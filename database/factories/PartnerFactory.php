@@ -18,7 +18,7 @@ class PartnerFactory extends Factory
     public function definition(): array
     {
         return [
-            'company_id' => Company::factory()->create()->first()->id,
+            'company_id' => Company::factory()->create()->id,
             'name' => $this->faker->company,
             'type' => $this->faker->randomElement(['supplier', 'customer', 'partner']),
             'contact_person' => $this->faker->name,

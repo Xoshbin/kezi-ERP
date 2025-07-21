@@ -19,14 +19,14 @@ class ProductFactory extends Factory
     public function definition(): array
     {
         return [
-            'company_id' => Company::factory()->create()->first()->id,
+            'company_id' => Company::factory()->create()->id,
             'name' => $this->faker->word(),
             'sku' => strtoupper($this->faker->bothify('SKU-####')),
             'description' => $this->faker->sentence(),
             'unit_price' => $this->faker->randomFloat(2, 10, 1000),
             'type' => $this->faker->randomElement(['product', 'service']),
-            'income_account_id' => Account::factory()->create()->first()->id,
-            'expense_account_id' => Account::factory()->create()->first()->id,
+            'income_account_id' => Account::factory()->create()->id,
+            'expense_account_id' => Account::factory()->create()->id,
             'is_active' => $this->faker->boolean(),
         ];
     }
