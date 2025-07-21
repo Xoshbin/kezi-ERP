@@ -45,4 +45,24 @@ class JournalEntryService
             return $journalEntry;
         });
     }
+
+    public function post(JournalEntry $journalEntry): bool
+    {
+        // 1. Re-validate the balance before posting.
+        $totalDebit = $journalEntry->lines()->sum('debit');
+        $totalCredit = $journalEntry->lines()->sum('credit');
+
+        if (bccomp($totalDebit, $totalCredit, 2) !== 0) {
+            throw ValidationException::withMessages(['lines' => 'Cannot post an unbalanced entry.']);
+        }
+
+        // Add other checks here (lock dates, etc.)
+
+        // 2. Update the totals and post the entry.
+        $journalEntry->total_debit = $totalDebit;
+        $journalEntry->total_credit = $totalCredit;
+        $journalEntry->is_posted = true;
+
+        return $journalEntry->save();
+    }
 }
