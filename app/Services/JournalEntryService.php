@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Exceptions\UpdateNotAllowedException;
 use App\Models\JournalEntry;
 use App\Rules\ActiveAccount;
 use Illuminate\Support\Facades\DB;
@@ -64,5 +65,16 @@ class JournalEntryService
         $journalEntry->is_posted = true;
 
         return $journalEntry->save();
+    }
+
+    public function update(JournalEntry $journalEntry, array $data): bool
+    {
+        // This is the guard clause. It protects posted entries.
+        if ($journalEntry->is_posted) {
+            throw new UpdateNotAllowedException('Cannot modify a posted journal entry.');
+        }
+
+        // If the guard clause passes, proceed with the update.
+        return $journalEntry->update($data);
     }
 }

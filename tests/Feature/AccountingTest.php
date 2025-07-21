@@ -1,6 +1,7 @@
 <?php
 
 use App\Exceptions\AccountIsDeprecatedException;
+use App\Exceptions\UpdateNotAllowedException;
 use App\Models\AnalyticAccount;
 use App\Models\Company;
 use App\Models\Account;
@@ -320,5 +321,42 @@ test('an unbalanced draft journal entry cannot be posted', function () {
     // Assert: Expect the service's post method to reject this and throw an exception.
     expect(fn() => (new JournalEntryService())->post($journalEntry))
         ->toThrow(ValidationException::class);
+})->only();
+
+test('a draft journal entry can be freely modified before posting', function () {
+    // Arrange: Create a draft journal entry.
+    $journalEntry = JournalEntry::factory()->create([
+        'is_posted' => false,
+        'description' => 'Initial Draft Description'
+    ]);
+
+    $updateData = ['description' => 'Updated Draft Description'];
+
+    // Act: Call the update method on the service.
+    $wasUpdated = (new JournalEntryService())->update($journalEntry, $updateData);
+
+    // Assert: Confirm the update was successful and the data was changed.
+    expect($wasUpdated)->toBeTrue();
+    expect($journalEntry->fresh()->description)->toBe('Updated Draft Description');
+})->only();
+test('a posted journal entry cannot be updated', function () {
+    // Arrange: Create a journal entry that is already posted.
+    $journalEntry = JournalEntry::factory()->create([
+        'is_posted' => true,
+        'description' => 'Original Posted Entry'
+    ]);
+
+    $updateData = ['description' => 'Attempted Unauthorized Update'];
+
+    // Assert: Expect that calling the update method on the service throws our
+    // specific exception, proving the action was blocked.
+    expect(fn() => (new JournalEntryService())->update($journalEntry, $updateData))
+        ->toThrow(UpdateNotAllowedException::class, 'Cannot modify a posted journal entry.');
+
+    // Assert: As a final check, confirm that the data in the database did not change.
+    $this->assertDatabaseHas('journal_entries', [
+        'id' => $journalEntry->id,
+        'description' => 'Original Posted Entry', // The description should be unchanged.
+    ]);
 })->only();
 });
