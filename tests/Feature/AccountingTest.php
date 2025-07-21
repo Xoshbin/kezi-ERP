@@ -16,6 +16,7 @@ use App\Models\User;
 use App\Models\VendorBill;
 use App\Models\AdjustmentDocument;
 use App\Services\CompanyService;
+use App\Services\CurrencyService;
 use Carbon\Carbon;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -54,6 +55,7 @@ test('a user is correctly related to their company for accounting contexts', fun
     // Verifies the structural integrity crucial for multi-company accounting.
     expect($user->company->id)->toBe($company->id);
 });
+
 test('duplicate tax ID for a company in the same fiscal country is prevented', function () {
     // Arrange: Create the first company that sets the baseline for the unique rule.
     Company::factory()->create(['tax_id' => 'VAT123', 'fiscal_country' => 'IQ']);
@@ -72,5 +74,25 @@ test('duplicate tax ID for a company in the same fiscal country is prevented', f
     // Assert: We expect that calling the service's create method with duplicate data
     // will fail validation and throw Laravel's standard ValidationException.
     expect(fn() => $companyService->create($duplicateCompanyData))
+        ->toThrow(ValidationException::class);
+});
+test('creating a currency with an existing code is prevented', function () {
+    // Arrange: Create the initial currency.
+    Currency::factory()->create(['code' => 'IQD']);
+
+    // Arrange: Prepare the data for the duplicate currency.
+    $duplicateData = [
+        'code' => 'IQD', // The duplicate code
+        'name' => 'Iraqi Dinar Duplicate',
+        'symbol' => 'د.ع',
+        'exchange_rate' => 1.0,
+    ];
+
+    // Arrange: Instantiate the service that holds the creation logic.
+    $currencyService = new CurrencyService();
+
+    // Assert: Expect the service to throw a ValidationException when trying to create
+    // the duplicate record, proving the business rule is enforced.
+    expect(fn() => $currencyService->create($duplicateData))
         ->toThrow(ValidationException::class);
 });
