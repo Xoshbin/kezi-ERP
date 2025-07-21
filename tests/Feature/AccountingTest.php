@@ -44,3 +44,10 @@ test('a company with existing financial records cannot be deleted', function () 
     // This confirms the deletion was truly prevented.
     $this->assertModelExists($company);
 });
+test('a user is correctly related to their company for accounting contexts', function () {
+    $company = Company::factory()->create();
+    $user = User::factory()->for($company)->create();
+
+    // Verifies the structural integrity crucial for multi-company accounting.
+    expect($user->company->id)->toBe($company->id);
+});
