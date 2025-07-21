@@ -46,7 +46,7 @@ test('a company with existing financial records cannot be deleted', function () 
     // Act & Assert: Double-check that the company was NOT removed from the database.
     // This confirms the deletion was truly prevented.
     $this->assertModelExists($company);
-});
+})->only();
 
 test('a user is correctly related to their company for accounting contexts', function () {
     $company = Company::factory()->create();
@@ -54,7 +54,7 @@ test('a user is correctly related to their company for accounting contexts', fun
 
     // Verifies the structural integrity crucial for multi-company accounting.
     expect($user->company->id)->toBe($company->id);
-});
+})->only();
 
 test('duplicate tax ID for a company in the same fiscal country is prevented', function () {
     // Arrange: Create the first company that sets the baseline for the unique rule.
@@ -75,7 +75,7 @@ test('duplicate tax ID for a company in the same fiscal country is prevented', f
     // will fail validation and throw Laravel's standard ValidationException.
     expect(fn() => $companyService->create($duplicateCompanyData))
         ->toThrow(ValidationException::class);
-});
+})->only();
 
 test('creating a currency with an existing code is prevented', function () {
     // Arrange: Create the initial currency.
@@ -96,7 +96,8 @@ test('creating a currency with an existing code is prevented', function () {
     // the duplicate record, proving the business rule is enforced.
     expect(fn() => $currencyService->create($duplicateData))
         ->toThrow(ValidationException::class);
-});
+})->only();
+
 test('a partner record is soft-deleted to preserve historical transaction context', function () {
     $partner = Partner::factory()->create();
     $partner->delete();
@@ -104,4 +105,22 @@ test('a partner record is soft-deleted to preserve historical transaction contex
     // Partners, as non-financial records, should be soft-deleted to maintain auditability [2-5].
     $this->assertSoftDeleted($partner);
     expect(Partner::find($partner->id))->toBeNull(); // Verifies default query behavior
+})->only();
+
+test('a soft-deleted partner can be retrieved using "withTrashed" for historical reporting', function () {
+    $partner = Partner::factory()->create();
+    $partner->delete();
+
+    // Ensures that historical data linked to soft-deleted entities is still accessible [2-5].
+    expect(Partner::withTrashed()->find($partner->id))->not->toBeNull();
+})->only();
+
+test('a product record is soft-deleted to preserve its history and linkages', function () {
+    $product = Product::factory()->create();
+    $product->delete();
+
+    // Products, like partners, are non-financial and subject to soft deletion principles [2-5].
+    $this->assertSoftDeleted($product);
+    expect(Product::find($product->id))->toBeNull();
+})->only();
 });
