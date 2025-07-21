@@ -15,6 +15,7 @@ use App\Models\Tax;
 use App\Models\User;
 use App\Models\VendorBill;
 use App\Models\AdjustmentDocument;
+use App\Services\CompanyService;
 use Carbon\Carbon;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -26,6 +27,7 @@ use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Queue;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use App\Exceptions\DeletionNotAllowedException; // A custom exception you should create
+use Illuminate\Validation\ValidationException; // The exception thrown by Laravel's validator
 
 uses(RefreshDatabase::class);
 
@@ -44,10 +46,31 @@ test('a company with existing financial records cannot be deleted', function () 
     // This confirms the deletion was truly prevented.
     $this->assertModelExists($company);
 });
+
 test('a user is correctly related to their company for accounting contexts', function () {
     $company = Company::factory()->create();
     $user = User::factory()->for($company)->create();
 
     // Verifies the structural integrity crucial for multi-company accounting.
     expect($user->company->id)->toBe($company->id);
+});
+test('duplicate tax ID for a company in the same fiscal country is prevented', function () {
+    // Arrange: Create the first company that sets the baseline for the unique rule.
+    Company::factory()->create(['tax_id' => 'VAT123', 'fiscal_country' => 'IQ']);
+
+    // Arrange: Prepare the data for the second, duplicate company.
+    $duplicateCompanyData = [
+        'name' => 'Duplicate Tax ID Company',
+        'tax_id' => 'VAT123', // Same tax_id
+        'fiscal_country' => 'IQ', // Same country
+        'currency_id' => Currency::factory()->create()->id,
+    ];
+
+    // Arrange: Instantiate the service that contains our business logic.
+    $companyService = new CompanyService();
+
+    // Assert: We expect that calling the service's create method with duplicate data
+    // will fail validation and throw Laravel's standard ValidationException.
+    expect(fn() => $companyService->create($duplicateCompanyData))
+        ->toThrow(ValidationException::class);
 });
