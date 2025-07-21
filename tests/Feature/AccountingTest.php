@@ -225,4 +225,26 @@ test('a deprecated account cannot be used for new financial transactions', funct
     expect(fn() => $journalEntryService->create($journalEntryData))
         ->toThrow(Illuminate\Validation\ValidationException::class);
 })->only();
+
+test('creating a journal with an existing short code for the same company is prevented', function () {
+    // Arrange: Create a company and the initial journal.
+    $company = Company::factory()->create();
+    Journal::factory()->for($company)->create(['short_code' => 'INV']);
+
+    // Arrange: Prepare data for the duplicate journal.
+    $duplicateData = [
+        'company_id' => $company->id,
+        'name' => 'Duplicate Sales Journal',
+        'type' => 'Sale',
+        'short_code' => 'INV', // The duplicate code
+    ];
+
+    // Arrange: Instantiate the service that holds your logic.
+    $journalService = new JournalService();
+
+    // Assert: Expect the service to throw a ValidationException when it
+    // detects the duplicate short code for the given company.
+    expect(fn() => $journalService->create($duplicateData))
+        ->toThrow(ValidationException::class);
+})->only();
 });
