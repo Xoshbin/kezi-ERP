@@ -373,4 +373,47 @@ test('a posted journal entry cannot be deleted', function () {
     // Assert: The model still exists in the database.
     $this->assertModelExists($journalEntry);
 })->only();
+
+test('posting a journal entry generates a cryptographic hash', function () {
+    // Arrange: Create a draft journal entry with no hash.
+    $journalEntry = JournalEntry::factory()->create([
+        'is_posted' => false,
+        'hash' => null
+    ]);
+
+    // Act: Post the entry using the service. This should trigger the observer.
+    (new JournalEntryService())->post($journalEntry);
+
+    // Assert: Check the model directly to confirm the hash was generated and saved.
+    $journalEntry->refresh(); // Get the latest data from the database.
+
+    expect($journalEntry->hash)->not->toBeNull();
+    expect(strlen($journalEntry->hash))->toBe(64); // The length of a SHA-256 hash.
+})->only();
+
+test('posting a journal entry links to the previous entry hash to form an audit chain', function () {
+    // Arrange: Create a company to scope the entries.
+    $company = Company::factory()->create();
+
+    // Arrange: Create the first entry, which is already posted and has a known hash.
+    $firstEntry = JournalEntry::factory()->for($company)->create([
+        'is_posted' => true,
+        'entry_date' => now()->subDay(),
+        'hash' => hash('sha256', 'first_entry_data'),
+    ]);
+
+    // Arrange: Create the second entry, which is still a draft.
+    $secondEntry = JournalEntry::factory()->for($company)->create([
+        'is_posted' => false,
+        'entry_date' => now(),
+    ]);
+
+    // Act: Post the second entry using the service. This should trigger the observer logic.
+    (new JournalEntryService())->post($secondEntry);
+
+    // Assert: Check the second entry to confirm its 'previous_hash'
+    // correctly links to the first entry's 'hash'.
+    $secondEntry->refresh();
+    expect($secondEntry->previous_hash)->toBe($firstEntry->hash);
+})->only();
 });
