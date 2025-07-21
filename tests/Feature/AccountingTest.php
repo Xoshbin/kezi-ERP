@@ -20,6 +20,7 @@ use App\Services\AccountService;
 use App\Services\CompanyService;
 use App\Services\CurrencyService;
 use App\Services\JournalEntryService;
+use App\Services\JournalService;
 use Carbon\Carbon;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -245,6 +246,50 @@ test('creating a journal with an existing short code for the same company is pre
     // Assert: Expect the service to throw a ValidationException when it
     // detects the duplicate short code for the given company.
     expect(fn() => $journalService->create($duplicateData))
+        ->toThrow(ValidationException::class);
+})->only();
+
+test('a journal entry correctly calculates totals and assigns a user when created', function () {
+    // Arrange: Create a user who will be the creator of the entry
+    $user = User::factory()->create();
+    $company = Company::factory()->create();
+
+    $entryData = [
+        'company_id' => $company->id,
+        'journal_id' => Journal::factory()->for($company)->create()->id,
+        'entry_date' => now()->toDateString(),
+        'reference' => 'JE-BALANCE-001',
+        'created_by_user_id' => $user->id, // Pass the required user ID
+        'lines' => [
+            ['account_id' => Account::factory()->for($company)->create()->id, 'debit' => 125.50],
+            ['account_id' => Account::factory()->for($company)->create()->id, 'credit' => 125.50],
+        ],
+    ];
+
+    // Act
+    $journalEntry = (new JournalEntryService())->create($entryData);
+
+    // Assert
+    expect($journalEntry->total_debit)->toEqual('125.50');
+    expect($journalEntry->total_credit)->toEqual('125.50');
+    expect($journalEntry->created_by_user_id)->toBe($user->id); // Also assert the user was set
+})->only();
+
+test('creating an unbalanced journal entry is prevented', function () {
+    // Arrange: Prepare data where debits do NOT equal credits.
+    $company = Company::factory()->create();
+    $unbalancedData = [
+        'company_id' => $company->id,
+        'entry_date' => now()->toDateString(),
+        'reference' => 'JE-UNBALANCED-001',
+        'lines' => [
+            ['account_id' => Account::factory()->for($company)->create()->id, 'debit' => 100.00],
+            ['account_id' => Account::factory()->for($company)->create()->id, 'credit' => 99.99], // Unbalanced!
+        ],
+    ];
+
+    // Assert: Expect the service to throw a ValidationException because the entry is unbalanced.
+    expect(fn() => (new JournalEntryService())->create($unbalancedData))
         ->toThrow(ValidationException::class);
 })->only();
 });
