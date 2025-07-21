@@ -1,5 +1,6 @@
 <?php
 
+use App\Exceptions\AccountIsDeprecatedException;
 use App\Models\AnalyticAccount;
 use App\Models\Company;
 use App\Models\Account;
@@ -18,6 +19,7 @@ use App\Models\AdjustmentDocument;
 use App\Services\AccountService;
 use App\Services\CompanyService;
 use App\Services\CurrencyService;
+use App\Services\JournalEntryService;
 use Carbon\Carbon;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -194,5 +196,33 @@ test('an account with existing transactions is marked as deprecated instead of b
         'id' => $account->id,
         'is_deprecated' => true,
     ]);
+})->only();
+
+test('a deprecated account cannot be used for new financial transactions', function () {
+    // Arrange: Create a company and the necessary accounts.
+    $company = Company::factory()->create();
+    $deprecatedAccount = Account::factory()->for($company)->create(['is_deprecated' => true]);
+    $activeAccount = Account::factory()->for($company)->create();
+
+    // Arrange: Prepare the data for a journal entry that attempts to use the deprecated account.
+    $journalEntryData = [
+        'company_id' => $company->id,
+        'entry_date' => now()->toDateString(),
+        'reference' => 'INVALID-USE-DEPRECATED',
+        'lines' => [
+            // This line uses the deprecated account, which should be rejected.
+            ['account_id' => $deprecatedAccount->id, 'debit' => 100],
+            // This line is valid.
+            ['account_id' => $activeAccount->id, 'credit' => 100],
+        ],
+    ];
+
+    // Arrange: Instantiate the service that contains the business logic.
+    $journalEntryService = new JournalEntryService();
+
+    // Assert: Expect the service to throw a specific, clear exception when it detects
+    // the use of a deprecated account. This confirms the backend rule is enforced.
+    expect(fn() => $journalEntryService->create($journalEntryData))
+        ->toThrow(Illuminate\Validation\ValidationException::class);
 })->only();
 });
