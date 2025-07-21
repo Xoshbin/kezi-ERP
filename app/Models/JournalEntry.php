@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Observers\JournalEntryObserver;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -39,6 +41,7 @@ use RuntimeException; // For explicit exception handling for immutability violat
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\JournalEntryLine[] $lines The individual debit/credit lines composing this journal entry.
  * @property-read \Illuminate\Models\Model|\Eloquent $source The originating document (e.g., Invoice, VendorBill, Payment) for this journal entry.
  */
+#[ObservedBy([JournalEntryObserver::class])]
 class JournalEntry extends Model
 {
     use HasFactory;
@@ -147,14 +150,6 @@ class JournalEntry extends Model
                         throw new RuntimeException("Attempted to modify immutable posted journal entry field: '{$field}'. Corrections must be made via new, offsetting contra-entries.");
                     }
                 }
-            }
-        });
-
-        // Prevent the deletion of any journal entry once it has been posted [1-3, 7].
-        static::deleting(function (JournalEntry $journalEntry) {
-            if ($journalEntry->is_posted) {
-                // Similarly, a RuntimeException prevents deletion, emphasizing contra-entries as the only path.
-                throw new RuntimeException("Cannot delete a posted journal entry. Financial records are immutable. Corrections must be made via new, offsetting contra-entries.");
             }
         });
     }

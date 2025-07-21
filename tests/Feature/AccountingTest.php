@@ -339,6 +339,7 @@ test('a draft journal entry can be freely modified before posting', function () 
     expect($wasUpdated)->toBeTrue();
     expect($journalEntry->fresh()->description)->toBe('Updated Draft Description');
 })->only();
+
 test('a posted journal entry cannot be updated', function () {
     // Arrange: Create a journal entry that is already posted.
     $journalEntry = JournalEntry::factory()->create([
@@ -358,5 +359,18 @@ test('a posted journal entry cannot be updated', function () {
         'id' => $journalEntry->id,
         'description' => 'Original Posted Entry', // The description should be unchanged.
     ]);
+})->only();
+
+test('a posted journal entry cannot be deleted', function () {
+    $journalEntry = JournalEntry::factory()->create(['is_posted' => true]);
+
+    // Act: Attempt to delete the model.
+    $deleteResult = $journalEntry->delete();
+
+    // Assert: The observer should have returned false, cancelling the deletion.
+    expect($deleteResult)->toBeFalse();
+
+    // Assert: The model still exists in the database.
+    $this->assertModelExists($journalEntry);
 })->only();
 });
