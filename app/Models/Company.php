@@ -6,7 +6,8 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Support\Collection; // For clarity on method returns
+use App\Observers\CompanyObserver;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 
 /**
  * Class Company
@@ -50,18 +51,11 @@ use Illuminate\Support\Collection; // For clarity on method returns
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\AnalyticPlan[] $analyticPlans
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Budget[] $budgets
  */
+
+#[ObservedBy([CompanyObserver::class])]
 class Company extends Model
 {
     use HasFactory;
-
-    /**
-     * The database table associated with the model.
-     * Eloquent conventions would automatically infer 'companies', but explicit
-     * declaration is good practice for clarity in complex financial systems.
-     *
-     * @var string
-     */
-    protected $table = 'companies';
 
     /**
      * The attributes that are mass assignable.
