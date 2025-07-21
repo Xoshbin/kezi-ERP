@@ -123,4 +123,33 @@ test('a product record is soft-deleted to preserve its history and linkages', fu
     $this->assertSoftDeleted($product);
     expect(Product::find($product->id))->toBeNull();
 })->only();
+
+test('a soft-deleted product can be retrieved with "withTrashed" for historical analysis', function () {
+    $product = Product::factory()->create();
+    $product->delete();
+
+    // Verifies the ability to access product history even after deactivation [2-5].
+    expect(Product::withTrashed()->find($product->id))->not->toBeNull();
+})->only();
+
+test('a product is correctly linked to its default income and expense general ledger accounts', function () {
+    $incomeAccount = Account::factory()->create(['type' => 'Income']);
+    $expenseAccount = Account::factory()->create(['type' => 'Expense']);
+    $product = Product::factory()->create([
+        'income_account_id' => $incomeAccount->id,
+        'expense_account_id' => $expenseAccount->id,
+    ]);
+
+    // Ensures proper accounting categorization for product sales and purchases [3, 5].
+    expect($product->incomeAccount->id)->toBe($incomeAccount->id);
+    expect($product->expenseAccount->id)->toBe($expenseAccount->id);
+})->only();
+
+test('a tax is correctly linked to its designated general ledger tax account', function () {
+    $taxAccount = Account::factory()->create(['type' => 'Liability']); // e.g., VAT Payable
+    $tax = Tax::factory()->create(['tax_account_id' => $taxAccount->id]);
+
+    // Critical for accurate tax reporting and balance sheet presentation [3, 5].
+    expect($tax->taxAccount->id)->toBe($taxAccount->id);
+})->only();
 });
