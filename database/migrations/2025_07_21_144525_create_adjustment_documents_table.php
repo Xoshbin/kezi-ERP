@@ -7,7 +7,10 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration
 {
     /**
-     * Run the migrations.
+     * In an accounting system, direct credit_notes tables are typically consolidated into a more general adjustment_documents table
+     * to handle various types of financial adjustments, 
+     * including credit notes, debit notes, and miscellaneous adjustments. 
+     * This approach ensures a unified and auditable trail for all corrections to posted financial records
      */
     public function up(): void
     {
@@ -25,6 +28,22 @@ return new class extends Migration
             $table->text('reason');
             $table->string('status')->default('Draft'); // 'Draft', 'Posted'
             $table->timestamps();
+
+            // Ensure uniqueness for reference_number combined with type and company_id,
+            // as reference numbers might be unique per type/company, not globally.
+            // This composite unique constraint complements the single unique constraint
+            // on 'reference_number' if it's meant to be globally unique.
+            // For a system where reference_number is unique *per type and company*,
+            // a unique index would be: ['company_id', 'type', 'reference_number']
+            // If reference_number is guaranteed to be globally unique across all types/companies
+            // once posted, the initial $table->string('reference_number')->unique(); is sufficient.
+            // Given the context of Odoo and accounting principles, a sequential number
+            // is usually unique within a journal or company for a specific document type [4, 5].
+            // To align with this, consider:
+            // $table->unique(['company_id', 'type', 'reference_number']);
+            // However, if the single 'reference_number' is enforced as globally unique (e.g., system-wide unique ID),
+            // then the basic unique constraint is sufficient. The sources suggest "unique for the type/company" [1],
+            // implying uniqueness is scoped. Thus, a composite unique index is more appropriate:
 
             $table->unique(['company_id', 'type', 'reference_number']);
         });
