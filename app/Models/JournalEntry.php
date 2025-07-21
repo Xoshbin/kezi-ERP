@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -40,6 +41,7 @@ use RuntimeException; // For explicit exception handling for immutability violat
  */
 class JournalEntry extends Model
 {
+    use HasFactory;
     /**
      * The database table associated with the model.
      *
