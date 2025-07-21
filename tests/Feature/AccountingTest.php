@@ -292,4 +292,33 @@ test('creating an unbalanced journal entry is prevented', function () {
     expect(fn() => (new JournalEntryService())->create($unbalancedData))
         ->toThrow(ValidationException::class);
 })->only();
+
+test('a balanced draft journal entry can be posted', function () {
+    // Arrange: Create a draft journal entry with balanced lines.
+    $journalEntry = JournalEntry::factory()->create(['is_posted' => false]);
+    $journalEntry->lines()->createMany([
+        ['account_id' => Account::factory()->create()->id, 'debit' => 100.00],
+        ['account_id' => Account::factory()->create()->id, 'credit' => 100.00],
+    ]);
+
+    // Act: Call the post method on the service.
+    (new JournalEntryService())->post($journalEntry);
+
+    // Assert: Check the model directly to see if its state was correctly updated.
+    $journalEntry->refresh();
+    expect($journalEntry->is_posted)->toBeTrue();
+})->only();
+
+test('an unbalanced draft journal entry cannot be posted', function () {
+    // Arrange: Create a draft entry with UNBALANCED lines.
+    $journalEntry = JournalEntry::factory()->create(['is_posted' => false]);
+    $journalEntry->lines()->createMany([
+        ['account_id' => Account::factory()->create()->id, 'debit' => 100.00],
+        ['account_id' => Account::factory()->create()->id, 'credit' => 99.00], // Unbalanced!
+    ]);
+
+    // Assert: Expect the service's post method to reject this and throw an exception.
+    expect(fn() => (new JournalEntryService())->post($journalEntry))
+        ->toThrow(ValidationException::class);
+})->only();
 });
