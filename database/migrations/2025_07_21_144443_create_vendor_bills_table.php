@@ -1,0 +1,40 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    /**
+     * Run the migrations.
+     */
+    public function up(): void
+    {
+        Schema::create('vendor_bills', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('company_id')->constrained('companies');
+            $table->foreignId('vendor_id')->constrained('partners');
+            $table->foreignId('currency_id')->constrained('currencies');
+            $table->foreignId('journal_entry_id')->nullable()->constrained('journal_entries')->onDelete('set null');
+            $table->string('bill_reference');
+            $table->date('bill_date');
+            $table->date('accounting_date');
+            $table->date('due_date')->nullable();
+            $table->string('status')->default('Draft')->index(); // 'Draft', 'Posted', 'Paid'
+            $table->decimal('total_amount', 15, 2);
+            $table->decimal('total_tax', 15, 2);
+            $table->timestamp('posted_at')->nullable();
+            $table->json('reset_to_draft_log')->nullable();
+            $table->timestamps();
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     */
+    public function down(): void
+    {
+        Schema::dropIfExists('vendor_bills');
+    }
+};
