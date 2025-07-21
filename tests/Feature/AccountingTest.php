@@ -15,6 +15,7 @@ use App\Models\Tax;
 use App\Models\User;
 use App\Models\VendorBill;
 use App\Models\AdjustmentDocument;
+use App\Services\AccountService;
 use App\Services\CompanyService;
 use App\Services\CurrencyService;
 use Carbon\Carbon;
@@ -151,5 +152,27 @@ test('a tax is correctly linked to its designated general ledger tax account', f
 
     // Critical for accurate tax reporting and balance sheet presentation [3, 5].
     expect($tax->taxAccount->id)->toBe($taxAccount->id);
+})->only();
+
+test('creating an account with a duplicate code for the same company is prevented', function () {
+    // Arrange: Create a company and the first account with code '1000'.
+    $company = Company::factory()->create();
+    Account::factory()->for($company)->create(['code' => '1000']);
+
+    // Arrange: Prepare the data for the second account, which is a duplicate.
+    $duplicateAccountData = [
+        'company_id' => $company->id,
+        'code' => '1000', // The duplicate code
+        'name' => 'Duplicate Cash Account',
+        'type' => 'Asset',
+    ];
+
+    // Arrange: Get the service that contains your business rules.
+    $accountService = new AccountService();
+
+    // Assert: Expect that trying to create the duplicate account will fail
+    // with a ValidationException. This proves your backend rule works.
+    expect(fn() => $accountService->create($duplicateAccountData))
+        ->toThrow(ValidationException::class);
 })->only();
 });
