@@ -70,6 +70,12 @@ class JournalEntry extends Model
         'description',
         'source_type',
         'source_id',
+        'total_debit',
+        'total_credit',
+        'is_posted',
+        'hash',
+        'previous_hash',
+        'created_by_user_id',
     ];
 
     /**
