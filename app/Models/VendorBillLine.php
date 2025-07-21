@@ -1,0 +1,129 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+
+// As a fundamental principle of accounting, financial line items,
+// much like their parent documents (Vendor Bills), are part of the immutable
+// financial record once the bill is "Posted" [1-3].
+// Therefore, the SoftDeletes trait is **intentionally omitted** to ensure
+// the integrity and auditability of historical accounting data [3].
+// Any corrections to posted lines must be handled via new, offsetting entries
+// (e.g., adjustment documents like credit notes or new journal entries) [3].
+
+class VendorBillLine extends Model
+{
+    use HasFactory;
+
+    /**
+     * The database table associated with the model.
+     * Explicitly defining the table name for clarity and consistency with migration schemas [2, 4].
+     *
+     * @var string
+     */
+    protected $table = 'vendor_bill_lines'; // Matches table name from source [2] section 13.
+
+    /**
+     * The attributes that are mass assignable.
+     * These fields can be safely filled via mass assignment, ensuring
+     * that only expected data is set on creation or update, a crucial security feature [5, 6].
+     *
+     * @var array<int, string>
+     */
+    protected $fillable = [
+        'vendor_bill_id',          // Foreign key to the parent VendorBill, linking each line to its primary document [2].
+        'product_id',              // Nullable foreign key to the Product model, identifying the item purchased [2].
+        'description',             // A detailed textual description of the line item [2].
+        'quantity',                // The quantity of the product or service on this line [2].
+        'unit_price',              // The price per unit of the item [2].
+        'tax_id',                  // Nullable foreign key to the Tax model, representing the tax applied to this line [2].
+        'subtotal',                // The calculated subtotal for this line, typically quantity * unit_price [2].
+        'total_line_tax',          // The total tax amount specifically for this line item [2].
+        'expense_account_id',      // Foreign key to the Account model, for proper expense classification in the Chart of Accounts [2].
+        'analytic_account_id',     // Nullable foreign key to the AnalyticAccount model for management/cost accounting [2, 7].
+        // While explicitly listed for `journal_entry_lines` [2], Odoo's design [8]
+        // implies its applicability at the document line level for richer analytic tracking.
+    ];
+
+    /**
+     * The attributes that should be cast to native types.
+     * Essential for maintaining numerical precision for financial values (`decimal:2`)
+     * and ensuring proper date handling for timestamps [2, 9].
+     *
+     * @var array<string, string>
+     */
+    protected $casts = [
+        'quantity'          => 'decimal:2', // Ensures precision for quantities, allowing for fractional units.
+        'unit_price'        => 'decimal:2', // **Crucial for financial accuracy**, ensuring amounts are stored with two decimal places [2].
+        'subtotal'          => 'decimal:2', // **Crucial for financial accuracy** [2].
+        'total_line_tax'    => 'decimal:2', // **Crucial for financial accuracy** [2].
+        'created_at'        => 'datetime',  // Automatically managed by Eloquent for audit trails [2].
+        'updated_at'        => 'datetime',  // Automatically managed by Eloquent [2].
+    ];
+
+    /**
+     * Get the Vendor Bill that owns the Vendor Bill Line.
+     * Establishes a **BelongsTo** relationship with the `VendorBill` model,
+     * linking each line item directly to its originating vendor bill document [2, 10-12].
+     *
+     * @return BelongsTo
+     */
+    public function vendorBill(): BelongsTo
+    {
+        return $this->belongsTo(VendorBill::class, 'vendor_bill_id');
+    }
+
+    /**
+     * Get the Product associated with the Vendor Bill Line.
+     * Defines a **BelongsTo** relationship to the `Product` model [10-12].
+     * This relationship is nullable, acknowledging that some bill lines may simply be descriptive
+     * without linking to a specific product from the catalog [2].
+     *
+     * @return BelongsTo
+     */
+    public function product(): BelongsTo
+    {
+        return $this->belongsTo(Product::class, 'product_id');
+    }
+
+    /**
+     * Get the Tax applied to the Vendor Bill Line.
+     * Establishes a **BelongsTo** relationship with the `Tax` model [10-12].
+     * This is crucial for correct tax calculation and reporting, and is nullable for tax-exempt items [2].
+     *
+     * @return BelongsTo
+     */
+    public function tax(): BelongsTo
+    {
+        return $this->belongsTo(Tax::class, 'tax_id');
+    }
+
+    /**
+     * Get the Expense Account associated with the Vendor Bill Line.
+     * This **BelongsTo** relationship is fundamental for the double-entry accounting system,
+     * directing the cost of each line item to the appropriate expense account in the Chart of Accounts [2, 10-12].
+     *
+     * @return BelongsTo
+     */
+    public function expenseAccount(): BelongsTo
+    {
+        return $this->belongsTo(Account::class, 'expense_account_id');
+    }
+
+    /**
+     * Get the Analytic Account for the Vendor Bill Line.
+     * Defines a **BelongsTo** relationship to the `AnalyticAccount` model [10-12].
+     * This provides a granular layer for internal management accounting, allowing costs
+     * to be tracked against specific projects, departments, or other analytic dimensions [2, 7, 8].
+     * It is nullable as not all expense lines may require analytic tracking.
+     *
+     * @return BelongsTo
+     */
+    public function analyticAccount(): BelongsTo
+    {
+        return $this->belongsTo(AnalyticAccount::class, 'analytic_account_id');
+    }
+}
