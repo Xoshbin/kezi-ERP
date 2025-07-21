@@ -1,0 +1,117 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+
+/**
+ * Class FiscalPositionTaxMapping
+ *
+ * @package App\Models
+ *
+ * This Eloquent model defines a specific rule for tax re-mapping within a Fiscal Position.
+ * It is a crucial component for adapting default tax applications to specific
+ * business scenarios or regulatory requirements based on the applied fiscal position.
+ * This model plays a vital role in automating tax compliance and ensuring accurate
+ * tax calculation in a dynamic multi-jurisdictional accounting environment.
+ *
+ * @property int $id Primary key, auto-incrementing.
+ * @property int $fiscal_position_id Foreign key to the 'fiscal_positions' table, linking this mapping rule to its parent fiscal position.
+ * @property int $original_tax_id Foreign key to the 'taxes' table, representing the tax that is being re-mapped (the default tax applied before the fiscal position).
+ * @property int $mapped_tax_id Foreign key to the 'taxes' table, representing the tax that the original_tax_id is re-mapped to (the tax applied after the fiscal position).
+ * @property \Illuminate\Support\Carbon|null $created_at Timestamp when the record was created.
+ * @property \Illuminate\Support\Carbon|null $updated_at Timestamp when the record was last updated.
+ *
+ * @property-read \App\Models\FiscalPosition $fiscalPosition The fiscal position to which this tax mapping rule belongs.
+ * @property-read \App\Models\Tax $originalTax The original tax entity that is being mapped.
+ * @property-read \App\Models\Tax $mappedTax The tax entity to which the original tax is mapped.
+ */
+class FiscalPositionTaxMapping extends Model
+{
+    use HasFactory;
+
+    /**
+     * The table associated with the model.
+     * As indicated in the migration script, this model interacts with the 'fiscal_position_tax_mappings' table.
+     *
+     * @var string
+     */
+    protected $table = 'fiscal_position_tax_mappings';
+
+    /**
+     * The attributes that are mass assignable.
+     * These fields can be safely filled via mass assignment, reflecting the core data
+     * necessary for a tax mapping rule.
+     *
+     * @var array<int, string>
+     */
+    protected $fillable = [
+        'fiscal_position_id',
+        'original_tax_id',
+        'mapped_tax_id',
+    ];
+
+    /**
+     * The attributes that should be cast.
+     * Ensures that 'created_at' and 'updated_at' are Carbon instances for consistent
+     * date and time manipulation.
+     *
+     * @var array<string, string>
+     */
+    protected $casts = [
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime',
+    ];
+
+    /*
+    |--------------------------------------------------------------------------
+    | Relationships
+    |--------------------------------------------------------------------------
+    | These relationships are fundamental for linking tax mapping rules
+    | to their respective fiscal positions and the actual tax definitions.
+    */
+
+    /**
+     * Get the fiscal position that this tax mapping belongs to.
+     * This defines the overarching context or set of rules under which the
+     * tax re-mapping is applied [1, 2].
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function fiscalPosition(): BelongsTo
+    {
+        // A FiscalPositionTaxMapping record is intrinsically tied to one FiscalPosition.
+        return $this->belongsTo(FiscalPosition::class);
+    }
+
+    /**
+     * Get the original tax that is subject to re-mapping.
+     * This represents the default tax rate or rule that would typically be applied
+     * before any fiscal position adjustments [1, 3].
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function originalTax(): BelongsTo
+    {
+        // Explicitly defining the foreign key 'original_tax_id' ensures correct
+        // linkage to the 'taxes' table, as it deviates from Laravel's default
+        // naming convention for a 'belongsTo' relationship to a 'Tax' model.
+        return $this->belongsTo(Tax::class, 'original_tax_id');
+    }
+
+    /**
+     * Get the tax to which the original tax is re-mapped.
+     * This is the effective tax rate or rule that will be applied once the
+     * fiscal position's mapping rule is triggered [1, 3].
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function mappedTax(): BelongsTo
+    {
+        // Similar to 'originalTax', the foreign key 'mapped_tax_id' is explicitly
+        // specified to establish the correct relationship to the 'taxes' table.
+        return $this->belongsTo(Tax::class, 'mapped_tax_id');
+    }
+}
