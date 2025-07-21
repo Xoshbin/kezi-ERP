@@ -76,6 +76,7 @@ test('duplicate tax ID for a company in the same fiscal country is prevented', f
     expect(fn() => $companyService->create($duplicateCompanyData))
         ->toThrow(ValidationException::class);
 });
+
 test('creating a currency with an existing code is prevented', function () {
     // Arrange: Create the initial currency.
     Currency::factory()->create(['code' => 'IQD']);
@@ -95,4 +96,12 @@ test('creating a currency with an existing code is prevented', function () {
     // the duplicate record, proving the business rule is enforced.
     expect(fn() => $currencyService->create($duplicateData))
         ->toThrow(ValidationException::class);
+});
+test('a partner record is soft-deleted to preserve historical transaction context', function () {
+    $partner = Partner::factory()->create();
+    $partner->delete();
+
+    // Partners, as non-financial records, should be soft-deleted to maintain auditability [2-5].
+    $this->assertSoftDeleted($partner);
+    expect(Partner::find($partner->id))->toBeNull(); // Verifies default query behavior
 });
