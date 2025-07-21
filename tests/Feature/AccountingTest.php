@@ -175,4 +175,24 @@ test('creating an account with a duplicate code for the same company is prevente
     expect(fn() => $accountService->create($duplicateAccountData))
         ->toThrow(ValidationException::class);
 })->only();
+
+test('an account with existing transactions is marked as deprecated instead of being deleted', function () {
+    // Arrange: Create an account and link a transaction to it.
+    $account = Account::factory()->create();
+    JournalEntry::factory()->create()->lines()->create(['account_id' => $account->id, 'debit' => 100]);
+
+    // Act: Attempt to delete the account. We expect our Observer to intercept this.
+    // The delete() method should return false because the Observer cancels the operation.
+    $deleteResult = $account->delete();
+
+    // Assert: The deletion was cancelled.
+    expect($deleteResult)->toBeFalse();
+
+    // Assert: The account still exists and is now deprecated.
+    // This is the only database check you need for this test.
+    $this->assertDatabaseHas('accounts', [
+        'id' => $account->id,
+        'is_deprecated' => true,
+    ]);
+})->only();
 });
