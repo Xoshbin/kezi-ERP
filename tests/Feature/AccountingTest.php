@@ -21,6 +21,7 @@ use App\Models\VendorBill;
 use App\Models\AdjustmentDocument;
 use App\Models\VendorBillLine;
 use App\Services\AccountService;
+use App\Services\AdjustmentDocumentService;
 use App\Services\CompanyService;
 use App\Services\CurrencyService;
 use App\Services\InvoiceService;
@@ -977,6 +978,190 @@ test('a confirmed payment is immutable', function () {
     $this->assertDatabaseHas('payments', [
         'id' => $payment->id,
         'amount' => 10000,
+    ]);
+})->only();
+
+test('an incoming payment correctly debits Bank and credits Accounts Receivable', function () {
+    // Arrange: Set up the company, customer, and user.
+    $company = Company::factory()->create();
+    $customer = Partner::factory()->for($company)->create(['type' => 'Customer']);
+    $currency = Currency::factory()->create(['code' => 'USD']);
+    $user = User::factory()->create();
+
+    // Arrange: Set up the default accounts the service will need.
+    $bankAccount = Account::factory()->for($company)->create(['type' => 'Bank']);
+    $arAccount = Account::factory()->for($company)->create(['type' => 'Receivable']);
+    config([
+        'accounting.defaults.default_bank_account_id' => $bankAccount->id,
+        'accounting.defaults.accounts_receivable_id' => $arAccount->id,
+    ]);
+
+    // Arrange: Prepare the data for an inbound payment.
+    $paymentData = [
+        'company_id' => $company->id,
+        'journal_id' => Journal::factory()->for($company)->create()->id,
+        'currency_id' => $currency->id,
+        'paid_to_from_partner_id' => $customer->id,
+        'payment_date' => now()->toDateString(),
+        'payment_type' => 'Inbound',
+        'amount' => 100.00, // Use a float, the MoneyCast will handle it.
+    ];
+
+    // Act: Create and confirm the payment using the service.
+    $payment = (new PaymentService())->createAndConfirm($paymentData, $user);
+
+    // Assert: Check that the payment is confirmed and linked to a journal entry.
+    expect($payment->status)->toBe('Confirmed');
+    expect($payment->journal_entry_id)->not->toBeNull();
+
+    // Assert: Confirm the journal entry lines are correct in the database.
+    // We check for the integer value 10000 (100.00 * 100).
+    $this->assertDatabaseHas('journal_entry_lines', [
+        'journal_entry_id' => $payment->journal_entry_id,
+        'account_id' => $bankAccount->id,
+        'debit' => 10000, // Dr Bank
+    ]);
+    $this->assertDatabaseHas('journal_entry_lines', [
+        'journal_entry_id' => $payment->journal_entry_id,
+        'account_id' => $arAccount->id,
+        'credit' => 10000, // Cr Accounts Receivable
+    ]);
+})->only();
+
+test('an outgoing payment correctly debits Accounts Payable and credits Bank', function () {
+    // Arrange: Set up the company, a vendor, and a user.
+    $company = Company::factory()->create();
+    $vendor = Partner::factory()->for($company)->create(['type' => 'Vendor']);
+    $currency = Currency::factory()->create(['code' => 'USD']);
+    $user = User::factory()->create();
+
+    // Arrange: Set up the default accounts the service will need.
+    $bankAccount = Account::factory()->for($company)->create(['type' => 'Bank']);
+    $apAccount = Account::factory()->for($company)->create(['type' => 'Payable']);
+    config([
+        'accounting.defaults.default_bank_account_id' => $bankAccount->id,
+        'accounting.defaults.accounts_payable_id' => $apAccount->id,
+    ]);
+
+    // Arrange: Prepare the data for an outbound payment.
+    $paymentData = [
+        'company_id' => $company->id,
+        'journal_id' => Journal::factory()->for($company)->create()->id,
+        'currency_id' => $currency->id,
+        'paid_to_from_partner_id' => $vendor->id,
+        'payment_date' => now()->toDateString(),
+        'payment_type' => 'Outbound',
+        'amount' => 250.00, // Use a float, the MoneyCast will handle it.
+    ];
+
+    // Act: Create and confirm the payment using the service.
+    $payment = (new PaymentService())->createAndConfirm($paymentData, $user);
+
+    // Assert: Check that the payment is confirmed and linked to a journal entry.
+    expect($payment->status)->toBe('Confirmed');
+    expect($payment->journal_entry_id)->not->toBeNull();
+
+    // Assert: Confirm the journal entry lines are correct in the database.
+    // We check for the integer value 25000 (250.00 * 100).
+    $this->assertDatabaseHas('journal_entry_lines', [
+        'journal_entry_id' => $payment->journal_entry_id,
+        'account_id' => $apAccount->id,
+        'debit' => 25000, // Dr Accounts Payable
+    ]);
+    $this->assertDatabaseHas('journal_entry_lines', [
+        'journal_entry_id' => $payment->journal_entry_id,
+        'account_id' => $bankAccount->id,
+        'credit' => 25000, // Cr Bank
+    ]);
+})->only();
+
+test('a posted credit note is immutable', function () {
+    // Arrange: Create a posted credit note with a specific amount.
+    // We use an integer because of your MoneyCast (50.00 * 100 = 5000).
+    $creditNote = AdjustmentDocument::factory()->create([
+        'status' => 'Posted',
+        'total_amount' => 50.00,
+    ]);
+
+    // Assert: Expect that any attempt to update the posted credit note will be blocked
+    // by the service and throw a specific exception.
+    expect(fn() => (new AdjustmentDocumentService())->update($creditNote, ['total_amount' => 9999]))
+        ->toThrow(UpdateNotAllowedException::class);
+
+    // Assert: As a final check, confirm the amount in the database did not change.
+    $this->assertDatabaseHas('adjustment_documents', [
+        'id' => $creditNote->id,
+        'total_amount' => 5000,
+    ]);
+})->only();
+
+test('a credit note explicitly references the original invoice it corrects for clear auditability', function () {
+    $originalInvoice = Invoice::factory()->create(['status' => 'Posted']);
+    $creditNote = AdjustmentDocument::factory()->create(['original_invoice_id' => $originalInvoice->id]);
+
+    // Essential for a clear and traceable audit trail [1, 2, 4, 9].
+    expect($creditNote->original_invoice_id)->toBe($originalInvoice->id);
+    expect($creditNote->originalInvoice->id)->toBe($originalInvoice->id);
+})->only();
+
+test('posting a credit note generates the correct reverse journal entry', function () {
+    // Arrange: Set up the company, user, and necessary accounts.
+    $company = Company::factory()->create();
+    $user = User::factory()->create();
+    $arAccount = Account::factory()->for($company)->create(['type' => 'Receivable']);
+    $incomeAccount = Account::factory()->for($company)->create(['type' => 'Income']);
+    $taxAccount = Account::factory()->for($company)->create(['type' => 'Liability']);
+    // Arrange: Create a specific journal for sales.
+    $salesJournal = Journal::factory()->for($company)->create(['type' => 'Sale']);
+
+
+    // Arrange: Create the original posted invoice.
+    $originalInvoice = Invoice::factory()->for($company)->create(['status' => 'Posted']);
+
+    // Arrange: Create a draft credit note to reverse the invoice.
+    // Note: We use integers for money values (110.00 * 100 = 11000).
+    $creditNote = AdjustmentDocument::factory()->for($company)->create([
+        'status' => 'Draft',
+        'original_invoice_id' => $originalInvoice->id,
+        'total_amount' => 110.00,
+        'total_tax' => 10.00,
+        // The credit note should also have lines detailing what is being credited.
+        // For simplicity, we'll assume the service can derive the accounts.
+    ]);
+
+    // Arrange: Set up default accounts for the service to use.
+    config([
+        'accounting.defaults.accounts_receivable_id' => $arAccount->id,
+        // In a real system, the service would get the income/tax accounts from the credit note lines.
+        'accounting.defaults.default_income_account_id' => $incomeAccount->id,
+        'accounting.defaults.default_tax_account_id' => $taxAccount->id,
+        'accounting.defaults.sales_journal_id' => $salesJournal->id,
+    ]);
+
+    // Act: Post the credit note using the service.
+    (new AdjustmentDocumentService())->post($creditNote, $user);
+
+    // Assert: Check the credit note's state.
+    $creditNote->refresh();
+    expect($creditNote->status)->toBe('Posted');
+    expect($creditNote->journal_entry_id)->not->toBeNull();
+
+    // Assert: Confirm the REVERSE journal entry lines were created correctly.
+    // We check for integer values.
+    $this->assertDatabaseHas('journal_entry_lines', [
+        'journal_entry_id' => $creditNote->journal_entry_id,
+        'account_id' => $incomeAccount->id,
+        'debit' => 10000, // Dr Income (total_amount - total_tax)
+    ]);
+    $this->assertDatabaseHas('journal_entry_lines', [
+        'journal_entry_id' => $creditNote->journal_entry_id,
+        'account_id' => $taxAccount->id,
+        'debit' => 1000, // Dr Tax Payable
+    ]);
+    $this->assertDatabaseHas('journal_entry_lines', [
+        'journal_entry_id' => $creditNote->journal_entry_id,
+        'account_id' => $arAccount->id,
+        'credit' => 11000, // Cr Accounts Receivable
     ]);
 })->only();
 

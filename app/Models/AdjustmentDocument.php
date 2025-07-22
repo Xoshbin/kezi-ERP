@@ -3,11 +3,13 @@
 namespace App\Models;
 
 use App\Casts\MoneyCast;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class AdjustmentDocument extends Model
 {
+    use HasFactory;
     /**
      * The table associated with the model.
      * Explicitly defining the table name is good practice, particularly for
@@ -36,6 +38,7 @@ class AdjustmentDocument extends Model
         'reason',                 // [5]
         'status',                 // [5] e.g., 'Draft', 'Posted'
         'journal_entry_id',       // [5]
+        'posted_at'
     ];
 
     /**

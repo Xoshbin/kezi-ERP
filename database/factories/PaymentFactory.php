@@ -30,7 +30,7 @@ class PaymentFactory extends Factory
             'reference' => $this->faker->uuid(),
             'status' => $this->faker->randomElement(['pending', 'completed', 'failed']),
             'paid_to_from_partner_id' => Partner::factory()->create()->id,
-            'journal_entry_id' => $this->faker->numberBetween(1, 100),
+            'journal_entry_id' => null,
         ];
     }
 }
