@@ -639,4 +639,63 @@ test('updating invoice lines correctly recalculates the invoice total amount and
     expect($invoice->total_amount)->toEqual('143.00');
 })->only();
 
+test('posting an invoice correctly debits Accounts Receivable and credits Income/Tax', function () {
+    // Arrange: Create all the necessary models for the test.
+    $company = Company::factory()->create();
+    $user = User::factory()->create();
+    $arAccount = Account::factory()->for($company)->create(['type' => 'Receivable']);
+    $incomeAccount = Account::factory()->for($company)->create(['type' => 'Income']);
+    $taxAccount = Account::factory()->for($company)->create(['type' => 'Liability']);
+    $salesJournal = Journal::factory()->for($company)->create(['type' => 'Sale']);
+
+    // Arrange: Set the default accounts for this test run.
+    // Your application needs to know which accounts to use automatically.
+    config([
+        'accounting.defaults.accounts_receivable_id' => $arAccount->id,
+        'accounting.defaults.sales_journal_id' => $salesJournal->id,
+    ]);
+
+    // Arrange: Create a draft invoice with one line item.
+    $invoice = Invoice::factory()->for($company)->create(['status' => 'Draft']);
+    $tax = Tax::factory()->for($company)->create(['tax_account_id' => $taxAccount->id, 'rate' => 0.10]);
+    $invoice->invoiceLines()->create([
+        'description' => 'Item for Sale',
+        'quantity' => 1,
+        'unit_price' => 100,
+        'tax_id' => $tax->id,
+        'income_account_id' => $incomeAccount->id,
+    ]);
+
+    // Act: Call the confirm method directly on your service.
+    (new InvoiceService())->confirm($invoice, $user);
+
+    // Assert: Check that the main journal entry is balanced.
+    $invoice->refresh(); // Get the latest data.
+    $this->assertDatabaseHas('journal_entries', [
+        'id' => $invoice->journal_entry_id,
+        'total_debit' => 11000,
+        'total_credit' => 11000,
+        'is_posted' => true,
+    ]);
+
+    // Assert: Check each individual line of the journal entry.
+    // 1. Assert the Debit to Accounts Receivable.
+    $this->assertDatabaseHas('journal_entry_lines', [
+        'journal_entry_id' => $invoice->journal_entry_id,
+        'account_id' => $arAccount->id,
+        'debit' => 11000,
+    ]);
+    // 2. Assert the Credit to the Income account.
+    $this->assertDatabaseHas('journal_entry_lines', [
+        'journal_entry_id' => $invoice->journal_entry_id,
+        'account_id' => $incomeAccount->id,
+        'credit' => 10000,
+    ]);
+    // 3. Assert the Credit to the Tax account.
+    $this->assertDatabaseHas('journal_entry_lines', [
+        'journal_entry_id' => $invoice->journal_entry_id,
+        'account_id' => $taxAccount->id,
+        'credit' => 1000,
+    ]);
+})->only();
 });

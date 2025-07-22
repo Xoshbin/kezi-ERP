@@ -152,6 +152,7 @@ class InvoiceService
             'source_id' => $invoice->id,
             'lines' => $lines,
             'created_by_user_id' => User::factory()->create()->id,
+            'is_posted' => true,
         ];
 
         // Delegate the creation to the JournalEntryService
