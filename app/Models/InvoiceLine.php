@@ -2,10 +2,13 @@
 
 namespace App\Models;
 
+use App\Observers\InvoiceLineObserver;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
+#[ObservedBy([InvoiceLineObserver::class])]
 class InvoiceLine extends Model
 {
     // Leveraging Laravel's HasFactory trait for simplified model factory creation in testing/seeding [5, 6].

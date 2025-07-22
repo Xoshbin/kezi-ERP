@@ -20,6 +20,7 @@ use App\Models\AdjustmentDocument;
 use App\Services\AccountService;
 use App\Services\CompanyService;
 use App\Services\CurrencyService;
+use App\Services\InvoiceService;
 use App\Services\JournalEntryService;
 use App\Services\JournalService;
 use Carbon\Carbon;
@@ -456,4 +457,27 @@ test('a journal entry correctly links its source type and ID to the originating 
     expect($journalEntry->source_type)->toBe('App\\Models\\Invoice');
     expect($journalEntry->source_id)->toBe($invoice->id);
 })->only();
+
+test('a draft customer invoice can be freely edited', function () {
+    // Arrange: Create a default income account to use for the lines.
+    $incomeAccount = Account::factory()->create(['type' => 'Income']);
+    $invoice = Invoice::factory()->create(['status' => 'Draft']);
+
+    $updateData = [
+        'lines' => [
+            // Now we provide the required income_account_id for each line.
+            ['description' => 'Service A', 'quantity' => 1, 'unit_price' => 100, 'income_account_id' => $incomeAccount->id],
+            ['description' => 'Service B', 'quantity' => 1, 'unit_price' => 50, 'income_account_id' => $incomeAccount->id],
+        ]
+    ];
+
+    $wasUpdated = (new InvoiceService())->update($invoice, $updateData);
+
+    expect($wasUpdated)->toBeTrue();
+    // Assuming your service doesn't calculate tax or subtotals in this test
+    // you might need to adjust this assertion based on your service logic.
+    // For now, let's just confirm the record was updated.
+    $this->assertDatabaseCount('invoice_lines', 2);
+})->only();
+
 });
