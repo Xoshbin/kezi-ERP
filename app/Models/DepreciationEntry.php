@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Casts\MoneyCast;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -63,7 +64,7 @@ class DepreciationEntry extends Model
      */
     protected $casts = [
         'depreciation_date' => 'date', // Casts to Carbon instance, focusing on date part
-        'amount' => 'decimal:2', // Ensures precision for currency amounts
+        'amount' => MoneyCast::class, // Ensures precision for currency amounts
         'journal_entry_id' => 'integer',
         'created_at' => 'datetime',
         'updated_at' => 'datetime',

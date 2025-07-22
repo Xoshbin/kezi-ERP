@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Casts\MoneyCast;
 use App\Observers\InvoiceLineObserver;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -50,9 +51,9 @@ class InvoiceLine extends Model
      */
     protected $casts = [
         'quantity' => 'decimal:2',
-        'unit_price' => 'decimal:2',
-        'subtotal' => 'decimal:2',
-        'total_line_tax' => 'decimal:2',
+        'unit_price' => MoneyCast::class,
+        'subtotal' => MoneyCast::class,
+        'total_line_tax' => MoneyCast::class,
         'created_at' => 'datetime', // Eloquent automatically manages these, but explicit casting is robust [12, 13].
         'updated_at' => 'datetime',
     ];

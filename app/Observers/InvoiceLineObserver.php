@@ -12,26 +12,25 @@ class InvoiceLineObserver
      */
     public function creating(InvoiceLine $invoiceLine): void
     {
-        // Automatically calculate the subtotal before saving.
-        // You can add tax calculation here later as well.
-        // Ensure subtotal is set first
-        if (is_null($invoiceLine->subtotal) && $invoiceLine->quantity && $invoiceLine->unit_price) {
-            $invoiceLine->subtotal = $invoiceLine->quantity * $invoiceLine->unit_price;
-        }
+        // The MoneyCast has already converted unit_price to an integer (e.g., 50.00 -> 5000).
+        // We must perform calculations with these integers.
 
-        // Now, calculate the tax for the line
-        $taxAmount = 0.00;
-        // Check if a tax ID was provided for the line
+        // 1. Always calculate the subtotal as an integer.
+        $subtotal = $invoiceLine->quantity * $invoiceLine->unit_price;
+        $invoiceLine->subtotal = $subtotal;
+
+        // 2. Calculate the tax amount as an integer.
+        $taxAmount = 0;
         if ($invoiceLine->tax_id) {
-            // Load the tax relationship to get the rate
             $tax = \App\Models\Tax::find($invoiceLine->tax_id);
             if ($tax) {
-                $taxAmount = $invoiceLine->subtotal * $tax->rate;
+                // Multiply first, then divide to maintain precision before rounding.
+                $taxAmount = ($subtotal * $tax->rate);
             }
         }
 
-        // Set the total_line_tax, which will be 0.00 if no tax was applied
-        $invoiceLine->total_line_tax = round($taxAmount, 2);
+        // Set the integer value for the total line tax.
+        $invoiceLine->total_line_tax = round($taxAmount);
     }
 
     /**

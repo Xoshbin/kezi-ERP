@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Casts\MoneyCast;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -42,7 +43,7 @@ class Tax extends Model
      * @var array<string, string>
      */
     protected $casts = [
-        'rate' => 'decimal:4', // Crucial for monetary precision in tax calculations [1]
+        'rate' => MoneyCast::class, // Crucial for monetary precision in tax calculations [1]
         'is_active' => 'boolean', // Ensures boolean behavior for the active status [1]
         'created_at' => 'datetime', // Laravel automatically casts these, but explicit declaration is good practice.
         'updated_at' => 'datetime',

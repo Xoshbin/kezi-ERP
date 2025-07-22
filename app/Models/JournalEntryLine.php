@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Casts\MoneyCast;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use RuntimeException; // Utilized for explicit enforcement of immutability and data integrity.
@@ -69,8 +70,8 @@ class JournalEntryLine extends Model
      * @var array<string, string>
      */
     protected $casts = [
-        'debit' => 'decimal:2',  // Enforces two decimal places for currency amounts.
-        'credit' => 'decimal:2', // Ensures consistency for credit amounts.
+        'debit' => MoneyCast::class,  // Enforces two decimal places for currency amounts.
+        'credit' => MoneyCast::class, // Ensures consistency for credit amounts.
     ];
 
     /**

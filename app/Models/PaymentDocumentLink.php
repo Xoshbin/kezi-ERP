@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Casts\MoneyCast;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -47,7 +48,7 @@ class PaymentDocumentLink extends Model
      * @var array<string, string>
      */
     protected $casts = [
-        'amount_applied' => 'decimal:2', // Ensures the amount is treated as a decimal with 2 places for precision.  [3]
+        'amount_applied' => MoneyCast::class, // Ensures the amount is treated as a decimal with 2 places for precision.  [3]
         'created_at' => 'datetime', // Automatically casts to Carbon instances for convenient date manipulation.  [4]
         'updated_at' => 'datetime', // Automatically casts to Carbon instances.  [4]
     ];

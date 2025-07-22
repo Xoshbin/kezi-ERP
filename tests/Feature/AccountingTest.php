@@ -555,7 +555,7 @@ test('a posted invoice cannot be directly modified', function () {
     // Assert: As a final check, confirm that the data in the database did not change.
     $this->assertDatabaseHas('invoices', [
         'id' => $invoice->id,
-        'total_amount' => '100.00', // The amount should be unchanged.
+        'total_amount' => 10000, // The amount should be unchanged.
     ]);
 })->only();
 

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Casts\MoneyCast;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -42,7 +43,7 @@ class Product extends Model
      * @var array<string, string>
      */
     protected $casts = [
-        'unit_price' => 'decimal:4', // For monetary values, decimal casting ensures precision [1].
+        'unit_price' => MoneyCast::class, // For monetary values, decimal casting ensures precision [1].
         'is_active' => 'boolean', // Ensures boolean handling for the active status [2].
         'created_at' => 'datetime', // Laravel automatically casts these, but explicit casting can be good practice [3].
         'updated_at' => 'datetime',
