@@ -3,6 +3,8 @@
 namespace App\Models;
 
 use App\Casts\MoneyCast;
+use App\Observers\VendorBillLineObserver;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -15,6 +17,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 // Any corrections to posted lines must be handled via new, offsetting entries
 // (e.g., adjustment documents like credit notes or new journal entries) [3].
 
+#[ObservedBy([VendorBillLineObserver::class])]
 class VendorBillLine extends Model
 {
     use HasFactory;

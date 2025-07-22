@@ -25,6 +25,7 @@ use App\Services\CurrencyService;
 use App\Services\InvoiceService;
 use App\Services\JournalEntryService;
 use App\Services\JournalService;
+use App\Services\VendorBillService;
 use Carbon\Carbon;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -698,4 +699,29 @@ test('posting an invoice correctly debits Accounts Receivable and credits Income
         'credit' => 1000,
     ]);
 })->only();
+
+test('a draft vendor bill can be freely edited', function () {
+    // Arrange: Create a draft vendor bill.
+    $company = Company::factory()->create();
+    $vendorBill = VendorBill::factory()->create(['status' => 'Draft']);
+    $expenseAccount = Account::factory()->for($company)->create(['type' => 'Expense']);
+
+
+    // Arrange: Prepare new line data. The service will calculate the new total.
+    $updateData = [
+        'lines' => [
+            ['description' => 'Raw Materials', 'quantity' => 1, 'unit_price' => 150, 'expense_account_id' => $expenseAccount->id],
+            ['description' => 'Shipping Cost', 'quantity' => 1, 'unit_price' => 100, 'expense_account_id' => $expenseAccount->id],
+        ]
+    ];
+
+    // Act: Call the update method on the service.
+    $wasUpdated = (new VendorBillService())->update($vendorBill, $updateData);
+
+    // Assert: Confirm the update was successful and the total was recalculated.
+    // We check for the integer value 25000 because of your MoneyCast (250.00 * 100).
+    expect($wasUpdated)->toBeTrue();
+    expect($vendorBill->fresh()->total_amount)->toEqual(250.0);
+})->only();
+
 });
