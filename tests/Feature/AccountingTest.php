@@ -5,6 +5,7 @@ use App\Exceptions\AccountIsDeprecatedException;
 use App\Exceptions\PeriodIsLockedException;
 use App\Exceptions\UpdateNotAllowedException;
 use App\Models\AnalyticAccount;
+use App\Models\AuditLog;
 use App\Models\Company;
 use App\Models\Account;
 use App\Models\Currency;
@@ -1399,6 +1400,43 @@ test('creating a financial record is logged in the audit trail', function () {
         'auditable_type' => JournalEntry::class, // Use the class name for clarity
         'auditable_id' => $journalEntry->id,
     ]);
+})->only();
+
+test('a status change from draft to posted is logged in the audit trail', function () {
+    // Arrange: Create a user who will perform the action.
+    $user = User::factory()->create();
+
+    // Arrange: Simulate this user being logged in so the observer can find them.
+    $this->actingAs($user);
+
+    // Arrange: Create a draft invoice.
+    $invoice = Invoice::factory()
+        ->has(InvoiceLine::factory()->count(1), 'invoiceLines')
+        ->create(['status' => 'Draft']);
+
+    // Arrange: Set up the default accounts/journals needed for the confirm() method.
+    config([
+        'accounting.defaults.accounts_receivable_id' => Account::factory()->create()->id,
+        'accounting.defaults.sales_journal_id' => Journal::factory()->create()->id,
+    ]);
+
+    // Act: Confirm the invoice using the service. This should trigger the AuditLogObserver.
+    (new InvoiceService())->confirm($invoice, $user);
+
+    // Assert: Find the audit log entry that was just created for this invoice update.
+    $log = AuditLog::where('auditable_type', Invoice::class)
+        ->where('auditable_id', $invoice->id)
+        ->latest('id')->first();
+
+    // Assert that the log entry exists and contains the correct information.
+    expect($log)->not->toBeNull();
+    expect($log->user_id)->toBe($user->id);
+    expect($log->event_type)->toBe('status_changed');
+
+    // Check that the 'old_values' correctly recorded the original status.
+    expect($log->old_values['status'])->toBe('Draft');
+    // Check that the 'new_values' correctly recorded the new status.
+    expect($log->new_values['status'])->toBe('Posted');
 })->only();
 
 });
