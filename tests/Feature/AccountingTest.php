@@ -1595,3 +1595,57 @@ test('a journal entry cannot be created with a non-existent account ID', functio
     expect(fn() => (new JournalEntryService())->create($entryData))
         ->toThrow(ValidationException::class);
 })->only();
+
+test('modifications after a reset-to-draft are fully audited upon re-posting', function () {
+    // Arrange: Set up the user and log them in.
+    $user = User::factory()->create();
+    $this->actingAs($user);
+
+    // Arrange: Create the initial posted invoice with a known total.
+    $invoice = Invoice::factory()->create([
+        'status' => 'Posted',
+        'total_amount' => 10000, // 100.00
+        'journal_entry_id' => \App\Models\JournalEntry::factory()->create()->id,
+    ]);
+
+    // Arrange: Set up necessary config for services.
+    config([
+        'accounting.defaults.accounts_receivable_id' => Account::factory()->create()->id,
+        'accounting.defaults.sales_journal_id' => Journal::factory()->create()->id,
+    ]);
+
+    $invoiceService = new InvoiceService();
+    $reason = 'Initial error correction';
+
+    // Act 1: Reset the posted invoice to draft.
+    $invoiceService->resetToDraft($invoice, $user, $reason);
+
+    // Act 2: Modify the invoice while it is in the draft state.
+    // We will update the lines, which should change the total amount.
+    $invoiceService->update($invoice, [
+        'lines' => [
+            ['description' => 'New Service', 'quantity' => 1, 'unit_price' => 150.00, 'income_account_id' => Account::factory()->create()->id],
+        ]
+    ]); // The total_amount should now be 15000 (150.00).
+
+    // Act 3: Re-post (confirm) the modified invoice.
+    $invoiceService->confirm($invoice, $user);
+
+    // Assert: Find the latest audit log for this invoice. It should be from the 'confirm' action.
+    $log = AuditLog::where('auditable_type', Invoice::class)
+        ->where('auditable_id', $invoice->id)
+        ->latest('id')->first();
+
+    // Assert that the log correctly captures the changes made between the reset and re-post.
+    expect($log)->not->toBeNull();
+    expect($log->event_type)->toBe('status_changed');
+
+    // The 'old' value for the amount should be what it was AFTER the reset.
+    expect($log->old_values['total_amount'])->toBe(10000);
+    // The 'new' value should be the recalculated amount.
+    expect($log->new_values['total_amount'])->toBe(15000);
+
+    // Also check the status change was logged correctly.
+    expect($log->old_values['status'])->toBe('Draft');
+    expect($log->new_values['status'])->toBe('Posted');
+});
