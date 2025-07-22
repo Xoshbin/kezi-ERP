@@ -74,9 +74,12 @@ class JournalEntryService
 
     public function update(JournalEntry $journalEntry, array $data): bool
     {
+        // 1. First, check if the original entry's date is locked.
+        $this->checkIfPeriodIsLocked($journalEntry->company_id, $journalEntry->entry_date);
+
         // Also check on update if the date is being changed.
         if (isset($data['entry_date'])) {
-            $this->checkIfPeriodIsLocked($entry->company_id, $data['entry_date']);
+            $this->checkIfPeriodIsLocked($journalEntry->company_id, $data['entry_date']);
         }
 
         // This is the guard clause. It protects posted entries.

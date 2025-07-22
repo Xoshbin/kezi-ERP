@@ -1194,4 +1194,29 @@ test('a financial transaction cannot be created in a locked period', function ()
     ]);
 })->only();
 
+test('a financial transaction in a locked period cannot be modified', function () {
+    // Arrange: Create a company and lock its books up to a month ago.
+    $company = Company::factory()->create();
+    LockDate::factory()->for($company)->create([
+        'locked_until' => now()->subMonth(),
+    ]);
+
+    // Arrange: Create a draft journal entry with a date inside the locked period.
+    $journalEntry = JournalEntry::factory()->for($company)->create([
+        'entry_date' => now()->subMonths(2)->toDateString(),
+        'description' => 'Original Description',
+    ]);
+
+    // Assert: Expect the service to throw our specific exception when it detects
+    // that the entry being modified is in a locked period.
+    expect(fn() => (new JournalEntryService())->update($journalEntry, ['description' => 'New Description']))
+        ->toThrow(PeriodIsLockedException::class);
+
+    // Assert: As a final check, confirm that the description was not changed in the database.
+    $this->assertDatabaseHas('journal_entries', [
+        'id' => $journalEntry->id,
+        'description' => 'Original Description',
+    ]);
+})->only();
+
 });
