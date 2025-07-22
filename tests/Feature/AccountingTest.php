@@ -724,4 +724,15 @@ test('a draft vendor bill can be freely edited', function () {
     expect($vendorBill->fresh()->total_amount)->toEqual(250.0);
 })->only();
 
+test('a draft vendor bill can be freely deleted', function () {
+    // Arrange: Create a draft vendor bill.
+    $vendorBill = VendorBill::factory()->create(['status' => 'Draft']);
+
+    // Act: Call the delete method on the service.
+    $wasDeleted = (new VendorBillService())->delete($vendorBill);
+
+    // Assert: Confirm the deletion was successful.
+    expect($wasDeleted)->toBeTrue();
+    $this->assertModelMissing($vendorBill);
+})->only();
 });
