@@ -28,6 +28,7 @@ use App\Models\VendorBillLine;
 use App\Services\AccountService;
 use App\Services\AdjustmentDocumentService;
 use App\Services\AssetService;
+use App\Services\BankReconciliationService;
 use App\Services\CompanyService;
 use App\Services\CurrencyService;
 use App\Services\InvoiceService;
@@ -1633,23 +1634,27 @@ test('modifications after a reset-to-draft are fully audited upon re-posting', f
     $invoiceService->confirm($invoice, $user);
 
     // Assert: Find the latest audit log for this invoice. It should be from the 'confirm' action.
-    $log = AuditLog::where('auditable_type', Invoice::class)
+    // Assert: Find the last two audit logs for this invoice.
+    $logs = AuditLog::where('auditable_type', Invoice::class)
         ->where('auditable_id', $invoice->id)
-        ->latest('id')->first();
+        ->latest('id')->take(2)->get();
 
-    // Assert that the log correctly captures the changes made between the reset and re-post.
-    expect($log)->not->toBeNull();
-    expect($log->event_type)->toBe('status_changed');
+// The first log in the collection (the most recent one) is from the 'confirm' action.
+    $confirmLog = $logs[0];
+    expect($confirmLog->event_type)->toBe('status_changed');
+    expect($confirmLog->old_values['status'])->toBe('Draft');
+    expect($confirmLog->new_values['status'])->toBe('Posted');
+// Assert that 'total_amount' was NOT part of this specific change.
+    expect($confirmLog->new_values)->not->toHaveKey('total_amount');
 
-    // The 'old' value for the amount should be what it was AFTER the reset.
-    expect($log->old_values['total_amount'])->toBe(10000);
-    // The 'new' value should be the recalculated amount.
-    expect($log->new_values['total_amount'])->toBe(15000);
-
-    // Also check the status change was logged correctly.
-    expect($log->old_values['status'])->toBe('Draft');
-    expect($log->new_values['status'])->toBe('Posted');
+// The second log in the collection is from the 'update' action.
+    $updateLog = $logs[1];
+    expect($updateLog->event_type)->toBe('record_updated');
+// Assert that this log correctly captured the change in the total amount.
+    expect($updateLog->old_values['total_amount'])->toBe(10000);
+    expect($updateLog->new_values['total_amount'])->toBe(15000);
 });
+
 test('bank reconciliation moves funds from outstanding to bank and updates payment status', function () {
     // Arrange: Set up the user, company, and necessary accounts.
     $user = User::factory()->create();
