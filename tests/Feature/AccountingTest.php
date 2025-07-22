@@ -603,4 +603,40 @@ test('resetting a posted invoice to draft is thoroughly logged and reverses the 
     // Assert: Crucially, confirm the original journal entry was deleted.
     $this->assertModelMissing($journalEntry);
 })->only();
+
+test('updating invoice lines correctly recalculates the invoice total amount and tax', function () {
+    // Arrange: Create accounts and products.
+    $invoice = Invoice::factory()->create(['status' => 'Draft', 'total_amount' => 0, 'total_tax' => 0]);
+    $tax = Tax::factory()->create(['rate' => 0.10]);
+    $incomeAccount = Account::factory()->create(['type' => 'Income']); // Create the income account
+
+    // Arrange: Prepare the new line data, including the required income_account_id.
+    $updateData = [
+        'lines' => [
+            [
+                'description' => 'Service Fee',
+                'quantity' => 2,
+                'unit_price' => 50,
+                'tax_id' => $tax->id,
+                'income_account_id' => $incomeAccount->id, // <-- Add this required ID
+            ],
+            [
+                'description' => 'Consulting',
+                'quantity' => 1,
+                'unit_price' => 30,
+                'tax_id' => $tax->id,
+                'income_account_id' => $incomeAccount->id, // <-- And here
+            ],
+        ],
+    ];
+
+    // Act: Call the update method on the service.
+    (new InvoiceService())->update($invoice, $updateData);
+
+    // Assert
+    $invoice->refresh();
+    expect($invoice->total_tax)->toEqual('13.00');
+    expect($invoice->total_amount)->toEqual('143.00');
+})->only();
+
 });
