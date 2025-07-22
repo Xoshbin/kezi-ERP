@@ -7,6 +7,7 @@ use App\Exceptions\UpdateNotAllowedException;
 use App\Models\AnalyticAccount;
 use App\Models\Asset;
 use App\Models\AuditLog;
+use App\Models\BankStatementLine;
 use App\Models\Company;
 use App\Models\Account;
 use App\Models\Currency;
@@ -1648,4 +1649,58 @@ test('modifications after a reset-to-draft are fully audited upon re-posting', f
     // Also check the status change was logged correctly.
     expect($log->old_values['status'])->toBe('Draft');
     expect($log->new_values['status'])->toBe('Posted');
+});
+test('bank reconciliation moves funds from outstanding to bank and updates payment status', function () {
+    // Arrange: Set up the user, company, and necessary accounts.
+    $user = User::factory()->create();
+    $this->actingAs($user);
+    $company = Company::factory()->create();
+    $bankAccount = Account::factory()->for($company)->create(['type' => 'Bank']);
+    $outstandingReceiptsAccount = Account::factory()->for($company)->create(['type' => 'Asset']);
+
+    // Arrange: Set up the default accounts for the two-step process.
+    config([
+        'accounting.defaults.default_bank_account_id' => $bankAccount->id,
+        'accounting.defaults.outstanding_receipts_account_id' => $outstandingReceiptsAccount->id,
+        // ... other defaults
+    ]);
+
+    // Arrange: Create a "Confirmed" payment. Its journal entry should be in the outstanding account.
+    // (This assumes your PaymentService now debits 'outstanding_receipts_account_id').
+    $payment = Payment::factory()->for($company)->create([
+        'status' => 'Confirmed',
+        'amount' => 150.00, // 150.00
+    ]);
+    // Simulate the initial journal entry: Dr Outstanding / Cr A/R
+    $initialJE = JournalEntry::factory()->create();
+    $initialJE->lines()->createMany([
+        ['account_id' => $outstandingReceiptsAccount->id, 'debit' => 15000],
+        ['account_id' => Account::factory()->create()->id, 'credit' => 15000],
+    ]);
+    $payment->update(['journal_entry_id' => $initialJE->id]);
+
+    // Arrange: Simulate a line from an imported bank statement that matches the payment.
+    $statementLine = BankStatementLine::factory()->create(['amount' => 15000]);
+
+    // Act: Reconcile the payment against the bank statement line using a new service.
+    (new BankReconciliationService())->reconcilePayment($payment, $statementLine, $user);
+
+    // Assert 1: The payment's status is now 'Reconciled'.
+    expect($payment->fresh()->status)->toBe('Reconciled');
+
+    // Assert 2: A *new* journal entry was created for the reconciliation.
+    $reconciliationJE = JournalEntry::latest('id')->first();
+    expect($reconciliationJE->id)->not->toBe($initialJE->id); // Ensure it's a new entry
+
+    // Assert 3: The new journal entry has the correct lines.
+    $this->assertDatabaseHas('journal_entry_lines', [
+        'journal_entry_id' => $reconciliationJE->id,
+        'account_id' => $bankAccount->id,
+        'debit' => 15000, // Dr Bank (Money is now in the final bank account)
+    ]);
+    $this->assertDatabaseHas('journal_entry_lines', [
+        'journal_entry_id' => $reconciliationJE->id,
+        'account_id' => $outstandingReceiptsAccount->id,
+        'credit' => 15000, // Cr Outstanding Receipts (Money moved out of the intermediary account)
+    ]);
 });
