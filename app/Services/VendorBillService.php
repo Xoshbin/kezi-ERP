@@ -96,8 +96,6 @@ class VendorBillService
             $logs = $vendorBill->reset_to_draft_log ? json_decode($vendorBill->reset_to_draft_log, true) : [];
             array_unshift($logs, $newLog);
 
-            $vendorBill->isBeingReset = true; // Flag for observers/events
-
             $vendorBill->status = 'Draft';
             $vendorBill->journal_entry_id = null;
             $vendorBill->posted_at = null;
