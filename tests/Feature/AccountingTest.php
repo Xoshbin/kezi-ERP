@@ -493,4 +493,46 @@ test('a draft customer invoice can be freely deleted', function () {
     // Assert: Confirm the record is gone from the database.
     $this->assertModelMissing($invoice);
 })->only();
+
+test('confirming an invoice assigns a sequential number, posts it, and creates a journal entry', function () {
+    // Arrange: Fake events to ensure our action dispatches one.
+    Event::fake();
+
+// Arrange: Create the company and user.
+    $company = Company::factory()->create();
+    $user = User::factory()->create();
+
+// Arrange: Create the default Accounts Receivable account the service will need.
+    $arAccount = Account::factory()->for($company)->create(['type' => 'Receivable']);
+// Arrange: Set the configuration for this test run.
+    config(['accounting.defaults.accounts_receivable_id' => $arAccount->id]);
+
+    // ARRANGE: Create the default Sales Journal for invoices.
+    $salesJournal = Journal::factory()->for($company)->create(['type' => 'Sale']);
+    config(['accounting.defaults.sales_journal_id' => $salesJournal->id]); // <-- Add this
+
+
+// Arrange: Create a draft invoice that HAS lines and a real total.
+// This uses the 'has' factory relationship to create lines automatically.
+    $invoice = Invoice::factory()->for($company)
+        ->has(InvoiceLine::factory()->count(2), 'invoiceLines')
+        ->create(['status' => 'Draft']);
+
+// The rest of your test (Act and Assert) remains the same.
+    // Act: Call the confirm method on the service, passing the user for the audit trail.
+
+    (new InvoiceService())->confirm($invoice, $user);
+
+    // Assert: Check the invoice's state directly.
+    $invoice->refresh();
+    expect($invoice->status)->toBe('Posted');
+    expect($invoice->invoice_number)->not->toBeNull(); // It should now have a number.
+    expect($invoice->journal_entry_id)->not->toBeNull(); // It should be linked to a JE.
+
+    // Assert: Confirm the linked journal entry was actually created in the database.
+    $this->assertDatabaseHas('journal_entries', ['id' => $invoice->journal_entry_id]);
+
+    // Assert: Confirm that an event was dispatched for other parts of the system to listen to.
+    Event::assertDispatched(InvoiceConfirmed::class);
+})->only();
 });
