@@ -5,10 +5,12 @@ use App\Exceptions\AccountIsDeprecatedException;
 use App\Exceptions\PeriodIsLockedException;
 use App\Exceptions\UpdateNotAllowedException;
 use App\Models\AnalyticAccount;
+use App\Models\Asset;
 use App\Models\AuditLog;
 use App\Models\Company;
 use App\Models\Account;
 use App\Models\Currency;
+use App\Models\DepreciationEntry;
 use App\Models\Invoice;
 use App\Models\InvoiceLine;
 use App\Models\Journal;
@@ -24,6 +26,7 @@ use App\Models\AdjustmentDocument;
 use App\Models\VendorBillLine;
 use App\Services\AccountService;
 use App\Services\AdjustmentDocumentService;
+use App\Services\AssetService;
 use App\Services\CompanyService;
 use App\Services\CurrencyService;
 use App\Services\InvoiceService;
@@ -1504,6 +1507,62 @@ test('a journal entry line can be assigned to an analytic account', function () 
     $this->assertDatabaseHas('journal_entry_lines', [
         'journal_entry_id' => $journalEntry->id,
         'analytic_account_id' => $analyticAccount->id,
+    ]);
+})->only();
+
+test('running depreciation generates correct depreciation and journal entries', function () {
+    // Arrange: Create a user who will perform the action.
+    $user = User::factory()->create();
+    $this->actingAs($user);
+    // Arrange: Create the main asset account as well.
+    $assetAccount = Account::factory()->create(['type' => 'Asset']);
+
+    // Arrange: Set up the company, user, and necessary accounts.
+    $company = Company::factory()->create();
+    $expenseAccount = Account::factory()->for($company)->create(['type' => 'Expense']);
+    $accumulatedDepAccount = Account::factory()->for($company)->create(['type' => 'Asset']); // Contra-asset
+
+    // Arrange: Set up the default accounts and journal the service will need.
+    config([
+        'accounting.defaults.depreciation_expense_account_id' => $expenseAccount->id,
+        'accounting.defaults.accumulated_depreciation_account_id' => $accumulatedDepAccount->id,
+        'accounting.defaults.depreciation_journal_id' => Journal::factory()->for($company)->create()->id,
+    ]);
+
+    // Arrange: Create an asset to be depreciated.
+    $asset = Asset::factory()->for($company)->create([
+        'purchase_value' => 1200.00, // 1,200.00
+        'useful_life_years' => 1,
+        'asset_account_id' => $assetAccount->id,
+        'depreciation_expense_account_id' => $expenseAccount->id,
+        'accumulated_depreciation_account_id' => $accumulatedDepAccount->id,
+    ]);
+
+    // Act: Run the depreciation for this asset using the service.
+    (new AssetService())->runDepreciation($asset, $user);
+
+    // Assert: Check that a depreciation entry was created for the correct amount.
+    // The amount should be 10000 (1200.00 / 12 months = 100.00 per month).
+    $this->assertDatabaseHas('depreciation_entries', [
+        'asset_id' => $asset->id,
+        'amount' => 10000,
+        'status' => 'Posted',
+    ]);
+
+    // Assert: Check that the depreciation entry is linked to a journal entry.
+    $depreciationEntry = DepreciationEntry::where('asset_id', $asset->id)->first();
+    expect($depreciationEntry->journal_entry_id)->not->toBeNull();
+
+    // Assert: Check that the journal entry lines are correct.
+    $this->assertDatabaseHas('journal_entry_lines', [
+        'journal_entry_id' => $depreciationEntry->journal_entry_id,
+        'account_id' => $expenseAccount->id,
+        'debit' => 10000, // Dr Depreciation Expense
+    ]);
+    $this->assertDatabaseHas('journal_entry_lines', [
+        'journal_entry_id' => $depreciationEntry->journal_entry_id,
+        'account_id' => $accumulatedDepAccount->id,
+        'credit' => 10000, // Cr Accumulated Depreciation
     ]);
 })->only();
 
