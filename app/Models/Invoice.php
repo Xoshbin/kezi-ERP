@@ -66,12 +66,17 @@ class Invoice extends Model
     protected $fillable = [
         'company_id',
         'customer_id',
+        'currency_id',
+        'journal_entry_id',
+        'fiscal_position_id',
+        'invoice_number',
         'invoice_date',
         'due_date',
-        'currency_id',
+        'status',
         'total_amount',
         'total_tax',
-        'fiscal_position_id', // Add fiscal_position_id as it is a field on the invoice table based on Odoo's design [4, 7]
+        'posted_at',
+        'reset_to_draft_log',
     ];
 
     /**
