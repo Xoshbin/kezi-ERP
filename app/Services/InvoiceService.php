@@ -42,4 +42,15 @@ class InvoiceService
         $invoice->total_amount = $subtotal + $tax;
         $invoice->total_tax = $tax;
     }
+
+    public function delete(Invoice $invoice): bool
+    {
+        // Guard Clause: Only allow deleting if the status is 'Draft'.
+        if ($invoice->status !== 'Draft') {
+            throw new DeletionNotAllowedException('Cannot delete a posted invoice.');
+        }
+
+        // If the guard passes, proceed with the deletion.
+        return $invoice->delete();
+    }
 }

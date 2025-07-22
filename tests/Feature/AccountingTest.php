@@ -480,4 +480,17 @@ test('a draft customer invoice can be freely edited', function () {
     $this->assertDatabaseCount('invoice_lines', 2);
 })->only();
 
+test('a draft customer invoice can be freely deleted', function () {
+    // Arrange: Create a draft invoice.
+    $invoice = Invoice::factory()->create(['status' => 'Draft']);
+
+    // Act: Call the delete method on the service.
+    $wasDeleted = (new InvoiceService())->delete($invoice);
+
+    // Assert: Confirm the deletion was successful.
+    expect($wasDeleted)->toBeTrue();
+
+    // Assert: Confirm the record is gone from the database.
+    $this->assertModelMissing($invoice);
+})->only();
 });
