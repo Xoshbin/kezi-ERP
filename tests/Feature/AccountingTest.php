@@ -919,7 +919,7 @@ test('confirming an inbound payment creates a linked journal entry', function ()
         'paid_to_from_partner_id' => $customer->id,     // <-- 2. FIX the key name
         'payment_date' => now()->toDateString(),      // <-- 3. ADD the payment date
         'payment_type' => 'Inbound',
-        'amount' => 50000, // 500.00 in integer form
+        'amount' => 500.00, // 500.00 in integer form
     ];
 
     // Act: Create and confirm the payment using the service.
@@ -932,12 +932,12 @@ test('confirming an inbound payment creates a linked journal entry', function ()
     $this->assertDatabaseHas('journal_entry_lines', [
         'journal_entry_id' => $payment->journal_entry_id,
         'account_id' => $bankAccount->id,
-        'debit' => 5000000, // Dr Bank
+        'debit' => 50000, // Dr Bank
     ]);
     $this->assertDatabaseHas('journal_entry_lines', [
         'journal_entry_id' => $payment->journal_entry_id,
         'account_id' => $arAccount->id,
-        'credit' => 5000000, // Cr Accounts Receivable
+        'credit' => 50000, // Cr Accounts Receivable
     ]);
 })->only();
 
