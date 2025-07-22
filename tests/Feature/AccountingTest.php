@@ -68,7 +68,7 @@ test('a company with existing financial records cannot be deleted', function () 
     // Act & Assert: Double-check that the company was NOT removed from the database.
     // This confirms the deletion was truly prevented.
     $this->assertModelExists($company);
-})->only();
+});
 
 test('a user is correctly related to their company for accounting contexts', function () {
     // Arrange: Create a user who will perform the action.
@@ -79,7 +79,7 @@ test('a user is correctly related to their company for accounting contexts', fun
 
     // Verifies the structural integrity crucial for multi-company accounting.
     expect($user->company->id)->toBe($company->id);
-})->only();
+});
 
 test('duplicate tax ID for a company in the same fiscal country is prevented', function () {
     // Arrange: Create a user who will perform the action.
@@ -103,7 +103,7 @@ test('duplicate tax ID for a company in the same fiscal country is prevented', f
     // will fail validation and throw Laravel's standard ValidationException.
     expect(fn() => $companyService->create($duplicateCompanyData))
         ->toThrow(ValidationException::class);
-})->only();
+});
 
 test('creating a currency with an existing code is prevented', function () {
     // Arrange: Create a user who will perform the action.
@@ -127,7 +127,7 @@ test('creating a currency with an existing code is prevented', function () {
     // the duplicate record, proving the business rule is enforced.
     expect(fn() => $currencyService->create($duplicateData))
         ->toThrow(ValidationException::class);
-})->only();
+});
 
 test('a partner record is soft-deleted to preserve historical transaction context', function () {
     // Arrange: Create a user who will perform the action.
@@ -139,7 +139,7 @@ test('a partner record is soft-deleted to preserve historical transaction contex
     // Partners, as non-financial records, should be soft-deleted to maintain auditability [2-5].
     $this->assertSoftDeleted($partner);
     expect(Partner::find($partner->id))->toBeNull(); // Verifies default query behavior
-})->only();
+});
 
 test('a soft-deleted partner can be retrieved using "withTrashed" for historical reporting', function () {
     // Arrange: Create a user who will perform the action.
@@ -150,7 +150,7 @@ test('a soft-deleted partner can be retrieved using "withTrashed" for historical
 
     // Ensures that historical data linked to soft-deleted entities is still accessible [2-5].
     expect(Partner::withTrashed()->find($partner->id))->not->toBeNull();
-})->only();
+});
 
 test('a product record is soft-deleted to preserve its history and linkages', function () {
     // Arrange: Create a user who will perform the action.
@@ -162,7 +162,7 @@ test('a product record is soft-deleted to preserve its history and linkages', fu
     // Products, like partners, are non-financial and subject to soft deletion principles [2-5].
     $this->assertSoftDeleted($product);
     expect(Product::find($product->id))->toBeNull();
-})->only();
+});
 
 test('a soft-deleted product can be retrieved with "withTrashed" for historical analysis', function () {
     // Arrange: Create a user who will perform the action.
@@ -173,7 +173,7 @@ test('a soft-deleted product can be retrieved with "withTrashed" for historical 
 
     // Verifies the ability to access product history even after deactivation [2-5].
     expect(Product::withTrashed()->find($product->id))->not->toBeNull();
-})->only();
+});
 
 test('a product is correctly linked to its default income and expense general ledger accounts', function () {
     // Arrange: Create a user who will perform the action.
@@ -189,7 +189,7 @@ test('a product is correctly linked to its default income and expense general le
     // Ensures proper accounting categorization for product sales and purchases [3, 5].
     expect($product->incomeAccount->id)->toBe($incomeAccount->id);
     expect($product->expenseAccount->id)->toBe($expenseAccount->id);
-})->only();
+});
 
 test('a tax is correctly linked to its designated general ledger tax account', function () {
     // Arrange: Create a user who will perform the action.
@@ -200,7 +200,7 @@ test('a tax is correctly linked to its designated general ledger tax account', f
 
     // Critical for accurate tax reporting and balance sheet presentation [3, 5].
     expect($tax->taxAccount->id)->toBe($taxAccount->id);
-})->only();
+});
 
 test('creating an account with a duplicate code for the same company is prevented', function () {
     // Arrange: Create a user who will perform the action.
@@ -225,7 +225,7 @@ test('creating an account with a duplicate code for the same company is prevente
     // with a ValidationException. This proves your backend rule works.
     expect(fn() => $accountService->create($duplicateAccountData))
         ->toThrow(ValidationException::class);
-})->only();
+});
 
 test('an account with existing transactions is marked as deprecated instead of being deleted', function () {
     // Arrange: Create a user who will perform the action.
@@ -248,7 +248,7 @@ test('an account with existing transactions is marked as deprecated instead of b
         'id' => $account->id,
         'is_deprecated' => true,
     ]);
-})->only();
+});
 
 test('a deprecated account cannot be used for new financial transactions', function () {
     // Arrange: Create a user who will perform the action.
@@ -279,7 +279,7 @@ test('a deprecated account cannot be used for new financial transactions', funct
     // the use of a deprecated account. This confirms the backend rule is enforced.
     expect(fn() => $journalEntryService->create($journalEntryData))
         ->toThrow(Illuminate\Validation\ValidationException::class);
-})->only();
+});
 
 test('creating a journal with an existing short code for the same company is prevented', function () {
     // Arrange: Create a user who will perform the action.
@@ -304,7 +304,7 @@ test('creating a journal with an existing short code for the same company is pre
     // detects the duplicate short code for the given company.
     expect(fn() => $journalService->create($duplicateData))
         ->toThrow(ValidationException::class);
-})->only();
+});
 
 test('a journal entry correctly calculates totals and assigns a user when created', function () {
     // Arrange: Create a user who will perform the action.
@@ -332,7 +332,7 @@ test('a journal entry correctly calculates totals and assigns a user when create
     expect($journalEntry->total_debit)->toEqual('125.50');
     expect($journalEntry->total_credit)->toEqual('125.50');
     expect($journalEntry->created_by_user_id)->toBe($user->id); // Also assert the user was set
-})->only();
+});
 
 test('creating an unbalanced journal entry is prevented', function () {
     // Arrange: Create a user who will perform the action.
@@ -353,7 +353,7 @@ test('creating an unbalanced journal entry is prevented', function () {
     // Assert: Expect the service to throw a ValidationException because the entry is unbalanced.
     expect(fn() => (new JournalEntryService())->create($unbalancedData))
         ->toThrow(ValidationException::class);
-})->only();
+});
 
 test('a balanced draft journal entry can be posted', function () {
     // Arrange: Create a user who will perform the action.
@@ -372,7 +372,7 @@ test('a balanced draft journal entry can be posted', function () {
     // Assert: Check the model directly to see if its state was correctly updated.
     $journalEntry->refresh();
     expect($journalEntry->is_posted)->toBeTrue();
-})->only();
+});
 
 test('an unbalanced draft journal entry cannot be posted', function () {
     // Arrange: Create a user who will perform the action.
@@ -388,7 +388,7 @@ test('an unbalanced draft journal entry cannot be posted', function () {
     // Assert: Expect the service's post method to reject this and throw an exception.
     expect(fn() => (new JournalEntryService())->post($journalEntry))
         ->toThrow(ValidationException::class);
-})->only();
+});
 
 test('a draft journal entry can be freely modified before posting', function () {
     // Arrange: Create a user who will perform the action.
@@ -408,7 +408,7 @@ test('a draft journal entry can be freely modified before posting', function () 
     // Assert: Confirm the update was successful and the data was changed.
     expect($wasUpdated)->toBeTrue();
     expect($journalEntry->fresh()->description)->toBe('Updated Draft Description');
-})->only();
+});
 
 test('a posted journal entry cannot be updated', function () {
     // Arrange: Create a user who will perform the action.
@@ -432,7 +432,7 @@ test('a posted journal entry cannot be updated', function () {
         'id' => $journalEntry->id,
         'description' => 'Original Posted Entry', // The description should be unchanged.
     ]);
-})->only();
+});
 
 test('a posted journal entry cannot be deleted', function () {
     // Arrange: Create a user who will perform the action.
@@ -448,7 +448,7 @@ test('a posted journal entry cannot be deleted', function () {
 
     // Assert: The model still exists in the database.
     $this->assertModelExists($journalEntry);
-})->only();
+});
 
 test('posting a journal entry generates a cryptographic hash', function () {
     // Arrange: Create a user who will perform the action.
@@ -468,7 +468,7 @@ test('posting a journal entry generates a cryptographic hash', function () {
 
     expect($journalEntry->hash)->not->toBeNull();
     expect(strlen($journalEntry->hash))->toBe(64); // The length of a SHA-256 hash.
-})->only();
+});
 
 test('posting a journal entry links to the previous entry hash to form an audit chain', function () {
     // Arrange: Create a user who will perform the action.
@@ -497,7 +497,7 @@ test('posting a journal entry links to the previous entry hash to form an audit 
     // correctly links to the first entry's 'hash'.
     $secondEntry->refresh();
     expect($secondEntry->previous_hash)->toBe($firstEntry->hash);
-})->only();
+});
 
 test('posted journal entries accurately record the creating user and creation timestamp', function () {
     // Arrange: Create a user who will perform the action.
@@ -509,7 +509,7 @@ test('posted journal entries accurately record the creating user and creation ti
     // Vital for comprehensive audit logging and accountability [1, 9, 11, 12].
     expect($journalEntry->created_by_user_id)->toBe($user->id);
     expect($journalEntry->created_at)->toBeInstanceOf(Carbon::class);
-})->only();
+});
 
 test('the creation timestamp for a posted journal entry is immutable', function () {
     // Arrange: Create a user who will perform the action.
@@ -531,7 +531,7 @@ test('the creation timestamp for a posted journal entry is immutable', function 
     // Assert: Confirm the timestamp in the database has not changed.
     $freshEntry = $journalEntry->fresh();
     expect($freshEntry->created_at->timestamp)->toBe($initialCreatedAt->timestamp);
-})->only();
+});
 
 test('a journal entry correctly links its source type and ID to the originating document (e.g., invoice)', function () {
     // Arrange: Create a user who will perform the action.
@@ -546,7 +546,7 @@ test('a journal entry correctly links its source type and ID to the originating 
     // Ensures traceability and comprehensive audit trail for financial transactions [1, 9].
     expect($journalEntry->source_type)->toBe('App\\Models\\Invoice');
     expect($journalEntry->source_id)->toBe($invoice->id);
-})->only();
+});
 
 test('a draft customer invoice can be freely edited', function () {
     // Arrange: Create a user who will perform the action.
@@ -571,7 +571,7 @@ test('a draft customer invoice can be freely edited', function () {
     // you might need to adjust this assertion based on your service logic.
     // For now, let's just confirm the record was updated.
     $this->assertDatabaseCount('invoice_lines', 2);
-})->only();
+});
 
 //test('a draft customer invoice can be freely deleted', function () {
 //    // Arrange: Create a user who will perform the action.
@@ -588,7 +588,7 @@ test('a draft customer invoice can be freely edited', function () {
 //
 //    // Assert: Confirm the record is gone from the database.
 //    $this->assertModelMissing($invoice);
-//})->only();
+//});
 
 test('confirming an invoice assigns a sequential number, posts it, and creates a journal entry', function () {
     // Arrange: Create a user who will perform the action.
@@ -633,7 +633,7 @@ test('confirming an invoice assigns a sequential number, posts it, and creates a
 
     // Assert: Confirm that an event was dispatched for other parts of the system to listen to.
     Event::assertDispatched(InvoiceConfirmed::class);
-})->only();
+});
 
 test('a posted invoice cannot be directly modified', function () {
     // Arrange: Create a user who will perform the action.
@@ -657,7 +657,7 @@ test('a posted invoice cannot be directly modified', function () {
         'id' => $invoice->id,
         'total_amount' => 10000, // The amount should be unchanged.
     ]);
-})->only();
+});
 
 test('a posted invoice cannot be deleted', function () {
     // Arrange: Create a user who will perform the action.
@@ -673,7 +673,7 @@ test('a posted invoice cannot be deleted', function () {
 
     // Assert: As a final check, confirm the invoice still exists in the database.
     $this->assertModelExists($invoice);
-})->only();
+});
 
 test('resetting a posted invoice to draft is thoroughly logged and reverses the journal entry', function () {
     // Arrange: Create a user who will perform the action.
@@ -708,7 +708,7 @@ test('resetting a posted invoice to draft is thoroughly logged and reverses the 
 
     // Assert: Crucially, confirm the original journal entry was deleted.
     $this->assertModelMissing($journalEntry);
-})->only();
+});
 
 test('updating invoice lines correctly recalculates the invoice total amount and tax', function () {
     // Arrange: Create a user who will perform the action.
@@ -746,7 +746,7 @@ test('updating invoice lines correctly recalculates the invoice total amount and
     $invoice->refresh();
     expect($invoice->total_tax)->toEqual('13.00');
     expect($invoice->total_amount)->toEqual('143.00');
-})->only();
+});
 
 test('posting an invoice correctly debits Accounts Receivable and credits Income/Tax', function () {
     // Arrange: Create a user who will perform the action.
@@ -809,7 +809,7 @@ test('posting an invoice correctly debits Accounts Receivable and credits Income
         'account_id' => $taxAccount->id,
         'credit' => 1000,
     ]);
-})->only();
+});
 
 test('a draft vendor bill can be freely edited', function () {
     // Arrange: Create a user who will perform the action.
@@ -836,7 +836,7 @@ test('a draft vendor bill can be freely edited', function () {
     // We check for the integer value 25000 because of your MoneyCast (250.00 * 100).
     expect($wasUpdated)->toBeTrue();
     expect($vendorBill->fresh()->total_amount)->toEqual(250.0);
-})->only();
+});
 
 //test('a draft vendor bill can be freely deleted', function () {
 //    // Arrange: Create a user who will perform the action.
@@ -851,7 +851,7 @@ test('a draft vendor bill can be freely edited', function () {
 //    // Assert: Confirm the deletion was successful.
 //    expect($wasDeleted)->toBeTrue();
 //    $this->assertModelMissing($vendorBill);
-//})->only();
+//});
 
 test('confirming a vendor bill creates a linked journal entry', function () {
     // Arrange: Create a user who will perform the action.
@@ -887,7 +887,7 @@ test('confirming a vendor bill creates a linked journal entry', function () {
 
     // Assert: Confirm the linked journal entry was actually created.
     $this->assertDatabaseHas('journal_entries', ['id' => $vendorBill->journal_entry_id]);
-})->only();
+});
 
 test('a posted vendor bill cannot be modified', function () {
     // Arrange: Create a user who will perform the action.
@@ -909,7 +909,7 @@ test('a posted vendor bill cannot be modified', function () {
         'id' => $vendorBill->id,
         'total_amount' => 2000000, // The amount should be unchanged.
     ]);
-})->only();
+});
 
 test('a posted vendor bill cannot be deleted', function () {
     // Arrange: Create a user who will perform the action.
@@ -925,7 +925,7 @@ test('a posted vendor bill cannot be deleted', function () {
 
     // Assert: Double-check that the model still exists in the database.
     $this->assertModelExists($vendorBill);
-})->only();
+});
 
 test('resetting a posted vendor bill to draft is logged and reverses the journal entry', function () {
     // Arrange: Create a user who will perform the action.
@@ -958,7 +958,7 @@ test('resetting a posted vendor bill to draft is logged and reverses the journal
 
     // Assert: Confirm the original journal entry was deleted to reverse the financial impact.
     $this->assertModelMissing($journalEntry);
-})->only();
+});
 
 test('posting a vendor bill correctly debits Expense/Asset and credits Accounts Payable', function () {
     // Arrange: Create a user who will perform the action.
@@ -1019,7 +1019,7 @@ test('posting a vendor bill correctly debits Expense/Asset and credits Accounts 
         'account_id' => $apAccount->id,
         'credit' => 11000, // Credit Accounts Payable for the total amount
     ]);
-})->only();
+});
 
 test('confirming an inbound payment creates a linked journal entry', function () {
     // Arrange: Create a user who will perform the action.
@@ -1070,7 +1070,7 @@ test('confirming an inbound payment creates a linked journal entry', function ()
         'account_id' => $arAccount->id,
         'credit' => 50000, // Cr Accounts Receivable
     ]);
-})->only();
+});
 
 test('a confirmed payment is immutable', function () {
     // Arrange: Create a user who will perform the action.
@@ -1111,7 +1111,7 @@ test('a confirmed payment is immutable', function () {
         'id' => $payment->id,
         'amount' => 10000,
     ]);
-})->only();
+});
 
 test('an incoming payment correctly debits Bank and credits Accounts Receivable', function () {
     // Arrange: Create a user who will perform the action.
@@ -1161,7 +1161,7 @@ test('an incoming payment correctly debits Bank and credits Accounts Receivable'
         'account_id' => $arAccount->id,
         'credit' => 10000, // Cr Accounts Receivable
     ]);
-})->only();
+});
 
 test('an outgoing payment correctly debits Accounts Payable and credits Bank', function () {
     // Arrange: Create a user who will perform the action.
@@ -1211,7 +1211,7 @@ test('an outgoing payment correctly debits Accounts Payable and credits Bank', f
         'account_id' => $bankAccount->id,
         'credit' => 25000, // Cr Bank
     ]);
-})->only();
+});
 
 test('a posted credit note is immutable', function () {
     // Arrange: Create a user who will perform the action.
@@ -1235,7 +1235,7 @@ test('a posted credit note is immutable', function () {
         'id' => $creditNote->id,
         'total_amount' => 5000,
     ]);
-})->only();
+});
 
 test('a credit note explicitly references the original invoice it corrects for clear auditability', function () {
     // Arrange: Create a user who will perform the action.
@@ -1248,7 +1248,7 @@ test('a credit note explicitly references the original invoice it corrects for c
     // Essential for a clear and traceable audit trail [1, 2, 4, 9].
     expect($creditNote->original_invoice_id)->toBe($originalInvoice->id);
     expect($creditNote->originalInvoice->id)->toBe($originalInvoice->id);
-})->only();
+});
 
 test('posting a credit note generates the correct reverse journal entry', function () {
     // Arrange: Create a user who will perform the action.
@@ -1312,7 +1312,7 @@ test('posting a credit note generates the correct reverse journal entry', functi
         'account_id' => $arAccount->id,
         'credit' => 11000, // Cr Accounts Receivable
     ]);
-})->only();
+});
 
 test('a financial transaction cannot be created in a locked period', function () {
     // Arrange: Create a user who will perform the action.
@@ -1343,7 +1343,7 @@ test('a financial transaction cannot be created in a locked period', function ()
     $this->assertDatabaseMissing('journal_entries', [
         'reference' => 'LOCKED-PERIOD-ENTRY'
     ]);
-})->only();
+});
 
 test('a financial transaction in a locked period cannot be modified', function () {
 
@@ -1373,7 +1373,7 @@ test('a financial transaction in a locked period cannot be modified', function (
         'id' => $journalEntry->id,
         'description' => 'Original Description',
     ]);
-})->only();
+});
 
 test('creating a financial record is logged in the audit trail', function () {
     // Arrange: Create a user who will perform the action.
@@ -1407,7 +1407,7 @@ test('creating a financial record is logged in the audit trail', function () {
         'auditable_type' => JournalEntry::class, // Use the class name for clarity
         'auditable_id' => $journalEntry->id,
     ]);
-})->only();
+});
 
 test('a status change from draft to posted is logged in the audit trail', function () {
     // Arrange: Create a user who will perform the action.
@@ -1444,7 +1444,7 @@ test('a status change from draft to posted is logged in the audit trail', functi
     expect($log->old_values['status'])->toBe('Draft');
     // Check that the 'new_values' correctly recorded the new status.
     expect($log->new_values['status'])->toBe('Posted');
-})->only();
+});
 
 test('resetting an invoice to draft is logged as a status change in audit logs', function () {
     // Arrange: Create a user and log them in for the test.
@@ -1474,7 +1474,7 @@ test('resetting an invoice to draft is logged as a status change in audit logs',
     // Assert: Check the old and new status values in the log.
     expect($log->old_values['status'])->toBe('Posted');
     expect($log->new_values['status'])->toBe('Draft');
-})->only();
+});
 
 test('a journal entry line can be assigned to an analytic account', function () {
     // Arrange: Create a user and log them in for the test.
@@ -1512,7 +1512,7 @@ test('a journal entry line can be assigned to an analytic account', function () 
         'journal_entry_id' => $journalEntry->id,
         'analytic_account_id' => $analyticAccount->id,
     ]);
-})->only();
+});
 
 test('running depreciation generates correct depreciation and journal entries', function () {
     // Arrange: Create a user who will perform the action.
@@ -1568,7 +1568,7 @@ test('running depreciation generates correct depreciation and journal entries', 
         'account_id' => $accumulatedDepAccount->id,
         'credit' => 10000, // Cr Accumulated Depreciation
     ]);
-})->only();
+});
 
 test('a journal entry cannot be created with a non-existent account ID', function () {
 
@@ -1596,7 +1596,7 @@ test('a journal entry cannot be created with a non-existent account ID', functio
     // Assert: Expect the service to throw a ValidationException because the 'exists' rule fails.
     expect(fn() => (new JournalEntryService())->create($entryData))
         ->toThrow(ValidationException::class);
-})->only();
+});
 
 test('modifications after a reset-to-draft are fully audited upon re-posting', function () {
     // Arrange: Set up the user and log them in.
