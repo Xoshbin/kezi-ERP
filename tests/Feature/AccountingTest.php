@@ -26,6 +26,7 @@ use App\Services\CurrencyService;
 use App\Services\InvoiceService;
 use App\Services\JournalEntryService;
 use App\Services\JournalService;
+use App\Services\PaymentService;
 use App\Services\VendorBillService;
 use Carbon\Carbon;
 use Illuminate\Bus\Queueable;
@@ -768,6 +769,191 @@ test('confirming a vendor bill creates a linked journal entry', function () {
 
     // Assert: Confirm the linked journal entry was actually created.
     $this->assertDatabaseHas('journal_entries', ['id' => $vendorBill->journal_entry_id]);
+})->only();
+
+test('a posted vendor bill cannot be modified', function () {
+    // Arrange: Create a vendor bill that is already posted.
+    // The total_amount is 20000 because of your MoneyCast (200 * 100).
+    $vendorBill = VendorBill::factory()->create(['status' => 'Posted', 'total_amount' => 20000]);
+
+    // Arrange: Prepare the data for the unauthorized update attempt.
+    $updateData = ['total_amount' => 25000];
+
+    // Assert: Expect the service to block this action by throwing an exception.
+    expect(fn() => (new VendorBillService())->update($vendorBill, $updateData))
+        ->toThrow(UpdateNotAllowedException::class);
+
+    // Assert: Double-check that the data in the database did not change.
+    $this->assertDatabaseHas('vendor_bills', [
+        'id' => $vendorBill->id,
+        'total_amount' => 2000000, // The amount should be unchanged.
+    ]);
+})->only();
+
+test('a posted vendor bill cannot be deleted', function () {
+    // Arrange: Create a vendor bill that is already posted.
+    $vendorBill = VendorBill::factory()->create(['status' => 'Posted']);
+
+    // Assert: Expect that calling the delete method on the service
+    // throws our specific exception, proving the action was blocked.
+    expect(fn() => (new VendorBillService())->delete($vendorBill))
+        ->toThrow(DeletionNotAllowedException::class, 'Cannot delete a posted vendor bill.');
+
+    // Assert: Double-check that the model still exists in the database.
+    $this->assertModelExists($vendorBill);
+})->only();
+
+test('resetting a posted vendor bill to draft is logged and reverses the journal entry', function () {
+    // Arrange: Create a user to perform the action.
+    $user = User::factory()->create();
+
+    // Arrange: Create a posted vendor bill with a linked journal entry.
+    $journalEntry = JournalEntry::factory()->create();
+    $vendorBill = VendorBill::factory()->create([
+        'status' => 'Posted',
+        'journal_entry_id' => $journalEntry->id,
+    ]);
+
+    $reason = 'Supplier sent a revised bill with corrected quantities.';
+
+    // Act: Call the service method to perform the action.
+    (new VendorBillService())->resetToDraft($vendorBill, $user, $reason);
+
+    // Assert: Check the state of the vendor bill.
+    $vendorBill->refresh();
+    expect($vendorBill->status)->toBe('Draft');
+    expect($vendorBill->journal_entry_id)->toBeNull();
+
+    // Assert: Check that the log was created correctly.
+    $log = $vendorBill->reset_to_draft_log[0]; // The cast already made it an array.
+
+    expect($log['user_id'])->toBe($user->id);
+    expect($log['reason'])->toBe($reason);
+    expect(Carbon::parse($log['timestamp']))->toBeInstanceOf(Carbon::class);
+
+    // Assert: Confirm the original journal entry was deleted to reverse the financial impact.
+    $this->assertModelMissing($journalEntry);
+})->only();
+
+test('posting a vendor bill correctly debits Expense/Asset and credits Accounts Payable', function () {
+    // Arrange: Set up the company, user, and necessary accounts.
+    $company = Company::factory()->create();
+    $user = User::factory()->create();
+    $apAccount = Account::factory()->for($company)->create(['type' => 'Payable']);
+    $expenseAccount = Account::factory()->for($company)->create(['type' => 'Expense']);
+    $taxAccount = Account::factory()->for($company)->create(['type' => 'Asset']); // Tax on purchases
+    $purchaseJournal = Journal::factory()->for($company)->create(['type' => 'Purchase']);
+
+    // Arrange: Set the default accounts for the service to use.
+    config([
+        'accounting.defaults.accounts_payable_id' => $apAccount->id,
+        'accounting.defaults.tax_receivable_id' => $taxAccount->id,
+        'accounting.defaults.purchase_journal_id' => $purchaseJournal->id,
+    ]);
+
+    // Arrange: Create a draft vendor bill.
+    $vendorBill = VendorBill::factory()->for($company)->create(['status' => 'Draft']);
+    $tax = Tax::factory()->for($company)->create(['rate' => 0.10]); // 10% tax
+
+    // Arrange: Add a line item to the bill.
+    $vendorBill->lines()->create([
+        'description' => 'Office Supplies Purchase',
+        'quantity' => 1,
+        'unit_price' => 100.00, // This will be cast to 10000
+        'tax_id' => $tax->id,
+        'expense_account_id' => $expenseAccount->id,
+    ]);
+
+    // Act: Confirm the bill using the service.
+    (new VendorBillService())->confirm($vendorBill, $user);
+
+    // Assert: Check that the bill is now posted.
+    $vendorBill->refresh();
+    expect($vendorBill->status)->toBe('Posted');
+    expect($vendorBill->journal_entry_id)->not->toBeNull();
+
+    // Assert: Check that the journal entry lines are correct (using integer values).
+    // The subtotal is 100.00 * 1 = 100.00 (stored as 10000)
+    // The tax is 100.00 * 10% = 10.00 (stored as 1000)
+    // The total is 110.00 (stored as 11000)
+    $this->assertDatabaseHas('journal_entry_lines', [
+        'journal_entry_id' => $vendorBill->journal_entry_id,
+        'account_id' => $expenseAccount->id,
+        'debit' => 10000, // Debit Expense for the subtotal
+    ]);
+    $this->assertDatabaseHas('journal_entry_lines', [
+        'journal_entry_id' => $vendorBill->journal_entry_id,
+        'account_id' => $taxAccount->id,
+        'debit' => 1000, // Debit Tax Asset for the tax amount
+    ]);
+    $this->assertDatabaseHas('journal_entry_lines', [
+        'journal_entry_id' => $vendorBill->journal_entry_id,
+        'account_id' => $apAccount->id,
+        'credit' => 11000, // Credit Accounts Payable for the total amount
+    ]);
+})->only();
+
+test('confirming an inbound payment creates a linked journal entry', function () {
+    // Arrange: Set up the company, customer, user, and necessary accounts.
+    $company = Company::factory()->create();
+    $customer = Partner::factory()->for($company)->create(['type' => 'Customer']);
+    $user = User::factory()->create();
+    $bankAccount = Account::factory()->for($company)->create(['type' => 'Bank']);
+    $arAccount = Account::factory()->for($company)->create(['type' => 'Receivable']);
+    $currency = Currency::factory()->create(['code' => 'USD']);
+
+    // Arrange: Create a specific journal for bank transactions.
+    $bankJournal = Journal::factory()->for($company)->create(['type' => 'Bank']);
+
+    // Arrange: Set up the default accounts the service will need.
+    config([
+        'accounting.defaults.default_bank_account_id' => $bankAccount->id,
+        'accounting.defaults.accounts_receivable_id' => $arAccount->id,
+    ]);
+
+    // Arrange: Prepare the COMPLETE data for an inbound payment.
+    $paymentData = [
+        'company_id' => $company->id,
+        'journal_id' => $bankJournal->id,              // <-- 1. ADD this required ID
+        'currency_id' => $currency->id,
+        'paid_to_from_partner_id' => $customer->id,     // <-- 2. FIX the key name
+        'payment_date' => now()->toDateString(),      // <-- 3. ADD the payment date
+        'payment_type' => 'Inbound',
+        'amount' => 50000, // 500.00 in integer form
+    ];
+
+    // Act: Create and confirm the payment using the service.
+    $payment = (new PaymentService())->createAndConfirm($paymentData, $user);
+    // Assert: Check that the payment is confirmed and linked to a journal entry.
+    expect($payment->status)->toBe('Confirmed');
+    expect($payment->journal_entry_id)->not->toBeNull();
+
+    // Assert: Confirm the journal entry exists and is correct.
+    $this->assertDatabaseHas('journal_entry_lines', [
+        'journal_entry_id' => $payment->journal_entry_id,
+        'account_id' => $bankAccount->id,
+        'debit' => 5000000, // Dr Bank
+    ]);
+    $this->assertDatabaseHas('journal_entry_lines', [
+        'journal_entry_id' => $payment->journal_entry_id,
+        'account_id' => $arAccount->id,
+        'credit' => 5000000, // Cr Accounts Receivable
+    ]);
+})->only();
+
+test('a confirmed payment is immutable', function () {
+    // Arrange: Create a confirmed payment.
+    $payment = Payment::factory()->create(['status' => 'Confirmed', 'amount' => 10000]);
+
+    // Assert: Expect that any attempt to update the payment will be blocked.
+    expect(fn() => (new PaymentService())->update($payment, ['amount' => 20000]))
+        ->toThrow(UpdateNotAllowedException::class, 'Cannot modify a confirmed payment.');
+
+    // Assert: Double-check that the amount in the database did not change.
+    $this->assertDatabaseHas('payments', [
+        'id' => $payment->id,
+        'amount' => 10000,
+    ]);
 })->only();
 
 });
