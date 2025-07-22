@@ -2,9 +2,12 @@
 
 namespace App\Services;
 
+use App\Exceptions\PeriodIsLockedException;
 use App\Exceptions\UpdateNotAllowedException;
 use App\Models\JournalEntry;
+use App\Models\LockDate;
 use App\Rules\ActiveAccount;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
@@ -13,6 +16,8 @@ class JournalEntryService
 {
     public function create(array $data): JournalEntry
     {
+        $this->checkIfPeriodIsLocked($data['company_id'], $data['entry_date']);
+
         Validator::make($data, [
             // Apply the rule to each account_id in the lines array
             'lines.*.account_id' => ['required', 'exists:accounts,id', new ActiveAccount],
@@ -69,6 +74,11 @@ class JournalEntryService
 
     public function update(JournalEntry $journalEntry, array $data): bool
     {
+        // Also check on update if the date is being changed.
+        if (isset($data['entry_date'])) {
+            $this->checkIfPeriodIsLocked($entry->company_id, $data['entry_date']);
+        }
+
         // This is the guard clause. It protects posted entries.
         if ($journalEntry->is_posted) {
             throw new UpdateNotAllowedException('Cannot modify a posted journal entry.');
@@ -76,5 +86,19 @@ class JournalEntryService
 
         // If the guard clause passes, proceed with the update.
         return $journalEntry->update($data);
+    }
+
+    /**
+     * Checks if a given date for a company falls within a locked period.
+     */
+    private function checkIfPeriodIsLocked(int $companyId, string $date): void
+    {
+        $entryDate = Carbon::parse($date);
+
+        $lockDate = LockDate::where('company_id', $companyId)->first();
+
+        if ($lockDate && $entryDate->lte($lockDate->locked_until)) {
+            throw new PeriodIsLockedException('The accounting period is locked and cannot be modified.');
+        }
     }
 }

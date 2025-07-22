@@ -2,6 +2,7 @@
 
 use App\Events\InvoiceConfirmed;
 use App\Exceptions\AccountIsDeprecatedException;
+use App\Exceptions\PeriodIsLockedException;
 use App\Exceptions\UpdateNotAllowedException;
 use App\Models\AnalyticAccount;
 use App\Models\Company;
@@ -1162,6 +1163,34 @@ test('posting a credit note generates the correct reverse journal entry', functi
         'journal_entry_id' => $creditNote->journal_entry_id,
         'account_id' => $arAccount->id,
         'credit' => 11000, // Cr Accounts Receivable
+    ]);
+})->only();
+
+test('a financial transaction cannot be created in a locked period', function () {
+    // Arrange: Create a company and lock its books up to a month ago.
+    $company = Company::factory()->create();
+    LockDate::factory()->for($company)->create([
+        'locked_until' => now()->subMonth(),
+    ]);
+
+    // Arrange: Prepare data for a journal entry with a date inside the locked period.
+    $lockedPeriodData = [
+        'company_id' => $company->id,
+        'entry_date' => now()->subMonths(2)->toDateString(), // This date is locked.
+        'reference' => 'LOCKED-PERIOD-ENTRY',
+        'lines' => [
+            ['account_id' => Account::factory()->for($company)->create()->id, 'debit' => 10000],
+            ['account_id' => Account::factory()->for($company)->create()->id, 'credit' => 10000],
+        ],
+    ];
+
+    // Assert: Expect the service to throw our specific exception when it detects the locked date.
+    expect(fn() => (new JournalEntryService())->create($lockedPeriodData))
+        ->toThrow(PeriodIsLockedException::class);
+
+    // Assert: As a final check, confirm that no journal entry was created.
+    $this->assertDatabaseMissing('journal_entries', [
+        'reference' => 'LOCKED-PERIOD-ENTRY'
     ]);
 })->only();
 
