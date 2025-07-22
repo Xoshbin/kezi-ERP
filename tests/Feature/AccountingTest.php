@@ -46,6 +46,9 @@ use Illuminate\Validation\ValidationException; // The exception thrown by Larave
 uses(RefreshDatabase::class);
 
 test('a company with existing financial records cannot be deleted', function () {
+    // Arrange: Create a user who will perform the action.
+    $user = User::factory()->create();
+    $this->actingAs($user);
     // Arrange: Create a company and a dependent financial record.
     $company = Company::factory()->create();
     Account::factory()->for($company)->create();
@@ -62,6 +65,9 @@ test('a company with existing financial records cannot be deleted', function () 
 })->only();
 
 test('a user is correctly related to their company for accounting contexts', function () {
+    // Arrange: Create a user who will perform the action.
+    $user = User::factory()->create();
+    $this->actingAs($user);
     $company = Company::factory()->create();
     $user = User::factory()->for($company)->create();
 
@@ -70,6 +76,9 @@ test('a user is correctly related to their company for accounting contexts', fun
 })->only();
 
 test('duplicate tax ID for a company in the same fiscal country is prevented', function () {
+    // Arrange: Create a user who will perform the action.
+    $user = User::factory()->create();
+    $this->actingAs($user);
     // Arrange: Create the first company that sets the baseline for the unique rule.
     Company::factory()->create(['tax_id' => 'VAT123', 'fiscal_country' => 'IQ']);
 
@@ -91,6 +100,9 @@ test('duplicate tax ID for a company in the same fiscal country is prevented', f
 })->only();
 
 test('creating a currency with an existing code is prevented', function () {
+    // Arrange: Create a user who will perform the action.
+    $user = User::factory()->create();
+    $this->actingAs($user);
     // Arrange: Create the initial currency.
     Currency::factory()->create(['code' => 'IQD']);
 
@@ -112,6 +124,9 @@ test('creating a currency with an existing code is prevented', function () {
 })->only();
 
 test('a partner record is soft-deleted to preserve historical transaction context', function () {
+    // Arrange: Create a user who will perform the action.
+    $user = User::factory()->create();
+    $this->actingAs($user);
     $partner = Partner::factory()->create();
     $partner->delete();
 
@@ -121,6 +136,9 @@ test('a partner record is soft-deleted to preserve historical transaction contex
 })->only();
 
 test('a soft-deleted partner can be retrieved using "withTrashed" for historical reporting', function () {
+    // Arrange: Create a user who will perform the action.
+    $user = User::factory()->create();
+    $this->actingAs($user);
     $partner = Partner::factory()->create();
     $partner->delete();
 
@@ -129,6 +147,9 @@ test('a soft-deleted partner can be retrieved using "withTrashed" for historical
 })->only();
 
 test('a product record is soft-deleted to preserve its history and linkages', function () {
+    // Arrange: Create a user who will perform the action.
+    $user = User::factory()->create();
+    $this->actingAs($user);
     $product = Product::factory()->create();
     $product->delete();
 
@@ -138,6 +159,9 @@ test('a product record is soft-deleted to preserve its history and linkages', fu
 })->only();
 
 test('a soft-deleted product can be retrieved with "withTrashed" for historical analysis', function () {
+    // Arrange: Create a user who will perform the action.
+    $user = User::factory()->create();
+    $this->actingAs($user);
     $product = Product::factory()->create();
     $product->delete();
 
@@ -146,6 +170,9 @@ test('a soft-deleted product can be retrieved with "withTrashed" for historical 
 })->only();
 
 test('a product is correctly linked to its default income and expense general ledger accounts', function () {
+    // Arrange: Create a user who will perform the action.
+    $user = User::factory()->create();
+    $this->actingAs($user);
     $incomeAccount = Account::factory()->create(['type' => 'Income']);
     $expenseAccount = Account::factory()->create(['type' => 'Expense']);
     $product = Product::factory()->create([
@@ -159,6 +186,9 @@ test('a product is correctly linked to its default income and expense general le
 })->only();
 
 test('a tax is correctly linked to its designated general ledger tax account', function () {
+    // Arrange: Create a user who will perform the action.
+    $user = User::factory()->create();
+    $this->actingAs($user);
     $taxAccount = Account::factory()->create(['type' => 'Liability']); // e.g., VAT Payable
     $tax = Tax::factory()->create(['tax_account_id' => $taxAccount->id]);
 
@@ -167,6 +197,9 @@ test('a tax is correctly linked to its designated general ledger tax account', f
 })->only();
 
 test('creating an account with a duplicate code for the same company is prevented', function () {
+    // Arrange: Create a user who will perform the action.
+    $user = User::factory()->create();
+    $this->actingAs($user);
     // Arrange: Create a company and the first account with code '1000'.
     $company = Company::factory()->create();
     Account::factory()->for($company)->create(['code' => '1000']);
@@ -189,6 +222,9 @@ test('creating an account with a duplicate code for the same company is prevente
 })->only();
 
 test('an account with existing transactions is marked as deprecated instead of being deleted', function () {
+    // Arrange: Create a user who will perform the action.
+    $user = User::factory()->create();
+    $this->actingAs($user);
     // Arrange: Create an account and link a transaction to it.
     $account = Account::factory()->create();
     JournalEntry::factory()->create()->lines()->create(['account_id' => $account->id, 'debit' => 100]);
@@ -209,6 +245,9 @@ test('an account with existing transactions is marked as deprecated instead of b
 })->only();
 
 test('a deprecated account cannot be used for new financial transactions', function () {
+    // Arrange: Create a user who will perform the action.
+    $user = User::factory()->create();
+    $this->actingAs($user);
     // Arrange: Create a company and the necessary accounts.
     $company = Company::factory()->create();
     $deprecatedAccount = Account::factory()->for($company)->create(['is_deprecated' => true]);
@@ -237,6 +276,9 @@ test('a deprecated account cannot be used for new financial transactions', funct
 })->only();
 
 test('creating a journal with an existing short code for the same company is prevented', function () {
+    // Arrange: Create a user who will perform the action.
+    $user = User::factory()->create();
+    $this->actingAs($user);
     // Arrange: Create a company and the initial journal.
     $company = Company::factory()->create();
     Journal::factory()->for($company)->create(['short_code' => 'INV']);
@@ -259,8 +301,10 @@ test('creating a journal with an existing short code for the same company is pre
 })->only();
 
 test('a journal entry correctly calculates totals and assigns a user when created', function () {
-    // Arrange: Create a user who will be the creator of the entry
+    // Arrange: Create a user who will perform the action.
     $user = User::factory()->create();
+    $this->actingAs($user);
+
     $company = Company::factory()->create();
 
     $entryData = [
@@ -285,6 +329,9 @@ test('a journal entry correctly calculates totals and assigns a user when create
 })->only();
 
 test('creating an unbalanced journal entry is prevented', function () {
+    // Arrange: Create a user who will perform the action.
+    $user = User::factory()->create();
+    $this->actingAs($user);
     // Arrange: Prepare data where debits do NOT equal credits.
     $company = Company::factory()->create();
     $unbalancedData = [
@@ -303,6 +350,9 @@ test('creating an unbalanced journal entry is prevented', function () {
 })->only();
 
 test('a balanced draft journal entry can be posted', function () {
+    // Arrange: Create a user who will perform the action.
+    $user = User::factory()->create();
+    $this->actingAs($user);
     // Arrange: Create a draft journal entry with balanced lines.
     $journalEntry = JournalEntry::factory()->create(['is_posted' => false]);
     $journalEntry->lines()->createMany([
@@ -319,6 +369,9 @@ test('a balanced draft journal entry can be posted', function () {
 })->only();
 
 test('an unbalanced draft journal entry cannot be posted', function () {
+    // Arrange: Create a user who will perform the action.
+    $user = User::factory()->create();
+    $this->actingAs($user);
     // Arrange: Create a draft entry with UNBALANCED lines.
     $journalEntry = JournalEntry::factory()->create(['is_posted' => false]);
     $journalEntry->lines()->createMany([
@@ -332,6 +385,9 @@ test('an unbalanced draft journal entry cannot be posted', function () {
 })->only();
 
 test('a draft journal entry can be freely modified before posting', function () {
+    // Arrange: Create a user who will perform the action.
+    $user = User::factory()->create();
+    $this->actingAs($user);
     // Arrange: Create a draft journal entry.
     $journalEntry = JournalEntry::factory()->create([
         'is_posted' => false,
@@ -349,6 +405,9 @@ test('a draft journal entry can be freely modified before posting', function () 
 })->only();
 
 test('a posted journal entry cannot be updated', function () {
+    // Arrange: Create a user who will perform the action.
+    $user = User::factory()->create();
+    $this->actingAs($user);
     // Arrange: Create a journal entry that is already posted.
     $journalEntry = JournalEntry::factory()->create([
         'is_posted' => true,
@@ -370,6 +429,9 @@ test('a posted journal entry cannot be updated', function () {
 })->only();
 
 test('a posted journal entry cannot be deleted', function () {
+    // Arrange: Create a user who will perform the action.
+    $user = User::factory()->create();
+    $this->actingAs($user);
     $journalEntry = JournalEntry::factory()->create(['is_posted' => true]);
 
     // Act: Attempt to delete the model.
@@ -383,6 +445,9 @@ test('a posted journal entry cannot be deleted', function () {
 })->only();
 
 test('posting a journal entry generates a cryptographic hash', function () {
+    // Arrange: Create a user who will perform the action.
+    $user = User::factory()->create();
+    $this->actingAs($user);
     // Arrange: Create a draft journal entry with no hash.
     $journalEntry = JournalEntry::factory()->create([
         'is_posted' => false,
@@ -400,6 +465,9 @@ test('posting a journal entry generates a cryptographic hash', function () {
 })->only();
 
 test('posting a journal entry links to the previous entry hash to form an audit chain', function () {
+    // Arrange: Create a user who will perform the action.
+    $user = User::factory()->create();
+    $this->actingAs($user);
     // Arrange: Create a company to scope the entries.
     $company = Company::factory()->create();
 
@@ -426,7 +494,10 @@ test('posting a journal entry links to the previous entry hash to form an audit 
 })->only();
 
 test('posted journal entries accurately record the creating user and creation timestamp', function () {
+    // Arrange: Create a user who will perform the action.
     $user = User::factory()->create();
+    $this->actingAs($user);
+
     $journalEntry = JournalEntry::factory()->create(['is_posted' => true, 'created_by_user_id' => $user->id]);
 
     // Vital for comprehensive audit logging and accountability [1, 9, 11, 12].
@@ -435,6 +506,9 @@ test('posted journal entries accurately record the creating user and creation ti
 })->only();
 
 test('the creation timestamp for a posted journal entry is immutable', function () {
+    // Arrange: Create a user who will perform the action.
+    $user = User::factory()->create();
+    $this->actingAs($user);
     // Arrange: Create a posted entry with a specific creation time.
     $initialCreatedAt = now()->subHour();
     $journalEntry = JournalEntry::factory()->create([
@@ -454,6 +528,9 @@ test('the creation timestamp for a posted journal entry is immutable', function 
 })->only();
 
 test('a journal entry correctly links its source type and ID to the originating document (e.g., invoice)', function () {
+    // Arrange: Create a user who will perform the action.
+    $user = User::factory()->create();
+    $this->actingAs($user);
     $invoice = Invoice::factory()->create(['status' => 'Posted']);
     $journalEntry = JournalEntry::factory()->for($invoice, 'source')->create([ // Using polymorphic factory
         'source_type' => 'App\\Models\\Invoice',
@@ -466,6 +543,9 @@ test('a journal entry correctly links its source type and ID to the originating 
 })->only();
 
 test('a draft customer invoice can be freely edited', function () {
+    // Arrange: Create a user who will perform the action.
+    $user = User::factory()->create();
+    $this->actingAs($user);
     // Arrange: Create a default income account to use for the lines.
     $incomeAccount = Account::factory()->create(['type' => 'Income']);
     $invoice = Invoice::factory()->create(['status' => 'Draft']);
@@ -502,6 +582,9 @@ test('a draft customer invoice can be freely deleted', function () {
 })->only();
 
 test('confirming an invoice assigns a sequential number, posts it, and creates a journal entry', function () {
+    // Arrange: Create a user who will perform the action.
+    $user = User::factory()->create();
+    $this->actingAs($user);
     // Arrange: Fake events to ensure our action dispatches one.
     Event::fake();
 
@@ -544,6 +627,9 @@ test('confirming an invoice assigns a sequential number, posts it, and creates a
 })->only();
 
 test('a posted invoice cannot be directly modified', function () {
+    // Arrange: Create a user who will perform the action.
+    $user = User::factory()->create();
+    $this->actingAs($user);
     // Arrange: Create an invoice that is already in 'Posted' status.
     $invoice = Invoice::factory()->create([
         'status' => 'Posted',
@@ -565,6 +651,9 @@ test('a posted invoice cannot be directly modified', function () {
 })->only();
 
 test('a posted invoice cannot be deleted', function () {
+    // Arrange: Create a user who will perform the action.
+    $user = User::factory()->create();
+    $this->actingAs($user);
     // Arrange: Create an invoice that is already posted.
     $invoice = Invoice::factory()->create(['status' => 'Posted']);
 
@@ -578,6 +667,9 @@ test('a posted invoice cannot be deleted', function () {
 })->only();
 
 test('resetting a posted invoice to draft is thoroughly logged and reverses the journal entry', function () {
+    // Arrange: Create a user who will perform the action.
+    $user = User::factory()->create();
+    $this->actingAs($user);
     // Arrange: Create a user who will perform this action.
     $user = User::factory()->create();
 
@@ -610,6 +702,9 @@ test('resetting a posted invoice to draft is thoroughly logged and reverses the 
 })->only();
 
 test('updating invoice lines correctly recalculates the invoice total amount and tax', function () {
+    // Arrange: Create a user who will perform the action.
+    $user = User::factory()->create();
+    $this->actingAs($user);
     // Arrange: Create accounts and products.
     $invoice = Invoice::factory()->create(['status' => 'Draft', 'total_amount' => 0, 'total_tax' => 0]);
     $tax = Tax::factory()->create(['rate' => 0.10]);
@@ -645,6 +740,9 @@ test('updating invoice lines correctly recalculates the invoice total amount and
 })->only();
 
 test('posting an invoice correctly debits Accounts Receivable and credits Income/Tax', function () {
+    // Arrange: Create a user who will perform the action.
+    $user = User::factory()->create();
+    $this->actingAs($user);
     // Arrange: Create all the necessary models for the test.
     $company = Company::factory()->create();
     $user = User::factory()->create();
@@ -705,6 +803,9 @@ test('posting an invoice correctly debits Accounts Receivable and credits Income
 })->only();
 
 test('a draft vendor bill can be freely edited', function () {
+    // Arrange: Create a user who will perform the action.
+    $user = User::factory()->create();
+    $this->actingAs($user);
     // Arrange: Create a draft vendor bill.
     $company = Company::factory()->create();
     $vendorBill = VendorBill::factory()->create(['status' => 'Draft']);
@@ -741,6 +842,9 @@ test('a draft vendor bill can be freely deleted', function () {
 })->only();
 
 test('confirming a vendor bill creates a linked journal entry', function () {
+    // Arrange: Create a user who will perform the action.
+    $user = User::factory()->create();
+    $this->actingAs($user);
     // Arrange: Set up the company and user.
     $company = Company::factory()->create();
     $user = User::factory()->create();
@@ -774,6 +878,9 @@ test('confirming a vendor bill creates a linked journal entry', function () {
 })->only();
 
 test('a posted vendor bill cannot be modified', function () {
+    // Arrange: Create a user who will perform the action.
+    $user = User::factory()->create();
+    $this->actingAs($user);
     // Arrange: Create a vendor bill that is already posted.
     // The total_amount is 20000 because of your MoneyCast (200 * 100).
     $vendorBill = VendorBill::factory()->create(['status' => 'Posted', 'total_amount' => 20000]);
@@ -793,6 +900,9 @@ test('a posted vendor bill cannot be modified', function () {
 })->only();
 
 test('a posted vendor bill cannot be deleted', function () {
+    // Arrange: Create a user who will perform the action.
+    $user = User::factory()->create();
+    $this->actingAs($user);
     // Arrange: Create a vendor bill that is already posted.
     $vendorBill = VendorBill::factory()->create(['status' => 'Posted']);
 
@@ -806,8 +916,9 @@ test('a posted vendor bill cannot be deleted', function () {
 })->only();
 
 test('resetting a posted vendor bill to draft is logged and reverses the journal entry', function () {
-    // Arrange: Create a user to perform the action.
+    // Arrange: Create a user who will perform the action.
     $user = User::factory()->create();
+    $this->actingAs($user);
 
     // Arrange: Create a posted vendor bill with a linked journal entry.
     $journalEntry = JournalEntry::factory()->create();
@@ -838,6 +949,10 @@ test('resetting a posted vendor bill to draft is logged and reverses the journal
 })->only();
 
 test('posting a vendor bill correctly debits Expense/Asset and credits Accounts Payable', function () {
+    // Arrange: Create a user who will perform the action.
+    $user = User::factory()->create();
+    $this->actingAs($user);
+
     // Arrange: Set up the company, user, and necessary accounts.
     $company = Company::factory()->create();
     $user = User::factory()->create();
@@ -896,6 +1011,10 @@ test('posting a vendor bill correctly debits Expense/Asset and credits Accounts 
 })->only();
 
 test('confirming an inbound payment creates a linked journal entry', function () {
+    // Arrange: Create a user who will perform the action.
+    $user = User::factory()->create();
+    $this->actingAs($user);
+
     // Arrange: Set up the company, customer, user, and necessary accounts.
     $company = Company::factory()->create();
     $customer = Partner::factory()->for($company)->create(['type' => 'Customer']);
@@ -944,8 +1063,10 @@ test('confirming an inbound payment creates a linked journal entry', function ()
 })->only();
 
 test('a confirmed payment is immutable', function () {
-    // Arrange: Create the user, company, and other necessary records.
+    // Arrange: Create a user who will perform the action.
     $user = User::factory()->create();
+    $this->actingAs($user);
+
     $company = Company::factory()->create();
     $currency = Currency::factory()->create(['code' => 'USD']);
 
@@ -983,6 +1104,10 @@ test('a confirmed payment is immutable', function () {
 })->only();
 
 test('an incoming payment correctly debits Bank and credits Accounts Receivable', function () {
+    // Arrange: Create a user who will perform the action.
+    $user = User::factory()->create();
+    $this->actingAs($user);
+
     // Arrange: Set up the company, customer, and user.
     $company = Company::factory()->create();
     $customer = Partner::factory()->for($company)->create(['type' => 'Customer']);
@@ -1030,6 +1155,10 @@ test('an incoming payment correctly debits Bank and credits Accounts Receivable'
 })->only();
 
 test('an outgoing payment correctly debits Accounts Payable and credits Bank', function () {
+    // Arrange: Create a user who will perform the action.
+    $user = User::factory()->create();
+    $this->actingAs($user);
+
     // Arrange: Set up the company, a vendor, and a user.
     $company = Company::factory()->create();
     $vendor = Partner::factory()->for($company)->create(['type' => 'Vendor']);
@@ -1077,6 +1206,10 @@ test('an outgoing payment correctly debits Accounts Payable and credits Bank', f
 })->only();
 
 test('a posted credit note is immutable', function () {
+    // Arrange: Create a user who will perform the action.
+    $user = User::factory()->create();
+    $this->actingAs($user);
+
     // Arrange: Create a posted credit note with a specific amount.
     // We use an integer because of your MoneyCast (50.00 * 100 = 5000).
     $creditNote = AdjustmentDocument::factory()->create([
@@ -1097,6 +1230,10 @@ test('a posted credit note is immutable', function () {
 })->only();
 
 test('a credit note explicitly references the original invoice it corrects for clear auditability', function () {
+    // Arrange: Create a user who will perform the action.
+    $user = User::factory()->create();
+    $this->actingAs($user);
+
     $originalInvoice = Invoice::factory()->create(['status' => 'Posted']);
     $creditNote = AdjustmentDocument::factory()->create(['original_invoice_id' => $originalInvoice->id]);
 
@@ -1106,6 +1243,9 @@ test('a credit note explicitly references the original invoice it corrects for c
 })->only();
 
 test('posting a credit note generates the correct reverse journal entry', function () {
+    // Arrange: Create a user who will perform the action.
+    $user = User::factory()->create();
+    $this->actingAs($user);
     // Arrange: Set up the company, user, and necessary accounts.
     $company = Company::factory()->create();
     $user = User::factory()->create();
@@ -1167,6 +1307,9 @@ test('posting a credit note generates the correct reverse journal entry', functi
 })->only();
 
 test('a financial transaction cannot be created in a locked period', function () {
+    // Arrange: Create a user who will perform the action.
+    $user = User::factory()->create();
+    $this->actingAs($user);
     // Arrange: Create a company and lock its books up to a month ago.
     $company = Company::factory()->create();
     LockDate::factory()->for($company)->create([
@@ -1195,6 +1338,11 @@ test('a financial transaction cannot be created in a locked period', function ()
 })->only();
 
 test('a financial transaction in a locked period cannot be modified', function () {
+
+    // Arrange: Create a user who will perform the action.
+    $user = User::factory()->create();
+    $this->actingAs($user);
+
     // Arrange: Create a company and lock its books up to a month ago.
     $company = Company::factory()->create();
     LockDate::factory()->for($company)->create([
@@ -1216,6 +1364,40 @@ test('a financial transaction in a locked period cannot be modified', function (
     $this->assertDatabaseHas('journal_entries', [
         'id' => $journalEntry->id,
         'description' => 'Original Description',
+    ]);
+})->only();
+
+test('creating a financial record is logged in the audit trail', function () {
+    // Arrange: Create a user who will perform the action.
+    $user = User::factory()->create();
+
+    // Arrange: We need to simulate this user being logged in so the observer
+    // can identify who is performing the action.
+    $this->actingAs($user);
+
+    // Arrange: Prepare the data for the journal entry.
+    $company = Company::factory()->create();
+    $entryData = [
+        'company_id' => $company->id,
+        'journal_id' => Journal::factory()->for($company)->create()->id,
+        'entry_date' => now()->toDateString(),
+        'reference' => 'LOGGED-JE-001',
+        'lines' => [
+            ['account_id' => Account::factory()->for($company)->create()->id, 'debit' => 5000],
+            ['account_id' => Account::factory()->for($company)->create()->id, 'credit' => 5000],
+        ],
+        'created_by_user_id' => $user->id,
+    ];
+
+    // Act: Create the entry using the service. This action will trigger the observer.
+    $journalEntry = (new JournalEntryService())->create($entryData);
+
+    // Assert: Check the database to confirm that the observer created the audit log entry.
+    $this->assertDatabaseHas('audit_logs', [
+        'user_id' => $user->id,
+        'event_type' => 'record_created',
+        'auditable_type' => JournalEntry::class, // Use the class name for clarity
+        'auditable_id' => $journalEntry->id,
     ]);
 })->only();
 

@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Observers\AccountObserver;
+use App\Observers\AuditLogObserver;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -29,7 +30,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property \Illuminate\Support\Carbon|null $updated_at
  */
 
-#[ObservedBy([AccountObserver::class])]
+#[ObservedBy([AccountObserver::class, AuditLogObserver::class])] //(to log when accounts are created or deprecated)
 class Account extends Model
 {
     use HasFactory;

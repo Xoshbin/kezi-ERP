@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Casts\MoneyCast;
+use App\Observers\AuditLogObserver;
 use App\Observers\JournalEntryObserver;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -42,7 +43,7 @@ use RuntimeException; // For explicit exception handling for immutability violat
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\JournalEntryLine[] $lines The individual debit/credit lines composing this journal entry.
  * @property-read \Illuminate\Models\Model|\Eloquent $source The originating document (e.g., Invoice, VendorBill, Payment) for this journal entry.
  */
-#[ObservedBy([JournalEntryObserver::class])]
+#[ObservedBy([JournalEntryObserver::class, AuditLogObserver::class])]
 class JournalEntry extends Model
 {
     use HasFactory;

@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Observers\AuditLogObserver;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -24,6 +26,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  *
  * @property-read \App\Models\Company $company The Company model associated with this lock date.
  */
+#[ObservedBy([AuditLogObserver::class])] //(to log when periods are closed)
 class LockDate extends Model
 {
     use HasFactory;

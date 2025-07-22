@@ -3,6 +3,8 @@
 namespace App\Models;
 
 use App\Casts\MoneyCast;
+use App\Observers\AuditLogObserver;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -43,6 +45,7 @@ use Illuminate\Support\Carbon;
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\InvoiceLine[] $invoiceLines The individual line items of this invoice.
  * @property-read \App\Models\FiscalPosition|null $fiscalPosition The fiscal position applied to this invoice.
  */
+#[ObservedBy([AuditLogObserver::class])]
 class Invoice extends Model
 {
     use HasFactory;
