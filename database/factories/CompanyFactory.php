@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\Currency;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -20,7 +21,7 @@ class CompanyFactory extends Factory
             'name' => $this->faker->company,
             'address' => $this->faker->address,
             'tax_id' => $this->faker->unique()->numerify('##########'),
-            'currency_id' => \App\Models\Currency::factory(),
+            'currency_id' => Currency::factory(),
             'fiscal_country' => $this->faker->countryCode,
             'parent_company_id' => null,
         ];

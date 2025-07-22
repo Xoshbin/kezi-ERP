@@ -18,10 +18,10 @@ class CurrencyFactory extends Factory
     {
         return [
             'code' => $this->faker->unique()->currencyCode,
-            'name' => $this->faker->unique()->currencyCode,
-            'symbol' => $this->faker->randomElement(['$', '€', '£', '¥', '₹']),
-            'exchange_rate' => $this->faker->randomFloat(4, 0.5, 2.0),
-            'is_active' => $this->faker->boolean(90),
+            'name' => $this->faker->currencyCode,
+            'symbol' => '$',
+            'exchange_rate' => 1.0,
+            'is_active' => true,
         ];
     }
 }

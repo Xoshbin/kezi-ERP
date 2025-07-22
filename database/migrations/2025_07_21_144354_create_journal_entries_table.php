@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('company_id')->constrained('companies');
             $table->foreignId('journal_id')->constrained('journals');
+            $table->foreignId('currency_id')->constrained('currencies');
             $table->foreignId('created_by_user_id')->constrained('users');
             $table->date('entry_date');
             $table->string('reference');

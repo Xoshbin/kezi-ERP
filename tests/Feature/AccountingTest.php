@@ -1169,13 +1169,20 @@ test('an outgoing payment correctly debits Accounts Payable and credits Bank', f
     $this->actingAs($user);
 
     // Arrange: Set up the company, a vendor, and a user.
-    $company = Company::factory()->create();
-    $vendor = Partner::factory()->for($company)->create(['type' => 'Vendor']);
-    $currency = Currency::factory()->create(['code' => 'USD']);
+    $currency = Currency::factory()->create(['code' => 'IQD']); // Create ONE currency
+    $company = Company::factory()->create(['currency_id' => $currency->id]);
+    $vendor = Partner::factory()->for($company)->create();
 
     // Arrange: Set up the default accounts the service will need.
     $bankAccount = Account::factory()->for($company)->create(['type' => 'Bank']);
     $apAccount = Account::factory()->for($company)->create(['type' => 'Payable']);
+
+    // Arrange: Create the journal and tell it which currency to use.
+    $bankJournal = Journal::factory()->for($company)->create([
+        'type' => 'Bank',
+        'currency_id' => $currency->id,
+    ]);
+
     config([
         'accounting.defaults.default_bank_account_id' => $bankAccount->id,
         'accounting.defaults.accounts_payable_id' => $apAccount->id,
@@ -1184,12 +1191,12 @@ test('an outgoing payment correctly debits Accounts Payable and credits Bank', f
     // Arrange: Prepare the data for an outbound payment.
     $paymentData = [
         'company_id' => $company->id,
-        'journal_id' => Journal::factory()->for($company)->create()->id,
-        'currency_id' => $currency->id,
+        'journal_id' => $bankJournal->id,
         'paid_to_from_partner_id' => $vendor->id,
         'payment_date' => now()->toDateString(),
+        'currency_id' => $currency->id, // Use the currency we created
         'payment_type' => 'Outbound',
-        'amount' => 250.00, // Use a float, the MoneyCast will handle it.
+        'amount' => 250.00,
     ];
 
     // Act: Create and confirm the payment using the service.
@@ -1659,29 +1666,47 @@ test('bank reconciliation moves funds from outstanding to bank and updates payme
     // Arrange: Set up the user, company, and necessary accounts.
     $user = User::factory()->create();
     $this->actingAs($user);
+
+    // Arrange: Create company WITH a currency
     $company = Company::factory()->create();
+    $currency = Currency::factory()->create(['code' => 'IQD']);
+    $company->update(['currency_id' => $currency->id]);
+
     $bankAccount = Account::factory()->for($company)->create(['type' => 'Bank']);
     $outstandingReceiptsAccount = Account::factory()->for($company)->create(['type' => 'Asset']);
+
+    // --- FIX STARTS HERE ---
+    // 1. Create the account for the credit line explicitly for the same company.
+    $otherAssetAccount = Account::factory()->for($company)->create(['type' => 'Asset']);
+    // --- FIX ENDS HERE ---
+
 
     // Arrange: Set up the default accounts for the two-step process.
     config([
         'accounting.defaults.default_bank_account_id' => $bankAccount->id,
         'accounting.defaults.outstanding_receipts_account_id' => $outstandingReceiptsAccount->id,
-        // ... other defaults
     ]);
 
-    // Arrange: Create a "Confirmed" payment. Its journal entry should be in the outstanding account.
-    // (This assumes your PaymentService now debits 'outstanding_receipts_account_id').
+    // Arrange: Create a "Confirmed" payment with the specific currency.
     $payment = Payment::factory()->for($company)->create([
         'status' => 'Confirmed',
         'amount' => 150.00, // 150.00
+        'currency_id' => $currency->id,
     ]);
-    // Simulate the initial journal entry: Dr Outstanding / Cr A/R
-    $initialJE = JournalEntry::factory()->create();
+
+    // Arrange: Simulate the initial journal entry, ensuring it also has the currency.
+    $initialJE = JournalEntry::factory()->for($company)->create([
+        'currency_id' => $currency->id,
+    ]);
+
+    // --- FIX STARTS HERE ---
+    // 2. Use the explicitly created account ID.
     $initialJE->lines()->createMany([
         ['account_id' => $outstandingReceiptsAccount->id, 'debit' => 15000],
-        ['account_id' => Account::factory()->create()->id, 'credit' => 15000],
+        ['account_id' => $otherAssetAccount->id, 'credit' => 15000],
     ]);
+    // --- FIX ENDS HERE ---
+
     $payment->update(['journal_entry_id' => $initialJE->id]);
 
     // Arrange: Simulate a line from an imported bank statement that matches the payment.
@@ -1695,17 +1720,86 @@ test('bank reconciliation moves funds from outstanding to bank and updates payme
 
     // Assert 2: A *new* journal entry was created for the reconciliation.
     $reconciliationJE = JournalEntry::latest('id')->first();
-    expect($reconciliationJE->id)->not->toBe($initialJE->id); // Ensure it's a new entry
+    expect($reconciliationJE->id)->not->toBe($initialJE->id);
 
     // Assert 3: The new journal entry has the correct lines.
     $this->assertDatabaseHas('journal_entry_lines', [
         'journal_entry_id' => $reconciliationJE->id,
         'account_id' => $bankAccount->id,
-        'debit' => 15000, // Dr Bank (Money is now in the final bank account)
+        'debit' => 15000,
     ]);
     $this->assertDatabaseHas('journal_entry_lines', [
         'journal_entry_id' => $reconciliationJE->id,
         'account_id' => $outstandingReceiptsAccount->id,
-        'credit' => 15000, // Cr Outstanding Receipts (Money moved out of the intermediary account)
+        'credit' => 15000,
+    ]);
+});
+
+test('posting a foreign currency invoice creates a journal entry with correct base and original amounts', function () {
+    // Arrange: Create a user and log them in.
+    $user = User::factory()->create();
+    $this->actingAs($user);
+
+    // Arrange: Set up company and currencies.
+    // Base currency is IQD. Foreign currency is USD.
+    $company = Company::factory()->create();
+    $baseCurrency = Currency::factory()->create(['code' => 'IQD', 'exchange_rate' => 1.0]);
+    $foreignCurrency = Currency::factory()->create(['code' => 'USD', 'exchange_rate' => 1450.0]);
+
+    // The company's main currency is IQD.
+    $company->update(['currency_id' => $baseCurrency->id]);
+
+    // Arrange: Set up necessary accounts and journal.
+    $arAccount = Account::factory()->for($company)->create(['type' => 'Receivable']);
+    $incomeAccount = Account::factory()->for($company)->create(['type' => 'Income']);
+    $salesJournal = Journal::factory()->for($company)->create(['type' => 'Sale']);
+    config([
+        'accounting.defaults.accounts_receivable_id' => $arAccount->id,
+        'accounting.defaults.sales_journal_id' => $salesJournal->id,
+    ]);
+
+    // Arrange: Create a draft invoice for $100 USD.
+    $invoice = Invoice::factory()->for($company)->create([
+        'status' => 'Draft',
+        'currency_id' => $foreignCurrency->id, // This invoice is in USD.
+    ]);
+    $invoice->invoiceLines()->create([
+        'description' => 'Service in USD',
+        'quantity' => 1,
+        'unit_price' => 100.00, // $100.00
+        'income_account_id' => $incomeAccount->id,
+    ]);
+
+    // Act: Confirm the invoice. This should trigger currency conversion.
+    (new InvoiceService())->confirm($invoice, $user);
+
+    // Assert: Check the journal entry. Amounts should be in the base currency (IQD).
+    // $100 USD * 1450 = 145,000 IQD.
+    $invoice->refresh();
+    $this->assertDatabaseHas('journal_entries', [
+        'id' => $invoice->journal_entry_id,
+        'total_debit' => 14500000, // 145,000.00 in integers
+        'total_credit' => 14500000,
+    ]);
+
+    // Assert: Check the journal entry lines for multi-currency details.
+    // 1. Assert the Debit to Accounts Receivable.
+    $this->assertDatabaseHas('journal_entry_lines', [
+        'journal_entry_id' => $invoice->journal_entry_id,
+        'account_id' => $arAccount->id,
+        'debit' => 14500000, // 145,000.00 IQD
+        'original_currency_amount' => 10000, // $100.00 USD
+        'exchange_rate_at_transaction' => 1450.0,
+        'currency_id' => $foreignCurrency->id,
+    ]);
+
+    // 2. Assert the Credit to the Income account.
+    $this->assertDatabaseHas('journal_entry_lines', [
+        'journal_entry_id' => $invoice->journal_entry_id,
+        'account_id' => $incomeAccount->id,
+        'credit' => 14500000, // 145,000.00 IQD
+        'original_currency_amount' => 10000, // $100.00 USD
+        'exchange_rate_at_transaction' => 1450.0,
+        'currency_id' => $foreignCurrency->id,
     ]);
 });

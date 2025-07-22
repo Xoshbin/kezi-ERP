@@ -38,6 +38,7 @@ class BankReconciliationService
         $journalEntryData = [
             'company_id' => $payment->company_id,
             'journal_id' => $payment->journal_id,
+            'currency_id' => $payment->currency_id,
             'entry_date' => now()->toDateString(),
             'reference' => 'RECO/' . $payment->id,
             'description' => 'Reconciliation for Payment #' . $payment->id,

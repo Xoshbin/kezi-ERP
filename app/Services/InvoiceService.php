@@ -69,16 +69,17 @@ class InvoiceService
         }
 
         DB::transaction(function () use ($invoice, $user) {
-            // 1. First, recalculate the invoice totals from its lines to ensure they are accurate.
+            // 1. Recalculate totals and SAVE them immediately.
             $this->recalculateInvoiceTotals($invoice);
+            $invoice->save(); // <-- Add this line
 
-            // 2. Assign a unique, sequential invoice number.
+            // 2. Assign invoice number and update status.
             $invoice->invoice_number = $this->getNextInvoiceNumber($invoice->company);
             $invoice->status = 'Posted';
             $invoice->posted_at = now();
 
-            // 3. Create the corresponding Journal Entry using the now-correct totals.
-            $journalEntry = $this->createJournalEntryForInvoice($invoice);
+            // 3. Create the corresponding Journal Entry.
+            $journalEntry = $this->createJournalEntryForInvoice($invoice, $user); // Pass user
             $invoice->journal_entry_id = $journalEntry->id;
 
             $invoice->save();
@@ -101,64 +102,77 @@ class InvoiceService
     /**
      * Prepares the data for and creates the journal entry for a posted invoice.
      */
-    private function createJournalEntryForInvoice(Invoice $invoice): JournalEntry
+    // In app/Services/InvoiceService.php
+    private function createJournalEntryForInvoice(Invoice $invoice, User $user): JournalEntry
     {
-        // Get the default Accounts Receivable account from your config.
-        $accountsReceivableAccountId = config('accounting.defaults.accounts_receivable_id');
+        // Load the relationships we'll need
+        $invoice->load('company.currency', 'currency', 'invoiceLines.tax');
 
-        // Prepare the lines for the journal entry.
+        $company = $invoice->company;
+        $baseCurrency = $company->currency;
+        $foreignCurrency = $invoice->currency;
+        $arAccountId = config('accounting.defaults.accounts_receivable_id');
+        $salesJournalId = config('accounting.defaults.sales_journal_id');
+
+        // Determine the exchange rate. If it's the same currency, the rate is 1.
+        $exchangeRate = ($baseCurrency->id === $foreignCurrency->id) ? 1 : $foreignCurrency->exchange_rate;
+
         $lines = [];
 
-        // 1. The Debit Line (Total amount owed by customer)
+        // 1. The Debit Line (Total amount converted to base currency)
         $lines[] = [
-            'account_id' => $accountsReceivableAccountId,
-            'debit' => $invoice->total_amount,
-            'credit' => 0,
-            'description' => 'Accounts Receivable for ' . $invoice->invoice_number,
+            'account_id' => $arAccountId,
+            'debit' => $invoice->total_amount * $exchangeRate, // Convert to base currency
+            'description' => 'A/R for ' . $invoice->invoice_number,
+            // Add foreign currency details for reference
+            'currency_id' => $foreignCurrency->id,
+            'original_currency_amount' => $invoice->total_amount,
+            'exchange_rate_at_transaction' => $exchangeRate,
         ];
 
-        // 2. The Credit Lines (Income and Tax from each invoice line)
-        foreach ($invoice->invoiceLines as $invoiceLine) {
-            // Credit the income account for the line's subtotal
+        // 2. The Credit Lines
+        foreach ($invoice->invoiceLines as $line) {
+            $creditAccountId = $line->deferred_revenue_account_id ?? $line->income_account_id;
+            // Credit the income account
             $lines[] = [
-                'account_id' => $invoiceLine->income_account_id,
-                'debit' => 0,
-                'credit' => $invoiceLine->subtotal,
-                'description' => $invoiceLine->description,
+                'account_id' => $creditAccountId,
+                'credit' => $line->subtotal * $exchangeRate, // Convert to base currency
+                'description' => $line->description,
+                // Add foreign currency details
+                'currency_id' => $foreignCurrency->id,
+                'original_currency_amount' => $line->subtotal,
+                'exchange_rate_at_transaction' => $exchangeRate,
             ];
 
-            // If there is tax, credit the tax account
-            if ($invoiceLine->total_line_tax > 0 && $invoiceLine->tax_id) {
+            // Credit the tax account
+            if ($line->total_line_tax > 0 && $line->tax) {
                 $lines[] = [
-                    'account_id' => $invoiceLine->tax->tax_account_id,
-                    'debit' => 0,
-                    'credit' => $invoiceLine->total_line_tax,
+                    'account_id' => $line->tax->tax_account_id,
+                    'credit' => $line->total_line_tax * $exchangeRate, // Convert to base currency
                     'description' => 'Tax for ' . $invoice->invoice_number,
+                    // Add foreign currency details
+                    'currency_id' => $foreignCurrency->id,
+                    'original_currency_amount' => $line->total_line_tax,
+                    'exchange_rate_at_transaction' => $exchangeRate,
                 ];
             }
         }
 
-        // Get the default sales journal ID from your config.
-        $salesJournalId = config('accounting.defaults.sales_journal_id');
-
-        // Assemble all data for the Journal Entry Service
         $journalEntryData = [
-            'company_id' => $invoice->company_id,
-            'journal_id' => $salesJournalId, // <-- Use the configured ID
+            'company_id' => $company->id,
+            'journal_id' => $salesJournalId,
+            'currency_id' => $baseCurrency->id, // The JE itself is in the base currency
             'entry_date' => $invoice->posted_at,
             'reference' => $invoice->invoice_number,
             'description' => 'Invoice ' . $invoice->invoice_number,
             'source_type' => Invoice::class,
             'source_id' => $invoice->id,
             'lines' => $lines,
-            'created_by_user_id' => User::factory()->create()->id,
-            'is_posted' => true,
+            'created_by_user_id' => $user->id,
         ];
 
-        // Delegate the creation to the JournalEntryService
-        return (new JournalEntryService())->create($journalEntryData);
+        return (new JournalEntryService())->create($journalEntryData, true);
     }
-
     public function resetToDraft(Invoice $invoice, User $user, string $reason): void
     {
         // 1. Authorize the action using a Policy.

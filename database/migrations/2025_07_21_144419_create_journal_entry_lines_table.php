@@ -16,9 +16,12 @@ return new class extends Migration
             $table->foreignId('journal_entry_id')->constrained('journal_entries')->onDelete('cascade');
             $table->foreignId('account_id')->constrained('accounts');
             $table->foreignId('partner_id')->nullable()->constrained('partners');
+            $table->foreignId('currency_id')->nullable()->constrained('currencies');
             $table->foreignId('analytic_account_id')->nullable()->constrained('analytic_accounts');
             $table->decimal('debit', 15, 2)->default(0);
             $table->decimal('credit', 15, 2)->default(0);
+            $table->decimal('original_currency_amount', 15, 2)->default(0);
+            $table->decimal('exchange_rate_at_transaction', 15, 2)->default(0);
             $table->text('description')->nullable();
             $table->timestamps();
         });
