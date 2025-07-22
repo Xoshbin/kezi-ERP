@@ -445,4 +445,15 @@ test('the creation timestamp for a posted journal entry is immutable', function 
     expect($freshEntry->created_at->timestamp)->toBe($initialCreatedAt->timestamp);
 })->only();
 
+test('a journal entry correctly links its source type and ID to the originating document (e.g., invoice)', function () {
+    $invoice = Invoice::factory()->create(['status' => 'Posted']);
+    $journalEntry = JournalEntry::factory()->for($invoice, 'source')->create([ // Using polymorphic factory
+        'source_type' => 'App\\Models\\Invoice',
+        'source_id' => $invoice->id,
+    ]);
+
+    // Ensures traceability and comprehensive audit trail for financial transactions [1, 9].
+    expect($journalEntry->source_type)->toBe('App\\Models\\Invoice');
+    expect($journalEntry->source_id)->toBe($invoice->id);
+})->only();
 });

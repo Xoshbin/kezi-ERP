@@ -17,6 +17,7 @@ return new class extends Migration
             $table->foreignId('customer_id')->constrained('partners');
             $table->foreignId('currency_id')->constrained('currencies');
             $table->foreignId('journal_entry_id')->nullable()->constrained('journal_entries')->onDelete('set null');
+            $table->foreignId('fiscal_position_id')->nullable()->constrained('fiscal_positions')->onDelete('set null');
             $table->string('invoice_number')->nullable();
             $table->date('invoice_date');
             $table->date('due_date');
