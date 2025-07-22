@@ -1,5 +1,6 @@
 <?php
 
+use App\Events\InvoiceConfirmed;
 use App\Exceptions\AccountIsDeprecatedException;
 use App\Exceptions\UpdateNotAllowedException;
 use App\Models\AnalyticAccount;
@@ -7,6 +8,7 @@ use App\Models\Company;
 use App\Models\Account;
 use App\Models\Currency;
 use App\Models\Invoice;
+use App\Models\InvoiceLine;
 use App\Models\Journal;
 use App\Models\JournalEntry;
 use App\Models\LockDate;
@@ -535,4 +537,39 @@ test('confirming an invoice assigns a sequential number, posts it, and creates a
     // Assert: Confirm that an event was dispatched for other parts of the system to listen to.
     Event::assertDispatched(InvoiceConfirmed::class);
 })->only();
+
+test('a posted invoice cannot be directly modified', function () {
+    // Arrange: Create an invoice that is already in 'Posted' status.
+    $invoice = Invoice::factory()->create([
+        'status' => 'Posted',
+        'total_amount' => 100.00
+    ]);
+
+    $updateData = ['total_amount' => 150.00];
+
+    // Assert: Expect that calling the update method on the service
+    // will throw our specific exception, proving the action was blocked.
+    expect(fn() => (new InvoiceService())->update($invoice, $updateData))
+        ->toThrow(UpdateNotAllowedException::class, 'Cannot modify a non-draft invoice.');
+
+    // Assert: As a final check, confirm that the data in the database did not change.
+    $this->assertDatabaseHas('invoices', [
+        'id' => $invoice->id,
+        'total_amount' => '100.00', // The amount should be unchanged.
+    ]);
+})->only();
+
+test('a posted invoice cannot be deleted', function () {
+    // Arrange: Create an invoice that is already posted.
+    $invoice = Invoice::factory()->create(['status' => 'Posted']);
+
+    // Assert: Expect that calling the delete method on the service
+    // will throw our specific exception, proving the action was blocked.
+    expect(fn() => (new InvoiceService())->delete($invoice))
+        ->toThrow(DeletionNotAllowedException::class, 'Cannot delete a posted invoice.');
+
+    // Assert: As a final check, confirm the invoice still exists in the database.
+    $this->assertModelExists($invoice);
+})->only();
+
 });

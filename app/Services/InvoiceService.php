@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Events\InvoiceConfirmed;
+use App\Exceptions\DeletionNotAllowedException;
 use App\Exceptions\UpdateNotAllowedException;
 use App\Models\Company;
 use App\Models\Invoice;
