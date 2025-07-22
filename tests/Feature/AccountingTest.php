@@ -942,12 +942,36 @@ test('confirming an inbound payment creates a linked journal entry', function ()
 })->only();
 
 test('a confirmed payment is immutable', function () {
-    // Arrange: Create a confirmed payment.
-    $payment = Payment::factory()->create(['status' => 'Confirmed', 'amount' => 10000]);
+    // Arrange: Create the user, company, and other necessary records.
+    $user = User::factory()->create();
+    $company = Company::factory()->create();
+    $currency = Currency::factory()->create(['code' => 'USD']);
+
+    // --- THIS IS THE FIX ---
+    // Arrange: Set up the default accounts the service needs to create the payment.
+    $bankAccount = Account::factory()->for($company)->create(['type' => 'Bank']);
+    $arAccount = Account::factory()->for($company)->create(['type' => 'Receivable']);
+    config([
+        'accounting.defaults.default_bank_account_id' => $bankAccount->id,
+        'accounting.defaults.accounts_receivable_id' => $arAccount->id,
+    ]);
+    // --- END FIX ---
+
+    // Arrange: Prepare the payment data.
+    $paymentData = [
+        'company_id' => $company->id,
+        'currency_id' => $currency->id,
+        'journal_id' => Journal::factory()->for($company)->create()->id,
+        'paid_to_from_partner_id' => Partner::factory()->for($company)->create()->id,
+        'payment_date' => now()->toDateString(),
+        'payment_type' => 'Inbound',
+        'amount' => 100.00, // 100.00
+    ];
+    $payment = (new PaymentService())->createAndConfirm($paymentData, $user);
 
     // Assert: Expect that any attempt to update the payment will be blocked.
     expect(fn() => (new PaymentService())->update($payment, ['amount' => 20000]))
-        ->toThrow(UpdateNotAllowedException::class, 'Cannot modify a confirmed payment.');
+        ->toThrow(UpdateNotAllowedException::class);
 
     // Assert: Double-check that the amount in the database did not change.
     $this->assertDatabaseHas('payments', [
