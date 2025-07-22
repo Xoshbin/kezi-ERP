@@ -8,8 +8,8 @@ return new class extends Migration
 {
     /**
      * In an accounting system, direct credit_notes tables are typically consolidated into a more general adjustment_documents table
-     * to handle various types of financial adjustments, 
-     * including credit notes, debit notes, and miscellaneous adjustments. 
+     * to handle various types of financial adjustments,
+     * including credit notes, debit notes, and miscellaneous adjustments.
      * This approach ensures a unified and auditable trail for all corrections to posted financial records
      */
     public function up(): void
@@ -27,6 +27,7 @@ return new class extends Migration
             $table->decimal('total_tax', 15, 2);
             $table->text('reason');
             $table->string('status')->default('Draft'); // 'Draft', 'Posted'
+            $table->timestamp('posted_at')->nullable();
             $table->timestamps();
 
             // Ensure uniqueness for reference_number combined with type and company_id,
