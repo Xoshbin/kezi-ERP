@@ -7,56 +7,48 @@ use Illuminate\Database\Eloquent\Model;
 
 class AuditLogObserver
 {
-    /**
-     * Handle the AuditLog "created" event.
-     */
     public function created(Model $model): void
     {
         $this->logAction('record_created', $model);
     }
 
-    /**
-     * Handle the AuditLog "updated" event.
-     */
     public function updated(Model $model): void
     {
-        $this->logAction('record_updated', $model);
+        // Check if the 'status' attribute was one of the fields that changed.
+        $eventType = $model->wasChanged('status') ? 'status_changed' : 'record_updated';
 
-    }
-
-    /**
-     * Handle the AuditLog "deleted" event.
-     */
-    public function deleted(AuditLog $auditLog): void
-    {
-        //
-    }
-
-    /**
-     * Handle the AuditLog "restored" event.
-     */
-    public function restored(AuditLog $auditLog): void
-    {
-        //
-    }
-
-    /**
-     * Handle the AuditLog "force deleted" event.
-     */
-    public function forceDeleted(AuditLog $auditLog): void
-    {
-        //
+        $this->logAction($eventType, $model);
     }
 
     protected function logAction(string $eventType, Model $model): void
     {
+        // For 'updated' events, we only want to log the fields that actually changed.
+        $oldValues = [];
+        $newValues = [];
+
+        if ($eventType !== 'record_created') {
+            foreach ($model->getChanges() as $key => $value) {
+                // Ignore 'updated_at' from the logs for clarity.
+                if ($key === 'updated_at') {
+                    continue;
+                }
+                $oldValues[$key] = $model->getOriginal($key);
+                $newValues[$key] = $value;
+            }
+
+            // If only 'updated_at' changed, there's nothing to log.
+            if (empty($newValues)) {
+                return;
+            }
+        }
+
         AuditLog::create([
-            'user_id' => auth()->id(), // Get the currently logged-in user
+            'user_id' => auth()->id(),
             'event_type' => $eventType,
             'auditable_type' => get_class($model),
             'auditable_id' => $model->getKey(),
-            'old_values' => json_encode($model->getOriginal()),
-            'new_values' => json_encode($model->getChanges()),
+            'old_values' => $oldValues, // <-- Use the filtered values
+            'new_values' => $newValues, // <-- Use the filtered values
             'ip_address' => request()->ip(),
         ]);
     }
