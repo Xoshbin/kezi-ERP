@@ -54,11 +54,14 @@ class JournalEntryLine extends Model
     protected $fillable = [
         'journal_entry_id',
         'account_id',
+        'partner_id',
+        'currency_id',
         'debit',
         'credit',
         'description',
-        'partner_id',
         'analytic_account_id',
+        'original_currency_amount',
+        'exchange_rate_at_transaction',
     ];
 
     /**
@@ -72,6 +75,7 @@ class JournalEntryLine extends Model
     protected $casts = [
         'debit' => MoneyCast::class,  // Enforces two decimal places for currency amounts.
         'credit' => MoneyCast::class, // Ensures consistency for credit amounts.
+        'original_currency_amount' => MoneyCast::class
     ];
 
     /**

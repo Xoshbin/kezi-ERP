@@ -55,6 +55,7 @@ class Currency extends Model
         'symbol',
         'exchange_rate',
         'is_active',
+        'last_updated_at'
     ];
 
     /**
@@ -68,6 +69,7 @@ class Currency extends Model
         'is_active' => 'boolean',
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
+        'last_updated_at' => 'datetime',
     ];
 
     /*

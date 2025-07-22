@@ -3,6 +3,7 @@
 namespace Database\Factories;
 
 use App\Models\Company;
+use App\Models\Currency;
 use App\Models\Journal;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
@@ -22,6 +23,7 @@ class JournalEntryFactory extends Factory
         return [
             'company_id' => Company::factory()->create()->id,
             'journal_id' => Journal::factory()->create()->id,
+            'currency_id' => Currency::factory(),
             'entry_date' => $this->faker->date(),
             'reference' => $this->faker->unique()->bothify('REF-####'),
             'description' => $this->faker->sentence(),

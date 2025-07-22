@@ -81,6 +81,7 @@ class JournalEntry extends Model
         'hash',
         'previous_hash',
         'created_by_user_id',
+        'currency_id'
     ];
 
     /**

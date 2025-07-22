@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Exceptions\PeriodIsLockedException;
 use App\Exceptions\UpdateNotAllowedException;
+use App\Models\Company;
 use App\Models\JournalEntry;
 use App\Models\LockDate;
 use App\Rules\ActiveAccount;
@@ -14,7 +15,7 @@ use Illuminate\Validation\ValidationException;
 
 class JournalEntryService
 {
-    public function create(array $data): JournalEntry
+    public function create(array $data, bool $postImmediately = false): JournalEntry
     {
         $this->checkIfPeriodIsLocked($data['company_id'], $data['entry_date']);
 
@@ -23,6 +24,12 @@ class JournalEntryService
             'lines.*.account_id' => ['required', 'exists:accounts,id', new ActiveAccount],
             // ... other rules
         ])->validate();
+
+        // IF a currency_id is not specified, use the company's default currency.
+        if (empty($data['currency_id'])) {
+            $company = Company::find($data['company_id']);
+            $data['currency_id'] = $company->currency_id;
+        }
 
         // 1. Calculate Totals
         $totalDebit = collect($data['lines'])->sum('debit');
@@ -37,12 +44,13 @@ class JournalEntryService
         }
 
         // 3. Create within a Transaction
-        return DB::transaction(function () use ($data, $totalDebit,  $totalCredit) {
+        return DB::transaction(function () use ($data, $totalDebit,  $totalCredit, $postImmediately) {
             // This is your excellent fix:
             $journalEntry = JournalEntry::create(
                 collect($data)->except('lines')->all() + [
                     'total_debit' => $totalDebit,
                     'total_credit' => $totalCredit,
+                    'is_posted' => $postImmediately, // <-- Set is_posted
                 ]
             );
 
