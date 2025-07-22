@@ -2,6 +2,7 @@
 namespace App\Services;
 
 use App\Events\PaymentConfirmed;
+use App\Exceptions\UpdateNotAllowedException;
 use App\Models\JournalEntry;
 use App\Models\Payment;
 use App\Models\User;
@@ -65,5 +66,18 @@ class PaymentService
         ];
 
         return (new JournalEntryService())->create($journalEntryData);
+    }
+
+    /**
+     * Update a draft payment. Confirmed payments are immutable.
+     */
+    public function update(Payment $payment, array $data): bool
+    {
+        // Guard Clause: Never allow updating a confirmed payment.
+        if ($payment->status === 'Confirmed') {
+            throw new UpdateNotAllowedException('Cannot modify a confirmed payment.');
+        }
+
+        return $payment->update($data);
     }
 }
