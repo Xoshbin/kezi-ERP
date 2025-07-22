@@ -1439,4 +1439,72 @@ test('a status change from draft to posted is logged in the audit trail', functi
     expect($log->new_values['status'])->toBe('Posted');
 })->only();
 
+test('resetting an invoice to draft is logged as a status change in audit logs', function () {
+    // Arrange: Create a user and log them in for the test.
+    $user = User::factory()->create();
+    $this->actingAs($user);
+
+    // Arrange: Create a posted invoice. It needs a journal entry to be realistic.
+    $invoice = Invoice::factory()->create([
+        'status' => 'Posted',
+        'journal_entry_id' => \App\Models\JournalEntry::factory()->create()->id,
+    ]);
+    $reason = 'Correcting an error.';
+
+    // Act: Call the service method. This will trigger the AuditLogObserver.
+    (new InvoiceService())->resetToDraft($invoice, $user, $reason);
+
+    // Assert: Find the audit log that was created for this action.
+    $log = AuditLog::where('auditable_type', Invoice::class)
+        ->where('auditable_id', $invoice->id)
+        ->latest('id')->first();
+
+    // Assert: Check that the log has the correct information.
+    expect($log)->not->toBeNull();
+    expect($log->user_id)->toBe($user->id);
+    expect($log->event_type)->toBe('status_changed');
+
+    // Assert: Check the old and new status values in the log.
+    expect($log->old_values['status'])->toBe('Posted');
+    expect($log->new_values['status'])->toBe('Draft');
+})->only();
+
+test('a journal entry line can be assigned to an analytic account', function () {
+    // Arrange: Create a user and log them in for the test.
+    $user = User::factory()->create();
+    $this->actingAs($user);
+
+    // Arrange: Create the analytic account we want to assign.
+    $analyticAccount = AnalyticAccount::factory()->create();
+
+    // Arrange: Prepare data for a journal entry, including the analytic_account_id on a line.
+    $entryData = [
+        'company_id' => Company::factory()->create()->id,
+        'journal_id' => Journal::factory()->create()->id,
+        'entry_date' => now()->toDateString(),
+        'reference' => 'ANALYTIC-TEST-001',
+        'lines' => [
+            [
+                'account_id' => Account::factory()->create()->id,
+                'debit' => 10000,
+                'description' => 'Expense for Project Alpha',
+                'analytic_account_id' => $analyticAccount->id, // Assign the analytic account
+            ],
+            [
+                'account_id' => Account::factory()->create()->id,
+                'credit' => 10000,
+            ],
+        ],
+    ];
+
+    // Act: Create the journal entry using the service.
+    $journalEntry = (new JournalEntryService())->create($entryData);
+
+    // Assert: Check the database to confirm the line was created with the correct analytic account.
+    $this->assertDatabaseHas('journal_entry_lines', [
+        'journal_entry_id' => $journalEntry->id,
+        'analytic_account_id' => $analyticAccount->id,
+    ]);
+})->only();
+
 });
