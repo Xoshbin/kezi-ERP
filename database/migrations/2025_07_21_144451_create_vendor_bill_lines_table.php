@@ -17,6 +17,7 @@ return new class extends Migration
             $table->foreignId('product_id')->nullable()->constrained('products');
             $table->foreignId('tax_id')->nullable()->constrained('taxes');
             $table->foreignId('expense_account_id')->constrained('accounts');
+            $table->foreignId('analytic_account_id')->nullable()->constrained('analytic_accounts');
             $table->string('description');
             $table->decimal('quantity', 15, 2);
             $table->decimal('unit_price', 15, 2);

@@ -34,7 +34,7 @@ class VendorBillService
             $vendorBill->posted_at = now();
 
             // 3. Create the accounting entry.
-            $journalEntry = $this->createJournalEntryForBill($vendorBill);
+            $journalEntry = $this->createJournalEntryForBill($vendorBill, $user);
             $vendorBill->journal_entry_id = $journalEntry->id;
 
             $vendorBill->save();
@@ -125,7 +125,7 @@ class VendorBillService
     /**
      * Create the corresponding journal entry for a posted vendor bill.
      */
-    private function createJournalEntryForBill(VendorBill $vendorBill): JournalEntry
+    private function createJournalEntryForBill(VendorBill $vendorBill, User $user): JournalEntry
     {
         // Get default accounts from your config.
         $apAccountId = config('accounting.defaults.accounts_payable_id');
@@ -168,6 +168,7 @@ class VendorBillService
             'source_type' => VendorBill::class,
             'source_id' => $vendorBill->id,
             'lines' => $lines,
+            'created_by_user_id' => $user->id,
         ];
 
         return (new JournalEntryService())->create($journalEntryData);

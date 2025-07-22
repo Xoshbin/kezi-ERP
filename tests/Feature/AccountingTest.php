@@ -19,6 +19,7 @@ use App\Models\Tax;
 use App\Models\User;
 use App\Models\VendorBill;
 use App\Models\AdjustmentDocument;
+use App\Models\VendorBillLine;
 use App\Services\AccountService;
 use App\Services\CompanyService;
 use App\Services\CurrencyService;
@@ -735,4 +736,38 @@ test('a draft vendor bill can be freely deleted', function () {
     expect($wasDeleted)->toBeTrue();
     $this->assertModelMissing($vendorBill);
 })->only();
+
+test('confirming a vendor bill creates a linked journal entry', function () {
+    // Arrange: Set up the company and user.
+    $company = Company::factory()->create();
+    $user = User::factory()->create();
+
+    // Arrange: Set up the default accounts and journals the service will need.
+    $apAccount = Account::factory()->for($company)->create(['type' => 'Payable']);
+    $purchaseJournal = Journal::factory()->for($company)->create(['type' => 'Purchase']);
+    $taxAccount = Account::factory()->for($company)->create(['type' => 'Asset']); // Tax on purchases is an asset
+
+    config([
+        'accounting.defaults.accounts_payable_id' => $apAccount->id,
+        'accounting.defaults.purchase_journal_id' => $purchaseJournal->id,
+        'accounting.defaults.tax_receivable_id' => $taxAccount->id, // <-- Add this line
+    ]);
+
+    // Arrange: Create a draft vendor bill with some lines so it has a value.
+    $vendorBill = VendorBill::factory()->for($company)
+        ->has(VendorBillLine::factory()->count(1), 'lines')
+        ->create(['status' => 'Draft']);
+
+    // Act: Call the confirm method on the service.
+    (new VendorBillService())->confirm($vendorBill, $user);
+
+    // Assert: Check the state of the vendor bill directly.
+    $vendorBill->refresh();
+    expect($vendorBill->status)->toBe('Posted');
+    expect($vendorBill->journal_entry_id)->not->toBeNull();
+
+    // Assert: Confirm the linked journal entry was actually created.
+    $this->assertDatabaseHas('journal_entries', ['id' => $vendorBill->journal_entry_id]);
+})->only();
+
 });
