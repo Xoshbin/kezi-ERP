@@ -572,4 +572,35 @@ test('a posted invoice cannot be deleted', function () {
     $this->assertModelExists($invoice);
 })->only();
 
+test('resetting a posted invoice to draft is thoroughly logged and reverses the journal entry', function () {
+    // Arrange: Create a user who will perform this action.
+    $user = User::factory()->create();
+
+    // Arrange: Create a posted invoice that has a linked journal entry.
+    $journalEntry = JournalEntry::factory()->create();
+    $invoice = Invoice::factory()->create([
+        'status' => 'Posted',
+        'journal_entry_id' => $journalEntry->id,
+    ]);
+
+    $reason = 'Correcting a data entry error before customer notification.';
+
+    // Act: Call the service method to perform this sensitive action.
+    (new InvoiceService())->resetToDraft($invoice, $user, $reason);
+
+    // Assert: Check the invoice's state.
+    $invoice->refresh();
+    expect($invoice->status)->toBe('Draft');
+    expect($invoice->journal_entry_id)->toBeNull(); // The link to the JE must be removed.
+
+    // Assert: Check that the log was created correctly.
+    expect($invoice->reset_to_draft_log)->toBeJson();
+    $log = json_decode($invoice->reset_to_draft_log, true)[0]; // Get the first log entry
+    expect($log['user_id'])->toBe($user->id);
+    expect($log['reason'])->toBe($reason);
+    expect(Carbon::parse($log['timestamp']))->toBeInstanceOf(Carbon::class);
+
+    // Assert: Crucially, confirm the original journal entry was deleted.
+    $this->assertModelMissing($journalEntry);
+})->only();
 });

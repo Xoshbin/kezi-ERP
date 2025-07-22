@@ -10,6 +10,7 @@ use App\Models\Invoice;
 use App\Models\JournalEntry;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Gate;
 
 class InvoiceService
 {
@@ -155,5 +156,35 @@ class InvoiceService
 
         // Delegate the creation to the JournalEntryService
         return (new JournalEntryService())->create($journalEntryData);
+    }
+
+    public function resetToDraft(Invoice $invoice, User $user, string $reason): void
+    {
+        // 1. Authorize the action using a Policy.
+        Gate::forUser($user)->authorize('resetToDraft', $invoice);
+
+        DB::transaction(function () use ($invoice, $user, $reason) {
+            // 2. Delete the associated Journal Entry to reverse the financial impact.
+            $invoice->journalEntry()->delete();
+
+            // 3. Log this exceptional event.
+            $newLog = [
+                'user_id' => $user->id,
+                'timestamp' => now()->toDateTimeString(),
+                'reason' => $reason,
+            ];
+            // Prepend to existing logs if any.
+            $logs = $invoice->reset_to_draft_log ? json_decode($invoice->reset_to_draft_log, true) : [];
+            array_unshift($logs, $newLog);
+
+            // 4. Update the invoice state.
+            $invoice->update([
+                'status' => 'Draft',
+                'journal_entry_id' => null,
+                'posted_at' => null,
+                'invoice_number' => null, // You should also nullify the number to allow it to be re-sequenced.
+                'reset_to_draft_log' => json_encode($logs),
+            ]);
+        });
     }
 }
