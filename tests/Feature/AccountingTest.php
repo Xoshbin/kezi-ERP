@@ -416,4 +416,33 @@ test('posting a journal entry links to the previous entry hash to form an audit 
     $secondEntry->refresh();
     expect($secondEntry->previous_hash)->toBe($firstEntry->hash);
 })->only();
+
+test('posted journal entries accurately record the creating user and creation timestamp', function () {
+    $user = User::factory()->create();
+    $journalEntry = JournalEntry::factory()->create(['is_posted' => true, 'created_by_user_id' => $user->id]);
+
+    // Vital for comprehensive audit logging and accountability [1, 9, 11, 12].
+    expect($journalEntry->created_by_user_id)->toBe($user->id);
+    expect($journalEntry->created_at)->toBeInstanceOf(Carbon::class);
+})->only();
+
+test('the creation timestamp for a posted journal entry is immutable', function () {
+    // Arrange: Create a posted entry with a specific creation time.
+    $initialCreatedAt = now()->subHour();
+    $journalEntry = JournalEntry::factory()->create([
+        'is_posted' => true,
+        'created_at' => $initialCreatedAt,
+        'updated_at' => $initialCreatedAt,
+    ]);
+
+    // Assert: Expect that any attempt to update the model through the service
+    // will be blocked by the immutability rule.
+    expect(fn() => (new JournalEntryService())->update($journalEntry, ['description' => 'New Desc']))
+        ->toThrow(UpdateNotAllowedException::class);
+
+    // Assert: Confirm the timestamp in the database has not changed.
+    $freshEntry = $journalEntry->fresh();
+    expect($freshEntry->created_at->timestamp)->toBe($initialCreatedAt->timestamp);
+})->only();
+
 });
