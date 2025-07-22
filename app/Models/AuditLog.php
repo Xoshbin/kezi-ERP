@@ -2,12 +2,24 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
-
 class AuditLog extends Model
 {
+    use HasFactory;
+
+    /**
+     * The name of the "updated at" column.
+     * Set to null to disable `updated_at` functionality for this model.
+     * An audit log is write-once, so it should never be "updated".
+     *
+     * @var string|null
+     */
+    const UPDATED_AT = null; // <-- Add this line
+
+
     /**
      * The table associated with the model.
      * While Laravel's convention often matches the model name, explicitly
@@ -23,8 +35,6 @@ class AuditLog extends Model
      * For audit logs, it's crucial to capture all relevant details.
      * We explicitly list the fields defined in the migration and schema
      * that users or the system will set when creating an audit entry.
-     * The 'id', 'created_at', and 'updated_at' fields are typically
-     * managed automatically by Eloquent and thus excluded from $fillable.
      *
      * @var array<int, string>
      */
@@ -47,15 +57,12 @@ class AuditLog extends Model
      * so casting them to `array` or `json` (which effectively does the same)
      * ensures they are automatically deserialized into PHP arrays when accessed,
      * and re-serialized into JSON when saved, simplifying data handling.
-     * Timestamps (`created_at`, `updated_at`) are automatically cast to Carbon instances [9].
      *
      * @var array<string, string>
      */
     protected $casts = [
         'old_values' => 'array',
-        'new_values' => 'array',
-        'created_at' => 'datetime',
-        'updated_at' => 'datetime',
+        'new_values' => 'array'
     ];
 
     /**

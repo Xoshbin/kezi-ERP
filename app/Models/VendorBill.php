@@ -3,6 +3,8 @@
 namespace App\Models;
 
 use App\Casts\MoneyCast;
+use App\Observers\AuditLogObserver;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -15,7 +17,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 // such as credit notes or debit notes [1-3].
 // Therefore, the SoftDeletes trait is **intentionally omitted** for the VendorBill model
 // to uphold auditability and prevent accidental data loss for historical financial records.
-
+#[ObservedBy([AuditLogObserver::class])]
 class VendorBill extends Model
 {
     use HasFactory;

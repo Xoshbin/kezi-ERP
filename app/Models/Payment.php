@@ -3,6 +3,8 @@
 namespace App\Models;
 
 use App\Casts\MoneyCast;
+use App\Observers\AuditLogObserver;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 // Note: SoftDeletes trait is intentionally excluded.
@@ -37,6 +39,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\VendorBill[] $vendorBills The vendor bills this payment has been applied to.
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\PaymentDocumentLink[] $paymentDocumentLinks The underlying pivot records for payment application.
  */
+#[ObservedBy([AuditLogObserver::class])]
 class Payment extends Model
 {
     use HasFactory;
