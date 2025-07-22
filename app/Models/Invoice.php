@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Casts\MoneyCast;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -88,8 +89,8 @@ class Invoice extends Model
     protected $casts = [
         'invoice_date' => 'date',
         'due_date' => 'date',
-        'total_amount' => 'float',
-        'total_tax' => 'float',
+        'total_amount' => MoneyCast::class,
+        'total_tax' => MoneyCast::class,
         'reset_to_draft_log' => 'json', // Store as JSON/Text as per source [1]
         'created_at' => 'datetime',
         'updated_at' => 'datetime',

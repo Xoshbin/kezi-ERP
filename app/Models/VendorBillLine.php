@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Casts\MoneyCast;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -57,9 +58,9 @@ class VendorBillLine extends Model
      */
     protected $casts = [
         'quantity'          => 'decimal:2', // Ensures precision for quantities, allowing for fractional units.
-        'unit_price'        => 'decimal:2', // **Crucial for financial accuracy**, ensuring amounts are stored with two decimal places [2].
-        'subtotal'          => 'decimal:2', // **Crucial for financial accuracy** [2].
-        'total_line_tax'    => 'decimal:2', // **Crucial for financial accuracy** [2].
+        'unit_price'        => MoneyCast::class, // **Crucial for financial accuracy**, ensuring amounts are stored with two decimal places [2].
+        'subtotal'          => MoneyCast::class, // **Crucial for financial accuracy** [2].
+        'total_line_tax'    => MoneyCast::class, // **Crucial for financial accuracy** [2].
         'created_at'        => 'datetime',  // Automatically managed by Eloquent for audit trails [2].
         'updated_at'        => 'datetime',  // Automatically managed by Eloquent [2].
     ];

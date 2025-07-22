@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Casts\MoneyCast;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -77,8 +78,8 @@ class Asset extends Model
      */
     protected $casts = [
         'purchase_date' => 'date',
-        'purchase_value' => 'float',
-        'salvage_value' => 'float',
+        'purchase_value' => MoneyCast::class,
+        'salvage_value' => MoneyCast::class,
         'useful_life_years' => 'integer',
         'created_at' => 'datetime',
         'updated_at' => 'datetime',

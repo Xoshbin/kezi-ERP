@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Casts\MoneyCast;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -64,9 +65,9 @@ class BudgetLine extends Model
      * @var array<string, string>
      */
     protected $casts = [
-        'budgeted_amount' => 'float',
-        'achieved_amount' => 'float',
-        'committed_amount' => 'float',
+        'budgeted_amount' => MoneyCast::class,
+        'achieved_amount' => MoneyCast::class,
+        'committed_amount' => MoneyCast::class,
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
     ];

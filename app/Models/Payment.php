@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Casts\MoneyCast;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 // Note: SoftDeletes trait is intentionally excluded.
@@ -67,7 +68,7 @@ class Payment extends Model
      */
     protected $casts = [
         'payment_date' => 'date', // Casts to a Carbon date object [3, 11].
-        'amount' => 'decimal:2', // Ensures the amount is treated as a decimal with 2 places for precision [3].
+        'amount' => MoneyCast::class, // Ensures the amount is treated as a decimal with 2 places for precision [3].
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
     ];

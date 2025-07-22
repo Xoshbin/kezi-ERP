@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Casts\MoneyCast;
 use App\Observers\JournalEntryObserver;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -93,8 +94,8 @@ class JournalEntry extends Model
      */
     protected $casts = [
         'entry_date' => 'date',
-        'total_debit' => 'decimal:2', // Represents currency, typically 2 decimal places for financial accuracy [3, 17].
-        'total_credit' => 'decimal:2', // Represents currency, typically 2 decimal places [3, 17].
+        'total_debit' => MoneyCast::class, // Represents currency, typically 2 decimal places for financial accuracy [3, 17].
+        'total_credit' => MoneyCast::class, // Represents currency, typically 2 decimal places [3, 17].
         'is_posted' => 'boolean', // Crucial flag for immutability [3].
     ];
 

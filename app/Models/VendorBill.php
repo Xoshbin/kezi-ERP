@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Casts\MoneyCast;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -63,8 +64,8 @@ class VendorBill extends Model
         'bill_date'          => 'date',       // Cast to date for consistency .
         'accounting_date'    => 'date',       // Cast to date for consistency .
         'due_date'           => 'date',       // Cast to date for consistency .
-        'total_amount'       => 'decimal:2',  // Crucial for financial precision, ensures two decimal places .
-        'total_tax'          => 'decimal:2',  // Crucial for financial precision .
+        'total_amount'       => MoneyCast::class,  // Crucial for financial precision, ensures two decimal places .
+        'total_tax'          => MoneyCast::class,  // Crucial for financial precision .
         'posted_at'          => 'datetime',   // Records the exact time of posting for audit .
         'reset_to_draft_log' => 'json',       // Stores audit log as JSON .
         'created_at'         => 'datetime',   // Automatically managed by Eloquent.

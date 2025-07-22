@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Casts\MoneyCast;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
@@ -47,8 +48,8 @@ class AdjustmentDocument extends Model
      */
     protected $casts = [
         'date'         => 'date',       // [5, 6]
-        'total_amount' => 'decimal:4',  // [5] Example precision, adjust as needed.
-        'total_tax'    => 'decimal:4',  // [5] Example precision, adjust as needed.
+        'total_amount' => MoneyCast::class,  // [5] Example precision, adjust as needed.
+        'total_tax'    => MoneyCast::class,  // [5] Example precision, adjust as needed.
         'created_at'   => 'datetime',   // [5, 6]
         'updated_at'   => 'datetime',   // [5, 6]
     ];
