@@ -1,61 +1,85 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Headless Accounting ERP System
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+## Overview
 
-## About Laravel
+This project is a robust, headless accounting and ERP system built on the Laravel framework. It is designed from the ground up with the core principles of **immutability**, **auditability**, and strict adherence to **double-entry bookkeeping standards**. Inspired by the reliability of enterprise-grade systems like Odoo, it is tailored for environments that demand strong manual controls, data integrity, and a transparent, unalterable audit trail.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+The system features a comprehensive suite of accounting modules managed through a clean, service-oriented architecture. All business logic is encapsulated within dedicated service classes, ensuring that financial rules are consistently enforced across the application, whether actions are initiated via an API, the administrative panel, or console commands. The administrative interface is powered by **Filament**.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Core Principles
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+The architecture is built upon a foundation of strict accounting principles:
 
-## Learning Laravel
+-   **Immutability**: Once a financial transaction is posted (e.g., an invoice is confirmed), it cannot be altered or deleted. All corrections are handled through new, offsetting transactions (like Credit Notes or reversing journal entries), preserving a complete and tamper-proof financial history.
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+-   **Auditability & Traceability**:
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+    -   **Comprehensive Audit Logs**: An `AuditLogObserver` automatically records all significant events, such as the creation or modification of records, tracking which user performed the action and what was changed.
+    -   **Cryptographic Hashing**: Journal entries are cryptographically linked in a blockchain-style chain. Each posted entry contains the hash of the preceding entry, making it computationally infeasible to alter historical records without detection.
+    -   **Source Linking**: Every journal entry is linked back to its originating document (e.g., an Invoice, Vendor Bill, or Payment), providing a clear and traceable path from the business document to the general ledger.
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+-   **Data Integrity**:
 
-## Laravel Sponsors
+    -   The system enforces business rules at multiple levels, including a `JournalEntryService` that validates that all entries are balanced (debits equal credits) before posting.
+    -   It prevents the use of deprecated accounts in new transactions.
+    -   **Period Locking**: The application allows for the locking of accounting periods, preventing any transactions from being created or modified within a closed period.
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+-   **Service-Oriented Architecture**: Business logic is cleanly separated from the presentation layer. Services like `InvoiceService`, `VendorBillService`, and `JournalEntryService` contain the core workflows, making the system modular, scalable, and easy to maintain.
 
-### Premium Partners
+-   **Test-Driven Development (TDD)**: The system's integrity is guaranteed by a comprehensive feature test suite written with **Pest**. These tests validate the core accounting logic, ensuring that principles like immutability and transaction balance are never violated.
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+## Key Features
 
-## Contributing
+The application includes a wide range of accounting and ERP features:
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+-   **Core Accounting Engine**:
 
-## Code of Conduct
+    -   Manages the Chart of Accounts, including rules for deprecating accounts instead of deleting them.
+    -   Handles financial Journals (e.g., Sales, Purchases, Bank, Cash).
+    -   Creates immutable, hash-chained Journal Entries as the ultimate source of financial truth.
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+-   **Sales & Invoicing**:
 
-## Security Vulnerabilities
+    -   Full lifecycle management for customer invoices (Draft -> Posted -> Paid).
+    -   Automatic generation of corresponding journal entries upon invoice confirmation.
+    -   Support for "reset to draft" functionality for posted invoices, which reverses the original journal entry and logs the action for audit purposes.
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+-   **Purchases & Vendor Bills**:
 
-## License
+    -   Manages the complete lifecycle of vendor bills, from creation to posting.
+    -   Ensures accurate tracking of expenses and accounts payable.
+    -   Automatically generates journal entries to reflect liabilities and expenses.
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+-   **Payments & Reconciliation**:
+
+    -   Handles both inbound (customer) and outbound (vendor) payments.
+    -   Links payments to one or more invoices/bills.
+    -   Features a two-step reconciliation process for bank transactions, moving funds from an "outstanding" account to the main bank account upon confirmation.
+
+-   **Asset Management & Depreciation**:
+
+    -   Tracks fixed assets from acquisition to disposal.
+    -   Automates the periodic generation of depreciation entries and their corresponding journal entries.
+
+-   **Multi-Currency Support**:
+
+    -   Handles transactions in foreign currencies.
+    -   Automatically converts amounts to the company's base currency for general ledger posting while preserving the original transaction amounts for reconciliation and reporting.
+
+-   **Analytic & Budgetary Accounting**:
+    -   Provides a flexible layer for management accounting by allowing journal entry lines to be tagged with **Analytic Accounts**.
+    -   Enables cost and revenue tracking by project, department, or any other defined dimension.
+
+## Technology Stack
+
+-   **Backend**: Laravel 11
+-   **Admin Panel**: Filament 3
+-   **Testing**: Pest
+
+## Architectural Highlights
+
+-   **Service Layer**: Centralizes all business logic for consistency and maintainability.
+-   **Observers**: Uses Eloquent Observers (`JournalEntryObserver`, `AuditLogObserver`) to automatically trigger actions like hashing, validation, and logging.
+-   **Custom Exceptions**: Employs custom exceptions (e.g., `PeriodIsLockedException`, `DeletionNotAllowedException`) for clear and predictable error handling.
+-   **Policies**: Leverages Laravel Policies for fine-grained authorization control over sensitive actions like resetting a posted document to draft.
+-   **Custom Casts**: Uses a custom `MoneyCast` to ensure financial data is handled with precision, storing amounts as integers to avoid floating-point inaccuracies.
