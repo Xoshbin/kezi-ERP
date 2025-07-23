@@ -33,41 +33,41 @@ class DatabaseSeeder extends Seeder
 
                 // 4. Fiscal positions and mappings
                 // Rules for applying taxes and mapping accounts based on partner location.
-                FiscalPositionSeeder::class,
-                FiscalPositionTaxMappingSeeder::class,
-                FiscalPositionAccountMappingSeeder::class,
+                // FiscalPositionSeeder::class,
+                // FiscalPositionTaxMappingSeeder::class,
+                // FiscalPositionAccountMappingSeeder::class,
 
                 // 5. Analytic accounting
                 // For cost accounting and tracking profitability.
-                AnalyticPlanSeeder::class,
-                AnalyticAccountSeeder::class,
-                AnalyticAccountPlanPivotSeeder::class,
+                // AnalyticPlanSeeder::class,
+                // AnalyticAccountSeeder::class,
+                // AnalyticAccountPlanPivotSeeder::class,
 
                 // 6. Assets and budgets
                 // For tracking fixed assets and financial planning.
-                AssetSeeder::class,
-                DepreciationEntrySeeder::class,
-                BudgetSeeder::class,
-                BudgetLineSeeder::class,
+                // AssetSeeder::class,
+                // DepreciationEntrySeeder::class,
+                // BudgetSeeder::class,
+                // BudgetLineSeeder::class,
 
                 // 7. Financial documents
                 // The primary transactional records.
-                InvoiceSeeder::class,
-                InvoiceLineSeeder::class,
-                VendorBillSeeder::class,
-                VendorBillLineSeeder::class,
-                PaymentSeeder::class,
-                PaymentDocumentLinkSeeder::class,
+                // InvoiceSeeder::class,
+                // InvoiceLineSeeder::class,
+                // VendorBillSeeder::class,
+                // VendorBillLineSeeder::class,
+                // PaymentSeeder::class,
+                // PaymentDocumentLinkSeeder::class,
 
                 // 8. Adjustments and statements
                 // For reconciliations and manual adjustments.
-                AdjustmentDocumentSeeder::class,
-                BankStatementSeeder::class,
-                BankStatementLineSeeder::class,
+                // AdjustmentDocumentSeeder::class,
+                // BankStatementSeeder::class,
+                // BankStatementLineSeeder::class,
 
                 // 9. Finally
                 // Lock dates to prevent changes to closed periods.
-                LockDateSeeder::class,
+                // LockDateSeeder::class,
             ]);
         });
     }
