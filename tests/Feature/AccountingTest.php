@@ -403,10 +403,12 @@ test('a draft journal entry can be freely modified before posting', function () 
     $updateData = ['description' => 'Updated Draft Description'];
 
     // Act: Call the update method on the service.
-    $wasUpdated = (new JournalEntryService())->update($journalEntry, $updateData);
+    $updatedEntry = (new JournalEntryService())->update($journalEntry, $updateData);
 
     // Assert: Confirm the update was successful and the data was changed.
-    expect($wasUpdated)->toBeTrue();
+    expect($updatedEntry)->toBeInstanceOf(JournalEntry::class);
+    expect($updatedEntry->id)->toBe($journalEntry->id);
+    expect($updatedEntry->description)->toBe('Updated Draft Description');
     expect($journalEntry->fresh()->description)->toBe('Updated Draft Description');
 });
 

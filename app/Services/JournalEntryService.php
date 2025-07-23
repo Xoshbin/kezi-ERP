@@ -80,7 +80,7 @@ class JournalEntryService
         return $journalEntry->save();
     }
 
-    public function update(JournalEntry $journalEntry, array $data): bool
+    public function update(JournalEntry $journalEntry, array $data): JournalEntry
     {
         // 1. First, check if the original entry's date is locked.
         $this->checkIfPeriodIsLocked($journalEntry->company_id, $journalEntry->entry_date);
@@ -96,7 +96,8 @@ class JournalEntryService
         }
 
         // If the guard clause passes, proceed with the update.
-        return $journalEntry->update($data);
+        $journalEntry->update($data);
+        return $journalEntry;
     }
 
     /**
