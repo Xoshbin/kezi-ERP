@@ -5,6 +5,7 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\AdjustmentDocumentResource\Pages;
 use App\Filament\Resources\AdjustmentDocumentResource\RelationManagers;
 use App\Models\AdjustmentDocument;
+use App\Services\AdjustmentDocumentService;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -12,6 +13,8 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Filament\Tables\Actions\Action;
+use Filament\Notifications\Notification;
 
 class AdjustmentDocumentResource extends Resource
 {
@@ -105,6 +108,25 @@ class AdjustmentDocumentResource extends Resource
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
+                Action::make('post')
+                    ->action(function (AdjustmentDocument $record) {
+                        $adjustmentDocumentService = new AdjustmentDocumentService();
+                        try {
+                            $adjustmentDocumentService->post($record, auth()->user());
+                            Notification::make()
+                                ->title('Adjustment document posted successfully')
+                                ->success()
+                                ->send();
+                        } catch (\Exception $e) {
+                            Notification::make()
+                                ->title('Error posting adjustment document')
+                                ->body($e->getMessage())
+                                ->danger()
+                                ->send();
+                        }
+                    })
+                    ->requiresConfirmation()
+                    ->visible(fn (AdjustmentDocument $record) => $record->status === 'Draft'),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

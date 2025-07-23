@@ -5,6 +5,7 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\InvoiceResource\Pages;
 use App\Filament\Resources\InvoiceResource\RelationManagers;
 use App\Models\Invoice;
+use App\Services\InvoiceService;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -12,6 +13,8 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Filament\Tables\Actions\Action;
+use Filament\Notifications\Notification;
 
 class InvoiceResource extends Resource
 {
@@ -109,6 +112,47 @@ class InvoiceResource extends Resource
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
+                Action::make('confirm')
+                    ->action(function (Invoice $record) {
+                        $invoiceService = new InvoiceService();
+                        try {
+                            $invoiceService->confirm($record, auth()->user());
+                            Notification::make()
+                                ->title('Invoice confirmed successfully')
+                                ->success()
+                                ->send();
+                        } catch (\Exception $e) {
+                            Notification::make()
+                                ->title('Error confirming invoice')
+                                ->body($e->getMessage())
+                                ->danger()
+                                ->send();
+                        }
+                    })
+                    ->requiresConfirmation()
+                    ->visible(fn (Invoice $record) => $record->status === 'Draft'),
+                Action::make('resetToDraft')
+                    ->action(function (Invoice $record, array $data) {
+                        $invoiceService = new InvoiceService();
+                        try {
+                            $invoiceService->resetToDraft($record, auth()->user(), $data['reason']);
+                            Notification::make()
+                                ->title('Invoice reset to draft successfully')
+                                ->success()
+                                ->send();
+                        } catch (\Exception $e) {
+                            Notification::make()
+                                ->title('Error resetting invoice to draft')
+                                ->body($e->getMessage())
+                                ->danger()
+                                ->send();
+                        }
+                    })
+                    ->form([
+                        Forms\Components\Textarea::make('reason')->required(),
+                    ])
+                    ->requiresConfirmation()
+                    ->visible(fn (Invoice $record) => $record->status === 'Posted'),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
