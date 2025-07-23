@@ -2,16 +2,24 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\JournalEntryResource\Pages;
-use App\Filament\Resources\JournalEntryResource\RelationManagers;
-use App\Models\JournalEntry;
 use Filament\Forms;
-use Filament\Forms\Form;
-use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Forms\Form;
 use Filament\Tables\Table;
+use App\Models\JournalEntry;
+use Filament\Resources\Resource;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Toggle;
+use Filament\Forms\Components\Repeater;
+use Filament\Forms\Components\Textarea;
+use Filament\Tables\Columns\IconColumn;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\DatePicker;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use App\Filament\Resources\JournalEntryResource\Pages;
+use App\Filament\Resources\JournalEntryResource\RelationManagers;
 
 class JournalEntryResource extends Resource
 {
@@ -46,12 +54,18 @@ class JournalEntryResource extends Resource
                     ->maxLength(255),
                 Forms\Components\Textarea::make('description')
                     ->columnSpanFull(),
-                Forms\Components\TextInput::make('total_debit')
-                    ->required()
-                    ->numeric(),
-                Forms\Components\TextInput::make('total_credit')
-                    ->required()
-                    ->numeric(),
+                Repeater::make('lines')
+                    ->relationship()
+                    ->schema([
+                        Forms\Components\Select::make('account_id')->relationship('account', 'name')->required()->columnSpan(2),
+                        Forms\Components\TextInput::make('debit')->required()->numeric()->columnSpan(1),
+                        Forms\Components\TextInput::make('credit')->required()->numeric()->columnSpan(1),
+                        Forms\Components\Select::make('partner_id')->relationship('partner', 'name')->columnSpan(2),
+                        Forms\Components\Select::make('analytic_account_id')->relationship('analyticAccount', 'name')->columnSpan(2),
+                        Forms\Components\TextInput::make('description')->maxLength(255)->columnSpanFull(),
+                    ])
+                    ->columns(4)
+                    ->columnSpanFull(),
                 Forms\Components\Toggle::make('is_posted')
                     ->required(),
                 Forms\Components\TextInput::make('hash')
