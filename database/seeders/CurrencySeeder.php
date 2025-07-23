@@ -26,7 +26,7 @@ class CurrencySeeder extends Seeder
             ['code' => 'IQD'],
             [
                 'name' => 'Iraqi Dinar',
-                'symbol' => 'IQD',
+                'symbol' => 'ع.د',
                 'exchange_rate' => 1460.0,
                 'is_active' => true,
             ]

@@ -39,6 +39,7 @@ class AccountSeeder extends Seeder
             ['code' => '310101', 'name' => 'Share Capital', 'type' => 'Equity'],
             ['code' => '330101', 'name' => 'Retained Earnings', 'type' => 'Equity'],
             ['code' => '390101', 'name' => 'Current Year Earnings', 'type' => 'Equity'],
+            ['code' => '320101', 'name' => 'Owner\'s Equity', 'type' => 'Equity'],
 
             // Income
             ['code' => '410101', 'name' => 'Product Sales', 'type' => 'Income'],

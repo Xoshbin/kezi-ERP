@@ -47,5 +47,20 @@ class ProductSeeder extends Seeder
                 'expense_account_id' => $expenseAccount->id,
             ]
         );
+
+        Product::updateOrCreate(
+            [
+                'company_id' => $company->id,
+                'sku' => 'DEV-001',
+            ],
+            [
+                'name' => 'Development Services',
+                'description' => 'Custom software development services.',
+                'unit_price' => 250000.00,
+                'type' => 'Service',
+                'income_account_id' => $incomeAccount->id,
+                'expense_account_id' => $expenseAccount->id,
+            ]
+        );
     }
 }

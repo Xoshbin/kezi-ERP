@@ -33,12 +33,12 @@ class JournalSeeder extends Seeder
             ],
             [
                 'name' => 'Bank (USD)',
-                'type' => 'Bank',
+                'type' => 'Bank and Cash',
                 'short_code' => 'BNK1',
             ],
             [
                 'name' => 'Bank (IQD)',
-                'type' => 'Bank',
+                'type' => 'Bank and Cash',
                 'short_code' => 'BNK2',
             ],
             [
