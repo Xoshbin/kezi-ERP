@@ -18,6 +18,7 @@ use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\DatePicker;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use App\Rules\ActiveAccount;
 use App\Filament\Resources\JournalEntryResource\Pages;
 use App\Filament\Resources\JournalEntryResource\RelationManagers;
 
@@ -33,6 +34,8 @@ class JournalEntryResource extends Resource
             ->schema([
                 Forms\Components\Select::make('company_id')
                     ->relationship('company', 'name')
+                    ->getSearchResultsUsing(fn(string $search): array => \App\Models\Company::where('name', 'like', "%{$search}%")->limit(50)->pluck('name', 'id')->toArray())
+                    ->getOptionLabelUsing(fn(string $value): ?string => \App\Models\Company::find($value)?->name)
                     ->required(),
                 Forms\Components\Select::make('journal_id')
                     ->relationship('journal', 'name')
@@ -57,11 +60,22 @@ class JournalEntryResource extends Resource
                 Repeater::make('lines')
                     ->relationship()
                     ->schema([
-                        Forms\Components\Select::make('account_id')->relationship('account', 'name')->required()->columnSpan(2),
+                        Forms\Components\Select::make('account_id')
+                            ->relationship('account', 'name')
+                            ->searchable()
+                            ->rules([new ActiveAccount])
+                            ->required()
+                            ->columnSpan(2),
                         Forms\Components\TextInput::make('debit')->required()->numeric()->columnSpan(1),
                         Forms\Components\TextInput::make('credit')->required()->numeric()->columnSpan(1),
-                        Forms\Components\Select::make('partner_id')->relationship('partner', 'name')->columnSpan(2),
-                        Forms\Components\Select::make('analytic_account_id')->relationship('analyticAccount', 'name')->columnSpan(2),
+                        Forms\Components\Select::make('partner_id')
+                            ->relationship('partner', 'name')
+                            ->searchable()
+                            ->columnSpan(2),
+                        Forms\Components\Select::make('analytic_account_id')
+                            ->relationship('analyticAccount', 'name')
+                            ->searchable()
+                            ->columnSpan(2),
                         Forms\Components\TextInput::make('description')->maxLength(255)->columnSpanFull(),
                     ])
                     ->columns(4)
