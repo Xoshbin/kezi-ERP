@@ -4,6 +4,8 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\AnalyticAccountResource\Pages;
 use App\Filament\Resources\AnalyticAccountResource\RelationManagers;
+use App\Filament\Resources\AnalyticAccountResource\RelationManagers\JournalEntryLinesRelationManager;
+use App\Filament\Resources\AnalyticAccountResource\RelationManagers\AnalyticPlansRelationManager;
 use App\Models\AnalyticAccount;
 use Filament\Forms;
 use Filament\Forms\Form;
@@ -79,7 +81,8 @@ class AnalyticAccountResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            RelationManagers\JournalEntryLinesRelationManager::class,
+            RelationManagers\AnalyticPlansRelationManager::class,
         ];
     }
 

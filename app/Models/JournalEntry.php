@@ -188,6 +188,16 @@ class JournalEntry extends Model
     }
 
     /**
+     * Get the Currency model to which this entry belongs.
+     *
+     * @return BelongsTo An Eloquent relationship instance for the Currency model [3, 22].
+     */
+    public function currency(): BelongsTo
+    {
+        return $this->belongsTo(Currency::class);
+    }
+
+    /**
      * Get the User model who created this journal entry.
      *
      * @return BelongsTo An Eloquent relationship instance for the User model, specifying the foreign key [3, 22].

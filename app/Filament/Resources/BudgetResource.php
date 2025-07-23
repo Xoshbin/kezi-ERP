@@ -87,7 +87,7 @@ class BudgetResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            RelationManagers\BudgetLinesRelationManager::class,
         ];
     }
 

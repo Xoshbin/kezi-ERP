@@ -29,16 +29,16 @@ class JournalEntryResource extends Resource
                 Forms\Components\Select::make('journal_id')
                     ->relationship('journal', 'name')
                     ->required(),
-                Forms\Components\TextInput::make('currency_id')
-                    ->required()
-                    ->numeric(),
+                Forms\Components\Select::make('currency_id')
+                    ->relationship('currency', 'name')
+                    ->required(),
                 Forms\Components\TextInput::make('exchange_rate')
                     ->required()
                     ->numeric()
                     ->default(1.000000),
-                Forms\Components\TextInput::make('created_by_user_id')
-                    ->required()
-                    ->numeric(),
+                Forms\Components\Select::make('created_by_user_id')
+                    ->relationship('createdBy', 'name')
+                    ->required(),
                 Forms\Components\DatePicker::make('entry_date')
                     ->required(),
                 Forms\Components\TextInput::make('reference')
@@ -131,7 +131,7 @@ class JournalEntryResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            RelationManagers\JournalEntryLinesRelationManager::class,
         ];
     }
 
