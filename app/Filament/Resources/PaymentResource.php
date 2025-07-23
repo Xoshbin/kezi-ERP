@@ -110,7 +110,8 @@ class PaymentResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            RelationManagers\InvoicesRelationManager::class,
+            RelationManagers\VendorBillsRelationManager::class,
         ];
     }
 

@@ -4,6 +4,8 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\CompanyResource\Pages;
 use App\Filament\Resources\CompanyResource\RelationManagers;
+use App\Filament\Resources\CompanyResource\RelationManagers\AccountsRelationManager;
+use App\Filament\Resources\CompanyResource\RelationManagers\UsersRelationManager;
 use App\Models\Company;
 use Filament\Forms;
 use Filament\Forms\Form;

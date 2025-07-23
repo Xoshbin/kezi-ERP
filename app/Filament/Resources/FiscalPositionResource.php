@@ -70,7 +70,8 @@ class FiscalPositionResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            RelationManagers\TaxMappingsRelationManager::class,
+            RelationManagers\AccountMappingsRelationManager::class,
         ];
     }
 

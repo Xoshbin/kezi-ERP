@@ -91,7 +91,7 @@ class BankStatementResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            RelationManagers\BankStatementLinesRelationManager::class,
         ];
     }
 

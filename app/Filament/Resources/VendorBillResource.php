@@ -120,7 +120,7 @@ class VendorBillResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            RelationManagers\VendorBillLinesRelationManager::class,
         ];
     }
 

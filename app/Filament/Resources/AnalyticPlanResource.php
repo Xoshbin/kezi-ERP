@@ -66,7 +66,8 @@ class AnalyticPlanResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            RelationManagers\AnalyticAccountsRelationManager::class,
+            RelationManagers\BudgetsRelationManager::class,
         ];
     }
 
