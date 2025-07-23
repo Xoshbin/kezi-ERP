@@ -2,8 +2,10 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use App\Models\Company;
+use App\Models\Journal;
 use Illuminate\Database\Seeder;
+use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 
 class JournalSeeder extends Seeder
 {
@@ -12,6 +14,51 @@ class JournalSeeder extends Seeder
      */
     public function run(): void
     {
-        //
+        $company = Company::where('name', 'Jmeryar Solutions')->first();
+
+        if (!$company) {
+            throw new \Exception('Company "Jmeryar Solutions" not found. Please run the CompanySeeder first.');
+        }
+
+        $journals = [
+            [
+                'name' => 'Customer Invoices',
+                'type' => 'Sale',
+                'short_code' => 'INV',
+            ],
+            [
+                'name' => 'Vendor Bills',
+                'type' => 'Purchase',
+                'short_code' => 'BILL',
+            ],
+            [
+                'name' => 'Bank (USD)',
+                'type' => 'Bank',
+                'short_code' => 'BNK1',
+            ],
+            [
+                'name' => 'Bank (IQD)',
+                'type' => 'Bank',
+                'short_code' => 'BNK2',
+            ],
+            [
+                'name' => 'Miscellaneous Operations',
+                'type' => 'Miscellaneous',
+                'short_code' => 'MISC',
+            ],
+        ];
+
+        foreach ($journals as $journal) {
+            Journal::updateOrCreate(
+                [
+                    'company_id' => $company->id,
+                    'short_code' => $journal['short_code'],
+                ],
+                [
+                    'name' => $journal['name'],
+                    'type' => $journal['type'],
+                ]
+            );
+        }
     }
 }
