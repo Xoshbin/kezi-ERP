@@ -2,9 +2,8 @@
 
 namespace Database\Seeders;
 
-use App\Models\User;
-// use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
 
 class DatabaseSeeder extends Seeder
 {
@@ -13,11 +12,63 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // User::factory(10)->create();
+        DB::transaction(function () {
+            $this->call([
+                // 1. Core entities
+                // These are the fundamental records required for the system to operate.
+                CurrencySeeder::class,
+                CompanySeeder::class,
+                UserSeeder::class,
 
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
-        ]);
+                // 2. Accounting structure
+                // Defines the chart of accounts and journals.
+                AccountSeeder::class,
+                JournalSeeder::class,
+
+                // 3. Operational data
+                // Basic data for transactions (customers, vendors, products).
+                PartnerSeeder::class,
+                TaxSeeder::class,
+                ProductSeeder::class,
+
+                // 4. Fiscal positions and mappings
+                // Rules for applying taxes and mapping accounts based on partner location.
+                FiscalPositionSeeder::class,
+                FiscalPositionTaxMappingSeeder::class,
+                FiscalPositionAccountMappingSeeder::class,
+
+                // 5. Analytic accounting
+                // For cost accounting and tracking profitability.
+                AnalyticPlanSeeder::class,
+                AnalyticAccountSeeder::class,
+                AnalyticAccountPlanPivotSeeder::class,
+
+                // 6. Assets and budgets
+                // For tracking fixed assets and financial planning.
+                AssetSeeder::class,
+                DepreciationEntrySeeder::class,
+                BudgetSeeder::class,
+                BudgetLineSeeder::class,
+
+                // 7. Financial documents
+                // The primary transactional records.
+                InvoiceSeeder::class,
+                InvoiceLineSeeder::class,
+                VendorBillSeeder::class,
+                VendorBillLineSeeder::class,
+                PaymentSeeder::class,
+                PaymentDocumentLinkSeeder::class,
+
+                // 8. Adjustments and statements
+                // For reconciliations and manual adjustments.
+                AdjustmentDocumentSeeder::class,
+                BankStatementSeeder::class,
+                BankStatementLineSeeder::class,
+
+                // 9. Finally
+                // Lock dates to prevent changes to closed periods.
+                LockDateSeeder::class,
+            ]);
+        });
     }
 }
