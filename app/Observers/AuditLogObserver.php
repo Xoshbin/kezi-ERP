@@ -22,6 +22,11 @@ class AuditLogObserver
 
     protected function logAction(string $eventType, Model $model): void
     {
+        // Do not log audit trails when running in the console (e.g., during seeding or tests).
+        if (app()->runningInConsole()) {
+            return;
+        }
+
         // For 'updated' events, we only want to log the fields that actually changed.
         $oldValues = [];
         $newValues = [];
