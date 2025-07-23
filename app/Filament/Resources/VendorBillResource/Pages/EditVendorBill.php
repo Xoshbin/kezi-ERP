@@ -3,8 +3,10 @@
 namespace App\Filament\Resources\VendorBillResource\Pages;
 
 use App\Filament\Resources\VendorBillResource;
+use App\Services\VendorBillService;
 use Filament\Actions;
 use Filament\Resources\Pages\EditRecord;
+use Illuminate\Database\Eloquent\Model;
 
 class EditVendorBill extends EditRecord
 {
@@ -13,7 +15,19 @@ class EditVendorBill extends EditRecord
     protected function getHeaderActions(): array
     {
         return [
-            Actions\DeleteAction::make(),
+            Actions\DeleteAction::make()
+                ->action(function (Model $record) {
+                    $vendorBillService = new VendorBillService();
+                    $vendorBillService->delete($record);
+                    $this->redirect(VendorBillResource::getUrl('index'));
+                }),
         ];
+    }
+
+    protected function handleRecordUpdate(Model $record, array $data): Model
+    {
+        $vendorBillService = new VendorBillService();
+        $vendorBillService->update($record, $data);
+        return $record;
     }
 }

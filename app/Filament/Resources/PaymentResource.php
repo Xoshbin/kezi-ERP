@@ -5,6 +5,7 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\PaymentResource\Pages;
 use App\Filament\Resources\PaymentResource\RelationManagers;
 use App\Models\Payment;
+use App\Services\PaymentService;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -12,6 +13,8 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Filament\Tables\Actions\Action;
+use Filament\Notifications\Notification;
 
 class PaymentResource extends Resource
 {
@@ -99,6 +102,25 @@ class PaymentResource extends Resource
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
+                Action::make('confirm')
+                    ->action(function (Payment $record) {
+                        $paymentService = new PaymentService();
+                        try {
+                            $paymentService->createAndConfirm(request()->all(), auth()->user());
+                            Notification::make()
+                                ->title('Payment confirmed successfully')
+                                ->success()
+                                ->send();
+                        } catch (\Exception $e) {
+                            Notification::make()
+                                ->title('Error confirming payment')
+                                ->body($e->getMessage())
+                                ->danger()
+                                ->send();
+                        }
+                    })
+                    ->requiresConfirmation()
+                    ->visible(fn (Payment $record) => $record->status === 'Draft'),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

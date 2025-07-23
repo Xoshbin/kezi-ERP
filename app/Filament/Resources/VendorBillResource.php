@@ -5,6 +5,7 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\VendorBillResource\Pages;
 use App\Filament\Resources\VendorBillResource\RelationManagers;
 use App\Models\VendorBill;
+use App\Services\VendorBillService;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -12,6 +13,8 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Filament\Tables\Actions\Action;
+use Filament\Notifications\Notification;
 
 class VendorBillResource extends Resource
 {
@@ -109,6 +112,47 @@ class VendorBillResource extends Resource
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
+                Action::make('confirm')
+                    ->action(function (VendorBill $record) {
+                        $vendorBillService = new VendorBillService();
+                        try {
+                            $vendorBillService->confirm($record, auth()->user());
+                            Notification::make()
+                                ->title('Vendor bill confirmed successfully')
+                                ->success()
+                                ->send();
+                        } catch (\Exception $e) {
+                            Notification::make()
+                                ->title('Error confirming vendor bill')
+                                ->body($e->getMessage())
+                                ->danger()
+                                ->send();
+                        }
+                    })
+                    ->requiresConfirmation()
+                    ->visible(fn (VendorBill $record) => $record->status === 'Draft'),
+                Action::make('resetToDraft')
+                    ->action(function (VendorBill $record, array $data) {
+                        $vendorBillService = new VendorBillService();
+                        try {
+                            $vendorBillService->resetToDraft($record, auth()->user(), $data['reason']);
+                            Notification::make()
+                                ->title('Vendor bill reset to draft successfully')
+                                ->success()
+                                ->send();
+                        } catch (\Exception $e) {
+                            Notification::make()
+                                ->title('Error resetting vendor bill to draft')
+                                ->body($e->getMessage())
+                                ->danger()
+                                ->send();
+                        }
+                    })
+                    ->form([
+                        Forms\Components\Textarea::make('reason')->required(),
+                    ])
+                    ->requiresConfirmation()
+                    ->visible(fn (VendorBill $record) => $record->status === 'Posted'),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
