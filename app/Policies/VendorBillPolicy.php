@@ -13,7 +13,8 @@ class VendorBillPolicy
      */
     public function viewAny(User $user): bool
     {
-        return false;
+        //TODO: Change this to implement actual logic before deploying
+        return true;
     }
 
     /**
@@ -21,7 +22,8 @@ class VendorBillPolicy
      */
     public function view(User $user, VendorBill $vendorBill): bool
     {
-        return false;
+        //TODO: Change this to implement actual logic before deploying
+        return true;
     }
 
     /**
@@ -29,7 +31,8 @@ class VendorBillPolicy
      */
     public function create(User $user): bool
     {
-        return false;
+        //TODO: Change this to implement actual logic before deploying
+        return true;
     }
 
     /**
@@ -37,7 +40,8 @@ class VendorBillPolicy
      */
     public function update(User $user, VendorBill $vendorBill): bool
     {
-        return false;
+        //TODO: Change this to implement actual logic before deploying
+        return true;
     }
 
     /**
@@ -45,7 +49,8 @@ class VendorBillPolicy
      */
     public function delete(User $user, VendorBill $vendorBill): bool
     {
-        return false;
+        //TODO: Change this to implement actual logic before deploying
+        return true;
     }
 
     /**
@@ -53,7 +58,8 @@ class VendorBillPolicy
      */
     public function restore(User $user, VendorBill $vendorBill): bool
     {
-        return false;
+        //TODO: Change this to implement actual logic before deploying
+        return true;
     }
 
     /**
@@ -61,7 +67,8 @@ class VendorBillPolicy
      */
     public function forceDelete(User $user, VendorBill $vendorBill): bool
     {
-        return false;
+        //TODO: Change this to implement actual logic before deploying
+        return true;
     }
 
     /**
@@ -70,6 +77,7 @@ class VendorBillPolicy
     public function confirm(User $user, VendorBill $vendorBill): bool
     {
         // For now, we will allow it. In a real app, you might check for a specific role.
+        //TODO: Change this to implement actual logic before deploying
         return true;
     }
 
@@ -83,6 +91,7 @@ class VendorBillPolicy
         // for example: return $user->hasRole('manager');
 
         // For the test to pass, we will simply allow it.
+        //TODO: Change this to implement actual logic before deploying
         return true;
     }
 }
