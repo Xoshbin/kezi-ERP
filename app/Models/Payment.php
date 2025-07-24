@@ -86,6 +86,36 @@ class Payment extends Model
         'status' => 'Draft',
     ];
 
+    public const TYPE_INBOUND = 'inbound';
+    public const TYPE_OUTBOUND = 'outbound';
+
+    public const STATUS_DRAFT = 'draft';
+    public const STATUS_CONFIRMED = 'confirmed';
+    public const STATUS_RECONCILED = 'reconciled';
+
+    /**
+     * Get available payment statuses.
+     *
+     * @return array<string, string>
+     */
+    public static function getStatuses(): array
+    {
+        return [
+            self::STATUS_DRAFT => 'Draft',
+            self::STATUS_CONFIRMED => 'Confirmed',
+            self::STATUS_RECONCILED => 'Reconciled',
+        ];
+    }
+
+    // use it in Filament select options columns
+    public static function getTypes(): array
+    {
+        return [
+            self::TYPE_INBOUND => 'Inbound',
+            self::TYPE_OUTBOUND => 'Outbound',
+        ];
+    }
+
     /**
      * Get the Company that owns the Payment.
      * A payment is always associated with a specific company in a multi-company setup [3].

@@ -1125,7 +1125,7 @@ test('confirming an inbound payment creates a linked journal entry', function ()
         'currency_id' => $currency->id,
         'paid_to_from_partner_id' => $customer->id,     // <-- 2. FIX the key name
         'payment_date' => now()->toDateString(),      // <-- 3. ADD the payment date
-        'payment_type' => 'Inbound',
+        'payment_type' => Payment::TYPE_INBOUND,
         'amount' => 500.00, // 500.00 in integer form
     ];
 
@@ -1173,7 +1173,7 @@ test('a confirmed payment is immutable', function () {
         'journal_id' => Journal::factory()->for($company)->create()->id,
         'paid_to_from_partner_id' => Partner::factory()->for($company)->create()->id,
         'payment_date' => now()->toDateString(),
-        'payment_type' => 'Inbound',
+        'payment_type' => Payment::TYPE_INBOUND,
         'amount' => 100.00, // 100.00
     ];
     $payment = (new PaymentService())->createAndConfirm($paymentData, $user);
@@ -1214,7 +1214,7 @@ test('an incoming payment correctly debits Bank and credits Accounts Receivable'
         'currency_id' => $currency->id,
         'paid_to_from_partner_id' => $customer->id,
         'payment_date' => now()->toDateString(),
-        'payment_type' => 'Inbound',
+        'payment_type' => Payment::TYPE_INBOUND,
         'amount' => 100.00, // Use a float, the MoneyCast will handle it.
     ];
 

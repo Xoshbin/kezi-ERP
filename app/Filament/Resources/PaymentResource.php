@@ -26,34 +26,33 @@ class PaymentResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('company_id')
-                    ->required()
-                    ->numeric(),
-                Forms\Components\TextInput::make('journal_id')
-                    ->required()
-                    ->numeric(),
-                Forms\Components\TextInput::make('currency_id')
-                    ->required()
-                    ->numeric(),
-                Forms\Components\TextInput::make('paid_to_from_partner_id')
-                    ->required()
-                    ->numeric(),
-                Forms\Components\TextInput::make('journal_entry_id')
-                    ->numeric(),
+                Forms\Components\Select::make('company_id')
+                    ->relationship('company', 'name')
+                    ->required(),
+                Forms\Components\Select::make('journal_id')
+                    ->relationship('journal', 'name'),
+                Forms\Components\Select::make('currency_id')
+                    ->relationship('currency', 'name')
+                    ->required(),
+                Forms\Components\Select::make('paid_to_from_partner_id')
+                    ->relationship('partner', 'name')
+                    ->required(),
+                Forms\Components\Select::make('journal_entry_id')
+                    ->relationship('journalEntry', 'id'),
                 Forms\Components\DatePicker::make('payment_date')
                     ->required(),
                 Forms\Components\TextInput::make('amount')
                     ->required()
                     ->numeric(),
-                Forms\Components\TextInput::make('payment_type')
-                    ->required()
-                    ->maxLength(255),
+                Forms\Components\Select::make('payment_type')
+                    ->options(Payment::getTypes())
+                    ->required(),
                 Forms\Components\TextInput::make('reference')
                     ->maxLength(255),
-                Forms\Components\TextInput::make('status')
+                Forms\Components\Select::make('status')
+                    ->options(Payment::getStatuses())
                     ->required()
-                    ->maxLength(255)
-                    ->default('Draft'),
+                    ->default(Payment::STATUS_DRAFT),
             ]);
     }
 
@@ -120,7 +119,7 @@ class PaymentResource extends Resource
                         }
                     })
                     ->requiresConfirmation()
-                    ->visible(fn (Payment $record) => $record->status === 'Draft'),
+                    ->visible(fn(Payment $record) => $record->status === 'Draft'),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
