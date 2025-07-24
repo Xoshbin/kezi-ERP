@@ -58,7 +58,25 @@ class Journal extends Model
         'type',
         'short_code',
         'currency_id',
+        'default_debit_account_id',
+        'default_credit_account_id',
     ];
+
+    /**
+     * Get the default debit account for this journal.
+     */
+    public function defaultDebitAccount(): BelongsTo
+    {
+        return $this->belongsTo(Account::class, 'default_debit_account_id');
+    }
+
+    /**
+     * Get the default credit account for this journal.
+     */
+    public function defaultCreditAccount(): BelongsTo
+    {
+        return $this->belongsTo(Account::class, 'default_credit_account_id');
+    }
 
     /**
      * Get the company that owns the journal.

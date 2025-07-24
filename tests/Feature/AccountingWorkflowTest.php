@@ -65,7 +65,10 @@ test('the entire accounting workflow from setup to credit note', function () {
     $revenueAccount = Account::where('code', '4000')->first();
     $salesDiscountAccount = Account::where('code', '5000')->first();
 
-    $bankJournal = Journal::factory()->for($company)->create(['type' => 'Bank']);
+    $bankJournal = Journal::factory()->for($company)->create([
+        'type' => 'Bank',
+        'default_debit_account_id' => $bankAccount->id,
+    ]);
 
     $taxReceivableAccount = Account::factory()->for($company)->create(['name' => 'Tax Receivable', 'type' => 'Asset']);
     $purchaseJournal = Journal::factory()->for($company)->create(['name' => 'Purchase Journal', 'type' => 'Purchase']);
@@ -158,26 +161,28 @@ test('the entire accounting workflow from setup to credit note', function () {
     expect($invoiceEntry->lines->where('account_id', $arAccount->id)->first()->debit)->toEqual('5000000.00');
     expect($invoiceEntry->lines->where('account_id', $revenueAccount->id)->first()->credit)->toEqual('5000000.00');
 
-    // // Step 6: Receiving Payment from Customer
-    // $paymentService = new PaymentService();
-    // $customerPayment = $paymentService->create([
-    //     'company_id' => $company->id,
-    //     'payment_type' => 'Inbound',
-    //     'partner_id' => $customer->id,
-    //     'amount' => 5000000,
-    //     'payment_date' => now()->toDateString(),
-    //     'journal_id' => $bankJournal->id,
-    //     'invoice_ids' => [$invoice->id],
-    // ], $user);
-    // $paymentService->confirm($customerPayment, $user);
+    // Step 6: Receiving Payment from Customer
+    $paymentService = new PaymentService();
+    $customerPayment = $paymentService->create([
+        'company_id' => $company->id,
+        'currency_id' => $currency->id,
+        'paid_to_from_partner_id' => $customer->id,
+        'payment_type' => 'Inbound',
+        'partner_id' => $customer->id,
+        'amount' => 5000000,
+        'payment_date' => now()->toDateString(),
+        'journal_id' => $bankJournal->id,
+        'invoice_ids' => [$invoice->id],
+    ], $user);
+    $paymentService->confirm($customerPayment, $user);
 
-    // $customerPayment->refresh();
-    // $customerPaymentEntry = $customerPayment->journalEntry;
-    // expect($customerPaymentEntry->is_posted)->toBeTrue();
-    // expect($customerPaymentEntry->total_debit)->toEqual('5000000.00');
-    // expect($customerPaymentEntry->lines->where('account_id', $bankAccount->id)->first()->debit)->toEqual('5000000.00');
-    // expect($customerPaymentEntry->lines->where('account_id', $arAccount->id)->first()->credit)->toEqual('5000000.00');
-    // expect($invoice->fresh()->status)->toBe('Paid');
+    $customerPayment->refresh();
+    $customerPaymentEntry = $customerPayment->journalEntry;
+    expect($customerPaymentEntry->is_posted)->toBeTrue();
+    expect($customerPaymentEntry->total_debit)->toEqual('5000000.00');
+    expect($customerPaymentEntry->lines->where('account_id', $bankAccount->id)->first()->debit)->toEqual('5000000.00');
+    expect($customerPaymentEntry->lines->where('account_id', $arAccount->id)->first()->credit)->toEqual('5000000.00');
+    expect($invoice->fresh()->status)->toBe('Paid');
 
     // // Step 7: Paying a Vendor
     // $vendorPayment = $paymentService->create([
