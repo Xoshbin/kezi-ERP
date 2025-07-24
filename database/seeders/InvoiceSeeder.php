@@ -35,7 +35,7 @@ class InvoiceSeeder extends Seeder
                     'user_id' => $adminUser->id,
                     'invoice_date' => Date::now(),
                     'due_date' => Date::now()->addDays(30),
-                    'status' => 'draft',
+                    'status' => Invoice::TYPE_DRAFT,
                     'notes' => 'Sample invoice for testing',
                 ]
             );

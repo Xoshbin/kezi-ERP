@@ -556,7 +556,7 @@ test('a draft customer invoice can be freely edited', function () {
     $this->actingAs($user);
     // Arrange: Create a default income account to use for the lines.
     $incomeAccount = Account::factory()->create(['type' => 'Income']);
-    $invoice = Invoice::factory()->create(['status' => 'Draft']);
+    $invoice = Invoice::factory()->create(['status' => Invoice::TYPE_DRAFT]);
 
     $updateData = [
         'lines' => [
@@ -617,7 +617,7 @@ test('confirming an invoice assigns a sequential number, posts it, and creates a
     // This uses the 'has' factory relationship to create lines automatically.
     $invoice = Invoice::factory()->for($company)
         ->has(InvoiceLine::factory()->count(2), 'invoiceLines')
-        ->create(['status' => 'Draft']);
+        ->create(['status' => Invoice::TYPE_DRAFT]);
 
     // The rest of your test (Act and Assert) remains the same.
     // Act: Call the confirm method on the service, passing the user for the audit trail.
@@ -626,7 +626,7 @@ test('confirming an invoice assigns a sequential number, posts it, and creates a
 
     // Assert: Check the invoice's state directly.
     $invoice->refresh();
-    expect($invoice->status)->toBe('Posted');
+    expect($invoice->status)->toBe(Invoice::TYPE_POSTED);
     expect($invoice->invoice_number)->not->toBeNull(); // It should now have a number.
     expect($invoice->journal_entry_id)->not->toBeNull(); // It should be linked to a JE.
 
@@ -687,7 +687,7 @@ test('resetting a posted invoice to draft is thoroughly logged and reverses the 
     // Arrange: Create a posted invoice that has a linked journal entry.
     $journalEntry = JournalEntry::factory()->create();
     $invoice = Invoice::factory()->create([
-        'status' => 'Posted',
+        'status' => Invoice::TYPE_POSTED,
         'journal_entry_id' => $journalEntry->id,
     ]);
 
@@ -698,7 +698,7 @@ test('resetting a posted invoice to draft is thoroughly logged and reverses the 
 
     // Assert: Check the invoice's state.
     $invoice->refresh();
-    expect($invoice->status)->toBe('Draft');
+    expect($invoice->status)->toBe(Invoice::TYPE_DRAFT);
     expect($invoice->journal_entry_id)->toBeNull(); // The link to the JE must be removed.
 
     // Assert: Check that the log was created correctly.
@@ -717,7 +717,7 @@ test('updating invoice lines correctly recalculates the invoice total amount and
     $user = User::factory()->create();
     $this->actingAs($user);
     // Arrange: Create accounts and products.
-    $invoice = Invoice::factory()->create(['status' => 'Draft', 'total_amount' => 0, 'total_tax' => 0]);
+    $invoice = Invoice::factory()->create(['status' => Invoice::TYPE_DRAFT, 'total_amount' => 0, 'total_tax' => 0]);
     $tax = Tax::factory()->create(['rate' => 0.10]);
     $incomeAccount = Account::factory()->create(['type' => 'Income']); // Create the income account
 
@@ -770,7 +770,7 @@ test('posting an invoice correctly debits Accounts Receivable and credits Income
     ]);
 
     // Arrange: Create a draft invoice with one line item.
-    $invoice = Invoice::factory()->for($company)->create(['status' => 'Draft']);
+    $invoice = Invoice::factory()->for($company)->create(['status' => Invoice::TYPE_DRAFT]);
     $tax = Tax::factory()->for($company)->create(['tax_account_id' => $taxAccount->id, 'rate' => 0.10]);
     $invoice->invoiceLines()->create([
         'description' => 'Item for Sale',
@@ -1502,7 +1502,7 @@ test('a status change from draft to posted is logged in the audit trail', functi
     // Arrange: Create a draft invoice.
     $invoice = Invoice::factory()
         ->has(InvoiceLine::factory()->count(1), 'invoiceLines')
-        ->create(['status' => 'Draft']);
+        ->create(['status' => Invoice::TYPE_DRAFT]);
 
     // Arrange: Set up the default accounts/journals needed for the confirm() method.
     config([
@@ -1524,9 +1524,9 @@ test('a status change from draft to posted is logged in the audit trail', functi
     expect($log->event_type)->toBe('status_changed');
 
     // Check that the 'old_values' correctly recorded the original status.
-    expect($log->old_values['status'])->toBe('Draft');
+    expect($log->old_values['status'])->toBe(Invoice::TYPE_DRAFT);
     // Check that the 'new_values' correctly recorded the new status.
-    expect($log->new_values['status'])->toBe('Posted');
+    expect($log->new_values['status'])->toBe(Invoice::TYPE_POSTED);
 });
 
 test('resetting an invoice to draft is logged as a status change in audit logs', function () {
@@ -1536,7 +1536,7 @@ test('resetting an invoice to draft is logged as a status change in audit logs',
 
     // Arrange: Create a posted invoice. It needs a journal entry to be realistic.
     $invoice = Invoice::factory()->create([
-        'status' => 'Posted',
+        'status' => Invoice::TYPE_POSTED,
         'journal_entry_id' => \App\Models\JournalEntry::factory()->create()->id,
     ]);
     $reason = 'Correcting an error.';
@@ -1555,8 +1555,8 @@ test('resetting an invoice to draft is logged as a status change in audit logs',
     expect($log->event_type)->toBe('status_changed');
 
     // Assert: Check the old and new status values in the log.
-    expect($log->old_values['status'])->toBe('Posted');
-    expect($log->new_values['status'])->toBe('Draft');
+    expect($log->old_values['status'])->toBe(Invoice::TYPE_POSTED);
+    expect($log->new_values['status'])->toBe(Invoice::TYPE_DRAFT);
 });
 
 test('a journal entry line can be assigned to an analytic account', function () {
@@ -1688,7 +1688,7 @@ test('modifications after a reset-to-draft are fully audited upon re-posting', f
 
     // Arrange: Create the initial posted invoice with a known total.
     $invoice = Invoice::factory()->create([
-        'status' => 'Posted',
+        'status' => Invoice::TYPE_POSTED,
         'total_amount' => 10000, // 100.00
         'journal_entry_id' => \App\Models\JournalEntry::factory()->create()->id,
     ]);
@@ -1725,8 +1725,8 @@ test('modifications after a reset-to-draft are fully audited upon re-posting', f
     // The first log in the collection (the most recent one) is from the 'confirm' action.
     $confirmLog = $logs[0];
     expect($confirmLog->event_type)->toBe('status_changed');
-    expect($confirmLog->old_values['status'])->toBe('Draft');
-    expect($confirmLog->new_values['status'])->toBe('Posted');
+    expect($confirmLog->old_values['status'])->toBe(Invoice::TYPE_DRAFT);
+    expect($confirmLog->new_values['status'])->toBe(Invoice::TYPE_POSTED);
     // Assert that 'total_amount' was NOT part of this specific change.
     expect($confirmLog->new_values)->not->toHaveKey('total_amount');
 
@@ -1836,7 +1836,7 @@ test('posting a foreign currency invoice creates a journal entry with correct ba
 
     // Arrange: Create a draft invoice for $100 USD.
     $invoice = Invoice::factory()->for($company)->create([
-        'status' => 'Draft',
+        'status' => Invoice::TYPE_DRAFT,
         'currency_id' => $foreignCurrency->id, // This invoice is in USD.
     ]);
     $invoice->invoiceLines()->create([

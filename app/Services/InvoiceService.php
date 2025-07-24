@@ -14,10 +14,27 @@ use Illuminate\Support\Facades\Gate;
 
 class InvoiceService
 {
+    public function create(array $data): Invoice
+    {
+        return DB::transaction(function () use ($data) {
+            $invoiceData = collect($data)->except('lines')->all();
+            $invoice = Invoice::create($invoiceData);
+
+            if (isset($data['lines'])) {
+                $invoice->invoiceLines()->createMany($data['lines']);
+            }
+
+            $this->recalculateInvoiceTotals($invoice);
+            $invoice->save();
+
+            return $invoice;
+        });
+    }
+
     public function update(Invoice $invoice, array $data): bool
     {
         // Guard Clause: Never allow updating a posted invoice.
-        if ($invoice->status !== 'Draft') {
+        if ($invoice->status !== Invoice::TYPE_DRAFT) {
             throw new UpdateNotAllowedException('Cannot modify a non-draft invoice.');
         }
 
@@ -51,8 +68,8 @@ class InvoiceService
 
     public function delete(Invoice $invoice): bool
     {
-        // Guard Clause: Only allow deleting if the status is 'Draft'.
-        if ($invoice->status !== 'Draft') {
+        // Guard Clause: Only allow deleting if the status is Invoice::TYPE_DRAFT.
+        if ($invoice->status !== Invoice::TYPE_DRAFT) {
             throw new DeletionNotAllowedException('Cannot delete a posted invoice.');
         }
 
@@ -63,7 +80,7 @@ class InvoiceService
     public function confirm(Invoice $invoice, User $user): void
     {
         // Guard clause to prevent re-confirming.
-        if ($invoice->status !== 'Draft') {
+        if ($invoice->status !== Invoice::TYPE_DRAFT) {
             // Or throw a custom exception
             return;
         }
@@ -75,7 +92,7 @@ class InvoiceService
 
             // 2. Assign invoice number and update status.
             $invoice->invoice_number = $this->getNextInvoiceNumber($invoice->company);
-            $invoice->status = 'Posted';
+            $invoice->status = Invoice::TYPE_POSTED;
             $invoice->posted_at = now();
 
             // 3. Create the corresponding Journal Entry.
@@ -194,7 +211,7 @@ class InvoiceService
 
             // 4. Update the invoice state.
             $invoice->update([
-                'status' => 'Draft',
+                'status' => Invoice::TYPE_DRAFT,
                 'journal_entry_id' => null,
                 'posted_at' => null,
                 'invoice_number' => null, // You should also nullify the number to allow it to be re-sequenced.
