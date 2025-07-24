@@ -69,11 +69,14 @@ test('the entire accounting workflow from setup to credit note', function () {
 
     $taxReceivableAccount = Account::factory()->for($company)->create(['name' => 'Tax Receivable', 'type' => 'Asset']);
     $purchaseJournal = Journal::factory()->for($company)->create(['name' => 'Purchase Journal', 'type' => 'Purchase']);
+    $salesJournal = Journal::factory()->for($company)->create(['name' => 'Sales Journal', 'type' => 'Sales']);
 
     config([
         'accounting.defaults.accounts_payable_id' => $apAccount->id,
         'accounting.defaults.tax_receivable_id' => $taxReceivableAccount->id,
         'accounting.defaults.purchase_journal_id' => $purchaseJournal->id,
+        'accounting.defaults.sales_journal_id' => $salesJournal->id,
+        'accounting.defaults.accounts_receivable_id' => $arAccount->id,
     ]);
 
     // Step 3: Capital Injection
@@ -124,32 +127,36 @@ test('the entire accounting workflow from setup to credit note', function () {
     expect($purchaseEntry->lines->where('account_id', $itEquipmentAccount->id)->first()->debit)->toEqual(3000000.0);
     expect($purchaseEntry->lines->where('account_id', $apAccount->id)->first()->credit)->toEqual(3000000.0);
 
-    // // Step 5: Providing a Service & Invoicing
-    // $customer = Partner::factory()->for($company)->create(['name' => 'Hawre Trading Group', 'type' => 'Customer']);
-    // $invoiceService = new InvoiceService();
-    // $invoice = $invoiceService->create([
-    //     'company_id' => $company->id,
-    //     'customer_id' => $customer->id,
-    //     'invoice_date' => now()->toDateString(),
-    //     'due_date' => now()->addDays(15)->toDateString(),
-    //     'lines' => [
-    //         [
-    //             'description' => 'On-site IT Infrastructure Setup',
-    //             'quantity' => 1,
-    //             'unit_price' => 5000000,
-    //             'income_account_id' => $revenueAccount->id,
-    //         ],
-    //     ],
-    // ]);
-    // $invoiceService->confirm($invoice, $user);
+    // Step 5: Providing a Service & Invoicing
+    $customer = Partner::factory()->for($company)->create(['name' => 'Hawre Trading Group', 'type' => 'Customer']);
+    $invoiceService = new InvoiceService();
+    $invoice = $invoiceService->create([
+        'company_id' => $company->id,
+        'customer_id' => $customer->id,
+        'currency_id' => $currency->id,
+        'total_amount' => 0,
+        'total_tax' => 0,
+        'invoice_date' => now()->toDateString(),
+        'due_date' => now()->addDays(15)->toDateString(),
+        'lines' => [
+            [
+                'description' => 'On-site IT Infrastructure Setup',
+                'quantity' => 1,
+                'reference' => 'IT-SETUP-001',
+                'unit_price' => 5000000,
+                'income_account_id' => $revenueAccount->id,
+            ],
+        ],
+    ]);
+    $invoiceService->confirm($invoice, $user);
 
-    // $invoice->refresh();
-    // $invoiceEntry = $invoice->journalEntry;
-    // expect($invoiceEntry->reference)->toBe($invoice->invoice_number);
-    // expect($invoiceEntry->is_posted)->toBeTrue();
-    // expect($invoiceEntry->total_debit)->toEqual('5000000.00');
-    // expect($invoiceEntry->lines->where('account_id', $arAccount->id)->first()->debit)->toEqual('5000000.00');
-    // expect($invoiceEntry->lines->where('account_id', $revenueAccount->id)->first()->credit)->toEqual('5000000.00');
+    $invoice->refresh();
+    $invoiceEntry = $invoice->journalEntry;
+    expect($invoiceEntry->reference)->toBe($invoice->invoice_number);
+    expect($invoiceEntry->is_posted)->toBeTrue();
+    expect($invoiceEntry->total_debit)->toEqual('500000000.0');
+    expect($invoiceEntry->lines->where('account_id', $arAccount->id)->first()->debit)->toEqual('5000000.00');
+    expect($invoiceEntry->lines->where('account_id', $revenueAccount->id)->first()->credit)->toEqual('5000000.00');
 
     // // Step 6: Receiving Payment from Customer
     // $paymentService = new PaymentService();
