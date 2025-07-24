@@ -74,6 +74,20 @@ class VendorBill extends Model
         'updated_at'         => 'datetime',   // Automatically managed by Eloquent.
     ];
 
+    public const TYPE_DRAFT = 'draft';
+    public const TYPE_POSTED = 'posted';
+    public const TYPE_PAID = 'paid';
+
+    // use it in Filament select options columns
+    public static function getTypes(): array
+    {
+        return [
+            self::TYPE_DRAFT => 'Draft',
+            self::TYPE_POSTED => 'Posted',
+            self::TYPE_PAID => 'Paid',
+        ];
+    }
+
     /**
      * Get the Company that owns the Vendor Bill.
      * This defines a **BelongsTo** relationship, enforcing the multi-company architecture

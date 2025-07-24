@@ -1,8 +1,9 @@
 <?php
 
-use Illuminate\Database\Migrations\Migration;
-use Illuminate\Database\Schema\Blueprint;
+use App\Models\VendorBill;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Database\Migrations\Migration;
 
 return new class extends Migration
 {
@@ -21,7 +22,7 @@ return new class extends Migration
             $table->date('bill_date');
             $table->date('accounting_date');
             $table->date('due_date')->nullable();
-            $table->string('status')->default('Draft')->index(); // 'Draft', 'Posted', 'Paid'
+            $table->string('status')->default(VendorBill::TYPE_DRAFT)->index(); // 'draft', 'posted', 'paid'
             $table->decimal('total_amount', 15, 2);
             $table->decimal('total_tax', 15, 2);
             $table->timestamp('posted_at')->nullable();

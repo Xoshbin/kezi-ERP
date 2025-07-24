@@ -21,7 +21,7 @@ class VendorBillService
         return DB::transaction(function () use ($data) {
             $vendorBill = new VendorBill();
             $vendorBill->fill(collect($data)->except('lines')->all());
-            $vendorBill->status = 'Draft';
+            $vendorBill->status = VendorBill::TYPE_DRAFT;
             $vendorBill->total_amount = 0; // Initialize total_amount to 0
             $vendorBill->total_tax = 0; // Initialize total_tax to 0
             $vendorBill->save(); // Save the vendor bill first to get an ID
@@ -42,7 +42,7 @@ class VendorBillService
      */
     public function confirm(VendorBill $vendorBill, User $user): void
     {
-        if ($vendorBill->status !== 'Draft') {
+        if ($vendorBill->status !== VendorBill::TYPE_DRAFT) {
             return; // Or throw an exception
         }
 
@@ -54,7 +54,7 @@ class VendorBillService
             $this->recalculateBillTotals($vendorBill);
 
             // 2. Update status and posting date.
-            $vendorBill->status = 'Posted';
+            $vendorBill->status = VendorBill::TYPE_POSTED;
             $vendorBill->posted_at = now();
 
             // 3. Create the accounting entry.
@@ -72,7 +72,7 @@ class VendorBillService
      */
     public function update(VendorBill $vendorBill, array $data): VendorBill
     {
-        if ($vendorBill->status !== 'Draft') {
+        if ($vendorBill->status !== VendorBill::TYPE_DRAFT) {
             throw new UpdateNotAllowedException('Cannot modify a non-draft vendor bill.');
         }
 
@@ -98,7 +98,7 @@ class VendorBillService
      */
     public function delete(VendorBill $vendorBill): bool
     {
-        if ($vendorBill->status !== 'Draft') {
+        if ($vendorBill->status !== VendorBill::TYPE_DRAFT) {
             throw new DeletionNotAllowedException('Cannot delete a posted vendor bill.');
         }
         return $vendorBill->delete();
@@ -122,7 +122,7 @@ class VendorBillService
             $logs = $vendorBill->reset_to_draft_log ?: [];
             array_unshift($logs, $newLog);
 
-            $vendorBill->status = 'Draft';
+            $vendorBill->status = VendorBill::TYPE_DRAFT;
             $vendorBill->journal_entry_id = null;
             $vendorBill->posted_at = null;
             $vendorBill->reset_to_draft_log = $logs;
