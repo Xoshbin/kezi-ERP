@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Payment;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -20,9 +21,9 @@ return new class extends Migration
             $table->foreignId('journal_entry_id')->nullable()->constrained('journal_entries')->onDelete('set null');
             $table->date('payment_date');
             $table->decimal('amount', 15, 2);
-            $table->string('payment_type'); // 'Inbound', 'Outbound'
+            $table->string('payment_type'); // 'inbound', 'outbound'
             $table->string('reference')->nullable();
-            $table->string('status')->default('Draft')->index(); // 'Draft', 'Confirmed', 'Reconciled'
+            $table->string('status')->default(Payment::STATUS_DRAFT)->index(); // 'draft', 'confirmed', 'reconciled'
             $table->timestamps();
         });
     }

@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Services;
 
 use App\Events\PaymentConfirmed;
@@ -18,9 +19,9 @@ class PaymentService
         return DB::transaction(function () use ($data, $user) {
             // Create the payment record itself.
             $payment = Payment::create($data + [
-                    'status' => 'Confirmed',
-                    'created_by_user_id' => $user->id, // Ensure user is recorded
-                ]);
+                'status' => 'Confirmed',
+                'created_by_user_id' => $user->id, // Ensure user is recorded
+            ]);
 
             // Create the corresponding journal entry.
             $journalEntry = $this->createJournalEntryForPayment($payment, $user);
@@ -41,7 +42,7 @@ class PaymentService
         $lines = [];
         $bankAccountId = config('accounting.defaults.default_bank_account_id');
 
-        if ($payment->payment_type === 'Inbound') {
+        if ($payment->payment_type === Payment::TYPE_INBOUND) {
             // Inbound: Money comes IN to the bank, reducing customer debt.
             $arAccountId = config('accounting.defaults.accounts_receivable_id');
             $lines[] = ['account_id' => $bankAccountId, 'debit' => $payment->amount];
