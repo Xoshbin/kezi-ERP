@@ -20,7 +20,7 @@ return new class extends Migration
             $table->foreignId('paid_to_from_partner_id')->constrained('partners');
             $table->foreignId('journal_entry_id')->nullable()->constrained('journal_entries')->onDelete('set null');
             $table->date('payment_date');
-            $table->decimal('amount', 15, 2);
+            $table->unsignedBigInteger('amount');
             $table->string('payment_type'); // 'inbound', 'outbound'
             $table->string('reference')->nullable();
             $table->string('status')->default(Payment::STATUS_DRAFT)->index(); // 'draft', 'confirmed', 'reconciled'

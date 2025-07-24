@@ -18,10 +18,10 @@ return new class extends Migration
             $table->foreignId('partner_id')->nullable()->constrained('partners');
             $table->foreignId('currency_id')->nullable()->constrained('currencies');
             $table->foreignId('analytic_account_id')->nullable()->constrained('analytic_accounts');
-            $table->decimal('debit', 15, 2)->default(0);
-            $table->decimal('credit', 15, 2)->default(0);
-            $table->decimal('original_currency_amount', 15, 2)->default(0);
-            $table->decimal('exchange_rate_at_transaction', 15, 2)->default(0);
+            $table->unsignedBigInteger('debit')->default(0);
+            $table->unsignedBigInteger('credit')->default(0);
+            $table->unsignedBigInteger('original_currency_amount')->default(0);
+            $table->unsignedBigInteger('exchange_rate_at_transaction')->default(0);
             $table->text('description')->nullable();
             $table->timestamps();
         });

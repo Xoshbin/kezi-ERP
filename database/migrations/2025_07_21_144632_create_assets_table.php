@@ -19,8 +19,8 @@ return new class extends Migration
             $table->foreignId('accumulated_depreciation_account_id')->constrained('accounts');
             $table->string('name');
             $table->date('purchase_date');
-            $table->decimal('purchase_value', 15, 2);
-            $table->decimal('salvage_value', 15, 2)->default(0);
+            $table->unsignedBigInteger('purchase_value');
+            $table->unsignedBigInteger('salvage_value')->default(0);
             $table->unsignedInteger('useful_life_years');
             $table->string('depreciation_method');
             $table->string('status')->default('Draft');

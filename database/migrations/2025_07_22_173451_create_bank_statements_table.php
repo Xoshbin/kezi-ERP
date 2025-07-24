@@ -17,8 +17,8 @@ return new class extends Migration
             $table->foreignId('journal_id')->constrained()->cascadeOnDelete(); // The Bank Journal
             $table->string('reference');
             $table->date('date');
-            $table->decimal('starting_balance', 15, 2)->default(0);
-            $table->decimal('ending_balance', 15, 2)->default(0);
+            $table->unsignedBigInteger('starting_balance')->default(0);
+            $table->unsignedBigInteger('ending_balance')->default(0);
             $table->timestamps();
         });
     }
