@@ -836,8 +836,82 @@ test('a draft vendor bill can be freely edited', function () {
 
     // Assert: Confirm the update was successful and the total was recalculated.
     // We check for the integer value 25000 because of your MoneyCast (250.00 * 100).
-    expect($wasUpdated)->toBeTrue();
+    expect($wasUpdated)->toBeInstanceOf(App\Models\VendorBill::class);
     expect($vendorBill->fresh()->total_amount)->toEqual(250.0);
+});
+
+test('creating a vendor bill sets correct draft status, saves line items, and calculates totals', function () {
+    // Arrange: Create a user who will perform the action.
+    $user = User::factory()->create();
+    $this->actingAs($user);
+    
+    // Arrange: Create necessary models
+    $company = Company::factory()->create();
+    $partner = Partner::factory()->for($company)->create();
+    $currency = Currency::factory()->create();
+    $expenseAccount = Account::factory()->for($company)->create(['type' => 'Expense']);
+    $tax = Tax::factory()->for($company)->create(['rate' => 0.10]);
+    
+    // Arrange: Prepare data for creating a new vendor bill
+    $createData = [
+        'company_id' => $company->id,
+        'vendor_id' => $partner->id,
+        'currency_id' => $currency->id,
+        'bill_reference' => 'BILL-001',
+        'bill_date' => now()->toDateString(),
+        'accounting_date' => now()->toDateString(),
+        'due_date' => now()->addDays(30)->toDateString(),
+        'status' => 'Draft', // This should be ignored as the service always creates drafts
+        'notes' => 'Test vendor bill',
+        'lines' => [
+            [
+                'description' => 'Office Supplies',
+                'quantity' => 2,
+                'unit_price' => 50.00,
+                'tax_id' => $tax->id,
+                'expense_account_id' => $expenseAccount->id,
+            ],
+            [
+                'description' => 'Consulting Services',
+                'quantity' => 1,
+                'unit_price' => 100.00,
+                'tax_id' => $tax->id,
+                'expense_account_id' => $expenseAccount->id,
+            ],
+        ],
+    ];
+    
+    // Act: Create the vendor bill using the service
+    $vendorBillService = new VendorBillService();
+    $vendorBill = $vendorBillService->create($createData);
+    
+    // Assert: Verify the vendor bill was created with correct draft status
+    expect($vendorBill->status)->toBe('Draft');
+    
+    // Assert: Verify line items were properly saved
+    expect($vendorBill->lines)->toHaveCount(2);
+    $firstLine = $vendorBill->lines->first();
+    expect($firstLine->description)->toBe('Office Supplies');
+    expect($firstLine->quantity)->toEqual(2.00);
+    expect($firstLine->unit_price)->toEqual(50.00);
+    expect($firstLine->tax_id)->toBe($tax->id);
+    expect($firstLine->expense_account_id)->toBe($expenseAccount->id);
+    
+    // Assert: Verify totals are calculated correctly
+    // Line 1: 2 * 50.00 = 100.00 subtotal, 100.00 * 0.10 = 10.00 tax
+    // Line 2: 1 * 100.00 = 100.00 subtotal, 100.00 * 0.10 = 10.00 tax
+    // Total: 200.00 subtotal, 20.00 tax, 220.00 total
+    expect($vendorBill->total_amount)->toEqual(220.00);
+    expect($vendorBill->total_tax)->toEqual(20.00);
+    
+    // Assert: Verify the accounting principles are followed
+    // The create method should always create a draft
+    expect($vendorBill->status)->toBe('Draft');
+    
+    // Assert: Verify the vendor bill is properly linked to its components
+    expect($vendorBill->company_id)->toBe($company->id);
+    expect($vendorBill->vendor_id)->toBe($partner->id);
+    expect($vendorBill->currency_id)->toBe($currency->id);
 });
 
 //test('a draft vendor bill can be freely deleted', function () {

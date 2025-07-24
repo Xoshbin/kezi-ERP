@@ -14,6 +14,30 @@ use Illuminate\Support\Facades\Gate;
 class VendorBillService
 {
     /**
+     * Create a new draft vendor bill.
+     */
+    public function create(array $data): VendorBill
+    {
+        return DB::transaction(function () use ($data) {
+            $vendorBill = new VendorBill();
+            $vendorBill->fill(collect($data)->except('lines')->all());
+            $vendorBill->status = 'Draft';
+            $vendorBill->total_amount = 0; // Initialize total_amount to 0
+            $vendorBill->total_tax = 0; // Initialize total_tax to 0
+            $vendorBill->save(); // Save the vendor bill first to get an ID
+
+            if (isset($data['lines'])) {
+                $vendorBill->lines()->createMany($data['lines']);
+            }
+
+            $this->recalculateBillTotals($vendorBill);
+            $vendorBill->save();
+
+            return $vendorBill;
+        });
+    }
+
+    /**
      * Confirm a draft vendor bill, post it, and create the corresponding journal entry.
      */
     public function confirm(VendorBill $vendorBill, User $user): void
@@ -46,13 +70,13 @@ class VendorBillService
     /**
      * Update a draft vendor bill.
      */
-    public function update(VendorBill $vendorBill, array $data): bool
+    public function update(VendorBill $vendorBill, array $data): VendorBill
     {
         if ($vendorBill->status !== 'Draft') {
             throw new UpdateNotAllowedException('Cannot modify a non-draft vendor bill.');
         }
 
-        return DB::transaction(function () use ($vendorBill, $data) {
+        DB::transaction(function () use ($vendorBill, $data) {
             if (isset($data['lines'])) {
                 $vendorBill->lines()->delete();
                 $vendorBill->lines()->createMany($data['lines']);
@@ -63,8 +87,10 @@ class VendorBillService
             $vendorBill->update(collect($data)->except('lines')->all());
 
             // We save again to persist the recalculated totals.
-            return $vendorBill->save();
+            $vendorBill->save();
         });
+
+        return $vendorBill;
     }
 
     /**
@@ -93,7 +119,7 @@ class VendorBillService
                 'timestamp' => now()->toDateTimeString(),
                 'reason' => $reason,
             ];
-            $logs = $vendorBill->reset_to_draft_log ? json_decode($vendorBill->reset_to_draft_log, true) : [];
+            $logs = $vendorBill->reset_to_draft_log ?: [];
             array_unshift($logs, $newLog);
 
             $vendorBill->status = 'Draft';

@@ -32,11 +32,20 @@ class VendorBillLinesRelationManager extends RelationManager
         return $table
             ->recordTitleAttribute('description')
             ->columns([
-                Tables\Columns\TextColumn::make('product.name'),
-                Tables\Columns\TextColumn::make('description'),
-                Tables\Columns\TextColumn::make('quantity'),
-                Tables\Columns\TextColumn::make('unit_price'),
-                Tables\Columns\TextColumn::make('tax.name'),
+                Tables\Columns\TextColumn::make('expenseAccount.name')
+                    ->label('Account')
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('debit')
+                    ->numeric()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('credit')
+                    ->numeric()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('analyticAccount.name')
+                    ->label('Analytic Account')
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('description')
+                    ->limit(50),
             ])
             ->filters([
                 //
