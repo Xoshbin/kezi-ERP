@@ -49,3 +49,11 @@ This file tracks the project's current status, including recent changes, current
 2.  The root cause was a violation of the immutability principle: the service created an already-posted journal entry, which an event listener then tried to post a second time, causing a `RuntimeException`.
 3.  Refactored `InvoiceService` to create the journal entry in a **draft** state, allowing the `PostJournalEntry` event subscriber to handle the posting exclusively.
 4.  This change aligns the invoice workflow with the vendor bill workflow, respects the immutability principle, and ensures a robust, auditable, two-step posting process. The bug is now fixed, and the test is passing.
+[2025-07-24 21:55:44] - **Issue:** A critical `QueryException` was blocking the `AccountingWorkflowTest`.
+**Resolution:**
+1.  The initial bug was a `ValidationException` due to a `null` account ID in `PaymentService`.
+2.  The fix for that revealed a deeper architectural issue: a `QueryException` because the `journals` table had no column to specify a default debit/credit account.
+3.  After a thorough, multi-step verification process including model and migration analysis, a schema change was approved as the only robust solution.
+4.  A new migration was created and run to add `default_debit_account_id` and `default_credit_account_id` to the `journals` table.
+5.  The `Journal` model was updated with the new relationships.
+6.  The bug is now fully resolved, and the application's architecture is significantly more robust and auditable.

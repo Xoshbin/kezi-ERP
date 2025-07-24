@@ -56,7 +56,14 @@ class PaymentService
         }
 
         $lines = [];
-        $bankAccountId = config('accounting.defaults.default_bank_account_id');
+        // The Journal is the source of truth for which account to use.
+        // Eager load the relationship to prevent extra queries.
+        $payment->load('journal');
+        $bankAccountId = $payment->journal->default_debit_account_id;
+
+        if (!$bankAccountId) {
+            throw new InvalidArgumentException('The selected journal is not configured with a default bank/cash account.');
+        }
 
         if ($payment->payment_type === Payment::TYPE_INBOUND) {
             // Inbound: Money comes IN to the bank, reducing customer debt.

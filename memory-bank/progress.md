@@ -43,3 +43,10 @@ This file tracks the project's progress using a task list format.
 - The root cause was a combination of missing test configuration and an incorrect implementation in `InvoiceService` that violated the system's immutability rules by attempting to post a journal entry twice.
 - Refactored `InvoiceService` to align with the working `VendorBillService` logic, ensuring the journal entry is created as a draft and posted by the `PostJournalEntry` event subscriber.
 - The test now passes, and the invoice accounting workflow is fully functional and compliant with project principles.
+[2025-07-24 21:55:35] - **Task:** Debug and fix critical `QueryException` in `AccountingWorkflowTest`.
+**Status:** Completed.
+**Summary:**
+- Diagnosed a `QueryException` that occurred after a previous fix attempt. The error (`no column named default_debit_account_id`) revealed a fundamental architectural flaw.
+- After extensive analysis of the models, migrations, and Memory Bank, it was confirmed that the `journals` table lacked the necessary columns to link a journal to its default accounts.
+- Executed a full-cycle fix: created a new database migration, updated the `Journal` model with the new relationships, and confirmed the service logic and tests were aligned.
+- This change resolves the bug permanently and strengthens the application's adherence to core accounting principles.

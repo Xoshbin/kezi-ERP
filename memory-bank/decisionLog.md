@@ -42,3 +42,10 @@ This file records architectural and implementation decisions using a list format
 1.  Modified `InvoiceService::create()` to explicitly instantiate the `Invoice` model, ensuring a consistent state.
 2.  Modified `InvoiceService::confirm()` to create the `JournalEntry` in a **draft** state, removing the `postImmediately` flag.
 3.  The existing `PostJournalEntry` event subscriber now correctly and exclusively handles the final posting of the journal entry for both invoices and vendor bills, ensuring a clean, decoupled, and auditable two-step process.
+[2025-07-24 21:55:15] - **Decision:** Added `default_debit_account_id` and `default_credit_account_id` columns to the `journals` table.
+**Rationale:** A critical bug in `PaymentService` revealed an architectural flaw: there was no reliable way to determine which bank/cash account a payment journal represented. This violated the core principles of traceability and internal controls. Adding a direct, non-nullable link from a journal to its default accounts is the only robust, scalable, and auditable solution. This change supports multi-company and multi-currency setups by design.
+**Implementation Details:**
+1.  add the foreign key columns to the `journals` table.
+2.  Updated the `Journal` Eloquent model with the new `fillable` attributes and `defaultDebitAccount()` / `defaultCreditAccount()` relationships.
+3.  Refactored `PaymentService` to use the new `journal->default_debit_account_id` relationship instead of a fragile global config.
+4.  Updated the `AccountingWorkflowTest` to correctly configure the test journal with its default account.
