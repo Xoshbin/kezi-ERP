@@ -24,6 +24,7 @@ class DatabaseSeeder extends Seeder
                 // Defines the chart of accounts and journals.
                 AccountSeeder::class,
                 JournalSeeder::class,
+                JournalEntrySeeder::class,
 
                 // 3. Operational data
                 // Basic data for transactions (customers, vendors, products).
