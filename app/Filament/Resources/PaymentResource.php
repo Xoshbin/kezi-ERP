@@ -15,6 +15,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Filament\Tables\Actions\Action;
 use Filament\Notifications\Notification;
+use Illuminate\Support\Facades\Auth;
 
 class PaymentResource extends Resource
 {
@@ -30,7 +31,8 @@ class PaymentResource extends Resource
                     ->relationship('company', 'name')
                     ->required(),
                 Forms\Components\Select::make('journal_id')
-                    ->relationship('journal', 'name'),
+                    ->relationship('journal', 'name')
+                    ->required(),
                 Forms\Components\Select::make('currency_id')
                     ->relationship('currency', 'name')
                     ->required(),
@@ -60,20 +62,13 @@ class PaymentResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('company_id')
-                    ->numeric()
+                Tables\Columns\TextColumn::make('company.name')
                     ->sortable(),
-                Tables\Columns\TextColumn::make('journal_id')
-                    ->numeric()
+                Tables\Columns\TextColumn::make('journal.name')
                     ->sortable(),
-                Tables\Columns\TextColumn::make('currency_id')
-                    ->numeric()
+                Tables\Columns\TextColumn::make('currency.name')
                     ->sortable(),
-                Tables\Columns\TextColumn::make('paid_to_from_partner_id')
-                    ->numeric()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('journal_entry_id')
-                    ->numeric()
+                Tables\Columns\TextColumn::make('partner.name')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('payment_date')
                     ->date()
@@ -82,8 +77,6 @@ class PaymentResource extends Resource
                     ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('payment_type')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('reference')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('status')
                     ->searchable(),
@@ -105,7 +98,7 @@ class PaymentResource extends Resource
                     ->action(function (Payment $record) {
                         $paymentService = new PaymentService();
                         try {
-                            $paymentService->createAndConfirm(request()->all(), auth()->user());
+                            $paymentService->confirm($record, Auth::user());
                             Notification::make()
                                 ->title('Payment confirmed successfully')
                                 ->success()

@@ -1130,9 +1130,11 @@ test('confirming an inbound payment creates a linked journal entry', function ()
     ];
 
     // Act: Create and confirm the payment using the service.
-    $payment = (new PaymentService())->createAndConfirm($paymentData, $user);
+    $paymentService = new PaymentService();
+    $payment = $paymentService->create($paymentData, $user);
+    $payment = $paymentService->confirm($payment, $user);
     // Assert: Check that the payment is confirmed and linked to a journal entry.
-    expect($payment->status)->toBe('Confirmed');
+    expect($payment->status)->toBe(Payment::STATUS_CONFIRMED);
     expect($payment->journal_entry_id)->not->toBeNull();
 
     // Assert: Confirm the journal entry exists and is correct.
@@ -1176,8 +1178,10 @@ test('a confirmed payment is immutable', function () {
         'payment_type' => Payment::TYPE_INBOUND,
         'amount' => 100.00, // 100.00
     ];
-    $payment = (new PaymentService())->createAndConfirm($paymentData, $user);
-
+    $paymentService = new PaymentService();
+    $payment = $paymentService->create($paymentData, $user);
+    $payment = $paymentService->confirm($payment, $user);
+    
     // Assert: Expect that any attempt to update the payment will be blocked.
     expect(fn() => (new PaymentService())->update($payment, ['amount' => 20000]))
         ->toThrow(UpdateNotAllowedException::class);
@@ -1219,10 +1223,12 @@ test('an incoming payment correctly debits Bank and credits Accounts Receivable'
     ];
 
     // Act: Create and confirm the payment using the service.
-    $payment = (new PaymentService())->createAndConfirm($paymentData, $user);
-
+    $paymentService = new PaymentService();
+    $payment = $paymentService->create($paymentData, $user);
+    $payment = $paymentService->confirm($payment, $user);
+    
     // Assert: Check that the payment is confirmed and linked to a journal entry.
-    expect($payment->status)->toBe('Confirmed');
+    expect($payment->status)->toBe(Payment::STATUS_CONFIRMED);
     expect($payment->journal_entry_id)->not->toBeNull();
 
     // Assert: Confirm the journal entry lines are correct in the database.
@@ -1276,10 +1282,12 @@ test('an outgoing payment correctly debits Accounts Payable and credits Bank', f
     ];
 
     // Act: Create and confirm the payment using the service.
-    $payment = (new PaymentService())->createAndConfirm($paymentData, $user);
-
+    $paymentService = new PaymentService();
+    $payment = $paymentService->create($paymentData, $user);
+    $payment = $paymentService->confirm($payment, $user);
+    
     // Assert: Check that the payment is confirmed and linked to a journal entry.
-    expect($payment->status)->toBe('Confirmed');
+    expect($payment->status)->toBe(Payment::STATUS_CONFIRMED);
     expect($payment->journal_entry_id)->not->toBeNull();
 
     // Assert: Confirm the journal entry lines are correct in the database.

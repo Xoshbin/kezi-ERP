@@ -30,3 +30,4 @@ This file tracks the project's current status, including recent changes, current
 
 *   
 [2025-07-23 20:51:19] - Reviewed the implementation of VendorBillResource pages and confirmed that CreateVendorBill and EditVendorBill correctly use the VendorBillService::update method for draft records. No changes were required.
+[2025-07-24 15:48:52] - Fixed failing tests in AccountingTest.php by updating them to use separate create and confirm steps instead of the non-existent createAndConfirm method. Corrected status assertion from 'Confirmed' to 'confirmed' to match the Payment model's implementation. All tests are now passing.
