@@ -23,8 +23,8 @@ return new class extends Migration
             $table->date('invoice_date');
             $table->date('due_date');
             $table->string('status')->default(Invoice::TYPE_DRAFT)->index(); // 'draft', 'posted', 'paid', 'cancelled'
-            $table->decimal('total_amount', 15, 2);
-            $table->decimal('total_tax', 15, 2);
+            $table->unsignedBigInteger('total_amount');
+            $table->unsignedBigInteger('total_tax');
             $table->timestamp('posted_at')->nullable();
             $table->json('reset_to_draft_log')->nullable();
             $table->timestamps();
