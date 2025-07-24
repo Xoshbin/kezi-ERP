@@ -22,8 +22,8 @@ class AuditLogObserver
 
     protected function logAction(string $eventType, Model $model): void
     {
-        // Do not log audit trails when running in the console (e.g., during seeding or tests).
-        if (app()->runningInConsole()) {
+        // Do not log audit trails when running in the console without an authenticated user (e.g., during seeding).
+        if (app()->runningInConsole() && ! auth()->check()) {
             return;
         }
 
