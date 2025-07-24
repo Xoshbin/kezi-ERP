@@ -3,12 +3,13 @@
 namespace App\Filament\Resources\PartnerResource\RelationManagers;
 
 use Filament\Forms;
-use Filament\Forms\Form;
-use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
+use Filament\Forms\Form;
+use App\Models\VendorBill;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Filament\Resources\RelationManagers\RelationManager;
 
 class VendorBillsRelationManager extends RelationManager
 {
@@ -29,7 +30,7 @@ class VendorBillsRelationManager extends RelationManager
                 Forms\Components\TextInput::make('status')
                     ->required()
                     ->maxLength(255)
-                    ->default('Draft'),
+                    ->default(VendorBill::TYPE_DRAFT),
                 Forms\Components\TextInput::make('total_amount')
                     ->required()
                     ->numeric(),

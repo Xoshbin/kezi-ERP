@@ -819,7 +819,7 @@ test('a draft vendor bill can be freely edited', function () {
     $this->actingAs($user);
     // Arrange: Create a draft vendor bill.
     $company = Company::factory()->create();
-    $vendorBill = VendorBill::factory()->create(['status' => 'Draft']);
+    $vendorBill = VendorBill::factory()->create(['status' => VendorBill::TYPE_DRAFT]);
     $expenseAccount = Account::factory()->for($company)->create(['type' => 'Expense']);
 
 
@@ -844,14 +844,14 @@ test('creating a vendor bill sets correct draft status, saves line items, and ca
     // Arrange: Create a user who will perform the action.
     $user = User::factory()->create();
     $this->actingAs($user);
-    
+
     // Arrange: Create necessary models
     $company = Company::factory()->create();
     $partner = Partner::factory()->for($company)->create();
     $currency = Currency::factory()->create();
     $expenseAccount = Account::factory()->for($company)->create(['type' => 'Expense']);
     $tax = Tax::factory()->for($company)->create(['rate' => 0.10]);
-    
+
     // Arrange: Prepare data for creating a new vendor bill
     $createData = [
         'company_id' => $company->id,
@@ -861,7 +861,7 @@ test('creating a vendor bill sets correct draft status, saves line items, and ca
         'bill_date' => now()->toDateString(),
         'accounting_date' => now()->toDateString(),
         'due_date' => now()->addDays(30)->toDateString(),
-        'status' => 'Draft', // This should be ignored as the service always creates drafts
+        'status' => VendorBill::TYPE_DRAFT, // This should be ignored as the service always creates drafts
         'notes' => 'Test vendor bill',
         'lines' => [
             [
@@ -880,14 +880,14 @@ test('creating a vendor bill sets correct draft status, saves line items, and ca
             ],
         ],
     ];
-    
+
     // Act: Create the vendor bill using the service
     $vendorBillService = new VendorBillService();
     $vendorBill = $vendorBillService->create($createData);
-    
+
     // Assert: Verify the vendor bill was created with correct draft status
-    expect($vendorBill->status)->toBe('Draft');
-    
+    expect($vendorBill->status)->toBe(VendorBill::TYPE_DRAFT);
+
     // Assert: Verify line items were properly saved
     expect($vendorBill->lines)->toHaveCount(2);
     $firstLine = $vendorBill->lines->first();
@@ -896,18 +896,18 @@ test('creating a vendor bill sets correct draft status, saves line items, and ca
     expect($firstLine->unit_price)->toEqual(50.00);
     expect($firstLine->tax_id)->toBe($tax->id);
     expect($firstLine->expense_account_id)->toBe($expenseAccount->id);
-    
+
     // Assert: Verify totals are calculated correctly
     // Line 1: 2 * 50.00 = 100.00 subtotal, 100.00 * 0.10 = 10.00 tax
     // Line 2: 1 * 100.00 = 100.00 subtotal, 100.00 * 0.10 = 10.00 tax
     // Total: 200.00 subtotal, 20.00 tax, 220.00 total
     expect($vendorBill->total_amount)->toEqual(220.00);
     expect($vendorBill->total_tax)->toEqual(20.00);
-    
+
     // Assert: Verify the accounting principles are followed
     // The create method should always create a draft
-    expect($vendorBill->status)->toBe('Draft');
-    
+    expect($vendorBill->status)->toBe(VendorBill::TYPE_DRAFT);
+
     // Assert: Verify the vendor bill is properly linked to its components
     expect($vendorBill->company_id)->toBe($company->id);
     expect($vendorBill->vendor_id)->toBe($partner->id);
@@ -951,14 +951,14 @@ test('confirming a vendor bill creates a linked journal entry', function () {
     // Arrange: Create a draft vendor bill with some lines so it has a value.
     $vendorBill = VendorBill::factory()->for($company)
         ->has(VendorBillLine::factory()->count(1), 'lines')
-        ->create(['status' => 'Draft']);
+        ->create(['status' => VendorBill::TYPE_DRAFT]);
 
     // Act: Call the confirm method on the service.
     (new VendorBillService())->confirm($vendorBill, $user);
 
     // Assert: Check the state of the vendor bill directly.
     $vendorBill->refresh();
-    expect($vendorBill->status)->toBe('Posted');
+    expect($vendorBill->status)->toBe(VendorBill::TYPE_POSTED);
     expect($vendorBill->journal_entry_id)->not->toBeNull();
 
     // Assert: Confirm the linked journal entry was actually created.
@@ -1022,7 +1022,7 @@ test('resetting a posted vendor bill to draft is logged and reverses the journal
 
     // Assert: Check the state of the vendor bill.
     $vendorBill->refresh();
-    expect($vendorBill->status)->toBe('Draft');
+    expect($vendorBill->status)->toBe(VendorBill::TYPE_DRAFT);
     expect($vendorBill->journal_entry_id)->toBeNull();
 
     // Assert: Check that the log was created correctly.
@@ -1056,7 +1056,7 @@ test('posting a vendor bill correctly debits Expense/Asset and credits Accounts 
     ]);
 
     // Arrange: Create a draft vendor bill.
-    $vendorBill = VendorBill::factory()->for($company)->create(['status' => 'Draft']);
+    $vendorBill = VendorBill::factory()->for($company)->create(['status' => VendorBill::TYPE_DRAFT]);
     $tax = Tax::factory()->for($company)->create(['rate' => 0.10]); // 10% tax
 
     // Arrange: Add a line item to the bill.
@@ -1073,7 +1073,7 @@ test('posting a vendor bill correctly debits Expense/Asset and credits Accounts 
 
     // Assert: Check that the bill is now posted.
     $vendorBill->refresh();
-    expect($vendorBill->status)->toBe('Posted');
+    expect($vendorBill->status)->toBe(VendorBill::TYPE_POSTED);
     expect($vendorBill->journal_entry_id)->not->toBeNull();
 
     // Assert: Check that the journal entry lines are correct (using integer values).
@@ -1722,18 +1722,18 @@ test('modifications after a reset-to-draft are fully audited upon re-posting', f
         ->where('auditable_id', $invoice->id)
         ->latest('id')->take(2)->get();
 
-// The first log in the collection (the most recent one) is from the 'confirm' action.
+    // The first log in the collection (the most recent one) is from the 'confirm' action.
     $confirmLog = $logs[0];
     expect($confirmLog->event_type)->toBe('status_changed');
     expect($confirmLog->old_values['status'])->toBe('Draft');
     expect($confirmLog->new_values['status'])->toBe('Posted');
-// Assert that 'total_amount' was NOT part of this specific change.
+    // Assert that 'total_amount' was NOT part of this specific change.
     expect($confirmLog->new_values)->not->toHaveKey('total_amount');
 
-// The second log in the collection is from the 'update' action.
+    // The second log in the collection is from the 'update' action.
     $updateLog = $logs[1];
     expect($updateLog->event_type)->toBe('record_updated');
-// Assert that this log correctly captured the change in the total amount.
+    // Assert that this log correctly captured the change in the total amount.
     expect($updateLog->old_values['total_amount'])->toBe(10000);
     expect($updateLog->new_values['total_amount'])->toBe(15000);
 });

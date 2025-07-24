@@ -51,13 +51,9 @@ class VendorBillResource extends Resource
                     ->required(),
                 Forms\Components\DatePicker::make('due_date'),
                 Forms\Components\Select::make('status')
-                    ->options([
-                        'Draft' => 'Draft',
-                        'Posted' => 'Posted',
-                        'Paid' => 'Paid',
-                    ])
+                    ->options(VendorBill::getTypes())
                     ->required()
-                    ->default('Draft'),
+                    ->default(VendorBill::TYPE_DRAFT),
                 Repeater::make('lines')
                     ->relationship()
                     ->schema([
@@ -182,7 +178,7 @@ class VendorBillResource extends Resource
                         }
                     })
                     ->requiresConfirmation()
-                    ->visible(fn(VendorBill $record) => $record->status === 'Draft'),
+                    ->visible(fn(VendorBill $record) => $record->status === VendorBill::TYPE_DRAFT),
                 Action::make('resetToDraft')
                     ->action(function (VendorBill $record, array $data) {
                         $user = Auth::user();
