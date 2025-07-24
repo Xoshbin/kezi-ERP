@@ -55,8 +55,8 @@ class DatabaseSeeder extends Seeder
                 // The primary transactional records.
                 // InvoiceSeeder::class,
                 // InvoiceLineSeeder::class,
-                // VendorBillSeeder::class,
-                // VendorBillLineSeeder::class,
+                VendorBillSeeder::class,
+                VendorBillLineSeeder::class,
                 // PaymentSeeder::class,
                 // PaymentDocumentLinkSeeder::class,
 
