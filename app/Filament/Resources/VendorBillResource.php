@@ -16,6 +16,10 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\VendorBillResource\Pages;
 use App\Filament\Resources\VendorBillResource\RelationManagers;
+use Filament\Forms\Components\Repeater;
+use App\Models\Currency;
+use App\Models\Tax;
+use Illuminate\Support\Facades\Auth;
 
 class VendorBillResource extends Resource
 {
@@ -46,16 +50,63 @@ class VendorBillResource extends Resource
                 Forms\Components\DatePicker::make('accounting_date')
                     ->required(),
                 Forms\Components\DatePicker::make('due_date'),
-                Forms\Components\TextInput::make('status')
+                Forms\Components\Select::make('status')
+                    ->options([
+                        'Draft' => 'Draft',
+                        'Posted' => 'Posted',
+                        'Paid' => 'Paid',
+                    ])
                     ->required()
-                    ->maxLength(255)
                     ->default('Draft'),
+                Repeater::make('lines')
+                    ->relationship()
+                    ->schema([
+                        Forms\Components\Select::make('product_id')
+                            ->relationship('product', 'name')
+                            ->searchable()
+                            ->columnSpan(2),
+                        Forms\Components\TextInput::make('description')
+                            ->maxLength(255)
+                            ->columnSpanFull(),
+                        Forms\Components\TextInput::make('quantity')
+                            ->required()
+                            ->numeric()
+                            ->columnSpan(1),
+                        Forms\Components\TextInput::make('unit_price')
+                            ->required()
+                            ->numeric()
+                            ->columnSpan(1),
+                        Forms\Components\Select::make('tax_id')
+                            ->relationship('tax', 'name')
+                            ->searchable()
+                            ->columnSpan(1),
+                        Forms\Components\Select::make('expense_account_id')
+                            ->relationship('expenseAccount', 'name')
+                            ->searchable()
+                            ->required()
+                            ->columnSpan(2),
+                        Forms\Components\Select::make('analytic_account_id')
+                            ->relationship('analyticAccount', 'name')
+                            ->searchable()
+                            ->columnSpan(2),
+                    ])
+                    ->columns(4)
+                    ->columnSpanFull()
+                    ->afterStateUpdated(function (callable $set, callable $get) {
+                        // Update total_amount when any line changes
+                        $totalDebit = collect($get('lines'))->sum('debit');
+                        $totalCredit = collect($get('lines'))->sum('credit');
+
+                        // Set the total_amount to the sum of debits (should equal credits in a balanced entry)
+                        $set('../../total_amount', $totalDebit);
+                    })
+                    ->live(onBlur: true),
                 Forms\Components\TextInput::make('total_amount')
-                    ->required()
-                    ->numeric(),
+                    ->numeric()
+                    ->readOnly(),
                 Forms\Components\TextInput::make('total_tax')
-                    ->required()
-                    ->numeric(),
+                    ->numeric()
+                    ->readOnly(),
                 Forms\Components\DateTimePicker::make('posted_at'),
                 Forms\Components\TextInput::make('reset_to_draft_log'),
             ]);
@@ -117,7 +168,7 @@ class VendorBillResource extends Resource
                     ->action(function (VendorBill $record) {
                         $vendorBillService = new VendorBillService();
                         try {
-                            $vendorBillService->confirm($record, auth()->user());
+                            $vendorBillService->confirm($record, Auth::user());
                             Notification::make()
                                 ->title('Vendor bill confirmed successfully')
                                 ->success()
@@ -134,7 +185,7 @@ class VendorBillResource extends Resource
                     ->visible(fn(VendorBill $record) => $record->status === 'Draft'),
                 Action::make('resetToDraft')
                     ->action(function (VendorBill $record, array $data) {
-                        $user = auth()->user();
+                        $user = Auth::user();
                         $vendorBillService = new VendorBillService();
                         try {
                             $vendorBillService->resetToDraft($record, $user, $data['reason']);

@@ -30,6 +30,7 @@ class AccountSeeder extends Seeder
             ['code' => '150199', 'name' => 'Acc. Depreciation - Office Equipment', 'type' => 'Asset'],
             ['code' => '150201', 'name' => 'Vehicles', 'type' => 'Asset'],
             ['code' => '150299', 'name' => 'Acc. Depreciation - Vehicles', 'type' => 'Asset'],
+            ['code' => '150301', 'name' => 'IT Equipment', 'type' => 'Asset (Fixed)'],
 
             // Liabilities
             ['code' => '210101', 'name' => 'Accounts Payable', 'type' => 'Liability'],
@@ -44,6 +45,9 @@ class AccountSeeder extends Seeder
             // Income
             ['code' => '410101', 'name' => 'Product Sales', 'type' => 'Income'],
             ['code' => '420101', 'name' => 'Service Revenue', 'type' => 'Income'],
+
+            ['code' => '600101', 'name' => 'Consulting Revenue', 'type' => 'Revenue'],
+            ['code' => '600102', 'name' => 'Sales Discounts & Returns', 'type' => 'Revenue (Contra)'],
 
             // Expenses
             ['code' => '510101', 'name' => 'Cost of Goods Sold (COGS)', 'type' => 'Expense'],

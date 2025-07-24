@@ -6,6 +6,11 @@ This file tracks the project's current status, including recent changes, current
 *
 
 ## Current Focus
+
+*   **Current Focus:** Updating the memory bank documentation to include details about the migration of `VendorBillResource` to use `VendorBillService`. This documentation serves as a reference for migrating other resources in the project.
+
+[2025-07-23 21:22:20] - Updated active context to reflect the focus on documenting the VendorBillResource migration.
+## Current Focus
 *   **Current Focus:** Initializing the Memory Bank and populating it with the provided project context. The primary goal is to understand the existing architecture and business logic of the accounting application.
 
 *   **Recent Changes:**
@@ -24,3 +29,4 @@ This file tracks the project's current status, including recent changes, current
 ## Open Questions/Issues
 
 *   
+[2025-07-23 20:51:19] - Reviewed the implementation of VendorBillResource pages and confirmed that CreateVendorBill and EditVendorBill correctly use the VendorBillService::update method for draft records. No changes were required.
