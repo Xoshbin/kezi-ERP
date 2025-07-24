@@ -49,3 +49,9 @@ This file records architectural and implementation decisions using a list format
 2.  Updated the `Journal` Eloquent model with the new `fillable` attributes and `defaultDebitAccount()` / `defaultCreditAccount()` relationships.
 3.  Refactored `PaymentService` to use the new `journal->default_debit_account_id` relationship instead of a fragile global config.
 4.  Updated the `AccountingWorkflowTest` to correctly configure the test journal with its default account.
+[2025-07-24 23:14:34] - **Decision:** Corrected multiple test suite flaws to resolve a critical bug and subsequent regressions.
+**Rationale:** The initial bug, a silent save failure, was traced to a case-sensitivity typo in the test data for `AccountingWorkflowTest`. Fixing this revealed that other tests in `AccountingTest.php` were brittle and improperly configured, causing regressions. The decisions were made to harden the test suite to make it a more accurate reflection of the application's accounting principles.
+**Implementation Details:**
+1.  **Corrected `MoneyCast` Return Type:** The `MoneyCast::get` method was modified to return a `float` instead of a formatted `string`. This enforces data integrity by ensuring that internal representations of monetary values are numeric, preventing type-related errors in calculations and audit logs.
+2.  **Hardened `JournalFactory`:** The `JournalFactory` was updated to prevent the creation of duplicate `Currency` and `Company` records. More importantly, it was modified to require the explicit setting of `default_debit_account_id` and `default_credit_account_id`, ensuring that all factory-created journals are valid for use in payment transactions.
+3.  **Fixed Test Setups:** The failing payment-related tests in `AccountingTest.php` were refactored to create `Journal` instances with the specific default accounts required by the business logic they were intended to validate. This makes the tests more explicit and reliable.

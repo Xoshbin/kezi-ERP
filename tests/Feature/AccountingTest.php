@@ -1110,7 +1110,11 @@ test('confirming an inbound payment creates a linked journal entry', function ()
     $currency = Currency::factory()->create(['code' => 'USD']);
 
     // Arrange: Create a specific journal for bank transactions.
-    $bankJournal = Journal::factory()->for($company)->create(['type' => 'Bank']);
+    $bankJournal = Journal::factory()->for($company)->create([
+        'type' => 'Bank',
+        'default_debit_account_id' => $bankAccount->id,
+        'default_credit_account_id' => $arAccount->id,
+    ]);
 
     // Arrange: Set up the default accounts the service will need.
     config([
@@ -1172,7 +1176,10 @@ test('a confirmed payment is immutable', function () {
     $paymentData = [
         'company_id' => $company->id,
         'currency_id' => $currency->id,
-        'journal_id' => Journal::factory()->for($company)->create()->id,
+        'journal_id' => Journal::factory()->for($company)->create([
+            'default_debit_account_id' => $bankAccount->id,
+            'default_credit_account_id' => $arAccount->id,
+        ])->id,
         'paid_to_from_partner_id' => Partner::factory()->for($company)->create()->id,
         'payment_date' => now()->toDateString(),
         'payment_type' => Payment::TYPE_INBOUND,
@@ -1214,7 +1221,10 @@ test('an incoming payment correctly debits Bank and credits Accounts Receivable'
     // Arrange: Prepare the data for an inbound payment.
     $paymentData = [
         'company_id' => $company->id,
-        'journal_id' => Journal::factory()->for($company)->create()->id,
+        'journal_id' => Journal::factory()->for($company)->create([
+            'default_debit_account_id' => $bankAccount->id,
+            'default_credit_account_id' => $arAccount->id,
+        ])->id,
         'currency_id' => $currency->id,
         'paid_to_from_partner_id' => $customer->id,
         'payment_date' => now()->toDateString(),
@@ -1263,6 +1273,8 @@ test('an outgoing payment correctly debits Accounts Payable and credits Bank', f
     $bankJournal = Journal::factory()->for($company)->create([
         'type' => 'Bank',
         'currency_id' => $currency->id,
+        'default_debit_account_id' => $apAccount->id,
+        'default_credit_account_id' => $bankAccount->id,
     ]);
 
     config([

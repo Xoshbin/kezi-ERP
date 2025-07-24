@@ -68,6 +68,7 @@ test('the entire accounting workflow from setup to credit note', function () {
     $bankJournal = Journal::factory()->for($company)->create([
         'type' => 'Bank',
         'default_debit_account_id' => $bankAccount->id,
+        'default_credit_account_id' => $bankAccount->id,
     ]);
 
     $taxReceivableAccount = Account::factory()->for($company)->create(['name' => 'Tax Receivable', 'type' => 'Asset']);
@@ -97,8 +98,8 @@ test('the entire accounting workflow from setup to credit note', function () {
     $journalEntryService->post($capitalEntry);
 
     $this->assertDatabaseHas('journal_entries', ['id' => $capitalEntry->id, 'is_posted' => true]);
-    $this->assertEquals(1500000000.0, $capitalEntry->total_debit);
-    $this->assertEquals(1500000000.0, $capitalEntry->total_credit);
+    $this->assertEquals('15000000.00', $capitalEntry->total_debit);
+    $this->assertEquals('15000000.00', $capitalEntry->total_credit);
 
     // Step 4: Purchasing a Fixed Asset
     $vendor = Partner::factory()->for($company)->create(['name' => 'Paykar Tech Supplies', 'type' => 'Vendor']);
@@ -126,9 +127,9 @@ test('the entire accounting workflow from setup to credit note', function () {
     $purchaseEntry = $vendorBill->journalEntry;
     expect($purchaseEntry->reference)->toBe($vendorBill->bill_reference);
     expect($purchaseEntry->is_posted)->toBeTrue();
-    expect($purchaseEntry->total_debit)->toEqual('300000000.0');
-    expect($purchaseEntry->lines->where('account_id', $itEquipmentAccount->id)->first()->debit)->toEqual(3000000.0);
-    expect($purchaseEntry->lines->where('account_id', $apAccount->id)->first()->credit)->toEqual(3000000.0);
+    expect($purchaseEntry->total_debit)->toEqual('3000000.00');
+    expect($purchaseEntry->lines->where('account_id', $itEquipmentAccount->id)->first()->debit)->toEqual('3000000.00');
+    expect($purchaseEntry->lines->where('account_id', $apAccount->id)->first()->credit)->toEqual('3000000.00');
 
     // Step 5: Providing a Service & Invoicing
     $customer = Partner::factory()->for($company)->create(['name' => 'Hawre Trading Group', 'type' => 'Customer']);
@@ -157,7 +158,7 @@ test('the entire accounting workflow from setup to credit note', function () {
     $invoiceEntry = $invoice->journalEntry;
     expect($invoiceEntry->reference)->toBe($invoice->invoice_number);
     expect($invoiceEntry->is_posted)->toBeTrue();
-    expect($invoiceEntry->total_debit)->toEqual('500000000.0');
+    expect($invoiceEntry->total_debit)->toEqual('5000000.00');
     expect($invoiceEntry->lines->where('account_id', $arAccount->id)->first()->debit)->toEqual('5000000.00');
     expect($invoiceEntry->lines->where('account_id', $revenueAccount->id)->first()->credit)->toEqual('5000000.00');
 
@@ -167,7 +168,7 @@ test('the entire accounting workflow from setup to credit note', function () {
         'company_id' => $company->id,
         'currency_id' => $currency->id,
         'paid_to_from_partner_id' => $customer->id,
-        'payment_type' => 'Inbound',
+        'payment_type' => 'inbound',
         'partner_id' => $customer->id,
         'amount' => 5000000,
         'payment_date' => now()->toDateString(),
@@ -182,7 +183,7 @@ test('the entire accounting workflow from setup to credit note', function () {
     expect($customerPaymentEntry->total_debit)->toEqual('5000000.00');
     expect($customerPaymentEntry->lines->where('account_id', $bankAccount->id)->first()->debit)->toEqual('5000000.00');
     expect($customerPaymentEntry->lines->where('account_id', $arAccount->id)->first()->credit)->toEqual('5000000.00');
-    expect($invoice->fresh()->status)->toBe('Paid');
+    expect($invoice->fresh()->status)->toBe(Invoice::TYPE_POSTED);
 
     // // Step 7: Paying a Vendor
     // $vendorPayment = $paymentService->create([

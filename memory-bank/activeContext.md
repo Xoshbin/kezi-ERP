@@ -57,3 +57,12 @@ This file tracks the project's current status, including recent changes, current
 4.  A new migration was created and run to add `default_debit_account_id` and `default_credit_account_id` to the `journals` table.
 5.  The `Journal` model was updated with the new relationships.
 6.  The bug is now fully resolved, and the application's architecture is significantly more robust and auditable.
+[2025-07-24 23:14:34] - **Issue:** A critical bug in `AccountingWorkflowTest` was causing a silent failure where a `debit` amount was saved as `0.00`.
+**Resolution:**
+1.  The initial investigation led down a complex path of analyzing the Eloquent save process, model events, and custom casts, which proved to be a red herring.
+2.  The true root cause was identified as a case-sensitivity typo (`'Inbound'` vs. `'inbound'`) in the test data, causing the `PaymentService` to execute the wrong logic block.
+3.  Fixing the typo revealed several regressions in other tests (`AccountingTest.php`).
+4.  These regressions were traced to two issues: the `MoneyCast` returning a formatted string instead of a float, and the `JournalFactory` creating duplicate data and improperly configured journals.
+5.  The `MoneyCast` was corrected to return a `float` for data integrity.
+6.  The `JournalFactory` and the relevant tests in `AccountingTest.php` were updated to ensure journals are always created with the correct default debit and credit accounts.
+7.  The entire test suite is now passing, and the application's core logic has been validated as correct.

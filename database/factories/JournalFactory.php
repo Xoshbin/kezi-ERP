@@ -3,6 +3,7 @@
 namespace Database\Factories;
 
 use App\Models\Company;
+use App\Models\Account;
 use App\Models\Currency;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -19,11 +20,13 @@ class JournalFactory extends Factory
     public function definition(): array
     {
         return [
-            'company_id' => Company::factory()->create()->id,
+            'company_id' => Company::factory(),
             'name' => $this->faker->company,
             'type' => $this->faker->randomElement(['general', 'cash', 'bank']),
             'short_code' => strtoupper($this->faker->lexify('???')),
-            'currency_id' => Currency::factory()->create()->id,
+            'currency_id' => Currency::factory(),
+            'default_debit_account_id' => Account::factory(),
+            'default_credit_account_id' => Account::factory(),
         ];
     }
 }
