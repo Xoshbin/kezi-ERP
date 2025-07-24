@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('analytic_account_plan_pivot', function (Blueprint $table) {
+        Schema::create('analytic_account_plan_pivots', function (Blueprint $table) {
             $table->foreignId('analytic_account_id')->constrained('analytic_accounts')->onDelete('cascade');
             $table->foreignId('analytic_plan_id')->constrained('analytic_plans')->onDelete('cascade');
             $table->timestamps();
