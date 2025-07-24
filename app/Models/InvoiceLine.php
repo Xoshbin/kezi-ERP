@@ -99,6 +99,11 @@ class InvoiceLine extends Model
         return $this->belongsTo(Account::class, 'income_account_id');
     }
 
+    public function analyticAccount(): BelongsTo
+    {
+        return $this->belongsTo(AnalyticAccount::class);
+    }
+
     // Since financial records like InvoiceLines, once part of a posted Invoice,
     // should not be directly deleted or altered [1-3],
     // soft deletes are generally not applied to such core financial transaction components.
