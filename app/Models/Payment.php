@@ -15,29 +15,48 @@ use Illuminate\Database\Eloquent\Model;
  * Class Payment
  *
  * @package App\Models
- *
- * @property int $id Primary Key, auto-increment [3].
- * @property int $company_id Foreign Key to companies.id, linking the payment to a specific company [3].
- * @property int $journal_id Foreign Key to journals.id, indicating the 'Bank' or 'Cash' journal used for the payment [3].
- * @property \Illuminate\Support\Carbon $payment_date Date of the payment [3].
- * @property float $amount Decimal, the value of the payment [3].
- * @property int $currency_id Foreign Key to currencies.id, specifying the payment's currency [3].
- * @property string $payment_type Type of payment (e.g., 'Inbound' for receipts, 'Outbound' for disbursements) [3].
- * @property string|null $reference String, such as a check number or manual transaction ID [1, 3].
- * @property string $status Status of the payment (e.g., 'Draft', 'Confirmed', 'Reconciled') [1, 3].
- * @property int|null $paid_to_from_partner_id Nullable Foreign Key to partners.id, identifying the customer or vendor involved [3].
- * @property int|null $journal_entry_id Nullable Foreign Key to journal_entries.id, created upon confirmation/posting [3].
- * @property \Illuminate\Support\Carbon|null $created_at Timestamp when the record was created [3].
- * @property \Illuminate\Support\Carbon|null $updated_at Timestamp when the record was last updated [3].
- *
- * @property-read \App\Models\Company $company The company to which this payment belongs.
- * @property-read \App\Models\Journal $journal The bank or cash journal associated with this payment.
- * @property-read \App\Models\Currency $currency The currency of the payment.
- * @property-read \App\Models\Partner|null $partner The customer or vendor linked to this payment.
- * @property-read \App\Models\JournalEntry|null $journalEntry The corresponding journal entry generated for this payment.
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Invoice[] $invoices The invoices this payment has been applied to.
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\VendorBill[] $vendorBills The vendor bills this payment has been applied to.
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\PaymentDocumentLink[] $paymentDocumentLinks The underlying pivot records for payment application.
+ * @property int $id
+ * @property int $company_id
+ * @property int $journal_id
+ * @property int $currency_id
+ * @property int $paid_to_from_partner_id
+ * @property int|null $journal_entry_id
+ * @property \Illuminate\Support\Carbon $payment_date
+ * @property float $amount
+ * @property string $payment_type
+ * @property string|null $reference
+ * @property string $status
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \App\Models\Company $company
+ * @property-read \App\Models\Currency $currency
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Invoice> $invoices
+ * @property-read int|null $invoices_count
+ * @property-read \App\Models\Journal $journal
+ * @property-read \App\Models\JournalEntry|null $journalEntry
+ * @property-read \App\Models\Partner $partner
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\PaymentDocumentLink> $paymentDocumentLinks
+ * @property-read int|null $payment_document_links_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\VendorBill> $vendorBills
+ * @property-read int|null $vendor_bills_count
+ * @method static \Database\Factories\PaymentFactory factory($count = null, $state = [])
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Payment newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Payment newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Payment query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Payment whereAmount($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Payment whereCompanyId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Payment whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Payment whereCurrencyId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Payment whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Payment whereJournalEntryId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Payment whereJournalId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Payment wherePaidToFromPartnerId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Payment wherePaymentDate($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Payment wherePaymentType($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Payment whereReference($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Payment whereStatus($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Payment whereUpdatedAt($value)
+ * @mixin \Eloquent
  */
 #[ObservedBy([AuditLogObserver::class])]
 class Payment extends Model

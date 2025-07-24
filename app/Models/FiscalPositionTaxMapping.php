@@ -10,23 +10,30 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * Class FiscalPositionTaxMapping
  *
  * @package App\Models
- *
+ * 
  * This Eloquent model defines a specific rule for tax re-mapping within a Fiscal Position.
  * It is a crucial component for adapting default tax applications to specific
  * business scenarios or regulatory requirements based on the applied fiscal position.
  * This model plays a vital role in automating tax compliance and ensuring accurate
  * tax calculation in a dynamic multi-jurisdictional accounting environment.
- *
- * @property int $id Primary key, auto-incrementing.
- * @property int $fiscal_position_id Foreign key to the 'fiscal_positions' table, linking this mapping rule to its parent fiscal position.
- * @property int $original_tax_id Foreign key to the 'taxes' table, representing the tax that is being re-mapped (the default tax applied before the fiscal position).
- * @property int $mapped_tax_id Foreign key to the 'taxes' table, representing the tax that the original_tax_id is re-mapped to (the tax applied after the fiscal position).
- * @property \Illuminate\Support\Carbon|null $created_at Timestamp when the record was created.
- * @property \Illuminate\Support\Carbon|null $updated_at Timestamp when the record was last updated.
- *
- * @property-read \App\Models\FiscalPosition $fiscalPosition The fiscal position to which this tax mapping rule belongs.
- * @property-read \App\Models\Tax $originalTax The original tax entity that is being mapped.
- * @property-read \App\Models\Tax $mappedTax The tax entity to which the original tax is mapped.
+ * @property int $fiscal_position_id
+ * @property int $original_tax_id
+ * @property int $mapped_tax_id
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \App\Models\FiscalPosition $fiscalPosition
+ * @property-read \App\Models\Tax $mappedTax
+ * @property-read \App\Models\Tax $originalTax
+ * @method static \Database\Factories\FiscalPositionTaxMappingFactory factory($count = null, $state = [])
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|FiscalPositionTaxMapping newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|FiscalPositionTaxMapping newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|FiscalPositionTaxMapping query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|FiscalPositionTaxMapping whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|FiscalPositionTaxMapping whereFiscalPositionId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|FiscalPositionTaxMapping whereMappedTaxId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|FiscalPositionTaxMapping whereOriginalTaxId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|FiscalPositionTaxMapping whereUpdatedAt($value)
+ * @mixin \Eloquent
  */
 class FiscalPositionTaxMapping extends Model
 {

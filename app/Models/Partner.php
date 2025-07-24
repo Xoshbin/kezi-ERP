@@ -10,31 +10,59 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * Class Partner
  *
  * @package App\Models
- *
- * @property int $id Primary Key, auto-increment.
- * @property int $company_id Foreign Key to companies.id.
- * @property string $name The partner's name.
- * @property string $type 'Customer', 'Vendor', or 'Both'.
- * @property string|null $contact_person Nullable string for contact person.
- * @property string|null $email Nullable string for email.
- * @property string|null $phone Nullable string for phone.
- * @property string|null $address_line_1 Nullable string for address line 1.
- * @property string|null $address_line_2 Nullable string for address line 2.
- * @property string|null $city Nullable string for city.
- * @property string|null $state Nullable string for state.
- * @property string|null $zip_code Nullable string for zip code.
- * @property string|null $country Nullable string for country.
- * @property string|null $tax_id Nullable string for tax identification number.
- * @property bool $is_active Boolean, default true.
- * @property \Illuminate\Support\Carbon|null $created_at Timestamp when the record was created.
- * @property \Illuminate\Support\Carbon|null $updated_at Timestamp when the record was last updated.
- * @property \Illuminate\Support\Carbon|null $deleted_at Timestamp when the record was soft-deleted.
- *
- * @property-read \App\Models\Company $company The company this partner belongs to.
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Invoice[] $invoices The invoices associated with this partner as a customer.
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\VendorBill[] $vendorBills The vendor bills associated with this partner as a vendor.
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Payment[] $payments The payments associated with this partner.
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\JournalEntryLine[] $journalEntryLines The journal entry lines associated with this partner.
+ * @property int $id
+ * @property int|null $company_id
+ * @property string $name
+ * @property string $type
+ * @property string|null $contact_person
+ * @property string|null $email
+ * @property string|null $phone
+ * @property string|null $address_line_1
+ * @property string|null $address_line_2
+ * @property string|null $city
+ * @property string|null $state
+ * @property string|null $zip_code
+ * @property string|null $country
+ * @property string|null $tax_id
+ * @property bool $is_active
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property \Illuminate\Support\Carbon|null $deleted_at
+ * @property-read \App\Models\Company|null $company
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Invoice> $invoices
+ * @property-read int|null $invoices_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\JournalEntryLine> $journalEntryLines
+ * @property-read int|null $journal_entry_lines_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Payment> $payments
+ * @property-read int|null $payments_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\VendorBill> $vendorBills
+ * @property-read int|null $vendor_bills_count
+ * @method static \Database\Factories\PartnerFactory factory($count = null, $state = [])
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Partner newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Partner newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Partner onlyTrashed()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Partner query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Partner whereAddressLine1($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Partner whereAddressLine2($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Partner whereCity($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Partner whereCompanyId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Partner whereContactPerson($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Partner whereCountry($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Partner whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Partner whereDeletedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Partner whereEmail($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Partner whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Partner whereIsActive($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Partner whereName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Partner wherePhone($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Partner whereState($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Partner whereTaxId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Partner whereType($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Partner whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Partner whereZipCode($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Partner withTrashed(bool $withTrashed = true)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Partner withoutTrashed()
+ * @mixin \Eloquent
  */
 class Partner extends Model
 {

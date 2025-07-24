@@ -10,6 +10,42 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 #[ObservedBy([InvoiceLineObserver::class])]
+/**
+ * @property int $id
+ * @property int $invoice_id
+ * @property int|null $product_id
+ * @property int|null $tax_id
+ * @property int $income_account_id
+ * @property string $description
+ * @property numeric $quantity
+ * @property float $unit_price
+ * @property float $subtotal
+ * @property float $total_line_tax
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \App\Models\AnalyticAccount|null $analyticAccount
+ * @property-read \App\Models\Account $incomeAccount
+ * @property-read \App\Models\Invoice $invoice
+ * @property-read \App\Models\Product|null $product
+ * @property-read \App\Models\Tax|null $tax
+ * @method static \Database\Factories\InvoiceLineFactory factory($count = null, $state = [])
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|InvoiceLine newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|InvoiceLine newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|InvoiceLine query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|InvoiceLine whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|InvoiceLine whereDescription($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|InvoiceLine whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|InvoiceLine whereIncomeAccountId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|InvoiceLine whereInvoiceId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|InvoiceLine whereProductId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|InvoiceLine whereQuantity($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|InvoiceLine whereSubtotal($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|InvoiceLine whereTaxId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|InvoiceLine whereTotalLineTax($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|InvoiceLine whereUnitPrice($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|InvoiceLine whereUpdatedAt($value)
+ * @mixin \Eloquent
+ */
 class InvoiceLine extends Model
 {
     // Leveraging Laravel's HasFactory trait for simplified model factory creation in testing/seeding [5, 6].

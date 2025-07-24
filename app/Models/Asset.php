@@ -12,31 +12,49 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * Class Asset
  *
  * @package App\Models
- *
+ * 
  * This Eloquent model represents a Fixed Asset within the accounting system.
  * It's designed to track long-term tangible assets, their acquisition, depreciation,
  * and eventual disposal, directly impacting the company's financial statements.
- *
- * @property int $id Primary key, auto-incrementing.
- * @property int $company_id Foreign key to the Company this asset belongs to. [1]
- * @property string $name The name or description of the asset (e.g., 'Office Building', 'Production Machine'). [1]
- * @property \Illuminate\Support\Carbon $purchase_date The date the asset was acquired. [1]
- * @property float $purchase_value The original cost or value of the asset at acquisition. [1]
- * @property float $salvage_value The estimated residual value of the asset at the end of its useful life. [1]
- * @property int $useful_life_years The estimated useful life of the asset in years. [1]
- * @property string $depreciation_method The method used for calculating depreciation (e.g., 'Straight-line'). [1]
- * @property int $asset_account_id Foreign key to the general ledger account representing the asset on the balance sheet. [1]
- * @property int $depreciation_expense_account_id Foreign key to the expense account for recording depreciation in the P&L. [1]
- * @property int $accumulated_depreciation_account_id Foreign key to the contra-asset account for accumulated depreciation. [1]
- * @property string $status The current status of the asset (e.g., 'Draft', 'Confirmed', 'Depreciating', 'Fully Depreciated', 'Sold'). [1]
- * @property \Illuminate\Support\Carbon|null $created_at Timestamp when the record was created. [1]
- * @property \Illuminate\Support\Carbon|null $updated_at Timestamp when the record was last updated. [1]
- *
- * @property-read \App\Models\Company $company The company that owns this asset.
- * @property-read \App\Models\Account $assetAccount The balance sheet account associated with this asset.
- * @property-read \App\Models\Account $depreciationExpenseAccount The profit & loss expense account for this asset's depreciation.
- * @property-read \App\Models\Account $accumulatedDepreciationAccount The contra-asset account for this asset's accumulated depreciation.
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\DepreciationEntry[] $depreciationEntries The depreciation entries recorded for this asset.
+ * @property int $id
+ * @property int $company_id
+ * @property int $asset_account_id
+ * @property int $depreciation_expense_account_id
+ * @property int $accumulated_depreciation_account_id
+ * @property string $name
+ * @property \Illuminate\Support\Carbon $purchase_date
+ * @property float $purchase_value
+ * @property float $salvage_value
+ * @property int $useful_life_years
+ * @property string $depreciation_method
+ * @property string $status
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \App\Models\Account $accumulatedDepreciationAccount
+ * @property-read \App\Models\Account $assetAccount
+ * @property-read \App\Models\Company $company
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\DepreciationEntry> $depreciationEntries
+ * @property-read int|null $depreciation_entries_count
+ * @property-read \App\Models\Account $depreciationExpenseAccount
+ * @method static \Database\Factories\AssetFactory factory($count = null, $state = [])
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Asset newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Asset newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Asset query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Asset whereAccumulatedDepreciationAccountId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Asset whereAssetAccountId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Asset whereCompanyId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Asset whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Asset whereDepreciationExpenseAccountId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Asset whereDepreciationMethod($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Asset whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Asset whereName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Asset wherePurchaseDate($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Asset wherePurchaseValue($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Asset whereSalvageValue($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Asset whereStatus($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Asset whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Asset whereUsefulLifeYears($value)
+ * @mixin \Eloquent
  */
 class Asset extends Model
 {

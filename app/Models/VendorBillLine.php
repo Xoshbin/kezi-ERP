@@ -18,6 +18,44 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 // (e.g., adjustment documents like credit notes or new journal entries) [3].
 
 #[ObservedBy([VendorBillLineObserver::class])]
+/**
+ * @property int $id
+ * @property int $vendor_bill_id
+ * @property int|null $product_id
+ * @property int|null $tax_id
+ * @property int $expense_account_id
+ * @property int|null $analytic_account_id
+ * @property string $description
+ * @property numeric $quantity
+ * @property float $unit_price
+ * @property float $subtotal
+ * @property float $total_line_tax
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \App\Models\AnalyticAccount|null $analyticAccount
+ * @property-read \App\Models\Account $expenseAccount
+ * @property-read \App\Models\Product|null $product
+ * @property-read \App\Models\Tax|null $tax
+ * @property-read \App\Models\VendorBill $vendorBill
+ * @method static \Database\Factories\VendorBillLineFactory factory($count = null, $state = [])
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|VendorBillLine newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|VendorBillLine newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|VendorBillLine query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|VendorBillLine whereAnalyticAccountId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|VendorBillLine whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|VendorBillLine whereDescription($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|VendorBillLine whereExpenseAccountId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|VendorBillLine whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|VendorBillLine whereProductId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|VendorBillLine whereQuantity($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|VendorBillLine whereSubtotal($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|VendorBillLine whereTaxId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|VendorBillLine whereTotalLineTax($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|VendorBillLine whereUnitPrice($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|VendorBillLine whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|VendorBillLine whereVendorBillId($value)
+ * @mixin \Eloquent
+ */
 class VendorBillLine extends Model
 {
     use HasFactory;

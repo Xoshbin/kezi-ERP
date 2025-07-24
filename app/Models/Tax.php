@@ -10,6 +10,35 @@ use Illuminate\Database\Eloquent\Model;
 // As per accounting principles, tax records, once used, should not be physically deleted.
 // Instead, they are managed via an 'is_active' flag for historical auditability.
 
+/**
+ * @property int $id
+ * @property int $company_id
+ * @property int $tax_account_id
+ * @property string $name
+ * @property float $rate
+ * @property string $type
+ * @property bool $is_active
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \App\Models\Company $company
+ * @property-read float $rate_percentage
+ * @property-read \App\Models\Account $taxAccount
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Tax active()
+ * @method static \Database\Factories\TaxFactory factory($count = null, $state = [])
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Tax newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Tax newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Tax query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Tax whereCompanyId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Tax whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Tax whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Tax whereIsActive($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Tax whereName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Tax whereRate($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Tax whereTaxAccountId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Tax whereType($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Tax whereUpdatedAt($value)
+ * @mixin \Eloquent
+ */
 class Tax extends Model
 {
     use HasFactory;

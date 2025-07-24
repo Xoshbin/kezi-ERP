@@ -6,6 +6,37 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
+/**
+ * @property int $id
+ * @property int $user_id
+ * @property string $event_type
+ * @property string $auditable_type
+ * @property int $auditable_id
+ * @property array<array-key, mixed>|null $old_values
+ * @property array<array-key, mixed>|null $new_values
+ * @property string|null $description
+ * @property string|null $ip_address
+ * @property string|null $user_agent
+ * @property \Illuminate\Support\Carbon $created_at
+ * @property-read Model|\Eloquent $auditable
+ * @property-read \App\Models\User $user
+ * @method static \Database\Factories\AuditLogFactory factory($count = null, $state = [])
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AuditLog newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AuditLog newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AuditLog query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AuditLog whereAuditableId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AuditLog whereAuditableType($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AuditLog whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AuditLog whereDescription($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AuditLog whereEventType($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AuditLog whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AuditLog whereIpAddress($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AuditLog whereNewValues($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AuditLog whereOldValues($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AuditLog whereUserAgent($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AuditLog whereUserId($value)
+ * @mixin \Eloquent
+ */
 class AuditLog extends Model
 {
     use HasFactory;

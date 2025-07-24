@@ -13,43 +13,74 @@ use Illuminate\Database\Eloquent\Attributes\ObservedBy;
  * Class Company
  *
  * @package App\Models
- *
+ * 
  * This Eloquent model represents a distinct legal entity or branch within the
  * multi-company accounting system. It serves as the root for all financial
  * data and configurations, ensuring proper segregation and adherence to
  * specific fiscal requirements.
- *
  * @property int $id
- * @property string $name The legal name of the company.
- * @property string|null $address The company's physical address.
- * @property string|null $tax_id The company's tax identification number (e.g., VAT number, Iraqi tax ID).
- * @property int $currency_id Foreign Key to currencies.id, the default operating currency for the company.
- * @property string $fiscal_country The fiscal country code (e.g., 'IQ' for Iraq), crucial for localization and tax compliance.
- * @property int|null $parent_company_id Nullable Foreign Key to companies.id, supporting multi-branch/multi-company structures.
+ * @property string $name
+ * @property string|null $address
+ * @property string|null $tax_id
+ * @property int $currency_id
+ * @property string $fiscal_country
+ * @property int|null $parent_company_id
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
- *
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Account> $accounts
+ * @property-read int|null $accounts_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\AdjustmentDocument> $adjustmentDocuments
+ * @property-read int|null $adjustment_documents_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\AnalyticAccount> $analyticAccounts
+ * @property-read int|null $analytic_accounts_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\AnalyticPlan> $analyticPlans
+ * @property-read int|null $analytic_plans_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Asset> $assets
+ * @property-read int|null $assets_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\AuditLog> $auditLogs
+ * @property-read int|null $audit_logs_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Budget> $budgets
+ * @property-read int|null $budgets_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, Company> $childrenCompanies
+ * @property-read int|null $children_companies_count
  * @property-read \App\Models\Currency $currency
- * @property-read \App\Models\Company|null $parentCompany
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Company[] $childrenCompanies
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\User[] $users
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\AuditLog[] $auditLogs
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\LockDate[] $lockDates
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Account[] $accounts
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Journal[] $journals
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\JournalEntry[] $journalEntries
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Invoice[] $invoices
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\VendorBill[] $vendorBills
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Payment[] $payments
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\AdjustmentDocument[] $adjustmentDocuments
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Partner[] $partners
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Product[] $products
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Tax[] $taxes
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\FiscalPosition[] $fiscalPositions
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Asset[] $assets
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\AnalyticAccount[] $analyticAccounts
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\AnalyticPlan[] $analyticPlans
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Budget[] $budgets
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\FiscalPosition> $fiscalPositions
+ * @property-read int|null $fiscal_positions_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Invoice> $invoices
+ * @property-read int|null $invoices_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\JournalEntry> $journalEntries
+ * @property-read int|null $journal_entries_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Journal> $journals
+ * @property-read int|null $journals_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\LockDate> $lockDates
+ * @property-read int|null $lock_dates_count
+ * @property-read Company|null $parentCompany
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Partner> $partners
+ * @property-read int|null $partners_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Payment> $payments
+ * @property-read int|null $payments_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Product> $products
+ * @property-read int|null $products_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Tax> $taxes
+ * @property-read int|null $taxes_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\User> $users
+ * @property-read int|null $users_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\VendorBill> $vendorBills
+ * @property-read int|null $vendor_bills_count
+ * @method static \Database\Factories\CompanyFactory factory($count = null, $state = [])
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Company newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Company newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Company query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Company whereAddress($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Company whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Company whereCurrencyId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Company whereFiscalCountry($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Company whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Company whereName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Company whereParentCompanyId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Company whereTaxId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Company whereUpdatedAt($value)
+ * @mixin \Eloquent
  */
 
 #[ObservedBy([CompanyObserver::class])]

@@ -10,21 +10,31 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
  * Class LockDate
- * @package App\Models
  *
+ * @package App\Models
+ * 
  * This Eloquent model defines a 'lock date' for a specific company and type (e.g., tax return, everything).
  * It is a critical component for enforcing immutability of financial records within closed periods,
  * preventing any direct creation or modification of journal entries with an accounting date on or before
  * the specified 'locked_until' date. This adheres strictly to core accounting principles and auditability requirements.
- *
- * @property int $id The unique primary key for this lock date entry.
- * @property int $company_id Foreign key linking this lock date to a specific Company.
- * @property string $lock_type The type of lock being applied (e.g., 'tax_return_date', 'everything_date').
- * @property \Illuminate\Support\Carbon $locked_until The date up to which financial records are locked.
- * @property \Illuminate\Support\Carbon $created_at Timestamp indicating when this lock date was created.
- * @property \Illuminate\Support\Carbon $updated_at Timestamp indicating when this lock date was last updated.
- *
- * @property-read \App\Models\Company $company The Company model associated with this lock date.
+ * @property int $id
+ * @property int $company_id
+ * @property string $lock_type
+ * @property \Illuminate\Support\Carbon $locked_until
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \App\Models\Company $company
+ * @method static \Database\Factories\LockDateFactory factory($count = null, $state = [])
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|LockDate newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|LockDate newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|LockDate query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|LockDate whereCompanyId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|LockDate whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|LockDate whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|LockDate whereLockType($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|LockDate whereLockedUntil($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|LockDate whereUpdatedAt($value)
+ * @mixin \Eloquent
  */
 #[ObservedBy([AuditLogObserver::class])] //(to log when periods are closed)
 class LockDate extends Model

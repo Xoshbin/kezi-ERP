@@ -9,27 +9,46 @@ use RuntimeException; // Utilized for explicit enforcement of immutability and d
 
 /**
  * Class JournalEntryLine
- * @package App\Models
  *
+ * @package App\Models
+ * 
  * This Eloquent model precisely represents a single debit or credit line within a comprehensive JournalEntry.
  * Each instance records the specific financial impact of a transaction on a designated account,
  * adhering to the fundamental tenets of double-entry bookkeeping.
- *
- * @property int $id The unique primary key for this journal entry line.
- * @property int $journal_entry_id Foreign key linking this line to its parent journal entry.
- * @property int $account_id Foreign key linking to the specific Account from the Chart of Accounts affected by this line.
- * @property float $debit The monetary amount debited to the account for this line.
- * @property float $credit The monetary amount credited from the account for this line.
- * @property string|null $description A concise, specific description for this individual line item.
- * @property int|null $partner_id Nullable foreign key linking to a Partner (customer or vendor) relevant to this line.
- * @property int|null $analytic_account_id Nullable foreign key linking to an AnalyticAccount for detailed management accounting (e.g., project or department tracking).
- * @property \Illuminate\Support\Carbon $created_at Timestamp indicating the exact system creation date and time of the line.
- * @property \Illuminate\Support\Carbon $updated_at Timestamp indicating the last system update date and time of the line.
- *
- * @property-read \App\Models\JournalEntry $journalEntry The parent JournalEntry model to which this line belongs.
- * @property-read \App\Models\Account $account The Account model associated with this line, representing its impact on the Chart of Accounts.
- * @property-read \App\Models\Partner|null $partner The optional Partner model linked to this line.
- * @property-read \App\Models\AnalyticAccount|null $analyticAccount The optional AnalyticAccount model linked to this line for granular financial tracking.
+ * @property int $id
+ * @property int $journal_entry_id
+ * @property int $account_id
+ * @property int|null $partner_id
+ * @property int|null $currency_id
+ * @property int|null $analytic_account_id
+ * @property float $debit
+ * @property float $credit
+ * @property float $original_currency_amount
+ * @property string $exchange_rate_at_transaction
+ * @property string|null $description
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \App\Models\Account $account
+ * @property-read \App\Models\AnalyticAccount|null $analyticAccount
+ * @property-read \App\Models\JournalEntry $journalEntry
+ * @property-read \App\Models\Partner|null $partner
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|JournalEntryLine newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|JournalEntryLine newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|JournalEntryLine query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|JournalEntryLine whereAccountId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|JournalEntryLine whereAnalyticAccountId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|JournalEntryLine whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|JournalEntryLine whereCredit($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|JournalEntryLine whereCurrencyId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|JournalEntryLine whereDebit($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|JournalEntryLine whereDescription($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|JournalEntryLine whereExchangeRateAtTransaction($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|JournalEntryLine whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|JournalEntryLine whereJournalEntryId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|JournalEntryLine whereOriginalCurrencyAmount($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|JournalEntryLine wherePartnerId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|JournalEntryLine whereUpdatedAt($value)
+ * @mixin \Eloquent
  */
 class JournalEntryLine extends Model
 {

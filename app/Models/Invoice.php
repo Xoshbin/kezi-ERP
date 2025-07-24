@@ -15,35 +15,58 @@ use Illuminate\Support\Carbon;
  * Class Invoice
  *
  * @package App\Models
- *
+ * 
  * This Eloquent model represents a customer invoice in the accounting system.
  * It is a foundational document for recording sales transactions and receivables.
  * Key accounting principles, such as immutability post-posting and a clear
  * audit trail for changes or corrections, are deeply embedded in its design.
- *
- * @property int $id Primary key, auto-incrementing. [1]
- * @property int $company_id Foreign key to the 'companies' table, indicating which company issued the invoice. [1]
- * @property int $customer_id Foreign key to the 'partners' table, representing the customer to whom the invoice is issued. [1]
- * @property Carbon $invoice_date The date the invoice was issued. [1]
- * @property Carbon $due_date The date the invoice payment is due. [1]
- * @property string|null $invoice_number A unique, sequentially assigned invoice number. This is assigned only upon confirmation/posting. [1, 2]
- * @property string $status The current status of the invoice (e.g., 'Draft', 'Posted', 'Paid', 'Cancelled'). 'Posted' invoices are immutable. [1, 3]
- * @property int $currency_id Foreign key to the 'currencies' table, representing the currency of the invoice. [1]
- * @property float $total_amount The total amount of the invoice, including tax. [1]
- * @property float $total_tax The total tax amount on the invoice. [1]
- * @property int|null $journal_entry_id Nullable foreign key to the 'journal_entries' table. Links the invoice to its immutable financial record once posted. [1]
- * @property Carbon|null $created_at Timestamp when the record was created. [1]
- * @property Carbon|null $updated_at Timestamp when the record was last updated. [1]
- * @property Carbon|null $posted_at Nullable timestamp, records when the invoice's status changed to 'Posted'. [1]
- * @property string|null $reset_to_draft_log JSON/Text field to log instances where a 'Posted' invoice was reset to 'Draft', crucial for audit trail maintenance. [1]
- * @property int|null $fiscal_position_id Nullable foreign key to the 'fiscal_positions' table. [4]
- *
- * @property-read \App\Models\Company $company The company that issued this invoice.
- * @property-read \App\Models\Partner $customer The customer to whom this invoice is issued.
- * @property-read \App\Models\Currency $currency The currency of this invoice.
- * @property-read \App\Models\JournalEntry|null $journalEntry The associated journal entry once the invoice is posted.
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\InvoiceLine[] $invoiceLines The individual line items of this invoice.
- * @property-read \App\Models\FiscalPosition|null $fiscalPosition The fiscal position applied to this invoice.
+ * @property int $id
+ * @property int $company_id
+ * @property int $customer_id
+ * @property int $currency_id
+ * @property int|null $journal_entry_id
+ * @property int|null $fiscal_position_id
+ * @property string|null $invoice_number
+ * @property Carbon $invoice_date
+ * @property Carbon $due_date
+ * @property string $status
+ * @property float $total_amount
+ * @property float $total_tax
+ * @property Carbon|null $posted_at
+ * @property array<array-key, mixed>|null $reset_to_draft_log
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property-read \App\Models\Company $company
+ * @property-read \App\Models\Currency $currency
+ * @property-read \App\Models\Partner $customer
+ * @property-read \App\Models\FiscalPosition|null $fiscalPosition
+ * @property-read string $full_reference
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\InvoiceLine> $invoiceLines
+ * @property-read int|null $invoice_lines_count
+ * @property-read \App\Models\JournalEntry|null $journalEntry
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Invoice draft()
+ * @method static \Database\Factories\InvoiceFactory factory($count = null, $state = [])
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Invoice newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Invoice newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Invoice posted()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Invoice query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Invoice whereCompanyId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Invoice whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Invoice whereCurrencyId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Invoice whereCustomerId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Invoice whereDueDate($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Invoice whereFiscalPositionId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Invoice whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Invoice whereInvoiceDate($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Invoice whereInvoiceNumber($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Invoice whereJournalEntryId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Invoice wherePostedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Invoice whereResetToDraftLog($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Invoice whereStatus($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Invoice whereTotalAmount($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Invoice whereTotalTax($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Invoice whereUpdatedAt($value)
+ * @mixin \Eloquent
  */
 #[ObservedBy([AuditLogObserver::class])]
 class Invoice extends Model

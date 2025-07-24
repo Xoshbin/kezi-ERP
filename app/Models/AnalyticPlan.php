@@ -12,26 +12,35 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * Class AnalyticPlan
  *
  * @package App\Models
- *
+ * 
  * This Eloquent model represents an Analytic Plan, a core concept in management
  * accounting systems like Odoo. Analytic plans are used to group and categorize
  * analytic accounts, enabling multi-dimensional analysis of costs and revenues
  * by project, department, or other business segments [1, 3].
- *
- * @property int $id Primary key, auto-incrementing.
- * @property string $name The name of the analytic plan (e.g., 'Project Budget', 'Departmental Costs') [3, 4].
- * @property int|null $parent_id Foreign key to another AnalyticPlan, supporting hierarchical plan structures [3].
- * @property string|null $default_applicability Defines how the plan is applied when creating new journal entries [3].
- * @property string|null $color A color code for visual identification of tags related to this plan [3].
- * @property int|null $company_id Foreign key to the company this analytic plan belongs to. Nullable for shared plans [4-6].
- * @property \Illuminate\Support\Carbon|null $created_at Timestamp when the record was created [4].
- * @property \Illuminate\Support\Carbon|null $updated_at Timestamp when the record was last updated [4].
- *
- * @property-read \App\Models\Company|null $company The company this analytic plan is associated with.
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\AnalyticAccount[] $analyticAccounts The analytic accounts associated with this plan.
- * @property-read \App\Models\AnalyticPlan|null $parent The parent analytic plan in a hierarchical structure.
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\AnalyticPlan[] $children The child analytic plans in a hierarchical structure.
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Budget[] $budgets The budgets associated with this analytic plan.
+ * @property int $id
+ * @property int $company_id
+ * @property string $name
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \App\Models\AnalyticAccountPlanPivot|null $pivot
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\AnalyticAccount> $analyticAccounts
+ * @property-read int|null $analytic_accounts_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Budget> $budgets
+ * @property-read int|null $budgets_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, AnalyticPlan> $children
+ * @property-read int|null $children_count
+ * @property-read \App\Models\Company $company
+ * @property-read AnalyticPlan|null $parent
+ * @method static \Database\Factories\AnalyticPlanFactory factory($count = null, $state = [])
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AnalyticPlan newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AnalyticPlan newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AnalyticPlan query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AnalyticPlan whereCompanyId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AnalyticPlan whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AnalyticPlan whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AnalyticPlan whereName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AnalyticPlan whereUpdatedAt($value)
+ * @mixin \Eloquent
  */
 class AnalyticPlan extends Model
 {

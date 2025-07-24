@@ -7,6 +7,47 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
+/**
+ * @property int $id
+ * @property int $company_id
+ * @property int|null $original_invoice_id
+ * @property int|null $original_vendor_bill_id
+ * @property int|null $journal_entry_id
+ * @property string $type
+ * @property \Illuminate\Support\Carbon $date
+ * @property string $reference_number
+ * @property float $total_amount
+ * @property float $total_tax
+ * @property string $reason
+ * @property string $status
+ * @property string|null $posted_at
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \App\Models\Company $company
+ * @property-read \App\Models\JournalEntry|null $journalEntry
+ * @property-read \App\Models\Invoice|null $originalInvoice
+ * @property-read \App\Models\VendorBill|null $originalVendorBill
+ * @method static \Database\Factories\AdjustmentDocumentFactory factory($count = null, $state = [])
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AdjustmentDocument newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AdjustmentDocument newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AdjustmentDocument query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AdjustmentDocument whereCompanyId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AdjustmentDocument whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AdjustmentDocument whereDate($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AdjustmentDocument whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AdjustmentDocument whereJournalEntryId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AdjustmentDocument whereOriginalInvoiceId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AdjustmentDocument whereOriginalVendorBillId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AdjustmentDocument wherePostedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AdjustmentDocument whereReason($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AdjustmentDocument whereReferenceNumber($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AdjustmentDocument whereStatus($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AdjustmentDocument whereTotalAmount($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AdjustmentDocument whereTotalTax($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AdjustmentDocument whereType($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AdjustmentDocument whereUpdatedAt($value)
+ * @mixin \Eloquent
+ */
 class AdjustmentDocument extends Model
 {
     use HasFactory;

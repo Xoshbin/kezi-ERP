@@ -9,16 +9,25 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * Class AnalyticAccountPlanPivot
  *
  * @package App\Models
- *
+ * 
  * This Eloquent model represents the pivot table for the many-to-many relationship
  * between AnalyticAccount and AnalyticPlan. It is essential for structuring
  * and categorizing analytic accounts within various management accounting plans,
  * enabling flexible cost and revenue analysis across different dimensions.
- *
- * @property int $analytic_account_id The foreign key to the analytic_accounts table.
- * @property int $analytic_plan_id    The foreign key to the analytic_plans table.
- * @property \Illuminate\Support\Carbon|null $created_at Timestamp when the pivot record was created.
- * @property \Illuminate\Support\Carbon|null $updated_at Timestamp when the pivot record was last updated.
+ * @property int $analytic_account_id
+ * @property int $analytic_plan_id
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \App\Models\AnalyticAccount $analyticAccount
+ * @property-read \App\Models\AnalyticPlan $analyticPlan
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AnalyticAccountPlanPivot newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AnalyticAccountPlanPivot newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AnalyticAccountPlanPivot query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AnalyticAccountPlanPivot whereAnalyticAccountId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AnalyticAccountPlanPivot whereAnalyticPlanId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AnalyticAccountPlanPivot whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AnalyticAccountPlanPivot whereUpdatedAt($value)
+ * @mixin \Eloquent
  */
 class AnalyticAccountPlanPivot extends Pivot
 {

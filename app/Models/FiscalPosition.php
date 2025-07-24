@@ -11,24 +11,35 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * Class FiscalPosition
  *
  * @package App\Models
- *
+ * 
  * This Eloquent model represents a fiscal position, a crucial component in an accounting system
  * designed to automatically adjust taxes and accounts based on specific criteria, such as
  * the geographic location or business type of a customer or vendor. Fiscal positions are
  * fundamental for ensuring compliance with diverse local tax regulations and automating
  * complex tax calculations in a multi-jurisdictional environment. They provide the rules
  * for adapting the standard taxes and accounts set on products or partners for a given transaction.
- *
- * @property int $id Primary key, auto-incrementing.
- * @property int $company_id Foreign key to the 'companies' table, linking to the company this fiscal position belongs to.
- * @property string $name The name of the fiscal position (e.g., 'Domestic Customer', 'Export Customer').
- * @property string|null $country The country code (e.g., 'IQ' for Iraq) this fiscal position applies to, if specific. Nullable to allow for broader applicability.
- * @property \Illuminate\Support\Carbon|null $created_at Timestamp when the record was created.
- * @property \Illuminate\Support\Carbon|null $updated_at Timestamp when the record was last updated.
- *
- * @property-read \App\Models\Company $company The company to which this fiscal position belongs.
- * @property-read \Illuminate\Database\Eloquent\Collection<\App\Models\FiscalPositionTaxMapping> $taxMappings The tax mappings associated with this fiscal position.
- * @property-read \Illuminate\Database\Eloquent\Collection<\App\Models\FiscalPositionAccountMapping> $accountMappings The account mappings associated with this fiscal position.
+ * @property int $id
+ * @property int $company_id
+ * @property string $name
+ * @property string|null $country
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\FiscalPositionAccountMapping> $accountMappings
+ * @property-read int|null $account_mappings_count
+ * @property-read \App\Models\Company $company
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\FiscalPositionTaxMapping> $taxMappings
+ * @property-read int|null $tax_mappings_count
+ * @method static \Database\Factories\FiscalPositionFactory factory($count = null, $state = [])
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|FiscalPosition newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|FiscalPosition newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|FiscalPosition query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|FiscalPosition whereCompanyId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|FiscalPosition whereCountry($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|FiscalPosition whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|FiscalPosition whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|FiscalPosition whereName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|FiscalPosition whereUpdatedAt($value)
+ * @mixin \Eloquent
  */
 class FiscalPosition extends Model
 {
