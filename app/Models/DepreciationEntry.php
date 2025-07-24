@@ -11,24 +11,35 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * Class DepreciationEntry
  *
  * @package App\Models
- *
+ * 
  * This Eloquent model represents a single depreciation event for a fixed asset.
  * It is crucial for automating the depreciation process, recognizing depreciation
  * expense, and maintaining the accuracy of the asset's book value on the balance sheet.
  * These entries are typically system-generated and, once linked to a posted journal entry,
  * become part of the immutable financial record.
- *
- * @property int $id Primary key, auto-incrementing.
- * @property int $asset_id Foreign key to the 'assets' table, linking to the asset being depreciated.
- * @property \Illuminate\Support\Carbon $depreciation_date The date on which this depreciation entry is recognized.
- * @property float $amount The amount of depreciation recorded for this period.
- * @property int|null $journal_entry_id Nullable foreign key to the 'journal_entries' table, linking to the actual posted financial transaction.
- * @property string $status The status of the depreciation entry (e.g., 'Draft', 'Posted').
- * @property \Illuminate\Support\Carbon|null $created_at Timestamp when the record was created.
- * @property \Illuminate\Support\Carbon|null $updated_at Timestamp when the record was last updated.
- *
- * @property-read \App\Models\Asset $asset The fixed asset to which this depreciation entry belongs.
- * @property-read \App\Models\JournalEntry|null $journalEntry The associated journal entry that records this depreciation.
+ * @property int $id
+ * @property int $asset_id
+ * @property int|null $journal_entry_id
+ * @property \Illuminate\Support\Carbon $depreciation_date
+ * @property float $amount
+ * @property string $status
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \App\Models\Asset $asset
+ * @property-read \App\Models\JournalEntry|null $journalEntry
+ * @method static \Database\Factories\DepreciationEntryFactory factory($count = null, $state = [])
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|DepreciationEntry newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|DepreciationEntry newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|DepreciationEntry query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|DepreciationEntry whereAmount($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|DepreciationEntry whereAssetId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|DepreciationEntry whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|DepreciationEntry whereDepreciationDate($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|DepreciationEntry whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|DepreciationEntry whereJournalEntryId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|DepreciationEntry whereStatus($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|DepreciationEntry whereUpdatedAt($value)
+ * @mixin \Eloquent
  */
 class DepreciationEntry extends Model
 {

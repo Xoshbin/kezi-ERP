@@ -14,12 +14,11 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * Class Account
  *
  * @package App\Models
- *
+ * 
  * This Eloquent model represents an account within the Chart of Accounts.
  * It is designed with core accounting principles in mind, such as immutability
  * for financial transactions and robust auditability. Accounts, once used
  * in a financial transaction, cannot be deleted but can be marked as deprecated.
- *
  * @property int $id
  * @property int $company_id
  * @property string $code
@@ -28,6 +27,40 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property bool $is_deprecated
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Asset> $accumulatedDepreciationAssets
+ * @property-read int|null $accumulated_depreciation_assets_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Asset> $assets
+ * @property-read int|null $assets_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\BudgetLine> $budgetLines
+ * @property-read int|null $budget_lines_count
+ * @property-read \App\Models\Company $company
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Asset> $depreciationExpenseAssets
+ * @property-read int|null $depreciation_expense_assets_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\VendorBillLine> $expenseVendorBillLines
+ * @property-read int|null $expense_vendor_bill_lines_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\InvoiceLine> $incomeInvoiceLines
+ * @property-read int|null $income_invoice_lines_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\JournalEntryLine> $journalEntryLines
+ * @property-read int|null $journal_entry_lines_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\FiscalPositionAccountMapping> $mappedFiscalPositionMappings
+ * @property-read int|null $mapped_fiscal_position_mappings_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\FiscalPositionAccountMapping> $originalFiscalPositionMappings
+ * @property-read int|null $original_fiscal_position_mappings_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Tax> $taxes
+ * @property-read int|null $taxes_count
+ * @method static \Database\Factories\AccountFactory factory($count = null, $state = [])
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Account newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Account newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Account query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Account whereCode($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Account whereCompanyId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Account whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Account whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Account whereIsDeprecated($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Account whereName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Account whereType($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Account whereUpdatedAt($value)
+ * @mixin \Eloquent
  */
 
 #[ObservedBy([AccountObserver::class, AuditLogObserver::class])] //(to log when accounts are created or deprecated)

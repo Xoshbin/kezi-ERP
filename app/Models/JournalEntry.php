@@ -15,33 +15,57 @@ use RuntimeException; // For explicit exception handling for immutability violat
 
 /**
  * Class JournalEntry
- * @package App\Models
  *
+ * @package App\Models
+ * 
  * This Eloquent model represents a financial journal entry in the double-entry accounting system.
  * It serves as the immutable record of all posted financial transactions [1-3].
- *
- * @property int $id The primary key, a sequentially numbered identifier for all posted financial transactions [3].
- * @property int $company_id Foreign key to the company this entry belongs to [3].
- * @property int $journal_id Foreign key to the journal (e.g., Sales, Bank, Miscellaneous) this entry belongs to [3].
- * @property string $entry_date The accounting date of the transaction [3, 5, 6].
- * @property string $reference A unique reference number (e.g., invoice number, bill reference) [3, 5, 6].
- * @property string $description A summary of the entire transaction [3].
- * @property float $total_debit The calculated sum of all debit lines, must equal total_credit [2, 3, 7].
- * @property float $total_credit The calculated sum of all credit lines, must equal total_debit [2, 3, 7].
- * @property bool $is_posted A boolean flag indicating if the entry is posted. Once true, this record is considered immutable [3].
- * @property string $hash A cryptographic fingerprint (SHA-256) of the entry's essential data, crucial for inalterability verification [3, 4, 8-10].
- * @property string $previous_hash The hash of the immediately preceding journal entry, forming a blockchain-like audit chain [3, 4, 8, 9].
- * @property int $created_by_user_id Foreign key to the user who created this entry [3].
- * @property string|null $source_type Polymorphic relation: model class name of the originating document (e.g., 'App\Models\Invoice') [3].
- * @property int|null $source_id Polymorphic relation: ID of the originating document [3].
- * @property \Illuminate\Support\Carbon $created_at The actual system creation date/time (immutable once set), vital for audit trails [3, 4, 8, 9].
- * @property \Illuminate\Support\Carbon $updated_at Timestamp for last update (managed by Eloquent, but content should not change if posted) [11].
- *
- * @property-read \App\Models\Company $company The company associated with this journal entry.
- * @property-read \App\Models\Journal $journal The journal where this entry was recorded.
- * @property-read \App\Models\User $createdBy The user who initiated the creation of this journal entry.
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\JournalEntryLine[] $lines The individual debit/credit lines composing this journal entry.
- * @property-read \Illuminate\Models\Model|\Eloquent $source The originating document (e.g., Invoice, VendorBill, Payment) for this journal entry.
+ * @property int $id
+ * @property int $company_id
+ * @property int $journal_id
+ * @property int $currency_id
+ * @property int $created_by_user_id
+ * @property \Illuminate\Support\Carbon $entry_date
+ * @property string $reference
+ * @property string|null $description
+ * @property float $total_debit
+ * @property float $total_credit
+ * @property bool $is_posted
+ * @property string|null $hash
+ * @property string|null $previous_hash
+ * @property string|null $source_type
+ * @property int|null $source_id
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \App\Models\Company $company
+ * @property-read \App\Models\User $createdBy
+ * @property-read \App\Models\Currency $currency
+ * @property-read \App\Models\Journal $journal
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\JournalEntryLine> $lines
+ * @property-read int|null $lines_count
+ * @property-read Model|\Eloquent|null $source
+ * @method static \Database\Factories\JournalEntryFactory factory($count = null, $state = [])
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|JournalEntry newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|JournalEntry newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|JournalEntry query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|JournalEntry whereCompanyId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|JournalEntry whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|JournalEntry whereCreatedByUserId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|JournalEntry whereCurrencyId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|JournalEntry whereDescription($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|JournalEntry whereEntryDate($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|JournalEntry whereHash($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|JournalEntry whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|JournalEntry whereIsPosted($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|JournalEntry whereJournalId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|JournalEntry wherePreviousHash($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|JournalEntry whereReference($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|JournalEntry whereSourceId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|JournalEntry whereSourceType($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|JournalEntry whereTotalCredit($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|JournalEntry whereTotalDebit($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|JournalEntry whereUpdatedAt($value)
+ * @mixin \Eloquent
  */
 #[ObservedBy([JournalEntryObserver::class, AuditLogObserver::class])]
 class JournalEntry extends Model

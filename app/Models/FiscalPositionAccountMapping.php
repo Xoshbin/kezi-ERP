@@ -10,27 +10,34 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * Class FiscalPositionAccountMapping
  *
  * @package App\Models
- *
+ * 
  * This Eloquent model represents a specific rule within a Fiscal Position that dictates how
  * a general ledger account (Chart of Accounts) is re-mapped or transformed during a financial
  * transaction. It is a critical component for adapting accounting entries to local regulations
  * or business scenarios, ensuring that the correct accounts are impacted based on the
  * applied fiscal position.
- *
+ * 
  * These mappings are essential for compliance and automation in multi-jurisdictional accounting systems,
  * allowing for dynamic adjustment of general ledger accounts (e.g., re-routing a domestic
  * sales account to an export sales account for international transactions).
- *
- * @property int $id Primary key, auto-incrementing.
- * @property int $fiscal_position_id Foreign key to the 'fiscal_positions' table, linking to the parent fiscal position [1, 2].
- * @property int $original_account_id Foreign key to the 'accounts' table, representing the account that is being re-mapped [1, 2].
- * @property int $mapped_account_id Foreign key to the 'accounts' table, representing the account that the original_account_id is re-mapped to [1, 2].
- * @property \Illuminate\Support\Carbon|null $created_at Timestamp when the record was created.
- * @property \Illuminate\Support\Carbon|null $updated_at Timestamp when the record was last updated.
- *
- * @property-read \App\Models\FiscalPosition $fiscalPosition The fiscal position to which this mapping belongs.
- * @property-read \App\Models\Account $originalAccount The original account being mapped.
- * @property-read \App\Models\Account $mappedAccount The account to which the original account is mapped.
+ * @property int $fiscal_position_id
+ * @property int $original_account_id
+ * @property int $mapped_account_id
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \App\Models\FiscalPosition $fiscalPosition
+ * @property-read \App\Models\Account $mappedAccount
+ * @property-read \App\Models\Account $originalAccount
+ * @method static \Database\Factories\FiscalPositionAccountMappingFactory factory($count = null, $state = [])
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|FiscalPositionAccountMapping newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|FiscalPositionAccountMapping newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|FiscalPositionAccountMapping query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|FiscalPositionAccountMapping whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|FiscalPositionAccountMapping whereFiscalPositionId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|FiscalPositionAccountMapping whereMappedAccountId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|FiscalPositionAccountMapping whereOriginalAccountId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|FiscalPositionAccountMapping whereUpdatedAt($value)
+ * @mixin \Eloquent
  */
 class FiscalPositionAccountMapping extends Model
 {

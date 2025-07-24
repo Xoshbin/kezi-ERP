@@ -11,25 +11,37 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * Class BudgetLine
  *
  * @package App\Models
- *
+ * 
  * This Eloquent model represents a single line item within a Budget.
  * It tracks specific budgeted amounts against actual achieved and committed amounts,
  * linking to either general ledger accounts (for financial budgets) or analytic accounts
  * (for analytic budgets) [3].
- *
- * @property int $id Primary key, auto-incrementing.
- * @property int $budget_id Foreign key to the parent Budget [3].
- * @property int|null $analytic_account_id Nullable foreign key to an AnalyticAccount, used for 'Analytic' budgets [3].
- * @property int|null $account_id Nullable foreign key to a general ledger Account, used for 'Financial' budgets [3].
- * @property float $budgeted_amount The planned or allocated amount for this budget line [3].
- * @property float $achieved_amount The actual amount incurred/achieved, calculated from confirmed journal entries [3].
- * @property float $committed_amount The amount committed (e.g., from confirmed Purchase Orders), calculated from POs [3].
- * @property \Illuminate\Support\Carbon|null $created_at Timestamp when the record was created.
- * @property \Illuminate\Support\Carbon|null $updated_at Timestamp when the record was last updated.
- *
- * @property-read \App\Models\Budget $budget The parent budget this line belongs to.
- * @property-read \App\Models\AnalyticAccount|null $analyticAccount The analytic account associated with this line (if applicable).
- * @property-read \App\Models\Account|null $account The general ledger account associated with this line (if applicable).
+ * @property int $id
+ * @property int $budget_id
+ * @property int|null $analytic_account_id
+ * @property int|null $account_id
+ * @property float $budgeted_amount
+ * @property float $achieved_amount
+ * @property float $committed_amount
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \App\Models\Account|null $account
+ * @property-read \App\Models\AnalyticAccount|null $analyticAccount
+ * @property-read \App\Models\Budget $budget
+ * @method static \Database\Factories\BudgetLineFactory factory($count = null, $state = [])
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|BudgetLine newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|BudgetLine newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|BudgetLine query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|BudgetLine whereAccountId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|BudgetLine whereAchievedAmount($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|BudgetLine whereAnalyticAccountId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|BudgetLine whereBudgetId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|BudgetLine whereBudgetedAmount($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|BudgetLine whereCommittedAmount($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|BudgetLine whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|BudgetLine whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|BudgetLine whereUpdatedAt($value)
+ * @mixin \Eloquent
  */
 class BudgetLine extends Model
 {

@@ -10,26 +10,45 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * Class Currency
  *
  * @package App\Models
- *
+ * 
  * This Eloquent model represents a financial currency within the accounting system.
  * It is essential for supporting multi-currency transactions, tracking exchange rates,
  * and ensuring accurate financial reporting across different monetary denominations.
- *
- * @property int $id Primary key, auto-incrementing [1].
- * @property string $code The ISO 4217 currency code (e.g., 'IQD', 'USD', 'EUR'), unique [1].
- * @property string $name The full name of the currency (e.g., 'Iraqi Dinar', 'United States Dollar') [1].
- * @property string $symbol The symbol of the currency (e.g., 'د.ع', '$') [1].
- * @property float $exchange_rate The rate relative to a chosen base currency (e.g., USD = 1.0) [1].
- * @property bool $is_active Boolean indicating if the currency is currently active, default true [1].
- * @property \Illuminate\Support\Carbon|null $created_at Timestamp when the record was created [1].
- * @property \Illuminate\Support\Carbon|null $updated_at Timestamp when the record was last updated [1].
- *
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Company[] $companies The companies that use this currency as their default operating currency.
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Journal[] $journals The journals that operate in this specific currency.
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Invoice[] $invoices The invoices issued in this currency.
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\VendorBill[] $vendorBills The vendor bills received in this currency.
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Payment[] $payments The payments made or received in this currency.
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\AnalyticAccount[] $analyticAccounts The analytic accounts that may be specific to this currency.
+ * @property int $id
+ * @property string $code
+ * @property string $name
+ * @property string $symbol
+ * @property float $exchange_rate
+ * @property bool $is_active
+ * @property \Illuminate\Support\Carbon|null $last_updated_at
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\AnalyticAccount> $analyticAccounts
+ * @property-read int|null $analytic_accounts_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Company> $companies
+ * @property-read int|null $companies_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Invoice> $invoices
+ * @property-read int|null $invoices_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Journal> $journals
+ * @property-read int|null $journals_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Payment> $payments
+ * @property-read int|null $payments_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\VendorBill> $vendorBills
+ * @property-read int|null $vendor_bills_count
+ * @method static \Database\Factories\CurrencyFactory factory($count = null, $state = [])
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Currency newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Currency newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Currency query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Currency whereCode($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Currency whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Currency whereExchangeRate($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Currency whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Currency whereIsActive($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Currency whereLastUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Currency whereName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Currency whereSymbol($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Currency whereUpdatedAt($value)
+ * @mixin \Eloquent
  */
 class Currency extends Model
 {

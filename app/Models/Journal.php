@@ -8,6 +8,34 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 
+/**
+ * @property int $id
+ * @property int $company_id
+ * @property string $name
+ * @property string $type
+ * @property string $short_code
+ * @property int|null $currency_id
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \App\Models\Company $company
+ * @property-read \App\Models\Currency|null $currency
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\JournalEntry> $journalEntries
+ * @property-read int|null $journal_entries_count
+ * @method static \Database\Factories\JournalFactory factory($count = null, $state = [])
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Journal newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Journal newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Journal query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Journal uniqueShortCode(string $shortCode, int $companyId)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Journal whereCompanyId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Journal whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Journal whereCurrencyId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Journal whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Journal whereName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Journal whereShortCode($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Journal whereType($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Journal whereUpdatedAt($value)
+ * @mixin \Eloquent
+ */
 class Journal extends Model
 {
     use HasFactory;

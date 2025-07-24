@@ -8,6 +8,35 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
+/**
+ * @property int $id
+ * @property int $company_id
+ * @property int|null $currency_id
+ * @property string $name
+ * @property string|null $reference
+ * @property bool $is_active
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\AnalyticPlan> $analyticPlans
+ * @property-read int|null $analytic_plans_count
+ * @property-read \App\Models\Company $company
+ * @property-read \App\Models\Currency|null $currency
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\JournalEntryLine> $journalEntryLines
+ * @property-read int|null $journal_entry_lines_count
+ * @method static \Database\Factories\AnalyticAccountFactory factory($count = null, $state = [])
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AnalyticAccount newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AnalyticAccount newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AnalyticAccount query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AnalyticAccount whereCompanyId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AnalyticAccount whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AnalyticAccount whereCurrencyId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AnalyticAccount whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AnalyticAccount whereIsActive($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AnalyticAccount whereName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AnalyticAccount whereReference($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AnalyticAccount whereUpdatedAt($value)
+ * @mixin \Eloquent
+ */
 class AnalyticAccount extends Model
 {
     use HasFactory;

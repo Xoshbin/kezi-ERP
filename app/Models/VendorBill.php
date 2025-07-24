@@ -18,6 +18,52 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 // Therefore, the SoftDeletes trait is **intentionally omitted** for the VendorBill model
 // to uphold auditability and prevent accidental data loss for historical financial records.
 #[ObservedBy([AuditLogObserver::class])]
+/**
+ * @property int $id
+ * @property int $company_id
+ * @property int $vendor_id
+ * @property int $currency_id
+ * @property int|null $journal_entry_id
+ * @property string $bill_reference
+ * @property \Illuminate\Support\Carbon $bill_date
+ * @property \Illuminate\Support\Carbon $accounting_date
+ * @property \Illuminate\Support\Carbon|null $due_date
+ * @property string $status
+ * @property float $total_amount
+ * @property float $total_tax
+ * @property \Illuminate\Support\Carbon|null $posted_at
+ * @property array<array-key, mixed>|null $reset_to_draft_log
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \App\Models\Company $company
+ * @property-read \App\Models\Currency $currency
+ * @property-read \App\Models\JournalEntry|null $journalEntry
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\VendorBillLine> $lines
+ * @property-read int|null $lines_count
+ * @property-read \App\Models\Partner $vendor
+ * @method static \Database\Factories\VendorBillFactory factory($count = null, $state = [])
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|VendorBill newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|VendorBill newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|VendorBill posted()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|VendorBill query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|VendorBill whereAccountingDate($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|VendorBill whereBillDate($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|VendorBill whereBillReference($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|VendorBill whereCompanyId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|VendorBill whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|VendorBill whereCurrencyId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|VendorBill whereDueDate($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|VendorBill whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|VendorBill whereJournalEntryId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|VendorBill wherePostedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|VendorBill whereResetToDraftLog($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|VendorBill whereStatus($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|VendorBill whereTotalAmount($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|VendorBill whereTotalTax($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|VendorBill whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|VendorBill whereVendorId($value)
+ * @mixin \Eloquent
+ */
 class VendorBill extends Model
 {
     use HasFactory;

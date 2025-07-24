@@ -8,13 +8,28 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
- * @property int $id The primary key for the record.
- * @property int $payment_id The foreign key linking to the Payment model.
- * @property int|null $invoice_id The foreign key linking to the Invoice model (nullable if linked to a vendor bill).
- * @property int|null $vendor_bill_id The foreign key linking to the VendorBill model (nullable if linked to an invoice).
- * @property float $amount_applied The specific amount of the payment applied to this document.
- * @property \Illuminate\Support\Carbon|null $created_at Timestamp when the record was created.
- * @property \Illuminate\Support\Carbon|null $updated_at Timestamp when the record was last updated.
+ * @property int $id
+ * @property int $payment_id
+ * @property int|null $invoice_id
+ * @property int|null $vendor_bill_id
+ * @property float $amount_applied
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \App\Models\Invoice|null $invoice
+ * @property-read \App\Models\Payment $payment
+ * @property-read \App\Models\VendorBill|null $vendorBill
+ * @method static \Database\Factories\PaymentDocumentLinkFactory factory($count = null, $state = [])
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PaymentDocumentLink newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PaymentDocumentLink newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PaymentDocumentLink query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PaymentDocumentLink whereAmountApplied($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PaymentDocumentLink whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PaymentDocumentLink whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PaymentDocumentLink whereInvoiceId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PaymentDocumentLink wherePaymentId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PaymentDocumentLink whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PaymentDocumentLink whereVendorBillId($value)
+ * @mixin \Eloquent
  */
 class PaymentDocumentLink extends Model
 {

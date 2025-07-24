@@ -11,24 +11,37 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * Class Budget
  *
  * @package App\Models
- *
+ * 
  * This Eloquent model represents a financial or analytic budget within the accounting system.
  * It serves as a planning and control tool, allowing organizations to allocate resources
  * and track performance against predefined targets. Budgets can be defined as 'Analytic'
  * for project/department-level tracking or 'Financial' for general ledger account targets [3, 5].
- *
- * @property int $id Primary key, auto-incrementing.
- * @property int $company_id Foreign key to the Company this budget belongs to [3].
- * @property string $name The name or description of the budget (e.g., 'Marketing Campaign Q1 2024', 'Annual Operating Budget') [3].
- * @property \Illuminate\Support\Carbon $period_start_date The start date of the budget period [3].
- * @property \Illuminate\Support\Carbon $period_end_date The end date of the budget period [3].
- * @property string $budget_type The type of budget, either 'Analytic' or 'Financial' [3].
- * @property string $status The current status of the budget (e.g., 'Draft', 'Open', 'Revised', 'Closed') [3].
- * @property \Illuminate\Support\Carbon|null $created_at Timestamp when the record was created.
- * @property \Illuminate\Support\Carbon|null $updated_at Timestamp when the record was last updated.
- *
- * @property-read \App\Models\Company $company The company to which this budget belongs.
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\BudgetLine[] $budgetLines The detailed lines comprising this budget.
+ * @property int $id
+ * @property int $company_id
+ * @property string $name
+ * @property \Illuminate\Support\Carbon $period_start_date
+ * @property \Illuminate\Support\Carbon $period_end_date
+ * @property string $budget_type
+ * @property string $status
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\BudgetLine> $budgetLines
+ * @property-read int|null $budget_lines_count
+ * @property-read \App\Models\Company $company
+ * @method static \Database\Factories\BudgetFactory factory($count = null, $state = [])
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Budget newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Budget newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Budget query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Budget whereBudgetType($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Budget whereCompanyId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Budget whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Budget whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Budget whereName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Budget wherePeriodEndDate($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Budget wherePeriodStartDate($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Budget whereStatus($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Budget whereUpdatedAt($value)
+ * @mixin \Eloquent
  */
 class Budget extends Model
 {
