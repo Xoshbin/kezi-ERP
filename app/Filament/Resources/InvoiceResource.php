@@ -2,19 +2,23 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\InvoiceResource\Pages;
-use App\Filament\Resources\InvoiceResource\RelationManagers;
-use App\Models\Invoice;
-use App\Services\InvoiceService;
+use App\Models\Tax;
 use Filament\Forms;
-use Filament\Forms\Form;
-use Filament\Resources\Resource;
 use Filament\Tables;
+use App\Models\Invoice;
+use App\Models\Currency;
+use Filament\Forms\Form;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
+use App\Services\InvoiceService;
+use Filament\Resources\Resource;
 use Filament\Tables\Actions\Action;
+use Illuminate\Support\Facades\Auth;
+use Filament\Forms\Components\Repeater;
 use Filament\Notifications\Notification;
+use Illuminate\Database\Eloquent\Builder;
+use App\Filament\Resources\InvoiceResource\Pages;
+use Illuminate\Database\Eloquent\SoftDeletingScope;
+use App\Filament\Resources\InvoiceResource\RelationManagers;
 
 class InvoiceResource extends Resource
 {
@@ -45,16 +49,55 @@ class InvoiceResource extends Resource
                     ->required(),
                 Forms\Components\DatePicker::make('due_date')
                     ->required(),
-                Forms\Components\TextInput::make('status')
+                Forms\Components\Select::make('status')
+                    ->options(Invoice::getTypes())
                     ->required()
-                    ->maxLength(255)
-                    ->default('Draft'),
+                    ->default(Invoice::TYPE_DRAFT),
+                Repeater::make('invoiceLines')
+                    ->relationship()
+                    ->schema([
+                        Forms\Components\Select::make('product_id')
+                            ->relationship('product', 'name')
+                            ->searchable()
+                            ->columnSpan(2),
+                        Forms\Components\TextInput::make('description')
+                            ->maxLength(255)
+                            ->columnSpanFull(),
+                        Forms\Components\TextInput::make('quantity')
+                            ->required()
+                            ->numeric()
+                            ->columnSpan(1),
+                        Forms\Components\TextInput::make('unit_price')
+                            ->required()
+                            ->numeric()
+                            ->columnSpan(1),
+                        Forms\Components\Select::make('tax_id')
+                            ->relationship('tax', 'name')
+                            ->searchable()
+                            ->columnSpan(1),
+                        Forms\Components\Select::make('income_account_id')
+                            ->relationship('incomeAccount', 'name')
+                            ->searchable()
+                            ->required()
+                            ->columnSpan(2)
+                    ])
+                    ->columns(4)
+                    ->columnSpanFull()
+                    ->afterStateUpdated(function (callable $set, callable $get) {
+                        // Update total_amount when any line changes
+                        $totalDebit = collect($get('invoiceLines'))->sum('debit');
+                        $totalCredit = collect($get('invoiceLines'))->sum('credit');
+
+                        // Set the total_amount to the sum of debits (should equal credits in a balanced entry)
+                        $set('../../total_amount', $totalDebit);
+                    })
+                    ->live(onBlur: true),
                 Forms\Components\TextInput::make('total_amount')
-                    ->required()
-                    ->numeric(),
+                    ->numeric()
+                    ->readOnly(),
                 Forms\Components\TextInput::make('total_tax')
-                    ->required()
-                    ->numeric(),
+                    ->numeric()
+                    ->readOnly(),
                 Forms\Components\DateTimePicker::make('posted_at'),
                 Forms\Components\TextInput::make('reset_to_draft_log'),
             ]);
@@ -130,7 +173,7 @@ class InvoiceResource extends Resource
                         }
                     })
                     ->requiresConfirmation()
-                    ->visible(fn (Invoice $record) => $record->status === 'Draft'),
+                    ->visible(fn(Invoice $record) => $record->status === Invoice::TYPE_DRAFT),
                 Action::make('resetToDraft')
                     ->action(function (Invoice $record, array $data) {
                         $invoiceService = new InvoiceService();
@@ -152,7 +195,7 @@ class InvoiceResource extends Resource
                         Forms\Components\Textarea::make('reason')->required(),
                     ])
                     ->requiresConfirmation()
-                    ->visible(fn (Invoice $record) => $record->status === 'Posted'),
+                    ->visible(fn(Invoice $record) => $record->status === 'Posted'),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
