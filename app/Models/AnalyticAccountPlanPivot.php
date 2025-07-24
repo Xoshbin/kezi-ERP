@@ -29,7 +29,7 @@ class AnalyticAccountPlanPivot extends Pivot
      *
      * @var string
      */
-    protected $table = 'analytic_account_plan_pivot';
+    protected $table = 'analytic_account_plan_pivots';
 
     /**
      * The attributes that are mass assignable.
