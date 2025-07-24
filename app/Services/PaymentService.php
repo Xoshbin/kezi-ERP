@@ -8,24 +8,36 @@ use App\Models\JournalEntry;
 use App\Models\Payment;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
+use InvalidArgumentException;
 
 class PaymentService
 {
     /**
-     * Create and confirm a payment in a single, transactional operation.
+     * Create a new draft payment.
      */
-    public function createAndConfirm(array $data, User $user): Payment
+    public function create(array $data, User $user): Payment
     {
-        return DB::transaction(function () use ($data, $user) {
-            // Create the payment record itself.
-            $payment = Payment::create($data + [
-                'status' => 'Confirmed',
-                'created_by_user_id' => $user->id, // Ensure user is recorded
-            ]);
+        return Payment::create($data + [
+            'status' => Payment::STATUS_DRAFT,
+            'created_by_user_id' => $user->id,
+        ]);
+    }
 
+    /**
+     * Confirm a draft payment, locking it and creating the journal entry.
+     */
+    public function confirm(Payment $payment, User $user): Payment
+    {
+        if ($payment->status !== Payment::STATUS_DRAFT) {
+            throw new UpdateNotAllowedException('Only draft payments can be confirmed.');
+        }
+
+        return DB::transaction(function () use ($payment, $user) {
             // Create the corresponding journal entry.
             $journalEntry = $this->createJournalEntryForPayment($payment, $user);
+
             $payment->journal_entry_id = $journalEntry->id;
+            $payment->status = Payment::STATUS_CONFIRMED;
             $payment->save();
 
             PaymentConfirmed::dispatch($payment);
@@ -39,6 +51,10 @@ class PaymentService
      */
     private function createJournalEntryForPayment(Payment $payment, User $user): JournalEntry
     {
+        if (!$payment->journal_id) {
+            throw new InvalidArgumentException('The payment must have a journal to be confirmed.');
+        }
+
         $lines = [];
         $bankAccountId = config('accounting.defaults.default_bank_account_id');
 
@@ -60,7 +76,7 @@ class PaymentService
             'entry_date' => $payment->payment_date,
             'reference' => 'Payment #' . $payment->id,
             'description' => 'Payment from/to ' . $payment->partner->name,
-            'source_type' => Payment::class,
+            'source_type' => get_class($payment),
             'source_id' => $payment->id,
             'created_by_user_id' => $user->id,
             'lines' => $lines,
@@ -75,7 +91,7 @@ class PaymentService
     public function update(Payment $payment, array $data): bool
     {
         // Guard Clause: Never allow updating a confirmed payment.
-        if ($payment->status === 'Confirmed') {
+        if ($payment->status === Payment::STATUS_CONFIRMED) {
             throw new UpdateNotAllowedException('Cannot modify a confirmed payment.');
         }
 
