@@ -29,3 +29,10 @@ This file records architectural and implementation decisions using a list format
 ## Implementation Details
 
 *
+[2025-07-24 19:36:10] - Refactored `VendorBillService::createJournalEntryForBill` to handle credit notes as true reversal transactions. Instead of applying the same debit/credit logic as a standard bill, the service now correctly inverts the entries for credit notes (debiting Accounts Payable, crediting expenses/taxes). This decision was made to align the implementation with the core accounting principle of immutability, where corrections are made via new, offsetting transactions rather than edits.
+[2025-07-24 20:28:00] - **Decision:** Implemented an event-driven approach for posting journal entries related to vendor bills.
+**Rationale:** The previous implementation created a journal entry in an un-posted state but failed to trigger the posting mechanism, causing feature tests to fail. By dispatching a `VendorBillConfirmed` event and creating a dedicated `PostJournalEntry` listener, the system now correctly decouples the creation of the journal entry from the posting process. This aligns with modern Laravel architecture, improves modularity, and ensures that the accounting workflow is completed reliably.
+**Implementation Details:**
+1.  Created a new `PostJournalEntry` listener in `app/Listeners`.
+2.  The listener's `handle` method calls `JournalEntryService->post()` to finalize the journal entry.
+3.  Registered the event and listener in `AppServiceProvider` to ensure they are correctly wired up by the framework.

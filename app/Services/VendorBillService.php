@@ -156,28 +156,43 @@ class VendorBillService
         $taxAccountId = config('accounting.defaults.tax_receivable_id'); // Tax on purchases is an asset
         $purchaseJournalId = config('accounting.defaults.purchase_journal_id');
 
+        // Explicitly fail if configuration is missing.
+        if (!$apAccountId || !$taxAccountId || !$purchaseJournalId) {
+            throw new \RuntimeException('Default accounting accounts (accounts_payable_id, tax_receivable_id, or purchase_journal_id) are not configured.');
+        }
+
+        // A credit note should reverse the debit/credit entries.
+        $isCreditNote = $vendorBill->type === 'credit_note';
+
         $lines = [];
 
-        // 1. The Credit Line (Total amount owed to the vendor)
+        // 1. The Accounts Payable Line: Credit for bills, Debit for credit notes.
         $lines[] = [
             'account_id' => $apAccountId,
-            'credit' => $vendorBill->total_amount,
+            'debit' => $isCreditNote ? $vendorBill->total_amount : 0,
+            'credit' => !$isCreditNote ? $vendorBill->total_amount : 0,
+            'description' => 'Accounts Payable',
         ];
 
-        // 2. The Debit Lines (Expense and Tax from each bill line)
+        // 2. The Debit/Credit Lines for expenses and taxes.
         foreach ($vendorBill->lines as $billLine) {
-            // Debit the expense account for the line's subtotal
+            if (empty($billLine->expense_account_id)) {
+                throw new \RuntimeException("Expense account is not set for vendor bill line #{$billLine->id}.");
+            }
+            // Expense line
             $lines[] = [
                 'account_id' => $billLine->expense_account_id,
-                'debit' => $billLine->subtotal,
+                'debit' => !$isCreditNote ? $billLine->subtotal : 0,
+                'credit' => $isCreditNote ? $billLine->subtotal : 0,
                 'description' => $billLine->description,
             ];
 
-            // Debit the tax account if there is tax
+            // Tax line
             if ($billLine->total_line_tax > 0) {
                 $lines[] = [
                     'account_id' => $taxAccountId,
-                    'debit' => $billLine->total_line_tax,
+                    'debit' => !$isCreditNote ? $billLine->total_line_tax : 0,
+                    'credit' => $isCreditNote ? $billLine->total_line_tax : 0,
                     'description' => 'Tax for bill ' . $vendorBill->bill_reference,
                 ];
             }
