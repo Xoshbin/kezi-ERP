@@ -185,25 +185,27 @@ test('the entire accounting workflow from setup to credit note', function () {
     expect($customerPaymentEntry->lines->where('account_id', $arAccount->id)->first()->credit)->toEqual('5000000.00');
     expect($invoice->fresh()->status)->toBe(Invoice::TYPE_POSTED);
 
-    // // Step 7: Paying a Vendor
-    // $vendorPayment = $paymentService->create([
-    //     'company_id' => $company->id,
-    //     'payment_type' => 'Outbound',
-    //     'partner_id' => $vendor->id,
-    //     'amount' => 3000000,
-    //     'payment_date' => now()->toDateString(),
-    //     'journal_id' => $bankJournal->id,
-    //     'vendor_bill_ids' => [$vendorBill->id],
-    // ], $user);
-    // $paymentService->confirm($vendorPayment, $user);
+    // Step 7: Paying a Vendor
+    $vendorPayment = $paymentService->create([
+        'company_id' => $company->id,
+        'currency_id' => $currency->id,
+        'paid_to_from_partner_id' => $vendor->id,
+        'payment_type' => 'Outbound',
+        'partner_id' => $vendor->id,
+        'amount' => 3000000,
+        'payment_date' => now()->toDateString(),
+        'journal_id' => $bankJournal->id,
+        'vendor_bill_ids' => [$vendorBill->id],
+    ], $user);
+    $paymentService->confirm($vendorPayment, $user);
 
-    // $vendorPayment->refresh();
-    // $vendorPaymentEntry = $vendorPayment->journalEntry;
-    // expect($vendorPaymentEntry->is_posted)->toBeTrue();
-    // expect($vendorPaymentEntry->total_debit)->toEqual('300000000.0');
-    // expect($vendorPaymentEntry->lines->where('account_id', $apAccount->id)->first()->debit)->toEqual('300000000.0');
-    // expect($vendorPaymentEntry->lines->where('account_id', $bankAccount->id)->first()->credit)->toEqual('300000000.0');
-    // expect($vendorBill->fresh()->status)->toBe('Paid');
+    $vendorPayment->refresh();
+    $vendorPaymentEntry = $vendorPayment->journalEntry;
+    expect($vendorPaymentEntry->is_posted)->toBeTrue();
+    expect($vendorPaymentEntry->total_debit)->toEqual(3000000.0);
+    expect($vendorPaymentEntry->lines->where('account_id', $apAccount->id)->first()->debit)->toEqual(3000000.0);
+    expect($vendorPaymentEntry->lines->where('account_id', $bankAccount->id)->first()->credit)->toEqual(3000000.0);
+    expect($vendorBill->fresh()->status)->toBe(VendorBill::TYPE_POSTED);
 
     // // Step 8: Handling a Correction (Credit Note)
     // $adjustmentService = new AdjustmentDocumentService();
