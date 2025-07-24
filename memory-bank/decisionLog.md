@@ -36,3 +36,9 @@ This file records architectural and implementation decisions using a list format
 1.  Created a new `PostJournalEntry` listener in `app/Listeners`.
 2.  The listener's `handle` method calls `JournalEntryService->post()` to finalize the journal entry.
 3.  Registered the event and listener in `AppServiceProvider` to ensure they are correctly wired up by the framework.
+[2025-07-24 21:08:00] - **Decision:** Refactored the `InvoiceService` and `PostJournalEntry` listener to resolve a critical bug preventing invoice confirmation.
+**Rationale:** The original implementation created a race condition and violated the system's immutability principle. The `InvoiceService` was creating an already-posted journal entry, which an event listener then tried to post again. The fix was to align the invoice workflow with the working vendor bill workflow.
+**Implementation Details:**
+1.  Modified `InvoiceService::create()` to explicitly instantiate the `Invoice` model, ensuring a consistent state.
+2.  Modified `InvoiceService::confirm()` to create the `JournalEntry` in a **draft** state, removing the `postImmediately` flag.
+3.  The existing `PostJournalEntry` event subscriber now correctly and exclusively handles the final posting of the journal entry for both invoices and vendor bills, ensuring a clean, decoupled, and auditable two-step process.

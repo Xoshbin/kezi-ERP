@@ -17,8 +17,12 @@ class InvoiceService
     public function create(array $data): Invoice
     {
         return DB::transaction(function () use ($data) {
-            $invoiceData = collect($data)->except('lines')->all();
-            $invoice = Invoice::create($invoiceData);
+            $invoice = new Invoice();
+            $invoice->fill(collect($data)->except('lines')->all());
+            $invoice->status = Invoice::TYPE_DRAFT;
+            $invoice->total_amount = 0;
+            $invoice->total_tax = 0;
+            $invoice->save(); // Save the invoice first to get an ID
 
             if (isset($data['lines'])) {
                 $invoice->invoiceLines()->createMany($data['lines']);
@@ -86,17 +90,12 @@ class InvoiceService
         }
 
         DB::transaction(function () use ($invoice, $user) {
-            // 1. Recalculate totals and SAVE them immediately.
             $this->recalculateInvoiceTotals($invoice);
-            $invoice->save(); // <-- Add this line
-
-            // 2. Assign invoice number and update status.
             $invoice->invoice_number = $this->getNextInvoiceNumber($invoice->company);
             $invoice->status = Invoice::TYPE_POSTED;
             $invoice->posted_at = now();
 
-            // 3. Create the corresponding Journal Entry.
-            $journalEntry = $this->createJournalEntryForInvoice($invoice, $user); // Pass user
+            $journalEntry = $this->createJournalEntryForInvoice($invoice, $user);
             $invoice->journal_entry_id = $journalEntry->id;
 
             $invoice->save();
@@ -188,7 +187,7 @@ class InvoiceService
             'created_by_user_id' => $user->id,
         ];
 
-        return (new JournalEntryService())->create($journalEntryData, true);
+        return (new JournalEntryService())->create($journalEntryData);
     }
     public function resetToDraft(Invoice $invoice, User $user, string $reason): void
     {

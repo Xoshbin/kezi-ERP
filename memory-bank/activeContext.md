@@ -43,3 +43,9 @@ This file tracks the project's current status, including recent changes, current
 3.  Created a `PostJournalEntry` listener to handle the event and post the journal entry.
 4.  Registered the listener in `AppServiceProvider`.
 5.  The bug is now fixed, and the associated feature test is passing. The system's event-driven architecture for this workflow is now correctly implemented.
+[2025-07-24 21:08:25] - **Issue:** The `AccountingWorkflowTest` was failing with a null reference error on the `journalEntry` relationship for Invoices.
+**Resolution:**
+1.  Diagnosed a complex transaction rollback issue in `InvoiceService::confirm`.
+2.  The root cause was a violation of the immutability principle: the service created an already-posted journal entry, which an event listener then tried to post a second time, causing a `RuntimeException`.
+3.  Refactored `InvoiceService` to create the journal entry in a **draft** state, allowing the `PostJournalEntry` event subscriber to handle the posting exclusively.
+4.  This change aligns the invoice workflow with the vendor bill workflow, respects the immutability principle, and ensures a robust, auditable, two-step posting process. The bug is now fixed, and the test is passing.

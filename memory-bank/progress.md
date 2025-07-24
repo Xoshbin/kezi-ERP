@@ -36,3 +36,10 @@ This file tracks the project's progress using a task list format.
 - Created a new `PostJournalEntry` listener to handle the event.
 - Registered the listener in `AppServiceProvider` to correctly link the event to its handler.
 - The test now passes, and the vendor bill workflow is fully functional.
+[2025-07-24 21:08:15] - **Task:** Debug and fix failing `AccountingWorkflowTest` for invoices.
+**Status:** Completed.
+**Summary:**
+- Diagnosed a complex bug where `Invoice` journal entries were not being created, leading to a null reference error.
+- The root cause was a combination of missing test configuration and an incorrect implementation in `InvoiceService` that violated the system's immutability rules by attempting to post a journal entry twice.
+- Refactored `InvoiceService` to align with the working `VendorBillService` logic, ensuring the journal entry is created as a draft and posted by the `PostJournalEntry` event subscriber.
+- The test now passes, and the invoice accounting workflow is fully functional and compliant with project principles.
