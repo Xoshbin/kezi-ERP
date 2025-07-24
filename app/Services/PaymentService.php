@@ -8,6 +8,7 @@ use App\Models\JournalEntry;
 use App\Models\Payment;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use InvalidArgumentException;
 
 class PaymentService
@@ -59,22 +60,23 @@ class PaymentService
         // The Journal is the source of truth for which account to use.
         // Eager load the relationship to prevent extra queries.
         $payment->load('journal');
-        $bankAccountId = $payment->journal->default_debit_account_id;
+        $debitAccountId = $payment->journal->default_debit_account_id;
+        $creditAccountId = $payment->journal->default_credit_account_id;
 
-        if (!$bankAccountId) {
-            throw new InvalidArgumentException('The selected journal is not configured with a default bank/cash account.');
+        if (!$debitAccountId || !$creditAccountId) {
+            throw new InvalidArgumentException('The selected journal is not fully configured with default debit and credit accounts.');
         }
 
         if ($payment->payment_type === Payment::TYPE_INBOUND) {
-            // Inbound: Money comes IN to the bank, reducing customer debt.
+            // Inbound: Money comes IN to the bank (debit), reducing customer debt (credit).
             $arAccountId = config('accounting.defaults.accounts_receivable_id');
-            $lines[] = ['account_id' => $bankAccountId, 'debit' => $payment->amount];
-            $lines[] = ['account_id' => $arAccountId, 'credit' => $payment->amount];
+            $lines[] = ['account_id' => $debitAccountId, 'debit' => $payment->amount, 'credit' => 0];
+            $lines[] = ['account_id' => $arAccountId, 'credit' => $payment->amount, 'debit' => 0];
         } else { // Outbound
-            // Outbound: Money goes OUT of the bank, reducing company debt.
+            // Outbound: Money goes OUT of the bank (credit), reducing company debt (debit).
             $apAccountId = config('accounting.defaults.accounts_payable_id');
-            $lines[] = ['account_id' => $apAccountId, 'debit' => $payment->amount];
-            $lines[] = ['account_id' => $bankAccountId, 'credit' => $payment->amount];
+            $lines[] = ['account_id' => $apAccountId, 'debit' => $payment->amount, 'credit' => 0];
+            $lines[] = ['account_id' => $creditAccountId, 'credit' => $payment->amount, 'debit' => 0];
         }
 
         $journalEntryData = [
@@ -89,7 +91,9 @@ class PaymentService
             'lines' => $lines,
         ];
 
-        return (new JournalEntryService())->create($journalEntryData);
+        Log::debug('PaymentService: Creating journal entry with data:', $journalEntryData);
+
+        return (new JournalEntryService())->create($journalEntryData, true);
     }
 
     /**

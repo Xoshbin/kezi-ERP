@@ -3,6 +3,7 @@
 namespace App\Listeners;
 
 use App\Events\InvoiceConfirmed;
+use App\Events\PaymentConfirmed;
 use App\Events\VendorBillConfirmed;
 use App\Services\JournalEntryService;
 use Illuminate\Events\Dispatcher;
@@ -27,6 +28,13 @@ class PostJournalEntry
         }
     }
 
+    public function handlePaymentConfirmed(PaymentConfirmed $event): void
+    {
+        if ($event->payment->journalEntry) {
+            $this->journalEntryService->post($event->payment->journalEntry);
+        }
+    }
+
     public function subscribe(Dispatcher $events): void
     {
         $events->listen(
@@ -37,6 +45,11 @@ class PostJournalEntry
         $events->listen(
             InvoiceConfirmed::class,
             [PostJournalEntry::class, 'handleInvoiceConfirmed']
+        );
+
+        $events->listen(
+            PaymentConfirmed::class,
+            [PostJournalEntry::class, 'handlePaymentConfirmed']
         );
     }
 }

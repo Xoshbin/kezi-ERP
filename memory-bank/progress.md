@@ -50,3 +50,10 @@ This file tracks the project's progress using a task list format.
 - After extensive analysis of the models, migrations, and Memory Bank, it was confirmed that the `journals` table lacked the necessary columns to link a journal to its default accounts.
 - Executed a full-cycle fix: created a new database migration, updated the `Journal` model with the new relationships, and confirmed the service logic and tests were aligned.
 - This change resolves the bug permanently and strengthens the application's adherence to core accounting principles.
+[2025-07-24 23:14:34] - **Task:** Debug and fix critical bug in `AccountingWorkflowTest` and subsequent regressions.
+**Status:** Completed.
+**Summary:**
+- Diagnosed the root cause of the `AccountingWorkflowTest` failure as a case-sensitivity typo in the test data.
+- Corrected the typo, which revealed several regressions in `AccountingTest.php`.
+- Fixed the regressions by correcting the return type of `MoneyCast` to `float` and by hardening the `JournalFactory` and the payment tests to ensure journals are always created with the correct default accounts.
+- The entire test suite is now passing, and the integrity of the accounting logic has been verified.

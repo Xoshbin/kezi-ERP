@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Casts\MoneyCast;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use RuntimeException; // Utilized for explicit enforcement of immutability and data integrity.
 
@@ -112,13 +113,22 @@ class JournalEntryLine extends Model
         // Enforce data integrity: A journal entry line must have either a debit or a credit, but not both,
         // and both must be non-negative. It cannot have both as zero [5].
         static::saving(function (JournalEntryLine $line) {
+            Log::debug('JournalEntryLine@saving: Fired.', [
+                'attributes' => $line->getAttributes(), // Raw attributes before casting
+                'debit_property' => $line->debit,       // Accessor value
+                'credit_property' => $line->credit,     // Accessor value
+            ]);
+            // IMPORTANT: Access raw attributes to avoid issues with mutators/casts during the saving event.
+            $debit = $line->getAttributes()['debit'] ?? 0;
+            $credit = $line->getAttributes()['credit'] ?? 0;
+
             // Ensure amounts are non-negative.
-            if ($line->debit < 0 || $line->credit < 0) {
+            if ($debit < 0 || $credit < 0) {
                 throw new RuntimeException("Validation Error: Debit and credit amounts must be non-negative values.");
             }
 
             // Ensure either debit or credit is present, but not both, and not both zero.
-            if (($line->debit > 0 && $line->credit > 0) || ($line->debit == 0 && $line->credit == 0)) {
+            if (($debit > 0 && $credit > 0) || ($debit == 0 && $credit == 0)) {
                 throw new RuntimeException("Validation Error: A journal entry line must contain either a non-zero debit or a non-zero credit amount, but not both, and not neither.");
             }
         });
