@@ -575,22 +575,22 @@ test('a draft customer invoice can be freely edited', function () {
     $this->assertDatabaseCount('invoice_lines', 2);
 });
 
-//test('a draft customer invoice can be freely deleted', function () {
-//    // Arrange: Create a user who will perform the action.
-//    $user = User::factory()->create();
-//    $this->actingAs($user);
-//    // Arrange: Create a draft invoice.
-//    $invoice = Invoice::factory()->create(['status' => 'Draft']);
-//
-//    // Act: Call the delete method on the service.
-//    $wasDeleted = (new InvoiceService())->delete($invoice);
-//
-//    // Assert: Confirm the deletion was successful.
-//    expect($wasDeleted)->toBeTrue();
-//
-//    // Assert: Confirm the record is gone from the database.
-//    $this->assertModelMissing($invoice);
-//});
+test('a draft customer invoice can be freely deleted', function () {
+   // Arrange: Create a user who will perform the action.
+   $user = User::factory()->create();
+   $this->actingAs($user);
+   // Arrange: Create a draft invoice.
+   $invoice = Invoice::factory()->create(['status' => Invoice::TYPE_DRAFT]);
+
+   // Act: Call the delete method on the service.
+   $wasDeleted = (new InvoiceService())->delete($invoice);
+
+   // Assert: Confirm the deletion was successful.
+   expect($wasDeleted)->toBeTrue();
+
+   // Assert: Confirm the record is gone from the database.
+   $this->assertModelMissing($invoice);
+});
 
 test('confirming an invoice assigns a sequential number, posts it, and creates a journal entry', function () {
     // Arrange: Create a user who will perform the action.
@@ -914,20 +914,20 @@ test('creating a vendor bill sets correct draft status, saves line items, and ca
     expect($vendorBill->currency_id)->toBe($currency->id);
 });
 
-//test('a draft vendor bill can be freely deleted', function () {
-//    // Arrange: Create a user who will perform the action.
-//    $user = User::factory()->create();
-//    $this->actingAs($user);
-//    // Arrange: Create a draft vendor bill.
-//    $vendorBill = VendorBill::factory()->create(['status' => 'Draft']);
-//
-//    // Act: Call the delete method on the service.
-//    $wasDeleted = (new VendorBillService())->delete($vendorBill);
-//
-//    // Assert: Confirm the deletion was successful.
-//    expect($wasDeleted)->toBeTrue();
-//    $this->assertModelMissing($vendorBill);
-//});
+test('a draft vendor bill can be freely deleted', function () {
+   // Arrange: Create a user who will perform the action.
+   $user = User::factory()->create();
+   $this->actingAs($user);
+   // Arrange: Create a draft vendor bill.
+   $vendorBill = VendorBill::factory()->create(['status' => VendorBill::TYPE_DRAFT]);
+
+   // Act: Call the delete method on the service.
+   $wasDeleted = (new VendorBillService())->delete($vendorBill);
+
+   // Assert: Confirm the deletion was successful.
+   expect($wasDeleted)->toBeTrue();
+   $this->assertModelMissing($vendorBill);
+});
 
 test('confirming a vendor bill creates a linked journal entry', function () {
     // Arrange: Create a user who will perform the action.
