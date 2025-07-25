@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Events\AdjustmentDocumentPosted;
 use App\Exceptions\UpdateNotAllowedException;
 use App\Models\AdjustmentDocument;
 use App\Models\JournalEntry;
@@ -30,7 +31,7 @@ class AdjustmentDocumentService
 
             $creditNote->save();
 
-            // You could dispatch an event here, like CreditNotePosted::dispatch($creditNote);
+            AdjustmentDocumentPosted::dispatch($creditNote);
         });
     }
 
@@ -41,7 +42,7 @@ class AdjustmentDocumentService
     {
         // Get the default accounts from your config.
         $arAccountId = config('accounting.defaults.accounts_receivable_id');
-        $incomeAccountId = config('accounting.defaults.default_income_account_id');
+        $salesDiscountAccountId = config('accounting.defaults.default_sales_discount_account_id');
         $taxAccountId = config('accounting.defaults.default_tax_account_id');
         $salesJournalId = config('accounting.defaults.sales_journal_id');
 
@@ -49,12 +50,16 @@ class AdjustmentDocumentService
         $lines = [];
         $subtotal = $creditNote->total_amount - $creditNote->total_tax;
 
-        // 1. Debit Revenue/Income to reduce it.
-        $lines[] = [ 'account_id' => $incomeAccountId, 'debit' => $subtotal ];
-        // 2. Debit Tax Payable to reduce it.
-        $lines[] = [ 'account_id' => $taxAccountId, 'debit' => $creditNote->total_tax ];
+        // 1. Debit the Sales Discount/Contra-Revenue account.
+        $lines[] = ['account_id' => $salesDiscountAccountId, 'debit' => $subtotal, 'credit' => 0];
+
+        // 2. Debit Tax Payable to reduce it, only if there is tax.
+        if ($creditNote->total_tax > 0) {
+            $lines[] = ['account_id' => $taxAccountId, 'debit' => $creditNote->total_tax, 'credit' => 0];
+        }
+
         // 3. Credit Accounts Receivable to reduce the customer's debt.
-        $lines[] = [ 'account_id' => $arAccountId, 'credit' => $creditNote->total_amount ];
+        $lines[] = ['account_id' => $arAccountId, 'credit' => $creditNote->total_amount, 'debit' => 0];
 
         $journalEntryData = [
             'company_id' => $creditNote->company_id,
@@ -68,7 +73,7 @@ class AdjustmentDocumentService
             'lines' => $lines,
         ];
 
-        return (new JournalEntryService())->create($journalEntryData);
+        return (new JournalEntryService())->create($journalEntryData, false);
     }
     public function update(AdjustmentDocument $creditNote, array $data): bool
     {
@@ -77,7 +82,7 @@ class AdjustmentDocumentService
             throw new UpdateNotAllowedException('Cannot modify a posted credit note.');
         }
 
-        // ... logic to update a draft credit note ...
+        return $creditNote->update($data);
     }
 
 }

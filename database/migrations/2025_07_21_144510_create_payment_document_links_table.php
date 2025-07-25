@@ -16,7 +16,7 @@ return new class extends Migration
             $table->foreignId('payment_id')->constrained('payments')->onDelete('cascade');
             $table->foreignId('invoice_id')->nullable()->constrained('invoices')->onDelete('cascade');
             $table->foreignId('vendor_bill_id')->nullable()->constrained('vendor_bills')->onDelete('cascade');
-            $table->decimal('amount_applied', 15, 2);
+            $table->unsignedBigInteger('amount_applied');
             $table->timestamps();
 
             // Note: The constraint that either invoice_id or vendor_bill_id is present

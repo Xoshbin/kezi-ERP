@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string('code')->unique(); // e.g., 'IQD', 'USD'
             $table->string('name');
             $table->string('symbol', 5);
-            $table->decimal('exchange_rate', 15, 6);
+            $table->unsignedBigInteger('exchange_rate');
             $table->boolean('is_active')->default(true);
             $table->dateTime('last_updated_at')->nullable();
             $table->timestamps();

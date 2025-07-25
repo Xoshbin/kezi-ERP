@@ -575,22 +575,22 @@ test('a draft customer invoice can be freely edited', function () {
     $this->assertDatabaseCount('invoice_lines', 2);
 });
 
-//test('a draft customer invoice can be freely deleted', function () {
-//    // Arrange: Create a user who will perform the action.
-//    $user = User::factory()->create();
-//    $this->actingAs($user);
-//    // Arrange: Create a draft invoice.
-//    $invoice = Invoice::factory()->create(['status' => 'Draft']);
-//
-//    // Act: Call the delete method on the service.
-//    $wasDeleted = (new InvoiceService())->delete($invoice);
-//
-//    // Assert: Confirm the deletion was successful.
-//    expect($wasDeleted)->toBeTrue();
-//
-//    // Assert: Confirm the record is gone from the database.
-//    $this->assertModelMissing($invoice);
-//});
+test('a draft customer invoice can be freely deleted', function () {
+   // Arrange: Create a user who will perform the action.
+   $user = User::factory()->create();
+   $this->actingAs($user);
+   // Arrange: Create a draft invoice.
+   $invoice = Invoice::factory()->create(['status' => Invoice::TYPE_DRAFT]);
+
+   // Act: Call the delete method on the service.
+   $wasDeleted = (new InvoiceService())->delete($invoice);
+
+   // Assert: Confirm the deletion was successful.
+   expect($wasDeleted)->toBeTrue();
+
+   // Assert: Confirm the record is gone from the database.
+   $this->assertModelMissing($invoice);
+});
 
 test('confirming an invoice assigns a sequential number, posts it, and creates a journal entry', function () {
     // Arrange: Create a user who will perform the action.
@@ -914,20 +914,20 @@ test('creating a vendor bill sets correct draft status, saves line items, and ca
     expect($vendorBill->currency_id)->toBe($currency->id);
 });
 
-//test('a draft vendor bill can be freely deleted', function () {
-//    // Arrange: Create a user who will perform the action.
-//    $user = User::factory()->create();
-//    $this->actingAs($user);
-//    // Arrange: Create a draft vendor bill.
-//    $vendorBill = VendorBill::factory()->create(['status' => 'Draft']);
-//
-//    // Act: Call the delete method on the service.
-//    $wasDeleted = (new VendorBillService())->delete($vendorBill);
-//
-//    // Assert: Confirm the deletion was successful.
-//    expect($wasDeleted)->toBeTrue();
-//    $this->assertModelMissing($vendorBill);
-//});
+test('a draft vendor bill can be freely deleted', function () {
+   // Arrange: Create a user who will perform the action.
+   $user = User::factory()->create();
+   $this->actingAs($user);
+   // Arrange: Create a draft vendor bill.
+   $vendorBill = VendorBill::factory()->create(['status' => VendorBill::TYPE_DRAFT]);
+
+   // Act: Call the delete method on the service.
+   $wasDeleted = (new VendorBillService())->delete($vendorBill);
+
+   // Assert: Confirm the deletion was successful.
+   expect($wasDeleted)->toBeTrue();
+   $this->assertModelMissing($vendorBill);
+});
 
 test('confirming a vendor bill creates a linked journal entry', function () {
     // Arrange: Create a user who will perform the action.
@@ -1110,7 +1110,11 @@ test('confirming an inbound payment creates a linked journal entry', function ()
     $currency = Currency::factory()->create(['code' => 'USD']);
 
     // Arrange: Create a specific journal for bank transactions.
-    $bankJournal = Journal::factory()->for($company)->create(['type' => 'Bank']);
+    $bankJournal = Journal::factory()->for($company)->create([
+        'type' => 'Bank',
+        'default_debit_account_id' => $bankAccount->id,
+        'default_credit_account_id' => $arAccount->id,
+    ]);
 
     // Arrange: Set up the default accounts the service will need.
     config([
@@ -1172,7 +1176,10 @@ test('a confirmed payment is immutable', function () {
     $paymentData = [
         'company_id' => $company->id,
         'currency_id' => $currency->id,
-        'journal_id' => Journal::factory()->for($company)->create()->id,
+        'journal_id' => Journal::factory()->for($company)->create([
+            'default_debit_account_id' => $bankAccount->id,
+            'default_credit_account_id' => $arAccount->id,
+        ])->id,
         'paid_to_from_partner_id' => Partner::factory()->for($company)->create()->id,
         'payment_date' => now()->toDateString(),
         'payment_type' => Payment::TYPE_INBOUND,
@@ -1214,7 +1221,10 @@ test('an incoming payment correctly debits Bank and credits Accounts Receivable'
     // Arrange: Prepare the data for an inbound payment.
     $paymentData = [
         'company_id' => $company->id,
-        'journal_id' => Journal::factory()->for($company)->create()->id,
+        'journal_id' => Journal::factory()->for($company)->create([
+            'default_debit_account_id' => $bankAccount->id,
+            'default_credit_account_id' => $arAccount->id,
+        ])->id,
         'currency_id' => $currency->id,
         'paid_to_from_partner_id' => $customer->id,
         'payment_date' => now()->toDateString(),
@@ -1263,6 +1273,8 @@ test('an outgoing payment correctly debits Accounts Payable and credits Bank', f
     $bankJournal = Journal::factory()->for($company)->create([
         'type' => 'Bank',
         'currency_id' => $currency->id,
+        'default_debit_account_id' => $apAccount->id,
+        'default_credit_account_id' => $bankAccount->id,
     ]);
 
     config([

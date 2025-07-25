@@ -16,9 +16,9 @@ return new class extends Migration
             $table->foreignId('budget_id')->constrained('budgets')->onDelete('cascade');
             $table->foreignId('analytic_account_id')->nullable()->constrained('analytic_accounts');
             $table->foreignId('account_id')->nullable()->constrained('accounts');
-            $table->decimal('budgeted_amount', 15, 2);
-            $table->decimal('achieved_amount', 15, 2)->default(0);
-            $table->decimal('committed_amount', 15, 2)->default(0);
+            $table->unsignedBigInteger('budgeted_amount');
+            $table->unsignedBigInteger('achieved_amount')->default(0);
+            $table->unsignedBigInteger('committed_amount')->default(0);
             $table->timestamps();
         });
     }

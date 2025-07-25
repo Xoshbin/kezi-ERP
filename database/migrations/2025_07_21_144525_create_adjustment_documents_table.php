@@ -23,8 +23,8 @@ return new class extends Migration
             $table->string('type'); // 'Credit Note', 'Debit Note', 'Miscellaneous Adjustment'
             $table->date('date');
             $table->string('reference_number');
-            $table->decimal('total_amount', 15, 2);
-            $table->decimal('total_tax', 15, 2);
+            $table->unsignedBigInteger('total_amount');
+            $table->unsignedBigInteger('total_tax');
             $table->text('reason');
             $table->string('status')->default('Draft'); // 'Draft', 'Posted'
             $table->timestamp('posted_at')->nullable();

@@ -3,6 +3,7 @@
 namespace App\Casts;
 
 use Illuminate\Contracts\Database\Eloquent\CastsAttributes;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Database\Eloquent\Model;
 
 class MoneyCast implements CastsAttributes
@@ -21,9 +22,8 @@ class MoneyCast implements CastsAttributes
      */
     public function get($model, string $key, $value, array $attributes): float
     {
-        // Transform the integer stored in the database into a float.
-        // For example, 12345 becomes 123.45
-        return round(floatval($value) / 100, precision: 2);
+        // Transform the integer stored in the database (e.g., 12345) into a float (e.g., 123.45).
+        return round(floatval($value) / 100, 2);
     }
 
     /**
@@ -38,10 +38,10 @@ class MoneyCast implements CastsAttributes
      *
      * @param  array<string, mixed>  $attributes
      */
-    public function set($model, string $key, $value, array $attributes): float
+    public function set($model, string $key, $value, array $attributes): int
     {
         // Transform the float into an integer for storage.
         // For example, 123.45 becomes 12345
-        return round(floatval($value) * 100);
+        return (int) round(floatval($value) * 100);
     }
 }
