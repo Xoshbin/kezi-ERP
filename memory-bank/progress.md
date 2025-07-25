@@ -70,3 +70,9 @@ This file tracks the project's progress using a task list format.
 - Refactored `AdjustmentDocumentService` to dispatch the event instead of posting the journal entry directly.
 - Updated the `PostJournalEntry` listener to handle the new event, unifying the posting logic for all document types.
 - This change improves architectural consistency and maintainability.
+[2025-07-25 15:43:41] - **Task:** Debug and fix failing `AccountingTest` for credit notes.
+**Status:** Completed.
+**Summary:**
+- Diagnosed and fixed a series of cascading errors starting with a `ValidationException`.
+- The resolution involved refactoring the test to align with accounting principles, correcting the test setup to provide necessary configuration, and ensuring the test assertions correctly handled the application's `MoneyCast` for financial values.
+- The test suite is now passing, and the credit note workflow is fully functional and compliant with the project's architectural rules.
