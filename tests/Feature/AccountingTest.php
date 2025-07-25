@@ -1363,6 +1363,7 @@ test('posting a credit note generates the correct reverse journal entry', functi
     $arAccount = Account::factory()->for($company)->create(['type' => 'Receivable']);
     $incomeAccount = Account::factory()->for($company)->create(['type' => 'Income']);
     $taxAccount = Account::factory()->for($company)->create(['type' => 'Liability']);
+    $salesDiscountAccount = Account::factory()->for($company)->create(['type' => 'Income']); // Or 'Contra-Revenue'
     // Arrange: Create a specific journal for sales.
     $salesJournal = Journal::factory()->for($company)->create(['type' => 'Sale']);
 
@@ -1384,8 +1385,8 @@ test('posting a credit note generates the correct reverse journal entry', functi
     // Arrange: Set up default accounts for the service to use.
     config([
         'accounting.defaults.accounts_receivable_id' => $arAccount->id,
-        // In a real system, the service would get the income/tax accounts from the credit note lines.
-        'accounting.defaults.default_income_account_id' => $incomeAccount->id,
+        // This is the crucial missing piece.
+        'accounting.defaults.default_sales_discount_account_id' => $salesDiscountAccount->id,
         'accounting.defaults.default_tax_account_id' => $taxAccount->id,
         'accounting.defaults.sales_journal_id' => $salesJournal->id,
     ]);
@@ -1398,11 +1399,37 @@ test('posting a credit note generates the correct reverse journal entry', functi
     expect($creditNote->status)->toBe('Posted');
     expect($creditNote->journal_entry_id)->not->toBeNull();
 
+    // Assert: Verify the journal entry was created correctly.
+    $journalEntry = JournalEntry::find($creditNote->journal_entry_id);
+    expect($journalEntry)->not->toBeNull();
+    expect($journalEntry->total_debit)->toEqual('110.00');
+    expect($journalEntry->total_credit)->toEqual('110.00');
+
+    // Assert: Verify the individual lines of the journal entry.
+    $this->assertDatabaseHas('journal_entry_lines', [
+        'journal_entry_id' => $journalEntry->id,
+        'account_id' => $salesDiscountAccount->id,
+        'debit' => 10000, // 100.00 * 100
+        'credit' => 0,
+    ]);
+    $this->assertDatabaseHas('journal_entry_lines', [
+        'journal_entry_id' => $journalEntry->id,
+        'account_id' => $taxAccount->id,
+        'debit' => 1000, // 10.00 * 100
+        'credit' => 0,
+    ]);
+    $this->assertDatabaseHas('journal_entry_lines', [
+        'journal_entry_id' => $journalEntry->id,
+        'account_id' => $arAccount->id,
+        'debit' => 0,
+        'credit' => 11000, // 110.00 * 100
+    ]);
+
     // Assert: Confirm the REVERSE journal entry lines were created correctly.
     // We check for integer values.
     $this->assertDatabaseHas('journal_entry_lines', [
         'journal_entry_id' => $creditNote->journal_entry_id,
-        'account_id' => $incomeAccount->id,
+        'account_id' => $salesDiscountAccount->id,
         'debit' => 10000, // Dr Income (total_amount - total_tax)
     ]);
     $this->assertDatabaseHas('journal_entry_lines', [
