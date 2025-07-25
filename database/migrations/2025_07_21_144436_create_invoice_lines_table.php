@@ -18,10 +18,10 @@ return new class extends Migration
             $table->foreignId('tax_id')->nullable()->constrained('taxes');
             $table->foreignId('income_account_id')->constrained('accounts');
             $table->string('description');
-            $table->decimal('quantity', 15, 2);
-            $table->decimal('unit_price', 15, 2);
-            $table->decimal('subtotal', 15, 2);
-            $table->decimal('total_line_tax', 15, 2);
+            $table->unsignedBigInteger('quantity');
+            $table->unsignedBigInteger('unit_price');
+            $table->unsignedBigInteger('subtotal');
+            $table->unsignedBigInteger('total_line_tax');
             $table->timestamps();
         });
     }

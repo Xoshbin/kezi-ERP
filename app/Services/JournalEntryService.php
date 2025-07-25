@@ -10,6 +10,7 @@ use App\Models\LockDate;
 use App\Rules\ActiveAccount;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
 
@@ -54,7 +55,9 @@ class JournalEntryService
                 ]
             );
 
-            $journalEntry->lines()->createMany($data['lines']);
+            foreach ($data['lines'] as $lineData) {
+                $journalEntry->lines()->create($lineData);
+            }
 
             return $journalEntry;
         });
@@ -62,9 +65,18 @@ class JournalEntryService
 
     public function post(JournalEntry $journalEntry): bool
     {
+        // If the entry is already posted, do nothing and return success.
+        if ($journalEntry->is_posted) {
+            return true;
+        }
+
         // 1. Re-validate the balance before posting.
-        $totalDebit = $journalEntry->lines()->sum('debit');
-        $totalCredit = $journalEntry->lines()->sum('credit');
+        // By operating on the collection ($journalEntry->lines) instead of the query builder,
+        // we ensure that the model's accessors (and thus the MoneyCast) are used,
+        // providing the correct float values for the sum.
+        $journalEntry->load('lines');
+        $totalDebit = $journalEntry->lines->sum('debit');
+        $totalCredit = $journalEntry->lines->sum('credit');
 
         if (bccomp($totalDebit, $totalCredit, 2) !== 0) {
             throw ValidationException::withMessages(['lines' => 'Cannot post an unbalanced entry.']);

@@ -17,7 +17,7 @@ return new class extends Migration
             $table->date('date');
             $table->string('description');
             $table->string('partner_name')->nullable();
-            $table->decimal('amount', 15, 2);
+            $table->unsignedBigInteger('amount');
             $table->boolean('is_reconciled')->default(false);
             $table->foreignId('payment_id')->nullable()->constrained()->nullOnDelete();
             $table->timestamps();

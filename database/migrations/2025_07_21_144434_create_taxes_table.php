@@ -16,7 +16,7 @@ return new class extends Migration
             $table->foreignId('company_id')->constrained('companies');
             $table->foreignId('tax_account_id')->constrained('accounts');
             $table->string('name');
-            $table->decimal('rate', 10, 5); // e.g., 0.15000 for 15%
+            $table->unsignedBigInteger('rate'); // e.g., 0.15000 for 15%
             $table->string('type'); // 'Sales', 'Purchase', 'Both'
             $table->boolean('is_active')->default(true);
             $table->timestamps();

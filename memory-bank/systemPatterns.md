@@ -22,3 +22,4 @@ It is optional, but recommended to be updated as the project evolves.
 ## Testing Patterns
 
 *
+[2025-07-24 21:55:54] - **Journal to Account Linking:** Core accounting journals (like 'Bank' or 'Cash') are now directly linked to their corresponding default debit and credit accounts in the Chart of Accounts via `default_debit_account_id` and `default_credit_account_id` columns in the `journals` table. This pattern ensures a robust, auditable, and unambiguous link between a financial transaction's source journal and its ledger impact, which is critical for internal controls and scalability.

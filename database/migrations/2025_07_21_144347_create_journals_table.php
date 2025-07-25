@@ -18,6 +18,8 @@ return new class extends Migration
             $table->string('type'); // e.g., 'Sale', 'Purchase', 'Bank', 'Cash', 'Miscellaneous'
             $table->string('short_code');
             $table->foreignId('currency_id')->nullable()->constrained('currencies');
+            $table->foreignId('default_debit_account_id')->nullable()->constrained('accounts');
+            $table->foreignId('default_credit_account_id')->nullable()->constrained('accounts');
             $table->timestamps();
 
             $table->unique(['company_id', 'short_code']);

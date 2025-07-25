@@ -20,8 +20,8 @@ return new class extends Migration
             $table->date('entry_date');
             $table->string('reference');
             $table->text('description')->nullable();
-            $table->decimal('total_debit', 15, 2);
-            $table->decimal('total_credit', 15, 2);
+            $table->unsignedBigInteger('total_debit');
+            $table->unsignedBigInteger('total_credit');
             $table->boolean('is_posted')->default(false)->index();
             $table->string('hash', 64)->nullable()->index();
             $table->string('previous_hash', 64)->nullable()->index();

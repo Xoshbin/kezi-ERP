@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Casts\MoneyCast;
 use App\Observers\AuditLogObserver;
 use App\Observers\JournalEntryObserver;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -138,8 +139,8 @@ class JournalEntry extends Model
         // Enforce the assignment of the creator's user ID upon initial creation,
         // vital for maintaining an accurate audit trail [3, 4, 8].
         static::creating(function (JournalEntry $journalEntry) {
-            if (auth()->check()) {
-                $journalEntry->created_by_user_id = auth()->id();
+            if (Auth::check()) {
+                $journalEntry->created_by_user_id = Auth::id();
             }
             // `is_posted` is typically initialized to `false` in the migration,
             // and transitions to `true` via a dedicated posting mechanism in the application's
@@ -280,8 +281,9 @@ class JournalEntry extends Model
      */
     public function calculateTotalsFromLines(): void
     {
-        $this->total_debit = $this->lines()->sum('debit');
-        $this->total_credit = $this->lines()->sum('credit');
+        $this->loadMissing('lines');
+        $this->total_debit = $this->lines->sum('debit');
+        $this->total_credit = $this->lines->sum('credit');
         // Further validation (e.g., ensuring total_debit === total_credit) should occur
         // in the service layer or a dedicated validation rule [3].
     }
