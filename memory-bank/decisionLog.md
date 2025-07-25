@@ -69,3 +69,9 @@ This file records architectural and implementation decisions using a list format
 1.  Created the `AdjustmentDocumentPosted` event.
 2.  Modified `AdjustmentDocumentService::post()` to create the journal entry in a draft state and dispatch the `AdjustmentDocumentPosted` event.
 3.  Updated the `PostJournalEntry` listener to subscribe to and handle the new event.
+[2025-07-25 15:43:41] - **Decision:** Resolved a multi-step bug in `AccountingTest` related to `AdjustmentDocument` posting.
+**Rationale:** The initial `ValidationException` revealed deeper issues, including missing test configuration and incorrect test assertions. The fixes were made sequentially to align the `AdjustmentDocument` test with the project's core accounting and architectural principles.
+**Implementation Details:**
+1.  Updated the test to be self-contained by providing the necessary `default_sales_discount_account_id` via `config()`.
+2.  Corrected the test's database assertions to use the correct integer-based values expected by the `MoneyCast`, ensuring data integrity.
+3.  Corrected a copy-paste error in the test assertions to check for the correct account ID.

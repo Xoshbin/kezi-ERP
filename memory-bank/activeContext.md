@@ -66,3 +66,10 @@ This file tracks the project's current status, including recent changes, current
 5.  The `MoneyCast` was corrected to return a `float` for data integrity.
 6.  The `JournalFactory` and the relevant tests in `AccountingTest.php` were updated to ensure journals are always created with the correct default debit and credit accounts.
 7.  The entire test suite is now passing, and the application's core logic has been validated as correct.
+[2025-07-25 15:43:41] - **Issue:** A failing test (`AccountingTest`) was caused by a `ValidationException` when posting a credit note. The `AdjustmentDocumentService` was not being provided with a default sales discount account in the test environment.
+**Resolution:**
+1.  Updated the test `posting a credit note generates the correct reverse journal entry` to create a `salesDiscountAccount`.
+2.  Configured the `accounting.defaults.default_sales_discount_account_id` to use the new account's ID.
+3.  Corrected the database assertions to use integer values for money, aligning with the `MoneyCast`.
+4.  Corrected a copy-paste error in the test assertions to check for the correct account ID.
+5.  The bug is now fixed, and the associated feature test is passing.
