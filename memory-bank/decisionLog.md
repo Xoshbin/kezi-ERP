@@ -55,3 +55,17 @@ This file records architectural and implementation decisions using a list format
 1.  **Corrected `MoneyCast` Return Type:** The `MoneyCast::get` method was modified to return a `float` instead of a formatted `string`. This enforces data integrity by ensuring that internal representations of monetary values are numeric, preventing type-related errors in calculations and audit logs.
 2.  **Hardened `JournalFactory`:** The `JournalFactory` was updated to prevent the creation of duplicate `Currency` and `Company` records. More importantly, it was modified to require the explicit setting of `default_debit_account_id` and `default_credit_account_id`, ensuring that all factory-created journals are valid for use in payment transactions.
 3.  **Fixed Test Setups:** The failing payment-related tests in `AccountingTest.php` were refactored to create `Journal` instances with the specific default accounts required by the business logic they were intended to validate. This makes the tests more explicit and reliable.
+[2025-07-25 00:33:13] - **Decision:** Resolved a multi-step bug in `AccountingWorkflowTest` related to `AdjustmentDocument` posting.
+**Rationale:** The initial `BadMethodCallException` revealed deeper issues, including incorrect service logic, missing test configuration, and improper handling of the application's `MoneyCast`. The fixes were made sequentially to align the `AdjustmentDocument` workflow with the project's core accounting and architectural principles.
+**Implementation Details:**
+1.  Refactored the test to use `AdjustmentDocumentService`, respecting the service-oriented architecture.
+2.  Corrected the service to use the appropriate contra-revenue account (`Sales Discounts & Returns`) for credit notes.
+3.  Updated the test to be self-contained by providing the necessary `default_sales_discount_account_id` via `config()`.
+4.  Modified the service to ensure the resulting `JournalEntry` was posted immediately, satisfying test assertions.
+5.  Corrected the test's database assertions to use the correct integer-based values expected by the `MoneyCast`, ensuring data integrity.
+[2025-07-25 00:43:11] - **Decision:** Refactored `AdjustmentDocumentService` to use an event-driven architecture for posting journal entries.
+**Rationale:** This change aligns the adjustment document workflow with the existing patterns for invoices and vendor bills, creating a consistent and decoupled architecture. It enhances modularity and maintainability by centralizing the journal posting logic in the `PostJournalEntry` listener.
+**Implementation Details:**
+1.  Created the `AdjustmentDocumentPosted` event.
+2.  Modified `AdjustmentDocumentService::post()` to create the journal entry in a draft state and dispatch the `AdjustmentDocumentPosted` event.
+3.  Updated the `PostJournalEntry` listener to subscribe to and handle the new event.

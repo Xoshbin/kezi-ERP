@@ -2,6 +2,7 @@
 
 namespace App\Listeners;
 
+use App\Events\AdjustmentDocumentPosted;
 use App\Events\InvoiceConfirmed;
 use App\Events\PaymentConfirmed;
 use App\Events\VendorBillConfirmed;
@@ -35,6 +36,13 @@ class PostJournalEntry
         }
     }
 
+    public function handleAdjustmentDocumentPosted(AdjustmentDocumentPosted $event): void
+    {
+        if ($event->adjustmentDocument->journalEntry) {
+            $this->journalEntryService->post($event->adjustmentDocument->journalEntry);
+        }
+    }
+
     public function subscribe(Dispatcher $events): void
     {
         $events->listen(
@@ -50,6 +58,11 @@ class PostJournalEntry
         $events->listen(
             PaymentConfirmed::class,
             [PostJournalEntry::class, 'handlePaymentConfirmed']
+        );
+
+        $events->listen(
+            AdjustmentDocumentPosted::class,
+            [PostJournalEntry::class, 'handleAdjustmentDocumentPosted']
         );
     }
 }

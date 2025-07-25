@@ -57,3 +57,16 @@ This file tracks the project's progress using a task list format.
 - Corrected the typo, which revealed several regressions in `AccountingTest.php`.
 - Fixed the regressions by correcting the return type of `MoneyCast` to `float` and by hardening the `JournalFactory` and the payment tests to ensure journals are always created with the correct default accounts.
 - The entire test suite is now passing, and the integrity of the accounting logic has been verified.
+[2025-07-25 00:33:13] - **Task:** Debug and fix failing `AccountingWorkflowTest` for credit notes.
+**Status:** Completed.
+**Summary:**
+- Diagnosed and fixed a series of cascading errors starting with a `BadMethodCallException`.
+- The resolution involved refactoring the `AdjustmentDocumentService` to align with accounting principles, correcting the test setup to provide necessary configuration, and ensuring the test assertions correctly handled the application's `MoneyCast` for financial values.
+- The test suite is now passing, and the credit note workflow is fully functional and compliant with the project's architectural rules.
+[2025-07-25 00:43:22] - **Task:** Refactor `AdjustmentDocumentService` to align with event-driven architecture.
+**Status:** Completed.
+**Summary:**
+- Created the `AdjustmentDocumentPosted` event.
+- Refactored `AdjustmentDocumentService` to dispatch the event instead of posting the journal entry directly.
+- Updated the `PostJournalEntry` listener to handle the new event, unifying the posting logic for all document types.
+- This change improves architectural consistency and maintainability.

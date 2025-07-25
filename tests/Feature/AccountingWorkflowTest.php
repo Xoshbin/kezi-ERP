@@ -81,6 +81,7 @@ test('the entire accounting workflow from setup to credit note', function () {
         'accounting.defaults.purchase_journal_id' => $purchaseJournal->id,
         'accounting.defaults.sales_journal_id' => $salesJournal->id,
         'accounting.defaults.accounts_receivable_id' => $arAccount->id,
+        'accounting.defaults.default_sales_discount_account_id' => $salesDiscountAccount->id,
     ]);
 
     // Step 3: Capital Injection
@@ -207,32 +208,55 @@ test('the entire accounting workflow from setup to credit note', function () {
     expect($vendorPaymentEntry->lines->where('account_id', $bankAccount->id)->first()->credit)->toEqual(3000000.0);
     expect($vendorBill->fresh()->status)->toBe(VendorBill::TYPE_POSTED);
 
-    // // Step 8: Handling a Correction (Credit Note)
-    // $adjustmentService = new AdjustmentDocumentService();
-    // // AdjustmentDocument doesn't have a service `create` method, so we create it directly.
-    // $creditNote = \App\Models\AdjustmentDocument::create([
-    //     'company_id' => $company->id,
-    //     'type' => 'Credit Note',
-    //     'invoice_id' => $invoice->id,
-    //     'date' => now()->toDateString(),
-    //     'reason' => 'Goodwill discount for new client',
-    //     'total_amount' => 500000, // Add total amount directly
-    //     'status' => 'Draft',
-    //     'created_by_user_id' => $user->id,
-    // ]);
-    // $creditNote->lines()->create([
-    //     'description' => 'Goodwill discount',
-    //     'quantity' => 1,
-    //     'unit_price' => 500000,
-    //     'account_id' => $salesDiscountAccount->id,
-    // ]);
+    // Step 8: Handling a Correction (Credit Note)
+    $adjustmentService = new AdjustmentDocumentService();
 
-    // $adjustmentService->post($creditNote, $user);
+    // The AdjustmentDocument model *itself* does not have a 'lines' relationship.
+    // Instead, you create the header document with its total_amount,
+    // and the AdjustmentDocumentService::post() method is responsible
+    // for generating the correct JournalEntry and its JournalEntryLine records.
 
-    // $creditNote->refresh();
-    // $creditNoteEntry = $creditNote->journalEntry;
-    // expect($creditNoteEntry->is_posted)->toBeTrue();
-    // expect($creditNoteEntry->total_debit)->toEqual('500000.00');
-    // expect($creditNoteEntry->lines->where('account_id', $salesDiscountAccount->id)->first()->debit)->toEqual('500000.00');
-    // expect($creditNoteEntry->lines->where('account_id', $arAccount->id)->first()->credit)->toEqual('500000.00');
+    $creditNote = \App\Models\AdjustmentDocument::factory()->create([
+        'company_id' => $company->id,
+        'reference_number' => 'CN-001',
+        // The total_tax and total_amount fields on AdjustmentDocument represent the overall adjustment.
+        // The detailed debit/credit to specific accounts (like Sales Discounts & Returns)
+        // are handled by the service when it generates the JournalEntryLines.
+        'total_tax' => 0,
+        'type' => 'Credit Note',
+        'original_invoice_id' => $invoice->id, // Link to the original invoice
+        'date' => now()->toDateString(),
+        'reason' => 'Goodwill discount for new client',
+        'total_amount' => 500000, // Total amount of the credit note
+        'status' => 'Draft'
+    ]);
+
+    // Your AdjustmentDocumentService::post() method should contain the logic
+    // to create the JournalEntry and its JournalEntryLines based on the
+    // Credit Note's type, amount, and the accounts configured in your system (e.g., config defaults).
+    // For a credit note, it would typically debit a 'Sales Discounts & Returns' (or similar) account
+    // and credit 'Accounts Receivable'.
+    $adjustmentService->post($creditNote, $user);
+
+    $creditNote->refresh();
+    $creditNoteEntry = $creditNote->journalEntry;
+
+    // Assertions will now check the JournalEntry and its lines, not direct AdjustmentDocument lines.
+    expect($creditNoteEntry->is_posted)->toBeTrue();
+    expect($creditNoteEntry->total_debit)->toEqual('500000.00');
+    expect($creditNoteEntry->total_credit)->toEqual('500000.00');
+
+    // Assert the debit to Sales Discounts & Returns (Contra-Revenue)
+    $this->assertDatabaseHas('journal_entry_lines', [
+        'journal_entry_id' => $creditNoteEntry->id,
+        'account_id' => $salesDiscountAccount->id,
+        'debit' => 50000000,
+    ]);
+
+    // Assert the credit to Accounts Receivable (Asset)
+    $this->assertDatabaseHas('journal_entry_lines', [
+        'journal_entry_id' => $creditNoteEntry->id,
+        'account_id' => $arAccount->id,
+        'credit' => 50000000,
+    ]);
 });
