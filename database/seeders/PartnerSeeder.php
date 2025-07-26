@@ -22,13 +22,13 @@ class PartnerSeeder extends Seeder
 
         $partners = [
             [
-                'name' => 'Walk-in Customer',
-                'type' => 'Customer',
+                'name' => 'Paykar Tech Supplies',
+                'type' => Partner::TYPE_VENDOR,
                 'country' => 'IQ',
             ],
             [
-                'name' => 'Default Vendor',
-                'type' => 'Vendor',
+                'name' => 'Hawre Trading Group',
+                'type' => Partner::TYPE_CUSTOMER,
                 'country' => 'IQ',
             ],
         ];

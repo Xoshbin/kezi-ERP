@@ -3,6 +3,7 @@
 namespace Database\Factories;
 
 use App\Models\Company;
+use App\Models\Partner;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -20,7 +21,7 @@ class PartnerFactory extends Factory
         return [
             'company_id' => Company::factory()->create()->id,
             'name' => $this->faker->company,
-            'type' => $this->faker->randomElement(['supplier', 'customer', 'partner']),
+            'type' => $this->faker->randomElement([Partner::TYPE_VENDOR, Partner::TYPE_CUSTOMER, Partner::TYPE_BOTH]),
             'contact_person' => $this->faker->name,
             'email' => $this->faker->unique()->safeEmail,
             'phone' => $this->faker->phoneNumber,

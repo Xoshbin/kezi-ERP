@@ -1104,7 +1104,7 @@ test('confirming an inbound payment creates a linked journal entry', function ()
 
     // Arrange: Set up the company, customer, user, and necessary accounts.
     $company = Company::factory()->create();
-    $customer = Partner::factory()->for($company)->create(['type' => 'Customer']);
+    $customer = Partner::factory()->for($company)->create(['type' => Partner::TYPE_CUSTOMER]);
     $bankAccount = Account::factory()->for($company)->create(['type' => 'Bank']);
     $arAccount = Account::factory()->for($company)->create(['type' => 'Receivable']);
     $currency = Currency::factory()->create(['code' => 'USD']);
@@ -1207,7 +1207,7 @@ test('an incoming payment correctly debits Bank and credits Accounts Receivable'
 
     // Arrange: Set up the company, customer, and user.
     $company = Company::factory()->create();
-    $customer = Partner::factory()->for($company)->create(['type' => 'Customer']);
+    $customer = Partner::factory()->for($company)->create(['type' => Partner::TYPE_CUSTOMER]);
     $currency = Currency::factory()->create(['code' => 'USD']);
 
     // Arrange: Set up the default accounts the service will need.
