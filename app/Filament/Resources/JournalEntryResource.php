@@ -103,6 +103,8 @@ class JournalEntryResource extends Resource
                 Tables\Columns\TextColumn::make('journal.name')
                     ->numeric()
                     ->sortable(),
+                Tables\Columns\IconColumn::make('is_posted')
+                    ->boolean(),
                 Tables\Columns\TextColumn::make('currency_id')
                     ->numeric()
                     ->sortable(),
@@ -123,8 +125,6 @@ class JournalEntryResource extends Resource
                 Tables\Columns\TextColumn::make('total_credit')
                     ->numeric()
                     ->sortable(),
-                Tables\Columns\IconColumn::make('is_posted')
-                    ->boolean(),
                 Tables\Columns\TextColumn::make('hash')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('previous_hash')
