@@ -11,6 +11,10 @@ use Illuminate\Support\Facades\DB;
 
 class AdjustmentDocumentService
 {
+    public function __construct(protected JournalEntryService $journalEntryService)
+    {
+    }
+
     /**
      * Post a draft credit note and create its reversing journal entry.
      */
@@ -73,7 +77,7 @@ class AdjustmentDocumentService
             'lines' => $lines,
         ];
 
-        return (new JournalEntryService())->create($journalEntryData, false);
+        return $this->journalEntryService->create($journalEntryData, false);
     }
     public function update(AdjustmentDocument $creditNote, array $data): bool
     {

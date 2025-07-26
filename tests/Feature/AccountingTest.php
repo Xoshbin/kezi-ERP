@@ -273,7 +273,7 @@ test('a deprecated account cannot be used for new financial transactions', funct
     ];
 
     // Arrange: Instantiate the service that contains the business logic.
-    $journalEntryService = new JournalEntryService();
+    $journalEntryService = app(JournalEntryService::class);
 
     // Assert: Expect the service to throw a specific, clear exception when it detects
     // the use of a deprecated account. This confirms the backend rule is enforced.
@@ -326,7 +326,7 @@ test('a journal entry correctly calculates totals and assigns a user when create
     ];
 
     // Act
-    $journalEntry = (new JournalEntryService())->create($entryData);
+    $journalEntry = (app(JournalEntryService::class))->create($entryData);
 
     // Assert
     expect($journalEntry->total_debit)->toEqual('125.50');
@@ -351,7 +351,7 @@ test('creating an unbalanced journal entry is prevented', function () {
     ];
 
     // Assert: Expect the service to throw a ValidationException because the entry is unbalanced.
-    expect(fn() => (new JournalEntryService())->create($unbalancedData))
+    expect(fn() => (app(JournalEntryService::class))->create($unbalancedData))
         ->toThrow(ValidationException::class);
 });
 
@@ -367,7 +367,7 @@ test('a balanced draft journal entry can be posted', function () {
     ]);
 
     // Act: Call the post method on the service.
-    (new JournalEntryService())->post($journalEntry);
+    (app(JournalEntryService::class))->post($journalEntry);
 
     // Assert: Check the model directly to see if its state was correctly updated.
     $journalEntry->refresh();
@@ -386,7 +386,7 @@ test('an unbalanced draft journal entry cannot be posted', function () {
     ]);
 
     // Assert: Expect the service's post method to reject this and throw an exception.
-    expect(fn() => (new JournalEntryService())->post($journalEntry))
+    expect(fn() => (app(JournalEntryService::class))->post($journalEntry))
         ->toThrow(ValidationException::class);
 });
 
@@ -403,7 +403,7 @@ test('a draft journal entry can be freely modified before posting', function () 
     $updateData = ['description' => 'Updated Draft Description'];
 
     // Act: Call the update method on the service.
-    $updatedEntry = (new JournalEntryService())->update($journalEntry, $updateData);
+    $updatedEntry = (app(JournalEntryService::class))->update($journalEntry, $updateData);
 
     // Assert: Confirm the update was successful and the data was changed.
     expect($updatedEntry)->toBeInstanceOf(JournalEntry::class);
@@ -426,7 +426,7 @@ test('a posted journal entry cannot be updated', function () {
 
     // Assert: Expect that calling the update method on the service throws our
     // specific exception, proving the action was blocked.
-    expect(fn() => (new JournalEntryService())->update($journalEntry, $updateData))
+    expect(fn() => (app(JournalEntryService::class))->update($journalEntry, $updateData))
         ->toThrow(UpdateNotAllowedException::class, 'Cannot modify a posted journal entry.');
 
     // Assert: As a final check, confirm that the data in the database did not change.
@@ -444,7 +444,7 @@ test('a draft journal entry can be deleted', function () {
     // Arrange: Create a user and the service.
     $user = User::factory()->create();
     $this->actingAs($user);
-    $service = new JournalEntryService();
+    $service = app(JournalEntryService::class);
 
     // Arrange: Create a journal entry that is NOT posted (a draft).
     $journalEntry = JournalEntry::factory()->create(['is_posted' => false]);
@@ -463,7 +463,7 @@ test('a posted journal entry cannot be deleted via the service', function () {
     // Arrange: Create a user and the service.
     $user = User::factory()->create();
     $this->actingAs($user);
-    $service = new JournalEntryService();
+    $service = app(JournalEntryService::class);
 
     // Arrange: Create a journal entry that IS posted.
     $journalEntry = JournalEntry::factory()->create(['is_posted' => true]);
@@ -480,7 +480,7 @@ test('a draft journal entry in a locked period cannot be deleted', function () {
     // Arrange: Create a user and the service.
     $user = User::factory()->create();
     $this->actingAs($user);
-    $service = new JournalEntryService();
+    $service = app(JournalEntryService::class);
 
     // Arrange: Create a company and lock its books up to a month ago.
     $company = Company::factory()->create();
@@ -529,7 +529,7 @@ test('posting a journal entry generates a cryptographic hash', function () {
     ]);
 
     // Act: Post the entry using the service. This should trigger the observer.
-    (new JournalEntryService())->post($journalEntry);
+    (app(JournalEntryService::class))->post($journalEntry);
 
     // Assert: Check the model directly to confirm the hash was generated and saved.
     $journalEntry->refresh(); // Get the latest data from the database.
@@ -559,7 +559,7 @@ test('posting a journal entry links to the previous entry hash to form an audit 
     ]);
 
     // Act: Post the second entry using the service. This should trigger the observer logic.
-    (new JournalEntryService())->post($secondEntry);
+    (app(JournalEntryService::class))->post($secondEntry);
 
     // Assert: Check the second entry to confirm its 'previous_hash'
     // correctly links to the first entry's 'hash'.
@@ -593,7 +593,7 @@ test('the creation timestamp for a posted journal entry is immutable', function 
 
     // Assert: Expect that any attempt to update the model through the service
     // will be blocked by the immutability rule.
-    expect(fn() => (new JournalEntryService())->update($journalEntry, ['description' => 'New Desc']))
+    expect(fn() => (app(JournalEntryService::class))->update($journalEntry, ['description' => 'New Desc']))
         ->toThrow(UpdateNotAllowedException::class);
 
     // Assert: Confirm the timestamp in the database has not changed.
@@ -632,7 +632,7 @@ test('a draft customer invoice can be freely edited', function () {
         ]
     ];
 
-    $wasUpdated = (new InvoiceService())->update($invoice, $updateData);
+    $wasUpdated = (app(InvoiceService::class))->update($invoice, $updateData);
 
     expect($wasUpdated)->toBeTrue();
     // Assuming your service doesn't calculate tax or subtotals in this test
@@ -649,7 +649,7 @@ test('a draft customer invoice can be freely deleted', function () {
    $invoice = Invoice::factory()->create(['status' => Invoice::TYPE_DRAFT]);
 
    // Act: Call the delete method on the service.
-   $wasDeleted = (new InvoiceService())->delete($invoice);
+   $wasDeleted = (app(InvoiceService::class))->delete($invoice);
 
    // Assert: Confirm the deletion was successful.
    expect($wasDeleted)->toBeTrue();
@@ -688,7 +688,7 @@ test('confirming an invoice assigns a sequential number, posts it, and creates a
     // The rest of your test (Act and Assert) remains the same.
     // Act: Call the confirm method on the service, passing the user for the audit trail.
 
-    (new InvoiceService())->confirm($invoice, $user);
+    (app(InvoiceService::class))->confirm($invoice, $user);
 
     // Assert: Check the invoice's state directly.
     $invoice->refresh();
@@ -717,7 +717,7 @@ test('a posted invoice cannot be directly modified', function () {
 
     // Assert: Expect that calling the update method on the service
     // will throw our specific exception, proving the action was blocked.
-    expect(fn() => (new InvoiceService())->update($invoice, $updateData))
+    expect(fn() => (app(InvoiceService::class))->update($invoice, $updateData))
         ->toThrow(UpdateNotAllowedException::class, 'Cannot modify a non-draft invoice.');
 
     // Assert: As a final check, confirm that the data in the database did not change.
@@ -736,7 +736,7 @@ test('a posted invoice cannot be deleted', function () {
 
     // Assert: Expect that calling the delete method on the service
     // will throw our specific exception, proving the action was blocked.
-    expect(fn() => (new InvoiceService())->delete($invoice))
+    expect(fn() => (app(InvoiceService::class))->delete($invoice))
         ->toThrow(DeletionNotAllowedException::class, 'Cannot delete a posted invoice.');
 
     // Assert: As a final check, confirm the invoice still exists in the database.
@@ -760,7 +760,7 @@ test('resetting a posted invoice to draft is thoroughly logged and reverses the 
     $reason = 'Correcting a data entry error before customer notification.';
 
     // Act: Call the service method to perform this sensitive action.
-    (new InvoiceService())->resetToDraft($invoice, $user, $reason);
+    (app(InvoiceService::class))->resetToDraft($invoice, $user, $reason);
 
     // Assert: Check the invoice's state.
     $invoice->refresh();
@@ -768,8 +768,8 @@ test('resetting a posted invoice to draft is thoroughly logged and reverses the 
     expect($invoice->journal_entry_id)->toBeNull(); // The link to the JE must be removed.
 
     // Assert: Check that the log was created correctly.
-    expect($invoice->reset_to_draft_log)->toBeJson();
-    $log = json_decode($invoice->reset_to_draft_log, true)[0]; // Get the first log entry
+    expect($invoice->reset_to_draft_log)->toBeArray();
+    $log = $invoice->reset_to_draft_log[0]; // Get the first log entry
     expect($log['user_id'])->toBe($user->id);
     expect($log['reason'])->toBe($reason);
     expect(Carbon::parse($log['timestamp']))->toBeInstanceOf(Carbon::class);
@@ -808,7 +808,7 @@ test('updating invoice lines correctly recalculates the invoice total amount and
     ];
 
     // Act: Call the update method on the service.
-    (new InvoiceService())->update($invoice, $updateData);
+    (app(InvoiceService::class))->update($invoice, $updateData);
 
     // Assert
     $invoice->refresh();
@@ -847,7 +847,7 @@ test('posting an invoice correctly debits Accounts Receivable and credits Income
     ]);
 
     // Act: Call the confirm method directly on your service.
-    (new InvoiceService())->confirm($invoice, $user);
+    (app(InvoiceService::class))->confirm($invoice, $user);
 
     // Assert: Check that the main journal entry is balanced.
     $invoice->refresh(); // Get the latest data.
@@ -898,7 +898,7 @@ test('a draft vendor bill can be freely edited', function () {
     ];
 
     // Act: Call the update method on the service.
-    $wasUpdated = (new VendorBillService())->update($vendorBill, $updateData);
+    $wasUpdated = app(VendorBillService::class)->update($vendorBill, $updateData);
 
     // Assert: Confirm the update was successful and the total was recalculated.
     // We check for the integer value 25000 because of your MoneyCast (250.00 * 100).
@@ -948,7 +948,7 @@ test('creating a vendor bill sets correct draft status, saves line items, and ca
     ];
 
     // Act: Create the vendor bill using the service
-    $vendorBillService = new VendorBillService();
+    $vendorBillService = app(VendorBillService::class);
     $vendorBill = $vendorBillService->create($createData);
 
     // Assert: Verify the vendor bill was created with correct draft status
@@ -988,7 +988,7 @@ test('a draft vendor bill can be freely deleted', function () {
    $vendorBill = VendorBill::factory()->create(['status' => VendorBill::TYPE_DRAFT]);
 
    // Act: Call the delete method on the service.
-   $wasDeleted = (new VendorBillService())->delete($vendorBill);
+   $wasDeleted = app(VendorBillService::class)->delete($vendorBill);
 
    // Assert: Confirm the deletion was successful.
    expect($wasDeleted)->toBeTrue();
@@ -1020,7 +1020,7 @@ test('confirming a vendor bill creates a linked journal entry', function () {
         ->create(['status' => VendorBill::TYPE_DRAFT]);
 
     // Act: Call the confirm method on the service.
-    (new VendorBillService())->confirm($vendorBill, $user);
+    app(VendorBillService::class)->confirm($vendorBill, $user);
 
     // Assert: Check the state of the vendor bill directly.
     $vendorBill->refresh();
@@ -1043,7 +1043,7 @@ test('a posted vendor bill cannot be modified', function () {
     $updateData = ['total_amount' => 25000];
 
     // Assert: Expect the service to block this action by throwing an exception.
-    expect(fn() => (new VendorBillService())->update($vendorBill, $updateData))
+    expect(fn() => (app(VendorBillService::class)->update($vendorBill, $updateData)))
         ->toThrow(UpdateNotAllowedException::class);
 
     // Assert: Double-check that the data in the database did not change.
@@ -1062,8 +1062,8 @@ test('a posted vendor bill cannot be deleted', function () {
 
     // Assert: Expect that calling the delete method on the service
     // throws our specific exception, proving the action was blocked.
-    expect(fn() => (new VendorBillService())->delete($vendorBill))
-        ->toThrow(DeletionNotAllowedException::class, 'Cannot delete a posted vendor bill.');
+    expect(fn() => app(VendorBillService::class)->delete($vendorBill))
+        ->toThrow(DeletionNotAllowedException::class, 'Cannot delete a posted vendor bill. Corrections must be made with a new reversal entry.');
 
     // Assert: Double-check that the model still exists in the database.
     $this->assertModelExists($vendorBill);
@@ -1084,7 +1084,7 @@ test('resetting a posted vendor bill to draft is logged and reverses the journal
     $reason = 'Supplier sent a revised bill with corrected quantities.';
 
     // Act: Call the service method to perform the action.
-    (new VendorBillService())->resetToDraft($vendorBill, $user, $reason);
+    app(VendorBillService::class)->resetToDraft($vendorBill, $user, $reason);
 
     // Assert: Check the state of the vendor bill.
     $vendorBill->refresh();
@@ -1135,7 +1135,7 @@ test('posting a vendor bill correctly debits Expense/Asset and credits Accounts 
     ]);
 
     // Act: Confirm the bill using the service.
-    (new VendorBillService())->confirm($vendorBill, $user);
+    app(VendorBillService::class)->confirm($vendorBill, $user);
 
     // Assert: Check that the bill is now posted.
     $vendorBill->refresh();
@@ -1200,7 +1200,7 @@ test('confirming an inbound payment creates a linked journal entry', function ()
     ];
 
     // Act: Create and confirm the payment using the service.
-    $paymentService = new PaymentService();
+    $paymentService = app(PaymentService::class);
     $payment = $paymentService->create($paymentData, $user);
     $payment = $paymentService->confirm($payment, $user);
     // Assert: Check that the payment is confirmed and linked to a journal entry.
@@ -1251,12 +1251,12 @@ test('a confirmed payment is immutable', function () {
         'payment_type' => Payment::TYPE_INBOUND,
         'amount' => 100.00, // 100.00
     ];
-    $paymentService = new PaymentService();
+    $paymentService = app(PaymentService::class);
     $payment = $paymentService->create($paymentData, $user);
     $payment = $paymentService->confirm($payment, $user);
     
     // Assert: Expect that any attempt to update the payment will be blocked.
-    expect(fn() => (new PaymentService())->update($payment, ['amount' => 20000]))
+    expect(fn() => (app(PaymentService::class)->update($payment, ['amount' => 20000])))
         ->toThrow(UpdateNotAllowedException::class);
 
     // Assert: Double-check that the amount in the database did not change.
@@ -1299,7 +1299,7 @@ test('an incoming payment correctly debits Bank and credits Accounts Receivable'
     ];
 
     // Act: Create and confirm the payment using the service.
-    $paymentService = new PaymentService();
+    $paymentService = app(PaymentService::class);
     $payment = $paymentService->create($paymentData, $user);
     $payment = $paymentService->confirm($payment, $user);
     
@@ -1360,7 +1360,7 @@ test('an outgoing payment correctly debits Accounts Payable and credits Bank', f
     ];
 
     // Act: Create and confirm the payment using the service.
-    $paymentService = new PaymentService();
+    $paymentService = app(PaymentService::class);
     $payment = $paymentService->create($paymentData, $user);
     $payment = $paymentService->confirm($payment, $user);
     
@@ -1396,7 +1396,7 @@ test('a posted credit note is immutable', function () {
 
     // Assert: Expect that any attempt to update the posted credit note will be blocked
     // by the service and throw a specific exception.
-    expect(fn() => (new AdjustmentDocumentService())->update($creditNote, ['total_amount' => 9999]))
+    expect(fn() => app(AdjustmentDocumentService::class)->update($creditNote, ['total_amount' => 9999]))
         ->toThrow(UpdateNotAllowedException::class);
 
     // Assert: As a final check, confirm the amount in the database did not change.
@@ -1458,7 +1458,7 @@ test('posting a credit note generates the correct reverse journal entry', functi
     ]);
 
     // Act: Post the credit note using the service.
-    (new AdjustmentDocumentService())->post($creditNote, $user);
+    app(AdjustmentDocumentService::class)->post($creditNote, $user);
 
     // Assert: Check the credit note's state.
     $creditNote->refresh();
@@ -1532,7 +1532,7 @@ test('a financial transaction cannot be created in a locked period', function ()
     ];
 
     // Assert: Expect the service to throw our specific exception when it detects the locked date.
-    expect(fn() => (new JournalEntryService())->create($lockedPeriodData))
+    expect(fn() => (app(JournalEntryService::class))->create($lockedPeriodData))
         ->toThrow(PeriodIsLockedException::class);
 
     // Assert: As a final check, confirm that no journal entry was created.
@@ -1561,7 +1561,7 @@ test('a financial transaction in a locked period cannot be modified', function (
 
     // Assert: Expect the service to throw our specific exception when it detects
     // that the entry being modified is in a locked period.
-    expect(fn() => (new JournalEntryService())->update($journalEntry, ['description' => 'New Description']))
+    expect(fn() => (app(JournalEntryService::class))->update($journalEntry, ['description' => 'New Description']))
         ->toThrow(PeriodIsLockedException::class);
 
     // Assert: As a final check, confirm that the description was not changed in the database.
@@ -1594,7 +1594,7 @@ test('creating a financial record is logged in the audit trail', function () {
     ];
 
     // Act: Create the entry using the service. This action will trigger the observer.
-    $journalEntry = (new JournalEntryService())->create($entryData);
+    $journalEntry = (app(JournalEntryService::class))->create($entryData);
 
     // Assert: Check the database to confirm that the observer created the audit log entry.
     $this->assertDatabaseHas('audit_logs', [
@@ -1624,7 +1624,7 @@ test('a status change from draft to posted is logged in the audit trail', functi
     ]);
 
     // Act: Confirm the invoice using the service. This should trigger the AuditLogObserver.
-    (new InvoiceService())->confirm($invoice, $user);
+    (app(InvoiceService::class))->confirm($invoice, $user);
 
     // Assert: Find the audit log entry that was just created for this invoice update.
     $log = AuditLog::where('auditable_type', Invoice::class)
@@ -1655,7 +1655,7 @@ test('resetting an invoice to draft is logged as a status change in audit logs',
     $reason = 'Correcting an error.';
 
     // Act: Call the service method. This will trigger the AuditLogObserver.
-    (new InvoiceService())->resetToDraft($invoice, $user, $reason);
+    (app(InvoiceService::class))->resetToDraft($invoice, $user, $reason);
 
     // Assert: Find the audit log that was created for this action.
     $log = AuditLog::where('auditable_type', Invoice::class)
@@ -1701,7 +1701,7 @@ test('a journal entry line can be assigned to an analytic account', function () 
     ];
 
     // Act: Create the journal entry using the service.
-    $journalEntry = (new JournalEntryService())->create($entryData);
+    $journalEntry = (app(JournalEntryService::class))->create($entryData);
 
     // Assert: Check the database to confirm the line was created with the correct analytic account.
     $this->assertDatabaseHas('journal_entry_lines', [
@@ -1739,7 +1739,7 @@ test('running depreciation generates correct depreciation and journal entries', 
     ]);
 
     // Act: Run the depreciation for this asset using the service.
-    (new AssetService())->runDepreciation($asset, $user);
+    app(AssetService::class)->runDepreciation($asset, $user);
 
     // Assert: Check that a depreciation entry was created for the correct amount.
     // The amount should be 10000 (1200.00 / 12 months = 100.00 per month).
@@ -1790,7 +1790,7 @@ test('a journal entry cannot be created with a non-existent account ID', functio
     ];
 
     // Assert: Expect the service to throw a ValidationException because the 'exists' rule fails.
-    expect(fn() => (new JournalEntryService())->create($entryData))
+    expect(fn() => (app(JournalEntryService::class))->create($entryData))
         ->toThrow(ValidationException::class);
 });
 
@@ -1812,7 +1812,7 @@ test('modifications after a reset-to-draft are fully audited upon re-posting', f
         'accounting.defaults.sales_journal_id' => Journal::factory()->create()->id,
     ]);
 
-    $invoiceService = new InvoiceService();
+    $invoiceService = app(InvoiceService::class);
     $reason = 'Initial error correction';
 
     // Act 1: Reset the posted invoice to draft.
@@ -1902,7 +1902,7 @@ test('bank reconciliation moves funds from outstanding to bank and updates payme
     $statementLine = BankStatementLine::factory()->create(['amount' => 15000]);
 
     // Act: Reconcile the payment against the bank statement line using a new service.
-    (new BankReconciliationService())->reconcilePayment($payment, $statementLine, $user);
+    app(BankReconciliationService::class)->reconcilePayment($payment, $statementLine, $user);
 
     // Assert 1: The payment's status is now 'Reconciled'.
     expect($payment->fresh()->status)->toBe('Reconciled');
@@ -1960,7 +1960,7 @@ test('posting a foreign currency invoice creates a journal entry with correct ba
     ]);
 
     // Act: Confirm the invoice. This should trigger currency conversion.
-    (new InvoiceService())->confirm($invoice, $user);
+    (app(InvoiceService::class))->confirm($invoice, $user);
 
     // Assert: Check the journal entry. Amounts should be in the base currency (IQD).
     // $100 USD * 1450 = 145,000 IQD.

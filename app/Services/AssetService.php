@@ -10,6 +10,10 @@ use Illuminate\Support\Facades\DB;
 
 class AssetService
 {
+    public function __construct(protected JournalEntryService $journalEntryService)
+    {
+    }
+    
     public function runDepreciation(Asset $asset, User $user): void
     {
         // 1. Calculate the depreciation amount for one period.
@@ -60,6 +64,6 @@ class AssetService
             'lines' => $lines,
         ];
 
-        return (new JournalEntryService())->create($journalEntryData);
+        return $this->journalEntryService->create($journalEntryData);
     }
 }

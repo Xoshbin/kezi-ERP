@@ -13,6 +13,12 @@ use Illuminate\Support\Facades\Gate;
 
 class VendorBillService
 {
+    public function __construct(
+        protected JournalEntryService $journalEntryService,
+        protected AccountingValidationService $accountingValidationService
+    ) {
+    }
+
     /**
      * Create a new draft vendor bill.
      */
@@ -98,10 +104,26 @@ class VendorBillService
      */
     public function delete(VendorBill $vendorBill): bool
     {
+
+        // First, check if the entry's date is in a locked period.
+        // This applies to ALL entries, whether draft or posted, if their date falls within a locked period.
+        $this->accountingValidationService->checkIfPeriodIsLocked($vendorBill->company_id, $vendorBill->bill_date);
+
+        // Block deletion if the entry has been posted.
+        // Block deletion if the entry has been posted. This is the non-negotiable immutability rule.
         if ($vendorBill->status !== VendorBill::TYPE_DRAFT) {
-            throw new DeletionNotAllowedException('Cannot delete a posted vendor bill.');
+            throw new DeletionNotAllowedException(
+                'Cannot delete a posted vendor bill. Corrections must be made with a new reversal entry.'
+            );
         }
-        return $vendorBill->delete();
+
+        // Proceed with deletion for draft entries.
+        // Using a transaction is good practice, though Eloquent's delete handles this well.
+        return DB::transaction(function () use ($vendorBill) {
+            // Deleting the JournalEntry will also delete its lines if foreign keys
+            // are configured with `onDelete('cascade')`.
+            return $vendorBill->delete();
+        });
     }
 
     /**
@@ -210,6 +232,6 @@ class VendorBillService
             'created_by_user_id' => $user->id,
         ];
 
-        return (new JournalEntryService())->create($journalEntryData);
+        return $this->journalEntryService->create($journalEntryData);
     }
 }

@@ -8,6 +8,9 @@ use App\Models\User;
 use Illuminate\Support\Facades\DB;
 class BankReconciliationService
 {
+    public function __construct(protected JournalEntryService $journalEntryService)
+    {
+    }
 
     public function reconcilePayment(Payment $payment, BankStatementLine $statementLine, User $user): void
     {
@@ -48,6 +51,6 @@ class BankReconciliationService
             'lines' => $lines,
         ];
 
-        (new JournalEntryService())->create($journalEntryData);
+        $this->journalEntryService->create($journalEntryData);
     }
 }

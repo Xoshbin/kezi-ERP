@@ -13,6 +13,10 @@ use InvalidArgumentException;
 
 class PaymentService
 {
+    public function __construct(protected JournalEntryService $journalEntryService)
+    {
+    }
+
     /**
      * Create a new draft payment.
      */
@@ -93,7 +97,7 @@ class PaymentService
 
         Log::debug('PaymentService: Creating journal entry with data:', $journalEntryData);
 
-        return (new JournalEntryService())->create($journalEntryData, true);
+        return $this->journalEntryService->create($journalEntryData, true);
     }
 
     /**
