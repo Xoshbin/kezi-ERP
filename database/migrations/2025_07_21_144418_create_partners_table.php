@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('company_id')->nullable()->constrained('companies');
             $table->string('name');
-            $table->string('type'); // 'Customer', 'Vendor', 'Both'
+            $table->string('type'); // 'customer', 'vendor', 'both'
             $table->string('contact_person')->nullable();
             $table->string('email')->nullable();
             $table->string('phone')->nullable();

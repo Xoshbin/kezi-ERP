@@ -20,7 +20,7 @@ class VendorBillSeeder extends Seeder
     {
         $company = Company::where('name', 'Jmeryar Solutions')->firstOrFail();
         $user = User::firstOrFail();
-        $vendors = Partner::where('type', 'vendor')->limit(3)->get();
+        $vendors = Partner::where('type', Partner::TYPE_VENDOR)->limit(3)->get();
 
         // if ($vendors->count() < 3) {
         //     throw new \Exception('Not enough vendor partners found to seed vendor bills.');

@@ -103,7 +103,7 @@ test('the entire accounting workflow from setup to credit note', function () {
     $this->assertEquals('15000000.00', $capitalEntry->total_credit);
 
     // Step 4: Purchasing a Fixed Asset
-    $vendor = Partner::factory()->for($company)->create(['name' => 'Paykar Tech Supplies', 'type' => 'Vendor']);
+    $vendor = Partner::factory()->for($company)->create(['name' => 'Paykar Tech Supplies', 'type' => Partner::TYPE_VENDOR]);
     $vendorBillService = new VendorBillService();
     $vendorBill = $vendorBillService->create([
         'company_id' => $company->id,
@@ -133,7 +133,7 @@ test('the entire accounting workflow from setup to credit note', function () {
     expect($purchaseEntry->lines->where('account_id', $apAccount->id)->first()->credit)->toEqual('3000000.00');
 
     // Step 5: Providing a Service & Invoicing
-    $customer = Partner::factory()->for($company)->create(['name' => 'Hawre Trading Group', 'type' => 'Customer']);
+    $customer = Partner::factory()->for($company)->create(['name' => 'Hawre Trading Group', 'type' => Partner::TYPE_CUSTOMER]);
     $invoiceService = new InvoiceService();
     $invoice = $invoiceService->create([
         'company_id' => $company->id,

@@ -35,13 +35,13 @@ class PaymentSeeder extends Seeder
         }
 
         // Fetch customer partners
-        $customers = Partner::where('type', 'customer')->limit(3)->get();
+        $customers = Partner::where('type', Partner::TYPE_CUSTOMER)->limit(3)->get();
         if ($customers->count() < 3) {
             throw new \Exception('Not enough customer partners found. Please run PartnerSeeder.');
         }
 
         // Fetch vendor partners
-        $vendors = Partner::where('type', 'vendor')->limit(3)->get();
+        $vendors = Partner::where('type', Partner::TYPE_VENDOR)->limit(3)->get();
         if ($vendors->count() < 3) {
             throw new \Exception('Not enough vendor partners found. Please run PartnerSeeder.');
         }
