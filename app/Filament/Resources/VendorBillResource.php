@@ -162,7 +162,7 @@ class VendorBillResource extends Resource
                 Tables\Actions\EditAction::make(),
                 Action::make('confirm')
                     ->action(function (VendorBill $record) {
-                        $vendorBillService = new VendorBillService();
+                        $vendorBillService = app(VendorBillService::class);
                         try {
                             $vendorBillService->confirm($record, Auth::user());
                             Notification::make()
@@ -182,7 +182,7 @@ class VendorBillResource extends Resource
                 Action::make('resetToDraft')
                     ->action(function (VendorBill $record, array $data) {
                         $user = Auth::user();
-                        $vendorBillService = new VendorBillService();
+                        $vendorBillService = app(VendorBillService::class);
                         try {
                             $vendorBillService->resetToDraft($record, $user, $data['reason']);
                             Notification::make()
