@@ -17,7 +17,7 @@ class EditVendorBill extends EditRecord
         return [
             Actions\DeleteAction::make()
                 ->action(function (Model $record) {
-                    $vendorBillService = new VendorBillService();
+                    $vendorBillService = app(VendorBillService::class);;
                     $vendorBillService->delete($record);
                     $this->redirect(VendorBillResource::getUrl('index'));
                 }),
@@ -26,7 +26,7 @@ class EditVendorBill extends EditRecord
 
     protected function handleRecordUpdate(Model $record, array $data): Model
     {
-        $vendorBillService = new VendorBillService();
+        $vendorBillService = app(VendorBillService::class);
         $vendorBillService->update($record, $data);
         return $record;
     }
