@@ -85,7 +85,7 @@ test('the entire accounting workflow from setup to credit note', function () {
     ]);
 
     // Step 3: Capital Injection
-    $journalEntryService = new JournalEntryService();
+    $journalEntryService = app(JournalEntryService::class);
     $capitalEntry = $journalEntryService->create([
         'company_id' => $company->id,
         'journal_id' => $bankJournal->id,
@@ -104,7 +104,7 @@ test('the entire accounting workflow from setup to credit note', function () {
 
     // Step 4: Purchasing a Fixed Asset
     $vendor = Partner::factory()->for($company)->create(['name' => 'Paykar Tech Supplies', 'type' => Partner::TYPE_VENDOR]);
-    $vendorBillService = new VendorBillService();
+    $vendorBillService = app(VendorBillService::class);
     $vendorBill = $vendorBillService->create([
         'company_id' => $company->id,
         'currency_id' => $currency->id,
@@ -134,7 +134,7 @@ test('the entire accounting workflow from setup to credit note', function () {
 
     // Step 5: Providing a Service & Invoicing
     $customer = Partner::factory()->for($company)->create(['name' => 'Hawre Trading Group', 'type' => Partner::TYPE_CUSTOMER]);
-    $invoiceService = new InvoiceService();
+    $invoiceService = app(InvoiceService::class);
     $invoice = $invoiceService->create([
         'company_id' => $company->id,
         'customer_id' => $customer->id,
@@ -164,7 +164,7 @@ test('the entire accounting workflow from setup to credit note', function () {
     expect($invoiceEntry->lines->where('account_id', $revenueAccount->id)->first()->credit)->toEqual('5000000.00');
 
     // Step 6: Receiving Payment from Customer
-    $paymentService = new PaymentService();
+    $paymentService = app(PaymentService::class);
     $customerPayment = $paymentService->create([
         'company_id' => $company->id,
         'currency_id' => $currency->id,
@@ -209,7 +209,7 @@ test('the entire accounting workflow from setup to credit note', function () {
     expect($vendorBill->fresh()->status)->toBe(VendorBill::TYPE_POSTED);
 
     // Step 8: Handling a Correction (Credit Note)
-    $adjustmentService = new AdjustmentDocumentService();
+    $adjustmentService = app(AdjustmentDocumentService::class);
 
     // The AdjustmentDocument model *itself* does not have a 'lines' relationship.
     // Instead, you create the header document with its total_amount,

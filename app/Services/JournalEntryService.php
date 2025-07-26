@@ -17,9 +17,13 @@ use Illuminate\Validation\ValidationException;
 
 class JournalEntryService
 {
+    public function __construct(protected AccountingValidationService $accountingValidationService)
+    {
+    }
+
     public function create(array $data, bool $postImmediately = false): JournalEntry
     {
-        $this->checkIfPeriodIsLocked($data['company_id'], $data['entry_date']);
+        $this->accountingValidationService->checkIfPeriodIsLocked($data['company_id'], $data['entry_date']);
 
         Validator::make($data, [
             // Apply the rule to each account_id in the lines array
@@ -96,11 +100,11 @@ class JournalEntryService
     public function update(JournalEntry $journalEntry, array $data): JournalEntry
     {
         // 1. First, check if the original entry's date is locked.
-        $this->checkIfPeriodIsLocked($journalEntry->company_id, $journalEntry->entry_date);
+        $this->accountingValidationService->checkIfPeriodIsLocked($journalEntry->company_id, $journalEntry->entry_date);
 
         // Also check on update if the date is being changed.
         if (isset($data['entry_date'])) {
-            $this->checkIfPeriodIsLocked($journalEntry->company_id, $data['entry_date']);
+            $this->accountingValidationService->checkIfPeriodIsLocked($journalEntry->company_id, $data['entry_date']);
         }
 
         // This is the guard clause. It protects posted entries.
@@ -111,20 +115,6 @@ class JournalEntryService
         // If the guard clause passes, proceed with the update.
         $journalEntry->update($data);
         return $journalEntry;
-    }
-
-    /**
-     * Checks if a given date for a company falls within a locked period.
-     */
-    private function checkIfPeriodIsLocked(int $companyId, string $date): void
-    {
-        $entryDate = Carbon::parse($date);
-
-        $lockDate = LockDate::where('company_id', $companyId)->first();
-
-        if ($lockDate && $entryDate->lte($lockDate->locked_until)) {
-            throw new PeriodIsLockedException('The accounting period is locked and cannot be modified.');
-        }
     }
 
     /**
@@ -140,7 +130,7 @@ class JournalEntryService
     {
         // First, check if the entry's date is in a locked period.
         // This applies to ALL entries, whether draft or posted, if their date falls within a locked period.
-        $this->checkIfPeriodIsLocked($journalEntry->company_id, $journalEntry->entry_date);
+        $this->accountingValidationService->checkIfPeriodIsLocked($journalEntry->company_id, $journalEntry->entry_date);
 
         // Block deletion if the entry has been posted.
         // Block deletion if the entry has been posted. This is the non-negotiable immutability rule.

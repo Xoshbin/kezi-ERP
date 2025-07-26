@@ -14,6 +14,10 @@ use Illuminate\Support\Facades\Gate;
 
 class InvoiceService
 {
+    public function __construct(protected JournalEntryService $journalEntryService)
+    {
+    }
+
     public function create(array $data): Invoice
     {
         return DB::transaction(function () use ($data) {
@@ -187,7 +191,7 @@ class InvoiceService
             'created_by_user_id' => $user->id,
         ];
 
-        return (new JournalEntryService())->create($journalEntryData);
+        return $this->journalEntryService->create($journalEntryData);
     }
     public function resetToDraft(Invoice $invoice, User $user, string $reason): void
     {
@@ -205,7 +209,7 @@ class InvoiceService
                 'reason' => $reason,
             ];
             // Prepend to existing logs if any.
-            $logs = $invoice->reset_to_draft_log ? json_decode($invoice->reset_to_draft_log, true) : [];
+            $logs = $invoice->reset_to_draft_log ?? [];
             array_unshift($logs, $newLog);
 
             // 4. Update the invoice state.
@@ -214,7 +218,7 @@ class InvoiceService
                 'journal_entry_id' => null,
                 'posted_at' => null,
                 'invoice_number' => null, // You should also nullify the number to allow it to be re-sequenced.
-                'reset_to_draft_log' => json_encode($logs),
+                'reset_to_draft_log' => $logs,
             ]);
         });
     }
