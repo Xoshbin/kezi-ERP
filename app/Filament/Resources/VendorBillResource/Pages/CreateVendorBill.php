@@ -13,7 +13,7 @@ class CreateVendorBill extends CreateRecord
 
     protected function handleRecordCreation(array $data): Model
     {
-        $vendorBillService = new VendorBillService();
+        $vendorBillService = app(VendorBillService::class);
         return $vendorBillService->create($data);
     }
 }
