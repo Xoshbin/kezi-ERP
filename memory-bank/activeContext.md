@@ -73,3 +73,9 @@ This file tracks the project's current status, including recent changes, current
 3.  Corrected the database assertions to use integer values for money, aligning with the `MoneyCast`.
 4.  Corrected a copy-paste error in the test assertions to check for the correct account ID.
 5.  The bug is now fixed, and the associated feature test is passing.
+[2025-07-26 22:00:49] - **Recent Changes:**
+- Refactored the `checkIfPeriodIsLocked` logic into a new `AccountingValidationService`.
+- Updated `JournalEntryService`, `VendorBillService`, `InvoiceService`, `PaymentService`, and `AdjustmentDocumentService` to use dependency injection for all service dependencies.
+- Corrected all related test failures in `AccountingWorkflowTest` and `AccountingTest` by resolving services from the container.
+- Fixed an issue in a Filament page (`CreateVendorBill`) that was manually instantiating a service, causing a fatal error.
+- Added a new unit test suite for the `AccountingValidationService`.

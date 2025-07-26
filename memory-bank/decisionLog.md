@@ -75,3 +75,6 @@ This file records architectural and implementation decisions using a list format
 1.  Updated the test to be self-contained by providing the necessary `default_sales_discount_account_id` via `config()`.
 2.  Corrected the test's database assertions to use the correct integer-based values expected by the `MoneyCast`, ensuring data integrity.
 3.  Corrected a copy-paste error in the test assertions to check for the correct account ID.
+[2025-07-26 22:00:21] - **Decision:** Refactored the `checkIfPeriodIsLocked` method from `JournalEntryService` into a new, dedicated `AccountingValidationService`.
+- **Rationale:** To centralize shared business logic, eliminate code duplication, improve maintainability, and adhere to the Single Responsibility Principle. This makes the system more scalable and easier to test.
+- **Implications:** All services requiring this validation (`JournalEntryService`, `VendorBillService`, etc.) must now inject `AccountingValidationService`. All service instantiations throughout the app (including tests and UI components like Filament pages) must be updated to use the service container (`app(...)`) to handle dependency injection correctly.
