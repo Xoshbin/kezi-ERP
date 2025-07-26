@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Exceptions\PeriodIsLockedException;
 use App\Exceptions\UpdateNotAllowedException;
+use App\Exceptions\DeletionNotAllowedException;
 use App\Models\Company;
 use App\Models\JournalEntry;
 use App\Models\LockDate;
@@ -124,5 +125,37 @@ class JournalEntryService
         if ($lockDate && $entryDate->lte($lockDate->locked_until)) {
             throw new PeriodIsLockedException('The accounting period is locked and cannot be modified.');
         }
+    }
+
+    /**
+     * Deletes a JournalEntry if it is in draft status.
+     * Deletion is blocked for posted entries to maintain financial integrity.
+     *
+     * @param JournalEntry $journalEntry The entry to delete.
+     * @return bool|null True on successful deletion.
+     * @throws DeletionNotAllowedException If the entry is already posted.
+     * @throws PeriodIsLockedException If the entry's date is in a locked period.
+     */
+    public function delete(JournalEntry $journalEntry): ?bool
+    {
+        // First, check if the entry's date is in a locked period.
+        // This applies to ALL entries, whether draft or posted, if their date falls within a locked period.
+        $this->checkIfPeriodIsLocked($journalEntry->company_id, $journalEntry->entry_date);
+
+        // Block deletion if the entry has been posted.
+        // Block deletion if the entry has been posted. This is the non-negotiable immutability rule.
+        if ($journalEntry->is_posted) {
+            throw new DeletionNotAllowedException(
+                'Cannot delete a posted journal entry. Corrections must be made with a new reversal entry.'
+            );
+        }
+
+        // Proceed with deletion for draft entries.
+        // Using a transaction is good practice, though Eloquent's delete handles this well.
+        return DB::transaction(function () use ($journalEntry) {
+            // Deleting the JournalEntry will also delete its lines if foreign keys
+            // are configured with `onDelete('cascade')`.
+            return $journalEntry->delete();
+        });
     }
 }
