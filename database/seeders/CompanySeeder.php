@@ -26,7 +26,7 @@ class CompanySeeder extends Seeder
         Company::updateOrCreate(
             ['name' => 'Jmeryar Solutions'],
             [
-                'address' => 'Baghdad, Iraq',
+                'address' => 'Slemani, Iraq',
                 'tax_id' => '123456789-IQ',
                 'currency_id' => $iqdCurrency->id,
                 'fiscal_country' => 'IQ',

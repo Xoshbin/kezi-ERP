@@ -29,9 +29,9 @@ class PartnerResource extends Resource
                 Forms\Components\TextInput::make('name')
                     ->required()
                     ->maxLength(255),
-                Forms\Components\TextInput::make('type')
+                Forms\Components\Select::make('type')
                     ->required()
-                    ->maxLength(255),
+                    ->options(Partner::getTypes()),
                 Forms\Components\TextInput::make('contact_person')
                     ->maxLength(255),
                 Forms\Components\TextInput::make('email')
@@ -68,8 +68,9 @@ class PartnerResource extends Resource
                     ->sortable(),
                 Tables\Columns\TextColumn::make('name')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('type')
-                    ->searchable(),
+                Tables\Columns\SelectColumn::make('type')
+                    ->searchable()
+                    ->options(Partner::getTypes()),
                 Tables\Columns\TextColumn::make('contact_person')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('email')

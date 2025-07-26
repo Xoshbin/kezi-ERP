@@ -22,12 +22,12 @@ class JournalSeeder extends Seeder
 
         $journals = [
             [
-                'name' => 'Customer Invoices',
+                'name' => 'Sales',
                 'type' => 'Sale',
                 'short_code' => 'INV',
             ],
             [
-                'name' => 'Vendor Bills',
+                'name' => 'Purchases',
                 'type' => 'Purchase',
                 'short_code' => 'BILL',
             ],
@@ -42,7 +42,7 @@ class JournalSeeder extends Seeder
                 'short_code' => 'BNK2',
             ],
             [
-                'name' => 'Miscellaneous Operations',
+                'name' => 'Miscellaneous',
                 'type' => 'Miscellaneous',
                 'short_code' => 'MISC',
             ],
