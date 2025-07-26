@@ -1,79 +1,46 @@
-🧠 Purpose
-The file sets global coding and architectural principles for building a headless accounting app for Iraq, inspired by Odoo but tailored to Iraq’s lack of digital banking.
+### 🧠 **Purpose**
 
-🧱 Core Design Philosophy
-Manual data entry only: No Stripe, PayPal, or Laravel Cashier. Ensures full control and transparency.
+This document outlines the coding and architectural principles for building a **headless accounting application for Iraq**. It's inspired by Odoo's robust accounting rules but adapted for a market without widespread digital banking.
 
-No deletion or editing of posted financial records: Only reversals (credit notes, debit notes) are allowed.
+### 🧱 **Core Design Philosophy**
 
-Headless Laravel API: Backend-only architecture for flexibility (web, mobile, etc.).
+* **Manual Data Entry First:** The system relies entirely on manual input. Integrations like Stripe or PayPal are not included, ensuring full control and transparency over financial data.
+* **Immutability is Law:** Posted financial records (**invoices, bills, journal entries**) can never be edited or deleted. Errors are corrected only through reversals (e.g., credit notes), preserving a perfect audit trail.
+* **Headless Laravel Backend:** The architecture is backend-only. The initial focus is on building solid business logic within services and actions, completely separate from any API or web interface.
+* **Business Logic-Focused TDD:** We use Test-Driven Development (TDD) with **Pest**. All tests must focus on the core business logic (services, calculations, state changes). At this stage, **we do not write tests for API endpoints**, as no API interfaces exist yet. This ensures the core engine is flawless before any UI is connected.
 
-Test-Driven Development (TDD) using Pest to guarantee code quality.
+### 🔐 **Immutable & Auditable System**
 
-🔐 Immutable & Auditable Accounting System
-Inspired by Odoo, it enforces:
+To ensure data integrity, the system enforces:
 
-Immutability: Posted records can’t be altered.
+* **Reversals Only:** Errors in posted documents are fixed with new, linked entries (reversals), not by changing the original record.
+* **Cryptographic Hashing:** Key financial records are hashed (similar to a blockchain) to make tampering detectable.
+* **Lock Dates:** Financial periods can be "locked," preventing any new or back-dated entries.
+* **Detailed Audit Logs:** Every action is logged, including the user, IP address, timestamp, and what was changed.
+* **Strict Document Numbering:** Official numbers are assigned only when a document is posted, ensuring no gaps in sequences.
 
-Reversals only: Fix errors via contra-entries, not edits.
+### 🧩 **Essential Database Design**
 
-Cryptographic Hashing: Like blockchain, to prevent tampering.
+The database schema includes tables for `companies`, `users`, `accounts`, `journals`, `journal_entries`, `invoices`, `payments`, `products`, `partners`, and more. Key principles include using foreign key constraints for data integrity and adding audit fields to every table.
 
-Lock Dates: Prevent changes to closed financial periods.
+### 🛠️ **Laravel Best Practices**
 
-Audit Logs: Track every change, user, IP, timestamp, etc.
+* **Service Layer:** All business logic is kept in dedicated service classes (e.g., `InvoiceService`, `PaymentService`) to keep controllers thin and logic reusable.
+* **Strong Validation:** All incoming data is strictly validated at the entry point to the business logic.
+* **Queues for Heavy Jobs:** Long-running tasks like posting a complex invoice are handled by background jobs to ensure the application remains fast.
+* **Events & Listeners:** System components are decoupled using events (e.g., `InvoicePosted`) to trigger actions like creating journal entries.
+* **Security:** Standard Laravel security features, including strong password hashing (Bcrypt/Argon2) and protection against common web vulnerabilities, are used.
 
-Strict Numbering: Sequential numbers only upon posting (no gaps).
+### 📊 **Accounting Workflows**
 
-🧩 Essential Database Design
-Comprehensive schema includes:
+The system is designed to handle core accounting workflows, including:
 
-companies, users, currencies, accounts
+* **Sales & Invoicing**
+* **Purchases & Vendor Bills**
+* **Payments & Reconciliation**
+* **Asset Management & Depreciation**
+* **Budgeting & Analytics**
 
-journals, journal_entries, journal_entry_lines
+### ✅ **Final Goal**
 
-invoices, vendor_bills, payments, adjustments
-
-products, partners, taxes, assets, budgets, analytics
-
-Key ideas: foreign keys, soft deletes for non-financial data, and audit fields on every table.
-
-🛠️ Laravel Best Practices
-Validation: Strong real-time validation at entry point.
-
-Migrations: Full version control for DB schema.
-
-Eloquent ORM: Used for clean and secure DB interaction.
-
-Queues: Background job processing with proper DB transactions.
-
-Events/Listeners: Decoupled design for tasks like posting invoices.
-
-Service Layer: Business logic via dedicated services (InvoiceService, etc.).
-
-Logging: Laravel logs + full audit trails.
-
-Security: Strong password hashing (Bcrypt/Argon2).
-
-Environment Configs: Use .env for environment-specific settings.
-
-📊 Accounting Workflows
-Handles:
-
-Sales & Invoices: Drafts → Post → Journal entries.
-
-Purchases & Vendor Bills: Manual entry, journalized at confirmation.
-
-Payments: Manual, reconciled against invoices/bills.
-
-Assets & Depreciation: Tracked and auto-depreciated.
-
-Deferred Revenues/Expenses: Accrual-based support.
-
-Budgets & Analytics: Per project/department for performance tracking.
-
-📋 Analogy
-Think of it like stone carving: drafts are like sketches, but once confirmed (posted), the record is etched in stone. Corrections are new carvings, never edits on the original.
-
-✅ Final Goal
-Build a trustworthy, immutable, fully auditable accounting backend tailored for Iraq, with the robustness and modularity of Odoo, but Laravel-native and banking-independent.
+The goal is to build a trustworthy, immutable, and fully auditable accounting backend for the Iraqi market. It combines the strictness of enterprise systems like Odoo with the flexibility and power of a modern Laravel application.
