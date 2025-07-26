@@ -436,6 +436,72 @@ test('a posted journal entry cannot be updated', function () {
     ]);
 });
 
+//================================================================
+// NEW AND UPDATED TESTS FOR THE DELETE METHOD
+//================================================================
+
+test('a draft journal entry can be deleted', function () {
+    // Arrange: Create a user and the service.
+    $user = User::factory()->create();
+    $this->actingAs($user);
+    $service = new JournalEntryService();
+
+    // Arrange: Create a journal entry that is NOT posted (a draft).
+    $journalEntry = JournalEntry::factory()->create(['is_posted' => false]);
+
+    // Act: Call the delete method on the service.
+    $wasDeleted = $service->delete($journalEntry);
+
+    // Assert: Confirm the deletion was successful.
+    expect($wasDeleted)->toBeTrue();
+
+    // Assert: Confirm the record is gone from the database.
+    $this->assertModelMissing($journalEntry);
+});
+
+test('a posted journal entry cannot be deleted via the service', function () {
+    // Arrange: Create a user and the service.
+    $user = User::factory()->create();
+    $this->actingAs($user);
+    $service = new JournalEntryService();
+
+    // Arrange: Create a journal entry that IS posted.
+    $journalEntry = JournalEntry::factory()->create(['is_posted' => true]);
+
+    // Assert: Expect the service to throw our specific exception, blocking the deletion.
+    expect(fn() => $service->delete($journalEntry))
+        ->toThrow(DeletionNotAllowedException::class, 'Cannot delete a posted journal entry. Corrections must be made with a new reversal entry.');
+
+    // Assert: As a final check, confirm the model still exists in the database.
+    $this->assertModelExists($journalEntry);
+});
+
+test('a draft journal entry in a locked period cannot be deleted', function () {
+    // Arrange: Create a user and the service.
+    $user = User::factory()->create();
+    $this->actingAs($user);
+    $service = new JournalEntryService();
+
+    // Arrange: Create a company and lock its books up to a month ago.
+    $company = Company::factory()->create();
+    LockDate::factory()->for($company)->create([
+        'locked_until' => now()->subMonth(),
+    ]);
+
+    // Arrange: Create a draft journal entry with a date inside the locked period.
+    $journalEntry = JournalEntry::factory()->for($company)->create([
+        'is_posted' => false,
+        'entry_date' => now()->subMonths(2)->toDateString(), // This date is locked.
+    ]);
+
+    // Assert: Expect the service to block the deletion due to the locked period.
+    expect(fn() => $service->delete($journalEntry))
+        ->toThrow(PeriodIsLockedException::class);
+
+    // Assert: As a final check, confirm the model was NOT deleted.
+    $this->assertModelExists($journalEntry);
+});
+
 test('a posted journal entry cannot be deleted', function () {
     // Arrange: Create a user who will perform the action.
     $user = User::factory()->create();
