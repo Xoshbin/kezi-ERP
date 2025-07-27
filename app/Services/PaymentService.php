@@ -71,16 +71,24 @@ class PaymentService
             throw new InvalidArgumentException('The selected journal is not fully configured with default debit and credit accounts.');
         }
 
+        // Fetch a fresh instance of the company to ensure we have the latest default accounts.
+        $company = Company::findOrFail($payment->company_id);
         if ($payment->payment_type === Payment::TYPE_INBOUND) {
             // Inbound: Money comes IN to the bank (debit), reducing customer debt (credit).
-            $arAccountId = config('accounting.defaults.accounts_receivable_id');
-            $lines[] = ['account_id' => $debitAccountId, 'debit' => $payment->amount, 'credit' => 0];
+            $arAccountId = $company->default_accounts_receivable_id;
+            if (!$arAccountId) {
+                throw new \RuntimeException('Default accounts receivable is not configured for this company.');
+            }
+            $lines[] = ['account_id' => $bankAccountId, 'debit' => $payment->amount, 'credit' => 0];
             $lines[] = ['account_id' => $arAccountId, 'credit' => $payment->amount, 'debit' => 0];
         } else { // Outbound
             // Outbound: Money goes OUT of the bank (credit), reducing company debt (debit).
-            $apAccountId = config('accounting.defaults.accounts_payable_id');
+            $apAccountId = $company->default_accounts_payable_id;
+            if (!$apAccountId) {
+                throw new \RuntimeException('Default accounts payable is not configured for this company.');
+            }
             $lines[] = ['account_id' => $apAccountId, 'debit' => $payment->amount, 'credit' => 0];
-            $lines[] = ['account_id' => $creditAccountId, 'credit' => $payment->amount, 'debit' => 0];
+            $lines[] = ['account_id' => $bankAccountId, 'credit' => $payment->amount, 'debit' => 0];
         }
 
         $journalEntryData = [

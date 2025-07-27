@@ -131,8 +131,12 @@ class InvoiceService
         $company = $invoice->company;
         $baseCurrency = $company->currency;
         $foreignCurrency = $invoice->currency;
-        $arAccountId = config('accounting.defaults.accounts_receivable_id');
-        $salesJournalId = config('accounting.defaults.sales_journal_id');
+        $arAccountId = $company->default_accounts_receivable_id;
+        $salesJournalId = $company->default_sales_journal_id;
+
+        if (!$arAccountId || !$salesJournalId) {
+            throw new \RuntimeException('Default accounts receivable or sales journal is not configured for this company.');
+        }
 
         // Determine the exchange rate. If it's the same currency, the rate is 1.
         $exchangeRate = ($baseCurrency->id === $foreignCurrency->id) ? 1 : $foreignCurrency->exchange_rate;

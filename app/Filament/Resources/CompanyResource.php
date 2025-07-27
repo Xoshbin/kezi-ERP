@@ -40,6 +40,46 @@ class CompanyResource extends Resource
                     ->maxLength(255),
                 Forms\Components\Select::make('parent_company_id')
                     ->relationship('parentCompany', 'name'),
+                Forms\Components\Select::make('default_accounts_payable_id')
+                    ->relationship('defaultAccountsPayable', 'name')
+                    ->searchable()
+                    ->label('Default Accounts Payable'),
+                Forms\Components\Select::make('default_tax_receivable_id')
+                    ->relationship('defaultTaxReceivable', 'name')
+                    ->searchable()
+                    ->label('Default Tax Receivable'),
+                Forms\Components\Select::make('default_purchase_journal_id')
+                    ->relationship('defaultPurchaseJournal', 'name')
+                    ->searchable()
+                    ->label('Default Purchase Journal'),
+                Forms\Components\Select::make('default_accounts_receivable_id')
+                    ->relationship('defaultAccountsReceivable', 'name')
+                    ->searchable()
+                    ->label('Default Accounts Receivable'),
+                Forms\Components\Select::make('default_sales_discount_account_id')
+                    ->relationship('defaultSalesDiscountAccount', 'name')
+                    ->searchable()
+                    ->label('Default Sales Discount Account'),
+                Forms\Components\Select::make('default_tax_account_id')
+                    ->relationship('defaultTaxAccount', 'name')
+                    ->searchable()
+                    ->label('Default Tax Account'),
+                Forms\Components\Select::make('default_sales_journal_id')
+                    ->relationship('defaultSalesJournal', 'name')
+                    ->searchable()
+                    ->label('Default Sales Journal'),
+                Forms\Components\Select::make('default_depreciation_journal_id')
+                    ->relationship('defaultDepreciationJournal', 'name')
+                    ->searchable()
+                    ->label('Default Depreciation Journal'),
+                Forms\Components\Select::make('default_bank_account_id')
+                    ->relationship('defaultBankAccount', 'name')
+                    ->searchable()
+                    ->label('Default Bank Account'),
+                Forms\Components\Select::make('default_outstanding_receipts_account_id')
+                    ->relationship('defaultOutstandingReceiptsAccount', 'name')
+                    ->searchable()
+                    ->label('Default Outstanding Receipts Account'),
             ]);
     }
 

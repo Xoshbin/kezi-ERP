@@ -19,6 +19,17 @@ return new class extends Migration
             $table->foreignId('currency_id')->constrained('currencies');
             $table->string('fiscal_country'); // e.g., 'IQ'
             $table->foreignId('parent_company_id')->nullable()->constrained('companies')->onDelete('set null');
+            $table->foreignId('default_accounts_payable_id')->nullable()->constrained('accounts')->nullOnDelete();
+            $table->foreignId('default_tax_receivable_id')->nullable()->constrained('accounts')->nullOnDelete();
+            $table->foreignId('default_purchase_journal_id')->nullable()->constrained('journals')->nullOnDelete();
+            $table->foreignId('default_bank_journal_id')->nullable()->constrained('journals')->nullOnDelete();
+            $table->foreignId('default_accounts_receivable_id')->nullable()->constrained('accounts')->nullOnDelete();
+            $table->foreignId('default_sales_discount_account_id')->nullable()->constrained('accounts')->nullOnDelete();
+            $table->foreignId('default_tax_account_id')->nullable()->constrained('accounts')->nullOnDelete();
+            $table->foreignId('default_sales_journal_id')->nullable()->constrained('journals')->nullOnDelete();
+            $table->foreignId('default_depreciation_journal_id')->nullable()->constrained('journals')->nullOnDelete();
+            $table->foreignId('default_bank_account_id')->nullable()->constrained('accounts')->nullOnDelete();
+            $table->foreignId('default_outstanding_receipts_account_id')->nullable()->constrained('accounts')->nullOnDelete();
             $table->timestamps();
         });
     }
