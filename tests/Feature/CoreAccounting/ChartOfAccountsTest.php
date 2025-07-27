@@ -7,6 +7,7 @@ use App\Models\JournalEntry;
 use App\Models\User;
 use App\Services\AccountService;
 use App\Services\JournalService;
+use Brick\Money\Money;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Validation\ValidationException;
 use Tests\Traits\CreatesApplication;
@@ -44,7 +45,30 @@ test('an account with existing transactions is marked as deprecated instead of b
     // Arrange: Create an account and link a transaction to it.
     $account = Account::factory()->for($this->company)->create();
     $journal = Journal::factory()->for($this->company)->create();
-    JournalEntry::factory()->for($this->company)->for($journal)->create()->lines()->create(['account_id' => $account->id, 'debit' => 100]);
+    $currencyCode = $this->company->currency->code;
+
+    // MODIFIED: Create the journal entry with correct Money objects for its totals.
+    $journalEntry = JournalEntry::factory()
+        ->for($this->company)
+        ->for($journal)
+        ->create([
+            'total_debit' => Money::of(100, $currencyCode),
+            'total_credit' => Money::of(100, $currencyCode), // Ensure the entry is balanced from the start.
+        ]);
+
+    // MODIFIED: Create the lines associated with the entry, ensuring it's balanced.
+    $balancingAccount = Account::factory()->for($this->company)->create();
+    $journalEntry->lines()->create([
+        'account_id' => $account->id,
+        'debit' => Money::of(100, $currencyCode),
+        'credit' => Money::of(0, $currencyCode),
+    ]);
+    $journalEntry->lines()->create([
+        'account_id' => $balancingAccount->id,
+        'credit' => Money::of(100, $currencyCode),
+        'debit' => Money::of(0, $currencyCode),
+    ]);
+
 
     // Act: Attempt to delete the account. We expect our Observer to intercept this.
     // The delete() method should return false because the Observer cancels the operation.
@@ -67,15 +91,18 @@ test('a deprecated account cannot be used for new financial transactions', funct
     $activeAccount = Account::factory()->for($this->company)->create();
 
     // Arrange: Prepare the data for a journal entry that attempts to use the deprecated account.
+    $currencyCode = $this->company->currency->code;
     $journalEntryData = [
         'company_id' => $this->company->id,
         'entry_date' => now()->toDateString(),
         'reference' => 'INVALID-USE-DEPRECATED',
+        'currency_id' => $this->company->currency_id,
+        'journal_id' => Journal::factory()->for($this->company)->create()->id,
         'lines' => [
             // This line uses the deprecated account, which should be rejected.
-            ['account_id' => $deprecatedAccount->id, 'debit' => 100],
+            ['account_id' => $deprecatedAccount->id, 'debit' => Money::of(100, $currencyCode), 'credit' => Money::of(0, $currencyCode)],
             // This line is valid.
-            ['account_id' => $activeAccount->id, 'credit' => 100],
+            ['account_id' => $activeAccount->id, 'credit' => Money::of(100, $currencyCode), 'debit' => Money::of(0, $currencyCode)],
         ],
     ];
 
