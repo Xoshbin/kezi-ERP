@@ -9,39 +9,39 @@ use Illuminate\Database\Eloquent\Model;
 class MoneyCast implements CastsAttributes
 {
     /**
-     * Cast the given value.
+     * Get the raw integer value (in cents) from the database.
      *
-     * This method is called when retrieving the value from the database.
-     * It converts the stored integer (e.g., 12345) into a float with two decimal places (e.g., 123.45).
-     *
-     * Example:
-     *   Database value: 12345
-     *   Returned value: 123.45
+     * This ensures that all internal calculations are performed on integers,
+     * preventing floating-point inaccuracies.
      *
      * @param  array<string, mixed>  $attributes
      */
-    public function get($model, string $key, $value, array $attributes): float
+    public function get($model, string $key, $value, array $attributes): ?int
     {
-        // Transform the integer stored in the database (e.g., 12345) into a float (e.g., 123.45).
-        return round(floatval($value) / 100, 2);
+        return $value === null ? null : (int) $value;
     }
 
     /**
-     * Prepare the given value for storage.
+     * Prepare the value for storage.
      *
-     * This method is called when saving the value to the database.
-     * It converts the float (e.g., 123.45) into an integer (e.g., 12345) for storage.
-     *
-     * Example:
-     *   Input value: 123.45
-     *   Stored value: 12345
+     * This method handles being passed a float (e.g., 123.45) from user input
+     * or an integer that is already in cents (e.g., 12345) from internal calculations.
      *
      * @param  array<string, mixed>  $attributes
      */
-    public function set($model, string $key, $value, array $attributes): int
+    public function set($model, string $key, $value, array $attributes): ?int
     {
-        // Transform the float into an integer for storage.
-        // For example, 123.45 becomes 12345
-        return (int) round(floatval($value) * 100);
+        if ($value === null) {
+            return null;
+        }
+
+        // If the value is already an integer, we assume it's in cents and pass it through.
+        // This prevents double-multiplication when models are saved and re-saved.
+        if (is_int($value)) {
+            return $value;
+        }
+
+        // Otherwise, assume it's a standard decimal value and convert to cents.
+        return (int) round((float)$value * 100);
     }
 }
