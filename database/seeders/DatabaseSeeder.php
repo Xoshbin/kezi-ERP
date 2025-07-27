@@ -18,12 +18,10 @@ class DatabaseSeeder extends Seeder
                 // These are the fundamental records required for the system to operate.
                 CurrencySeeder::class,
                 CompanySeeder::class,
-                UserSeeder::class,
-
-                // 2. Accounting structure
-                // Defines the chart of accounts and journals.
                 AccountSeeder::class,
                 JournalSeeder::class,
+                UpdateCompanyDefaultsSeeder::class,
+                UserSeeder::class,
                 // JournalEntrySeeder::class,
 
                 // 3. Operational data

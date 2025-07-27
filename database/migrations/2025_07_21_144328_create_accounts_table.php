@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('accounts', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('company_id')->constrained('companies');
+            $table->foreignId('company_id');
             $table->string('code');
             $table->string('name');
             $table->string('type'); // e.g., 'Asset', 'Liability', 'Equity', 'Income', 'Expense'
