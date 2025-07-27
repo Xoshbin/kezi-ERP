@@ -98,6 +98,18 @@ class AdjustmentDocument extends Model
         'updated_at'   => 'datetime',   // [5, 6]
     ];
 
+    public const STATUS_DRAFT = 'draft'; // [5]
+    public const STATUS_POSTED = 'posted'; // [5]
+
+    // use it in Filament select options columns
+    public static function getStatuses(): array
+    {
+        return [
+            self::STATUS_DRAFT => 'Draft',
+            self::STATUS_POSTED => 'Posted',
+        ];
+    }
+
     /**
      * The "booted" method of the model.
      * This is an appropriate place to enforce global constraints or event listeners.
