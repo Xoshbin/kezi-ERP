@@ -37,7 +37,12 @@ class AssetService
     private function createJournalEntryForDepreciation(DepreciationEntry $entry, User $user): JournalEntry
     {
         $asset = $entry->asset; // Get the parent asset
-        $journalId = config('accounting.defaults.depreciation_journal_id');
+        $company = $asset->company;
+        $journalId = $company->default_depreciation_journal_id;
+
+        if (!$journalId) {
+            throw new \RuntimeException('Default depreciation journal is not configured for this company.');
+        }
 
         $lines = [
             // Debit the expense account

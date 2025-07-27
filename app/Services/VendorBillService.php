@@ -173,14 +173,15 @@ class VendorBillService
      */
     private function createJournalEntryForBill(VendorBill $vendorBill, User $user): JournalEntry
     {
-        // Get default accounts from your config.
-        $apAccountId = config('accounting.defaults.accounts_payable_id');
-        $taxAccountId = config('accounting.defaults.tax_receivable_id'); // Tax on purchases is an asset
-        $purchaseJournalId = config('accounting.defaults.purchase_journal_id');
+        // Get default accounts from the bill's company.
+        $company = $vendorBill->company;
+        $apAccountId = $company->default_accounts_payable_id;
+        $taxAccountId = $company->default_tax_receivable_id;
+        $purchaseJournalId = $company->default_purchase_journal_id;
 
-        // Explicitly fail if configuration is missing.
+        // Explicitly fail if configuration is missing for the company.
         if (!$apAccountId || !$taxAccountId || !$purchaseJournalId) {
-            throw new \RuntimeException('Default accounting accounts (accounts_payable_id, tax_receivable_id, or purchase_journal_id) are not configured.');
+            throw new \RuntimeException('Default accounting accounts are not configured for this company. Please set them in the company settings.');
         }
 
         // A credit note should reverse the debit/credit entries.

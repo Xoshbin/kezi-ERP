@@ -76,3 +76,15 @@ This file tracks the project's progress using a task list format.
 - Diagnosed and fixed a series of cascading errors starting with a `ValidationException`.
 - The resolution involved refactoring the test to align with accounting principles, correcting the test setup to provide necessary configuration, and ensuring the test assertions correctly handled the application's `MoneyCast` for financial values.
 - The test suite is now passing, and the credit note workflow is fully functional and compliant with the project's architectural rules.
+[2025-07-27 07:14:22] - **Task:** Comprehensive architectural refactoring.
+**Status:** In Progress.
+**Summary:**
+- Migrated all default accounting settings from `config()` to the `companies` table.
+- Updated database, UI, services, and seeders to support the new architecture.
+- Currently fixing the test suite, which is failing due to the architectural changes. A new `CreatesApplication` trait has been created to assist with this.
+[2025-07-27 07:33:56] - **Task:** Fix the entire test suite after a major architectural refactoring.
+**Status:** In Progress.
+**Summary:**
+- Resolved all `UniqueConstraintViolationException` and `BadMethodCallException` errors in the test suite.
+- Corrected the test setup to provide a fully configured company for each test.
+- The `AccountingWorkflowTest` is still failing with an `ErrorException`. The next step is to investigate the `PaymentService` to identify the root cause of this error.

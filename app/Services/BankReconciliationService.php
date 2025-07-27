@@ -30,8 +30,13 @@ class BankReconciliationService
 
     private function createJournalEntryForReconciliation(Payment $payment, User $user): void
     {
-        $bankAccountId = config('accounting.defaults.default_bank_account_id');
-        $outstandingAccountId = config('accounting.defaults.outstanding_receipts_account_id');
+        $company = $payment->company;
+        $bankAccountId = $company->default_bank_account_id;
+        $outstandingAccountId = $company->default_outstanding_receipts_account_id;
+
+        if (!$bankAccountId || !$outstandingAccountId) {
+            throw new \RuntimeException('Default bank or outstanding receipts account is not configured for this company.');
+        }
 
         $lines = [
             ['account_id' => $bankAccountId, 'debit' => $payment->amount],

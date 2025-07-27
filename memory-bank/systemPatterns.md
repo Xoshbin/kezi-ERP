@@ -26,3 +26,6 @@ It is optional, but recommended to be updated as the project evolves.
 [2025-07-26 22:00:39] - **Pattern: Dedicated Validation Services**
 - **Description:** Shared business logic validations (e.g., checking for locked accounting periods) are encapsulated within their own dedicated service classes (e.g., `AccountingValidationService`).
 - **Implementation:** These services are injected via the constructor into other services or resolved from the container in UI components. This promotes the Single Responsibility Principle, enhances testability by allowing for easy mocking, and improves code maintainability by centralizing logic.
+[2025-07-27 07:14:02] - **Pattern: Company-Specific Default Accounts**
+- **Description:** Critical accounting settings, such as default accounts for payables, receivables, and taxes, and default journals for different transaction types, are stored directly on the `companies` table in the database.
+- **Implementation:** This pattern replaces the use of a global `config()` file, which is unsuitable for a multi-tenant application. All services that generate journal entries now retrieve these settings from the `Company` model associated with the transaction. This ensures that each company's financial data is correctly and independently configured, which is a cornerstone of a robust multi-company accounting system.

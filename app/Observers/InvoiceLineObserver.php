@@ -15,11 +15,21 @@ class InvoiceLineObserver
         // The MoneyCast has already converted unit_price to an integer (e.g., 50.00 -> 5000).
         // We must perform calculations with these integers.
 
-        // 1. Always calculate the subtotal as an integer.
+        // 1. Set the income account and description from the product.
+        if ($invoiceLine->product_id) {
+            if (!$invoiceLine->income_account_id) {
+                $invoiceLine->income_account_id = $invoiceLine->product->income_account_id;
+            }
+            if (!$invoiceLine->description) {
+                $invoiceLine->description = $invoiceLine->product->name;
+            }
+        }
+
+        // 2. Always calculate the subtotal as an integer.
         $subtotal = $invoiceLine->quantity * $invoiceLine->unit_price;
         $invoiceLine->subtotal = $subtotal;
 
-        // 2. Calculate the tax amount as an integer.
+        // 3. Calculate the tax amount as an integer.
         $taxAmount = 0;
         if ($invoiceLine->tax_id) {
             $tax = \App\Models\Tax::find($invoiceLine->tax_id);

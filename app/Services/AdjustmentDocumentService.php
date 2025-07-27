@@ -44,11 +44,16 @@ class AdjustmentDocumentService
      */
     private function createJournalEntryForCreditNote(AdjustmentDocument $creditNote, User $user): JournalEntry
     {
-        // Get the default accounts from your config.
-        $arAccountId = config('accounting.defaults.accounts_receivable_id');
-        $salesDiscountAccountId = config('accounting.defaults.default_sales_discount_account_id');
-        $taxAccountId = config('accounting.defaults.default_tax_account_id');
-        $salesJournalId = config('accounting.defaults.sales_journal_id');
+        // Get the default accounts from the credit note's company.
+        $company = $creditNote->company;
+        $arAccountId = $company->default_accounts_receivable_id;
+        $salesDiscountAccountId = $company->default_sales_discount_account_id;
+        $taxAccountId = $company->default_tax_account_id;
+        $salesJournalId = $company->default_sales_journal_id;
+
+        if (!$arAccountId || !$salesDiscountAccountId || !$taxAccountId || !$salesJournalId) {
+            throw new \RuntimeException('Default accounting accounts for adjustments are not configured for this company.');
+        }
 
         // A sales credit note creates a REVERSE entry of the original sale.
         $lines = [];

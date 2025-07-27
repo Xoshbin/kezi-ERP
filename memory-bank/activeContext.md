@@ -79,3 +79,15 @@ This file tracks the project's current status, including recent changes, current
 - Corrected all related test failures in `AccountingWorkflowTest` and `AccountingTest` by resolving services from the container.
 - Fixed an issue in a Filament page (`CreateVendorBill`) that was manually instantiating a service, causing a fatal error.
 - Added a new unit test suite for the `AccountingValidationService`.
+[2025-07-27 07:14:12] - **Current Focus:** Fixing the entire test suite after a major architectural refactoring.
+- **Recent Changes:**
+    - Migrated all default accounting settings from a global `config()` file to the `companies` table in the database to support multi-tenancy.
+    - This involved creating new database migrations, updating the `Company` model and Filament resource, refactoring all affected services (`VendorBillService`, `InvoiceService`, etc.), and updating the `CompanySeeder`.
+- **Open Questions/Issues:**
+    - The test suite is currently failing with multiple errors related to the new architecture. The immediate next step is to refactor the tests to use a new `CreatesApplication` trait that sets up a fully configured company for each test.
+[2025-07-27 07:33:45] - **Current Focus:** Fixing the remaining test failures in `AccountingWorkflowTest`.
+- **Recent Changes:**
+    - Resolved all `UniqueConstraintViolationException` and `BadMethodCallException` errors in the test suite.
+    - Corrected the test setup to provide a fully configured company for each test.
+- **Open Questions/Issues:**
+    - The `AccountingWorkflowTest` is still failing with an `ErrorException` ("Attempt to read property 'debit' on null"). The next step is to investigate the `PaymentService` to identify the root cause of this error.
