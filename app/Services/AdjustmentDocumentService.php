@@ -79,7 +79,7 @@ class AdjustmentDocumentService
             'lines' => $lines,
         ];
 
-        return $this->journalEntryService->create($journalEntryData, false);
+        return $this->journalEntryService->create($journalEntryData, true);
     }
     public function update(AdjustmentDocument $creditNote, array $data): bool
     {

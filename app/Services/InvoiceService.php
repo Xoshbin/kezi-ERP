@@ -11,6 +11,8 @@ use App\Models\JournalEntry;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\ValidationException;
 
 class InvoiceService
 {
@@ -20,20 +22,46 @@ class InvoiceService
 
     public function create(array $data): Invoice
     {
-        return DB::transaction(function () use ($data) {
-            $invoice = new Invoice();
-            $invoice->fill(collect($data)->except('lines')->all());
-            $invoice->status = Invoice::TYPE_DRAFT;
-            $invoice->total_amount = 0;
-            $invoice->total_tax = 0;
-            $invoice->save(); // Save the invoice first to get an ID
+        $company = Company::findOrFail($data['company_id']);
+        if ($company->isDateLocked($data['invoice_date'])) {
+            throw new \App\Exceptions\PeriodIsLockedException('The period for this invoice date is locked.');
+        }
 
-            if (isset($data['lines'])) {
-                $invoice->invoiceLines()->createMany($data['lines']);
+        $validatedData = Validator::make($data, [
+            'company_id' => 'required|exists:companies,id',
+            'customer_id' => 'required|exists:partners,id',
+            'currency_id' => 'required|exists:currencies,id',
+            'invoice_date' => 'required|date',
+            'due_date' => 'required|date',
+            'lines' => 'sometimes|array',
+            'lines.*.description' => 'required|string',
+            'lines.*.quantity' => 'required|numeric|min:0',
+            'lines.*.unit_price' => 'required|numeric|min:0',
+            'lines.*.income_account_id' => 'required|exists:accounts,id',
+        ])->validate();
+
+        return DB::transaction(function () use ($validatedData, $data) {
+            $invoice = new Invoice();
+            $invoice->fill(collect($validatedData)->except('lines')->all());
+            $invoice->status = Invoice::TYPE_DRAFT;
+
+            // Temporarily hold lines to calculate totals before saving
+            $lines = $data['lines'] ?? [];
+            $invoice->total_amount = collect($lines)->sum(function ($line) {
+                return ($line['quantity'] ?? 0) * ($line['unit_price'] ?? 0);
+            });
+            $invoice->total_tax = 0; // Assuming no tax for now, can be enhanced later
+
+            $invoice->save(); // Now save with totals
+
+            if (!empty($lines)) {
+                $invoice->invoiceLines()->createMany($lines);
             }
 
+            // Recalculate to be absolutely sure and handle taxes if logic is added
             $this->recalculateInvoiceTotals($invoice);
             $invoice->save();
+
 
             return $invoice;
         });
@@ -46,20 +74,36 @@ class InvoiceService
             throw new UpdateNotAllowedException('Cannot modify a non-draft invoice.');
         }
 
-        return DB::transaction(function () use ($invoice, $data) {
+        // Validate the incoming data before starting a transaction.
+        $validatedData = Validator::make($data, [
+            'partner_id' => 'sometimes|exists:partners,id',
+            'currency_id' => 'sometimes|exists:currencies,id',
+            'invoice_date' => 'sometimes|date',
+            'due_date' => 'sometimes|date',
+            'lines' => 'sometimes|array',
+            'lines.*.product_id' => 'required|exists:products,id',
+            'lines.*.quantity' => 'required|numeric|min:0',
+            'lines.*.unit_price' => 'required|numeric|min:0',
+        ])->validate();
+
+
+        return DB::transaction(function () use ($invoice, $validatedData) {
             // If new lines are provided, replace the old ones.
-            if (isset($data['lines'])) {
+            if (isset($validatedData['lines'])) {
                 $invoice->invoiceLines()->delete();
-                $invoice->invoiceLines()->createMany($data['lines']);
+                $invoice->invoiceLines()->createMany($validatedData['lines']);
             }
 
-            // Always recalculate totals to ensure they are correct.
-            $this->recalculateInvoiceTotals($invoice);
-
             // Update other fields like description, due_date, etc.
-            return $invoice->update(
-                collect($data)->except('lines')->all()
+            $invoice->update(
+                collect($validatedData)->except('lines')->all()
             );
+
+            // Always recalculate totals to ensure they are correct after any change.
+            $this->recalculateInvoiceTotals($invoice);
+            $invoice->save(); // Save the new totals.
+
+            return true;
         });
     }
 
@@ -91,6 +135,10 @@ class InvoiceService
         if ($invoice->status !== Invoice::TYPE_DRAFT) {
             // Or throw a custom exception
             return;
+        }
+
+        if ($invoice->company->isDateLocked($invoice->invoice_date)) {
+            throw new \App\Exceptions\PeriodIsLockedException('The period for this invoice date is locked.');
         }
 
         DB::transaction(function () use ($invoice, $user) {
