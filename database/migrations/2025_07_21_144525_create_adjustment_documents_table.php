@@ -26,7 +26,7 @@ return new class extends Migration
             $table->unsignedBigInteger('total_amount');
             $table->unsignedBigInteger('total_tax');
             $table->text('reason');
-            $table->string('status')->default('Draft'); // 'Draft', 'Posted'
+            $table->string('status')->default('draft'); // 'draft', 'posted'
             $table->timestamp('posted_at')->nullable();
             $table->timestamps();
 

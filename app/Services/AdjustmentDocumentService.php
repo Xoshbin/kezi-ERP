@@ -20,19 +20,16 @@ class AdjustmentDocumentService
      */
     public function post(AdjustmentDocument $creditNote, User $user): void
     {
-        if ($creditNote->status !== 'Draft') {
-            return; // Or throw an exception
-        }
 
         DB::transaction(function () use ($creditNote, $user) {
-            // 1. Update the credit note's status.
-            $creditNote->status = 'Posted';
+            // 1. Update the credit note's status and save it immediately.
+            $creditNote->status = AdjustmentDocument::STATUS_POSTED;
             $creditNote->posted_at = now();
+            $creditNote->save();
 
-            // 2. Create the reversing journal entry.
+            // 2. Create the reversing journal entry and post it immediately.
             $journalEntry = $this->createJournalEntryForCreditNote($creditNote, $user);
             $creditNote->journal_entry_id = $journalEntry->id;
-
             $creditNote->save();
 
             AdjustmentDocumentPosted::dispatch($creditNote);
