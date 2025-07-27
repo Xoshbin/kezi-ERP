@@ -21,7 +21,7 @@ class InvoiceFactory extends Factory
     public function definition(): array
     {
         return [
-            'company_id' => Company::factory()->create()->id,
+            'company_id' => fn (array $attributes) => $attributes['company_id'] ?? Company::factory()->create()->id,
             'customer_id' => Partner::factory()->create()->id,
             'invoice_date' => $this->faker->date(),
             'due_date' => $this->faker->dateTimeBetween('now', '+30 days')->format('Y-m-d'),
