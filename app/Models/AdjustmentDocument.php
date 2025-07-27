@@ -79,7 +79,8 @@ class AdjustmentDocument extends Model
         'reason',                 // [5]
         'status',                 // [5] e.g., 'Draft', 'Posted'
         'journal_entry_id',       // [5]
-        'posted_at'
+        'posted_at',
+        'currency_id'
     ];
 
     /**
@@ -212,4 +213,15 @@ class AdjustmentDocument extends Model
     //         default => 'Unknown',
     //     };
     // }
+
+    /**
+     * Get the currency of this invoice.
+     * Every invoice operates in a specific currency. [1]
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function currency(): BelongsTo
+    {
+        return $this->belongsTo(Currency::class);
+    }
 }

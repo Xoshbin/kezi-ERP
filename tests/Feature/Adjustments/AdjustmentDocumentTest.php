@@ -8,6 +8,7 @@ use App\Models\Journal;
 use App\Models\JournalEntry;
 use App\Models\User;
 use App\Services\AdjustmentDocumentService;
+use Brick\Money\Money; // Import the Money class
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Event;
 use Tests\Traits\CreatesApplication;
@@ -29,10 +30,12 @@ test('an adjustment document can be posted, which creates a journal entry and di
     $this->company->update(['default_adjustment_journal_id' => $adjustmentJournal->id]);
 
     // Arrange: Create a draft adjustment document with total amounts.
+    // MODIFIED: Create amounts using Money objects.
+    $currencyCode = $this->company->currency->code;
     $document = AdjustmentDocument::factory()->for($this->company)->create([
         'status' => AdjustmentDocument::STATUS_DRAFT,
-        'total_amount' => 200,
-        'total_tax' => 0,
+        'total_amount' => Money::of(200, $currencyCode),
+        'total_tax' => Money::of(0, $currencyCode),
     ]);
 
     // Act: Post the document using the service.
@@ -50,8 +53,11 @@ test('an adjustment document can be posted, which creates a journal entry and di
     expect($document->fresh()->journal_entry_id)->toBe($journalEntry->id);
 
     // Assert: The journal entry has the correct totals.
-    expect($journalEntry->total_debit)->toEqual(200);
-    expect($journalEntry->total_credit)->toEqual(200);
+    // MODIFIED: Assert against a Money object.
+    $expectedAmount = Money::of(200, $currencyCode);
+    expect($journalEntry->total_debit->isEqualTo($expectedAmount))->toBeTrue();
+    expect($journalEntry->total_credit->isEqualTo($expectedAmount))->toBeTrue();
+
 
     // Assert: An event was dispatched.
     Event::assertDispatched(AdjustmentDocumentPosted::class, function ($event) use ($document) {

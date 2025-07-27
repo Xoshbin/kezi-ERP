@@ -3,6 +3,7 @@
 namespace Database\Factories;
 
 use App\Models\Company;
+use App\Models\Currency;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -19,6 +20,10 @@ class AdjustmentDocumentFactory extends Factory
     {
         return [
             'company_id' => Company::factory()->create()->id,
+            'currency_id' => Currency::firstOrCreate(
+                ['code' => 'IQD'],
+                ['name' => 'Iraqi Dinar', 'symbol' => 'د.ع']
+            )->id,
             'original_invoice_id' => null,
             'original_vendor_bill_id' => null,
             'type' => $this->faker->randomElement(['Credit Note', 'Debit Note', 'Miscellaneous Adjustment']),

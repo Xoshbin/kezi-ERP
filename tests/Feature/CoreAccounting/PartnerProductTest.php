@@ -6,6 +6,7 @@ use App\Models\Partner;
 use App\Models\Product;
 use App\Models\Tax;
 use App\Models\User;
+use Brick\Money\Money; // Import the Money class
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\Traits\CreatesApplication;
 
@@ -35,7 +36,11 @@ test('a soft-deleted partner can be retrieved using "withTrashed" for historical
 });
 
 test('a product record is soft-deleted to preserve its history and linkages', function () {
-    $product = Product::factory()->for($this->company)->create();
+    // MODIFIED: The product factory needs a Money object for unit_price
+    $currencyCode = $this->company->currency->code;
+    $product = Product::factory()->for($this->company)->create([
+        'unit_price' => Money::of(10, $currencyCode)
+    ]);
     $product->delete();
 
     // Products, like partners, are non-financial and subject to soft deletion principles [2-5].
@@ -44,7 +49,11 @@ test('a product record is soft-deleted to preserve its history and linkages', fu
 });
 
 test('a soft-deleted product can be retrieved with "withTrashed" for historical analysis', function () {
-    $product = Product::factory()->for($this->company)->create();
+    // MODIFIED: The product factory needs a Money object for unit_price
+    $currencyCode = $this->company->currency->code;
+    $product = Product::factory()->for($this->company)->create([
+        'unit_price' => Money::of(10, $currencyCode)
+    ]);
     $product->delete();
 
     // Verifies the ability to access product history even after deactivation [2-5].
@@ -54,9 +63,12 @@ test('a soft-deleted product can be retrieved with "withTrashed" for historical 
 test('a product is correctly linked to its default income and expense general ledger accounts', function () {
     $incomeAccount = Account::factory()->for($this->company)->create(['type' => 'Income']);
     $expenseAccount = Account::factory()->for($this->company)->create(['type' => 'Expense']);
+    // MODIFIED: The product factory needs a Money object for unit_price
+    $currencyCode = $this->company->currency->code;
     $product = Product::factory()->for($this->company)->create([
         'income_account_id' => $incomeAccount->id,
         'expense_account_id' => $expenseAccount->id,
+        'unit_price' => Money::of(10, $currencyCode)
     ]);
 
     // Ensures proper accounting categorization for product sales and purchases [3, 5].
@@ -66,7 +78,12 @@ test('a product is correctly linked to its default income and expense general le
 
 test('a tax is correctly linked to its designated general ledger tax account', function () {
     $taxAccount = Account::factory()->for($this->company)->create(['type' => 'Liability']); // e.g., VAT Payable
-    $tax = Tax::factory()->for($this->company)->create(['tax_account_id' => $taxAccount->id]);
+    // MODIFIED: The tax factory needs a Money object for rate
+    $currencyCode = $this->company->currency->code;
+    $tax = Tax::factory()->for($this->company)->create([
+        'tax_account_id' => $taxAccount->id,
+        'rate' => Money::of('0.05', $currencyCode), // e.g. 5%
+    ]);
 
     // Critical for accurate tax reporting and balance sheet presentation [3, 5].
     expect($tax->taxAccount->id)->toBe($taxAccount->id);

@@ -6,9 +6,12 @@ use App\Events\InvoiceConfirmed;
 use App\Exceptions\DeletionNotAllowedException;
 use App\Exceptions\UpdateNotAllowedException;
 use App\Models\Company;
+use App\Models\Currency;
 use App\Models\Invoice;
 use App\Models\JournalEntry;
 use App\Models\User;
+use Brick\Math\RoundingMode;
+use Brick\Money\Money;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Validator;
@@ -45,17 +48,29 @@ class InvoiceService
             $invoice->fill(collect($validatedData)->except('lines')->all());
             $invoice->status = Invoice::TYPE_DRAFT;
 
-            // Temporarily hold lines to calculate totals before saving
+            $currencyCode = Currency::find($data['currency_id'])->code;
             $lines = $data['lines'] ?? [];
-            $invoice->total_amount = collect($lines)->sum(function ($line) {
-                return ($line['quantity'] ?? 0) * ($line['unit_price'] ?? 0);
-            });
-            $invoice->total_tax = 0; // Assuming no tax for now, can be enhanced later
+            
+            // Temporarily hold lines to calculate totals before saving
+            // MODIFIED: Use Money objects for calculation
+            $totalAmount = Money::of(0, $currencyCode);
+            foreach ($lines as $line) {
+                $lineTotal = Money::of($line['unit_price'], $currencyCode)->multipliedBy($line['quantity']);
+                $totalAmount = $totalAmount->plus($lineTotal);
+            }
+            $invoice->total_amount = $totalAmount;
+            $invoice->total_tax = Money::of(0, $currencyCode); // Assuming no tax for now, can be enhanced later
 
             $invoice->save(); // Now save with totals
 
+            // MODIFIED: Create lines one by one to ensure the cast can handle the Money object
             if (!empty($lines)) {
-                $invoice->invoiceLines()->createMany($lines);
+                foreach ($lines as $lineData) {
+                    // MODIFIED: Manually create the Money object before passing it to the model layer.
+                    // This ensures the MoneyCast receives an object and doesn't need to resolve the currency.
+                    $lineData['unit_price'] = Money::of($lineData['unit_price'], $currencyCode);
+                    $invoice->invoiceLines()->create($lineData);
+                }
             }
 
             // Recalculate to be absolutely sure and handle taxes if logic is added
@@ -91,7 +106,10 @@ class InvoiceService
             // If new lines are provided, replace the old ones.
             if (isset($validatedData['lines'])) {
                 $invoice->invoiceLines()->delete();
-                $invoice->invoiceLines()->createMany($validatedData['lines']);
+                // MODIFIED: Create lines one by one to ensure the cast can handle the Money object
+                foreach ($validatedData['lines'] as $lineData) {
+                    $invoice->invoiceLines()->create($lineData);
+                }
             }
 
             // Update other fields like description, due_date, etc.
@@ -109,12 +127,19 @@ class InvoiceService
 
     public function recalculateInvoiceTotals(Invoice $invoice): void
     {
-        $invoice->load('invoiceLines'); // Ensure lines are loaded
+        $invoice->loadMissing('invoiceLines'); // Ensure lines are loaded
+        $currencyCode = $invoice->currency->code;
 
-        $subtotal = $invoice->invoiceLines->sum('subtotal'); // Assuming subtotal is calculated on the line
-        $tax = $invoice->invoiceLines->sum('total_line_tax'); // Assuming tax is calculated on the line
+        // MODIFIED: Use Money objects and a loop for accurate summation
+        $subtotal = Money::of(0, $currencyCode);
+        $tax = Money::of(0, $currencyCode);
 
-        $invoice->total_amount = $subtotal + $tax;
+        foreach ($invoice->invoiceLines as $line) {
+            $subtotal = $subtotal->plus($line->subtotal);
+            $tax = $tax->plus($line->total_line_tax);
+        }
+
+        $invoice->total_amount = $subtotal->plus($tax);
         $invoice->total_tax = $tax;
     }
 
@@ -174,7 +199,7 @@ class InvoiceService
     private function createJournalEntryForInvoice(Invoice $invoice, User $user): JournalEntry
     {
         // Load the relationships we'll need
-        $invoice->load('company.currency', 'currency', 'invoiceLines.tax');
+        $invoice->load('company.currency', 'currency', 'invoiceLines.tax', 'invoiceLines.incomeAccount');
 
         $company = $invoice->company;
         $baseCurrency = $company->currency;
@@ -190,15 +215,16 @@ class InvoiceService
         $exchangeRate = ($baseCurrency->id === $foreignCurrency->id) ? 1 : $foreignCurrency->exchange_rate;
 
         $lines = [];
+        $zeroAmountInBase = Money::of(0, $baseCurrency->code); // MODIFIED: Create zero amount for base currency
 
         // 1. The Debit Line (Total amount converted to base currency)
         $lines[] = [
             'account_id' => $arAccountId,
-            'debit' => $invoice->total_amount * $exchangeRate, // Convert to base currency
+            'debit' => $invoice->total_amount->multipliedBy($exchangeRate, RoundingMode::HALF_UP), // MODIFIED
+            'credit' => $zeroAmountInBase, // MODIFIED
             'description' => 'A/R for ' . $invoice->invoice_number,
-            // Add foreign currency details for reference
             'currency_id' => $foreignCurrency->id,
-            'original_currency_amount' => $invoice->total_amount,
+            'original_currency_amount' => $invoice->total_amount, // This is already a Money object
             'exchange_rate_at_transaction' => $exchangeRate,
         ];
 
@@ -208,23 +234,23 @@ class InvoiceService
             // Credit the income account
             $lines[] = [
                 'account_id' => $creditAccountId,
-                'credit' => $line->subtotal * $exchangeRate, // Convert to base currency
+                'credit' => $line->subtotal->multipliedBy($exchangeRate, RoundingMode::HALF_UP), // MODIFIED
+                'debit' => $zeroAmountInBase, // MODIFIED
                 'description' => $line->description,
-                // Add foreign currency details
                 'currency_id' => $foreignCurrency->id,
-                'original_currency_amount' => $line->subtotal,
+                'original_currency_amount' => $line->subtotal, // Already a Money object
                 'exchange_rate_at_transaction' => $exchangeRate,
             ];
 
             // Credit the tax account
-            if ($line->total_line_tax > 0 && $line->tax) {
+            if ($line->total_line_tax->isPositive() && $line->tax) { // MODIFIED
                 $lines[] = [
                     'account_id' => $line->tax->tax_account_id,
-                    'credit' => $line->total_line_tax * $exchangeRate, // Convert to base currency
+                    'credit' => $line->total_line_tax->multipliedBy($exchangeRate, RoundingMode::HALF_UP), // MODIFIED
+                    'debit' => $zeroAmountInBase, // MODIFIED
                     'description' => 'Tax for ' . $invoice->invoice_number,
-                    // Add foreign currency details
                     'currency_id' => $foreignCurrency->id,
-                    'original_currency_amount' => $line->total_line_tax,
+                    'original_currency_amount' => $line->total_line_tax, // Already a Money object
                     'exchange_rate_at_transaction' => $exchangeRate,
                 ];
             }
@@ -243,8 +269,9 @@ class InvoiceService
             'created_by_user_id' => $user->id,
         ];
 
-        return $this->journalEntryService->create($journalEntryData);
+        return $this->journalEntryService->create($journalEntryData, true); // MODIFIED: Pass true to post immediately
     }
+
     public function resetToDraft(Invoice $invoice, User $user, string $reason): void
     {
         // 1. Authorize the action using a Policy.
@@ -252,7 +279,9 @@ class InvoiceService
 
         DB::transaction(function () use ($invoice, $user, $reason) {
             // 2. Delete the associated Journal Entry to reverse the financial impact.
-            $invoice->journalEntry()->delete();
+            if ($invoice->journalEntry) { // Check if it exists before trying to delete
+                $invoice->journalEntry->delete();
+            }
 
             // 3. Log this exceptional event.
             $newLog = [
