@@ -8,8 +8,10 @@ use App\Exceptions\UpdateNotAllowedException;
 use App\Models\User;
 use App\Models\VendorBill;
 use App\Models\JournalEntry;
+use Brick\Money\Money;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
+
 class VendorBillService
 {
     public function __construct(
@@ -35,12 +37,21 @@ class VendorBillService
             }
             $vendorBill->fill($vendorBillData);
             $vendorBill->status = VendorBill::TYPE_DRAFT;
-            $vendorBill->total_amount = 0; // Initialize total_amount to 0
-            $vendorBill->total_tax = 0; // Initialize total_tax to 0
+
+            // MODIFIED: Initialize totals with Money objects
+            $currencyCode = $vendorBill->currency->code;
+            $vendorBill->total_amount = Money::of(0, $currencyCode);
+            $vendorBill->total_tax = Money::of(0, $currencyCode);
             $vendorBill->save(); // Save the vendor bill first to get an ID
 
             if (isset($data['lines'])) {
-                $vendorBill->lines()->createMany($data['lines']);
+                // MODIFIED: createMany can have issues with casts, create one-by-one for safety
+                foreach ($data['lines'] as $lineData) {
+                    // MODIFIED: Manually create the Money object before passing it to the model layer.
+                    // This ensures the MoneyCast receives an object and doesn't need to resolve the currency.
+                    $lineData['unit_price'] = Money::of($lineData['unit_price'], $currencyCode);
+                    $vendorBill->lines()->create($lineData);
+                }
             }
 
             $this->recalculateBillTotals($vendorBill);
@@ -93,7 +104,10 @@ class VendorBillService
 
             if (isset($updateData['lines'])) {
                 $vendorBill->lines()->delete();
-                $vendorBill->lines()->createMany($updateData['lines']);
+                // MODIFIED: createMany can have issues with casts, create one-by-one for safety
+                foreach ($updateData['lines'] as $lineData) {
+                    $vendorBill->lines()->create($lineData);
+                }
                 unset($updateData['lines']);
             }
 
@@ -169,14 +183,20 @@ class VendorBillService
      */
     public function recalculateBillTotals(VendorBill $vendorBill): void
     {
-        $vendorBill->load('lines');
+        $vendorBill->loadMissing('lines');
 
-        // Sums are performed on integer values due to the MoneyCast.
-        $totalTax = $vendorBill->lines->sum('total_line_tax');
-        $subtotal = $vendorBill->lines->sum('subtotal');
+        $currencyCode = $vendorBill->currency->code;
+
+        $totalTax = Money::of(0, $currencyCode);
+        $subtotal = Money::of(0, $currencyCode);
+
+        foreach ($vendorBill->lines as $line) {
+            $totalTax = $totalTax->plus($line->total_line_tax);
+            $subtotal = $subtotal->plus($line->subtotal);
+        }
 
         $vendorBill->total_tax = $totalTax;
-        $vendorBill->total_amount = $subtotal + $totalTax;
+        $vendorBill->total_amount = $subtotal->plus($totalTax);
     }
 
     /**
@@ -212,6 +232,8 @@ class VendorBillService
         $apAccountId = $company->default_accounts_payable_id;
         $taxAccountId = $company->default_tax_receivable_id;
         $purchaseJournalId = $company->default_purchase_journal_id;
+        // MODIFIED: Get currency code to create zero-value Money objects
+        $currencyCode = $vendorBill->currency->code;
 
         // Explicitly fail if configuration is missing for the company.
         if (!$apAccountId || !$taxAccountId || !$purchaseJournalId) {
@@ -222,12 +244,13 @@ class VendorBillService
         $isCreditNote = $vendorBill->type === 'credit_note';
 
         $lines = [];
+        $zeroAmount = Money::of(0, $currencyCode); // MODIFIED
 
         // 1. The Accounts Payable Line: Credit for bills, Debit for credit notes.
         $lines[] = [
             'account_id' => $apAccountId,
-            'debit' => $isCreditNote ? $vendorBill->total_amount : 0,
-            'credit' => !$isCreditNote ? $vendorBill->total_amount : 0,
+            'debit' => $isCreditNote ? $vendorBill->total_amount : $zeroAmount, // MODIFIED
+            'credit' => !$isCreditNote ? $vendorBill->total_amount : $zeroAmount, // MODIFIED
             'description' => 'Accounts Payable',
         ];
 
@@ -239,17 +262,18 @@ class VendorBillService
             // Expense line
             $lines[] = [
                 'account_id' => $billLine->expense_account_id,
-                'debit' => !$isCreditNote ? $billLine->subtotal : 0,
-                'credit' => $isCreditNote ? $billLine->subtotal : 0,
+                'debit' => !$isCreditNote ? $billLine->subtotal : $zeroAmount, // MODIFIED
+                'credit' => $isCreditNote ? $billLine->subtotal : $zeroAmount, // MODIFIED
                 'description' => $billLine->description,
             ];
 
             // Tax line
-            if ($billLine->total_line_tax > 0) {
+            // MODIFIED: Use isPositive() for comparison
+            if ($billLine->total_line_tax->isPositive()) {
                 $lines[] = [
                     'account_id' => $taxAccountId,
-                    'debit' => !$isCreditNote ? $billLine->total_line_tax : 0,
-                    'credit' => $isCreditNote ? $billLine->total_line_tax : 0,
+                    'debit' => !$isCreditNote ? $billLine->total_line_tax : $zeroAmount, // MODIFIED
+                    'credit' => $isCreditNote ? $billLine->total_line_tax : $zeroAmount, // MODIFIED
                     'description' => 'Tax for bill ' . $vendorBill->bill_reference,
                 ];
             }
@@ -258,6 +282,7 @@ class VendorBillService
         $journalEntryData = [
             'company_id' => $vendorBill->company_id,
             'journal_id' => $purchaseJournalId,
+            'currency_id' => $vendorBill->currency_id, // MODIFIED: Added currency_id for consistency
             'entry_date' => $vendorBill->posted_at,
             'reference' => $vendorBill->bill_reference,
             'description' => 'Vendor Bill ' . $vendorBill->bill_reference,
@@ -267,6 +292,6 @@ class VendorBillService
             'created_by_user_id' => $user->id,
         ];
 
-        return $this->journalEntryService->create($journalEntryData);
+        return $this->journalEntryService->create($journalEntryData, true); // MODIFIED: Pass true to post immediately
     }
 }

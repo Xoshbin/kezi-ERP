@@ -24,7 +24,9 @@ class JournalFactory extends Factory
             'name' => $this->faker->company,
             'type' => $this->faker->randomElement(['general', 'cash', 'bank']),
             'short_code' => strtoupper($this->faker->lexify('???')),
-            'currency_id' => Currency::firstOrCreate(['code' => 'IQD'], ['name' => 'Iraqi Dinar', 'symbol' => 'IQD', 'exchange_rate' => 1.0])->id,
+            'currency_id' => function (array $attributes) {
+                return Company::find($attributes['company_id'])->currency_id;
+            },
             'default_debit_account_id' => Account::factory(),
             'default_credit_account_id' => Account::factory(),
         ];

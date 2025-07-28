@@ -238,4 +238,15 @@ class JournalEntryLine extends Model
     {
         return $this->belongsTo(AnalyticAccount::class);
     }
+
+    /**
+     * Get the currency of this invoice.
+     * Every invoice operates in a specific currency. [1]
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function currency(): BelongsTo
+    {
+        return $this->belongsTo(Currency::class);
+    }
 }

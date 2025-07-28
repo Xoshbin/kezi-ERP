@@ -7,6 +7,7 @@ use App\Exceptions\UpdateNotAllowedException;
 use App\Models\AdjustmentDocument;
 use App\Models\JournalEntry;
 use App\Models\User;
+use Brick\Money\Money; // Import the Money class
 use Illuminate\Support\Facades\DB;
 
 class AdjustmentDocumentService
@@ -20,7 +21,6 @@ class AdjustmentDocumentService
      */
     public function post(AdjustmentDocument $creditNote, User $user): void
     {
-
         DB::transaction(function () use ($creditNote, $user) {
             // 1. Update the credit note's status and save it immediately.
             $creditNote->status = AdjustmentDocument::STATUS_POSTED;
@@ -47,6 +47,7 @@ class AdjustmentDocumentService
         $salesDiscountAccountId = $company->default_sales_discount_account_id;
         $taxAccountId = $company->default_tax_account_id;
         $salesJournalId = $company->default_sales_journal_id;
+        $currencyCode = $creditNote->currency->code;
 
         if (!$arAccountId || !$salesDiscountAccountId || !$taxAccountId || !$salesJournalId) {
             throw new \RuntimeException('Default accounting accounts for adjustments are not configured for this company.');
@@ -54,18 +55,23 @@ class AdjustmentDocumentService
 
         // A sales credit note creates a REVERSE entry of the original sale.
         $lines = [];
-        $subtotal = $creditNote->total_amount - $creditNote->total_tax;
+        // MODIFIED: Use the minus() method for Money objects
+        $subtotal = $creditNote->total_amount->minus($creditNote->total_tax);
 
         // 1. Debit the Sales Discount/Contra-Revenue account.
-        $lines[] = ['account_id' => $salesDiscountAccountId, 'debit' => $subtotal, 'credit' => 0];
+        // MODIFIED: Ensure credit is a Money object
+        $lines[] = ['account_id' => $salesDiscountAccountId, 'debit' => $subtotal, 'credit' => Money::of(0, $currencyCode)];
 
         // 2. Debit Tax Payable to reduce it, only if there is tax.
-        if ($creditNote->total_tax > 0) {
-            $lines[] = ['account_id' => $taxAccountId, 'debit' => $creditNote->total_tax, 'credit' => 0];
+        // MODIFIED: Use isPositive() method for comparison
+        if ($creditNote->total_tax->isPositive()) {
+            // MODIFIED: Ensure credit is a Money object
+            $lines[] = ['account_id' => $taxAccountId, 'debit' => $creditNote->total_tax, 'credit' => Money::of(0, $currencyCode)];
         }
 
         // 3. Credit Accounts Receivable to reduce the customer's debt.
-        $lines[] = ['account_id' => $arAccountId, 'credit' => $creditNote->total_amount, 'debit' => 0];
+        // MODIFIED: Ensure debit is a Money object
+        $lines[] = ['account_id' => $arAccountId, 'credit' => $creditNote->total_amount, 'debit' => Money::of(0, $currencyCode)];
 
         $journalEntryData = [
             'company_id' => $creditNote->company_id,
@@ -81,6 +87,7 @@ class AdjustmentDocumentService
 
         return $this->journalEntryService->create($journalEntryData, true);
     }
+
     public function update(AdjustmentDocument $creditNote, array $data): bool
     {
         // Block any attempt to change a posted document.
@@ -90,5 +97,4 @@ class AdjustmentDocumentService
 
         return $creditNote->update($data);
     }
-
 }

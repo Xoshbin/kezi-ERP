@@ -14,6 +14,7 @@ use App\Services\InvoiceService;
 use App\Services\JournalEntryService;
 use App\Services\PaymentService;
 use App\Services\VendorBillService;
+use Brick\Money\Money;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 uses(RefreshDatabase::class, \Tests\Traits\CreatesApplication::class);
@@ -26,6 +27,7 @@ test('the entire accounting workflow from setup to credit note', function () {
 
     // Retrieve essentials from the configured company
     $currency = $company->currency;
+    $currencyCode = $currency->code;
     $bankAccount = $company->defaultBankAccount;
     $arAccount = $company->defaultAccountsReceivable;
     $itEquipmentAccount = Account::factory()->for($company)->create(['type' => 'Fixed Asset']);
@@ -35,29 +37,30 @@ test('the entire accounting workflow from setup to credit note', function () {
     $salesDiscountAccount = $company->defaultSalesDiscountAccount;
     $bankJournal = $company->defaultBankJournal;
 
-    // Define test-specific amounts
-    $initialCapitalInvestment = 15_000_000;
-    $highEndLaptopCost = 3_000_000;
-    $itInfrastructureServiceCost = 5_000_000;
-    $goodwillDiscount = 500_000;
+    // MODIFIED: Define test-specific amounts using Money objects for precision
+    $initialCapitalInvestment = Money::of(15_000_000, $currencyCode);
+    $highEndLaptopCost = Money::of(3_000_000, $currencyCode);
+    $itInfrastructureServiceCost = Money::of(5_000_000, $currencyCode);
+    $goodwillDiscount = Money::of(500_000, $currencyCode);
 
     // Step 3: Capital Injection
     $journalEntryService = app(JournalEntryService::class);
+    // MODIFIED: Use Money objects in the service call
     $capitalEntry = $journalEntryService->create([
         'company_id' => $company->id,
         'journal_id' => $bankJournal->id,
         'entry_date' => now()->toDateString(),
         'reference' => 'Initial Capital Investment',
         'lines' => [
-            ['account_id' => $bankAccount->id, 'debit' => $initialCapitalInvestment, 'credit' => 0],
-            ['account_id' => $equityAccount->id, 'debit' => 0, 'credit' => $initialCapitalInvestment],
+            ['account_id' => $bankAccount->id, 'debit' => $initialCapitalInvestment, 'credit' => Money::of(0, $currencyCode)],
+            ['account_id' => $equityAccount->id, 'debit' => Money::of(0, $currencyCode), 'credit' => $initialCapitalInvestment],
         ],
-    ]);
-    $journalEntryService->post($capitalEntry);
+    ], true); // Post immediately
 
     $this->assertDatabaseHas('journal_entries', ['id' => $capitalEntry->id, 'is_posted' => true]);
-    $this->assertEquals('15000000.00', $capitalEntry->total_debit);
-    $this->assertEquals('15000000.00', $capitalEntry->total_credit);
+    // MODIFIED: Assert against Money objects
+    expect($capitalEntry->total_debit->isEqualTo($initialCapitalInvestment))->toBeTrue();
+    expect($capitalEntry->total_credit->isEqualTo($initialCapitalInvestment))->toBeTrue();
 
     // Step 4: Purchasing a Fixed Asset
     $vendor = Partner::factory()->for($company)->create(['name' => 'Paykar Tech Supplies', 'type' => Partner::TYPE_VENDOR]);
@@ -74,20 +77,22 @@ test('the entire accounting workflow from setup to credit note', function () {
             [
                 'description' => 'High-End Laptop for Business Use',
                 'quantity' => 1,
-                'unit_price' => $highEndLaptopCost,
+                // MODIFIED: Use float value for unit price to pass validation
+                'unit_price' => $highEndLaptopCost->getAmount()->toFloat(),
                 'expense_account_id' => $itEquipmentAccount->id,
             ],
         ],
-    ], $user);
+    ]);
     $vendorBillService->confirm($vendorBill, $user);
 
     $vendorBill->refresh();
     $purchaseEntry = $vendorBill->journalEntry;
     expect($purchaseEntry->reference)->toBe($vendorBill->bill_reference);
     expect($purchaseEntry->is_posted)->toBeTrue();
-    expect($purchaseEntry->total_debit)->toEqual(300000000);
-    expect($purchaseEntry->lines->where('account_id', $itEquipmentAccount->id)->first()->debit)->toEqual(300000000);
-    expect($purchaseEntry->lines->where('account_id', $apAccount->id)->first()->credit)->toEqual(300000000);
+    // MODIFIED: Assert against Money objects and corrected amount
+    expect($purchaseEntry->total_debit->isEqualTo($highEndLaptopCost))->toBeTrue();
+    expect($purchaseEntry->lines->where('account_id', $itEquipmentAccount->id)->first()->debit->isEqualTo($highEndLaptopCost))->toBeTrue();
+    expect($purchaseEntry->lines->where('account_id', $apAccount->id)->first()->credit->isEqualTo($highEndLaptopCost))->toBeTrue();
 
     // Step 5: Providing a Service & Invoicing
     $customer = Partner::factory()->for($company)->create(['name' => 'Hawre Trading Group', 'type' => Partner::TYPE_CUSTOMER]);
@@ -103,7 +108,8 @@ test('the entire accounting workflow from setup to credit note', function () {
                 'description' => 'On-site IT Infrastructure Setup',
                 'quantity' => 1,
                 'reference' => 'IT-SETUP-001',
-                'unit_price' => 5000000,
+                // MODIFIED: Use float value for unit price to pass validation
+                'unit_price' => $itInfrastructureServiceCost->getAmount()->toFloat(),
                 'income_account_id' => $revenueAccount->id,
             ],
         ],
@@ -114,9 +120,10 @@ test('the entire accounting workflow from setup to credit note', function () {
     $invoiceEntry = $invoice->journalEntry;
     expect($invoiceEntry->reference)->toBe($invoice->invoice_number);
     expect($invoiceEntry->is_posted)->toBeTrue();
-    expect($invoiceEntry->total_debit)->toEqual(500000000);
-    expect($invoiceEntry->lines->where('account_id', $arAccount->id)->first()->debit)->toEqual(500000000);
-    expect($invoiceEntry->lines->where('account_id', $revenueAccount->id)->first()->credit)->toEqual(500000000);
+    // MODIFIED: Assert against Money objects and corrected amount
+    expect($invoiceEntry->total_debit->isEqualTo($itInfrastructureServiceCost))->toBeTrue();
+    expect($invoiceEntry->lines->where('account_id', $arAccount->id)->first()->debit->isEqualTo($itInfrastructureServiceCost))->toBeTrue();
+    expect($invoiceEntry->lines->where('account_id', $revenueAccount->id)->first()->credit->isEqualTo($itInfrastructureServiceCost))->toBeTrue();
 
     // Step 6: Receiving Payment from Customer
     $paymentService = app(PaymentService::class);
@@ -130,7 +137,8 @@ test('the entire accounting workflow from setup to credit note', function () {
             [
                 'document_id' => $invoice->id,
                 'document_type' => 'invoice',
-                'amount' => 5000000,
+                // MODIFIED: Use the major amount from the Money object
+                'amount' => $itInfrastructureServiceCost->getAmount()->toFloat(),
             ],
         ],
     ], $user);
@@ -139,10 +147,11 @@ test('the entire accounting workflow from setup to credit note', function () {
     $customerPayment->refresh();
     $customerPaymentEntry = $customerPayment->journalEntry;
     expect($customerPaymentEntry->is_posted)->toBeTrue();
-    expect($customerPaymentEntry->total_debit)->toEqual(5000000);
-    expect($customerPaymentEntry->lines->where('account_id', $bankAccount->id)->first()->debit)->toEqual(5000000);
-    expect($customerPaymentEntry->lines->where('account_id', $arAccount->id)->first()->credit)->toEqual(5000000);
-    expect($invoice->fresh()->status)->toBe(Invoice::TYPE_POSTED);
+    // MODIFIED: Assert against Money objects
+    expect($customerPaymentEntry->total_debit->isEqualTo($itInfrastructureServiceCost))->toBeTrue();
+    expect($customerPaymentEntry->lines->where('account_id', $bankAccount->id)->first()->debit->isEqualTo($itInfrastructureServiceCost))->toBeTrue();
+    expect($customerPaymentEntry->lines->where('account_id', $arAccount->id)->first()->credit->isEqualTo($itInfrastructureServiceCost))->toBeTrue();
+    expect($invoice->fresh()->status)->toBe(Invoice::TYPE_PAID);
 
     // Step 7: Paying a Vendor
     $vendorPayment = $paymentService->create([
@@ -155,7 +164,8 @@ test('the entire accounting workflow from setup to credit note', function () {
             [
                 'document_id' => $vendorBill->id,
                 'document_type' => 'vendor_bill',
-                'amount' => 3000000,
+                // MODIFIED: Use the major amount from the Money object
+                'amount' => $highEndLaptopCost->getAmount()->toFloat(),
             ],
         ],
     ], $user);
@@ -164,60 +174,49 @@ test('the entire accounting workflow from setup to credit note', function () {
     $vendorPayment->refresh();
     $vendorPaymentEntry = $vendorPayment->journalEntry;
     expect($vendorPaymentEntry->is_posted)->toBeTrue();
-    expect($vendorPaymentEntry->total_debit)->toEqual(3000000.0);
-    expect($vendorPaymentEntry->lines->where('account_id', $apAccount->id)->first()->debit)->toEqual(3000000.0);
-    expect($vendorPaymentEntry->lines->where('account_id', $bankAccount->id)->first()->credit)->toEqual(3000000.0);
-    expect($vendorBill->fresh()->status)->toBe(VendorBill::TYPE_POSTED);
+    // MODIFIED: Assert against Money objects
+    expect($vendorPaymentEntry->total_debit->isEqualTo($highEndLaptopCost))->toBeTrue();
+    expect($vendorPaymentEntry->lines->where('account_id', $apAccount->id)->first()->debit->isEqualTo($highEndLaptopCost))->toBeTrue();
+    expect($vendorPaymentEntry->lines->where('account_id', $bankAccount->id)->first()->credit->isEqualTo($highEndLaptopCost))->toBeTrue();
+    expect($vendorBill->fresh()->status)->toBe(VendorBill::TYPE_PAID);
 
     // Step 8: Handling a Correction (Credit Note)
     $adjustmentService = app(AdjustmentDocumentService::class);
 
-    // The AdjustmentDocument model *itself* does not have a 'lines' relationship.
-    // Instead, you create the header document with its total_amount,
-    // and the AdjustmentDocumentService::post() method is responsible
-    // for generating the correct JournalEntry and its JournalEntryLine records.
-
     $creditNote = \App\Models\AdjustmentDocument::factory()->create([
         'company_id' => $company->id,
         'reference_number' => 'CN-001',
-        // The total_tax and total_amount fields on AdjustmentDocument represent the overall adjustment.
-        // The detailed debit/credit to specific accounts (like Sales Discounts & Returns)
-        // are handled by the service when it generates the JournalEntryLines.
-        'total_tax' => 0,
+        'total_tax' => Money::of(0, $currencyCode),
         'type' => 'Credit Note',
-        'original_invoice_id' => $invoice->id, // Link to the original invoice
+        'original_invoice_id' => $invoice->id,
         'date' => now()->toDateString(),
         'reason' => 'Goodwill discount for new client',
-        'total_amount' => $goodwillDiscount, // Total amount of the credit note
+        // MODIFIED: Use Money object for total amount
+        'total_amount' => $goodwillDiscount,
         'status' => 'Draft'
     ]);
 
-    // Your AdjustmentDocumentService::post() method should contain the logic
-    // to create the JournalEntry and its JournalEntryLines based on the
-    // Credit Note's type, amount, and the accounts configured in your system (e.g., config defaults).
-    // For a credit note, it would typically debit a 'Sales Discounts & Returns' (or similar) account
-    // and credit 'Accounts Receivable'.
     $adjustmentService->post($creditNote, $user);
 
     $creditNote->refresh();
     $creditNoteEntry = $creditNote->journalEntry;
 
-    // Assertions will now check the JournalEntry and its lines, not direct AdjustmentDocument lines.
     expect($creditNoteEntry->is_posted)->toBeTrue();
-    expect($creditNoteEntry->total_debit)->toEqual('500000.00');
-    expect($creditNoteEntry->total_credit)->toEqual('500000.00');
+    // MODIFIED: Assert against Money objects
+    expect($creditNoteEntry->total_debit->isEqualTo($goodwillDiscount))->toBeTrue();
+    expect($creditNoteEntry->total_credit->isEqualTo($goodwillDiscount))->toBeTrue();
 
-    // Assert the debit to Sales Discounts & Returns (Contra-Revenue)
+    // MODIFIED: Assert the debit using minor units for database check
     $this->assertDatabaseHas('journal_entry_lines', [
         'journal_entry_id' => $creditNoteEntry->id,
         'account_id' => $salesDiscountAccount->id,
-        'debit' => $goodwillDiscount,
+        'debit' => $goodwillDiscount->getMinorAmount()->toInt(),
     ]);
 
-    // Assert the credit to Accounts Receivable (Asset)
+    // MODIFIED: Assert the credit using minor units for database check
     $this->assertDatabaseHas('journal_entry_lines', [
         'journal_entry_id' => $creditNoteEntry->id,
         'account_id' => $arAccount->id,
-        'credit' => $goodwillDiscount,
+        'credit' => $goodwillDiscount->getMinorAmount()->toInt(),
     ]);
 });

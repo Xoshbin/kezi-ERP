@@ -3,6 +3,7 @@
 namespace App\Observers;
 
 use App\Models\VendorBillLine;
+use Brick\Money\Money;
 
 class VendorBillLineObserver
 {
@@ -11,19 +12,22 @@ class VendorBillLineObserver
      */
     public function creating(VendorBillLine $vendorBillLine): void
     {
-        // 1. Calculate the subtotal as an integer.
-        $subtotal = $vendorBillLine->quantity * $vendorBillLine->unit_price;
+        // 1. Calculate the subtotal using the Money object's method.
+        // We use the unit_price (Money) and multiply it by the quantity.
+        $subtotal = $vendorBillLine->unit_price->multipliedBy($vendorBillLine->quantity);
         $vendorBillLine->subtotal = $subtotal;
 
-        // 2. Calculate the tax amount as an integer.
-        $taxAmount = 0;
-        if ($vendorBillLine->tax_id) {
-            $tax = \App\Models\Tax::find($vendorBillLine->tax_id);
-            if ($tax) {
-                $taxAmount = ($subtotal * $tax->rate);
-            }
+        // 2. Calculate the tax amount.
+        // Start with a zero Money object in the same currency.
+        $taxAmount = Money::zero($subtotal->getCurrency());
+
+        // If a tax relationship exists on the line, calculate the tax.
+        if ($vendorBillLine->tax) {
+            // Assuming the 'rate' on your Tax model is a decimal (e.g., 0.05 for 5%).
+            $taxAmount = $subtotal->multipliedBy($vendorBillLine->tax->rate);
         }
-        $vendorBillLine->total_line_tax = round($taxAmount);
+
+        $vendorBillLine->total_line_tax = $taxAmount;
     }
 
     /**
