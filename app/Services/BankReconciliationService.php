@@ -5,7 +5,9 @@ namespace App\Services;
 use App\Models\BankStatementLine;
 use App\Models\Payment;
 use App\Models\User;
+use Brick\Money\Money; // Import the Money class
 use Illuminate\Support\Facades\DB;
+
 class BankReconciliationService
 {
     public function __construct(protected JournalEntryService $journalEntryService)
@@ -30,19 +32,28 @@ class BankReconciliationService
 
     private function createJournalEntryForReconciliation(Payment $payment, User $user): void
     {
-        $bankAccountId = config('accounting.defaults.default_bank_account_id');
-        $outstandingAccountId = config('accounting.defaults.outstanding_receipts_account_id');
+        $company = $payment->company;
+        $bankAccountId = $company->default_bank_account_id;
+        $outstandingAccountId = $company->default_outstanding_receipts_account_id;
+        // MODIFIED: Get currency code for creating zero-value Money objects
+        $currencyCode = $payment->currency->code;
 
+
+        if (!$bankAccountId || !$outstandingAccountId) {
+            throw new \RuntimeException('Default bank or outstanding receipts account is not configured for this company.');
+        }
+
+        // MODIFIED: Update lines to include zero-value Money objects for the opposing side.
         $lines = [
-            ['account_id' => $bankAccountId, 'debit' => $payment->amount],
-            ['account_id' => $outstandingAccountId, 'credit' => $payment->amount],
+            ['account_id' => $bankAccountId, 'debit' => $payment->amount, 'credit' => Money::of(0, $currencyCode)],
+            ['account_id' => $outstandingAccountId, 'credit' => $payment->amount, 'debit' => Money::of(0, $currencyCode)],
         ];
 
         $journalEntryData = [
             'company_id' => $payment->company_id,
             'journal_id' => $payment->journal_id,
             'currency_id' => $payment->currency_id,
-            'entry_date' => now()->toDateString(),
+            'entry_date' => now(), // Use a Carbon instance
             'reference' => 'RECO/' . $payment->id,
             'description' => 'Reconciliation for Payment #' . $payment->id,
             'source_type' => Payment::class,
@@ -51,6 +62,7 @@ class BankReconciliationService
             'lines' => $lines,
         ];
 
-        $this->journalEntryService->create($journalEntryData);
+        // MODIFIED: Pass 'true' to post the journal entry immediately for consistency.
+        $this->journalEntryService->create($journalEntryData, true);
     }
 }

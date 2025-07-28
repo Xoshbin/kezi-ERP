@@ -8,6 +8,7 @@ use App\Exceptions\UpdateNotAllowedException;
 use App\Models\User;
 use App\Models\VendorBill;
 use App\Models\JournalEntry;
+use Brick\Money\Money;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 
@@ -24,16 +25,33 @@ class VendorBillService
      */
     public function create(array $data): VendorBill
     {
+        // First, check if the entry's date is in a locked period.
+        $this->accountingValidationService->checkIfPeriodIsLocked($data['company_id'], $data['bill_date']);
+
         return DB::transaction(function () use ($data) {
             $vendorBill = new VendorBill();
-            $vendorBill->fill(collect($data)->except('lines')->all());
+            $vendorBillData = collect($data)->except('lines')->all();
+            if (isset($vendorBillData['partner_id'])) {
+                $vendorBillData['vendor_id'] = $vendorBillData['partner_id'];
+                unset($vendorBillData['partner_id']);
+            }
+            $vendorBill->fill($vendorBillData);
             $vendorBill->status = VendorBill::TYPE_DRAFT;
-            $vendorBill->total_amount = 0; // Initialize total_amount to 0
-            $vendorBill->total_tax = 0; // Initialize total_tax to 0
+
+            // MODIFIED: Initialize totals with Money objects
+            $currencyCode = $vendorBill->currency->code;
+            $vendorBill->total_amount = Money::of(0, $currencyCode);
+            $vendorBill->total_tax = Money::of(0, $currencyCode);
             $vendorBill->save(); // Save the vendor bill first to get an ID
 
             if (isset($data['lines'])) {
-                $vendorBill->lines()->createMany($data['lines']);
+                // MODIFIED: createMany can have issues with casts, create one-by-one for safety
+                foreach ($data['lines'] as $lineData) {
+                    // MODIFIED: Manually create the Money object before passing it to the model layer.
+                    // This ensures the MoneyCast receives an object and doesn't need to resolve the currency.
+                    $lineData['unit_price'] = Money::of($lineData['unit_price'], $currencyCode);
+                    $vendorBill->lines()->create($lineData);
+                }
             }
 
             $this->recalculateBillTotals($vendorBill);
@@ -52,48 +70,55 @@ class VendorBillService
             return; // Or throw an exception
         }
 
-        // Authorize the action using a Policy.
+        // First, check if the entry's date is in a locked period.
+        $this->accountingValidationService->checkIfPeriodIsLocked($vendorBill->company_id, $vendorBill->bill_date);
+
         Gate::forUser($user)->authorize('confirm', $vendorBill);
 
         DB::transaction(function () use ($vendorBill, $user) {
-            // 1. Recalculate totals to ensure accuracy before posting.
-            $this->recalculateBillTotals($vendorBill);
-
-            // 2. Update status and posting date.
-            $vendorBill->status = VendorBill::TYPE_POSTED;
-            $vendorBill->posted_at = now();
-
-            // 3. Create the accounting entry.
-            $journalEntry = $this->createJournalEntryForBill($vendorBill, $user);
-            $vendorBill->journal_entry_id = $journalEntry->id;
-
-            $vendorBill->save();
-
-            VendorBillConfirmed::dispatch($vendorBill);
+            $this->_confirmAndPostBill($vendorBill, $user);
         });
     }
 
     /**
-     * Update a draft vendor bill.
+     * Update a draft vendor bill. Can also handle posting in the same action.
      */
-    public function update(VendorBill $vendorBill, array $data): VendorBill
+    public function update(VendorBill $vendorBill, array $data, User $user): VendorBill
     {
+        // First, check if the entry's date is in a locked period.
+        $this->accountingValidationService->checkIfPeriodIsLocked($vendorBill->company_id, $data['bill_date'] ?? $vendorBill->bill_date);
+
         if ($vendorBill->status !== VendorBill::TYPE_DRAFT) {
-            throw new UpdateNotAllowedException('Cannot modify a non-draft vendor bill.');
+            throw new UpdateNotAllowedException('Cannot update a posted vendor bill.');
         }
 
-        DB::transaction(function () use ($vendorBill, $data) {
-            if (isset($data['lines'])) {
-                $vendorBill->lines()->delete();
-                $vendorBill->lines()->createMany($data['lines']);
+        $isPosting = isset($data['status']) && $data['status'] === VendorBill::TYPE_POSTED;
+
+        DB::transaction(function () use ($vendorBill, $data, $user, $isPosting) {
+            $updateData = collect($data)->except('status')->all();
+
+            if (isset($updateData['partner_id'])) {
+                $updateData['vendor_id'] = $updateData['partner_id'];
+                unset($updateData['partner_id']);
             }
 
-            $this->recalculateBillTotals($vendorBill);
+            if (isset($updateData['lines'])) {
+                $vendorBill->lines()->delete();
+                // MODIFIED: createMany can have issues with casts, create one-by-one for safety
+                foreach ($updateData['lines'] as $lineData) {
+                    $vendorBill->lines()->create($lineData);
+                }
+                unset($updateData['lines']);
+            }
 
-            $vendorBill->update(collect($data)->except('lines')->all());
+            $vendorBill->fill($updateData);
 
-            // We save again to persist the recalculated totals.
-            $vendorBill->save();
+            if ($isPosting) {
+                $this->_confirmAndPostBill($vendorBill, $user);
+            } else {
+                $this->recalculateBillTotals($vendorBill);
+                $vendorBill->save();
+            }
         });
 
         return $vendorBill;
@@ -158,14 +183,43 @@ class VendorBillService
      */
     public function recalculateBillTotals(VendorBill $vendorBill): void
     {
-        $vendorBill->load('lines');
+        $vendorBill->loadMissing('lines');
 
-        // Sums are performed on integer values due to the MoneyCast.
-        $totalTax = $vendorBill->lines->sum('total_line_tax');
-        $subtotal = $vendorBill->lines->sum('subtotal');
+        $currencyCode = $vendorBill->currency->code;
+
+        $totalTax = Money::of(0, $currencyCode);
+        $subtotal = Money::of(0, $currencyCode);
+
+        foreach ($vendorBill->lines as $line) {
+            $totalTax = $totalTax->plus($line->total_line_tax);
+            $subtotal = $subtotal->plus($line->subtotal);
+        }
 
         $vendorBill->total_tax = $totalTax;
-        $vendorBill->total_amount = $subtotal + $totalTax;
+        $vendorBill->total_amount = $subtotal->plus($totalTax);
+    }
+
+    /**
+     * Internal method to perform the actual posting logic. Assumes it's running inside a transaction.
+     */
+    private function _confirmAndPostBill(VendorBill $vendorBill, User $user): void
+    {
+        // 1. Recalculate totals to ensure accuracy before posting.
+        $this->recalculateBillTotals($vendorBill);
+
+        // 2. Update status and posting date.
+        $vendorBill->status = VendorBill::TYPE_POSTED;
+        $vendorBill->posted_at = now();
+
+        // 3. Create the accounting entry.
+        $journalEntry = $this->createJournalEntryForBill($vendorBill, $user);
+        $vendorBill->journal_entry_id = $journalEntry->id;
+
+        // 4. Save all changes to the bill.
+        $vendorBill->save();
+
+        // 5. Dispatch event.
+        VendorBillConfirmed::dispatch($vendorBill);
     }
 
     /**
@@ -173,30 +227,34 @@ class VendorBillService
      */
     private function createJournalEntryForBill(VendorBill $vendorBill, User $user): JournalEntry
     {
-        // Get default accounts from your config.
-        $apAccountId = config('accounting.defaults.accounts_payable_id');
-        $taxAccountId = config('accounting.defaults.tax_receivable_id'); // Tax on purchases is an asset
-        $purchaseJournalId = config('accounting.defaults.purchase_journal_id');
+        // Get default accounts from the bill's company.
+        $company = $vendorBill->company;
+        $apAccountId = $company->default_accounts_payable_id;
+        $taxAccountId = $company->default_tax_receivable_id;
+        $purchaseJournalId = $company->default_purchase_journal_id;
+        // MODIFIED: Get currency code to create zero-value Money objects
+        $currencyCode = $vendorBill->currency->code;
 
-        // Explicitly fail if configuration is missing.
+        // Explicitly fail if configuration is missing for the company.
         if (!$apAccountId || !$taxAccountId || !$purchaseJournalId) {
-            throw new \RuntimeException('Default accounting accounts (accounts_payable_id, tax_receivable_id, or purchase_journal_id) are not configured.');
+            throw new \RuntimeException('Default accounting accounts are not configured for this company. Please set them in the company settings.');
         }
 
         // A credit note should reverse the debit/credit entries.
         $isCreditNote = $vendorBill->type === 'credit_note';
 
         $lines = [];
+        $zeroAmount = Money::of(0, $currencyCode); // MODIFIED
 
         // 1. The Accounts Payable Line: Credit for bills, Debit for credit notes.
         $lines[] = [
             'account_id' => $apAccountId,
-            'debit' => $isCreditNote ? $vendorBill->total_amount : 0,
-            'credit' => !$isCreditNote ? $vendorBill->total_amount : 0,
+            'debit' => $isCreditNote ? $vendorBill->total_amount : $zeroAmount, // MODIFIED
+            'credit' => !$isCreditNote ? $vendorBill->total_amount : $zeroAmount, // MODIFIED
             'description' => 'Accounts Payable',
         ];
 
-        // 2. The Debit/Credit Lines for expenses and taxes.
+        // 2. The Debit/Credit lines for expenses and taxes.
         foreach ($vendorBill->lines as $billLine) {
             if (empty($billLine->expense_account_id)) {
                 throw new \RuntimeException("Expense account is not set for vendor bill line #{$billLine->id}.");
@@ -204,17 +262,18 @@ class VendorBillService
             // Expense line
             $lines[] = [
                 'account_id' => $billLine->expense_account_id,
-                'debit' => !$isCreditNote ? $billLine->subtotal : 0,
-                'credit' => $isCreditNote ? $billLine->subtotal : 0,
+                'debit' => !$isCreditNote ? $billLine->subtotal : $zeroAmount, // MODIFIED
+                'credit' => $isCreditNote ? $billLine->subtotal : $zeroAmount, // MODIFIED
                 'description' => $billLine->description,
             ];
 
             // Tax line
-            if ($billLine->total_line_tax > 0) {
+            // MODIFIED: Use isPositive() for comparison
+            if ($billLine->total_line_tax->isPositive()) {
                 $lines[] = [
                     'account_id' => $taxAccountId,
-                    'debit' => !$isCreditNote ? $billLine->total_line_tax : 0,
-                    'credit' => $isCreditNote ? $billLine->total_line_tax : 0,
+                    'debit' => !$isCreditNote ? $billLine->total_line_tax : $zeroAmount, // MODIFIED
+                    'credit' => $isCreditNote ? $billLine->total_line_tax : $zeroAmount, // MODIFIED
                     'description' => 'Tax for bill ' . $vendorBill->bill_reference,
                 ];
             }
@@ -223,6 +282,7 @@ class VendorBillService
         $journalEntryData = [
             'company_id' => $vendorBill->company_id,
             'journal_id' => $purchaseJournalId,
+            'currency_id' => $vendorBill->currency_id, // MODIFIED: Added currency_id for consistency
             'entry_date' => $vendorBill->posted_at,
             'reference' => $vendorBill->bill_reference,
             'description' => 'Vendor Bill ' . $vendorBill->bill_reference,
@@ -232,6 +292,6 @@ class VendorBillService
             'created_by_user_id' => $user->id,
         ];
 
-        return $this->journalEntryService->create($journalEntryData);
+        return $this->journalEntryService->create($journalEntryData, true); // MODIFIED: Pass true to post immediately
     }
 }

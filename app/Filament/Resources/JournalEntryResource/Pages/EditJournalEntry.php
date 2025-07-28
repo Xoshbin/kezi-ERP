@@ -17,7 +17,7 @@ class EditJournalEntry extends EditRecord
         return [
             Actions\DeleteAction::make()
                 ->action(function (Model $record) {
-                    $journalEntryService = new JournalEntryService();
+                    $journalEntryService = app(JournalEntryService::class);
                     $journalEntryService->delete($record);
                     $this->redirect(JournalEntryResource::getUrl('index'));
                 }),
@@ -26,7 +26,7 @@ class EditJournalEntry extends EditRecord
 
     protected function handleRecordUpdate(Model $record, array $data): Model
     {
-        $journalEntryService = new JournalEntryService();
+        $journalEntryService = app(JournalEntryService::class);
         return $journalEntryService->update($record, $data);
     }
 }

@@ -16,10 +16,25 @@ return new class extends Migration
             $table->string('name');
             $table->text('address')->nullable();
             $table->string('tax_id')->nullable();
-            $table->foreignId('currency_id')->constrained('currencies');
+            $table->foreignId('currency_id');
             $table->string('fiscal_country'); // e.g., 'IQ'
             $table->foreignId('parent_company_id')->nullable()->constrained('companies')->onDelete('set null');
+            $table->foreignId('default_accounts_payable_id')->nullable()->constrained('accounts')->nullOnDelete();
+            $table->foreignId('default_tax_receivable_id')->nullable()->constrained('accounts')->nullOnDelete();
+            $table->foreignId('default_purchase_journal_id')->nullable();
+            $table->foreignId('default_bank_journal_id')->nullable();
+            $table->foreignId('default_accounts_receivable_id')->nullable()->constrained('accounts')->nullOnDelete();
+            $table->foreignId('default_sales_discount_account_id')->nullable()->constrained('accounts')->nullOnDelete();
+            $table->foreignId('default_tax_account_id')->nullable()->constrained('accounts')->nullOnDelete();
+            $table->foreignId('default_sales_journal_id')->nullable();
+            $table->foreignId('default_depreciation_journal_id')->nullable();
+            $table->foreignId('default_bank_account_id')->nullable()->constrained('accounts')->nullOnDelete();
+            $table->foreignId('default_outstanding_receipts_account_id')->nullable()->constrained('accounts')->nullOnDelete();
             $table->timestamps();
+        });
+
+        Schema::table('accounts', function (Blueprint $table) {
+            $table->foreign('company_id')->references('id')->on('companies')->onDelete('cascade');
         });
     }
 
@@ -28,6 +43,12 @@ return new class extends Migration
      */
     public function down(): void
     {
+        Schema::table('accounts', function (Blueprint $table) {
+            // The name of the foreign key constraint is generated automatically by Laravel
+            // following the convention: table_column_foreign
+            $table->dropForeign(['company_id']);
+        });
+
         Schema::dropIfExists('companies');
     }
 };

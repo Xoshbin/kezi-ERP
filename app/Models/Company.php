@@ -103,6 +103,17 @@ class Company extends Model
         'currency_id',
         'fiscal_country',
         'parent_company_id',
+        'default_accounts_payable_id',
+        'default_tax_receivable_id',
+        'default_purchase_journal_id',
+        'default_accounts_receivable_id',
+        'default_sales_discount_account_id',
+        'default_tax_account_id',
+        'default_sales_journal_id',
+        'default_depreciation_journal_id',
+        'default_bank_account_id',
+        'default_outstanding_receipts_account_id',
+        'default_bank_journal_id',
     ];
 
     /**
@@ -349,5 +360,79 @@ class Company extends Model
     public function budgets(): HasMany
     {
         return $this->hasMany(Budget::class);
+    }
+
+    public function defaultAccountsPayable(): BelongsTo
+    {
+        return $this->belongsTo(Account::class, 'default_accounts_payable_id');
+    }
+
+    public function defaultTaxReceivable(): BelongsTo
+    {
+        return $this->belongsTo(Account::class, 'default_tax_receivable_id');
+    }
+
+    public function defaultPurchaseJournal(): BelongsTo
+    {
+        return $this->belongsTo(Journal::class, 'default_purchase_journal_id');
+    }
+
+    public function defaultAccountsReceivable(): BelongsTo
+    {
+        return $this->belongsTo(Account::class, 'default_accounts_receivable_id');
+    }
+
+    public function defaultSalesDiscountAccount(): BelongsTo
+    {
+        return $this->belongsTo(Account::class, 'default_sales_discount_account_id');
+    }
+
+    public function defaultTaxAccount(): BelongsTo
+    {
+        return $this->belongsTo(Account::class, 'default_tax_account_id');
+    }
+
+    public function defaultSalesJournal(): BelongsTo
+    {
+        return $this->belongsTo(Journal::class, 'default_sales_journal_id');
+    }
+
+    public function defaultDepreciationJournal(): BelongsTo
+    {
+        return $this->belongsTo(Journal::class, 'default_depreciation_journal_id');
+    }
+
+    public function defaultBankJournal(): BelongsTo
+    {
+        return $this->belongsTo(Journal::class, 'default_bank_journal_id');
+    }
+
+    public function defaultBankAccount(): BelongsTo
+    {
+        return $this->belongsTo(Account::class, 'default_bank_account_id');
+    }
+
+    public function defaultOutstandingReceiptsAccount(): BelongsTo
+    {
+        return $this->belongsTo(Account::class, 'default_outstanding_receipts_account_id');
+    }
+
+    /**
+     * Check if a given date is within a locked period for the company.
+     *
+     * This method is essential for enforcing the immutability of posted transactions,
+     * a core principle of the accounting system [1, 8]. It queries the `lock_dates`
+     * table to determine if any lock date prevents transactions on the given date.
+     *
+     * @param string| \Carbon\Carbon $date The date to check.
+     * @return bool True if the date is locked, false otherwise.
+     */
+    public function isDateLocked($date): bool
+    {
+        $dateToCheck = \Carbon\Carbon::parse($date)->startOfDay();
+
+        return $this->lockDates()
+            ->where('locked_until', '>=', $dateToCheck)
+            ->exists();
     }
 }

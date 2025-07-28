@@ -2,46 +2,107 @@
 
 namespace App\Casts;
 
+use Brick\Money\Money;
+use App\Models\Currency;
 use Illuminate\Contracts\Database\Eloquent\CastsAttributes;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Database\Eloquent\Model;
+use InvalidArgumentException;
 
 class MoneyCast implements CastsAttributes
 {
     /**
-     * Cast the given value.
+     * A cache for Currency models to avoid repeated database queries.
      *
-     * This method is called when retrieving the value from the database.
-     * It converts the stored integer (e.g., 12345) into a float with two decimal places (e.g., 123.45).
-     *
-     * Example:
-     *   Database value: 12345
-     *   Returned value: 123.45
-     *
-     * @param  array<string, mixed>  $attributes
+     * @var array<int, Currency>
      */
-    public function get($model, string $key, $value, array $attributes): float
+    protected static array $currencyCache = [];
+
+    /**
+     * Cast the stored integer value to a Money object.
+     */
+    public function get($model, string $key, $value, array $attributes): ?Money
     {
-        // Transform the integer stored in the database (e.g., 12345) into a float (e.g., 123.45).
-        return round(floatval($value) / 100, 2);
+        if (is_null($value)) {
+            return null;
+        }
+
+        $currency = $this->resolveCurrency($model, $attributes);
+
+        return Money::ofMinor($value, $currency->code);
     }
 
     /**
-     * Prepare the given value for storage.
-     *
-     * This method is called when saving the value to the database.
-     * It converts the float (e.g., 123.45) into an integer (e.g., 12345) for storage.
-     *
-     * Example:
-     *   Input value: 123.45
-     *   Stored value: 12345
-     *
-     * @param  array<string, mixed>  $attributes
+     * Prepare the given Money object for storage.
      */
-    public function set($model, string $key, $value, array $attributes): int
+    public function set($model, string $key, $value, array $attributes): ?int
     {
-        // Transform the float into an integer for storage.
-        // For example, 123.45 becomes 12345
-        return (int) round(floatval($value) * 100);
+        if (is_null($value)) {
+            return null;
+        }
+
+        if (!$value instanceof Money) {
+            // Allow setting from numeric values for convenience in factories/seeders
+            if (is_numeric($value)) {
+                $currency = $this->resolveCurrency($model, $attributes);
+                $value = Money::of($value, $currency->code);
+            } else {
+                throw new InvalidArgumentException('The given value is not a Money instance or numeric.');
+            }
+        }
+
+        return $value->getMinorAmount()->toInt();
+    }
+
+    /**
+     * Resolves the currency from the model's attributes or relationships.
+     */
+    protected function resolveCurrency(Model $model, array $attributes): Currency
+    {
+        $currencyId = $attributes['currency_id'] ?? null;
+
+        if (!$currencyId) {
+            $currencyId = $this->findCurrencyIdInRelations($model);
+        }
+
+        if (!$currencyId) {
+            // As a last resort, check for a company relationship
+            if (method_exists($model, 'company')) {
+                 $model->loadMissing('company.currency');
+                 if ($model->company) {
+                     $currencyId = $model->company->currency_id;
+                 }
+            }
+        }
+        
+        if (!$currencyId) {
+            throw new InvalidArgumentException('Could not resolve currency_id for model ' . get_class($model));
+        }
+
+        if (!isset(self::$currencyCache[$currencyId])) {
+            self::$currencyCache[$currencyId] = Currency::findOrFail($currencyId);
+        }
+
+        return self::$currencyCache[$currencyId];
+    }
+
+    /**
+     * Intelligently find currency_id from common relationships.
+     */
+    protected function findCurrencyIdInRelations(Model $model): ?int
+    {
+        // A list of common parent relationships that hold a currency_id.
+        $possibleRelations = ['invoice', 'vendorBill', 'journalEntry', 'payment'];
+
+        foreach ($possibleRelations as $relationName) {
+            // THIS IS THE FIX: Check if the relationship method exists before trying to load it.
+            if (method_exists($model, $relationName)) {
+                $model->loadMissing($relationName);
+                if ($model->relationLoaded($relationName) && $model->{$relationName}) {
+                    return $model->{$relationName}->currency_id;
+                }
+            }
+        }
+
+        return null;
     }
 }
