@@ -25,7 +25,9 @@ class InvoiceFactory extends Factory
             'customer_id' => Partner::factory()->create()->id,
             'invoice_date' => $this->faker->date(),
             'due_date' => $this->faker->dateTimeBetween('now', '+30 days')->format('Y-m-d'),
-            'currency_id' => Currency::factory()->create()->id,
+            'currency_id' => function (array $attributes) {
+                return Company::find($attributes['company_id'])->currency_id;
+            }, 
             'total_amount' => $this->faker->randomFloat(2, 100, 10000),
             'total_tax' => $this->faker->randomFloat(2, 0, 2000),
             'fiscal_position_id' => FiscalPosition::factory()->create()->id,
