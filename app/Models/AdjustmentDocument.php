@@ -79,7 +79,8 @@ class AdjustmentDocument extends Model
         'reason',                 // [5]
         'status',                 // [5] e.g., 'Draft', 'Posted'
         'journal_entry_id',       // [5]
-        'posted_at'
+        'posted_at',
+        'currency_id'
     ];
 
     /**
@@ -97,6 +98,18 @@ class AdjustmentDocument extends Model
         'created_at'   => 'datetime',   // [5, 6]
         'updated_at'   => 'datetime',   // [5, 6]
     ];
+
+    public const STATUS_DRAFT = 'draft'; // [5]
+    public const STATUS_POSTED = 'posted'; // [5]
+
+    // use it in Filament select options columns
+    public static function getStatuses(): array
+    {
+        return [
+            self::STATUS_DRAFT => 'Draft',
+            self::STATUS_POSTED => 'Posted',
+        ];
+    }
 
     /**
      * The "booted" method of the model.
@@ -200,4 +213,15 @@ class AdjustmentDocument extends Model
     //         default => 'Unknown',
     //     };
     // }
+
+    /**
+     * Get the currency of this invoice.
+     * Every invoice operates in a specific currency. [1]
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function currency(): BelongsTo
+    {
+        return $this->belongsTo(Currency::class);
+    }
 }

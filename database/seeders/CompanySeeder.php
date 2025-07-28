@@ -2,8 +2,10 @@
 
 namespace Database\Seeders;
 
+use App\Models\Account;
 use App\Models\Company;
 use App\Models\Currency;
+use App\Models\Journal;
 use Illuminate\Database\Seeder;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 
@@ -16,13 +18,11 @@ class CompanySeeder extends Seeder
     {
         // Find the Iraqi Dinar (IQD) currency.
         $iqdCurrency = Currency::where('code', 'IQD')->first();
-
-        // If the currency is not found, throw an exception to enforce seeder order.
         if (!$iqdCurrency) {
             throw new \Exception('IQD currency not found. Please run the CurrencySeeder first.');
         }
 
-        // Create the main company record.
+        // Create the main company record without default accounts or journals.
         Company::updateOrCreate(
             ['name' => 'Jmeryar Solutions'],
             [

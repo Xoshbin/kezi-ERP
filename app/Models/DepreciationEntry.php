@@ -64,6 +64,7 @@ class DepreciationEntry extends Model
         'amount',
         'journal_entry_id',
         'status',
+        'currency_id'
     ];
 
     /**
@@ -111,5 +112,16 @@ class DepreciationEntry extends Model
     public function journalEntry(): BelongsTo
     {
         return $this->belongsTo(JournalEntry::class);
+    }
+
+    /**
+     * Get the currency of this invoice.
+     * Every invoice operates in a specific currency. [1]
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function currency(): BelongsTo
+    {
+        return $this->belongsTo(Currency::class);
     }
 }
