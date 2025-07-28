@@ -20,6 +20,7 @@ return new class extends Migration
             $table->foreignId('original_invoice_id')->nullable()->constrained('invoices');
             $table->foreignId('original_vendor_bill_id')->nullable()->constrained('vendor_bills');
             $table->foreignId('journal_entry_id')->nullable()->constrained('journal_entries')->onDelete('set null');
+            $table->foreignId('currency_id')->constrained('currencies');
             $table->string('type'); // 'Credit Note', 'Debit Note', 'Miscellaneous Adjustment'
             $table->date('date');
             $table->string('reference_number');

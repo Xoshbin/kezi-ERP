@@ -25,7 +25,9 @@ class PaymentFactory extends Factory
             'journal_id' => Journal::factory()->create()->id,
             'payment_date' => $this->faker->date(),
             'amount' => $this->faker->randomFloat(2, 10, 10000),
-            'currency_id' => Currency::factory()->create()->id,
+            'currency_id' => function (array $attributes) {
+                return Company::find($attributes['company_id'])->currency_id;
+            },
             'payment_type' => $this->faker->randomElement(['cash', 'bank', 'cheque', 'online']),
             'reference' => $this->faker->uuid(),
             'status' => $this->faker->randomElement(['pending', 'completed', 'failed']),

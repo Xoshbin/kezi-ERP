@@ -5,8 +5,10 @@ use App\Models\BankStatementLine;
 use App\Models\Company;
 use App\Models\Journal;
 use App\Models\JournalEntry;
+use App\Models\Payment;
 use App\Models\User;
 use App\Services\BankReconciliationService;
+use Brick\Money\Money;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\Traits\CreatesApplication;
 
@@ -22,13 +24,33 @@ test('a bank statement line can be reconciled with a payment', function () {
     // Arrange: Set up the necessary accounts and a payment.
     $bankAccount = Account::factory()->for($this->company)->create(['type' => 'Bank']);
     $this->company->update(['default_bank_account_id' => $bankAccount->id]);
-    $payment = \App\Models\Payment::factory()->for($this->company)->create(['amount' => 100.00, 'status' => 'Confirmed']);
 
-    // Arrange: Create a bank statement line that matches the payment.
-    $bankStatementLine = BankStatementLine::factory()->for($this->company)->create([
-        'amount' => 100.00,
-        'is_reconciled' => false,
-    ]);
+    $currencyCode = $this->company->currency->code;
+    $payment = Payment::factory()
+        ->for($this->company)
+        ->create([
+            'amount' => Money::of(100, $currencyCode),
+            'currency_id' => $this->company->currency_id,
+            'status' => 'Confirmed'
+        ]);
+
+    // Arrange: Create a bank statement and a line that matches the payment.
+    $bankStatement = \App\Models\BankStatement::factory()
+        ->for($this->company)
+        ->for($payment->journal) // We can reuse the payment's journal
+        ->create([
+            'starting_balance' => Money::of(0, $currencyCode),
+            'ending_balance' => Money::of(100, $currencyCode),
+        ]);
+
+    // Create the line for the new BankStatement.
+    $bankStatementLine = BankStatementLine::factory()
+        ->for($bankStatement)
+        ->for($this->company) // THIS IS THE FIX: Explicitly set the company for the line.
+        ->create([
+            'amount' => Money::of(100, $currencyCode),
+            'is_reconciled' => false,
+        ]);
 
     // Act: Reconcile the statement line with the payment.
     (app(BankReconciliationService::class))->reconcilePayment($payment, $bankStatementLine, $this->user);

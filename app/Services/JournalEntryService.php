@@ -9,6 +9,7 @@ use App\Models\Company;
 use App\Models\JournalEntry;
 use App\Models\LockDate;
 use App\Rules\ActiveAccount;
+use Brick\Money\Money;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -38,11 +39,23 @@ class JournalEntryService
         }
 
         // 1. Calculate Totals
-        $totalDebit = collect($data['lines'])->sum('debit');
-        $totalCredit = collect($data['lines'])->sum('credit');
+        // MODIFIED: Use Money objects for precise summation
+        $currencyCode = \App\Models\Currency::find($data['currency_id'])->code;
+        $totalDebit = Money::of(0, $currencyCode);
+        $totalCredit = Money::of(0, $currencyCode);
+
+        foreach ($data['lines'] as $line) {
+            if (isset($line['debit']) && $line['debit'] instanceof Money) {
+                $totalDebit = $totalDebit->plus($line['debit']);
+            }
+            if (isset($line['credit']) && $line['credit'] instanceof Money) {
+                $totalCredit = $totalCredit->plus($line['credit']);
+            }
+        }
 
         // 2. Validate the balance rule
-        if (bccomp($totalDebit, $totalCredit, 2) !== 0) {
+        // MODIFIED: Use isEqualTo() for Money object comparison
+        if (!$totalDebit->isEqualTo($totalCredit)) {
             // This stops execution and throws the clean error your test expects.
             throw ValidationException::withMessages([
                 'lines' => 'The total debits must equal the total credits.'
@@ -76,14 +89,17 @@ class JournalEntryService
         }
 
         // 1. Re-validate the balance before posting.
-        // By operating on the collection ($journalEntry->lines) instead of the query builder,
-        // we ensure that the model's accessors (and thus the MoneyCast) are used,
-        // providing the correct float values for the sum.
-        $journalEntry->load('lines');
-        $totalDebit = $journalEntry->lines->sum('debit');
-        $totalCredit = $journalEntry->lines->sum('credit');
+        $journalEntry->load('lines', 'currency');
+        // MODIFIED: Sum Money objects from the loaded relations.
+        $totalDebit = Money::of(0, $journalEntry->currency->code);
+        $totalCredit = Money::of(0, $journalEntry->currency->code);
+        foreach($journalEntry->lines as $line) {
+            $totalDebit = $totalDebit->plus($line->debit);
+            $totalCredit = $totalCredit->plus($line->credit);
+        }
 
-        if (bccomp($totalDebit, $totalCredit, 2) !== 0) {
+        // MODIFIED: Use isEqualTo() for Money object comparison
+        if (!$totalDebit->isEqualTo($totalCredit)) {
             throw ValidationException::withMessages(['lines' => 'Cannot post an unbalanced entry.']);
         }
 
