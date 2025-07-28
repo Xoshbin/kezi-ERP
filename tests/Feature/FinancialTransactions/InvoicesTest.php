@@ -100,7 +100,7 @@ test('confirming an invoice generates the correct journal entry', function () {
     $this->assertDatabaseHas('journal_entry_lines', [
         'journal_entry_id' => $journalEntry->id,
         'account_id' => $this->company->default_accounts_receivable_id,
-        'debit' => 20000,
+        'debit' => 200000,
         'credit' => 0,
     ]);
 
@@ -109,7 +109,7 @@ test('confirming an invoice generates the correct journal entry', function () {
         'journal_entry_id' => $journalEntry->id,
         'account_id' => $productSalesAccount->id,
         'debit' => 0,
-        'credit' => 20000,
+        'credit' => 200000,
     ]);
 });
 

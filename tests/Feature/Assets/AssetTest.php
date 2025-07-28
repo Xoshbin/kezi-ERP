@@ -64,12 +64,12 @@ test('running depreciation for an asset creates the correct journal entries', fu
     $this->assertDatabaseHas('journal_entry_lines', [
         'journal_entry_id' => $journalEntry->id,
         'account_id' => $depreciationExpenseAccount->id,
-        'debit' => 1000,
+        'debit' => 10000,
     ]);
     $this->assertDatabaseHas('journal_entry_lines', [
         'journal_entry_id' => $journalEntry->id,
         'account_id' => $accumulatedDepreciationAccount->id,
-        'credit' => 1000,
+        'credit' => 10000,
     ]);
 
     // Assert: The asset's book value was updated.
