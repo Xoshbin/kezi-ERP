@@ -105,7 +105,8 @@ test('creating a payment generates the correct journal entry', function () {
     $invoice = Invoice::factory()->for($this->company)->create([
         'status' => 'posted',
         'total_amount' => Money::of(500, $currencyCode),
-        'total_tax' => Money::of(0, $currencyCode)
+        'total_tax' => Money::of(0, $currencyCode),
+        'currency_id' => $this->company->currency_id, // MODIFIED: Ensure consistent currency
     ]);
 
     // Arrange: Prepare payment data for the full amount.
