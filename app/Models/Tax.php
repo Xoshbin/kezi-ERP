@@ -78,6 +78,19 @@ class Tax extends Model
         'updated_at' => 'datetime',
     ];
 
+    public const TYPE_SALES = 'sales';
+    public const TYPE_PURCHASE = 'purchase';
+    public const TYPE_BOTH = 'both';
+
+    public static function getTypes(): array
+    {
+        return [
+            self::TYPE_SALES => 'Sales',
+            self::TYPE_PURCHASE => 'Purchase',
+            self::TYPE_BOTH => 'Both',
+        ];
+    }
+
     /**
      * Get the Company that owns the Tax.
      * This relationship enforces the multi-company architecture, ensuring that each tax

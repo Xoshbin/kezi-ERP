@@ -83,6 +83,28 @@ class Budget extends Model
         'updated_at' => 'datetime',
     ];
 
+    public const TYPE_ANALYTIC = 'analytic'; // For project/department-level budgets [3, 5]
+    public const TYPE_FINANCIAL = 'financial'; // For general ledger account budgets [3, 5]
+
+    public const STATUS_DRAFT = 'draft'; // Initial state for budget creation [3]
+    public const STATUS_FINALIZED = 'finalized'; // Indicates a budget is ready for use
+
+    public static function getTypes(): array
+    {
+        return [
+            self::TYPE_ANALYTIC => 'Analytic',
+            self::TYPE_FINANCIAL => 'Financial',
+        ];
+    }
+
+    public static function getStatuses(): array
+    {
+        return [
+            self::STATUS_DRAFT => 'Draft',
+            self::STATUS_FINALIZED => 'Finalized',
+        ];
+    }
+
     /*
     |--------------------------------------------------------------------------
     | Relationships

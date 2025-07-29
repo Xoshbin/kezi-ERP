@@ -111,6 +111,19 @@ class AdjustmentDocument extends Model
         ];
     }
 
+    public const TYPE_CREDIT_NOTE = 'credit note'; // [5]
+    public const TYPE_DEBIT_NOTE = 'debit note'; // [5]
+    public const TYPE_MISCELLANEOUS = 'miscellaneous'; // [5]
+
+    public static function getTypes(): array
+    {
+        return [
+            self::TYPE_CREDIT_NOTE => 'Credit Note',
+            self::TYPE_DEBIT_NOTE => 'Debit Note',
+            self::TYPE_MISCELLANEOUS => 'mMiscellaneous',
+        ];
+    }
+
     /**
      * The "booted" method of the model.
      * This is an appropriate place to enforce global constraints or event listeners.
