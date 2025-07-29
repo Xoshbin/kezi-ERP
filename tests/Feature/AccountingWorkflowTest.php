@@ -83,6 +83,9 @@ test('the entire accounting workflow from setup to credit note', function () {
             ],
         ],
     ]);
+
+    $vendorBill->refresh();
+
     $vendorBillService->confirm($vendorBill, $user);
 
     $vendorBill->refresh();

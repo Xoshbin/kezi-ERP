@@ -20,7 +20,7 @@ use Brick\Money\Money;
  * Class JournalEntry
  *
  * @package App\Models
- * 
+ *
  * This Eloquent model represents a financial journal entry in the double-entry accounting system.
  * It serves as the immutable record of all posted financial transactions [1-3].
  * @property int $id
@@ -70,6 +70,8 @@ use Brick\Money\Money;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|JournalEntry whereUpdatedAt($value)
  * @mixin \Eloquent
  */
+
+#[ObservedBy([JournalEntryObserver::class])]
 class JournalEntry extends Model
 {
     use HasFactory;
@@ -281,4 +283,22 @@ class JournalEntry extends Model
      *
      * @return void
      */
+
+    public function calculateTotalsFromLines(): void
+    {
+        // Ensure the lines relationship is loaded to avoid extra queries
+        $this->loadMissing('lines', 'currency');
+
+        $currencyCode = $this->currency->code;
+        $totalDebit = Money::of(0, $currencyCode);
+        $totalCredit = Money::of(0, $currencyCode);
+
+        foreach ($this->lines as $line) {
+            $totalDebit = $totalDebit->plus($line->debit);
+            $totalCredit = $totalCredit->plus($line->credit);
+        }
+
+        $this->total_debit = $totalDebit;
+        $this->total_credit = $totalCredit;
+    }
 }
