@@ -15,6 +15,7 @@ use App\Actions\Accounting\CreateJournalEntryForVendorBillAction;
 use App\Events\VendorBillConfirmed;
 use App\Exceptions\DeletionNotAllowedException;
 use App\Exceptions\UpdateNotAllowedException;
+use App\Models\AuditLog;
 use App\Models\User;
 use App\Models\VendorBill;
 use Illuminate\Support\Facades\DB;
@@ -76,6 +77,23 @@ class VendorBillService
         Gate::forUser($user)->authorize('resetToDraft', $vendorBill);
 
         DB::transaction(function () use ($vendorBill, $user, $reason) {
+            // Manually create a specific audit log for this action.
+            AuditLog::create([
+                'user_id' => $user->id,
+                'event_type' => 'reset_to_draft',
+                'auditable_type' => get_class($vendorBill),
+                'auditable_id' => $vendorBill->id,
+                'old_values' => [
+                    'status' => $vendorBill->status,
+                    'journal_entry_id' => $vendorBill->journal_entry_id,
+                ],
+                'new_values' => [
+                    'status' => VendorBill::TYPE_DRAFT,
+                    'reason' => $reason,
+                ],
+                'ip_address' => request()->ip(),
+            ]);
+
             $vendorBill->journalEntry()->delete();
 
             $newLog = [
