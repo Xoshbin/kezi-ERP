@@ -37,6 +37,19 @@ class JournalResource extends Resource
                     ->maxLength(255),
                 Forms\Components\Select::make('currency_id')
                     ->relationship('currency', 'name'),
+
+                // ADDED: The missing default account fields
+                Forms\Components\Select::make('default_debit_account_id')
+                    ->relationship('defaultDebitAccount', 'name')
+                    ->searchable()
+                    ->label('Default Debit Account')
+                    ->helperText('For Bank/Cash journals, this is the bank account to use for payments.'),
+
+                Forms\Components\Select::make('default_credit_account_id')
+                    ->relationship('defaultCreditAccount', 'name')
+                    ->searchable()
+                    ->label('Default Credit Account')
+                    ->helperText('For Bank/Cash journals, this is the bank account to use for payments.'),
             ]);
     }
 
@@ -53,6 +66,15 @@ class JournalResource extends Resource
                     ->searchable(),
                 Tables\Columns\TextColumn::make('short_code')
                     ->searchable(),
+
+                // ADDED: Columns to see the configuration in the list view
+                Tables\Columns\TextColumn::make('defaultDebitAccount.name')
+                    ->label('Default Debit Acct.')
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('defaultCreditAccount.name')
+                    ->label('Default Credit Acct.')
+                    ->sortable(),
+
                 Tables\Columns\TextColumn::make('currency.name')
                     ->numeric()
                     ->sortable(),
