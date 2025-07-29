@@ -54,7 +54,6 @@ class VendorBillResource extends Resource
                 Forms\Components\DatePicker::make('due_date'),
                 Forms\Components\Select::make('status')
                     ->options(VendorBill::getTypes())
-                    ->required()
                     // The status is now always disabled.
                     // State changes are handled ONLY by the header actions.
                     ->disabled()
