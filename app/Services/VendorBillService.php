@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Actions\Accounting\CreateJournalEntryForVendorBillAction; // 1. Add the import for the new action.
 use App\Events\VendorBillConfirmed;
 use App\Exceptions\DeletionNotAllowedException;
 use App\Exceptions\UpdateNotAllowedException;
@@ -15,7 +16,7 @@ use Illuminate\Support\Facades\Gate;
 class VendorBillService
 {
     public function __construct(
-        protected JournalEntryService $journalEntryService,
+        // The JournalEntryService is no longer needed here.
         protected AccountingValidationService $accountingValidationService
     ) {
     }
@@ -54,7 +55,6 @@ class VendorBillService
                 }
             }
 
-            $this->recalculateBillTotals($vendorBill);
             $vendorBill->save();
 
             return $vendorBill;
@@ -116,7 +116,6 @@ class VendorBillService
             if ($isPosting) {
                 $this->_confirmAndPostBill($vendorBill, $user);
             } else {
-                $this->recalculateBillTotals($vendorBill);
                 $vendorBill->save();
             }
         });
@@ -178,41 +177,19 @@ class VendorBillService
         });
     }
 
-    /**
-     * Recalculate the total_amount and total_tax from the bill's lines.
-     */
-    public function recalculateBillTotals(VendorBill $vendorBill): void
-    {
-        $vendorBill->loadMissing('lines');
-
-        $currencyCode = $vendorBill->currency->code;
-
-        $totalTax = Money::of(0, $currencyCode);
-        $subtotal = Money::of(0, $currencyCode);
-
-        foreach ($vendorBill->lines as $line) {
-            $totalTax = $totalTax->plus($line->total_line_tax);
-            $subtotal = $subtotal->plus($line->subtotal);
-        }
-
-        $vendorBill->total_tax = $totalTax;
-        $vendorBill->total_amount = $subtotal->plus($totalTax);
-    }
 
     /**
      * Internal method to perform the actual posting logic. Assumes it's running inside a transaction.
      */
     private function _confirmAndPostBill(VendorBill $vendorBill, User $user): void
     {
-        // 1. Recalculate totals to ensure accuracy before posting.
-        $this->recalculateBillTotals($vendorBill);
-
-        // 2. Update status and posting date.
+        // 1. Update status and posting date.
+        // The `saving` event on the VendorBill model will handle recalculating totals.
         $vendorBill->status = VendorBill::TYPE_POSTED;
         $vendorBill->posted_at = now();
 
-        // 3. Create the accounting entry.
-        $journalEntry = $this->createJournalEntryForBill($vendorBill, $user);
+        // 3. Create the accounting entry using our new, dedicated Action.
+        $journalEntry = (new CreateJournalEntryForVendorBillAction())->execute($vendorBill, $user);
         $vendorBill->journal_entry_id = $journalEntry->id;
 
         // 4. Save all changes to the bill.
@@ -222,76 +199,6 @@ class VendorBillService
         VendorBillConfirmed::dispatch($vendorBill);
     }
 
-    /**
-     * Create the corresponding journal entry for a posted vendor bill.
-     */
-    private function createJournalEntryForBill(VendorBill $vendorBill, User $user): JournalEntry
-    {
-        // Get default accounts from the bill's company.
-        $company = $vendorBill->company;
-        $apAccountId = $company->default_accounts_payable_id;
-        $taxAccountId = $company->default_tax_receivable_id;
-        $purchaseJournalId = $company->default_purchase_journal_id;
-        // MODIFIED: Get currency code to create zero-value Money objects
-        $currencyCode = $vendorBill->currency->code;
-
-        // Explicitly fail if configuration is missing for the company.
-        if (!$apAccountId || !$taxAccountId || !$purchaseJournalId) {
-            throw new \RuntimeException('Default accounting accounts are not configured for this company. Please set them in the company settings.');
-        }
-
-        // A credit note should reverse the debit/credit entries.
-        $isCreditNote = $vendorBill->type === 'credit_note';
-
-        $lines = [];
-        $zeroAmount = Money::of(0, $currencyCode); // MODIFIED
-
-        // 1. The Accounts Payable Line: Credit for bills, Debit for credit notes.
-        $lines[] = [
-            'account_id' => $apAccountId,
-            'debit' => $isCreditNote ? $vendorBill->total_amount : $zeroAmount, // MODIFIED
-            'credit' => !$isCreditNote ? $vendorBill->total_amount : $zeroAmount, // MODIFIED
-            'description' => 'Accounts Payable',
-        ];
-
-        // 2. The Debit/Credit lines for expenses and taxes.
-        foreach ($vendorBill->lines as $billLine) {
-            if (empty($billLine->expense_account_id)) {
-                throw new \RuntimeException("Expense account is not set for vendor bill line #{$billLine->id}.");
-            }
-            // Expense line
-            $lines[] = [
-                'account_id' => $billLine->expense_account_id,
-                'debit' => !$isCreditNote ? $billLine->subtotal : $zeroAmount, // MODIFIED
-                'credit' => $isCreditNote ? $billLine->subtotal : $zeroAmount, // MODIFIED
-                'description' => $billLine->description,
-            ];
-
-            // Tax line
-            // MODIFIED: Use isPositive() for comparison
-            if ($billLine->total_line_tax->isPositive()) {
-                $lines[] = [
-                    'account_id' => $taxAccountId,
-                    'debit' => !$isCreditNote ? $billLine->total_line_tax : $zeroAmount, // MODIFIED
-                    'credit' => $isCreditNote ? $billLine->total_line_tax : $zeroAmount, // MODIFIED
-                    'description' => 'Tax for bill ' . $vendorBill->bill_reference,
-                ];
-            }
-        }
-
-        $journalEntryData = [
-            'company_id' => $vendorBill->company_id,
-            'journal_id' => $purchaseJournalId,
-            'currency_id' => $vendorBill->currency_id, // MODIFIED: Added currency_id for consistency
-            'entry_date' => $vendorBill->posted_at,
-            'reference' => $vendorBill->bill_reference,
-            'description' => 'Vendor Bill ' . $vendorBill->bill_reference,
-            'source_type' => VendorBill::class,
-            'source_id' => $vendorBill->id,
-            'lines' => $lines,
-            'created_by_user_id' => $user->id,
-        ];
-
-        return $this->journalEntryService->create($journalEntryData, true); // MODIFIED: Pass true to post immediately
-    }
+    // 4. The old private method is now removed.
+    // private function createJournalEntryForBill(...) has been deleted.
 }

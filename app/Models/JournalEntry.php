@@ -31,8 +31,8 @@ use Brick\Money\Money;
  * @property \Illuminate\Support\Carbon $entry_date
  * @property string $reference
  * @property string|null $description
- * @property float $total_debit
- * @property float $total_credit
+ * @property \Brick\Money\Money $total_debit
+ * @property \Brick\Money\Money $total_credit
  * @property bool $is_posted
  * @property string|null $hash
  * @property string|null $previous_hash
@@ -70,7 +70,6 @@ use Brick\Money\Money;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|JournalEntry whereUpdatedAt($value)
  * @mixin \Eloquent
  */
-#[ObservedBy([JournalEntryObserver::class, AuditLogObserver::class])]
 class JournalEntry extends Model
 {
     use HasFactory;
@@ -148,6 +147,7 @@ class JournalEntry extends Model
             // and transitions to `true` via a dedicated posting mechanism in the application's
             // service layer, which also handles hashing.
         });
+
 
         // Strict enforcement of immutability for posted financial records.
         // Direct modification or deletion of posted journal entries is explicitly disallowed
@@ -281,21 +281,4 @@ class JournalEntry extends Model
      *
      * @return void
      */
-    public function calculateTotalsFromLines(): void
-    {
-        $this->loadMissing('lines', 'currency');
-
-        // Define the starting point for our summation: a Money object of zero.
-        $zero = Money::of(0, $this->currency->code);
-
-        // Use the 'reduce' method to correctly sum the Money objects.
-        $this->total_debit = $this->lines->reduce(function (Money $carry, $item) {
-            // The 'plus' method correctly adds one Money object to another.
-            return $carry->plus($item->debit ?? 0);
-        }, $zero);
-
-        $this->total_credit = $this->lines->reduce(function (Money $carry, $item) {
-            return $carry->plus($item->credit ?? 0);
-        }, $zero);
-    }
 }

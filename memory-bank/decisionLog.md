@@ -88,3 +88,9 @@ This file records architectural and implementation decisions using a list format
     2.  **Test Trait Configuration:** Corrected the `createConfiguredCompany()` method in `tests/Traits/CreatesApplication.php` to provide all required default accounts and journals, resolving multiple `RuntimeException`s.
     3.  **Factory Correction:** Modified the `CompanyFactory` and `JournalFactory` to use `Currency::firstOrCreate()` instead of `Currency::factory()`, eliminating the creation of duplicate currencies.
     4.  **Test Isolation:** Refactored the `creating a currency with an existing code is prevented` test to create its own unique currency, preventing conflicts with the shared 'IQD' currency.
+[2025-07-29 16:01:19] - **Decision:** Corrected a critical bug in the tax calculation logic that caused incorrect journal entries for vendor bills.
+- **Rationale:** The `Tax` model was incorrectly casting its `rate` attribute to an `integer` instead of a `float`. This caused the tax rate to be truncated to zero during calculations, leading to incorrect `total_amount` on vendor bills and failed test assertions. The fix ensures that tax rates are handled as numeric values, preserving precision and aligning with accounting principles.
+- **Implementation Details:**
+    1.  Modified the `rate` attribute's cast in `app/Models/Tax.php` from `integer` to `float`.
+    2.  Updated the `CreateJournalEntryForVendorBillActionTest` to create the tax `rate` as a `float` (e.g., `0.10`) instead of a `Money` object, which was causing the incorrect type coercion.
+    3.  Ensured the `VendorBillLineObserver` correctly uses the `float` value for tax calculations.

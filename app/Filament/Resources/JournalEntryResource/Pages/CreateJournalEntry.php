@@ -2,22 +2,24 @@
 
 namespace App\Filament\Resources\JournalEntryResource\Pages;
 
+use App\Actions\Accounting\CreateJournalEntryAction;
+use App\DataTransferObjects\Accounting\CreateJournalEntryDTO;
+use App\DataTransferObjects\Accounting\CreateJournalEntryLineDTO;
 use App\Filament\Resources\JournalEntryResource;
 use App\Models\Company;
 use App\Models\LockDate;
 use Filament\Resources\Pages\CreateRecord;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Validation\ValidationException;
-use Illuminate\Support\Facades\DB;
-use App\Models\Currency;
-use Brick\Money\Money;
 
 class CreateJournalEntry extends CreateRecord
 {
     protected static string $resource = JournalEntryResource::class;
 
+    // This method is now simplified, acting only as a validation guard before creation.
     protected function mutateFormDataBeforeCreate(array $data): array
     {
+        // 1. Period Lock Validation
         $entryDate = \Carbon\Carbon::parse($data['entry_date']);
         $lockDate = LockDate::where('company_id', $data['company_id'])->first();
         if ($lockDate && $entryDate->lte($lockDate->locked_until)) {
@@ -25,11 +27,9 @@ class CreateJournalEntry extends CreateRecord
                 'data.entry_date' => 'The accounting period is locked and cannot be modified.',
             ]);
         }
-        
-        // The 'lines' data is now reliably in the $data array.
-        $lines = $data['lines'] ?? [];
 
-        // Perform balance validation
+        // 2. Balance Validation
+        $lines = $data['lines'] ?? [];
         $totalDebit = collect($lines)->sum(fn($line) => $line['debit'] ?? 0);
         $totalCredit = collect($lines)->sum(fn($line) => $line['credit'] ?? 0);
 
@@ -39,58 +39,46 @@ class CreateJournalEntry extends CreateRecord
             ]);
         }
 
-        $data['total_debit'] = $totalDebit;
-        $data['total_credit'] = $totalCredit;
-
+        // 3. Ensure Currency is set
         if (empty($data['currency_id']) && !empty($data['company_id'])) {
             $company = Company::find($data['company_id']);
             if ($company) {
                 $data['currency_id'] = $company->currency_id;
             }
         }
-        
-        // We no longer unset the lines here. They are passed to the next step.
+
         return $data;
     }
 
+    // This method now cleanly translates form data to DTOs and executes the Action.
     protected function handleRecordCreation(array $data): Model
     {
-        return DB::transaction(function () use ($data) {
-            // 1. Separate lines data from parent data.
-            $linesData = $data['lines'] ?? [];
-            unset($data['lines']);
+        $lineDTOs = [];
+        foreach ($data['lines'] as $line) {
+            $lineDTOs[] = new CreateJournalEntryLineDTO(
+                account_id: $line['account_id'],
+                debit: $line['debit'],
+                credit: $line['credit'],
+                description: $line['description'],
+                partner_id: $line['partner_id'],
+                analytic_account_id: $line['analytic_account_id']
+            );
+        }
 
-            // 2. Create the parent JournalEntry.
-            $journalEntry = static::getModel()::create($data);
+        $journalEntryDTO = new CreateJournalEntryDTO(
+            company_id: $data['company_id'],
+            journal_id: $data['journal_id'],
+            currency_id: $data['currency_id'],
+            entry_date: $data['entry_date'],
+            reference: $data['reference'],
+            description: $data['description'],
+            created_by_user_id: $data['created_by_user_id'],
+            is_posted: $data['is_posted'],
+            lines: $lineDTOs
+        );
 
-            // 3. Manually prepare and create the lines.
-            if (!empty($linesData)) {
-                $currencyId = $data['currency_id'];
-                
-                // --- START OF THE FIX ---
-                // Fetch the currency model to get its string code (e.g., 'IQD')
-                $currency = Currency::find($currencyId);
-                if (!$currency) {
-                    throw new \Exception("Could not find Currency with ID: {$currencyId}");
-                }
-                $currencyCode = $currency->code;
+        $action = new CreateJournalEntryAction();
 
-                $linesWithMoneyObjects = array_map(function ($line) use ($currencyId, $currencyCode) {
-                    // Pre-convert the numeric strings into complete Money objects.
-                    $line['debit'] = Money::of($line['debit'] ?? 0, $currencyCode);
-                    $line['credit'] = Money::of($line['credit'] ?? 0, $currencyCode);
-                    
-                    // Also pass the currency_id for the database column.
-                    $line['currency_id'] = $currencyId; 
-                    return $line;
-                }, $linesData);
-
-                // Eloquent will now receive Money objects and the cast will work perfectly.
-                $journalEntry->lines()->createMany($linesWithMoneyObjects);
-                // --- END OF THE FIX ---
-            }
-
-            return $journalEntry;
-        });
+        return $action->execute($journalEntryDTO);
     }
 }

@@ -7,14 +7,13 @@ use App\Exceptions\UpdateNotAllowedException;
 use App\Models\Company;
 use App\Models\Currency;
 use App\Models\Invoice;
-use App\Models\JournalEntry;
 use App\Models\Payment;
 use App\Models\User;
 use App\Models\VendorBill;
 use Brick\Money\Money;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 use InvalidArgumentException;
+use App\Actions\Accounting\CreateJournalEntryForPaymentAction;
 
 class PaymentService
 {
@@ -115,7 +114,7 @@ class PaymentService
 
         return DB::transaction(function () use ($payment, $user) {
             // Create the corresponding journal entry.
-            $journalEntry = $this->createJournalEntryForPayment($payment, $user);
+            $journalEntry = (new CreateJournalEntryForPaymentAction())->execute($payment, $user);
 
             $payment->journal_entry_id = $journalEntry->id;
             $payment->status = Payment::STATUS_CONFIRMED;
@@ -146,70 +145,6 @@ class PaymentService
 
             return $payment;
         });
-    }
-
-    /**
-     * Creates the double-entry journal entry for a confirmed payment.
-     */
-    private function createJournalEntryForPayment(Payment $payment, User $user): JournalEntry
-    {
-        if (!$payment->journal_id) {
-            throw new InvalidArgumentException('The payment must have a journal to be confirmed.');
-        }
-
-        $lines = [];
-        // The Journal is the source of truth for which account to use.
-        // Eager load the relationship to prevent extra queries.
-        $payment->load('journal', 'currency');
-        // For a payment journal, both default debit and credit accounts point to the same bank account.
-        // We can reliably use the default_debit_account_id as the bank account for the transaction.
-        $bankAccountId = $payment->journal->default_debit_account_id;
-
-        if (!$bankAccountId) {
-            throw new InvalidArgumentException('The selected journal is not fully configured with a default debit account.');
-        }
-
-        // Fetch a fresh instance of the company to ensure we have the latest default accounts.
-        $company = Company::findOrFail($payment->company_id);
-        // MODIFIED: Create a zero-value Money object for consistency
-        $zeroAmount = Money::of(0, $payment->currency->code);
-
-        if ($payment->payment_type === Payment::TYPE_INBOUND) {
-            // Inbound: Money comes IN to the bank (debit), reducing customer debt (credit).
-            $arAccountId = $company->default_accounts_receivable_id;
-            if (!$arAccountId) {
-                throw new \RuntimeException('Default accounts receivable is not configured for this company.');
-            }
-            // MODIFIED: Ensure both debit and credit keys exist and use Money objects.
-            $lines[] = ['account_id' => $bankAccountId, 'debit' => $payment->amount, 'credit' => $zeroAmount];
-            $lines[] = ['account_id' => $arAccountId, 'credit' => $payment->amount, 'debit' => $zeroAmount];
-        } else { // Outbound
-            // Outbound: Money goes OUT of the bank (credit), reducing company debt (debit).
-            $apAccountId = $company->default_accounts_payable_id;
-            if (!$apAccountId) {
-                throw new \RuntimeException('Default accounts payable is not configured for this company.');
-            }
-            // MODIFIED: Ensure both debit and credit keys exist and use Money objects.
-            $lines[] = ['account_id' => $apAccountId, 'debit' => $payment->amount, 'credit' => $zeroAmount];
-            $lines[] = ['account_id' => $bankAccountId, 'credit' => $payment->amount, 'debit' => $zeroAmount];
-        }
-
-        $journalEntryData = [
-            'company_id' => $payment->company_id,
-            'journal_id' => $payment->journal_id,
-            'currency_id' => $payment->currency_id,
-            'entry_date' => $payment->payment_date,
-            'reference' => 'Payment #' . $payment->id,
-            'description' => 'Payment from/to ' . $payment->partner->name,
-            'source_type' => get_class($payment),
-            'source_id' => $payment->id,
-            'created_by_user_id' => $user->id,
-            'lines' => $lines,
-        ];
-
-        Log::debug('PaymentService: Creating journal entry with data:', $journalEntryData);
-
-        return $this->journalEntryService->create($journalEntryData, true);
     }
 
     /**

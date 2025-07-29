@@ -16,6 +16,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
+use App\Actions\Accounting\CreateJournalEntryForInvoiceAction;
 
 class InvoiceService
 {
@@ -50,7 +51,7 @@ class InvoiceService
 
             $currencyCode = Currency::find($data['currency_id'])->code;
             $lines = $data['lines'] ?? [];
-            
+
             // Temporarily hold lines to calculate totals before saving
             // MODIFIED: Use Money objects for calculation
             $totalAmount = Money::of(0, $currencyCode);
@@ -172,7 +173,7 @@ class InvoiceService
             $invoice->status = Invoice::TYPE_POSTED;
             $invoice->posted_at = now();
 
-            $journalEntry = $this->createJournalEntryForInvoice($invoice, $user);
+            $journalEntry = (new CreateJournalEntryForInvoiceAction())->execute($invoice, $user);
             $invoice->journal_entry_id = $journalEntry->id;
 
             $invoice->save();
@@ -190,86 +191,6 @@ class InvoiceService
 
         // Format it nicely, e.g., INV-00001
         return 'INV-' . str_pad($lastNumber + 1, 5, '0', STR_PAD_LEFT);
-    }
-
-    /**
-     * Prepares the data for and creates the journal entry for a posted invoice.
-     */
-    // In app/Services/InvoiceService.php
-    private function createJournalEntryForInvoice(Invoice $invoice, User $user): JournalEntry
-    {
-        // Load the relationships we'll need
-        $invoice->load('company.currency', 'currency', 'invoiceLines.tax', 'invoiceLines.incomeAccount');
-
-        $company = $invoice->company;
-        $baseCurrency = $company->currency;
-        $foreignCurrency = $invoice->currency;
-        $arAccountId = $company->default_accounts_receivable_id;
-        $salesJournalId = $company->default_sales_journal_id;
-
-        if (!$arAccountId || !$salesJournalId) {
-            throw new \RuntimeException('Default accounts receivable or sales journal is not configured for this company.');
-        }
-
-        // Determine the exchange rate. If it's the same currency, the rate is 1.
-        $exchangeRate = ($baseCurrency->id === $foreignCurrency->id) ? 1 : $foreignCurrency->exchange_rate;
-
-        $lines = [];
-        $zeroAmountInBase = Money::of(0, $baseCurrency->code); // MODIFIED: Create zero amount for base currency
-
-        // 1. The Debit Line (Total amount converted to base currency)
-        $lines[] = [
-            'account_id' => $arAccountId,
-            'debit' => $invoice->total_amount->multipliedBy($exchangeRate, RoundingMode::HALF_UP), // MODIFIED
-            'credit' => $zeroAmountInBase, // MODIFIED
-            'description' => 'A/R for ' . $invoice->invoice_number,
-            'currency_id' => $foreignCurrency->id,
-            'original_currency_amount' => $invoice->total_amount, // This is already a Money object
-            'exchange_rate_at_transaction' => $exchangeRate,
-        ];
-
-        // 2. The Credit Lines
-        foreach ($invoice->invoiceLines as $line) {
-            $creditAccountId = $line->deferred_revenue_account_id ?? $line->income_account_id;
-            // Credit the income account
-            $lines[] = [
-                'account_id' => $creditAccountId,
-                'credit' => $line->subtotal->multipliedBy($exchangeRate, RoundingMode::HALF_UP), // MODIFIED
-                'debit' => $zeroAmountInBase, // MODIFIED
-                'description' => $line->description,
-                'currency_id' => $foreignCurrency->id,
-                'original_currency_amount' => $line->subtotal, // Already a Money object
-                'exchange_rate_at_transaction' => $exchangeRate,
-            ];
-
-            // Credit the tax account
-            if ($line->total_line_tax->isPositive() && $line->tax) { // MODIFIED
-                $lines[] = [
-                    'account_id' => $line->tax->tax_account_id,
-                    'credit' => $line->total_line_tax->multipliedBy($exchangeRate, RoundingMode::HALF_UP), // MODIFIED
-                    'debit' => $zeroAmountInBase, // MODIFIED
-                    'description' => 'Tax for ' . $invoice->invoice_number,
-                    'currency_id' => $foreignCurrency->id,
-                    'original_currency_amount' => $line->total_line_tax, // Already a Money object
-                    'exchange_rate_at_transaction' => $exchangeRate,
-                ];
-            }
-        }
-
-        $journalEntryData = [
-            'company_id' => $company->id,
-            'journal_id' => $salesJournalId,
-            'currency_id' => $baseCurrency->id, // The JE itself is in the base currency
-            'entry_date' => $invoice->posted_at,
-            'reference' => $invoice->invoice_number,
-            'description' => 'Invoice ' . $invoice->invoice_number,
-            'source_type' => Invoice::class,
-            'source_id' => $invoice->id,
-            'lines' => $lines,
-            'created_by_user_id' => $user->id,
-        ];
-
-        return $this->journalEntryService->create($journalEntryData, true); // MODIFIED: Pass true to post immediately
     }
 
     public function resetToDraft(Invoice $invoice, User $user, string $reason): void

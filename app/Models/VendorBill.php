@@ -29,8 +29,8 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property \Illuminate\Support\Carbon $accounting_date
  * @property \Illuminate\Support\Carbon|null $due_date
  * @property string $status
- * @property float $total_amount
- * @property float $total_tax
+ * @property \Brick\Money\Money $total_amount
+ * @property \Brick\Money\Money $total_tax
  * @property \Illuminate\Support\Carbon|null $posted_at
  * @property array<array-key, mixed>|null $reset_to_draft_log
  * @property \Illuminate\Support\Carbon|null $created_at
@@ -119,6 +119,41 @@ class VendorBill extends Model
         'created_at'         => 'datetime',   // Automatically managed by Eloquent.
         'updated_at'         => 'datetime',   // Automatically managed by Eloquent.
     ];
+
+    protected static function booted(): void
+    {
+        static::saving(function (self $vendorBill) {
+            // This ensures totals are always correct before saving.
+            $vendorBill->calculateTotalsFromLines();
+        });
+    }
+
+    public function calculateTotalsFromLines(): void
+    {
+        $this->loadMissing('lines', 'currency');
+
+        $currencyCode = $this->currency->code;
+        $zero = \Brick\Money\Money::of(0, $currencyCode);
+
+        $totalTax = $this->lines->reduce(
+            fn (\Brick\Money\Money $carry, VendorBillLine $line) => $carry->plus($line->total_line_tax),
+            $zero
+        );
+
+        $subtotal = $this->lines->reduce(
+            fn (\Brick\Money\Money $carry, VendorBillLine $line) => $carry->plus($line->subtotal),
+            $zero
+        );
+
+        $this->total_tax = $totalTax;
+        $this->total_amount = $subtotal->plus($totalTax);
+
+        \Illuminate\Support\Facades\Log::info('calculateTotalsFromLines', [
+            'total_tax' => $totalTax->getAmount(),
+            'subtotal' => $subtotal->getAmount(),
+            'total_amount' => $this->total_amount->getAmount(),
+        ]);
+    }
 
     public const TYPE_DRAFT = 'draft';
     public const TYPE_POSTED = 'posted';
