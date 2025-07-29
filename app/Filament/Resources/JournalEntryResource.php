@@ -21,6 +21,9 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Rules\ActiveAccount;
 use App\Filament\Resources\JournalEntryResource\Pages;
 use App\Filament\Resources\JournalEntryResource\RelationManagers;
+use App\Models\Account;
+use App\Models\Partner;
+use App\Models\AnalyticAccount as AnalyticAccountModel; // Use an alias to avoid conflict with the relationship name
 
 class JournalEntryResource extends Resource
 {
@@ -58,23 +61,25 @@ class JournalEntryResource extends Resource
                 Forms\Components\Textarea::make('description')
                     ->columnSpanFull(),
                 Repeater::make('lines')
-                    ->relationship()
                     ->schema([
                         Forms\Components\Select::make('account_id')
-                            ->relationship('account', 'name')
                             ->searchable()
+                            ->getSearchResultsUsing(fn (string $search): array => Account::where('name', 'like', "%{$search}%")->limit(50)->pluck('name', 'id')->toArray())
+                            ->getOptionLabelUsing(fn ($value): ?string => Account::find($value)?->name)
                             ->rules([new ActiveAccount])
                             ->required()
                             ->columnSpan(2),
                         Forms\Components\TextInput::make('debit')->required()->numeric()->columnSpan(1),
                         Forms\Components\TextInput::make('credit')->required()->numeric()->columnSpan(1),
                         Forms\Components\Select::make('partner_id')
-                            ->relationship('partner', 'name')
                             ->searchable()
+                            ->getSearchResultsUsing(fn (string $search): array => Partner::where('name', 'like', "%{$search}%")->limit(50)->pluck('name', 'id')->toArray())
+                            ->getOptionLabelUsing(fn ($value): ?string => Partner::find($value)?->name)
                             ->columnSpan(2),
                         Forms\Components\Select::make('analytic_account_id')
-                            ->relationship('analyticAccount', 'name')
                             ->searchable()
+                            ->getSearchResultsUsing(fn (string $search): array => AnalyticAccountModel::where('name', 'like', "%{$search}%")->limit(50)->pluck('name', 'id')->toArray())
+                            ->getOptionLabelUsing(fn ($value): ?string => AnalyticAccountModel::find($value)?->name)
                             ->columnSpan(2),
                         Forms\Components\TextInput::make('description')->maxLength(255)->columnSpanFull(),
                     ])

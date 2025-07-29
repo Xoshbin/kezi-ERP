@@ -4,6 +4,8 @@ namespace App\Providers;
 
 use App\Listeners\PostJournalEntry;
 use Illuminate\Support\ServiceProvider;
+use App\Livewire\Synthesizers\MoneySynth;
+use Livewire\Livewire;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -24,6 +26,6 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        Livewire::propertySynthesizer(MoneySynth::class);
     }
 }
