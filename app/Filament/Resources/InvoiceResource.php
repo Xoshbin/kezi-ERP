@@ -19,6 +19,8 @@ use Illuminate\Database\Eloquent\Builder;
 use App\Filament\Resources\InvoiceResource\Pages;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\InvoiceResource\RelationManagers;
+use App\Models\Account;
+use App\Models\Product;
 
 class InvoiceResource extends Resource
 {
@@ -30,76 +32,56 @@ class InvoiceResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\Select::make('company_id')
-                    ->relationship('company', 'name')
-                    ->required(),
-                Forms\Components\Select::make('customer_id')
-                    ->relationship('customer', 'name')
-                    ->required(),
-                Forms\Components\Select::make('currency_id')
-                    ->relationship('currency', 'name')
-                    ->required(),
-                Forms\Components\Select::make('journal_entry_id')
-                    ->relationship('journalEntry', 'id'),
-                Forms\Components\Select::make('fiscal_position_id')
-                    ->relationship('fiscalPosition', 'name'),
-                Forms\Components\TextInput::make('invoice_number')
-                    ->maxLength(255),
-                Forms\Components\DatePicker::make('invoice_date')
-                    ->required(),
-                Forms\Components\DatePicker::make('due_date')
-                    ->required(),
+                Forms\Components\Select::make('company_id')->relationship('company', 'name')->required(),
+                Forms\Components\Select::make('customer_id')->relationship('customer', 'name')->required(),
+                Forms\Components\Select::make('currency_id')->relationship('currency', 'name')->required(),
+                Forms\Components\Select::make('fiscal_position_id')->relationship('fiscalPosition', 'name'),
+                Forms\Components\DatePicker::make('invoice_date')->required(),
+                Forms\Components\DatePicker::make('due_date')->required(),
                 Forms\Components\Select::make('status')
                     ->options(Invoice::getTypes())
-                    ->required()
-                    ->default(Invoice::TYPE_DRAFT),
+                    ->disabled()
+                    ->dehydrated(false),
+
                 Repeater::make('invoiceLines')
-                    ->relationship()
+                    // ->relationship() // REMOVED
                     ->schema([
                         Forms\Components\Select::make('product_id')
-                            ->relationship('product', 'name')
                             ->searchable()
+                            ->getSearchResultsUsing(fn (string $search): array => Product::where('name', 'like', "%{$search}%")->limit(50)->pluck('name', 'id')->toArray())
+                            ->getOptionLabelUsing(fn ($value): ?string => Product::find($value)?->name)
+                            ->reactive()
+                            ->afterStateUpdated(function ($state, callable $set) {
+                                if ($state) {
+                                    $product = Product::find($state);
+                                    if ($product) {
+                                        $set('description', $product->description);
+                                        $set('unit_price', $product->unit_price->getAmount()->toFloat());
+                                        $set('income_account_id', $product->income_account_id);
+                                    }
+                                }
+                            })
                             ->columnSpan(2),
-                        Forms\Components\TextInput::make('description')
-                            ->maxLength(255)
-                            ->columnSpanFull(),
-                        Forms\Components\TextInput::make('quantity')
-                            ->required()
-                            ->numeric()
-                            ->columnSpan(1),
-                        Forms\Components\TextInput::make('unit_price')
-                            ->required()
-                            ->numeric()
-                            ->columnSpan(1),
+                        Forms\Components\TextInput::make('description')->maxLength(255)->required()->columnSpan(2),
+                        Forms\Components\TextInput::make('quantity')->required()->numeric()->default(1)->columnSpan(1),
+                        Forms\Components\TextInput::make('unit_price')->required()->numeric()->columnSpan(1),
                         Forms\Components\Select::make('tax_id')
-                            ->relationship('tax', 'name')
                             ->searchable()
+                            ->getSearchResultsUsing(fn (string $search): array => Tax::where('name', 'like', "%{$search}%")->limit(50)->pluck('name', 'id')->toArray())
+                            ->getOptionLabelUsing(fn ($value): ?string => Tax::find($value)?->name)
                             ->columnSpan(1),
                         Forms\Components\Select::make('income_account_id')
-                            ->relationship('incomeAccount', 'name')
                             ->searchable()
+                            ->getSearchResultsUsing(fn (string $search): array => Account::where('type', 'Income')->where('name', 'like', "%{$search}%")->limit(50)->pluck('name', 'id')->toArray())
+                            ->getOptionLabelUsing(fn ($value): ?string => Account::find($value)?->name)
                             ->required()
-                            ->columnSpan(2)
+                            ->columnSpan(2),
                     ])
-                    ->columns(4)
-                    ->columnSpanFull()
-                    ->afterStateUpdated(function (callable $set, callable $get) {
-                        // Update total_amount when any line changes
-                        $totalDebit = collect($get('invoiceLines'))->sum('debit');
-                        $totalCredit = collect($get('invoiceLines'))->sum('credit');
+                    ->columns(5)
+                    ->columnSpanFull(),
 
-                        // Set the total_amount to the sum of debits (should equal credits in a balanced entry)
-                        $set('../../total_amount', $totalDebit);
-                    })
-                    ->live(onBlur: true),
-                Forms\Components\TextInput::make('total_amount')
-                    ->numeric()
-                    ->readOnly(),
-                Forms\Components\TextInput::make('total_tax')
-                    ->numeric()
-                    ->readOnly(),
-                Forms\Components\DateTimePicker::make('posted_at'),
-                Forms\Components\TextInput::make('reset_to_draft_log'),
+                Forms\Components\TextInput::make('total_amount')->numeric()->readOnly()->prefix(fn (callable $get) => Currency::find($get('currency_id'))?->symbol),
+                Forms\Components\TextInput::make('total_tax')->numeric()->readOnly()->prefix(fn (callable $get) => Currency::find($get('currency_id'))?->symbol),
             ]);
     }
 
