@@ -72,13 +72,14 @@ class CreateJournalEntry extends CreateRecord
             entry_date: $data['entry_date'],
             reference: $data['reference'],
             description: $data['description'],
-            created_by_user_id: $data['created_by_user_id'],
-            is_posted: $data['is_posted'],
+            created_by_user_id: auth()->id(), // It's safer to get the authenticated user here.
+
+            // THE FIX: A new entry from the form should always be a draft.
+            is_posted: false,
+
             lines: $lineDTOs
         );
 
-        $action = new CreateJournalEntryAction();
-
-        return $action->execute($journalEntryDTO);
+        return (new CreateJournalEntryAction())->execute($journalEntryDTO);
     }
 }
