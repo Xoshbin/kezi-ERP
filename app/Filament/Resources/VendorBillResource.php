@@ -2,6 +2,9 @@
 
 namespace App\Filament\Resources;
 
+use App\Models\Account;
+use App\Models\AnalyticAccount;
+use App\Models\Product;
 use Filament\Forms;
 use App\Models\User;
 use Filament\Tables;
@@ -40,8 +43,7 @@ class VendorBillResource extends Resource
                 Forms\Components\Select::make('currency_id')
                     ->relationship('currency', 'name')
                     ->required(),
-                Forms\Components\Select::make('journal_entry_id')
-                    ->relationship('journalEntry', 'id'),
+                // journal_entry_id is system-assigned, so it's removed from the form.
                 Forms\Components\TextInput::make('bill_reference')
                     ->required()
                     ->maxLength(255),
@@ -53,61 +55,93 @@ class VendorBillResource extends Resource
                 Forms\Components\Select::make('status')
                     ->options(VendorBill::getTypes())
                     ->required()
-                    ->default(VendorBill::TYPE_DRAFT),
+                    // The status is now always disabled.
+                    // State changes are handled ONLY by the header actions.
+                    ->disabled()
+                    // Tell Filament to not even try saving this field's value.
+                    ->dehydrated(false),
+
                 Repeater::make('lines')
-                    ->relationship()
                     ->schema([
                         Forms\Components\Select::make('product_id')
-                            ->relationship('product', 'name')
                             ->searchable()
+                            ->getSearchResultsUsing(fn (string $search): array => Product::where('name', 'like', "%{$search}%")->limit(50)->pluck('name', 'id')->toArray())
+                            ->getOptionLabelUsing(fn ($value): ?string => Product::find($value)?->name)
+                            ->reactive()
+                            ->afterStateUpdated(function ($state, callable $set) {
+                                if ($state) {
+                                    $product = Product::find($state);
+                                    if ($product) {
+                                        $set('description', $product->name);
+                                        $set('unit_price', $product->unit_price->getAmount()->toFloat());
+                                        $set('expense_account_id', $product->expense_account_id);
+                                    }
+                                }
+                            })
                             ->columnSpan(2),
-                        Forms\Components\TextInput::make('description')
-                            ->maxLength(255)
-                            ->columnSpanFull(),
-                        Forms\Components\TextInput::make('quantity')
-                            ->required()
-                            ->numeric()
-                            ->columnSpan(1),
-                        Forms\Components\TextInput::make('unit_price')
-                            ->required()
-                            ->numeric()
-                            ->columnSpan(1),
+                        Forms\Components\TextInput::make('description')->maxLength(255)->required()->columnSpan(2),
+                        Forms\Components\TextInput::make('quantity')->required()->numeric()->default(1)->columnSpan(1),
+                        Forms\Components\TextInput::make('unit_price')->required()->numeric()->columnSpan(1),
                         Forms\Components\Select::make('tax_id')
-                            ->relationship('tax', 'name')
                             ->searchable()
+                            ->getSearchResultsUsing(fn (string $search): array => Tax::where('name', 'like', "%{$search}%")->limit(50)->pluck('name', 'id')->toArray())
+                            ->getOptionLabelUsing(fn ($value): ?string => Tax::find($value)?->name)
                             ->columnSpan(1),
                         Forms\Components\Select::make('expense_account_id')
-                            ->relationship('expenseAccount', 'name')
                             ->searchable()
+                            ->getSearchResultsUsing(fn (string $search): array => Account::where('name', 'like', "%{$search}%")->limit(50)->pluck('name', 'id')->toArray())
+                            ->getOptionLabelUsing(fn ($value): ?string => Account::find($value)?->name)
                             ->required()
                             ->columnSpan(2),
                         Forms\Components\Select::make('analytic_account_id')
-                            ->relationship('analyticAccount', 'name')
                             ->searchable()
+                            ->getSearchResultsUsing(fn (string $search): array => AnalyticAccount::where('name', 'like', "%{$search}%")->limit(50)->pluck('name', 'id')->toArray())
+                            ->getOptionLabelUsing(fn ($value): ?string => AnalyticAccount::find($value)?->name)
                             ->columnSpan(2),
                     ])
-                    ->columns(4)
+                    ->columns(5) // Adjusted column count for better layout.
                     ->columnSpanFull()
-                    ->afterStateUpdated(function (callable $set, callable $get) {
-                        // Update total_amount when any line changes
-                        $totalDebit = collect($get('lines'))->sum('debit');
-                        $totalCredit = collect($get('lines'))->sum('credit');
+                    // IMPROVEMENT 2: Correct real-time calculation of totals.
+                    ->afterStateUpdated(function (callable $get, callable $set) {
+                        $lines = $get('lines') ?? [];
+                        $totalAmount = 0;
+                        $totalTax = 0;
 
-                        // Set the total_amount to the sum of debits (should equal credits in a balanced entry)
-                        $set('../../total_amount', $totalDebit);
+                        foreach ($lines as $line) {
+                            $quantity = (float)($line['quantity'] ?? 0);
+                            $unitPrice = (float)($line['unit_price'] ?? 0);
+                            $subtotal = $quantity * $unitPrice;
+
+                            $lineTax = 0;
+                            if (!empty($line['tax_id'])) {
+                                $tax = Tax::find($line['tax_id']);
+                                if ($tax) {
+                                    // Assumes tax rate is stored as a decimal (e.g., 0.10 for 10%).
+                                    $lineTax = $subtotal * $tax->rate;
+                                }
+                            }
+                            $totalTax += $lineTax;
+                            $totalAmount += $subtotal + $lineTax;
+                        }
+                        // Update the read-only total fields at the bottom of the form.
+                        $set('../../total_amount', $totalAmount);
+                        $set('../../total_tax', $totalTax);
                     })
-                    ->live(onBlur: true),
+                    ->live(onBlur: true), // The 'live' is what enables the reactivity.
+
                 Forms\Components\TextInput::make('total_amount')
                     ->numeric()
-                    ->readOnly(),
+                    ->readOnly()
+                    ->prefix(fn (callable $get) => Currency::find($get('currency_id'))?->symbol),
                 Forms\Components\TextInput::make('total_tax')
                     ->numeric()
-                    ->readOnly(),
-                Forms\Components\DateTimePicker::make('posted_at'),
-                Forms\Components\TextInput::make('reset_to_draft_log'),
+                    ->readOnly()
+                    ->prefix(fn (callable $get) => Currency::find($get('currency_id'))?->symbol),
+                // These fields are for system logging and should not be on the form.
+                // Forms\Components\DateTimePicker::make('posted_at'),
+                // Forms\Components\TextInput::make('reset_to_draft_log'),
             ]);
     }
-
     public static function table(Table $table): Table
     {
         return $table
