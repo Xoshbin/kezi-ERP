@@ -8,6 +8,9 @@ use App\Models\LockDate;
 use Filament\Resources\Pages\CreateRecord;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Validation\ValidationException;
+use Illuminate\Support\Facades\DB;
+use App\Models\Currency;
+use Brick\Money\Money;
 
 class CreateJournalEntry extends CreateRecord
 {
@@ -15,7 +18,6 @@ class CreateJournalEntry extends CreateRecord
 
     protected function mutateFormDataBeforeCreate(array $data): array
     {
-        // Replicate period lock check from your service
         $entryDate = \Carbon\Carbon::parse($data['entry_date']);
         $lockDate = LockDate::where('company_id', $data['company_id'])->first();
         if ($lockDate && $entryDate->lte($lockDate->locked_until)) {
@@ -23,9 +25,9 @@ class CreateJournalEntry extends CreateRecord
                 'data.entry_date' => 'The accounting period is locked and cannot be modified.',
             ]);
         }
-
-        // Get lines data from the form state
-        $lines = $this->form->getState()['lines'] ?? [];
+        
+        // The 'lines' data is now reliably in the $data array.
+        $lines = $data['lines'] ?? [];
 
         // Perform balance validation
         $totalDebit = collect($lines)->sum(fn($line) => $line['debit'] ?? 0);
@@ -37,18 +39,58 @@ class CreateJournalEntry extends CreateRecord
             ]);
         }
 
-        // Add calculated totals to the main record's data
         $data['total_debit'] = $totalDebit;
         $data['total_credit'] = $totalCredit;
 
-        // Handle default currency if not provided
         if (empty($data['currency_id']) && !empty($data['company_id'])) {
             $company = Company::find($data['company_id']);
             if ($company) {
                 $data['currency_id'] = $company->currency_id;
             }
         }
-
+        
+        // We no longer unset the lines here. They are passed to the next step.
         return $data;
+    }
+
+    protected function handleRecordCreation(array $data): Model
+    {
+        return DB::transaction(function () use ($data) {
+            // 1. Separate lines data from parent data.
+            $linesData = $data['lines'] ?? [];
+            unset($data['lines']);
+
+            // 2. Create the parent JournalEntry.
+            $journalEntry = static::getModel()::create($data);
+
+            // 3. Manually prepare and create the lines.
+            if (!empty($linesData)) {
+                $currencyId = $data['currency_id'];
+                
+                // --- START OF THE FIX ---
+                // Fetch the currency model to get its string code (e.g., 'IQD')
+                $currency = Currency::find($currencyId);
+                if (!$currency) {
+                    throw new \Exception("Could not find Currency with ID: {$currencyId}");
+                }
+                $currencyCode = $currency->code;
+
+                $linesWithMoneyObjects = array_map(function ($line) use ($currencyId, $currencyCode) {
+                    // Pre-convert the numeric strings into complete Money objects.
+                    $line['debit'] = Money::of($line['debit'] ?? 0, $currencyCode);
+                    $line['credit'] = Money::of($line['credit'] ?? 0, $currencyCode);
+                    
+                    // Also pass the currency_id for the database column.
+                    $line['currency_id'] = $currencyId; 
+                    return $line;
+                }, $linesData);
+
+                // Eloquent will now receive Money objects and the cast will work perfectly.
+                $journalEntry->lines()->createMany($linesWithMoneyObjects);
+                // --- END OF THE FIX ---
+            }
+
+            return $journalEntry;
+        });
     }
 }

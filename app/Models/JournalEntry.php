@@ -13,6 +13,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use RuntimeException; // For explicit exception handling for immutability violations
+use Brick\Money\Money;
+
 
 /**
  * Class JournalEntry
@@ -281,10 +283,19 @@ class JournalEntry extends Model
      */
     public function calculateTotalsFromLines(): void
     {
-        $this->loadMissing('lines');
-        $this->total_debit = $this->lines->sum('debit');
-        $this->total_credit = $this->lines->sum('credit');
-        // Further validation (e.g., ensuring total_debit === total_credit) should occur
-        // in the service layer or a dedicated validation rule [3].
+        $this->loadMissing('lines', 'currency');
+
+        // Define the starting point for our summation: a Money object of zero.
+        $zero = Money::of(0, $this->currency->code);
+
+        // Use the 'reduce' method to correctly sum the Money objects.
+        $this->total_debit = $this->lines->reduce(function (Money $carry, $item) {
+            // The 'plus' method correctly adds one Money object to another.
+            return $carry->plus($item->debit ?? 0);
+        }, $zero);
+
+        $this->total_credit = $this->lines->reduce(function (Money $carry, $item) {
+            return $carry->plus($item->credit ?? 0);
+        }, $zero);
     }
 }

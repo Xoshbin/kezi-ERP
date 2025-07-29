@@ -115,22 +115,46 @@ class JournalEntryService
 
     public function update(JournalEntry $journalEntry, array $data): JournalEntry
     {
-        // 1. First, check if the original entry's date is locked.
-        $this->accountingValidationService->checkIfPeriodIsLocked($journalEntry->company_id, $journalEntry->entry_date);
+        // 1. Run existing validation checks
+        $this->accountingValidationService->checkIfPeriodIsLocked($journalEntry->company_id, $data['entry_date'] ?? $journalEntry->entry_date);
 
-        // Also check on update if the date is being changed.
-        if (isset($data['entry_date'])) {
-            $this->accountingValidationService->checkIfPeriodIsLocked($journalEntry->company_id, $data['entry_date']);
-        }
-
-        // This is the guard clause. It protects posted entries.
         if ($journalEntry->is_posted) {
             throw new UpdateNotAllowedException('Cannot modify a posted journal entry.');
         }
 
-        // If the guard clause passes, proceed with the update.
-        $journalEntry->update($data);
-        return $journalEntry;
+        // 2. Perform the update within a database transaction
+        return DB::transaction(function () use ($journalEntry, $data) {
+            // Separate the lines data from the parent data
+            $linesData = $data['lines'] ?? [];
+            unset($data['lines']);
+
+            // Update the main fields of the parent JournalEntry
+            $journalEntry->update($data);
+
+            // Sync the lines: delete the old ones first
+            $journalEntry->lines()->delete();
+
+            // Create the new lines from the form data
+            if (!empty($linesData)) {
+                $currency = $journalEntry->currency;
+                $currencyCode = $currency->code;
+                
+                $linesToCreate = array_map(function ($line) use ($currency, $currencyCode) {
+                    $line['debit'] = Money::of($line['debit'] ?? 0, $currencyCode);
+                    $line['credit'] = Money::of($line['credit'] ?? 0, $currencyCode);
+                    $line['currency_id'] = $currency->id;
+                    return $line;
+                }, $linesData);
+
+                $journalEntry->lines()->createMany($linesToCreate);
+            }
+            
+            // Recalculate totals from the new lines and save
+            $journalEntry->calculateTotalsFromLines();
+            $journalEntry->save();
+
+            return $journalEntry;
+        });
     }
 
     /**
