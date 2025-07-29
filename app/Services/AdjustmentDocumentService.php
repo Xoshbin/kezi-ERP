@@ -2,17 +2,17 @@
 
 namespace App\Services;
 
+use App\Actions\Accounting\CreateJournalEntryForAdjustmentAction; // 1. Import the new action
 use App\Events\AdjustmentDocumentPosted;
 use App\Exceptions\UpdateNotAllowedException;
 use App\Models\AdjustmentDocument;
-use App\Models\JournalEntry;
 use App\Models\User;
-use Brick\Money\Money; // Import the Money class
 use Illuminate\Support\Facades\DB;
 
 class AdjustmentDocumentService
 {
-    public function __construct(protected JournalEntryService $journalEntryService)
+    // 2. The JournalEntryService dependency is no longer needed.
+    public function __construct()
     {
     }
 
@@ -22,13 +22,15 @@ class AdjustmentDocumentService
     public function post(AdjustmentDocument $creditNote, User $user): void
     {
         DB::transaction(function () use ($creditNote, $user) {
-            // 1. Update the credit note's status and save it immediately.
+            // Update the credit note's status and save it.
             $creditNote->status = AdjustmentDocument::STATUS_POSTED;
             $creditNote->posted_at = now();
             $creditNote->save();
 
-            // 2. Create the reversing journal entry and post it immediately.
-            $journalEntry = $this->createJournalEntryForCreditNote($creditNote, $user);
+            // 3. Create and execute our new, dedicated action.
+            $journalEntry = (new CreateJournalEntryForAdjustmentAction())->execute($creditNote, $user);
+
+            // Link the created journal entry back to the document.
             $creditNote->journal_entry_id = $journalEntry->id;
             $creditNote->save();
 
@@ -36,57 +38,8 @@ class AdjustmentDocumentService
         });
     }
 
-    /**
-     * Creates the reversing journal entry for a posted credit note.
-     */
-    private function createJournalEntryForCreditNote(AdjustmentDocument $creditNote, User $user): JournalEntry
-    {
-        // Get the default accounts from the credit note's company.
-        $company = $creditNote->company;
-        $arAccountId = $company->default_accounts_receivable_id;
-        $salesDiscountAccountId = $company->default_sales_discount_account_id;
-        $taxAccountId = $company->default_tax_account_id;
-        $salesJournalId = $company->default_sales_journal_id;
-        $currencyCode = $creditNote->currency->code;
-
-        if (!$arAccountId || !$salesDiscountAccountId || !$taxAccountId || !$salesJournalId) {
-            throw new \RuntimeException('Default accounting accounts for adjustments are not configured for this company.');
-        }
-
-        // A sales credit note creates a REVERSE entry of the original sale.
-        $lines = [];
-        // MODIFIED: Use the minus() method for Money objects
-        $subtotal = $creditNote->total_amount->minus($creditNote->total_tax);
-
-        // 1. Debit the Sales Discount/Contra-Revenue account.
-        // MODIFIED: Ensure credit is a Money object
-        $lines[] = ['account_id' => $salesDiscountAccountId, 'debit' => $subtotal, 'credit' => Money::of(0, $currencyCode)];
-
-        // 2. Debit Tax Payable to reduce it, only if there is tax.
-        // MODIFIED: Use isPositive() method for comparison
-        if ($creditNote->total_tax->isPositive()) {
-            // MODIFIED: Ensure credit is a Money object
-            $lines[] = ['account_id' => $taxAccountId, 'debit' => $creditNote->total_tax, 'credit' => Money::of(0, $currencyCode)];
-        }
-
-        // 3. Credit Accounts Receivable to reduce the customer's debt.
-        // MODIFIED: Ensure debit is a Money object
-        $lines[] = ['account_id' => $arAccountId, 'credit' => $creditNote->total_amount, 'debit' => Money::of(0, $currencyCode)];
-
-        $journalEntryData = [
-            'company_id' => $creditNote->company_id,
-            'journal_id' => $salesJournalId,
-            'entry_date' => $creditNote->posted_at,
-            'reference' => 'CN-' . $creditNote->reference_number,
-            'description' => 'Credit Note ' . $creditNote->reference_number,
-            'source_type' => AdjustmentDocument::class,
-            'source_id' => $creditNote->id,
-            'created_by_user_id' => $user->id,
-            'lines' => $lines,
-        ];
-
-        return $this->journalEntryService->create($journalEntryData, true);
-    }
+    // 4. This entire private method is now obsolete and can be removed.
+    // private function createJournalEntryForCreditNote(...) {}
 
     public function update(AdjustmentDocument $creditNote, array $data): bool
     {
