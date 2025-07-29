@@ -17,6 +17,7 @@ use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
 use App\Actions\Accounting\CreateJournalEntryForInvoiceAction;
+use App\Models\AuditLog; // Add this import
 
 class InvoiceService
 {
@@ -77,8 +78,23 @@ class InvoiceService
         Gate::forUser($user)->authorize('resetToDraft', $invoice);
 
         DB::transaction(function () use ($invoice, $user, $reason) {
-            // THE FIX: Call delete() on the relationship builder `journalEntry()`
-            // This issues a direct query and bypasses the model observer.
+            // Manually create a specific audit log for this action.
+            AuditLog::create([
+                'user_id' => $user->id,
+                'event_type' => 'reset_to_draft',
+                'auditable_type' => get_class($invoice),
+                'auditable_id' => $invoice->id,
+                'old_values' => [
+                    'status' => $invoice->status,
+                    'journal_entry_id' => $invoice->journal_entry_id,
+                ],
+                'new_values' => [
+                    'status' => Invoice::TYPE_DRAFT,
+                    'reason' => $reason,
+                ],
+                'ip_address' => request()->ip(),
+            ]);
+
             $invoice->journalEntry()->delete();
 
             $newLog = [
