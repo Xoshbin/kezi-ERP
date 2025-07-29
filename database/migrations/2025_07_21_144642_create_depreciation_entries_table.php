@@ -18,7 +18,7 @@ return new class extends Migration
             $table->foreignId('currency_id')->constrained('currencies');
             $table->date('depreciation_date');
             $table->unsignedBigInteger('amount');
-            $table->string('status')->default('Draft'); // 'Draft', 'Posted'
+            $table->string('status')->default('draft'); // 'draft', 'posted'
             $table->timestamps();
         });
     }
