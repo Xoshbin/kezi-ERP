@@ -15,7 +15,7 @@ use Illuminate\Support\Carbon;
  * Class Invoice
  *
  * @package App\Models
- * 
+ *
  * This Eloquent model represents a customer invoice in the accounting system.
  * It is a foundational document for recording sales transactions and receivables.
  * Key accounting principles, such as immutability post-posting and a clear

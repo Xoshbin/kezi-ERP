@@ -88,3 +88,9 @@ This file tracks the project's progress using a task list format.
 - Resolved all `UniqueConstraintViolationException` and `BadMethodCallException` errors in the test suite.
 - Corrected the test setup to provide a fully configured company for each test.
 - The `AccountingWorkflowTest` is still failing with an `ErrorException`. The next step is to investigate the `PaymentService` to identify the root cause of this error.
+[2025-07-29 16:05:25] - **Task:** Debug and fix failing `CreateJournalEntryForVendorBillActionTest`.
+**Status:** Completed.
+**Summary:**
+- Diagnosed a critical bug where the `Tax` model's `rate` attribute was incorrectly cast to an `integer`, causing tax calculations to fail.
+- Corrected the cast to `float` in the `Tax` model and updated the corresponding test to use a numeric value for the rate.
+- The test now passes, and the vendor bill accounting workflow is fully functional.

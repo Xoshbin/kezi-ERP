@@ -72,7 +72,7 @@ class Tax extends Model
      * @var array<string, string>
      */
     protected $casts = [
-        'rate' => MoneyCast::class, // Crucial for monetary precision in tax calculations [1]
+        'rate' => 'float', // Crucial for monetary precision in tax calculations [1]
         'is_active' => 'boolean', // Ensures boolean behavior for the active status [1]
         'created_at' => 'datetime', // Laravel automatically casts these, but explicit declaration is good practice.
         'updated_at' => 'datetime',
@@ -123,7 +123,12 @@ class Tax extends Model
      */
     public function getRatePercentageAttribute(): float
     {
-        return (float) $this->rate * 100;
+        return (float) $this->rate * 100; // 1500 → 15.00%
+    }
+
+    public function getRateFractionAttribute()
+    {
+        return $this->rate / 100; // 1500 → 15.00%
     }
 
     /**

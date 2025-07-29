@@ -23,7 +23,7 @@ class VendorBillLineObserver
 
         // If a tax relationship exists on the line, calculate the tax.
         if ($vendorBillLine->tax) {
-            // Assuming the 'rate' on your Tax model is a decimal (e.g., 0.05 for 5%).
+            // Assuming the 'rate' on your Tax model is a Money object.
             $taxAmount = $subtotal->multipliedBy($vendorBillLine->tax->rate);
         }
 
@@ -31,11 +31,13 @@ class VendorBillLineObserver
     }
 
     /**
-     * Handle the VendorBillLine "created" event.
+     * Handle the "saved" event for the VendorBillLine.
+     * This event fires on both creation and update.
      */
     public function created(VendorBillLine $vendorBillLine): void
     {
-        //
+        $vendorBillLine->vendorBill->calculateTotalsFromLines();
+        $vendorBillLine->vendorBill->saveQuietly();
     }
 
     /**
@@ -43,15 +45,17 @@ class VendorBillLineObserver
      */
     public function updated(VendorBillLine $vendorBillLine): void
     {
-        //
+        $vendorBillLine->vendorBill->calculateTotalsFromLines();
+        $vendorBillLine->vendorBill->saveQuietly();
     }
 
     /**
-     * Handle the VendorBillLine "deleted" event.
+     * Handle the "deleted" event for the VendorBillLine.
      */
     public function deleted(VendorBillLine $vendorBillLine): void
     {
-        //
+        $vendorBillLine->vendorBill->calculateTotalsFromLines();
+        $vendorBillLine->vendorBill->saveQuietly();
     }
 
     /**

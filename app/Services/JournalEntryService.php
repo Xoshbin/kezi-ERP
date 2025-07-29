@@ -45,10 +45,10 @@ class JournalEntryService
         $totalCredit = Money::of(0, $currencyCode);
 
         foreach ($data['lines'] as $line) {
-            if (isset($line['debit']) && $line['debit'] instanceof Money) {
+            if (isset($line['debit'])) {
                 $totalDebit = $totalDebit->plus($line['debit']);
             }
-            if (isset($line['credit']) && $line['credit'] instanceof Money) {
+            if (isset($line['credit'])) {
                 $totalCredit = $totalCredit->plus($line['credit']);
             }
         }
@@ -63,13 +63,12 @@ class JournalEntryService
         }
 
         // 3. Create within a Transaction
-        return DB::transaction(function () use ($data, $totalDebit,  $totalCredit, $postImmediately) {
-            // This is your excellent fix:
+        return DB::transaction(function () use ($data, $postImmediately, $totalDebit, $totalCredit) {
             $journalEntry = JournalEntry::create(
                 collect($data)->except('lines')->all() + [
+                    'is_posted' => $postImmediately,
                     'total_debit' => $totalDebit,
                     'total_credit' => $totalCredit,
-                    'is_posted' => $postImmediately, // <-- Set is_posted
                 ]
             );
 
@@ -77,6 +76,8 @@ class JournalEntryService
                 $journalEntry->lines()->create($lineData);
             }
 
+            // The totals are now set correctly on creation.
+            // We can return the entry directly.
             return $journalEntry;
         });
     }
@@ -111,50 +112,6 @@ class JournalEntryService
         $journalEntry->is_posted = true;
 
         return $journalEntry->save();
-    }
-
-    public function update(JournalEntry $journalEntry, array $data): JournalEntry
-    {
-        // 1. Run existing validation checks
-        $this->accountingValidationService->checkIfPeriodIsLocked($journalEntry->company_id, $data['entry_date'] ?? $journalEntry->entry_date);
-
-        if ($journalEntry->is_posted) {
-            throw new UpdateNotAllowedException('Cannot modify a posted journal entry.');
-        }
-
-        // 2. Perform the update within a database transaction
-        return DB::transaction(function () use ($journalEntry, $data) {
-            // Separate the lines data from the parent data
-            $linesData = $data['lines'] ?? [];
-            unset($data['lines']);
-
-            // Update the main fields of the parent JournalEntry
-            $journalEntry->update($data);
-
-            // Sync the lines: delete the old ones first
-            $journalEntry->lines()->delete();
-
-            // Create the new lines from the form data
-            if (!empty($linesData)) {
-                $currency = $journalEntry->currency;
-                $currencyCode = $currency->code;
-                
-                $linesToCreate = array_map(function ($line) use ($currency, $currencyCode) {
-                    $line['debit'] = Money::of($line['debit'] ?? 0, $currencyCode);
-                    $line['credit'] = Money::of($line['credit'] ?? 0, $currencyCode);
-                    $line['currency_id'] = $currency->id;
-                    return $line;
-                }, $linesData);
-
-                $journalEntry->lines()->createMany($linesToCreate);
-            }
-            
-            // Recalculate totals from the new lines and save
-            $journalEntry->calculateTotalsFromLines();
-            $journalEntry->save();
-
-            return $journalEntry;
-        });
     }
 
     /**

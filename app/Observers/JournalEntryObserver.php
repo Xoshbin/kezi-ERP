@@ -7,6 +7,7 @@ use App\Models\JournalEntry;
 
 class JournalEntryObserver
 {
+
     /**
      * Handle the JournalEntry "created" event.
      */

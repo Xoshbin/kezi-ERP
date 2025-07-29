@@ -1,0 +1,85 @@
+<?php
+
+use App\Actions\Accounting\UpdateJournalEntryAction;
+use App\DataTransferObjects\Accounting\UpdateJournalEntryDTO;
+use App\DataTransferObjects\Accounting\UpdateJournalEntryLineDTO;
+use App\Models\Account;
+use App\Models\Company;
+use App\Models\Journal;
+use App\Models\JournalEntry;
+use Brick\Money\Money;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\Traits\CreatesApplication;
+
+uses(RefreshDatabase::class, CreatesApplication::class);
+
+test('it updates a journal entry and syncs its lines from a DTO', function () {
+    // 1. Arrange: Create an initial journal entry
+    $company = $this->createConfiguredCompany();
+    $currencyCode = $company->currency->code;
+    $journalEntry = JournalEntry::factory()->for($company)->create([
+        'reference' => 'Original Reference',
+        'is_posted' => false,
+    ]);
+    $accountA = Account::factory()->for($company)->create();
+    $accountB = Account::factory()->for($company)->create();
+
+    // Add an initial line that we expect to be removed
+    $journalEntry->lines()->create([
+        'account_id' => $accountA->id,
+        'debit' => Money::of(100, $currencyCode),
+        'credit' => Money::of(0, $currencyCode),
+        'currency_id' => $company->currency_id,
+    ]);
+
+    // 2. Prepare the DTO with the updated data
+    $updateDTO = new UpdateJournalEntryDTO(
+        journalEntry: $journalEntry,
+        journal_id: $journalEntry->journal_id,
+        currency_id: $journalEntry->currency_id,
+        entry_date: now()->addDay()->toDateString(), // New date
+        reference: 'Updated Reference', // New reference
+        description: 'Updated Description',
+        is_posted: false,
+        lines: [
+            new UpdateJournalEntryLineDTO( // A new set of lines
+                account_id: $accountB->id,
+                debit: '250.00',
+                credit: '0.00',
+                description: 'New Line 1',
+                partner_id: null,
+                analytic_account_id: null,
+            ),
+            new UpdateJournalEntryLineDTO(
+                account_id: $accountA->id,
+                debit: '0.00',
+                credit: '250.00',
+                description: 'New Line 2',
+                partner_id: null,
+                analytic_account_id: null,
+            ),
+        ]
+    );
+
+    // 3. Act
+    $action = new UpdateJournalEntryAction();
+    $updatedJournalEntry = $action->execute($updateDTO);
+
+    // 4. Assert
+    $this->assertDatabaseHas('journal_entries', [
+        'id' => $journalEntry->id,
+        'reference' => 'Updated Reference',
+        'description' => 'Updated Description',
+    ]);
+
+    // Assert the old line is gone and the new lines exist
+    $this->assertDatabaseCount('journal_entry_lines', 2);
+    $this->assertDatabaseHas('journal_entry_lines', [
+        'journal_entry_id' => $journalEntry->id,
+        'account_id' => $accountB->id,
+        'debit' => 250000,
+    ]);
+
+    $expectedTotal = Money::of('250.00', $currencyCode);
+    expect($updatedJournalEntry->total_debit->isEqualTo($expectedTotal))->toBeTrue();
+});
