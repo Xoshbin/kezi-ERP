@@ -78,20 +78,19 @@ test('confirming a vendor bill generates the correct journal entry', function ()
     // Arrange: Create a draft vendor bill with one line item.
     $vendorBill = VendorBill::factory()->for($this->company)->create([
         'status' => 'draft',
-        'total_amount' => Money::of(0, $currencyCode),
-        'total_tax' => Money::of(0, $currencyCode),
     ]);
-    // MODIFIED: Explicitly set the subtotal and tax to ensure the test has the correct data,
-    // bypassing any potentially incorrect observer logic.
+
+    // Create the line without manually setting subtotal or tax. Let the observer handle it.
     $vendorBill->lines()->create([
         'product_id' => $product->id,
         'description' => 'Test Product',
         'quantity' => 3,
         'unit_price' => Money::of(50, $currencyCode),
         'expense_account_id' => $expenseAccount->id,
-        'subtotal' => Money::of(150, $currencyCode),
-        'total_line_tax' => Money::of(0, $currencyCode),
     ]);
+
+    // **THE FIX:** Refresh the model instance from the database to get the updated totals.
+    $vendorBill->refresh();
 
     // Act: Confirm the vendor bill.
     (app(VendorBillService::class))->confirm($vendorBill, $this->user);

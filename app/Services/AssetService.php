@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Actions\Accounting\CreateJournalEntryForDepreciationAction;
 use App\Models\Asset;
 use App\Models\DepreciationEntry;
 use App\Models\JournalEntry;

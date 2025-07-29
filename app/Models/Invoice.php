@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Casts\MoneyCast;
 use App\Observers\AuditLogObserver;
+use Brick\Money\Money;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -255,5 +256,26 @@ class Invoice extends Model
     public function getFullReferenceAttribute(): string
     {
         return $this->invoice_number . ' - ' . $this->invoice_date->format('Y-m-d');
+    }
+
+    public function calculateTotalsFromLines(): void
+    {
+        $this->loadMissing('invoiceLines.tax', 'currency');
+
+        $currencyCode = $this->currency->code;
+        $zero = Money::of(0, $currencyCode);
+
+        $totalTax = $this->invoiceLines->reduce(
+            fn (Money $carry, InvoiceLine $line) => $carry->plus($line->total_line_tax ?? $zero),
+            $zero
+        );
+
+        $subtotal = $this->invoiceLines->reduce(
+            fn (Money $carry, InvoiceLine $line) => $carry->plus($line->subtotal ?? $zero),
+            $zero
+        );
+
+        $this->total_tax = $totalTax;
+        $this->total_amount = $subtotal->plus($totalTax);
     }
 }
