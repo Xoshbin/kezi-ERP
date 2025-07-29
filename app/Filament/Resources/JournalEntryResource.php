@@ -86,7 +86,8 @@ class JournalEntryResource extends Resource
                     ->columns(4)
                     ->columnSpanFull(),
                 Forms\Components\Toggle::make('is_posted')
-                    ->required(),
+                    ->disabled()
+                    ->dehydrated(false),
                 Forms\Components\TextInput::make('hash')
                     ->maxLength(64),
                 Forms\Components\TextInput::make('previous_hash')
