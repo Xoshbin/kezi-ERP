@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Invoice;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 
@@ -22,7 +23,7 @@ class DatabaseSeeder extends Seeder
                 JournalSeeder::class,
                 UpdateCompanyDefaultsSeeder::class,
                 UserSeeder::class,
-                // JournalEntrySeeder::class,
+                JournalEntrySeeder::class,
 
                 // 3. Operational data
                 // Basic data for transactions (customers, vendors, products).
@@ -51,7 +52,8 @@ class DatabaseSeeder extends Seeder
 
                 // 7. Financial documents
                 // The primary transactional records.
-                // VendorBillSeeder::clas
+                 VendorBillSeeder::class,
+                 InvoiceSeeder::class,
                 // InvoiceLineSeeder::class, // Removed as logic is now in InvoiceSeeder
                 // PaymentSeeder::class,
                 // PaymentDocumentLinkSeeder::class,
