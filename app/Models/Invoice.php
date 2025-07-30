@@ -124,19 +124,19 @@ class Invoice extends Model
         'posted_at' => 'datetime',
     ];
 
-    public const TYPE_DRAFT = 'draft';
-    public const TYPE_POSTED = 'posted';
-    public const TYPE_PAID = 'paid';
-    public const TYPE_CANCELLED = 'cancelled';
+    public const STATUS_DRAFT = 'draft';
+    public const STATUS_POSTED = 'posted';
+    public const STATUS_PAID = 'paid';
+    public const STATUS_CANCELLED = 'cancelled';
 
     // use it in Filament select options columns
-    public static function getTypes(): array
+    public static function getStatuses(): array
     {
         return [
-            self::TYPE_DRAFT => 'Draft',
-            self::TYPE_POSTED => 'Posted',
-            self::TYPE_PAID => 'Paid',
-            self::TYPE_CANCELLED => 'Cancelled',
+            self::STATUS_DRAFT => 'Draft',
+            self::STATUS_POSTED => 'Posted',
+            self::STATUS_PAID => 'Paid',
+            self::STATUS_CANCELLED => 'Cancelled',
         ];
     }
 

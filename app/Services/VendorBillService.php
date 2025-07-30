@@ -37,7 +37,7 @@ class VendorBillService
      */
     public function confirm(VendorBill $vendorBill, User $user): void
     {
-        if ($vendorBill->status !== VendorBill::TYPE_DRAFT) {
+        if ($vendorBill->status !== VendorBill::STATUS_DRAFT) {
             return; // Or throw an exception
         }
 
@@ -58,7 +58,7 @@ class VendorBillService
 
         $this->accountingValidationService->checkIfPeriodIsLocked($vendorBill->company_id, $vendorBill->bill_date);
 
-        if ($vendorBill->status !== VendorBill::TYPE_DRAFT) {
+        if ($vendorBill->status !== VendorBill::STATUS_DRAFT) {
             throw new DeletionNotAllowedException(
                 'Cannot delete a posted vendor bill. Corrections must be made with a new reversal entry.'
             );
@@ -88,7 +88,7 @@ class VendorBillService
                     'journal_entry_id' => $vendorBill->journal_entry_id,
                 ],
                 'new_values' => [
-                    'status' => VendorBill::TYPE_DRAFT,
+                    'status' => VendorBill::STATUS_DRAFT,
                     'reason' => $reason,
                 ],
                 'ip_address' => request()->ip(),
@@ -104,7 +104,7 @@ class VendorBillService
             $logs = $vendorBill->reset_to_draft_log ?: [];
             array_unshift($logs, $newLog);
 
-            $vendorBill->status = VendorBill::TYPE_DRAFT;
+            $vendorBill->status = VendorBill::STATUS_DRAFT;
             $vendorBill->journal_entry_id = null;
             $vendorBill->posted_at = null;
             $vendorBill->reset_to_draft_log = $logs;
@@ -115,7 +115,7 @@ class VendorBillService
 
     private function _confirmAndPostBill(VendorBill $vendorBill, User $user): void
     {
-        $vendorBill->status = VendorBill::TYPE_POSTED;
+        $vendorBill->status = VendorBill::STATUS_POSTED;
         $vendorBill->posted_at = now();
 
         $journalEntry = (new CreateJournalEntryForVendorBillAction())->execute($vendorBill, $user);

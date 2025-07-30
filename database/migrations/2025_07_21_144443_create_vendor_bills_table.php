@@ -22,7 +22,7 @@ return new class extends Migration
             $table->date('bill_date');
             $table->date('accounting_date');
             $table->date('due_date')->nullable();
-            $table->string('status')->default(VendorBill::TYPE_DRAFT)->index(); // 'draft', 'posted', 'paid'
+            $table->string('status')->default(VendorBill::STATUS_DRAFT)->index(); // 'draft', 'posted', 'paid'
             $table->unsignedBigInteger('total_amount');
             $table->unsignedBigInteger('total_tax');
             $table->timestamp('posted_at')->nullable();
