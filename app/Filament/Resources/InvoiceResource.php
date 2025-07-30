@@ -40,7 +40,7 @@ class InvoiceResource extends Resource
                 Forms\Components\DatePicker::make('due_date')->label(__('invoice.due_date'))->required(),
                 Forms\Components\Select::make('status')
                     ->label(__('invoice.status'))
-                    ->options(Invoice::getTypes())
+                    ->options(Invoice::getStatuses())
                     ->disabled()
                     ->dehydrated(false),
 
@@ -174,7 +174,7 @@ class InvoiceResource extends Resource
                         }
                     })
                     ->requiresConfirmation()
-                    ->visible(fn(Invoice $record) => $record->status === Invoice::TYPE_DRAFT),
+                    ->visible(fn(Invoice $record) => $record->status === Invoice::STATUS_DRAFT),
                 Action::make('resetToDraft')
                     ->label(__('invoice.reset_to_draft'))
                     ->action(function (Invoice $record, array $data) {

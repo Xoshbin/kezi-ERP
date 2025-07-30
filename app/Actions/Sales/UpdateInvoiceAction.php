@@ -15,7 +15,7 @@ class UpdateInvoiceAction
     {
         $invoice = $dto->invoice;
 
-        if ($invoice->status !== Invoice::TYPE_DRAFT) {
+        if ($invoice->status !== Invoice::STATUS_DRAFT) {
             throw new UpdateNotAllowedException('Cannot modify a non-draft invoice.');
         }
 

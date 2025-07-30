@@ -25,7 +25,7 @@ class EditInvoice extends EditRecord
                 ->label(__('invoice.confirm_invoice'))
                 ->color('success')
                 ->requiresConfirmation()
-                ->visible(fn (Invoice $record): bool => $record->status === Invoice::TYPE_DRAFT)
+                ->visible(fn (Invoice $record): bool => $record->status === Invoice::STATUS_DRAFT)
                 ->action(function (Invoice $record): void {
                     $this->save();
                     $service = app(InvoiceService::class);
@@ -40,7 +40,7 @@ class EditInvoice extends EditRecord
             Actions\Action::make('registerPayment')
                 ->label(__('invoice.register_payment'))
                 ->color('info')
-                ->visible(fn (Invoice $record): bool => $record->status === Invoice::TYPE_POSTED)
+                ->visible(fn (Invoice $record): bool => $record->status === Invoice::STATUS_POSTED)
                 ->action(fn (Invoice $record) => redirect()->to(PaymentResource::getUrl('create', [
                     'invoice_id' => $record->id,
                     'amount' => $record->total_amount->getAmount()->toFloat(),
@@ -52,7 +52,7 @@ class EditInvoice extends EditRecord
                 ->label(__('invoice.reset_to_draft'))
                 ->color('warning')
                 ->requiresConfirmation()
-                ->visible(fn (Invoice $record): bool => $record->status === Invoice::TYPE_POSTED)
+                ->visible(fn (Invoice $record): bool => $record->status === Invoice::STATUS_POSTED)
                 ->form([
                     \Filament\Forms\Components\Textarea::make('reason')->label(__('invoice.reason'))->required(),
                 ])

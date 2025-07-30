@@ -26,7 +26,7 @@ class EditVendorBill extends EditRecord
                 ->label(__('vendor_bill.confirm_bill'))
                 ->color('success')
                 ->requiresConfirmation()
-                ->visible(fn (VendorBill $record): bool => $record->status === VendorBill::TYPE_DRAFT)
+                ->visible(fn (VendorBill $record): bool => $record->status === VendorBill::STATUS_DRAFT)
                 ->action(function (VendorBill $record): void {
                     $this->save();
 
@@ -43,7 +43,7 @@ class EditVendorBill extends EditRecord
                 ->label(__('vendor_bill.reset_to_draft'))
                 ->color('warning')
                 ->requiresConfirmation()
-                ->visible(fn (VendorBill $record): bool => $record->status === VendorBill::TYPE_POSTED)
+                ->visible(fn (VendorBill $record): bool => $record->status === VendorBill::STATUS_POSTED)
                 ->form([
                     Forms\Components\Textarea::make('reason')->label(__('vendor_bill.reason'))->required(),
                 ])

@@ -45,7 +45,7 @@ class InvoiceSeeder extends Seeder
                 'total_tax' => 0,
                 'due_date' => $dueDate,
                 'total_amount' => 5000000,
-                'status' => Invoice::TYPE_DRAFT, // Set to posted as per story
+                'status' => Invoice::STATUS_DRAFT, // Set to posted as per story
             ]
         );
 

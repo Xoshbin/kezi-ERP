@@ -60,7 +60,7 @@ class VendorBillResource extends Resource
                     ->label(__('vendor_bill.due_date')),
                 Forms\Components\Select::make('status')
                     ->label(__('vendor_bill.status'))
-                    ->options(VendorBill::getTypes())
+                    ->options(VendorBill::getStatuses())
                     ->disabled()
                     ->dehydrated(false),
 
@@ -209,7 +209,7 @@ class VendorBillResource extends Resource
                         }
                     })
                     ->requiresConfirmation()
-                    ->visible(fn(VendorBill $record) => $record->status === VendorBill::TYPE_DRAFT),
+                    ->visible(fn(VendorBill $record) => $record->status === VendorBill::STATUS_DRAFT),
                 Action::make('resetToDraft')
                     ->label(__('vendor_bill.reset_to_draft'))
                     ->action(function (VendorBill $record, array $data) {

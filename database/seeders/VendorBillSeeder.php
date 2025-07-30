@@ -33,7 +33,7 @@ class VendorBillSeeder extends Seeder
             'bill_date' => Carbon::today(),
             'accounting_date' => Carbon::today(),
             'due_date' => Carbon::today()->addDays(30),
-            'status' => VendorBill::TYPE_DRAFT,
+            'status' => VendorBill::STATUS_DRAFT,
             'currency_id' => $company->currency_id,
             'total_amount' => Money::of(3000000, 'IQD'),
             'total_tax' => 0,

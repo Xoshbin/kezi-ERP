@@ -22,7 +22,7 @@ class UpdateVendorBillAction
 
         $this->accountingValidationService->checkIfPeriodIsLocked($vendorBill->company_id, $dto->bill_date);
 
-        if ($vendorBill->status !== VendorBill::TYPE_DRAFT) {
+        if ($vendorBill->status !== VendorBill::STATUS_DRAFT) {
             throw new UpdateNotAllowedException('Cannot update a posted vendor bill.');
         }
 

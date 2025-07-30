@@ -27,8 +27,8 @@ class InvoiceService
 
     public function delete(Invoice $invoice): bool
     {
-        // Guard Clause: Only allow deleting if the status is Invoice::TYPE_DRAFT.
-        if ($invoice->status !== Invoice::TYPE_DRAFT) {
+        // Guard Clause: Only allow deleting if the status is Invoice::STATUS_DRAFT.
+        if ($invoice->status !== Invoice::STATUS_DRAFT) {
             throw new DeletionNotAllowedException('Cannot delete a posted invoice.');
         }
 
@@ -39,7 +39,7 @@ class InvoiceService
     public function confirm(Invoice $invoice, User $user): void
     {
         // Guard clause to prevent re-confirming.
-        if ($invoice->status !== Invoice::TYPE_DRAFT) {
+        if ($invoice->status !== Invoice::STATUS_DRAFT) {
             // Or throw a custom exception
             return;
         }
@@ -50,7 +50,7 @@ class InvoiceService
 
         DB::transaction(function () use ($invoice, $user) {
             $invoice->invoice_number = $this->getNextInvoiceNumber($invoice->company);
-            $invoice->status = Invoice::TYPE_POSTED;
+            $invoice->status = Invoice::STATUS_POSTED;
             $invoice->posted_at = now();
 
             $journalEntry = (new CreateJournalEntryForInvoiceAction())->execute($invoice, $user);
@@ -89,7 +89,7 @@ class InvoiceService
                     'journal_entry_id' => $invoice->journal_entry_id,
                 ],
                 'new_values' => [
-                    'status' => Invoice::TYPE_DRAFT,
+                    'status' => Invoice::STATUS_DRAFT,
                     'reason' => $reason,
                 ],
                 'ip_address' => request()->ip(),
@@ -106,7 +106,7 @@ class InvoiceService
             array_unshift($logs, $newLog);
 
             $invoice->update([
-                'status' => Invoice::TYPE_DRAFT,
+                'status' => Invoice::STATUS_DRAFT,
                 'journal_entry_id' => null,
                 'posted_at' => null,
                 'invoice_number' => null,
