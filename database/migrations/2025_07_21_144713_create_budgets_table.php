@@ -17,8 +17,8 @@ return new class extends Migration
             $table->string('name');
             $table->date('period_start_date');
             $table->date('period_end_date');
-            $table->string('budget_type'); // 'Analytic', 'Financial'
-            $table->string('status')->default('Draft');
+            $table->string('budget_type'); // 'analytic', 'financial'
+            $table->string('status')->default('draft'); // 'draft', 'finalized'
             $table->timestamps();
         });
     }

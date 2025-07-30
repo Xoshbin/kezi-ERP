@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('company_id')->constrained('companies');
             $table->string('name');
-            $table->string('type'); // e.g., 'Sale', 'Purchase', 'Bank', 'Cash', 'Miscellaneous'
+            $table->string('type'); // e.g., 'sale', 'purchase', 'bank', 'cash', 'miscellaneous'
             $table->string('short_code');
             $table->foreignId('currency_id')->nullable()->constrained('currencies');
             $table->foreignId('default_debit_account_id')->nullable()->constrained('accounts');

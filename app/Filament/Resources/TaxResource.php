@@ -19,26 +19,51 @@ class TaxResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
+    public static function getLabel(): string
+    {
+        return __('tax.label');
+    }
+
+    public static function getPluralLabel(): string
+    {
+        return __('tax.plural_label');
+    }
+
+    public static function getNavigationLabel(): string
+    {
+        return __('tax.plural_label');
+    }
+
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('company_id')
-                    ->required()
-                    ->numeric(),
-                Forms\Components\TextInput::make('tax_account_id')
-                    ->required()
-                    ->numeric(),
+                Forms\Components\Select::make('company_id')
+                    ->relationship('company', 'name')
+                    ->label(__('tax.company'))
+                    ->required(),
+                Forms\Components\Select::make('tax_account_id')
+                    ->relationship('taxAccount', 'name')
+                    ->label(__('tax.tax_account'))
+                    ->required(),
                 Forms\Components\TextInput::make('name')
+                    ->label(__('tax.name'))
                     ->required()
                     ->maxLength(255),
                 Forms\Components\TextInput::make('rate')
+                    ->label(__('tax.rate'))
                     ->required()
                     ->numeric(),
-                Forms\Components\TextInput::make('type')
-                    ->required()
-                    ->maxLength(255),
+                Forms\Components\Select::make('type')
+                    ->label(__('tax.type'))
+                    ->options([
+                        'sales' => __('tax.types.sales'),
+                        'purchases' => __('tax.types.purchases'),
+                        'none' => __('tax.types.none'),
+                    ])
+                    ->required(),
                 Forms\Components\Toggle::make('is_active')
+                    ->label(__('tax.is_active'))
                     ->required(),
             ]);
     }
@@ -47,26 +72,32 @@ class TaxResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('company_id')
-                    ->numeric()
+                Tables\Columns\TextColumn::make('company.name')
+                    ->label(__('tax.company'))
                     ->sortable(),
-                Tables\Columns\TextColumn::make('tax_account_id')
-                    ->numeric()
+                Tables\Columns\TextColumn::make('taxAccount.name')
+                    ->label(__('tax.tax_account'))
                     ->sortable(),
                 Tables\Columns\TextColumn::make('name')
+                    ->label(__('tax.name'))
                     ->searchable(),
                 Tables\Columns\TextColumn::make('rate')
+                    ->label(__('tax.rate'))
                     ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('type')
+                    ->label(__('tax.type'))
                     ->searchable(),
                 Tables\Columns\IconColumn::make('is_active')
+                    ->label(__('tax.is_active'))
                     ->boolean(),
                 Tables\Columns\TextColumn::make('created_at')
+                    ->label(__('tax.created_at'))
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('updated_at')
+                    ->label(__('tax.updated_at'))
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),

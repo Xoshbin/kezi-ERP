@@ -17,7 +17,7 @@ return new class extends Migration
             $table->foreignId('tax_account_id')->constrained('accounts');
             $table->string('name');
             $table->unsignedBigInteger('rate'); // e.g., 0.15000 for 15%
-            $table->string('type'); // 'Sales', 'Purchase', 'Both'
+            $table->string('type'); // 'sales', 'purchase', 'both'
             $table->boolean('is_active')->default(true);
             $table->timestamps();
         });

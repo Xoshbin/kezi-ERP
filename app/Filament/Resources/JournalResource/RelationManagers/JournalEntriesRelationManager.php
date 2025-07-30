@@ -12,6 +12,8 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class JournalEntriesRelationManager extends RelationManager
 {
+    protected static ?string $title = 'Journal Entries';
+    
     protected static string $relationship = 'journalEntries';
 
     public function form(Form $form): Form
@@ -19,13 +21,17 @@ class JournalEntriesRelationManager extends RelationManager
         return $form
             ->schema([
                 Forms\Components\DatePicker::make('entry_date')
+                    ->label(__('journal.entry_date'))
                     ->required(),
                 Forms\Components\TextInput::make('reference')
+                    ->label(__('journal.reference'))
                     ->required()
                     ->maxLength(255),
                 Forms\Components\Textarea::make('description')
+                    ->label(__('journal.description'))
                     ->columnSpanFull(),
                 Forms\Components\Toggle::make('is_posted')
+                    ->label(__('journal.is_posted'))
                     ->required(),
             ]);
     }
@@ -36,9 +42,12 @@ class JournalEntriesRelationManager extends RelationManager
             ->recordTitleAttribute('reference')
             ->columns([
                 Tables\Columns\TextColumn::make('entry_date')
+                    ->label(__('journal.entry_date'))
                     ->date(),
-                Tables\Columns\TextColumn::make('reference'),
+                Tables\Columns\TextColumn::make('reference')
+                    ->label(__('journal.reference')),
                 Tables\Columns\IconColumn::make('is_posted')
+                    ->label(__('journal.is_posted'))
                     ->boolean(),
             ])
             ->filters([

@@ -37,17 +37,4 @@ class AdjustmentDocumentService
             AdjustmentDocumentPosted::dispatch($creditNote);
         });
     }
-
-    // 4. This entire private method is now obsolete and can be removed.
-    // private function createJournalEntryForCreditNote(...) {}
-
-    public function update(AdjustmentDocument $creditNote, array $data): bool
-    {
-        // Block any attempt to change a posted document.
-        if ($creditNote->status === 'Posted') {
-            throw new UpdateNotAllowedException('Cannot modify a posted credit note.');
-        }
-
-        return $creditNote->update($data);
-    }
 }

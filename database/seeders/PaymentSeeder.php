@@ -5,10 +5,10 @@ namespace Database\Seeders;
 use App\Models\Account;
 use App\Models\Company;
 use App\Models\Invoice;
+use App\Models\Journal;
 use App\Models\Partner;
 use App\Models\Payment;
 use App\Models\User;
-use App\Models\VendorBill;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Date;
 
@@ -28,80 +28,35 @@ class PaymentSeeder extends Seeder
             throw new \Exception('Company "Jmeryar Solutions" not found. Please run CompanySeeder.');
         }
 
-        // Fetch the admin user
-        $adminUser = User::where('name', 'Admin User')->first();
-        if (!$adminUser) {
-            throw new \Exception('User "Admin User" not found. Please run UserSeeder.');
+        // Fetch Hawre Trading Group partner
+        $partner = Partner::where('name', 'Hawre Trading Group')->first();
+        if (!$partner) {
+            throw new \Exception('Partner "Hawre Trading Group" not found. Please run PartnerSeeder.');
         }
 
-        // Fetch customer partners
-        $customers = Partner::where('type', Partner::TYPE_CUSTOMER)->limit(3)->get();
-        if ($customers->count() < 3) {
-            throw new \Exception('Not enough customer partners found. Please run PartnerSeeder.');
+        // Fetch Bank Journal
+        $journal = Journal::where('name', 'Bank (IQD)')->first();
+        if (!$journal) {
+            throw new \Exception('Journal "Bank" not found. Please run JournalSeeder.');
         }
 
-        // Fetch vendor partners
-        $vendors = Partner::where('type', Partner::TYPE_VENDOR)->limit(3)->get();
-        if ($vendors->count() < 3) {
-            throw new \Exception('Not enough vendor partners found. Please run PartnerSeeder.');
+        // Fetch the invoice from Step 6 (assuming it's the latest or you can specify)
+        $invoice = Invoice::orderBy('id', 'desc')->first();
+        if (!$invoice) {
+            throw new \Exception('No invoice found. Please run InvoiceSeeder.');
         }
 
-        // Fetch the bank account
-        $bankAccount = Account::where('name', 'Bank Account')->first();
-        if (!$bankAccount) {
-            throw new \Exception('Account "Bank Account" not found. Please run AccountSeeder.');
-        }
-
-        // Fetch sample invoices
-        $invoices = Invoice::where('status', 'posted')->limit(3)->get();
-        if ($invoices->count() < 3) {
-            throw new \Exception('Not enough posted invoices found. Please run InvoiceSeeder.');
-        }
-
-        // Fetch sample vendor bills
-        $vendorBills = VendorBill::where('status', 'posted')->limit(3)->get();
-        if ($vendorBills->count() < 3) {
-            throw new \Exception('Not enough posted vendor bills found. Please run VendorBillSeeder.');
-        }
-
-        // Seed customer payments
-        for ($i = 0; $i < 3; $i++) {
-            Payment::updateOrCreate(
-                ['reference' => 'PAY-2025-' . str_pad($i + 1, 3, '0', STR_PAD_LEFT)],
-                [
-                    'company_id' => $company->id,
-                    'user_id' => $adminUser->id,
-                    'partner_id' => $customers[$i]->id,
-                    'account_id' => $bankAccount->id,
-                    'payment_date' => Date::now(),
-                    'amount' => $invoices[$i]->total,
-                    'status' => 'posted',
-                    'payment_method' => ($i % 2 == 0) ? 'cash' : 'bank_transfer',
-                    'notes' => 'Sample payment for testing',
-                    'paymentable_id' => $invoices[$i]->id,
-                    'paymentable_type' => Invoice::class,
-                ]
-            );
-        }
-
-        // Seed vendor payments
-        for ($i = 0; $i < 3; $i++) {
-            Payment::updateOrCreate(
-                ['reference' => 'PAY-2025-' . str_pad($i + 4, 3, '0', STR_PAD_LEFT)],
-                [
-                    'company_id' => $company->id,
-                    'user_id' => $adminUser->id,
-                    'partner_id' => $vendors[$i]->id,
-                    'account_id' => $bankAccount->id,
-                    'payment_date' => Date::now(),
-                    'amount' => $vendorBills[$i]->total,
-                    'status' => 'posted',
-                    'payment_method' => ($i % 2 == 0) ? 'cash' : 'bank_transfer',
-                    'notes' => 'Sample payment for testing',
-                    'paymentable_id' => $vendorBills[$i]->id,
-                    'paymentable_type' => VendorBill::class,
-                ]
-            );
-        }
+        // Create the payment
+        Payment::create([
+            'company_id' => $company->id,
+            'currency_id' => $company->currency_id,
+            'payment_type' => 'inbound', // Cash receipt
+            'paid_to_from_partner_id' => $partner->id,
+            'amount' => 5000000,
+            'payment_date' => Date::now(),
+            'journal_id' => $journal->id,
+            'status' => Payment::STATUS_DRAFT,
+            'reference' => 'Inbound cash receipt from Hawre Trading Group',
+        ]);
     }
 }

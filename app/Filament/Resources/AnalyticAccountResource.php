@@ -21,21 +21,48 @@ class AnalyticAccountResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
+    public static function getNavigationGroup(): ?string
+    {
+        return __('analytic_account.navigation_group');
+    }
+
+    public static function getNavigationLabel(): string
+    {
+        return __('analytic_account.navigation_label');
+    }
+
+    public static function getModelLabel(): string
+    {
+        return __('analytic_account.analytic_account');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __('analytic_account.analytic_accounts');
+    }
+
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
                 Forms\Components\Select::make('company_id')
                     ->relationship('company', 'name')
+                    ->label(__('analytic_account.company'))
+                    ->placeholder(__('analytic_account.select_company'))
                     ->required(),
                 Forms\Components\Select::make('currency_id')
-                    ->relationship('currency', 'name'),
+                    ->relationship('currency', 'name')
+                    ->label(__('analytic_account.currency'))
+                    ->placeholder(__('analytic_account.select_currency')),
                 Forms\Components\TextInput::make('name')
+                    ->label(__('analytic_account.name'))
                     ->required()
                     ->maxLength(255),
                 Forms\Components\TextInput::make('reference')
+                    ->label(__('analytic_account.reference'))
                     ->maxLength(255),
                 Forms\Components\Toggle::make('is_active')
+                    ->label(__('analytic_account.is_active'))
                     ->required(),
             ]);
     }
@@ -45,22 +72,29 @@ class AnalyticAccountResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('company.name')
+                    ->label(__('analytic_account.company'))
                     ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('currency.name')
+                    ->label(__('analytic_account.currency'))
                     ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('name')
+                    ->label(__('analytic_account.name'))
                     ->searchable(),
                 Tables\Columns\TextColumn::make('reference')
+                    ->label(__('analytic_account.reference'))
                     ->searchable(),
                 Tables\Columns\IconColumn::make('is_active')
+                    ->label(__('analytic_account.is_active'))
                     ->boolean(),
                 Tables\Columns\TextColumn::make('created_at')
+                    ->label(__('analytic_account.created_at'))
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('updated_at')
+                    ->label(__('analytic_account.updated_at'))
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),

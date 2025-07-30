@@ -14,15 +14,30 @@ class BudgetLinesRelationManager extends RelationManager
 {
     protected static string $relationship = 'budgetLines';
 
+    protected static ?string $title = 'Budget Lines';
+
     public function form(Form $form): Form
     {
         return $form
             ->schema([
-                Forms\Components\Select::make('analytic_account_id')->relationship('analyticAccount', 'name'),
-                Forms\Components\Select::make('account_id')->relationship('account', 'name'),
-                Forms\Components\TextInput::make('budgeted_amount')->required()->numeric(),
-                Forms\Components\TextInput::make('achieved_amount')->required()->numeric(),
-                Forms\Components\TextInput::make('committed_amount')->required()->numeric(),
+                Forms\Components\Select::make('analytic_account_id')
+                    ->label(__('budget.budget_lines.form.analytic_account_id'))
+                    ->relationship('analyticAccount', 'name'),
+                Forms\Components\Select::make('account_id')
+                    ->label(__('budget.budget_lines.form.account_id'))
+                    ->relationship('account', 'name'),
+                Forms\Components\TextInput::make('budgeted_amount')
+                    ->label(__('budget.budget_lines.form.budgeted_amount'))
+                    ->required()
+                    ->numeric(),
+                Forms\Components\TextInput::make('achieved_amount')
+                    ->label(__('budget.budget_lines.form.achieved_amount'))
+                    ->required()
+                    ->numeric(),
+                Forms\Components\TextInput::make('committed_amount')
+                    ->label(__('budget.budget_lines.form.committed_amount'))
+                    ->required()
+                    ->numeric(),
             ]);
     }
 
@@ -31,11 +46,16 @@ class BudgetLinesRelationManager extends RelationManager
         return $table
             ->recordTitleAttribute('id')
             ->columns([
-                Tables\Columns\TextColumn::make('analyticAccount.name'),
-                Tables\Columns\TextColumn::make('account.name'),
-                Tables\Columns\TextColumn::make('budgeted_amount'),
-                Tables\Columns\TextColumn::make('achieved_amount'),
-                Tables\Columns\TextColumn::make('committed_amount'),
+                Tables\Columns\TextColumn::make('analyticAccount.name')
+                    ->label(__('budget.budget_lines.table.analytic_account_name')),
+                Tables\Columns\TextColumn::make('account.name')
+                    ->label(__('budget.budget_lines.table.account_name')),
+                Tables\Columns\TextColumn::make('budgeted_amount')
+                    ->label(__('budget.budget_lines.table.budgeted_amount')),
+                Tables\Columns\TextColumn::make('achieved_amount')
+                    ->label(__('budget.budget_lines.table.achieved_amount')),
+                Tables\Columns\TextColumn::make('committed_amount')
+                    ->label(__('budget.budget_lines.table.committed_amount')),
             ])
             ->filters([
                 //

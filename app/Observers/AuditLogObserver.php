@@ -20,31 +20,38 @@ class AuditLogObserver
         $this->logAction($eventType, $model);
     }
 
+    /**
+     * Handle the Model "deleted" event.
+     */
+    public function deleted(Model $model): void
+    {
+        // Prevent logging the deletion of an audit log itself.
+        if ($model instanceof \App\Models\AuditLog) {
+            return;
+        }
+        $this->logAction('record_deleted', $model);
+    }
+
     protected function logAction(string $eventType, Model $model): void
     {
-        // Do not log audit trails when running in the console without an authenticated user (e.g., during seeding).
         if (app()->runningInConsole() && ! auth()->check()) {
             return;
         }
 
-        // For 'updated' events, we only want to log the fields that actually changed.
         $oldValues = [];
         $newValues = [];
 
-        if ($eventType !== 'record_created') {
+        if ($eventType === 'record_deleted') {
+            // For deletions, all original attributes are the "old values".
+            $oldValues = $model->getAttributes();
+        } elseif ($eventType !== 'record_created') {
             foreach ($model->getChanges() as $key => $value) {
-                // Ignore 'updated_at' from the logs for clarity.
-                if ($key === 'updated_at') {
-                    continue;
-                }
+                if ($key === 'updated_at') continue;
                 $oldValues[$key] = $model->getOriginal($key);
                 $newValues[$key] = $value;
             }
 
-            // If only 'updated_at' changed, there's nothing to log.
-            if (empty($newValues)) {
-                return;
-            }
+            if (empty($newValues)) return;
         }
 
         AuditLog::create([
@@ -52,8 +59,8 @@ class AuditLogObserver
             'event_type' => $eventType,
             'auditable_type' => get_class($model),
             'auditable_id' => $model->getKey(),
-            'old_values' => $oldValues, // <-- Use the filtered values
-            'new_values' => $newValues, // <-- Use the filtered values
+            'old_values' => $oldValues,
+            'new_values' => $newValues,
             'ip_address' => request()->ip(),
         ]);
     }
