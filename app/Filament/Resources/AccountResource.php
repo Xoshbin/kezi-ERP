@@ -20,23 +20,38 @@ class AccountResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
+    public static function getPluralModelLabel(): string
+    {
+        return __('account.plural_label');
+    }
+
+    public static function getNavigationLabel(): string
+    {
+        return __('account.plural_label');
+    }
+
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
                 Forms\Components\Select::make('company_id')
+                    ->label(__('account.company'))
                     ->relationship('company', 'name')
                     ->required(),
                 Forms\Components\TextInput::make('code')
+                    ->label(__('account.code'))
                     ->required()
                     ->maxLength(255),
                 Forms\Components\TextInput::make('name')
+                    ->label(__('account.name'))
                     ->required()
                     ->maxLength(255),
                 Forms\Components\TextInput::make('type')
+                    ->label(__('account.type'))
                     ->required()
                     ->maxLength(255),
                 Forms\Components\Toggle::make('is_deprecated')
+                    ->label(__('account.is_deprecated'))
                     ->required(),
             ]);
     }
@@ -46,21 +61,28 @@ class AccountResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('company.name')
+                    ->label(__('account.company'))
                     ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('code')
+                    ->label(__('account.code'))
                     ->searchable(),
                 Tables\Columns\TextColumn::make('name')
+                    ->label(__('account.name'))
                     ->searchable(),
                 Tables\Columns\TextColumn::make('type')
+                    ->label(__('account.type'))
                     ->searchable(),
                 Tables\Columns\IconColumn::make('is_deprecated')
+                    ->label(__('account.is_deprecated'))
                     ->boolean(),
                 Tables\Columns\TextColumn::make('created_at')
+                    ->label(__('account.created_at'))
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('updated_at')
+                    ->label(__('account.updated_at'))
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
