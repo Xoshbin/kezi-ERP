@@ -10,6 +10,11 @@ class ListBankStatements extends ListRecords
 {
     protected static string $resource = BankStatementResource::class;
 
+    public function getTitle(): string
+    {
+        return __('bank_statement.list_bank_statements');
+    }
+
     protected function getHeaderActions(): array
     {
         return [
