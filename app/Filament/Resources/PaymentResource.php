@@ -78,10 +78,10 @@ class PaymentResource extends Resource
                             ->options(function (Get $get) {
                                 $type = $get('document_type');
                                 if ($type === 'invoice') {
-                                    return Invoice::where('status', Invoice::TYPE_POSTED)->pluck('invoice_number', 'id');
+                                    return Invoice::where('status', Invoice::STATUS_POSTED)->pluck('invoice_number', 'id');
                                 }
                                 if ($type === 'vendor_bill') {
-                                    return VendorBill::where('status', VendorBill::TYPE_POSTED)->pluck('bill_reference', 'id');
+                                    return VendorBill::where('status', VendorBill::STATUS_POSTED)->pluck('bill_reference', 'id');
                                 }
                                 return [];
                             })
