@@ -18,12 +18,12 @@ class InvoiceLinesRelationManager extends RelationManager
     {
         return $form
             ->schema([
-                Forms\Components\Select::make('product_id')->relationship('product', 'name'),
-                Forms\Components\TextInput::make('description')->required()->maxLength(255),
-                Forms\Components\TextInput::make('quantity')->required()->numeric(),
-                Forms\Components\TextInput::make('unit_price')->required()->numeric(),
-                Forms\Components\Select::make('tax_id')->relationship('tax', 'name'),
-                Forms\Components\Select::make('income_account_id')->relationship('incomeAccount', 'name')->required(),
+                Forms\Components\Select::make('product_id')->relationship('product', 'name')->label(__('invoice.product')),
+                Forms\Components\TextInput::make('description')->label(__('invoice.description'))->required()->maxLength(255),
+                Forms\Components\TextInput::make('quantity')->label(__('invoice.quantity'))->required()->numeric(),
+                Forms\Components\TextInput::make('unit_price')->label(__('invoice.unit_price'))->required()->numeric(),
+                Forms\Components\Select::make('tax_id')->relationship('tax', 'name')->label(__('invoice.tax')),
+                Forms\Components\Select::make('income_account_id')->relationship('incomeAccount', 'name')->label(__('invoice.income_account'))->required(),
             ]);
     }
 
@@ -32,11 +32,11 @@ class InvoiceLinesRelationManager extends RelationManager
         return $table
             ->recordTitleAttribute('description')
             ->columns([
-                Tables\Columns\TextColumn::make('product.name'),
-                Tables\Columns\TextColumn::make('description'),
-                Tables\Columns\TextColumn::make('quantity'),
-                Tables\Columns\TextColumn::make('unit_price'),
-                Tables\Columns\TextColumn::make('tax.name'),
+                Tables\Columns\TextColumn::make('product.name')->label(__('invoice.product')),
+                Tables\Columns\TextColumn::make('description')->label(__('invoice.description')),
+                Tables\Columns\TextColumn::make('quantity')->label(__('invoice.quantity')),
+                Tables\Columns\TextColumn::make('unit_price')->label(__('invoice.unit_price')),
+                Tables\Columns\TextColumn::make('tax.name')->label(__('invoice.tax')),
             ])
             ->filters([
                 //
