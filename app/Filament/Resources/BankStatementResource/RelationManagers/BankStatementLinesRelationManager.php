@@ -14,21 +14,28 @@ class BankStatementLinesRelationManager extends RelationManager
 {
     protected static string $relationship = 'bankStatementLines';
 
+    protected static ?string $title = 'Bank Statement Lines';
+
     public function form(Form $form): Form
     {
         return $form
             ->schema([
                 Forms\Components\DatePicker::make('date')
+                    ->label(__('bank_statement.date'))
                     ->required(),
                 Forms\Components\TextInput::make('description')
+                    ->label(__('bank_statement.description'))
                     ->required()
                     ->maxLength(255),
                 Forms\Components\TextInput::make('partner_name')
+                    ->label(__('bank_statement.partner_name'))
                     ->maxLength(255),
                 Forms\Components\TextInput::make('amount')
+                    ->label(__('bank_statement.amount'))
                     ->required()
                     ->numeric(),
                 Forms\Components\Toggle::make('is_reconciled')
+                    ->label(__('bank_statement.is_reconciled'))
                     ->required(),
             ]);
     }
@@ -36,14 +43,19 @@ class BankStatementLinesRelationManager extends RelationManager
     public function table(Table $table): Table
     {
         return $table
-            ->recordTitleAttribute('description')
+            ->recordTitleAttribute(null)
             ->columns([
                 Tables\Columns\TextColumn::make('date')
+                    ->label(__('bank_statement.date'))
                     ->date(),
-                Tables\Columns\TextColumn::make('description'),
-                Tables\Columns\TextColumn::make('partner_name'),
-                Tables\Columns\TextColumn::make('amount'),
+                Tables\Columns\TextColumn::make('description')
+                    ->label(__('bank_statement.description')),
+                Tables\Columns\TextColumn::make('partner_name')
+                    ->label(__('bank_statement.partner_name')),
+                Tables\Columns\TextColumn::make('amount')
+                    ->label(__('bank_statement.amount')),
                 Tables\Columns\IconColumn::make('is_reconciled')
+                    ->label(__('bank_statement.is_reconciled'))
                     ->boolean(),
             ])
             ->filters([
