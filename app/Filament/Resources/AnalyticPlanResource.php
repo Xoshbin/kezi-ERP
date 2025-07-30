@@ -19,14 +19,26 @@ class AnalyticPlanResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
+    public static function getModelLabel(): string
+    {
+        return __('analytic_plan.singular');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __('analytic_plan.plural');
+    }
+
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
                 Forms\Components\Select::make('company_id')
                     ->relationship('company', 'name')
+                    ->label(__('analytic_plan.company'))
                     ->required(),
                 Forms\Components\TextInput::make('name')
+                    ->label(__('analytic_plan.name'))
                     ->required()
                     ->maxLength(255),
             ]);
@@ -37,15 +49,19 @@ class AnalyticPlanResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('company.name')
+                    ->label(__('analytic_plan.company'))
                     ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('name')
+                    ->label(__('analytic_plan.name'))
                     ->searchable(),
                 Tables\Columns\TextColumn::make('created_at')
+                    ->label(__('analytic_plan.created_at'))
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('updated_at')
+                    ->label(__('analytic_plan.updated_at'))
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),

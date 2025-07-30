@@ -11,7 +11,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * Class DepreciationEntry
  *
  * @package App\Models
- * 
+ *
  * This Eloquent model represents a single depreciation event for a fixed asset.
  * It is crucial for automating the depreciation process, recognizing depreciation
  * expense, and maintaining the accuracy of the asset's book value on the balance sheet.
@@ -81,6 +81,18 @@ class DepreciationEntry extends Model
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
     ];
+
+    public const STATUS_DRAFT = 'draft';
+    public const STATUS_POSTED = 'posted';
+
+    // use it in Filament select options columns
+    public static function getstatuses(): array
+    {
+        return [
+            self::STATUS_DRAFT => 'Draft',
+            self::STATUS_POSTED => 'Posted',
+        ];
+    }
 
     /*
     |--------------------------------------------------------------------------

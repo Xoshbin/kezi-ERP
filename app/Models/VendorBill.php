@@ -17,7 +17,6 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 // such as credit notes or debit notes [1-3].
 // Therefore, the SoftDeletes trait is **intentionally omitted** for the VendorBill model
 // to uphold auditability and prevent accidental data loss for historical financial records.
-#[ObservedBy([AuditLogObserver::class])]
 /**
  * @property int $id
  * @property int $company_id
@@ -64,6 +63,8 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|VendorBill whereVendorId($value)
  * @mixin \Eloquent
  */
+
+#[ObservedBy([AuditLogObserver::class])]
 class VendorBill extends Model
 {
     use HasFactory;
@@ -155,17 +156,17 @@ class VendorBill extends Model
         ]);
     }
 
-    public const TYPE_DRAFT = 'draft';
-    public const TYPE_POSTED = 'posted';
-    public const TYPE_PAID = 'paid';
+    public const STATUS_DRAFT = 'draft';
+    public const STATUS_POSTED = 'posted';
+    public const STATUS_PAID = 'paid';
 
     // use it in Filament select options columns
-    public static function getTypes(): array
+    public static function getStatuses(): array
     {
         return [
-            self::TYPE_DRAFT => 'Draft',
-            self::TYPE_POSTED => 'Posted',
-            self::TYPE_PAID => 'Paid',
+            self::STATUS_DRAFT => 'Draft',
+            self::STATUS_POSTED => 'Posted',
+            self::STATUS_PAID => 'Paid',
         ];
     }
 

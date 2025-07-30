@@ -91,6 +91,17 @@ class Product extends Model
         'deleted_at' => 'datetime', // Essential for SoftDeletes [3].
     ];
 
+    public const TYPE_SERVICE = 'service';
+    public const TYPE_STORABLE_PRODUCT = 'storable product';
+
+    public static function getTypes(): array
+    {
+        return [
+            self::TYPE_SERVICE => 'Service',
+            self::TYPE_STORABLE_PRODUCT => 'Storable Product',
+        ];
+    }
+
     /**
      * Get the Company that owns the Product.
      * This relationship is fundamental in a multi-company accounting setup, ensuring products are scoped to specific entities [4].

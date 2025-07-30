@@ -1,0 +1,38 @@
+<?php
+
+return [
+    // Labels
+    'analytic_account' => 'هەژماری شیکاری',
+    'analytic_accounts' => 'هەژمارە شیکارییەکان',
+    'analytic_plan' => 'پلانی شیکاری',
+    'analytic_plans' => 'پلانە شیکارییەکان',
+    'company' => 'کۆمپانیا',
+    'currency' => 'دراو',
+    'name' => 'ناو',
+    'reference' => 'سەرچاوە',
+    'is_active' => 'چالاکە',
+    'created_at' => 'کاتی دروستبوون',
+    'updated_at' => 'کاتی نوێکردنەوە',
+    'journal_entry' => 'تۆماری رۆژانە',
+    'journal_entry_lines' => 'هێڵەکانی تۆماری رۆژانە',
+    'debit' => 'قەرزدار',
+    'credit' => 'قەرزدەر',
+    'description' => 'پێناسە',
+
+    // Navigation
+    'navigation_label' => 'هەژمارە شیکارییەکان',
+    'navigation_group' => 'ژمێریاری',
+
+    // Placeholders
+    'select_company' => 'کۆمپانیایەک هەڵبژێرە',
+    'select_currency' => 'دراوێک هەڵبژێرە',
+
+    // Pages
+    'pages.list.title' => 'هەژمارە شیکارییەکان',
+    'pages.create.title' => 'دروستکردنی هەژماری شیکاری',
+    'pages.edit.title' => 'گۆڕینی هەژماری شیکاری',
+
+    // Relation Managers
+    'relation_managers.journal_entry_lines.title' => 'هێڵەکانی تۆماری رۆژانە',
+    'relation_managers.analytic_plans.title' => 'پلانە شیکارییەکان',
+];

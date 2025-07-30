@@ -20,7 +20,7 @@ return new class extends Migration
             $table->string('sku');
             $table->text('description')->nullable();
             $table->unsignedBigInteger('unit_price');
-            $table->string('type'); // 'Service', 'Storable Product'
+            $table->string('type'); // 'service', 'storable product'
             $table->boolean('is_active')->default(true);
             $table->timestamps();
             $table->softDeletes();
