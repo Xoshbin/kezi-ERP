@@ -18,12 +18,12 @@ class VendorBillLinesRelationManager extends RelationManager
     {
         return $form
             ->schema([
-                Forms\Components\Select::make('product_id')->relationship('product', 'name'),
-                Forms\Components\TextInput::make('description')->required()->maxLength(255),
-                Forms\Components\TextInput::make('quantity')->required()->numeric(),
-                Forms\Components\TextInput::make('unit_price')->required()->numeric(),
-                Forms\Components\Select::make('tax_id')->relationship('tax', 'name'),
-                Forms\Components\Select::make('expense_account_id')->relationship('expenseAccount', 'name')->required(),
+                Forms\Components\Select::make('product_id')->relationship('product', 'name')->label(__('vendor_bill.product')),
+                Forms\Components\TextInput::make('description')->required()->maxLength(255)->label(__('vendor_bill.description')),
+                Forms\Components\TextInput::make('quantity')->required()->numeric()->label(__('vendor_bill.quantity')),
+                Forms\Components\TextInput::make('unit_price')->required()->numeric()->label(__('vendor_bill.unit_price')),
+                Forms\Components\Select::make('tax_id')->relationship('tax', 'name')->label(__('vendor_bill.tax')),
+                Forms\Components\Select::make('expense_account_id')->relationship('expenseAccount', 'name')->required()->label(__('vendor_bill.expense_account')),
             ]);
     }
 
@@ -33,18 +33,21 @@ class VendorBillLinesRelationManager extends RelationManager
             ->recordTitleAttribute('description')
             ->columns([
                 Tables\Columns\TextColumn::make('expenseAccount.name')
-                    ->label('Account')
+                    ->label(__('vendor_bill.account'))
                     ->sortable(),
                 Tables\Columns\TextColumn::make('debit')
+                    ->label(__('vendor_bill.debit'))
                     ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('credit')
+                    ->label(__('vendor_bill.credit'))
                     ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('analyticAccount.name')
-                    ->label('Analytic Account')
+                    ->label(__('vendor_bill.analytic_account'))
                     ->sortable(),
                 Tables\Columns\TextColumn::make('description')
+                    ->label(__('vendor_bill.description'))
                     ->limit(50),
             ])
             ->filters([

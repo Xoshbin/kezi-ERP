@@ -13,6 +13,7 @@ use Filament\Forms;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
 
 class EditVendorBill extends EditRecord
 {
@@ -21,44 +22,38 @@ class EditVendorBill extends EditRecord
     protected function getHeaderActions(): array
     {
         return [
-            // The "Confirm" button to post the bill
             Actions\Action::make('confirm')
-                ->label('Confirm Bill')
+                ->label(__('vendor_bill.confirm_bill'))
                 ->color('success')
                 ->requiresConfirmation()
-                // This action is only visible if the bill is a draft.
                 ->visible(fn (VendorBill $record): bool => $record->status === VendorBill::TYPE_DRAFT)
                 ->action(function (VendorBill $record): void {
-                    // First, save any pending changes the user made in the form.
                     $this->save();
 
-                    // Then, call the confirmation service.
                     $vendorBillService = app(VendorBillService::class);
                     try {
-                        $vendorBillService->confirm($record, auth()->user());
-                        Notification::make()->title('Bill confirmed successfully')->success()->send();
+                        $vendorBillService->confirm($record, Auth::user());
+                        Notification::make()->title(__('vendor_bill.notification_bill_confirmed_success'))->success()->send();
                     } catch (\Exception $e) {
-                        Notification::make()->title('Error confirming bill')->body($e->getMessage())->danger()->send();
+                        Notification::make()->title(__('vendor_bill.notification_confirm_bill_error'))->body($e->getMessage())->danger()->send();
                     }
                 }),
 
-            // The "Reset to Draft" button
             Actions\Action::make('resetToDraft')
-                ->label('Reset to Draft')
+                ->label(__('vendor_bill.reset_to_draft'))
                 ->color('warning')
                 ->requiresConfirmation()
-                // This action is only visible if the bill is already posted.
                 ->visible(fn (VendorBill $record): bool => $record->status === VendorBill::TYPE_POSTED)
                 ->form([
-                    Forms\Components\Textarea::make('reason')->required(),
+                    Forms\Components\Textarea::make('reason')->label(__('vendor_bill.reason'))->required(),
                 ])
                 ->action(function (VendorBill $record, array $data): void {
                     $vendorBillService = app(VendorBillService::class);
                     try {
-                        $vendorBillService->resetToDraft($record, auth()->user(), $data['reason']);
-                        Notification::make()->title('Bill reset to draft')->success()->send();
+                        $vendorBillService->resetToDraft($record, Auth::user(), $data['reason']);
+                        Notification::make()->title(__('vendor_bill.notification_bill_reset_success'))->success()->send();
                     } catch (\Exception $e) {
-                        Notification::make()->title('Error resetting bill')->body($e->getMessage())->danger()->send();
+                        Notification::make()->title(__('vendor_bill.notification_reset_bill_error'))->body($e->getMessage())->danger()->send();
                     }
                 }),
 
@@ -70,8 +65,6 @@ class EditVendorBill extends EditRecord
         ];
     }
 
-    // This method now has a single, simple responsibility:
-    // to save changes to the data of a DRAFT bill.
     protected function handleRecordUpdate(Model $record, array $data): Model
     {
         $lineDTOs = [];
@@ -101,7 +94,6 @@ class EditVendorBill extends EditRecord
         return (new UpdateVendorBillAction())->execute($vendorBillDTO);
     }
 
-    // The mutateFormDataBeforeFill method remains unchanged and is correct.
     protected function mutateFormDataBeforeFill(array $data): array
     {
         $this->record->loadMissing('lines');
@@ -110,15 +102,15 @@ class EditVendorBill extends EditRecord
                 'product_id' => $line->product_id,
                 'description' => $line->description,
                 'quantity' => $line->quantity,
-                'unit_price' => $line->unit_price?->getAmount()->toFloat(),
+                'unit_price' => $line->unit_price?->getAmount(),
                 'tax_id' => $line->tax_id,
                 'expense_account_id' => $line->expense_account_id,
                 'analytic_account_id' => $line->analytic_account_id,
             ];
         })->toArray();
         $data['lines'] = $linesData;
-        $data['total_amount'] = $this->record->total_amount?->getAmount()->toFloat();
-        $data['total_tax'] = $this->record->total_tax?->getAmount()->toFloat();
+        $data['total_amount'] = $this->record->total_amount?->getAmount();
+        $data['total_tax'] = $this->record->total_tax?->getAmount();
         return $data;
     }
 }
