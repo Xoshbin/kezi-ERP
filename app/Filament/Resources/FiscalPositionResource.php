@@ -25,11 +25,14 @@ class FiscalPositionResource extends Resource
             ->schema([
                 Forms\Components\Select::make('company_id')
                     ->relationship('company', 'name')
+                    ->label(__('fiscal_position.company'))
                     ->required(),
                 Forms\Components\TextInput::make('name')
+                    ->label(__('fiscal_position.name'))
                     ->required()
                     ->maxLength(255),
                 Forms\Components\TextInput::make('country')
+                    ->label(__('fiscal_position.country'))
                     ->maxLength(255),
             ]);
     }
@@ -39,17 +42,22 @@ class FiscalPositionResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('company.name')
+                    ->label(__('fiscal_position.company'))
                     ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('name')
+                    ->label(__('fiscal_position.name'))
                     ->searchable(),
                 Tables\Columns\TextColumn::make('country')
+                    ->label(__('fiscal_position.country'))
                     ->searchable(),
                 Tables\Columns\TextColumn::make('created_at')
+                    ->label(__('fiscal_position.created_at'))
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('updated_at')
+                    ->label(__('fiscal_position.updated_at'))
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
