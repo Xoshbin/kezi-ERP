@@ -20,8 +20,6 @@ class UpdateAdjustmentDocumentAction
         }
 
         return DB::transaction(function () use ($dto, $adjustmentDocument) {
-            $currencyCode = Currency::find($dto->currency_id)->code;
-
             $adjustmentDocument->update([
                 'type' => $dto->type,
                 'date' => $dto->date,
@@ -30,9 +28,30 @@ class UpdateAdjustmentDocumentAction
                 'currency_id' => $dto->currency_id,
                 'original_invoice_id' => $dto->original_invoice_id,
                 'original_vendor_bill_id' => $dto->original_vendor_bill_id,
-                'total_amount' => Money::of($dto->total_amount, $currencyCode),
-                'total_tax' => Money::of($dto->total_tax, $currencyCode),
             ]);
+
+            // Sync the lines: delete old ones, create new ones.
+            $adjustmentDocument->lines()->delete();
+
+            $currencyCode = Currency::find($dto->currency_id)->code;
+            $linesToCreate = [];
+            foreach ($dto->lines as $lineDto) {
+                $linesToCreate[] = [
+                    'product_id' => $lineDto->product_id,
+                    'description' => $lineDto->description,
+                    'quantity' => $lineDto->quantity,
+                    'unit_price' => Money::of($lineDto->unit_price, $currencyCode),
+                    'tax_id' => $lineDto->tax_id,
+                    'account_id' => $lineDto->account_id,
+                ];
+            }
+
+            if (!empty($linesToCreate)) {
+                $adjustmentDocument->lines()->createMany($linesToCreate);
+            }
+
+            // The model's saving observer will recalculate totals automatically.
+            $adjustmentDocument->save();
 
             return $adjustmentDocument;
         });
