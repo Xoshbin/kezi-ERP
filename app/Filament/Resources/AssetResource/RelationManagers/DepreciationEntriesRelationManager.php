@@ -19,11 +19,14 @@ class DepreciationEntriesRelationManager extends RelationManager
         return $form
             ->schema([
                 Forms\Components\DatePicker::make('depreciation_date')
+                    ->label(__('asset.depreciation_date'))
                     ->required(),
                 Forms\Components\TextInput::make('amount')
+                    ->label(__('asset.amount'))
                     ->required()
                     ->numeric(),
                 Forms\Components\TextInput::make('status')
+                    ->label(__('asset.status'))
                     ->required()
                     ->maxLength(255)
                     ->default('Draft'),
@@ -36,9 +39,12 @@ class DepreciationEntriesRelationManager extends RelationManager
             ->recordTitleAttribute('depreciation_date')
             ->columns([
                 Tables\Columns\TextColumn::make('depreciation_date')
+                    ->label(__('asset.depreciation_date'))
                     ->date(),
-                Tables\Columns\TextColumn::make('amount'),
-                Tables\Columns\TextColumn::make('status'),
+                Tables\Columns\TextColumn::make('amount')
+                    ->label(__('asset.amount')),
+                Tables\Columns\TextColumn::make('status')
+                    ->label(__('asset.status')),
             ])
             ->filters([
                 //
