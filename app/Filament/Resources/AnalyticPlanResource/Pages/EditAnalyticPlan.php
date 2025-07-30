@@ -10,6 +10,11 @@ class EditAnalyticPlan extends EditRecord
 {
     protected static string $resource = AnalyticPlanResource::class;
 
+    public function getTitle(): string
+    {
+        return __('analytic_plan.pages.edit');
+    }
+
     protected function getHeaderActions(): array
     {
         return [

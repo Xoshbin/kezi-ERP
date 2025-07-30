@@ -36,33 +36,39 @@ class VendorBillResource extends Resource
             ->schema([
                 Forms\Components\Select::make('company_id')
                     ->relationship('company', 'name')
+                    ->label(__('vendor_bill.company'))
                     ->required(),
                 Forms\Components\Select::make('vendor_id')
                     ->relationship('vendor', 'name')
+                    ->label(__('vendor_bill.vendor'))
                     ->required(),
                 Forms\Components\Select::make('currency_id')
                     ->relationship('currency', 'name')
+                    ->label(__('vendor_bill.currency'))
                     ->required(),
-                // journal_entry_id is system-assigned, so it's removed from the form.
                 Forms\Components\TextInput::make('bill_reference')
+                    ->label(__('vendor_bill.bill_reference'))
                     ->required()
                     ->maxLength(255),
                 Forms\Components\DatePicker::make('bill_date')
+                    ->label(__('vendor_bill.bill_date'))
                     ->required(),
                 Forms\Components\DatePicker::make('accounting_date')
+                    ->label(__('vendor_bill.accounting_date'))
                     ->required(),
-                Forms\Components\DatePicker::make('due_date'),
+                Forms\Components\DatePicker::make('due_date')
+                    ->label(__('vendor_bill.due_date')),
                 Forms\Components\Select::make('status')
+                    ->label(__('vendor_bill.status'))
                     ->options(VendorBill::getTypes())
-                    // The status is now always disabled.
-                    // State changes are handled ONLY by the header actions.
                     ->disabled()
-                    // Tell Filament to not even try saving this field's value.
                     ->dehydrated(false),
 
                 Repeater::make('lines')
+                    ->label(__('vendor_bill.lines'))
                     ->schema([
                         Forms\Components\Select::make('product_id')
+                            ->label(__('vendor_bill.product'))
                             ->searchable()
                             ->getSearchResultsUsing(fn (string $search): array => Product::where('name', 'like', "%{$search}%")->limit(50)->pluck('name', 'id')->toArray())
                             ->getOptionLabelUsing(fn ($value): ?string => Product::find($value)?->name)
@@ -72,35 +78,37 @@ class VendorBillResource extends Resource
                                     $product = Product::find($state);
                                     if ($product) {
                                         $set('description', $product->name);
-                                        $set('unit_price', $product->unit_price->getAmount()->toFloat());
+                                        $set('unit_price', $product->unit_price);
                                         $set('expense_account_id', $product->expense_account_id);
                                     }
                                 }
                             })
                             ->columnSpan(2),
-                        Forms\Components\TextInput::make('description')->maxLength(255)->required()->columnSpan(2),
-                        Forms\Components\TextInput::make('quantity')->required()->numeric()->default(1)->columnSpan(1),
-                        Forms\Components\TextInput::make('unit_price')->required()->numeric()->columnSpan(1),
+                        Forms\Components\TextInput::make('description')->label(__('vendor_bill.description'))->maxLength(255)->required()->columnSpan(2),
+                        Forms\Components\TextInput::make('quantity')->label(__('vendor_bill.quantity'))->required()->numeric()->default(1)->columnSpan(1),
+                        Forms\Components\TextInput::make('unit_price')->label(__('vendor_bill.unit_price'))->required()->numeric()->columnSpan(1),
                         Forms\Components\Select::make('tax_id')
+                            ->label(__('vendor_bill.tax'))
                             ->searchable()
                             ->getSearchResultsUsing(fn (string $search): array => Tax::where('name', 'like', "%{$search}%")->limit(50)->pluck('name', 'id')->toArray())
                             ->getOptionLabelUsing(fn ($value): ?string => Tax::find($value)?->name)
                             ->columnSpan(1),
                         Forms\Components\Select::make('expense_account_id')
+                            ->label(__('vendor_bill.expense_account'))
                             ->searchable()
                             ->getSearchResultsUsing(fn (string $search): array => Account::where('name', 'like', "%{$search}%")->limit(50)->pluck('name', 'id')->toArray())
                             ->getOptionLabelUsing(fn ($value): ?string => Account::find($value)?->name)
                             ->required()
                             ->columnSpan(2),
                         Forms\Components\Select::make('analytic_account_id')
+                            ->label(__('vendor_bill.analytic_account'))
                             ->searchable()
                             ->getSearchResultsUsing(fn (string $search): array => AnalyticAccount::where('name', 'like', "%{$search}%")->limit(50)->pluck('name', 'id')->toArray())
                             ->getOptionLabelUsing(fn ($value): ?string => AnalyticAccount::find($value)?->name)
                             ->columnSpan(2),
                     ])
-                    ->columns(5) // Adjusted column count for better layout.
+                    ->columns(5)
                     ->columnSpanFull()
-                    // IMPROVEMENT 2: Correct real-time calculation of totals.
                     ->afterStateUpdated(function (callable $get, callable $set) {
                         $lines = $get('lines') ?? [];
                         $totalAmount = 0;
@@ -115,75 +123,87 @@ class VendorBillResource extends Resource
                             if (!empty($line['tax_id'])) {
                                 $tax = Tax::find($line['tax_id']);
                                 if ($tax) {
-                                    // Assumes tax rate is stored as a decimal (e.g., 0.10 for 10%).
                                     $lineTax = $subtotal * $tax->rate;
                                 }
                             }
                             $totalTax += $lineTax;
                             $totalAmount += $subtotal + $lineTax;
                         }
-                        // Update the read-only total fields at the bottom of the form.
                         $set('../../total_amount', $totalAmount);
                         $set('../../total_tax', $totalTax);
                     })
-                    ->live(onBlur: true), // The 'live' is what enables the reactivity.
+                    ->live(onBlur: true),
 
                 Forms\Components\TextInput::make('total_amount')
+                    ->label(__('vendor_bill.total_amount'))
                     ->numeric()
                     ->readOnly()
                     ->prefix(fn (callable $get) => Currency::find($get('currency_id'))?->symbol),
                 Forms\Components\TextInput::make('total_tax')
+                    ->label(__('vendor_bill.total_tax'))
                     ->numeric()
                     ->readOnly()
                     ->prefix(fn (callable $get) => Currency::find($get('currency_id'))?->symbol),
-                // These fields are for system logging and should not be on the form.
-                // Forms\Components\DateTimePicker::make('posted_at'),
-                // Forms\Components\TextInput::make('reset_to_draft_log'),
             ]);
     }
+
     public static function table(Table $table): Table
     {
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('company.name')
+                    ->label(__('vendor_bill.company'))
                     ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('vendor.name')
+                    ->label(__('vendor_bill.vendor'))
                     ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('currency.name')
+                    ->label(__('vendor_bill.currency'))
                     ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('journalEntry.id')
+                    ->label(__('vendor_bill.journal_entry_id'))
                     ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('bill_reference')
+                    ->label(__('vendor_bill.bill_reference'))
                     ->searchable(),
                 Tables\Columns\TextColumn::make('bill_date')
+                    ->label(__('vendor_bill.bill_date'))
                     ->date()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('accounting_date')
+                    ->label(__('vendor_bill.accounting_date'))
                     ->date()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('due_date')
+                    ->label(__('vendor_bill.due_date'))
                     ->date()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('status')
+                    ->label(__('vendor_bill.status'))
                     ->searchable(),
                 Tables\Columns\TextColumn::make('total_amount')
+                    ->label(__('vendor_bill.total_amount'))
                     ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('total_tax')
+                    ->label(__('vendor_bill.total_tax'))
                     ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('posted_at')
+                    ->label(__('vendor_bill.posted_at'))
                     ->dateTime()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('created_at')
+                    ->label(__('vendor_bill.created_at'))
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('updated_at')
+                    ->label(__('vendor_bill.updated_at'))
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
@@ -194,17 +214,18 @@ class VendorBillResource extends Resource
             ->actions([
                 Tables\Actions\EditAction::make(),
                 Action::make('confirm')
+                    ->label(__('vendor_bill.confirm'))
                     ->action(function (VendorBill $record) {
                         $vendorBillService = app(VendorBillService::class);
                         try {
                             $vendorBillService->confirm($record, Auth::user());
                             Notification::make()
-                                ->title('Vendor bill confirmed successfully')
+                                ->title(__('vendor_bill.notification_confirm_success'))
                                 ->success()
                                 ->send();
                         } catch (\Exception $e) {
                             Notification::make()
-                                ->title('Error: Could not confirm vendor bill')
+                                ->title(__('vendor_bill.notification_confirm_error'))
                                 ->body($e->getMessage())
                                 ->danger()
                                 ->send();
@@ -213,25 +234,26 @@ class VendorBillResource extends Resource
                     ->requiresConfirmation()
                     ->visible(fn(VendorBill $record) => $record->status === VendorBill::TYPE_DRAFT),
                 Action::make('resetToDraft')
+                    ->label(__('vendor_bill.reset_to_draft'))
                     ->action(function (VendorBill $record, array $data) {
                         $user = Auth::user();
                         $vendorBillService = app(VendorBillService::class);
                         try {
                             $vendorBillService->resetToDraft($record, $user, $data['reason']);
                             Notification::make()
-                                ->title('Vendor bill reset to draft successfully')
+                                ->title(__('vendor_bill.notification_reset_success'))
                                 ->success()
                                 ->send();
                         } catch (\Exception $e) {
                             Notification::make()
-                                ->title('Error: Could not reset vendor bill')
+                                ->title(__('vendor_bill.notification_reset_error'))
                                 ->body($e->getMessage())
                                 ->danger()
                                 ->send();
                         }
                     })
                     ->form([
-                        Forms\Components\Textarea::make('reason')->required(),
+                        Forms\Components\Textarea::make('reason')->label(__('vendor_bill.reason'))->required(),
                     ])
                     ->requiresConfirmation()
                     ->visible(fn(VendorBill $record) => $record->status === 'Posted'),

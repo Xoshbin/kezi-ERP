@@ -16,4 +16,9 @@ class ListTaxes extends ListRecords
             Actions\CreateAction::make(),
         ];
     }
+
+    public function getTitle(): string
+    {
+        return __('tax.pages.list');
+    }
 }

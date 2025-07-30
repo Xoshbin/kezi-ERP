@@ -20,16 +20,21 @@ class InvoicesRelationManager extends RelationManager
         return $form
             ->schema([
                 Forms\Components\TextInput::make('invoice_number')
+                    ->label(__('payment.relation_manager.invoices.form.invoice_number'))
                     ->maxLength(255),
                 Forms\Components\DatePicker::make('invoice_date')
+                    ->label(__('payment.relation_manager.invoices.form.invoice_date'))
                     ->required(),
                 Forms\Components\DatePicker::make('due_date')
+                    ->label(__('payment.relation_manager.invoices.form.due_date'))
                     ->required(),
                 Forms\Components\TextInput::make('status')
+                    ->label(__('payment.relation_manager.invoices.form.status'))
                     ->required()
                     ->maxLength(255)
                     ->default(Invoice::TYPE_DRAFT),
                 Forms\Components\TextInput::make('total_amount')
+                    ->label(__('payment.relation_manager.invoices.form.total_amount'))
                     ->required()
                     ->numeric(),
             ]);
@@ -40,14 +45,16 @@ class InvoicesRelationManager extends RelationManager
         return $table
             ->recordTitleAttribute('invoice_number')
             ->columns([
-                Tables\Columns\TextColumn::make('invoice_number'),
+                Tables\Columns\TextColumn::make('invoice_number')->label(__('payment.relation_manager.invoices.column.invoice_number')),
                 Tables\Columns\TextColumn::make('invoice_date')
+                    ->label(__('payment.relation_manager.invoices.column.invoice_date'))
                     ->date(),
                 Tables\Columns\TextColumn::make('due_date')
+                    ->label(__('payment.relation_manager.invoices.column.due_date'))
                     ->date(),
-                Tables\Columns\TextColumn::make('status'),
-                Tables\Columns\TextColumn::make('total_amount'),
-                Tables\Columns\TextColumn::make('pivot.amount_applied'),
+                Tables\Columns\TextColumn::make('status')->label(__('payment.relation_manager.invoices.column.status')),
+                Tables\Columns\TextColumn::make('total_amount')->label(__('payment.relation_manager.invoices.column.total_amount')),
+                Tables\Columns\TextColumn::make('pivot.amount_applied')->label(__('payment.relation_manager.invoices.column.amount_applied')),
             ])
             ->filters([
                 //

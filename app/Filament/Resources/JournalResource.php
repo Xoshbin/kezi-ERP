@@ -42,14 +42,14 @@ class JournalResource extends Resource
                 Forms\Components\Select::make('default_debit_account_id')
                     ->relationship('defaultDebitAccount', 'name')
                     ->searchable()
-                    ->label('Default Debit Account')
-                    ->helperText('For Bank/Cash journals, this is the bank account to use for payments.'),
+                    ->label(__('journal.default_debit_account'))
+                    ->helperText(__('journal.default_debit_account_helper')),
 
                 Forms\Components\Select::make('default_credit_account_id')
                     ->relationship('defaultCreditAccount', 'name')
                     ->searchable()
-                    ->label('Default Credit Account')
-                    ->helperText('For Bank/Cash journals, this is the bank account to use for payments.'),
+                    ->label(__('journal.default_credit_account'))
+                    ->helperText(__('journal.default_credit_account_helper')),
             ]);
     }
 
@@ -69,10 +69,10 @@ class JournalResource extends Resource
 
                 // ADDED: Columns to see the configuration in the list view
                 Tables\Columns\TextColumn::make('defaultDebitAccount.name')
-                    ->label('Default Debit Acct.')
+                    ->label(__('journal.default_debit_account_short'))
                     ->sortable(),
                 Tables\Columns\TextColumn::make('defaultCreditAccount.name')
-                    ->label('Default Credit Acct.')
+                    ->label(__('journal.default_credit_account_short'))
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('currency.name')

@@ -9,6 +9,7 @@ use Filament\Actions;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
 
 class EditPayment extends EditRecord
 {
@@ -18,7 +19,7 @@ class EditPayment extends EditRecord
     {
         return [
             Actions\Action::make('confirm')
-                ->label('Confirm Payment')
+                ->label(__('payment.edit.action.confirm.label'))
                 ->color('success')
                 ->requiresConfirmation()
                 ->visible(fn (Payment $record): bool => $record->status === Payment::STATUS_DRAFT)
@@ -26,10 +27,10 @@ class EditPayment extends EditRecord
                     $this->save();
                     $service = app(PaymentService::class);
                     try {
-                        $service->confirm($record, auth()->user());
-                        Notification::make()->title('Payment confirmed successfully')->success()->send();
+                        $service->confirm($record, Auth::user());
+                        Notification::make()->title(__('payment.action.confirm.notification.success'))->success()->send();
                     } catch (\Exception $e) {
-                        Notification::make()->title('Error confirming payment')->body($e->getMessage())->danger()->send();
+                        Notification::make()->title(__('payment.action.confirm.notification.error'))->body($e->getMessage())->danger()->send();
                     }
                 }),
             Actions\DeleteAction::make(),

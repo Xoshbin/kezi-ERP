@@ -10,6 +10,11 @@ class ListAnalyticPlans extends ListRecords
 {
     protected static string $resource = AnalyticPlanResource::class;
 
+    public function getTitle(): string
+    {
+        return __('analytic_plan.pages.list');
+    }
+
     protected function getHeaderActions(): array
     {
         return [
