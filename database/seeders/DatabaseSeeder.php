@@ -55,7 +55,7 @@ class DatabaseSeeder extends Seeder
                  VendorBillSeeder::class,
                  InvoiceSeeder::class,
                 // InvoiceLineSeeder::class, // Removed as logic is now in InvoiceSeeder
-                // PaymentSeeder::class,
+                PaymentSeeder::class,
                 // PaymentDocumentLinkSeeder::class,
 
                 // 8. Adjustments and statements

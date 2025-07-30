@@ -46,14 +46,14 @@ class PaymentService
                     // For now, we assume a full payment marks the invoice as paid.
                     // A more robust solution would sum all payments against the invoice total.
                     if ($payment->amount->isGreaterThanOrEqualTo($link->invoice->total_amount)) {
-                        $link->invoice->status = Invoice::TYPE_PAID;
+                        $link->invoice->status = Invoice::STATUS_PAID;
                         $link->invoice->save();
                     }
                 }
                 if ($link->vendorBill) {
                     // Same logic for vendor bills.
                     if ($payment->amount->isGreaterThanOrEqualTo($link->vendorBill->total_amount)) {
-                        $link->vendorBill->status = VendorBill::TYPE_PAID;
+                        $link->vendorBill->status = VendorBill::STATUS_PAID;
                         $link->vendorBill->save();
                     }
                 }
