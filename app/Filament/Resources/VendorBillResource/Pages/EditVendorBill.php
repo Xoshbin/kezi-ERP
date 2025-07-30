@@ -102,15 +102,15 @@ class EditVendorBill extends EditRecord
                 'product_id' => $line->product_id,
                 'description' => $line->description,
                 'quantity' => $line->quantity,
-                'unit_price' => $line->unit_price?->getAmount(),
+                'unit_price' => $line->unit_price?->getAmount()->toFloat(),
                 'tax_id' => $line->tax_id,
                 'expense_account_id' => $line->expense_account_id,
                 'analytic_account_id' => $line->analytic_account_id,
             ];
         })->toArray();
         $data['lines'] = $linesData;
-        $data['total_amount'] = $this->record->total_amount?->getAmount();
-        $data['total_tax'] = $this->record->total_tax?->getAmount();
+        $data['total_amount'] = $this->record->total_amount?->getAmount()->toFloat();
+        $data['total_tax'] = $this->record->total_tax?->getAmount()->toFloat();
         return $data;
     }
 }
