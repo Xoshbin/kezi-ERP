@@ -10,6 +10,11 @@ class ListAnalyticAccounts extends ListRecords
 {
     protected static string $resource = AnalyticAccountResource::class;
 
+    public function getTitle(): string
+    {
+        return __('analytic_account.pages.list.title');
+    }
+
     protected function getHeaderActions(): array
     {
         return [

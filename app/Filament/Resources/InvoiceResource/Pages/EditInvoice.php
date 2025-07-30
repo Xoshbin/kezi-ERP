@@ -22,7 +22,7 @@ class EditInvoice extends EditRecord
     {
         return [
             Actions\Action::make('confirm')
-                ->label('Confirm Invoice')
+                ->label(__('invoice.confirm_invoice'))
                 ->color('success')
                 ->requiresConfirmation()
                 ->visible(fn (Invoice $record): bool => $record->status === Invoice::TYPE_DRAFT)
@@ -31,14 +31,14 @@ class EditInvoice extends EditRecord
                     $service = app(InvoiceService::class);
                     try {
                         $service->confirm($record, auth()->user());
-                        Notification::make()->title('Invoice confirmed successfully')->success()->send();
+                        Notification::make()->title(__('invoice.invoice_confirmed_successfully'))->success()->send();
                     } catch (\Exception $e) {
-                        Notification::make()->title('Error confirming invoice')->body($e->getMessage())->danger()->send();
+                        Notification::make()->title(__('invoice.error_confirming_invoice'))->body($e->getMessage())->danger()->send();
                     }
                 }),
 
             Actions\Action::make('registerPayment')
-                ->label('Register Payment')
+                ->label(__('invoice.register_payment'))
                 ->color('info')
                 ->visible(fn (Invoice $record): bool => $record->status === Invoice::TYPE_POSTED)
                 ->action(fn (Invoice $record) => redirect()->to(PaymentResource::getUrl('create', [
@@ -49,20 +49,20 @@ class EditInvoice extends EditRecord
                 ]))),
 
             Actions\Action::make('resetToDraft')
-                ->label('Reset to Draft')
+                ->label(__('invoice.reset_to_draft'))
                 ->color('warning')
                 ->requiresConfirmation()
                 ->visible(fn (Invoice $record): bool => $record->status === Invoice::TYPE_POSTED)
                 ->form([
-                    \Filament\Forms\Components\Textarea::make('reason')->required(),
+                    \Filament\Forms\Components\Textarea::make('reason')->label(__('invoice.reason'))->required(),
                 ])
                 ->action(function (Invoice $record, array $data): void {
                     $service = app(InvoiceService::class);
                     try {
                         $service->resetToDraft($record, auth()->user(), $data['reason']);
-                        Notification::make()->title('Invoice reset to draft')->success()->send();
+                        Notification::make()->title(__('invoice.invoice_reset_to_draft'))->success()->send();
                     } catch (\Exception $e) {
-                        Notification::make()->title('Error resetting invoice')->body($e->getMessage())->danger()->send();
+                        Notification::make()->title(__('invoice.error_resetting_invoice'))->body($e->getMessage())->danger()->send();
                     }
                 }),
 

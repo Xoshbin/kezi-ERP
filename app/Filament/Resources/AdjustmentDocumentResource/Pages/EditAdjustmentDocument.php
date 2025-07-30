@@ -20,7 +20,7 @@ class EditAdjustmentDocument extends EditRecord
     {
         return [
             Actions\Action::make('post')
-                ->label('Post Document')
+                ->label(__('adjustment_document.post_document'))
                 ->color('success')
                 ->requiresConfirmation()
                 ->visible(fn (AdjustmentDocument $record): bool => $record->status === AdjustmentDocument::STATUS_DRAFT)
@@ -29,9 +29,9 @@ class EditAdjustmentDocument extends EditRecord
                     $service = app(AdjustmentDocumentService::class);
                     try {
                         $service->post($record, auth()->user());
-                        Notification::make()->title('Document posted successfully')->success()->send();
+                        Notification::make()->title(__('adjustment_document.notification_document_posted_successfully'))->success()->send();
                     } catch (\Exception $e) {
-                        Notification::make()->title('Error posting document')->body($e->getMessage())->danger()->send();
+                        Notification::make()->title(__('adjustment_document.notification_document_post_error'))->body($e->getMessage())->danger()->send();
                     }
                 }),
             Actions\DeleteAction::make(),

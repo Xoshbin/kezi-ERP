@@ -19,26 +19,42 @@ class BankStatementResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
+    public static function getModelLabel(): string
+    {
+        return __('bank_statement.bank_statement');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __('bank_statement.bank_statements');
+    }
+
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
                 Forms\Components\TextInput::make('company_id')
+                    ->label(__('bank_statement.company_id'))
                     ->required()
                     ->numeric(),
                 Forms\Components\TextInput::make('journal_id')
+                    ->label(__('bank_statement.journal_id'))
                     ->required()
                     ->numeric(),
                 Forms\Components\TextInput::make('reference')
+                    ->label(__('bank_statement.reference'))
                     ->required()
                     ->maxLength(255),
                 Forms\Components\DatePicker::make('date')
+                    ->label(__('bank_statement.date'))
                     ->required(),
                 Forms\Components\TextInput::make('starting_balance')
+                    ->label(__('bank_statement.starting_balance'))
                     ->required()
                     ->numeric()
                     ->default(0.00),
                 Forms\Components\TextInput::make('ending_balance')
+                    ->label(__('bank_statement.ending_balance'))
                     ->required()
                     ->numeric()
                     ->default(0.00),
@@ -50,27 +66,35 @@ class BankStatementResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('company_id')
+                    ->label(__('bank_statement.company_id'))
                     ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('journal_id')
+                    ->label(__('bank_statement.journal_id'))
                     ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('reference')
+                    ->label(__('bank_statement.reference'))
                     ->searchable(),
                 Tables\Columns\TextColumn::make('date')
+                    ->label(__('bank_statement.date'))
                     ->date()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('starting_balance')
+                    ->label(__('bank_statement.starting_balance'))
                     ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('ending_balance')
+                    ->label(__('bank_statement.ending_balance'))
                     ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('created_at')
+                    ->label(__('bank_statement.created_at'))
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('updated_at')
+                    ->label(__('bank_statement.updated_at'))
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
