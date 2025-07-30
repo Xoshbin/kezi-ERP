@@ -24,7 +24,7 @@ class CreateJournalEntry extends CreateRecord
         $lockDate = LockDate::where('company_id', $data['company_id'])->first();
         if ($lockDate && $entryDate->lte($lockDate->locked_until)) {
             throw ValidationException::withMessages([
-                'data.entry_date' => 'The accounting period is locked and cannot be modified.',
+                'data.entry_date' => __('journal_entry.period_locked'),
             ]);
         }
 
@@ -35,7 +35,7 @@ class CreateJournalEntry extends CreateRecord
 
         if (bccomp((string)$totalDebit, (string)$totalCredit, 2) !== 0) {
             throw ValidationException::withMessages([
-                'data.lines' => 'The total debits must equal the total credits.',
+                'data.lines' => __('journal_entry.debits_must_equal_credits'),
             ]);
         }
 
@@ -72,7 +72,7 @@ class CreateJournalEntry extends CreateRecord
             entry_date: $data['entry_date'],
             reference: $data['reference'],
             description: $data['description'],
-            created_by_user_id: auth()->id(), // It's safer to get the authenticated user here.
+            created_by_user_id: \Illuminate\Support\Facades\Auth::id(), // It's safer to get the authenticated user here.
 
             // THE FIX: A new entry from the form should always be a draft.
             is_posted: false,
