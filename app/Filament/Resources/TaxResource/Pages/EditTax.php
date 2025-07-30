@@ -16,4 +16,9 @@ class EditTax extends EditRecord
             Actions\DeleteAction::make(),
         ];
     }
+
+    public function getTitle(): string
+    {
+        return __('tax.pages.edit');
+    }
 }
