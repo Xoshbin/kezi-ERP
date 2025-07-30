@@ -78,7 +78,7 @@ class VendorBillResource extends Resource
                                     $product = Product::find($state);
                                     if ($product) {
                                         $set('description', $product->name);
-                                        $set('unit_price', $product->unit_price);
+                                        $set('unit_price', $product->unit_price?->getAmount()->toFloat());
                                         $set('expense_account_id', $product->expense_account_id);
                                     }
                                 }
@@ -109,30 +109,7 @@ class VendorBillResource extends Resource
                     ])
                     ->columns(5)
                     ->columnSpanFull()
-                    ->afterStateUpdated(function (callable $get, callable $set) {
-                        $lines = $get('lines') ?? [];
-                        $totalAmount = 0;
-                        $totalTax = 0;
-
-                        foreach ($lines as $line) {
-                            $quantity = (float)($line['quantity'] ?? 0);
-                            $unitPrice = (float)($line['unit_price'] ?? 0);
-                            $subtotal = $quantity * $unitPrice;
-
-                            $lineTax = 0;
-                            if (!empty($line['tax_id'])) {
-                                $tax = Tax::find($line['tax_id']);
-                                if ($tax) {
-                                    $lineTax = $subtotal * $tax->rate;
-                                }
-                            }
-                            $totalTax += $lineTax;
-                            $totalAmount += $subtotal + $lineTax;
-                        }
-                        $set('../../total_amount', $totalAmount);
-                        $set('../../total_tax', $totalTax);
-                    })
-                    ->live(onBlur: true),
+                    ,
 
                 Forms\Components\TextInput::make('total_amount')
                     ->label(__('vendor_bill.total_amount'))
