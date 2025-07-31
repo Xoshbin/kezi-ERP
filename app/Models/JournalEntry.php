@@ -106,6 +106,8 @@ class JournalEntry extends Model
         'total_debit',
         'total_credit',
         'is_posted',
+        'state',
+        'reversed_entry_id',
         'hash',
         'previous_hash',
         'created_by_user_id',
