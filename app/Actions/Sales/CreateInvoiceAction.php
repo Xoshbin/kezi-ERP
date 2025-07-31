@@ -2,17 +2,25 @@
 
 namespace App\Actions\Sales;
 
-use App\DataTransferObjects\Sales\CreateInvoiceDTO;
-use App\Models\Currency;
-use App\Models\Invoice;
 use Brick\Money\Money;
+use App\Models\Invoice;
+use App\Models\Currency;
 use Illuminate\Support\Facades\DB;
+use App\Services\AccountingValidationService;
+use App\DataTransferObjects\Sales\CreateInvoiceDTO;
 
 class CreateInvoiceAction
 {
+    public function __construct(
+        private readonly AccountingValidationService $accountingValidationService = new AccountingValidationService()
+    ) {}
+
     public function execute(CreateInvoiceDTO $dto): Invoice
     {
-        return DB::transaction(function () use ($dto) {
+        $this->accountingValidationService->checkIfPeriodIsLocked($dto->company_id, $dto->invoice_date);
+
+        // 1. Execute the transaction and store the created (but stale) invoice in a variable.
+        $invoice = DB::transaction(function () use ($dto) {
             $currencyCode = Currency::find($dto->currency_id)->code;
 
             $invoice = Invoice::create([
@@ -48,5 +56,8 @@ class CreateInvoiceAction
 
             return $invoice;
         });
+
+        // 2. Now, refresh the model from the database and return the fresh version.
+        return $invoice->fresh();
     }
 }
