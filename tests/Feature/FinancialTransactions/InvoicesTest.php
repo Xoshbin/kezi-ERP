@@ -177,11 +177,8 @@ test('an invoice cannot be created or posted in a locked period', function () {
     $currencyCode = $this->company->currency->code;
     $draftInvoice = Invoice::factory()->create([
         'company_id' => $this->company->id,
-        'currency_id' => $this->company->currency_id,
-        'status' => 'draft',
+        'status' => Invoice::STATUS_DRAFT,
         'invoice_date' => now()->addDay()->toDateString(),
-        'total_amount' => Money::of(100, $currencyCode),
-        'total_tax' => Money::of(0, $currencyCode),
     ]);
 
     // Act: Now, try to CONFIRM the invoice but set its date to be inside the locked period.
