@@ -22,7 +22,7 @@ class CreateInvoiceAction
                 'fiscal_position_id' => $dto->fiscal_position_id,
                 'invoice_date' => $dto->invoice_date,
                 'due_date' => $dto->due_date,
-                'status' => Invoice::TYPE_DRAFT,
+                'status' => Invoice::STATUS_DRAFT,
                 'total_amount' => Money::of(0, $currencyCode),
                 'total_tax' => Money::of(0, $currencyCode),
             ]);

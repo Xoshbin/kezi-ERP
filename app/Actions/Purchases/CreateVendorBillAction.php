@@ -30,7 +30,7 @@ class CreateVendorBillAction
                 'bill_date' => $dto->bill_date,
                 'accounting_date' => $dto->accounting_date,
                 'due_date' => $dto->due_date,
-                'status' => VendorBill::TYPE_DRAFT,
+                'status' => VendorBill::STATUS_DRAFT,
                 'total_amount' => Money::of(0, $currencyCode), // Initialize
                 'total_tax' => Money::of(0, $currencyCode),    // Initialize
             ]);
