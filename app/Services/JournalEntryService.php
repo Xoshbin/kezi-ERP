@@ -2,19 +2,20 @@
 
 namespace App\Services;
 
-use App\Exceptions\PeriodIsLockedException;
-use App\Exceptions\UpdateNotAllowedException;
-use App\Exceptions\DeletionNotAllowedException;
-use App\Models\Company;
-use App\Models\JournalEntry;
-use App\Models\LockDate;
-use App\Rules\ActiveAccount;
-use Brick\Money\Money;
 use Carbon\Carbon;
+use App\Models\User;
+use Brick\Money\Money;
+use App\Models\Company;
+use App\Models\LockDate;
+use App\Models\JournalEntry;
+use App\Rules\ActiveAccount;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
+use App\Exceptions\PeriodIsLockedException;
+use App\Exceptions\UpdateNotAllowedException;
 use Illuminate\Validation\ValidationException;
+use App\Exceptions\DeletionNotAllowedException;
 
 class JournalEntryService
 {
@@ -143,6 +144,58 @@ class JournalEntryService
             // Deleting the JournalEntry will also delete its lines if foreign keys
             // are configured with `onDelete('cascade')`.
             return $journalEntry->delete();
+        });
+    }
+
+    /**
+     * Creates and posts a reversing journal entry for a given posted entry.
+     *
+     * @param JournalEntry $originalEntry The entry to be reversed.
+     * @param string $reason The reason for the reversal.
+     * @param User $user The user performing the action.
+     * @return JournalEntry The newly created reversing entry.
+     * @throws \Exception
+     */
+    public function createReversal(JournalEntry $originalEntry, string $reason, User $user): JournalEntry
+    {
+        if (!$originalEntry->is_posted) {
+            throw new \Exception('Only posted journal entries can be reversed.');
+        }
+
+        return DB::transaction(function () use ($originalEntry, $reason, $user) {
+            // Create the new reversing entry header
+            $reversingEntry = JournalEntry::create([
+                'company_id' => $originalEntry->company_id,
+                'journal_id' => $originalEntry->journal_id,
+                'currency_id' => $originalEntry->currency_id,
+                'entry_date' => now(), // Reversal happens now
+                'reference' => 'REV/' . $originalEntry->reference,
+                'description' => $reason,
+                'total_debit' => $originalEntry->total_credit, // Swap totals
+                'total_credit' => $originalEntry->total_debit, // Swap totals
+                'is_posted' => true, // Reversals are posted immediately
+                'created_by_user_id' => $user->id,
+            ]);
+
+            // Create the inverse lines
+            foreach ($originalEntry->lines as $line) {
+                $reversingEntry->lines()->create([
+                    'account_id' => $line->account_id,
+                    'partner_id' => $line->partner_id,
+                    'currency_id' => $line->currency_id,
+                    'debit' => $line->credit, // The core of the reversal
+                    'credit' => $line->debit,  // The core of the reversal
+                    'description' => 'Reversal of line: ' . $line->description,
+                ]);
+            }
+
+            // Update the original entry to mark it as reversed for a clear audit trail
+            $originalEntry->update([
+                'state' => 'reversed',
+                'reversed_entry_id' => $reversingEntry->id,
+            ]);
+
+            return $reversingEntry;
         });
     }
 }
