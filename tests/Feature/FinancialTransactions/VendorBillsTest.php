@@ -226,6 +226,9 @@ test('a vendor bill cannot be created or posted in a locked period', function ()
     // Act: Change the date to be inside the locked period before confirming.
     $draftVendorBill->bill_date = now()->subMonth()->toDateString();
 
+    // Save the change to the database before passing it to the service.
+    $draftVendorBill->save();
+
     // Assert: Expect confirmation to fail.
     expect(fn() => (app(VendorBillService::class))->confirm($draftVendorBill, $this->user))
         ->toThrow(PeriodIsLockedException::class);

@@ -122,6 +122,22 @@ class VendorBill extends Model
         'updated_at'         => 'datetime',   // Automatically managed by Eloquent.
     ];
 
+    public const STATUS_DRAFT = 'draft';
+    public const STATUS_POSTED = 'posted';
+    public const STATUS_PAID = 'paid';
+    public const STATUS_CANCELED = 'canceled';
+
+    // use it in Filament select options columns
+    public static function getStatuses(): array
+    {
+        return [
+            self::STATUS_DRAFT => 'Draft',
+            self::STATUS_POSTED => 'Posted',
+            self::STATUS_PAID => 'Paid',
+            self::STATUS_CANCELED => 'Canceled',
+        ];
+    }
+
     protected static function booted(): void
     {
         static::saving(function (self $vendorBill) {
@@ -155,20 +171,6 @@ class VendorBill extends Model
             'subtotal' => $subtotal->getAmount(),
             'total_amount' => $this->total_amount->getAmount(),
         ]);
-    }
-
-    public const STATUS_DRAFT = 'draft';
-    public const STATUS_POSTED = 'posted';
-    public const STATUS_PAID = 'paid';
-
-    // use it in Filament select options columns
-    public static function getStatuses(): array
-    {
-        return [
-            self::STATUS_DRAFT => 'Draft',
-            self::STATUS_POSTED => 'Posted',
-            self::STATUS_PAID => 'Paid',
-        ];
     }
 
     /**
