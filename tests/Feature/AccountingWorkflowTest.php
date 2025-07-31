@@ -1,21 +1,30 @@
 <?php
 
+use App\Models\User;
+use Brick\Money\Money;
 use App\Models\Account;
 use App\Models\Company;
-use App\Models\Currency;
 use App\Models\Invoice;
 use App\Models\Journal;
-use App\Models\JournalEntry;
 use App\Models\Partner;
-use App\Models\User;
+use App\Models\Currency;
 use App\Models\VendorBill;
-use App\Services\AdjustmentDocumentService;
+use App\Models\JournalEntry;
 use App\Services\InvoiceService;
-use App\Services\JournalEntryService;
 use App\Services\PaymentService;
 use App\Services\VendorBillService;
-use Brick\Money\Money;
+use App\Services\JournalEntryService;
+use App\Actions\Sales\CreateInvoiceAction;
+use App\Services\AdjustmentDocumentService;
+use App\Actions\Payments\CreatePaymentAction;
+use App\Actions\Purchases\CreateVendorBillAction;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use App\DataTransferObjects\Sales\CreateInvoiceDTO;
+use App\DataTransferObjects\Payments\CreatePaymentDTO;
+use App\DataTransferObjects\Sales\CreateInvoiceLineDTO;
+use App\DataTransferObjects\Purchases\CreateVendorBillDTO;
+use App\DataTransferObjects\Purchases\CreateVendorBillLineDTO;
+use App\DataTransferObjects\Payments\CreatePaymentDocumentLinkDTO;
 
 uses(RefreshDatabase::class, \Tests\Traits\CreatesApplication::class);
 
@@ -64,25 +73,33 @@ test('the entire accounting workflow from setup to credit note', function () {
 
     // Step 4: Purchasing a Fixed Asset
     $vendor = Partner::factory()->for($company)->create(['name' => 'Paykar Tech Supplies', 'type' => Partner::TYPE_VENDOR]);
+    // Arrange: Prepare the DTOs for the Action.
+    $lineDto = new CreateVendorBillLineDTO(
+        description: 'High-End Laptop for Business Use',
+        quantity: 1,
+        unit_price: (string) $highEndLaptopCost->getAmount()->toFloat(), // DTO expects a string for price
+        expense_account_id: $itEquipmentAccount->id,
+        product_id: null,
+        tax_id: null,
+        analytic_account_id: null
+    );
+
+    $vendorBillDto = new CreateVendorBillDTO(
+        company_id: $company->id,
+        vendor_id: $vendor->id, // <-- Note: DTO uses 'vendor_id'
+        currency_id: $currency->id,
+        bill_reference: 'KE-LAPTOP-001',
+        bill_date: now()->toDateString(),
+        accounting_date: now()->toDateString(),
+        due_date: now()->addDays(30)->toDateString(),
+        lines: [$lineDto]
+    );
+
+    // Act: Create the vendor bill using the Action.
+    $vendorBill = (new CreateVendorBillAction())->execute($vendorBillDto);
+
+    // The rest of the test remains the same...
     $vendorBillService = app(VendorBillService::class);
-    $vendorBill = $vendorBillService->create([
-        'company_id' => $company->id,
-        'currency_id' => $currency->id,
-        'partner_id' => $vendor->id,
-        'bill_date' => now()->toDateString(),
-        'accounting_date' => now()->toDateString(),
-        'due_date' => now()->addDays(30)->toDateString(),
-        'bill_reference' => 'KE-LAPTOP-001',
-        'lines' => [
-            [
-                'description' => 'High-End Laptop for Business Use',
-                'quantity' => 1,
-                // MODIFIED: Use float value for unit price to pass validation
-                'unit_price' => $highEndLaptopCost->getAmount()->toFloat(),
-                'expense_account_id' => $itEquipmentAccount->id,
-            ],
-        ],
-    ]);
 
     $vendorBill->refresh();
 
@@ -99,24 +116,30 @@ test('the entire accounting workflow from setup to credit note', function () {
 
     // Step 5: Providing a Service & Invoicing
     $customer = Partner::factory()->for($company)->create(['name' => 'Hawre Trading Group', 'type' => Partner::TYPE_CUSTOMER]);
+    $lineDto = new CreateInvoiceLineDTO(
+        description: 'On-site IT Infrastructure Setup',
+        quantity: 1,
+        unit_price: (string) $itInfrastructureServiceCost->getAmount()->toFloat(), // DTO expects a string
+        income_account_id: $revenueAccount->id,
+        product_id: null,
+        tax_id: null
+    );
+
+    $invoiceDto = new CreateInvoiceDTO(
+        company_id: $company->id,
+        customer_id: $customer->id,
+        currency_id: $currency->id,
+        invoice_date: now()->toDateString(),
+        due_date: now()->addDays(15)->toDateString(),
+        lines: [$lineDto],
+        fiscal_position_id: null
+    );
+
+    // Act: Create the invoice using the Action.
+    $invoice = (new CreateInvoiceAction())->execute($invoiceDto);
+
+    // The rest of the test remains the same...
     $invoiceService = app(InvoiceService::class);
-    $invoice = $invoiceService->create([
-        'company_id' => $company->id,
-        'customer_id' => $customer->id,
-        'currency_id' => $currency->id,
-        'invoice_date' => now()->toDateString(),
-        'due_date' => now()->addDays(15)->toDateString(),
-        'lines' => [
-            [
-                'description' => 'On-site IT Infrastructure Setup',
-                'quantity' => 1,
-                'reference' => 'IT-SETUP-001',
-                // MODIFIED: Use float value for unit price to pass validation
-                'unit_price' => $itInfrastructureServiceCost->getAmount()->toFloat(),
-                'income_account_id' => $revenueAccount->id,
-            ],
-        ],
-    ]);
     $invoiceService->confirm($invoice, $user);
 
     $invoice->refresh();
@@ -129,22 +152,26 @@ test('the entire accounting workflow from setup to credit note', function () {
     expect($invoiceEntry->lines->where('account_id', $revenueAccount->id)->first()->credit->isEqualTo($itInfrastructureServiceCost))->toBeTrue();
 
     // Step 6: Receiving Payment from Customer
+    $documentLinkDto = new CreatePaymentDocumentLinkDTO(
+        document_type: 'invoice',
+        document_id: $invoice->id,
+        amount_applied: (string) $itInfrastructureServiceCost->getAmount()->toFloat() // DTO expects a string
+    );
+
+    $paymentDto = new CreatePaymentDTO(
+        company_id: $company->id,
+        journal_id: $bankJournal->id,
+        currency_id: $currency->id,
+        payment_date: now()->toDateString(),
+        document_links: [$documentLinkDto],
+        reference: null
+    );
+
+    // Act: Create the payment using the Action.
+    $customerPayment = (new CreatePaymentAction())->execute($paymentDto, $user);
+
+    // The rest of the test step remains the same...
     $paymentService = app(PaymentService::class);
-    $customerPayment = $paymentService->create([
-        'company_id' => $company->id,
-        'currency_id' => $currency->id,
-        'paid_to_from_partner_id' => $customer->id,
-        'payment_date' => now()->toDateString(),
-        'journal_id' => $bankJournal->id,
-        'documents' => [
-            [
-                'document_id' => $invoice->id,
-                'document_type' => 'invoice',
-                // MODIFIED: Use the major amount from the Money object
-                'amount' => $itInfrastructureServiceCost->getAmount()->toFloat(),
-            ],
-        ],
-    ], $user);
     $paymentService->confirm($customerPayment, $user);
 
     $customerPayment->refresh();
@@ -154,24 +181,27 @@ test('the entire accounting workflow from setup to credit note', function () {
     expect($customerPaymentEntry->total_debit->isEqualTo($itInfrastructureServiceCost))->toBeTrue();
     expect($customerPaymentEntry->lines->where('account_id', $bankAccount->id)->first()->debit->isEqualTo($itInfrastructureServiceCost))->toBeTrue();
     expect($customerPaymentEntry->lines->where('account_id', $arAccount->id)->first()->credit->isEqualTo($itInfrastructureServiceCost))->toBeTrue();
-    expect($invoice->fresh()->status)->toBe(Invoice::TYPE_PAID);
+    expect($invoice->fresh()->status)->toBe(Invoice::STATUS_PAID);
 
     // Step 7: Paying a Vendor
-    $vendorPayment = $paymentService->create([
-        'company_id' => $company->id,
-        'currency_id' => $currency->id,
-        'paid_to_from_partner_id' => $vendor->id,
-        'payment_date' => now()->toDateString(),
-        'journal_id' => $bankJournal->id,
-        'documents' => [
-            [
-                'document_id' => $vendorBill->id,
-                'document_type' => 'vendor_bill',
-                // MODIFIED: Use the major amount from the Money object
-                'amount' => $highEndLaptopCost->getAmount()->toFloat(),
-            ],
-        ],
-    ], $user);
+    $vendorDocumentLinkDto = new CreatePaymentDocumentLinkDTO(
+        document_type: 'vendor_bill',
+        document_id: $vendorBill->id,
+        amount_applied: (string) $highEndLaptopCost->getAmount()->toFloat()
+    );
+
+    $vendorPaymentDto = new CreatePaymentDTO(
+        company_id: $company->id,
+        journal_id: $bankJournal->id,
+        currency_id: $currency->id,
+        payment_date: now()->toDateString(),
+        document_links: [$vendorDocumentLinkDto],
+        reference: 'Payment for Laptop'
+    );
+
+    // Act: Create the vendor payment using the Action.
+    $vendorPayment = (new CreatePaymentAction())->execute($vendorPaymentDto, $user);
+
     $paymentService->confirm($vendorPayment, $user);
 
     $vendorPayment->refresh();
@@ -181,7 +211,7 @@ test('the entire accounting workflow from setup to credit note', function () {
     expect($vendorPaymentEntry->total_debit->isEqualTo($highEndLaptopCost))->toBeTrue();
     expect($vendorPaymentEntry->lines->where('account_id', $apAccount->id)->first()->debit->isEqualTo($highEndLaptopCost))->toBeTrue();
     expect($vendorPaymentEntry->lines->where('account_id', $bankAccount->id)->first()->credit->isEqualTo($highEndLaptopCost))->toBeTrue();
-    expect($vendorBill->fresh()->status)->toBe(VendorBill::TYPE_PAID);
+    expect($vendorBill->fresh()->status)->toBe(VendorBill::STATUS_PAID);
 
     // Step 8: Handling a Correction (Credit Note)
     $adjustmentService = app(AdjustmentDocumentService::class);
