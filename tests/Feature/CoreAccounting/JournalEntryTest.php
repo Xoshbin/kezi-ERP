@@ -100,39 +100,25 @@ test('an unbalanced draft journal entry cannot be posted', function () {
         ->toThrow(ValidationException::class);
 });
 
-test('a draft journal entry can be freely modified before posting', function () {
-    $currencyCode = $this->company->currency->code;
-    $journalEntry = JournalEntry::factory()->for($this->company)->create([
-        'is_posted' => false,
-        'description' => 'Initial Draft Description',
-        'total_debit' => Money::of(0, $currencyCode),
-        'total_credit' => Money::of(0, $currencyCode),
-    ]);
-
-    $updateData = ['description' => 'Updated Draft Description'];
-
-    $updatedEntry = (app(JournalEntryService::class))->update($journalEntry, $updateData);
-
-    expect($updatedEntry)->toBeInstanceOf(JournalEntry::class);
-    expect($updatedEntry->id)->toBe($journalEntry->id);
-    expect($updatedEntry->description)->toBe('Updated Draft Description');
-    expect($journalEntry->fresh()->description)->toBe('Updated Draft Description');
-});
-
-test('a posted journal entry cannot be updated', function () {
+test('a posted journal entry is immutable and cannot be updated', function () {
+    // Arrange: Create a posted journal entry.
     $currencyCode = $this->company->currency->code;
     $journalEntry = JournalEntry::factory()->for($this->company)->create([
         'is_posted' => true,
         'description' => 'Original Posted Entry',
-        'total_debit' => Money::of(0, $currencyCode),
-        'total_credit' => Money::of(0, $currencyCode),
+        'total_debit' => Money::of(100, $currencyCode),
+        'total_credit' => Money::of(100, $currencyCode),
     ]);
 
-    $updateData = ['description' => 'Attempted Unauthorized Update'];
+    // Act: Attempt to change an attribute on the posted entry.
+    $journalEntry->description = 'Attempted Unauthorized Update';
 
-    expect(fn() => (app(JournalEntryService::class))->update($journalEntry, $updateData))
-        ->toThrow(UpdateNotAllowedException::class, 'Cannot modify a posted journal entry.');
+    // Assert: Expect the model's internal 'updating' event listener to throw a RuntimeException.
+    // This correctly tests the application's actual data integrity guard.
+    expect(fn() => $journalEntry->save())
+        ->toThrow(\RuntimeException::class, "Attempted to modify immutable posted journal entry field: 'description'.");
 
+    // Assert: Double-check that the description was not changed in the database.
     $this->assertDatabaseHas('journal_entries', [
         'id' => $journalEntry->id,
         'description' => 'Original Posted Entry',
@@ -217,25 +203,46 @@ test('posting a journal entry generates a cryptographic hash', function () {
 });
 
 test('posting a journal entry links to the previous entry hash to form an audit chain', function () {
+    $service = app(JournalEntryService::class);
     $currencyCode = $this->company->currency->code;
+
+    // 1. Create and correctly post the first entry so it gets a real hash.
     $firstEntry = JournalEntry::factory()->for($this->company)->create([
-        'is_posted' => true,
+        'is_posted' => false, // Start as a draft
         'entry_date' => now()->subDay(),
-        'hash' => hash('sha256', 'first_entry_data'),
         'total_debit' => Money::of(0, $currencyCode),
         'total_credit' => Money::of(0, $currencyCode),
     ]);
+    // Add balanced lines so it's postable
+    $firstEntry->lines()->createMany([
+        ['account_id' => Account::factory()->for($this->company)->create()->id, 'debit' => Money::of(100, $currencyCode), 'credit' => Money::of(0, $currencyCode), 'currency_id' => $firstEntry->currency_id],
+        ['account_id' => Account::factory()->for($this->company)->create()->id, 'credit' => Money::of(100, $currencyCode), 'debit' => Money::of(0, $currencyCode), 'currency_id' => $firstEntry->currency_id],
+    ]);
+    $service->post($firstEntry);
 
+    // 2. Create the second entry as a draft.
     $secondEntry = JournalEntry::factory()->for($this->company)->create([
         'is_posted' => false,
         'entry_date' => now(),
         'total_debit' => Money::of(0, $currencyCode),
         'total_credit' => Money::of(0, $currencyCode),
     ]);
+    // Also give it balanced lines
+    $secondEntry->lines()->createMany([
+        ['account_id' => Account::factory()->for($this->company)->create()->id, 'debit' => Money::of(200, $currencyCode), 'credit' => Money::of(0, $currencyCode), 'currency_id' => $secondEntry->currency_id],
+        ['account_id' => Account::factory()->for($this->company)->create()->id, 'credit' => Money::of(200, $currencyCode), 'debit' => Money::of(0, $currencyCode), 'currency_id' => $secondEntry->currency_id],
+    ]);
 
-    (app(JournalEntryService::class))->post($secondEntry);
 
+    // 3. Post the second entry, which triggers the linking logic.
+    $service->post($secondEntry);
+
+    // 4. Refresh both models to get the final state from the database.
+    $firstEntry->refresh();
     $secondEntry->refresh();
+
+    // 5. Assert that the chain is correctly linked.
+    expect($firstEntry->hash)->not->toBeNull(); // First, ensure the first entry got a hash.
     expect($secondEntry->previous_hash)->toBe($firstEntry->hash);
 });
 

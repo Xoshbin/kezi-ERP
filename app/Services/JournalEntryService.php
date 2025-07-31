@@ -2,19 +2,20 @@
 
 namespace App\Services;
 
-use App\Exceptions\PeriodIsLockedException;
-use App\Exceptions\UpdateNotAllowedException;
-use App\Exceptions\DeletionNotAllowedException;
-use App\Models\Company;
-use App\Models\JournalEntry;
-use App\Models\LockDate;
-use App\Rules\ActiveAccount;
-use Brick\Money\Money;
 use Carbon\Carbon;
+use App\Models\User;
+use Brick\Money\Money;
+use App\Models\Company;
+use App\Models\LockDate;
+use App\Models\JournalEntry;
+use App\Rules\ActiveAccount;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
+use App\Exceptions\PeriodIsLockedException;
+use App\Exceptions\UpdateNotAllowedException;
 use Illuminate\Validation\ValidationException;
+use App\Exceptions\DeletionNotAllowedException;
 
 class JournalEntryService
 {
@@ -45,10 +46,10 @@ class JournalEntryService
         $totalCredit = Money::of(0, $currencyCode);
 
         foreach ($data['lines'] as $line) {
-            if (isset($line['debit']) && $line['debit'] instanceof Money) {
+            if (isset($line['debit'])) {
                 $totalDebit = $totalDebit->plus($line['debit']);
             }
-            if (isset($line['credit']) && $line['credit'] instanceof Money) {
+            if (isset($line['credit'])) {
                 $totalCredit = $totalCredit->plus($line['credit']);
             }
         }
@@ -63,13 +64,12 @@ class JournalEntryService
         }
 
         // 3. Create within a Transaction
-        return DB::transaction(function () use ($data, $totalDebit,  $totalCredit, $postImmediately) {
-            // This is your excellent fix:
+        return DB::transaction(function () use ($data, $postImmediately, $totalDebit, $totalCredit) {
             $journalEntry = JournalEntry::create(
                 collect($data)->except('lines')->all() + [
+                    'is_posted' => $postImmediately,
                     'total_debit' => $totalDebit,
                     'total_credit' => $totalCredit,
-                    'is_posted' => $postImmediately, // <-- Set is_posted
                 ]
             );
 
@@ -77,6 +77,8 @@ class JournalEntryService
                 $journalEntry->lines()->create($lineData);
             }
 
+            // The totals are now set correctly on creation.
+            // We can return the entry directly.
             return $journalEntry;
         });
     }
@@ -113,50 +115,6 @@ class JournalEntryService
         return $journalEntry->save();
     }
 
-    public function update(JournalEntry $journalEntry, array $data): JournalEntry
-    {
-        // 1. Run existing validation checks
-        $this->accountingValidationService->checkIfPeriodIsLocked($journalEntry->company_id, $data['entry_date'] ?? $journalEntry->entry_date);
-
-        if ($journalEntry->is_posted) {
-            throw new UpdateNotAllowedException('Cannot modify a posted journal entry.');
-        }
-
-        // 2. Perform the update within a database transaction
-        return DB::transaction(function () use ($journalEntry, $data) {
-            // Separate the lines data from the parent data
-            $linesData = $data['lines'] ?? [];
-            unset($data['lines']);
-
-            // Update the main fields of the parent JournalEntry
-            $journalEntry->update($data);
-
-            // Sync the lines: delete the old ones first
-            $journalEntry->lines()->delete();
-
-            // Create the new lines from the form data
-            if (!empty($linesData)) {
-                $currency = $journalEntry->currency;
-                $currencyCode = $currency->code;
-                
-                $linesToCreate = array_map(function ($line) use ($currency, $currencyCode) {
-                    $line['debit'] = Money::of($line['debit'] ?? 0, $currencyCode);
-                    $line['credit'] = Money::of($line['credit'] ?? 0, $currencyCode);
-                    $line['currency_id'] = $currency->id;
-                    return $line;
-                }, $linesData);
-
-                $journalEntry->lines()->createMany($linesToCreate);
-            }
-            
-            // Recalculate totals from the new lines and save
-            $journalEntry->calculateTotalsFromLines();
-            $journalEntry->save();
-
-            return $journalEntry;
-        });
-    }
-
     /**
      * Deletes a JournalEntry if it is in draft status.
      * Deletion is blocked for posted entries to maintain financial integrity.
@@ -186,6 +144,58 @@ class JournalEntryService
             // Deleting the JournalEntry will also delete its lines if foreign keys
             // are configured with `onDelete('cascade')`.
             return $journalEntry->delete();
+        });
+    }
+
+    /**
+     * Creates and posts a reversing journal entry for a given posted entry.
+     *
+     * @param JournalEntry $originalEntry The entry to be reversed.
+     * @param string $reason The reason for the reversal.
+     * @param User $user The user performing the action.
+     * @return JournalEntry The newly created reversing entry.
+     * @throws \Exception
+     */
+    public function createReversal(JournalEntry $originalEntry, string $reason, User $user): JournalEntry
+    {
+        if (!$originalEntry->is_posted) {
+            throw new \Exception('Only posted journal entries can be reversed.');
+        }
+
+        return DB::transaction(function () use ($originalEntry, $reason, $user) {
+            // Create the new reversing entry header
+            $reversingEntry = JournalEntry::create([
+                'company_id' => $originalEntry->company_id,
+                'journal_id' => $originalEntry->journal_id,
+                'currency_id' => $originalEntry->currency_id,
+                'entry_date' => now(), // Reversal happens now
+                'reference' => 'REV/' . $originalEntry->reference,
+                'description' => $reason,
+                'total_debit' => $originalEntry->total_credit, // Swap totals
+                'total_credit' => $originalEntry->total_debit, // Swap totals
+                'is_posted' => true, // Reversals are posted immediately
+                'created_by_user_id' => $user->id,
+            ]);
+
+            // Create the inverse lines
+            foreach ($originalEntry->lines as $line) {
+                $reversingEntry->lines()->create([
+                    'account_id' => $line->account_id,
+                    'partner_id' => $line->partner_id,
+                    'currency_id' => $line->currency_id,
+                    'debit' => $line->credit, // The core of the reversal
+                    'credit' => $line->debit,  // The core of the reversal
+                    'description' => 'Reversal of line: ' . $line->description,
+                ]);
+            }
+
+            // Update the original entry to mark it as reversed for a clear audit trail
+            $originalEntry->update([
+                'state' => 'reversed',
+                'reversed_entry_id' => $reversingEntry->id,
+            ]);
+
+            return $reversingEntry;
         });
     }
 }

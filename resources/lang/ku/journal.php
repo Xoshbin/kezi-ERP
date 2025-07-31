@@ -1,0 +1,18 @@
+<?php
+
+return [
+    // JournalResource.php
+    'default_debit_account' => 'هەژماری قەرزی بنەڕەت',
+    'default_debit_account_helper' => 'بۆ رۆژنامچەی بانک/کاش، ئەمە ئەو هەژمارە بانکییەیە کە بۆ پارەدان بەکاردێت.',
+    'default_credit_account' => 'هەژماری خاوەن قەرزی بنەڕەت',
+    'default_credit_account_helper' => 'بۆ رۆژنامچەی بانک/کاش، ئەمە ئەو هەژمارە بانکییەیە کە بۆ پارەدان بەکاردێت.',
+    'default_debit_account_short' => 'هەژماری قەرزی بنەڕەت',
+    'default_credit_account_short' => 'هەژماری خاوەن قەرزی بنەڕەت',
+
+    // JournalEntriesRelationManager.php
+    'entry_date' => 'بەرواری تۆمارکردن',
+    'reference' => 'سەرچاوە',
+    'description' => 'پێناسە',
+    'is_posted' => 'پۆستکراوە',
+    'journal_entries' => 'تۆمارەکانی رۆژنامچە',
+];

@@ -91,3 +91,9 @@ This file tracks the project's current status, including recent changes, current
     - Corrected the test setup to provide a fully configured company for each test.
 - **Open Questions/Issues:**
     - The `AccountingWorkflowTest` is still failing with an `ErrorException` ("Attempt to read property 'debit' on null"). The next step is to investigate the `PaymentService` to identify the root cause of this error.
+[2025-07-29 16:05:16] - **Issue:** A critical bug was causing the `CreateJournalEntryForVendorBillActionTest` to fail due to an incorrect `total_credit` on the `JournalEntry` model.
+**Resolution:**
+1.  The root cause was traced to an incorrect type cast on the `rate` attribute of the `Tax` model, which was being cast to an `integer` instead of a `float`.
+2.  This caused the tax rate to be truncated to zero, leading to incorrect tax calculations in the `VendorBillLineObserver`.
+3.  The fix involved changing the cast in the `Tax` model to `float` and updating the test to create the tax rate as a numeric value.
+4.  The bug is now resolved, and the test is passing.

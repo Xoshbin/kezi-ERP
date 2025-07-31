@@ -19,25 +19,41 @@ class CurrencyResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
+    public static function getLabel(): ?string
+    {
+        return __('currency.label');
+    }
+
+    public static function getPluralLabel(): ?string
+    {
+        return __('currency.plural_label');
+    }
+
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
                 Forms\Components\TextInput::make('code')
+                    ->label(__('currency.code'))
                     ->required()
                     ->maxLength(255),
                 Forms\Components\TextInput::make('name')
+                    ->label(__('currency.name'))
                     ->required()
                     ->maxLength(255),
                 Forms\Components\TextInput::make('symbol')
+                    ->label(__('currency.symbol'))
                     ->required()
                     ->maxLength(5),
                 Forms\Components\TextInput::make('exchange_rate')
+                    ->label(__('currency.exchange_rate'))
                     ->required()
                     ->numeric(),
                 Forms\Components\Toggle::make('is_active')
+                    ->label(__('currency.is_active'))
                     ->required(),
-                Forms\Components\DateTimePicker::make('last_updated_at'),
+                Forms\Components\DateTimePicker::make('last_updated_at')
+                    ->label(__('currency.last_updated_at')),
             ]);
     }
 
@@ -46,24 +62,32 @@ class CurrencyResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('code')
+                    ->label(__('currency.code'))
                     ->searchable(),
                 Tables\Columns\TextColumn::make('name')
+                    ->label(__('currency.name'))
                     ->searchable(),
                 Tables\Columns\TextColumn::make('symbol')
+                    ->label(__('currency.symbol'))
                     ->searchable(),
                 Tables\Columns\TextColumn::make('exchange_rate')
+                    ->label(__('currency.exchange_rate'))
                     ->numeric()
                     ->sortable(),
                 Tables\Columns\IconColumn::make('is_active')
+                    ->label(__('currency.is_active'))
                     ->boolean(),
                 Tables\Columns\TextColumn::make('last_updated_at')
+                    ->label(__('currency.last_updated_at'))
                     ->dateTime()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('created_at')
+                    ->label(__('currency.created_at'))
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('updated_at')
+                    ->label(__('currency.updated_at'))
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),

@@ -2,10 +2,12 @@
 
 namespace App\Models;
 
+use Brick\Money\Money;
 use App\Casts\MoneyCast;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 /**
  * @property int $id
@@ -111,6 +113,19 @@ class AdjustmentDocument extends Model
         ];
     }
 
+    public const TYPE_CREDIT_NOTE = 'credit note'; // [5]
+    public const TYPE_DEBIT_NOTE = 'debit note'; // [5]
+    public const TYPE_MISCELLANEOUS = 'miscellaneous'; // [5]
+
+    public static function getTypes(): array
+    {
+        return [
+            self::TYPE_CREDIT_NOTE => 'Credit Note',
+            self::TYPE_DEBIT_NOTE => 'Debit Note',
+            self::TYPE_MISCELLANEOUS => 'mMiscellaneous',
+        ];
+    }
+
     /**
      * The "booted" method of the model.
      * This is an appropriate place to enforce global constraints or event listeners.
@@ -148,6 +163,11 @@ class AdjustmentDocument extends Model
     | These methods define the relationships this model has with other models,
     | crucial for a cohesive accounting system.
     */
+
+    public function lines(): HasMany
+    {
+        return $this->hasMany(AdjustmentDocumentLine::class);
+    }
 
     /**
      * Get the company that owns the adjustment document.
@@ -223,5 +243,36 @@ class AdjustmentDocument extends Model
     public function currency(): BelongsTo
     {
         return $this->belongsTo(Currency::class);
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Business Logic Methods
+    |--------------------------------------------------------------------------
+    */
+
+    /**
+     * Calculates and sets the total tax and total amount for the document
+     * by summing the values from its associated lines.
+     */
+    public function calculateTotalsFromLines(): void
+    {
+        $this->loadMissing('lines.tax', 'currency');
+
+        $currencyCode = $this->currency->code;
+        $zero = Money::of(0, $currencyCode);
+
+        $totalTax = $this->lines->reduce(
+            fn (Money $carry, AdjustmentDocumentLine $line) => $carry->plus($line->total_line_tax ?? $zero),
+            $zero
+        );
+
+        $subtotal = $this->lines->reduce(
+            fn (Money $carry, AdjustmentDocumentLine $line) => $carry->plus($line->subtotal ?? $zero),
+            $zero
+        );
+
+        $this->total_tax = $totalTax;
+        $this->total_amount = $subtotal->plus($totalTax);
     }
 }

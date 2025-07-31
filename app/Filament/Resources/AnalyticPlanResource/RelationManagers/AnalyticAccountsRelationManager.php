@@ -14,11 +14,14 @@ class AnalyticAccountsRelationManager extends RelationManager
 {
     protected static string $relationship = 'analyticAccounts';
 
+    protected static ?string $title = 'Analytic Accounts';
+
     public function form(Form $form): Form
     {
         return $form
             ->schema([
                 Forms\Components\TextInput::make('name')
+                    ->label(__('analytic_plan.name'))
                     ->required()
                     ->maxLength(255),
             ]);
@@ -29,7 +32,8 @@ class AnalyticAccountsRelationManager extends RelationManager
         return $table
             ->recordTitleAttribute('name')
             ->columns([
-                Tables\Columns\TextColumn::make('name'),
+                Tables\Columns\TextColumn::make('name')
+                    ->label(__('analytic_plan.name')),
             ])
             ->filters([
                 //

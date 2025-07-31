@@ -2,9 +2,15 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Models\Company;
+use App\Models\Invoice;
+use App\Models\Journal;
+use App\Models\VendorBill;
+use App\Observers\CurrencyObserver;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 
 /**
  * Class Currency
@@ -50,6 +56,8 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Currency whereUpdatedAt($value)
  * @mixin \Eloquent
  */
+
+#[ObservedBy([CurrencyObserver::class])]
 class Currency extends Model
 {
     use HasFactory;
@@ -162,5 +170,10 @@ class Currency extends Model
     public function analyticAccounts(): HasMany
     {
         return $this->hasMany(AnalyticAccount::class); // [1]
+    }
+
+    public function journalEntries(): HasMany
+    {
+        return $this->hasMany(JournalEntry::class);
     }
 }

@@ -10,6 +10,11 @@ class EditBankStatement extends EditRecord
 {
     protected static string $resource = BankStatementResource::class;
 
+    public function getTitle(): string
+    {
+        return __('bank_statement.edit_bank_statement');
+    }
+
     protected function getHeaderActions(): array
     {
         return [

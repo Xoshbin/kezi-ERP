@@ -14,12 +14,20 @@ class AccountMappingsRelationManager extends RelationManager
 {
     protected static string $relationship = 'accountMappings';
 
+    protected static ?string $title = 'Account Mappings';
+
     public function form(Form $form): Form
     {
         return $form
             ->schema([
-                Forms\Components\Select::make('original_account_id')->relationship('originalAccount', 'name')->required(),
-                Forms\Components\Select::make('mapped_account_id')->relationship('mappedAccount', 'name')->required(),
+                Forms\Components\Select::make('original_account_id')
+                    ->relationship('originalAccount', 'name')
+                    ->label(__('fiscal_position.relation_managers.account_mappings.original_account'))
+                    ->required(),
+                Forms\Components\Select::make('mapped_account_id')
+                    ->relationship('mappedAccount', 'name')
+                    ->label(__('fiscal_position.relation_managers.account_mappings.mapped_account'))
+                    ->required(),
             ]);
     }
 
@@ -28,8 +36,10 @@ class AccountMappingsRelationManager extends RelationManager
         return $table
             ->recordTitleAttribute('id')
             ->columns([
-                Tables\Columns\TextColumn::make('originalAccount.name'),
-                Tables\Columns\TextColumn::make('mappedAccount.name'),
+                Tables\Columns\TextColumn::make('originalAccount.name')
+                    ->label(__('fiscal_position.relation_managers.account_mappings.original_account')),
+                Tables\Columns\TextColumn::make('mappedAccount.name')
+                    ->label(__('fiscal_position.relation_managers.account_mappings.mapped_account')),
             ])
             ->filters([
                 //

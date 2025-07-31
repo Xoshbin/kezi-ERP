@@ -3,10 +3,12 @@
 namespace App\Models;
 
 use App\Casts\MoneyCast;
+use App\Observers\PaymentObserver;
 use App\Observers\AuditLogObserver;
-use Illuminate\Database\Eloquent\Attributes\ObservedBy;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
+
 // Note: SoftDeletes trait is intentionally excluded.
 // Financial transaction records like Payments, once confirmed, are immutable
 // and should not be soft-deleted to maintain data integrity and audit trails [1-3].
@@ -58,7 +60,7 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Payment whereUpdatedAt($value)
  * @mixin \Eloquent
  */
-#[ObservedBy([AuditLogObserver::class])]
+#[ObservedBy([AuditLogObserver::class, PaymentObserver::class])]
 class Payment extends Model
 {
     use HasFactory;
@@ -111,6 +113,7 @@ class Payment extends Model
     public const STATUS_DRAFT = 'draft';
     public const STATUS_CONFIRMED = 'confirmed';
     public const STATUS_RECONCILED = 'reconciled';
+    public const STATUS_CANCELED = 'canceled';
 
     /**
      * Get available payment statuses.
@@ -123,6 +126,7 @@ class Payment extends Model
             self::STATUS_DRAFT => 'Draft',
             self::STATUS_CONFIRMED => 'Confirmed',
             self::STATUS_RECONCILED => 'Reconciled',
+            self::STATUS_CANCELED => 'Canceled',
         ];
     }
 

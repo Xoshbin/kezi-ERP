@@ -9,4 +9,9 @@ use Filament\Resources\Pages\CreateRecord;
 class CreateBankStatement extends CreateRecord
 {
     protected static string $resource = BankStatementResource::class;
+
+    public function getTitle(): string
+    {
+        return __('bank_statement.create_bank_statement');
+    }
 }
