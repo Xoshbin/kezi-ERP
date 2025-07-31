@@ -27,13 +27,21 @@ class CompanyObserver
      * Handle the Company "deleting" event.
      * This code runs RIGHT BEFORE a company is deleted.
      */
+    /**
+     * Handle the Company "deleting" event.
+     * This is a critical guard to prevent orphaning any financial data.
+     */
     public function deleting(Company $company): void
     {
-        // Check if the company has any accounts.
-        // You should add more checks here for invoices, etc. later.
-        if ($company->accounts()->exists()) {
-            // If it has accounts, throw our custom exception.
-            throw new DeletionNotAllowedException('Cannot delete company with associated financial records.');
+        // A comprehensive check for any transactional data.
+        if (
+            $company->accounts()->exists() ||
+            $company->journalEntries()->exists() ||
+            $company->invoices()->exists() ||
+            $company->vendorBills()->exists() ||
+            $company->payments()->exists()
+        ) {
+            throw new DeletionNotAllowedException('Cannot delete a company with associated financial records.');
         }
     }
 

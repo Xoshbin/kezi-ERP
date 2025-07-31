@@ -26,7 +26,7 @@ test('it creates a correct journal entry for a posted invoice', function () {
     ]);
 
     $invoice = Invoice::factory()->for($company)->create([
-        'status' => Invoice::TYPE_POSTED,
+        'status' => Invoice::STATUS_POSTED,
         'posted_at' => now(),
         'invoice_number' => 'TEST-INV-001'
     ]);
