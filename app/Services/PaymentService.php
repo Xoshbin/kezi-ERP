@@ -2,24 +2,23 @@
 
 namespace App\Services;
 
-use App\Events\PaymentConfirmed;
-use App\Exceptions\UpdateNotAllowedException;
+use App\Models\User;
+use Brick\Money\Money;
 use App\Models\Company;
-use App\Models\Currency;
 use App\Models\Invoice;
 use App\Models\Payment;
-use App\Models\User;
+use App\Models\Currency;
 use App\Models\VendorBill;
-use Brick\Money\Money;
-use Illuminate\Support\Facades\DB;
 use InvalidArgumentException;
+use App\Events\PaymentConfirmed;
+use Illuminate\Support\Facades\DB;
+use App\Exceptions\UpdateNotAllowedException;
+use App\Exceptions\DeletionNotAllowedException;
 use App\Actions\Accounting\CreateJournalEntryForPaymentAction;
 
 class PaymentService
 {
-    public function __construct(protected JournalEntryService $journalEntryService)
-    {
-    }
+    public function __construct(protected JournalEntryService $journalEntryService) {}
 
     /**
      * Confirm a draft payment, locking it and creating the journal entry.
@@ -38,30 +37,102 @@ class PaymentService
             $payment->status = Payment::STATUS_CONFIRMED;
             $payment->save();
 
-            // MODIFIED: Update the status of the linked documents (invoices/vendor bills).
-            $payment->load('paymentDocumentLinks.invoice', 'paymentDocumentLinks.vendorBill');
-
-            foreach ($payment->paymentDocumentLinks as $link) {
-                if ($link->invoice) {
-                    // For now, we assume a full payment marks the invoice as paid.
-                    // A more robust solution would sum all payments against the invoice total.
-                    if ($payment->amount->isGreaterThanOrEqualTo($link->invoice->total_amount)) {
-                        $link->invoice->status = Invoice::STATUS_PAID;
-                        $link->invoice->save();
-                    }
-                }
-                if ($link->vendorBill) {
-                    // Same logic for vendor bills.
-                    if ($payment->amount->isGreaterThanOrEqualTo($link->vendorBill->total_amount)) {
-                        $link->vendorBill->status = VendorBill::STATUS_PAID;
-                        $link->vendorBill->save();
-                    }
-                }
-            }
+            // After confirming the payment, update the status of linked documents.
+            $this->updateLinkedDocumentStatus($payment);
 
             PaymentConfirmed::dispatch($payment);
 
             return $payment;
         });
+    }
+
+    /**
+     * Checks linked documents and updates their status to 'Paid' if fully paid.
+     */
+    protected function updateLinkedDocumentStatus(Payment $payment): void
+    {
+        $payment->load('paymentDocumentLinks.invoice', 'paymentDocumentLinks.vendorBill');
+
+        foreach ($payment->paymentDocumentLinks as $link) {
+            if ($link->invoice) {
+                $invoice = $link->invoice;
+
+                // --- START OF FIX ---
+                // Correctly sum the 'amount_applied' from the pivot table for this invoice.
+                $totalPaidMinor = $invoice->payments()
+                                          ->where('payments.status', '!=', Payment::STATUS_CANCELED)
+                                          ->sum('payment_document_links.amount_applied');
+
+                // Convert the summed integer back to a Money object for comparison.
+                $totalPaid = Money::ofMinor($totalPaidMinor, $invoice->currency->code);
+                // --- END OF FIX ---
+
+                if ($totalPaid->isGreaterThanOrEqualTo($invoice->total_amount)) {
+                    $invoice->status = Invoice::STATUS_PAID;
+                    $invoice->save();
+                }
+            }
+
+            if ($link->vendorBill) {
+                $vendorBill = $link->vendorBill;
+                $totalPaidMinor = $vendorBill->payments()
+                                             ->where('payments.status', '!=', Payment::STATUS_CANCELED)
+                                             ->sum('payment_document_links.amount_applied');
+                $totalPaid = Money::ofMinor($totalPaidMinor, $vendorBill->currency->code);
+
+                if ($totalPaid->isGreaterThanOrEqualTo($vendorBill->total_amount)) {
+                    $vendorBill->status = VendorBill::STATUS_PAID;
+                    $vendorBill->save();
+                }
+            }
+        }
+    }
+
+    /**
+     * Cancels a confirmed payment by creating a reversing journal entry.
+     */
+    public function cancel(Payment $payment, User $user): void
+    {
+        if ($payment->status !== Payment::STATUS_CONFIRMED) {
+            throw new \Exception('Only confirmed payments can be cancelled.');
+        }
+
+        DB::transaction(function () use ($payment, $user) {
+            $originalEntry = $payment->journalEntry;
+            if (!$originalEntry) {
+                throw new \Exception('Cannot cancel payment without a journal entry.');
+            }
+
+            // Use the new service method to create the reversal
+            $this->journalEntryService->createReversal(
+                $originalEntry,
+                'Cancellation of Payment ' . $payment->id,
+                $user
+            );
+
+            // Update the payment status to Cancelled
+            $payment->status = Payment::STATUS_CANCELED; // You may need to add 'Cancelled' to your Payment model statuses
+            $payment->save();
+
+            // Here you would dispatch a PaymentCancelled event if needed
+        });
+    }
+
+    /**
+     * Deletes a payment, but only if it is in a draft state.
+     * Enforces the accounting principle of immutability for confirmed transactions.
+     *
+     * @param Payment $payment The payment to be deleted.
+     * @throws DeletionNotAllowedException If the payment is not in a draft state.
+     */
+    public function delete(Payment $payment): void
+    {
+        // THE GUARD CLAUSE: This is the core of the fix.
+        if ($payment->status !== Payment::STATUS_DRAFT) {
+            throw new DeletionNotAllowedException('Confirmed payments cannot be deleted. Please create a reversal entry instead.');
+        }
+
+        // If the payment is a draft, proceed with deletion.
+        $payment->delete();
     }
 }

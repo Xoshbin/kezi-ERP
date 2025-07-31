@@ -4,11 +4,12 @@ namespace App\Models;
 
 use App\Casts\MoneyCast;
 use App\Observers\AuditLogObserver;
-use Illuminate\Database\Eloquent\Attributes\ObservedBy;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 // As a fundamental principle of accounting data integrity,
 // 'posted' financial records, such as Vendor Bills, must be **immutable** [1-3].
@@ -217,6 +218,17 @@ class VendorBill extends Model
     public function journalEntry(): BelongsTo
     {
         return $this->belongsTo(JournalEntry::class, 'journal_entry_id');
+    }
+
+    /**
+     * Get the Payments that are applied to this Vendor Bill.
+     *
+     * @return BelongsToMany
+     */
+    public function payments(): BelongsToMany
+    {
+        return $this->belongsToMany(Payment::class, 'payment_document_links', 'vendor_bill_id', 'payment_id')
+            ->withPivot('amount_applied');
     }
 
     /**

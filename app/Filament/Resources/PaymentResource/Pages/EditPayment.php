@@ -22,7 +22,7 @@ class EditPayment extends EditRecord
                 ->label(__('payment.edit.action.confirm.label'))
                 ->color('success')
                 ->requiresConfirmation()
-                ->visible(fn (Payment $record): bool => $record->status === Payment::STATUS_DRAFT)
+                ->visible(fn(Payment $record): bool => $record->status === Payment::STATUS_DRAFT)
                 ->action(function (Payment $record): void {
                     $this->save();
                     $service = app(PaymentService::class);
@@ -33,7 +33,32 @@ class EditPayment extends EditRecord
                         Notification::make()->title(__('payment.action.confirm.notification.error'))->body($e->getMessage())->danger()->send();
                     }
                 }),
-            Actions\DeleteAction::make(),
+            Actions\Action::make('cancel')
+                ->label('Cancel Payment')
+                ->color('danger')
+                ->requiresConfirmation()
+                ->action(function (Payment $record) {
+                    try {
+                        app(PaymentService::class)->cancel($record, Auth::user());
+                        Notification::make()
+                            ->title('Payment Cancelled')
+                            ->body('The payment and its journal entry have been successfully reversed.')
+                            ->success()
+                            ->send();
+                        // Refresh the page to show the new 'Cancelled' status
+                        $this->refreshFormData(['status']);
+                    } catch (\Exception $e) {
+                        Notification::make()
+                            ->title('Cancellation Failed')
+                            ->body($e->getMessage())
+                            ->danger()
+                            ->send();
+                    }
+                })
+                // Only show this button for Confirmed payments
+                ->visible(fn(Payment $record): bool => $record->status === Payment::STATUS_CONFIRMED),
+            Actions\DeleteAction::make()
+                ->visible(fn(Payment $record): bool => $record->status === Payment::STATUS_DRAFT),
         ];
     }
 

@@ -2,15 +2,16 @@
 
 namespace App\Models;
 
-use App\Casts\MoneyCast;
-use App\Observers\AuditLogObserver;
 use Brick\Money\Money;
-use Illuminate\Database\Eloquent\Attributes\ObservedBy;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasMany;
+use App\Casts\MoneyCast;
 use Illuminate\Support\Carbon;
+use App\Observers\AuditLogObserver;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 /**
  * Class Invoice
@@ -212,6 +213,19 @@ class Invoice extends Model
     public function fiscalPosition(): BelongsTo
     {
         return $this->belongsTo(FiscalPosition::class);
+    }
+
+    /**
+     * Get the Payments that are applied to this Invoice.
+     * An invoice can be paid by multiple payments, and a single payment
+     * can potentially pay multiple invoices, creating a many-to-many relationship.
+     *
+     * @return BelongsToMany
+     */
+    public function payments(): BelongsToMany
+    {
+        return $this->belongsToMany(Payment::class, 'payment_document_links', 'invoice_id', 'payment_id')
+            ->withPivot('amount_applied');
     }
 
     /*
