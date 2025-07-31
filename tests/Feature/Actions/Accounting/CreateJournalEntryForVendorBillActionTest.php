@@ -23,7 +23,7 @@ test('it creates a correct journal entry for a posted vendor bill', function () 
     $product = Product::factory()->for($company)->create();
 
     $vendorBill = VendorBill::factory()->for($company)->create([
-        'status' => VendorBill::TYPE_POSTED,
+        'status' => VendorBill::STATUS_POSTED,
         'posted_at' => now(),
     ]);
     $vendorBill->lines()->create([

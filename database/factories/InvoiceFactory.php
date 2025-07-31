@@ -21,13 +21,15 @@ class InvoiceFactory extends Factory
     public function definition(): array
     {
         return [
-            'company_id' => fn (array $attributes) => $attributes['company_id'] ?? Company::factory()->create()->id,
-            'customer_id' => Partner::factory()->create()->id,
+            'company_id' => Company::factory(),
+
+            // BEST PRACTICE: Simplify other relationships as well.
+            'customer_id' => Partner::factory(),
             'invoice_date' => $this->faker->date(),
             'due_date' => $this->faker->dateTimeBetween('now', '+30 days')->format('Y-m-d'),
             'currency_id' => function (array $attributes) {
                 return Company::find($attributes['company_id'])->currency_id;
-            }, 
+            },
             'total_amount' => $this->faker->randomFloat(2, 100, 10000),
             'total_tax' => $this->faker->randomFloat(2, 0, 2000),
             'fiscal_position_id' => FiscalPosition::factory()->create()->id,

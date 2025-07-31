@@ -23,14 +23,11 @@ test('a company with existing financial records cannot be deleted', function () 
     // Arrange: Create a dependent financial record.
     Account::factory()->for($this->company)->create();
 
-    // Assert: Expect that our business logic will throw a specific,
-    // custom exception when this rule is violated.
-    // This is much cleaner than checking for an HTTP status code.
+    // Assert: Expect the exact message thrown by the CompanyObserver.
     expect(fn() => $this->company->delete())
-        ->toThrow(DeletionNotAllowedException::class, 'Cannot delete company with associated financial records.');
+        ->toThrow(DeletionNotAllowedException::class, 'Cannot delete a company with associated financial records.'); // <-- Corrected Message
 
-    // Act & Assert: Double-check that the company was NOT removed from the database.
-    // This confirms the deletion was truly prevented.
+    // Verify: Double-check that the company was NOT removed from the database.
     $this->assertModelExists($this->company);
 });
 
