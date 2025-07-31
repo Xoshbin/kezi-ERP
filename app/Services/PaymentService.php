@@ -7,6 +7,7 @@ use Brick\Money\Money;
 use App\Models\Company;
 use App\Models\Invoice;
 use App\Models\Payment;
+use App\Models\AuditLog;
 use App\Models\Currency;
 use App\Models\VendorBill;
 use InvalidArgumentException;
@@ -89,32 +90,42 @@ class PaymentService
     }
 
     /**
-     * Cancels a confirmed payment by creating a reversing journal entry.
+     * Cancels a confirmed payment by creating a reversing journal entry and a detailed audit log.
      */
-    public function cancel(Payment $payment, User $user): void
+    public function cancel(Payment $payment, User $user, string $reason): void // Add $reason parameter
     {
         if ($payment->status !== Payment::STATUS_CONFIRMED) {
             throw new \Exception('Only confirmed payments can be cancelled.');
         }
 
-        DB::transaction(function () use ($payment, $user) {
+        DB::transaction(function () use ($payment, $user, $reason) {
             $originalEntry = $payment->journalEntry;
             if (!$originalEntry) {
                 throw new \Exception('Cannot cancel payment without a journal entry.');
             }
+            
+            // Step 1: Create the explicit audit log with the reason.
+            AuditLog::create([
+                'user_id' => $user->id,
+                'event_type' => 'cancellation',
+                'auditable_type' => get_class($payment),
+                'auditable_id' => $payment->id,
+                'description' => 'Payment Cancelled: ' . $reason,
+                'old_values' => ['status' => $payment->status],
+                'new_values' => ['status' => Payment::STATUS_CANCELED],
+                'ip_address' => request()->ip(),
+            ]);
 
-            // Use the new service method to create the reversal
+            // Step 2: Create the reversal.
             $this->journalEntryService->createReversal(
                 $originalEntry,
-                'Cancellation of Payment ' . $payment->id,
+                'Cancellation of Payment #' . $payment->id . ': ' . $reason,
                 $user
             );
 
-            // Update the payment status to Cancelled
-            $payment->status = Payment::STATUS_CANCELED; // You may need to add 'Cancelled' to your Payment model statuses
+            // Step 3: Update the payment's status.
+            $payment->status = Payment::STATUS_CANCELED;
             $payment->save();
-
-            // Here you would dispatch a PaymentCancelled event if needed
         });
     }
 

@@ -114,7 +114,7 @@ describe('Payment Cancellations', function () {
         expect($originalEntryId)->not->toBeNull();
 
         // Act 2: Cancel the now-confirmed payment.
-        $this->paymentService->cancel($payment, $this->user);
+        $this->paymentService->cancel($payment, $this->user, 'Test cancellation reason.');
 
         // Assert: Check that the payment and its original entry are correctly cancelled/reversed.
         $payment->refresh();
@@ -131,8 +131,8 @@ describe('Payment Cancellations', function () {
         $draftPayment = Payment::factory()->for($this->company)->create(['status' => Payment::STATUS_DRAFT]);
 
         // Act & Assert: Expect an exception.
-        expect(fn() => $this->paymentService->cancel($draftPayment, $this->user))
-            ->toThrow(\Exception::class, 'Only confirmed payments can be cancelled.');
+        expect(fn() => $this->paymentService->cancel($draftPayment, $this->user, 'Should fail')) // FIX
+        ->toThrow(\Exception::class, 'Only confirmed payments can be cancelled.');
     });
 
     test('it prevents cancelling a reconciled payment', function () {
@@ -140,7 +140,7 @@ describe('Payment Cancellations', function () {
         $reconciledPayment = Payment::factory()->for($this->company)->create(['status' => Payment::STATUS_RECONCILED]);
 
         // Act & Assert: Expect an exception.
-        expect(fn() => $this->paymentService->cancel($reconciledPayment, $this->user))
-            ->toThrow(\Exception::class, 'Only confirmed payments can be cancelled.');
+        expect(fn() => $this->paymentService->cancel($reconciledPayment, $this->user, 'Should fail')) // FIX
+        ->toThrow(\Exception::class, 'Only confirmed payments can be cancelled.');
     });
 });

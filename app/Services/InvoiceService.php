@@ -73,45 +73,45 @@ class InvoiceService
         return 'INV-' . str_pad($lastNumber + 1, 5, '0', STR_PAD_LEFT);
     }
 
-    public function resetToDraft(Invoice $invoice, User $user, string $reason): void
+    /**
+     * Cancels a posted invoice by creating a reversing journal entry and a detailed audit log.
+     */
+    public function cancel(Invoice $invoice, User $user, string $reason): void
     {
-        Gate::forUser($user)->authorize('resetToDraft', $invoice);
+        Gate::forUser($user)->authorize('cancel', $invoice); // You may want a specific policy for this
+
+        if ($invoice->status !== Invoice::STATUS_POSTED) {
+            throw new \Exception('Only posted invoices can be cancelled.');
+        }
 
         DB::transaction(function () use ($invoice, $user, $reason) {
-            // Manually create a specific audit log for this action.
+            $originalEntry = $invoice->journalEntry;
+            if (!$originalEntry) {
+                throw new \Exception('Cannot cancel an invoice without a journal entry.');
+            }
+
+            // Step 1: Create a detailed audit log explaining the action.
             AuditLog::create([
                 'user_id' => $user->id,
-                'event_type' => 'reset_to_draft',
+                'event_type' => 'cancellation',
                 'auditable_type' => get_class($invoice),
                 'auditable_id' => $invoice->id,
-                'old_values' => [
-                    'status' => $invoice->status,
-                    'journal_entry_id' => $invoice->journal_entry_id,
-                ],
-                'new_values' => [
-                    'status' => Invoice::STATUS_DRAFT,
-                    'reason' => $reason,
-                ],
+                'description' => 'Invoice Cancelled: ' . $reason,
+                'old_values' => ['status' => $invoice->status],
+                'new_values' => ['status' => Invoice::STATUS_CANCELLED],
                 'ip_address' => request()->ip(),
             ]);
 
-            $invoice->journalEntry()->delete();
+            // Step 2: Use the service to create the reversing journal entry.
+            $this->journalEntryService->createReversal(
+                $originalEntry,
+                'Cancellation of Invoice ' . $invoice->invoice_number . ': ' . $reason,
+                $user
+            );
 
-            $newLog = [
-                'user_id' => $user->id,
-                'timestamp' => now()->toDateTimeString(),
-                'reason' => $reason,
-            ];
-            $logs = $invoice->reset_to_draft_log ?? [];
-            array_unshift($logs, $newLog);
-
-            $invoice->update([
-                'status' => Invoice::STATUS_DRAFT,
-                'journal_entry_id' => null,
-                'posted_at' => null,
-                'invoice_number' => null,
-                'reset_to_draft_log' => $logs,
-            ]);
+            // Step 3: Update the invoice's status to reflect the cancellation.
+            $invoice->status = Invoice::STATUS_CANCELLED;
+            $invoice->save();
         });
     }
 }

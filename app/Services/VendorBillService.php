@@ -24,7 +24,8 @@ use Illuminate\Support\Facades\Gate;
 class VendorBillService
 {
     public function __construct(
-        protected AccountingValidationService $accountingValidationService
+        protected AccountingValidationService $accountingValidationService,
+        protected JournalEntryService $journalEntryService
     ) {
     }
 
@@ -37,6 +38,10 @@ class VendorBillService
      */
     public function confirm(VendorBill $vendorBill, User $user): void
     {
+        // Refresh the model instance to get the latest data from the database,
+        // including any totals calculated by observers.
+        $vendorBill->refresh();
+        
         if ($vendorBill->status !== VendorBill::STATUS_DRAFT) {
             return; // Or throw an exception
         }
@@ -70,46 +75,46 @@ class VendorBillService
     }
 
     /**
-     * Reset a posted vendor bill back to draft.
+     * Cancels a posted vendor bill by creating a reversing journal entry and a detailed audit log.
      */
-    public function resetToDraft(VendorBill $vendorBill, User $user, string $reason): void
+    public function cancel(VendorBill $vendorBill, User $user, string $reason): void
     {
-        Gate::forUser($user)->authorize('resetToDraft', $vendorBill);
+        Gate::forUser($user)->authorize('cancel', $vendorBill);
+
+        if ($vendorBill->status !== VendorBill::STATUS_POSTED) {
+            throw new \Exception('Only posted vendor bills can be cancelled.');
+        }
 
         DB::transaction(function () use ($vendorBill, $user, $reason) {
-            // Manually create a specific audit log for this action.
+            $originalEntry = $vendorBill->journalEntry;
+            if (!$originalEntry) {
+                throw new \Exception('Cannot cancel a bill without a journal entry.');
+            }
+
+            // Step 1: Create a detailed audit log *before* making changes.
+            // This captures the state of the bill right before cancellation.
             AuditLog::create([
                 'user_id' => $user->id,
-                'event_type' => 'reset_to_draft',
+                'event_type' => 'cancellation', // A more specific event type
                 'auditable_type' => get_class($vendorBill),
                 'auditable_id' => $vendorBill->id,
-                'old_values' => [
-                    'status' => $vendorBill->status,
-                    'journal_entry_id' => $vendorBill->journal_entry_id,
-                ],
-                'new_values' => [
-                    'status' => VendorBill::STATUS_DRAFT,
-                    'reason' => $reason,
-                ],
+                'description' => 'Vendor Bill Cancelled: ' . $reason,
+                'old_values' => ['status' => $vendorBill->status],
+                'new_values' => ['status' => VendorBill::STATUS_CANCELED],
                 'ip_address' => request()->ip(),
             ]);
 
-            $vendorBill->journalEntry()->delete();
+            // Step 2: Create the proper reversing journal entry.
+            // The "reason" is passed to the reversal for the entry's description.
+            $this->journalEntryService->createReversal(
+                $originalEntry,
+                'Cancellation of Bill ' . $vendorBill->bill_reference . ': ' . $reason,
+                $user
+            );
 
-            $newLog = [
-                'user_id' => $user->id,
-                'timestamp' => now()->toDateTimeString(),
-                'reason' => $reason,
-            ];
-            $logs = $vendorBill->reset_to_draft_log ?: [];
-            array_unshift($logs, $newLog);
-
-            $vendorBill->status = VendorBill::STATUS_DRAFT;
-            $vendorBill->journal_entry_id = null;
-            $vendorBill->posted_at = null;
-            $vendorBill->reset_to_draft_log = $logs;
-
-            $vendorBill->save();
+            // Step 3: Update the vendor bill's status.
+            $vendorBill->status = VendorBill::STATUS_CANCELED;
+            $vendorBill->save(); // saveQuietly() isn't needed if the observer handles status changes gracefully
         });
     }
 

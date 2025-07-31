@@ -94,4 +94,15 @@ class VendorBillPolicy
         //TODO: Change this to implement actual logic before deploying
         return true;
     }
+
+    /**
+     * Determine whether the user can cancel the model.
+     */
+    public function cancel(User $user, VendorBill $vendorBill): bool
+    {
+        // For now, allow any logged-in user to cancel a posted vendor bill.
+        // We can add more specific role-based logic here later if needed.
+        // return $vendorBill->status === 'posted';
+        return true;
+    }
 }
