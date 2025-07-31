@@ -3,8 +3,11 @@
 namespace App\Models;
 
 use App\Casts\MoneyCast;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Observers\TaxObserver;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 
 // The SoftDeletes trait is intentionally omitted for the Tax model.
 // As per accounting principles, tax records, once used, should not be physically deleted.
@@ -39,6 +42,9 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Tax whereUpdatedAt($value)
  * @mixin \Eloquent
  */
+
+#[ObservedBy([TaxObserver::class])]
+
 class Tax extends Model
 {
     use HasFactory;
@@ -72,11 +78,24 @@ class Tax extends Model
      * @var array<string, string>
      */
     protected $casts = [
-        'rate' => MoneyCast::class, // Crucial for monetary precision in tax calculations [1]
+        'rate' => 'float', // Crucial for monetary precision in tax calculations [1]
         'is_active' => 'boolean', // Ensures boolean behavior for the active status [1]
         'created_at' => 'datetime', // Laravel automatically casts these, but explicit declaration is good practice.
         'updated_at' => 'datetime',
     ];
+
+    public const TYPE_SALES = 'sales';
+    public const TYPE_PURCHASE = 'purchase';
+    public const TYPE_BOTH = 'both';
+
+    public static function getTypes(): array
+    {
+        return [
+            self::TYPE_SALES => 'Sales',
+            self::TYPE_PURCHASE => 'Purchase',
+            self::TYPE_BOTH => 'Both',
+        ];
+    }
 
     /**
      * Get the Company that owns the Tax.
@@ -123,7 +142,12 @@ class Tax extends Model
      */
     public function getRatePercentageAttribute(): float
     {
-        return (float) $this->rate * 100;
+        return (float) $this->rate * 100; // 1500 → 15.00%
+    }
+
+    public function getRateFractionAttribute()
+    {
+        return $this->rate / 100; // 1500 → 15.00%
     }
 
     /**
@@ -144,5 +168,15 @@ class Tax extends Model
     public function isPurchaseTax(): bool
     {
         return in_array($this->type, ['Purchase', 'Both']);
+    }
+
+    public function invoiceLines(): HasMany
+    {
+        return $this->hasMany(InvoiceLine::class);
+    }
+
+    public function vendorBillLines(): HasMany
+    {
+        return $this->hasMany(VendorBillLine::class);
     }
 }

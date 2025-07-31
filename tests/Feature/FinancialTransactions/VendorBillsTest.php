@@ -1,23 +1,27 @@
 <?php
 
-use App\Events\VendorBillConfirmed;
-use App\Exceptions\DeletionNotAllowedException;
-use App\Exceptions\PeriodIsLockedException;
-use App\Exceptions\UpdateNotAllowedException;
+use App\Models\User;
+use Brick\Money\Money;
 use App\Models\Account;
 use App\Models\Company;
 use App\Models\Journal;
-use App\Models\JournalEntry;
-use App\Models\LockDate;
 use App\Models\Partner;
 use App\Models\Product;
-use App\Models\User;
+use App\Models\LockDate;
 use App\Models\VendorBill;
+use App\Models\JournalEntry;
+use App\Events\VendorBillConfirmed;
 use App\Services\VendorBillService;
-use Brick\Money\Money;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\Event;
 use Tests\Traits\CreatesApplication;
+use Illuminate\Support\Facades\Event;
+use App\Exceptions\PeriodIsLockedException;
+use App\Exceptions\UpdateNotAllowedException;
+use App\Exceptions\DeletionNotAllowedException;
+use App\Actions\Purchases\CreateVendorBillAction;
+use App\Actions\Purchases\UpdateVendorBillAction;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use App\DataTransferObjects\Purchases\CreateVendorBillDTO;
+use App\DataTransferObjects\Purchases\UpdateVendorBillDTO;
 
 uses(RefreshDatabase::class, CreatesApplication::class);
 
@@ -78,20 +82,19 @@ test('confirming a vendor bill generates the correct journal entry', function ()
     // Arrange: Create a draft vendor bill with one line item.
     $vendorBill = VendorBill::factory()->for($this->company)->create([
         'status' => 'draft',
-        'total_amount' => Money::of(0, $currencyCode),
-        'total_tax' => Money::of(0, $currencyCode),
     ]);
-    // MODIFIED: Explicitly set the subtotal and tax to ensure the test has the correct data,
-    // bypassing any potentially incorrect observer logic.
+
+    // Create the line without manually setting subtotal or tax. Let the observer handle it.
     $vendorBill->lines()->create([
         'product_id' => $product->id,
         'description' => 'Test Product',
         'quantity' => 3,
         'unit_price' => Money::of(50, $currencyCode),
         'expense_account_id' => $expenseAccount->id,
-        'subtotal' => Money::of(150, $currencyCode),
-        'total_line_tax' => Money::of(0, $currencyCode),
     ]);
+
+    // **THE FIX:** Refresh the model instance from the database to get the updated totals.
+    $vendorBill->refresh();
 
     // Act: Confirm the vendor bill.
     (app(VendorBillService::class))->confirm($vendorBill, $this->user);
@@ -129,25 +132,32 @@ test('confirming a vendor bill generates the correct journal entry', function ()
 
 test('a posted vendor bill cannot be updated', function () {
     // Arrange: Create a posted vendor bill.
-    $currencyCode = $this->company->currency->code;
     $vendorBill = VendorBill::factory()->for($this->company)->create([
         'status' => 'posted',
-        'total_amount' => Money::of(100, $currencyCode),
-        'total_tax' => Money::of(0, $currencyCode),
     ]);
-    $originalVendorId = $vendorBill->vendor_id;
+    $newVendor = Partner::factory()->for($this->company)->create();
 
-    // Arrange: Prepare the data for the update attempt.
-    $updateData = ['partner_id' => Partner::factory()->for($this->company)->create()->id];
+    // Arrange: Prepare the DTO with the attempted update data.
+    // The DTO needs all the fields, even if some are unchanged.
+    $updateDto = new UpdateVendorBillDTO(
+        vendorBill: $vendorBill,
+        vendor_id: $newVendor->id, // The attempted change
+        currency_id: $vendorBill->currency_id,
+        bill_reference: $vendorBill->bill_reference,
+        bill_date: $vendorBill->bill_date->toDateString(),
+        accounting_date: $vendorBill->accounting_date->toDateString(),
+        due_date: $vendorBill->due_date?->toDateString(),
+        lines: [],
+    );
 
-    // Assert: Expect the service to throw our specific exception.
-    expect(fn() => (app(VendorBillService::class))->update($vendorBill, $updateData, $this->user))
+    // Assert: Expect the Action to throw our specific exception because the bill is posted.
+    expect(fn() => (new UpdateVendorBillAction())->execute($updateDto))
         ->toThrow(UpdateNotAllowedException::class, 'Cannot update a posted vendor bill.');
 
     // Assert: Double-check that the data was not changed.
     $this->assertDatabaseHas('vendor_bills', [
         'id' => $vendorBill->id,
-        'vendor_id' => $originalVendorId,
+        'vendor_id' => $vendorBill->vendor_id, // Should still be the original vendor
     ]);
 });
 
@@ -191,31 +201,33 @@ test('a vendor bill cannot be created or posted in a locked period', function ()
     // Arrange: Lock the company's books.
     LockDate::factory()->for($this->company)->create(['locked_until' => now()->subDay()]);
 
-    // Arrange: Prepare data with a date in the locked period.
-    $vendorBillData = [
-        'company_id' => $this->company->id,
-        'vendor_id' => Partner::factory()->for($this->company)->create()->id,
-        'currency_id' => $this->company->currency_id,
-        'bill_date' => now()->subMonth()->toDateString(), // Locked date.
-        'due_date' => now()->addMonth()->toDateString(),
-        'status' => 'draft',
-    ];
+    // Arrange: Prepare a complete DTO with a date in the locked period.
+    $vendorBillDto = new CreateVendorBillDTO(
+        company_id: $this->company->id,
+        vendor_id: Partner::factory()->for($this->company)->create()->id,
+        currency_id: $this->company->currency_id,
+        bill_date: now()->subMonth()->toDateString(), // Locked date.
+        accounting_date: now()->subMonth()->toDateString(),
+        due_date: now()->addMonth()->toDateString(),
+        bill_reference: 'SHOULD-FAIL',
+        lines: [],
+    );
 
-    // Assert: Expect creation to fail.
-    expect(fn() => (app(VendorBillService::class))->create($vendorBillData))
+    // Assert: Expect the Action to fail with the correct exception.
+    expect(fn() => (new CreateVendorBillAction())->execute($vendorBillDto))
         ->toThrow(PeriodIsLockedException::class);
 
     // Arrange: Create a draft bill with a valid date.
-    $currencyCode = $this->company->currency->code;
     $draftVendorBill = VendorBill::factory()->for($this->company)->create([
         'status' => 'draft',
         'bill_date' => now()->addDay()->toDateString(),
-        'total_amount' => Money::of(100, $currencyCode),
-        'total_tax' => Money::of(0, $currencyCode),
     ]);
 
     // Act: Change the date to be inside the locked period before confirming.
     $draftVendorBill->bill_date = now()->subMonth()->toDateString();
+
+    // Save the change to the database before passing it to the service.
+    $draftVendorBill->save();
 
     // Assert: Expect confirmation to fail.
     expect(fn() => (app(VendorBillService::class))->confirm($draftVendorBill, $this->user))

@@ -2,8 +2,9 @@
 
 namespace App\Observers;
 
-use App\Models\VendorBillLine;
 use Brick\Money\Money;
+use Brick\Math\RoundingMode;
+use App\Models\VendorBillLine;
 
 class VendorBillLineObserver
 {
@@ -14,7 +15,7 @@ class VendorBillLineObserver
     {
         // 1. Calculate the subtotal using the Money object's method.
         // We use the unit_price (Money) and multiply it by the quantity.
-        $subtotal = $vendorBillLine->unit_price->multipliedBy($vendorBillLine->quantity);
+        $subtotal = $vendorBillLine->unit_price->multipliedBy($vendorBillLine->quantity, RoundingMode::HALF_UP);
         $vendorBillLine->subtotal = $subtotal;
 
         // 2. Calculate the tax amount.
@@ -23,19 +24,21 @@ class VendorBillLineObserver
 
         // If a tax relationship exists on the line, calculate the tax.
         if ($vendorBillLine->tax) {
-            // Assuming the 'rate' on your Tax model is a decimal (e.g., 0.05 for 5%).
-            $taxAmount = $subtotal->multipliedBy($vendorBillLine->tax->rate);
+            // Assuming the 'rate' on your Tax model is a Money object.
+            $taxAmount = $subtotal->multipliedBy($vendorBillLine->tax->rate, RoundingMode::HALF_UP);
         }
 
         $vendorBillLine->total_line_tax = $taxAmount;
     }
 
     /**
-     * Handle the VendorBillLine "created" event.
+     * Handle the "saved" event for the VendorBillLine.
+     * This event fires on both creation and update.
      */
     public function created(VendorBillLine $vendorBillLine): void
     {
-        //
+        $vendorBillLine->vendorBill->calculateTotalsFromLines();
+        $vendorBillLine->vendorBill->saveQuietly();
     }
 
     /**
@@ -43,15 +46,17 @@ class VendorBillLineObserver
      */
     public function updated(VendorBillLine $vendorBillLine): void
     {
-        //
+        $vendorBillLine->vendorBill->calculateTotalsFromLines();
+        $vendorBillLine->vendorBill->saveQuietly();
     }
 
     /**
-     * Handle the VendorBillLine "deleted" event.
+     * Handle the "deleted" event for the VendorBillLine.
      */
     public function deleted(VendorBillLine $vendorBillLine): void
     {
-        //
+        $vendorBillLine->vendorBill->calculateTotalsFromLines();
+        $vendorBillLine->vendorBill->saveQuietly();
     }
 
     /**

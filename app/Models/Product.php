@@ -3,9 +3,12 @@
 namespace App\Models;
 
 use App\Casts\MoneyCast;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Observers\ProductObserver;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 
 /**
  * @property int $id
@@ -48,6 +51,8 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Product withoutTrashed()
  * @mixin \Eloquent
  */
+
+#[ObservedBy([ProductObserver::class])]
 class Product extends Model
 {
     use HasFactory, SoftDeletes;
@@ -90,6 +95,17 @@ class Product extends Model
         'updated_at' => 'datetime',
         'deleted_at' => 'datetime', // Essential for SoftDeletes [3].
     ];
+
+    public const TYPE_SERVICE = 'service';
+    public const TYPE_STORABLE_PRODUCT = 'storable product';
+
+    public static function getTypes(): array
+    {
+        return [
+            self::TYPE_SERVICE => 'Service',
+            self::TYPE_STORABLE_PRODUCT => 'Storable Product',
+        ];
+    }
 
     /**
      * Get the Company that owns the Product.
@@ -148,5 +164,15 @@ class Product extends Model
     public function scopeBySku($query, $sku, $companyId)
     {
         return $query->where('sku', $sku)->where('company_id', $companyId);
+    }
+
+    public function invoiceLines(): HasMany
+    {
+        return $this->hasMany(InvoiceLine::class);
+    }
+
+    public function vendorBillLines(): HasMany
+    {
+        return $this->hasMany(VendorBillLine::class);
     }
 }

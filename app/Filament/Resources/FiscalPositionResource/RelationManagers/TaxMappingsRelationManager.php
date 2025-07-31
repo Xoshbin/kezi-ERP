@@ -14,12 +14,20 @@ class TaxMappingsRelationManager extends RelationManager
 {
     protected static string $relationship = 'taxMappings';
 
+    protected static ?string $title = 'Tax Mappings';
+
     public function form(Form $form): Form
     {
         return $form
             ->schema([
-                Forms\Components\Select::make('original_tax_id')->relationship('originalTax', 'name')->required(),
-                Forms\Components\Select::make('mapped_tax_id')->relationship('mappedTax', 'name')->required(),
+                Forms\Components\Select::make('original_tax_id')
+                    ->relationship('originalTax', 'name')
+                    ->label(__('fiscal_position.relation_managers.tax_mappings.original_tax'))
+                    ->required(),
+                Forms\Components\Select::make('mapped_tax_id')
+                    ->relationship('mappedTax', 'name')
+                    ->label(__('fiscal_position.relation_managers.tax_mappings.mapped_tax'))
+                    ->required(),
             ]);
     }
 
@@ -28,8 +36,10 @@ class TaxMappingsRelationManager extends RelationManager
         return $table
             ->recordTitleAttribute('id')
             ->columns([
-                Tables\Columns\TextColumn::make('originalTax.name'),
-                Tables\Columns\TextColumn::make('mappedTax.name'),
+                Tables\Columns\TextColumn::make('originalTax.name')
+                    ->label(__('fiscal_position.relation_managers.tax_mappings.original_tax')),
+                Tables\Columns\TextColumn::make('mappedTax.name')
+                    ->label(__('fiscal_position.relation_managers.tax_mappings.mapped_tax')),
             ])
             ->filters([
                 //

@@ -91,7 +91,7 @@ class MoneyCast implements CastsAttributes
     protected function findCurrencyIdInRelations(Model $model): ?int
     {
         // A list of common parent relationships that hold a currency_id.
-        $possibleRelations = ['invoice', 'vendorBill', 'journalEntry', 'payment'];
+        $possibleRelations = ['invoice', 'vendorBill', 'journalEntry', 'payment', 'adjustmentDocument'];
 
         foreach ($possibleRelations as $relationName) {
             // THIS IS THE FIX: Check if the relationship method exists before trying to load it.

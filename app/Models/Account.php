@@ -14,7 +14,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * Class Account
  *
  * @package App\Models
- * 
+ *
  * This Eloquent model represents an account within the Chart of Accounts.
  * It is designed with core accounting principles in mind, such as immutability
  * for financial transactions and robust auditability. Accounts, once used
@@ -108,6 +108,25 @@ class Account extends Model
         'is_deprecated' => 'boolean',
     ];
 
+    public const TYPE_ASSET = 'asset';
+    public const TYPE_LIABILITY = 'liability';
+    public const TYPE_EQUITY = 'equity';
+    public const TYPE_INCOME = 'income';
+    public const TYPE_EXPENSE = 'expense';
+
+    public function getTypeOptions(): array
+    {
+        return [
+            self::TYPE_ASSET => 'Asset',
+            self::TYPE_LIABILITY => 'Liability',
+            self::TYPE_EQUITY => 'Equity',
+            self::TYPE_INCOME => 'Income',
+            self::TYPE_EXPENSE => 'Expense',
+        ];
+    }
+
+
+    
     /*
     |--------------------------------------------------------------------------
     | Relationships

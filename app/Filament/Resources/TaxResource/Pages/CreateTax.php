@@ -9,4 +9,9 @@ use Filament\Resources\Pages\CreateRecord;
 class CreateTax extends CreateRecord
 {
     protected static string $resource = TaxResource::class;
+
+    public function getTitle(): string
+    {
+        return __('tax.pages.create');
+    }
 }

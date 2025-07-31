@@ -3,9 +3,10 @@
 namespace Database\Factories;
 
 use App\Models\Company;
-use App\Models\Currency;
 use App\Models\Journal;
 use App\Models\Partner;
+use App\Models\Payment;
+use App\Models\Currency;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -30,7 +31,7 @@ class PaymentFactory extends Factory
             },
             'payment_type' => $this->faker->randomElement(['cash', 'bank', 'cheque', 'online']),
             'reference' => $this->faker->uuid(),
-            'status' => $this->faker->randomElement(['pending', 'completed', 'failed']),
+            'status' => Payment::STATUS_DRAFT,
             'paid_to_from_partner_id' => Partner::factory()->create()->id,
             'journal_entry_id' => null,
         ];

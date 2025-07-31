@@ -10,6 +10,11 @@ class EditAnalyticAccount extends EditRecord
 {
     protected static string $resource = AnalyticAccountResource::class;
 
+    public function getTitle(): string
+    {
+        return __('analytic_account.pages.edit.title');
+    }
+
     protected function getHeaderActions(): array
     {
         return [

@@ -22,7 +22,7 @@ return new class extends Migration
             $table->string('invoice_number')->nullable();
             $table->date('invoice_date');
             $table->date('due_date');
-            $table->string('status')->default(Invoice::TYPE_DRAFT)->index(); // 'draft', 'posted', 'paid', 'cancelled'
+            $table->string('status')->default(Invoice::STATUS_DRAFT)->index(); // 'draft', 'posted', 'paid', 'cancelled'
             $table->unsignedBigInteger('total_amount');
             $table->unsignedBigInteger('total_tax');
             $table->timestamp('posted_at')->nullable();

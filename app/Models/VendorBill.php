@@ -4,11 +4,12 @@ namespace App\Models;
 
 use App\Casts\MoneyCast;
 use App\Observers\AuditLogObserver;
-use Illuminate\Database\Eloquent\Attributes\ObservedBy;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 // As a fundamental principle of accounting data integrity,
 // 'posted' financial records, such as Vendor Bills, must be **immutable** [1-3].
@@ -17,7 +18,6 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 // such as credit notes or debit notes [1-3].
 // Therefore, the SoftDeletes trait is **intentionally omitted** for the VendorBill model
 // to uphold auditability and prevent accidental data loss for historical financial records.
-#[ObservedBy([AuditLogObserver::class])]
 /**
  * @property int $id
  * @property int $company_id
@@ -29,8 +29,8 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property \Illuminate\Support\Carbon $accounting_date
  * @property \Illuminate\Support\Carbon|null $due_date
  * @property string $status
- * @property float $total_amount
- * @property float $total_tax
+ * @property \Brick\Money\Money $total_amount
+ * @property \Brick\Money\Money $total_tax
  * @property \Illuminate\Support\Carbon|null $posted_at
  * @property array<array-key, mixed>|null $reset_to_draft_log
  * @property \Illuminate\Support\Carbon|null $created_at
@@ -64,6 +64,8 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|VendorBill whereVendorId($value)
  * @mixin \Eloquent
  */
+
+#[ObservedBy([AuditLogObserver::class])]
 class VendorBill extends Model
 {
     use HasFactory;
@@ -120,18 +122,55 @@ class VendorBill extends Model
         'updated_at'         => 'datetime',   // Automatically managed by Eloquent.
     ];
 
-    public const TYPE_DRAFT = 'draft';
-    public const TYPE_POSTED = 'posted';
-    public const TYPE_PAID = 'paid';
+    public const STATUS_DRAFT = 'draft';
+    public const STATUS_POSTED = 'posted';
+    public const STATUS_PAID = 'paid';
+    public const STATUS_CANCELED = 'canceled';
 
     // use it in Filament select options columns
-    public static function getTypes(): array
+    public static function getStatuses(): array
     {
         return [
-            self::TYPE_DRAFT => 'Draft',
-            self::TYPE_POSTED => 'Posted',
-            self::TYPE_PAID => 'Paid',
+            self::STATUS_DRAFT => 'Draft',
+            self::STATUS_POSTED => 'Posted',
+            self::STATUS_PAID => 'Paid',
+            self::STATUS_CANCELED => 'Canceled',
         ];
+    }
+
+    protected static function booted(): void
+    {
+        static::saving(function (self $vendorBill) {
+            // This ensures totals are always correct before saving.
+            $vendorBill->calculateTotalsFromLines();
+        });
+    }
+
+    public function calculateTotalsFromLines(): void
+    {
+        $this->loadMissing('lines', 'currency');
+
+        $currencyCode = $this->currency->code;
+        $zero = \Brick\Money\Money::of(0, $currencyCode);
+
+        $totalTax = $this->lines->reduce(
+            fn (\Brick\Money\Money $carry, VendorBillLine $line) => $carry->plus($line->total_line_tax),
+            $zero
+        );
+
+        $subtotal = $this->lines->reduce(
+            fn (\Brick\Money\Money $carry, VendorBillLine $line) => $carry->plus($line->subtotal),
+            $zero
+        );
+
+        $this->total_tax = $totalTax;
+        $this->total_amount = $subtotal->plus($totalTax);
+
+        \Illuminate\Support\Facades\Log::info('calculateTotalsFromLines', [
+            'total_tax' => $totalTax->getAmount(),
+            'subtotal' => $subtotal->getAmount(),
+            'total_amount' => $this->total_amount->getAmount(),
+        ]);
     }
 
     /**
@@ -181,6 +220,17 @@ class VendorBill extends Model
     public function journalEntry(): BelongsTo
     {
         return $this->belongsTo(JournalEntry::class, 'journal_entry_id');
+    }
+
+    /**
+     * Get the Payments that are applied to this Vendor Bill.
+     *
+     * @return BelongsToMany
+     */
+    public function payments(): BelongsToMany
+    {
+        return $this->belongsToMany(Payment::class, 'payment_document_links', 'vendor_bill_id', 'payment_id')
+            ->withPivot('amount_applied');
     }
 
     /**

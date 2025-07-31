@@ -2,20 +2,22 @@
 
 namespace App\Models;
 
+use Brick\Money\Money;
 use App\Casts\MoneyCast;
-use App\Observers\AuditLogObserver;
-use Illuminate\Database\Eloquent\Attributes\ObservedBy;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
+use App\Observers\AuditLogObserver;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 /**
  * Class Invoice
  *
  * @package App\Models
- * 
+ *
  * This Eloquent model represents a customer invoice in the accounting system.
  * It is a foundational document for recording sales transactions and receivables.
  * Key accounting principles, such as immutability post-posting and a clear
@@ -123,19 +125,19 @@ class Invoice extends Model
         'posted_at' => 'datetime',
     ];
 
-    public const TYPE_DRAFT = 'draft';
-    public const TYPE_POSTED = 'posted';
-    public const TYPE_PAID = 'paid';
-    public const TYPE_CANCELLED = 'cancelled';
+    public const STATUS_DRAFT = 'draft';
+    public const STATUS_POSTED = 'posted';
+    public const STATUS_PAID = 'paid';
+    public const STATUS_CANCELLED = 'cancelled';
 
     // use it in Filament select options columns
-    public static function getTypes(): array
+    public static function getStatuses(): array
     {
         return [
-            self::TYPE_DRAFT => 'Draft',
-            self::TYPE_POSTED => 'Posted',
-            self::TYPE_PAID => 'Paid',
-            self::TYPE_CANCELLED => 'Cancelled',
+            self::STATUS_DRAFT => 'Draft',
+            self::STATUS_POSTED => 'Posted',
+            self::STATUS_PAID => 'Paid',
+            self::STATUS_CANCELLED => 'Cancelled',
         ];
     }
 
@@ -213,6 +215,19 @@ class Invoice extends Model
         return $this->belongsTo(FiscalPosition::class);
     }
 
+    /**
+     * Get the Payments that are applied to this Invoice.
+     * An invoice can be paid by multiple payments, and a single payment
+     * can potentially pay multiple invoices, creating a many-to-many relationship.
+     *
+     * @return BelongsToMany
+     */
+    public function payments(): BelongsToMany
+    {
+        return $this->belongsToMany(Payment::class, 'payment_document_links', 'invoice_id', 'payment_id')
+            ->withPivot('amount_applied');
+    }
+
     /*
     |--------------------------------------------------------------------------
     | Scopes (Example)
@@ -255,5 +270,26 @@ class Invoice extends Model
     public function getFullReferenceAttribute(): string
     {
         return $this->invoice_number . ' - ' . $this->invoice_date->format('Y-m-d');
+    }
+
+    public function calculateTotalsFromLines(): void
+    {
+        $this->loadMissing('invoiceLines.tax', 'currency');
+
+        $currencyCode = $this->currency->code;
+        $zero = Money::of(0, $currencyCode);
+
+        $totalTax = $this->invoiceLines->reduce(
+            fn (Money $carry, InvoiceLine $line) => $carry->plus($line->total_line_tax ?? $zero),
+            $zero
+        );
+
+        $subtotal = $this->invoiceLines->reduce(
+            fn (Money $carry, InvoiceLine $line) => $carry->plus($line->subtotal ?? $zero),
+            $zero
+        );
+
+        $this->total_tax = $totalTax;
+        $this->total_amount = $subtotal->plus($totalTax);
     }
 }

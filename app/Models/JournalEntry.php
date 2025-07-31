@@ -20,7 +20,7 @@ use Brick\Money\Money;
  * Class JournalEntry
  *
  * @package App\Models
- * 
+ *
  * This Eloquent model represents a financial journal entry in the double-entry accounting system.
  * It serves as the immutable record of all posted financial transactions [1-3].
  * @property int $id
@@ -31,8 +31,8 @@ use Brick\Money\Money;
  * @property \Illuminate\Support\Carbon $entry_date
  * @property string $reference
  * @property string|null $description
- * @property float $total_debit
- * @property float $total_credit
+ * @property \Brick\Money\Money $total_debit
+ * @property \Brick\Money\Money $total_credit
  * @property bool $is_posted
  * @property string|null $hash
  * @property string|null $previous_hash
@@ -70,7 +70,8 @@ use Brick\Money\Money;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|JournalEntry whereUpdatedAt($value)
  * @mixin \Eloquent
  */
-#[ObservedBy([JournalEntryObserver::class, AuditLogObserver::class])]
+
+#[ObservedBy([JournalEntryObserver::class])]
 class JournalEntry extends Model
 {
     use HasFactory;
@@ -105,6 +106,8 @@ class JournalEntry extends Model
         'total_debit',
         'total_credit',
         'is_posted',
+        'state',
+        'reversed_entry_id',
         'hash',
         'previous_hash',
         'created_by_user_id',
@@ -148,6 +151,7 @@ class JournalEntry extends Model
             // and transitions to `true` via a dedicated posting mechanism in the application's
             // service layer, which also handles hashing.
         });
+
 
         // Strict enforcement of immutability for posted financial records.
         // Direct modification or deletion of posted journal entries is explicitly disallowed
@@ -281,21 +285,22 @@ class JournalEntry extends Model
      *
      * @return void
      */
+
     public function calculateTotalsFromLines(): void
     {
+        // Ensure the lines relationship is loaded to avoid extra queries
         $this->loadMissing('lines', 'currency');
 
-        // Define the starting point for our summation: a Money object of zero.
-        $zero = Money::of(0, $this->currency->code);
+        $currencyCode = $this->currency->code;
+        $totalDebit = Money::of(0, $currencyCode);
+        $totalCredit = Money::of(0, $currencyCode);
 
-        // Use the 'reduce' method to correctly sum the Money objects.
-        $this->total_debit = $this->lines->reduce(function (Money $carry, $item) {
-            // The 'plus' method correctly adds one Money object to another.
-            return $carry->plus($item->debit ?? 0);
-        }, $zero);
+        foreach ($this->lines as $line) {
+            $totalDebit = $totalDebit->plus($line->debit);
+            $totalCredit = $totalCredit->plus($line->credit);
+        }
 
-        $this->total_credit = $this->lines->reduce(function (Money $carry, $item) {
-            return $carry->plus($item->credit ?? 0);
-        }, $zero);
+        $this->total_debit = $totalDebit;
+        $this->total_credit = $totalCredit;
     }
 }

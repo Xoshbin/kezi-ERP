@@ -2,88 +2,63 @@
 
 namespace App\Observers;
 
-use App\Exceptions\DeletionNotAllowedException;
 use App\Models\JournalEntry;
 
 class JournalEntryObserver
 {
     /**
-     * Handle the JournalEntry "created" event.
+     * Handle the JournalEntry "creating" event.
+     * This handles cases where an entry is created as already posted.
      */
-    public function created(JournalEntry $journalEntry): void
+    public function creating(JournalEntry $journalEntry): void
     {
-        //
-    }
-
-    /**
-     * Handle the JournalEntry "updating" event. (This is correct)
-     */
-    public function updating(JournalEntry $journalEntry): void
-    {
-        // Check if the entry is being posted
-        if ($journalEntry->isDirty('is_posted') && $journalEntry->is_posted) {
-            // 1. Find the last posted entry for this company to link to.
-            $lastEntry = JournalEntry::where('company_id', $journalEntry->company_id)
-                ->where('is_posted', true)
-                ->latest('entry_date') // Order by date to find the most recent
-                ->first();
-
-            // 2. Set the previous_hash on the current entry.
-            if ($lastEntry) {
-                $journalEntry->previous_hash = $lastEntry->hash;
-            }
-
-            // 3. Now, generate the hash for the current entry.
-            $journalEntry->hash = $this->generateHashForEntry($journalEntry);
+        if ($journalEntry->is_posted) {
+            $this->applyHashingAndLinking($journalEntry);
         }
     }
 
-
-
     /**
-     * Handle the JournalEntry "updated" event.
+     * Handle the JournalEntry "updating" event.
+     * This handles cases where a draft entry is transitioned to posted.
      */
-    public function updated(JournalEntry $journalEntry): void
+    public function updating(JournalEntry $journalEntry): void
     {
-        //
+        if ($journalEntry->isDirty('is_posted') && $journalEntry->is_posted) {
+            $this->applyHashingAndLinking($journalEntry);
+        }
     }
 
     /**
      * Handle the JournalEntry "deleting" event.
      */
-    public function deleting(JournalEntry $journalEntry): bool // Add return type for clarity
+    public function deleting(JournalEntry $journalEntry): bool
     {
         if ($journalEntry->is_posted) {
-            // This cleanly stops the deletion process.
             return false;
         }
-
-        // If not posted, allow the deletion to proceed.
         return true;
     }
 
     /**
-     * Handle the JournalEntry "deleted" event.
+     * Applies the hashing and linking logic to a journal entry.
      */
-    public function deleted(JournalEntry $journalEntry): void
+    private function applyHashingAndLinking(JournalEntry $journalEntry): void
     {
-        //
-    }
+        // 1. Find the last posted entry for this company to link to.
+        $lastEntry = JournalEntry::where('company_id', $journalEntry->company_id)
+            ->where('is_posted', true)
+            ->where('id', '!=', $journalEntry->id) // Exclude the entry being saved
+            ->orderByDesc('entry_date')           // Order by date to find the most recent
+            ->orderByDesc('id')                   // Add secondary sort for robustness
+            ->first();
 
-    /**
-     * Handle the JournalEntry "restored" event.
-     */
-    public function restored(JournalEntry $journalEntry): void
-    {
-        //
-    }
+        // 2. Set the previous_hash on the current entry.
+        if ($lastEntry) {
+            $journalEntry->previous_hash = $lastEntry->hash;
+        }
 
-    /**
-     * Handle the JournalEntry "force deleted" event.
-     */
-    public function forceDeleted(JournalEntry $journalEntry): void
-    {
-        //
+        // 3. Now, generate the hash for the current entry.
+        $journalEntry->hash = $this->generateHashForEntry($journalEntry);
     }
 
     /**
@@ -99,4 +74,5 @@ class JournalEntryObserver
 
         return hash('sha256', $dataToHash);
     }
+
 }

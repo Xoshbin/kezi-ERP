@@ -16,4 +16,9 @@ class ListAssets extends ListRecords
             Actions\CreateAction::make(),
         ];
     }
+
+    public function getTitle(): string
+    {
+        return __('asset.plural_label');
+    }
 }

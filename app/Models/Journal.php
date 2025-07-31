@@ -2,10 +2,13 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Models\Account;
+use App\Observers\JournalObserver;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 
 
 /**
@@ -36,6 +39,8 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Journal whereUpdatedAt($value)
  * @mixin \Eloquent
  */
+#[ObservedBy([JournalObserver::class])]
+
 class Journal extends Model
 {
     use HasFactory;
@@ -62,6 +67,24 @@ class Journal extends Model
         'default_credit_account_id',
     ];
 
+    public const TYPE_SALE = 'sale';
+    public const TYPE_PURCHASE = 'purchase';
+    public const TYPE_BANK = 'bank';
+    public const TYPE_CASH = 'cash';
+    public const TYPE_MISCELLANEOUS = 'miscellaneous';
+
+    public static function getTypes(): array
+    {
+        return [
+            self::TYPE_SALE => 'Sale',
+            self::TYPE_PURCHASE => 'Purchase',
+            self::TYPE_BANK => 'Bank',
+            self::TYPE_CASH => 'Cash',
+            self::TYPE_MISCELLANEOUS => 'Miscellaneous',
+        ];
+    }
+
+        
     /**
      * Get the default debit account for this journal.
      */
