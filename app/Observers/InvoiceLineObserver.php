@@ -2,9 +2,10 @@
 
 namespace App\Observers;
 
-use App\Models\InvoiceLine;
-use Brick\Money\Money;
 use App\Models\Tax;
+use Brick\Money\Money;
+use App\Models\InvoiceLine;
+use Brick\Math\RoundingMode;
 
 class InvoiceLineObserver
 {
@@ -42,7 +43,7 @@ class InvoiceLineObserver
 
         // The MoneyCast has already converted unit_price to a Money object.
         // We must perform all calculations with Money objects.
-        $subtotal = $invoiceLine->unit_price->multipliedBy($invoiceLine->quantity);
+        $subtotal = $invoiceLine->unit_price->multipliedBy($invoiceLine->quantity, RoundingMode::HALF_UP);
         $invoiceLine->subtotal = $subtotal;
 
         // Calculate the tax amount as a Money object.
@@ -53,7 +54,7 @@ class InvoiceLineObserver
             $tax = Tax::find($invoiceLine->tax_id);
             if ($tax) {
                 // Use the 'rate' float directly as the multiplier.
-                $taxAmount = $subtotal->multipliedBy($tax->rate);
+                $taxAmount = $subtotal->multipliedBy($tax->rate, RoundingMode::HALF_UP);
             }
         }
 

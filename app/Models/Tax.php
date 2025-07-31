@@ -3,8 +3,11 @@
 namespace App\Models;
 
 use App\Casts\MoneyCast;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Observers\TaxObserver;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 
 // The SoftDeletes trait is intentionally omitted for the Tax model.
 // As per accounting principles, tax records, once used, should not be physically deleted.
@@ -39,6 +42,9 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Tax whereUpdatedAt($value)
  * @mixin \Eloquent
  */
+
+#[ObservedBy([TaxObserver::class])]
+
 class Tax extends Model
 {
     use HasFactory;
@@ -162,5 +168,15 @@ class Tax extends Model
     public function isPurchaseTax(): bool
     {
         return in_array($this->type, ['Purchase', 'Both']);
+    }
+
+    public function invoiceLines(): HasMany
+    {
+        return $this->hasMany(InvoiceLine::class);
+    }
+
+    public function vendorBillLines(): HasMany
+    {
+        return $this->hasMany(VendorBillLine::class);
     }
 }
