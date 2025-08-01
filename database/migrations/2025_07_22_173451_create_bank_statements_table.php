@@ -14,7 +14,8 @@ return new class extends Migration
         Schema::create('bank_statements', function (Blueprint $table) {
             $table->id();
             $table->foreignId('company_id')->constrained()->cascadeOnDelete();
-            $table->foreignId('journal_id')->constrained()->cascadeOnDelete(); // The Bank Journal
+            $table->foreignId('journal_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('currency_id')->constrained('currencies');
             $table->string('reference');
             $table->date('date');
             $table->unsignedBigInteger('starting_balance')->default(0);

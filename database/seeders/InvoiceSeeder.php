@@ -28,8 +28,8 @@ class InvoiceSeeder extends Seeder
             throw new \Exception('Not enough partners found to seed invoices.');
         }
 
-        // Seed specific invoice for "Al-Mansour Trading Co."
-        $alMansourPartner = Partner::first();
+        // Seed specific invoice for "Hawre Trading Group"
+        $hawrePartner = Partner::where('name', 'Hawre Trading Group')->first();
 
         $invoiceDate = Date::now();
         $dueDate = Date::now()->addDays(15);
@@ -37,7 +37,7 @@ class InvoiceSeeder extends Seeder
         $invoice = Invoice::updateOrCreate(
             [
                 'company_id' => $company->id,
-                'customer_id' => $alMansourPartner->id
+                'customer_id' => $hawrePartner->id
             ],
             [
                 'currency_id' => $company->currency_id,
