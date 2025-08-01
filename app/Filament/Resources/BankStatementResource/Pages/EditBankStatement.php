@@ -25,6 +25,27 @@ class EditBankStatement extends EditRecord
         ];
     }
 
+    protected function mutateFormDataBeforeFill(array $data): array
+    {
+        // 1. Load the relationship and format it for the Repeater.
+        // The key 'bankStatementLines' must match the ->name() of your Repeater component.
+        $data['bankStatementLines'] = $this->record->bankStatementLines->map(function ($line) {
+            // Convert Money objects to plain strings for the form fields.
+            return [
+                'date' => $line->date->format('Y-m-d'),
+                'description' => $line->description,
+                'amount' => (string) $line->amount->getAmount(),
+                'partner_id' => $line->partner_id,
+            ];
+        })->all();
+
+        // 2. Convert the parent's Money objects to plain strings for the TextInputs.
+        $data['starting_balance'] = (string) $this->record->starting_balance->getAmount();
+        $data['ending_balance'] = (string) $this->record->ending_balance->getAmount();
+
+        return $data;
+    }
+
     protected function handleRecordUpdate(\Illuminate\Database\Eloquent\Model $record, array $data): \Illuminate\Database\Eloquent\Model
     {
         $lineDTOs = [];
