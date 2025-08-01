@@ -3,17 +3,28 @@
 namespace App\Livewire;
 
 use Brick\Money\Money;
+use App\Models\Account;
 use App\Models\Payment;
 use Livewire\Component;
+use Filament\Actions\Action;
 use App\Models\BankStatement;
 use App\Models\BankStatementLine;
 use Livewire\Attributes\Computed;
 use Illuminate\Support\Facades\Auth;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Contracts\HasForms;
+use Filament\Forms\Components\Textarea;
 use Filament\Notifications\Notification;
+use Filament\Actions\Contracts\HasActions;
 use App\Services\BankReconciliationService;
+use Filament\Forms\Concerns\InteractsWithForms;
+use Filament\Actions\Concerns\InteractsWithActions;
 
-class BankReconciliationMatcher extends Component
+class BankReconciliationMatcher extends Component implements HasForms, HasActions
 {
+    use InteractsWithActions;
+    use InteractsWithForms;
+
     public BankStatement $record;
 
     public array $selectedLines = [];
@@ -79,7 +90,6 @@ class BankReconciliationMatcher extends Component
 
             // Reset the selections to clear the UI
             $this->reset('selectedLines', 'selectedPayments');
-
         } catch (\Exception $e) {
             // Send a failure notification
             Notification::make()
@@ -88,6 +98,67 @@ class BankReconciliationMatcher extends Component
                 ->danger()
                 ->send();
         }
+    }
+
+    // Action method to define the modal
+    public function writeOff(): Action
+    {
+        return Action::make('writeOff')
+            ->label('Create Write-Off')
+            ->modalHeading('Create Write-Off Entry')
+            ->modalWidth('xl')
+            // The action() method handles the submission
+            ->action(function (array $data, array $arguments, BankReconciliationService $service) {
+                $line = BankStatementLine::find($arguments['lineId']);
+                $writeOffAccount = Account::find($data['write_off_account_id']);
+
+                if (!$line || !$writeOffAccount) {
+                    Notification::make()->title('Error')->body('Invalid data provided.')->danger()->send();
+                    return;
+                }
+
+                try {
+                    $service->createWriteOff($line, $writeOffAccount, Auth::user(), $data['description']);
+
+                    Notification::make()
+                        ->title('Write-off created successfully')
+                        ->success()
+                        ->send();
+
+                    // Refresh the component to show the line is gone
+                    $this->dispatch('$refresh');
+                } catch (\Exception $e) {
+                    Notification::make()
+                        ->title('Failed to create write-off')
+                        ->body($e->getMessage())
+                        ->danger()
+                        ->send();
+                }
+            })
+            // form() defines the fields inside the modal
+            ->form(function (array $arguments) {
+                // We can use the arguments to pre-fill data
+                $line = BankStatementLine::find($arguments['lineId']);
+
+                return [
+                    Select::make('write_off_account_id')
+                        ->label('Write-Off Account')
+                        ->searchable()
+                        ->options(function () {
+                            // Only allow selection of Income or Expense accounts
+                            return Account::query()
+                                ->where('company_id', auth()->user()->company_id)
+                                ->whereIn('type', [Account::TYPE_INCOME, Account::TYPE_EXPENSE]) // Corrected line
+                                ->where('is_deprecated', false)
+                                ->pluck('name', 'id');
+                        })
+                        ->required(),
+                    Textarea::make('description')
+                        ->label('Description')
+                        ->required()
+                        ->default('Write-Off for: ' . $line?->description),
+                ];
+            });
     }
 
     public function render()

@@ -1,4 +1,5 @@
 <div>
+    {{ $this->actions }}
     {{-- Main layout grid for the panels --}}
     <x-filament::grid class="gap-6" xl-grid-cols="3">
 
@@ -10,13 +11,21 @@
 
             <div class="mt-4 space-y-2">
                 @forelse ($statementLines as $line)
-                    <div class="flex items-center p-3 border rounded-md shadow-sm hover:bg-gray-50 dark:border-white/10 dark:hover:bg-white/5">
-                        <input type="checkbox" wire:model.live="selectedLines" value="{{ $line->id }}" class="w-4 h-4 mr-4 text-primary-600 bg-gray-100 border-gray-300 rounded focus:ring-primary-500 dark:focus:ring-primary-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                    <div
+                        class="flex items-center p-3 border rounded-md shadow-sm hover:bg-gray-50 dark:border-white/10 dark:hover:bg-white/5">
+                        <input type="checkbox" wire:model.live="selectedLines" value="{{ $line->id }}"
+                            class="w-4 h-4 mr-4 text-primary-600 bg-gray-100 border-gray-300 rounded focus:ring-primary-500 dark:focus:ring-primary-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
                         <div class="flex-grow text-sm">
                             <p class="font-medium text-gray-900 dark:text-white">{{ $line->description }}</p>
-                            <p class="text-gray-500 dark:text-gray-400">{{ $line->date->toFormattedDateString() }} - {{ $line->partner->name ?? '' }}</p>
+                            <p class="text-gray-500 dark:text-gray-400">{{ $line->date->toFormattedDateString() }} -
+                                {{ $line->partner->name ?? '' }}</p>
                         </div>
-                        <div class="text-sm font-mono text-right text-gray-700 dark:text-gray-200">{{ $line->amount }}</div>
+                        <div class="text-sm font-mono text-right text-gray-700 dark:text-gray-200">{{ $line->amount }}
+                        </div>
+                        <div class="pl-3 ml-3 border-l dark:border-white/10">
+                            <x-filament::icon-button icon="heroicon-o-pencil-square" tooltip="Create Write-Off"
+                                wire:click="mountAction('writeOff', { lineId: {{ $line->id }} })" />
+                        </div>
                     </div>
                 @empty
                     <p class="text-center text-gray-500">No unreconciled bank lines.</p>
@@ -31,18 +40,23 @@
             </x-slot>
 
             <div class="mt-4 space-y-2">
-                 @forelse ($payments as $payment)
-                    <div class="flex items-center p-3 border rounded-md shadow-sm hover:bg-gray-50 dark:border-white/10 dark:hover:bg-white/5">
-                        <input type="checkbox" wire:model.live="selectedPayments" value="{{ $payment->id }}" class="w-4 h-4 mr-4 text-primary-600 bg-gray-100 border-gray-300 rounded focus:ring-primary-500 dark:focus:ring-primary-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                @forelse ($payments as $payment)
+                    <div
+                        class="flex items-center p-3 border rounded-md shadow-sm hover:bg-gray-50 dark:border-white/10 dark:hover:bg-white/5">
+                        <input type="checkbox" wire:model.live="selectedPayments" value="{{ $payment->id }}"
+                            class="w-4 h-4 mr-4 text-primary-600 bg-gray-100 border-gray-300 rounded focus:ring-primary-500 dark:focus:ring-primary-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
                         <div class="flex-grow text-sm">
-                           <p class="font-medium text-gray-900 dark:text-white">{{ $payment->partner->name ?? 'N/A' }}</p>
-                           <p class="text-gray-500 dark:text-gray-400">{{ $payment->reference }} ({{ $payment->payment_type }})</p>
+                            <p class="font-medium text-gray-900 dark:text-white">{{ $payment->partner->name ?? 'N/A' }}
+                            </p>
+                            <p class="text-gray-500 dark:text-gray-400">{{ $payment->reference }}
+                                ({{ $payment->payment_type }})</p>
                         </div>
-                        <div class="text-sm font-mono text-right text-gray-700 dark:text-gray-200">{{ $payment->amount }}</div>
+                        <div class="text-sm font-mono text-right text-gray-700 dark:text-gray-200">
+                            {{ $payment->amount }}</div>
                     </div>
                 @empty
                     <p class="text-center text-gray-500">No confirmable payments found.</p>
-                 @endforelse
+                @endforelse
             </div>
         </x-filament::section>
 
@@ -76,13 +90,9 @@
                     </dl>
                 </div>
 
-                <x-filament::button
-                    type="button"
-                    wire:click="reconcile"
-                    class="w-full"
-                    icon="heroicon-m-check-circle"
-                    :disabled="$this->difference->isZero() === false || (count($selectedLines) === 0 && count($selectedPayments) === 0)"
-                >
+                <x-filament::button type="button" wire:click="reconcile" class="w-full" icon="heroicon-m-check-circle"
+                    :disabled="$this->difference->isZero() === false ||
+                        (count($selectedLines) === 0 && count($selectedPayments) === 0)">
                     Reconcile
                 </x-filament::button>
             </div>
