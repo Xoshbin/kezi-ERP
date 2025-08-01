@@ -11,11 +11,10 @@
             <div class="mt-4 space-y-2">
                 @forelse ($statementLines as $line)
                     <div class="flex items-center p-3 border rounded-md shadow-sm hover:bg-gray-50 dark:border-white/10 dark:hover:bg-white/5">
-                        {{-- CORRECTED CHECKBOX STYLING --}}
                         <input type="checkbox" wire:model.live="selectedLines" value="{{ $line->id }}" class="w-4 h-4 mr-4 text-primary-600 bg-gray-100 border-gray-300 rounded focus:ring-primary-500 dark:focus:ring-primary-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
                         <div class="flex-grow text-sm">
                             <p class="font-medium text-gray-900 dark:text-white">{{ $line->description }}</p>
-                            <p class="text-gray-500 dark:text-gray-400">{{ $line->date->toFormattedDateString() }}</p>
+                            <p class="text-gray-500 dark:text-gray-400">{{ $line->date->toFormattedDateString() }} - {{ $line->partner->name ?? '' }}</p>
                         </div>
                         <div class="text-sm font-mono text-right text-gray-700 dark:text-gray-200">{{ $line->amount }}</div>
                     </div>
@@ -34,11 +33,10 @@
             <div class="mt-4 space-y-2">
                  @forelse ($payments as $payment)
                     <div class="flex items-center p-3 border rounded-md shadow-sm hover:bg-gray-50 dark:border-white/10 dark:hover:bg-white/5">
-                        {{-- CORRECTED CHECKBOX STYLING --}}
                         <input type="checkbox" wire:model.live="selectedPayments" value="{{ $payment->id }}" class="w-4 h-4 mr-4 text-primary-600 bg-gray-100 border-gray-300 rounded focus:ring-primary-500 dark:focus:ring-primary-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
                         <div class="flex-grow text-sm">
                            <p class="font-medium text-gray-900 dark:text-white">{{ $payment->partner->name ?? 'N/A' }}</p>
-                           <p class="text-gray-500 dark:text-gray-400">{{ $payment->reference }}</p>
+                           <p class="text-gray-500 dark:text-gray-400">{{ $payment->reference }} ({{ $payment->payment_type }})</p>
                         </div>
                         <div class="text-sm font-mono text-right text-gray-700 dark:text-gray-200">{{ $payment->amount }}</div>
                     </div>
@@ -59,24 +57,31 @@
                     <dl class="space-y-2">
                         <div class="flex items-center justify-between">
                             <dt class="text-sm font-medium text-gray-500">Bank Total:</dt>
-                            <dd class="text-sm font-mono text-gray-900 dark:text-white">0.00 IQD</dd>
+                            <dd class="text-sm font-mono text-gray-900 dark:text-white">{{ $this->bankTotal }}</dd>
                         </div>
                         <div class="flex items-center justify-between">
-                            <dt class="text-sm font-medium text-gray-500">Payment Total:</dt>
-                            <dd class="text-sm font-mono text-gray-900 dark:text-white">0.00 IQD</dd>
+                            <dt class="text-sm font-medium text-gray-500">To Balance:</dt>
+                            <dd class="text-sm font-mono text-gray-900 dark:text-white">{{ $this->paymentTotal }}</dd>
                         </div>
                         <div class="flex items-center justify-between pt-2 mt-2 border-t dark:border-white/10">
                             <dt class="font-semibold text-gray-900 dark:text-white">Difference:</dt>
-                            <dd class="font-semibold font-mono text-gray-900 dark:text-white">0.00 IQD</dd>
+                            <dd @class([
+                                'font-semibold font-mono',
+                                'text-gray-900 dark:text-white' => $this->difference->isZero(),
+                                'text-danger-600 dark:text-danger-400' => !$this->difference->isZero(),
+                            ])>
+                                {{ $this->difference }}
+                            </dd>
                         </div>
                     </dl>
                 </div>
 
                 <x-filament::button
                     type="button"
+                    wire:click="reconcile"
                     class="w-full"
                     icon="heroicon-m-check-circle"
-                    disabled
+                    :disabled="$this->difference->isZero() === false || (count($selectedLines) === 0 && count($selectedPayments) === 0)"
                 >
                     Reconcile
                 </x-filament::button>
