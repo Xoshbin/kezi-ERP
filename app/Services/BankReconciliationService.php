@@ -7,6 +7,8 @@ use App\Models\BankStatementLine;
 use App\Models\Payment;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
+use InvalidArgumentException;
+use RuntimeException;
 
 class BankReconciliationService
 {
@@ -31,30 +33,34 @@ class BankReconciliationService
 
     public function reconcile(array $bankStatementLineIds, array $paymentIds, User $user): void
     {
-        DB::transaction(function () use ($bankStatementLineIds, $paymentIds, $user) {
-            // 1. Fetch and lock the records to prevent race conditions.
-            $lines = BankStatementLine::whereIn('id', $bankStatementLineIds)->lockForUpdate()->get();
-            $payments = Payment::whereIn('id', $paymentIds)->lockForUpdate()->get();
+        // Fetch all necessary models upfront
+        $lines = BankStatementLine::whereIn('id', $bankStatementLineIds)->get();
+        $payments = Payment::whereIn('id', $paymentIds)->with('company')->get();
 
-            // 2. Validate: Ensure totals match and records are in the correct state.
-            // (Throw an exception if validation fails).
+        if ($lines->isEmpty() && $payments->isEmpty()) {
+            throw new InvalidArgumentException('No items selected for reconciliation.');
+        }
 
-            // 3. Update the Bank Statement Lines.
+        // **THIS IS THE CRITICAL NEW VALIDATION STEP**
+        // Before starting the transaction, check if all payments can be reconciled.
+        foreach ($payments as $payment) {
+            $company = $payment->company;
+            if (!$company->default_bank_account_id || !$company->default_outstanding_receipts_account_id) {
+                throw new RuntimeException("Company '{$company->name}' is missing default bank or outstanding accounts configuration.");
+            }
+        }
+
+        // Now, proceed with the transaction, confident that the final step will succeed.
+        DB::transaction(function () use ($lines, $payments, $user) {
             foreach ($lines as $line) {
                 $line->is_reconciled = true;
-                // For a simple 1-to-1 match, you can link the payment.
-                if (count($payments) === 1) {
-                    $line->payment_id = $payments->first()->id;
-                }
                 $line->save();
             }
 
-            // 4. Update the Payments and trigger their final Journal Entries.
             foreach ($payments as $payment) {
                 $payment->status = Payment::STATUS_RECONCILED;
                 $payment->save();
 
-                // 5. Call the action to create the final JE.
                 (new CreateJournalEntryForReconciliationAction())->execute($payment, $user);
             }
         });
