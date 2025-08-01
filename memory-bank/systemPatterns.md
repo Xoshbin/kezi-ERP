@@ -29,3 +29,39 @@ It is optional, but recommended to be updated as the project evolves.
 [2025-07-27 07:14:02] - **Pattern: Company-Specific Default Accounts**
 - **Description:** Critical accounting settings, such as default accounts for payables, receivables, and taxes, and default journals for different transaction types, are stored directly on the `companies` table in the database.
 - **Implementation:** This pattern replaces the use of a global `config()` file, which is unsuitable for a multi-tenant application. All services that generate journal entries now retrieve these settings from the `Company` model associated with the transaction. This ensures that each company's financial data is correctly and independently configured, which is a cornerstone of a robust multi-company accounting system.
+
+[2025-08-01 17:27:00] - **Pattern: Actions/DTOs Architecture**
+- **Description:** All business operations follow a consistent Actions/DTOs pattern where DTOs provide type-safe data contracts and Actions encapsulate business logic execution.
+- **Implementation:**
+  - DTOs use readonly properties for immutability and type safety
+  - Actions have single `execute()` methods with database transactions
+  - Domain-driven organization (Accounting, Sales, Purchases, Payments, Adjustments)
+  - Filament resources delegate to Actions instead of direct model manipulation
+  - Consistent error handling and validation patterns across all operations
+
+[2025-08-01 17:27:00] - **Pattern: Livewire Integration with Filament**
+- **Description:** Complex interactive UI components use Livewire for real-time updates while leveraging Filament's form and action systems for modals and forms.
+- **Implementation:**
+  - Livewire components handle real-time calculations and state management
+  - Filament actions provide modal interfaces for complex operations
+  - Computed properties for efficient reactive calculations
+  - Service injection for business logic execution
+  - Proper Money object handling in reactive contexts
+
+[2025-08-01 17:27:00] - **Pattern: Financial Precision with Money Objects**
+- **Description:** All monetary values are handled using Brick\Money objects throughout the application to ensure precise financial calculations.
+- **Implementation:**
+  - MoneyCast for automatic Money object conversion in Eloquent models
+  - Consistent Money object usage in Actions, Services, and UI components
+  - Proper handling of different currencies and exchange rates
+  - Minor amount storage in database with automatic Money object hydration
+  - Specialized financial calculation actions that preserve precision
+
+[2025-08-01 17:27:00] - **Pattern: Interactive Bank Reconciliation**
+- **Description:** Bank reconciliation uses a dedicated Livewire component for real-time matching between bank statement lines and system payments.
+- **Implementation:**
+  - Real-time calculation of totals and differences using computed properties
+  - Interactive selection of items to reconcile
+  - Write-off functionality for unmatched items with proper journal entry creation
+  - Integration with the established Actions/Services architecture
+  - Comprehensive validation before allowing reconciliation operations

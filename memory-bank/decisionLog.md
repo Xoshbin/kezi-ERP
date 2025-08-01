@@ -94,3 +94,27 @@ This file records architectural and implementation decisions using a list format
     1.  Modified the `rate` attribute's cast in `app/Models/Tax.php` from `integer` to `float`.
     2.  Updated the `CreateJournalEntryForVendorBillActionTest` to create the tax `rate` as a `float` (e.g., `0.10`) instead of a `Money` object, which was causing the incorrect type coercion.
     3.  Ensured the `VendorBillLineObserver` correctly uses the `float` value for tax calculations.
+
+[2025-08-01 17:26:00] - **Decision:** Implemented comprehensive Actions/DTOs architectural pattern for all business operations.
+- **Rationale:** To achieve consistent data handling, type safety, and clear separation between UI and business logic. This pattern ensures that all business operations follow the same structure and validation approach, improving maintainability and reducing errors.
+- **Implementation Details:**
+    1. Created 16 specialized Action classes organized by domain (Accounting, Sales, Purchases, Payments, Adjustments)
+    2. Implemented 24 DTOs with readonly properties for immutable data transfer
+    3. Updated all Filament resources to use Actions instead of direct model manipulation
+    4. Established consistent execute() method patterns with database transactions
+
+[2025-08-01 17:26:00] - **Decision:** Developed interactive bank reconciliation system using Livewire components.
+- **Rationale:** Bank reconciliation is a critical accounting function that requires real-time interaction and validation. Using Livewire provides a smooth user experience while maintaining Laravel's backend advantages.
+- **Implementation Details:**
+    1. Created `BankReconciliationMatcher` Livewire component with real-time total calculations
+    2. Implemented interactive matching between bank statement lines and system payments
+    3. Added write-off functionality with modal forms using Filament actions
+    4. Integrated proper Money object handling for precise financial calculations
+
+[2025-08-01 17:26:00] - **Decision:** Enhanced MoneyCast and Money object handling for improved financial precision.
+- **Rationale:** Financial applications require absolute precision in monetary calculations. Enhancing the Money object handling ensures accurate calculations and prevents floating-point precision issues.
+- **Implementation Details:**
+    1. Improved MoneyCast to handle Money objects more reliably in various contexts
+    2. Added comprehensive logging for Money object transformations during debugging
+    3. Ensured consistent Money object usage across Actions, Services, and UI components
+    4. Created specialized actions for financial calculations that preserve precision

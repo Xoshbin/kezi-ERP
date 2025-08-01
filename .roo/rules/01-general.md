@@ -31,6 +31,24 @@ The database schema includes tables for `companies`, `users`, `accounts`, `journ
 * **Events & Listeners:** System components are decoupled using events (e.g., `InvoicePosted`) to trigger actions like creating journal entries.
 * **Security:** Standard Laravel security features, including strong password hashing (Bcrypt/Argon2) and protection against common web vulnerabilities, are used.
 
+### 🏗️ **Architectural Patterns**
+
+The system implements a sophisticated layered architecture:
+
+* **Actions Layer (Command Pattern):** Domain-organized business operations with single `execute()` methods, atomic database transactions, and proper dependency injection. Actions handle specific business workflows like invoice creation, payment processing, and journal entry generation.
+
+* **Data Transfer Objects (DTOs):** Type-safe, immutable data contracts with readonly properties that define clear boundaries between layers. DTOs mirror the Actions structure and provide composition for complex operations (e.g., Invoice containing InvoiceLine DTOs).
+
+* **Service Orchestration:** Core services (`JournalEntryService`, `InvoiceService`, `PaymentService`, etc.) implement business rules and coordinate complex workflows. Services enforce immutability, handle event dispatching, and manage audit trail creation.
+
+* **Filament Integration:** Clean separation between UI and business logic where Filament resources delegate all operations to Actions and Services. Form data is transformed into DTOs before business logic execution.
+
+* **Livewire Components:** Interactive UI components for complex real-time functionality (e.g., bank reconciliation matching) that integrate seamlessly with the service layer while maintaining proper Money object handling and audit trails.
+
+* **Money Object Precision:** All monetary values use `Brick\Money` objects throughout the application with a custom `MoneyCast` for automatic conversion, ensuring precise financial calculations and multi-currency support.
+
+* **Multi-Company Architecture:** Company-specific configurations stored in the `Company` model rather than global config files, enabling proper multi-tenant accounting with isolated financial data per company.
+
 ### 📊 **Accounting Workflows**
 
 The system is designed to handle core accounting workflows, including:
