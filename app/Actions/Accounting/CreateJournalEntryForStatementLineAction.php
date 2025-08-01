@@ -34,7 +34,9 @@ class CreateJournalEntryForStatementLineAction
         // 1. `$line->amount` is the Money object (e.g., for -$50.00).
         // 2. `getAbsoluteAmount()` returns its value as a precise BigDecimal object (e.g., 50.00).
         // 3. Casting to a string gives us a reliable "50.00" string representation.
-        $amountInMajorUnits = (string) $line->amount->abs()->getAmount();         // 3. Get the absolute value (e.g., 5000)
+        $amountInMinorUnits = $line->amount->abs()->getMinorAmount()->toInt();
+        // Convert minor units to major units (decimal string) for CreateJournalEntryAction
+        $amountInMajorUnits = $line->amount->abs()->getAmount()->toScale(3);
 
         $isCreditToBank = $line->amount->isNegative();
 
@@ -71,5 +73,8 @@ class CreateJournalEntryForStatementLineAction
 
         // This action now correctly receives '50' and interprets it as $50.00.
         (new CreateJournalEntryAction())->execute($journalEntryData);
+
+        // Mark the statement line as reconciled
+        $line->update(['is_reconciled' => true]);
     }
 }
