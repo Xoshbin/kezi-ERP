@@ -45,13 +45,13 @@ test('a bank statement line can be reconciled with a payment', function () {
         ]);
 
     // Create the line for the new BankStatement.
-    $bankStatementLine = BankStatementLine::factory()
-        ->for($bankStatement)
-        ->for($this->company) // THIS IS THE FIX: Explicitly set the company for the line.
-        ->create([
-            'amount' => Money::of(100, $currencyCode),
-            'is_reconciled' => false,
-        ]);
+    $bankStatementLine = $bankStatement->bankStatementLines()->create([
+        'company_id' => $this->company->id,
+        'date' => now(),
+        'description' => 'Test line for reconciliation',
+        'amount' => Money::of(100, $currencyCode),
+        'is_reconciled' => false,
+    ]);
 
     // Act: Reconcile the statement line with the payment.
     (app(BankReconciliationService::class))->reconcilePayment($payment, $bankStatementLine, $this->user);

@@ -73,7 +73,7 @@ class MoneyCast implements CastsAttributes
                  }
             }
         }
-        
+
         if (!$currencyId) {
             throw new InvalidArgumentException('Could not resolve currency_id for model ' . get_class($model));
         }
@@ -91,7 +91,7 @@ class MoneyCast implements CastsAttributes
     protected function findCurrencyIdInRelations(Model $model): ?int
     {
         // A list of common parent relationships that hold a currency_id.
-        $possibleRelations = ['invoice', 'vendorBill', 'journalEntry', 'payment', 'adjustmentDocument'];
+        $possibleRelations = ['invoice', 'vendorBill', 'journalEntry', 'payment', 'adjustmentDocument', 'bankStatement'];
 
         foreach ($possibleRelations as $relationName) {
             // THIS IS THE FIX: Check if the relationship method exists before trying to load it.
