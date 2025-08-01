@@ -16,8 +16,8 @@ return new class extends Migration
             $table->foreignId('bank_statement_id')->constrained()->cascadeOnDelete();
             $table->date('date');
             $table->string('description');
-            $table->string('partner_name')->nullable();
-            $table->unsignedBigInteger('amount');
+            $table->foreignId('partner_id')->nullable()->constrained('partners');
+            $table->bigInteger('amount');
             $table->boolean('is_reconciled')->default(false);
             $table->foreignId('payment_id')->nullable()->constrained()->nullOnDelete();
             $table->foreignId('company_id')->constrained('companies')->after('id');
