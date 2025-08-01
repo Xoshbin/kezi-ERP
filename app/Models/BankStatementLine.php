@@ -3,8 +3,11 @@
 namespace App\Models;
 
 use App\Casts\MoneyCast;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Observers\BankStatementLineObserver;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 
 /**
  * @property int $id
@@ -35,6 +38,8 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|BankStatementLine whereUpdatedAt($value)
  * @mixin \Eloquent
  */
+
+#[ObservedBy([BankStatementLineObserver::class])]
 class BankStatementLine extends Model
 {
     /** @use HasFactory<\Database\Factories\BankStatementLineFactory> */
@@ -44,7 +49,7 @@ class BankStatementLine extends Model
         'bank_statement_id',
         'date',
         'description',
-        'partner_name',
+        'partner_id',
         'amount',
         'is_reconciled',
         'payment_id',
@@ -67,5 +72,13 @@ class BankStatementLine extends Model
     public function payment()
     {
         return $this->belongsTo(Payment::class);
+    }
+
+    /**
+     * Get the partner associated with the bank statement line.
+     */
+    public function partner(): BelongsTo
+    {
+        return $this->belongsTo(Partner::class);
     }
 }

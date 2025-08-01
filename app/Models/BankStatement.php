@@ -3,8 +3,10 @@
 namespace App\Models;
 
 use App\Casts\MoneyCast;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 /**
  * @property int $id
@@ -41,6 +43,7 @@ class BankStatement extends Model
     protected $fillable = [
         'company_id',
         'journal_id',
+        'currency_id',
         'reference',
         'date',
         'starting_balance',
@@ -61,5 +64,18 @@ class BankStatement extends Model
     public function journal()
     {
         return $this->belongsTo(Journal::class);
+    }
+
+    /**
+     * Get the currency for the bank statement.
+     */
+    public function currency(): BelongsTo
+    {
+        return $this->belongsTo(Currency::class);
+    }
+
+    public function bankStatementLines(): HasMany
+    {
+        return $this->hasMany(BankStatementLine::class);
     }
 }

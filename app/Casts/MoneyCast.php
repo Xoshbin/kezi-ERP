@@ -4,9 +4,10 @@ namespace App\Casts;
 
 use Brick\Money\Money;
 use App\Models\Currency;
-use Illuminate\Contracts\Database\Eloquent\CastsAttributes;
-use Illuminate\Database\Eloquent\Model;
 use InvalidArgumentException;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Contracts\Database\Eloquent\CastsAttributes;
 
 class MoneyCast implements CastsAttributes
 {
@@ -36,6 +37,10 @@ class MoneyCast implements CastsAttributes
      */
     public function set($model, string $key, $value, array $attributes): ?int
     {
+        Log::info('MoneyCast received value:', [
+            'class' => is_object($value) ? get_class($value) : gettype($value),
+            'value_string' => (string) $value,
+        ]);
         if (is_null($value)) {
             return null;
         }
@@ -73,7 +78,7 @@ class MoneyCast implements CastsAttributes
                  }
             }
         }
-        
+
         if (!$currencyId) {
             throw new InvalidArgumentException('Could not resolve currency_id for model ' . get_class($model));
         }
@@ -91,7 +96,7 @@ class MoneyCast implements CastsAttributes
     protected function findCurrencyIdInRelations(Model $model): ?int
     {
         // A list of common parent relationships that hold a currency_id.
-        $possibleRelations = ['invoice', 'vendorBill', 'journalEntry', 'payment', 'adjustmentDocument'];
+        $possibleRelations = ['invoice', 'vendorBill', 'journalEntry', 'payment', 'adjustmentDocument', 'bankStatement'];
 
         foreach ($possibleRelations as $relationName) {
             // THIS IS THE FIX: Check if the relationship method exists before trying to load it.
