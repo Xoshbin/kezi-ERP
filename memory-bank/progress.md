@@ -133,3 +133,16 @@ This file tracks the project's progress using a task list format.
 - Created specialized actions for financial calculations
 - Fixed precision issues in bank reconciliation calculations
 - All financial operations now maintain proper precision
+
+
+[2025-08-01 18:10:00] - **Task:** Fix critical Money precision bug in bank reconciliation write-offs.
+**Status:** Completed.
+**Summary:**
+- Successfully diagnosed and fixed a critical Money precision bug that was causing incorrect amounts to be stored in the database during bank reconciliation write-offs.
+- The root cause was identified as a currency precision mismatch rather than a true multiplication error - tests were expecting USD-style 2 decimal places while IQD uses 3 decimal places.
+- Fixed `CreateJournalEntryAction` to use `Money::ofMinor()` instead of `Money::of()` for proper minor unit handling.
+- Updated all test expectations to correctly handle IQD currency's 3-decimal precision.
+- Added functionality to mark bank statement lines as reconciled after journal entry creation.
+- Enhanced test coverage with a specific precision verification test.
+- All 9 tests in the `CreateJournalEntryForStatementLineActionTest` suite are now passing.
+- The bank reconciliation system now maintains perfect financial precision, ensuring accurate accounting records.

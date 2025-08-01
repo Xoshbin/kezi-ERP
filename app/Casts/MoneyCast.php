@@ -19,6 +19,14 @@ class MoneyCast implements CastsAttributes
     protected static array $currencyCache = [];
 
     /**
+     * Clear the currency cache. Used for test isolation.
+     */
+    public static function clearCache(): void
+    {
+        self::$currencyCache = [];
+    }
+
+    /**
      * Cast the stored integer value to a Money object.
      */
     public function get($model, string $key, $value, array $attributes): ?Money
@@ -64,6 +72,11 @@ class MoneyCast implements CastsAttributes
     protected function resolveCurrency(Model $model, array $attributes): Currency
     {
         $currencyId = $attributes['currency_id'] ?? null;
+
+        // If currency_id is not in attributes but the model has it as a property, use it
+        if (!$currencyId && isset($model->currency_id)) {
+            $currencyId = $model->currency_id;
+        }
 
         if (!$currencyId) {
             $currencyId = $this->findCurrencyIdInRelations($model);
