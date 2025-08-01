@@ -23,7 +23,7 @@ class JournalFactory extends Factory
             'company_id' => Company::factory(),
             'name' => $this->faker->company,
             'type' => $this->faker->randomElement(['general', 'cash', 'bank']),
-            'short_code' => strtoupper($this->faker->lexify('???')),
+            'short_code' => $this->faker->unique()->bothify('???'),
             'currency_id' => function (array $attributes) {
                 return Company::find($attributes['company_id'])->currency_id;
             },

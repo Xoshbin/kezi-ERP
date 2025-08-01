@@ -1,16 +1,17 @@
 <?php
 
+use App\Models\User;
+use Brick\Money\Money;
 use App\Models\Account;
-use App\Models\BankStatement;
-use App\Models\BankStatementLine;
 use App\Models\Company;
 use App\Models\Journal;
 use App\Models\Payment;
-use App\Models\User;
-use App\Services\BankReconciliationService;
-use Brick\Money\Money;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use App\Models\Currency;
+use App\Models\BankStatement;
+use App\Models\BankStatementLine;
+use Illuminate\Support\Facades\Log;
+use App\Services\BankReconciliationService;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 
 uses(Tests\TestCase::class, RefreshDatabase::class);
 
@@ -90,5 +91,74 @@ it('successfully reconciles a payment and a bank statement line', function () {
         'source_type' => Payment::class,
         'source_id' => $payment->id,
         'description' => 'Reconciliation for Payment #' . $payment->id,
+    ]);
+});
+
+it('creates a write-off for a single bank statement line', function () {
+    // 1. Create the bank account
+    $companyBankAccount = Account::factory()->create([
+        'company_id' => $this->company->id,
+        'type' => 'Bank and Cash',
+    ]);
+
+    // 2. Create the Bank Journal and link BOTH default accounts
+    $bankJournal = Journal::factory()->create([
+        'company_id' => $this->company->id,
+        'type' => 'bank',
+        'default_debit_account_id' => $companyBankAccount->id,
+        'default_credit_account_id' => $companyBankAccount->id,
+    ]);
+
+    // 3. Create the expense account
+    $expenseAccount = Account::factory()->create([
+        'company_id' => $this->company->id,
+        'type' => 'Expense',
+    ]);
+
+    // 4. Create the bank statement
+    $currency = $this->company->currency;
+    $statement = BankStatement::factory()->create([
+        'company_id' => $this->company->id,
+        'journal_id' => $bankJournal->id,
+        'currency_id' => $currency->id,
+    ]);
+
+    // 5. Create the bank statement line
+    $bankFeeLine = BankStatementLine::factory()->create([
+        'bank_statement_id' => $statement->id,
+        'is_reconciled' => false,
+        'amount' => Money::of(-50, $currency->code), // A $50 bank fee
+    ]);
+
+    // We use fresh() to ensure we are reading from the database.
+    // getMinorAmount() gives the raw integer value (e.g., -5000).
+    $valueInDb = $bankFeeLine->fresh()->amount->getMinorAmount()->toInt();
+    Log::info('1. Value immediately after creation: ' . $valueInDb);
+
+    $service = new BankReconciliationService();
+    $description = 'Monthly Bank Service Fee';
+
+    // Act
+    $service->createWriteOff($bankFeeLine, $expenseAccount, $this->user, $description);
+
+    // Assert
+    $this->assertDatabaseHas('bank_statement_lines', [
+        'id' => $bankFeeLine->id,
+        'is_reconciled' => true,
+    ]);
+
+    $this->assertDatabaseHas('journal_entries', [
+        'description' => $description,
+        'total_debit' => 50000, // <-- CORRECTED
+    ]);
+
+    $this->assertDatabaseHas('journal_entry_lines', [
+        'account_id' => $expenseAccount->id,
+        'debit' => 50000, // <-- CORRECTED (Expense is debited)
+    ]);
+
+    $this->assertDatabaseHas('journal_entry_lines', [
+        'account_id' => $companyBankAccount->id,
+        'credit' => 50000, // <-- CORRECTED (Bank account is credited)
     ]);
 });

@@ -2,13 +2,15 @@
 
 namespace App\Services;
 
-use App\Actions\Accounting\CreateJournalEntryForReconciliationAction; // 1. Import the new action
-use App\Models\BankStatementLine;
-use App\Models\Payment;
 use App\Models\User;
-use Illuminate\Support\Facades\DB;
-use InvalidArgumentException;
 use RuntimeException;
+use App\Models\Account;
+use App\Models\Payment;
+use InvalidArgumentException;
+use App\Models\BankStatementLine;
+use Illuminate\Support\Facades\DB;
+use App\Actions\Accounting\CreateJournalEntryForStatementLineAction;
+use App\Actions\Accounting\CreateJournalEntryForReconciliationAction; // 1. Import the new action
 
 class BankReconciliationService
 {
@@ -63,6 +65,17 @@ class BankReconciliationService
 
                 (new CreateJournalEntryForReconciliationAction())->execute($payment, $user);
             }
+        });
+    }
+
+    public function createWriteOff(BankStatementLine $line, Account $writeOffAccount, User $user, string $description): void
+    {
+        DB::transaction(function () use ($line, $writeOffAccount, $user, $description) {
+            // 1. Mark the line as reconciled.
+            $line->update(['is_reconciled' => true]);
+
+            // 2. Call the new action to create the journal entry.
+            (new CreateJournalEntryForStatementLineAction())->execute($line, $writeOffAccount, $user, $description);
         });
     }
 }

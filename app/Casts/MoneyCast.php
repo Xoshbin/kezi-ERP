@@ -4,9 +4,10 @@ namespace App\Casts;
 
 use Brick\Money\Money;
 use App\Models\Currency;
-use Illuminate\Contracts\Database\Eloquent\CastsAttributes;
-use Illuminate\Database\Eloquent\Model;
 use InvalidArgumentException;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Contracts\Database\Eloquent\CastsAttributes;
 
 class MoneyCast implements CastsAttributes
 {
@@ -36,6 +37,10 @@ class MoneyCast implements CastsAttributes
      */
     public function set($model, string $key, $value, array $attributes): ?int
     {
+        Log::info('MoneyCast received value:', [
+            'class' => is_object($value) ? get_class($value) : gettype($value),
+            'value_string' => (string) $value,
+        ]);
         if (is_null($value)) {
             return null;
         }
