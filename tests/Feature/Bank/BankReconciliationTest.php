@@ -40,6 +40,7 @@ test('a bank statement line can be reconciled with a payment', function () {
         ->for($payment->journal) // We can reuse the payment's journal
         ->create([
             'starting_balance' => Money::of(0, $currencyCode),
+            'currency_id' => $this->company->currency_id,
             'ending_balance' => Money::of(100, $currencyCode),
         ]);
 
