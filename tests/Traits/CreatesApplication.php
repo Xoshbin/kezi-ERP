@@ -9,9 +9,18 @@ use App\Models\Journal;
 
 trait CreatesApplication
 {
+    public function createApplication()
+    {
+        $app = require __DIR__.'/../../bootstrap/app.php';
+
+        $app->make(\Illuminate\Contracts\Console\Kernel::class)->bootstrap();
+
+        return $app;
+    }
+
     protected function createConfiguredCompany(): Company
     {
-        $currency = Currency::firstOrCreate(['code' => 'IQD'], ['name' => 'Iraqi Dinar', 'symbol' => 'IQD', 'exchange_rate' => 1.0]);
+        $currency = Currency::firstOrCreate(['code' => 'IQD'], ['name' => 'Iraqi Dinar', 'symbol' => 'IQD', 'exchange_rate' => 1, 'is_active' => true, 'decimal_places' => 3]);
         $company = Company::factory()->create(['currency_id' => $currency->id]);
 
         // Create all necessary accounts first.

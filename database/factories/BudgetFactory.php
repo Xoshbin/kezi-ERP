@@ -17,7 +17,15 @@ class BudgetFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'company_id' => \App\Models\Company::factory(),
+            'name' => $this->faker->word,
+            'period_start_date' => $this->faker->date(),
+            'period_end_date' => $this->faker->dateTimeBetween('+1 month', '+1 year'),
+            'budget_type' => $this->faker->randomElement(['analytic', 'financial']),
+            'status' => $this->faker->randomElement(['draft', 'finalized']),
+            'currency_id' => function (array $attributes) {
+                return \App\Models\Company::find($attributes['company_id'])->currency_id;
+            },
         ];
     }
 }

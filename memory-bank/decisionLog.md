@@ -216,3 +216,8 @@ This file records architectural and implementation decisions using a list format
     1.  Created a new coding standard in `.roo/rules/02-coding-style.txt` that formally documents this rule.
     2.  The `JournalEntryState` Enum serves as the primary example of this best practice.
     3.  Future work should involve refactoring older models to use Enums for consistency.
+[2025-08-02 06:30:00] - **Decision:** Resolved a persistent `MoneyCast` bug in the test suite by removing the `configure` method from `VendorBillFactory.php`.
+- **Rationale:** The `configure` method in the factory was incorrectly overriding the `currency_id` for `VendorBill` models, causing tests to fail by using the default company currency (IQD) instead of the specified test currency (USD). This violated test isolation and produced incorrect monetary values. Removing this method ensures that the factory respects the currency provided in the test setup, aligning the test environment with the application's intended multi-currency behavior.
+- **Implementation Details:**
+    1.  Deleted the `configure` method from `database/factories/VendorBillFactory.php`.
+    2.  Verified the fix by running the entire `money-cast` test group, confirming that all 9 tests now pass.

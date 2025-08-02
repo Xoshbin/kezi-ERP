@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('budgets', function (Blueprint $table) {
             $table->id();
             $table->foreignId('company_id')->constrained('companies');
+            $table->foreignId('currency_id')->constrained('currencies');
             $table->string('name');
             $table->date('period_start_date');
             $table->date('period_end_date');

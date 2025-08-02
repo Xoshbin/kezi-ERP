@@ -12,7 +12,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * Class Asset
  *
  * @package App\Models
- * 
+ *
  * This Eloquent model represents a Fixed Asset within the accounting system.
  * It's designed to track long-term tangible assets, their acquisition, depreciation,
  * and eventual disposal, directly impacting the company's financial statements.
@@ -86,6 +86,7 @@ class Asset extends Model
         'depreciation_expense_account_id',
         'accumulated_depreciation_account_id',
         'status',
+        'currency_id',
     ];
 
     /**
@@ -165,5 +166,10 @@ class Asset extends Model
     public function depreciationEntries(): HasMany
     {
         return $this->hasMany(DepreciationEntry::class);
+    }
+
+    public function currency(): BelongsTo
+    {
+        return $this->belongsTo(Currency::class);
     }
 }

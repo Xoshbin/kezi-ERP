@@ -176,3 +176,10 @@ This file tracks the project's current status, including recent changes, current
 - Formalized the project's coding standards by creating `.roo/rules/02-coding-style.txt` and mandating the use of PHP 8.1+ Backed Enums for state management.
 - Updated the Memory Bank to reflect all recent architectural decisions and progress.
 **Next Steps:** The feature is complete and the system is ready for the next development task.
+[2025-08-02 06:31:00] - **COMPLETED: Debugging of MoneyCast Test Failures**
+**Current Focus:** The system is stable and all tests are passing. The previous focus was on resolving persistent test failures in the `money-cast` group related to the `VendorBill` and `VendorBillLine` models.
+**Recent Changes:**
+- The root cause was identified as an incorrect `configure` method in `VendorBillFactory.php` that was overriding the currency settings.
+- The `configure` method was removed from the factory, resolving the test failures.
+- All 9 tests in the `money-cast` group now pass, confirming the `MoneyCast` functionality is correct across all relevant models.
+**Next Steps:** The system is ready for the next development task.

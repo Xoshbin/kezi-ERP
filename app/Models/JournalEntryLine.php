@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Casts\MoneyCast;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -53,6 +54,8 @@ use RuntimeException; // Utilized for explicit enforcement of immutability and d
  */
 class JournalEntryLine extends Model
 {
+    use HasFactory;
+
     /**
      * The database table associated with the model.
      *

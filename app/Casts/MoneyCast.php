@@ -4,6 +4,7 @@ namespace App\Casts;
 
 use Brick\Money\Money;
 use App\Models\Currency;
+use Brick\Math\RoundingMode;
 use InvalidArgumentException;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Database\Eloquent\Model;
@@ -53,12 +54,11 @@ class MoneyCast implements CastsAttributes
             return null;
         }
 
-        if (is_int($value)) {
+        // If the value is numeric (int, float, or numeric string) but not already a Money object,
+        // create a Money object from it, treating it as a major unit value.
+        if (is_numeric($value) && !$value instanceof Money) {
             $currency = $this->resolveCurrency($model, $attributes);
-            $value = Money::ofMinor($value, $currency->code);
-        } elseif (is_numeric($value)) {
-            $currency = $this->resolveCurrency($model, $attributes);
-            $value = Money::of($value, $currency->code);
+            $value = Money::of($value, $currency->code, null, RoundingMode::HALF_UP);
         } elseif (!$value instanceof Money) {
             throw new InvalidArgumentException('The given value is not a Money instance or numeric.');
         }
@@ -79,7 +79,7 @@ class MoneyCast implements CastsAttributes
         }
 
         if (!$currencyId) {
-            $currencyId = $this->findCurrencyIdInRelations($model);
+            $currencyId = $this->findCurrencyIdInRelations($model, $attributes);
         }
 
         if (!$currencyId) {
@@ -106,14 +106,34 @@ class MoneyCast implements CastsAttributes
     /**
      * Intelligently find currency_id from common relationships.
      */
-    protected function findCurrencyIdInRelations(Model $model): ?int
+    protected function findCurrencyIdInRelations(Model $model, array $attributes): ?int
     {
         // A list of common parent relationships that hold a currency_id.
-        $possibleRelations = ['invoice', 'vendorBill', 'journalEntry', 'payment', 'adjustmentDocument', 'bankStatement'];
+        $possibleRelations = ['invoice', 'vendorBill', 'journalEntry', 'payment', 'adjustmentDocument', 'bankStatement', 'budget', 'asset'];
 
         foreach ($possibleRelations as $relationName) {
-            // THIS IS THE FIX: Check if the relationship method exists before trying to load it.
-            if (method_exists($model, $relationName)) {
+            if (! method_exists($model, $relationName)) {
+                continue;
+            }
+
+            // Strategy 1: If relation is already loaded, use it.
+            if ($model->relationLoaded($relationName) && $model->{$relationName}) {
+                return $model->{$relationName}->currency_id;
+            }
+
+            // Strategy 2: Use the foreign key from the attributes array if available.
+            // This is crucial for the `set` method, where the relation might not be loaded yet.
+            $foreignKey = $model->{$relationName}()->getForeignKeyName();
+            if (isset($attributes[$foreignKey])) {
+                // Find the parent model without relying on the current model's state
+                $parent = $model->{$relationName}()->getRelated()->newQuery()->find($attributes[$foreignKey]);
+                if ($parent) {
+                    return $parent->currency_id;
+                }
+            }
+
+            // Strategy 3: Fallback to loading the relation from the database if the model exists.
+            if ($model->exists) {
                 $model->loadMissing($relationName);
                 if ($model->relationLoaded($relationName) && $model->{$relationName}) {
                     return $model->{$relationName}->currency_id;

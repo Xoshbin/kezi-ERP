@@ -141,8 +141,15 @@ class VendorBill extends Model
     protected static function booted(): void
     {
         static::saving(function (self $vendorBill) {
-            // This ensures totals are always correct before saving.
-            $vendorBill->calculateTotalsFromLines();
+            // This check is crucial. We only want to auto-calculate totals
+            // if the lines relationship has been loaded. This prevents the
+            // calculation from running when we are, for example, creating a bill
+            // header from a factory without lines, which would incorrectly
+            // reset the total to zero. It allows tests and other parts of the
+            // application to manually set a total on a line-less bill.
+            if ($vendorBill->relationLoaded('lines')) {
+                $vendorBill->calculateTotalsFromLines();
+            }
         });
     }
 

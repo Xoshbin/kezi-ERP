@@ -11,7 +11,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * Class Budget
  *
  * @package App\Models
- * 
+ *
  * This Eloquent model represents a financial or analytic budget within the accounting system.
  * It serves as a planning and control tool, allowing organizations to allocate resources
  * and track performance against predefined targets. Budgets can be defined as 'Analytic'
@@ -68,6 +68,7 @@ class Budget extends Model
         'period_end_date',
         'budget_type',
         'status',
+        'currency_id',
     ];
 
     /**
@@ -132,5 +133,9 @@ class Budget extends Model
     public function budgetLines(): HasMany
     {
         return $this->hasMany(BudgetLine::class);
+    }
+    public function currency(): BelongsTo
+    {
+        return $this->belongsTo(Currency::class);
     }
 }

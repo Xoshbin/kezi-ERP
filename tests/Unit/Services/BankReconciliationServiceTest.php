@@ -47,7 +47,7 @@ it('successfully reconciles a payment and a bank statement line', function () {
         'default_outstanding_receipts_account_id' => Account::factory()->create(['company_id' => $this->company->id])->id,
     ]);
 
-    $currency = Currency::factory()->create(['code' => 'USD']);
+    $currency = Currency::firstOrCreate(['code' => 'USD'], ['name' => 'US Dollar', 'symbol' => '$', 'exchange_rate' => 1, 'is_active' => true, 'decimal_places' => 2]);
 
     $statement = BankStatement::factory()->create([
         'company_id' => $this->company->id,

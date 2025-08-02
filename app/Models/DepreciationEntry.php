@@ -128,7 +128,7 @@ class DepreciationEntry extends Model
 
     /**
      * Get the currency of this invoice.
-     * Every invoice operates in a specific currency. [1]
+     * Every invoice operates in a specific currency.
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */

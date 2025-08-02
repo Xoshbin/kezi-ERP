@@ -19,7 +19,7 @@ class ProductFactory extends Factory
     public function definition(): array
     {
         return [
-            'company_id' => Company::factory()->create()->id,
+            'company_id' => fn () => Company::factory()->create()->id,
             'name' => $this->faker->word(),
             'sku' => strtoupper($this->faker->bothify('SKU-####')),
             'description' => $this->faker->sentence(),
