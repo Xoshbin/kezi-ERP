@@ -221,3 +221,9 @@ This file records architectural and implementation decisions using a list format
 - **Implementation Details:**
     1.  Deleted the `configure` method from `database/factories/VendorBillFactory.php`.
     2.  Verified the fix by running the entire `money-cast` test group, confirming that all 9 tests now pass.
+
+[2025-08-02 20:33:50] - **Decision:** Added the Single Responsibility Principle (SRP) to the core principles of the coding style guide.
+- **Rationale:** To formalize a key software design principle that is already being followed in the project. This ensures that all current and future development adheres to this standard, which promotes modular, maintainable, and testable code.
+- **Implementation Details:**
+    1.  Added a new entry for SRP in `.roo/rules/02-coding-style.txt`.
+    2.  The entry defines the principle and provides examples relevant to the existing architecture (Services, Actions, Observers).
