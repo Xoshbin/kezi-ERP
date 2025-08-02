@@ -14,14 +14,20 @@ use Tests\Traits\CreatesApplication;
 use App\Actions\Payments\CreatePaymentAction;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use App\DataTransferObjects\Payments\CreatePaymentDTO;
+use Tests\Traits\WithUnlockedPeriod;
 use App\DataTransferObjects\Payments\CreatePaymentDocumentLinkDTO;
 
-uses(RefreshDatabase::class, CreatesApplication::class);
+uses(RefreshDatabase::class, CreatesApplication::class, WithUnlockedPeriod::class);
 
 beforeEach(function () {
+    $this->setupWithUnlockedPeriod();
     $this->company = $this->createConfiguredCompany();
     $this->user = User::factory()->for($this->company)->create();
     $this->actingAs($this->user);
+});
+
+afterEach(function () {
+    $this->tearDownWithUnlockedPeriod();
 });
 
 test('an inbound payment can be created and linked to an invoice', function () {
@@ -49,7 +55,7 @@ test('an inbound payment can be created and linked to an invoice', function () {
     );
 
     // Act: Create the payment using the Action.
-    $payment = (new CreatePaymentAction())->execute($paymentDTO, $this->user);
+    $payment = (app(CreatePaymentAction::class))->execute($paymentDTO, $this->user);
 
     // Assert: The payment was created successfully.
     $this->assertModelExists($payment);
@@ -89,7 +95,7 @@ test('an outbound payment can be created and linked to a vendor bill', function 
     );
 
     // Act: Create the payment using the Action.
-    $payment = (new CreatePaymentAction())->execute($paymentDTO, $this->user);
+    $payment = (app(CreatePaymentAction::class))->execute($paymentDTO, $this->user);
 
     // Assert: The payment was created successfully.
     $this->assertModelExists($payment);
@@ -138,8 +144,8 @@ test('creating a payment generates the correct journal entry', function () {
     );
 
     // Act: Create the payment using the Action.
-    $payment = (new CreatePaymentAction())->execute($paymentDTO, $this->user);
-    
+    $payment = (app(CreatePaymentAction::class))->execute($paymentDTO, $this->user);
+
     // Act: Confirm the payment to trigger journal entry creation.
     (app(PaymentService::class))->confirm($payment, $this->user);
 

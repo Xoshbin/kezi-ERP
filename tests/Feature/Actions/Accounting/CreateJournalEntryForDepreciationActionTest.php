@@ -32,7 +32,7 @@ test('it creates a correct journal entry for a depreciation entry', function () 
         ]);
 
     // 2. Act
-    $action = new CreateJournalEntryForDepreciationAction();
+    $action = app(CreateJournalEntryForDepreciationAction::class);
     $journalEntry = $action->execute($depreciationEntry, $user);
 
     // 3. Assert

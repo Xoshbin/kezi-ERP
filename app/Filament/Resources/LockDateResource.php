@@ -2,59 +2,37 @@
 
 namespace App\Filament\Resources;
 
+use App\Enums\Accounting\LockDateType;
 use App\Filament\Resources\LockDateResource\Pages;
-use App\Filament\Resources\LockDateResource\RelationManagers;
 use App\Models\LockDate;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class LockDateResource extends Resource
 {
     protected static ?string $model = LockDate::class;
-
-    protected static ?string $navigationIcon = 'heroicon-o-lock-closed';
-
-    public static function getLabel(): string
-    {
-        return __('lock_date.label');
-    }
-
-    public static function getPluralLabel(): string
-    {
-        return __('lock_date.plural_label');
-    }
-
-    public static function getNavigationLabel(): string
-    {
-        return __('lock_date.navigation_label');
-    }
-
-    public static function getNavigationGroup(): string
-    {
-        return __('lock_date.navigation_group');
-    }
+    protected static ?string $navigationGroup = 'Accounting';
+    protected static ?int $navigationSort = 7;
 
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
+                Forms\Components\Select::make('lock_type')
+                    ->options(collect(LockDateType::cases())->mapWithKeys(fn ($case) => [$case->value => $case->getLabel()]))
+                    ->required()
+                    ->disabled(fn (?LockDate $record) => $record !== null && $record->lock_type === LockDateType::HARD_LOCK)
+                    ->dehydrated(fn (?LockDate $record) => $record === null), // Only save on create
+                Forms\Components\DatePicker::make('locked_until')
+                    ->required(),
                 Forms\Components\Select::make('company_id')
                     ->relationship('company', 'name')
-                    ->label(__('lock_date.company'))
-                    ->placeholder(__('lock_date.select_company'))
-                    ->required(),
-                Forms\Components\TextInput::make('lock_type')
-                    ->label(__('lock_date.lock_type'))
                     ->required()
-                    ->maxLength(255),
-                Forms\Components\DatePicker::make('locked_until')
-                    ->label(__('lock_date.locked_until'))
-                    ->required(),
+                    ->default(fn () => auth()->user()->company_id)
+                    ->disabled(),
             ]);
     }
 
@@ -62,46 +40,17 @@ class LockDateResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('company.name')
-                    ->label(__('lock_date.company'))
-                    ->numeric()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('lock_type')
-                    ->label(__('lock_date.lock_type'))
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('locked_until')
-                    ->label(__('lock_date.locked_until'))
-                    ->date()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('created_at')
-                    ->label(__('lock_date.created_at'))
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('updated_at')
-                    ->label(__('lock_date.updated_at'))
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-            ])
-            ->filters([
-                //
+                Tables\Columns\TextColumn::make('lock_type')->badge(),
+                Tables\Columns\TextColumn::make('locked_until')->date(),
+                Tables\Columns\TextColumn::make('company.name')->sortable(),
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
+                Tables\Actions\EditAction::make()
+                    ->disabled(fn (LockDate $record) => $record->lock_type === LockDateType::HARD_LOCK),
+                Tables\Actions\DeleteAction::make()
+                    ->disabled(fn (LockDate $record) => $record->lock_type === LockDateType::HARD_LOCK),
             ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
-                ]),
-            ]);
-    }
-
-    public static function getRelations(): array
-    {
-        return [
-            //
-        ];
+            ->bulkActions([]);
     }
 
     public static function getPages(): array

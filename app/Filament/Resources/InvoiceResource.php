@@ -21,6 +21,7 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\InvoiceResource\RelationManagers;
 use App\Models\Account;
 use App\Models\Product;
+use App\Rules\NotInLockedPeriod;
 
 class InvoiceResource extends Resource
 {
@@ -36,7 +37,7 @@ class InvoiceResource extends Resource
                 Forms\Components\Select::make('customer_id')->relationship('customer', 'name')->label(__('invoice.customer'))->required(),
                 Forms\Components\Select::make('currency_id')->relationship('currency', 'name')->label(__('invoice.currency'))->required(),
                 Forms\Components\Select::make('fiscal_position_id')->relationship('fiscalPosition', 'name')->label(__('invoice.fiscal_position')),
-                Forms\Components\DatePicker::make('invoice_date')->label(__('invoice.invoice_date'))->required(),
+                Forms\Components\DatePicker::make('invoice_date')->label(__('invoice.invoice_date'))->required()->rules([new NotInLockedPeriod()]),
                 Forms\Components\DatePicker::make('due_date')->label(__('invoice.due_date'))->required(),
                 Forms\Components\Select::make('status')
                     ->label(__('invoice.status'))

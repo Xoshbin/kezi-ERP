@@ -23,7 +23,7 @@ test('it creates a correct journal entry for a payment reconciliation', function
         ]);
 
     // 2. Act
-    $action = new CreateJournalEntryForReconciliationAction();
+    $action = app(CreateJournalEntryForReconciliationAction::class);
     $journalEntry = $action->execute($payment, $user);
 
     // 3. Assert

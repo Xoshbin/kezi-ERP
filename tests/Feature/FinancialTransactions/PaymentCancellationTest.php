@@ -6,8 +6,9 @@ use App\Services\PaymentService;
 use App\Enums\Accounting\JournalEntryState;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\Traits\CreatesApplication;
+use Tests\Traits\WithUnlockedPeriod;
 
-uses(RefreshDatabase::class, CreatesApplication::class);
+uses(RefreshDatabase::class, CreatesApplication::class, WithUnlockedPeriod::class);
 
 test('cancelling a confirmed payment creates a reversing journal entry and an audit log', function () {
     // Arrange
