@@ -25,7 +25,7 @@ test('it creates a correct journal entry for a posted adjustment document (credi
         ]);
 
     // 2. Act
-    $action = new CreateJournalEntryForAdjustmentAction();
+    $action = app(CreateJournalEntryForAdjustmentAction::class);
     $journalEntry = $action->execute($adjustment, $user);
 
     // 3. Assert

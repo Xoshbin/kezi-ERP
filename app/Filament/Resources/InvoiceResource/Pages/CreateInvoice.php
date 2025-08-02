@@ -43,6 +43,6 @@ class CreateInvoice extends CreateRecord
             fiscal_position_id: $data['fiscal_position_id'] ?? null
         );
 
-        return (new CreateInvoiceAction())->execute($invoiceDTO);
+        return app(CreateInvoiceAction::class)->execute($invoiceDTO);
     }
 }

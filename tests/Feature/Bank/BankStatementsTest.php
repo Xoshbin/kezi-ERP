@@ -59,7 +59,7 @@ test('it creates a bank statement and its lines from a dto', function () {
     );
 
     // Act: Execute the action.
-    $action = new CreateBankStatementAction();
+    $action = app(CreateBankStatementAction::class);
     $bankStatement = $action->execute($statementDTO);
 
     // Assert: Check that the statement and its lines were created correctly.

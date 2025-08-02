@@ -14,8 +14,9 @@ use Brick\Money\Money;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 use Tests\Traits\CreatesApplication;
+use Tests\Traits\WithUnlockedPeriod;
 
-uses(RefreshDatabase::class, CreatesApplication::class);
+uses(RefreshDatabase::class, CreatesApplication::class, WithUnlockedPeriod::class);
 
 beforeEach(function () {
     $this->company = $this->createConfiguredCompany();
@@ -58,8 +59,8 @@ test('adjustment document totals are calculated correctly from lines', function 
     // Line 2: (1 * 50) = 50 subtotal + 0 tax = 50 total
     // Total Tax: 20
     // Total Amount: 220 + 50 = 270
-    expect($adjustmentDoc->total_tax->getAmount()->toFloat())->toBe(20.00);
-    expect($adjustmentDoc->total_amount->getAmount()->toFloat())->toBe(270.00);
+    expect($adjustmentDoc->total_tax->getMinorAmount()->toInt())->toBe(20000);
+    expect($adjustmentDoc->total_amount->getMinorAmount()->toInt())->toBe(270000);
 });
 
 
@@ -101,7 +102,7 @@ test('create adjustment document action correctly creates document with lines', 
     );
 
     // Act
-    $action = new \App\Actions\Adjustments\CreateAdjustmentDocumentAction();
+    $action = app(\App\Actions\Adjustments\CreateAdjustmentDocumentAction::class);
     $adjustmentDoc = $action->execute($dto);
 
     // Assert
@@ -113,6 +114,6 @@ test('create adjustment document action correctly creates document with lines', 
     // Line 2: 15 subtotal + 0 tax = 15 total
     // Total Tax: 20
     // Total Amount: 220 + 15 = 235
-    expect($adjustmentDoc->total_tax->getAmount()->toFloat())->toBe(20.00);
-    expect($adjustmentDoc->total_amount->getAmount()->toFloat())->toBe(235.00);
+    expect($adjustmentDoc->total_tax->getMinorAmount()->toInt())->toBe(20000);
+    expect($adjustmentDoc->total_amount->getMinorAmount()->toInt())->toBe(235000);
 });

@@ -32,7 +32,7 @@ it('correctly creates a journal entry and links it to the statement line via a p
     );
 
     // Act
-    (new CreateJournalEntryForStatementLineAction())->execute($dto);
+    (app(CreateJournalEntryForStatementLineAction::class))->execute($dto);
 
     // Assert
     $this->assertDatabaseHas('journal_entries', [
@@ -57,7 +57,7 @@ it('updates the statement line status to reconciled within the same atomic trans
     );
 
     // Act
-    (new CreateJournalEntryForStatementLineAction())->execute($dto);
+    (app(CreateJournalEntryForStatementLineAction::class))->execute($dto);
 
     // Assert
     $this->assertDatabaseHas('bank_statement_lines', [
@@ -92,7 +92,7 @@ it('rolls back the entire transaction if updating the statement line fails', fun
     $this->expectException(\Exception::class);
     $this->expectExceptionMessage('DB error');
 
-    (new CreateJournalEntryForStatementLineAction())->execute($dto);
+    (app(CreateJournalEntryForStatementLineAction::class))->execute($dto);
 
     // These assertions will not be reached, but are here for clarity.
     // In a real scenario, we'd check the state *after* catching the exception.
@@ -125,7 +125,7 @@ it('handles multi-currency scenarios correctly', function (string $currencyCode,
     );
 
     // Act
-    (new CreateJournalEntryForStatementLineAction())->execute($dto);
+    (app(CreateJournalEntryForStatementLineAction::class))->execute($dto);
 
     // Assert
     $journalEntry = JournalEntry::first();

@@ -29,7 +29,7 @@ class BankReconciliationService
             $statementLine->save();
 
             // 3. Create and execute the new, dedicated action.
-            (new CreateJournalEntryForReconciliationAction())->execute($payment, $user);
+            (app(CreateJournalEntryForReconciliationAction::class))->execute($payment, $user);
         });
     }
 
@@ -63,7 +63,7 @@ class BankReconciliationService
                 $payment->status = Payment::STATUS_RECONCILED;
                 $payment->save();
 
-                (new CreateJournalEntryForReconciliationAction())->execute($payment, $user);
+                (app(CreateJournalEntryForReconciliationAction::class))->execute($payment, $user);
             }
         });
     }
@@ -78,6 +78,6 @@ class BankReconciliationService
             description: $description
         );
 
-        (new CreateJournalEntryForStatementLineAction())->execute($dto);
+        (app(CreateJournalEntryForStatementLineAction::class))->execute($dto);
     }
 }

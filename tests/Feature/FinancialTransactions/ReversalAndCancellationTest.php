@@ -14,8 +14,9 @@ use App\Services\JournalEntryService;
 use App\Enums\Accounting\JournalEntryState;
 use App\Exceptions\DeletionNotAllowedException;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\Traits\WithUnlockedPeriod;
 
-uses(RefreshDatabase::class, CreatesApplication::class);
+uses(RefreshDatabase::class, CreatesApplication::class, WithUnlockedPeriod::class);
 
 beforeEach(function () {
     // Set up a fully configured company and an authenticated user for each test.
@@ -105,7 +106,7 @@ describe('Payment Cancellations', function () {
             document_links: [$linkDto],
             reference: 'Test Payment'
         );
-        $payment = (new \App\Actions\Payments\CreatePaymentAction())->execute($paymentDto, $this->user);
+        $payment = (app(\App\Actions\Payments\CreatePaymentAction::class))->execute($paymentDto, $this->user);
 
         // Act 1: Confirm the payment.
         $this->paymentService->confirm($payment, $this->user);

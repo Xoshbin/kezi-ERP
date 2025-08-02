@@ -7,7 +7,9 @@ use App\DataTransferObjects\Accounting\CreateJournalEntryDTO;
 use App\DataTransferObjects\Accounting\CreateJournalEntryLineDTO;
 use App\Filament\Resources\JournalEntryResource;
 use App\Models\Company;
+use App\Models\Journal;
 use App\Models\LockDate;
+use Brick\Money\Money;
 use Filament\Resources\Pages\CreateRecord;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Validation\ValidationException;
@@ -53,12 +55,18 @@ class CreateJournalEntry extends CreateRecord
     // This method now cleanly translates form data to DTOs and executes the Action.
     protected function handleRecordCreation(array $data): Model
     {
+        $journal = Journal::find($data['journal_id']);
+        $currencyCode = $journal->currency->code;
+
         $lineDTOs = [];
         foreach ($data['lines'] as $line) {
+            $debitAmount = $line['debit'] ?? '0';
+            $creditAmount = $line['credit'] ?? '0';
+
             $lineDTOs[] = new CreateJournalEntryLineDTO(
                 account_id: $line['account_id'],
-                debit: $line['debit'],
-                credit: $line['credit'],
+                debit: Money::of($debitAmount, $currencyCode),
+                credit: Money::of($creditAmount, $currencyCode),
                 description: $line['description'],
                 partner_id: $line['partner_id'],
                 analytic_account_id: $line['analytic_account_id']
@@ -80,6 +88,6 @@ class CreateJournalEntry extends CreateRecord
             lines: $lineDTOs
         );
 
-        return (new CreateJournalEntryAction())->execute($journalEntryDTO);
+        return app(CreateJournalEntryAction::class)->execute($journalEntryDTO);
     }
 }

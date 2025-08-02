@@ -44,7 +44,7 @@ test('it creates a correct journal entry for a posted vendor bill', function () 
     $freshVendorBill = VendorBill::find($vendorBill->id);
 
     // 2. Act
-    $action = new CreateJournalEntryForVendorBillAction();
+    $action = app(CreateJournalEntryForVendorBillAction::class);
     // Pass the fresh, correct model to the action.
     $journalEntry = $action->execute($freshVendorBill, $user);
 

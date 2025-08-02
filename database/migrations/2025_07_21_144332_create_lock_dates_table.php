@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('lock_dates', function (Blueprint $table) {
             $table->id();
             $table->foreignId('company_id')->constrained('companies');
-            $table->string('lock_type');
+            $table->string('lock_type'); // tax_return_date, everything_date
             $table->date('locked_until');
             $table->timestamps();
 

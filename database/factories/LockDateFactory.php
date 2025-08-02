@@ -19,7 +19,7 @@ class LockDateFactory extends Factory
     {
         return [
             'company_id' => Company::factory()->create()->id,
-            'lock_type' => $this->faker->randomElement(['type1', 'type2', 'type3']),
+            'lock_type' => $this->faker->randomElement(['tax_return_date', 'everything_date']),
             'locked_until' => $this->faker->dateTimeBetween('now', '+1 year'),
         ];
     }

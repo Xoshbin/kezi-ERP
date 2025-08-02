@@ -14,13 +14,19 @@ use Brick\Money\Money;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Validation\ValidationException;
 use Tests\Traits\CreatesApplication;
+use Tests\Traits\WithUnlockedPeriod;
 
-uses(RefreshDatabase::class, CreatesApplication::class);
+uses(RefreshDatabase::class, CreatesApplication::class, WithUnlockedPeriod::class);
 
 beforeEach(function () {
+    $this->setupWithUnlockedPeriod();
     $this->company = $this->createConfiguredCompany();
     $this->user = User::factory()->for($this->company)->create();
     $this->actingAs($this->user);
+});
+
+afterEach(function () {
+    $this->tearDownWithUnlockedPeriod();
 });
 
 test('a journal entry correctly calculates totals and assigns a user when created', function () {
@@ -156,6 +162,8 @@ test('a posted journal entry cannot be deleted via the service', function () {
 });
 
 test('a draft journal entry in a locked period cannot be deleted', function () {
+    $this->tearDownWithUnlockedPeriod(); // Disable the mock for this specific test.
+
     $service = app(JournalEntryService::class);
     LockDate::factory()->for($this->company)->create(['locked_until' => now()->subMonth()]);
     $currencyCode = $this->company->currency->code;

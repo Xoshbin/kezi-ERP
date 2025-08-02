@@ -24,6 +24,8 @@ use App\Models\Currency;
 use App\Models\Tax;
 use Illuminate\Support\Facades\Auth;
 
+use App\Rules\NotInLockedPeriod;
+
 class VendorBillResource extends Resource
 {
     protected static ?string $model = VendorBill::class;
@@ -52,10 +54,12 @@ class VendorBillResource extends Resource
                     ->maxLength(255),
                 Forms\Components\DatePicker::make('bill_date')
                     ->label(__('vendor_bill.bill_date'))
-                    ->required(),
+                    ->required()
+                    ->rules([new NotInLockedPeriod()]),
                 Forms\Components\DatePicker::make('accounting_date')
                     ->label(__('vendor_bill.accounting_date'))
-                    ->required(),
+                    ->required()
+                    ->rules([new NotInLockedPeriod()]),
                 Forms\Components\DatePicker::make('due_date')
                     ->label(__('vendor_bill.due_date')),
                 Forms\Components\Select::make('status')

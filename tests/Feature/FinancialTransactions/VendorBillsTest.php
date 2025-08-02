@@ -199,7 +199,10 @@ test('a draft vendor bill can be deleted', function () {
 
 test('a vendor bill cannot be created or posted in a locked period', function () {
     // Arrange: Lock the company's books.
-    LockDate::factory()->for($this->company)->create(['locked_until' => now()->subDay()]);
+    LockDate::factory()->for($this->company)->create([
+        'locked_until' => now()->subDay(),
+        'lock_type' => \App\Enums\Accounting\LockDateType::ALL_USERS,
+    ]);
 
     // Arrange: Prepare a complete DTO with a date in the locked period.
     $vendorBillDto = new CreateVendorBillDTO(
@@ -214,7 +217,7 @@ test('a vendor bill cannot be created or posted in a locked period', function ()
     );
 
     // Assert: Expect the Action to fail with the correct exception.
-    expect(fn() => (new CreateVendorBillAction())->execute($vendorBillDto))
+    expect(fn() => (app(CreateVendorBillAction::class))->execute($vendorBillDto))
         ->toThrow(PeriodIsLockedException::class);
 
     // Arrange: Create a draft bill with a valid date.
