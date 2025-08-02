@@ -140,3 +140,24 @@ $invoice->save(); // Stored as 5000000000
 
 $invoice->total_amount = 500; // For USD
 $invoice->save(); // Stored as 50000
+
+## 5. Internationalization (I18n)
+
+**Rule:** All user-facing strings, including text in the user interface, exceptions, notifications, and any other part of the application visible to the end-user, MUST be translatable using Laravel's localization features.
+
+**Rationale:** To ensure the application can be easily adapted for different languages and regions. This is critical for a market like Iraq, which has multiple official languages (English and Kurdish). A fully localized application provides a better user experience and broader accessibility.
+
+**Implementation:**
+- **PHP Code:** Use the `__()` helper function to retrieve translation strings.
+  - Example: `throw new \Exception(__('Your invoice has been successfully posted.'));`
+- **Blade Templates:** Use the `@lang()` directive for translations within views.
+  - Example: `<span>@lang('messages.welcome')</span>`
+- **Translation Files:** All translation strings MUST be stored in language files within the `resources/lang/` directory, following this structure:
+  ```
+  resources/lang/
+  ├── en/
+  │   └── messages.php
+  └── ku/
+      └── messages.php
+  ```
+- **No Hardcoded Strings:** Under no circumstances should user-facing text be hardcoded directly in PHP files or Blade templates.
