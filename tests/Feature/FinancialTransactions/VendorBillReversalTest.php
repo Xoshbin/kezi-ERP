@@ -3,6 +3,7 @@
 use App\Models\User;
 use App\Models\VendorBill;
 use App\Services\VendorBillService;
+use App\Enums\Accounting\JournalEntryState;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\Traits\CreatesApplication;
 
@@ -37,7 +38,7 @@ test('cancelling a posted vendor bill creates a reversing journal entry and an a
 
     // Assert: Bill status and reversal entry are correct
     expect($vendorBill->status)->toBe(VendorBill::STATUS_CANCELED);
-    expect($originalEntry->state)->toBe('reversed');
+    expect($originalEntry->state)->toBe(JournalEntryState::Reversed);
     expect($originalEntry->reversed_entry_id)->not->toBeNull();
 
     // --- NEW ASSERTION FOR AUDIT LOG ---

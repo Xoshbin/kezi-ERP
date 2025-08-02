@@ -53,14 +53,14 @@ class MoneyCast implements CastsAttributes
             return null;
         }
 
-        if (!$value instanceof Money) {
-            // Allow setting from numeric values for convenience in factories/seeders
-            if (is_numeric($value)) {
-                $currency = $this->resolveCurrency($model, $attributes);
-                $value = Money::of($value, $currency->code);
-            } else {
-                throw new InvalidArgumentException('The given value is not a Money instance or numeric.');
-            }
+        if (is_int($value)) {
+            $currency = $this->resolveCurrency($model, $attributes);
+            $value = Money::ofMinor($value, $currency->code);
+        } elseif (is_numeric($value)) {
+            $currency = $this->resolveCurrency($model, $attributes);
+            $value = Money::of($value, $currency->code);
+        } elseif (!$value instanceof Money) {
+            throw new InvalidArgumentException('The given value is not a Money instance or numeric.');
         }
 
         return $value->getMinorAmount()->toInt();

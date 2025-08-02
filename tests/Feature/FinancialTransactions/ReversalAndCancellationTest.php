@@ -11,6 +11,7 @@ use App\Models\JournalEntry;
 use App\Services\PaymentService;
 use Tests\Traits\CreatesApplication;
 use App\Services\JournalEntryService;
+use App\Enums\Accounting\JournalEntryState;
 use App\Exceptions\DeletionNotAllowedException;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
@@ -70,7 +71,7 @@ describe('Journal Entry Reversals', function () {
 
         // Assert: Check that the original entry is now marked as reversed.
         $originalEntry->refresh();
-        expect($originalEntry->state)->toBe('reversed');
+        expect($originalEntry->state)->toBe(JournalEntryState::Reversed);
         expect($originalEntry->reversed_entry_id)->toBe($reversingEntry->id);
     });
 

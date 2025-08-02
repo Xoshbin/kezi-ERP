@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Casts\MoneyCast;
+use App\Enums\Accounting\JournalEntryState;
 use App\Observers\AuditLogObserver;
 use App\Observers\JournalEntryObserver;
 use Illuminate\Support\Facades\Auth;
@@ -129,6 +130,7 @@ class JournalEntry extends Model
         'total_debit' => MoneyCast::class, // Represents currency, typically 2 decimal places for financial accuracy [3, 17].
         'total_credit' => MoneyCast::class, // Represents currency, typically 2 decimal places [3, 17].
         'is_posted' => 'boolean', // Crucial flag for immutability [3].
+        'state' => JournalEntryState::class, // Journal entry state for reversal tracking
     ];
 
     /**
@@ -262,6 +264,20 @@ class JournalEntry extends Model
     public function source(): MorphTo
     {
         return $this->morphTo();
+    }
+
+    /**
+     * Get the journal entry that this entry reverses.
+     *
+     * This relationship is used when this journal entry is a reversing entry
+     * for another journal entry. The `reversed_entry_id` points to the
+     * original entry being reversed.
+     *
+     * @return BelongsTo An Eloquent relationship instance for the JournalEntry model.
+     */
+    public function reversingEntry(): BelongsTo
+    {
+        return $this->belongsTo(JournalEntry::class, 'reversed_entry_id');
     }
 
     /*

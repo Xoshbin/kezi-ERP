@@ -15,7 +15,7 @@ use Illuminate\Database\Eloquent\Attributes\ObservedBy;
  * @property \Illuminate\Support\Carbon $date
  * @property string $description
  * @property string|null $partner_name
- * @property float $amount
+ * @property \Brick\Money\Money $amount
  * @property bool $is_reconciled
  * @property int|null $payment_id
  * @property \Illuminate\Support\Carbon|null $created_at
@@ -80,5 +80,15 @@ class BankStatementLine extends Model
     public function partner(): BelongsTo
     {
         return $this->belongsTo(Partner::class);
+    }
+
+    /**
+     * Get the journal entry that was created for this bank statement line (if any).
+     * This uses the polymorphic relationship from JournalEntry.
+     */
+    public function journalEntry(): \Illuminate\Database\Eloquent\Relations\HasOne
+    {
+        return $this->hasOne(JournalEntry::class, 'source_id')
+            ->where('source_type', self::class);
     }
 }

@@ -186,3 +186,33 @@ This file records architectural and implementation decisions using a list format
 - `tests/Feature/Actions/Accounting/CreateJournalEntryForStatementLineActionTest.php` (added cache clearing in test setup)
 
 **Architecture Preserved**: Money object handling and caching system maintained, test isolation principles upheld, TDD workflow reliability ensured.
+
+[2025-08-02 04:37:00] - **RESOLVED: Cascading Money and Currency Exceptions in Test Suite**
+
+**Problem**: A `MoneyMismatchException` was occurring in tests involving journal entry creation from bank statement lines. Initial fixes led to a subsequent `BadMethodCallException` and then a regression to the original `MoneyMismatchException`.
+
+**Root Cause Analysis**:
+1.  **Initial `MoneyMismatchException`**: The `CreateJournalEntryForStatementLineAction` was creating `Money` objects using the currency from the bank statement *line* (e.g., USD) but the overall journal entry was being created with the currency from the bank statement *header* (e.g., GTQ, ERN), causing a conflict.
+2.  **`BadMethodCallException`**: The first fix attempted to resolve this by using the bank statement's currency object (`App\Models\Currency`) but incorrectly called `->getCurrencyCode()` on it, a method that only exists on `Brick\Money\Currency` objects. The correct property was `->code`.
+3.  **Second `MoneyMismatchException`**: The next fix corrected the property access to `->code` but failed to convert the *amount* from the bank statement line's currency to the journal's currency. It was passing a USD-based amount into a context expecting another currency.
+4.  **Final `BadMethodCallException` in `ReverseJournalEntryAction`**: A separate but related issue was found where `->getMinorAmount()->toInt()` was being called. The `getMinorAmount()` method returns a `BigNumber` object, which does not have a `toInt()` method. The correct approach is to simply use `getMinorAmount()` as it returns the value in the correct format for `Money::ofMinor()`.
+
+**Solution**:
+- In `CreateJournalEntryForStatementLineAction.php`:
+    - The currency is now correctly sourced from the bank statement header: `$currency = $line->bankStatement->currency;`.
+    - The amount is explicitly converted into a new `Money` object using the correct currency and the amount from the statement line: `$amount = Money::of($line->amount->getAmount(), $currency->code)->abs();`.
+- In `ReverseJournalEntryAction.php`:
+    - Corrected the calls to `Money::ofMinor` to pass the `BigNumber` object directly, which is the expected input: `Money::ofMinor($line->credit->getMinorAmount(), $currencyCode)`.
+
+**Impact**: All currency-related exceptions in the test suite are resolved. The system now correctly handles multi-currency scenarios in both bank statement reconciliation and journal entry reversals, ensuring data integrity.
+
+**Files Modified**:
+- `app/Actions/Accounting/CreateJournalEntryForStatementLineAction.php`
+- `app/Actions/Accounting/ReverseJournalEntryAction.php`
+
+[2025-08-02 04:40:00] - **Decision:** Mandated the use of PHP 8.1+ Backed Enums for all state management.
+- **Rationale:** To enforce type safety, improve code clarity, and reduce boilerplate. Class constants are now considered a deprecated pattern for state management in this project. This decision was made after identifying inconsistencies between older models (like `Invoice`) and newer features.
+- **Implementation Details:**
+    1.  Created a new coding standard in `.roo/rules/02-coding-style.txt` that formally documents this rule.
+    2.  The `JournalEntryState` Enum serves as the primary example of this best practice.
+    3.  Future work should involve refactoring older models to use Enums for consistency.

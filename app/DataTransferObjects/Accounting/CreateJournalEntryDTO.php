@@ -17,5 +17,7 @@ class CreateJournalEntryDTO
         public readonly int $created_by_user_id,
         public readonly bool $is_posted,
         public readonly array $lines,
+        public readonly ?string $source_type = null,
+        public readonly ?int $source_id = null,
     ) {}
 }

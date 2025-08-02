@@ -3,6 +3,7 @@
 use App\Models\User;
 use App\Models\Invoice;
 use App\Services\InvoiceService;
+use App\Enums\Accounting\JournalEntryState;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\Traits\CreatesApplication;
 
@@ -40,7 +41,7 @@ test('cancelling a posted invoice creates a reversing journal entry and an audit
 
     // Assert: Invoice status and journal entry reversal are correct
     expect($invoice->status)->toBe(Invoice::STATUS_CANCELLED);
-    expect($originalEntry->state)->toBe('reversed');
+    expect($originalEntry->state)->toBe(JournalEntryState::Reversed);
     expect($originalEntry->reversed_entry_id)->not->toBeNull();
 
     // Assert: Audit log was created with the correct details

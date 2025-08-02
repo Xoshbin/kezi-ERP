@@ -1,5 +1,4 @@
 <div>
-    {{ $this->actions }}
     {{-- Main layout grid for the panels --}}
     <x-filament::grid class="gap-6" xl-grid-cols="3">
 

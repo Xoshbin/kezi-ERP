@@ -114,3 +114,65 @@ This file tracks the project's current status, including recent changes, current
 - Write-off capability for unmatched items
 - Comprehensive test coverage ensuring accounting accuracy
 - Full integration with the established Actions/DTOs/Services architecture
+
+
+[2025-08-01 19:11:00] - **BANK RECONCILIATION WRITE-OFF ANALYSIS COMPLETED**
+**Current Focus:** Completed comprehensive analysis of bank reconciliation write-off feature from both technical and accounting perspectives.
+
+**Key Findings:**
+- Write-off core logic is technically sound with proper double-entry accounting
+- Critical gap: Missing audit trail link between BankStatementLine and JournalEntry 
+- No reversal mechanism exists, violating immutability principles
+- Test coverage insufficient - missing dedicated action tests and failure scenarios
+
+**Deliverables Created:**
+- Complete gap analysis identifying 3 critical missing pieces
+- Detailed implementation plan saved to `write_off_feature_plan.md`
+- Specific recommendations for audit trail using existing `source` polymorphic relationship
+- Testing strategy for both happy path and edge cases
+
+**Next Steps:** Implementation phase ready to begin following the documented plan.
+
+
+[2025-08-01 20:25:00] - **COMPLETED: Journal Entry Reversal UI Integration**
+**Current Focus:** Successfully integrated journal entry reversal functionality into Filament UI for bank statement lines as part of Phase 3 strategic plan.
+
+**Implementation Details:**
+- Added `journalEntry()` relationship to `BankStatementLine` model using polymorphic connection via `source_type` and `source_id`
+- Enhanced `BankStatementLinesRelationManager` with conditional "Reverse Write-Off" action
+- Configured action visibility: only shows for reconciled lines with posted journal entries (`$record->is_reconciled && $record->journalEntry?->state === JournalEntryState::Posted`)
+- Implemented authorization using existing Gate policy: `Gate::allows('reverse', $record->journalEntry)`
+- Added comprehensive user feedback with confirmation modal and success/error notifications
+- Integrated with existing `ReverseJournalEntryAction` for consistent reversal logic
+- Added eager loading optimization with `->modifyQueryUsing(fn (Builder $query) => $query->with('journalEntry'))`
+
+**Testing Results:**
+- All bank statement tests pass (2 passed, 12 assertions)
+- All reversal and cancellation tests pass (5 passed, 20 assertions)  
+- All accounting action tests pass (8 passed, 49 assertions)
+- No regressions detected in the broader system
+
+**Architecture Maintained:**
+- Follows established Actions/DTOs pattern with proper service integration
+- Preserves immutability principles through reversal mechanism
+- Maintains audit trail integrity and proper authorization checks
+- Consistent with existing Filament UI patterns and user experience
+
+[2025-08-02 04:38:00] - **COMPLETED: Debugging of Cascading Currency Exceptions**
+**Current Focus:** The system is stable and all tests are passing. The previous focus was on resolving a series of `MoneyMismatchException` and `BadMethodCallException` errors that were causing test failures.
+
+**Recent Changes:**
+- Fixed a currency mismatch issue in `CreateJournalEntryForStatementLineAction` by ensuring the journal entry uses the currency from the bank statement header, not the individual line.
+- Corrected the amount conversion in the same action to create a new `Money` object with the proper currency.
+- Resolved a `BadMethodCallException` in `ReverseJournalEntryAction` by correcting the usage of `getMinorAmount()`.
+
+**Next Steps:** The system is ready for the next development task.
+
+[2025-08-02 04:40:00] - **COMPLETED: Immutable Write-Off & Reversal System**
+**Current Focus:** The entire strategic plan for the bank reconciliation write-off and reversal feature is complete. The system is stable and all related tests are passing.
+**Recent Changes:**
+- Completed a four-phase implementation: Core Logic, Reversal State Machine, Filament UI, and PEST Testing.
+- Debugged and fixed a series of cascading `TypeError` and `InvalidArgumentException` errors related to the `Brick\Money` library and DTO type-hinting.
+- Formalized the project's coding standards by creating `.roo/rules/02-coding-style.txt` and mandating the use of PHP 8.1+ Backed Enums for state management.
+- Updated the Memory Bank to reflect all recent architectural decisions and progress.
+**Next Steps:** The feature is complete and the system is ready for the next development task.
