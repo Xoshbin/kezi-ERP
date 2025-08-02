@@ -6,6 +6,8 @@ use App\Listeners\PostJournalEntry;
 use App\Models\JournalEntry;
 use App\Models\LockDate;
 use App\Observers\JournalEntryObserver;
+use App\Models\DepreciationEntry;
+use App\Observers\DepreciationEntryObserver;
 use App\Observers\LockDateObserver;
 use Illuminate\Support\ServiceProvider;
 use App\Livewire\Synthesizers\MoneySynth;
@@ -33,5 +35,6 @@ class AppServiceProvider extends ServiceProvider
         Livewire::propertySynthesizer(MoneySynth::class);
         LockDate::observe(LockDateObserver::class);
         JournalEntry::observe(JournalEntryObserver::class);
+        DepreciationEntry::observe(DepreciationEntryObserver::class);
     }
 }
