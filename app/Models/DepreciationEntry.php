@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Casts\MoneyCast;
+use App\Enums\Assets\DepreciationEntryStatus;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -78,21 +79,10 @@ class DepreciationEntry extends Model
         'depreciation_date' => 'date', // Casts to Carbon instance, focusing on date part
         'amount' => MoneyCast::class, // Ensures precision for currency amounts
         'journal_entry_id' => 'integer',
+        'status' => DepreciationEntryStatus::class,
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
     ];
-
-    public const STATUS_DRAFT = 'draft';
-    public const STATUS_POSTED = 'posted';
-
-    // use it in Filament select options columns
-    public static function getstatuses(): array
-    {
-        return [
-            self::STATUS_DRAFT => 'Draft',
-            self::STATUS_POSTED => 'Posted',
-        ];
-    }
 
     /*
     |--------------------------------------------------------------------------

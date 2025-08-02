@@ -3,10 +3,13 @@
 namespace App\Models;
 
 use App\Casts\MoneyCast;
+use App\Enums\Assets\AssetStatus;
+use App\Enums\Assets\DepreciationMethod;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\MorphTo;
 
 /**
  * Class Asset
@@ -100,6 +103,8 @@ class Asset extends Model
         'purchase_value' => MoneyCast::class,
         'salvage_value' => MoneyCast::class,
         'useful_life_years' => 'integer',
+        'status' => AssetStatus::class,
+        'depreciation_method' => DepreciationMethod::class,
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
     ];
@@ -171,5 +176,15 @@ class Asset extends Model
     public function currency(): BelongsTo
     {
         return $this->belongsTo(Currency::class);
+    }
+    /**
+     * Get the parent source model (e.g., VendorBill).
+     * This relationship links the asset to its acquisition document.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\MorphTo
+     */
+    public function source(): MorphTo
+    {
+        return $this->morphTo();
     }
 }

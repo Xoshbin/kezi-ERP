@@ -44,7 +44,7 @@ class CreateJournalEntryAction
         }
 
         // --- FIX IS HERE: Add $totalDebit and $totalCredit to the 'use' statement ---
-        return DB::transaction(function () use ($dto, $totalDebit, $totalCredit, $currencyCode) {
+        return DB::transaction(function () use ($dto, $totalDebit, $totalCredit, $currencyCode, $currency) {
             $journalEntry = JournalEntry::create([
                 'company_id' => $dto->company_id,
                 'journal_id' => $dto->journal_id,
@@ -63,13 +63,17 @@ class CreateJournalEntryAction
             // ... (rest of the code is correct) ...
 
             foreach ($dto->lines as $lineDto) {
+                $multiplier = pow(10, $currency->decimal_places);
+                $debit_in_minor_units = (int) ($lineDto->debit->getAmount()->toFloat() * $multiplier);
+                $credit_in_minor_units = (int) ($lineDto->credit->getAmount()->toFloat() * $multiplier);
+
                 $journalEntry->lines()->create([
                     'account_id' => $lineDto->account_id,
                     'partner_id' => $lineDto->partner_id,
                     'analytic_account_id' => $lineDto->analytic_account_id,
                     'description' => $lineDto->description,
-                    'debit' => $lineDto->debit,
-                    'credit' => $lineDto->credit,
+                    'debit' => $debit_in_minor_units,
+                    'credit' => $credit_in_minor_units,
                 ]);
             }
 

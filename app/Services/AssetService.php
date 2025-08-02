@@ -2,47 +2,75 @@
 
 namespace App\Services;
 
-use App\Actions\Accounting\CreateJournalEntryForDepreciationAction;
+use App\Actions\Assets\CreateAssetAction;
+use App\Actions\Assets\DisposeAssetAction;
+use App\Actions\Assets\PostDepreciationEntryAction;
+use App\Actions\Assets\UpdateAssetAction;
+use App\DataTransferObjects\Assets\CreateAssetDTO;
+use App\DataTransferObjects\Assets\DisposeAssetDTO;
+use App\DataTransferObjects\Assets\UpdateAssetDTO;
+use App\Enums\Assets\DepreciationEntryStatus;
 use App\Models\Asset;
 use App\Models\DepreciationEntry;
-use App\Models\JournalEntry;
 use App\Models\User;
-use Brick\Money\Money; // Import the Money class
-use Brick\Math\RoundingMode; // Import RoundingMode for division
-use Illuminate\Support\Facades\DB;
+use Brick\Math\RoundingMode;
+use Brick\Money\Money;
+use Carbon\Carbon;
+use Illuminate\Support\Collection;
 
 class AssetService
 {
-    public function __construct(protected JournalEntryService $journalEntryService)
-    {
+    public function __construct(
+        protected CreateAssetAction $createAssetAction,
+        protected UpdateAssetAction $updateAssetAction,
+        protected DisposeAssetAction $disposeAssetAction,
+        protected PostDepreciationEntryAction $postDepreciationEntryAction
+    ) {
     }
 
-    public function runDepreciation(Asset $asset, User $user): void
+    public function createAsset(CreateAssetDTO $dto): Asset
     {
-        // 1. Calculate the depreciation amount for one period.
-        $totalMonths = $asset->useful_life_years * 12;
-        if ($totalMonths <= 0) {
-            return; // Avoid division by zero
-        }
-        $depreciableValue = $asset->purchase_value->minus($asset->salvage_value);
-        $monthlyAmount = $depreciableValue->dividedBy($totalMonths, RoundingMode::HALF_UP);
+        return $this->createAssetAction->execute($dto);
+    }
 
+    public function updateAsset(Asset $asset, UpdateAssetDTO $dto): Asset
+    {
+        return $this->updateAssetAction->execute($asset, $dto);
+    }
 
-        DB::transaction(function () use ($asset, $user, $monthlyAmount) {
-            // 2. Create the depreciation entry record.
-            // The 'amount' will now be a Money object, and the MoneyCast will handle it.
-            $depreciationEntry = $asset->depreciationEntries()->create([
-                'depreciation_date' => now(),
-                'amount' => $monthlyAmount,
-                'status' => 'Posted',
-                'currency_id' => $asset->company->currency_id, // MODIFIED: Added the missing currency_id
+    public function disposeAsset(Asset $asset, DisposeAssetDTO $dto): Asset
+    {
+        return $this->disposeAssetAction->execute($asset, $dto);
+    }
+
+    public function postDepreciation(DepreciationEntry $depreciationEntry, User $user): DepreciationEntry
+    {
+        return $this->postDepreciationEntryAction->execute($depreciationEntry, $user);
+    }
+
+    public function computeDepreciation(Asset $asset): Collection
+    {
+        $asset->load('currency');
+        $depreciableValue = $asset->purchase_price->minus($asset->salvage_value, RoundingMode::HALF_UP);
+
+        $monthlyDepreciation = $depreciableValue->dividedBy($asset->useful_life * 12, RoundingMode::HALF_UP);
+
+        $depreciationDate = Carbon::parse($asset->purchase_date)->startOfMonth();
+
+        $entries = collect();
+
+        for ($i = 0; $i < $asset->useful_life * 12; $i++) {
+            $depreciationDate = $depreciationDate->addMonth();
+            $entry = DepreciationEntry::create([
+                'asset_id' => $asset->id,
+                'company_id' => $asset->company_id,
+                'amount' => $monthlyDepreciation,
+                'depreciation_date' => $depreciationDate,
+                'status' => DepreciationEntryStatus::Draft,
             ]);
+            $entries->push($entry);
+        }
 
-            // 3. Create and execute the new, dedicated action.
-            $journalEntry = (new CreateJournalEntryForDepreciationAction())->execute($depreciationEntry, $user);
-
-            $depreciationEntry->journal_entry_id = $journalEntry->id;
-            $depreciationEntry->save();
-        });
+        return $entries;
     }
 }

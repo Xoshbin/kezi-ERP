@@ -78,6 +78,7 @@ class JournalEntryLine extends Model
         'journal_entry_id',
         'account_id',
         'partner_id',
+        'currency_id',
         'debit',
         'credit',
         'description',
