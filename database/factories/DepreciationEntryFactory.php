@@ -20,6 +20,9 @@ class DepreciationEntryFactory extends Factory
     {
         return [
             'asset_id' => Asset::factory(), // Better default than a random number
+            'currency_id' => function (array $attributes) {
+                return Asset::find($attributes['asset_id'])->currency_id;
+            },
             'depreciation_date' => $this->faker->date(),
             'amount' => $this->faker->randomFloat(2, 100, 10000),
             'journal_entry_id' => null, // FIX: Default to null, as it's created later.
@@ -27,22 +30,4 @@ class DepreciationEntryFactory extends Factory
         ];
     }
 
-    /**
-     * Configure the model factory.
-     *
-     * @return $this
-     */
-    public function configure(): static
-    {
-        return $this->afterMaking(function (DepreciationEntry $depreciationEntry) {
-            if (! $depreciationEntry->currency_id) {
-                // Eager load the relationship to avoid an N+1 problem if creating many
-                $asset = $depreciationEntry->asset ?? Asset::find($depreciationEntry->asset_id);
-                if ($asset) {
-                    $asset->loadMissing('company.currency');
-                    $depreciationEntry->currency_id = $asset->company->currency_id;
-                }
-            }
-        });
-    }
 }

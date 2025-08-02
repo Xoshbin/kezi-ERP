@@ -21,7 +21,7 @@ class CompanyFactory extends Factory
             'name' => $this->faker->company,
             'address' => $this->faker->address,
             'tax_id' => $this->faker->unique()->numerify('##########'),
-            'currency_id' => Currency::firstOrCreate(['code' => 'IQD'], ['name' => 'Iraqi Dinar', 'symbol' => 'IQD', 'exchange_rate' => 1.0])->id,
+            'currency_id' => Currency::firstOrCreate(['code' => 'IQD'], ['name' => 'Iraqi Dinar', 'symbol' => 'IQD', 'exchange_rate' => 1, 'is_active' => true, 'decimal_places' => 3])->id,
             'fiscal_country' => $this->faker->countryCode,
             'parent_company_id' => null,
         ];

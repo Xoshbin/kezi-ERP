@@ -17,6 +17,7 @@ return new class extends Migration
             $table->foreignId('asset_account_id')->constrained('accounts');
             $table->foreignId('depreciation_expense_account_id')->constrained('accounts');
             $table->foreignId('accumulated_depreciation_account_id')->constrained('accounts');
+            $table->foreignId('currency_id')->constrained('currencies');
             $table->string('name');
             $table->date('purchase_date');
             $table->unsignedBigInteger('purchase_value');

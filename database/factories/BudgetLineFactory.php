@@ -17,7 +17,10 @@ class BudgetLineFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'budget_id' => \App\Models\Budget::factory(),
+            'budgeted_amount' => $this->faker->numberBetween(1000, 100000),
+            'achieved_amount' => $this->faker->numberBetween(0, 100000),
+            'committed_amount' => $this->faker->numberBetween(0, 100000),
         ];
     }
 }

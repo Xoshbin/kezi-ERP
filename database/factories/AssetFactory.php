@@ -4,6 +4,7 @@ namespace Database\Factories;
 
 use App\Models\Account;
 use App\Models\Company;
+use App\Models\Currency;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -20,6 +21,7 @@ class AssetFactory extends Factory
     {
         return [
             'company_id' => Company::factory(),
+            'currency_id' => Currency::factory(),
             'name' => $this->faker->word,
             'purchase_date' => $this->faker->date(),
             'purchase_value' => 120000,

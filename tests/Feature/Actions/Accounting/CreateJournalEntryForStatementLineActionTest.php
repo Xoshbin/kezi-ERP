@@ -10,19 +10,16 @@ use App\Models\Currency;
 use App\Models\Journal;
 use App\Models\JournalEntry;
 use App\Models\User;
+use Brick\Money\Money;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
 use Tests\Traits\CreatesApplication;
 
 uses(RefreshDatabase::class, CreatesApplication::class);
 
-beforeEach(function () {
-    $this->createConfiguredCompany();
-});
-
 it('correctly creates a journal entry and links it to the statement line via a polymorphic relationship', function () {
     // Arrange
-    $company = Company::first();
+    $company = Company::factory()->create();
     $user = User::factory()->for($company)->create();
     $line = BankStatementLine::factory()->for(BankStatement::factory()->for($company)->for(Journal::factory()->for($company)->create())->create())->create(['amount' => -100000]); // -100.000 IQD
     $writeOffAccount = Account::factory()->for($company)->create();
@@ -47,7 +44,7 @@ it('correctly creates a journal entry and links it to the statement line via a p
 
 it('updates the statement line status to reconciled within the same atomic transaction', function () {
     // Arrange
-    $company = Company::first();
+    $company = Company::factory()->create();
     $user = User::factory()->for($company)->create();
     $line = BankStatementLine::factory()->for(BankStatement::factory()->for($company)->for(Journal::factory()->for($company)->create())->create())->create(['is_reconciled' => false]);
     $writeOffAccount = Account::factory()->for($company)->create();
@@ -74,7 +71,7 @@ it('updates the statement line status to reconciled within the same atomic trans
 
 it('rolls back the entire transaction if updating the statement line fails', function () {
     // Arrange
-    $company = Company::first();
+    $company = Company::factory()->create();
     $user = User::factory()->for($company)->create();
     $line = BankStatementLine::factory()->for(BankStatement::factory()->for($company)->for(Journal::factory()->for($company)->create())->create())->create();
     $writeOffAccount = Account::factory()->for($company)->create();
@@ -108,15 +105,15 @@ it('rolls back the entire transaction if updating the statement line fails', fun
 
 it('handles multi-currency scenarios correctly', function (string $currencyCode, int $minorAmount, string $majorAmount) {
     // Arrange
-    $company = Company::first();
-    $currency = Currency::firstWhere('code', $currencyCode) ?? Currency::factory()->create(['code' => $currencyCode]);
+    $company = Company::factory()->create();
+    $currency = Currency::firstOrCreate(['code' => $currencyCode], ['name' => $currencyCode, 'symbol' => $currencyCode, 'exchange_rate' => 1, 'is_active' => true, 'decimal_places' => $currencyCode === 'IQD' ? 3 : 2]);
     $currency->update(['decimal_places' => $currencyCode === 'IQD' ? 3 : 2]);
     $company->update(['currency_id' => $currency->id]);
 
     $user = User::factory()->for($company)->create();
     $journal = Journal::factory()->for($company)->create();
     $bankStatement = BankStatement::factory()->for($company)->for($journal)->create(['currency_id' => $currency->id]);
-    $line = BankStatementLine::factory()->for($bankStatement)->create(['amount' => $minorAmount]);
+    $line = BankStatementLine::factory()->for($bankStatement)->create(['amount' => Money::ofMinor($minorAmount, $currencyCode)]);
     $writeOffAccount = Account::factory()->for($company)->create();
     $bankAccount = $journal->defaultDebitAccount;
 
@@ -150,6 +147,6 @@ it('handles multi-currency scenarios correctly', function (string $currencyCode,
     ]);
 
 })->with([
-    'IQD' => ['IQD', 50000, '50.000'],
-    'USD' => ['USD', 7500, '75.00'],
+    'IQD' => ['IQD', 50000000, '50000.000'],
+    'USD' => ['USD', 750000, '7500.00'],
 ]);

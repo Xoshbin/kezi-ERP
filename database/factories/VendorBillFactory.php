@@ -22,6 +22,9 @@ class VendorBillFactory extends Factory
         return [
             'company_id' => Company::factory(),
             'vendor_id' => Partner::factory(),
+            'currency_id' => function (array $attributes) {
+                return Company::find($attributes['company_id'])->currency_id;
+            },
             'bill_date' => $this->faker->date(),
             'accounting_date' => $this->faker->date(),
             'due_date' => $this->faker->dateTimeBetween('now', '+2 months')->format('Y-m-d'),
@@ -35,12 +38,4 @@ class VendorBillFactory extends Factory
         ];
     }
 
-    public function configure(): static
-    {
-        return $this->afterMaking(function ($vendorBill) {
-            if ($vendorBill->company) {
-                $vendorBill->currency_id = $vendorBill->company->currency_id;
-            }
-        });
-    }
 }

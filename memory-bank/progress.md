@@ -163,3 +163,10 @@ This file tracks the project's progress using a task list format.
 - Formalized the project's architectural standards by creating and updating the `.roo/rules/02-coding-style.txt` file to mandate the use of PHP 8.1+ Backed Enums.
 - Performed a comprehensive update of the entire Memory Bank to reflect the completed work and architectural decisions.
 - The feature is now stable, fully tested, and architecturally consistent.
+[2025-08-02 06:31:00] - **Task:** Debug and fix failing `MoneyCast` tests.
+**Status:** Completed.
+**Summary:**
+- Diagnosed persistent test failures in the `money-cast` group related to `VendorBill` and `VendorBillLine`.
+- Identified the root cause as an incorrect `configure` method in `VendorBillFactory.php` that was overriding currency settings during tests.
+- Removed the offending method from the factory.
+- All 9 tests in the `money-cast` group now pass, confirming the `MoneyCast` functionality is correct and the system is stable.
