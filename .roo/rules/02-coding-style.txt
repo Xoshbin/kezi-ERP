@@ -7,6 +7,7 @@ This document outlines the official coding styles, architectural patterns, and b
 - **Immutability is Law:** Posted financial records (invoices, bills, journal entries) can NEVER be edited or deleted. Corrections are made only through new, reversing transactions.
 - **Manual Data Entry First:** The system relies on manual input. No third-party payment integrations.
 - **Business Logic-Focused TDD:** All tests must focus on the core business logic (services, calculations, state changes) using Pest.
+- **No Temporary Hacks:** All development, for both features and tests, must strictly adhere to the established architectural patterns (Actions, DTOs, Services), prioritize code reusability, and align with the overall system design. Solutions must be robust and scalable, without violating core accounting principles. Short-term workarounds are forbidden.
 
 ## 2. State Management: PHP 8.1+ Backed Enums
 
@@ -107,3 +108,35 @@ The application follows a strict layered architecture to separate concerns. The 
 
 **Rationale:** To avoid floating-point inaccuracies and ensure precision.
 **Implementation:** Use the custom `MoneyCast` on all model properties that represent money. All calculations in Services and Actions must be performed using the methods provided by the `Brick\Money` library (e.g., `plus()`, `minus()`, `multipliedBy()`).
+
+### 4.1. MoneyCast and Currency Precision
+
+**Rule:** The `app/Casts/MoneyCast.php` class automatically handles the conversion between major and minor currency units based on the currency's defined decimal places. All numeric input (integers, floats, numeric strings) is treated as major units.
+
+**Rationale:** To ensure that monetary values are stored with the correct precision in the database, preventing rounding errors and maintaining data integrity across different currencies.
+
+**Implementation Examples:**
+
+- **Iraqi Dinar (IQD - 3 decimal places):**
+    - A value of `5,000,000` IQD (major units) will be stored in the database as `5,000,000,000` (minor units).
+    - The `MoneyCast` multiplies the major unit value by 1000.
+
+- **US Dollar (USD - 2 decimal places):**
+    - A value of `$500` USD (major units) will be stored in the database as `50000` (minor units).
+    - The `MoneyCast` multiplies the major unit value by 100.
+
+```php
+// Example usage in a model:
+class Invoice extends Model
+{
+    protected $casts = [
+        'total_amount' => MoneyCast::class,
+    ];
+}
+
+// When you set the value, you use major units:
+$invoice->total_amount = 5000000; // For IQD
+$invoice->save(); // Stored as 5000000000
+
+$invoice->total_amount = 500; // For USD
+$invoice->save(); // Stored as 50000
