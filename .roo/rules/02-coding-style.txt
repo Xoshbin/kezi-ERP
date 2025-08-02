@@ -1,0 +1,109 @@
+# Coding Style & Architectural Standards
+
+This document outlines the official coding styles, architectural patterns, and best practices for this application. Adherence to these standards is mandatory to ensure consistency, maintainability, and robustness.
+
+## 1. Core Principles
+
+- **Immutability is Law:** Posted financial records (invoices, bills, journal entries) can NEVER be edited or deleted. Corrections are made only through new, reversing transactions.
+- **Manual Data Entry First:** The system relies on manual input. No third-party payment integrations.
+- **Business Logic-Focused TDD:** All tests must focus on the core business logic (services, calculations, state changes) using Pest.
+
+## 2. State Management: PHP 8.1+ Backed Enums
+
+**Rule:** All state management (e.g., `status`, `state`, `type`) MUST be implemented using PHP 8.1+ Backed Enums. The use of class constants for defining states is deprecated and should be refactored to Enums wherever possible.
+
+**Rationale:**
+- **Type Safety:** Enums provide absolute type safety.
+- **Code Clarity & Discoverability:** Enums are self-documenting.
+- **Reduced Boilerplate:** Enums can contain their own related logic.
+
+**Example:**
+```php
+// app/Enums/Accounting/InvoiceStatus.php
+enum InvoiceStatus: string
+{
+    case Draft = 'draft';
+    case Posted = 'posted';
+    // ...
+}
+
+// app/Models/Invoice.php
+class Invoice extends Model
+{
+    protected $casts = [
+        'status' => InvoiceStatus::class,
+    ];
+}
+```
+
+## 3. Layered Architecture
+
+The application follows a strict layered architecture to separate concerns. The primary layers are: Actions, Data Transfer Objects (DTOs), Services, Observers, and Policies.
+
+### 3.1. Actions Layer (`app/Actions/`)
+
+**Purpose:** To encapsulate a single, specific business operation (Command Pattern). Actions are the only place where data is written or modified.
+
+**Rules:**
+- Each Action MUST have a single public `execute()` method.
+- The `execute()` method MUST be wrapped in a `DB::transaction()` to ensure atomicity.
+- Actions SHOULD accept a DTO for input to enforce a strict data contract.
+- Actions are organized by domain (e.g., `Accounting/`, `Sales/`, `Purchases/`).
+- Actions are responsible for their own validation or should call a dedicated validation service.
+
+### 3.2. Data Transfer Objects (`app/DataTransferObjects/`)
+
+**Purpose:** To provide type-safe, immutable data contracts for transferring data between layers, especially into Actions.
+
+**Rules:**
+- All DTOs MUST be `readonly` classes.
+- All properties MUST be `public readonly` and have strict type hints.
+- Data is passed exclusively through the constructor.
+- DTOs contain NO business logic. They are pure data structures.
+- DTOs SHOULD be organized by domain, mirroring the `Actions` structure.
+
+### 3.3. Service Layer (`app/Services/`)
+
+**Purpose:** To orchestrate complex business workflows that may involve multiple Actions, validation steps, or dispatching events. Services do NOT directly modify data; they delegate that responsibility to Actions.
+
+**Rules:**
+- Services contain high-level business process logic.
+- Services call Actions to perform data modifications.
+- Services are responsible for dispatching domain events (e.g., `InvoiceConfirmed`).
+- Services can be injected into Filament Resources, Livewire Components, and other Services.
+
+### 3.4. Observers (`app/Observers/`)
+
+**Purpose:** To react to Eloquent model lifecycle events (`creating`, `updating`, `deleting`) to enforce system-level data integrity rules and trigger automatic side effects.
+
+**Rules:**
+- Observers are used for **System Reactions**, NOT for business rule authorization.
+- **Use Cases:**
+    - Enforcing non-negotiable data integrity (e.g., preventing deletion of a posted record).
+    - Automatically calculating fields (e.g., line totals).
+    - Maintaining the cryptographic hash chain on `JournalEntry`.
+    - Creating `AuditLog` entries.
+
+### 3.5. Policies (`app/Policies/`)
+
+**Purpose:** To handle all user **Authorization**. Policies answer the question, "Can the current user perform this action on this model?"
+
+**Rules:**
+- All authorization checks MUST be handled by a Policy.
+- Policies are checked before an action is attempted, typically in the UI layer (Filament) or at the beginning of a Service method using `Gate::authorize()`.
+- Do NOT place authorization logic in Observers, Services, or Actions.
+
+### 3.6. Events & Listeners (`app/Events/`, `app/Listeners/`)
+
+**Purpose:** To decouple different parts of the system. An action in one domain can trigger a reaction in another without them being tightly coupled.
+
+**Rules:**
+- Events are dispatched from Services after a core business process is completed (e.g., `InvoiceConfirmed`).
+- Listeners subscribe to these events to perform follow-up actions (e.g., posting a journal entry, sending a notification).
+
+## 4. Financial Calculations
+
+**Rule:** All monetary values MUST be handled using `Brick\Money` objects. Never use floats for financial calculations.
+
+**Rationale:** To avoid floating-point inaccuracies and ensure precision.
+**Implementation:** Use the custom `MoneyCast` on all model properties that represent money. All calculations in Services and Actions must be performed using the methods provided by the `Brick\Money` library (e.g., `plus()`, `minus()`, `multipliedBy()`).
