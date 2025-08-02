@@ -2,13 +2,17 @@
 
 namespace App\Filament\Resources\BankStatementResource\RelationManagers;
 
+use App\Actions\Accounting\ReverseJournalEntryAction;
+use App\Enums\Accounting\JournalEntryState;
 use Filament\Forms;
 use Filament\Forms\Form;
+use Filament\Notifications\Notification;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Support\Facades\Gate;
 
 class BankStatementLinesRelationManager extends RelationManager
 {
@@ -44,6 +48,7 @@ class BankStatementLinesRelationManager extends RelationManager
     {
         return $table
             ->recordTitleAttribute(null)
+            ->modifyQueryUsing(fn (Builder $query) => $query->with('journalEntry'))
             ->columns([
                 Tables\Columns\TextColumn::make('date')
                     ->label(__('bank_statement.date'))
@@ -67,6 +72,32 @@ class BankStatementLinesRelationManager extends RelationManager
             ->actions([
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make(),
+                Tables\Actions\Action::make('reverse')
+                    ->label('Reverse Write-Off')
+                    ->icon('heroicon-o-arrow-uturn-left')
+                    ->color('danger')
+                    ->visible(fn ($record) => $record->is_reconciled && $record->journalEntry?->state === JournalEntryState::Posted)
+                    ->authorize(fn ($record) => Gate::allows('reverse', $record->journalEntry))
+                    ->requiresConfirmation()
+                    ->modalHeading('Reverse Write-Off')
+                    ->modalDescription('Are you sure you want to reverse this write-off? This will create a reversing journal entry and mark the bank statement line as unreconciled.')
+                    ->action(function ($record) {
+                        try {
+                            $reverseAction = app(ReverseJournalEntryAction::class);
+                            $reverseAction->execute($record->journalEntry);
+
+                            Notification::make()
+                                ->title('Write-off reversed successfully')
+                                ->success()
+                                ->send();
+                        } catch (\Exception $e) {
+                            Notification::make()
+                                ->title('Error reversing write-off')
+                                ->body($e->getMessage())
+                                ->danger()
+                                ->send();
+                        }
+                    }),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

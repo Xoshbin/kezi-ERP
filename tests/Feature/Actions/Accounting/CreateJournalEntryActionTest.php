@@ -23,6 +23,9 @@ test('it creates a journal entry and its lines from a DTO', function () {
     $accountB = Account::factory()->for($company)->create();
     $currencyCode = $company->currency->code;
 
+    $amount = Money::of('150.75', $currencyCode);
+    $zero = Money::zero($currencyCode);
+
     // 2. Prepare the DTO
     $journalEntryDTO = new CreateJournalEntryDTO(
         company_id: $company->id,
@@ -36,16 +39,16 @@ test('it creates a journal entry and its lines from a DTO', function () {
         lines: [
             new CreateJournalEntryLineDTO(
                 account_id: $accountA->id,
-                debit: '150.75',
-                credit: '0.00',
+                debit: $amount,
+                credit: $zero,
                 description: 'Line 1',
                 partner_id: null,
                 analytic_account_id: null,
             ),
             new CreateJournalEntryLineDTO(
                 account_id: $accountB->id,
-                debit: '0.00',
-                credit: '150.75',
+                debit: $zero,
+                credit: $amount,
                 description: 'Line 2',
                 partner_id: null,
                 analytic_account_id: null,

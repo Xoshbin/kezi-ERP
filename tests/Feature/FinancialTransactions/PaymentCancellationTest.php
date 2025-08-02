@@ -3,6 +3,7 @@
 use App\Models\Payment;
 use App\Models\User;
 use App\Services\PaymentService;
+use App\Enums\Accounting\JournalEntryState;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\Traits\CreatesApplication;
 
@@ -19,7 +20,7 @@ test('cancelling a confirmed payment creates a reversing journal entry and an au
     $paymentService = app(PaymentService::class);
     $paymentService->confirm($payment, $user);
     $payment->refresh();
-    
+
     expect($payment->status)->toBe(Payment::STATUS_CONFIRMED);
     $originalEntry = $payment->journalEntry;
 
@@ -31,7 +32,7 @@ test('cancelling a confirmed payment creates a reversing journal entry and an au
 
     // Assert: Payment status and reversal are correct
     expect($payment->status)->toBe(Payment::STATUS_CANCELED);
-    expect($originalEntry->state)->toBe('reversed');
+    expect($originalEntry->state)->toBe(JournalEntryState::Reversed);
 
     // Assert: Audit log was created
     $this->assertDatabaseHas('audit_logs', [

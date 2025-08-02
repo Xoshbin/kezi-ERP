@@ -146,3 +146,20 @@ This file tracks the project's progress using a task list format.
 - Enhanced test coverage with a specific precision verification test.
 - All 9 tests in the `CreateJournalEntryForStatementLineActionTest` suite are now passing.
 - The bank reconciliation system now maintains perfect financial precision, ensuring accurate accounting records.
+
+[2025-08-02 04:38:00] - **Task:** Debug and fix cascading currency-related exceptions in the test suite.
+**Status:** Completed.
+**Summary:**
+- Diagnosed and fixed a series of `MoneyMismatchException` and `BadMethodCallException` errors.
+- The root causes were incorrect currency sourcing in `CreateJournalEntryForStatementLineAction` and improper `Money` object creation in both that action and `ReverseJournalEntryAction`.
+- Applied targeted fixes to ensure the correct currency and amount are used in all financial calculations.
+- The entire test suite of 95 tests is now passing, and the system is stable.
+
+[2025-08-02 04:40:00] - **Task:** Finalize Immutable Write-Off & Reversal System.
+**Status:** Completed.
+**Summary:**
+- Successfully debugged and fixed all failing PEST tests related to the new feature.
+- Resolved a series of cascading `TypeError` and `InvalidArgumentException` errors by correcting the handling of `Brick\Money` objects in the DTO and Action layers.
+- Formalized the project's architectural standards by creating and updating the `.roo/rules/02-coding-style.txt` file to mandate the use of PHP 8.1+ Backed Enums.
+- Performed a comprehensive update of the entire Memory Bank to reflect the completed work and architectural decisions.
+- The feature is now stable, fully tested, and architecturally consistent.

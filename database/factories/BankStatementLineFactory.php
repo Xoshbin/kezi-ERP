@@ -3,6 +3,7 @@
 namespace Database\Factories;
 
 use App\Models\BankStatement;
+use Brick\Money\Money;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -21,7 +22,7 @@ class BankStatementLineFactory extends Factory
             'bank_statement_id' => BankStatement::factory(),
             'date' => $this->faker->date(),
             'description' => $this->faker->sentence(),
-            'amount' => 15000, // Default to the test amount
+            'amount' => Money::of(150, 'USD'), // Default to a USD money object
         ];
     }
 }

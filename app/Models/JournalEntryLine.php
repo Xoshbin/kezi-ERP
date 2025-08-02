@@ -12,7 +12,7 @@ use RuntimeException; // Utilized for explicit enforcement of immutability and d
  * Class JournalEntryLine
  *
  * @package App\Models
- * 
+ *
  * This Eloquent model precisely represents a single debit or credit line within a comprehensive JournalEntry.
  * Each instance records the specific financial impact of a transaction on a designated account,
  * adhering to the fundamental tenets of double-entry bookkeeping.
@@ -75,7 +75,6 @@ class JournalEntryLine extends Model
         'journal_entry_id',
         'account_id',
         'partner_id',
-        'currency_id',
         'debit',
         'credit',
         'description',
@@ -88,7 +87,7 @@ class JournalEntryLine extends Model
      * The attributes that should be cast to native types.
      *
      * Casting ensures that data retrieved from the database is consistently presented in appropriate PHP types.
-     * Financial amounts (`debit`, `credit`) are rigorously cast to `decimal:2` to maintain currency precision [5, 6].
+     * Financial amounts (`debit`, `credit`) are rigorously cast to `decimal:2` to maintain currency precision.
      *
      * @var array<string, string>
      */
@@ -111,7 +110,7 @@ class JournalEntryLine extends Model
     protected static function booted(): void
     {
         // Enforce data integrity: A journal entry line must have either a debit or a credit, but not both,
-        // and both must be non-negative. It cannot have both as zero [5].
+        // and both must be non-negative. It cannot have both as zero.
 
         // Crucial immutability enforcement: Prevent modification of a journal entry line
         // if its parent journal entry has already been posted.
@@ -167,14 +166,14 @@ class JournalEntryLine extends Model
     |--------------------------------------------------------------------------
     |
     | Eloquent relationships define how this model interacts with other models,
-    | providing a fluent and intuitive interface for traversing related data [7, 8].
+    | providing a fluent and intuitive interface for traversing related data.
     |
     */
 
     /**
      * Get the parent `JournalEntry` model that this line belongs to.
      *
-     * This `belongsTo` relationship is foundational, linking each line to its overarching transaction [5].
+     * This `belongsTo` relationship is foundational, linking each line to its overarching transaction.
      *
      * @return BelongsTo An Eloquent relationship instance for the `JournalEntry` model.
      */
@@ -186,7 +185,7 @@ class JournalEntryLine extends Model
     /**
      * Get the `Account` model that this journal entry line affects.
      *
-     * Each line impacts a specific account within the chart of accounts, crucial for detailed ledger postings [5].
+     * Each line impacts a specific account within the chart of accounts, crucial for detailed ledger postings.
      *
      * @return BelongsTo An Eloquent relationship instance for the `Account` model.
      */
@@ -198,7 +197,7 @@ class JournalEntryLine extends Model
     /**
      * Get the `Partner` (customer or vendor) model optionally associated with this line.
      *
-     * This relationship supports tracking transactions involving specific external entities [5].
+     * This relationship supports tracking transactions involving specific external entities.
      *
      * @return BelongsTo An Eloquent relationship instance for the `Partner` model.
      */
@@ -210,23 +209,12 @@ class JournalEntryLine extends Model
     /**
      * Get the `AnalyticAccount` model optionally associated with this line.
      *
-     * Used for management accounting, allowing cost and revenue tracking against projects, departments, or other dimensions [5, 9].
+     * Used for management accounting, allowing cost and revenue tracking against projects, departments, or other dimensions.
      *
      * @return BelongsTo An Eloquent relationship instance for the `AnalyticAccount` model.
      */
     public function analyticAccount(): BelongsTo
     {
         return $this->belongsTo(AnalyticAccount::class);
-    }
-
-    /**
-     * Get the currency of this invoice.
-     * Every invoice operates in a specific currency. [1]
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
-     */
-    public function currency(): BelongsTo
-    {
-        return $this->belongsTo(Currency::class);
     }
 }

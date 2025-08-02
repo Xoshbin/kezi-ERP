@@ -70,12 +70,14 @@ class BankReconciliationService
 
     public function createWriteOff(BankStatementLine $line, Account $writeOffAccount, User $user, string $description): void
     {
-        DB::transaction(function () use ($line, $writeOffAccount, $user, $description) {
-            // 1. Mark the line as reconciled.
-            $line->update(['is_reconciled' => true]);
+        // Create DTO and execute action - the action handles its own transaction
+        $dto = new \App\DataTransferObjects\Accounting\CreateJournalEntryForStatementLineDTO(
+            bankStatementLine: $line,
+            writeOffAccount: $writeOffAccount,
+            user: $user,
+            description: $description
+        );
 
-            // 2. Call the new action to create the journal entry.
-            (new CreateJournalEntryForStatementLineAction())->execute($line, $writeOffAccount, $user, $description);
-        });
+        (new CreateJournalEntryForStatementLineAction())->execute($dto);
     }
 }

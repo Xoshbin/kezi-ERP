@@ -65,3 +65,10 @@ It is optional, but recommended to be updated as the project evolves.
   - Write-off functionality for unmatched items with proper journal entry creation
   - Integration with the established Actions/Services architecture
   - Comprehensive validation before allowing reconciliation operations
+  
+  [2025-08-02 04:40:00] - **Pattern: State Management with Backed Enums**
+  - **Description:** All state management (e.g., `status`, `state`, `type`) is implemented using PHP 8.1+ Backed Enums. This provides absolute type safety and self-documenting, discoverable states.
+  - **Implementation:**
+    - Enums are defined in the `app/Enums/` directory, organized by domain.
+    - Models cast their state attributes directly to the corresponding Enum class.
+    - This pattern is now the standard and replaces the older class constant approach.
