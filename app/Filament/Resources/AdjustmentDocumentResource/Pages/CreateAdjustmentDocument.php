@@ -80,6 +80,6 @@ class CreateAdjustmentDocument extends CreateRecord
             lines: $lineDTOs
         );
 
-        return (new CreateAdjustmentDocumentAction())->execute($dto);
+        return app(CreateAdjustmentDocumentAction::class)->execute($dto);
     }
 }

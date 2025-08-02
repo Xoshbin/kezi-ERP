@@ -67,6 +67,6 @@ class CreateVendorBill extends CreateRecord
             lines: $lineDTOs
         );
 
-        return (new CreateVendorBillAction())->execute($vendorBillDTO);
+        return app(CreateVendorBillAction::class)->execute($vendorBillDTO);
     }
 }
