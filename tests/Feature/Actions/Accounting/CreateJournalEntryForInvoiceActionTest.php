@@ -41,7 +41,7 @@ test('it creates a correct journal entry for a posted invoice', function () {
     $invoice->refresh();
 
     // 2. Act
-    $action = new CreateJournalEntryForInvoiceAction();
+    $action = app(CreateJournalEntryForInvoiceAction::class);
     $journalEntry = $action->execute($invoice, $user);
 
     // 3. Assert (This will now pass)

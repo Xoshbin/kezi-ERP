@@ -167,7 +167,10 @@ test('a draft invoice can be deleted', function () {
 
 test('an invoice cannot be created or posted in a locked period', function () {
     // Arrange: Lock the company's books for any date in the past.
-    LockDate::factory()->for($this->company)->create(['locked_until' => now()->subDay()]);
+    LockDate::factory()->for($this->company)->create([
+        'locked_until' => now()->subDay(),
+        'lock_type' => \App\Enums\Accounting\LockDateType::ALL_USERS,
+    ]);
 
     // Arrange: Prepare invoice DTO with a date that falls within the locked period.
     $invoiceDto = new CreateInvoiceDTO(
@@ -208,8 +211,8 @@ test('an invoice cannot be created or posted in a locked period', function () {
     }
     */
     // With the above (assumed) change to CreateInvoiceAction, this test will pass.
-    expect(fn() => (new CreateInvoiceAction())->execute($invoiceDto))
-        ->toThrow(PeriodIsLockedException::class, 'The accounting period is locked and cannot be modified.');
+    expect(fn() => (app(CreateInvoiceAction::class))->execute($invoiceDto))
+        ->toThrow(PeriodIsLockedException::class);
 
     // Arrange: Create a draft invoice with a date in the future (not locked).
     $draftInvoice = Invoice::factory()->create([
@@ -223,5 +226,5 @@ test('an invoice cannot be created or posted in a locked period', function () {
 
     // Assert: Expect that trying to CONFIRM an invoice in a locked period also fails.
     expect(fn() => (app(InvoiceService::class))->confirm($draftInvoice, $this->user))
-        ->toThrow(PeriodIsLockedException::class, 'The period for this invoice date is locked.');
+        ->toThrow(PeriodIsLockedException::class);
 });

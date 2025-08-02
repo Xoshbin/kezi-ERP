@@ -3,21 +3,24 @@
 namespace App\Actions\Purchases;
 
 use App\DataTransferObjects\Purchases\CreateVendorBillDTO;
+use App\Models\Company;
 use App\Models\Currency;
 use App\Models\VendorBill;
-use App\Services\AccountingValidationService;
+use App\Services\Accounting\LockDateService;
 use Brick\Money\Money;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 
 class CreateVendorBillAction
 {
-    public function __construct(
-        private readonly AccountingValidationService $accountingValidationService = new AccountingValidationService()
-    ) {}
+    public function __construct(private readonly LockDateService $lockDateService)
+    {
+    }
 
     public function execute(CreateVendorBillDTO $dto): VendorBill
     {
-        $this->accountingValidationService->checkIfPeriodIsLocked($dto->company_id, $dto->bill_date);
+        $company = Company::findOrFail($dto->company_id);
+        $this->lockDateService->enforce($company, Carbon::parse($dto->bill_date));
 
         return DB::transaction(function () use ($dto) {
             $currencyCode = Currency::find($dto->currency_id)->code;

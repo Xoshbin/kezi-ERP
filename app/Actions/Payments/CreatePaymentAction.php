@@ -3,22 +3,31 @@
 namespace App\Actions\Payments;
 
 use App\DataTransferObjects\Payments\CreatePaymentDTO;
+use App\Models\Company;
 use App\Models\Currency;
 use App\Models\Invoice;
 use App\Models\Payment;
 use App\Models\User;
 use App\Models\VendorBill;
+use App\Services\Accounting\LockDateService;
 use Brick\Money\Money;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use InvalidArgumentException;
 
 class CreatePaymentAction
 {
+    public function __construct(private readonly LockDateService $lockDateService)
+    {
+    }
+
     public function execute(CreatePaymentDTO $dto, User $user): Payment
     {
         if (empty($dto->document_links)) {
             throw new InvalidArgumentException('A payment must be linked to at least one document.');
         }
+        $company = Company::findOrFail($dto->company_id);
+        $this->lockDateService->enforce($company, Carbon::parse($dto->payment_date));
 
         return DB::transaction(function () use ($dto, $user) {
             $currencyCode = Currency::find($dto->currency_id)->code;

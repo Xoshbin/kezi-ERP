@@ -57,7 +57,7 @@ test('it creates a journal entry and its lines from a DTO', function () {
     );
 
     // 3. Act
-    $action = new CreateJournalEntryAction();
+    $action = app(CreateJournalEntryAction::class);
     $journalEntry = $action->execute($journalEntryDTO);
 
     // 4. Assert

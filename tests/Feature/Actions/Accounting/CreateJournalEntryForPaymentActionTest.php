@@ -24,7 +24,7 @@ test('it creates a correct journal entry for an inbound payment', function () {
     ]);
 
     // 2. Act
-    $action = new CreateJournalEntryForPaymentAction();
+    $action = app(CreateJournalEntryForPaymentAction::class);
     $journalEntry = $action->execute($payment, $user);
 
     // 3. Assert

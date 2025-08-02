@@ -13,6 +13,10 @@ use InvalidArgumentException;
 
 class CreateJournalEntryForStatementLineAction
 {
+    public function __construct(private readonly CreateJournalEntryAction $createJournalEntryAction)
+    {
+    }
+
     public function execute(CreateJournalEntryForStatementLineDTO $dto): void
     {
         DB::transaction(function () use ($dto) {
@@ -71,7 +75,7 @@ class CreateJournalEntryForStatementLineAction
             );
 
             // Create the journal entry
-            $journalEntry = (new CreateJournalEntryAction())->execute($journalEntryData);
+            $journalEntry = $this->createJournalEntryAction->execute($journalEntryData);
 
             // Mark the statement line as reconciled
             $line->update(['is_reconciled' => true]);
