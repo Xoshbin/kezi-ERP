@@ -96,7 +96,7 @@ test('the entire accounting workflow from setup to credit note', function () {
     );
 
     // Act: Create the vendor bill using the Action.
-    $vendorBill = (new CreateVendorBillAction())->execute($vendorBillDto);
+    $vendorBill = (app(CreateVendorBillAction::class))->execute($vendorBillDto);
 
     // The rest of the test remains the same...
     $vendorBillService = app(VendorBillService::class);
@@ -136,7 +136,7 @@ test('the entire accounting workflow from setup to credit note', function () {
     );
 
     // Act: Create the invoice using the Action.
-    $invoice = (new CreateInvoiceAction())->execute($invoiceDto);
+    $invoice = (app(CreateInvoiceAction::class))->execute($invoiceDto);
 
     // The rest of the test remains the same...
     $invoiceService = app(InvoiceService::class);
@@ -168,7 +168,7 @@ test('the entire accounting workflow from setup to credit note', function () {
     );
 
     // Act: Create the payment using the Action.
-    $customerPayment = (new CreatePaymentAction())->execute($paymentDto, $user);
+    $customerPayment = (app(CreatePaymentAction::class))->execute($paymentDto, $user);
 
     // The rest of the test step remains the same...
     $paymentService = app(PaymentService::class);
@@ -200,7 +200,7 @@ test('the entire accounting workflow from setup to credit note', function () {
     );
 
     // Act: Create the vendor payment using the Action.
-    $vendorPayment = (new CreatePaymentAction())->execute($vendorPaymentDto, $user);
+    $vendorPayment = (app(CreatePaymentAction::class))->execute($vendorPaymentDto, $user);
 
     $paymentService->confirm($vendorPayment, $user);
 

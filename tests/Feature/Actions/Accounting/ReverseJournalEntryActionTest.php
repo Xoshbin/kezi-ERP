@@ -39,7 +39,7 @@ beforeEach(function () {
         user: $this->user,
         description: 'Original Write Off'
     );
-    (new CreateJournalEntryForStatementLineAction())->execute($dto);
+    (app(CreateJournalEntryForStatementLineAction::class))->execute($dto);
     $this->originalJe = JournalEntry::first();
 });
 

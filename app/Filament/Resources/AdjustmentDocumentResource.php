@@ -20,6 +20,8 @@ use Filament\Forms\Components\Repeater;
 use App\Models\Account; // ADDED for Repeater schema
 use App\Filament\Resources\AdjustmentDocumentResource\Pages;
 
+use App\Rules\NotInLockedPeriod;
+
 class AdjustmentDocumentResource extends Resource
 {
     protected static ?string $model = AdjustmentDocument::class;
@@ -48,7 +50,7 @@ class AdjustmentDocumentResource extends Resource
                     Forms\Components\Select::make('currency_id')->relationship('currency', 'name')->reactive()->required()
                         ->disabled(fn (Get $get): bool => !empty($get('original_invoice_id')) || !empty($get('original_vendor_bill_id'))),
                     Forms\Components\TextInput::make('reference_number')->required()->maxLength(255),
-                    Forms\Components\DatePicker::make('date')->required(),
+                    Forms\Components\DatePicker::make('date')->required()->rules([new NotInLockedPeriod()]),
                     Forms\Components\Select::make('type')->options(AdjustmentDocument::getTypes())->required(),
                     Forms\Components\Textarea::make('reason')->required()->columnSpanFull(),
                 ])->columns(2),

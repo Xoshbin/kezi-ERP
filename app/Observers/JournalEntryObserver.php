@@ -3,6 +3,7 @@
 namespace App\Observers;
 
 use App\Models\JournalEntry;
+use App\Services\Accounting\LockDateService;
 
 class JournalEntryObserver
 {
@@ -13,6 +14,7 @@ class JournalEntryObserver
     public function creating(JournalEntry $journalEntry): void
     {
         if ($journalEntry->is_posted) {
+            app(LockDateService::class)->enforce($journalEntry->company, $journalEntry->entry_date);
             $this->applyHashingAndLinking($journalEntry);
         }
     }
@@ -24,6 +26,7 @@ class JournalEntryObserver
     public function updating(JournalEntry $journalEntry): void
     {
         if ($journalEntry->isDirty('is_posted') && $journalEntry->is_posted) {
+            app(LockDateService::class)->enforce($journalEntry->company, $journalEntry->entry_date);
             $this->applyHashingAndLinking($journalEntry);
         }
     }

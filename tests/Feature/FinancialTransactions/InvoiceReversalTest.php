@@ -6,8 +6,17 @@ use App\Services\InvoiceService;
 use App\Enums\Accounting\JournalEntryState;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\Traits\CreatesApplication;
+use Tests\Traits\WithUnlockedPeriod;
 
-uses(RefreshDatabase::class, CreatesApplication::class);
+uses(RefreshDatabase::class, CreatesApplication::class, WithUnlockedPeriod::class);
+
+beforeEach(function () {
+    $this->setupWithUnlockedPeriod();
+});
+
+afterEach(function () {
+    $this->tearDownWithUnlockedPeriod();
+});
 
 test('cancelling a posted invoice creates a reversing journal entry and an audit log', function () {
     // Arrange
