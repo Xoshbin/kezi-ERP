@@ -8,6 +8,7 @@ This document outlines the official coding styles, architectural patterns, and b
 - **Manual Data Entry First:** The system relies on manual input. No third-party payment integrations.
 - **Business Logic-Focused TDD:** All tests must focus on the core business logic (services, calculations, state changes) using Pest.
 - **No Temporary Hacks:** All development, for both features and tests, must strictly adhere to the established architectural patterns (Actions, DTOs, Services), prioritize code reusability, and align with the overall system design. Solutions must be robust and scalable, without violating core accounting principles. Short-term workarounds are forbidden.
+- **Lowercase Enum & Option Values:** All enum values and any option stored in the database (e.g., status, type, state) MUST be lowercase, snake_case. CamelCase, PascalCase, or uppercase values are strictly prohibited for database storage. This ensures consistency, simplifies querying, and avoids case-sensitivity issues across different database engines.
 
 ## 2. State Management: PHP 8.1+ Backed Enums
 
