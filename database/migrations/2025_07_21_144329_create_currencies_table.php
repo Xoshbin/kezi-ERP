@@ -19,7 +19,7 @@ return new class extends Migration
             $table->unsignedBigInteger('exchange_rate');
             $table->boolean('is_active')->default(true);
             $table->dateTime('last_updated_at')->nullable();
-            $table->unsignedTinyInteger('decimal_places')->default(2)->after('symbol');
+            $table->unsignedTinyInteger('decimal_places')->default(2);
             $table->timestamps();
         });
     }
