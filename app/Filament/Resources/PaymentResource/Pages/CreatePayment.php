@@ -8,6 +8,7 @@ use App\DataTransferObjects\Payments\CreatePaymentDTO;
 use App\Filament\Resources\PaymentResource;
 use Filament\Resources\Pages\CreateRecord;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
 
 class CreatePayment extends CreateRecord
 {
@@ -39,6 +40,6 @@ class CreatePayment extends CreateRecord
             reference: $data['reference']
         );
 
-        return (new CreatePaymentAction())->execute($paymentDTO, auth()->user());
+        return app(CreatePaymentAction::class)->execute($paymentDTO, Auth::user());
     }
 }
