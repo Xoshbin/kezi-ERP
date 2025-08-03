@@ -72,3 +72,5 @@ It is optional, but recommended to be updated as the project evolves.
     - Enums are defined in the `app/Enums/` directory, organized by domain.
     - Models cast their state attributes directly to the corresponding Enum class.
     - This pattern is now the standard and replaces the older class constant approach.
+
+[2025-08-03 19:22:37] - **Definitive Solution Pattern:** For models requiring pre-save calculations, the business logic resides exclusively within a dedicated Action that accepts a DTO. Observers are reserved for side effects (e.g., updating a parent model's totals after a line item is saved). This pattern ensures that complex calculations are handled within a transactional, testable, and dedicated class, while Observers are kept clean and focused on reactive side effects rather than primary business logic.

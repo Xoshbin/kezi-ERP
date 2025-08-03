@@ -227,3 +227,5 @@ This file records architectural and implementation decisions using a list format
 - **Implementation Details:**
     1.  Added a new entry for SRP in `.roo/rules/02-coding-style.txt`.
     2.  The entry defines the principle and provides examples relevant to the existing architecture (Services, Actions, Observers).
+
+[2025-08-03 19:22:37] - Established "Definitive Solution Pattern" for pre-save calculations. Business logic for these calculations will reside exclusively within a dedicated Action that accepts a DTO. Observers are reserved for side effects. This pattern was successfully used to fix NOT NULL constraint violations when creating VendorBillLine records.
