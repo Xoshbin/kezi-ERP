@@ -8,6 +8,11 @@ use Illuminate\Support\Facades\DB;
 
 class UpdateAssetAction
 {
+     public function __construct(
+        protected ComputeDepreciationScheduleAction $computeDepreciationScheduleAction
+    ) {
+    }
+
     public function execute(Asset $asset, UpdateAssetDTO $dto): Asset
     {
         return DB::transaction(function () use ($asset, $dto) {
@@ -23,6 +28,9 @@ class UpdateAssetAction
                 'accumulated_depreciation_account_id' => $dto->accumulated_depreciation_account_id,
                 'currency_id' => $dto->currency_id,
             ]);
+
+            // After updating the asset, re-compute the future depreciation schedule.
+            $this->computeDepreciationScheduleAction->execute($asset);
 
             return $asset;
         });

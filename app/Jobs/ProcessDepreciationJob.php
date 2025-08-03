@@ -20,7 +20,7 @@ class ProcessDepreciationJob implements ShouldQueue
 
     public function handle(): void
     {
-        $user = $this->entry->company->users()->first();
+        $user = $this->entry->asset->company->users()->first();
         (new PostDepreciationEntryAction(new \App\Actions\Accounting\CreateJournalEntryForDepreciationAction()))->execute($this->entry, $user);
     }
 }
