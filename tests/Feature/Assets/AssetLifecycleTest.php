@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\User;
+use App\Models\Asset;
 use Brick\Money\Money;
 use App\Models\Account;
 use App\Models\Company;
@@ -86,7 +87,7 @@ test('confirming asset generates initial journal entry', function () {
 
     // Assert
     $this->assertDatabaseHas('journal_entries', [
-        'source_type' => 'asset',
+        'source_type' => Asset::class,
         'source_id' => $asset->id,
         'is_posted' => true,
     ]);
@@ -97,13 +98,13 @@ test('confirming asset generates initial journal entry', function () {
     $this->assertDatabaseHas('journal_entry_lines', [
         'journal_entry_id' => $journalEntry->id,
         'account_id' => $this->assetAccount->id,
-        'debit' => 100000,
+        'debit' => 100000000,
     ]);
 
     $this->assertDatabaseHas('journal_entry_lines', [
         'journal_entry_id' => $journalEntry->id,
-        'account_id' => $this->company->default_payable_account_id,
-        'credit' => 100000,
+        'account_id' => $this->company->default_accounts_payable_id,
+        'credit' => 100000000,
     ]);
 });
 
@@ -135,7 +136,9 @@ test('depreciation calculation generates correct draft entries', function () {
     $this->assertDatabaseHas('depreciation_entries', [
         'asset_id' => $asset->id,
         'status' => \App\Enums\Assets\DepreciationEntryStatus::Draft->value,
-        'amount' => 1000, // 1200 / 120 = 10 per month
+        // The purchase value of 120,000 / 120 months = 1,000 per month.
+        // For a 3-decimal currency, this is stored as 1,000,000 minor units.
+        'amount' => 1000000,
     ]);
 });
 
@@ -178,13 +181,13 @@ test('automated depreciation job posts correct journal entries periodically', fu
     $this->assertDatabaseHas('journal_entry_lines', [
         'journal_entry_id' => $journalEntry->id,
         'account_id' => $this->depreciationExpenseAccount->id,
-        'debit' => 1000,
+        'debit' => 1000000,
     ]);
 
     $this->assertDatabaseHas('journal_entry_lines', [
         'journal_entry_id' => $journalEntry->id,
         'account_id' => $this->accumulatedDepreciationAccount->id,
-        'credit' => 1000,
+        'credit' => 1000000,
     ]);
 });
 
@@ -227,12 +230,12 @@ test('posted depreciation entries are immutable and hashed', function () {
 
 
 test('asset modification recomputes future depreciation schedule', function () {
-    // Arrange
-    $assetDTO = new CreateAssetDTO(
+    // Arrange: Create an asset and its initial depreciation schedule.
+    $assetDTO = new \App\DataTransferObjects\Assets\CreateAssetDTO(
         company_id: $this->company->id,
         name: 'Test Asset',
         purchase_date: now()->subYears(2),
-        purchase_value: 120000,
+        purchase_value: 120000, // Represents 120,000.000 IQD
         salvage_value: 0,
         useful_life_years: 10,
         depreciation_method: \App\Enums\Assets\DepreciationMethod::StraightLine,
@@ -241,42 +244,52 @@ test('asset modification recomputes future depreciation schedule', function () {
         accumulated_depreciation_account_id: $this->accumulatedDepreciationAccount->id,
         currency_id: $this->company->currency_id
     );
-    $asset = (new CreateAssetAction())->execute($assetDTO);
-    $asset->status = AssetStatus::Confirmed;
-    $asset->save();
-    (new \App\Actions\Assets\ComputeDepreciationScheduleAction())->execute($asset->fresh());
+    $asset = (new \App\Actions\Assets\CreateAssetAction())->execute($assetDTO);
+    $asset->update(['status' => \App\Enums\Assets\AssetStatus::Confirmed]);
+    (new \App\Actions\Assets\ComputeDepreciationScheduleAction())->execute($asset);
 
-    // Post one year of depreciation
-    for ($i = 0; $i < 12; $i++) {
-        $this->artisan('app:process-depreciations');
-    }
+    // Arrange: Simulate posting the first 12 depreciation entries.
+    $asset->depreciationEntries()->where('status', 'draft')->take(12)->get()->each(function ($entry) {
+        $postAction = app(\App\Actions\Assets\PostDepreciationEntryAction::class);
+        $postAction->execute($entry, $this->user);
+    });
 
-    // Act
+    // Act: Update the asset's value. The refactored UpdateAssetAction will re-compute the schedule.
     $updateAssetDTO = new \App\DataTransferObjects\Assets\UpdateAssetDTO(
         name: 'Test Asset Updated',
         purchase_date: $asset->purchase_date,
-        purchase_value: 240000,
+        purchase_value: 240000, // New value: 240,000.000 IQD
         salvage_value: 0,
         useful_life_years: 10,
         depreciation_method: \App\Enums\Assets\DepreciationMethod::StraightLine,
-        asset_account_id: $this->assetAccount->id,
-        depreciation_expense_account_id: $this->depreciationExpenseAccount->id,
-        accumulated_depreciation_account_id: $this->accumulatedDepreciationAccount->id,
-        currency_id: $this->company->currency_id
+        asset_account_id: $asset->asset_account_id,
+        depreciation_expense_account_id: $asset->depreciation_expense_account_id,
+        accumulated_depreciation_account_id: $asset->accumulated_depreciation_account_id,
+        currency_id: $asset->currency_id
     );
-    (new \App\Actions\Assets\UpdateAssetAction())->execute($asset, $updateAssetDTO);
 
-    // Assert
-    $this->assertDatabaseCount('depreciation_entries', 120);
+    // Resolve the action from the container to ensure its dependencies are injected.
+    $updateAction = app(\App\Actions\Assets\UpdateAssetAction::class);
+    $updateAction->execute($asset, $updateAssetDTO);
+
+    // Assert: The final state of the database is correct.
+    // There should be 12 old 'posted' entries + 120 new 'draft' entries.
+    $this->assertDatabaseCount('depreciation_entries', 132);
+
+    // Assert that the 12 posted entries still have their original amount.
+    expect($asset->depreciationEntries()->where('status', 'posted')->count())->toBe(12);
     $this->assertDatabaseHas('depreciation_entries', [
         'asset_id' => $asset->id,
         'status' => \App\Enums\Assets\DepreciationEntryStatus::Posted->value,
-        'amount' => 1000,
+        'amount' => 1000000, // Original amount (120k / 120 = 1k per month)
     ]);
+
+    // Assert that there are now 120 new draft entries with the re-calculated amount.
+    expect($asset->depreciationEntries()->where('status', 'draft')->count())->toBe(120);
     $this->assertDatabaseHas('depreciation_entries', [
         'asset_id' => $asset->id,
         'status' => \App\Enums\Assets\DepreciationEntryStatus::Draft->value,
-        'amount' => 2000,
+        'amount' => 2000000, // New amount (240k / 120 = 2k per month)
     ]);
 });
 

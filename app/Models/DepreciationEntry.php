@@ -92,6 +92,14 @@ class DepreciationEntry extends Model
     */
 
     /**
+     * Get the company that this depreciation entry belongs to.
+     */
+    public function company(): BelongsTo
+    {
+        return $this->belongsTo(Company::class);
+    }
+
+    /**
      * Get the asset that this depreciation entry belongs to.
      * Each depreciation entry corresponds to a specific fixed asset.
      *

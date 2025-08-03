@@ -43,6 +43,8 @@ class CompanyBuilder
             'default_sales_discount_account_id' => ['type' => 'Expense', 'name' => 'Sales Discount'],
             'default_tax_account_id' => ['type' => 'Liability', 'name' => 'Tax Payable'],
             'default_tax_receivable_id' => ['type' => 'Asset', 'name' => 'Tax Receivable'],
+            'default_gain_loss_account_id' => ['type' => 'Income', 'name' => 'Gain/Loss on Asset Disposal'],
+
         ];
         return $this;
     }

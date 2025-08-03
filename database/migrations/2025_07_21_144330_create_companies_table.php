@@ -30,6 +30,7 @@ return new class extends Migration
             $table->foreignId('default_depreciation_journal_id')->nullable();
             $table->foreignId('default_bank_account_id')->nullable()->constrained('accounts')->nullOnDelete();
             $table->foreignId('default_outstanding_receipts_account_id')->nullable()->constrained('accounts')->nullOnDelete();
+            $table->foreignId('default_gain_loss_account_id')->nullable()->constrained('accounts')->nullOnDelete();
             $table->timestamps();
         });
 

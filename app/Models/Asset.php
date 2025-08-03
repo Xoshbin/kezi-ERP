@@ -3,13 +3,16 @@
 namespace App\Models;
 
 use App\Casts\MoneyCast;
+use App\Observers\AssetObserver;
 use App\Enums\Assets\AssetStatus;
-use App\Enums\Assets\DepreciationMethod;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use App\Enums\Assets\DepreciationMethod;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 
 /**
  * Class Asset
@@ -59,6 +62,7 @@ use Illuminate\Database\Eloquent\Relations\MorphTo;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Asset whereUsefulLifeYears($value)
  * @mixin \Eloquent
  */
+#[ObservedBy([AssetObserver::class])]
 class Asset extends Model
 {
     use HasFactory;
@@ -186,5 +190,14 @@ class Asset extends Model
     public function source(): MorphTo
     {
         return $this->morphTo();
+    }
+
+    /**
+     * Get all of the asset's journal entries.
+     * An asset can have multiple journal entries (e.g., for acquisition, disposal).
+     */
+    public function journalEntries(): MorphMany
+    {
+        return $this->morphMany(JournalEntry::class, 'source');
     }
 }
