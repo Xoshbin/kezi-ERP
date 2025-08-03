@@ -14,9 +14,9 @@ class UpdateAssetAction
             $asset->update([
                 'name' => $dto->name,
                 'purchase_date' => $dto->purchase_date,
-                'purchase_price' => $dto->purchase_value,
+                'purchase_value' => $dto->purchase_value,
                 'salvage_value' => $dto->salvage_value,
-                'useful_life' => $dto->useful_life_years,
+                'useful_life_years' => $dto->useful_life_years,
                 'depreciation_method' => $dto->depreciation_method,
                 'asset_account_id' => $dto->asset_account_id,
                 'depreciation_expense_account_id' => $dto->depreciation_expense_account_id,
