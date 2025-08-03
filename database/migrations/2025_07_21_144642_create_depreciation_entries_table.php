@@ -15,7 +15,6 @@ return new class extends Migration
             $table->id();
             $table->foreignId('asset_id')->constrained('assets')->onDelete('cascade');
             $table->foreignId('journal_entry_id')->nullable()->constrained('journal_entries')->onDelete('set null');
-            $table->foreignId('currency_id')->constrained('currencies');
             $table->date('depreciation_date');
             $table->unsignedBigInteger('amount');
             $table->string('status')->default('draft'); // 'draft', 'posted'
