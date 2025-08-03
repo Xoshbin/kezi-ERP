@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use Brick\Money\Money;
 use App\Models\Company;
 use App\Models\Journal;
 use App\Models\Currency;
@@ -22,11 +23,11 @@ class BankStatementFactory extends Factory
         return [
             'company_id' => Company::factory(),
             'journal_id' => Journal::factory(),
-            'currency_id' => Currency::factory(),
+            'currency_id' => Currency::factory()->create()->id,
             'reference' => $this->faker->unique()->bothify('REF-####-????'),
             'date' => $this->faker->date(),
-            'starting_balance' => $this->faker->randomFloat(2, 0, 100000),
-            'ending_balance' => $this->faker->randomFloat(2, 0, 100000),
+            'starting_balance' => Money::of($this->faker->randomFloat(2, 100, 10000), 'USD'),
+            'ending_balance' => Money::of($this->faker->randomFloat(2, 100, 10000), 'USD'),
         ];
     }
 }

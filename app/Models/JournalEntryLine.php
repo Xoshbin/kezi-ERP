@@ -78,7 +78,6 @@ class JournalEntryLine extends Model
         'journal_entry_id',
         'account_id',
         'partner_id',
-        'currency_id',
         'debit',
         'credit',
         'description',
@@ -220,5 +219,15 @@ class JournalEntryLine extends Model
     public function analyticAccount(): BelongsTo
     {
         return $this->belongsTo(AnalyticAccount::class);
+    }
+
+    /**
+     * Accessor to provide the currency_id to the MoneyCast.
+     * This robust implementation prevents N+1 query issues.
+     */
+    public function getCurrencyIdAttribute(): int
+    {
+        // If the relationship is already loaded, use it. Otherwise, use the foreign key.
+        return $this->journalEntry->currency_id ?? $this->journalEntry()->getForeignKeyResults()->first()->currency_id;
     }
 }

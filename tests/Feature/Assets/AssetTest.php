@@ -1,22 +1,17 @@
 <?php
 
-use App\Models\Account;
-use App\Models\Asset;
-use App\Models\Company;
-use App\Models\User;
-use App\Services\AssetService;
-use Brick\Money\Money; // Import the Money class
 use Carbon\Carbon;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use App\Models\User;
+use App\Models\Asset;
+use App\Models\Account;
+use App\Models\Company;
+use App\Services\AssetService;
 use Tests\Traits\CreatesApplication;
+use Tests\Traits\WithConfiguredCompany;
+use Brick\Money\Money; // Import the Money class
+use Illuminate\Foundation\Testing\RefreshDatabase;
 
-uses(RefreshDatabase::class, CreatesApplication::class);
-
-beforeEach(function () {
-    $this->company = $this->createConfiguredCompany();
-    $this->user = User::factory()->for($this->company)->create();
-    $this->actingAs($this->user);
-});
+uses(RefreshDatabase::class, WithConfiguredCompany::class);
 
 test('running depreciation for an asset creates the correct journal entries', function () {
     // Arrange: Set up the necessary accounts and journal.

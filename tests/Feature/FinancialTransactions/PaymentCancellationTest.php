@@ -1,25 +1,23 @@
 <?php
 
-use App\Models\Payment;
 use App\Models\User;
+use App\Models\Payment;
+use Tests\Traits\MocksTime;
 use App\Services\PaymentService;
-use App\Enums\Accounting\JournalEntryState;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\Traits\CreatesApplication;
 use Tests\Traits\WithUnlockedPeriod;
+use Tests\Traits\WithConfiguredCompany;
+use App\Enums\Accounting\JournalEntryState;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 
-uses(RefreshDatabase::class, CreatesApplication::class, WithUnlockedPeriod::class);
+uses(RefreshDatabase::class, WithConfiguredCompany::class, MocksTime::class);
 
 test('cancelling a confirmed payment creates a reversing journal entry and an audit log', function () {
-    // Arrange
-    $company = $this->createConfiguredCompany();
-    $user = User::factory()->for($company)->create();
-    $this->actingAs($user);
 
     // Create and confirm a payment
-    $payment = Payment::factory()->for($company)->create(['status' => 'draft']);
+    $payment = Payment::factory()->for($this->company)->create(['status' => 'draft']);
     $paymentService = app(PaymentService::class);
-    $paymentService->confirm($payment, $user);
+    $paymentService->confirm($payment, $this->user);
     $payment->refresh();
 
     expect($payment->status)->toBe(Payment::STATUS_CONFIRMED);
@@ -27,7 +25,7 @@ test('cancelling a confirmed payment creates a reversing journal entry and an au
 
     // Act: Cancel the payment with a specific reason
     $cancellationReason = 'Duplicate payment entry.';
-    $paymentService->cancel($payment, $user, $cancellationReason);
+    $paymentService->cancel($payment, $this->user, $cancellationReason);
     $payment->refresh();
     $originalEntry->refresh();
 
@@ -39,7 +37,7 @@ test('cancelling a confirmed payment creates a reversing journal entry and an au
     $this->assertDatabaseHas('audit_logs', [
         'auditable_type' => Payment::class,
         'auditable_id' => $payment->id,
-        'user_id' => $user->id,
+        'user_id' => $this->user->id,
         'event_type' => 'cancellation',
         'description' => 'Payment Cancelled: ' . $cancellationReason,
     ]);

@@ -1,21 +1,23 @@
 <?php
 
-use App\Actions\Assets\CreateAssetAction;
-use App\DataTransferObjects\Assets\CreateAssetDTO;
-use App\Enums\Assets\AssetStatus;
-use App\Models\Account;
-use App\Models\Company;
 use App\Models\User;
 use Brick\Money\Money;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use App\Models\Account;
+use App\Models\Company;
+use App\Enums\Assets\AssetStatus;
 use Tests\Traits\CreatesApplication;
+use Tests\Traits\WithConfiguredCompany;
+use App\Enums\Assets\DepreciationMethod;
+use App\Actions\Assets\CreateAssetAction;
+use App\Enums\Assets\DepreciationEntryStatus;
+use App\Exceptions\UpdateNotAllowedException;
+use App\Exceptions\DeletionNotAllowedException;
+use App\DataTransferObjects\Assets\CreateAssetDTO;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 
-uses(RefreshDatabase::class, CreatesApplication::class);
+uses(RefreshDatabase::class, WithConfiguredCompany::class);
 
 beforeEach(function () {
-    $this->company = $this->createConfiguredCompany();
-    $this->user = User::factory()->for($this->company)->create();
-    $this->actingAs($this->user);
 
     $this->assetAccount = Account::factory()->for($this->company)->create(['type' => 'Fixed Asset']);
     $this->depreciationExpenseAccount = Account::factory()->for($this->company)->create(['type' => 'Expense']);

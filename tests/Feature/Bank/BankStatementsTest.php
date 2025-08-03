@@ -2,26 +2,24 @@
 
 namespace Tests\Feature\Bank;
 
+use App\Models\User;
+use Brick\Money\Money;
+use App\Models\Journal;
+use App\Models\Partner;
+use App\Models\BankStatement;
+use Tests\Traits\CreatesApplication;
+use Tests\Traits\WithConfiguredCompany;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use App\Actions\Accounting\CreateBankStatementAction;
 use App\Actions\Accounting\UpdateBankStatementAction;
 use App\DataTransferObjects\Accounting\CreateBankStatementDTO;
-use App\DataTransferObjects\Accounting\CreateBankStatementLineDTO;
 use App\DataTransferObjects\Accounting\UpdateBankStatementDTO;
+use App\DataTransferObjects\Accounting\CreateBankStatementLineDTO;
 use App\DataTransferObjects\Accounting\UpdateBankStatementLineDTO;
-use App\Models\BankStatement;
-use App\Models\Journal;
-use App\Models\Partner;
-use App\Models\User;
-use Brick\Money\Money;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Tests\Traits\CreatesApplication;
 
-uses(RefreshDatabase::class, CreatesApplication::class);
+uses(RefreshDatabase::class, WithConfiguredCompany::class);
 
 beforeEach(function () {
-    $this->company = $this->createConfiguredCompany();
-    $this->user = User::factory()->for($this->company)->create();
-    $this->actingAs($this->user);
 
     // Setup a specific journal for bank transactions
     $this->bankJournal = Journal::factory()->for($this->company)->create(['type' => 'Bank']);

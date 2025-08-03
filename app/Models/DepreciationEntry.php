@@ -64,8 +64,7 @@ class DepreciationEntry extends Model
         'depreciation_date',
         'amount',
         'journal_entry_id',
-        'status',
-        'currency_id'
+        'status'
     ];
 
     /**
@@ -117,13 +116,13 @@ class DepreciationEntry extends Model
     }
 
     /**
-     * Get the currency of this invoice.
-     * Every invoice operates in a specific currency.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * Accessor to provide the currency_id to the MoneyCast.
+     * FIX: Correctly references the parent 'asset' model, not 'invoice'.
+     * This robust implementation prevents N+1 query issues.
      */
-    public function currency(): BelongsTo
+    public function getCurrencyIdAttribute(): int
     {
-        return $this->belongsTo(Currency::class);
+        // If the relationship is already loaded, use it. Otherwise, use the foreign key.
+        return $this->asset->currency_id ?? $this->asset()->getForeignKeyResults()->first()->currency_id;
     }
 }

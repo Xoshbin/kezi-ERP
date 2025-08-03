@@ -1,23 +1,18 @@
 <?php
 
-use App\Exceptions\DeletionNotAllowedException;
+use App\Models\User;
 use App\Models\Account;
 use App\Models\Company;
 use App\Models\Currency;
-use App\Models\User;
 use App\Services\CompanyService;
 use App\Services\CurrencyService;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Validation\ValidationException;
 use Tests\Traits\CreatesApplication;
+use Tests\Traits\WithConfiguredCompany;
+use Illuminate\Validation\ValidationException;
+use App\Exceptions\DeletionNotAllowedException;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 
-uses(RefreshDatabase::class, CreatesApplication::class);
-
-beforeEach(function () {
-    $this->company = $this->createConfiguredCompany();
-    $this->user = User::factory()->for($this->company)->create();
-    $this->actingAs($this->user);
-});
+uses(RefreshDatabase::class, WithConfiguredCompany::class);
 
 test('a company with existing financial records cannot be deleted', function () {
     // Arrange: Create a dependent financial record.

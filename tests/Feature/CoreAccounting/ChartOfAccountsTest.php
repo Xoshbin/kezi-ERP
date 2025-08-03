@@ -1,24 +1,19 @@
 <?php
 
+use App\Models\User;
+use Brick\Money\Money;
 use App\Models\Account;
 use App\Models\Company;
 use App\Models\Journal;
 use App\Models\JournalEntry;
-use App\Models\User;
 use App\Services\AccountService;
 use App\Services\JournalService;
-use Brick\Money\Money;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Validation\ValidationException;
 use Tests\Traits\CreatesApplication;
+use Tests\Traits\WithConfiguredCompany;
+use Illuminate\Validation\ValidationException;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 
-uses(RefreshDatabase::class, CreatesApplication::class);
-
-beforeEach(function () {
-    $this->company = $this->createConfiguredCompany();
-    $this->user = User::factory()->for($this->company)->create();
-    $this->actingAs($this->user);
-});
+uses(RefreshDatabase::class, WithConfiguredCompany::class);
 
 test('creating an account with a duplicate code for the same company is prevented', function () {
     // Arrange: Create the first account with code '1000'.

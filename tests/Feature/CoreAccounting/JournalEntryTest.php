@@ -1,33 +1,24 @@
 <?php
 
-use App\Exceptions\DeletionNotAllowedException;
-use App\Exceptions\PeriodIsLockedException;
-use App\Exceptions\UpdateNotAllowedException;
+use App\Models\User;
+use Brick\Money\Money;
 use App\Models\Account;
 use App\Models\Company;
 use App\Models\Journal;
-use App\Models\JournalEntry;
 use App\Models\LockDate;
-use App\Models\User;
-use App\Services\JournalEntryService;
-use Brick\Money\Money;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Validation\ValidationException;
+use Tests\Traits\MocksTime;
+use App\Models\JournalEntry;
 use Tests\Traits\CreatesApplication;
 use Tests\Traits\WithUnlockedPeriod;
+use App\Services\JournalEntryService;
+use Tests\Traits\WithConfiguredCompany;
+use App\Exceptions\PeriodIsLockedException;
+use App\Exceptions\UpdateNotAllowedException;
+use Illuminate\Validation\ValidationException;
+use App\Exceptions\DeletionNotAllowedException;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 
-uses(RefreshDatabase::class, CreatesApplication::class, WithUnlockedPeriod::class);
-
-beforeEach(function () {
-    $this->setupWithUnlockedPeriod();
-    $this->company = $this->createConfiguredCompany();
-    $this->user = User::factory()->for($this->company)->create();
-    $this->actingAs($this->user);
-});
-
-afterEach(function () {
-    $this->tearDownWithUnlockedPeriod();
-});
+uses(RefreshDatabase::class, WithConfiguredCompany::class, MocksTime::class);
 
 test('a journal entry correctly calculates totals and assigns a user when created', function () {
     $currencyCode = $this->company->currency->code;
@@ -162,8 +153,6 @@ test('a posted journal entry cannot be deleted via the service', function () {
 });
 
 test('a draft journal entry in a locked period cannot be deleted', function () {
-    $this->tearDownWithUnlockedPeriod(); // Disable the mock for this specific test.
-
     $service = app(JournalEntryService::class);
     LockDate::factory()->for($this->company)->create(['locked_until' => now()->subMonth()]);
     $currencyCode = $this->company->currency->code;

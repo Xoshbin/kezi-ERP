@@ -1,31 +1,28 @@
 <?php
 
-use App\Actions\Accounting\CreateJournalEntryForPaymentAction;
-use App\Models\Company;
-use App\Models\Payment;
 use App\Models\User;
 use Brick\Money\Money;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use App\Models\Company;
+use App\Models\Payment;
 use Tests\Traits\CreatesApplication;
+use Tests\Traits\WithConfiguredCompany;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use App\Actions\Accounting\CreateJournalEntryForPaymentAction;
 
-uses(RefreshDatabase::class, CreatesApplication::class);
+uses(RefreshDatabase::class, WithConfiguredCompany::class);
 
 test('it creates a correct journal entry for an inbound payment', function () {
-    // 1. Arrange
-    $company = $this->createConfiguredCompany();
-    $user = User::factory()->for($company)->create();
-    $currencyCode = $company->currency->code;
 
-    $payment = Payment::factory()->for($company)->create([
+    $payment = Payment::factory()->for($this->company)->create([
         'payment_type' => Payment::TYPE_INBOUND,
-        'amount' => Money::of(500, $currencyCode),
-        'journal_id' => $company->default_bank_journal_id,
+        'amount' => Money::of(500, $$this->company->currencyCode),
+        'journal_id' => $this->company->default_bank_journal_id,
         'status' => 'Confirmed',
     ]);
 
     // 2. Act
     $action = app(CreateJournalEntryForPaymentAction::class);
-    $journalEntry = $action->execute($payment, $user);
+    $journalEntry = $action->execute($payment, $this->user);
 
     // 3. Assert
     $this->assertNotNull($journalEntry);
@@ -34,12 +31,12 @@ test('it creates a correct journal entry for an inbound payment', function () {
     // Assert correct accounts were used
     $this->assertDatabaseHas('journal_entry_lines', [
         'journal_entry_id' => $journalEntry->id,
-        'account_id' => $company->default_bank_account_id, // Inbound payment DEBITS the bank
+        'account_id' => $this->company->default_bank_account_id, // Inbound payment DEBITS the bank
         'debit' => 500000,
     ]);
     $this->assertDatabaseHas('journal_entry_lines', [
         'journal_entry_id' => $journalEntry->id,
-        'account_id' => $company->default_accounts_receivable_id, // Inbound payment CREDITS A/R
+        'account_id' => $this->company->default_accounts_receivable_id, // Inbound payment CREDITS A/R
         'credit' => 500000,
     ]);
 });
