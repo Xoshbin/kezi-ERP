@@ -2,36 +2,29 @@
 
 namespace Database\Factories;
 
+use Brick\Money\Money;
 use App\Models\Account;
 use App\Models\Invoice;
 use App\Models\Product;
-use App\Models\Tax;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
-/**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\InvoiceLine>
- */
 class InvoiceLineFactory extends Factory
 {
-    /**
-     * Define the model's default state.
-     *
-     * @return array<string, mixed>
-     */
     public function definition(): array
     {
         return [
-            'invoice_id' => Invoice::factory()->create()->id,
-            'product_id' => Product::factory()->create()->id,
+            // A line should NOT create its own parent invoice. The test should provide it.
+            'invoice_id' => Invoice::factory(),
+            'product_id' => null, // Default to a descriptive line without a product
             'description' => $this->faker->sentence(),
-            'quantity' => $this->faker->randomFloat(2, 1, 100),
-            'unit_price' => $this->faker->randomFloat(2, 10, 1000),
-            'tax_id' => Tax::factory()->create()->id,
-            'subtotal' => function (array $attributes) {
-                return round($attributes['quantity'] * $attributes['unit_price'], 2);
-            },
-            'total_line_tax' => $this->faker->randomFloat(2, 0, 200),
-            'income_account_id' => Account::factory()->create()->id,
+            'quantity' => $this->faker->numberBetween(1, 5),
+            'unit_price' => Money::of($this->faker->randomFloat(2, 25, 500), 'USD'),
+            'tax_id' => null, // Default to no tax
+            // The income account should come from the product or be specified in the test.
+            'income_account_id' => Account::factory()->state(['type' => 'Income']),
+            // Subtotal and tax are calculated by observers.
+            'subtotal' => Money::of($this->faker->randomFloat(2, 100, 10000), 'USD'),
+            'total_line_tax' => Money::of($this->faker->randomFloat(2, 100, 10000), 'USD'),
         ];
     }
 }

@@ -1,36 +1,29 @@
 <?php
 
-use App\Actions\Accounting\CreateJournalEntryForStatementLineAction;
-use App\Actions\Accounting\ReverseJournalEntryAction;
-use App\DataTransferObjects\Accounting\CreateJournalEntryForStatementLineDTO;
-use App\Enums\Accounting\JournalEntryState;
+use App\Models\User;
 use App\Models\Account;
-use App\Models\BankStatement;
-use App\Models\BankStatementLine;
 use App\Models\Company;
 use App\Models\Journal;
 use App\Models\JournalEntry;
-use App\Models\User;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use App\Models\BankStatement;
+use App\Models\BankStatementLine;
 use Illuminate\Support\Facades\Gate;
 use Tests\Traits\CreatesApplication;
+use Tests\Traits\WithConfiguredCompany;
+use App\Enums\Accounting\JournalEntryState;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use App\Actions\Accounting\ReverseJournalEntryAction;
+use App\Actions\Accounting\CreateJournalEntryForStatementLineAction;
+use App\DataTransferObjects\Accounting\CreateJournalEntryForStatementLineDTO;
 
-uses(RefreshDatabase::class, CreatesApplication::class);
+uses(RefreshDatabase::class, WithConfiguredCompany::class);
 
 beforeEach(function () {
-    $this->createConfiguredCompany();
-    $this->company = Company::first();
-    $this->user = User::factory()->for($this->company)->create();
-    $this->actingAs($this->user);
-
-    // Use the company's default currency for consistency
-    $currency = $this->company->currency;
-    $currencyCode = $currency->code;
 
     // Create an original journal entry via the write-off action
     $this->line = BankStatementLine::factory()
-        ->for(BankStatement::factory()->for($this->company)->for(Journal::factory()->for($this->company)->create())->for($currency)->create())
-        ->create(['amount' => \Brick\Money\Money::ofMinor(-100000, $currencyCode), 'is_reconciled' => false]);
+        ->for(BankStatement::factory()->for($this->company)->for(Journal::factory()->for($this->company)->create())->for($$this->company->currency)->create())
+        ->create(['amount' => \Brick\Money\Money::ofMinor(-100000, $$this->company->currencyCode), 'is_reconciled' => false]);
     $writeOffAccount = Account::factory()->for($this->company)->create();
 
     $dto = new CreateJournalEntryForStatementLineDTO(

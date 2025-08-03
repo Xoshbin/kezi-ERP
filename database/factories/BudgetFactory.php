@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\Currency;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -23,9 +24,7 @@ class BudgetFactory extends Factory
             'period_end_date' => $this->faker->dateTimeBetween('+1 month', '+1 year'),
             'budget_type' => $this->faker->randomElement(['analytic', 'financial']),
             'status' => $this->faker->randomElement(['draft', 'finalized']),
-            'currency_id' => function (array $attributes) {
-                return \App\Models\Company::find($attributes['company_id'])->currency_id;
-            },
+            'currency_id' => Currency::factory()->create()->id,
         ];
     }
 }

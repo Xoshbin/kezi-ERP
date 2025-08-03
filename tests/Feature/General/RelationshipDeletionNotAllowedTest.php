@@ -15,22 +15,15 @@ use App\Models\JournalEntry;
 use App\Models\VendorBillLine;
 use App\Services\InvoiceService;
 use Tests\Traits\CreatesApplication;
+use App\Services\JournalEntryService;
 use Illuminate\Database\QueryException;
+use Tests\Traits\WithConfiguredCompany;
 use App\Exceptions\DeletionNotAllowedException;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use App\Actions\Purchases\CreateVendorBillLineAction;
+use App\DataTransferObjects\Purchases\CreateVendorBillLineDTO;
 
-uses(RefreshDatabase::class, CreatesApplication::class);
-
-/**
- * This test suite specifically targets deletion scenarios that would violate accounting principles,
- * focusing on the integrity of relationships between posted financial documents and their associated master data.
- */
-beforeEach(function () {
-    // Set up a fully configured company and an authenticated user for each test.
-    $this->company = $this->createConfiguredCompany();
-    $this->user = User::factory()->for($this->company)->create();
-    $this->actingAs($this->user);
-});
+uses(RefreshDatabase::class, WithConfiguredCompany::class);
 
 //======================================================================
 // Test Case 1: Protecting Journal Entry Lines
@@ -48,18 +41,17 @@ test('a journal entry line cannot be deleted from a posted journal entry', funct
         'is_posted' => true,
         'total_debit' => Money::of(100, $currencyCode),
         'total_credit' => Money::of(100, $currencyCode),
+        'currency_id' => $this->company->currency_id, // Ensure currency is set
     ]);
     $lineToDelete = $journalEntry->lines()->create([
         'account_id' => Account::factory()->for($this->company)->create()->id,
         'debit' => Money::of(100, $currencyCode),
         'credit' => Money::of(0, $currencyCode),
-        'currency_id' => $this->company->currency_id,
     ]);
     $journalEntry->lines()->create([
         'account_id' => Account::factory()->for($this->company)->create()->id,
         'debit' => Money::of(0, $currencyCode),
         'credit' => Money::of(100, $currencyCode),
-        'currency_id' => $this->company->currency_id,
     ]);
 
     // Act & Assert: Attempting to delete the line directly should throw a RuntimeException.
@@ -87,6 +79,7 @@ test('a partner linked to a posted invoice cannot be deleted', function () {
     $customer = Partner::factory()->for($this->company)->create();
     Invoice::factory()->for($this->company)->create([
         'customer_id' => $customer->id,
+        'currency_id' => $this->company->currency_id, // Ensure currency is set
         'status' => 'posted',
     ]);
 
@@ -111,18 +104,30 @@ test('a product linked to a posted vendor bill line cannot be deleted', function
      * should not be deletable (even soft-deleted) to preserve data integrity.
      */
 
-    // Arrange: Create a product and use it in a vendor bill line.
+    // Arrange: Create a product and a posted vendor bill.
     $product = Product::factory()->for($this->company)->create();
-    $vendorBill = VendorBill::factory()->for($this->company)->create(['status' => 'posted']);
-    $vendorBill->lines()->create([
-        'description' => 'Test line item for product deletion test', // <-- Add this line
-        'product_id' => $product->id,
-        'quantity' => 1,
-        'unit_price' => Money::of(100, $this->company->currency->code),
-        'expense_account_id' => Account::factory()->for($this->company)->create()->id,
+    $vendorBill = VendorBill::factory()->for($this->company)->create([
+        'status' => 'posted',
+        'currency_id' => $this->company->currency_id,
     ]);
 
-    // Act & Assert: Attempting to delete the product should be blocked by our new observer.
+    // --- START OF FIX ---
+    // Act: Create the vendor bill line using the dedicated Action and DTO.
+    // This correctly encapsulates the creation logic and ensures all required fields are calculated.
+    $lineDto = new CreateVendorBillLineDTO(
+        description: 'Test line item for product deletion test',
+        quantity: 1,
+        unit_price: '100.00', // The DTO accepts a clean string representation.
+        expense_account_id: $product->expense_account_id, // Use the product's default expense account.
+        product_id: $product->id,
+        tax_id: null,
+        analytic_account_id: null
+    );
+
+    app(CreateVendorBillLineAction::class)->execute($vendorBill, $lineDto);
+    // --- END OF FIX ---
+
+    // Assert: Attempting to delete the product should be blocked by the ProductObserver.
     expect(fn() => $product->delete())
         ->toThrow(DeletionNotAllowedException::class, 'Cannot delete a product that has been used in transactions.');
 
@@ -144,6 +149,7 @@ test('a user who created a journal entry cannot be deleted', function () {
     // Arrange: The `beforeEach` hook already creates a user. We just need to link them to an entry.
     JournalEntry::factory()->for($this->company)->create([
         'created_by_user_id' => $this->user->id,
+        'currency_id' => $this->company->currency_id, // Ensure currency is set
         'is_posted' => true,
         'total_debit' => 0,
         'total_credit' => 0,
@@ -163,21 +169,31 @@ test('a user who created a journal entry cannot be deleted', function () {
 test('a posted invoice with lines cannot be deleted', function () {
     /**
      * Principle: A posted invoice is an immutable financial document. It cannot be deleted.
-     * This is enforced by the InvoiceService and model-level logic.
      */
 
-    // Arrange: Create a posted invoice with a line.
+    // Arrange: Create a draft invoice, ensuring its currency is explicitly set.
     $invoice = Invoice::factory()->for($this->company)->create([
         'status' => 'draft',
-        'total_amount' => 100,
-        'total_tax' => 0,
+        'currency_id' => $this->company->currency_id, // Explicitly set currency for clarity
+        'total_amount' => 0, // Will be recalculated by observers
+        'total_tax' => 0,    // Will be recalculated by observers
     ]);
-    InvoiceLine::factory()->for($invoice)->create();
-    (new InvoiceService(app(\App\Services\JournalEntryService::class)))->confirm($invoice, $this->user);
 
-    // Act & Assert: Attempting to delete the invoice should be blocked by our application logic.
+    // Arrange: Create an invoice line.
+    // THIS IS THE KEY FIX: We now explicitly pass a Money object for the 'unit_price'.
+    // This tells the factory exactly what value to use, so the MoneyCast's 'set' method
+    // receives a Money object directly and doesn't need to resolve the currency itself during creation.
+    InvoiceLine::factory()->for($invoice)->create([
+        'unit_price' => Money::of(100, $this->company->currency->code),
+        'quantity' => 1
+    ]);
+
+    // Act: Confirm the invoice using the service.
+    (new \App\Services\InvoiceService(app(\App\Services\JournalEntryService::class)))->confirm($invoice, $this->user);
+
+    // Assert: Attempting to delete the now-posted invoice must fail.
     $this->expectException(\App\Exceptions\DeletionNotAllowedException::class);
-    (new InvoiceService(app(\App\Services\JournalEntryService::class)))->delete($invoice);
+    (new \App\Services\InvoiceService(app(\App\Services\JournalEntryService::class)))->delete($invoice);
 
     // Verify: The invoice and its journal entry must still exist.
     $this->assertModelExists($invoice);

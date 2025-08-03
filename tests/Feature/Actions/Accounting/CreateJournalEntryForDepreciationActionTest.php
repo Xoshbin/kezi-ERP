@@ -1,31 +1,28 @@
 <?php
 
-use App\Actions\Accounting\CreateJournalEntryForDepreciationAction;
-use App\Models\Asset;
-use App\Models\DepreciationEntry;
 use App\Models\User;
+use App\Models\Asset;
 use Brick\Money\Money;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use App\Models\DepreciationEntry;
 use Tests\Traits\CreatesApplication;
+use Tests\Traits\WithConfiguredCompany;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use App\Actions\Accounting\CreateJournalEntryForDepreciationAction;
 
-uses(RefreshDatabase::class, CreatesApplication::class);
+uses(RefreshDatabase::class, WithConfiguredCompany::class);
 
 test('it creates a correct journal entry for a depreciation entry', function () {
-    // 1. Arrange
-    $company = $this->createConfiguredCompany();
-    $user = User::factory()->for($company)->create();
-    $currencyCode = $company->currency->code;
 
-    $asset = Asset::factory()->for($company)->create([
-        'depreciation_expense_account_id' => \App\Models\Account::factory()->for($company)->create()->id,
-        'accumulated_depreciation_account_id' => \App\Models\Account::factory()->for($company)->create()->id,
+    $asset = Asset::factory()->for($this->company)->create([
+        'depreciation_expense_account_id' => \App\Models\Account::factory()->for($this->company)->create()->id,
+        'accumulated_depreciation_account_id' => \App\Models\Account::factory()->for($this->company)->create()->id,
     ]);
 
     // FIX: Be explicit about the state of the model before the action runs.
     $depreciationEntry = DepreciationEntry::factory()
         ->for($asset)
         ->create([
-            'amount' => Money::of(120, $currencyCode),
+            'amount' => Money::of(120, $$this->company->currencyCode),
             'depreciation_date' => now(),
             'journal_entry_id' => null, // It should not have a journal entry yet.
             'status' => 'Posted',      // The service sets this status right before the action.
@@ -33,14 +30,14 @@ test('it creates a correct journal entry for a depreciation entry', function () 
 
     // 2. Act
     $action = app(CreateJournalEntryForDepreciationAction::class);
-    $journalEntry = $action->execute($depreciationEntry, $user);
+    $journalEntry = $action->execute($depreciationEntry, $this->user);
 
     // 3. Assert
     $this->assertNotNull($journalEntry);
     $this->assertTrue($journalEntry->is_posted);
-    $this->assertEquals($company->default_depreciation_journal_id, $journalEntry->journal_id);
+    $this->assertEquals($this->company->default_depreciation_journal_id, $journalEntry->journal_id);
 
-    $expectedTotal = Money::of(120, $currencyCode);
+    $expectedTotal = Money::of(120, $$this->company->currencyCode);
     $this->assertTrue($journalEntry->total_debit->isEqualTo($expectedTotal));
     $this->assertTrue($journalEntry->total_credit->isEqualTo($expectedTotal));
 

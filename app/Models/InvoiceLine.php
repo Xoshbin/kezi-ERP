@@ -9,7 +9,6 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-#[ObservedBy([InvoiceLineObserver::class])]
 /**
  * @property int $id
  * @property int $invoice_id
@@ -46,6 +45,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|InvoiceLine whereUpdatedAt($value)
  * @mixin \Eloquent
  */
+#[ObservedBy([InvoiceLineObserver::class])]
 class InvoiceLine extends Model
 {
     // Leveraging Laravel's HasFactory trait for simplified model factory creation in testing/seeding [5, 6].
@@ -145,4 +145,14 @@ class InvoiceLine extends Model
     // soft deletes are generally not applied to such core financial transaction components.
     // The immutability and correction mechanisms (contra-entries) are handled at the parent Invoice level [1-3].
     // The migration's `cascadeOnDelete()` for `invoice_id` ensures that if a draft invoice is deleted, its lines follow [4].
+
+    /**
+     * Accessor to provide the currency_id to the MoneyCast.
+     * This robust implementation prevents N+1 query issues.
+     */
+    public function getCurrencyIdAttribute(): int
+    {
+        // If the relationship is already loaded, use it. Otherwise, use the foreign key.
+        return $this->invoice->currency_id ?? $this->invoice()->getForeignKeyResults()->first()->currency_id;
+    }
 }

@@ -11,7 +11,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * Class BudgetLine
  *
  * @package App\Models
- * 
+ *
  * This Eloquent model represents a single line item within a Budget.
  * It tracks specific budgeted amounts against actual achieved and committed amounts,
  * linking to either general ledger accounts (for financial budgets) or analytic accounts
@@ -67,7 +67,7 @@ class BudgetLine extends Model
         'account_id',
         'budgeted_amount',
         'achieved_amount',
-        'committed_amount',
+        'committed_amount'
     ];
 
     /**
@@ -124,5 +124,15 @@ class BudgetLine extends Model
     {
         // Account model is typically in App\Models [4, 8]
         return $this->belongsTo(Account::class);
+    }
+
+    /**
+     * Accessor to provide the currency_id to the MoneyCast.
+     * This robust implementation prevents N+1 query issues.
+     */
+    public function getCurrencyIdAttribute(): int
+    {
+        // If the relationship is already loaded, use it. Otherwise, use the foreign key.
+        return $this->budget->currency_id ?? $this->budget()->getForeignKeyResults()->first()->currency_id;
     }
 }

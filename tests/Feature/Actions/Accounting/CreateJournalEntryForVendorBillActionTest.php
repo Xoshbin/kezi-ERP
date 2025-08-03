@@ -1,28 +1,25 @@
 <?php
 
-use App\Actions\Accounting\CreateJournalEntryForVendorBillAction;
-use App\Models\Product;
 use App\Models\Tax;
 use App\Models\User;
-use App\Models\VendorBill;
 use Brick\Money\Money;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use App\Models\Product;
+use App\Models\VendorBill;
 use Tests\Traits\CreatesApplication;
+use Tests\Traits\WithConfiguredCompany;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use App\Actions\Accounting\CreateJournalEntryForVendorBillAction;
 
-uses(RefreshDatabase::class, CreatesApplication::class);
+uses(RefreshDatabase::class, WithConfiguredCompany::class);
 
 test('it creates a correct journal entry for a posted vendor bill', function () {
-    // 1. Arrange
-    $company = $this->createConfiguredCompany();
-    $user = User::factory()->for($company)->create();
-    $currencyCode = $company->currency->code;
 
-    $tax = Tax::factory()->for($company)->create([
+    $tax = Tax::factory()->for($this->company)->create([
         'rate' => 0.10,
     ]);
-    $product = Product::factory()->for($company)->create();
+    $product = Product::factory()->for($this->company)->create();
 
-    $vendorBill = VendorBill::factory()->for($company)->create([
+    $vendorBill = VendorBill::factory()->for($this->company)->create([
         'status' => VendorBill::STATUS_POSTED,
         'posted_at' => now(),
     ]);
@@ -30,10 +27,10 @@ test('it creates a correct journal entry for a posted vendor bill', function () 
         'product_id' => $product->id,
         'quantity' => 1,
         'description' => 'asdf',
-        'unit_price' => Money::of(500, $currencyCode),
+        'unit_price' => Money::of(500, $$this->company->currencyCode),
         'tax_id' => $tax->id,
-        'subtotal' => Money::of(500, $currencyCode),
-        'total_line_tax' => Money::of(50, $currencyCode),
+        'subtotal' => Money::of(500, $$this->company->currencyCode),
+        'total_line_tax' => Money::of(50, $$this->company->currencyCode),
         'expense_account_id' => $product->expense_account_id,
     ]);
 
@@ -46,19 +43,19 @@ test('it creates a correct journal entry for a posted vendor bill', function () 
     // 2. Act
     $action = app(CreateJournalEntryForVendorBillAction::class);
     // Pass the fresh, correct model to the action.
-    $journalEntry = $action->execute($freshVendorBill, $user);
+    $journalEntry = $action->execute($freshVendorBill, $this->user);
 
     // 3. Assert (This will now pass)
     $this->assertNotNull($journalEntry);
     $this->assertTrue($journalEntry->is_posted);
-    $this->assertEquals($company->default_purchase_journal_id, $journalEntry->journal_id);
+    $this->assertEquals($this->company->default_purchase_journal_id, $journalEntry->journal_id);
 
-    $expectedTotal = Money::of(550, $currencyCode);
+    $expectedTotal = Money::of(550, $$this->company->currencyCode);
     $this->assertTrue($journalEntry->total_credit->isEqualTo($expectedTotal));
 
     $this->assertDatabaseHas('journal_entry_lines', [
         'journal_entry_id' => $journalEntry->id,
-        'account_id' => $company->default_accounts_payable_id,
+        'account_id' => $this->company->default_accounts_payable_id,
         'credit' => 550000,
     ]);
     $this->assertDatabaseHas('journal_entry_lines', [
@@ -68,7 +65,7 @@ test('it creates a correct journal entry for a posted vendor bill', function () 
     ]);
     $this->assertDatabaseHas('journal_entry_lines', [
         'journal_entry_id' => $journalEntry->id,
-        'account_id' => $company->default_tax_receivable_id,
+        'account_id' => $this->company->default_tax_receivable_id,
         'debit' => 50000,
     ]);
 });
