@@ -25,7 +25,7 @@ class ComputeDepreciationScheduleAction
 
     private function computeStraightLine(Asset $asset): void
     {
-        $depreciableValue = $asset->purchase_value->subtract($asset->salvage_value);
+        $depreciableValue = $asset->purchase_value->minus($asset->salvage_value);
         $totalMonths = $asset->useful_life_years * 12;
 
         if ($totalMonths <= 0) {
