@@ -17,7 +17,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 // Any corrections to posted lines must be handled via new, offsetting entries
 // (e.g., adjustment documents like credit notes or new journal entries) [3].
 
-#[ObservedBy([VendorBillLineObserver::class])]
 /**
  * @property int $id
  * @property int $vendor_bill_id
@@ -56,6 +55,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|VendorBillLine whereVendorBillId($value)
  * @mixin \Eloquent
  */
+#[ObservedBy([VendorBillLineObserver::class])]
 class VendorBillLine extends Model
 {
     use HasFactory;
@@ -167,5 +167,16 @@ class VendorBillLine extends Model
     public function analyticAccount(): BelongsTo
     {
         return $this->belongsTo(AnalyticAccount::class, 'analytic_account_id');
+    }
+
+    /**
+     * Accessor to provide the currency_id to the MoneyCast.
+     * This makes the model responsible for knowing its own currency context.
+     */
+    public function getCurrencyIdAttribute(): int
+    {
+        // This assumes the 'vendorBill' relationship is always loaded when needed.
+        // You can add loadMissing('vendorBill') for robustness if necessary.
+        return $this->vendorBill->currency_id;
     }
 }

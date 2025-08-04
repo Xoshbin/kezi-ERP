@@ -1,25 +1,20 @@
 <?php
 
-use App\Events\AdjustmentDocumentPosted;
+use App\Models\User;
 use App\Models\Account;
-use App\Models\AdjustmentDocument;
 use App\Models\Company;
 use App\Models\Journal;
 use App\Models\JournalEntry;
-use App\Models\User;
+use App\Models\AdjustmentDocument;
+use Tests\Traits\CreatesApplication;
+use Illuminate\Support\Facades\Event;
+use Tests\Traits\WithConfiguredCompany;
+use App\Events\AdjustmentDocumentPosted;
 use App\Services\AdjustmentDocumentService;
 use Brick\Money\Money; // Import the Money class
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\Event;
-use Tests\Traits\CreatesApplication;
 
-uses(RefreshDatabase::class, CreatesApplication::class);
-
-beforeEach(function () {
-    $this->company = $this->createConfiguredCompany();
-    $this->user = User::factory()->for($this->company)->create();
-    $this->actingAs($this->user);
-});
+uses(RefreshDatabase::class, WithConfiguredCompany::class);
 
 test('an adjustment document can be posted, which creates a journal entry and dispatches an event', function () {
     // Arrange: Ensure events are being listened for.

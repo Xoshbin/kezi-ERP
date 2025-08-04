@@ -2,9 +2,10 @@
 
 namespace Database\Factories;
 
+use Brick\Money\Money;
 use App\Models\Company;
-use App\Models\Currency;
 use App\Models\Partner;
+use App\Models\Currency;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -30,8 +31,8 @@ class VendorBillFactory extends Factory
             'due_date' => $this->faker->dateTimeBetween('now', '+2 months')->format('Y-m-d'),
             'bill_reference' => $this->faker->unique()->bothify('BILL-####??'),
             'status' => 'draft',
-            'total_amount' => 0,
-            'total_tax' => 0,
+            'total_amount' => Money::of($this->faker->randomFloat(2, 100, 10000), 'USD'),
+            'total_tax' => Money::of($this->faker->randomFloat(2, 100, 10000), 'USD'),
             'journal_entry_id' => null,
             'posted_at' => null,
             'reset_to_draft_log' => null,

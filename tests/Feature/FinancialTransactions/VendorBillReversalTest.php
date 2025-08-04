@@ -1,52 +1,61 @@
 <?php
 
 use App\Models\User;
+use Brick\Money\Money;
+use App\Models\Account;
 use App\Models\VendorBill;
 use App\Services\VendorBillService;
-use App\Enums\Accounting\JournalEntryState;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\Traits\CreatesApplication;
+use Tests\Traits\WithConfiguredCompany;
+use App\Enums\Accounting\JournalEntryState;
+use App\Actions\Purchases\CreateVendorBillLineAction; // Import the Action
+use App\DataTransferObjects\Purchases\CreateVendorBillLineDTO; // Import the DTO
+use Illuminate\Foundation\Testing\RefreshDatabase;
 
-uses(RefreshDatabase::class, CreatesApplication::class);
+uses(RefreshDatabase::class, WithConfiguredCompany::class);
 
 test('cancelling a posted vendor bill creates a reversing journal entry and an audit log', function () {
-    // Arrange
-    $company = $this->createConfiguredCompany();
-    $user = User::factory()->for($company)->create();
-    $this->actingAs($user);
+    // Arrange: Create a draft vendor bill to set up the test scenario.
+    $vendorBill = VendorBill::factory()->for($this->company)->create(['status' => 'draft']);
 
-    $vendorBill = VendorBill::factory()->for($company)->create(['status' => 'draft']);
-    $vendorBill->lines()->create([
-        'description' => 'Test Service',
-        'quantity' => 1,
-        'unit_price' => \Brick\Money\Money::of(1000, $company->currency->code),
-        'expense_account_id' => \App\Models\Account::factory()->for($company)->create(['type' => 'Expense'])->id,
-    ]);
+    // --- START OF FIX ---
+    // Act 1a: Create the vendor bill line using our robust, established pattern.
+    $lineDto = new CreateVendorBillLineDTO(
+        description: 'Test Service',
+        quantity: 1,
+        unit_price: '1000.00',
+        expense_account_id: Account::factory()->for($this->company)->create(['type' => 'Expense'])->id,
+        product_id: null,
+        tax_id: null,
+        analytic_account_id: null
+    );
+
+    app(CreateVendorBillLineAction::class)->execute($vendorBill, $lineDto);
+    // --- END OF FIX ---
 
     $vendorBillService = app(VendorBillService::class);
 
-    // Act 1: Confirm the bill
-    $vendorBillService->confirm($vendorBill, $user);
+    // Act 1b: Confirm the bill to make it 'posted'.
+    $vendorBillService->confirm($vendorBill, $this->user);
     $vendorBill->refresh();
     $originalEntry = $vendorBill->journalEntry;
 
-    // Act 2: Cancel the posted bill with a specific reason
+    // Act 2: Cancel the posted bill with a specific reason.
     $cancellationReason = 'User requested cancellation due to incorrect PO.';
-    $vendorBillService->cancel($vendorBill, $user, $cancellationReason);
+    $vendorBillService->cancel($vendorBill, $this->user, $cancellationReason);
     $vendorBill->refresh();
     $originalEntry->refresh();
 
-    // Assert: Bill status and reversal entry are correct
+    // Assert: Bill status and reversal entry are correct.
     expect($vendorBill->status)->toBe(VendorBill::STATUS_CANCELED);
     expect($originalEntry->state)->toBe(JournalEntryState::Reversed);
     expect($originalEntry->reversed_entry_id)->not->toBeNull();
 
-    // --- NEW ASSERTION FOR AUDIT LOG ---
-    // Assert that a specific audit log entry was created for this cancellation.
+    // Assert: A specific audit log entry was created for this cancellation.
     $this->assertDatabaseHas('audit_logs', [
         'auditable_type' => VendorBill::class,
         'auditable_id' => $vendorBill->id,
-        'user_id' => $user->id,
+        'user_id' => $this->user->id,
         'event_type' => 'cancellation',
         'description' => 'Vendor Bill Cancelled: ' . $cancellationReason,
     ]);

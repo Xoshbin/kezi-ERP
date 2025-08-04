@@ -22,7 +22,7 @@ class AnalyticAccountFactory extends Factory
             'company_id' => Company::factory()->create()->id,
             'name' => $this->faker->company . ' ' . $this->faker->word,
             'reference' => $this->faker->optional()->bothify('AA-####'),
-            'currency_id' => Currency::firstOrCreate(['code' => 'IQD'])->id,
+            'currency_id' => Currency::factory()->create()->id,
             'is_active' => $this->faker->boolean(90),
         ];
     }

@@ -1,33 +1,32 @@
 <?php
 
-use App\Actions\Accounting\CreateJournalEntryForStatementLineAction;
-use App\DataTransferObjects\Accounting\CreateJournalEntryForStatementLineDTO;
-use App\Models\Account;
-use App\Models\BankStatement;
-use App\Models\BankStatementLine;
-use App\Models\Company;
-use App\Models\Currency;
-use App\Models\Journal;
-use App\Models\JournalEntry;
 use App\Models\User;
 use Brick\Money\Money;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use App\Models\Account;
+use App\Models\Company;
+use App\Models\Journal;
+use App\Models\Currency;
+use App\Models\JournalEntry;
+use App\Models\BankStatement;
+use App\Models\BankStatementLine;
 use Illuminate\Support\Facades\DB;
 use Tests\Traits\CreatesApplication;
+use Tests\Traits\WithConfiguredCompany;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use App\Actions\Accounting\CreateJournalEntryForStatementLineAction;
+use App\DataTransferObjects\Accounting\CreateJournalEntryForStatementLineDTO;
 
-uses(RefreshDatabase::class, CreatesApplication::class);
+uses(RefreshDatabase::class, WithConfiguredCompany::class);
 
 it('correctly creates a journal entry and links it to the statement line via a polymorphic relationship', function () {
     // Arrange
-    $company = Company::factory()->create();
-    $user = User::factory()->for($company)->create();
-    $line = BankStatementLine::factory()->for(BankStatement::factory()->for($company)->for(Journal::factory()->for($company)->create())->create())->create(['amount' => -100000]); // -100.000 IQD
-    $writeOffAccount = Account::factory()->for($company)->create();
+    $line = BankStatementLine::factory()->for(BankStatement::factory()->for($this->company)->for(Journal::factory()->for($this->company)->create())->create())->create(['amount' => -100000]); // -100.000 IQD
+    $writeOffAccount = Account::factory()->for($this->company)->create();
 
     $dto = new CreateJournalEntryForStatementLineDTO(
         bankStatementLine: $line,
         writeOffAccount: $writeOffAccount,
-        user: $user,
+        user: $this->user,
         description: 'Test Write Off'
     );
 
@@ -44,10 +43,10 @@ it('correctly creates a journal entry and links it to the statement line via a p
 
 it('updates the statement line status to reconciled within the same atomic transaction', function () {
     // Arrange
-    $company = Company::factory()->create();
-    $user = User::factory()->for($company)->create();
-    $line = BankStatementLine::factory()->for(BankStatement::factory()->for($company)->for(Journal::factory()->for($company)->create())->create())->create(['is_reconciled' => false]);
-    $writeOffAccount = Account::factory()->for($company)->create();
+    $this->company = Company::factory()->create();
+    $user = User::factory()->for($this->company)->create();
+    $line = BankStatementLine::factory()->for(BankStatement::factory()->for($this->company)->for(Journal::factory()->for($this->company)->create())->create())->create(['is_reconciled' => false]);
+    $writeOffAccount = Account::factory()->for($this->company)->create();
 
     $dto = new CreateJournalEntryForStatementLineDTO(
         bankStatementLine: $line,
@@ -71,10 +70,10 @@ it('updates the statement line status to reconciled within the same atomic trans
 
 it('rolls back the entire transaction if updating the statement line fails', function () {
     // Arrange
-    $company = Company::factory()->create();
-    $user = User::factory()->for($company)->create();
-    $line = BankStatementLine::factory()->for(BankStatement::factory()->for($company)->for(Journal::factory()->for($company)->create())->create())->create();
-    $writeOffAccount = Account::factory()->for($company)->create();
+    $this->company = Company::factory()->create();
+    $user = User::factory()->for($this->company)->create();
+    $line = BankStatementLine::factory()->for(BankStatement::factory()->for($this->company)->for(Journal::factory()->for($this->company)->create())->create())->create();
+    $writeOffAccount = Account::factory()->for($this->company)->create();
 
     $dto = new CreateJournalEntryForStatementLineDTO(
         bankStatementLine: $line,
@@ -105,16 +104,16 @@ it('rolls back the entire transaction if updating the statement line fails', fun
 
 it('handles multi-currency scenarios correctly', function (string $currencyCode, int $minorAmount, string $majorAmount) {
     // Arrange
-    $company = Company::factory()->create();
+    $this->company = Company::factory()->create();
     $currency = Currency::firstOrCreate(['code' => $currencyCode], ['name' => $currencyCode, 'symbol' => $currencyCode, 'exchange_rate' => 1, 'is_active' => true, 'decimal_places' => $currencyCode === 'IQD' ? 3 : 2]);
     $currency->update(['decimal_places' => $currencyCode === 'IQD' ? 3 : 2]);
-    $company->update(['currency_id' => $currency->id]);
+    $this->company->update(['currency_id' => $currency->id]);
 
-    $user = User::factory()->for($company)->create();
-    $journal = Journal::factory()->for($company)->create();
-    $bankStatement = BankStatement::factory()->for($company)->for($journal)->create(['currency_id' => $currency->id]);
+    $user = User::factory()->for($this->company)->create();
+    $journal = Journal::factory()->for($this->company)->create();
+    $bankStatement = BankStatement::factory()->for($this->company)->for($journal)->create(['currency_id' => $currency->id]);
     $line = BankStatementLine::factory()->for($bankStatement)->create(['amount' => Money::ofMinor($minorAmount, $currencyCode)]);
-    $writeOffAccount = Account::factory()->for($company)->create();
+    $writeOffAccount = Account::factory()->for($this->company)->create();
     $bankAccount = $journal->defaultDebitAccount;
 
     $dto = new CreateJournalEntryForStatementLineDTO(

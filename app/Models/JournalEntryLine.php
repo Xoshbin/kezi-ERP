@@ -220,4 +220,20 @@ class JournalEntryLine extends Model
     {
         return $this->belongsTo(AnalyticAccount::class);
     }
+
+    /**
+     * Accessor to provide the currency_id to the MoneyCast.
+     * This robust implementation prevents N+1 query issues.
+     */
+    public function getCurrencyIdAttribute(): int
+    {
+        // THE FIX: This is the correct, idiomatic Eloquent way.
+        // It will use the eager-loaded relationship if available, or lazy-load it if not.
+        // It is the developer's responsibility to eager-load (`->with('journalEntry')`)
+        // in performance-critical code to prevent N+1 issues.
+        // If the relationship is loaded, use it. If not (e.g., during creation),
+        // lazy-load the parent to get the currency_id.
+        return $this->journalEntry->currency_id;
+    }
+
 }

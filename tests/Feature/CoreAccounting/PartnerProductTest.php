@@ -1,22 +1,17 @@
 <?php
 
+use App\Models\Tax;
+use App\Models\User;
 use App\Models\Account;
 use App\Models\Company;
 use App\Models\Partner;
 use App\Models\Product;
-use App\Models\Tax;
-use App\Models\User;
+use Tests\Traits\CreatesApplication;
+use Tests\Traits\WithConfiguredCompany;
 use Brick\Money\Money; // Import the Money class
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Tests\Traits\CreatesApplication;
 
-uses(RefreshDatabase::class, CreatesApplication::class);
-
-beforeEach(function () {
-    $this->company = $this->createConfiguredCompany();
-    $this->user = User::factory()->for($this->company)->create();
-    $this->actingAs($this->user);
-});
+uses(RefreshDatabase::class, WithConfiguredCompany::class);
 
 test('a partner record is soft-deleted to preserve historical transaction context', function () {
     $partner = Partner::factory()->for($this->company)->create();

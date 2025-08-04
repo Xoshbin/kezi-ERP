@@ -1,35 +1,33 @@
 <?php
 
-use App\Actions\Accounting\UpdateJournalEntryAction;
-use App\DataTransferObjects\Accounting\UpdateJournalEntryDTO;
-use App\DataTransferObjects\Accounting\UpdateJournalEntryLineDTO;
+use Brick\Money\Money;
 use App\Models\Account;
 use App\Models\Company;
 use App\Models\Journal;
 use App\Models\JournalEntry;
-use Brick\Money\Money;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\Traits\CreatesApplication;
+use Tests\Traits\WithConfiguredCompany;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use App\Actions\Accounting\UpdateJournalEntryAction;
+use App\DataTransferObjects\Accounting\UpdateJournalEntryDTO;
+use App\DataTransferObjects\Accounting\UpdateJournalEntryLineDTO;
 
-uses(RefreshDatabase::class, CreatesApplication::class);
+uses(RefreshDatabase::class, WithConfiguredCompany::class);
 
 test('it updates a journal entry and syncs its lines from a DTO', function () {
-    // 1. Arrange: Create an initial journal entry
-    $company = $this->createConfiguredCompany();
-    $currencyCode = $company->currency->code;
-    $journalEntry = JournalEntry::factory()->for($company)->create([
+    $journalEntry = JournalEntry::factory()->for($this->company)->create([
         'reference' => 'Original Reference',
         'is_posted' => false,
     ]);
-    $accountA = Account::factory()->for($company)->create();
-    $accountB = Account::factory()->for($company)->create();
+    $accountA = Account::factory()->for($this->company)->create();
+    $accountB = Account::factory()->for($this->company)->create();
 
     // Add an initial line that we expect to be removed
     $journalEntry->lines()->create([
         'account_id' => $accountA->id,
-        'debit' => Money::of(100, $currencyCode),
-        'credit' => Money::of(0, $currencyCode),
-        'currency_id' => $company->currency_id,
+        'debit' => Money::of(100, $$this->company->currencyCode),
+        'credit' => Money::of(0, $$this->company->currencyCode),
+        'currency_id' => $this->company->currency_id,
     ]);
 
     // 2. Prepare the DTO with the updated data
@@ -80,6 +78,6 @@ test('it updates a journal entry and syncs its lines from a DTO', function () {
         'debit' => 250000,
     ]);
 
-    $expectedTotal = Money::of('250.00', $currencyCode);
+    $expectedTotal = Money::of('250.00', $$this->company->currencyCode);
     expect($updatedJournalEntry->total_debit->isEqualTo($expectedTotal))->toBeTrue();
 });

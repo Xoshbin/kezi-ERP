@@ -26,8 +26,7 @@ class AdjustmentDocumentLine extends Model
         'tax_id',
         'subtotal',
         'total_line_tax',
-        'account_id',
-        'currency_id',
+        'account_id'
     ];
 
     protected $casts = [
@@ -66,5 +65,16 @@ class AdjustmentDocumentLine extends Model
     public function lines(): HasMany
     {
         return $this->hasMany(AdjustmentDocumentLine::class);
+    }
+
+    /**
+     * Accessor to provide the currency_id to the MoneyCast.
+     * This makes the model responsible for knowing its own currency context.
+     */
+    public function getCurrencyIdAttribute(): int
+    {
+        // This assumes the 'adjustmentDocument' relationship is always loaded when needed.
+        // You can add loadMissing('adjustmentDocument') for robustness if necessary.
+        return $this->adjustmentDocument->currency_id;
     }
 }

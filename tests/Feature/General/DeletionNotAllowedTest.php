@@ -2,34 +2,25 @@
 
 namespace Tests\Feature;
 
-use App\Exceptions\DeletionNotAllowedException;
-use App\Models\Account;
-use App\Models\Company;
-use App\Models\Currency;
-use App\Models\Invoice;
-use App\Models\InvoiceLine;
-use App\Models\Journal;
-use App\Models\JournalEntry;
-use App\Models\Partner;
 use App\Models\Tax;
 use App\Models\User;
-use App\Models\VendorBill;
 use Brick\Money\Money;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use App\Models\Account;
+use App\Models\Company;
+use App\Models\Invoice;
+use App\Models\Journal;
+use App\Models\Partner;
+use App\Models\Currency;
+use App\Models\VendorBill;
+use App\Models\InvoiceLine;
+use App\Models\JournalEntry;
 use Tests\Traits\CreatesApplication;
+use Illuminate\Database\Eloquent\Model;
+use Tests\Traits\WithConfiguredCompany;
+use App\Exceptions\DeletionNotAllowedException;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 
-uses(RefreshDatabase::class, CreatesApplication::class);
-
-/**
- * This test suite is dedicated to ensuring the application upholds core accounting principles
- * by preventing the deletion of records that would compromise data integrity and the audit trail.
- */
-beforeEach(function () {
-    // Set up a fully configured company and authenticated user for each test.
-    $this->company = $this->createConfiguredCompany();
-    $this->user = User::factory()->for($this->company)->create();
-    $this->actingAs($this->user);
-});
+uses(RefreshDatabase::class, WithConfiguredCompany::class);
 
 //======================================================================
 // Test Case 1: Comprehensive Company Deletion Prevention

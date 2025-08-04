@@ -2,11 +2,12 @@
 
 namespace Database\Factories;
 
-use App\Models\Account;
-use App\Models\AnalyticAccount;
-use App\Models\Product;
 use App\Models\Tax;
+use Brick\Money\Money;
+use App\Models\Account;
+use App\Models\Product;
 use App\Models\VendorBill;
+use App\Models\AnalyticAccount;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -24,14 +25,12 @@ class VendorBillLineFactory extends Factory
         return [
             'vendor_bill_id' => VendorBill::factory()->create()->id,
             'product_id' => Product::factory()->create()->id,
-            'description' => $this->faker->sentence(),
+            'description' => $this->faker->sentence(4),
             'quantity' => $this->faker->randomFloat(2, 1, 100),
-            'unit_price' => $this->faker->randomFloat(2, 10, 1000),
+            'unit_price' => Money::of($this->faker->randomFloat(2, 10, 1000), 'USD'),
             'tax_id' => Tax::factory()->create()->id,
-            'subtotal' => function (array $attributes) {
-                return round(($attributes['quantity'] ?? 1) * ($attributes['unit_price'] ?? 0), 2);
-            },
-            'total_line_tax' => $this->faker->randomFloat(2, 0, 200),
+            'subtotal' => Money::of($this->faker->randomFloat(2, 100, 10000), 'USD'),
+            'total_line_tax' => Money::of($this->faker->randomFloat(2, 0, 200), 'USD'),
             'expense_account_id' => Account::factory()->create()->id,
             'analytic_account_id' => AnalyticAccount::factory()->create()->id, // Nullable, can be used for detailed tracking
         ];

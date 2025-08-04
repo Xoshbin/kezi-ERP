@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Casts\MoneyCast;
+use App\Enums\Assets\DepreciationEntryStatus;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -63,8 +64,7 @@ class DepreciationEntry extends Model
         'depreciation_date',
         'amount',
         'journal_entry_id',
-        'status',
-        'currency_id'
+        'status'
     ];
 
     /**
@@ -78,21 +78,10 @@ class DepreciationEntry extends Model
         'depreciation_date' => 'date', // Casts to Carbon instance, focusing on date part
         'amount' => MoneyCast::class, // Ensures precision for currency amounts
         'journal_entry_id' => 'integer',
+        'status' => DepreciationEntryStatus::class,
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
     ];
-
-    public const STATUS_DRAFT = 'draft';
-    public const STATUS_POSTED = 'posted';
-
-    // use it in Filament select options columns
-    public static function getstatuses(): array
-    {
-        return [
-            self::STATUS_DRAFT => 'Draft',
-            self::STATUS_POSTED => 'Posted',
-        ];
-    }
 
     /*
     |--------------------------------------------------------------------------
@@ -101,6 +90,14 @@ class DepreciationEntry extends Model
     | Depreciation entries are tightly linked to the assets they depreciate and the
     | journal entries that record the financial impact.
     */
+
+    /**
+     * Get the company that this depreciation entry belongs to.
+     */
+    public function company(): BelongsTo
+    {
+        return $this->belongsTo(Company::class);
+    }
 
     /**
      * Get the asset that this depreciation entry belongs to.
@@ -127,13 +124,13 @@ class DepreciationEntry extends Model
     }
 
     /**
-     * Get the currency of this invoice.
-     * Every invoice operates in a specific currency.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * Accessor to provide the currency_id to the MoneyCast.
+     * FIX: Correctly references the parent 'asset' model, not 'invoice'.
+     * This robust implementation prevents N+1 query issues.
      */
-    public function currency(): BelongsTo
+    public function getCurrencyIdAttribute(): int
     {
-        return $this->belongsTo(Currency::class);
+        // If the relationship is already loaded, use it. Otherwise, use the foreign key.
+        return $this->asset->currency_id ?? $this->asset()->getForeignKeyResults()->first()->currency_id;
     }
 }

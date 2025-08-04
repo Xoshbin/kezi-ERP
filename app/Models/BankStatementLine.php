@@ -52,7 +52,7 @@ class BankStatementLine extends Model
         'partner_id',
         'amount',
         'is_reconciled',
-        'payment_id',
+        'payment_id'
     ];
 
     protected $casts = [
@@ -90,5 +90,16 @@ class BankStatementLine extends Model
     {
         return $this->hasOne(JournalEntry::class, 'source_id')
             ->where('source_type', self::class);
+    }
+
+    /**
+     * Accessor to provide the currency_id to the MoneyCast.
+     * This makes the model responsible for knowing its own currency context.
+     */
+    public function getCurrencyIdAttribute(): int
+    {
+        // This assumes the 'bankStatement' relationship is always loaded when needed.
+        // You can add loadMissing('bankStatement') for robustness if necessary.
+        return $this->bankStatement->currency_id;
     }
 }

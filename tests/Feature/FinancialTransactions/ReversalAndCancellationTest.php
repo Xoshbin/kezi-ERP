@@ -7,22 +7,20 @@ use Brick\Money\Money;
 use App\Models\Account;
 use App\Models\Invoice;
 use App\Models\Payment;
+use Tests\Traits\MocksTime;
 use App\Models\JournalEntry;
 use App\Services\PaymentService;
 use Tests\Traits\CreatesApplication;
+use Tests\Traits\WithUnlockedPeriod;
 use App\Services\JournalEntryService;
+use Tests\Traits\WithConfiguredCompany;
 use App\Enums\Accounting\JournalEntryState;
 use App\Exceptions\DeletionNotAllowedException;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Tests\Traits\WithUnlockedPeriod;
 
-uses(RefreshDatabase::class, CreatesApplication::class, WithUnlockedPeriod::class);
+uses(RefreshDatabase::class, WithConfiguredCompany::class, MocksTime::class);
 
 beforeEach(function () {
-    // Set up a fully configured company and an authenticated user for each test.
-    $this->company = $this->createConfiguredCompany();
-    $this->user = User::factory()->for($this->company)->create();
-    $this->actingAs($this->user);
     $this->journalEntryService = app(JournalEntryService::class);
     $this->paymentService = app(PaymentService::class);
 });

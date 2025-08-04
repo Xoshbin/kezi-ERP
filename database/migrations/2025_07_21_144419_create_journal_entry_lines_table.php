@@ -16,7 +16,6 @@ return new class extends Migration
             $table->foreignId('journal_entry_id')->constrained('journal_entries')->onDelete('cascade');
             $table->foreignId('account_id')->constrained('accounts');
             $table->foreignId('partner_id')->nullable()->constrained('partners');
-            $table->foreignId('currency_id')->nullable()->constrained('currencies');
             $table->foreignId('analytic_account_id')->nullable()->constrained('analytic_accounts');
             $table->unsignedBigInteger('debit')->default(0);
             $table->unsignedBigInteger('credit')->default(0);

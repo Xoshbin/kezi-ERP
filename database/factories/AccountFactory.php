@@ -2,143 +2,125 @@
 
 namespace Database\Factories;
 
+use App\Models\Account;
 use App\Models\Company;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
-/**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Account>
- */
 class AccountFactory extends Factory
 {
+    /**
+     * The name of the factory's corresponding model.
+     *
+     * @var string
+     */
+    protected $model = Account::class;
+
+    /**
+     * Configure the model factory.
+     *
+     * This is the ideal place to handle logic that should run after
+     * the definition() and any state() methods have been applied.
+     * Here, we centralize the code generation logic.
+     *
+     * @return $this
+     */
+    public function configure(): static
+    {
+        return $this->afterMaking(function (Account $account) {
+            // If a code hasn't been explicitly set by a state, generate it
+            // based on the account's final type. This is our single source of truth.
+            if (empty($account->code)) {
+                $account->code = $this->generateCodeForType($account->type);
+            }
+        });
+    }
+
     /**
      * Define the model's default state.
      *
      * @return array<string, mixed>
      */
-    public function definition()
+    public function definition(): array
     {
-        // Define common account types as per accounting principles
-        $accountTypes = [
-            'Asset', 'Liability', 'Equity', 'Income', 'Expense',
-            'Bank and Cash', 'Receivable', 'Payable', 'Current Assets',
-            'Non-current Assets', 'Prepayments', 'Fixed Assets', 'Credit Card',
-            'Current Liabilities', 'Non-current Liabilities', 'Other Income',
-            'Depreciation', 'Cost of Revenue', 'Other', 'Off-Balance Sheet'
-        ];
-
-        // Randomly pick an account type
-        $type = $this->faker->randomElement($accountTypes);
-
-        // Generate a plausible account code based on type for better realism
-        // This simulates common accounting practices where codes follow patterns [9, 10]
-        $codePrefix = '';
-        switch ($type) {
-            case 'Asset':
-            case 'Cash':
-            case 'Bank and Cash':
-            case 'Receivable':
-            case 'Current Assets':
-            case 'Non-current Assets':
-            case 'Prepayments':
-            case 'Fixed Assets':
-                $codePrefix = $this->faker->numberBetween(100, 199); // Assets usually start with 1xx [10, 11]
-                break;
-            case 'Liability':
-            case 'Payable':
-            case 'Credit Card':
-            case 'Current Liabilities':
-            case 'Non-current Liabilities':
-                $codePrefix = $this->faker->numberBetween(200, 299); // Liabilities usually start with 2xx [10, 11]
-                break;
-            case 'Equity':
-                $codePrefix = $this->faker->numberBetween(300, 399); // Equity usually starts with 3xx [10, 11]
-                break;
-            case 'Income':
-            case 'Other Income':
-                $codePrefix = $this->faker->numberBetween(400, 499); // Revenues/Income usually start with 4xx [10, 11]
-                break;
-            case 'Expense':
-            case 'Depreciation':
-            case 'Cost of Revenue':
-                $codePrefix = $this->faker->numberBetween(500, 599); // Expenses usually start with 5xx [10, 11]
-                break;
-            default:
-                $codePrefix = $this->faker->numberBetween(600, 999); // Other/Misc [5]
-                break;
-        }
+        // Default to the five primary account types. Specific types are handled by states.
+        $type = $this->faker->randomElement(['Asset', 'Liability', 'Equity', 'Income', 'Expense']);
 
         return [
-            // Ensure a company_id is always present. Use an existing company or create one.
-            'company_id' => Company::factory(), // Automatically creates a Company if none is provided [12, 13]
-            'name' => $this->faker->words(2, true) . ' Account', // e.g., "Sales Revenue Account"
-            'code' => $codePrefix . $this->faker->unique()->randomNumber(4, true), // Ensures unique code [7]
+            'company_id' => Company::factory(),
+            'name' => $this->faker->words(2, true) . ' Account',
             'type' => $type,
-            'is_deprecated' => false, // Default to not deprecated
+            'is_deprecated' => false,
+            // The 'code' will be generated in the configure() method.
         ];
     }
 
     /**
-     * Indicate that the account is deprecated.
-     *
-     * @return \Illuminate\Database\Eloquent\Factories\Factory
+     * A single, private helper to generate account codes. No more duplication.
      */
-    public function deprecated()
+    private function generateCodeForType(string $type): string
     {
-        return $this->state(function (array $attributes) {
-            return [
-                'is_deprecated' => true,
-            ];
-        });
+        $prefix = match ($type) {
+            'Asset', 'Bank and Cash', 'Receivable', 'Current Assets', 'Non-current Assets', 'Prepayments', 'Fixed Assets' => $this->faker->numberBetween(1000, 1999),
+            'Liability', 'Payable', 'Credit Card', 'Current Liabilities', 'Non-current Liabilities' => $this->faker->numberBetween(2000, 2999),
+            'Equity' => $this->faker->numberBetween(3000, 3999),
+            'Income', 'Other Income' => $this->faker->numberBetween(4000, 4999),
+            'Expense', 'Depreciation', 'Cost of Revenue' => $this->faker->numberBetween(5000, 5999),
+            default => $this->faker->numberBetween(6000, 9999),
+        };
+
+        return $prefix . $this->faker->unique()->randomNumber(3, true);
     }
 
-    /**
-     * Define specific account types states.
-     * This provides convenience for creating common accounting accounts directly.
-     *
-     * @return \Illuminate\Database\Eloquent\Factories\Factory
-     */
-    public function asset()
+    // --- STATE METHODS ---
+    // These are now much simpler. They only set the type and name.
+
+    public function deprecated(): Factory
     {
-        return $this->state(fn (array $attributes) => ['type' => 'Asset', 'code' => $this->faker->numberBetween(100, 199) . $this->faker->unique()->randomNumber(4, true)]);
+        return $this->state(fn (array $attributes) => ['is_deprecated' => true]);
     }
 
-    public function liability()
+    public function asset(): Factory
     {
-        return $this->state(fn (array $attributes) => ['type' => 'Liability', 'code' => $this->faker->numberBetween(200, 299) . $this->faker->unique()->randomNumber(4, true)]);
+        return $this->state(fn (array $attributes) => ['type' => 'Asset']);
     }
 
-    public function equity()
+    public function liability(): Factory
     {
-        return $this->state(fn (array $attributes) => ['type' => 'Equity', 'code' => $this->faker->numberBetween(300, 399) . $this->faker->unique()->randomNumber(4, true)]);
+        return $this->state(fn (array $attributes) => ['type' => 'Liability']);
     }
 
-    public function income()
+    public function equity(): Factory
     {
-        return $this->state(fn (array $attributes) => ['type' => 'Income', 'code' => $this->faker->numberBetween(400, 499) . $this->faker->unique()->randomNumber(4, true)]);
+        return $this->state(fn (array $attributes) => ['type' => 'Equity']);
     }
 
-    public function expense()
+    public function income(): Factory
     {
-        return $this->state(fn (array $attributes) => ['type' => 'Expense', 'code' => $this->faker->numberBetween(500, 599) . $this->faker->unique()->randomNumber(4, true)]);
+        return $this->state(fn (array $attributes) => ['type' => 'Income']);
     }
 
-    public function cash()
+    public function expense(): Factory
     {
-        return $this->state(fn (array $attributes) => ['type' => 'Bank and Cash', 'name' => 'Cash Account', 'code' => '100' . $this->faker->unique()->randomNumber(4, true)]);
+        return $this->state(fn (array $attributes) => ['type' => 'Expense']);
     }
 
-    public function bank()
+    public function cash(): Factory
     {
-        return $this->state(fn (array $attributes) => ['type' => 'Bank and Cash', 'name' => 'Bank Account', 'code' => '101' . $this->faker->unique()->randomNumber(4, true)]);
+        return $this->state(fn (array $attributes) => ['type' => 'Bank and Cash', 'name' => 'Cash Account']);
     }
 
-    public function accountsReceivable()
+    public function bank(): Factory
     {
-        return $this->state(fn (array $attributes) => ['type' => 'Receivable', 'name' => 'Accounts Receivable', 'code' => '113' . $this->faker->unique()->randomNumber(4, true)]);
+        return $this->state(fn (array $attributes) => ['type' => 'Bank and Cash', 'name' => 'Bank Account']);
     }
 
-    public function accountsPayable()
+    public function accountsReceivable(): Factory
     {
-        return $this->state(fn (array $attributes) => ['type' => 'Payable', 'name' => 'Accounts Payable', 'code' => '212' . $this->faker->unique()->randomNumber(4, true)]);
+        return $this->state(fn (array $attributes) => ['type' => 'Receivable', 'name' => 'Accounts Receivable']);
+    }
+
+    public function accountsPayable(): Factory
+    {
+        return $this->state(fn (array $attributes) => ['type' => 'Payable', 'name' => 'Accounts Payable']);
     }
 }

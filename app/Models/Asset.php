@@ -3,10 +3,16 @@
 namespace App\Models;
 
 use App\Casts\MoneyCast;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Observers\AssetObserver;
+use App\Enums\Assets\AssetStatus;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use App\Enums\Assets\DepreciationMethod;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\MorphTo;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 
 /**
  * Class Asset
@@ -23,8 +29,8 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property int $accumulated_depreciation_account_id
  * @property string $name
  * @property \Illuminate\Support\Carbon $purchase_date
- * @property float $purchase_value
- * @property float $salvage_value
+ * @property \Brick\Money\Money $purchase_value
+ * @property \Brick\Money\Money $salvage_value
  * @property int $useful_life_years
  * @property string $depreciation_method
  * @property string $status
@@ -56,6 +62,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Asset whereUsefulLifeYears($value)
  * @mixin \Eloquent
  */
+#[ObservedBy([AssetObserver::class])]
 class Asset extends Model
 {
     use HasFactory;
@@ -100,6 +107,8 @@ class Asset extends Model
         'purchase_value' => MoneyCast::class,
         'salvage_value' => MoneyCast::class,
         'useful_life_years' => 'integer',
+        'status' => AssetStatus::class,
+        'depreciation_method' => DepreciationMethod::class,
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
     ];
@@ -171,5 +180,24 @@ class Asset extends Model
     public function currency(): BelongsTo
     {
         return $this->belongsTo(Currency::class);
+    }
+    /**
+     * Get the parent source model (e.g., VendorBill).
+     * This relationship links the asset to its acquisition document.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\MorphTo
+     */
+    public function source(): MorphTo
+    {
+        return $this->morphTo();
+    }
+
+    /**
+     * Get all of the asset's journal entries.
+     * An asset can have multiple journal entries (e.g., for acquisition, disposal).
+     */
+    public function journalEntries(): MorphMany
+    {
+        return $this->morphMany(JournalEntry::class, 'source');
     }
 }
