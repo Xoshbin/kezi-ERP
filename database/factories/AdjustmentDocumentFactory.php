@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use Brick\Money\Money;
 use App\Models\Company;
 use App\Models\Currency;
 use Illuminate\Database\Eloquent\Factories\Factory;
@@ -20,17 +21,14 @@ class AdjustmentDocumentFactory extends Factory
     {
         return [
             'company_id' => Company::factory()->create()->id,
-            'currency_id' => Currency::firstOrCreate(
-                ['code' => 'IQD'],
-                ['name' => 'Iraqi Dinar', 'symbol' => 'د.ع']
-            )->id,
+            'currency_id' => Currency::factory()->create()->id,
             'original_invoice_id' => null,
             'original_vendor_bill_id' => null,
             'type' => $this->faker->randomElement(['Credit Note', 'Debit Note', 'Miscellaneous Adjustment']),
             'date' => $this->faker->date(),
             'reference_number' => $this->faker->unique()->bothify('ADJ-#####'),
-            'total_amount' => $this->faker->randomFloat(2, 100, 10000),
-            'total_tax' => $this->faker->randomFloat(2, 0, 2000),
+            'total_amount' => Money::of($this->faker->randomFloat(2, 100, 10000), 'USD'),
+            'total_tax' => Money::of($this->faker->randomFloat(2, 0, 2000), 'USD'),
             'reason' => $this->faker->sentence(),
             'status' => $this->faker->randomElement(['Draft', 'Posted']),
             'journal_entry_id' => null,

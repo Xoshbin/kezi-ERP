@@ -183,3 +183,5 @@ This file tracks the project's current status, including recent changes, current
 - The `configure` method was removed from the factory, resolving the test failures.
 - All 9 tests in the `money-cast` group now pass, confirming the `MoneyCast` functionality is correct across all relevant models.
 **Next Steps:** The system is ready for the next development task.
+
+[2025-08-03 19:22:37] - **Recent Change:** Established the "Definitive Solution Pattern" for handling pre-save calculations in models. This formalizes the use of Actions and DTOs for business logic, reserving Observers for side effects.

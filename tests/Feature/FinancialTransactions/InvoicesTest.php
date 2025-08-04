@@ -12,8 +12,11 @@ use App\Models\LockDate;
 use App\Models\JournalEntry;
 use App\Events\InvoiceConfirmed;
 use App\Services\InvoiceService;
+use Illuminate\Support\Facades\DB;
 use Tests\Traits\CreatesApplication;
 use Illuminate\Support\Facades\Event;
+use App\Enums\Accounting\LockDateType;
+use Tests\Traits\WithConfiguredCompany;
 use App\Actions\Sales\CreateInvoiceAction;
 use App\Actions\Sales\UpdateInvoiceAction;
 use App\Exceptions\PeriodIsLockedException;
@@ -24,13 +27,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use App\DataTransferObjects\Sales\CreateInvoiceDTO;
 use App\DataTransferObjects\Sales\UpdateInvoiceDTO;
 
-uses(RefreshDatabase::class, CreatesApplication::class);
-
-beforeEach(function () {
-    $this->company = $this->createConfiguredCompany();
-    $this->user = User::factory()->for($this->company)->create();
-    $this->actingAs($this->user);
-});
+uses(RefreshDatabase::class, WithConfiguredCompany::class);
 
 test('a draft invoice can be confirmed, which posts it and dispatches an event', function () {
     // Arrange: Ensure events are being listened for.

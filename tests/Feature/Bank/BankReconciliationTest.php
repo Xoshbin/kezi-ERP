@@ -1,24 +1,19 @@
 <?php
 
+use App\Models\User;
+use Brick\Money\Money;
 use App\Models\Account;
-use App\Models\BankStatementLine;
 use App\Models\Company;
 use App\Models\Journal;
-use App\Models\JournalEntry;
 use App\Models\Payment;
-use App\Models\User;
-use App\Services\BankReconciliationService;
-use Brick\Money\Money;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use App\Models\JournalEntry;
+use App\Models\BankStatementLine;
 use Tests\Traits\CreatesApplication;
+use Tests\Traits\WithConfiguredCompany;
+use App\Services\BankReconciliationService;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 
-uses(RefreshDatabase::class, CreatesApplication::class);
-
-beforeEach(function () {
-    $this->company = $this->createConfiguredCompany();
-    $this->user = User::factory()->for($this->company)->create();
-    $this->actingAs($this->user);
-});
+uses(RefreshDatabase::class, WithConfiguredCompany::class);
 
 test('a bank statement line can be reconciled with a payment', function () {
     // Arrange: Set up the necessary accounts and a payment.

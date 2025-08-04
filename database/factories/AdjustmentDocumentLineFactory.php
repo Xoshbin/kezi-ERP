@@ -2,12 +2,13 @@
 
 namespace Database\Factories;
 
+use App\Models\Tax;
+use Brick\Money\Money;
 use App\Models\Account;
+use App\Models\Product;
+use App\Models\Currency;
 use App\Models\AdjustmentDocument;
 use App\Models\AdjustmentDocumentLine;
-use App\Models\Currency;
-use App\Models\Product;
-use App\Models\Tax;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class AdjustmentDocumentLineFactory extends Factory
@@ -21,10 +22,10 @@ class AdjustmentDocumentLineFactory extends Factory
             'product_id' => Product::factory(),
             'description' => $this->faker->sentence,
             'quantity' => $this->faker->numberBetween(1, 10),
-            'unit_price' => $this->faker->randomFloat(2, 10, 100),
+            'unit_price' => Money::of($this->faker->randomFloat(2, 10, 100), 'USD'),
             'tax_id' => Tax::factory(),
-            'subtotal' => $this->faker->randomFloat(2, 10, 1000),
-            'total_line_tax' => $this->faker->randomFloat(2, 0, 100),
+            'subtotal' => Money::of($this->faker->randomFloat(2, 100, 10000), 'USD'),
+            'total_line_tax' => Money::of($this->faker->randomFloat(2, 0, 100), 'USD'),
             'account_id' => Account::factory(),
         ];
     }

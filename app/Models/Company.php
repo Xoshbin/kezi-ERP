@@ -13,7 +13,7 @@ use Illuminate\Database\Eloquent\Attributes\ObservedBy;
  * Class Company
  *
  * @package App\Models
- * 
+ *
  * This Eloquent model represents a distinct legal entity or branch within the
  * multi-company accounting system. It serves as the root for all financial
  * data and configurations, ensuring proper segregation and adherence to
@@ -114,6 +114,7 @@ class Company extends Model
         'default_bank_account_id',
         'default_outstanding_receipts_account_id',
         'default_bank_journal_id',
+        'default_gain_loss_account_id',
     ];
 
     /**
@@ -415,6 +416,14 @@ class Company extends Model
     public function defaultOutstandingReceiptsAccount(): BelongsTo
     {
         return $this->belongsTo(Account::class, 'default_outstanding_receipts_account_id');
+    }
+
+    /**
+     * Get the default account for recording gains or losses on asset disposal.
+     */
+    public function defaultGainLossAccount(): BelongsTo
+    {
+        return $this->belongsTo(Account::class, 'default_gain_loss_account_id');
     }
 
     /**

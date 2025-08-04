@@ -44,7 +44,7 @@ class CreateJournalEntryAction
         }
 
         // --- FIX IS HERE: Add $totalDebit and $totalCredit to the 'use' statement ---
-        return DB::transaction(function () use ($dto, $totalDebit, $totalCredit, $currencyCode) {
+        return DB::transaction(function () use ($dto, $totalDebit, $totalCredit, $currencyCode, $currency) {
             $journalEntry = JournalEntry::create([
                 'company_id' => $dto->company_id,
                 'journal_id' => $dto->journal_id,
@@ -60,10 +60,11 @@ class CreateJournalEntryAction
                 'source_id' => $dto->source_id,
             ]);
 
-            // ... (rest of the code is correct) ...
+            // This ensures the $journalEntry object is fully hydrated before we use it.
+            $journalEntry = $journalEntry->fresh()->load('currency');
 
             foreach ($dto->lines as $lineDto) {
-                $journalEntry->lines()->create([
+                $line = $journalEntry->lines()->make([
                     'account_id' => $lineDto->account_id,
                     'partner_id' => $lineDto->partner_id,
                     'analytic_account_id' => $lineDto->analytic_account_id,
@@ -71,6 +72,8 @@ class CreateJournalEntryAction
                     'debit' => $lineDto->debit,
                     'credit' => $lineDto->credit,
                 ]);
+                $line->setRelation('journalEntry', $journalEntry);
+                $line->save();
             }
 
             return $journalEntry;

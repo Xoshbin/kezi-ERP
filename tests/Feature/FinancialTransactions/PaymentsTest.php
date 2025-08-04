@@ -9,26 +9,17 @@ use App\Models\Journal;
 use App\Models\Partner;
 use App\Models\Payment;
 use App\Models\VendorBill;
+use Tests\Traits\MocksTime;
 use App\Services\PaymentService;
 use Tests\Traits\CreatesApplication;
+use Tests\Traits\WithUnlockedPeriod;
+use Tests\Traits\WithConfiguredCompany;
 use App\Actions\Payments\CreatePaymentAction;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use App\DataTransferObjects\Payments\CreatePaymentDTO;
-use Tests\Traits\WithUnlockedPeriod;
 use App\DataTransferObjects\Payments\CreatePaymentDocumentLinkDTO;
 
-uses(RefreshDatabase::class, CreatesApplication::class, WithUnlockedPeriod::class);
-
-beforeEach(function () {
-    $this->setupWithUnlockedPeriod();
-    $this->company = $this->createConfiguredCompany();
-    $this->user = User::factory()->for($this->company)->create();
-    $this->actingAs($this->user);
-});
-
-afterEach(function () {
-    $this->tearDownWithUnlockedPeriod();
-});
+uses(RefreshDatabase::class, WithConfiguredCompany::class, MocksTime::class);
 
 test('an inbound payment can be created and linked to an invoice', function () {
     // Arrange: Create an invoice to be paid.

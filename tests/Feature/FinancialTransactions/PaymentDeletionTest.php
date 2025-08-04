@@ -2,19 +2,17 @@
 
 namespace Tests\Feature\FinancialTransactions;
 
-use App\Exceptions\DeletionNotAllowedException;
-use App\Models\Payment;
 use App\Models\User;
+use App\Models\Payment;
 use App\Services\PaymentService;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\Traits\CreatesApplication;
+use Tests\Traits\WithConfiguredCompany;
+use App\Exceptions\DeletionNotAllowedException;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 
-uses(RefreshDatabase::class, CreatesApplication::class);
+uses(RefreshDatabase::class, WithConfiguredCompany::class);
 
 beforeEach(function () {
-    $this->company = $this->createConfiguredCompany();
-    $this->user = User::factory()->for($this->company)->create();
-    $this->actingAs($this->user);
     $this->paymentService = app(PaymentService::class);
 });
 

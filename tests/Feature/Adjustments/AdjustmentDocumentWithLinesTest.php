@@ -2,27 +2,23 @@
 
 namespace Tests\Feature\Adjustments;
 
+use App\Models\Tax;
+use Tests\TestCase;
+use App\Models\User;
+use Brick\Money\Money;
+use App\Models\Account;
+use App\Models\Product;
+use Tests\Traits\MocksTime;
+use App\Models\AdjustmentDocument;
+use Tests\Traits\CreatesApplication;
+use Tests\Traits\WithUnlockedPeriod;
+use Tests\Traits\WithConfiguredCompany;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use App\Actions\Adjustments\CreateAdjustmentDocumentAction;
 use App\DataTransferObjects\Adjustments\CreateAdjustmentDocumentDTO;
 use App\DataTransferObjects\Adjustments\CreateAdjustmentDocumentLineDTO;
-use App\Models\Account;
-use App\Models\AdjustmentDocument;
-use App\Models\Product;
-use App\Models\Tax;
-use App\Models\User;
-use Brick\Money\Money;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Tests\TestCase;
-use Tests\Traits\CreatesApplication;
-use Tests\Traits\WithUnlockedPeriod;
 
-uses(RefreshDatabase::class, CreatesApplication::class, WithUnlockedPeriod::class);
-
-beforeEach(function () {
-    $this->company = $this->createConfiguredCompany();
-    $this->user = User::factory()->for($this->company)->create();
-    $this->actingAs($this->user);
-});
+uses(RefreshDatabase::class, WithConfiguredCompany::class, MocksTime::class);
 
 test('adjustment document totals are calculated correctly from lines', function () {
     // Arrange

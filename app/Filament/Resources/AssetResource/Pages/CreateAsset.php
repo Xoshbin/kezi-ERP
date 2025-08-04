@@ -2,16 +2,20 @@
 
 namespace App\Filament\Resources\AssetResource\Pages;
 
+use App\DataTransferObjects\Assets\CreateAssetDTO;
 use App\Filament\Resources\AssetResource;
-use Filament\Actions;
+use App\Services\AssetService;
 use Filament\Resources\Pages\CreateRecord;
+use Illuminate\Support\Facades\DB;
 
 class CreateAsset extends CreateRecord
 {
     protected static string $resource = AssetResource::class;
 
-    public static function getTranslatedTitle(): string
+    protected function handleRecordCreation(array $data): \Illuminate\Database\Eloquent\Model
     {
-        return __('asset.plural_label');
+        $dto = new CreateAssetDTO(...$data);
+
+        return DB::transaction(fn () => app(AssetService::class)->createAsset($dto));
     }
 }
