@@ -23,7 +23,6 @@ class DepreciationEntryFactory extends Factory
     {
         return [
             'asset_id' => Asset::factory(), // Better default than a random number
-            'currency_id' => Currency::factory()->create()->id,
             'depreciation_date' => $this->faker->date(),
             'amount' => Money::of($this->faker->randomFloat(2, 100, 10000), 'USD'),
             'journal_entry_id' => null, // FIX: Default to null, as it's created later.

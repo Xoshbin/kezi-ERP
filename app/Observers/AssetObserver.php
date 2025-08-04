@@ -20,7 +20,7 @@ class AssetObserver
             if ($asset->journalEntries()->where('source_type', 'asset')->doesntExist()) {
                 $user = Auth::user(); // Observers don't have direct access to the acting user, so we use the authenticated user.
                 if ($user) {
-                    (new CreateJournalEntryForAssetAcquisitionAction())->execute($asset, $user);
+                    app(CreateJournalEntryForAssetAcquisitionAction::class)->execute($asset, $user);
                 }
             }
         }

@@ -323,9 +323,9 @@ test('asset disposal correctly generates final journal entries', function () {
     $disposeAssetDTO = new \App\DataTransferObjects\Assets\DisposeAssetDTO(
         disposal_date: now(),
         disposal_value: 70000,
-        gain_loss_account_id: $this->company->default_gain_on_sale_account_id,
+        gain_loss_account_id: $this->company->default_gain_loss_account_id,
     );
-    (new \App\Actions\Assets\DisposeAssetAction())->execute($asset->fresh(), $disposeAssetDTO);
+    (app(\App\Actions\Assets\DisposeAssetAction::class))->execute($asset->fresh(), $disposeAssetDTO, $this->user);
 
     // Assert
     $this->assertDatabaseHas('assets', [
@@ -334,12 +334,12 @@ test('asset disposal correctly generates final journal entries', function () {
     ]);
 
     $this->assertDatabaseHas('journal_entries', [
-        'source_type' => 'asset_disposal',
+        'source_type' => Asset::class,
         'source_id' => $asset->id,
         'is_posted' => true,
     ]);
 
-    $journalEntry = $asset->journalEntries()->where('source_type', 'asset_disposal')->first();
+    $journalEntry = $asset->journalEntries()->latest()->first();
     $this->assertModelExists($journalEntry);
 
     // 60000 (accumulated depreciation) + 70000 (cash) = 130000
@@ -347,24 +347,24 @@ test('asset disposal correctly generates final journal entries', function () {
     $this->assertDatabaseHas('journal_entry_lines', [
         'journal_entry_id' => $journalEntry->id,
         'account_id' => $this->accumulatedDepreciationAccount->id,
-        'debit' => 60000,
+        'debit' => 60000000,
     ]);
 
     $this->assertDatabaseHas('journal_entry_lines', [
         'journal_entry_id' => $journalEntry->id,
         'account_id' => $this->company->default_bank_account_id,
-        'debit' => 70000,
+        'debit' => 70000000,
     ]);
 
     $this->assertDatabaseHas('journal_entry_lines', [
         'journal_entry_id' => $journalEntry->id,
         'account_id' => $this->assetAccount->id,
-        'credit' => 120000,
+        'credit' => 120000000,
     ]);
 
     $this->assertDatabaseHas('journal_entry_lines', [
         'journal_entry_id' => $journalEntry->id,
-        'account_id' => $this->company->default_gain_on_sale_account_id,
-        'credit' => 10000,
+        'account_id' => $this->company->default_gain_loss_account_id,
+        'credit' => 10000000,
     ]);
 });

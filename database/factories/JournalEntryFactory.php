@@ -24,7 +24,9 @@ class JournalEntryFactory extends Factory
         return [
             'company_id' => Company::factory()->create()->id,
             'journal_id' => Journal::factory()->create()->id,
-            'currency_id' => Currency::factory()->create()->id,
+            'currency_id' => function (array $attributes) {
+                return Company::find($attributes['company_id'])->currency_id;
+            },
             'entry_date' => $this->faker->date(),
             'reference' => $this->faker->unique()->bothify('REF-####'),
             'description' => $this->faker->sentence(),

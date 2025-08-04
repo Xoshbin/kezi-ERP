@@ -43,7 +43,6 @@ class ComputeDepreciationScheduleAction
                 'depreciation_date' => $depreciationDate->copy(),
                 'amount' => $monthlyDepreciation,
                 'status' => DepreciationEntryStatus::Draft,
-                'currency_id' => $asset->currency_id,
             ]);
 
             $depreciationDate->addMonth();
