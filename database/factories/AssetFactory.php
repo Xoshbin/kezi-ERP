@@ -23,7 +23,9 @@ class AssetFactory extends Factory
     {
         return [
             'company_id' => Company::factory(),
-            'currency_id' => Currency::factory()->create()->id,
+            'currency_id' => function (array $attributes) {
+                return Company::find($attributes['company_id'])->currency_id;
+            },
             'name' => $this->faker->word,
             'purchase_date' => $this->faker->date(),
             'purchase_value' => Money::of($this->faker->randomFloat(2, 100, 10000), 'USD'),

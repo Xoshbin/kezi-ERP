@@ -29,8 +29,8 @@ use Illuminate\Database\Eloquent\Attributes\ObservedBy;
  * @property int $accumulated_depreciation_account_id
  * @property string $name
  * @property \Illuminate\Support\Carbon $purchase_date
- * @property float $purchase_value
- * @property float $salvage_value
+ * @property \Brick\Money\Money $purchase_value
+ * @property \Brick\Money\Money $salvage_value
  * @property int $useful_life_years
  * @property string $depreciation_method
  * @property string $status

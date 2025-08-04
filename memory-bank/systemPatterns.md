@@ -74,3 +74,30 @@ It is optional, but recommended to be updated as the project evolves.
     - This pattern is now the standard and replaces the older class constant approach.
 
 [2025-08-03 19:22:37] - **Definitive Solution Pattern:** For models requiring pre-save calculations, the business logic resides exclusively within a dedicated Action that accepts a DTO. Observers are reserved for side effects (e.g., updating a parent model's totals after a line item is saved). This pattern ensures that complex calculations are handled within a transactional, testable, and dedicated class, while Observers are kept clean and focused on reactive side effects rather than primary business logic.
+
+[2025-08-04 07:15:51] - **Pattern: Child Model Currency Resolution**
+- **Description:** Child models that have monetary values but do not have their own `currency_id` column must resolve their currency from their parent model. This is achieved by implementing a `getCurrencyIdAttribute` accessor on the child model.
+- **Implementation:** The accessor must be robust enough to handle cases where the parent relationship is not yet loaded, especially during model creation. The recommended approach is to use the null coalescing operator to lazy-load the parent relationship if it's not already available.
+- **Example:**
+  ```php
+  // In a child model like InvoiceLine or JournalEntryLine
+  public function getCurrencyIdAttribute(): int
+  {
+      // If the relationship is loaded, use it. If not, lazy-load it.
+      return $this->parentModel->currency_id ?? $this->parentModel()->first()->currency_id;
+  }
+  ```- **Usage:** To prevent N+1 query issues in performance-critical code, it is the developer's responsibility to eager-load the parent relationship (e.g., `->with('parentModel')`) when retrieving multiple child models.
+
+[2025-08-04 07:18:00] - **Pattern: Handling Money Objects in Actions and Tests**
+- **Description:** When working with `Brick\Money` objects that are hydrated by the `MoneyCast`, it's crucial to handle them correctly in Actions and tests to avoid `NumberFormatException` and assertion errors.
+- **Implementation:**
+  - **In Actions:** When an Action receives a model with a `Money` object attribute (e.g., `$asset->purchase_value`), that attribute is already a `Money` object. Do not attempt to create a new `Money` object from it (e.g., `Money::of($asset->purchase_value, ...)`). Simply use the object directly. If you need to pass the value to a DTO that expects a `Money` object, you can pass the object as is.
+  - **In DTOs:** When a DTO receives a raw numeric value (e.g., from a form input), use `Money::of()` to create the `Money` object, specifying the currency.
+  - **In Tests:** When making database assertions (`assertDatabaseHas`), always use the minor currency unit (e.g., `10000000` for 10,000 IQD). The `MoneyCast` stores values in their minor form, and tests must reflect this.
+  - **Docblocks:** Ensure that model docblocks correctly type-hint monetary properties as `\Brick\Money\Money` (e.g., `@property \Brick\Money\Money $purchase_value`) to provide accurate static analysis and prevent linter confusion.
+
+[2025-08-04 07:18:00] - **Pattern: Polymorphic Relationships and `source_type`**
+- **Description:** When creating records that use polymorphic relationships (e.g., `JournalEntry` with a `source` relation), the `source_type` column must be set to the fully qualified class name of the source model (e.g., `App\Models\Asset::class`).
+- **Implementation:**
+  - **In Actions:** When creating a DTO for a polymorphic model, pass the `::class` constant of the source model to the `source_type` property.
+  - **In Tests:** When querying for a polymorphic relationship in a test, use the `::class` constant in your `assertDatabaseHas` call. Avoid using hardcoded strings, as this can lead to errors if the model namespace changes. When querying the relationship directly in a test (e.g., `$asset->journalEntries()`), do not add an additional `where('source_type', ...)` clause, as the relationship definition already handles this.

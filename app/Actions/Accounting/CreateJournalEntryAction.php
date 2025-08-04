@@ -60,21 +60,20 @@ class CreateJournalEntryAction
                 'source_id' => $dto->source_id,
             ]);
 
-            // ... (rest of the code is correct) ...
+            // This ensures the $journalEntry object is fully hydrated before we use it.
+            $journalEntry = $journalEntry->fresh()->load('currency');
 
             foreach ($dto->lines as $lineDto) {
-                $multiplier = pow(10, $currency->decimal_places);
-                $debit_in_minor_units = (int) ($lineDto->debit->getAmount()->toFloat() * $multiplier);
-                $credit_in_minor_units = (int) ($lineDto->credit->getAmount()->toFloat() * $multiplier);
-
-                $journalEntry->lines()->create([
+                $line = $journalEntry->lines()->make([
                     'account_id' => $lineDto->account_id,
                     'partner_id' => $lineDto->partner_id,
                     'analytic_account_id' => $lineDto->analytic_account_id,
                     'description' => $lineDto->description,
-                    'debit' => $debit_in_minor_units,
-                    'credit' => $credit_in_minor_units,
+                    'debit' => $lineDto->debit,
+                    'credit' => $lineDto->credit,
                 ]);
+                $line->setRelation('journalEntry', $journalEntry);
+                $line->save();
             }
 
             return $journalEntry;
