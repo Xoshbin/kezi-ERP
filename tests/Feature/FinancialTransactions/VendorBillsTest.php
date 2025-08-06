@@ -125,6 +125,7 @@ test('a vendor bill cannot be created in a locked period', function () {
 
     LockDate::factory()->for($this->company)->create([
         'locked_until' => '2026-01-31',
+        'lock_type' => 'everything_date',
     ]);
 
     $vendorBillDto = new CreateVendorBillDTO(

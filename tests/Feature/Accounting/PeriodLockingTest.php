@@ -121,6 +121,7 @@ describe('Action Integration with Locked Periods', function () {
             'locked_until' => '2025-12-31',
             'lock_type' => LockDateType::HARD_LOCK,
         ]);
+        \App\Models\Partner::factory()->for($this->company)->create();
     });
 
     it('throws PeriodIsLockedException for CreateInvoiceAction', function () {
