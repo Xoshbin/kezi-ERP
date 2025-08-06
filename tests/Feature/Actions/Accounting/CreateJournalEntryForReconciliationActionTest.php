@@ -13,7 +13,7 @@ test('it creates a correct journal entry for a payment reconciliation', function
     $payment = Payment::factory()
         ->for($this->company)
         ->create([
-            'amount' => Money::of(250, $$this->company->currencyCode),
+            'amount' => Money::of(250, $this->company->currency->code),
             'journal_id' => $this->company->default_bank_journal_id,
         ]);
 
@@ -26,7 +26,7 @@ test('it creates a correct journal entry for a payment reconciliation', function
     $this->assertTrue($journalEntry->is_posted);
 
     // Assert correct totals
-    $expectedTotal = Money::of(250, $$this->company->currencyCode);
+    $expectedTotal = Money::of(250, $this->company->currency->code);
     $this->assertTrue($journalEntry->total_debit->isEqualTo($expectedTotal));
     $this->assertTrue($journalEntry->total_credit->isEqualTo($expectedTotal));
 
