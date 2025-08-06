@@ -115,6 +115,9 @@ class Company extends Model
         'default_outstanding_receipts_account_id',
         'default_bank_journal_id',
         'default_gain_loss_account_id',
+        'inventory_adjustment_account_id',
+        'default_stock_location_id',
+        'default_vendor_location_id',
     ];
 
     /**
@@ -426,6 +429,11 @@ class Company extends Model
         return $this->belongsTo(Account::class, 'default_gain_loss_account_id');
     }
 
+    public function inventoryAdjustmentAccount(): BelongsTo
+    {
+        return $this->belongsTo(Account::class, 'inventory_adjustment_account_id');
+    }
+
     /**
      * Check if a given date is within a locked period for the company.
      *
@@ -443,5 +451,25 @@ class Company extends Model
         return $this->lockDates()
             ->where('locked_until', '>=', $dateToCheck)
             ->exists();
+    }
+
+    /**
+     * The company's default stock location for internal operations.
+     */
+    public function defaultStockLocation(): BelongsTo
+    {
+        // CORRECTED: This is a BelongsTo relationship because the
+        // 'default_stock_location_id' foreign key is on the 'companies' table.
+        return $this->belongsTo(StockLocation::class, 'default_stock_location_id');
+    }
+
+    /**
+     * The company's default location representing external vendors.
+     */
+    public function vendorLocation(): BelongsTo
+    {
+        // CORRECTED: The foreign key in the database is 'default_vendor_location_id',
+        // not 'vendor_location_id'. We align the model with the schema.
+        return $this->belongsTo(StockLocation::class, 'default_vendor_location_id');
     }
 }

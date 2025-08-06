@@ -3,31 +3,39 @@
 namespace App\Services;
 
 // Add new imports for Actions and DTOs
-use App\Actions\Purchases\CreateVendorBillAction;
-use App\Actions\Purchases\UpdateVendorBillAction;
-use App\DataTransferObjects\Purchases\CreateVendorBillDTO;
-use App\DataTransferObjects\Purchases\CreateVendorBillLineDTO;
-use App\DataTransferObjects\Purchases\UpdateVendorBillDTO;
-use App\DataTransferObjects\Purchases\UpdateVendorBillLineDTO;
-
-// ... other existing use statements
-use App\Actions\Accounting\CreateJournalEntryForVendorBillAction;
-use App\Events\VendorBillConfirmed;
-use App\Exceptions\DeletionNotAllowedException;
-use App\Exceptions\UpdateNotAllowedException;
-use App\Models\AuditLog;
 use App\Models\User;
+use RuntimeException;
+use App\Models\AuditLog;
 use App\Models\VendorBill;
 use Illuminate\Support\Facades\DB;
+use App\Enums\Products\ProductType;
+
+// ... other existing use statements
+use App\Events\VendorBillConfirmed;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Gate;
+use App\Enums\Inventory\StockMoveType;
+use App\Enums\Inventory\StockMoveStatus;
+use App\Services\Inventory\StockMoveService;
+use App\Exceptions\UpdateNotAllowedException;
+use App\Exceptions\DeletionNotAllowedException;
+use App\Actions\Inventory\CreateStockMoveAction;
+use App\Actions\Purchases\CreateVendorBillAction;
+use App\Actions\Purchases\UpdateVendorBillAction;
+use App\DataTransferObjects\Inventory\CreateStockMoveDTO;
+use App\DataTransferObjects\Purchases\CreateVendorBillDTO;
+use App\DataTransferObjects\Purchases\UpdateVendorBillDTO;
+use App\DataTransferObjects\Purchases\CreateVendorBillLineDTO;
+use App\DataTransferObjects\Purchases\UpdateVendorBillLineDTO;
+use App\Actions\Accounting\CreateJournalEntryForVendorBillAction;
 
 class VendorBillService
 {
     public function __construct(
         protected AccountingValidationService $accountingValidationService,
-        protected JournalEntryService $journalEntryService
-    ) {
-    }
+        protected JournalEntryService $journalEntryService,
+        protected CreateStockMoveAction $createStockMoveAction
+    ) {}
 
     // ... The confirm, delete, and resetToDraft methods remain unchanged ...
     // ... because they are orchestrating logic, not just creating/updating data.
@@ -41,7 +49,7 @@ class VendorBillService
         // Refresh the model instance to get the latest data from the database,
         // including any totals calculated by observers.
         $vendorBill->refresh();
-        
+
         if ($vendorBill->status !== VendorBill::STATUS_DRAFT) {
             return; // Or throw an exception
         }
@@ -118,8 +126,59 @@ class VendorBillService
         });
     }
 
+    public function post(VendorBill $vendorBill, User $user): void
+    {
+        if ($vendorBill->status !== 'draft') {
+            return;
+        }
+
+        DB::transaction(function () use ($vendorBill, $user) {
+            // This existing logic is correct.
+            $vendorBill->update(['status' => 'posted', 'posted_at' => now()]);
+            $journalEntry = $this->journalEntryService->createJournalEntryForVendorBill($vendorBill);
+            $vendorBill->update(['journal_entry_id' => $journalEntry->id]);
+
+            // --- 3. Add the logic to create stock moves ---
+            foreach ($vendorBill->lines()->with('product')->get() as $line) {
+                if ($line->product?->type === ProductType::Storable) {
+                    $company = $vendorBill->company;
+
+                    // Ensure default locations are configured for the company
+                    if (!$company->vendorLocation || !$company->defaultStockLocation) {
+                        throw new RuntimeException("Default Vendor or Stock Location is not configured for Company ID: {$company->id}. Please configure them to proceed.");
+                    }
+
+                    $dto = new CreateStockMoveDTO(
+                        company_id: $company->id,
+                        product_id: $line->product->id,
+                        quantity: $line->quantity,
+                        from_location_id: $company->vendorLocation->id,
+                        to_location_id: $company->defaultStockLocation->id,
+                        move_type: StockMoveType::INCOMING,
+                        move_date: $vendorBill->bill_date,
+                        reference: $vendorBill->bill_reference,
+                        source_type: VendorBill::class,
+                        source_id: $vendorBill->id,
+                        created_by_user_id: $user->id,
+                        // Add the missing argument, e.g. status (adjust as needed)
+                        status: StockMoveStatus::DRAFT
+                    );
+
+                    $this->createStockMoveAction->execute($dto);
+                }
+            }
+        });
+    }
+
     private function _confirmAndPostBill(VendorBill $vendorBill, User $user): void
     {
+        Log::info('--- Starting _confirmAndPostBill for VendorBill ID: ' . $vendorBill->id . ' ---'); // <-- Add Log 1
+
+        if ($vendorBill->status !== 'draft') {
+            Log::info('VendorBill status is not draft. Exiting.'); // <-- Add Log 2
+            return;
+        }
+
         $vendorBill->status = VendorBill::STATUS_POSTED;
         $vendorBill->posted_at = now();
 
@@ -127,6 +186,45 @@ class VendorBillService
         $vendorBill->journal_entry_id = $journalEntry->id;
 
         $vendorBill->save();
+
+        Log::info('Journal Entry created. Looping through lines...'); // <-- Add Log 3
+
+
+        // Create stock moves for storable products
+        foreach ($vendorBill->lines()->with('product')->get() as $line) {
+            Log::info('Processing Line ID: ' . $line->id . ' for Product ID: ' . $line->product_id); // <-- Add Log 4
+
+            if ($line->product?->type === ProductType::Storable) {
+                Log::info('Product is Storable. Creating Stock Move...'); // <-- Add Log 5
+
+                $company = $vendorBill->company;
+
+                if (!$company->vendorLocation || !$company->defaultStockLocation) {
+                    throw new RuntimeException("Default Vendor or Stock Location is not configured for Company ID: {$company->id}.");
+                } else {
+                    Log::info('Product is NOT Storable. Type is: ' . ($line->product?->type->value ?? 'N/A')); // <-- Add Log 6
+
+                }
+
+                $dto = new CreateStockMoveDTO(
+                    company_id: $company->id,
+                    product_id: $line->product->id,
+                    quantity: $line->quantity,
+                    from_location_id: $company->vendorLocation->id,
+                    to_location_id: $company->defaultStockLocation->id,
+                    move_type: StockMoveType::INCOMING,
+                    move_date: $vendorBill->bill_date,
+                    reference: $vendorBill->bill_reference,
+                    source_type: VendorBill::class,
+                    source_id: $vendorBill->id,
+                    created_by_user_id: $user->id,
+                    // Add the missing argument, e.g. status (adjust as needed)
+                    status: StockMoveStatus::DRAFT
+                );
+
+                $this->createStockMoveAction->execute($dto);
+            }
+        }
 
         VendorBillConfirmed::dispatch($vendorBill);
     }
