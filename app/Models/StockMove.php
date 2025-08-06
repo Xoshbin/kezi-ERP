@@ -1,0 +1,69 @@
+<?php
+
+namespace App\Models;
+
+use App\Enums\Inventory\StockMoveStatus;
+use App\Enums\Inventory\StockMoveType;
+use App\Observers\StockMoveObserver;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\MorphTo;
+
+#[ObservedBy([StockMoveObserver::class])]
+class StockMove extends Model
+{
+    use HasFactory;
+
+    protected $fillable = [
+        'company_id',
+        'product_id',
+        'quantity',
+        'from_location_id',
+        'to_location_id',
+        'move_type',
+        'status',
+        'move_date',
+        'reference',
+        'source_type',
+        'source_id',
+        'created_by_user_id',
+    ];
+
+    protected $casts = [
+        'move_type' => StockMoveType::class,
+        'status' => StockMoveStatus::class,
+        'move_date' => 'date',
+    ];
+
+    public function company(): BelongsTo
+    {
+        return $this->belongsTo(Company::class);
+    }
+
+    public function product(): BelongsTo
+    {
+        return $this->belongsTo(Product::class);
+    }
+
+    public function fromLocation(): BelongsTo
+    {
+        return $this->belongsTo(StockLocation::class, 'from_location_id');
+    }
+
+    public function toLocation(): BelongsTo
+    {
+        return $this->belongsTo(StockLocation::class, 'to_location_id');
+    }
+
+    public function source(): MorphTo
+    {
+        return $this->morphTo();
+    }
+
+    public function createdByUser(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'created_by_user_id');
+    }
+}

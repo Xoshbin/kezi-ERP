@@ -4,7 +4,9 @@ namespace App\Models;
 
 use App\Casts\MoneyCast;
 use App\Observers\ProductObserver;
+use App\Enums\Products\ProductType;
 use Illuminate\Database\Eloquent\Model;
+use App\Enums\Inventory\ValuationMethod;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -80,6 +82,12 @@ class Product extends Model
         'income_account_id',
         'expense_account_id',
         'is_active',
+        'inventory_valuation_method',
+        'default_inventory_account_id',
+        'default_cogs_account_id',
+        'default_stock_input_account_id',
+        'default_price_difference_account_id',
+        'average_cost',
     ];
 
     /**
@@ -89,27 +97,19 @@ class Product extends Model
      * @var array<string, string>
      */
     protected $casts = [
-        'unit_price' => MoneyCast::class, // For monetary values, decimal casting ensures precision [1].
-        'is_active' => 'boolean', // Ensures boolean handling for the active status [2].
-        'created_at' => 'datetime', // Laravel automatically casts these, but explicit casting can be good practice [3].
+        'unit_price' => MoneyCast::class,
+        'average_cost' => MoneyCast::class,
+        'is_active' => 'boolean',
+        'inventory_valuation_method' => ValuationMethod::class,
+        'created_at' => 'datetime',
         'updated_at' => 'datetime',
-        'deleted_at' => 'datetime', // Essential for SoftDeletes [3].
+        'deleted_at' => 'datetime',
+        'type' => ProductType::class,
     ];
-
-    public const TYPE_SERVICE = 'service';
-    public const TYPE_STORABLE_PRODUCT = 'storable product';
-
-    public static function getTypes(): array
-    {
-        return [
-            self::TYPE_SERVICE => 'Service',
-            self::TYPE_STORABLE_PRODUCT => 'Storable Product',
-        ];
-    }
 
     /**
      * Get the Company that owns the Product.
-     * This relationship is fundamental in a multi-company accounting setup, ensuring products are scoped to specific entities [4].
+     * This relationship is fundamental in a multi-company accounting setup, ensuring products are scoped to specific entities.
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
@@ -120,7 +120,7 @@ class Product extends Model
 
     /**
      * Get the Account (from the Chart of Accounts) that is the default income account for this product.
-     * This is crucial for automating revenue recognition when the product is sold, impacting the Income Statement [4].
+     * This is crucial for automating revenue recognition when the product is sold, impacting the Income Statement.
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
@@ -131,13 +131,33 @@ class Product extends Model
 
     /**
      * Get the Account (from the Chart of Accounts) that is the default expense account for this product.
-     * This enables automated cost allocation and impacts the Expense section of the Income Statement, aligning with the double-entry principle [4].
+     * This enables automated cost allocation and impacts the Expense section of the Income Statement, aligning with the double-entry principle.
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function expenseAccount()
     {
         return $this->belongsTo(Account::class, 'expense_account_id');
+    }
+
+    public function defaultInventoryAccount()
+    {
+        return $this->belongsTo(Account::class, 'default_inventory_account_id');
+    }
+
+    public function defaultCogsAccount()
+    {
+        return $this->belongsTo(Account::class, 'default_cogs_account_id');
+    }
+
+    public function defaultStockInputAccount()
+    {
+        return $this->belongsTo(Account::class, 'default_stock_input_account_id');
+    }
+
+    public function defaultPriceDifferenceAccount()
+    {
+        return $this->belongsTo(Account::class, 'default_price_difference_account_id');
     }
 
     /**
@@ -154,7 +174,7 @@ class Product extends Model
 
     /**
      * Scope a query to find a product by its SKU within a specific company.
-     * SKU should be unique per company to prevent data duplication and maintain accurate inventory records [4].
+     * SKU should be unique per company to prevent data duplication and maintain accurate inventory records.
      *
      * @param  \Illuminate\Database\Eloquent\Builder  $query
      * @param  string  $sku
@@ -174,5 +194,15 @@ class Product extends Model
     public function vendorBillLines(): HasMany
     {
         return $this->hasMany(VendorBillLine::class);
+    }
+
+    /**
+     * Accessor to provide the currency_id to the MoneyCast.
+     * This robust implementation prevents N+1 query issues.
+     */
+    public function getCurrencyIdAttribute(): int
+    {
+        // If the company relationship is loaded, use it. If not, lazy-load it.
+        return $this->company->currency_id ?? $this->company()->first()->currency_id;
     }
 }
