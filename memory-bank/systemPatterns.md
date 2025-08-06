@@ -101,3 +101,6 @@ It is optional, but recommended to be updated as the project evolves.
 - **Implementation:**
   - **In Actions:** When creating a DTO for a polymorphic model, pass the `::class` constant of the source model to the `source_type` property.
   - **In Tests:** When querying for a polymorphic relationship in a test, use the `::class` constant in your `assertDatabaseHas` call. Avoid using hardcoded strings, as this can lead to errors if the model namespace changes. When querying the relationship directly in a test (e.g., `$asset->journalEntries()`), do not add an additional `where('source_type', ...)` clause, as the relationship definition already handles this.
+
+
+[2025-08-06 06:55:00] - **Explicit Context Pattern:** This pattern provides the definitive solution for any situation where a model's attribute depends on context from a parent that isn't available during its creation. The responsibility for providing context to a new model instance must be shifted from the model itself (which is contextually unaware during creation) to the calling code (the Action or Service, which is fully aware). Instead of passing raw values and hoping the model can infer the context, the calling code must explicitly create a context-aware object (like Brick\Money\Money) and pass that complete object to the creation method.
