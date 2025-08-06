@@ -25,8 +25,8 @@ test('it updates a journal entry and syncs its lines from a DTO', function () {
     // Add an initial line that we expect to be removed
     $journalEntry->lines()->create([
         'account_id' => $accountA->id,
-        'debit' => Money::of(100, $$this->company->currencyCode),
-        'credit' => Money::of(0, $$this->company->currencyCode),
+        'debit' => Money::of(100, $this->company->currency->code),
+        'credit' => Money::of(0, $this->company->currency->code),
         'currency_id' => $this->company->currency_id,
     ]);
 
@@ -78,6 +78,6 @@ test('it updates a journal entry and syncs its lines from a DTO', function () {
         'debit' => 250000,
     ]);
 
-    $expectedTotal = Money::of('250.00', $$this->company->currencyCode);
+    $expectedTotal = Money::of('250.00', $this->company->currency->code);
     expect($updatedJournalEntry->total_debit->isEqualTo($expectedTotal))->toBeTrue();
 });
