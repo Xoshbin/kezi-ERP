@@ -22,10 +22,10 @@ test('it creates a correct journal entry for a depreciation entry', function () 
     $depreciationEntry = DepreciationEntry::factory()
         ->for($asset)
         ->create([
-            'amount' => Money::of(120, $$this->company->currencyCode),
+            'amount' => Money::of(120, $this->company->currency->code),
             'depreciation_date' => now(),
             'journal_entry_id' => null, // It should not have a journal entry yet.
-            'status' => 'Posted',      // The service sets this status right before the action.
+            'status' => \App\Enums\Assets\DepreciationEntryStatus::Posted,
         ]);
 
     // 2. Act
@@ -37,7 +37,7 @@ test('it creates a correct journal entry for a depreciation entry', function () 
     $this->assertTrue($journalEntry->is_posted);
     $this->assertEquals($this->company->default_depreciation_journal_id, $journalEntry->journal_id);
 
-    $expectedTotal = Money::of(120, $$this->company->currencyCode);
+    $expectedTotal = Money::of(120, $this->company->currency->code);
     $this->assertTrue($journalEntry->total_debit->isEqualTo($expectedTotal));
     $this->assertTrue($journalEntry->total_credit->isEqualTo($expectedTotal));
 

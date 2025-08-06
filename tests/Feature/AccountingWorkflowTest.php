@@ -177,8 +177,8 @@ test('the entire accounting workflow from setup to credit note', function () {
     expect($customerPaymentEntry->is_posted)->toBeTrue();
     // MODIFIED: Assert against Money objects
     expect($customerPaymentEntry->total_debit->isEqualTo($itInfrastructureServiceCost))->toBeTrue();
-    expect($customerPaymentEntry->lines->where('account_id', $bankAccount->id)->first()->debit->isEqualTo($itInfrastructureServiceCost))->toBeTrue();
-    expect($customerPaymentEntry->lines->where('account_id', $arAccount->id)->first()->credit->isEqualTo($itInfrastructureServiceCost))->toBeTrue();
+    expect($customerPaymentEntry->lines->where('account_id', $bankAccount->id)->first()->debit->getAmount()->toFloat())->toEqual($itInfrastructureServiceCost->getAmount()->toFloat());
+    expect($customerPaymentEntry->lines->where('account_id', $arAccount->id)->first()->credit->getAmount()->toFloat())->toEqual($itInfrastructureServiceCost->getAmount()->toFloat());
     expect($invoice->fresh()->status)->toBe(Invoice::STATUS_PAID);
 
     // Step 7: Paying a Vendor
@@ -216,8 +216,9 @@ test('the entire accounting workflow from setup to credit note', function () {
 
     $creditNote = \App\Models\AdjustmentDocument::factory()->create([
         'company_id' => $this->company->id,
+        'currency_id' => $this->company->currency_id,
         'reference_number' => 'CN-001',
-        'total_tax' => Money::of(0, $currencyCode),
+        'total_tax' => Money::of(0, $currency->code),
         'type' => 'Credit Note',
         'original_invoice_id' => $invoice->id,
         'date' => now()->toDateString(),

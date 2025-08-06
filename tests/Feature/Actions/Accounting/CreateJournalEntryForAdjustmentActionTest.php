@@ -15,8 +15,9 @@ test('it creates a correct journal entry for a posted adjustment document (credi
     $adjustment = AdjustmentDocument::factory()
         ->for($this->company)
         ->create([
-            'total_amount' => Money::of(110, $$this->company->currencyCode),
-            'total_tax' => Money::of(10, $$this->company->currencyCode),
+            'currency_id' => $this->company->currency_id,
+            'total_amount' => Money::of(110, $this->company->currency->code),
+            'total_tax' => Money::of(10, $this->company->currency->code),
             'posted_at' => now(),
             'reference_number' => 'TEST-CN-001',
         ]);
@@ -31,7 +32,7 @@ test('it creates a correct journal entry for a posted adjustment document (credi
     $this->assertEquals($this->company->default_sales_journal_id, $journalEntry->journal_id);
 
     // Assert correct totals
-    $expectedTotal = Money::of(110, $$this->company->currencyCode);
+    $expectedTotal = Money::of(110, $this->company->currency->code);
     $this->assertTrue($journalEntry->total_debit->isEqualTo($expectedTotal));
     $this->assertTrue($journalEntry->total_credit->isEqualTo($expectedTotal));
 
