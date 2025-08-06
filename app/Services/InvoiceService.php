@@ -68,7 +68,7 @@ class InvoiceService
 
             // Create stock moves for storable products
             foreach ($invoice->invoiceLines as $line) {
-                if ($line->product->product_type === ProductType::STORABLE) {
+                if ($line->product && $line->product->product_type === ProductType::Storable->value) {
                     (new CreateStockMoveAction($this->stockMoveService))->execute(new CreateStockMoveDTO(
                         company_id: $invoice->company_id,
                         product_id: $line->product_id,

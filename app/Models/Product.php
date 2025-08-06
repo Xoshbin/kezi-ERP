@@ -3,14 +3,15 @@
 namespace App\Models;
 
 use App\Casts\MoneyCast;
-use App\Observers\ProductObserver;
-use App\Enums\Products\ProductType;
-use Illuminate\Database\Eloquent\Model;
 use App\Enums\Inventory\ValuationMethod;
-use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Enums\Products\ProductType;
+use App\Observers\ProductObserver;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
  * @property int $id
@@ -53,25 +54,13 @@ use Illuminate\Database\Eloquent\Attributes\ObservedBy;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Product withoutTrashed()
  * @mixin \Eloquent
  */
-
 #[ObservedBy([ProductObserver::class])]
 class Product extends Model
 {
     use HasFactory, SoftDeletes;
 
-    /**
-     * The table associated with the model.
-     *
-     * @var string
-     */
-    protected $table = 'products'; // Laravel's convention is 'products', so explicit declaration is optional but good for clarity.
+    protected $table = 'products';
 
-    /**
-     * The attributes that are mass assignable.
-     * These fields are typically populated via user input or automated processes.
-     *
-     * @var array<int, string>
-     */
     protected $fillable = [
         'company_id',
         'name',
@@ -90,12 +79,6 @@ class Product extends Model
         'average_cost',
     ];
 
-    /**
-     * The attributes that should be cast.
-     * This ensures proper data types are used when interacting with the model attributes.
-     *
-     * @var array<string, string>
-     */
     protected $casts = [
         'unit_price' => MoneyCast::class,
         'average_cost' => MoneyCast::class,
@@ -113,7 +96,7 @@ class Product extends Model
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    public function company()
+    public function company(): BelongsTo
     {
         return $this->belongsTo(Company::class, 'company_id');
     }
@@ -124,7 +107,7 @@ class Product extends Model
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    public function incomeAccount()
+    public function incomeAccount(): BelongsTo
     {
         return $this->belongsTo(Account::class, 'income_account_id');
     }
@@ -135,27 +118,29 @@ class Product extends Model
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    public function expenseAccount()
+    public function expenseAccount(): BelongsTo
     {
         return $this->belongsTo(Account::class, 'expense_account_id');
     }
 
-    public function defaultInventoryAccount()
+    // ADDED: Relationship to the default inventory/valuation account.
+    public function inventoryAccount(): BelongsTo
     {
         return $this->belongsTo(Account::class, 'default_inventory_account_id');
     }
 
-    public function defaultCogsAccount()
+    public function defaultCogsAccount(): BelongsTo
     {
         return $this->belongsTo(Account::class, 'default_cogs_account_id');
     }
 
-    public function defaultStockInputAccount()
+    // ADDED: Relationship to the default stock input/accrual account.
+    public function stockInputAccount(): BelongsTo
     {
         return $this->belongsTo(Account::class, 'default_stock_input_account_id');
     }
 
-    public function defaultPriceDifferenceAccount()
+    public function defaultPriceDifferenceAccount(): BelongsTo
     {
         return $this->belongsTo(Account::class, 'default_price_difference_account_id');
     }

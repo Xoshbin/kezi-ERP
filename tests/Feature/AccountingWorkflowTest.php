@@ -101,7 +101,7 @@ test('the entire accounting workflow from setup to credit note', function () {
 
     $vendorBill->refresh();
 
-    $vendorBillService->confirm($vendorBill, $this->user);
+    $vendorBillService->post($vendorBill, $this->user);
 
     $vendorBill->refresh();
     $purchaseEntry = $vendorBill->journalEntry;
