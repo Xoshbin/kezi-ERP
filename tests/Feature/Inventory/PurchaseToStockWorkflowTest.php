@@ -69,13 +69,12 @@ describe('Purchase to Stock Workflow (AVCO)', function () {
             'status' => 'draft',
         ]);
         $lineDto = new CreateVendorBillLineDTO(
-            vendorBill: $vendorBill,
             product_id: $this->product->id,
             quantity: $quantity,
             unit_price: $costPerUnit,
             expense_account_id: $this->product->expense_account_id
         );
-        (new CreateVendorBillLineAction())->execute($lineDto);
+        (new CreateVendorBillLineAction())->execute($vendorBill, $lineDto);
         $vendorBill->refresh(); // Refresh to get totals calculated by observers.
 
         // Act: Confirm the vendor bill. This is the trigger for our entire workflow.
