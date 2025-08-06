@@ -58,12 +58,14 @@ class MoneyCast implements CastsAttributes
     protected function resolveCurrency(Model $model): Currency
     {
         // This relies on the model having a `currency_id` attribute or accessor.
-        $currencyId = $model->currency_id;
-
-        if (!$currencyId) {
-            throw new InvalidArgumentException('Could not resolve currency for the model.');
+        if (isset($model->currency_id)) {
+            return Currency::findOrFail($model->currency_id);
         }
 
-        return Currency::findOrFail($currencyId);
+        if (method_exists($model, 'currency') && $model->currency) {
+            return $model->currency;
+        }
+
+        throw new InvalidArgumentException('Could not resolve currency for the model.');
     }
 }

@@ -29,8 +29,10 @@ test('it creates a correct journal entry for a posted invoice', function () {
     ]);
     $invoice->invoiceLines()->create([
         'product_id' => $product->id,
+        'income_account_id' => $product->income_account_id,
+        'description' => 'Test Product',
         'quantity' => 2,
-        'unit_price' => Money::of(100, $$this->company->currencyCode),
+        'unit_price' => Money::of(100, $this->company->currency->code),
         'tax_id' => $tax->id,
     ]);
 
@@ -46,7 +48,7 @@ test('it creates a correct journal entry for a posted invoice', function () {
     $this->assertTrue($journalEntry->is_posted);
     $this->assertEquals($this->company->default_sales_journal_id, $journalEntry->journal_id);
 
-    $expectedTotal = Money::of(220, $$this->company->currencyCode); // 200 (subtotal) + 20 (tax)
+    $expectedTotal = Money::of(220, $this->company->currency->code); // 200 (subtotal) + 20 (tax)
     expect($journalEntry->total_debit->isEqualTo($expectedTotal))->toBeTrue();
 
     // Assert correct accounts were used
