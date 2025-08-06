@@ -7,12 +7,20 @@ use Brick\Money\Money;
 use App\Models\Currency;
 use App\Models\VendorBill;
 use Illuminate\Support\Facades\DB;
+use App\Services\AccountingValidationService;
 use App\DataTransferObjects\Purchases\CreateVendorBillDTO;
 
 class CreateVendorBillAction
 {
+    public function __construct(
+        private readonly AccountingValidationService $accountingValidationService = new AccountingValidationService()
+    ) {}
+
     public function execute(CreateVendorBillDTO $dto): VendorBill
     {
+        $this->accountingValidationService->checkIfPeriodIsLocked($dto->company_id, $dto->accounting_date);
+
+
         return DB::transaction(function () use ($dto) {
             // 1. Fetch the currency model from the ID in the DTO
             $currency = Currency::findOrFail($dto->currency_id);

@@ -2,27 +2,29 @@
 
 namespace Tests\Feature\FinancialTransactions;
 
-use App\Actions\Purchases\CreateVendorBillAction;
-use App\Actions\Purchases\CreateVendorBillLineAction; // Import the Action
-use App\Actions\Purchases\UpdateVendorBillAction;
-use App\DataTransferObjects\Purchases\CreateVendorBillDTO;
-use App\DataTransferObjects\Purchases\CreateVendorBillLineDTO; // Import the DTO
-use App\DataTransferObjects\Purchases\UpdateVendorBillDTO;
-use App\Events\VendorBillConfirmed;
-use App\Exceptions\DeletionNotAllowedException;
-use App\Exceptions\PeriodIsLockedException;
-use App\Exceptions\UpdateNotAllowedException;
-use App\Models\JournalEntry;
-use App\Models\LockDate;
+use Brick\Money\Money;
 use App\Models\Partner;
 use App\Models\Product;
+use App\Models\LockDate;
 use App\Models\VendorBill;
-use App\Services\VendorBillService;
-use Brick\Money\Money;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\Event;
 use Tests\Traits\MocksTime;
+use App\Models\JournalEntry;
+use App\Models\StockLocation;
+use App\Events\VendorBillConfirmed;
+use App\Services\VendorBillService;
+use Illuminate\Support\Facades\Event;
 use Tests\Traits\WithConfiguredCompany;
+use App\Enums\Inventory\StockLocationType;
+use App\Exceptions\PeriodIsLockedException;
+use App\Exceptions\UpdateNotAllowedException;
+use App\Exceptions\DeletionNotAllowedException;
+use App\Actions\Purchases\CreateVendorBillAction;
+use App\Actions\Purchases\UpdateVendorBillAction;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use App\DataTransferObjects\Purchases\CreateVendorBillDTO;
+use App\DataTransferObjects\Purchases\UpdateVendorBillDTO;
+use App\Actions\Purchases\CreateVendorBillLineAction; // Import the Action
+use App\DataTransferObjects\Purchases\CreateVendorBillLineDTO; // Import the DTO
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class, MocksTime::class);
 
@@ -50,6 +52,12 @@ test('a draft vendor bill can be confirmed, which posts it and dispatches an eve
 });
 
 test('confirming a vendor bill generates the correct journal entry', function () {
+    $vendorLocation = StockLocation::factory()->for($this->company)->create(['type' => StockLocationType::VENDOR]);
+    $stockLocation = StockLocation::factory()->for($this->company)->create(['type' => StockLocationType::INTERNAL]);
+    $this->company->update([
+        'vendor_location_id' => $vendorLocation->id,
+        'default_stock_location_id' => $stockLocation->id,
+    ]);
     $expenseAccount = $this->company->accounts()->where('type', 'Expense')->firstOrFail();
     $product = Product::factory()->for($this->company)->create(['expense_account_id' => $expenseAccount->id]);
     $vendorBill = VendorBill::factory()->for($this->company)->create(['status' => 'draft']);

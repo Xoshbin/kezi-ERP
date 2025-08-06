@@ -3,10 +3,12 @@
 namespace App\Models;
 
 use App\Casts\MoneyCast;
-use App\Enums\Assets\DepreciationEntryStatus;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Observers\DepreciationEntryObserver;
+use App\Enums\Assets\DepreciationEntryStatus;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 
 /**
  * Class DepreciationEntry
@@ -42,6 +44,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|DepreciationEntry whereUpdatedAt($value)
  * @mixin \Eloquent
  */
+#[ObservedBy([DepreciationEntryObserver::class])]
 class DepreciationEntry extends Model
 {
     use HasFactory;

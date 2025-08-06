@@ -6,13 +6,16 @@ use App\Models\Account;
 use App\Models\Company;
 use App\Models\Journal;
 use App\Models\Currency;
+use App\Models\StockLocation;
 use App\Enums\Accounting\JournalType;
+use App\Enums\Inventory\StockLocationType;
 
 class CompanyBuilder
 {
     protected ?Currency $currency = null;
     protected array $accounts = [];
     protected array $journals = [];
+    protected array $stockLocations = [];
 
     public static function new(): self
     {
@@ -61,6 +64,15 @@ class CompanyBuilder
         return $this;
     }
 
+    public function withDefaultStockLocations(): self
+    {
+        $this->stockLocations = [
+            'vendor_location_id' => ['type' => StockLocationType::VENDOR, 'name' => 'Vendor Location'],
+            'default_stock_location_id' => ['type' => StockLocationType::INTERNAL, 'name' => 'Internal Stock'],
+        ];
+        return $this;
+    }
+
     public function create(): Company
     {
         if (!$this->currency) {
@@ -84,10 +96,21 @@ class CompanyBuilder
             ]));
         }
 
+        $locationInstances = [];
+        foreach ($this->stockLocations as $key => $details) {
+            $locationInstances[$key] = StockLocation::factory()->for($company)->create($details);
+        }
+
         $company->update(array_merge(
             collect($accountInstances)->mapWithKeys(fn($acc, $k) => [$k => $acc->id])->all(),
-            collect($journalInstances)->mapWithKeys(fn($jour, $k) => [$k => $jour->id])->all()
+            collect($journalInstances)->mapWithKeys(fn($jour, $k) => [$k => $jour->id])->all(),
+            collect($locationInstances)->mapWithKeys(fn($loc, $k) => [$k => $loc->id])->all() // Add location IDs
+
         ));
+
+        if (!empty($updates)) {
+            $company->update($updates);
+        }
 
         return $company->fresh();
     }

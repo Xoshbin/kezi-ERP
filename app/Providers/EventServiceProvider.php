@@ -2,12 +2,14 @@
 
 namespace App\Providers;
 
+use App\Events\VendorBillConfirmed;
+use Illuminate\Support\Facades\Event;
+use Illuminate\Auth\Events\Registered;
 use App\Events\Inventory\StockMoveConfirmed;
 use App\Listeners\Inventory\HandleStockMoveConfirmation;
-use Illuminate\Auth\Events\Registered;
+use App\Listeners\Inventory\ProcessInventoryForConfirmedBill;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
-use Illuminate\Support\Facades\Event;
 
 class EventServiceProvider extends ServiceProvider
 {
@@ -22,6 +24,9 @@ class EventServiceProvider extends ServiceProvider
         ],
         StockMoveConfirmed::class => [
             HandleStockMoveConfirmation::class,
+        ],
+        VendorBillConfirmed::class => [
+            ProcessInventoryForConfirmedBill::class,
         ],
     ];
 
