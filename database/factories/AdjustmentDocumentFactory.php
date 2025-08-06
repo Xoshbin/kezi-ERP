@@ -20,8 +20,8 @@ class AdjustmentDocumentFactory extends Factory
     public function definition(): array
     {
         return [
-            'company_id' => Company::factory()->create()->id,
-            'currency_id' => Currency::factory()->create()->id,
+            'company_id' => Company::factory(),
+            'currency_id' => fn(array $attributes) => Company::find($attributes['company_id'])->currency_id,
             'original_invoice_id' => null,
             'original_vendor_bill_id' => null,
             'type' => $this->faker->randomElement(['Credit Note', 'Debit Note', 'Miscellaneous Adjustment']),

@@ -36,7 +36,7 @@ test('cancelling a posted vendor bill creates a reversing journal entry and an a
     $vendorBillService = app(VendorBillService::class);
 
     // Act 1b: Confirm the bill to make it 'posted'.
-    $vendorBillService->confirm($vendorBill, $this->user);
+    $vendorBillService->post($vendorBill, $this->user);
     $vendorBill->refresh();
     $originalEntry = $vendorBill->journalEntry;
 

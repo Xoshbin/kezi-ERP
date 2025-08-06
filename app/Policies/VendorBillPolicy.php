@@ -74,7 +74,7 @@ class VendorBillPolicy
     /**
      * Determine whether the user can confirm the vendor bill.
      */
-    public function confirm(User $user, VendorBill $vendorBill): bool
+    public function post(User $user, VendorBill $vendorBill): bool
     {
         // For now, we will allow it. In a real app, you might check for a specific role.
         //TODO: Change this to implement actual logic before deploying

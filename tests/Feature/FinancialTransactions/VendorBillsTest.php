@@ -28,6 +28,11 @@ use App\DataTransferObjects\Purchases\CreateVendorBillLineDTO; // Import the DTO
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class, MocksTime::class);
 
+beforeEach(function () {
+    $this->setupWithConfiguredCompany();
+    $this->setupInventoryTestEnvironment();
+});
+
 test('a draft vendor bill can be confirmed, which posts it and dispatches an event', function () {
     Event::fake();
     $vendorBill = VendorBill::factory()->for($this->company)->create(['status' => 'draft']);
@@ -44,38 +49,30 @@ test('a draft vendor bill can be confirmed, which posts it and dispatches an eve
     );
     app(CreateVendorBillLineAction::class)->execute($vendorBill, $lineDto);
 
-    app(VendorBillService::class)->confirm($vendorBill, $this->user);
+    app(VendorBillService::class)->post($vendorBill, $this->user);
 
     $vendorBill->refresh();
     expect($vendorBill->status)->toBe(VendorBill::STATUS_POSTED);
-    Event::assertDispatched(VendorBillConfirmed::class, fn ($event) => $event->vendorBill->id === $vendorBill->id);
+    Event::assertDispatched(VendorBillConfirmed::class, fn($event) => $event->vendorBill->id === $vendorBill->id);
 });
 
 test('confirming a vendor bill generates the correct journal entry', function () {
-    $vendorLocation = StockLocation::factory()->for($this->company)->create(['type' => StockLocationType::VENDOR]);
-    $stockLocation = StockLocation::factory()->for($this->company)->create(['type' => StockLocationType::INTERNAL]);
-    $this->company->update([
-        'vendor_location_id' => $vendorLocation->id,
-        'default_stock_location_id' => $stockLocation->id,
+    $product = Product::factory()->for($this->company)->create([
+        'type' => \App\Enums\Products\ProductType::Storable,
+        'inventory_valuation_method' => \App\Enums\Inventory\ValuationMethod::AVCO,
+        'default_inventory_account_id' => $this->inventoryAccount->id,
+        'default_stock_input_account_id' => $this->stockInputAccount->id,
     ]);
-    $expenseAccount = $this->company->accounts()->where('type', 'Expense')->firstOrFail();
-    $product = Product::factory()->for($this->company)->create(['expense_account_id' => $expenseAccount->id]);
     $vendorBill = VendorBill::factory()->for($this->company)->create(['status' => 'draft']);
 
-    // **THE FIX**: Replace the direct ->create() call with our robust Action.
-    $lineDto = new CreateVendorBillLineDTO(
-        description: $product->name,
-        quantity: 3,
-        unit_price: '50.00', // DTOs accept clean string representations of money
-        expense_account_id: $expenseAccount->id,
-        product_id: $product->id,
-        tax_id: null,
-        analytic_account_id: null
-    );
-    app(CreateVendorBillLineAction::class)->execute($vendorBill, $lineDto);
+    // Since we now have a dedicated Action for this, we can simplify line creation
+    \App\Models\VendorBillLine::factory()->for($vendorBill)->for($product)->create([
+        'quantity' => 3,
+        'unit_price' => Money::of(50, $this->company->currency->code), // Explicitly 50 IQD
+    ]);
 
-    // The service now receives a fully consistent and correct VendorBill.
-    app(VendorBillService::class)->confirm($vendorBill, $this->user);
+    // The service call remains the same
+    app(VendorBillService::class)->post($vendorBill, $this->user);
 
     $this->assertDatabaseCount('journal_entries', 1);
     $journalEntry = JournalEntry::first();
@@ -85,8 +82,8 @@ test('confirming a vendor bill generates the correct journal entry', function ()
         ->and($journalEntry->total_debit)->toEqual($expectedTotal)
         ->and($journalEntry->total_credit)->toEqual($expectedTotal);
 
-    expect($journalEntry->lines()->where('account_id', $expenseAccount->id)->first()->debit)->toEqual($expectedTotal);
-    expect($journalEntry->lines()->where('account_id', $this->company->default_accounts_payable_id)->first()->credit)->toEqual($expectedTotal);
+    expect($journalEntry->lines()->where('account_id', $this->inventoryAccount->id)->first()->debit)->toEqual($expectedTotal);
+    expect($journalEntry->lines()->where('account_id', $this->stockInputAccount->id)->first()->credit)->toEqual($expectedTotal);
 });
 
 test('a posted vendor bill cannot be updated', function () {

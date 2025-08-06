@@ -27,6 +27,7 @@ class ProcessInventoryForConfirmedBill
     private function processStorableProductLine($vendorBill, $line, $user): void
     {
         $product = $line->product;
+        $product->refresh();
         $company = $vendorBill->company->fresh();
 
         if (!$company->vendorLocation || !$company->defaultStockLocation) {
@@ -48,9 +49,9 @@ class ProcessInventoryForConfirmedBill
             'completed_at' => now(),
         ]);
 
-        $purchaseValue = $line->unit_price->multipliedBy($line->quantity);
-        $oldValue = $product->average_cost->multipliedBy($product->quantity_on_hand);
-        $totalQuantity = $product->quantity_on_hand + $line->quantity;
+        $purchaseValue = $line->unit_price->multipliedBy((string)$line->quantity, RoundingMode::HALF_UP);
+        $oldValue = ($product->average_cost ?? Money::zero($vendorBill->currency->code))->multipliedBy((string)($product->quantity_on_hand ?? 0), RoundingMode::HALF_UP);
+        $totalQuantity = ($product->quantity_on_hand ?? 0) + $line->quantity;
         $totalValue = $oldValue->plus($purchaseValue);
 
         $newAverageCost = $totalQuantity > 0
