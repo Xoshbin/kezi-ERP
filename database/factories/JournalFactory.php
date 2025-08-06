@@ -2,9 +2,10 @@
 
 namespace Database\Factories;
 
-use App\Models\Company;
 use App\Models\Account;
+use App\Models\Company;
 use App\Models\Currency;
+use App\Enums\Accounting\JournalType;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -22,7 +23,7 @@ class JournalFactory extends Factory
         return [
             'company_id' => Company::factory(),
             'name' => $this->faker->company,
-            'type' => $this->faker->randomElement(['general', 'cash', 'bank']),
+            'type' => JournalType::Miscellaneous,
             'short_code' => $this->faker->unique()->bothify('???'),
             'currency_id' => function (array $attributes) {
                 return Company::find($attributes['company_id'])->currency_id;

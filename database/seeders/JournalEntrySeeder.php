@@ -29,7 +29,7 @@ class JournalEntrySeeder extends Seeder
             $journalEntry = JournalEntry::create([
                 'company_id' => $company->id,
                 'journal_id' => $bankJournal->id,
-                'currency_id' => $currency->id,
+                'currency_id' => $company->currency_id,
                 'entry_date' => now(),
                 'reference' => 'Initial Capital Investment',
                 'description' => 'Record the initial capital investment.',
@@ -42,15 +42,13 @@ class JournalEntrySeeder extends Seeder
             $journalEntry->lines()->createMany([
                 [
                     'account_id' => $bankAccount->id,
-                    'currency_id' => $currency->id,
                     'debit' => Money::of(15000000, 'IQD'),
-                    'credit' => 0,
+                    'credit' => Money::of(0, 'IQD'),
                     'description' => 'Initial capital deposit',
                 ],
                 [
                     'account_id' => $equityAccount->id,
-                    'currency_id' => $currency->id,
-                    'debit' => 0,
+                    'debit' => Money::of(0, 'IQD'),
                     'credit' => Money::of(15000000, 'IQD'),
                     'description' => 'Owner\'s equity contribution',
                 ],

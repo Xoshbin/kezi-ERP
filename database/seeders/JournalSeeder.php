@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Enums\Accounting\JournalType;
 use App\Models\Account;
 use App\Models\Company;
 use App\Models\Currency;
@@ -37,7 +38,7 @@ class JournalSeeder extends Seeder
             // == Primary Operational Journals ==
             [
                 'name' => 'Sales',
-                'type' => 'Sale',
+                'type' => JournalType::Sale,
                 'short_code' => 'INV',
                 'currency_id' => null, // Can be used for any currency
                 'default_debit_account_id' => $accountsReceivable->id,
@@ -45,7 +46,7 @@ class JournalSeeder extends Seeder
             ],
             [
                 'name' => 'Purchases',
-                'type' => 'Purchase',
+                'type' => JournalType::Purchase,
                 'short_code' => 'BILL',
                 'currency_id' => null, // Can be used for any currency
                 'default_debit_account_id' => $cogs->id,
@@ -55,7 +56,7 @@ class JournalSeeder extends Seeder
             // == Main Bank & Cash Journals ==
             [
                 'name' => 'Bank (IQD)',
-                'type' => 'Bank',
+                'type' => JournalType::Bank,
                 'short_code' => 'BNK-IQD',
                 'currency_id' => $iqdCurrency->id,
                 'default_debit_account_id' => $bankAccountIqd->id,
@@ -63,7 +64,7 @@ class JournalSeeder extends Seeder
             ],
             [
                 'name' => 'Bank (USD)',
-                'type' => 'Bank',
+                'type' => JournalType::Bank,
                 'short_code' => 'BNK-USD',
                 'currency_id' => $usdCurrency->id,
                 'default_debit_account_id' => $bankAccountUsd->id,
@@ -71,7 +72,7 @@ class JournalSeeder extends Seeder
             ],
             [
                 'name' => 'Cash (IQD)',
-                'type' => 'Cash',
+                'type' => JournalType::Cash,
                 'short_code' => 'CSH-IQD',
                 'currency_id' => $iqdCurrency->id,
                 'default_debit_account_id' => $cashAccountIqd->id,
@@ -79,7 +80,7 @@ class JournalSeeder extends Seeder
             ],
             [
                 'name' => 'Cash (USD)',
-                'type' => 'Cash',
+                'type' => JournalType::Cash,
                 'short_code' => 'CSH-USD',
                 'currency_id' => $usdCurrency->id,
                 'default_debit_account_id' => $cashAccountUsd->id,
@@ -89,7 +90,7 @@ class JournalSeeder extends Seeder
             // == Example: Additional Future Bank Journals ==
             [
                 'name' => 'Cihan Bank',
-                'type' => 'Bank',
+                'type' => JournalType::Bank,
                 'short_code' => 'CIHAN',
                 'currency_id' => $iqdCurrency->id,
                 'default_debit_account_id' => $bankAccountIqd->id, // You might create a specific account for this later
@@ -97,7 +98,7 @@ class JournalSeeder extends Seeder
             ],
             [
                 'name' => 'NBI Bank',
-                'type' => 'Bank',
+                'type' => JournalType::Bank,
                 'short_code' => 'NBI',
                 'currency_id' => $iqdCurrency->id,
                 'default_debit_account_id' => $bankAccountIqd->id, // You might create a specific account for this later
@@ -107,7 +108,7 @@ class JournalSeeder extends Seeder
             // == Miscellaneous Journal ==
             [
                 'name' => 'Miscellaneous',
-                'type' => 'Miscellaneous',
+                'type' => JournalType::Miscellaneous,
                 'short_code' => 'MISC',
                 'currency_id' => null,
                 'default_debit_account_id' => null,
