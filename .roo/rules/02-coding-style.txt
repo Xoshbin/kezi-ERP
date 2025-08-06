@@ -10,32 +10,35 @@ This document outlines the official coding styles, architectural patterns, and b
 - **No Temporary Hacks:** All development, for both features and tests, must strictly adhere to the established architectural patterns (Actions, DTOs, Services), prioritize code reusability, and align with the overall system design. Solutions must be robust and scalable, without violating core accounting principles. Short-term workarounds are forbidden.
 - **Single Responsibility Principle (SRP):** Each class, method, or function should have only one reason to change. Logic should be narrowly focused and encapsulated. For example, a service should orchestrate a workflow, an action should execute a single business operation, and an observer should react to a model event. This keeps the codebase modular, maintainable, and easier to test.
 - **Definitive Solution Pattern:** We have established a key pattern for creating models that require pre-save calculations. The business logic for these calculations resides exclusively within a dedicated Action that accepts a DTO. Observers are reserved for side effects (e.g., updating a parent model's totals after a line item is saved). This pattern was successfully used to fix NOT NULL constraint violations when creating VendorBillLine records.
+- **Explicit Context Pattern:** This pattern provides the definitive solution for any situation where a model's attribute depends on context from a parent that isn't available during its creation. The responsibility for providing context to a new model instance must be shifted from the model itself (which is contextually unaware during creation) to the calling code (the Action or Service, which is fully aware). Instead of passing raw values and hoping the model can infer the context, the calling code must explicitly create a context-aware object (like Brick\Money\Money) and pass that complete object to the creation method.
 - **Lowercase Enum & Option Values:** All enum values and any option stored in the database (e.g., status, type, state) MUST be lowercase, snake_case. CamelCase, PascalCase, or uppercase values are strictly prohibited for database storage. This ensures consistency, simplifies querying, and avoids case-sensitivity issues across different database engines.
 
 ## 2. State Management: PHP 8.1+ Backed Enums
 
-**Rule:** All state management (e.g., `status`, `state`, `type`) MUST be implemented using PHP 8.1+ Backed Enums. The use of class constants for defining states is deprecated and should be refactored to Enums wherever possible.
+**Rule:** All state management (e.g., `status`, `state`, `type`) MUST be implemented using PHP 8.1+ Backed Enums. The use of class constants for defining states is deprecated and should be refactored to Enums wherever possible. Enum cases MUST be `PascalCase`, while their corresponding string values MUST be `snake_case`.
 
 **Rationale:**
 - **Type Safety:** Enums provide absolute type safety.
-- **Code Clarity & Discoverability:** Enums are self-documenting.
+- **Code Clarity & Discoverability:** Enums are self-documenting. `PascalCase` for cases follows official PHP examples, treating them as object members rather than traditional constants.
 - **Reduced Boilerplate:** Enums can contain their own related logic.
+- **Database Consistency:** Using `snake_case` for backed string values aligns with the database convention for column and table names and is enforced by the `Lowercase Enum & Option Values` core principle.
 
 **Example:**
 ```php
-// app/Enums/Accounting/InvoiceStatus.php
-enum InvoiceStatus: string
+// app/Enums/Inventory/StockLocationType.php
+enum StockLocationType: string
 {
-    case Draft = 'draft';
-    case Posted = 'posted';
-    // ...
+    case Internal = 'internal';
+    case Customer = 'customer';
+    case Vendor = 'vendor';
+    case InventoryAdjustment = 'inventory_adjustment';
 }
 
-// app/Models/Invoice.php
-class Invoice extends Model
+// Example usage in a model:
+class StockLocation extends Model
 {
     protected $casts = [
-        'status' => InvoiceStatus::class,
+        'type' => StockLocationType::class,
     ];
 }
 ```

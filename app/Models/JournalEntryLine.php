@@ -223,17 +223,24 @@ class JournalEntryLine extends Model
 
     /**
      * Accessor to provide the currency_id to the MoneyCast.
-     * This robust implementation prevents N+1 query issues.
+     * This robust implementation prevents N+1 query issues and handles the creation lifecycle.
      */
     public function getCurrencyIdAttribute(): int
     {
-        // THE FIX: This is the correct, idiomatic Eloquent way.
-        // It will use the eager-loaded relationship if available, or lazy-load it if not.
-        // It is the developer's responsibility to eager-load (`->with('journalEntry')`)
-        // in performance-critical code to prevent N+1 issues.
-        // If the relationship is loaded, use it. If not (e.g., during creation),
-        // lazy-load the parent to get the currency_id.
-        return $this->journalEntry->currency_id;
+        // This is the most efficient path: the relationship is already loaded in memory.
+        if ($this->relationLoaded('journalEntry') && $this->journalEntry) {
+            return $this->journalEntry->currency_id;
+        }
+
+        // This is the fallback for when the model is being created via a relationship.
+        // Eloquent sets the foreign key 'journal_entry_id' before the cast is triggered.
+        if ($this->journal_entry_id) {
+            // We find the parent's currency_id directly to avoid fully loading the parent model.
+            return JournalEntry::find($this->journal_entry_id)?->currency_id;
+        }
+
+        // If we have no relationship and no foreign key, we cannot determine the currency.
+        throw new \RuntimeException('Could not determine currency for JournalEntryLine.');
     }
 
 }

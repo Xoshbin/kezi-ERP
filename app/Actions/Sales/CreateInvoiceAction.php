@@ -13,8 +13,10 @@ use Illuminate\Support\Facades\DB;
 
 class CreateInvoiceAction
 {
-    public function __construct(private readonly LockDateService $lockDateService)
-    {
+    public function __construct(
+        private readonly LockDateService $lockDateService,
+        private readonly CreateInvoiceLineAction $createInvoiceLineAction
+    ) {
     }
 
     public function execute(CreateInvoiceDTO $dto): Invoice
@@ -37,24 +39,13 @@ class CreateInvoiceAction
                 'total_tax' => Money::of(0, $currencyCode),
             ]);
 
-            $linesToCreate = [];
             foreach ($dto->lines as $lineDto) {
-                $linesToCreate[] = [
-                    'product_id' => $lineDto->product_id,
-                    'description' => $lineDto->description,
-                    'quantity' => $lineDto->quantity,
-                    'unit_price' => Money::of($lineDto->unit_price, $currencyCode),
-                    'tax_id' => $lineDto->tax_id,
-                    'income_account_id' => $lineDto->income_account_id,
-                ];
+                $this->createInvoiceLineAction->execute($invoice, $lineDto);
             }
 
             if (!empty($linesToCreate)) {
                 $invoice->invoiceLines()->createMany($linesToCreate);
             }
-
-            // The model's saving observer will calculate totals.
-            $invoice->save();
 
             return $invoice;
         });

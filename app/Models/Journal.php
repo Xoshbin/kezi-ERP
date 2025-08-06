@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Models\Account;
 use App\Observers\JournalObserver;
+use App\Enums\Accounting\JournalType;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -67,24 +68,11 @@ class Journal extends Model
         'default_credit_account_id',
     ];
 
-    public const TYPE_SALE = 'sale';
-    public const TYPE_PURCHASE = 'purchase';
-    public const TYPE_BANK = 'bank';
-    public const TYPE_CASH = 'cash';
-    public const TYPE_MISCELLANEOUS = 'miscellaneous';
+    protected $casts = [
+        'type' => JournalType::class, // <-- Add this cast
+    ];
 
-    public static function getTypes(): array
-    {
-        return [
-            self::TYPE_SALE => 'Sale',
-            self::TYPE_PURCHASE => 'Purchase',
-            self::TYPE_BANK => 'Bank',
-            self::TYPE_CASH => 'Cash',
-            self::TYPE_MISCELLANEOUS => 'Miscellaneous',
-        ];
-    }
 
-        
     /**
      * Get the default debit account for this journal.
      */
