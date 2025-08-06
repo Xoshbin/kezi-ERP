@@ -15,8 +15,9 @@ class CreateVendorBillLineDTO
         public readonly int $quantity,
         public readonly string|Money $unit_price,
         public readonly int $expense_account_id,
-        public readonly ?string $description = null,
-        public readonly ?int $tax_id = null,
-        public readonly ?int $analytic_account_id = null
+        public readonly ?int $product_id,
+        public readonly ?int $tax_id,
+        public readonly ?int $analytic_account_id,
+        public readonly ?string $currency = null,
     ) {}
 }
