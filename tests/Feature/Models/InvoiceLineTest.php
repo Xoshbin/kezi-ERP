@@ -3,10 +3,13 @@
 use App\Models\Currency;
 use App\Models\Invoice;
 use App\Models\InvoiceLine;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+
+uses(RefreshDatabase::class);
 
 it('correctly resolves its currency_id from its parent invoice', function () {
     // Arrange
-    $usd = Currency::factory()->create();
+    $usd = Currency::factory()->create(['code' => 'USD']);
     $invoice = Invoice::factory()->create(['currency_id' => $usd->id]);
     $line = InvoiceLine::factory()->make(['invoice_id' => $invoice->id]);
 
