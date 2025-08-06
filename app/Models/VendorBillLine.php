@@ -106,6 +106,25 @@ class VendorBillLine extends Model
         'updated_at'        => 'datetime',  // Automatically managed by Eloquent [2].
     ];
 
+    protected static function booted(): void
+    {
+        static::saving(function (self $line) {
+            $line->loadMissing('vendorBill.currency', 'tax');
+
+            $currency = $line->vendorBill->currency;
+            $subtotal = $line->unit_price->multipliedBy((string)$line->quantity, \Brick\Math\RoundingMode::HALF_UP);
+            $taxAmount = \Brick\Money\Money::of(0, $currency->code);
+
+            if ($line->tax) {
+                $taxRate = (string)($line->tax->rate / 100);
+                $taxAmount = $subtotal->multipliedBy($taxRate, \Brick\Math\RoundingMode::HALF_UP);
+            }
+
+            $line->subtotal = $subtotal;
+            $line->total_line_tax = $taxAmount;
+        });
+    }
+
     /**
      * Get the Vendor Bill that owns the Vendor Bill Line.
      * Establishes a **BelongsTo** relationship with the `VendorBill` model,

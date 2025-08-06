@@ -15,13 +15,11 @@ use Carbon\Carbon;
 
 class CreateVendorBillAction
 {
-    public function __construct(protected LockDateService $lockDateService)
-    {
-    }
-
     public function __construct(
+        protected LockDateService $lockDateService,
         private readonly AccountingValidationService $accountingValidationService = new AccountingValidationService()
-    ) {}
+    ) {
+    }
 
     public function execute(CreateVendorBillDTO $dto): VendorBill
     {
