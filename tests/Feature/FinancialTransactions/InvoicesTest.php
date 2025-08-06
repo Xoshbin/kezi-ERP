@@ -19,6 +19,8 @@ use App\Enums\Accounting\LockDateType;
 use Tests\Traits\WithConfiguredCompany;
 use App\Actions\Sales\CreateInvoiceAction;
 use App\Actions\Sales\UpdateInvoiceAction;
+use App\Actions\Sales\CreateInvoiceLineAction;
+use App\DataTransferObjects\Sales\CreateInvoiceLineDTO;
 use App\Exceptions\PeriodIsLockedException;
 use App\Exceptions\UpdateNotAllowedException;
 use App\Services\AccountingValidationService;
@@ -77,11 +79,15 @@ test('confirming an invoice generates the correct journal entry', function () {
     ]);
 
     // The observer will now correctly pull the ID from the product above.
-    $invoice->invoiceLines()->create([
-        'product_id' => $product->id,
-        'quantity' => 2,
-        'unit_price' => Money::of(100, $currencyCode),
-    ]);
+    $lineDto = new CreateInvoiceLineDTO(
+        product_id: $product->id,
+        description: 'Product Description',
+        quantity: 2,
+        unit_price: '100',
+        income_account_id: $productSalesAccount->id,
+        tax_id: null,
+    );
+    app(CreateInvoiceLineAction::class)->execute($invoice, $lineDto);
 
     // Act: Confirm the invoice.
     (app(InvoiceService::class))->confirm($invoice, $this->user);
