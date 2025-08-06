@@ -6,9 +6,9 @@ use App\Models\Account;
 use App\Models\Company;
 use App\Models\Journal;
 use App\Models\Currency;
-use App\Models\Account;
-use App\Models\Journal;
+use App\Models\StockLocation;
 use App\Enums\Accounting\JournalType;
+use App\Enums\Inventory\StockLocationType;
 
 class CompanyBuilder
 {
@@ -68,6 +68,16 @@ class CompanyBuilder
         return $this;
     }
 
+    public function withDefaultStockLocations(): self
+    {
+        $this->stockLocations = [
+            'default_stock_input_location_id' => ['name' => 'Stock Input', 'type' => StockLocationType::VENDOR->value],
+            'default_stock_output_location_id' => ['name' => 'Stock Output', 'type' => StockLocationType::CUSTOMER->value],
+            'default_stock_location_id' => ['name' => 'Default Stock', 'type' => StockLocationType::INTERNAL->value],
+        ];
+        return $this;
+    }
+
     public function create(): Company
     {
         if (!$this->currency) {
@@ -99,13 +109,17 @@ class CompanyBuilder
         $company->update(array_merge(
             collect($accountInstances)->mapWithKeys(fn($acc, $k) => [$k => $acc->id])->all(),
             collect($journalInstances)->mapWithKeys(fn($jour, $k) => [$k => $jour->id])->all(),
-            collect($locationInstances)->mapWithKeys(fn($loc, $k) => [$k => $loc->id])->all() // Add location IDs
-
+            collect($locationInstances)->mapWithKeys(fn($loc, $k) => [$k => $loc->id])->all()
         ));
 
-        if (!empty($updates)) {
-            $company->update($updates);
+        // Associate the locations with the company
+        if (isset($locationInstances['default_stock_input_location_id'])) {
+            $company->vendorLocation()->associate($locationInstances['default_stock_input_location_id']);
         }
+        if (isset($locationInstances['default_stock_location_id'])) {
+            $company->defaultStockLocation()->associate($locationInstances['default_stock_location_id']);
+        }
+        $company->save();
 
         return $company->fresh();
     }

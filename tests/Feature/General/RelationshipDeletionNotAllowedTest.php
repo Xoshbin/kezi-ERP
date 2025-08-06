@@ -189,11 +189,15 @@ test('a posted invoice with lines cannot be deleted', function () {
     ]);
 
     // Act: Confirm the invoice using the service.
-    (new \App\Services\InvoiceService(app(\App\Services\JournalEntryService::class)))->confirm($invoice, $this->user);
+    $this->mock(\App\Services\JournalEntryService::class, function ($mock) {
+        $mock->shouldReceive('post')->once();
+    });
+    $this->mock(\App\Services\Inventory\StockMoveService::class);
+    app(\App\Services\InvoiceService::class)->confirm($invoice, $this->user);
 
     // Assert: Attempting to delete the now-posted invoice must fail.
     $this->expectException(\App\Exceptions\DeletionNotAllowedException::class);
-    (new \App\Services\InvoiceService(app(\App\Services\JournalEntryService::class)))->delete($invoice);
+    app(\App\Services\InvoiceService::class)->delete($invoice);
 
     // Verify: The invoice and its journal entry must still exist.
     $this->assertModelExists($invoice);

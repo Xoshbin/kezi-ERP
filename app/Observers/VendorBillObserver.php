@@ -29,7 +29,7 @@ class VendorBillObserver
         }
     }
 
-    private function processStorableProductLine(VendorBill $vendorBill, $line): void
+    public function processStorableProductLine(VendorBill $vendorBill, $line): void
     {
         if (!$line->product) {
             return;
@@ -62,12 +62,15 @@ class VendorBillObserver
 
             // FIX #2: Add the user ID for a complete audit trail.
             // We assume the user who confirmed the bill is stored on the bill model.
-            'created_by_user_id' => $vendorBill->user_id,
+            'created_by_user_id' => auth()?->id(),
         ]);
 
         // Recalculate Average Cost (AVCO)
+        if (!$line->product->is_storable) {
+            return;
+        }
         $purchaseValue = $line->unit_price->multipliedBy($line->quantity);
-        $oldValue = $product->average_cost->multipliedBy($product->quantity_on_hand);
+        $oldValue = ($product->average_cost ?? Money::zero($currency->code))->multipliedBy($product->quantity_on_hand);
         $totalQuantity = $product->quantity_on_hand + $line->quantity;
         $totalValue = $oldValue->plus($purchaseValue);
 
