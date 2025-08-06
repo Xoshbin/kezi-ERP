@@ -1,5 +1,8 @@
 <?php
 
+use App\Actions\Accounting\CreateJournalEntryForDepreciationAction;
+use App\Actions\Assets\PostDepreciationEntryAction;
+use App\Enums\Assets\DepreciationEntryStatus;
 use Carbon\Carbon;
 use App\Models\User;
 use App\Models\Asset;
@@ -23,7 +26,6 @@ test('running depreciation for an asset creates the correct journal entries', fu
     // Arrange: Create an asset to be depreciated.
     $currencyCode = $this->company->currency->code;
     $asset = Asset::factory()->for($this->company)->create([
-        // MODIFIED: Ensure this value is 1200, not 12000. This is the likely source of the error.
         'purchase_value' => Money::of(1200, $currencyCode),
         'salvage_value' => Money::of(0, $currencyCode),
         'purchase_date' => now()->subYear(),
@@ -34,19 +36,24 @@ test('running depreciation for an asset creates the correct journal entries', fu
         'depreciation_expense_account_id' => $depreciationExpenseAccount->id,
     ]);
 
-    // Act: Run the depreciation for a specific period (e.g., one month).
-    // The annual depreciation is 120. Monthly is 10.
-    (app(AssetService::class))->runDepreciation($asset, $this->user);
+    // Act: Compute draft depreciation entries and then post the first one.
+    (app(AssetService::class))->computeDepreciation($asset);
+    $draftEntry = $asset->depreciationEntries()->where('status', DepreciationEntryStatus::Draft)->first();
 
-    // Assert: A depreciation entry was created for the asset.
-    $this->assertDatabaseCount('depreciation_entries', 1);
-    $depreciationEntry = $asset->depreciationEntries()->first();
+    // Manually instantiate and execute the action
+    $postAction = new PostDepreciationEntryAction(new CreateJournalEntryForDepreciationAction());
+    $postedDepreciationEntry = $postAction->execute($draftEntry, $this->user);
+
+    // Assert: A depreciation entry was created and posted.
+    $this->assertDatabaseCount('depreciation_entries', 120); // 10 years * 12 months
+    $this->assertEquals(DepreciationEntryStatus::Posted, $postedDepreciationEntry->status);
+
     $expectedMonthlyAmount = Money::of(10, $currencyCode);
-    expect($depreciationEntry->amount->isEqualTo($expectedMonthlyAmount))->toBeTrue();
+    expect($postedDepreciationEntry->amount->isEqualTo($expectedMonthlyAmount))->toBeTrue();
 
     // Assert: A journal entry was created and linked.
-    $this->assertNotNull($depreciationEntry->journal_entry_id);
-    $journalEntry = $depreciationEntry->journalEntry;
+    $this->assertNotNull($postedDepreciationEntry->journal_entry_id);
+    $journalEntry = $postedDepreciationEntry->journalEntry;
     $this->assertModelExists($journalEntry);
 
     // Assert: The journal entry has the correct details.
@@ -55,16 +62,15 @@ test('running depreciation for an asset creates the correct journal entries', fu
     expect($journalEntry->total_credit->isEqualTo($expectedMonthlyAmount))->toBeTrue();
 
     // Assert: The correct accounts were debited and credited.
-    // The database stores the minor amount (integer), so 10.00 becomes 1000.
     $this->assertDatabaseHas('journal_entry_lines', [
         'journal_entry_id' => $journalEntry->id,
         'account_id' => $depreciationExpenseAccount->id,
-        'debit' => 10000,
+        'debit' => 10000, // 10.000 becomes 10000 in minor units for IQD
     ]);
     $this->assertDatabaseHas('journal_entry_lines', [
         'journal_entry_id' => $journalEntry->id,
         'account_id' => $accumulatedDepreciationAccount->id,
-        'credit' => 10000,
+        'credit' => 10000, // 10.000 becomes 10000 in minor units for IQD
     ]);
 
     // Assert: The asset's book value was updated.
