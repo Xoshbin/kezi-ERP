@@ -19,7 +19,7 @@ class LockDateService
             return false;
         }
 
-        return $date->lte($lockedUntil);
+        return $date->lt($lockedUntil);
     }
 
     public function enforce(Company $company, Carbon $date): void
@@ -30,8 +30,8 @@ class LockDateService
         ];
 
         foreach ($lockTypes as $lockType) {
-            if ($this->isPeriodLocked($company, $date, $lockType)) {
-                $lockedDate = $this->getLockDateForType($company, $lockType);
+            $lockedDate = $this->getLockDateForType($company, $lockType);
+            if ($lockedDate && $date->lt($lockedDate)) {
                 throw new PeriodIsLockedException("The period is locked until {$lockedDate->format('Y-m-d')}.");
             }
         }
@@ -42,9 +42,11 @@ class LockDateService
         $cacheKey = "lock_date_{$company->id}_{$lockType}";
 
         return Cache::remember($cacheKey, now()->addDay(), function () use ($company, $lockType) {
-            return LockDate::where('company_id', $company->id)
+            $date = LockDate::where('company_id', $company->id)
                 ->where('lock_type', $lockType)
                 ->value('locked_until');
+
+            return $date ? Carbon::parse($date) : null;
         });
     }
 }
