@@ -33,6 +33,7 @@ return new class extends Migration
             $table->foreignId('default_gain_loss_account_id')->nullable()->constrained('accounts')->nullOnDelete();
             $table->foreignId('default_stock_location_id')->nullable();
             $table->foreignId('default_vendor_location_id')->nullable();
+            $table->foreignId('inventory_adjustment_account_id')->nullable()->constrained('accounts');
             $table->timestamps();
         });
 
