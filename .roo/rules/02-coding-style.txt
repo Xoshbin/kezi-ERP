@@ -12,6 +12,10 @@ This document outlines the official coding styles, architectural patterns, and b
 - **Definitive Solution Pattern:** We have established a key pattern for creating models that require pre-save calculations. The business logic for these calculations resides exclusively within a dedicated Action that accepts a DTO. Observers are reserved for side effects (e.g., updating a parent model's totals after a line item is saved). This pattern was successfully used to fix NOT NULL constraint violations when creating VendorBillLine records.
 - **Explicit Context Pattern:** This pattern provides the definitive solution for any situation where a model's attribute depends on context from a parent that isn't available during its creation. The responsibility for providing context to a new model instance must be shifted from the model itself (which is contextually unaware during creation) to the calling code (the Action or Service, which is fully aware). Instead of passing raw values and hoping the model can infer the context, the calling code must explicitly create a context-aware object (like Brick\Money\Money) and pass that complete object to the creation method.
 - **Lowercase Enum & Option Values:** All enum values and any option stored in the database (e.g., status, type, state) MUST be lowercase, snake_case. CamelCase, PascalCase, or uppercase values are strictly prohibited for database storage. This ensures consistency, simplifies querying, and avoids case-sensitivity issues across different database engines.
+- **Architectural Consistency:** Ensure any feature, bug fix, or change is consistent with the other parts of the app. Analyze the codebase carefully and follow existing patterns.
+- **Targeted Changes:** Modify only the code that needs to be changed. Avoid unnecessary refactoring to keep commit messages clean and easy to review.
+- **Respect Accounting Principles:** Do not violate core accounting principles.
+- **Preserve Comments:** Do not remove comments unless they are no longer relevant. Commenting is important for code maintainability.
 
 ## 2. State Management: PHP 8.1+ Backed Enums
 
