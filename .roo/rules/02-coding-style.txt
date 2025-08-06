@@ -91,6 +91,31 @@ The application follows a strict layered architecture to separate concerns. The 
     - Maintaining the cryptographic hash chain on `JournalEntry`.
     - Creating `AuditLog` entries.
 
+### 3.4.1. Observer Registration
+
+**Rule:** Observers MUST be registered using the `#[ObservedBy]` attribute directly on the corresponding Eloquent model. Manual registration in `EventServiceProvider` is prohibited.
+
+**Rationale:**
+- **Colocation of Logic:** Keeps the connection between a model and its observer in one place, improving discoverability and maintainability.
+- **Clarity & Explicitness:** Makes it immediately clear which observers are acting on a model just by looking at the model file.
+- **Modern Syntax:** Aligns with modern Laravel practices for auto-discovery and registration.
+
+**Example:**
+```php
+// app/Models/AdjustmentDocumentLine.php
+namespace App\Models;
+
+use App\Observers\AdjustmentDocumentLineObserver;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
+use Illuminate\Database\Eloquent\Model;
+
+#[ObservedBy([AdjustmentDocumentLineObserver::class])]
+class AdjustmentDocumentLine extends Model
+{
+    // ...
+}
+```
+
 ### 3.5. Policies (`app/Policies/`)
 
 **Purpose:** To handle all user **Authorization**. Policies answer the question, "Can the current user perform this action on this model?"
