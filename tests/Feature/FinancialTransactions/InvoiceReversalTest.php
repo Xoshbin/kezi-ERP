@@ -3,6 +3,8 @@
 use App\Models\User;
 use Brick\Money\Money;
 use App\Models\Account;
+use App\Actions\Sales\CreateInvoiceLineAction;
+use App\DataTransferObjects\Sales\CreateInvoiceLineDTO;
 use App\Models\Invoice;
 use Tests\Traits\MocksTime;
 use App\Services\InvoiceService;
@@ -17,12 +19,16 @@ uses(RefreshDatabase::class, WithConfiguredCompany::class, MocksTime::class);
 test('cancelling a posted invoice creates a reversing journal entry and an audit log', function () {
 
     $invoice = Invoice::factory()->for($this->company)->create(['status' => 'draft']);
-    $invoice->invoiceLines()->create([
-        'description' => 'Consulting Services',
-        'quantity' => 1,
-        'unit_price' => \Brick\Money\Money::of(2500, $this->company->currency->code),
-        'income_account_id' => \App\Models\Account::factory()->for($this->company)->create(['type' => 'Income'])->id,
-    ]);
+    $incomeAccount = \App\Models\Account::factory()->for($this->company)->create(['type' => 'Income']);
+    $lineDto = new CreateInvoiceLineDTO(
+        description: 'Consulting Services',
+        quantity: 1,
+        unit_price: '2500',
+        income_account_id: $incomeAccount->id,
+        product_id: null,
+        tax_id: null,
+    );
+    app(CreateInvoiceLineAction::class)->execute($invoice, $lineDto);
 
     $invoiceService = app(InvoiceService::class);
 
