@@ -15,8 +15,10 @@ class CreateVendorBillLineAction
 {
     public function execute(VendorBill $vendorBill, CreateVendorBillLineDTO $dto): VendorBillLine
     {
-        $currencyCode = $dto->currency ?? $vendorBill->currency->code;
-        $unitPrice = Money::of($dto->unit_price, $currencyCode);
+        // CORRECTED: This logic handles both Money objects and strings for unit_price.
+        $unitPrice = $dto->unit_price instanceof Money
+            ? $dto->unit_price
+            : Money::of($dto->unit_price, $vendorBill->currency->code);
 
         // All subsequent calculations will now work correctly.
         $currency = $unitPrice->getCurrency();
@@ -24,7 +26,7 @@ class CreateVendorBillLineAction
         $description = $dto->description ?? $product?->name;
         $subtotal = $unitPrice->multipliedBy($dto->quantity, RoundingMode::HALF_UP);
 
-        $taxAmount = Money::zero($currencyCode);
+        $taxAmount = Money::zero($currency);
         if ($dto->tax_id && $tax = Tax::find($dto->tax_id)) {
             $taxAmount = $subtotal->multipliedBy($tax->rate, RoundingMode::HALF_UP);
         }
