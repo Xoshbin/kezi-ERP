@@ -51,15 +51,15 @@ class AssetService
     public function computeDepreciation(Asset $asset): Collection
     {
         $asset->load('currency');
-        $depreciableValue = $asset->purchase_price->minus($asset->salvage_value, RoundingMode::HALF_UP);
+        $depreciableValue = $asset->purchase_value->minus($asset->salvage_value, RoundingMode::HALF_UP);
 
-        $monthlyDepreciation = $depreciableValue->dividedBy($asset->useful_life * 12, RoundingMode::HALF_UP);
+        $monthlyDepreciation = $depreciableValue->dividedBy($asset->useful_life_years * 12, RoundingMode::HALF_UP);
 
         $depreciationDate = Carbon::parse($asset->purchase_date)->startOfMonth();
 
         $entries = collect();
 
-        for ($i = 0; $i < $asset->useful_life * 12; $i++) {
+        for ($i = 0; $i < $asset->useful_life_years * 12; $i++) {
             $depreciationDate = $depreciationDate->addMonth();
             $entry = DepreciationEntry::create([
                 'asset_id' => $asset->id,
