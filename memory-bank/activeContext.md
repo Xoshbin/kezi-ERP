@@ -185,3 +185,6 @@ This file tracks the project's current status, including recent changes, current
 **Next Steps:** The system is ready for the next development task.
 
 [2025-08-03 19:22:37] - **Recent Change:** Established the "Definitive Solution Pattern" for handling pre-save calculations in models. This formalizes the use of Actions and DTOs for business logic, reserving Observers for side effects.
+
+
+[2025-08-06 06:55:00] - **Recent Change:** Established the "Explicit Context Pattern" for handling framework dependency issues during model creation. This formalizes the process of passing complete, context-aware objects to model creation methods.
