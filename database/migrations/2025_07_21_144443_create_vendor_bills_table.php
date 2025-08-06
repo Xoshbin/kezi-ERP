@@ -27,6 +27,7 @@ return new class extends Migration
             $table->unsignedBigInteger('total_tax');
             $table->timestamp('posted_at')->nullable();
             $table->json('reset_to_draft_log')->nullable();
+            $table->foreignId('user_id')->nullable()->constrained('users')->after('company_id');
             $table->timestamps();
         });
     }
