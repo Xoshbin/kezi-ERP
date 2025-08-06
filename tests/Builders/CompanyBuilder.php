@@ -6,8 +6,6 @@ use App\Models\Account;
 use App\Models\Company;
 use App\Models\Journal;
 use App\Models\Currency;
-use App\Models\Account;
-use App\Models\Journal;
 use App\Enums\Accounting\JournalType;
 
 class CompanyBuilder
@@ -56,6 +54,10 @@ class CompanyBuilder
     public function withDefaultJournals(): self
     {
         $this->journals = [
+            'default_purchase_journal_id' => ['type' => JournalType::Purchase, 'name' => 'Purchase Journal'],
+            'default_sales_journal_id' => ['type' => JournalType::Sale, 'name' => 'Sales Journal'],
+            'default_bank_journal_id' => ['type' => JournalType::Bank, 'name' => 'Bank Journal'],
+            'default_depreciation_journal_id' => ['type' => JournalType::Miscellaneous, 'name' => 'Depreciation Journal'],
             'default_purchase_journal_id' => ['type' => JournalType::Purchase, 'name' => 'Purchase Journal'],
             'default_sales_journal_id' => ['type' => JournalType::Sale, 'name' => 'Sales Journal'],
             'default_bank_journal_id' => ['type' => JournalType::Bank, 'name' => 'Bank Journal'],
