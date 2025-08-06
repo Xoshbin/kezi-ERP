@@ -2,6 +2,7 @@
 
 use App\Models\User;
 use Brick\Money\Money;
+use App\Enums\Accounting\JournalType;
 use App\Models\Account;
 use App\Models\Company;
 use App\Models\Journal;
@@ -21,7 +22,7 @@ beforeEach(function () {
     $this->user = User::factory()->create(['company_id' => $this->company->id]);
     $this->bankJournal = Journal::factory()->create([
         'company_id' => $this->company->id,
-        'type' => 'Bank',
+        'type' => JournalType::Bank,
     ]);
 });
 
