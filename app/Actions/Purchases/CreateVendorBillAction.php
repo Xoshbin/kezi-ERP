@@ -3,17 +3,27 @@
 namespace App\Actions\Purchases;
 
 use App\Models\Tax;
+use App\Models\Company;
 use Brick\Money\Money;
 use App\Models\Currency;
 use App\Models\VendorBill;
 use Illuminate\Support\Facades\DB;
+use App\Services\Accounting\LockDateService;
 use App\DataTransferObjects\Purchases\CreateVendorBillDTO;
+use Carbon\Carbon;
 
 class CreateVendorBillAction
 {
+    public function __construct(protected LockDateService $lockDateService)
+    {
+    }
+
     public function execute(CreateVendorBillDTO $dto): VendorBill
     {
-        return DB::transaction(function () use ($dto) {
+        $company = Company::findOrFail($dto->company_id);
+
+        return DB::transaction(function () use ($dto, $company) {
+            $this->lockDateService->enforce($company, Carbon::parse($dto->bill_date));
             // 1. Fetch the currency model from the ID in the DTO
             $currency = Currency::findOrFail($dto->currency_id);
 

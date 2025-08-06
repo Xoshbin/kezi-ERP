@@ -13,13 +13,13 @@ class CreateVendorBillLineAction
 {
     public function execute(VendorBill $vendorBill, CreateVendorBillLineDTO $dto): VendorBillLine
     {
-        $currency = $vendorBill->currency;
-        $unitPrice = Money::of($dto->unit_price, $currency->code);
+        $currencyCode = $dto->currency ?? $vendorBill->currency->code;
+        $unitPrice = Money::of($dto->unit_price, $currencyCode);
 
         // Perform all calculations *before* creating the model.
         $subtotal = $unitPrice->multipliedBy($dto->quantity, RoundingMode::HALF_UP);
 
-        $taxAmount = Money::zero($currency->code);
+        $taxAmount = Money::zero($currencyCode);
         if ($dto->tax_id && $tax = Tax::find($dto->tax_id)) {
             $taxAmount = $subtotal->multipliedBy($tax->rate, RoundingMode::HALF_UP);
         }
