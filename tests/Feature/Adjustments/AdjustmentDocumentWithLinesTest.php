@@ -24,6 +24,7 @@ test('adjustment document totals are calculated correctly from lines', function 
     // Arrange
     $currencyCode = $this->company->currency->code;
     $adjustmentDoc = AdjustmentDocument::factory()->for($this->company)->create([
+        'currency_id' => $this->company->currency->id,
         'total_amount' => Money::of(0, $currencyCode),
         'total_tax' => Money::of(0, $currencyCode),
     ]);
