@@ -27,10 +27,10 @@ test('it creates a correct journal entry for a posted vendor bill', function () 
         'product_id' => $product->id,
         'quantity' => 1,
         'description' => 'asdf',
-        'unit_price' => Money::of(500, $$this->company->currencyCode),
+        'unit_price' => Money::of(500, $this->company->currency->code),
         'tax_id' => $tax->id,
-        'subtotal' => Money::of(500, $$this->company->currencyCode),
-        'total_line_tax' => Money::of(50, $$this->company->currencyCode),
+        'subtotal' => Money::of(500, $this->company->currency->code),
+        'total_line_tax' => Money::of(50, $this->company->currency->code),
         'expense_account_id' => $product->expense_account_id,
     ]);
 
@@ -50,7 +50,7 @@ test('it creates a correct journal entry for a posted vendor bill', function () 
     $this->assertTrue($journalEntry->is_posted);
     $this->assertEquals($this->company->default_purchase_journal_id, $journalEntry->journal_id);
 
-    $expectedTotal = Money::of(550, $$this->company->currencyCode);
+    $expectedTotal = Money::of(550, $this->company->currency->code);
     $this->assertTrue($journalEntry->total_credit->isEqualTo($expectedTotal));
 
     $this->assertDatabaseHas('journal_entry_lines', [

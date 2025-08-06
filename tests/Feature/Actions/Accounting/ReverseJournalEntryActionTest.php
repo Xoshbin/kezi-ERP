@@ -22,8 +22,8 @@ beforeEach(function () {
 
     // Create an original journal entry via the write-off action
     $this->line = BankStatementLine::factory()
-        ->for(BankStatement::factory()->for($this->company)->for(Journal::factory()->for($this->company)->create())->for($$this->company->currency)->create())
-        ->create(['amount' => \Brick\Money\Money::ofMinor(-100000, $$this->company->currencyCode), 'is_reconciled' => false]);
+        ->for(BankStatement::factory()->for($this->company)->for(Journal::factory()->for($this->company)->create())->for($this->company->currency)->create())
+        ->create(['amount' => \Brick\Money\Money::ofMinor(-100000, $this->company->currency->code), 'is_reconciled' => false]);
     $writeOffAccount = Account::factory()->for($this->company)->create();
 
     $dto = new CreateJournalEntryForStatementLineDTO(
