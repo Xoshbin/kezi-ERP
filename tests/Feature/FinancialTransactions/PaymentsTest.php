@@ -4,6 +4,7 @@ use App\Models\User;
 use Brick\Money\Money;
 use App\Models\Account;
 use App\Models\Company;
+use App\Enums\Accounting\JournalType;
 use App\Models\Invoice;
 use App\Models\Journal;
 use App\Models\Partner;
@@ -38,7 +39,7 @@ test('an inbound payment can be created and linked to an invoice', function () {
 
     $paymentDTO = new CreatePaymentDTO(
         company_id: $this->company->id,
-        journal_id: Journal::factory()->for($this->company)->create(['type' => 'Bank'])->id,
+        journal_id: Journal::factory()->for($this->company)->create(['type' => JournalType::Bank])->id,
         currency_id: $this->company->currency_id,
         payment_date: now()->toDateString(),
         document_links: [$documentLinkDTO],
@@ -78,7 +79,7 @@ test('an outbound payment can be created and linked to a vendor bill', function 
 
     $paymentDTO = new CreatePaymentDTO(
         company_id: $this->company->id,
-        journal_id: Journal::factory()->for($this->company)->create(['type' => 'Bank'])->id,
+        journal_id: Journal::factory()->for($this->company)->create(['type' => JournalType::Bank])->id,
         currency_id: $this->company->currency_id,
         payment_date: now()->toDateString(),
         document_links: [$documentLinkDTO],
@@ -105,7 +106,7 @@ test('creating a payment generates the correct journal entry', function () {
     $receivableAccount = Account::factory()->for($this->company)->create(['type' => 'Receivable']);
     $bankAccount = Account::factory()->for($this->company)->create(['type' => 'Bank']);
     $bankJournal = Journal::factory()->for($this->company)->create([
-        'type' => 'Bank',
+        'type' => JournalType::Bank,
         'default_debit_account_id' => $bankAccount->id,
         'default_credit_account_id' => $bankAccount->id
     ]);
