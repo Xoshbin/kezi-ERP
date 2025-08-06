@@ -5,6 +5,7 @@ namespace Tests\Feature\Bank;
 use App\Models\User;
 use Brick\Money\Money;
 use App\Models\Journal;
+use App\Enums\Accounting\JournalType;
 use App\Models\Partner;
 use App\Models\BankStatement;
 use Tests\Traits\CreatesApplication;
@@ -22,7 +23,7 @@ uses(RefreshDatabase::class, WithConfiguredCompany::class);
 beforeEach(function () {
 
     // Setup a specific journal for bank transactions
-    $this->bankJournal = Journal::factory()->for($this->company)->create(['type' => 'Bank']);
+    $this->bankJournal = Journal::factory()->for($this->company)->create(['type' => JournalType::Bank]);
 });
 
 test('it creates a bank statement and its lines from a dto', function () {
