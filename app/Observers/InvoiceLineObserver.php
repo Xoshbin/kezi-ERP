@@ -13,7 +13,21 @@ class InvoiceLineObserver
      */
     public function creating(InvoiceLine $invoiceLine): void
     {
-        // NO LONGER NEEDED.
+        $invoiceLine->loadMissing('tax', 'invoice.currency');
+        $currency = $invoiceLine->invoice->currency;
+
+        // unit_price is already a Money object thanks to the MoneyCast
+        // Calculate subtotal
+        $subtotal = $invoiceLine->unit_price->multipliedBy($invoiceLine->quantity);
+        $invoiceLine->subtotal = $subtotal;
+
+        // Calculate tax
+        if ($invoiceLine->tax) {
+            $taxRate = $invoiceLine->tax->rate;
+            $invoiceLine->total_line_tax = $subtotal->multipliedBy($taxRate);
+        } else {
+            $invoiceLine->total_line_tax = \Brick\Money\Money::of(0, $currency->code);
+        }
     }
 
     /**
