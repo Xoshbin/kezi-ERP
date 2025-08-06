@@ -4,6 +4,7 @@ use App\Models\User;
 use App\Models\Account;
 use App\Models\Company;
 use App\Models\Journal;
+use App\Enums\Accounting\JournalType;
 use App\Models\JournalEntry;
 use App\Models\AdjustmentDocument;
 use Tests\Traits\CreatesApplication;
@@ -21,7 +22,7 @@ test('an adjustment document can be posted, which creates a journal entry and di
     Event::fake();
 
     // Arrange: Set up the necessary journal.
-    $adjustmentJournal = Journal::factory()->for($this->company)->create(['type' => 'Miscellaneous']);
+    $adjustmentJournal = Journal::factory()->for($this->company)->create(['type' => JournalType::Miscellaneous]);
     $this->company->update(['default_adjustment_journal_id' => $adjustmentJournal->id]);
 
     // Arrange: Create a draft adjustment document with total amounts.
@@ -29,6 +30,7 @@ test('an adjustment document can be posted, which creates a journal entry and di
     $currencyCode = $this->company->currency->code;
     $document = AdjustmentDocument::factory()->for($this->company)->create([
         'status' => AdjustmentDocument::STATUS_DRAFT,
+        'currency_id' => $this->company->currency_id,
         'total_amount' => Money::of(200, $currencyCode),
         'total_tax' => Money::of(0, $currencyCode),
     ]);
