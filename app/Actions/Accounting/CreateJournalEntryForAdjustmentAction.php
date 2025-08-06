@@ -37,7 +37,12 @@ class CreateJournalEntryForAdjustmentAction
 
         // 3. Build the journal entry lines based on credit note accounting rules (reversing a sale).
         $lines = [];
-        $subtotal = $adjustment->total_amount->minus($adjustment->total_tax);
+        // Explicitly use the document's currency for all calculations.
+        // Explicitly use the document's currency for all calculations, adhering to the "Explicit Context Pattern".
+        // We retrieve the raw integer value from the model's attributes and create the Money object here, in the action.
+        $totalAmount = Money::ofMinor($adjustment->getAttributes()['total_amount'], $currencyCode);
+        $totalTax = Money::ofMinor($adjustment->getAttributes()['total_tax'], $currencyCode);
+        $subtotal = $totalAmount->minus($totalTax);
 
         // Rule: DEBIT the Sales Discount/Contra-Revenue account.
         $lines[] = [
@@ -47,10 +52,10 @@ class CreateJournalEntryForAdjustmentAction
         ];
 
         // Rule: DEBIT Tax Payable to reduce it (if there is tax).
-        if ($adjustment->total_tax->isPositive()) {
+        if ($totalTax->isPositive()) {
             $lines[] = [
                 'account_id' => $taxAccountId,
-                'debit' => $adjustment->total_tax,
+                'debit' => $totalTax,
                 'credit' => Money::of(0, $currencyCode),
             ];
         }
@@ -58,13 +63,14 @@ class CreateJournalEntryForAdjustmentAction
         // Rule: CREDIT Accounts Receivable to reduce the customer's debt.
         $lines[] = [
             'account_id' => $arAccountId,
-            'credit' => $adjustment->total_amount,
+            'credit' => $totalAmount,
             'debit' => Money::of(0, $currencyCode),
         ];
 
         // 4. Prepare the data payload for the generic JournalEntryService.
         $journalEntryData = [
             'company_id' => $adjustment->company_id,
+            'currency_id' => $adjustment->currency_id,
             'journal_id' => $salesJournalId,
             'entry_date' => $adjustment->posted_at,
             'reference' => 'CN-' . $adjustment->reference_number,
