@@ -6,9 +6,9 @@ use App\Models\Account;
 use App\Models\Company;
 use App\Models\Journal;
 use App\Models\Currency;
-use App\Models\StockLocation;
+use App\Models\Account;
+use App\Models\Journal;
 use App\Enums\Accounting\JournalType;
-use App\Enums\Inventory\StockLocationType;
 
 class CompanyBuilder
 {
@@ -60,16 +60,6 @@ class CompanyBuilder
             'default_sales_journal_id' => ['type' => JournalType::Sale, 'name' => 'Sales Journal'],
             'default_bank_journal_id' => ['type' => JournalType::Bank, 'name' => 'Bank Journal'],
             'default_depreciation_journal_id' => ['type' => JournalType::Miscellaneous, 'name' => 'Depreciation Journal'],
-        ];
-        return $this;
-    }
-
-    public function withDefaultStockLocations(): self
-    {
-        $this->stockLocations = [
-            'default_stock_input_location_id' => ['name' => 'Stock Input', 'type' => StockLocationType::VENDOR->value],
-            'default_stock_output_location_id' => ['name' => 'Stock Output', 'type' => StockLocationType::CUSTOMER->value],
-            'default_stock_location_id' => ['name' => 'Default Stock', 'type' => StockLocationType::INTERNAL->value],
         ];
         return $this;
     }
