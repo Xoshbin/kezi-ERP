@@ -6,26 +6,33 @@ use App\Models\VendorBillLine;
 
 class VendorBillLineObserver
 {
-    // The "creating" method is no longer needed here, as the Action handles initial calculation.
-    // The "updating" method could still be used if you allow lines to be edited.
 
     /**
-     * Handle the "saved" event (after creation or update).
-     * This triggers the parent VendorBill to update its own totals.
+     * Handle the VendorBillLine "saved" event.
+     * This is triggered on both creation and update.
      */
     public function saved(VendorBillLine $vendorBillLine): void
     {
-        $vendorBillLine->vendorBill->calculateTotalsFromLines();
-        $vendorBillLine->vendorBill->saveQuietly();
+        $this->updateParentVendorBillTotals($vendorBillLine);
     }
 
     /**
-     * Handle the "deleted" event.
-     * This also triggers the parent VendorBill to update its totals.
+     * Handle the VendorBillLine "deleted" event.
      */
     public function deleted(VendorBillLine $vendorBillLine): void
     {
-        $vendorBillLine->vendorBill->calculateTotalsFromLines();
-        $vendorBillLine->vendorBill->saveQuietly();
+        $this->updateParentVendorBillTotals($vendorBillLine);
+    }
+
+    /**
+     * Recalculate and save the totals on the parent VendorBill.
+     */
+    protected function updateParentVendorBillTotals(VendorBillLine $vendorBillLine): void
+    {
+        $vendorBill = $vendorBillLine->vendorBill;
+        if ($vendorBill) {
+            $vendorBill->calculateTotalsFromLines();
+            $vendorBill->saveQuietly();
+        }
     }
 }
