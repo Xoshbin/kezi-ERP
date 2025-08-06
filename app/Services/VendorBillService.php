@@ -61,6 +61,14 @@ class VendorBillService
         DB::transaction(function () use ($vendorBill, $user) {
             $this->_confirmAndPostBill($vendorBill, $user);
         });
+
+        $vendorBill->status = 'posted';
+        $vendorBill->posted_at = now();
+        $vendorBill->user_id = $user->id; // Make sure user is set on bill
+        $vendorBill->save();
+
+        // Dispatch the event with full context
+        VendorBillConfirmed::dispatch($vendorBill, $user);
     }
 
     /**

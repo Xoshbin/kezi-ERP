@@ -12,6 +12,7 @@ trait WithConfiguredCompany
         $this->company = CompanyBuilder::new()
             ->withDefaultAccounts()
             ->withDefaultJournals()
+            ->withDefaultStockLocations()
             ->create();
 
         $this->user = User::factory()->for($this->company)->create();

@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Casts\MoneyCast;
 use App\Observers\AuditLogObserver;
+use App\Observers\VendorBillObserver;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -65,7 +66,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
  * @mixin \Eloquent
  */
 
-#[ObservedBy([AuditLogObserver::class])]
+#[ObservedBy([AuditLogObserver::class, VendorBillObserver::class])]
 class VendorBill extends Model
 {
     use HasFactory;
