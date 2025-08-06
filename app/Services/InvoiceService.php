@@ -17,12 +17,20 @@ use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
 use App\Actions\Accounting\CreateJournalEntryForInvoiceAction;
+use App\Actions\Inventory\CreateStockMoveAction;
+use App\DataTransferObjects\Inventory\CreateStockMoveDTO;
+use App\Enums\Inventory\StockMoveStatus;
+use App\Enums\Inventory\StockMoveType;
+use App\Enums\Products\ProductType;
 use App\Models\AuditLog; // Add this import
+use App\Services\Inventory\StockMoveService;
 
 class InvoiceService
 {
-    public function __construct(protected JournalEntryService $journalEntryService)
-    {
+    public function __construct(
+        protected JournalEntryService $journalEntryService,
+        protected StockMoveService $stockMoveService
+    ) {
     }
 
     public function delete(Invoice $invoice): bool
@@ -57,6 +65,26 @@ class InvoiceService
             $invoice->journal_entry_id = $journalEntry->id;
 
             $invoice->save();
+
+            // Create stock moves for storable products
+            foreach ($invoice->invoiceLines as $line) {
+                if ($line->product->product_type === ProductType::STORABLE) {
+                    (new CreateStockMoveAction($this->stockMoveService))->execute(new CreateStockMoveDTO(
+                        company_id: $invoice->company_id,
+                        product_id: $line->product_id,
+                        quantity: $line->quantity,
+                        from_location_id: $invoice->company->stock_location_id,
+                        to_location_id: $invoice->partner->stock_location_id,
+                        move_type: StockMoveType::OUTGOING,
+                        status: StockMoveStatus::DONE,
+                        move_date: $invoice->invoice_date,
+                        reference: $invoice->invoice_number,
+                        source_id: $invoice->id,
+                        source_type: Invoice::class,
+                        created_by_user_id: $user->id,
+                    ));
+                }
+            }
 
             InvoiceConfirmed::dispatch($invoice);
         });

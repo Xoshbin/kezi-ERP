@@ -17,6 +17,8 @@ return new class extends Migration
             $table->foreign('default_bank_journal_id')->references('id')->on('journals')->nullOnDelete();
             $table->foreign('default_sales_journal_id')->references('id')->on('journals')->nullOnDelete();
             $table->foreign('default_depreciation_journal_id')->references('id')->on('journals')->nullOnDelete();
+            $table->foreign('default_stock_location_id')->references('id')->on('stock_locations');
+            $table->foreign('default_vendor_location_id')->references('id')->on('stock_locations');
         });
     }
 
@@ -31,6 +33,8 @@ return new class extends Migration
             $table->dropForeign(['default_bank_journal_id']);
             $table->dropForeign(['default_sales_journal_id']);
             $table->dropForeign(['default_depreciation_journal_id']);
+            $table->dropForeign(['default_stock_location_id']);   // <-- add this
+            $table->dropForeign(['default_vendor_location_id']);  // <-- add this
         });
     }
 };
