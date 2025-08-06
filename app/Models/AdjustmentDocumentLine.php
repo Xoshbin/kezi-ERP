@@ -56,6 +56,11 @@ class AdjustmentDocumentLine extends Model
         return $this->belongsTo(Account::class);
     }
 
+    public function currency(): BelongsTo
+    {
+        return $this->adjustmentDocument->currency();
+    }
+
     /**
      * Get the line items for this adjustment document.
      * An adjustment document consists of multiple detail lines.
@@ -67,14 +72,4 @@ class AdjustmentDocumentLine extends Model
         return $this->hasMany(AdjustmentDocumentLine::class);
     }
 
-    /**
-     * Accessor to provide the currency_id to the MoneyCast.
-     * This makes the model responsible for knowing its own currency context.
-     */
-    public function getCurrencyIdAttribute(): int
-    {
-        // This assumes the 'adjustmentDocument' relationship is always loaded when needed.
-        // You can add loadMissing('adjustmentDocument') for robustness if necessary.
-        return $this->adjustmentDocument->currency_id;
-    }
 }

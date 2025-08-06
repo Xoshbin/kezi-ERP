@@ -280,13 +280,13 @@ class Invoice extends Model
         $zero = Money::of(0, $currencyCode);
 
         $totalTax = $this->invoiceLines->reduce(
-            fn (Money $carry, InvoiceLine $line) => $carry->plus($line->total_line_tax ?? $zero),
-            $zero
+            fn (Money $carry, InvoiceLine $line) => $carry->plus($line->total_line_tax ?? Money::of(0, $currencyCode)),
+            Money::of(0, $currencyCode)
         );
 
         $subtotal = $this->invoiceLines->reduce(
-            fn (Money $carry, InvoiceLine $line) => $carry->plus($line->subtotal ?? $zero),
-            $zero
+            fn (Money $carry, InvoiceLine $line) => $carry->plus($line->subtotal ?? Money::of(0, $currencyCode)),
+            Money::of(0, $currencyCode)
         );
 
         $this->total_tax = $totalTax;
