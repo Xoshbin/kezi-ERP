@@ -29,7 +29,8 @@ class InvoiceService
 {
     public function __construct(
         protected JournalEntryService $journalEntryService,
-        protected StockMoveService $stockMoveService
+        protected StockMoveService $stockMoveService,
+        protected CreateJournalEntryForInvoiceAction $createJournalEntryForInvoiceAction
     ) {
     }
 
@@ -61,7 +62,7 @@ class InvoiceService
             $invoice->status = Invoice::STATUS_POSTED;
             $invoice->posted_at = now();
 
-            $journalEntry = (new CreateJournalEntryForInvoiceAction())->execute($invoice, $user);
+            $journalEntry = $this->createJournalEntryForInvoiceAction->execute($invoice, $user);
             $invoice->journal_entry_id = $journalEntry->id;
 
             $invoice->save();

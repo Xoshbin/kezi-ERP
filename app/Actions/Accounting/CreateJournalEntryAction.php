@@ -64,7 +64,17 @@ class CreateJournalEntryAction
             $journalEntry = $journalEntry->fresh()->load('currency');
 
             foreach ($dto->lines as $lineDto) {
-                $line = $journalEntry->lines()->make([
+                $line = new \App\Models\JournalEntryLine();
+
+                // First, establish the relationship. This makes the parent's context (like currency)
+                // available to the line model *before* any attributes are set. This is the key
+                // to solving the MoneyCast issue without schema changes.
+                $line->journalEntry()->associate($journalEntry);
+
+                // Now, fill the attributes. The MoneyCast on 'debit' and 'credit' will be
+                // triggered here, but it can now successfully call getCurrencyIdAttribute()
+                // because the journalEntry relationship is established.
+                $line->fill([
                     'account_id' => $lineDto->account_id,
                     'partner_id' => $lineDto->partner_id,
                     'analytic_account_id' => $lineDto->analytic_account_id,
@@ -72,7 +82,8 @@ class CreateJournalEntryAction
                     'debit' => $lineDto->debit,
                     'credit' => $lineDto->credit,
                 ]);
-                $line->setRelation('journalEntry', $journalEntry);
+
+                // Finally, save the fully prepared line.
                 $line->save();
             }
 

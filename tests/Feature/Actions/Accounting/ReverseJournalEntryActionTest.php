@@ -38,14 +38,14 @@ beforeEach(function () {
 
 it('creates a correct reversing journal entry with inverted amounts', function () {
     // Act
-    $reversingJe = (new ReverseJournalEntryAction(app(\App\Actions\Accounting\CreateJournalEntryAction::class)))->execute($this->originalJe);
+    $reversingJe = (new ReverseJournalEntryAction(app(\App\Actions\Accounting\CreateJournalEntryAction::class)))->execute($this->originalJe, 'Test Reversal', $this->user);
 
     // Assert
     $this->assertModelExists($reversingJe);
     $this->assertDatabaseHas('journal_entries', [
         'id' => $reversingJe->id,
         'reversed_entry_id' => $this->originalJe->id,
-        'reference' => 'REV: ' . $this->originalJe->reference,
+        'reference' => 'REV/' . $this->originalJe->reference,
     ]);
 
     $originalDebit = $this->originalJe->lines->sum(fn($line) => $line->debit->getMinorAmount()->toInt());
@@ -57,7 +57,7 @@ it('creates a correct reversing journal entry with inverted amounts', function (
 
 it('updates the original journal entry state to reversed', function () {
     // Act
-    (new ReverseJournalEntryAction(app(\App\Actions\Accounting\CreateJournalEntryAction::class)))->execute($this->originalJe);
+    (new ReverseJournalEntryAction(app(\App\Actions\Accounting\CreateJournalEntryAction::class)))->execute($this->originalJe, 'Test Reversal', $this->user);
 
     // Assert
     $this->assertDatabaseHas('journal_entries', [
@@ -74,7 +74,7 @@ it('sets the source bank statement line back to unreconciled', function () {
     ]);
 
     // Act
-    (new ReverseJournalEntryAction(app(\App\Actions\Accounting\CreateJournalEntryAction::class)))->execute($this->originalJe);
+    (new ReverseJournalEntryAction(app(\App\Actions\Accounting\CreateJournalEntryAction::class)))->execute($this->originalJe, 'Test Reversal', $this->user);
 
     // Assert final state
     $this->assertDatabaseHas('bank_statement_lines', [
@@ -86,8 +86,8 @@ it('sets the source bank statement line back to unreconciled', function () {
 it('is idempotent and does not create multiple reversals for the same entry', function () {
     // Act
     $action = new ReverseJournalEntryAction(app(\App\Actions\Accounting\CreateJournalEntryAction::class));
-    $firstReversal = $action->execute($this->originalJe);
-    $secondReversal = $action->execute($this->originalJe->fresh()); // Use fresh model
+    $firstReversal = $action->execute($this->originalJe, 'Test Reversal', $this->user);
+    $secondReversal = $action->execute($this->originalJe->fresh(), 'Test Reversal', $this->user); // Use fresh model
 
     // Assert
     $this->assertDatabaseCount('journal_entries', 2); // Original + 1 reversal
