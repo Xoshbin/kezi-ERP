@@ -188,3 +188,8 @@ This file tracks the project's current status, including recent changes, current
 
 
 [2025-08-06 06:55:00] - **Recent Change:** Established the "Explicit Context Pattern" for handling framework dependency issues during model creation. This formalizes the process of passing complete, context-aware objects to model creation methods.
+
+[2025-08-07 09:42:25] - [FIXED] Filament Repeater Field Test Failure
+**Issue:** A test for a Filament repeater field was failing with a `null` assertion error, even though the UI displayed the correct data.
+**Root Cause:** The test was incorrectly assuming a zero-based index for repeater field items in its assertion (`lines.0.debit`). The repeater actually uses UUIDs for keys.
+**Resolution:** The test was modified to dynamically retrieve the repeater item's key from the form data and use that key in the assertion, making the test robust and accurate.

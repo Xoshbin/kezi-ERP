@@ -153,7 +153,7 @@ test('the entire accounting workflow from setup to credit note', function () {
     $documentLinkDto = new CreatePaymentDocumentLinkDTO(
         document_type: 'invoice',
         document_id: $invoice->id,
-        amount_applied: (string) $itInfrastructureServiceCost->getAmount()->toFloat() // DTO expects a string
+        amount_applied: $itInfrastructureServiceCost
     );
 
     $paymentDto = new CreatePaymentDTO(
@@ -185,7 +185,7 @@ test('the entire accounting workflow from setup to credit note', function () {
     $vendorDocumentLinkDto = new CreatePaymentDocumentLinkDTO(
         document_type: 'vendor_bill',
         document_id: $vendorBill->id,
-        amount_applied: (string) $highEndLaptopCost->getAmount()->toFloat()
+        amount_applied: $highEndLaptopCost
     );
 
     $vendorPaymentDto = new CreatePaymentDTO(

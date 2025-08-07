@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use Carbon\Carbon;
+use App\Actions\Accounting\ReverseJournalEntryAction;
 use App\Models\User;
 use Brick\Money\Money;
 use App\Models\Company;
@@ -162,40 +163,6 @@ class JournalEntryService
             throw new \Exception('Only posted journal entries can be reversed.');
         }
 
-        return DB::transaction(function () use ($originalEntry, $reason, $user) {
-            // Create the new reversing entry header
-            $reversingEntry = JournalEntry::create([
-                'company_id' => $originalEntry->company_id,
-                'journal_id' => $originalEntry->journal_id,
-                'currency_id' => $originalEntry->currency_id,
-                'entry_date' => now(), // Reversal happens now
-                'reference' => 'REV/' . $originalEntry->reference,
-                'description' => $reason,
-                'total_debit' => $originalEntry->total_credit, // Swap totals
-                'total_credit' => $originalEntry->total_debit, // Swap totals
-                'is_posted' => true, // Reversals are posted immediately
-                'created_by_user_id' => $user->id,
-            ]);
-
-            // Create the inverse lines
-            foreach ($originalEntry->lines as $line) {
-                $reversingEntry->lines()->create([
-                    'account_id' => $line->account_id,
-                    'partner_id' => $line->partner_id,
-                    'currency_id' => $line->currency_id,
-                    'debit' => $line->credit, // The core of the reversal
-                    'credit' => $line->debit,  // The core of the reversal
-                    'description' => 'Reversal of line: ' . $line->description,
-                ]);
-            }
-
-            // Update the original entry to mark it as reversed for a clear audit trail
-            $originalEntry->update([
-                'state' => 'reversed',
-                'reversed_entry_id' => $reversingEntry->id,
-            ]);
-
-            return $reversingEntry;
-        });
+        return app(ReverseJournalEntryAction::class)->execute($originalEntry, $reason, $user);
     }
 }
