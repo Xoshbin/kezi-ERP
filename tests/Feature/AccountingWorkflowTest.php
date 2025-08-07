@@ -209,7 +209,7 @@ test('the entire accounting workflow from setup to credit note', function () {
     expect($vendorPaymentEntry->total_debit->isEqualTo($highEndLaptopCost))->toBeTrue();
     expect($vendorPaymentEntry->lines->where('account_id', $apAccount->id)->first()->debit->isEqualTo($highEndLaptopCost))->toBeTrue();
     expect($vendorPaymentEntry->lines->where('account_id', $bankAccount->id)->first()->credit->isEqualTo($highEndLaptopCost))->toBeTrue();
-    expect($vendorBill->fresh()->status)->toBe(VendorBill::STATUS_PAID);
+    expect($vendorBill->fresh()->status)->toBe(\App\Enums\Purchases\VendorBillStatus::Paid);
 
     // Step 8: Handling a Correction (Credit Note)
     $adjustmentService = app(AdjustmentDocumentService::class);

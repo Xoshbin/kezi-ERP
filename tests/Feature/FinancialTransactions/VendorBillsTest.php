@@ -25,6 +25,7 @@ use App\DataTransferObjects\Purchases\CreateVendorBillDTO;
 use App\DataTransferObjects\Purchases\UpdateVendorBillDTO;
 use App\Actions\Purchases\CreateVendorBillLineAction; // Import the Action
 use App\DataTransferObjects\Purchases\CreateVendorBillLineDTO; // Import the DTO
+use App\Enums\Purchases\VendorBillStatus;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class, MocksTime::class);
 
@@ -52,7 +53,7 @@ test('a draft vendor bill can be confirmed, which posts it and dispatches an eve
     app(VendorBillService::class)->post($vendorBill, $this->user);
 
     $vendorBill->refresh();
-    expect($vendorBill->status)->toBe(VendorBill::STATUS_POSTED);
+    expect($vendorBill->status)->toBe(VendorBillStatus::Posted);
     Event::assertDispatched(VendorBillConfirmed::class, fn($event) => $event->vendorBill->id === $vendorBill->id);
 });
 

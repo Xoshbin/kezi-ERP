@@ -9,6 +9,7 @@ use App\DataTransferObjects\Inventory\CreateStockMoveDTO;
 use App\Enums\Inventory\StockMoveStatus;
 use App\Enums\Inventory\StockMoveType;
 use App\Enums\Products\ProductType;
+use App\Enums\Purchases\VendorBillStatus;
 use App\Events\VendorBillConfirmed;
 use App\Exceptions\DeletionNotAllowedException;
 use App\Models\AuditLog;
@@ -30,7 +31,7 @@ class VendorBillService
 
     public function post(VendorBill $vendorBill, User $user): void
     {
-        if ($vendorBill->status !== VendorBill::STATUS_DRAFT) {
+        if ($vendorBill->status !== VendorBillStatus::Draft) {
             return;
         }
 
@@ -106,7 +107,7 @@ class VendorBillService
 
         $this->accountingValidationService->checkIfPeriodIsLocked($vendorBill->company_id, $vendorBill->bill_date);
 
-        if ($vendorBill->status !== VendorBill::STATUS_DRAFT) {
+        if ($vendorBill->status !== VendorBillStatus::Draft) {
             throw new DeletionNotAllowedException(
                 'Cannot delete a posted vendor bill. Corrections must be made with a new reversal entry.'
             );
@@ -124,7 +125,7 @@ class VendorBillService
     {
         Gate::forUser($user)->authorize('cancel', $vendorBill);
 
-        if ($vendorBill->status !== VendorBill::STATUS_POSTED) {
+        if ($vendorBill->status !== VendorBillStatus::Posted) {
             throw new \Exception('Only posted vendor bills can be cancelled.');
         }
 
@@ -143,7 +144,7 @@ class VendorBillService
                 'auditable_id' => $vendorBill->id,
                 'description' => 'Vendor Bill Cancelled: ' . $reason,
                 'old_values' => ['status' => $vendorBill->status],
-                'new_values' => ['status' => VendorBill::STATUS_CANCELED],
+                'new_values' => ['status' => VendorBillStatus::Cancelled],
                 'ip_address' => request()->ip(),
             ]);
 
@@ -156,7 +157,7 @@ class VendorBillService
             );
 
             // Step 3: Update the vendor bill's status.
-            $vendorBill->status = VendorBill::STATUS_CANCELED;
+            $vendorBill->status = VendorBillStatus::Cancelled;
             $vendorBill->save(); // saveQuietly() isn't needed if the observer handles status changes gracefully
         });
     }

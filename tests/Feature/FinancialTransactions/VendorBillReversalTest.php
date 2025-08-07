@@ -7,10 +7,11 @@ use App\Models\VendorBill;
 use App\Services\VendorBillService;
 use Tests\Traits\CreatesApplication;
 use Tests\Traits\WithConfiguredCompany;
+use App\Enums\Purchases\VendorBillStatus;
 use App\Enums\Accounting\JournalEntryState;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use App\Actions\Purchases\CreateVendorBillLineAction; // Import the Action
 use App\DataTransferObjects\Purchases\CreateVendorBillLineDTO; // Import the DTO
-use Illuminate\Foundation\Testing\RefreshDatabase;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);
 
@@ -47,7 +48,7 @@ test('cancelling a posted vendor bill creates a reversing journal entry and an a
     $originalEntry->refresh();
 
     // Assert: Bill status and reversal entry are correct.
-    expect($vendorBill->status)->toBe(VendorBill::STATUS_CANCELED);
+    expect($vendorBill->status)->toBe(VendorBillStatus::Cancelled);
     expect($originalEntry->state)->toBe(JournalEntryState::Reversed);
     expect($originalEntry->reversed_entry_id)->not->toBeNull();
 
