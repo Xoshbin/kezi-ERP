@@ -212,3 +212,10 @@ All 133 tests in the suite are now passing. The "Period Locking" feature is stab
 - **Identified Root Cause:** Test assertion for repeater field was incorrect.
 - **Solution:** Modified test to dynamically use repeater field keys.
 - **Status:** The test now passes, and the form correctly displays monetary values.
+[2025-08-07 12:52:33] - **Task Completed:** Debugged and fixed a critical currency calculation and display bug in the Journal Entry edit page.
+**Details:**
+- **Initial Bug:** Incorrect display of IQD amounts due to flawed currency decimal place resolution.
+- **Failed Attempts:** Initial fixes were incorrect, leading to a fatal `ErrorException` due to improper casting of `BigDecimal` objects.
+- **Final Solution:** Refactored the calculation logic to use the native arithmetic methods of the `Brick\Money\Money` object, ensuring precision and type safety.
+- **Documentation:** Updated `.roo/rules/02-coding-style.txt` with a new "Safe Money Aggregation" rule.
+- **Memory Bank:** Updated `decisionLog.md`, `systemPatterns.md`, and `activeContext.md` to capture the learnings from this task.
