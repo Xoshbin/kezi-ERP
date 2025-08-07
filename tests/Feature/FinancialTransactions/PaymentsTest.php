@@ -24,17 +24,18 @@ uses(RefreshDatabase::class, WithConfiguredCompany::class, MocksTime::class);
 
 test('an inbound payment can be created and linked to an invoice', function () {
     // Arrange: Create an invoice to be paid.
-    $currencyCode = $this->company->currency->code;
+    $currency = $this->company->currency;
     $invoice = Invoice::factory()->for($this->company)->create([
         'status' => 'posted',
-        'total_amount' => Money::of(200, $currencyCode),
+        'total_amount' => Money::of(200, $currency->code),
+        'currency_id' => $currency->id,
     ]);
 
     // Arrange: Prepare the DTOs for the Action.
     $documentLinkDTO = new CreatePaymentDocumentLinkDTO(
         document_type: 'invoice',
         document_id: $invoice->id,
-        amount_applied: '200.00'
+        amount_applied: Money::of(200, $currency->code)
     );
 
     $paymentDTO = new CreatePaymentDTO(
@@ -51,7 +52,7 @@ test('an inbound payment can be created and linked to an invoice', function () {
 
     // Assert: The payment was created successfully.
     $this->assertModelExists($payment);
-    expect($payment->amount->isEqualTo(Money::of(200, $currencyCode)))->toBeTrue();
+    $this->assertTrue(Money::of(200, $currency->code)->isEqualTo($payment->amount));
     expect($payment->payment_type)->toBe(Payment::TYPE_INBOUND);
 
     // Assert: The payment is correctly linked to the invoice.
@@ -64,17 +65,18 @@ test('an inbound payment can be created and linked to an invoice', function () {
 
 test('an outbound payment can be created and linked to a vendor bill', function () {
     // Arrange: Create a vendor bill to be paid.
-    $currencyCode = $this->company->currency->code;
+    $currency = $this->company->currency;
     $vendorBill = VendorBill::factory()->for($this->company)->create([
         'status' => 'posted',
-        'total_amount' => Money::of(150, $currencyCode),
+        'total_amount' => Money::of(150, $currency->code),
+        'currency_id' => $currency->id,
     ]);
 
     // Arrange: Prepare the DTOs for the Action.
     $documentLinkDTO = new CreatePaymentDocumentLinkDTO(
         document_type: 'vendor_bill',
         document_id: $vendorBill->id,
-        amount_applied: '150.00'
+        amount_applied: Money::of(150, $currency->code)
     );
 
     $paymentDTO = new CreatePaymentDTO(
@@ -91,7 +93,7 @@ test('an outbound payment can be created and linked to a vendor bill', function 
 
     // Assert: The payment was created successfully.
     $this->assertModelExists($payment);
-    expect($payment->amount->isEqualTo(Money::of(150, $currencyCode)))->toBeTrue();
+    $this->assertTrue(Money::of(150, $currency->code)->isEqualTo($payment->amount));
     expect($payment->payment_type)->toBe(Payment::TYPE_OUTBOUND);
 
     // Assert: The payment is correctly linked to the vendor bill.
@@ -123,7 +125,7 @@ test('creating a payment generates the correct journal entry', function () {
     $documentLinkDTO = new CreatePaymentDocumentLinkDTO(
         document_type: 'invoice',
         document_id: $invoice->id,
-        amount_applied: '500.00'
+        amount_applied: Money::of(500, $this->company->currency->code)
     );
 
     $paymentDTO = new CreatePaymentDTO(

@@ -16,7 +16,7 @@ use Illuminate\Database\Eloquent\Attributes\ObservedBy;
  * Class Currency
  *
  * @package App\Models
- * 
+ *
  * This Eloquent model represents a financial currency within the accounting system.
  * It is essential for supporting multi-currency transactions, tracking exchange rates,
  * and ensuring accurate financial reporting across different monetary denominations.
@@ -82,7 +82,8 @@ class Currency extends Model
         'symbol',
         'exchange_rate',
         'is_active',
-        'last_updated_at'
+        'last_updated_at',
+        'decimal_places'
     ];
 
     /**
@@ -97,6 +98,7 @@ class Currency extends Model
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
         'last_updated_at' => 'datetime',
+        'decimal_places' => 'integer',
     ];
 
     /*

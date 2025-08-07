@@ -40,8 +40,8 @@ describe('Journal Entry Reversals', function () {
         $revenueAccount = Account::factory()->for($this->company)->create(['type' => 'Income']);
 
         $originalEntry->lines()->createMany([
-            ['account_id' => $arAccount->id, 'debit' => Money::of(150, $currencyCode), 'credit' => Money::of(0, $currencyCode), 'currency_id' => $this->company->currency_id],
-            ['account_id' => $revenueAccount->id, 'credit' => Money::of(150, $currencyCode), 'debit' => Money::of(0, $currencyCode), 'currency_id' => $this->company->currency_id],
+            ['account_id' => $arAccount->id, 'debit' => Money::of(150, $currencyCode), 'credit' => Money::of(0, $currencyCode)],
+            ['account_id' => $revenueAccount->id, 'credit' => Money::of(150, $currencyCode), 'debit' => Money::of(0, $currencyCode)],
         ]);
 
         // Act: Create the reversal.
@@ -95,7 +95,7 @@ describe('Payment Cancellations', function () {
         ]);
 
         // Arrange: Create a draft payment using the proper Action, which is the official way.
-        $linkDto = new \App\DataTransferObjects\Payments\CreatePaymentDocumentLinkDTO('invoice', $invoice->id, '250.00');
+        $linkDto = new \App\DataTransferObjects\Payments\CreatePaymentDocumentLinkDTO('invoice', $invoice->id, Money::of(250, $this->company->currency->code));
         $paymentDto = new \App\DataTransferObjects\Payments\CreatePaymentDTO(
             company_id: $this->company->id,
             journal_id: $this->company->default_bank_journal_id,
