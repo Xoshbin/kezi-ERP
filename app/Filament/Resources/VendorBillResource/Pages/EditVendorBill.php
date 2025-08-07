@@ -4,7 +4,7 @@ namespace App\Filament\Resources\VendorBillResource\Pages;
 
 use App\Actions\Purchases\UpdateVendorBillAction;
 use App\DataTransferObjects\Purchases\UpdateVendorBillDTO;
-use App\DataTransferObjects\Purchases\UpdateVendorBillLineDTO;
+use App\Enums\Purchases\VendorBillStatus;
 use App\Filament\Resources\VendorBillResource;
 use App\Models\VendorBill;
 use App\Services\VendorBillService;
@@ -26,10 +26,8 @@ class EditVendorBill extends EditRecord
                 ->label(__('vendor_bill.confirm_bill'))
                 ->color('success')
                 ->requiresConfirmation()
-                ->visible(fn (VendorBill $record): bool => $record->status === VendorBill::STATUS_DRAFT)
+                ->visible(fn (VendorBill $record): bool => $record->status === VendorBillStatus::Draft)
                 ->action(function (VendorBill $record): void {
-                    $this->save();
-
                     $vendorBillService = app(VendorBillService::class);
                     try {
                         $vendorBillService->confirm($record, Auth::user());
@@ -43,7 +41,7 @@ class EditVendorBill extends EditRecord
                 ->label(__('vendor_bill.reset_to_draft'))
                 ->color('warning')
                 ->requiresConfirmation()
-                ->visible(fn (VendorBill $record): bool => $record->status === VendorBill::STATUS_POSTED)
+                ->visible(fn (VendorBill $record): bool => $record->status === VendorBillStatus::Posted)
                 ->form([
                     Forms\Components\Textarea::make('reason')->label(__('vendor_bill.reason'))->required(),
                 ])

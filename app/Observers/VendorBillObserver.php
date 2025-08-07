@@ -5,6 +5,7 @@ namespace App\Observers;
 use App\Enums\Inventory\StockMoveStatus;
 use App\Enums\Inventory\StockMoveType;
 use App\Enums\Products\ProductType;
+use App\Enums\Purchases\VendorBillStatus;
 use App\Models\StockMove;
 use App\Models\VendorBill;
 use Brick\Math\RoundingMode;
@@ -18,7 +19,7 @@ class VendorBillObserver
     public function updated(VendorBill $vendorBill): void
     {
         // Only trigger when the status is first changed to 'posted'.
-        if ($vendorBill->wasChanged('status') && $vendorBill->status === VendorBill::STATUS_POSTED) {
+        if ($vendorBill->wasChanged('status') && $vendorBill->status === VendorBillStatus::Posted) {
 
             foreach ($vendorBill->lines as $line) {
                 // Only process lines with storable products.
