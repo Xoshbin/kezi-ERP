@@ -52,37 +52,42 @@ class EditJournalEntry extends EditRecord
 
     protected function mutateFormDataBeforeFill(array $data): array
     {
-        // Eager-load the necessary relationships on the record
-        $this->record->load('lines.journalEntry.currency');
+        // Eager-load the necessary relationships for the MoneyCast to function correctly.
+        $this->record->load('currency', 'lines.journalEntry.currency');
 
-        $totalDebit = 0;
-        $totalCredit = 0;
+        // Initialize totals as Money objects to maintain precision.
+        $totalDebit = \Brick\Money\Money::zero($this->record->currency->code);
+        $totalCredit = \Brick\Money\Money::zero($this->record->currency->code);
 
         $lines = $this->record->lines->map(function ($line) use (&$totalDebit, &$totalCredit) {
-            $currency = $line->journalEntry->currency;
-            $debitRaw = $line->getRawOriginal('debit');
-            $creditRaw = $line->getRawOriginal('credit');
+            // Use the MoneyCast to get Money objects for debit and credit.
+            $debitMoney = $line->debit;
+            $creditMoney = $line->credit;
 
-            $debit = $debitRaw > 0 ? (string) ($debitRaw / (10 ** $currency->decimal_places)) : '0';
-            $credit = $creditRaw > 0 ? (string) ($creditRaw / (10 ** $currency->decimal_places)) : '0';
-
-            $totalDebit += (float)$debit;
-            $totalCredit += (float)$credit;
+            // Add the Money objects directly to the totals.
+            if ($debitMoney) {
+                $totalDebit = $totalDebit->plus($debitMoney);
+            }
+            if ($creditMoney) {
+                $totalCredit = $totalCredit->plus($creditMoney);
+            }
 
             return [
                 'account_id' => $line->account_id,
                 'partner_id' => $line->partner_id,
                 'analytic_account_id' => $line->analytic_account_id,
                 'description' => $line->description,
-                'debit' => $debit,
-                'credit' => $credit,
+                // Use getAmount() to get the string representation for the form field.
+                'debit' => $debitMoney?->getAmount()->__toString() ?? '0',
+                'credit' => $creditMoney?->getAmount()->__toString() ?? '0',
             ];
         })->toArray();
 
         $data['lines'] = $lines;
-        $data['total_debit'] = (string) $totalDebit;
-        $data['total_credit'] = (string) $totalCredit;
-        $data['balance'] = (string) ($totalDebit - $totalCredit);
+        // Convert the final totals to strings for the form.
+        $data['total_debit'] = $totalDebit->getAmount()->__toString();
+        $data['total_credit'] = $totalCredit->getAmount()->__toString();
+        $data['balance'] = $totalDebit->minus($totalCredit)->getAmount()->__toString();
 
         return $data;
     }

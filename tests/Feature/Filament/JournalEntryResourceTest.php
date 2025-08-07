@@ -148,7 +148,6 @@ it('can delete a journal entry', function () {
 it('can display correct major amount in edit form', function () {
     // Arrange
     $currency = Currency::where('code', 'IQD')->firstOrFail();
-    $currency->update(['decimal_places' => 3]);
 
     $journalEntry = JournalEntry::factory()
         ->for($this->company)

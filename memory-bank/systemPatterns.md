@@ -104,3 +104,8 @@ It is optional, but recommended to be updated as the project evolves.
 
 
 [2025-08-06 06:55:00] - **Explicit Context Pattern:** This pattern provides the definitive solution for any situation where a model's attribute depends on context from a parent that isn't available during its creation. The responsibility for providing context to a new model instance must be shifted from the model itself (which is contextually unaware during creation) to the calling code (the Action or Service, which is fully aware). Instead of passing raw values and hoping the model can infer the context, the calling code must explicitly create a context-aware object (like Brick\Money\Money) and pass that complete object to the creation method.
+
+[2025-08-07 12:52:12] - **Pattern:** Safe Money Aggregation
+**Context:** When calculating sums or totals of monetary values that are represented by `Brick\Money\Money` objects.
+**Problem:** Directly casting the output of `$money->getAmount()` (a `BigDecimal` object) to a `float` or `int` for summation causes a fatal `ErrorException`.
+**Solution:** Always use the built-in arithmetic methods of the `Money` object (e.g., `$total->plus($line->price)`). Initialize totals with `Money::zero('CUR')` and perform all calculations with `Money` objects. Convert to a string for display only at the final step using `->getAmount()->__toString()`. This ensures type safety and preserves precision.
