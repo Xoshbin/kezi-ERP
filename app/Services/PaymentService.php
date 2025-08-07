@@ -86,7 +86,7 @@ class PaymentService
                 $totalPaid = Money::ofMinor($totalPaidMinor, $vendorBill->currency->code);
 
                 if ($totalPaid->isGreaterThanOrEqualTo($vendorBill->total_amount)) {
-                    $vendorBill->status = VendorBill::STATUS_PAID;
+                    $vendorBill->status = \App\Enums\Purchases\VendorBillStatus::Paid;
                     $vendorBill->save();
                 }
             }

@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\Purchases\VendorBillStatus;
 use App\Models\VendorBill;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
@@ -22,7 +23,7 @@ return new class extends Migration
             $table->date('bill_date');
             $table->date('accounting_date');
             $table->date('due_date')->nullable();
-            $table->string('status')->default(VendorBill::STATUS_DRAFT)->index(); // 'draft', 'posted', 'paid', 'canceled
+            $table->string('status')->default(VendorBillStatus::Draft)->index(); // 'draft', 'posted', 'paid', 'canceled
             $table->unsignedBigInteger('total_amount');
             $table->unsignedBigInteger('total_tax');
             $table->timestamp('posted_at')->nullable();
