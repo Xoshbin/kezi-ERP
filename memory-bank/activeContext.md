@@ -193,3 +193,5 @@ This file tracks the project's current status, including recent changes, current
 **Issue:** A test for a Filament repeater field was failing with a `null` assertion error, even though the UI displayed the correct data.
 **Root Cause:** The test was incorrectly assuming a zero-based index for repeater field items in its assertion (`lines.0.debit`). The repeater actually uses UUIDs for keys.
 **Resolution:** The test was modified to dynamically retrieve the repeater item's key from the form data and use that key in the assertion, making the test robust and accurate.
+[2025-08-07 12:52:23] - **Recent Changes:** Resolved a critical bug in `EditJournalEntry.php` related to incorrect currency display and calculation. The issue was traced to an improper casting of `BigDecimal` objects to floats. The fix involved refactoring the code to use the native arithmetic methods of the `Money` object, ensuring type safety and precision. This led to the creation of a new "Safe Money Aggregation" pattern.
+**Current Focus:** The immediate bug is fixed. The system is stable. No open questions remain on this topic.

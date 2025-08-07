@@ -176,6 +176,29 @@ $invoice->save(); // Stored as 5000000000
 $invoice->total_amount = 500; // For USD
 $invoice->save(); // Stored as 50000
 
+### 4.2. Safe Aggregation of Money Objects
+
+**Rule:** When calculating totals or performing any aggregation of monetary values, you MUST use the arithmetic methods provided by the `Brick\Money\Money` objects (e.g., `plus()`, `minus()`). Direct casting of the `Money` object or its `BigDecimal` amount to `float` or `int` for summation is strictly forbidden, as it will lead to a fatal `ErrorException`.
+
+**Rationale:** The `getAmount()` method on a `Money` object returns a `Brick\Math\BigDecimal` object, not a primitive type. Attempting to cast this object to a `float` (e.g., `$total += (float)$money->getAmount()`) will cause the application to crash. Using the built-in methods ensures that all calculations are handled with arbitrary precision and type safety.
+
+**Implementation Example:**
+
+```php
+// Correct way to sum Money objects
+$total = Money::zero('USD');
+foreach ($lines as $line) {
+    // $line->price is a Money object from a cast
+    $total = $total->plus($line->price);
+}
+
+// Incorrect way - THIS WILL CRASH
+$total = 0.0;
+foreach ($lines as $line) {
+    $total += (float) $line->price->getAmount(); // ErrorException
+}
+```
+
 ## 5. Internationalization (I18n)
 
 **Rule:** All user-facing strings, including text in the user interface, exceptions, notifications, and any other part of the application visible to the end-user, MUST be translatable using Laravel's localization features.
