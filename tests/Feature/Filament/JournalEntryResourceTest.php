@@ -176,8 +176,8 @@ it('can display correct major amount in edit form', function () {
     $firstLineKey = array_key_first($lines);
 
     $livewire->assertFormSet([
-        "lines.{$firstLineKey}.debit" => '15000',
-        "lines.{$firstLineKey}.credit" => '0',
+        "lines.{$firstLineKey}.debit" => '15000.000',
+        "lines.{$firstLineKey}.credit" => '0.000',
     ]);
 });
 
@@ -275,8 +275,8 @@ it('calculates and fills totals on edit page load', function () {
         'record' => $journalEntry->getRouteKey(),
     ])
     ->assertFormSet([
-        'total_debit' => '500',
-        'total_credit' => '200',
-        'balance' => '300',
+        'total_debit' => '500.000',
+        'total_credit' => '200.000',
+        'balance' => '300.000',
     ]);
 });
