@@ -151,7 +151,7 @@ describe('Action Integration with Locked Periods', function () {
 
     it('throws PeriodIsLockedException for CreatePaymentAction', function () {
         $invoice = Invoice::factory()->for($this->company)->create();
-        $linkDto = new CreatePaymentDocumentLinkDTO('invoice', $invoice->id, '100');
+        $linkDto = new CreatePaymentDocumentLinkDTO('invoice', $invoice->id, \Brick\Money\Money::of(100, $this->company->currency->code));
 
         app(CreatePaymentAction::class)->execute(new CreatePaymentDTO(
             company_id: $this->company->id,

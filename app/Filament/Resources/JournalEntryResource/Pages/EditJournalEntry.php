@@ -50,25 +50,43 @@ class EditJournalEntry extends EditRecord
         ];
     }
 
-    // This method is for loading the line data into the form. It is correct.
     protected function mutateFormDataBeforeFill(array $data): array
     {
-        $this->record->loadMissing('lines');
-        $linesData = $this->record->lines->map(function ($line) {
+        // Eager-load the necessary relationships on the record
+        $this->record->load('lines.journalEntry.currency');
+
+        $totalDebit = 0;
+        $totalCredit = 0;
+
+        $lines = $this->record->lines->map(function ($line) use (&$totalDebit, &$totalCredit) {
+            $currency = $line->journalEntry->currency;
+            $debitRaw = $line->getRawOriginal('debit');
+            $creditRaw = $line->getRawOriginal('credit');
+
+            $debit = $debitRaw > 0 ? (string) ($debitRaw / (10 ** $currency->decimal_places)) : '0';
+            $credit = $creditRaw > 0 ? (string) ($creditRaw / (10 ** $currency->decimal_places)) : '0';
+
+            $totalDebit += (float)$debit;
+            $totalCredit += (float)$credit;
+
             return [
                 'account_id' => $line->account_id,
                 'partner_id' => $line->partner_id,
                 'analytic_account_id' => $line->analytic_account_id,
                 'description' => $line->description,
-                'debit' => $line->debit?->getAmount()->toFloat(),
-                'credit' => $line->credit?->getAmount()->toFloat(),
+                'debit' => $debit,
+                'credit' => $credit,
             ];
         })->toArray();
-        $data['lines'] = $linesData;
+
+        $data['lines'] = $lines;
+        $data['total_debit'] = (string) $totalDebit;
+        $data['total_credit'] = (string) $totalCredit;
+        $data['balance'] = (string) ($totalDebit - $totalCredit);
+
         return $data;
     }
 
-    // This method now correctly only handles updating a DRAFT entry's data.
     protected function handleRecordUpdate(Model $record, array $data): Model
     {
         $lineDTOs = [];
@@ -90,11 +108,10 @@ class EditJournalEntry extends EditRecord
             entry_date: $data['entry_date'],
             reference: $data['reference'],
             description: $data['description'],
-            // The status is no longer controlled by the form, so we pass its existing state.
             is_posted: $record->is_posted,
             lines: $lineDTOs
         );
 
-        return (new UpdateJournalEntryAction())->execute($updateDTO);
+        return app(UpdateJournalEntryAction::class)->execute($updateDTO);
     }
 }

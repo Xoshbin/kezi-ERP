@@ -17,9 +17,9 @@ class ReverseJournalEntryAction
         private readonly CreateJournalEntryAction $createJournalEntryAction
     ) {}
 
-    public function execute(JournalEntry $journalEntry): JournalEntry
+    public function execute(JournalEntry $journalEntry, string $reason, \App\Models\User $user): JournalEntry
     {
-        return DB::transaction(function () use ($journalEntry) {
+        return DB::transaction(function () use ($journalEntry, $reason, $user) {
             // Guard Clause: Check if the journal entry is already reversed (idempotent)
             if ($journalEntry->state === JournalEntryState::Reversed) {
                 // If so, find and return the existing reversal entry to maintain idempotency.
@@ -47,9 +47,9 @@ class ReverseJournalEntryAction
                 journal_id: $journalEntry->journal_id,
                 currency_id: $journalEntry->currency_id,
                 entry_date: now()->format('Y-m-d'),
-                reference: 'REV: ' . $journalEntry->reference,
-                description: 'Reversal of: ' . $journalEntry->description,
-                created_by_user_id: Auth::id(),
+                reference: 'REV/' . $journalEntry->reference,
+                description: $reason,
+                created_by_user_id: $user->id,
                 is_posted: true, // Reversing entries are posted immediately
                 lines: $reversingLines,
                 source_type: null,
@@ -60,9 +60,9 @@ class ReverseJournalEntryAction
             $reversingEntry = $this->createJournalEntryAction->execute($reversingEntryDTO);
             $reversingEntry->reversed_entry_id = $journalEntry->id;
             $reversingEntry->save();
-
             // Update the original journal entry state to Reversed
             $journalEntry->state = JournalEntryState::Reversed;
+            $journalEntry->reversed_entry_id = $reversingEntry->id;
             $journalEntry->save();
 
             // Update source record if it's a BankStatementLine

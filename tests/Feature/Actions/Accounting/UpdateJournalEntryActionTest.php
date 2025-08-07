@@ -27,7 +27,6 @@ test('it updates a journal entry and syncs its lines from a DTO', function () {
         'account_id' => $accountA->id,
         'debit' => Money::of(100, $this->company->currency->code),
         'credit' => Money::of(0, $this->company->currency->code),
-        'currency_id' => $this->company->currency_id,
     ]);
 
     // 2. Prepare the DTO with the updated data

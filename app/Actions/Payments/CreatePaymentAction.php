@@ -37,7 +37,7 @@ class CreatePaymentAction
 
             // Determine totals, partner, and payment type from linked documents
             foreach ($dto->document_links as $link) {
-                $totalAmount = $totalAmount->plus(Money::of($link->amount_applied, $currencyCode));
+                $totalAmount = $totalAmount->plus($link->amount_applied);
                 $documentTypes[$link->document_type] = true;
 
                 if (!$partnerId) {
@@ -70,7 +70,7 @@ class CreatePaymentAction
             // Create the links
             foreach ($dto->document_links as $link) {
                 $linkData = [
-                    'amount_applied' => Money::of($link->amount_applied, $currencyCode),
+                    'amount_applied' => $link->amount_applied,
                 ];
                 if ($link->document_type === 'invoice') {
                     $linkData['invoice_id'] = $link->document_id;
