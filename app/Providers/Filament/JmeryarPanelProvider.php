@@ -55,6 +55,7 @@ class JmeryarPanelProvider extends PanelProvider
             ->authMiddleware([
                 Authenticate::class,
             ])
+            ->viteTheme('resources/js/filament/jmeryar/theme.js')
             ->plugins([
                 FilamentDeveloperLoginsPlugin::make()
                     ->enabled(app()->environment('local'))
