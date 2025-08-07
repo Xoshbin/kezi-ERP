@@ -14,7 +14,8 @@ use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Textarea;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
-use Filament\Forms\Components\TextInput;
+use App\Filament\Forms\Components\MoneyInput;
+use App\Filament\Tables\Columns\MoneyColumn;
 use Filament\Forms\Components\DatePicker;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
@@ -44,7 +45,7 @@ class JournalEntryResource extends Resource
                     ->required()
                     ->live()
                     ->default(Company::first()?->id)
-                    ->afterStateUpdated(fn (callable $set, ?string $state) => $set('currency_id', Company::find($state)?->currency_id)),
+                    ->afterStateUpdated(fn(callable $set, ?string $state) => $set('currency_id', Company::find($state)?->currency_id)),
                 Forms\Components\Select::make('journal_id')
                     ->relationship('journal', 'name')
                     ->searchable()
@@ -54,6 +55,7 @@ class JournalEntryResource extends Resource
                     ->relationship('currency', 'name')
                     ->searchable()
                     ->required()
+                    ->live()
                     ->default(Company::first()?->currency_id),
                 Forms\Components\DatePicker::make('entry_date')
                     ->required()
@@ -71,8 +73,8 @@ class JournalEntryResource extends Resource
                             ->rules([new ActiveAccount])
                             ->required()
                             ->columnSpan(2),
-                        Forms\Components\TextInput::make('debit')->required()->numeric()->columnSpan(1)->live(onBlur: true),
-                        Forms\Components\TextInput::make('credit')->required()->numeric()->columnSpan(1)->live(onBlur: true),
+                        MoneyInput::make('debit')->required()->currencyField('../../currency_id')->numeric()->columnSpan(1)->live(onBlur: true),
+                        MoneyInput::make('credit')->required()->currencyField('../../currency_id')->numeric()->columnSpan(1)->live(onBlur: true),
                         Forms\Components\Select::make('partner_id')
                             ->options(Partner::pluck('name', 'id'))
                             ->searchable()
@@ -90,14 +92,17 @@ class JournalEntryResource extends Resource
                     ->afterStateUpdated(function (callable $set, $state) {
                         self::updateTotals($set, $state);
                     }),
-                Forms\Components\TextInput::make('total_debit')
+                MoneyInput::make('total_debit')
                     ->numeric()
+                    ->currencyField('currency_id')
                     ->readOnly(),
-                Forms\Components\TextInput::make('total_credit')
+                MoneyInput::make('total_credit')
                     ->numeric()
+                    ->currencyField('currency_id')
                     ->readOnly(),
-                Forms\Components\TextInput::make('balance')
+                MoneyInput::make('balance')
                     ->numeric()
+                    ->currencyField('currency_id')
                     ->readOnly(),
             ]);
     }
@@ -112,8 +117,8 @@ class JournalEntryResource extends Resource
                 Tables\Columns\TextColumn::make('currency.name')->sortable(),
                 Tables\Columns\TextColumn::make('entry_date')->date()->sortable(),
                 Tables\Columns\TextColumn::make('reference')->searchable(),
-                Tables\Columns\TextColumn::make('total_debit')->numeric()->sortable(),
-                Tables\Columns\TextColumn::make('total_credit')->numeric()->sortable(),
+                MoneyColumn::make('total_debit')->sortable(),
+                MoneyColumn::make('total_credit')->sortable(),
                 Tables\Columns\TextColumn::make('created_at')->dateTime()->sortable()->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('updated_at')->dateTime()->sortable()->toggleable(isToggledHiddenByDefault: true),
             ])
@@ -161,5 +166,4 @@ class JournalEntryResource extends Resource
             'edit' => Pages\EditJournalEntry::route('/{record}/edit'),
         ];
     }
-
 }
