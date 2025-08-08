@@ -41,4 +41,13 @@ class InvoiceFactory extends Factory
             ];
         });
     }
+
+    public function withLines(int $count = 1): self
+    {
+        return $this->afterCreating(function (Invoice $invoice) use ($count) {
+            \App\Models\InvoiceLine::factory()->count($count)->create([
+                'invoice_id' => $invoice->id,
+            ]);
+        });
+    }
 }
