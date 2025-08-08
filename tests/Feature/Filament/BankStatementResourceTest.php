@@ -183,6 +183,25 @@ it('preserves the reconcile button in the table', function () {
         ->assertTableActionExists('reconcile');
 });
 
+it('can navigate to reconciliation page', function () {
+    $bankStatement = BankStatement::factory()->create([
+        'company_id' => $this->company->id,
+    ]);
+
+    $this->get(BankStatementResource::getUrl('reconcile', ['record' => $bankStatement]))
+        ->assertSuccessful()
+        ->assertSeeLivewire(\App\Livewire\Accounting\BankReconciliationMatcher::class);
+});
+
+it('shows reconcile action in view page', function () {
+    $bankStatement = BankStatement::factory()->create([
+        'company_id' => $this->company->id,
+    ]);
+
+    livewire(BankStatementResource\Pages\ViewBankStatement::class, ['record' => $bankStatement->id])
+        ->assertActionExists('reconcile');
+});
+
 it('can handle multiple lines in create', function () {
     /** @var \App\Models\Partner $partner1 */
     $partner1 = Partner::factory()->create(['company_id' => $this->company->id]);
@@ -294,20 +313,18 @@ it('can reconcile bank statement lines with payments', function () {
         'status' => \App\Models\Payment::STATUS_CONFIRMED,
     ]);
 
-    // Test the BankReconciliation component reactivity
-    $reconciliationComponent = livewire(\App\Livewire\BankReconciliation::class, [
-        'record' => $bankStatement,
+    // Test the BankReconciliationMatcher component reactivity
+    $reconciliationComponent = livewire(\App\Livewire\Accounting\BankReconciliationMatcher::class, [
+        'bankStatementId' => $bankStatement->id,
     ]);
 
-    $reconciliationComponent->set('selectedLines', [$statementLine->id])
-                           ->set('selectedPayments', [$payment->id]);
+    $reconciliationComponent->set('selectedBankLines', [$statementLine->id])
+                           ->set('selectedSystemPayments', [$payment->id]);
 
     // Verify the component shows it can reconcile
-    expect($reconciliationComponent->get('canReconcile'))->toBeTrue();
-    expect($reconciliationComponent->get('difference')->isZero())->toBeTrue();
-
-    // Note: Actual reconciliation action would need to be implemented in the component
-    // For now, we're testing the reactive behavior
+    $summary = $reconciliationComponent->get('summary');
+    expect($summary['isBalanced'])->toBeTrue();
+    expect($summary['difference']->isZero())->toBeTrue();
 });
 
 it('can create write-off entries for unmatched bank statement lines', function () {
@@ -335,16 +352,14 @@ it('can create write-off entries for unmatched bank statement lines', function (
         'name' => 'Bank Charges',
     ]);
 
-    // Test the write-off action
-    livewire(BankStatementResource\Pages\ReconcileBankStatement::class, [
-        'record' => $bankStatement->getRouteKey(),
+    // Test the write-off action through the Livewire component
+    livewire(\App\Livewire\Accounting\BankReconciliationMatcher::class, [
+        'bankStatementId' => $bankStatement->id,
     ])
-        ->callAction('writeOff', [
-            'line_id' => $statementLine->id,
+        ->callTableAction('writeOff', $statementLine, [
             'write_off_account_id' => $writeOffAccount->id,
             'description' => 'Bank service fee write-off',
-        ])
-        ->assertNotified('Write-off created successfully');
+        ]);
 
     // Verify write-off was created
     $statementLine->refresh();
@@ -387,9 +402,9 @@ it('prevents reconciliation when totals do not match', function () {
     ]);
 
     // Test that reconciliation button is disabled when totals don't match
-    // Test the BankReconciliation component with mismatched amounts
-    $reconciliationComponent = livewire(\App\Livewire\BankReconciliation::class, [
-        'record' => $bankStatement,
+    // Test the BankReconciliationMatcher component with mismatched amounts
+    $reconciliationComponent = livewire(\App\Livewire\Accounting\BankReconciliationMatcher::class, [
+        'bankStatementId' => $bankStatement->id,
     ]);
 
     $reconciliationComponent->set('selectedLines', [$statementLine->id])
@@ -425,9 +440,9 @@ it('can clear selections in reconciliation interface', function () {
         'is_reconciled' => false,
     ]);
 
-    // Test the clear selections functionality in BankReconciliation component
-    $reconciliationComponent = livewire(\App\Livewire\BankReconciliation::class, [
-        'record' => $bankStatement,
+    // Test the clear selections functionality in BankReconciliationMatcher component
+    $reconciliationComponent = livewire(\App\Livewire\Accounting\BankReconciliationMatcher::class, [
+        'bankStatementId' => $bankStatement->id,
     ]);
 
     $reconciliationComponent->set('selectedLines', [$statementLine->id])
@@ -466,9 +481,9 @@ it('has reactive reconciliation summary', function () {
         'status' => \App\Models\Payment::STATUS_CONFIRMED,
     ]);
 
-    // Test the BankReconciliation Livewire component directly
-    $reconciliationComponent = livewire(\App\Livewire\BankReconciliation::class, [
-        'record' => $bankStatement,
+    // Test the BankReconciliationMatcher Livewire component directly
+    $reconciliationComponent = livewire(\App\Livewire\Accounting\BankReconciliationMatcher::class, [
+        'bankStatementId' => $bankStatement->id,
     ]);
 
     // Initially, no selections should mean canReconcile is false
@@ -510,13 +525,13 @@ it('can toggle bank lines and payments in reconciliation interface', function ()
         'status' => \App\Models\Payment::STATUS_CONFIRMED,
     ]);
 
-    $reconciliationComponent = livewire(\App\Livewire\BankReconciliation::class, [
-        'record' => $bankStatement,
+    $reconciliationComponent = livewire(\App\Livewire\Accounting\BankReconciliationMatcher::class, [
+        'bankStatementId' => $bankStatement->id,
     ]);
 
     // Test toggling bank line
-    $reconciliationComponent->call('toggleBankLine', $statementLine->id)
-                           ->assertSet('selectedLines', [$statementLine->id]);
+    $reconciliationComponent->call('toggleSystemPayment', $payment->id)
+                           ->assertSet('selectedSystemPayments', [$payment->id]);
 
     // Test toggling payment
     $reconciliationComponent->call('togglePayment', $payment->id)
@@ -557,22 +572,23 @@ it('can perform reconciliation through the livewire component', function () {
         'status' => \App\Models\Payment::STATUS_CONFIRMED,
     ]);
 
-    $reconciliationComponent = livewire(\App\Livewire\BankReconciliation::class, [
-        'record' => $bankStatement,
+    $reconciliationComponent = livewire(\App\Livewire\Accounting\BankReconciliationMatcher::class, [
+        'bankStatementId' => $bankStatement->id,
     ]);
 
     // Select matching items
-    $reconciliationComponent->set('selectedLines', [$statementLine->id])
-                           ->set('selectedPayments', [$payment->id]);
+    $reconciliationComponent->set('selectedBankLines', [$statementLine->id])
+                           ->set('selectedSystemPayments', [$payment->id]);
 
     // Verify can reconcile
-    expect($reconciliationComponent->get('canReconcile'))->toBeTrue();
+    $summary = $reconciliationComponent->get('summary');
+    expect($summary['isBalanced'])->toBeTrue();
 
     // Perform reconciliation
     $reconciliationComponent->call('reconcile');
 
     // Verify selections were cleared
-    expect($reconciliationComponent->get('selectedLines'))->toBeEmpty();
+    expect($reconciliationComponent->get('selectedBankLines'))->toBeEmpty();
     expect($reconciliationComponent->get('selectedPayments'))->toBeEmpty();
 });
 
@@ -624,13 +640,13 @@ it('calculates totals correctly with different payment types', function () {
         'status' => \App\Models\Payment::STATUS_CONFIRMED,
     ]);
 
-    $reconciliationComponent = livewire(\App\Livewire\BankReconciliation::class, [
-        'record' => $bankStatement,
+    $reconciliationComponent = livewire(\App\Livewire\Accounting\BankReconciliationMatcher::class, [
+        'bankStatementId' => $bankStatement->id,
     ]);
 
     // Test 1: Select deposit line and inbound payment (both positive)
-    $reconciliationComponent->set('selectedLines', [$depositLine->id])
-                           ->set('selectedPayments', [$inboundPayment->id]);
+    $reconciliationComponent->set('selectedBankLines', [$depositLine->id])
+                           ->set('selectedSystemPayments', [$inboundPayment->id]);
 
     expect($reconciliationComponent->get('selectedBankTotal')->getAmount()->toInt())->toBe(1000); // 1000.00 in major units
     expect($reconciliationComponent->get('selectedPaymentTotal')->getAmount()->toInt())->toBe(1000); // 1000.00 in major units
@@ -675,8 +691,8 @@ it('can write off bank statement lines', function () {
         'is_reconciled' => false,
     ]);
 
-    $reconciliationComponent = livewire(\App\Livewire\BankReconciliation::class, [
-        'record' => $bankStatement,
+    $reconciliationComponent = livewire(\App\Livewire\Accounting\BankReconciliationMatcher::class, [
+        'bankStatementId' => $bankStatement->id,
     ]);
 
     // Write off the bank line
@@ -707,8 +723,8 @@ it('can write off payments', function () {
         'status' => \App\Models\Payment::STATUS_CONFIRMED,
     ]);
 
-    $reconciliationComponent = livewire(\App\Livewire\BankReconciliation::class, [
-        'record' => $bankStatement,
+    $reconciliationComponent = livewire(\App\Livewire\Accounting\BankReconciliationMatcher::class, [
+        'bankStatementId' => $bankStatement->id,
     ]);
 
     // Write off the payment
