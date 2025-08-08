@@ -2,8 +2,6 @@
 
 namespace App\Actions\Accounting;
 
-use Brick\Money\Money;
-use App\Models\Currency;
 use App\Models\BankStatement;
 use Illuminate\Support\Facades\DB;
 use App\DataTransferObjects\Accounting\UpdateBankStatementDTO;
@@ -25,16 +23,12 @@ class UpdateBankStatementAction
                 'ending_balance' => $dto->ending_balance,
             ]);
 
-            $existingLineIds = $bankStatement->bankStatementLines()->pluck('id')->toArray();
-            $incomingLineIds = [];
-
-            // 2. Update existing lines and create new ones
+            // 2. Delete existing lines and recreate them
             $bankStatement->bankStatementLines()->delete();
 
 
-            // 3. Delete lines that were removed from the form
+            // 3. Create new lines from DTO
             if (!empty($dto->lines)) {
-                $currencyCode = Currency::find($dto->currency_id)->code;
                 $linesToCreate = [];
 
                 foreach ($dto->lines as $lineDto) {
@@ -43,8 +37,7 @@ class UpdateBankStatementAction
                         'date' => $lineDto->date,
                         'description' => $lineDto->description,
                         'partner_id' => $lineDto->partner_id,
-                        // Create the Money object here, so the Cast receives a complete object.
-                        'amount' => Money::of($lineDto->amount, $currencyCode),
+                        'amount' => $lineDto->amount,
                     ];
                 }
 

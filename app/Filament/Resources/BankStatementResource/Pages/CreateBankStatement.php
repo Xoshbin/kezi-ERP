@@ -8,6 +8,10 @@ use App\Filament\Resources\BankStatementResource;
 use App\Actions\Accounting\CreateBankStatementAction;
 use App\DataTransferObjects\Accounting\CreateBankStatementDTO;
 use App\DataTransferObjects\Accounting\CreateBankStatementLineDTO;
+use App\Models\Currency;
+use Brick\Money\Money;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
 
 class CreateBankStatement extends CreateRecord
 {
@@ -18,34 +22,37 @@ class CreateBankStatement extends CreateRecord
         return __('bank_statement.create_bank_statement');
     }
 
-    protected function handleRecordCreation(array $data): \Illuminate\Database\Eloquent\Model
+    protected function mutateFormDataBeforeCreate(array $data): array
     {
-        // Prepare Line DTOs
+        $currency = Currency::find($data['currency_id']);
         $lineDTOs = [];
-        if (isset($data['bankStatementLines'])) {
-            foreach ($data['bankStatementLines'] as $line) {
-                $lineDTOs[] = new CreateBankStatementLineDTO(
-                    date: $line['date'],
-                    description: $line['description'],
-                    amount: $line['amount'],
-                    partner_id: $line['partner_id']
-                );
-            }
+        foreach ($data['bankStatementLines'] as $line) {
+            $lineDTOs[] = new CreateBankStatementLineDTO(
+                date: $line['date'],
+                description: $line['description'],
+                amount: Money::of($line['amount'], $currency->code),
+                partner_id: $line['partner_id']
+            );
         }
+        $data['bankStatementLines'] = $lineDTOs;
+        $data['created_by_user_id'] = Auth::id();
 
-        // Prepare Parent DTO
-        $dto = new CreateBankStatementDTO(
+        return $data;
+    }
+
+    protected function handleRecordCreation(array $data): Model
+    {
+        $bankStatementDTO = new CreateBankStatementDTO(
             company_id: $data['company_id'],
             currency_id: $data['currency_id'],
             journal_id: $data['journal_id'],
             reference: $data['reference'],
             date: $data['date'],
-            starting_balance: $data['starting_balance'],
-            ending_balance: $data['ending_balance'],
-            lines: $lineDTOs
+            starting_balance: Money::of($data['starting_balance'], Currency::find($data['currency_id'])->code),
+            ending_balance: Money::of($data['ending_balance'], Currency::find($data['currency_id'])->code),
+            lines: $data['bankStatementLines']
         );
 
-        // Execute the Action
-        return (new CreateBankStatementAction())->execute($dto);
+        return app(CreateBankStatementAction::class)->execute($bankStatementDTO);
     }
 }

@@ -35,13 +35,13 @@ test('it creates a bank statement and its lines from a dto', function () {
         new CreateBankStatementLineDTO(
             date: now()->toDateString(),
             description: 'Incoming Payment #1',
-            amount: '1500.00',
+            amount: Money::of('1500.00', $currencyCode),
             partner_id: (string)$partner->id,
         ),
         new CreateBankStatementLineDTO(
             date: now()->toDateString(),
             description: 'Bank Service Fee',
-            amount: '-25.50',
+            amount: Money::of('-25.50', $currencyCode),
             partner_id: null,
         ),
     ];
@@ -52,8 +52,8 @@ test('it creates a bank statement and its lines from a dto', function () {
         journal_id: $this->bankJournal->id,
         reference: 'Statement 08/2025',
         date: now()->toDateString(),
-        starting_balance: '1000.00',
-        ending_balance: '2474.50', // 1000 + 1500 - 25.50
+        starting_balance: Money::of('1000.00', $currencyCode),
+        ending_balance: Money::of('2474.50', $currencyCode), // 1000 + 1500 - 25.50
         lines: $lineDTOs,
     );
 
@@ -108,14 +108,14 @@ test('it updates a bank statement and syncs its lines from a dto', function () {
             id: $lineToUpdate->id,
             date: now()->addDay()->toDateString(),
             description: 'Updated Description',
-            amount: '250.00',
+            amount: Money::of('250.00', $currencyCode),
             partner_id: null
         ),
         new UpdateBankStatementLineDTO( // Add a new line
             id: null,
             date: now()->addDay()->toDateString(),
             description: 'Newly Added Line',
-            amount: '-50.00',
+            amount: Money::of('-50.00', $currencyCode),
             partner_id: null
         ),
     ];
@@ -126,13 +126,13 @@ test('it updates a bank statement and syncs its lines from a dto', function () {
         journal_id: $statement->journal_id,
         reference: 'Updated Statement Reference',
         date: now()->addDay()->toDateString(),
-        starting_balance: '1000.00',
-        ending_balance: '1200.00', // 1000 + 250 - 50
+        starting_balance: Money::of('1000.00', $currencyCode),
+        ending_balance: Money::of('1200.00', $currencyCode), // 1000 + 250 - 50
         lines: $updateLineDTOs
     );
 
     // Act: Execute the update action.
-    $action = new UpdateBankStatementAction();
+    $action = app(UpdateBankStatementAction::class);
     $action->execute($updateStatementDTO);
 
     // Assert: Check the results of the sync operation.
