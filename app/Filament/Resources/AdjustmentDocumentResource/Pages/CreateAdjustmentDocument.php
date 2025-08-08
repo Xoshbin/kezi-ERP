@@ -6,6 +6,8 @@ namespace App\Filament\Resources\AdjustmentDocumentResource\Pages;
 // Add imports for Invoice and VendorBill
 use App\Models\Invoice;
 use App\Models\VendorBill;
+use App\Models\Currency;
+use Brick\Money\Money;
 use Illuminate\Validation\ValidationException;
 // Other use statements...
 use App\Actions\Adjustments\CreateAdjustmentDocumentAction;
@@ -56,12 +58,13 @@ class CreateAdjustmentDocument extends CreateRecord
     protected function handleRecordCreation(array $data): Model
     {
         // This method will now always receive a valid $data['currency_id']
+        $currency = Currency::find($data['currency_id']);
         $lineDTOs = [];
         foreach ($data['lines'] as $line) {
             $lineDTOs[] = new CreateAdjustmentDocumentLineDTO(
                 description: $line['description'],
                 quantity: $line['quantity'],
-                unit_price: $line['unit_price'],
+                unit_price: Money::of($line['unit_price'], $currency->code),
                 account_id: $line['account_id'],
                 product_id: $line['product_id'] ?? null,
                 tax_id: $line['tax_id'] ?? null
