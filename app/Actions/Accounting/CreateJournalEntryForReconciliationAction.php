@@ -26,7 +26,7 @@ class CreateJournalEntryForReconciliationAction
 
         // The amount must be in the currency of the journal.
         // We create a new Money instance from the payment's minor amount, but with the journal's currency.
-        $amountInJournalCurrency = $payment->amount;
+        $amountInJournalCurrency = Money::ofMinor($payment->amount->getMinorAmount(), $currencyCode);
 
         // 2. Get the required default accounts from the company.
         $bankAccountId = $company->default_bank_account_id;
