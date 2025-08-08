@@ -35,4 +35,11 @@ class PartnerFactory extends Factory
             'is_active' => $this->faker->boolean,
         ];
     }
+
+    public function vendor(): self
+    {
+        return $this->state(fn (array $attributes) => [
+            'type' => Partner::TYPE_VENDOR,
+        ]);
+    }
 }

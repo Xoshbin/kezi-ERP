@@ -5,14 +5,15 @@ namespace App\Actions\Accounting;
 use App\Models\JournalEntry;
 use App\Models\User;
 use App\Models\VendorBill;
-use App\Services\JournalEntryService;
+use App\DataTransferObjects\Accounting\CreateJournalEntryDTO;
+use App\DataTransferObjects\Accounting\CreateJournalEntryLineDTO;
 use Brick\Money\Money;
 use Illuminate\Support\Facades\DB;
 use RuntimeException;
 
 class CreateJournalEntryForExpenseBillAction
 {
-    public function __construct(protected JournalEntryService $journalEntryService)
+    public function __construct(private readonly CreateJournalEntryAction $createJournalEntryAction)
     {
     }
 
@@ -31,54 +32,61 @@ class CreateJournalEntryForExpenseBillAction
 
             $expenseLines = $vendorBill->lines->where('product.type', '!=', 'storable');
 
-            $journalLines = [];
+            $lineDTOs = [];
             $totalDebit = Money::of(0, $currency->code);
 
             foreach ($expenseLines as $line) {
                 // Debit the expense account
-                $journalLines[] = [
-                    'account_id' => $line->expense_account_id,
-                    'debit' => $line->subtotal,
-                    'credit' => Money::of(0, $currency->code),
-                    'description' => $line->description,
-                ];
+                $lineDTOs[] = new CreateJournalEntryLineDTO(
+                    account_id: $line->expense_account_id,
+                    debit: $line->subtotal,
+                    credit: Money::of(0, $currency->code),
+                    description: $line->description,
+                    partner_id: null,
+                    analytic_account_id: null,
+                );
                 $totalDebit = $totalDebit->plus($line->subtotal);
 
                 // Handle tax if applicable
                 if ($line->tax_id && $line->total_line_tax->isPositive()) {
                     $taxAccountId = $company->default_tax_receivable_id; // Or a more specific tax account if needed
-                    $journalLines[] = [
-                        'account_id' => $taxAccountId,
-                        'debit' => $line->total_line_tax,
-                        'credit' => Money::of(0, $currency->code),
-                        'description' => "Tax for: {$line->description}",
-                    ];
+                    $lineDTOs[] = new CreateJournalEntryLineDTO(
+                        account_id: $taxAccountId,
+                        debit: $line->total_line_tax,
+                        credit: Money::of(0, $currency->code),
+                        description: "Tax for: {$line->description}",
+                        partner_id: null,
+                        analytic_account_id: null,
+                    );
                     $totalDebit = $totalDebit->plus($line->total_line_tax);
                 }
             }
 
             // Credit Accounts Payable for the total amount
-            $journalLines[] = [
-                'account_id' => $apAccountId,
-                'debit' => Money::of(0, $currency->code),
-                'credit' => $totalDebit,
-                'description' => 'Accounts Payable',
-            ];
+            $lineDTOs[] = new CreateJournalEntryLineDTO(
+                account_id: $apAccountId,
+                debit: Money::of(0, $currency->code),
+                credit: $totalDebit,
+                description: 'Accounts Payable',
+                partner_id: $vendorBill->partner_id,
+                analytic_account_id: null,
+            );
 
-            $journalEntryData = [
-                'company_id' => $company->id,
-                'journal_id' => $company->default_purchase_journal_id,
-                'currency_id' => $currency->id,
-                'entry_date' => $vendorBill->accounting_date,
-                'reference' => $vendorBill->bill_reference,
-                'description' => 'Vendor Bill ' . $vendorBill->bill_reference,
-                'source_type' => VendorBill::class,
-                'source_id' => $vendorBill->id,
-                'created_by_user_id' => $user->id,
-                'lines' => $journalLines,
-            ];
+            $journalEntryDTO = new CreateJournalEntryDTO(
+                company_id: $company->id,
+                journal_id: $company->default_purchase_journal_id,
+                currency_id: $currency->id,
+                entry_date: $vendorBill->accounting_date,
+                reference: $vendorBill->bill_reference,
+                description: 'Vendor Bill ' . $vendorBill->bill_reference,
+                source_type: VendorBill::class,
+                source_id: $vendorBill->id,
+                created_by_user_id: $user->id,
+                is_posted: true,
+                lines: $lineDTOs,
+            );
 
-            return $this->journalEntryService->create($journalEntryData, true);
+            return $this->createJournalEntryAction->execute($journalEntryDTO);
         });
     }
 }

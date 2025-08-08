@@ -2,26 +2,28 @@
 
 namespace App\Services;
 
-use App\Actions\Accounting\CreateJournalEntryForExpenseBillAction; // Add this import
-use App\Actions\Accounting\CreateJournalEntryForInventoryBillAction;
-use App\Actions\Inventory\CreateStockMoveAction;
-use App\DataTransferObjects\Inventory\CreateStockMoveDTO;
-use App\Enums\Inventory\StockMoveStatus;
-use App\Enums\Inventory\StockMoveType;
-use App\Enums\Products\ProductType;
-use App\Events\VendorBillConfirmed;
-use App\Exceptions\DeletionNotAllowedException;
-use App\Models\AuditLog;
 use App\Models\User;
+use RuntimeException;
+use App\Models\AuditLog;
 use App\Models\VendorBill;
 use Illuminate\Support\Facades\DB;
+use App\Enums\Products\ProductType;
+use App\Events\VendorBillConfirmed;
 use Illuminate\Support\Facades\Gate;
-use RuntimeException;
+use App\Enums\Inventory\StockMoveType;
+use App\Enums\Inventory\StockMoveStatus;
+use App\Enums\Purchases\VendorBillStatus;
+use App\Services\Accounting\LockDateService;
+use App\Exceptions\DeletionNotAllowedException;
+use App\Actions\Inventory\CreateStockMoveAction;
+use App\DataTransferObjects\Inventory\CreateStockMoveDTO;
+use App\Actions\Accounting\CreateJournalEntryForInventoryBillAction;
+use App\Actions\Accounting\CreateJournalEntryForExpenseBillAction; // Add this import
 
 class VendorBillService
 {
     public function __construct(
-        protected AccountingValidationService $accountingValidationService,
+        protected LockDateService $lockDateService,
         protected JournalEntryService $journalEntryService,
         protected CreateStockMoveAction $createStockMoveAction,
         protected CreateJournalEntryForInventoryBillAction $createJournalEntryForInventoryBillAction,
@@ -30,19 +32,20 @@ class VendorBillService
 
     public function post(VendorBill $vendorBill, User $user): void
     {
-        if ($vendorBill->status !== VendorBill::STATUS_DRAFT) {
+        if ($vendorBill->status !== VendorBillStatus::Draft) {
             return;
         }
 
-        $this->accountingValidationService->checkIfPeriodIsLocked($vendorBill->company_id, $vendorBill->bill_date);
+        $this->lockDateService->enforce(\App\Models\Company::find($vendorBill->company_id), \Carbon\Carbon::parse($vendorBill->bill_date));
+
+
         Gate::forUser($user)->authorize('post', $vendorBill);
 
         DB::transaction(function () use ($vendorBill, $user) {
-            $vendorBill->update([
-                'status' => VendorBill::STATUS_POSTED,
-                'posted_at' => now(),
-                'user_id' => $user->id
-            ]);
+            $vendorBill->user_id = $user->id;
+            $vendorBill->status = VendorBillStatus::Posted;
+            $vendorBill->posted_at = now();
+            $vendorBill->save();
 
             // Determine if the bill contains storable or only expense items
             $hasStorableItems = $vendorBill->lines()->whereHas('product', fn($q) => $q->where('type', ProductType::Storable))->exists();
@@ -62,7 +65,7 @@ class VendorBillService
 
             // Associate the created journal entry with the bill
             if (isset($journalEntry)) {
-                 $vendorBill->update(['journal_entry_id' => $journalEntry->id]);
+                $vendorBill->update(['journal_entry_id' => $journalEntry->id]);
             }
         });
 
@@ -103,10 +106,9 @@ class VendorBillService
      */
     public function delete(VendorBill $vendorBill): bool
     {
+        $this->lockDateService->enforce(\App\Models\Company::find($vendorBill->company_id), \Carbon\Carbon::parse($vendorBill->bill_date));
 
-        $this->accountingValidationService->checkIfPeriodIsLocked($vendorBill->company_id, $vendorBill->bill_date);
-
-        if ($vendorBill->status !== VendorBill::STATUS_DRAFT) {
+        if ($vendorBill->status !== VendorBillStatus::Draft) {
             throw new DeletionNotAllowedException(
                 'Cannot delete a posted vendor bill. Corrections must be made with a new reversal entry.'
             );
@@ -124,7 +126,7 @@ class VendorBillService
     {
         Gate::forUser($user)->authorize('cancel', $vendorBill);
 
-        if ($vendorBill->status !== VendorBill::STATUS_POSTED) {
+        if ($vendorBill->status !== VendorBillStatus::Posted) {
             throw new \Exception('Only posted vendor bills can be cancelled.');
         }
 
@@ -143,7 +145,7 @@ class VendorBillService
                 'auditable_id' => $vendorBill->id,
                 'description' => 'Vendor Bill Cancelled: ' . $reason,
                 'old_values' => ['status' => $vendorBill->status],
-                'new_values' => ['status' => VendorBill::STATUS_CANCELED],
+                'new_values' => ['status' => VendorBillStatus::Cancelled],
                 'ip_address' => request()->ip(),
             ]);
 
@@ -156,8 +158,44 @@ class VendorBillService
             );
 
             // Step 3: Update the vendor bill's status.
-            $vendorBill->status = VendorBill::STATUS_CANCELED;
+            $vendorBill->status = VendorBillStatus::Cancelled;
             $vendorBill->save(); // saveQuietly() isn't needed if the observer handles status changes gracefully
+        });
+    }
+
+    public function confirm(VendorBill $vendorBill, User $user): void
+    {
+        $this->post($vendorBill, $user);
+    }
+
+    public function resetToDraft(VendorBill $vendorBill, User $user, string $reason): void
+    {
+        Gate::forUser($user)->authorize('resetToDraft', $vendorBill);
+
+        if ($vendorBill->status !== \App\Enums\Purchases\VendorBillStatus::Posted) {
+            throw new \Exception('Only posted vendor bills can be reset to draft.');
+        }
+
+        DB::transaction(function () use ($vendorBill, $user, $reason) {
+            $originalEntry = $vendorBill->journalEntry;
+            if ($originalEntry) {
+                $this->journalEntryService->createReversal($originalEntry, 'Reset of Bill ' . $vendorBill->bill_reference . ': ' . $reason, $user);
+            }
+
+            $logEntry = [
+                'reset_by_user_id' => $user->id,
+                'reset_at' => now()->toDateTimeString(),
+                'reason' => $reason,
+                'original_posted_at' => $vendorBill->posted_at->toDateTimeString(),
+                'original_journal_entry_id' => $vendorBill->journal_entry_id,
+            ];
+
+            $vendorBill->update([
+                'status' => \App\Enums\Purchases\VendorBillStatus::Draft,
+                'posted_at' => null,
+                'journal_entry_id' => null,
+                'reset_to_draft_log' => array_merge($vendorBill->reset_to_draft_log ?? [], [$logEntry]),
+            ]);
         });
     }
 }

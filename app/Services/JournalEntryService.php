@@ -3,86 +3,21 @@
 namespace App\Services;
 
 use Carbon\Carbon;
-use App\Actions\Accounting\ReverseJournalEntryAction;
 use App\Models\User;
 use Brick\Money\Money;
 use App\Models\Company;
-use App\Models\LockDate;
 use App\Models\JournalEntry;
-use App\Rules\ActiveAccount;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Validator;
 use App\Exceptions\PeriodIsLockedException;
-use App\Exceptions\UpdateNotAllowedException;
+use App\Services\Accounting\LockDateService;
 use Illuminate\Validation\ValidationException;
 use App\Exceptions\DeletionNotAllowedException;
+use App\Actions\Accounting\ReverseJournalEntryAction;
 
 class JournalEntryService
 {
-    public function __construct(protected AccountingValidationService $accountingValidationService)
-    {
-    }
+    public function __construct(protected LockDateService $lockDateService,) {}
 
-    public function create(array $data, bool $postImmediately = false): JournalEntry
-    {
-        $this->accountingValidationService->checkIfPeriodIsLocked($data['company_id'], $data['entry_date']);
-
-        Validator::make($data, [
-            // Apply the rule to each account_id in the lines array
-            'lines.*.account_id' => ['required', 'exists:accounts,id', new ActiveAccount],
-            // ... other rules
-        ])->validate();
-
-        // IF a currency_id is not specified, use the company's default currency.
-        if (empty($data['currency_id'])) {
-            $company = Company::find($data['company_id']);
-            $data['currency_id'] = $company->currency_id;
-        }
-
-        // 1. Calculate Totals
-        // MODIFIED: Use Money objects for precise summation
-        $currencyCode = \App\Models\Currency::find($data['currency_id'])->code;
-        $totalDebit = Money::of(0, $currencyCode);
-        $totalCredit = Money::of(0, $currencyCode);
-
-        foreach ($data['lines'] as $line) {
-            if (isset($line['debit'])) {
-                $totalDebit = $totalDebit->plus($line['debit']);
-            }
-            if (isset($line['credit'])) {
-                $totalCredit = $totalCredit->plus($line['credit']);
-            }
-        }
-
-        // 2. Validate the balance rule
-        // MODIFIED: Use isEqualTo() for Money object comparison
-        if (!$totalDebit->isEqualTo($totalCredit)) {
-            // This stops execution and throws the clean error your test expects.
-            throw ValidationException::withMessages([
-                'lines' => 'The total debits must equal the total credits.'
-            ]);
-        }
-
-        // 3. Create within a Transaction
-        return DB::transaction(function () use ($data, $postImmediately, $totalDebit, $totalCredit) {
-            $journalEntry = JournalEntry::create(
-                collect($data)->except('lines')->all() + [
-                    'is_posted' => $postImmediately,
-                    'total_debit' => $totalDebit,
-                    'total_credit' => $totalCredit,
-                ]
-            );
-
-            foreach ($data['lines'] as $lineData) {
-                $journalEntry->lines()->create($lineData);
-            }
-
-            // The totals are now set correctly on creation.
-            // We can return the entry directly.
-            return $journalEntry;
-        });
-    }
 
     public function post(JournalEntry $journalEntry): bool
     {
@@ -96,7 +31,7 @@ class JournalEntryService
         // MODIFIED: Sum Money objects from the loaded relations.
         $totalDebit = Money::of(0, $journalEntry->currency->code);
         $totalCredit = Money::of(0, $journalEntry->currency->code);
-        foreach($journalEntry->lines as $line) {
+        foreach ($journalEntry->lines as $line) {
             $totalDebit = $totalDebit->plus($line->debit);
             $totalCredit = $totalCredit->plus($line->credit);
         }
@@ -129,7 +64,8 @@ class JournalEntryService
     {
         // First, check if the entry's date is in a locked period.
         // This applies to ALL entries, whether draft or posted, if their date falls within a locked period.
-        $this->accountingValidationService->checkIfPeriodIsLocked($journalEntry->company_id, $journalEntry->entry_date);
+        $this->lockDateService->enforce($journalEntry->company, Carbon::parse($journalEntry->entry_date));
+
 
         // Block deletion if the entry has been posted.
         // Block deletion if the entry has been posted. This is the non-negotiable immutability rule.

@@ -63,7 +63,8 @@ it('correctly processes an incoming storable product using AVCO, creating a stoc
         bill_date: $purchaseDate->toDateString(),
         accounting_date: $purchaseDate->toDateString(),
         due_date: $purchaseDate->addDays(30)->toDateString(),
-        lines: [$lineDto]
+        lines: [$lineDto],
+        created_by_user_id: $this->user->id
     );
 
     $vendorBill = resolve(CreateVendorBillAction::class)->execute($billDto);

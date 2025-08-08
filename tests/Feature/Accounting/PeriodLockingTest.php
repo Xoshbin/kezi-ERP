@@ -145,7 +145,8 @@ describe('Action Integration with Locked Periods', function () {
             bill_date: '2025-12-15', // Date is inside locked period
             accounting_date: '2025-12-15',
             due_date: null,
-            lines: []
+            lines: [],
+            created_by_user_id: $this->user->id
         ));
     })->throws(PeriodIsLockedException::class);
 

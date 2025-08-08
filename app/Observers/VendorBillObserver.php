@@ -5,6 +5,7 @@ namespace App\Observers;
 use App\Enums\Inventory\StockMoveStatus;
 use App\Enums\Inventory\StockMoveType;
 use App\Enums\Products\ProductType;
+use App\Enums\Purchases\VendorBillStatus;
 use App\Models\StockMove;
 use App\Models\VendorBill;
 use Brick\Math\RoundingMode;
@@ -18,7 +19,7 @@ class VendorBillObserver
     public function updated(VendorBill $vendorBill): void
     {
         // Only trigger when the status is first changed to 'posted'.
-        if ($vendorBill->wasChanged('status') && $vendorBill->status === VendorBill::STATUS_POSTED) {
+        if ($vendorBill->wasChanged('status') && $vendorBill->status === VendorBillStatus::Posted) {
 
             foreach ($vendorBill->lines as $line) {
                 // Only process lines with storable products.
@@ -38,8 +39,6 @@ class VendorBillObserver
         $product = $line->product;
         $company = $vendorBill->company->fresh();
 
-        // FIX #1: Add a guard clause to ensure locations are configured before proceeding.
-        // This provides a clear error instead of "Attempt to read property 'id' on null".
         if (!$company->vendorLocation || !$company->defaultStockLocation) {
             throw new \RuntimeException("Default Vendor or Stock Location is not configured for Company ID: {$company->id}.");
         }
@@ -59,16 +58,10 @@ class VendorBillObserver
             'move_date' => $vendorBill->accounting_date,
             'move_type' => StockMoveType::INCOMING,
             'status' => StockMoveStatus::DONE,
-
-            // FIX #2: Add the user ID for a complete audit trail.
-            // We assume the user who confirmed the bill is stored on the bill model.
-            'created_by_user_id' => auth()?->id(),
+            'created_by_user_id' => $vendorBill->user_id,
         ]);
 
         // Recalculate Average Cost (AVCO)
-        if (!$line->product->is_storable) {
-            return;
-        }
         $purchaseValue = $line->unit_price->multipliedBy($line->quantity);
         $oldValue = ($product->average_cost ?? Money::zero($currency->code))->multipliedBy($product->quantity_on_hand);
         $totalQuantity = $product->quantity_on_hand + $line->quantity;
@@ -78,8 +71,12 @@ class VendorBillObserver
             ? $totalValue->dividedBy($totalQuantity, RoundingMode::HALF_UP)
             : Money::zero($currency->code);
 
-        $product->quantity_on_hand = $totalQuantity;
-        $product->average_cost = $newAverageCost;
-        $product->save();
+        // Bypass Eloquent and update the database directly.
+        \Illuminate\Support\Facades\DB::table('products')
+            ->where('id', $product->id)
+            ->update([
+                'quantity_on_hand' => $totalQuantity,
+                'average_cost' => $newAverageCost->getMinorAmount()->toInt(),
+            ]);
     }
 }

@@ -21,6 +21,8 @@ class ProcessDepreciationJob implements ShouldQueue
     public function handle(): void
     {
         $user = $this->entry->asset->company->users()->first();
-        (new PostDepreciationEntryAction(new \App\Actions\Accounting\CreateJournalEntryForDepreciationAction()))->execute($this->entry, $user);
+        // By using app(), Laravel's service container will automatically resolve
+        // the nested dependencies for both actions.
+        app(PostDepreciationEntryAction::class)->execute($this->entry, $user);
     }
 }
