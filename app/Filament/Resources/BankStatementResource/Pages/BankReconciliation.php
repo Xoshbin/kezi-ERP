@@ -3,8 +3,8 @@
 namespace App\Filament\Resources\BankStatementResource\Pages;
 
 use App\Filament\Resources\BankStatementResource;
+use App\Livewire\Accounting\BankReconciliationMatcher;
 use Filament\Resources\Pages\Page;
-use App\Models\BankStatement;
 
 class BankReconciliation extends Page
 {
@@ -12,10 +12,21 @@ class BankReconciliation extends Page
 
     protected static string $view = 'filament.resources.bank-statement-resource.pages.bank-reconciliation';
 
-    // This public property's name ('record') matches the route parameter.
-    // Filament will automatically find the BankStatement and inject it here.
-    public BankStatement $record;
+    // We can pass the bank statement ID to the Livewire component
+    public int $record;
 
-    // The mount() method has been removed to allow Filament's
-    // automatic model binding to work without interference.
+    public function mount(int $record): void
+    {
+        $this->record = $record;
+    }
+
+    public function getTitle(): string
+    {
+        return __('bank_statement.reconcile_bank_statement');
+    }
+
+    public function getHeading(): string
+    {
+        return __('bank_statement.reconcile_bank_statement');
+    }
 }
