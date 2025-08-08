@@ -26,9 +26,9 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property int|null $analytic_account_id
  * @property string $description
  * @property numeric $quantity
- * @property float $unit_price
- * @property float $subtotal
- * @property float $total_line_tax
+ * @property \Brick\Money\Money $unit_price
+ * @property \Brick\Money\Money $subtotal
+ * @property \Brick\Money\Money $total_line_tax
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property-read \App\Models\AnalyticAccount|null $analyticAccount
@@ -106,24 +106,16 @@ class VendorBillLine extends Model
         'updated_at'        => 'datetime',  // Automatically managed by Eloquent [2].
     ];
 
-    protected static function booted(): void
-    {
-        static::saving(function (self $line) {
-            $line->loadMissing('vendorBill.currency', 'tax');
-
-            $currency = $line->vendorBill->currency;
-            $subtotal = $line->unit_price->multipliedBy((string)$line->quantity, \Brick\Math\RoundingMode::HALF_UP);
-            $taxAmount = \Brick\Money\Money::of(0, $currency->code);
-
-            if ($line->tax) {
-                $taxRate = (string)($line->tax->rate / 100);
-                $taxAmount = $subtotal->multipliedBy($taxRate, \Brick\Math\RoundingMode::HALF_UP);
-            }
-
-            $line->subtotal = $subtotal;
-            $line->total_line_tax = $taxAmount;
-        });
-    }
+    /**
+     * The relationships that should always be loaded.
+     * Eager-loading the `vendorBill` relationship is critical because the `MoneyCast`
+     * for monetary fields on this model depends on the currency context provided by the parent bill.
+     * Without this, any retrieval of a `VendorBillLine` would fail when casting monetary values
+     * due to the missing currency information, leading to a "currency_id on null" error.
+     *
+     * @var array
+     */
+    protected $with = ['vendorBill'];
 
     /**
      * Get the Vendor Bill that owns the Vendor Bill Line.
@@ -192,10 +184,11 @@ class VendorBillLine extends Model
      * Accessor to provide the currency_id to the MoneyCast.
      * This makes the model responsible for knowing its own currency context.
      */
-    public function getCurrencyIdAttribute(): int
+    public function getCurrencyIdAttribute(): ?int
     {
-        // This assumes the 'vendorBill' relationship is always loaded when needed.
-        // You can add loadMissing('vendorBill') for robustness if necessary.
-        return $this->vendorBill->currency_id;
+        // If the relationship is loaded, use it. If not, lazy-load it.
+        // This is crucial for the MoneyCast to work correctly, especially during
+        // model creation where the relationship might not be set yet.
+        return $this->vendorBill->currency_id ?? $this->vendorBill()->first()->currency_id;
     }
 }

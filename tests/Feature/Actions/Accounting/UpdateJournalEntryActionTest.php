@@ -59,7 +59,7 @@ test('it updates a journal entry and syncs its lines from a DTO', function () {
     );
 
     // 3. Act
-    $action = new UpdateJournalEntryAction();
+    $action = app(UpdateJournalEntryAction::class);
     $updatedJournalEntry = $action->execute($updateDTO);
 
     // 4. Assert

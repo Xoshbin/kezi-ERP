@@ -13,9 +13,13 @@ uses(RefreshDatabase::class, WithConfiguredCompany::class);
 
 test('it creates a correct journal entry for an inbound payment', function () {
 
+    $this->company->currency->update(['exchange_rate' => 1.0]);
+    $this->company->refresh();
+
     $payment = Payment::factory()->for($this->company)->create([
         'payment_type' => Payment::TYPE_INBOUND,
         'amount' => Money::of(500, $this->company->currency->code),
+        'currency_id' => $this->company->currency_id,
         'journal_id' => $this->company->default_bank_journal_id,
         'status' => 'Confirmed',
     ]);
