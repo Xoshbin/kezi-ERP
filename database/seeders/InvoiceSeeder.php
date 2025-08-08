@@ -46,7 +46,7 @@ class InvoiceSeeder extends Seeder
         $lineDto = new CreateInvoiceLineDTO(
             description: 'On-site IT Infrastructure Setup',
             quantity: 1,
-            unit_price: '5000000', // DTOs accept clean string representations
+            unit_price: Money::of('5000000', $currencyCode), // DTOs expect Money objects
             income_account_id: $consultingRevenueAccount->id,
             product_id: null,
             tax_id: null
