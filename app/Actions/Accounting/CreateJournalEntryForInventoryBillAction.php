@@ -41,10 +41,12 @@ class CreateJournalEntryForInventoryBillAction
                     throw new RuntimeException("Product ID {$line->product_id} is missing default inventory or stock input accounts.");
                 }
 
+                $lineValue = $line->subtotal->plus($line->total_line_tax);
+
                 // Debit Inventory Account, Credit Stock Input Account for each line's subtotal.
                 $journalLines[] = [
                     'account_id' => $inventoryAccount->id,
-                    'debit' => $line->subtotal,
+                    'debit' => $lineValue,
                     'credit' => Money::of(0, $currency->code),
                     'description' => "Inventory valuation for: {$line->description}",
                 ];
@@ -52,11 +54,11 @@ class CreateJournalEntryForInventoryBillAction
                 $journalLines[] = [
                     'account_id' => $stockInputAccount->id,
                     'debit' => Money::of(0, $currency->code),
-                    'credit' => $line->subtotal,
+                    'credit' => $lineValue,
                     'description' => "Stock input for: {$line->description}",
                 ];
 
-                $totalValue = $totalValue->plus($line->subtotal);
+                $totalValue = $totalValue->plus($lineValue);
             }
 
             $journalEntryData = [

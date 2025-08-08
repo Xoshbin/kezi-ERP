@@ -38,6 +38,13 @@ class CreateJournalEntryForPaymentAction
         $amountInBaseCurrency = $amountInPaymentCurrency->multipliedBy($exchangeRate);
         $paymentAmountInBase = Money::of($amountInBaseCurrency, $baseCurrency->code, null, \Brick\Math\RoundingMode::HALF_UP);
 
+        \Illuminate\Support\Facades\Log::info('CreateJournalEntryForPaymentAction', [
+            'payment_amount' => $payment->amount->getAmount()->toFloat(),
+            'exchange_rate' => $exchangeRate,
+            'amount_in_base_currency' => $amountInBaseCurrency->toFloat(),
+            'payment_amount_in_base_minor' => $paymentAmountInBase->getMinorAmount()->toInt(),
+        ]);
+
         if ($payment->payment_type === Payment::TYPE_INBOUND) {
             $arAccountId = $company->default_accounts_receivable_id;
             if (!$arAccountId) {

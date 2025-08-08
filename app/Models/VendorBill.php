@@ -142,12 +142,12 @@ class VendorBill extends Model
         $zero = \Brick\Money\Money::of(0, $currencyCode);
 
         $totalTax = $this->lines->reduce(
-            fn (\Brick\Money\Money $carry, VendorBillLine $line) => $carry->plus($line->total_line_tax),
+            fn (\Brick\Money\Money $carry, VendorBillLine $line) => $carry->plus($line->total_line_tax ?? $zero),
             $zero
         );
 
         $subtotal = $this->lines->reduce(
-            fn (\Brick\Money\Money $carry, VendorBillLine $line) => $carry->plus($line->subtotal),
+            fn (\Brick\Money\Money $carry, VendorBillLine $line) => $carry->plus($line->subtotal ?? $zero),
             $zero
         );
 

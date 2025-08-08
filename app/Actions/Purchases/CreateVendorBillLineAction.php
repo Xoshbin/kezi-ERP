@@ -3,42 +3,47 @@
 namespace App\Actions\Purchases;
 
 use App\DataTransferObjects\Purchases\CreateVendorBillLineDTO;
-use App\Models\Product; // Make sure Product is imported
 use App\Models\Tax;
 use App\Models\VendorBill;
 use App\Models\VendorBillLine;
-use Brick\Money\Money;
-// It seems RoundingMode was used here before, let's keep it for consistency
 use Brick\Math\RoundingMode;
+use Brick\Money\Money;
 
 class CreateVendorBillLineAction
 {
     public function execute(VendorBill $vendorBill, CreateVendorBillLineDTO $dto): VendorBillLine
     {
-        $currencyCode = $dto->currency ?? $vendorBill->currency->code;
-        $unitPrice = Money::of($dto->unit_price, $currencyCode);
+        $currency = $vendorBill->currency;
 
-        // All subsequent calculations will now work correctly.
-        $currency = $unitPrice->getCurrency();
-        $product = Product::find($dto->product_id); // Find is fine for single action context
-        $description = $dto->description ?? $product?->name;
+        // 1. Explicitly create the Money object from the DTO.
+        $unitPrice = $dto->unit_price instanceof Money
+            ? $dto->unit_price
+            : Money::of($dto->unit_price, $currency->code);
+
+        // 2. Perform calculations with full context.
         $subtotal = $unitPrice->multipliedBy($dto->quantity, RoundingMode::HALF_UP);
 
-        $taxAmount = Money::zero($currencyCode);
-        if ($dto->tax_id && $tax = Tax::find($dto->tax_id)) {
-            $taxAmount = $subtotal->multipliedBy($tax->rate, RoundingMode::HALF_UP);
+        $taxAmount = Money::of(0, $currency->code);
+        if ($dto->tax_id) {
+            $tax = Tax::find($dto->tax_id);
+            if ($tax) {
+                $taxRate = $tax->rate / 100;
+                $taxAmount = $subtotal->multipliedBy((string)$taxRate, RoundingMode::HALF_UP);
+            }
         }
 
-        return $vendorBill->lines()->create([
+        // 3. Create the model with pre-calculated values.
+        return VendorBillLine::create([
+            'vendor_bill_id' => $vendorBill->id,
             'product_id' => $dto->product_id,
-            'description' => $description,
+            'description' => $dto->description,
             'quantity' => $dto->quantity,
             'unit_price' => $unitPrice,
-            'tax_id' => $dto->tax_id,
-            'expense_account_id' => $dto->expense_account_id,
-            'analytic_account_id' => $dto->analytic_account_id,
             'subtotal' => $subtotal,
             'total_line_tax' => $taxAmount,
+            'expense_account_id' => $dto->expense_account_id,
+            'tax_id' => $dto->tax_id,
+            'analytic_account_id' => $dto->analytic_account_id,
         ]);
     }
 }
