@@ -39,4 +39,34 @@ class VendorBillFactory extends Factory
         ];
     }
 
+    public function draft(): self
+    {
+        return $this->state(fn (array $attributes) => [
+            'status' => 'draft',
+            'posted_at' => null,
+            'journal_entry_id' => null,
+        ]);
+    }
+
+    public function posted(): self
+    {
+        return $this->state(function (array $attributes) {
+            return [
+                'status' => 'posted',
+                'posted_at' => now(),
+                'journal_entry_id' => \App\Models\JournalEntry::factory()->create([
+                    'company_id' => $attributes['company_id'],
+                ])->id,
+            ];
+        });
+    }
+
+    public function withLines(int $count = 1): self
+    {
+        return $this->afterCreating(function (\App\Models\VendorBill $vendorBill) use ($count) {
+            \App\Models\VendorBillLine::factory()->count($count)->create([
+                'vendor_bill_id' => $vendorBill->id,
+            ]);
+        });
+    }
 }
