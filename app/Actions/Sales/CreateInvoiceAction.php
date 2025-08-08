@@ -43,10 +43,6 @@ class CreateInvoiceAction
                 $this->createInvoiceLineAction->execute($invoice, $lineDto);
             }
 
-            if (!empty($linesToCreate)) {
-                $invoice->invoiceLines()->createMany($linesToCreate);
-            }
-
             return $invoice;
         });
 

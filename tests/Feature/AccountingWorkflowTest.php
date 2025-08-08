@@ -138,7 +138,7 @@ test('the entire accounting workflow from setup to credit note', function () {
     $lineDto = new CreateInvoiceLineDTO(
         description: 'On-site IT Infrastructure Setup',
         quantity: 1,
-        unit_price: (string) $itInfrastructureServiceCost->getAmount()->toFloat(), // DTO expects a string
+        unit_price: $itInfrastructureServiceCost, // DTO now expects Money object
         income_account_id: $revenueAccount->id,
         product_id: null,
         tax_id: null
