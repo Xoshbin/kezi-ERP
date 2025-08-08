@@ -2,26 +2,25 @@
 
 namespace App\Services\Inventory;
 
-use App\DataTransferObjects\Inventory\AdjustInventoryDTO;
-use App\Enums\Inventory\ValuationMethod;
+use Carbon\Carbon;
+use Brick\Money\Money;
 use App\Models\Product;
-use App\Enums\Accounting\JournalEntryState;
 use App\Models\JournalEntry;
 use App\Models\JournalEntryLine;
-use App\Services\Accounting\AccountingValidationService;
-use Brick\Money\Money;
-use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
+use App\Enums\Inventory\ValuationMethod;
+use App\Enums\Accounting\JournalEntryState;
+use App\Services\Accounting\LockDateService;
+use App\DataTransferObjects\Inventory\AdjustInventoryDTO;
 
 class InventoryValuationService
 {
-    public function __construct(private readonly AccountingValidationService $accountingValidationService)
-    {
-    }
+    public function __construct(protected LockDateService $lockDateService,) {}
 
     public function processIncomingStock(Product $product, float $quantity, Money $costPerUnit, Carbon $date, $sourceDocument): void
     {
-        $this->accountingValidationService->ensureDateIsNotLocked($product->company_id, $date);
+        $this->lockDateService->enforce(\App\Models\Company::find($product->company_id), \Carbon\Carbon::parse($date));
+
         // Logic will depend on the product's valuation method
         if ($product->valuation_method === ValuationMethod::AVCO) {
             // Recalculate average cost
@@ -40,7 +39,8 @@ class InventoryValuationService
 
     public function processOutgoingStock(Product $product, float $quantity, Carbon $date, $sourceDocument): void
     {
-        $this->accountingValidationService->ensureDateIsNotLocked($product->company_id, $date);
+        $this->lockDateService->enforce(\App\Models\Company::find($product->company_id), \Carbon\Carbon::parse($date));
+
         // Logic will depend on the product's valuation method
         if ($product->valuation_method === ValuationMethod::AVCO) {
             // Calculate COGS using average_cost
@@ -60,7 +60,8 @@ class InventoryValuationService
     public function adjustInventoryValue(AdjustInventoryDTO $dto): void
     {
         $product = Product::findOrFail($dto->product_id);
-        $this->accountingValidationService->ensureDateIsNotLocked($product->company_id, $dto->adjustment_date);
+        $this->lockDateService->enforce(\App\Models\Company::find($product->company_id), \Carbon\Carbon::parse($dto->adjustment_date));
+
         // This is a simplified example. A real implementation would need to calculate the value of the adjustment.
         // For now, we will assume the value is the quantity * the product's average cost.
         $adjustmentValue = $product->average_cost->multipliedBy($dto->quantity);
