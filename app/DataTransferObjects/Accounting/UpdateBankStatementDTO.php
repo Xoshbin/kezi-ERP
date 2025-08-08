@@ -3,6 +3,7 @@
 namespace App\DataTransferObjects\Accounting;
 
 use App\Models\BankStatement;
+use Brick\Money\Money;
 
 class UpdateBankStatementDTO
 {
@@ -15,8 +16,8 @@ class UpdateBankStatementDTO
         public readonly int $journal_id,
         public readonly string $reference,
         public readonly string $date,
-        public readonly string $starting_balance,
-        public readonly string $ending_balance,
+        public readonly Money $starting_balance,
+        public readonly Money $ending_balance,
         public readonly array $lines,
     ) {}
 }
