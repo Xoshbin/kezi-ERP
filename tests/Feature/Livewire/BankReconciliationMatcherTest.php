@@ -10,20 +10,40 @@ use App\Models\Account;
 use App\Models\Journal;
 use App\Models\Partner;
 use App\Livewire\Accounting\BankReconciliationMatcher;
+use App\Livewire\Accounting\BankTransactionsTable;
+use App\Livewire\Accounting\SystemPaymentsTable;
 use Brick\Money\Money;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Livewire\Livewire;
+
+uses(RefreshDatabase::class);
 
 beforeEach(function () {
     $this->company = Company::factory()->create();
     $this->user = User::factory()->for($this->company)->create();
     $this->actingAs($this->user);
-    
+
     $this->currency = $this->company->currency;
-    
+
+    // Create required accounts for reconciliation
+    $this->bankAccount = Account::factory()
+        ->for($this->company)
+        ->create(['type' => 'asset', 'name' => 'Bank Account']);
+
+    $this->outstandingAccount = Account::factory()
+        ->for($this->company)
+        ->create(['type' => 'asset', 'name' => 'Outstanding Receipts']);
+
+    // Update company with default accounts
+    $this->company->update([
+        'default_bank_account_id' => $this->bankAccount->id,
+        'default_outstanding_receipts_account_id' => $this->outstandingAccount->id,
+    ]);
+
     $this->bankJournal = Journal::factory()
         ->for($this->company)
-        ->create(['type' => 'Bank']);
-    
+        ->create(['type' => 'bank']);
+
     $this->bankStatement = BankStatement::factory()
         ->for($this->company)
         ->for($this->currency)
@@ -51,14 +71,15 @@ describe('BankReconciliationMatcher Livewire Component', function () {
             ->for($this->bankStatement)
             ->create(['is_reconciled' => true]);
 
-        Livewire::test(BankReconciliationMatcher::class, ['bankStatementId' => $this->bankStatement->id])
-            ->assertCanSeeTableRecords([$unreconciledLine])
-            ->assertCannotSeeTableRecords([$reconciledLine]);
+        // Test the BankTransactionsTable component directly
+        Livewire::test(BankTransactionsTable::class, ['bankStatement' => $this->bankStatement])
+            ->assertSee($unreconciledLine->description)
+            ->assertDontSee($reconciledLine->description);
     });
 
     it('displays unreconciled system payments', function () {
         $partner = Partner::factory()->for($this->company)->create();
-        
+
         $unreconciledPayment = Payment::factory()
             ->for($this->company)
             ->for($this->currency)
@@ -75,7 +96,8 @@ describe('BankReconciliationMatcher Livewire Component', function () {
             ->for($this->bankJournal)
             ->create(['status' => 'Reconciled']);
 
-        Livewire::test(BankReconciliationMatcher::class, ['bankStatementId' => $this->bankStatement->id])
+        // Test the SystemPaymentsTable component directly
+        Livewire::test(SystemPaymentsTable::class, ['bankStatement' => $this->bankStatement])
             ->assertSee($partner->name)
             ->assertDontSee('Reconciled Payment');
     });
@@ -85,14 +107,15 @@ describe('BankReconciliationMatcher Livewire Component', function () {
             ->for($this->bankStatement)
             ->create(['is_reconciled' => false]);
 
-        $component = Livewire::test(BankReconciliationMatcher::class, ['bankStatementId' => $this->bankStatement->id]);
+        // Test the BankTransactionsTable component directly
+        $component = Livewire::test(BankTransactionsTable::class, ['bankStatement' => $this->bankStatement]);
 
         // Initially not selected
         $component->assertSet('selectedBankLines', []);
 
         // Select the line (simulate checkbox click)
-        $component->call('table.toggleRecord', $bankLine->id);
-        
+        $component->call('toggleBankLine', $bankLine->id);
+
         // Should be selected now
         $component->assertSet('selectedBankLines', [$bankLine->id]);
     });
@@ -104,20 +127,21 @@ describe('BankReconciliationMatcher Livewire Component', function () {
             ->for($this->bankJournal)
             ->create(['status' => 'confirmed']);
 
-        $component = Livewire::test(BankReconciliationMatcher::class, ['bankStatementId' => $this->bankStatement->id]);
+        // Test the SystemPaymentsTable component directly
+        $component = Livewire::test(SystemPaymentsTable::class, ['bankStatement' => $this->bankStatement]);
 
         // Initially not selected
-        $component->assertSet('selectedSystemPayments', []);
+        $component->assertSet('selectedPayments', []);
 
         // Select the payment
-        $component->call('toggleSystemPayment', $payment->id);
-        
+        $component->call('togglePayment', $payment->id);
+
         // Should be selected now
-        $component->assertSet('selectedSystemPayments', [$payment->id]);
+        $component->assertSet('selectedPayments', [$payment->id]);
 
         // Toggle again to deselect
-        $component->call('toggleSystemPayment', $payment->id);
-        $component->assertSet('selectedSystemPayments', []);
+        $component->call('togglePayment', $payment->id);
+        $component->assertSet('selectedPayments', []);
     });
 
     it('calculates summary correctly for balanced selection', function () {
@@ -138,12 +162,23 @@ describe('BankReconciliationMatcher Livewire Component', function () {
                 'status' => 'confirmed',
             ]);
 
-        $component = Livewire::test(BankReconciliationMatcher::class, ['bankStatementId' => $this->bankStatement->id])
-            ->set('selectedBankLines', [$bankLine->id])
-            ->set('selectedSystemPayments', [$payment->id]);
+        $component = Livewire::test(BankReconciliationMatcher::class, ['bankStatementId' => $this->bankStatement->id]);
+
+        // Simulate events from child components
+        $component->call('updateBankSelection', [
+            'selectedIds' => [$bankLine->id],
+            'total' => 100000, // 100.000 IQD in minor units (3 decimal places)
+            'currency' => $this->currency->code,
+        ]);
+
+        $component->call('updatePaymentSelection', [
+            'selectedIds' => [$payment->id],
+            'total' => 100000, // 100.000 IQD in minor units (3 decimal places)
+            'currency' => $this->currency->code,
+        ]);
 
         $summary = $component->get('summary');
-        
+
         expect($summary['isBalanced'])->toBeTrue();
         expect($summary['bankTotal']->isEqualTo(Money::of(100, $this->currency->code)))->toBeTrue();
         expect($summary['systemTotal']->isEqualTo(Money::of(100, $this->currency->code)))->toBeTrue();
@@ -168,12 +203,23 @@ describe('BankReconciliationMatcher Livewire Component', function () {
                 'status' => 'confirmed',
             ]);
 
-        $component = Livewire::test(BankReconciliationMatcher::class, ['bankStatementId' => $this->bankStatement->id])
-            ->set('selectedBankLines', [$bankLine->id])
-            ->set('selectedSystemPayments', [$payment->id]);
+        $component = Livewire::test(BankReconciliationMatcher::class, ['bankStatementId' => $this->bankStatement->id]);
+
+        // Simulate events from child components
+        $component->call('updateBankSelection', [
+            'selectedIds' => [$bankLine->id],
+            'total' => 100000, // 100.000 IQD in minor units (3 decimal places)
+            'currency' => $this->currency->code,
+        ]);
+
+        $component->call('updatePaymentSelection', [
+            'selectedIds' => [$payment->id],
+            'total' => 50000, // 50.000 IQD in minor units (3 decimal places)
+            'currency' => $this->currency->code,
+        ]);
 
         $summary = $component->get('summary');
-        
+
         expect($summary['isBalanced'])->toBeFalse();
         expect($summary['difference']->isEqualTo(Money::of(50, $this->currency->code)))->toBeTrue();
     });
@@ -196,12 +242,24 @@ describe('BankReconciliationMatcher Livewire Component', function () {
                 'status' => 'confirmed',
             ]);
 
-        Livewire::test(BankReconciliationMatcher::class, ['bankStatementId' => $this->bankStatement->id])
-            ->set('selectedBankLines', [$bankLine->id])
-            ->set('selectedSystemPayments', [$payment->id])
-            ->call('reconcile')
+        $component = Livewire::test(BankReconciliationMatcher::class, ['bankStatementId' => $this->bankStatement->id]);
+
+        // Simulate balanced selections via events
+        $component->call('updateBankSelection', [
+            'selectedIds' => [$bankLine->id],
+            'total' => 100000, // 100.000 IQD in minor units (3 decimal places)
+            'currency' => $this->currency->code,
+        ]);
+
+        $component->call('updatePaymentSelection', [
+            'selectedIds' => [$payment->id],
+            'total' => 100000, // 100.000 IQD in minor units (3 decimal places)
+            'currency' => $this->currency->code,
+        ]);
+
+        $component->call('reconcile')
             ->assertSet('selectedBankLines', [])
-            ->assertSet('selectedSystemPayments', []);
+            ->assertSet('selectedPayments', []);
 
         // Verify reconciliation was performed
         expect($bankLine->fresh()->is_reconciled)->toBeTrue();
@@ -226,10 +284,22 @@ describe('BankReconciliationMatcher Livewire Component', function () {
                 'status' => 'confirmed',
             ]);
 
-        Livewire::test(BankReconciliationMatcher::class, ['bankStatementId' => $this->bankStatement->id])
-            ->set('selectedBankLines', [$bankLine->id])
-            ->set('selectedSystemPayments', [$payment->id])
-            ->call('reconcile');
+        $component = Livewire::test(BankReconciliationMatcher::class, ['bankStatementId' => $this->bankStatement->id]);
+
+        // Simulate unbalanced selections via events
+        $component->call('updateBankSelection', [
+            'selectedIds' => [$bankLine->id],
+            'total' => 100000, // 100.000 IQD in minor units (3 decimal places)
+            'currency' => $this->currency->code,
+        ]);
+
+        $component->call('updatePaymentSelection', [
+            'selectedIds' => [$payment->id],
+            'total' => 50000, // 50.000 IQD in minor units (3 decimal places)
+            'currency' => $this->currency->code,
+        ]);
+
+        $component->call('reconcile');
 
         // Verify reconciliation was NOT performed
         expect($bankLine->fresh()->is_reconciled)->toBeFalse();
@@ -249,10 +319,11 @@ describe('BankReconciliationMatcher Livewire Component', function () {
             ->for($this->company)
             ->create(['type' => 'expense']);
 
-        Livewire::test(BankReconciliationMatcher::class, ['bankStatementId' => $this->bankStatement->id])
+        // Test the write-off action on the BankTransactionsTable component
+        Livewire::test(BankTransactionsTable::class, ['bankStatement' => $this->bankStatement])
             ->callTableAction('writeOff', $bankLine, [
-                'write_off_account_id' => $writeOffAccount->id,
-                'description' => 'Write-off for small discrepancy',
+                'account_id' => $writeOffAccount->id,
+                'reason' => 'Write-off for small discrepancy',
             ]);
 
         expect($bankLine->fresh()->is_reconciled)->toBeTrue();
