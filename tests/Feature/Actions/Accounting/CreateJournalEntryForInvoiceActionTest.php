@@ -27,13 +27,19 @@ test('it creates a correct journal entry for a posted invoice', function () {
         'posted_at' => now(),
         'invoice_number' => 'TEST-INV-001'
     ]);
+    $unitPrice = Money::of(100, $this->company->currency->code);
+    $subtotal = $unitPrice->multipliedBy(2);
+    $taxAmount = $subtotal->multipliedBy($tax->rate);
+
     $invoice->invoiceLines()->create([
         'product_id' => $product->id,
         'income_account_id' => $product->income_account_id,
         'description' => 'Test Product',
         'quantity' => 2,
-        'unit_price' => Money::of(100, $this->company->currency->code),
+        'unit_price' => $unitPrice,
         'tax_id' => $tax->id,
+        'subtotal' => $subtotal,
+        'total_line_tax' => $taxAmount,
     ]);
 
     // THE FIX: Refresh the invoice to get the totals calculated automatically by the observer.
