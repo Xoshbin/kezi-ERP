@@ -6,15 +6,10 @@ use Carbon\Carbon;
 use App\Models\User;
 use Brick\Money\Money;
 use App\Models\Company;
-use App\Models\LockDate;
 use App\Models\JournalEntry;
-use App\Rules\ActiveAccount;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Validator;
 use App\Exceptions\PeriodIsLockedException;
 use App\Services\Accounting\LockDateService;
-use App\Exceptions\UpdateNotAllowedException;
 use Illuminate\Validation\ValidationException;
 use App\Exceptions\DeletionNotAllowedException;
 use App\Actions\Accounting\ReverseJournalEntryAction;
@@ -23,65 +18,6 @@ class JournalEntryService
 {
     public function __construct(protected LockDateService $lockDateService,) {}
 
-    public function create(array $data, bool $postImmediately = false): JournalEntry
-    {
-        $this->lockDateService->enforce(\App\Models\Company::find($data['company_id']), \Carbon\Carbon::parse($data['entry_date']));
-
-        Validator::make($data, [
-            // Apply the rule to each account_id in the lines array
-            'lines.*.account_id' => ['required', 'exists:accounts,id', new ActiveAccount],
-            // ... other rules
-        ])->validate();
-
-        // IF a currency_id is not specified, use the company's default currency.
-        if (empty($data['currency_id'])) {
-            $company = Company::find($data['company_id']);
-            $data['currency_id'] = $company->currency_id;
-        }
-
-        // 1. Calculate Totals
-        // MODIFIED: Use Money objects for precise summation
-        $currencyCode = \App\Models\Currency::find($data['currency_id'])->code;
-        $totalDebit = Money::of(0, $currencyCode);
-        $totalCredit = Money::of(0, $currencyCode);
-
-        foreach ($data['lines'] as $line) {
-            if (isset($line['debit'])) {
-                $totalDebit = $totalDebit->plus($line['debit']);
-            }
-            if (isset($line['credit'])) {
-                $totalCredit = $totalCredit->plus($line['credit']);
-            }
-        }
-
-        // 2. Validate the balance rule
-        // MODIFIED: Use isEqualTo() for Money object comparison
-        if (!$totalDebit->isEqualTo($totalCredit)) {
-            // This stops execution and throws the clean error your test expects.
-            throw ValidationException::withMessages([
-                'lines' => 'The total debits must equal the total credits.'
-            ]);
-        }
-
-        // 3. Create within a Transaction
-        return DB::transaction(function () use ($data, $postImmediately, $totalDebit, $totalCredit) {
-            $journalEntry = JournalEntry::create(
-                collect($data)->except('lines')->all() + [
-                    'is_posted' => $postImmediately,
-                    'total_debit' => $totalDebit,
-                    'total_credit' => $totalCredit,
-                ]
-            );
-
-            foreach ($data['lines'] as $lineData) {
-                $journalEntry->lines()->create($lineData);
-            }
-
-            // The totals are now set correctly on creation.
-            // We can return the entry directly.
-            return $journalEntry;
-        });
-    }
 
     public function post(JournalEntry $journalEntry): bool
     {
