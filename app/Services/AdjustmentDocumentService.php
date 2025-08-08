@@ -11,8 +11,7 @@ use Illuminate\Support\Facades\DB;
 
 class AdjustmentDocumentService
 {
-    // 2. The JournalEntryService dependency is no longer needed.
-    public function __construct()
+    public function __construct(private readonly CreateJournalEntryForAdjustmentAction $createJournalEntryForAdjustmentAction)
     {
     }
 
@@ -28,7 +27,7 @@ class AdjustmentDocumentService
             $creditNote->save();
 
             // 3. Create and execute our new, dedicated action.
-            $journalEntry = (new CreateJournalEntryForAdjustmentAction())->execute($creditNote, $user);
+            $journalEntry = $this->createJournalEntryForAdjustmentAction->execute($creditNote, $user);
 
             // Link the created journal entry back to the document.
             $creditNote->journal_entry_id = $journalEntry->id;
