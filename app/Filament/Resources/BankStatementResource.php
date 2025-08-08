@@ -221,8 +221,7 @@ class BankStatementResource extends Resource
                     ->label('Reconcile')
                     ->icon('heroicon-o-scale')
                     ->color('success')
-                    // This generates the URL to our custom page for the specific record
-                    ->url(fn(BankStatement $record): string => static::getUrl('reconcile', ['record' => $record])) // Must use 'record'
+                    ->url(fn(BankStatement $record): string => static::getUrl('reconcile', ['record' => $record]))
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
@@ -251,7 +250,7 @@ class BankStatementResource extends Resource
             'index' => Pages\ListBankStatements::route('/'),
             'create' => Pages\CreateBankStatement::route('/create'),
             'view' => Pages\ViewBankStatement::route('/{record}'),
-            'reconcile' => Pages\ReconcileBankStatement::route('/{record}/reconcile'),
+            'reconcile' => Pages\BankReconciliation::route('/{record}/reconcile'),
             'edit' => Pages\EditBankStatement::route('/{record}/edit'),
         ];
     }
