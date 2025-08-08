@@ -17,11 +17,23 @@ class CurrencyFactory extends Factory
     public function definition(): array
     {
         return [
-            'name' => $this->faker->unique()->word,
+            'name' => $this->faker->unique()->country . ' Dollar',
             'code' => $this->faker->unique()->currencyCode,
-            'symbol' => $this->faker->unique()->randomLetter(),
-            'exchange_rate' => 1,
+            'symbol' => $this->faker->unique()->lexify('?'),
+            'exchange_rate' => $this->faker->randomFloat(4, 0.5, 1.5),
             'decimal_places' => 2,
         ];
+    }
+
+    public function configure(): self
+    {
+        return $this->afterMaking(function (\App\Models\Currency $currency) {
+            //
+        })->afterCreating(function (\App\Models\Currency $currency) {
+            if ($currency->code === 'IQD') {
+                $currency->decimal_places = 3;
+                $currency->save();
+            }
+        });
     }
 }
