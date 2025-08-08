@@ -6,11 +6,18 @@ use App\DataTransferObjects\Sales\UpdateInvoiceDTO;
 use App\Exceptions\UpdateNotAllowedException;
 use App\Models\Currency;
 use App\Models\Invoice;
+use App\Models\Tax;
+use App\Services\Accounting\LockDateService;
+use Brick\Math\RoundingMode;
 use Brick\Money\Money;
 use Illuminate\Support\Facades\DB;
 
 class UpdateInvoiceAction
 {
+    public function __construct(protected LockDateService $lockDateService)
+    {
+    }
+
     public function execute(UpdateInvoiceDTO $dto): Invoice
     {
         $invoice = $dto->invoice;
@@ -18,6 +25,8 @@ class UpdateInvoiceAction
         if ($invoice->status !== Invoice::STATUS_DRAFT) {
             throw new UpdateNotAllowedException('Cannot modify a non-draft invoice.');
         }
+
+        $this->lockDateService->enforce($invoice->company, \Carbon\Carbon::parse($dto->invoice_date));
 
         return DB::transaction(function () use ($dto, $invoice) {
             $invoice->update([
@@ -30,24 +39,40 @@ class UpdateInvoiceAction
 
             $invoice->invoiceLines()->delete();
 
-            $currencyCode = Currency::find($dto->currency_id)->code;
-            $linesToCreate = [];
+            $lines = [];
             foreach ($dto->lines as $lineDto) {
-                $linesToCreate[] = [
+                // Calculate subtotal and tax amounts
+                $unitPrice = $lineDto->unit_price;
+                $subtotal = $unitPrice->multipliedBy($lineDto->quantity, RoundingMode::HALF_UP);
+
+                $taxAmount = Money::of(0, $invoice->currency->code);
+                if ($lineDto->tax_id) {
+                    $tax = Tax::find($lineDto->tax_id);
+                    if ($tax) {
+                        $taxAmount = $subtotal->multipliedBy($tax->rate, RoundingMode::HALF_UP);
+                    }
+                }
+
+                $lines[] = new \App\Models\InvoiceLine([
                     'product_id' => $lineDto->product_id,
                     'description' => $lineDto->description,
                     'quantity' => $lineDto->quantity,
-                    'unit_price' => Money::of($lineDto->unit_price, $currencyCode),
-                    'tax_id' => $lineDto->tax_id,
+                    'unit_price' => $lineDto->unit_price,
+                    'subtotal' => $subtotal,
+                    'total_line_tax' => $taxAmount,
                     'income_account_id' => $lineDto->income_account_id,
-                ];
+                    'tax_id' => $lineDto->tax_id,
+                ]);
             }
 
-            if (!empty($linesToCreate)) {
-                $invoice->invoiceLines()->createMany($linesToCreate);
-            }
-
+            $invoice->setRelation('invoiceLines', collect($lines));
+            $invoice->calculateTotalsFromLines();
             $invoice->save();
+
+            foreach ($lines as $line) {
+                $line->invoice_id = $invoice->id;
+                $line->save();
+            }
 
             return $invoice;
         });

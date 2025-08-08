@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources;
 
+use App\Filament\Forms\Components\MoneyInput;
 use App\Models\Tax;
 use Filament\Forms;
 use Filament\Tables;
@@ -14,6 +15,7 @@ use Filament\Resources\Resource;
 use Filament\Tables\Actions\Action;
 use Illuminate\Support\Facades\Auth;
 use Filament\Forms\Components\Repeater;
+use Filament\Forms\Components\Section;
 use Filament\Notifications\Notification;
 use Illuminate\Database\Eloquent\Builder;
 use App\Filament\Resources\InvoiceResource\Pages;
@@ -21,6 +23,7 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\InvoiceResource\RelationManagers;
 use App\Models\Account;
 use App\Models\Product;
+use App\Models\Company;
 use App\Rules\NotInLockedPeriod;
 
 class InvoiceResource extends Resource
@@ -31,63 +34,110 @@ class InvoiceResource extends Resource
 
     public static function form(Form $form): Form
     {
-        return $form
-            ->schema([
-                Forms\Components\Select::make('company_id')->relationship('company', 'name')->label(__('invoice.company'))->required(),
-                Forms\Components\Select::make('customer_id')->relationship('customer', 'name')->label(__('invoice.customer'))->required(),
-                Forms\Components\Select::make('currency_id')->relationship('currency', 'name')->label(__('invoice.currency'))->required(),
-                Forms\Components\Select::make('fiscal_position_id')->relationship('fiscalPosition', 'name')->label(__('invoice.fiscal_position')),
-                Forms\Components\DatePicker::make('invoice_date')->label(__('invoice.invoice_date'))->required()->rules([new NotInLockedPeriod()]),
-                Forms\Components\DatePicker::make('due_date')->label(__('invoice.due_date'))->required(),
-                Forms\Components\Select::make('status')
-                    ->label(__('invoice.status'))
-                    ->options(Invoice::getStatuses())
-                    ->disabled()
-                    ->dehydrated(false),
+        $company = Company::first();
 
-                Repeater::make('invoiceLines')
-                    ->label(__('invoice.invoice_lines'))
-                    ->schema([
-                        Forms\Components\Select::make('product_id')
-                            ->label(__('invoice.product'))
-                            ->searchable()
-                            ->getSearchResultsUsing(fn (string $search): array => Product::where('name', 'like', "%{$search}%")->limit(50)->pluck('name', 'id')->toArray())
-                            ->getOptionLabelUsing(fn ($value): ?string => Product::find($value)?->name)
-                            ->reactive()
-                            ->afterStateUpdated(function ($state, callable $set) {
-                                if ($state) {
-                                    $product = Product::find($state);
-                                    if ($product) {
-                                        $set('description', $product->description);
-                                        $set('unit_price', $product->unit_price->getAmount()->toFloat());
-                                        $set('income_account_id', $product->income_account_id);
+        return $form->schema([
+            Section::make()
+                ->schema([
+                    Forms\Components\Select::make('company_id')
+                        ->relationship('company', 'name')
+                        ->label(__('invoice.company'))
+                        ->required()
+                        ->live()
+                        ->default($company?->id)
+                        ->afterStateUpdated(function (callable $set, $state) {
+                            $company = Company::find($state);
+                            if ($company) {
+                                $set('currency_id', $company->currency_id);
+                            }
+                        }),
+                    Forms\Components\Select::make('customer_id')
+                        ->relationship('customer', 'name')
+                        ->label(__('invoice.customer'))
+                        ->required(),
+                    Forms\Components\Select::make('currency_id')
+                        ->relationship('currency', 'name')
+                        ->label(__('invoice.currency'))
+                        ->required()
+                        ->live()
+                        ->default($company?->currency_id),
+                    Forms\Components\Select::make('fiscal_position_id')
+                        ->relationship('fiscalPosition', 'name')
+                        ->label(__('invoice.fiscal_position')),
+                    Forms\Components\DatePicker::make('invoice_date')
+                        ->label(__('invoice.invoice_date'))
+                        ->required()
+                        ->rules([new NotInLockedPeriod()]),
+                    Forms\Components\DatePicker::make('due_date')
+                        ->label(__('invoice.due_date'))
+                        ->required(),
+                    Forms\Components\Select::make('status')
+                        ->label(__('invoice.status'))
+                        ->options(Invoice::getStatuses())
+                        ->disabled()
+                        ->dehydrated(false),
+                ])
+                ->columns(2),
+
+            Section::make(__('invoice.invoice_lines'))
+                ->schema([
+                    Forms\Components\Repeater::make('invoiceLines')
+                        ->label(__('invoice.invoice_lines'))
+                        ->live()
+                        ->reorderable(true)
+                        ->minItems(1)
+                        ->schema([
+                            Forms\Components\Select::make('product_id')
+                                ->label(__('invoice.product'))
+                                ->searchable()
+                                ->getSearchResultsUsing(fn(string $search): array => Product::where('name', 'like', "%{$search}%")->limit(50)->pluck('name', 'id')->toArray())
+                                ->getOptionLabelUsing(fn($value): ?string => Product::find($value)?->name)
+                                ->reactive()
+                                ->afterStateUpdated(function (callable $set, $state) {
+                                    if ($state) {
+                                        $product = Product::find($state);
+                                        if ($product) {
+                                            $set('description', $product->description);
+                                            $set('unit_price', $product->unit_price);
+                                            $set('income_account_id', $product->income_account_id);
+                                        }
                                     }
-                                }
-                            })
-                            ->columnSpan(2),
-                        Forms\Components\TextInput::make('description')->label(__('invoice.description'))->maxLength(255)->required()->columnSpan(2),
-                        Forms\Components\TextInput::make('quantity')->label(__('invoice.quantity'))->required()->numeric()->default(1)->columnSpan(1),
-                        Forms\Components\TextInput::make('unit_price')->label(__('invoice.unit_price'))->required()->numeric()->columnSpan(1),
-                        Forms\Components\Select::make('tax_id')
-                            ->label(__('invoice.tax'))
-                            ->searchable()
-                            ->getSearchResultsUsing(fn (string $search): array => Tax::where('name', 'like', "%{$search}%")->limit(50)->pluck('name', 'id')->toArray())
-                            ->getOptionLabelUsing(fn ($value): ?string => Tax::find($value)?->name)
-                            ->columnSpan(1),
-                        Forms\Components\Select::make('income_account_id')
-                            ->label(__('invoice.income_account'))
-                            ->searchable()
-                            ->getSearchResultsUsing(fn (string $search): array => Account::where('type', 'Income')->where('name', 'like', "%{$search}%")->limit(50)->pluck('name', 'id')->toArray())
-                            ->getOptionLabelUsing(fn ($value): ?string => Account::find($value)?->name)
-                            ->required()
-                            ->columnSpan(2),
-                    ])
-                    ->columns(5)
-                    ->columnSpanFull(),
-
-                Forms\Components\TextInput::make('total_amount')->label(__('invoice.total_amount'))->numeric()->readOnly()->prefix(fn (callable $get) => Currency::find($get('currency_id'))?->symbol),
-                Forms\Components\TextInput::make('total_tax')->label(__('invoice.total_tax'))->numeric()->readOnly()->prefix(fn (callable $get) => Currency::find($get('currency_id'))?->symbol),
-            ]);
+                                })
+                                ->columnSpan(2),
+                            Forms\Components\TextInput::make('description')
+                                ->label(__('invoice.description'))
+                                ->maxLength(255)
+                                ->required()
+                                ->columnSpan(2),
+                            Forms\Components\TextInput::make('quantity')
+                                ->label(__('invoice.quantity'))
+                                ->required()
+                                ->numeric()
+                                ->default(1)
+                                ->columnSpan(1),
+                            MoneyInput::make('unit_price')
+                                ->label(__('invoice.unit_price'))
+                                ->currencyField('../../currency_id')
+                                ->required()
+                                ->columnSpan(1),
+                            Forms\Components\Select::make('tax_id')
+                                ->label(__('invoice.tax'))
+                                ->searchable()
+                                ->getSearchResultsUsing(fn(string $search): array => Tax::where('name', 'like', "%{$search}%")->limit(50)->pluck('name', 'id')->toArray())
+                                ->getOptionLabelUsing(fn($value): ?string => Tax::find($value)?->name)
+                                ->columnSpan(1),
+                            Forms\Components\Select::make('income_account_id')
+                                ->label(__('invoice.income_account'))
+                                ->searchable()
+                                ->getSearchResultsUsing(fn(string $search): array => Account::where('type', 'Income')->where('name', 'like', "%{$search}%")->limit(50)->pluck('name', 'id')->toArray())
+                                ->getOptionLabelUsing(fn($value): ?string => Account::find($value)?->name)
+                                ->required()
+                                ->columnSpan(2),
+                        ])
+                        ->columns(5)
+                        ->columnSpanFull(),
+                ]),
+        ]);
     }
 
     public static function table(Table $table): Table
