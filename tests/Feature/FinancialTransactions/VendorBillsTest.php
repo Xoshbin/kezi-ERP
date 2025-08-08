@@ -64,13 +64,19 @@ test('confirming a vendor bill generates the correct journal entry', function ()
         'default_inventory_account_id' => $this->inventoryAccount->id,
         'default_stock_input_account_id' => $this->stockInputAccount->id,
     ]);
-    $vendorBill = VendorBill::factory()->for($this->company)->create(['status' => 'draft']);
+    $vendorBill = VendorBill::factory()->for($this->company)->create(['status' => VendorBillStatus::Draft]);
 
-    // Since we now have a dedicated Action for this, we can simplify line creation
-    \App\Models\VendorBillLine::factory()->for($vendorBill)->for($product)->create([
-        'quantity' => 3,
-        'unit_price' => Money::of(50, $this->company->currency->code), // Explicitly 50 IQD
-    ]);
+    // Use the dedicated Action to create the line, ensuring calculations are run.
+    $lineDto = new CreateVendorBillLineDTO(
+        description: $product->name,
+        quantity: 3,
+        unit_price: Money::of(5000, $this->company->currency->code),
+        expense_account_id: $this->company->accounts()->where('type', 'Expense')->first()->id,
+        product_id: $product->id,
+        tax_id: null,
+        analytic_account_id: null
+    );
+    app(CreateVendorBillLineAction::class)->execute($vendorBill, $lineDto);
 
     // The service call remains the same
     app(VendorBillService::class)->post($vendorBill, $this->user);
@@ -78,7 +84,7 @@ test('confirming a vendor bill generates the correct journal entry', function ()
     $this->assertDatabaseCount('journal_entries', 1);
     $journalEntry = JournalEntry::first();
 
-    $expectedTotal = Money::of(150, $this->company->currency->code);
+    $expectedTotal = Money::of(15000, $this->company->currency->code);
     expect($journalEntry->journal_id)->toBe($this->company->default_purchase_journal_id)
         ->and($journalEntry->total_debit)->toEqual($expectedTotal)
         ->and($journalEntry->total_credit)->toEqual($expectedTotal);
@@ -93,6 +99,7 @@ test('a posted vendor bill cannot be updated', function () {
 
     $updateDto = new UpdateVendorBillDTO(
         vendorBill: $vendorBill,
+        company_id: $this->company->id,
         vendor_id: $newVendor->id,
         currency_id: $vendorBill->currency_id,
         bill_reference: $vendorBill->bill_reference,
@@ -100,6 +107,7 @@ test('a posted vendor bill cannot be updated', function () {
         accounting_date: $vendorBill->accounting_date->toDateString(),
         due_date: $vendorBill->due_date?->toDateString(),
         lines: [],
+        updated_by_user_id: $this->user->id
     );
 
     expect(fn() => app(UpdateVendorBillAction::class)->execute($updateDto))
@@ -135,6 +143,7 @@ test('a vendor bill cannot be created in a locked period', function () {
         due_date: '2026-03-10',
         bill_reference: 'SHOULD-FAIL',
         lines: [],
+        created_by_user_id: $this->user->id
     );
 
     expect(fn() => app(CreateVendorBillAction::class)->execute($vendorBillDto))

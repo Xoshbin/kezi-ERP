@@ -17,12 +17,12 @@ use App\Models\User;
 use App\Models\VendorBill;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
-use RuntimeException;
+use App\Services\Accounting\LockDateService;
 
 class VendorBillService
 {
     public function __construct(
-        protected AccountingValidationService $accountingValidationService,
+        protected LockDateService $lockDateService,
         protected JournalEntryService $journalEntryService,
         protected CreateStockMoveAction $createStockMoveAction,
         protected CreateJournalEntryForInventoryBillAction $createJournalEntryForInventoryBillAction,
@@ -35,7 +35,7 @@ class VendorBillService
             return;
         }
 
-        $this->accountingValidationService->checkIfPeriodIsLocked($vendorBill->company_id, $vendorBill->bill_date);
+        $this->lockDateService->enforce(\App\Models\Company::find($vendorBill->company_id), \Carbon\Carbon::parse($vendorBill->bill_date));
         Gate::forUser($user)->authorize('post', $vendorBill);
 
         DB::transaction(function () use ($vendorBill, $user) {
@@ -104,8 +104,7 @@ class VendorBillService
      */
     public function delete(VendorBill $vendorBill): bool
     {
-
-        $this->accountingValidationService->checkIfPeriodIsLocked($vendorBill->company_id, $vendorBill->bill_date);
+        $this->lockDateService->enforce(\App\Models\Company::find($vendorBill->company_id), \Carbon\Carbon::parse($vendorBill->bill_date));
 
         if ($vendorBill->status !== VendorBillStatus::Draft) {
             throw new DeletionNotAllowedException(
