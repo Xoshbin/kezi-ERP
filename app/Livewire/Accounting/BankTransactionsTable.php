@@ -2,8 +2,10 @@
 
 namespace App\Livewire\Accounting;
 
+use App\Models\Account;
 use App\Models\BankStatement;
 use App\Models\BankStatementLine;
+use App\Services\BankReconciliationService;
 use Brick\Money\Money;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
@@ -15,6 +17,7 @@ use Filament\Tables\Columns\ViewColumn;
 use Filament\Tables\Concerns\InteractsWithTable;
 use Filament\Tables\Contracts\HasTable;
 use Filament\Tables\Table;
+use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 
 class BankTransactionsTable extends Component implements HasTable, HasForms
@@ -66,7 +69,7 @@ class BankTransactionsTable extends Component implements HasTable, HasForms
                             ->label(__('bank_statement.write_off_account'))
                             ->options(function () {
                                 return \App\Models\Account::where('company_id', $this->bankStatement->company_id)
-                                    ->where('account_type', 'expense')
+                                    ->where('type', 'expense')
                                     ->pluck('name', 'id');
                             })
                             ->required(),
@@ -76,8 +79,14 @@ class BankTransactionsTable extends Component implements HasTable, HasForms
                             ->maxLength(500),
                     ])
                     ->action(function (array $data, BankStatementLine $record) {
-                        app(\App\Actions\Accounting\WriteOffBankStatementLineAction::class)
-                            ->execute($record, $data['account_id'], $data['reason']);
+                        $writeOffAccount = Account::findOrFail($data['account_id']);
+
+                        app(BankReconciliationService::class)->createWriteOff(
+                            $record,
+                            $writeOffAccount,
+                            Auth::user(),
+                            $data['reason']
+                        );
 
                         $this->dispatch('bank-line-written-off');
                     }),
