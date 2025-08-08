@@ -8,6 +8,8 @@ use App\Filament\Resources\BankStatementResource;
 use App\Actions\Accounting\UpdateBankStatementAction;
 use App\DataTransferObjects\Accounting\UpdateBankStatementDTO;
 use App\DataTransferObjects\Accounting\UpdateBankStatementLineDTO;
+use Brick\Money\Money;
+use Illuminate\Database\Eloquent\Model;
 
 class EditBankStatement extends EditRecord
 {
@@ -27,38 +29,30 @@ class EditBankStatement extends EditRecord
 
     protected function mutateFormDataBeforeFill(array $data): array
     {
-        // 1. Load the relationship and format it for the Repeater.
-        // The key 'bankStatementLines' must match the ->name() of your Repeater component.
-        $data['bankStatementLines'] = $this->record->bankStatementLines->map(function ($line) {
-            // Convert Money objects to plain strings for the form fields.
+        $this->record->loadMissing('bankStatementLines', 'currency');
+        $linesData = $this->record->bankStatementLines->map(function ($line) {
             return [
                 'date' => $line->date->format('Y-m-d'),
                 'description' => $line->description,
-                'amount' => (string) $line->amount->getAmount(),
+                'amount' => $line->amount,
                 'partner_id' => $line->partner_id,
             ];
-        })->all();
-
-        // 2. Convert the parent's Money objects to plain strings for the TextInputs.
-        $data['starting_balance'] = (string) $this->record->starting_balance->getAmount();
-        $data['ending_balance'] = (string) $this->record->ending_balance->getAmount();
-
+        })->toArray();
+        $data['bankStatementLines'] = $linesData;
         return $data;
     }
 
-    protected function handleRecordUpdate(\Illuminate\Database\Eloquent\Model $record, array $data): \Illuminate\Database\Eloquent\Model
+    protected function handleRecordUpdate(Model $record, array $data): Model
     {
         $lineDTOs = [];
-        if (isset($data['bankStatementLines'])) {
-            foreach ($data['bankStatementLines'] as $line) {
-                $lineDTOs[] = new UpdateBankStatementLineDTO(
-                    id: $line['id'] ?? null,
-                    date: $line['date'],
-                    description: $line['description'],
-                    amount: $line['amount'],
-                    partner_id: $line['partner_id']
-                );
-            }
+        foreach ($data['bankStatementLines'] as $line) {
+            $lineDTOs[] = new UpdateBankStatementLineDTO(
+                id: $line['id'] ?? null,
+                date: $line['date'],
+                description: $line['description'],
+                amount: Money::of($line['amount'], $record->currency->code),
+                partner_id: $line['partner_id']
+            );
         }
 
         $dto = new UpdateBankStatementDTO(
@@ -67,11 +61,11 @@ class EditBankStatement extends EditRecord
             journal_id: $data['journal_id'],
             reference: $data['reference'],
             date: $data['date'],
-            starting_balance: $data['starting_balance'],
-            ending_balance: $data['ending_balance'],
+            starting_balance: Money::of($data['starting_balance'], $record->currency->code),
+            ending_balance: Money::of($data['ending_balance'], $record->currency->code),
             lines: $lineDTOs
         );
 
-        return (new UpdateBankStatementAction())->execute($dto);
+        return app(UpdateBankStatementAction::class)->execute($dto);
     }
 }

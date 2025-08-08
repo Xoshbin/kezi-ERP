@@ -15,6 +15,11 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\BankStatementResource\Pages;
 use App\Filament\Resources\BankStatementResource\RelationManagers;
 use App\Models\Partner;
+use App\Models\Company;
+use App\Filament\Forms\Components\MoneyInput;
+use Filament\Forms\Components\Section;
+use Filament\Infolists;
+use Filament\Infolists\Infolist;
 
 class BankStatementResource extends Resource
 {
@@ -34,59 +39,136 @@ class BankStatementResource extends Resource
 
     public static function form(Form $form): Form
     {
-        return $form
+        $company = Company::first();
+
+        return $form->schema([
+            Section::make()
+                ->schema([
+                    Forms\Components\Select::make('company_id')
+                        ->relationship('company', 'name')
+                        ->label(__('bank_statement.company'))
+                        ->required()
+                        ->live()
+                        ->default($company?->id)
+                        ->afterStateUpdated(function (callable $set, $state) {
+                            $company = Company::find($state);
+                            if ($company) {
+                                $set('currency_id', $company->currency_id);
+                            }
+                        }),
+                    Forms\Components\Select::make('currency_id')
+                        ->relationship('currency', 'name')
+                        ->label(__('bank_statement.currency'))
+                        ->required()
+                        ->live()
+                        ->default($company?->currency_id),
+                    Forms\Components\Select::make('journal_id')
+                        ->label(__('bank_statement.bank_journal'))
+                        ->options(Journal::where('type', 'Bank')->pluck('name', 'id'))
+                        ->searchable()
+                        ->required(),
+                    Forms\Components\TextInput::make('reference')
+                        ->label(__('bank_statement.reference'))
+                        ->required()
+                        ->maxLength(255),
+                    Forms\Components\DatePicker::make('date')
+                        ->label(__('bank_statement.date'))
+                        ->required(),
+                    MoneyInput::make('starting_balance')
+                        ->label(__('bank_statement.starting_balance'))
+                        ->currencyField('currency_id')
+                        ->required(),
+                    MoneyInput::make('ending_balance')
+                        ->label(__('bank_statement.ending_balance'))
+                        ->currencyField('currency_id')
+                        ->required(),
+                ])->columns(2),
+
+            Section::make(__('bank_statement.transactions'))
+                ->schema([
+                    Forms\Components\Repeater::make('bankStatementLines')
+                        ->label(__('bank_statement.statement_lines'))
+                        ->live()
+                        ->reorderable(true)
+                        ->minItems(1)
+                        ->schema([
+                            Forms\Components\DatePicker::make('date')
+                                ->label(__('bank_statement.line_date'))
+                                ->required()
+                                ->columnSpan(2),
+                            Forms\Components\TextInput::make('description')
+                                ->label(__('bank_statement.description'))
+                                ->required()
+                                ->maxLength(255)
+                                ->columnSpan(4),
+                            Forms\Components\Select::make('partner_id')
+                                ->label(__('bank_statement.partner'))
+                                ->searchable()
+                                ->getSearchResultsUsing(fn(string $search): array => Partner::where('name', 'like', "%{$search}%")->limit(50)->pluck('name', 'id')->toArray())
+                                ->getOptionLabelUsing(fn($value): ?string => Partner::find($value)?->name)
+                                ->columnSpan(3),
+                            MoneyInput::make('amount')
+                                ->label(__('bank_statement.amount'))
+                                ->currencyField('../../../currency_id')
+                                ->required()
+                                ->columnSpan(3),
+                        ])
+                        ->columns(12)
+                        ->addActionLabel(__('bank_statement.add_transaction_line'))
+                        ->defaultItems(1),
+                ]),
+        ]);
+    }
+
+    public static function infolist(Infolist $infolist): Infolist
+    {
+        return $infolist
             ->schema([
-                Forms\Components\Section::make('Statement Details')
+                Infolists\Components\Section::make('Statement Information')
                     ->schema([
-                        Forms\Components\Select::make('company_id')
-                            ->relationship('company', 'name')
-                            ->required(),
-                        Forms\Components\Select::make('currency_id')
-                            ->relationship('currency', 'name')
-                            ->required(),
-                        Forms\Components\Select::make('journal_id')
-                            ->label('Bank Journal')
-                            ->options(Journal::where('type', 'Bank')->pluck('name', 'id'))
-                            ->searchable()
-                            ->required(),
-                        Forms\Components\TextInput::make('reference')
-                            ->required()
-                            ->maxLength(255),
-                        Forms\Components\DatePicker::make('date')
-                            ->required(),
-                        Forms\Components\TextInput::make('starting_balance')
-                            ->required()
-                            ->numeric(),
-                        Forms\Components\TextInput::make('ending_balance')
-                            ->required()
-                            ->numeric(),
+                        Infolists\Components\TextEntry::make('reference')
+                            ->label('Reference'),
+                        Infolists\Components\TextEntry::make('date')
+                            ->label('Date')
+                            ->date(),
+                        Infolists\Components\TextEntry::make('company.name')
+                            ->label('Company'),
+                        Infolists\Components\TextEntry::make('currency.name')
+                            ->label('Currency'),
+                        Infolists\Components\TextEntry::make('journal.name')
+                            ->label('Bank Journal'),
+                        Infolists\Components\TextEntry::make('starting_balance')
+                            ->label('Starting Balance')
+                            ->money(fn($record) => $record->currency->code),
+                        Infolists\Components\TextEntry::make('ending_balance')
+                            ->label('Ending Balance')
+                            ->money(fn($record) => $record->currency->code),
                     ])->columns(2),
 
-                Forms\Components\Section::make('Transactions')
+                Infolists\Components\Section::make('Bank Statement Lines')
                     ->schema([
-                        Forms\Components\Repeater::make('bankStatementLines')
-                            ->label('Statement Lines')
+                        Infolists\Components\RepeatableEntry::make('bankStatementLines')
+                            ->label('')
                             ->schema([
-                                Forms\Components\DatePicker::make('date')
-                                    ->required()
-                                    ->columnSpan(2),
-                                Forms\Components\TextInput::make('description')
-                                    ->required()
-                                    ->maxLength(255)
-                                    ->columnSpan(4),
-                                Forms\Components\Select::make('partner_id')
+                                Infolists\Components\TextEntry::make('date')
+                                    ->label('Date')
+                                    ->date(),
+                                Infolists\Components\TextEntry::make('description')
+                                    ->label('Description'),
+                                Infolists\Components\TextEntry::make('partner.name')
                                     ->label('Partner')
-                                    ->options(Partner::all()->pluck('name', 'id')) // Manually provide the options
-                                    ->searchable()
-                                    ->columnSpan(3),
-                                Forms\Components\TextInput::make('amount')
-                                    ->required()
-                                    ->numeric()
-                                    ->columnSpan(3),
+                                    ->placeholder('—'),
+                                Infolists\Components\TextEntry::make('amount')
+                                    ->label('Amount')
+                                    ->money(fn($record) => $record->bankStatement->currency->code)
+                                    ->color(fn($state) => $state->isPositive() ? 'success' : 'danger'),
+                                Infolists\Components\TextEntry::make('is_reconciled')
+                                    ->label('Status')
+                                    ->badge()
+                                    ->color(fn($state) => $state ? 'success' : 'warning')
+                                    ->formatStateUsing(fn($state) => $state ? 'Reconciled' : 'Pending'),
                             ])
-                            ->columns(12)
-                            ->addActionLabel('Add Transaction Line')
-                            ->defaultItems(1),
+                            ->columns(5),
                     ]),
             ]);
     }
@@ -133,10 +215,12 @@ class BankStatementResource extends Resource
                 //
             ])
             ->actions([
+                Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
                 Action::make('reconcile')
                     ->label('Reconcile')
                     ->icon('heroicon-o-scale')
+                    ->color('success')
                     // This generates the URL to our custom page for the specific record
                     ->url(fn(BankStatement $record): string => static::getUrl('reconcile', ['record' => $record])) // Must use 'record'
             ])
@@ -166,7 +250,8 @@ class BankStatementResource extends Resource
         return [
             'index' => Pages\ListBankStatements::route('/'),
             'create' => Pages\CreateBankStatement::route('/create'),
-            'reconcile' => Pages\BankReconciliation::route('/{record}/reconcile'), // Must be {record}
+            'view' => Pages\ViewBankStatement::route('/{record}'),
+            'reconcile' => Pages\ReconcileBankStatement::route('/{record}/reconcile'),
             'edit' => Pages\EditBankStatement::route('/{record}/edit'),
         ];
     }
