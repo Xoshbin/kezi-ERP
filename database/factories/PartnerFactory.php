@@ -42,4 +42,11 @@ class PartnerFactory extends Factory
             'type' => Partner::TYPE_VENDOR,
         ]);
     }
+
+    public function customer(): self
+    {
+        return $this->state(fn (array $attributes) => [
+            'type' => Partner::TYPE_CUSTOMER,
+        ]);
+    }
 }

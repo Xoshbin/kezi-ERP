@@ -103,6 +103,65 @@ class InvoiceService
     }
 
     /**
+     * Resets a posted invoice back to draft status with a detailed audit log.
+     */
+    public function resetToDraft(Invoice $invoice, User $user, string $reason): void
+    {
+        if ($invoice->status !== Invoice::STATUS_POSTED) {
+            throw new \Exception('Only posted invoices can be reset to draft.');
+        }
+
+        DB::transaction(function () use ($invoice, $user, $reason) {
+            $originalEntry = $invoice->journalEntry;
+            if (!$originalEntry) {
+                throw new \Exception('Cannot reset an invoice without a journal entry.');
+            }
+
+            // Step 1: Create a detailed audit log explaining the action.
+            \App\Models\AuditLog::create([
+                'user_id' => $user->id,
+                'event_type' => 'reset_to_draft',
+                'auditable_type' => get_class($invoice),
+                'auditable_id' => $invoice->id,
+                'description' => 'Invoice Reset to Draft: ' . $reason,
+                'old_values' => ['status' => $invoice->status],
+                'new_values' => ['status' => Invoice::STATUS_DRAFT],
+                'ip_address' => request()->ip(),
+            ]);
+
+            // Step 2: Use the service to create the reversing journal entry.
+            $this->journalEntryService->createReversal(
+                $originalEntry,
+                'Reset to Draft of Invoice ' . $invoice->invoice_number . ': ' . $reason,
+                $user
+            );
+
+            // Step 3: Store original values before clearing them
+            $originalInvoiceNumber = $invoice->invoice_number;
+            $originalPostedAt = $invoice->posted_at;
+
+            // Step 4: Add to reset log for audit trail
+            $resetLog = $invoice->reset_to_draft_log ?? [];
+            $resetLog[] = [
+                'reset_at' => now()->toISOString(),
+                'reset_by' => $user->id,
+                'reason' => $reason,
+                'original_invoice_number' => $originalInvoiceNumber,
+                'original_posted_at' => $originalPostedAt?->toISOString(),
+            ];
+
+            // Step 5: Update the invoice's status and clear posted fields.
+            $invoice->status = Invoice::STATUS_DRAFT;
+            $invoice->posted_at = null;
+            $invoice->journal_entry_id = null;
+            $invoice->invoice_number = null;
+            $invoice->reset_to_draft_log = $resetLog;
+
+            $invoice->save();
+        });
+    }
+
+    /**
      * Cancels a posted invoice by creating a reversing journal entry and a detailed audit log.
      */
     public function cancel(Invoice $invoice, User $user, string $reason): void
@@ -120,7 +179,7 @@ class InvoiceService
             }
 
             // Step 1: Create a detailed audit log explaining the action.
-            AuditLog::create([
+            \App\Models\AuditLog::create([
                 'user_id' => $user->id,
                 'event_type' => 'cancellation',
                 'auditable_type' => get_class($invoice),
