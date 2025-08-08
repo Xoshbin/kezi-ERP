@@ -4,6 +4,8 @@ namespace App\Models;
 
 use App\Casts\MoneyCast;
 use App\Observers\AdjustmentDocumentLineObserver;
+use Brick\Money\Money;
+use Brick\Math\RoundingMode;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -35,6 +37,37 @@ class AdjustmentDocumentLine extends Model
         'subtotal' => MoneyCast::class,
         'total_line_tax' => MoneyCast::class,
     ];
+
+    protected static function booted(): void
+    {
+        static::saving(function (self $line) {
+            $line->calculateLineTotals();
+        });
+    }
+
+    public function calculateLineTotals(): void
+    {
+        $currency = $this->adjustmentDocument->currency;
+        $quantity = $this->quantity;
+
+        // If unit_price is already a Money object, use it. Otherwise, create it from the numeric value.
+        $unitPrice = $this->unit_price instanceof Money
+            ? $this->unit_price
+            : Money::of($this->unit_price, $currency->code);
+
+        $subtotal = $unitPrice->multipliedBy($quantity, RoundingMode::HALF_UP);
+        $this->subtotal = $subtotal;
+
+        $totalLineTax = Money::of(0, $currency->code);
+        if ($this->tax_id) {
+            $tax = Tax::find($this->tax_id);
+            if ($tax) {
+                // NOTE: The rate in Tax model is a float (e.g., 0.10 for 10%)
+                $totalLineTax = $subtotal->multipliedBy($tax->rate, RoundingMode::HALF_UP);
+            }
+        }
+        $this->total_line_tax = $totalLineTax;
+    }
 
     public function adjustmentDocument(): BelongsTo
     {
