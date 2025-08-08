@@ -6,6 +6,7 @@ use App\DataTransferObjects\Accounting\CreateJournalEntryDTO;
 use App\Models\Company;
 use App\Models\Currency;
 use App\Models\JournalEntry;
+use App\Models\Account;
 use App\Services\Accounting\LockDateService;
 use Brick\Money\Money;
 use Carbon\Carbon;
@@ -32,7 +33,13 @@ class CreateJournalEntryAction
         $totalDebit = Money::zero($currencyCode);
         $totalCredit = Money::zero($currencyCode);
 
-        foreach ($dto->lines as $line) {
+        foreach ($dto->lines as $index => $line) {
+            $account = Account::find($line->account_id);
+            if ($account && $account->is_deprecated) {
+                throw ValidationException::withMessages([
+                    "lines.{$index}.account_id" => "Account '{$account->name}' is deprecated and cannot be used.",
+                ]);
+            }
             $totalDebit = $totalDebit->plus($line->debit);
             $totalCredit = $totalCredit->plus($line->credit);
         }
