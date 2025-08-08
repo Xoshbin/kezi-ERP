@@ -90,7 +90,8 @@ test('the entire accounting workflow from setup to credit note', function () {
         bill_date: now()->toDateString(),
         accounting_date: now()->toDateString(),
         due_date: now()->addDays(30)->toDateString(),
-        lines: [$lineDto]
+        lines: [$lineDto],
+        created_by_user_id: $this->user->id
     );
 
     // Act: Create the vendor bill using the Action.
