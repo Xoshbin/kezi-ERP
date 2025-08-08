@@ -231,4 +231,15 @@ class Payment extends Model
     {
         return $this->hasMany(PaymentDocumentLink::class);
     }
+
+    /**
+     * Get the BankStatementLines that are linked to this payment.
+     * This relationship is established when a payment is reconciled with bank statement lines.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function bankStatementLines()
+    {
+        return $this->hasMany(BankStatementLine::class);
+    }
 }
