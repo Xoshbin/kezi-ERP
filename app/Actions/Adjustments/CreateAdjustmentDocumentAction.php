@@ -47,7 +47,7 @@ class CreateAdjustmentDocumentAction
                     'product_id' => $lineDto->product_id,
                     'description' => $lineDto->description,
                     'quantity' => $lineDto->quantity,
-                    'unit_price' => Money::of($lineDto->unit_price, $currencyCode),
+                    'unit_price' => $lineDto->unit_price, // Already a Money object from DTO
                     'tax_id' => $lineDto->tax_id,
                     'account_id' => $lineDto->account_id,
                 ];
