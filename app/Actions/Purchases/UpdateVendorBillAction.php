@@ -6,7 +6,10 @@ use App\DataTransferObjects\Purchases\UpdateVendorBillDTO;
 use App\Enums\Purchases\VendorBillStatus;
 use App\Exceptions\UpdateNotAllowedException;
 use App\Models\VendorBill;
+use App\Models\Tax;
 use App\Services\Accounting\LockDateService;
+use Brick\Math\RoundingMode;
+use Brick\Money\Money;
 use Illuminate\Support\Facades\DB;
 
 class UpdateVendorBillAction
@@ -41,11 +44,26 @@ class UpdateVendorBillAction
 
             $lines = [];
             foreach ($updateVendorBillDTO->lines as $line) {
+                // Calculate subtotal and tax amounts
+                $unitPrice = $line->unit_price;
+                $subtotal = $unitPrice->multipliedBy($line->quantity, RoundingMode::HALF_UP);
+
+                $taxAmount = Money::of(0, $vendorBill->currency->code);
+                if ($line->tax_id) {
+                    $tax = Tax::find($line->tax_id);
+                    if ($tax) {
+                        $taxRate = $tax->rate / 100;
+                        $taxAmount = $subtotal->multipliedBy((string)$taxRate, RoundingMode::HALF_UP);
+                    }
+                }
+
                 $lines[] = new \App\Models\VendorBillLine([
                     'product_id' => $line->product_id,
                     'description' => $line->description,
                     'quantity' => $line->quantity,
                     'unit_price' => $line->unit_price,
+                    'subtotal' => $subtotal,
+                    'total_line_tax' => $taxAmount,
                     'expense_account_id' => $line->expense_account_id,
                     'tax_id' => $line->tax_id,
                     'analytic_account_id' => $line->analytic_account_id,

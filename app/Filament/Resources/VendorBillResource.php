@@ -86,6 +86,7 @@ class VendorBillResource extends Resource
                         ->label(__('vendor_bill.lines'))
                         ->live()
                         ->reorderable(true)
+                        ->minItems(1)
                         ->schema([
                             Forms\Components\Select::make('product_id')
                                 ->label(__('vendor_bill.product'))
