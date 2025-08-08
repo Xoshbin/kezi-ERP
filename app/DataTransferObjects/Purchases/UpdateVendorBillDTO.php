@@ -3,19 +3,23 @@
 namespace App\DataTransferObjects\Purchases;
 
 use App\Models\VendorBill;
-class UpdateVendorBillDTO
+
+readonly class UpdateVendorBillDTO
 {
     /**
-     * @param UpdateVendorBillLineDTO[] $lines
+     * @param \App\DataTransferObjects\Purchases\VendorBillLineDTO[] $lines
      */
     public function __construct(
-        public readonly VendorBill $vendorBill,
-        public readonly int $vendor_id,
-        public readonly int $currency_id,
-        public readonly string $bill_reference,
-        public readonly string $bill_date,
-        public readonly string $accounting_date,
-        public readonly ?string $due_date,
-        public readonly array $lines,
-    ) {}
+        public VendorBill $vendorBill,
+        public int $company_id,
+        public int $vendor_id,
+        public int $currency_id,
+        public string $bill_reference,
+        public string $bill_date,
+        public string $accounting_date,
+        public ?string $due_date,
+        public array $lines,
+        public int $updated_by_user_id
+    ) {
+    }
 }

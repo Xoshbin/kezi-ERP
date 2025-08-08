@@ -2,19 +2,19 @@
 
 namespace App\Actions\Accounting;
 
-use App\DataTransferObjects\Accounting\UpdateJournalEntryDTO;
-use App\Exceptions\UpdateNotAllowedException;
+use Brick\Money\Money;
 use App\Models\Currency;
 use App\Models\JournalEntry;
-use App\Services\AccountingValidationService;
-use Brick\Money\Money;
 use Illuminate\Support\Facades\DB;
+use App\Services\Accounting\LockDateService;
+use App\Exceptions\UpdateNotAllowedException;
 use Illuminate\Validation\ValidationException;
+use App\DataTransferObjects\Accounting\UpdateJournalEntryDTO;
 
 class UpdateJournalEntryAction
 {
     public function __construct(
-        private readonly AccountingValidationService $validationService = new AccountingValidationService()
+        protected LockDateService $lockDateService,
     ) {}
 
     public function execute(UpdateJournalEntryDTO $dto): JournalEntry
@@ -22,7 +22,7 @@ class UpdateJournalEntryAction
         $journalEntry = $dto->journalEntry;
 
         // 1. Perform all necessary validation before touching the database.
-        $this->validationService->checkIfPeriodIsLocked($journalEntry->company_id, $dto->entry_date);
+        $this->lockDateService->enforce(\App\Models\Company::find($journalEntry->company_id), \Carbon\Carbon::parse($journalEntry->entry_date));
 
         if ($journalEntry->is_posted) {
             throw new UpdateNotAllowedException('Cannot modify a posted journal entry.');

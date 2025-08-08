@@ -14,7 +14,6 @@ use App\Services\InvoiceService;
 use App\Services\PaymentService;
 use App\Models\AdjustmentDocument;
 use App\Services\VendorBillService;
-use App\Services\JournalEntryService;
 use Tests\Traits\WithConfiguredCompany;
 use App\Actions\Sales\CreateInvoiceAction;
 use App\Services\AdjustmentDocumentService;
@@ -24,6 +23,9 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use App\DataTransferObjects\Sales\CreateInvoiceDTO;
 use App\DataTransferObjects\Payments\CreatePaymentDTO;
 use App\DataTransferObjects\Sales\CreateInvoiceLineDTO;
+use App\Actions\Accounting\CreateJournalEntryAction;
+use App\DataTransferObjects\Accounting\CreateJournalEntryDTO;
+use App\DataTransferObjects\Accounting\CreateJournalEntryLineDTO;
 use App\DataTransferObjects\Purchases\CreateVendorBillDTO;
 use App\DataTransferObjects\Purchases\CreateVendorBillLineDTO;
 use App\DataTransferObjects\Payments\CreatePaymentDocumentLinkDTO;
@@ -51,18 +53,36 @@ test('the entire accounting workflow from setup to credit note', function () {
     $goodwillDiscount = Money::of(500_000, $currencyCode);
 
     // Step 3: Capital Injection
-    $journalEntryService = app(JournalEntryService::class);
-    // MODIFIED: Use Money objects in the service call
-    $capitalEntry = $journalEntryService->create([
-        'company_id' => $this->company->id,
-        'journal_id' => $bankJournal->id,
-        'entry_date' => now()->toDateString(),
-        'reference' => 'Initial Capital Investment',
-        'lines' => [
-            ['account_id' => $bankAccount->id, 'debit' => $initialCapitalInvestment, 'credit' => Money::of(0, $currencyCode)],
-            ['account_id' => $equityAccount->id, 'debit' => Money::of(0, $currencyCode), 'credit' => $initialCapitalInvestment],
+    $createJournalEntryAction = app(CreateJournalEntryAction::class);
+    $capitalEntryDto = new CreateJournalEntryDTO(
+        company_id: $this->company->id,
+        journal_id: $bankJournal->id,
+        currency_id: $currency->id,
+        entry_date: now()->toDateString(),
+        reference: 'Initial Capital Investment',
+        description: 'Initial Capital Investment',
+        created_by_user_id: $this->user->id,
+        is_posted: true,
+        lines: [
+            new CreateJournalEntryLineDTO(
+                account_id: $bankAccount->id,
+                debit: $initialCapitalInvestment,
+                credit: Money::of(0, $currencyCode),
+                description: 'Bank',
+                partner_id: null,
+                analytic_account_id: null,
+            ),
+            new CreateJournalEntryLineDTO(
+                account_id: $equityAccount->id,
+                debit: Money::of(0, $currencyCode),
+                credit: $initialCapitalInvestment,
+                description: 'Equity',
+                partner_id: null,
+                analytic_account_id: null,
+            ),
         ],
-    ], true); // Post immediately
+    );
+    $capitalEntry = $createJournalEntryAction->execute($capitalEntryDto);
 
     $this->assertDatabaseHas('journal_entries', ['id' => $capitalEntry->id, 'is_posted' => true]);
     // MODIFIED: Assert against Money objects
@@ -90,7 +110,8 @@ test('the entire accounting workflow from setup to credit note', function () {
         bill_date: now()->toDateString(),
         accounting_date: now()->toDateString(),
         due_date: now()->addDays(30)->toDateString(),
-        lines: [$lineDto]
+        lines: [$lineDto],
+        created_by_user_id: $this->user->id
     );
 
     // Act: Create the vendor bill using the Action.
@@ -209,7 +230,7 @@ test('the entire accounting workflow from setup to credit note', function () {
     expect($vendorPaymentEntry->total_debit->isEqualTo($highEndLaptopCost))->toBeTrue();
     expect($vendorPaymentEntry->lines->where('account_id', $apAccount->id)->first()->debit->isEqualTo($highEndLaptopCost))->toBeTrue();
     expect($vendorPaymentEntry->lines->where('account_id', $bankAccount->id)->first()->credit->isEqualTo($highEndLaptopCost))->toBeTrue();
-    expect($vendorBill->fresh()->status)->toBe(VendorBill::STATUS_PAID);
+    expect($vendorBill->fresh()->status)->toBe(\App\Enums\Purchases\VendorBillStatus::Paid);
 
     // Step 8: Handling a Correction (Credit Note)
     $adjustmentService = app(AdjustmentDocumentService::class);

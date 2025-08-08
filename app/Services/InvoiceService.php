@@ -2,32 +2,34 @@
 
 namespace App\Services;
 
-use App\Events\InvoiceConfirmed;
-use App\Exceptions\DeletionNotAllowedException;
-use App\Exceptions\UpdateNotAllowedException;
-use App\Models\Company;
-use App\Models\Currency;
-use App\Models\Invoice;
-use App\Models\JournalEntry;
 use App\Models\User;
-use Brick\Math\RoundingMode;
 use Brick\Money\Money;
+use App\Models\Company;
+use App\Models\Invoice;
+use App\Models\Currency;
+use App\Models\JournalEntry;
+use Brick\Math\RoundingMode;
+use App\Events\InvoiceConfirmed;
 use Illuminate\Support\Facades\DB;
+use App\Enums\Products\ProductType;
 use Illuminate\Support\Facades\Gate;
+use App\Enums\Inventory\StockMoveType;
+use App\Enums\Inventory\StockMoveStatus;
 use Illuminate\Support\Facades\Validator;
+use App\Models\AuditLog; // Add this import
+use App\Services\Accounting\LockDateService;
+use App\Services\Inventory\StockMoveService;
+use App\Exceptions\UpdateNotAllowedException;
 use Illuminate\Validation\ValidationException;
-use App\Actions\Accounting\CreateJournalEntryForInvoiceAction;
+use App\Exceptions\DeletionNotAllowedException;
 use App\Actions\Inventory\CreateStockMoveAction;
 use App\DataTransferObjects\Inventory\CreateStockMoveDTO;
-use App\Enums\Inventory\StockMoveStatus;
-use App\Enums\Inventory\StockMoveType;
-use App\Enums\Products\ProductType;
-use App\Models\AuditLog; // Add this import
-use App\Services\Inventory\StockMoveService;
+use App\Actions\Accounting\CreateJournalEntryForInvoiceAction;
 
 class InvoiceService
 {
     public function __construct(
+        protected LockDateService $lockDateService,
         protected JournalEntryService $journalEntryService,
         protected StockMoveService $stockMoveService,
         protected CreateJournalEntryForInvoiceAction $createJournalEntryForInvoiceAction
@@ -53,9 +55,7 @@ class InvoiceService
             return;
         }
 
-        if ($invoice->company->isDateLocked($invoice->invoice_date)) {
-            throw new \App\Exceptions\PeriodIsLockedException('The period for this invoice date is locked.');
-        }
+        $this->lockDateService->enforce(\App\Models\Company::find($invoice->company_id), \Carbon\Carbon::parse($invoice->invoice_date));
 
         DB::transaction(function () use ($invoice, $user) {
             $invoice->invoice_number = $this->getNextInvoiceNumber($invoice->company);

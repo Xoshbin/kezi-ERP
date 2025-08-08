@@ -3,62 +3,82 @@
 namespace App\Actions\Purchases;
 
 use App\DataTransferObjects\Purchases\UpdateVendorBillDTO;
+use App\Enums\Purchases\VendorBillStatus;
 use App\Exceptions\UpdateNotAllowedException;
-use App\Models\Currency;
 use App\Models\VendorBill;
-use App\Services\AccountingValidationService;
+use App\Models\Tax;
+use App\Services\Accounting\LockDateService;
+use Brick\Math\RoundingMode;
 use Brick\Money\Money;
 use Illuminate\Support\Facades\DB;
 
 class UpdateVendorBillAction
 {
-    public function __construct(
-        private readonly AccountingValidationService $accountingValidationService = new AccountingValidationService()
-    ) {}
-
-    public function execute(UpdateVendorBillDTO $dto): VendorBill
+    public function __construct(protected LockDateService $lockDateService)
     {
-        $vendorBill = $dto->vendorBill;
+    }
 
-        $this->accountingValidationService->checkIfPeriodIsLocked($vendorBill->company_id, $dto->bill_date);
+    public function execute(UpdateVendorBillDTO $updateVendorBillDTO): VendorBill
+    {
+        $vendorBill = $updateVendorBillDTO->vendorBill;
 
-        if ($vendorBill->status !== VendorBill::STATUS_DRAFT) {
-            throw new UpdateNotAllowedException('Cannot update a posted vendor bill.');
+        if ($vendorBill->status !== VendorBillStatus::Draft) {
+            throw new UpdateNotAllowedException('Only draft vendor bills can be updated.');
         }
 
-        return DB::transaction(function () use ($dto, $vendorBill) {
+        $this->lockDateService->enforce($vendorBill->company, \Carbon\Carbon::parse($updateVendorBillDTO->bill_date));
+
+
+        return DB::transaction(function () use ($updateVendorBillDTO) {
+            $vendorBill = $updateVendorBillDTO->vendorBill;
+
             $vendorBill->update([
-                'vendor_id' => $dto->vendor_id,
-                'currency_id' => $dto->currency_id,
-                'bill_reference' => $dto->bill_reference,
-                'bill_date' => $dto->bill_date,
-                'accounting_date' => $dto->accounting_date,
-                'due_date' => $dto->due_date,
+                'vendor_id' => $updateVendorBillDTO->vendor_id,
+                'currency_id' => $updateVendorBillDTO->currency_id,
+                'bill_date' => $updateVendorBillDTO->bill_date,
+                'due_date' => $updateVendorBillDTO->due_date,
+                'bill_reference' => $updateVendorBillDTO->bill_reference,
             ]);
 
-            // Sync the lines
             $vendorBill->lines()->delete();
 
-            $currencyCode = Currency::find($dto->currency_id)->code;
-            $linesToCreate = [];
-            foreach ($dto->lines as $lineDto) {
-                $linesToCreate[] = [
-                    'product_id' => $lineDto->product_id,
-                    'description' => $lineDto->description,
-                    'quantity' => $lineDto->quantity,
-                    'unit_price' => Money::of($lineDto->unit_price, $currencyCode),
-                    'tax_id' => $lineDto->tax_id,
-                    'expense_account_id' => $lineDto->expense_account_id,
-                    'analytic_account_id' => $lineDto->analytic_account_id,
-                ];
+            $lines = [];
+            foreach ($updateVendorBillDTO->lines as $line) {
+                // Calculate subtotal and tax amounts
+                $unitPrice = $line->unit_price;
+                $subtotal = $unitPrice->multipliedBy($line->quantity, RoundingMode::HALF_UP);
+
+                $taxAmount = Money::of(0, $vendorBill->currency->code);
+                if ($line->tax_id) {
+                    $tax = Tax::find($line->tax_id);
+                    if ($tax) {
+                        $taxRate = $tax->rate / 100;
+                        $taxAmount = $subtotal->multipliedBy((string)$taxRate, RoundingMode::HALF_UP);
+                    }
+                }
+
+                $lines[] = new \App\Models\VendorBillLine([
+                    'product_id' => $line->product_id,
+                    'description' => $line->description,
+                    'quantity' => $line->quantity,
+                    'unit_price' => $line->unit_price,
+                    'subtotal' => $subtotal,
+                    'total_line_tax' => $taxAmount,
+                    'expense_account_id' => $line->expense_account_id,
+                    'tax_id' => $line->tax_id,
+                    'analytic_account_id' => $line->analytic_account_id,
+                ]);
             }
 
-            if (!empty($linesToCreate)) {
-                $vendorBill->lines()->createMany($linesToCreate);
-            }
-
-            // The model's saving observer will recalculate totals
+            $vendorBill->setRelation('lines', collect($lines));
+            $vendorBill->calculateTotalsFromLines();
             $vendorBill->save();
+
+            foreach ($lines as $line) {
+                $line->vendor_bill_id = $vendorBill->id;
+                $line->save();
+            }
+
 
             return $vendorBill;
         });

@@ -4,10 +4,12 @@ namespace App\Filament\Resources\VendorBillResource\Pages;
 
 use App\Actions\Purchases\UpdateVendorBillAction;
 use App\DataTransferObjects\Purchases\UpdateVendorBillDTO;
-use App\DataTransferObjects\Purchases\UpdateVendorBillLineDTO;
+use App\DataTransferObjects\Purchases\VendorBillLineDTO;
+use App\Enums\Purchases\VendorBillStatus;
 use App\Filament\Resources\VendorBillResource;
 use App\Models\VendorBill;
 use App\Services\VendorBillService;
+use Brick\Money\Money;
 use Filament\Actions;
 use Filament\Forms;
 use Filament\Notifications\Notification;
@@ -23,13 +25,11 @@ class EditVendorBill extends EditRecord
     {
         return [
             Actions\Action::make('confirm')
-                ->label(__('vendor_bill.confirm_bill'))
+                ->label(__('vendor_bill.confirm'))
                 ->color('success')
                 ->requiresConfirmation()
-                ->visible(fn (VendorBill $record): bool => $record->status === VendorBill::STATUS_DRAFT)
+                ->visible(fn (VendorBill $record): bool => $record->status === VendorBillStatus::Draft)
                 ->action(function (VendorBill $record): void {
-                    $this->save();
-
                     $vendorBillService = app(VendorBillService::class);
                     try {
                         $vendorBillService->confirm($record, Auth::user());
@@ -43,7 +43,7 @@ class EditVendorBill extends EditRecord
                 ->label(__('vendor_bill.reset_to_draft'))
                 ->color('warning')
                 ->requiresConfirmation()
-                ->visible(fn (VendorBill $record): bool => $record->status === VendorBill::STATUS_POSTED)
+                ->visible(fn (VendorBill $record): bool => $record->status === VendorBillStatus::Posted)
                 ->form([
                     Forms\Components\Textarea::make('reason')->label(__('vendor_bill.reason'))->required(),
                 ])
@@ -69,12 +69,12 @@ class EditVendorBill extends EditRecord
     {
         $lineDTOs = [];
         foreach ($data['lines'] as $line) {
-            $lineDTOs[] = new UpdateVendorBillLineDTO(
+            $lineDTOs[] = new VendorBillLineDTO(
+                product_id: $line['product_id'] ?? null,
                 description: $line['description'],
                 quantity: $line['quantity'],
-                unit_price: $line['unit_price'],
+                unit_price: Money::of($line['unit_price'], $record->currency->code),
                 expense_account_id: $line['expense_account_id'],
-                product_id: $line['product_id'] ?? null,
                 tax_id: $line['tax_id'] ?? null,
                 analytic_account_id: $line['analytic_account_id'] ?? null
             );
@@ -82,35 +82,35 @@ class EditVendorBill extends EditRecord
 
         $vendorBillDTO = new UpdateVendorBillDTO(
             vendorBill: $record,
+            company_id: $data['company_id'],
             vendor_id: $data['vendor_id'],
             currency_id: $data['currency_id'],
             bill_reference: $data['bill_reference'],
             bill_date: $data['bill_date'],
             accounting_date: $data['accounting_date'],
             due_date: $data['due_date'] ?? null,
-            lines: $lineDTOs
+            lines: $lineDTOs,
+            updated_by_user_id: Auth::id()
         );
 
-        return (new UpdateVendorBillAction())->execute($vendorBillDTO);
+        return app(UpdateVendorBillAction::class)->execute($vendorBillDTO);
     }
 
     protected function mutateFormDataBeforeFill(array $data): array
     {
-        $this->record->loadMissing('lines');
+        $this->record->loadMissing('lines', 'currency');
         $linesData = $this->record->lines->map(function ($line) {
             return [
                 'product_id' => $line->product_id,
                 'description' => $line->description,
                 'quantity' => $line->quantity,
-                'unit_price' => $line->unit_price?->getAmount()->toFloat(),
+                'unit_price' => $line->unit_price,
                 'tax_id' => $line->tax_id,
                 'expense_account_id' => $line->expense_account_id,
                 'analytic_account_id' => $line->analytic_account_id,
             ];
         })->toArray();
         $data['lines'] = $linesData;
-        $data['total_amount'] = $this->record->total_amount?->getAmount()->toFloat();
-        $data['total_tax'] = $this->record->total_tax?->getAmount()->toFloat();
         return $data;
     }
 }

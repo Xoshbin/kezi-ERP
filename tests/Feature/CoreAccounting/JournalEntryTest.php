@@ -185,7 +185,10 @@ test('a posted journal entry cannot be deleted via the service', function () {
 
 test('a draft journal entry in a locked period cannot be deleted', function () {
     $service = app(JournalEntryService::class);
-    LockDate::factory()->for($this->company)->create(['locked_until' => now()->subMonth()]);
+    LockDate::factory()->for($this->company)->create([
+        'lock_type' => \App\Enums\Accounting\LockDateType::ALL_USERS->value,
+        'locked_until' => now()->subMonth()
+    ]);
     $currencyCode = $this->company->currency->code;
     $journalEntry = JournalEntry::factory()->for($this->company)->create([
         'is_posted' => false,
