@@ -351,90 +351,65 @@ Soran, an ambitious IT professional in Slemani, decides to start his own consult
 * **Accounting Rationale:** Bank reconciliation is the process of matching transactions recorded in your company's internal books with those appearing on your bank statements. Its primary purpose is to ensure that your cash and bank accounts in the General Ledger accurately reflect the actual cash held by the business.
 
 ### • 10.1. Create a Bank Statement Record:
-* **Resource:** `BankStatementResource`
+* **Resource:** `BankStatementResource`.
 * **Action:** Click "New Bank Statement".
 * **Enter Data (Header):**
     * `company_id`: Select "Jmeryar ERP" (from Step 1.2).
-    * `starting_balance`: (e.g., 11,500,000 IQD, reflecting the balance after Step 8's payment).
-    * `ending_balance`: (e.g., 11,499,500 IQD, accounting for a small fee).
-* **Action (Lines):** Add one `BankStatementLine`:
-    * `date`: (Today's Date).
-    * `description`: Monthly Bank Fee.
-    * `amount`: -500 (representing a 500 IQD withdrawal/fee).
-    * `partner_id`: (Leave blank or select the Bank as a partner if applicable).
-* **Expected Outcome:** The bank statement, including the unrecorded bank fee, is successfully entered into the system.
+    * `starting_balance`: Calculate this based on your system's bank balance before the transactions on this statement. For example, after Step 8's payment, your bank balance would be 15,000,000 (initial) + 5,000,000 (Hawre payment) - 3,000,000 (Paykar payment) = 17,000,000 IQD. So, `starting_balance`: 17000000 IQD.
+    * `ending_balance`: (e.g., 17000000 (start) + 5000000 (Hawre) - 3000000 (Paykar) - 500 (fee) = 18999500 IQD).
+* **Action (Lines):** Add three `BankStatementLine` items:
+    * **Line 1 (Hawre Payment):**
+        * `date`: (Today's Date, matching payment date from Step 7).
+        * `description`: "Hawre Trading Group Payment for Invoice INV-001".
+        * `amount`: 5000000 (representing the incoming payment from Step 7).
+        * `partner_id`: Select "Hawre Trading Group" (from Step 6.1).
+    * **Line 2 (Paykar Payment):**
+        * `date`: (Today's Date, matching payment date from Step 8).
+        * `description`: "Payment to Paykar Tech Supplies for Laptop Bill BILL-001".
+        * `amount`: -3000000 (representing the outgoing payment to Paykar from Step 8).
+        * `partner_id`: Select "Paykar Tech Supplies" (from Step 5.1).
+    * **Line 3 (Bank Fee - for Write-Off):**
+        * `date`: (Today's Date).
+        * `description`: "Monthly Bank Service Fee".
+        * `amount`: -500 (representing a 500 IQD withdrawal/fee, not yet recorded internally).
+        * `partner_id`: (Leave blank, or select the Bank as a partner if applicable).
+* **Expected Outcome:** The bank statement, including both recorded payments and the unrecorded bank fee, is successfully entered into the system.
 
 ### • 10.2. Initiate Bank Reconciliation:
-* **Resource:** `BankStatementResource`
-* **Action:** From the list of bank statements, click the "Reconcile" action button next to the newly created bank statement.
-* **Filament Integration:** This action leads to an interactive reconciliation interface, displaying bank statement lines and suggesting matches with existing `JournalEntry` records (such as payments from Step 7 and 8).
+* **Resource:** `BankStatementResource`.
+* **Action:** From the list of bank statements, click the "Reconcile" action button (icon 'heroicon-o-scale') next to the newly created bank statement.
+* **Filament Integration:** This action will lead to a Livewire component designed for interactive reconciliation, displaying the `BankStatementLine` records and suggesting matches with existing `JournalEntry` records (such as those from Payments in Step 7 and 8).
 
 ### • 10.3. Perform a Write-Off for the Unmatched Bank Fee:
-* **Context:** On the reconciliation interface, identify the "Monthly Bank Fee" line (-500 IQD) as unmatched.
-* **Action:** Click the "Write Off" or "Adjust Difference" button for this line. Enter:
-    * `amount`: -500 IQD (pre-filled).
-    * `account_id`: Select 6100 - Bank Charges Expense (or create a new specific account if needed).
-    * `description`: Write-off for monthly bank service charge.
-* **Backend Logic:** Upon confirmation, a new `JournalEntry` is created:
-    * **Debit:** 6100 - Bank Charges Expense for 500 IQD.
-    * **Credit:** 1010 - Bank for 500 IQD.
-    * The entry is posted, hashed, and linked to the `BankStatementLine` for auditability.
-* **Expected Outcome:** The "Monthly Bank Fee" line is marked as reconciled, and the bank account balance in the General Ledger reflects the deduction.
+* **Context:** On the reconciliation interface, identify the "Monthly Bank Service Fee" line (amount -500 IQD) as an unmatched record.
+* **Action:** Click the "Write Off" or "Adjust Difference" button associated with this specific `BankStatementLine`. This should trigger a Filament modal.
+* **Enter Data (Modal):**
+    * The amount of -500 IQD is pre-filled.
+    * Account: Select 6100 - Depreciation Expense (or 'Bank Charges Expense' if a more specific account was created).
+    * Description: "Write-off for monthly bank service charge".
+* **Backend Logic (Developer Detail):**
+    * Upon confirmation, your service layer (e.g., `App\Services\Accounting\ReconciliationService` or `CreateJournalEntryForStatementLineAction`) executes the write-off logic.
+    * It creates a new `JournalEntry` and associated `JournalEntryLine` records as a contra-entry for the -500 IQD difference.
+        * **Debit:** 6100 - Depreciation Expense (or Bank Charges Expense) account for 500 IQD.
+        * **Credit:** 1010 - Bank account for 500 IQD.
+    * The `total_debit` and `total_credit` for this new `JournalEntry` must be equal.
+    * The `JournalEntry`'s `is_posted` flag is set to true, and it is immediately cryptographically hashed (`hash` and `previous_hash` generated) to ensure immutability and link it to the audit chain.
+    * The `JournalEntry` is explicitly linked back to the `BankStatementLine` via `source_type` and `source_id`.
+    * All monetary values are handled using Brick\Money objects and your custom MoneyCast, ensuring precise financial calculations, especially considering IQD's specific decimal places.
+* **Expected Outcome:** The "Monthly Bank Service Fee" `BankStatementLine`'s status is updated to reconciled. The bank account balance in your General Ledger now accurately reflects the deduction for the bank fee.
 
 ### • 10.4. Reconcile Previous Payments:
-* **Context:** Payments from "Hawre Trading Group" (Step 7) and "Paykar Tech Supplies" (Step 8) appear as `JournalEntry` records awaiting reconciliation.
-* **Action:** Match these records with their corresponding bank statement lines.
-* **Expected Outcome:** The respective `BankStatementLine` records for these payments are marked as reconciled, and payment statuses may update accordingly.
+* **Context:** On the reconciliation interface, the incoming payment from "Hawre Trading Group" (from Step 7, amount 5,000,000 IQD) and the outgoing payment to "Paykar Tech Supplies" (from Step 8, amount 3,000,000 IQD) should appear as `BankStatementLine` records (created in Step 10.1) that can be matched with their corresponding `JournalEntry` records (which were generated by the Payment models in Steps 7 and 8).
+* **Action:** Match these `BankStatementLine` records with their corresponding `JournalEntry` records. This can be manual selection or automated suggestions from the system.
+* **Expected Outcome:** The respective `BankStatementLine` records for these payments are marked as reconciled. The Payment records themselves might also update their status (e.g., from 'Confirmed' to 'Reconciled' if your system tracks this granularly).
 
-* **Overall Expected Outcome:**
-    * The bank statement is processed, including manual input of minor discrepancies.
-    * The immaterial bank fee is handled via a write-off, creating an offsetting journal entry and preserving the immutable audit trail.
-    * Previously recorded payments are matched and reconciled with their corresponding bank statement lines.
-    * The company's internal bank balance in the General Ledger matches the actual bank statement balance, demonstrating effective cash management and adherence to double-entry bookkeeping principles.
-• A "write-off" in this context is applied to immaterial or unrecoverable discrepancies (e.g., small bank fees, minor interest) that are present on the bank statement but not yet recorded in your system. Instead of a problematic "deletion" (which is strictly prohibited for posted financial records due to immutability), a write-off involves creating a new, offsetting journal entry. This contra-entry records the difference to an appropriate income or expense account (e.g., Bank Charges Expense, Miscellaneous Income). This method is crucial as it preserves a perfect audit trail, explicitly showing both the original bank transaction and the adjustment made for reconciliation.
-• 🛠️ Technical Flow (Developer): Given your Laravel 12, Filament, and Pest stack, this scenario leverages the BankStatementResource and the implemented write-off functionality.
-    1. 10.1. Create a Bank Statement Record:
-        ▪ Resource: BankStatementResource.
-        ▪ Action: Click "New Bank Statement".
-        ▪ Enter Data (Header):
-            • company_id: Select "Jmeryar ERP" (from Step 1.2).
-            • starting_balance: (e.g., 11500000 IQD - reflecting the balance after Step 8's payment).
-            • ending_balance: (e.g., 11499500 IQD - accounting for a small fee).
-        ▪ Action (Lines): Add one BankStatementLine.
-            • date: (Today's Date).
-            • description: "Monthly Bank Fee".
-            • amount: -500 (representing a 500 IQD withdrawal/fee).
-            • partner_id: (Leave blank or select the Bank as a partner if applicable).
-        ▪ Expected Outcome: The bank statement, including the unrecorded bank fee, is successfully entered into the system.
-    2. 10.2. Initiate Bank Reconciliation:
-        ▪ Resource: BankStatementResource.
-        ▪ Action: From the list of bank statements, click the "Reconcile" action button (icon 'heroicon-o-scale') next to the newly created bank statement.
-        ▪ Filament Integration: This action will typically lead to a Livewire component for interactive reconciliation, displaying the bank statement lines and suggesting matches with existing JournalEntry records (like the payments from Step 7 and 8).
-    3. 10.3. Perform a Write-Off for the Unmatched Bank Fee:
-        ▪ Context: On the reconciliation interface, identify the "Monthly Bank Fee" line (amount -500 IQD) as an unmatched record.
-        ▪ Action: Click the "Write Off" or "Adjust Difference" button associated with this specific BankStatementLine. This should trigger a Filament modal.
-        ▪ Enter Data (Modal):
-            • The amount of -500 IQD is pre-filled.
-            • Account: Select 6100 - Bank Charges Expense (or create a new specific account like 'Bank Fees Expense' if needed for finer granularity).
-            • Description: "Write-off for monthly bank service charge".
-        ▪ Backend Logic (Developer Detail):
-            • Upon confirmation, your ReconciliationService (or CreateJournalEntryForStatementLineAction) executes the write-off logic.
-            • It creates a new JournalEntry and associated JournalEntryLine records to account for the -500 IQD difference. This is a contra-entry.
-                ◦ Debit: 6100 - Bank Charges Expense account for 500 IQD.
-                ◦ Credit: 1010 - Bank account for 500 IQD.
-            • The new JournalEntry's is_posted flag is set to true, and it is immediately cryptographically hashed (hash and previous_hash generated) to ensure immutability and link it to the audit chain.
-            • The JournalEntry is explicitly linked back to the BankStatementLine via source_type (App\Models\BankStatementLine) and source_id.
-            • All monetary values are handled using Brick\Money objects and your custom MoneyCast, ensuring precise financial calculations, especially considering IQD's specific decimal places.
-        ▪ Expected Outcome: The "Monthly Bank Fee" BankStatementLine's status is updated to reconciled. The bank account balance in your General Ledger now accurately reflects the deduction for the bank fee.
-    4. 10.4. Reconcile Previous Payments:
-        ▪ Context: On the reconciliation interface, the incoming payment from "Hawre Trading Group" (Step 7) and the outgoing payment to "Paykar Tech Supplies" (Step 8) should appear as JournalEntry records awaiting reconciliation.
-        ▪ Action: Match these JournalEntry records with their corresponding bank statement lines. This can be manual selection or automated suggestions from the system.
-        ▪ Expected Outcome: The respective BankStatementLine records for these payments are marked as reconciled. The Payment records themselves might also update their status (e.g., from 'Confirmed' to 'Reconciled' if they track this granularly).
-• Expected Outcome (Overall Scenario):
-    ◦ The bank statement is successfully processed, including manual input of a minor discrepancy.
-    ◦ The immaterial bank fee is correctly handled via a write-off, creating a new, offsetting journal entry that preserves the immutable audit trail.
-    ◦ Previously recorded payments are matched and reconciled with their corresponding bank statement lines.
-    ◦ The company's internal bank balance in the General Ledger now precisely matches the actual bank statement balance, demonstrating effective cash management and adherence to double-entry bookkeeping principles.
+---
+
+* **Expected Outcome (Overall Scenario):**
+    * The bank statement is successfully processed, including manual input of the two payments and a minor bank fee.
+    * The immaterial bank fee is correctly handled via a write-off, creating a new, offsetting journal entry that preserves the immutable audit trail.
+    * Previously recorded customer and vendor payments are matched and reconciled with their corresponding bank statement lines.
+    * The company's internal bank balance in the General Ledger now precisely matches the actual bank statement balance, demonstrating effective cash management and adherence to double-entry bookkeeping principles.
 
 ## Additional Post-Scenario Tests & Considerations for Robustness
 
