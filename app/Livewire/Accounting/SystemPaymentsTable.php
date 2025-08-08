@@ -97,7 +97,7 @@ class SystemPaymentsTable extends Component implements HasTable, HasForms
 
         $this->dispatch('payment-selection-changed', [
             'selectedIds' => $this->selectedPayments,
-            'total' => $total->getAmount()->toInt(),
+            'total' => $total->getMinorAmount()->toInt(),
             'currency' => $total->getCurrency()->getCurrencyCode(),
         ]);
     }
