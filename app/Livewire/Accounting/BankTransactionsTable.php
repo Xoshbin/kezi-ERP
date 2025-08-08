@@ -119,7 +119,7 @@ class BankTransactionsTable extends Component implements HasTable, HasForms
 
         $this->dispatch('bank-selection-changed', [
             'selectedIds' => $this->selectedBankLines,
-            'total' => $total->getAmount()->toInt(),
+            'total' => $total->getMinorAmount()->toInt(),
             'currency' => $total->getCurrency()->getCurrencyCode(),
         ]);
     }
