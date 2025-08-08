@@ -4,7 +4,7 @@ namespace App\Filament\Resources\VendorBillResource\Pages;
 
 use App\Actions\Purchases\CreateVendorBillAction;
 use App\DataTransferObjects\Purchases\CreateVendorBillDTO;
-use App\DataTransferObjects\Purchases\VendorBillLineDTO;
+use App\DataTransferObjects\Purchases\CreateVendorBillLineDTO;
 use App\Filament\Resources\VendorBillResource;
 use App\Models\Currency;
 use Brick\Money\Money;
@@ -21,14 +21,15 @@ class CreateVendorBill extends CreateRecord
         $currency = Currency::find($data['currency_id']);
         $lineDTOs = [];
         foreach ($data['lines'] as $line) {
-            $lineDTOs[] = new VendorBillLineDTO(
+            $lineDTOs[] = new CreateVendorBillLineDTO(
                 product_id: $line['product_id'],
                 description: $line['description'],
                 quantity: $line['quantity'],
                 unit_price: Money::of($line['unit_price'], $currency->code),
-                tax_id: $line['tax_id'] ?? null,
                 expense_account_id: $line['expense_account_id'],
-                analytic_account_id: $line['analytic_account_id'] ?? null
+                tax_id: $line['tax_id'] ?? null,
+                analytic_account_id: $line['analytic_account_id'] ?? null,
+                currency: $currency->code
             );
         }
         $data['lines'] = $lineDTOs;
