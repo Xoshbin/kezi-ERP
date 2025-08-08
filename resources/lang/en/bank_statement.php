@@ -57,6 +57,7 @@ return [
     'reconciliation_successful' => 'Reconciliation completed successfully',
     'no_partner' => 'No Partner',
     'no_unreconciled_payments' => 'No unreconciled payments found',
+    'no_unreconciled_payments_description' => 'All payments have been reconciled or there are no confirmed payments for this period.',
     'select' => 'Select',
     'payment_date' => 'Payment Date',
     'type' => 'Type',
