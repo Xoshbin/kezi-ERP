@@ -4,12 +4,16 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\PaymentResource\Pages;
 use App\Filament\Resources\PaymentResource\RelationManagers;
+use App\Filament\Forms\Components\MoneyInput;
+use App\Models\Company;
 use App\Models\Invoice;
 use App\Models\Payment;
 use App\Models\VendorBill;
+use App\Enums\Purchases\VendorBillStatus;
 use App\Services\PaymentService;
 use Filament\Forms;
 use Filament\Forms\Form;
+use Filament\Forms\Components\Section;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
@@ -49,56 +53,108 @@ class PaymentResource extends Resource
 
     public static function form(Form $form): Form
     {
-        return $form
-            ->schema([
-                Forms\Components\Select::make('company_id')->relationship('company', 'name')->required()->label(__('payment.form.company_id')),
-                Forms\Components\Select::make('journal_id')->relationship('journal', 'name')->required()->label(__('payment.form.journal_id')),
-                Forms\Components\Select::make('currency_id')->relationship('currency', 'name')->required()->label(__('payment.form.currency_id')),
-                Forms\Components\DatePicker::make('payment_date')->required()->label(__('payment.form.payment_date')),
-                Forms\Components\TextInput::make('reference')->maxLength(255)->label(__('payment.form.reference')),
+        $company = Company::first();
 
-                // Read-only fields derived by the Action
-                Forms\Components\TextInput::make('amount')->numeric()->readOnly()->label(__('payment.form.amount')),
-                Forms\Components\Select::make('payment_type')->options(Payment::getTypes())->disabled()->label(__('payment.form.payment_type')),
-                Forms\Components\Select::make('status')->options(Payment::getStatuses())->disabled()->label(__('payment.form.status')),
+        return $form->schema([
+            Section::make()
+                ->schema([
+                    Forms\Components\Select::make('company_id')
+                        ->relationship('company', 'name')
+                        ->label(__('payment.form.company_id'))
+                        ->required()
+                        ->live()
+                        ->default($company?->id)
+                        ->afterStateUpdated(function (callable $set, $state) {
+                            $company = Company::find($state);
+                            if ($company) {
+                                $set('currency_id', $company->currency_id);
+                            }
+                        }),
+                    Forms\Components\Select::make('journal_id')
+                        ->relationship('journal', 'name')
+                        ->label(__('payment.form.journal_id'))
+                        ->required(),
+                    Forms\Components\Select::make('currency_id')
+                        ->relationship('currency', 'name')
+                        ->label(__('payment.form.currency_id'))
+                        ->required()
+                        ->live()
+                        ->default($company?->currency_id),
+                    Forms\Components\DatePicker::make('payment_date')
+                        ->label(__('payment.form.payment_date'))
+                        ->required(),
+                    Forms\Components\TextInput::make('reference')
+                        ->label(__('payment.form.reference'))
+                        ->maxLength(255),
 
-                Repeater::make('document_links')
-                    ->label(__('payment.form.document_links'))
-                    ->schema([
-                        Forms\Components\Select::make('document_type')
-                            ->label(__('payment.form.document_type'))
-                            ->options([
-                                'invoice' => __('payment.form.document_type.invoice'),
-                                'vendor_bill' => __('payment.form.document_type.vendor_bill'),
-                            ])
-                            ->required()
-                            ->reactive(),
-                        Forms\Components\Select::make('document_id')
-                            ->label(__('payment.form.document_id'))
-                            ->options(function (Get $get) {
-                                $type = $get('document_type');
-                                if ($type === 'invoice') {
-                                    return Invoice::where('status', Invoice::STATUS_POSTED)->pluck('invoice_number', 'id');
-                                }
-                                if ($type === 'vendor_bill') {
-                                    return VendorBill::where('status', VendorBill::STATUS_POSTED)->pluck('bill_reference', 'id');
-                                }
-                                return [];
-                            })
-                            ->searchable()
-                            ->required(),
-                        Forms\Components\TextInput::make('amount_applied')->numeric()->required()->label(__('payment.form.amount_applied')),
-                    ])->columnSpanFull()
-                    ->live(onBlur: true)
-                    ->afterStateUpdated(function (Get $get, callable $set) {
-                        $links = $get('document_links') ?? [];
-                        $total = 0;
-                        foreach ($links as $link) {
-                            $total += (float)($link['amount_applied'] ?? 0);
-                        }
-                        $set('amount', $total);
-                    }),
-            ]);
+                    // Read-only fields derived by the Action
+                    MoneyInput::make('amount')
+                        ->label(__('payment.form.amount'))
+                        ->currencyField('currency_id')
+                        ->readOnly(),
+                    Forms\Components\Select::make('payment_type')
+                        ->label(__('payment.form.payment_type'))
+                        ->options(Payment::getTypes())
+                        ->disabled()
+                        ->dehydrated(false),
+                    Forms\Components\Select::make('status')
+                        ->label(__('payment.form.status'))
+                        ->options(Payment::getStatuses())
+                        ->disabled()
+                        ->dehydrated(false),
+                ])
+                ->columns(2),
+
+            Section::make(__('payment.form.document_links'))
+                ->schema([
+                    Repeater::make('document_links')
+                        ->label(__('payment.form.document_links'))
+                        ->live()
+                        ->reorderable(true)
+                        ->minItems(1)
+                        ->disabled(fn (?Payment $record) => $record && $record->status !== Payment::STATUS_DRAFT)
+                        ->schema([
+                            Forms\Components\Select::make('document_type')
+                                ->label(__('payment.form.document_type'))
+                                ->options([
+                                    'invoice' => __('payment.form.document_type.invoice'),
+                                    'vendor_bill' => __('payment.form.document_type.vendor_bill'),
+                                ])
+                                ->required()
+                                ->live()
+                                ->columnSpan(1),
+                            Forms\Components\Select::make('document_id')
+                                ->label(__('payment.form.document_id'))
+                                ->options(function (Get $get) {
+                                    $type = $get('document_type');
+                                    if ($type === 'invoice') {
+                                        return Invoice::where('status', 'posted')->pluck('invoice_number', 'id');
+                                    }
+                                    if ($type === 'vendor_bill') {
+                                        return VendorBill::where('status', VendorBillStatus::Posted)->pluck('bill_reference', 'id');
+                                    }
+                                    return [];
+                                })
+                                ->searchable()
+                                ->required()
+                                ->columnSpan(1),
+                            MoneyInput::make('amount_applied')
+                                ->label(__('payment.form.amount_applied'))
+                                ->currencyField('../../currency_id')
+                                ->required()
+                                ->columnSpan(1),
+                        ])
+                        ->columns(3)
+                        ->afterStateUpdated(function (Get $get, callable $set) {
+                            $links = $get('document_links') ?? [];
+                            $total = 0;
+                            foreach ($links as $link) {
+                                $total += (float)($link['amount_applied'] ?? 0);
+                            }
+                            $set('amount', $total);
+                        }),
+                ]),
+        ]);
     }
 
     public static function table(Table $table): Table
@@ -155,7 +211,7 @@ class PaymentResource extends Resource
                     ->visible(fn(\App\Models\Payment $record): bool => $record->status === 'Confirmed')
                     ->action(function (\App\Models\Payment $record, \App\Services\PaymentService $paymentService) {
                         try {
-                            $paymentService->cancel($record, auth()->user());
+                            $paymentService->cancel($record, auth()->user(), 'Payment cancelled via table action');
                             \Filament\Notifications\Notification::make()
                                 ->title('Payment Cancelled Successfully')
                                 ->success()

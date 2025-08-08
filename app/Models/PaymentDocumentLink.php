@@ -6,6 +6,7 @@ use App\Casts\MoneyCast;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasOneThrough;
 
 /**
  * @property int $id
@@ -99,6 +100,24 @@ class PaymentDocumentLink extends Model
     public function vendorBill(): BelongsTo
     {
         return $this->belongsTo(VendorBill::class);
+    }
+
+    /**
+     * Get the currency for this payment document link through the payment.
+     * This is needed for the MoneyCast to work properly.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasOneThrough
+     */
+    public function currency()
+    {
+        return $this->hasOneThrough(
+            Currency::class,
+            Payment::class,
+            'id', // Foreign key on payments table
+            'id', // Foreign key on currencies table
+            'payment_id', // Local key on payment_document_links table
+            'currency_id' // Local key on payments table
+        );
     }
 
     /**
