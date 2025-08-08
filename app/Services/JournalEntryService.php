@@ -3,7 +3,6 @@
 namespace App\Services;
 
 use Carbon\Carbon;
-use App\Actions\Accounting\ReverseJournalEntryAction;
 use App\Models\User;
 use Brick\Money\Money;
 use App\Models\Company;
@@ -14,19 +13,19 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use App\Exceptions\PeriodIsLockedException;
+use App\Services\Accounting\LockDateService;
 use App\Exceptions\UpdateNotAllowedException;
 use Illuminate\Validation\ValidationException;
 use App\Exceptions\DeletionNotAllowedException;
+use App\Actions\Accounting\ReverseJournalEntryAction;
 
 class JournalEntryService
 {
-    public function __construct(protected AccountingValidationService $accountingValidationService)
-    {
-    }
+    public function __construct(protected LockDateService $lockDateService,) {}
 
     public function create(array $data, bool $postImmediately = false): JournalEntry
     {
-        $this->accountingValidationService->checkIfPeriodIsLocked($data['company_id'], $data['entry_date']);
+        $this->lockDateService->enforce(\App\Models\Company::find($data['company_id']), \Carbon\Carbon::parse($data['entry_date']));
 
         Validator::make($data, [
             // Apply the rule to each account_id in the lines array
@@ -96,7 +95,7 @@ class JournalEntryService
         // MODIFIED: Sum Money objects from the loaded relations.
         $totalDebit = Money::of(0, $journalEntry->currency->code);
         $totalCredit = Money::of(0, $journalEntry->currency->code);
-        foreach($journalEntry->lines as $line) {
+        foreach ($journalEntry->lines as $line) {
             $totalDebit = $totalDebit->plus($line->debit);
             $totalCredit = $totalCredit->plus($line->credit);
         }
@@ -129,7 +128,8 @@ class JournalEntryService
     {
         // First, check if the entry's date is in a locked period.
         // This applies to ALL entries, whether draft or posted, if their date falls within a locked period.
-        $this->accountingValidationService->checkIfPeriodIsLocked($journalEntry->company_id, $journalEntry->entry_date);
+        $this->lockDateService->enforce($journalEntry->company, Carbon::parse($journalEntry->entry_date));
+
 
         // Block deletion if the entry has been posted.
         // Block deletion if the entry has been posted. This is the non-negotiable immutability rule.

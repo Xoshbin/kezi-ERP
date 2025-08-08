@@ -31,7 +31,7 @@ class LockDateService
 
         foreach ($lockTypes as $lockType) {
             $lockedDate = $this->getLockDateForType($company, $lockType);
-            if ($lockedDate && $date->lt($lockedDate)) {
+            if ($lockedDate && $date->lte($lockedDate)) {
                 throw new PeriodIsLockedException("The period is locked until {$lockedDate->format('Y-m-d')}.");
             }
         }
