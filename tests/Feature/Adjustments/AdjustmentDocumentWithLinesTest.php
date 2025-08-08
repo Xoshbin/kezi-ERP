@@ -71,7 +71,7 @@ test('create adjustment document action correctly creates document with lines', 
         new CreateAdjustmentDocumentLineDTO(
             description: 'Service A refund',
             quantity: 1,
-            unit_price: '200.00',
+            unit_price: Money::of('200.00', $currencyCode),
             account_id: $account->id,
             tax_id: $tax->id,
             product_id: null
@@ -79,7 +79,7 @@ test('create adjustment document action correctly creates document with lines', 
         new CreateAdjustmentDocumentLineDTO(
             description: 'Shipping fee refund',
             quantity: 1,
-            unit_price: '15.00',
+            unit_price: Money::of('15.00', $currencyCode),
             account_id: $account->id,
             tax_id: null,
             product_id: null
