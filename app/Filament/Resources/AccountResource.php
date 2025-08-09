@@ -57,10 +57,14 @@ class AccountResource extends Resource
                     ->label(__('account.name'))
                     ->required()
                     ->maxLength(255),
-                Forms\Components\TextInput::make('type')
+                Forms\Components\Select::make('type')
                     ->label(__('account.type'))
                     ->required()
-                    ->maxLength(255),
+                    ->options(
+                        collect(AccountType::cases())
+                            ->mapWithKeys(fn (AccountType $type) => [$type->value => $type->label()])
+                    )
+                    ->searchable(),
                 Forms\Components\Toggle::make('is_deprecated')
                     ->label(__('account.is_deprecated'))
                     ->required(),
