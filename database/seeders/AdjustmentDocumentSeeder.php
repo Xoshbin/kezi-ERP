@@ -19,7 +19,7 @@ class AdjustmentDocumentSeeder extends Seeder
     public function run()
     {
         // Fetch the "Adjustments" journal
-        $adjustmentJournal = Journal::where('name', 'Adjustments')->first();
+        $adjustmentJournal = Journal::where('name->en', 'Adjustments')->first();
 
         if (!$adjustmentJournal) {
             $this->command->error('The "Adjustments" journal was not found. Please run the JournalSeeder.');

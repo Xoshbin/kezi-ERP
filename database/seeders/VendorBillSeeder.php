@@ -22,7 +22,7 @@ class VendorBillSeeder extends Seeder
         }
 
         $vendor = Partner::where('name', 'Paykar Tech Supplies')->where('company_id', $company->id)->first();
-        $itEquipmentAccount = Account::where('name', 'IT Equipment')->where('company_id', $company->id)->first();
+        $itEquipmentAccount = Account::where('name->en', 'IT Equipment')->where('company_id', $company->id)->first();
         $currencyCode = $company->currency->code;
 
         // 1. Create the parent Vendor Bill first

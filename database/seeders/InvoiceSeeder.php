@@ -41,7 +41,7 @@ class InvoiceSeeder extends Seeder
         );
 
         // 2. Prepare the DTO for the line item
-        $consultingRevenueAccount = Account::where('name', 'Consulting Revenue')->firstOrFail();
+        $consultingRevenueAccount = Account::where('name->en', 'Consulting Revenue')->firstOrFail();
 
         $lineDto = new CreateInvoiceLineDTO(
             description: 'On-site IT Infrastructure Setup',
