@@ -8,6 +8,7 @@ use Filament\Widgets;
 use Filament\PanelProvider;
 use Filament\Support\Colors\Color;
 use Filament\Http\Middleware\Authenticate;
+use Filament\SpatieLaravelTranslatablePlugin;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\Cookie\Middleware\EncryptCookies;
 use Filament\Http\Middleware\AuthenticateSession;
@@ -57,6 +58,8 @@ class JmeryarPanelProvider extends PanelProvider
             ])
             ->viteTheme('resources/js/filament/jmeryar/theme.js')
             ->plugins([
+                SpatieLaravelTranslatablePlugin::make()
+                    ->defaultLocales(['en', 'ckb']),
                 FilamentDeveloperLoginsPlugin::make()
                     ->enabled(app()->environment('local'))
                     ->users([
