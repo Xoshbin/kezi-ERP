@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
+use Spatie\Translatable\HasTranslations;
 
 
 /**
@@ -44,7 +45,9 @@ use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 
 class Journal extends Model
 {
-    use HasFactory;
+    use HasFactory, HasTranslations;
+
+    public array $translatable = ['name'];
 
     /**
      * The table associated with the model.

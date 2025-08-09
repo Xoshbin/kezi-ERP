@@ -4,11 +4,13 @@ namespace App\Models;
 
 use App\Observers\AccountObserver;
 use App\Observers\AuditLogObserver;
-use Illuminate\Database\Eloquent\Attributes\ObservedBy;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Enums\Accounting\AccountType;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Spatie\Translatable\HasTranslations;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 
 /**
  * Class Account
@@ -66,7 +68,9 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 #[ObservedBy([AccountObserver::class, AuditLogObserver::class])] //(to log when accounts are created or deprecated)
 class Account extends Model
 {
-    use HasFactory;
+    use HasFactory, HasTranslations;
+
+    public array $translatable = ['name'];
 
     /**
      * The database table associated with the model.
@@ -106,27 +110,9 @@ class Account extends Model
      */
     protected $casts = [
         'is_deprecated' => 'boolean',
+        'type' => AccountType::class, // Enums provide type safety and clarity [12]
     ];
 
-    public const TYPE_ASSET = 'asset';
-    public const TYPE_LIABILITY = 'liability';
-    public const TYPE_EQUITY = 'equity';
-    public const TYPE_INCOME = 'income';
-    public const TYPE_EXPENSE = 'expense';
-
-    public function getTypeOptions(): array
-    {
-        return [
-            self::TYPE_ASSET => 'Asset',
-            self::TYPE_LIABILITY => 'Liability',
-            self::TYPE_EQUITY => 'Equity',
-            self::TYPE_INCOME => 'Income',
-            self::TYPE_EXPENSE => 'Expense',
-        ];
-    }
-
-
-    
     /*
     |--------------------------------------------------------------------------
     | Relationships

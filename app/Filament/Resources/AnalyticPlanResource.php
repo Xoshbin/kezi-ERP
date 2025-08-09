@@ -8,6 +8,7 @@ use App\Models\AnalyticPlan;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
+use Filament\Resources\Concerns\Translatable;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
@@ -15,6 +16,8 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class AnalyticPlanResource extends Resource
 {
+    use Translatable;
+
     protected static ?string $model = AnalyticPlan::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';

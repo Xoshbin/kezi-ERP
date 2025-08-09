@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('journals', function (Blueprint $table) {
             $table->id();
             $table->foreignId('company_id')->constrained('companies');
-            $table->string('name');
+            $table->json('name');
             $table->string('type'); // e.g., 'sale', 'purchase', 'bank', 'cash', 'miscellaneous'
             $table->string('short_code');
             $table->foreignId('currency_id')->nullable()->constrained('currencies');

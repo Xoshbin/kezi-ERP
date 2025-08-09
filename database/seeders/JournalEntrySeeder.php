@@ -22,7 +22,7 @@ class JournalEntrySeeder extends Seeder
             $company = Company::firstOrFail();
             $user = User::firstOrFail();
             $currency = $company->currency;
-            $bankJournal = Journal::where('name', 'Bank (IQD)')->where('company_id', $company->id)->firstOrFail();
+            $bankJournal = Journal::where('name->en', 'Bank (IQD)')->where('company_id', $company->id)->firstOrFail();
             $bankAccount = Account::where('code', '110102')->where('company_id', $company->id)->firstOrFail();
             $equityAccount = Account::where('code', '320101')->where('company_id', $company->id)->firstOrFail();
 

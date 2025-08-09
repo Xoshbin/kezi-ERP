@@ -96,7 +96,10 @@ class VendorBillResource extends Resource
                         ->label(__('vendor_bill.due_date')),
                     Forms\Components\Select::make('status')
                         ->label(__('vendor_bill.status'))
-                        ->options(VendorBillStatus::class)
+                        ->options(
+                            collect(VendorBillStatus::cases())
+                                ->mapWithKeys(fn (VendorBillStatus $status) => [$status->value => $status->label()])
+                        )
                         ->disabled()
                         ->dehydrated(false),
                 ])
@@ -146,14 +149,14 @@ class VendorBillResource extends Resource
                             Forms\Components\Select::make('tax_id')
                                 ->label(__('vendor_bill.tax'))
                                 ->searchable()
-                                ->getSearchResultsUsing(fn(string $search): array => Tax::where('name', 'like', "%{$search}%")->limit(50)->pluck('name', 'id')->toArray())
-                                ->getOptionLabelUsing(fn($value): ?string => Tax::find($value)?->name)
+                                ->getSearchResultsUsing(fn(string $search): array => Tax::where('name->' . app()->getLocale(), 'like', "%{$search}%")->limit(50)->pluck('name->' . app()->getLocale(), 'id')->toArray())
+                                ->getOptionLabelUsing(fn($value): ?string => Tax::find($value)?->getTranslation('name', app()->getLocale()))
                                 ->columnSpan(1),
                             Forms\Components\Select::make('expense_account_id')
                                 ->label(__('vendor_bill.expense_account'))
                                 ->searchable()
-                                ->getSearchResultsUsing(fn(string $search): array => Account::where('name', 'like', "%{$search}%")->limit(50)->pluck('name', 'id')->toArray())
-                                ->getOptionLabelUsing(fn($value): ?string => Account::find($value)?->name)
+                                ->getSearchResultsUsing(fn(string $search): array => Account::where('name->' . app()->getLocale(), 'like', "%{$search}%")->limit(50)->pluck('name->' . app()->getLocale(), 'id')->toArray())
+                                ->getOptionLabelUsing(fn($value): ?string => Account::find($value)?->getTranslation('name', app()->getLocale()))
                                 ->required()
                                 ->columnSpan(2),
                             Forms\Components\Select::make('analytic_account_id')

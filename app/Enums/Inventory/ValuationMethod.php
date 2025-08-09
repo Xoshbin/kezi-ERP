@@ -8,4 +8,12 @@ enum ValuationMethod: string
     case LIFO = 'lifo';
     case AVCO = 'avco';
     case STANDARD = 'standard_price';
+
+    /**
+     * Get the translated label for the valuation method.
+     */
+    public function label(): string
+    {
+        return __('enums.valuation_method.' . $this->value);
+    }
 }

@@ -280,8 +280,8 @@ it('can reconcile bank statement lines with payments', function () {
     $bankJournal = Journal::factory()->for($this->company)->create(['type' => JournalType::Bank]);
 
     // Set up required company accounts for reconciliation
-    $bankAccount = \App\Models\Account::factory()->for($this->company)->create(['type' => 'Bank']);
-    $outstandingAccount = \App\Models\Account::factory()->for($this->company)->create(['type' => 'Receivable']);
+    $bankAccount = \App\Models\Account::factory()->for($this->company)->create(['type' => 'asset']);
+    $outstandingAccount = \App\Models\Account::factory()->for($this->company)->create(['type' => 'asset']);
 
     $this->company->update([
         'default_bank_account_id' => $bankAccount->id,
@@ -358,7 +358,7 @@ it('can create write-off entries for unmatched bank statement lines', function (
 
     // Create a write-off account
     $writeOffAccount = \App\Models\Account::factory()->for($this->company)->create([
-        'type' => 'Expense',
+        'type' => 'expense',
         'name' => 'Bank Charges',
     ]);
 

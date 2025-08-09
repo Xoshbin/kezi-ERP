@@ -24,9 +24,10 @@ class FiscalPositionSeeder extends Seeder
             FiscalPosition::updateOrCreate(
                 [
                     'company_id' => $company->id,
-                    'name' => 'Domestic (Iraq)',
+                    'name' => ['en' => 'Domestic (Iraq)', 'ckb' => 'ناوخۆیی (عێراق)'],
                 ],
                 [
+                    'name' => ['en' => 'Domestic (Iraq)', 'ckb' => 'ناوخۆیی (عێراق)'],
                     'country' => 'IQ',
                 ]
             );

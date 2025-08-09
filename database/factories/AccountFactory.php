@@ -30,7 +30,10 @@ class AccountFactory extends Factory
             // If a code hasn't been explicitly set by a state, generate it
             // based on the account's final type. This is our single source of truth.
             if (empty($account->code)) {
-                $account->code = $this->generateCodeForType($account->type);
+                $typeValue = $account->type instanceof \App\Enums\Accounting\AccountType
+                    ? $account->type->value
+                    : $account->type;
+                $account->code = $this->generateCodeForType($typeValue);
             }
         });
     }
@@ -43,7 +46,7 @@ class AccountFactory extends Factory
     public function definition(): array
     {
         // Default to the five primary account types. Specific types are handled by states.
-        $type = $this->faker->randomElement(['Asset', 'Liability', 'Equity', 'Income', 'Expense']);
+        $type = $this->faker->randomElement(['asset', 'liability', 'equity', 'income', 'expense']);
 
         return [
             'company_id' => Company::factory(),
@@ -60,11 +63,11 @@ class AccountFactory extends Factory
     private function generateCodeForType(string $type): string
     {
         $prefix = match ($type) {
-            'Asset', 'Bank and Cash', 'Receivable', 'Current Assets', 'Non-current Assets', 'Prepayments', 'Fixed Assets' => $this->faker->numberBetween(1000, 1999),
-            'Liability', 'Payable', 'Credit Card', 'Current Liabilities', 'Non-current Liabilities' => $this->faker->numberBetween(2000, 2999),
-            'Equity' => $this->faker->numberBetween(3000, 3999),
-            'Income', 'Other Income' => $this->faker->numberBetween(4000, 4999),
-            'Expense', 'Depreciation', 'Cost of Revenue' => $this->faker->numberBetween(5000, 5999),
+            'asset', 'Asset', 'Bank and Cash', 'Receivable', 'Current Assets', 'Non-current Assets', 'Prepayments', 'Fixed Assets' => $this->faker->numberBetween(1000, 1999),
+            'liability', 'Liability', 'Payable', 'Credit Card', 'Current Liabilities', 'Non-current Liabilities' => $this->faker->numberBetween(2000, 2999),
+            'equity', 'Equity' => $this->faker->numberBetween(3000, 3999),
+            'income', 'Income', 'Other Income' => $this->faker->numberBetween(4000, 4999),
+            'expense', 'Expense', 'Depreciation', 'Cost of Revenue' => $this->faker->numberBetween(5000, 5999),
             default => $this->faker->numberBetween(6000, 9999),
         };
 
@@ -81,46 +84,46 @@ class AccountFactory extends Factory
 
     public function asset(): Factory
     {
-        return $this->state(fn (array $attributes) => ['type' => 'Asset']);
+        return $this->state(fn (array $attributes) => ['type' => 'asset']);
     }
 
     public function liability(): Factory
     {
-        return $this->state(fn (array $attributes) => ['type' => 'Liability']);
+        return $this->state(fn (array $attributes) => ['type' => 'liability']);
     }
 
     public function equity(): Factory
     {
-        return $this->state(fn (array $attributes) => ['type' => 'Equity']);
+        return $this->state(fn (array $attributes) => ['type' => 'equity']);
     }
 
     public function income(): Factory
     {
-        return $this->state(fn (array $attributes) => ['type' => 'Income']);
+        return $this->state(fn (array $attributes) => ['type' => 'income']);
     }
 
     public function expense(): Factory
     {
-        return $this->state(fn (array $attributes) => ['type' => 'Expense']);
+        return $this->state(fn (array $attributes) => ['type' => 'expense']);
     }
 
     public function cash(): Factory
     {
-        return $this->state(fn (array $attributes) => ['type' => 'Bank and Cash', 'name' => 'Cash Account']);
+        return $this->state(fn (array $attributes) => ['type' => 'asset', 'name' => 'Cash Account']);
     }
 
     public function bank(): Factory
     {
-        return $this->state(fn (array $attributes) => ['type' => 'Bank and Cash', 'name' => 'Bank Account']);
+        return $this->state(fn (array $attributes) => ['type' => 'asset', 'name' => 'Bank Account']);
     }
 
     public function accountsReceivable(): Factory
     {
-        return $this->state(fn (array $attributes) => ['type' => 'Receivable', 'name' => 'Accounts Receivable']);
+        return $this->state(fn (array $attributes) => ['type' => 'asset', 'name' => 'Accounts Receivable']);
     }
 
     public function accountsPayable(): Factory
     {
-        return $this->state(fn (array $attributes) => ['type' => 'Payable', 'name' => 'Accounts Payable']);
+        return $this->state(fn (array $attributes) => ['type' => 'liability', 'name' => 'Accounts Payable']);
     }
 }
