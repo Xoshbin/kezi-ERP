@@ -1,5 +1,4 @@
 <?php
-// FILE: app/Listeners/CreateAssetFromVendorBillListener.php
 
 namespace App\Listeners\Asset;
 

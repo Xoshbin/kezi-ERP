@@ -1,5 +1,4 @@
 <?php
-// FILE: tests/Feature/Accounting/AssetCreationFromVendorBillTest.php
 
 namespace Tests\Feature\Accounting;
 
