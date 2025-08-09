@@ -8,7 +8,16 @@ use Filament\Resources\Pages\CreateRecord;
 
 class CreateAnalyticPlan extends CreateRecord
 {
+    use CreateRecord\Concerns\Translatable;
+
     protected static string $resource = AnalyticPlanResource::class;
+
+    protected function getHeaderActions(): array
+    {
+        return [
+            Actions\LocaleSwitcher::make(),
+        ];
+    }
 
     public function getTitle(): string
     {

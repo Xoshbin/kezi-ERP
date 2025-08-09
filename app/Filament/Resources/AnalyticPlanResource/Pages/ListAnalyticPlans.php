@@ -8,6 +8,8 @@ use Filament\Resources\Pages\ListRecords;
 
 class ListAnalyticPlans extends ListRecords
 {
+    use ListRecords\Concerns\Translatable;
+
     protected static string $resource = AnalyticPlanResource::class;
 
     public function getTitle(): string
@@ -18,6 +20,7 @@ class ListAnalyticPlans extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
+            Actions\LocaleSwitcher::make(),
             Actions\CreateAction::make(),
         ];
     }

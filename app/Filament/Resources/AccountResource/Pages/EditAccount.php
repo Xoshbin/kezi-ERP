@@ -10,11 +10,14 @@ use Illuminate\Database\Eloquent\Model;
 
 class EditAccount extends EditRecord
 {
+    use EditRecord\Concerns\Translatable;
+
     protected static string $resource = AccountResource::class;
 
     protected function getHeaderActions(): array
     {
         return [
+            Actions\LocaleSwitcher::make(),
             Actions\DeleteAction::make()
                 ->action(function (Model $record) {
                     $accountService = new AccountService();
