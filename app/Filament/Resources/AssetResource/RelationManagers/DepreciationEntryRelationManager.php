@@ -16,6 +16,11 @@ class DepreciationEntryRelationManager extends RelationManager
 {
     protected static string $relationship = 'depreciationEntries';
 
+    public static function getTitle(\Illuminate\Database\Eloquent\Model $ownerRecord, string $pageClass): string
+    {
+        return __('asset.depreciation_entries');
+    }
+
     public function form(Form $form): Form
     {
         return $form
@@ -29,9 +34,13 @@ class DepreciationEntryRelationManager extends RelationManager
         return $table
             ->recordTitleAttribute('depreciation_date')
             ->columns([
-                TextColumn::make('depreciation_date')->date(),
-                TextColumn::make('amount')->money('IQD'),
-                TextColumn::make('status'),
+                TextColumn::make('depreciation_date')
+                    ->label(__('asset.depreciation_date'))
+                    ->date(),
+                TextColumn::make('amount')
+                    ->label(__('asset.amount')),
+                TextColumn::make('status')
+                    ->label(__('asset.status')),
             ])
             ->filters([
                 //
@@ -41,7 +50,7 @@ class DepreciationEntryRelationManager extends RelationManager
             ])
             ->actions([
                 Action::make('post')
-                    ->label('Post')
+                    ->label(__('asset.post'))
                     ->action(fn (DepreciationEntry $record) => $this->postDepreciation($record))
                     ->requiresConfirmation()
                     ->visible(fn (DepreciationEntry $record): bool => $record->status === DepreciationEntryStatus::Draft),
@@ -54,6 +63,6 @@ class DepreciationEntryRelationManager extends RelationManager
     public function postDepreciation(DepreciationEntry $entry): void
     {
         app(AssetService::class)->postDepreciation($entry, request()->user());
-        $this->notify('success', 'Depreciation posted successfully.');
+        $this->notify('success', __('asset.post_depreciation_success'));
     }
 }

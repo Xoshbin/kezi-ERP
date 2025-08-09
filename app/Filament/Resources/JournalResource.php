@@ -19,23 +19,43 @@ class JournalResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
+    public static function getModelLabel(): string
+    {
+        return __('journal.label');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __('journal.plural_label');
+    }
+
+    public static function getNavigationLabel(): string
+    {
+        return __('journal.plural_label');
+    }
+
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
                 Forms\Components\Select::make('company_id')
+                    ->label(__('journal.company'))
                     ->relationship('company', 'name')
                     ->required(),
                 Forms\Components\TextInput::make('name')
+                    ->label(__('journal.name'))
                     ->required()
                     ->maxLength(255),
                 Forms\Components\TextInput::make('type')
+                    ->label(__('journal.type'))
                     ->required()
                     ->maxLength(255),
                 Forms\Components\TextInput::make('short_code')
+                    ->label(__('journal.short_code'))
                     ->required()
                     ->maxLength(255),
                 Forms\Components\Select::make('currency_id')
+                    ->label(__('journal.currency'))
                     ->relationship('currency', 'name'),
 
                 // ADDED: The missing default account fields
@@ -58,13 +78,17 @@ class JournalResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('company.name')
+                    ->label(__('journal.company'))
                     ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('name')
+                    ->label(__('journal.name'))
                     ->searchable(),
                 Tables\Columns\TextColumn::make('type')
+                    ->label(__('journal.type'))
                     ->searchable(),
                 Tables\Columns\TextColumn::make('short_code')
+                    ->label(__('journal.short_code'))
                     ->searchable(),
 
                 // ADDED: Columns to see the configuration in the list view
@@ -76,13 +100,16 @@ class JournalResource extends Resource
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('currency.name')
+                    ->label(__('journal.currency'))
                     ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('created_at')
+                    ->label(__('journal.created_at'))
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('updated_at')
+                    ->label(__('journal.updated_at'))
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),

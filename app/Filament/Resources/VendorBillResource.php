@@ -29,6 +29,21 @@ class VendorBillResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
+    public static function getModelLabel(): string
+    {
+        return __('vendor_bill.label');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __('vendor_bill.plural_label');
+    }
+
+    public static function getNavigationLabel(): string
+    {
+        return __('vendor_bill.plural_label');
+    }
+
     public static function form(Form $form): Form
     {
         $company = Company::first();

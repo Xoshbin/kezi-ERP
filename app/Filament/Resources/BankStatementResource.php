@@ -37,6 +37,11 @@ class BankStatementResource extends Resource
         return __('bank_statement.bank_statements');
     }
 
+    public static function getNavigationLabel(): string
+    {
+        return __('bank_statement.bank_statements');
+    }
+
     public static function form(Form $form): Form
     {
         $company = Company::first();
@@ -124,46 +129,46 @@ class BankStatementResource extends Resource
     {
         return $infolist
             ->schema([
-                Infolists\Components\Section::make('Statement Information')
+                Infolists\Components\Section::make(__('bank_statement.statement_information'))
                     ->schema([
                         Infolists\Components\TextEntry::make('reference')
-                            ->label('Reference'),
+                            ->label(__('bank_statement.reference')),
                         Infolists\Components\TextEntry::make('date')
-                            ->label('Date')
+                            ->label(__('bank_statement.date'))
                             ->date(),
                         Infolists\Components\TextEntry::make('company.name')
-                            ->label('Company'),
+                            ->label(__('bank_statement.company')),
                         Infolists\Components\TextEntry::make('currency.name')
-                            ->label('Currency'),
+                            ->label(__('bank_statement.currency')),
                         Infolists\Components\TextEntry::make('journal.name')
-                            ->label('Bank Journal'),
+                            ->label(__('bank_statement.bank_journal')),
                         Infolists\Components\TextEntry::make('starting_balance')
-                            ->label('Starting Balance')
+                            ->label(__('bank_statement.starting_balance'))
                             ->money(fn($record) => $record->currency->code),
                         Infolists\Components\TextEntry::make('ending_balance')
-                            ->label('Ending Balance')
+                            ->label(__('bank_statement.ending_balance'))
                             ->money(fn($record) => $record->currency->code),
                     ])->columns(2),
 
-                Infolists\Components\Section::make('Bank Statement Lines')
+                Infolists\Components\Section::make(__('bank_statement.statement_lines'))
                     ->schema([
                         Infolists\Components\RepeatableEntry::make('bankStatementLines')
                             ->label('')
                             ->schema([
                                 Infolists\Components\TextEntry::make('date')
-                                    ->label('Date')
+                                    ->label(__('bank_statement.date'))
                                     ->date(),
                                 Infolists\Components\TextEntry::make('description')
-                                    ->label('Description'),
+                                    ->label(__('bank_statement.description')),
                                 Infolists\Components\TextEntry::make('partner.name')
-                                    ->label('Partner')
+                                    ->label(__('bank_statement.partner'))
                                     ->placeholder('—'),
                                 Infolists\Components\TextEntry::make('amount')
-                                    ->label('Amount')
+                                    ->label(__('bank_statement.amount'))
                                     ->money(fn($record) => $record->bankStatement->currency->code)
                                     ->color(fn($state) => $state->isPositive() ? 'success' : 'danger'),
                                 Infolists\Components\TextEntry::make('is_reconciled')
-                                    ->label('Status')
+                                    ->label(__('bank_statement.status'))
                                     ->badge()
                                     ->color(fn($state) => $state ? 'success' : 'warning')
                                     ->formatStateUsing(fn($state) => $state ? 'Reconciled' : 'Pending'),
@@ -218,7 +223,7 @@ class BankStatementResource extends Resource
                 Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
                 Action::make('reconcile')
-                    ->label('Reconcile')
+                    ->label(__('bank_statement.reconcile'))
                     ->icon('heroicon-o-scale')
                     ->color('success')
                     ->url(fn(BankStatement $record): string => static::getUrl('reconcile', ['record' => $record]))

@@ -1,6 +1,10 @@
 <?php
 
 return [
+    // Labels
+    'label' => 'Product',
+    'plural_label' => 'Products',
+
     'company_id' => 'Company',
     'income_account_id' => 'Income Account',
     'expense_account_id' => 'Expense Account',

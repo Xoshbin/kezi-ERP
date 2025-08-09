@@ -1,6 +1,10 @@
 <?php
 
 return [
+    // Labels
+    'label' => 'بەرهەم',
+    'plural_label' => 'بەرهەمەکان',
+
     'company_id' => 'کۆمپانیا',
     'income_account_id' => 'هەژماری داهات',
     'expense_account_id' => 'هەژماری خەرجی',

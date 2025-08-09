@@ -147,7 +147,8 @@ class CompanyResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            RelationManagers\AccountsRelationManager::class,
+            RelationManagers\UsersRelationManager::class,
         ];
     }
 

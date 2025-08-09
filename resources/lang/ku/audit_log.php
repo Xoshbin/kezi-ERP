@@ -1,6 +1,10 @@
 <?php
 
 return [
+    // Labels
+    'label' => 'لۆگی وردبینی',
+    'plural_label' => 'لۆگەکانی وردبینی',
+
     'user_id' => 'بەکارهێنەر',
     'user_name' => 'ناوی بەکارهێنەر',
     'event_type' => 'جۆری ڕووداو',
