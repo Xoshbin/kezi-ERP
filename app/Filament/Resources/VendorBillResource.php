@@ -87,7 +87,7 @@ class VendorBillResource extends Resource
                     Forms\Components\DatePicker::make('bill_date')
                         ->label(__('vendor_bill.bill_date'))
                         ->required()
-                        ->rules([new NotInLockedPeriod()]),
+                        ->rules([new NotInLockedPeriod($company)]),
                     Forms\Components\DatePicker::make('accounting_date')
                         ->label(__('vendor_bill.accounting_date'))
                         ->required()

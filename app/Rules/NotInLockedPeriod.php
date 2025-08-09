@@ -6,6 +6,7 @@ use App\Models\Company;
 use App\Services\Accounting\LockDateService;
 use Closure;
 use Illuminate\Contracts\Validation\ValidationRule;
+use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
 
 class NotInLockedPeriod implements ValidationRule
@@ -14,7 +15,15 @@ class NotInLockedPeriod implements ValidationRule
 
     public function __construct(?Company $company = null)
     {
-        $this->company = $company ?? auth()->user()->company;
+        if ($company) {
+            $this->company = $company;
+        } else {
+            $user = Auth::user();
+            if (!$user || !$user->company) {
+                throw new \InvalidArgumentException('Company is required for lock date validation');
+            }
+            $this->company = $user->company;
+        }
     }
 
     public function validate(string $attribute, mixed $value, Closure $fail): void
