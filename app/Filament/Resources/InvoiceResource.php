@@ -145,14 +145,14 @@ class InvoiceResource extends Resource
                             Forms\Components\Select::make('tax_id')
                                 ->label(__('invoice.tax'))
                                 ->searchable()
-                                ->getSearchResultsUsing(fn(string $search): array => Tax::where('name', 'like', "%{$search}%")->limit(50)->pluck('name', 'id')->toArray())
-                                ->getOptionLabelUsing(fn($value): ?string => Tax::find($value)?->name)
+                                ->getSearchResultsUsing(fn(string $search): array => Tax::where('name->' . app()->getLocale(), 'like', "%{$search}%")->limit(50)->pluck('name->' . app()->getLocale(), 'id')->toArray())
+                                ->getOptionLabelUsing(fn($value): ?string => Tax::find($value)?->getTranslation('name', app()->getLocale()))
                                 ->columnSpan(1),
                             Forms\Components\Select::make('income_account_id')
                                 ->label(__('invoice.income_account'))
                                 ->searchable()
-                                ->getSearchResultsUsing(fn(string $search): array => Account::where('type', 'Income')->where('name', 'like', "%{$search}%")->limit(50)->pluck('name', 'id')->toArray())
-                                ->getOptionLabelUsing(fn($value): ?string => Account::find($value)?->name)
+                                ->getSearchResultsUsing(fn(string $search): array => Account::where('type', 'Income')->where('name->' . app()->getLocale(), 'like', "%{$search}%")->limit(50)->pluck('name->' . app()->getLocale(), 'id')->toArray())
+                                ->getOptionLabelUsing(fn($value): ?string => Account::find($value)?->getTranslation('name', app()->getLocale()))
                                 ->required()
                                 ->columnSpan(2),
                         ])
