@@ -39,7 +39,7 @@ class BudgetSeeder extends Seeder
         }
 
         // Fetch analytic plan
-        $analyticPlan = AnalyticPlan::where('name', 'Department')->first();
+        $analyticPlan = AnalyticPlan::where('name->en', 'Department')->first();
         if (!$analyticPlan) {
             throw new \Exception("Analytic Plan 'Department' not found. Please run AnalyticPlanSeeder.");
         }

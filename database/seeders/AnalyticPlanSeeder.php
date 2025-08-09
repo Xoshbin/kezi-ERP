@@ -25,9 +25,11 @@ class AnalyticPlanSeeder extends Seeder
         AnalyticPlan::updateOrCreate(
             [
                 'company_id' => $company->id,
-                'name' => 'Projects',
+                'name' => ['en' => 'Projects', 'ckb' => 'پڕۆژەکان'],
             ],
-            [] // No other attributes to update or create with.
+            [
+                'name' => ['en' => 'Projects', 'ckb' => 'پڕۆژەکان'],
+            ]
         );
     }
 }

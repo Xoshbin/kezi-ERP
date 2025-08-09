@@ -28,16 +28,16 @@ class JournalSeeder extends Seeder
         $cashAccountIqd = Account::where('code', '110202')->firstOrFail();
         $cashAccountUsd = Account::where('code', '110201')->firstOrFail();
         // You would also fetch other accounts for sales, purchases, etc. here
-        $accountsReceivable = Account::where('name', 'Accounts Receivable')->firstOrFail();
-        $productSales = Account::where('name', 'Product Sales')->firstOrFail();
-        $accountsPayable = Account::where('name', 'Accounts Payable')->firstOrFail();
-        $cogs = Account::where('name', 'Cost of Goods Sold (COGS)')->firstOrFail();
+        $accountsReceivable = Account::where('name->en', 'Accounts Receivable')->firstOrFail();
+        $productSales = Account::where('name->en', 'Product Sales')->firstOrFail();
+        $accountsPayable = Account::where('name->en', 'Accounts Payable')->firstOrFail();
+        $cogs = Account::where('name->en', 'Cost of Goods Sold (COGS)')->firstOrFail();
 
 
         $journals = [
             // == Primary Operational Journals ==
             [
-                'name' => 'Sales',
+                'name' => ['en' => 'Sales', 'ckb' => 'فرۆشتن'],
                 'type' => JournalType::Sale,
                 'short_code' => 'INV',
                 'currency_id' => null, // Can be used for any currency
@@ -45,7 +45,7 @@ class JournalSeeder extends Seeder
                 'default_credit_account_id' => $productSales->id,
             ],
             [
-                'name' => 'Purchases',
+                'name' => ['en' => 'Purchases', 'ckb' => 'کڕین'],
                 'type' => JournalType::Purchase,
                 'short_code' => 'BILL',
                 'currency_id' => null, // Can be used for any currency
@@ -55,7 +55,7 @@ class JournalSeeder extends Seeder
 
             // == Main Bank & Cash Journals ==
             [
-                'name' => 'Bank (IQD)',
+                'name' => ['en' => 'Bank (IQD)', 'ckb' => 'بانک (دینار)'],
                 'type' => JournalType::Bank,
                 'short_code' => 'BNK-IQD',
                 'currency_id' => $iqdCurrency->id,
@@ -63,7 +63,7 @@ class JournalSeeder extends Seeder
                 'default_credit_account_id' => $bankAccountIqd->id,
             ],
             [
-                'name' => 'Bank (USD)',
+                'name' => ['en' => 'Bank (USD)', 'ckb' => 'بانک (دۆلار)'],
                 'type' => JournalType::Bank,
                 'short_code' => 'BNK-USD',
                 'currency_id' => $usdCurrency->id,
@@ -71,7 +71,7 @@ class JournalSeeder extends Seeder
                 'default_credit_account_id' => $bankAccountUsd->id,
             ],
             [
-                'name' => 'Cash (IQD)',
+                'name' => ['en' => 'Cash (IQD)', 'ckb' => 'پارەی نەخت (دینار)'],
                 'type' => JournalType::Cash,
                 'short_code' => 'CSH-IQD',
                 'currency_id' => $iqdCurrency->id,
@@ -79,7 +79,7 @@ class JournalSeeder extends Seeder
                 'default_credit_account_id' => $cashAccountIqd->id,
             ],
             [
-                'name' => 'Cash (USD)',
+                'name' => ['en' => 'Cash (USD)', 'ckb' => 'پارەی نەخت (دۆلار)'],
                 'type' => JournalType::Cash,
                 'short_code' => 'CSH-USD',
                 'currency_id' => $usdCurrency->id,
@@ -89,7 +89,7 @@ class JournalSeeder extends Seeder
 
             // == Example: Additional Future Bank Journals ==
             [
-                'name' => 'Cihan Bank',
+                'name' => ['en' => 'Cihan Bank', 'ckb' => 'بانکی جیھان'],
                 'type' => JournalType::Bank,
                 'short_code' => 'CIHAN',
                 'currency_id' => $iqdCurrency->id,
@@ -97,7 +97,7 @@ class JournalSeeder extends Seeder
                 'default_credit_account_id' => $bankAccountIqd->id,
             ],
             [
-                'name' => 'NBI Bank',
+                'name' => ['en' => 'NBI Bank', 'ckb' => 'بانکی NBI'],
                 'type' => JournalType::Bank,
                 'short_code' => 'NBI',
                 'currency_id' => $iqdCurrency->id,
@@ -107,7 +107,7 @@ class JournalSeeder extends Seeder
 
             // == Miscellaneous Journal ==
             [
-                'name' => 'Miscellaneous',
+                'name' => ['en' => 'Miscellaneous', 'ckb' => 'جۆراوجۆر'],
                 'type' => JournalType::Miscellaneous,
                 'short_code' => 'MISC',
                 'currency_id' => null,
