@@ -30,6 +30,13 @@ class AdjustmentDocumentResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-document-duplicate';
 
+    protected static ?int $navigationSort = 3;
+
+    public static function getNavigationGroup(): ?string
+    {
+        return __('navigation.groups.administration');
+    }
+
     // Localization functions remain the same...
     public static function getLabel(): ?string
     {

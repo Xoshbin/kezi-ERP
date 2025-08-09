@@ -14,11 +14,13 @@ use Filament\Tables\Table;
 class LockDateResource extends Resource
 {
     protected static ?string $model = LockDate::class;
+
+    protected static ?int $navigationSort = 7;
+
     public static function getNavigationGroup(): ?string
     {
-        return __('navigation.groups.accounting');
+        return __('navigation.groups.configuration');
     }
-    protected static ?int $navigationSort = 7;
 
     public static function getModelLabel(): string
     {
