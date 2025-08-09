@@ -89,7 +89,7 @@ class InvoiceResource extends Resource
                     Forms\Components\DatePicker::make('invoice_date')
                         ->label(__('invoice.invoice_date'))
                         ->required()
-                        ->rules([new NotInLockedPeriod()]),
+                        ->rules([new NotInLockedPeriod($company)]),
                     Forms\Components\DatePicker::make('due_date')
                         ->label(__('invoice.due_date'))
                         ->required(),

@@ -104,7 +104,7 @@ class AdjustmentDocumentResource extends Resource
                             Forms\Components\DatePicker::make('date')
                                 ->label(__('adjustment_document.adjustment_date'))
                                 ->required()
-                                ->rules([new NotInLockedPeriod()])
+                                ->rules([new NotInLockedPeriod($company)])
                                 ->default(now())
                                 ->native(false),
                         ]),
