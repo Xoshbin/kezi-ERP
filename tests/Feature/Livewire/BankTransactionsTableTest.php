@@ -14,31 +14,34 @@ use Livewire\Livewire;
 uses(RefreshDatabase::class);
 
 beforeEach(function () {
+    // Set locale to English for consistent test assertions
+    app()->setLocale('en');
+
     $this->company = Company::factory()->create();
     $this->user = User::factory()->for($this->company)->create();
     $this->actingAs($this->user);
-    
+
     $this->currency = $this->company->currency;
-    
+
     // Create required accounts for reconciliation
     $this->bankAccount = Account::factory()
         ->for($this->company)
         ->create(['type' => 'asset', 'name' => 'Bank Account']);
-    
+
     $this->outstandingAccount = Account::factory()
         ->for($this->company)
         ->create(['type' => 'asset', 'name' => 'Outstanding Receipts']);
-    
+
     // Update company with default accounts
     $this->company->update([
         'default_bank_account_id' => $this->bankAccount->id,
         'default_outstanding_receipts_account_id' => $this->outstandingAccount->id,
     ]);
-    
+
     $this->bankJournal = Journal::factory()
         ->for($this->company)
         ->create(['type' => 'bank']);
-    
+
     $this->bankStatement = BankStatement::factory()
         ->for($this->company)
         ->for($this->currency)
@@ -87,7 +90,7 @@ describe('BankTransactionsTable Livewire Component', function () {
 
         // Select the line
         $component->call('toggleBankLine', $bankLine->id);
-        
+
         // Should be selected now
         $component->assertSet('selectedBankLines', [$bankLine->id]);
 
@@ -134,7 +137,7 @@ describe('BankTransactionsTable Livewire Component', function () {
 
         // Verify the line is now reconciled
         expect($bankLine->fresh()->is_reconciled)->toBeTrue();
-        
+
         // Verify a journal entry was created
         $this->assertDatabaseHas('journal_entries', [
             'company_id' => $this->company->id,
@@ -178,7 +181,7 @@ describe('BankTransactionsTable Livewire Component', function () {
             ]);
 
         $component = Livewire::test(BankTransactionsTable::class, ['bankStatement' => $this->bankStatement]);
-        
+
         // Select both lines
         $component->call('toggleBankLine', $line1->id);
         $component->call('toggleBankLine', $line2->id);
@@ -208,10 +211,10 @@ describe('BankTransactionsTable Livewire Component', function () {
             ->create(['is_reconciled' => false]);
 
         $component = Livewire::test(BankTransactionsTable::class, ['bankStatement' => $this->bankStatement]);
-        
+
         // The write-off form should only show expense accounts from the same company
         $component->mountTableAction('writeOff', $bankLine);
-        
+
         // This is a basic test - in a real scenario, you'd need to inspect the form options
         // For now, we just verify the component can mount the action
         expect($component->instance())->toBeInstanceOf(BankTransactionsTable::class);
