@@ -77,15 +77,15 @@ function setupFoundation() {
 
     // Create accounts
     $accountsData = [
-        '1010' => ['name' => 'Bank', 'type' => AccountType::Asset],
-        '1200' => ['name' => 'Accounts Receivable', 'type' => AccountType::Asset],
-        '1500' => ['name' => 'IT Equipment', 'type' => AccountType::Asset],
-        '1501' => ['name' => 'Accumulated Depreciation', 'type' => AccountType::Asset],
-        '2100' => ['name' => 'Accounts Payable', 'type' => AccountType::Liability],
+        '1010' => ['name' => 'Bank', 'type' => AccountType::BankAndCash],
+        '1200' => ['name' => 'Accounts Receivable', 'type' => AccountType::Receivable],
+        '1500' => ['name' => 'IT Equipment', 'type' => AccountType::FixedAssets, 'can_create_assets' => true],
+        '1501' => ['name' => 'Accumulated Depreciation', 'type' => AccountType::NonCurrentAssets],
+        '2100' => ['name' => 'Accounts Payable', 'type' => AccountType::Payable],
         '3000' => ['name' => 'Owner\'s Equity', 'type' => AccountType::Equity],
         '4000' => ['name' => 'Consulting Revenue', 'type' => AccountType::Income],
         '5000' => ['name' => 'Sales Discounts & Returns', 'type' => AccountType::Income],
-        '6100' => ['name' => 'Depreciation Expense', 'type' => AccountType::Expense],
+        '6100' => ['name' => 'Depreciation Expense', 'type' => AccountType::Depreciation],
     ];
 
     $accounts = [];
@@ -96,6 +96,7 @@ function setupFoundation() {
             'name' => $data['name'],
             'type' => $data['type'],
             'is_deprecated' => false,
+            'can_create_assets' => $data['can_create_assets'] ?? false,
         ]);
     }
 
@@ -299,6 +300,18 @@ test('Jmeryar ERP complete accounting scenario - Full Workflow', function () {
     expect($assetLine->debit->getAmount()->toInt())->toBe(3000000);
     expect($liabilityLine->account_id)->toBe($accounts['2100']->id); // Accounts Payable
     expect($liabilityLine->credit->getAmount()->toInt())->toBe(3000000);
+
+    // Verify that an asset was created from the vendor bill
+    $createdAssets = \App\Models\Asset::where('source_type', 'App\Models\VendorBill')
+        ->where('source_id', $vendorBill->id)
+        ->get();
+    expect($createdAssets)->toHaveCount(1);
+
+    $createdAsset = $createdAssets->first();
+    expect($createdAsset->name)->toBe('High-End Laptop for Business Use');
+    expect($createdAsset->purchase_value->getAmount()->toInt())->toBe(3000000);
+    expect($createdAsset->asset_account_id)->toBe($accounts['1500']->id);
+    expect($createdAsset->company_id)->toBe($company->id);
 
     // Step 6: Customer Invoice and Payment
     // Create the Customer ("Hawre Trading Group")
@@ -533,9 +546,9 @@ test('Jmeryar ERP complete accounting scenario - Full Workflow', function () {
     // Step 11: Inventory Management
     // Create Inventory Accounts
     $inventoryAccounts = [
-        ['code' => '1100', 'name' => 'Inventory Asset', 'type' => AccountType::Asset],
-        ['code' => '6000', 'name' => 'Cost of Goods Sold', 'type' => AccountType::Expense],
-        ['code' => '2150', 'name' => 'Stock Interim (Received)', 'type' => AccountType::Liability],
+        ['code' => '1100', 'name' => 'Inventory Asset', 'type' => AccountType::CurrentAssets],
+        ['code' => '6000', 'name' => 'Cost of Goods Sold', 'type' => AccountType::CostOfRevenue],
+        ['code' => '2150', 'name' => 'Stock Interim (Received)', 'type' => AccountType::CurrentLiabilities],
     ];
 
     $inventoryAccountsCreated = [];
