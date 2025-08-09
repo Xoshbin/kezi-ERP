@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('fiscal_positions', function (Blueprint $table) {
             $table->id();
             $table->foreignId('company_id')->constrained('companies');
-            $table->string('name');
+            $table->json('name');
             $table->string('country')->nullable();
             $table->timestamps();
         });

@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('company_id');
             $table->string('code');
-            $table->string('name');
+            $table->json('name');
             $table->string('type'); // e.g., 'asset', 'liability', 'equity', 'income', 'expense'
             $table->boolean('is_deprecated')->default(false);
             $table->timestamps();
