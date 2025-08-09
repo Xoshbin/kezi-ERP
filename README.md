@@ -306,3 +306,9 @@ This layered architecture provides several key benefits:
 - **Command Pattern**: Actions encapsulate discrete business operations
 - **Event-Driven Architecture**: Loose coupling through domain events
 - **Domain-Driven Design**: Code organization reflects business domains
+
+## TODO
+
+- [ ] Show exceptions as notifications when the user performs an action that throws an exception (e.g., via Filament or Livewire).
+- [ ] Implement centralized exception handling for UI-triggered actions.
+- [ ] Add user-friendly error messages for common accounting errors (e.g., period locked, deletion not allowed).
