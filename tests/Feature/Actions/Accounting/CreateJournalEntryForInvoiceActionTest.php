@@ -19,7 +19,7 @@ test('it creates a correct journal entry for a posted invoice', function () {
         'tax_account_id' => $this->company->default_tax_account_id,
     ]);
     $product = Product::factory()->for($this->company)->create([
-        'income_account_id' => \App\Models\Account::factory()->for($this->company)->create(['type' => 'Income'])->id,
+        'income_account_id' => \App\Models\Account::factory()->for($this->company)->create(['type' => 'income'])->id,
     ]);
 
     $invoice = Invoice::factory()->for($this->company)->create([

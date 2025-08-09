@@ -37,7 +37,7 @@ describe('Journal Entry Reversals', function () {
             'total_credit' => Money::of(150, $currencyCode),
         ]);
         $arAccount = $this->company->defaultAccountsReceivable;
-        $revenueAccount = Account::factory()->for($this->company)->create(['type' => 'Income']);
+        $revenueAccount = Account::factory()->for($this->company)->create(['type' => 'income']);
 
         $originalEntry->lines()->createMany([
             ['account_id' => $arAccount->id, 'debit' => Money::of(150, $currencyCode), 'credit' => Money::of(0, $currencyCode)],

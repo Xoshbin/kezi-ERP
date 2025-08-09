@@ -3,6 +3,7 @@
 namespace Tests\Feature\FinancialTransactions;
 
 use Brick\Money\Money;
+use App\Models\Account;
 use App\Models\Partner;
 use App\Models\Product;
 use App\Models\LockDate;
@@ -43,7 +44,7 @@ test('a draft vendor bill can be confirmed, which posts it and dispatches an eve
         description: 'Test Service',
         quantity: 1,
         unit_price: '100.00',
-        expense_account_id: $this->company->accounts()->where('type', 'Expense')->first()->id,
+        expense_account_id: Account::factory()->for($this->company)->create(['type' => 'expense'])->id,
         product_id: null,
         tax_id: null,
         analytic_account_id: null
@@ -71,7 +72,7 @@ test('confirming a vendor bill generates the correct journal entry', function ()
         description: $product->name,
         quantity: 3,
         unit_price: Money::of(5000, $this->company->currency->code),
-        expense_account_id: $this->company->accounts()->where('type', 'Expense')->first()->id,
+        expense_account_id: Account::factory()->for($this->company)->create(['type' => 'expense'])->id,
         product_id: $product->id,
         tax_id: null,
         analytic_account_id: null

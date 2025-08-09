@@ -25,7 +25,7 @@ test('cancelling a posted vendor bill creates a reversing journal entry and an a
         description: 'Test Service',
         quantity: 1,
         unit_price: '1000.00',
-        expense_account_id: Account::factory()->for($this->company)->create(['type' => 'Expense'])->id,
+        expense_account_id: Account::factory()->for($this->company)->create(['type' => 'expense'])->id,
         product_id: null,
         tax_id: null,
         analytic_account_id: null
