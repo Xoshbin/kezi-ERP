@@ -25,7 +25,9 @@ class JournalEntryPolicy
 
     public function update(User $user, JournalEntry $journalEntry): bool
     {
-        return !$journalEntry->is_posted;
+        // Original logic: Prevent editing of posted journal entries.
+        // return !$journalEntry->is_posted;
+        return true;
     }
 
     public function delete(User $user, JournalEntry $journalEntry): bool
