@@ -83,6 +83,7 @@ class PaymentResource extends Resource
                         ->live()
                         ->default($company?->currency_id),
                     Forms\Components\DatePicker::make('payment_date')
+                        ->default(now())
                         ->label(__('payment.form.payment_date'))
                         ->required(),
                     Forms\Components\TextInput::make('reference')

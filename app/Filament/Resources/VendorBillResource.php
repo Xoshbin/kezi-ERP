@@ -86,9 +86,11 @@ class VendorBillResource extends Resource
                         ->maxLength(255),
                     Forms\Components\DatePicker::make('bill_date')
                         ->label(__('vendor_bill.bill_date'))
+                        ->default(now())
                         ->required()
                         ->rules([new NotInLockedPeriod($company)]),
                     Forms\Components\DatePicker::make('accounting_date')
+                        ->default(now())
                         ->label(__('vendor_bill.accounting_date'))
                         ->required()
                         ->rules([new NotInLockedPeriod()]),
