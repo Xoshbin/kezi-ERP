@@ -15,10 +15,11 @@ return new class extends Migration
             $table->id();
             $table->foreignId('company_id')->constrained('companies');
             $table->foreignId('tax_account_id')->constrained('accounts');
-            $table->string('name');
+            $table->json('name');
             $table->unsignedBigInteger('rate'); // e.g., 0.15000 for 15%
             $table->string('type'); // 'sales', 'purchase', 'both'
             $table->boolean('is_active')->default(true);
+            $table->json('label_on_invoices')->nullable();
             $table->timestamps();
         });
     }
