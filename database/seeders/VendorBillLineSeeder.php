@@ -20,7 +20,7 @@ class VendorBillLineSeeder extends Seeder
     {
         // $vendorBills = VendorBill::where('status', 'draft')->get();
         // $products = Product::limit(3)->get();
-        // $tax = Tax::where('name', 'VAT 18%')->firstOrFail();
+        // $tax = Tax::where('name->en', 'VAT 18%')->firstOrFail();
 
         // if ($products->count() < 3) {
         //     throw new \Exception('Not enough products found to seed vendor bill lines.');
