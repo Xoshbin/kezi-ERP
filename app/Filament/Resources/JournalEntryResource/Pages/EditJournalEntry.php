@@ -50,25 +50,51 @@ class EditJournalEntry extends EditRecord
         ];
     }
 
-    // This method is for loading the line data into the form. It is correct.
     protected function mutateFormDataBeforeFill(array $data): array
-    {
-        $this->record->loadMissing('lines');
-        $linesData = $this->record->lines->map(function ($line) {
-            return [
-                'account_id' => $line->account_id,
-                'partner_id' => $line->partner_id,
-                'analytic_account_id' => $line->analytic_account_id,
-                'description' => $line->description,
-                'debit' => $line->debit?->getAmount()->toFloat(),
-                'credit' => $line->credit?->getAmount()->toFloat(),
-            ];
-        })->toArray();
-        $data['lines'] = $linesData;
-        return $data;
-    }
+{
+    // Eager-load the necessary relationships
+    $this->record->load('currency', 'lines.journalEntry.currency');
 
-    // This method now correctly only handles updating a DRAFT entry's data.
+    // Get the currency code for creating zero-value money objects
+    $currencyCode = $this->record->currency->code;
+
+    // Initialize totals
+    $totalDebit = \Brick\Money\Money::zero($currencyCode);
+    $totalCredit = \Brick\Money\Money::zero($currencyCode);
+
+    $lines = $this->record->lines->map(function ($line) use (&$totalDebit, &$totalCredit, $currencyCode) {
+        // Use the MoneyCast to get Money objects for debit and credit.
+        $debitMoney = $line->debit;
+        $creditMoney = $line->credit;
+
+        if ($debitMoney) {
+            $totalDebit = $totalDebit->plus($debitMoney);
+        }
+        if ($creditMoney) {
+            $totalCredit = $totalCredit->plus($creditMoney);
+        }
+
+        return [
+            'account_id' => $line->account_id,
+            'partner_id' => $line->partner_id,
+            'analytic_account_id' => $line->analytic_account_id,
+            'description' => $line->description,
+            // -- CHANGE IS HERE --
+            // Pass the entire Money object, or a new zero-value one
+            'debit' => $debitMoney ?? \Brick\Money\Money::zero($currencyCode),
+            'credit' => $creditMoney ?? \Brick\Money\Money::zero($currencyCode),
+        ];
+    })->toArray();
+
+    $data['lines'] = $lines;
+    // The totals can remain strings for display-only fields
+    $data['total_debit'] = $totalDebit->getAmount()->__toString();
+    $data['total_credit'] = $totalCredit->getAmount()->__toString();
+    $data['balance'] = $totalDebit->minus($totalCredit)->getAmount()->__toString();
+
+    return $data;
+}
+
     protected function handleRecordUpdate(Model $record, array $data): Model
     {
         $lineDTOs = [];
@@ -90,11 +116,10 @@ class EditJournalEntry extends EditRecord
             entry_date: $data['entry_date'],
             reference: $data['reference'],
             description: $data['description'],
-            // The status is no longer controlled by the form, so we pass its existing state.
             is_posted: $record->is_posted,
             lines: $lineDTOs
         );
 
-        return (new UpdateJournalEntryAction())->execute($updateDTO);
+        return app(UpdateJournalEntryAction::class)->execute($updateDTO);
     }
 }

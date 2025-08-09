@@ -1,6 +1,10 @@
 <?php
 
 return [
+    // Labels
+    'label' => 'Budget',
+    'plural_label' => 'Budgets',
+
     // BudgetResource
     'form' => [
         'company_id' => 'Company',

@@ -27,8 +27,12 @@ class ProductFactory extends Factory
             'description' => $this->faker->sentence(),
             'unit_price' => Money::of($this->faker->randomFloat(2, 100, 10000), 'USD'),
             'type' => ProductType::Storable,
-            'income_account_id' => Account::factory()->create()->id,
-            'expense_account_id' => Account::factory()->create()->id,
+            'income_account_id' => function (array $attributes) {
+                return Account::factory()->create(['company_id' => $attributes['company_id']])->id;
+            },
+            'expense_account_id' => function (array $attributes) {
+                return Account::factory()->create(['company_id' => $attributes['company_id']])->id;
+            },
             'is_active' => $this->faker->boolean(),
         ];
     }

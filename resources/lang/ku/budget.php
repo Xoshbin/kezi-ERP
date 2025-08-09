@@ -1,6 +1,10 @@
 <?php
 
 return [
+    // Labels
+    'label' => 'بودجە',
+    'plural_label' => 'بودجەکان',
+
     // BudgetResource
     'form' => [
         'company_id' => 'کۆمپانیا',

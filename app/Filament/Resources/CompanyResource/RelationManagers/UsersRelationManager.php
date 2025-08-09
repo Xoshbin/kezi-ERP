@@ -14,7 +14,12 @@ class UsersRelationManager extends RelationManager
 {
     protected static string $relationship = 'users';
 
-    protected static ?string $title = 'company.users.title';
+    protected static ?string $title = null;
+
+    public static function getTitle(\Illuminate\Database\Eloquent\Model $ownerRecord, string $pageClass): string
+    {
+        return __('company.users.title');
+    }
 
     public function form(Form $form): Form
     {

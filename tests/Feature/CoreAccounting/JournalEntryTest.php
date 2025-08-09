@@ -1,78 +1,102 @@
 <?php
 
-use App\Models\User;
-use Brick\Money\Money;
+use App\Actions\Accounting\CreateJournalEntryAction;
+use App\DataTransferObjects\Accounting\CreateJournalEntryDTO;
+use App\DataTransferObjects\Accounting\CreateJournalEntryLineDTO;
+use App\Exceptions\DeletionNotAllowedException;
+use App\Exceptions\PeriodIsLockedException;
+use App\Exceptions\UpdateNotAllowedException;
 use App\Models\Account;
 use App\Models\Company;
 use App\Models\Journal;
-use App\Models\LockDate;
-use Tests\Traits\MocksTime;
 use App\Models\JournalEntry;
-use Tests\Traits\CreatesApplication;
-use Tests\Traits\WithUnlockedPeriod;
+use App\Models\LockDate;
+use App\Models\User;
 use App\Services\JournalEntryService;
-use Tests\Traits\WithConfiguredCompany;
-use App\Exceptions\PeriodIsLockedException;
-use App\Exceptions\UpdateNotAllowedException;
-use Illuminate\Validation\ValidationException;
-use App\Exceptions\DeletionNotAllowedException;
+use Brick\Money\Money;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Validation\ValidationException;
+use Tests\Traits\CreatesApplication;
+use Tests\Traits\MocksTime;
+use Tests\Traits\WithConfiguredCompany;
+use Tests\Traits\WithUnlockedPeriod;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class, MocksTime::class);
 
 test('a journal entry correctly calculates totals and assigns a user when created', function () {
-    $currencyCode = $this->company->currency->code;
-    $entryData = [
-        'company_id' => $this->company->id,
-        'journal_id' => Journal::factory()->for($this->company)->create()->id,
-        'entry_date' => now()->toDateString(),
-        'reference' => 'JE-BALANCE-001',
-        'created_by_user_id' => $this->user->id,
-        'currency_id' => $this->company->currency_id,
-        'lines' => [
-            ['account_id' => Account::factory()->for($this->company)->create()->id, 'debit' => Money::of('125.50', $currencyCode), 'credit' => Money::of(0, $currencyCode)],
-            ['account_id' => Account::factory()->for($this->company)->create()->id, 'credit' => Money::of('125.50', $currencyCode), 'debit' => Money::of(0, $currencyCode)],
+    $currency = $this->company->currency;
+    $account1 = Account::factory()->for($this->company)->create();
+    $account2 = Account::factory()->for($this->company)->create();
+
+    $dto = new CreateJournalEntryDTO(
+        company_id: $this->company->id,
+        journal_id: Journal::factory()->for($this->company)->create()->id,
+        currency_id: $currency->id,
+        entry_date: now()->toDateString(),
+        reference: 'JE-BALANCE-001',
+        description: 'Test Entry',
+        created_by_user_id: $this->user->id,
+        is_posted: true,
+        lines: [
+            new CreateJournalEntryLineDTO(account_id: $account1->id, debit: Money::of('125.50', $currency->code), credit: Money::of(0, $currency->code), description: 'Line 1', partner_id: null, analytic_account_id: null),
+            new CreateJournalEntryLineDTO(account_id: $account2->id, debit: Money::of(0, $currency->code), credit: Money::of('125.50', $currency->code), description: 'Line 2', partner_id: null, analytic_account_id: null),
         ],
-    ];
+    );
 
-    $journalEntry = (app(JournalEntryService::class))->create($entryData);
+    $journalEntry = (app(CreateJournalEntryAction::class))->execute($dto);
 
-    $expectedAmount = Money::of('125.50', $currencyCode);
+    $expectedAmount = Money::of('125.50', $currency->code);
     expect($journalEntry->total_debit->isEqualTo($expectedAmount))->toBeTrue();
     expect($journalEntry->total_credit->isEqualTo($expectedAmount))->toBeTrue();
     expect($journalEntry->created_by_user_id)->toBe($this->user->id);
 });
 
 test('creating an unbalanced journal entry is prevented', function () {
-    $currencyCode = $this->company->currency->code;
-    $unbalancedData = [
-        'company_id' => $this->company->id,
-        'journal_id' => Journal::factory()->for($this->company)->create()->id,
-        'entry_date' => now()->toDateString(),
-        'reference' => 'JE-UNBALANCED-001',
-        'currency_id' => $this->company->currency_id,
-        'lines' => [
-            ['account_id' => Account::factory()->for($this->company)->create()->id, 'debit' => Money::of('100.00', $currencyCode), 'credit' => Money::of(0, $currencyCode)],
-            ['account_id' => Account::factory()->for($this->company)->create()->id, 'credit' => Money::of('99.99', $currencyCode), 'debit' => Money::of(0, $currencyCode)],
-        ],
-    ];
+    $currency = $this->company->currency;
+    $account1 = Account::factory()->for($this->company)->create();
+    $account2 = Account::factory()->for($this->company)->create();
 
-    expect(fn() => (app(JournalEntryService::class))->create($unbalancedData))
+    $dto = new CreateJournalEntryDTO(
+        company_id: $this->company->id,
+        journal_id: Journal::factory()->for($this->company)->create()->id,
+        currency_id: $currency->id,
+        entry_date: now()->toDateString(),
+        reference: 'JE-UNBALANCED-001',
+        description: 'Test Unbalanced Entry',
+        created_by_user_id: $this->user->id,
+        is_posted: true,
+        lines: [
+            new CreateJournalEntryLineDTO(account_id: $account1->id, debit: Money::of('100.00', $currency->code), credit: Money::of(0, $currency->code), description: 'Line 1', partner_id: null, analytic_account_id: null),
+            new CreateJournalEntryLineDTO(account_id: $account2->id, debit: Money::of(0, $currency->code), credit: Money::of('99.99', $currency->code), description: 'Line 2', partner_id: null, analytic_account_id: null),
+        ],
+    );
+
+    expect(fn () => (app(CreateJournalEntryAction::class))->execute($dto))
         ->toThrow(ValidationException::class);
 });
 
 test('a balanced draft journal entry can be posted', function () {
-    $currencyCode = $this->company->currency->code;
-    $journalEntry = JournalEntry::factory()->for($this->company)->create([
-        'is_posted' => false,
-        'total_debit' => Money::of(0, $currencyCode),
-        'total_credit' => Money::of(0, $currencyCode),
-    ]);
-    // MODIFIED: Pass currency_id directly to the lines.
-    $journalEntry->lines()->createMany([
-        ['account_id' => Account::factory()->for($this->company)->create()->id, 'debit' => Money::of('100.00', $currencyCode), 'credit' => Money::of(0, $currencyCode), 'currency_id' => $journalEntry->currency_id],
-        ['account_id' => Account::factory()->for($this->company)->create()->id, 'credit' => Money::of('100.00', $currencyCode), 'debit' => Money::of(0, $currencyCode), 'currency_id' => $journalEntry->currency_id],
-    ]);
+    $currency = $this->company->currency;
+    $account1 = Account::factory()->for($this->company)->create();
+    $account2 = Account::factory()->for($this->company)->create();
+
+    $dto = new CreateJournalEntryDTO(
+        company_id: $this->company->id,
+        journal_id: Journal::factory()->for($this->company)->create()->id,
+        currency_id: $currency->id,
+        entry_date: now()->toDateString(),
+        reference: 'JE-DRAFT-001',
+        description: 'Test Draft Entry',
+        created_by_user_id: $this->user->id,
+        is_posted: false,
+        lines: [
+            new CreateJournalEntryLineDTO(account_id: $account1->id, debit: Money::of('100.00', $currency->code), credit: Money::of(0, $currency->code), description: 'Debit', partner_id: null, analytic_account_id: null),
+            new CreateJournalEntryLineDTO(account_id: $account2->id, debit: Money::of(0, $currency->code), credit: Money::of('100.00', $currency->code), description: 'Credit', partner_id: null, analytic_account_id: null),
+        ],
+    );
+
+    $journalEntry = (app(CreateJournalEntryAction::class))->execute($dto);
+    expect($journalEntry->is_posted)->toBeFalse();
 
     (app(JournalEntryService::class))->post($journalEntry);
 
@@ -81,19 +105,26 @@ test('a balanced draft journal entry can be posted', function () {
 });
 
 test('an unbalanced draft journal entry cannot be posted', function () {
-    $currencyCode = $this->company->currency->code;
-    $journalEntry = JournalEntry::factory()->for($this->company)->create([
-        'is_posted' => false,
-        'total_debit' => Money::of(0, $currencyCode),
-        'total_credit' => Money::of(0, $currencyCode),
-    ]);
-    // MODIFIED: Pass currency_id directly to the lines.
-    $journalEntry->lines()->createMany([
-        ['account_id' => Account::factory()->for($this->company)->create()->id, 'debit' => Money::of('100.00', $currencyCode), 'credit' => Money::of(0, $currencyCode), 'currency_id' => $journalEntry->currency_id],
-        ['account_id' => Account::factory()->for($this->company)->create()->id, 'credit' => Money::of('99.00', $currencyCode), 'debit' => Money::of(0, $currencyCode), 'currency_id' => $journalEntry->currency_id],
-    ]);
+    $currency = $this->company->currency;
+    $account1 = Account::factory()->for($this->company)->create();
+    $account2 = Account::factory()->for($this->company)->create();
 
-    expect(fn() => (app(JournalEntryService::class))->post($journalEntry))
+    $dto = new CreateJournalEntryDTO(
+        company_id: $this->company->id,
+        journal_id: Journal::factory()->for($this->company)->create()->id,
+        currency_id: $currency->id,
+        entry_date: now()->toDateString(),
+        reference: 'JE-UNBALANCED-DRAFT-001',
+        description: 'Test Unbalanced Draft',
+        created_by_user_id: $this->user->id,
+        is_posted: false,
+        lines: [
+            new CreateJournalEntryLineDTO(account_id: $account1->id, debit: Money::of('100.00', $currency->code), credit: Money::of(0, $currency->code), description: 'Debit', partner_id: null, analytic_account_id: null),
+            new CreateJournalEntryLineDTO(account_id: $account2->id, debit: Money::of(0, $currency->code), credit: Money::of('99.00', $currency->code), description: 'Credit', partner_id: null, analytic_account_id: null),
+        ],
+    );
+
+    expect(fn () => (app(CreateJournalEntryAction::class))->execute($dto))
         ->toThrow(ValidationException::class);
 });
 
@@ -154,7 +185,10 @@ test('a posted journal entry cannot be deleted via the service', function () {
 
 test('a draft journal entry in a locked period cannot be deleted', function () {
     $service = app(JournalEntryService::class);
-    LockDate::factory()->for($this->company)->create(['locked_until' => now()->subMonth()]);
+    LockDate::factory()->for($this->company)->create([
+        'lock_type' => \App\Enums\Accounting\LockDateType::ALL_USERS->value,
+        'locked_until' => now()->subMonth()
+    ]);
     $currencyCode = $this->company->currency->code;
     $journalEntry = JournalEntry::factory()->for($this->company)->create([
         'is_posted' => false,
@@ -200,39 +234,46 @@ test('posting a journal entry generates a cryptographic hash', function () {
 });
 
 test('posting a journal entry links to the previous entry hash to form an audit chain', function () {
-    $service = app(JournalEntryService::class);
-    $currencyCode = $this->company->currency->code;
+    $action = app(CreateJournalEntryAction::class);
+    $currency = $this->company->currency;
+    $account1 = Account::factory()->for($this->company)->create();
+    $account2 = Account::factory()->for($this->company)->create();
+    $account3 = Account::factory()->for($this->company)->create();
+    $account4 = Account::factory()->for($this->company)->create();
 
-    // 1. Create and correctly post the first entry so it gets a real hash.
-    $firstEntry = JournalEntry::factory()->for($this->company)->create([
-        'is_posted' => false, // Start as a draft
-        'entry_date' => now()->subDay(),
-        'total_debit' => Money::of(0, $currencyCode),
-        'total_credit' => Money::of(0, $currencyCode),
-    ]);
-    // Add balanced lines so it's postable
-    $firstEntry->lines()->createMany([
-        ['account_id' => Account::factory()->for($this->company)->create()->id, 'debit' => Money::of(100, $currencyCode), 'credit' => Money::of(0, $currencyCode), 'currency_id' => $firstEntry->currency_id],
-        ['account_id' => Account::factory()->for($this->company)->create()->id, 'credit' => Money::of(100, $currencyCode), 'debit' => Money::of(0, $currencyCode), 'currency_id' => $firstEntry->currency_id],
-    ]);
-    $service->post($firstEntry);
+    // 1. Create and post the first entry.
+    $firstDto = new CreateJournalEntryDTO(
+        company_id: $this->company->id,
+        journal_id: Journal::factory()->for($this->company)->create()->id,
+        currency_id: $currency->id,
+        entry_date: now()->subDay()->toDateString(),
+        reference: 'JE-CHAIN-001',
+        description: 'First Entry',
+        created_by_user_id: $this->user->id,
+        is_posted: true,
+        lines: [
+            new CreateJournalEntryLineDTO(account_id: $account1->id, debit: Money::of(100, $currency->code), credit: Money::of(0, $currency->code), description: 'Debit 1', partner_id: null, analytic_account_id: null),
+            new CreateJournalEntryLineDTO(account_id: $account2->id, debit: Money::of(0, $currency->code), credit: Money::of(100, $currency->code), description: 'Credit 1', partner_id: null, analytic_account_id: null),
+        ],
+    );
+    $firstEntry = $action->execute($firstDto);
 
-    // 2. Create the second entry as a draft.
-    $secondEntry = JournalEntry::factory()->for($this->company)->create([
-        'is_posted' => false,
-        'entry_date' => now(),
-        'total_debit' => Money::of(0, $currencyCode),
-        'total_credit' => Money::of(0, $currencyCode),
-    ]);
-    // Also give it balanced lines
-    $secondEntry->lines()->createMany([
-        ['account_id' => Account::factory()->for($this->company)->create()->id, 'debit' => Money::of(200, $currencyCode), 'credit' => Money::of(0, $currencyCode), 'currency_id' => $secondEntry->currency_id],
-        ['account_id' => Account::factory()->for($this->company)->create()->id, 'credit' => Money::of(200, $currencyCode), 'debit' => Money::of(0, $currencyCode), 'currency_id' => $secondEntry->currency_id],
-    ]);
-
-
-    // 3. Post the second entry, which triggers the linking logic.
-    $service->post($secondEntry);
+    // 2. Create and post the second entry.
+    $secondDto = new CreateJournalEntryDTO(
+        company_id: $this->company->id,
+        journal_id: $firstDto->journal_id,
+        currency_id: $currency->id,
+        entry_date: now()->toDateString(),
+        reference: 'JE-CHAIN-002',
+        description: 'Second Entry',
+        created_by_user_id: $this->user->id,
+        is_posted: true,
+        lines: [
+            new CreateJournalEntryLineDTO(account_id: $account3->id, debit: Money::of(200, $currency->code), credit: Money::of(0, $currency->code), description: 'Debit 2', partner_id: null, analytic_account_id: null),
+            new CreateJournalEntryLineDTO(account_id: $account4->id, debit: Money::of(0, $currency->code), credit: Money::of(200, $currency->code), description: 'Credit 2', partner_id: null, analytic_account_id: null),
+        ],
+    );
+    $secondEntry = $action->execute($secondDto);
 
     // 4. Refresh both models to get the final state from the database.
     $firstEntry->refresh();

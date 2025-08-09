@@ -2,6 +2,8 @@
 
 return [
     // General
+    'label' => 'Journal Entry',
+    'plural_label' => 'Journal Entries',
     'journal_entry' => 'Journal Entry',
     'journal_entries' => 'Journal Entries',
 

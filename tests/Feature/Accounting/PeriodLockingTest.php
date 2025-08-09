@@ -145,13 +145,14 @@ describe('Action Integration with Locked Periods', function () {
             bill_date: '2025-12-15', // Date is inside locked period
             accounting_date: '2025-12-15',
             due_date: null,
-            lines: []
+            lines: [],
+            created_by_user_id: $this->user->id
         ));
     })->throws(PeriodIsLockedException::class);
 
     it('throws PeriodIsLockedException for CreatePaymentAction', function () {
         $invoice = Invoice::factory()->for($this->company)->create();
-        $linkDto = new CreatePaymentDocumentLinkDTO('invoice', $invoice->id, '100');
+        $linkDto = new CreatePaymentDocumentLinkDTO('invoice', $invoice->id, \Brick\Money\Money::of(100, $this->company->currency->code));
 
         app(CreatePaymentAction::class)->execute(new CreatePaymentDTO(
             company_id: $this->company->id,

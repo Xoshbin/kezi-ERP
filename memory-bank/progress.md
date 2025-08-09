@@ -206,3 +206,16 @@ The introduction of the feature caused 70 existing tests to fail. A systematic d
 
 **Outcome:**
 All 133 tests in the suite are now passing. The "Period Locking" feature is stable, fully tested, and successfully integrated into the application.
+
+[2025-08-06 22:57:49] - [COMPLETED] Debugged and fixed 4 failing test suites (`PaymentsTest`, `JournalEntryTest`, `PeriodLockingTest`, `ReversalAndCancellationTest`) that regressed after refactoring the `JournalEntryResource`. The entire test suite is now passing.
+[2025-08-07 09:42:35] - **COMPLETED:** Debug and fix failing test for `JournalEntryResource` edit form.
+- **Identified Root Cause:** Test assertion for repeater field was incorrect.
+- **Solution:** Modified test to dynamically use repeater field keys.
+- **Status:** The test now passes, and the form correctly displays monetary values.
+[2025-08-07 12:52:33] - **Task Completed:** Debugged and fixed a critical currency calculation and display bug in the Journal Entry edit page.
+**Details:**
+- **Initial Bug:** Incorrect display of IQD amounts due to flawed currency decimal place resolution.
+- **Failed Attempts:** Initial fixes were incorrect, leading to a fatal `ErrorException` due to improper casting of `BigDecimal` objects.
+- **Final Solution:** Refactored the calculation logic to use the native arithmetic methods of the `Brick\Money\Money` object, ensuring precision and type safety.
+- **Documentation:** Updated `.roo/rules/02-coding-style.txt` with a new "Safe Money Aggregation" rule.
+- **Memory Bank:** Updated `decisionLog.md`, `systemPatterns.md`, and `activeContext.md` to capture the learnings from this task.

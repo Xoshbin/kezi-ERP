@@ -15,7 +15,12 @@ class VendorBillsRelationManager extends RelationManager
 {
     protected static string $relationship = 'vendorBills';
 
-    protected static ?string $title = 'partner.vendor_bills_relation_manager.title';
+    protected static ?string $title = null;
+
+    public static function getTitle(\Illuminate\Database\Eloquent\Model $ownerRecord, string $pageClass): string
+    {
+        return __('partner.vendor_bills_relation_manager.title');
+    }
 
     public function form(Form $form): Form
     {

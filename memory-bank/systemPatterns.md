@@ -24,7 +24,7 @@ It is optional, but recommended to be updated as the project evolves.
 *
 [2025-07-24 21:55:54] - **Journal to Account Linking:** Core accounting journals (like 'Bank' or 'Cash') are now directly linked to their corresponding default debit and credit accounts in the Chart of Accounts via `default_debit_account_id` and `default_credit_account_id` columns in the `journals` table. This pattern ensures a robust, auditable, and unambiguous link between a financial transaction's source journal and its ledger impact, which is critical for internal controls and scalability.
 [2025-07-26 22:00:39] - **Pattern: Dedicated Validation Services**
-- **Description:** Shared business logic validations (e.g., checking for locked accounting periods) are encapsulated within their own dedicated service classes (e.g., `AccountingValidationService`).
+- **Description:** Shared business logic validations (e.g., checking for locked accounting periods) are encapsulated within their own dedicated service classes (e.g., `LockDateService`).
 - **Implementation:** These services are injected via the constructor into other services or resolved from the container in UI components. This promotes the Single Responsibility Principle, enhances testability by allowing for easy mocking, and improves code maintainability by centralizing logic.
 [2025-07-27 07:14:02] - **Pattern: Company-Specific Default Accounts**
 - **Description:** Critical accounting settings, such as default accounts for payables, receivables, and taxes, and default journals for different transaction types, are stored directly on the `companies` table in the database.
@@ -104,3 +104,8 @@ It is optional, but recommended to be updated as the project evolves.
 
 
 [2025-08-06 06:55:00] - **Explicit Context Pattern:** This pattern provides the definitive solution for any situation where a model's attribute depends on context from a parent that isn't available during its creation. The responsibility for providing context to a new model instance must be shifted from the model itself (which is contextually unaware during creation) to the calling code (the Action or Service, which is fully aware). Instead of passing raw values and hoping the model can infer the context, the calling code must explicitly create a context-aware object (like Brick\Money\Money) and pass that complete object to the creation method.
+
+[2025-08-07 12:52:12] - **Pattern:** Safe Money Aggregation
+**Context:** When calculating sums or totals of monetary values that are represented by `Brick\Money\Money` objects.
+**Problem:** Directly casting the output of `$money->getAmount()` (a `BigDecimal` object) to a `float` or `int` for summation causes a fatal `ErrorException`.
+**Solution:** Always use the built-in arithmetic methods of the `Money` object (e.g., `$total->plus($line->price)`). Initialize totals with `Money::zero('CUR')` and perform all calculations with `Money` objects. Convert to a string for display only at the final step using `->getAmount()->__toString()`. This ensures type safety and preserves precision.

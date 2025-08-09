@@ -6,6 +6,7 @@ use App\Casts\MoneyCast;
 use App\Observers\AuditLogObserver;
 use App\Observers\VendorBillObserver;
 use Illuminate\Database\Eloquent\Model;
+use App\Enums\Purchases\VendorBillStatus;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -115,6 +116,7 @@ class VendorBill extends Model
         'bill_date'          => 'date',       // Cast to date for consistency .
         'accounting_date'    => 'date',       // Cast to date for consistency .
         'due_date'           => 'date',       // Cast to date for consistency .
+        'status'             => VendorBillStatus::class,
         'total_amount'       => MoneyCast::class,  // Crucial for financial precision, ensures two decimal places .
         'total_tax'          => MoneyCast::class,  // Crucial for financial precision .
         'posted_at'          => 'datetime',   // Records the exact time of posting for audit .
@@ -122,22 +124,6 @@ class VendorBill extends Model
         'created_at'         => 'datetime',   // Automatically managed by Eloquent.
         'updated_at'         => 'datetime',   // Automatically managed by Eloquent.
     ];
-
-    public const STATUS_DRAFT = 'draft';
-    public const STATUS_POSTED = 'posted';
-    public const STATUS_PAID = 'paid';
-    public const STATUS_CANCELED = 'canceled';
-
-    // use it in Filament select options columns
-    public static function getStatuses(): array
-    {
-        return [
-            self::STATUS_DRAFT => 'Draft',
-            self::STATUS_POSTED => 'Posted',
-            self::STATUS_PAID => 'Paid',
-            self::STATUS_CANCELED => 'Canceled',
-        ];
-    }
 
      protected static function booted(): void
     {
@@ -156,12 +142,12 @@ class VendorBill extends Model
         $zero = \Brick\Money\Money::of(0, $currencyCode);
 
         $totalTax = $this->lines->reduce(
-            fn (\Brick\Money\Money $carry, VendorBillLine $line) => $carry->plus($line->total_line_tax),
+            fn (\Brick\Money\Money $carry, VendorBillLine $line) => $carry->plus($line->total_line_tax ?? $zero),
             $zero
         );
 
         $subtotal = $this->lines->reduce(
-            fn (\Brick\Money\Money $carry, VendorBillLine $line) => $carry->plus($line->subtotal),
+            fn (\Brick\Money\Money $carry, VendorBillLine $line) => $carry->plus($line->subtotal ?? $zero),
             $zero
         );
 

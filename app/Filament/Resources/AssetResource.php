@@ -27,36 +27,65 @@ class AssetResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-archive-box';
 
-    protected static ?string $navigationGroup = 'Accounting';
+    protected static ?int $navigationSort = 2;
+
+    public static function getNavigationGroup(): ?string
+    {
+        return __('navigation.groups.financial_planning');
+    }
+
+    public static function getModelLabel(): string
+    {
+        return __('asset.label');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __('asset.plural_label');
+    }
+
+    public static function getNavigationLabel(): string
+    {
+        return __('asset.plural_label');
+    }
 
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
                 TextInput::make('name')
+                    ->label(__('asset.name'))
                     ->required()
                     ->maxLength(255),
                 DatePicker::make('purchase_date')
+                    ->label(__('asset.purchase_date'))
                     ->required(),
                 TextInput::make('purchase_value')
+                    ->label(__('asset.purchase_value'))
                     ->required()
                     ->numeric(),
                 TextInput::make('salvage_value')
+                    ->label(__('asset.salvage_value'))
                     ->required()
                     ->numeric(),
                 TextInput::make('useful_life_years')
+                    ->label(__('asset.useful_life_years'))
                     ->required()
                     ->integer(),
                 Select::make('depreciation_method')
+                    ->label(__('asset.depreciation_method'))
                     ->options(DepreciationMethod::class)
                     ->required(),
                 Select::make('asset_account_id')
+                    ->label(__('asset.asset_account'))
                     ->relationship('assetAccount', 'name')
                     ->required(),
                 Select::make('depreciation_expense_account_id')
+                    ->label(__('asset.depreciation_expense_account'))
                     ->relationship('depreciationExpenseAccount', 'name')
                     ->required(),
                 Select::make('accumulated_depreciation_account_id')
+                    ->label(__('asset.accumulated_depreciation_account'))
                     ->relationship('accumulatedDepreciationAccount', 'name')
                     ->required(),
             ]);
@@ -66,10 +95,16 @@ class AssetResource extends Resource
     {
         return $table
             ->columns([
-                TextColumn::make('name')->searchable(),
-                TextColumn::make('status'),
-                TextColumn::make('purchase_date')->date(),
-                TextColumn::make('purchase_value')->money('IQD'), // Assuming IQD, adjust as needed
+                TextColumn::make('name')
+                    ->label(__('asset.name'))
+                    ->searchable(),
+                TextColumn::make('status')
+                    ->label(__('asset.status')),
+                TextColumn::make('purchase_date')
+                    ->label(__('asset.purchase_date'))
+                    ->date(),
+                TextColumn::make('purchase_value')
+                    ->label(__('asset.purchase_value')),
             ])
             ->filters([
                 //

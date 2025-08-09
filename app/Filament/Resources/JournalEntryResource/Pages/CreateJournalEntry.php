@@ -18,61 +18,32 @@ class CreateJournalEntry extends CreateRecord
 {
     protected static string $resource = JournalEntryResource::class;
 
-    // This method is now simplified, acting only as a validation guard before creation.
     protected function mutateFormDataBeforeCreate(array $data): array
     {
-        // 1. Period Lock Validation
-        $entryDate = \Carbon\Carbon::parse($data['entry_date']);
-        $lockDate = LockDate::where('company_id', $data['company_id'])->first();
-        if ($lockDate && $entryDate->lte($lockDate->locked_until)) {
-            throw ValidationException::withMessages([
-                'data.entry_date' => __('journal_entry.period_locked'),
-            ]);
-        }
-
-        // 2. Balance Validation
-        $lines = $data['lines'] ?? [];
-        $totalDebit = collect($lines)->sum(fn($line) => $line['debit'] ?? 0);
-        $totalCredit = collect($lines)->sum(fn($line) => $line['credit'] ?? 0);
-
-        if (bccomp((string)$totalDebit, (string)$totalCredit, 2) !== 0) {
-            throw ValidationException::withMessages([
-                'data.lines' => __('journal_entry.debits_must_equal_credits'),
-            ]);
-        }
-
-        // 3. Ensure Currency is set
-        if (empty($data['currency_id']) && !empty($data['company_id'])) {
-            $company = Company::find($data['company_id']);
-            if ($company) {
-                $data['currency_id'] = $company->currency_id;
+        $lineDTOs = [];
+        if (isset($data['lines']) && is_array($data['lines'])) {
+            $currency = \App\Models\Currency::find($data['currency_id']);
+            if ($currency) {
+                foreach ($data['lines'] as $line) {
+                    $lineDTOs[] = new CreateJournalEntryLineDTO(
+                        account_id: $line['account_id'],
+                        debit: Money::of($line['debit'] ?? 0, $currency->code),
+                        credit: Money::of($line['credit'] ?? 0, $currency->code),
+                        description: $line['description'],
+                        partner_id: $line['partner_id'],
+                        analytic_account_id: $line['analytic_account_id']
+                    );
+                }
             }
         }
+        $data['lines'] = $lineDTOs;
+        $data['created_by_user_id'] = \Illuminate\Support\Facades\Auth::id();
 
         return $data;
     }
 
-    // This method now cleanly translates form data to DTOs and executes the Action.
     protected function handleRecordCreation(array $data): Model
     {
-        $journal = Journal::find($data['journal_id']);
-        $currencyCode = $journal->currency->code;
-
-        $lineDTOs = [];
-        foreach ($data['lines'] as $line) {
-            $debitAmount = $line['debit'] ?? '0';
-            $creditAmount = $line['credit'] ?? '0';
-
-            $lineDTOs[] = new CreateJournalEntryLineDTO(
-                account_id: $line['account_id'],
-                debit: Money::of($debitAmount, $currencyCode),
-                credit: Money::of($creditAmount, $currencyCode),
-                description: $line['description'],
-                partner_id: $line['partner_id'],
-                analytic_account_id: $line['analytic_account_id']
-            );
-        }
-
         $journalEntryDTO = new CreateJournalEntryDTO(
             company_id: $data['company_id'],
             journal_id: $data['journal_id'],
@@ -80,12 +51,9 @@ class CreateJournalEntry extends CreateRecord
             entry_date: $data['entry_date'],
             reference: $data['reference'],
             description: $data['description'],
-            created_by_user_id: \Illuminate\Support\Facades\Auth::id(), // It's safer to get the authenticated user here.
-
-            // THE FIX: A new entry from the form should always be a draft.
+            created_by_user_id: $data['created_by_user_id'],
             is_posted: false,
-
-            lines: $lineDTOs
+            lines: $data['lines']
         );
 
         return app(CreateJournalEntryAction::class)->execute($journalEntryDTO);

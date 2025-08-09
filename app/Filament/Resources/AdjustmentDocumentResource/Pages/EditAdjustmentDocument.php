@@ -6,6 +6,8 @@ namespace App\Filament\Resources\AdjustmentDocumentResource\Pages;
 // Add these imports
 use App\Models\Invoice;
 use App\Models\VendorBill;
+use App\Models\Currency;
+use Brick\Money\Money;
 use Illuminate\Validation\ValidationException;
 
 // Other use statements...
@@ -46,7 +48,7 @@ class EditAdjustmentDocument extends EditRecord
             Actions\DeleteAction::make(),
         ];
     }
-    
+
     // --- START OF THE FIX ---
     protected function mutateFormDataBeforeSave(array $data): array
     {
@@ -70,7 +72,7 @@ class EditAdjustmentDocument extends EditRecord
                 'data.currency_id' => __('validation.required', ['attribute' => 'currency']),
             ]);
         }
-        
+
         // 4. Inject the now-guaranteed currency_id into the line items.
         $parentCurrencyId = $data['currency_id'];
         if (isset($data['lines'])) {
@@ -89,34 +91,33 @@ class EditAdjustmentDocument extends EditRecord
     protected function mutateFormDataBeforeFill(array $data): array
     {
         $this->record->loadMissing('lines');
-        
+
+        // Keep Money objects for MoneyInput components
         $linesData = $this->record->lines->map(function ($line) {
             return [
                 'product_id' => $line->product_id,
                 'description' => $line->description,
                 'quantity' => $line->quantity,
-                'unit_price' => $line->unit_price?->getAmount()->toFloat(),
+                'unit_price' => $line->unit_price, // Keep as Money object
                 'tax_id' => $line->tax_id,
                 'account_id' => $line->account_id,
             ];
         })->toArray();
-        
+
         $data['lines'] = $linesData;
-        $data['total_amount'] = $this->record->total_amount?->getAmount()->toFloat();
-        $data['total_tax'] = $this->record->total_tax?->getAmount()->toFloat();
-        
         return $data;
     }
 
     protected function handleRecordUpdate(Model $record, array $data): Model
     {
         // This method will now always receive a valid $data['currency_id']
+        $currency = Currency::find($data['currency_id']);
         $lineDTOs = [];
         foreach ($data['lines'] as $line) {
             $lineDTOs[] = new UpdateAdjustmentDocumentLineDTO(
                 description: $line['description'],
                 quantity: $line['quantity'],
-                unit_price: $line['unit_price'],
+                unit_price: Money::of($line['unit_price'], $currency->code),
                 account_id: $line['account_id'],
                 product_id: $line['product_id'] ?? null,
                 tax_id: $line['tax_id'] ?? null

@@ -195,7 +195,7 @@ This phase focuses on improving aspects based on Odoo's patterns and adding a mo
     *   Beyond purchase/sale, provide dedicated `AdjustInventoryAction` for manual quantity corrections (e.g., spoilage, theft, physical count discrepancies). These actions should generate corresponding `JournalEntry` via `InventoryValuationService` to debit/credit a `Inventory Adjustment Expense/Income` account.
     *   The system should log *all* adjustments with a clear reason.
 *   **Multi-Location/Warehouse Support:** The `stock_locations` table allows for granular tracking of inventory across multiple physical locations, aligning with Odoo's capability. `StockMove` records will explicitly link these locations.
-*   **Lock Date Enforcement:** Ensure that `InventoryValuationService` methods, particularly those generating `JournalEntry` records, respect your existing `LockDateService` and `AccountingValidationService` to prevent posting in locked accounting periods.
+*   **Lock Date Enforcement:** Ensure that `InventoryValuationService` methods, particularly those generating `JournalEntry` records, respect your existing `LockDateService` to prevent posting in locked accounting periods.
 *   **Enhanced Reporting (Leveraging existing data):**
     *   **Inventory Valuation Report:** Sum `InventoryCostLayer` or apply `Product.average_cost` across all `Product` records, filtered by `StockLocation` if desired, for a real-time Balance Sheet valuation.
     *   **Cost of Goods Sold (COGS) Report:** Aggregate `StockMoveValuation` records for `outgoing` moves, grouped by `Product` and period.

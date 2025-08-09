@@ -2,6 +2,8 @@
 
 return [
     // General
+    'label' => 'پسوولەی فرۆشیار',
+    'plural_label' => 'پسوولەکانی فرۆشیار',
     'vendor_bill' => 'پسوولەی فرۆشیار',
     'vendor_bills' => 'پسوولەکانی فرۆشیار',
 
