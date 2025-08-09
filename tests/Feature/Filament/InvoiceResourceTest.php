@@ -146,13 +146,13 @@ it('can reset an invoice to draft', function () {
     // Create accounts for the journal entry
     $receivableAccount = \App\Models\Account::factory()->create([
         'company_id' => $this->company->id,
-        'type' => 'Asset',
+        'type' => 'asset',
         'name' => 'Accounts Receivable',
     ]);
 
     $salesAccount = \App\Models\Account::factory()->create([
         'company_id' => $this->company->id,
-        'type' => 'Income',
+        'type' => 'income',
         'name' => 'Sales Revenue',
     ]);
 
