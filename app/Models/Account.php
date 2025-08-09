@@ -97,6 +97,7 @@ class Account extends Model
         'name',
         'type',
         'is_deprecated',
+        'can_create_assets',
     ];
 
     /**

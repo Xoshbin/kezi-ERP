@@ -30,8 +30,8 @@ trait CreatesApplication
             'default_accounts_receivable_id' => Account::factory()->for($company)->create(['type' => 'Asset', 'name' => 'Accounts Receivable']),
             'default_sales_discount_account_id' => Account::factory()->for($company)->create(['type' => 'Expense', 'name' => 'Sales Discount']),
             'default_tax_account_id' => Account::factory()->for($company)->create(['type' => 'Liability', 'name' => 'Tax Payable']),
-            'default_bank_account_id' => Account::factory()->for($company)->create(['type' => 'asset', 'name' => 'Bank']),
-            'default_outstanding_receipts_account_id' => Account::factory()->for($company)->create(['type' => 'asset', 'name' => 'Outstanding Receipts']),
+            'default_bank_account_id' => Account::factory()->for($company)->create(['type' => 'bank_and_cash', 'name' => 'Bank']),
+            'default_outstanding_receipts_account_id' => Account::factory()->for($company)->create(['type' => 'current_assets', 'name' => 'Outstanding Receipts']),
         ];
 
         $accountIds = collect($accounts)->mapWithKeys(fn($account, $key) => [$key => $account->id])->all();

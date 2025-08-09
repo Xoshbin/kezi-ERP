@@ -20,9 +20,9 @@ uses(RefreshDatabase::class, WithConfiguredCompany::class);
 
 beforeEach(function () {
 
-    $this->assetAccount = Account::factory()->for($this->company)->create(['type' => 'asset']);
+    $this->assetAccount = Account::factory()->for($this->company)->create(['type' => 'fixed_assets']);
     $this->depreciationExpenseAccount = Account::factory()->for($this->company)->create(['type' => 'expense']);
-    $this->accumulatedDepreciationAccount = Account::factory()->for($this->company)->create(['type' => 'asset']);
+    $this->accumulatedDepreciationAccount = Account::factory()->for($this->company)->create(['type' => 'non_current_assets']);
 });
 
 test('asset can be created manually and confirmed', function () {

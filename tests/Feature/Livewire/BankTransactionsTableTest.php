@@ -26,11 +26,11 @@ beforeEach(function () {
     // Create required accounts for reconciliation
     $this->bankAccount = Account::factory()
         ->for($this->company)
-        ->create(['type' => 'asset', 'name' => 'Bank Account']);
+        ->create(['type' => 'bank_and_cash', 'name' => 'Bank Account']);
 
     $this->outstandingAccount = Account::factory()
         ->for($this->company)
-        ->create(['type' => 'asset', 'name' => 'Outstanding Receipts']);
+        ->create(['type' => 'current_assets', 'name' => 'Outstanding Receipts']);
 
     // Update company with default accounts
     $this->company->update([
@@ -201,7 +201,7 @@ describe('BankTransactionsTable Livewire Component', function () {
 
         $assetAccount = Account::factory()
             ->for($this->company)
-            ->create(['type' => 'asset', 'name' => 'Cash']);
+            ->create(['type' => 'bank_and_cash', 'name' => 'Cash']);
 
         $otherCompanyAccount = Account::factory()
             ->create(['type' => 'expense', 'name' => 'Other Company Expense']);

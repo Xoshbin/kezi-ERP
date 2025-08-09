@@ -99,7 +99,7 @@ it('creates a write-off for a single bank statement line', function () {
     // 1. Create the bank account
     $companyBankAccount = Account::factory()->create([
         'company_id' => $this->company->id,
-        'type' => 'asset',
+        'type' => 'bank_and_cash',
     ]);
 
     // 2. Create the Bank Journal and link BOTH default accounts

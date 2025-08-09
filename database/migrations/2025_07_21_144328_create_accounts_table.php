@@ -1,8 +1,9 @@
 <?php
 
-use Illuminate\Database\Migrations\Migration;
-use Illuminate\Database\Schema\Blueprint;
+use App\Enums\Accounting\AccountType;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Database\Migrations\Migration;
 
 return new class extends Migration
 {
@@ -16,8 +17,10 @@ return new class extends Migration
             $table->foreignId('company_id');
             $table->string('code');
             $table->json('name');
-            $table->string('type'); // e.g., 'asset', 'liability', 'equity', 'income', 'expense'
+            $allowedTypes = collect(AccountType::cases())->pluck('value')->all();
+            $table->enum('type', $allowedTypes);
             $table->boolean('is_deprecated')->default(false);
+            $table->boolean('can_create_assets')->default(false);
             $table->timestamps();
 
             $table->unique(['company_id', 'code']);
