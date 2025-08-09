@@ -2,6 +2,8 @@
 
 return [
     // General
+    'label' => 'Invoice',
+    'plural_label' => 'Invoices',
     'invoice' => 'Invoice',
     'invoices' => 'Invoices',
     'invoice_details' => 'Invoice Details',

@@ -18,12 +18,11 @@ use Illuminate\Support\Facades\Event;
 use App\Enums\Accounting\LockDateType;
 use Tests\Traits\WithConfiguredCompany;
 use App\Actions\Sales\CreateInvoiceAction;
-use App\Actions\Sales\UpdateInvoiceAction;
+
 use App\Actions\Sales\CreateInvoiceLineAction;
 use App\DataTransferObjects\Sales\CreateInvoiceLineDTO;
 use App\Exceptions\PeriodIsLockedException;
 use App\Exceptions\UpdateNotAllowedException;
-use App\Services\AccountingValidationService;
 use App\Exceptions\DeletionNotAllowedException;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use App\DataTransferObjects\Sales\CreateInvoiceDTO;
@@ -83,7 +82,7 @@ test('confirming an invoice generates the correct journal entry', function () {
         product_id: $product->id,
         description: 'Product Description',
         quantity: 2,
-        unit_price: '100',
+        unit_price: \Brick\Money\Money::of('100', $this->company->currency->code),
         income_account_id: $productSalesAccount->id,
         tax_id: null,
     );
@@ -118,7 +117,7 @@ test('a posted invoice cannot be updated', function () {
     );
 
     // Assert: Expect the Action to throw the exception because the invoice is posted.
-    expect(fn() => (new UpdateInvoiceAction())->execute($updateDto))
+    expect(fn() => app(\App\Actions\Sales\UpdateInvoiceAction::class)->execute($updateDto))
         ->toThrow(UpdateNotAllowedException::class, 'Cannot modify a non-draft invoice.');
 
     // Assert: Double-check that the customer_id was not changed in the database.

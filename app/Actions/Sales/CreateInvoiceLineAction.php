@@ -14,7 +14,7 @@ class CreateInvoiceLineAction
     public function execute(Invoice $invoice, CreateInvoiceLineDTO $dto): InvoiceLine
     {
         $currency = $invoice->currency;
-        $unitPrice = Money::of($dto->unit_price, $currency->code);
+        $unitPrice = $dto->unit_price; // Already a Money object
 
         // 1. Perform all calculations *before* creating the model, as per our pattern.
         $subtotal = $unitPrice->multipliedBy($dto->quantity, RoundingMode::HALF_UP);

@@ -104,7 +104,7 @@ The application follows the **Command Pattern** with domain-driven organization 
 - **Single Responsibility**: Each action has one `execute()` method with clear input/output contracts
 - **Atomic Operations**: All actions wrap operations in database transactions
 - **Rich Domain Logic**: Actions contain proper accounting rules and business validation
-- **Dependency Injection**: Actions properly inject required services (e.g., `AccountingValidationService`)
+- **Dependency Injection**: Actions properly inject required services (e.g., `LockDateService`)
 - **Type Safety**: Actions accept strongly-typed DTOs and return specific model instances
 
 **Example Action Structure:**
@@ -166,7 +166,7 @@ The service layer implements **business orchestration** and **domain logic enfor
 - **`InvoiceService`** - Sales document lifecycle management
 - **`VendorBillService`** - Purchase document processing
 - **`PaymentService`** - Payment processing and reconciliation
-- **`AccountingValidationService`** - Shared validation logic (period locking, etc.)
+- **`LockDateService`** - Shared validation logic (period locking, etc.)
 - **`BankReconciliationService`** - Bank statement matching and reconciliation
 
 #### **Key Patterns:**

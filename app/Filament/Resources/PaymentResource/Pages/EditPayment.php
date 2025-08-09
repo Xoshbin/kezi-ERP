@@ -2,9 +2,14 @@
 
 namespace App\Filament\Resources\PaymentResource\Pages;
 
+use App\Actions\Payments\UpdatePaymentAction;
+use App\DataTransferObjects\Payments\UpdatePaymentDTO;
+use App\DataTransferObjects\Payments\UpdatePaymentDocumentLinkDTO;
 use App\Filament\Resources\PaymentResource;
+use App\Models\Currency;
 use App\Models\Payment;
 use App\Services\PaymentService;
+use Brick\Money\Money;
 use Filament\Actions;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
@@ -39,7 +44,7 @@ class EditPayment extends EditRecord
                 ->requiresConfirmation()
                 ->action(function (Payment $record) {
                     try {
-                        app(PaymentService::class)->cancel($record, Auth::user());
+                        app(PaymentService::class)->cancel($record, Auth::user(), 'Payment cancelled via UI');
                         Notification::make()
                             ->title('Payment Cancelled')
                             ->body('The payment and its journal entry have been successfully reversed.')
@@ -104,9 +109,41 @@ class EditPayment extends EditRecord
 
     protected function handleRecordUpdate(Model $record, array $data): Model
     {
-        // For now, we only allow updating the main fields of a draft payment,
-        // not the linked documents. A full update would require an UpdatePaymentAction.
-        $record->update($data);
-        return $record;
+        $currency = Currency::find($data['currency_id']);
+        $linkDTOs = [];
+
+        // If document_links is not in the data (e.g., for confirmed payments where it's disabled),
+        // use the existing links from the record
+        $documentLinks = $data['document_links'] ?? [];
+        if (empty($documentLinks) && $record->paymentDocumentLinks->isNotEmpty()) {
+            foreach ($record->paymentDocumentLinks as $link) {
+                $documentLinks[] = [
+                    'document_type' => $link->invoice_id ? 'invoice' : 'vendor_bill',
+                    'document_id' => $link->invoice_id ?: $link->vendor_bill_id,
+                    'amount_applied' => $link->amount_applied->getAmount()->toFloat(),
+                ];
+            }
+        }
+
+        foreach ($documentLinks as $link) {
+            $linkDTOs[] = new UpdatePaymentDocumentLinkDTO(
+                document_type: $link['document_type'],
+                document_id: $link['document_id'],
+                amount_applied: Money::of($link['amount_applied'], $currency->code)
+            );
+        }
+
+        $paymentDTO = new UpdatePaymentDTO(
+            payment: $record,
+            company_id: $data['company_id'],
+            journal_id: $data['journal_id'],
+            currency_id: $data['currency_id'],
+            payment_date: $data['payment_date'],
+            document_links: $linkDTOs,
+            reference: $data['reference'],
+            updated_by_user_id: Auth::id()
+        );
+
+        return app(UpdatePaymentAction::class)->execute($paymentDTO);
     }
 }

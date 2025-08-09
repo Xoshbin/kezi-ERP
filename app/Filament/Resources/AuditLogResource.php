@@ -19,6 +19,28 @@ class AuditLogResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
+    protected static ?int $navigationSort = 2;
+
+    public static function getNavigationGroup(): ?string
+    {
+        return __('navigation.groups.administration');
+    }
+
+    public static function getModelLabel(): string
+    {
+        return __('audit_log.label');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __('audit_log.plural_label');
+    }
+
+    public static function getNavigationLabel(): string
+    {
+        return __('audit_log.plural_label');
+    }
+
     public static function form(Form $form): Form
     {
         return $form

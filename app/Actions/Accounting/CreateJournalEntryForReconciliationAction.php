@@ -2,20 +2,17 @@
 
 namespace App\Actions\Accounting;
 
+use App\DataTransferObjects\Accounting\CreateJournalEntryDTO;
+use App\DataTransferObjects\Accounting\CreateJournalEntryLineDTO;
 use App\Models\JournalEntry;
 use App\Models\Payment;
 use App\Models\User;
-use App\Services\JournalEntryService;
 use Brick\Money\Money;
-use Illuminate\Support\Facades\App;
 
 class CreateJournalEntryForReconciliationAction
 {
-    protected JournalEntryService $journalEntryService;
-
-    public function __construct()
+    public function __construct(private readonly CreateJournalEntryAction $createJournalEntryAction)
     {
-        $this->journalEntryService = App::make(JournalEntryService::class);
     }
 
     public function execute(Payment $payment, User $user): JournalEntry
@@ -41,36 +38,43 @@ class CreateJournalEntryForReconciliationAction
 
         // 3. Build the journal entry lines based on reconciliation accounting rules.
         // This entry moves value from the in-transit account to the final bank account.
-        $lines = [
+        $lineDTOs = [
             // Rule: DEBIT the actual Bank Account to increase its balance.
-            [
-                'account_id' => $bankAccountId,
-                'debit' => $amountInJournalCurrency,
-                'credit' => Money::of(0, $currencyCode),
-            ],
+            new CreateJournalEntryLineDTO(
+                account_id: $bankAccountId,
+                debit: $amountInJournalCurrency,
+                credit: Money::of(0, $currencyCode),
+                description: 'Bank Account',
+                partner_id: null,
+                analytic_account_id: null,
+            ),
             // Rule: CREDIT the Outstanding Receipts/Payments account to clear it.
-            [
-                'account_id' => $outstandingAccountId,
-                'credit' => $amountInJournalCurrency,
-                'debit' => Money::of(0, $currencyCode),
-            ],
+            new CreateJournalEntryLineDTO(
+                account_id: $outstandingAccountId,
+                debit: Money::of(0, $currencyCode),
+                credit: $amountInJournalCurrency,
+                description: 'Outstanding Receipts/Payments',
+                partner_id: null,
+                analytic_account_id: null,
+            ),
         ];
 
         // 4. Prepare the data payload.
-        $journalEntryData = [
-            'company_id' => $payment->company_id,
-            'journal_id' => $payment->journal_id,
-            'currency_id' => $currency->id,
-            'entry_date' => now(),
-            'reference' => 'RECO/' . $payment->id,
-            'description' => 'Reconciliation for Payment #' . $payment->id,
-            'source_type' => Payment::class,
-            'source_id' => $payment->id,
-            'created_by_user_id' => $user->id,
-            'lines' => $lines,
-        ];
+        $journalEntryDTO = new CreateJournalEntryDTO(
+            company_id: $payment->company_id,
+            journal_id: $payment->journal_id,
+            currency_id: $currency->id,
+            entry_date: now(),
+            reference: 'RECO/' . $payment->id,
+            description: 'Reconciliation for Payment #' . $payment->id,
+            source_type: Payment::class,
+            source_id: $payment->id,
+            created_by_user_id: $user->id,
+            is_posted: true,
+            lines: $lineDTOs,
+        );
 
-        // 5. Execute the generic service to create and post the entry.
-        return $this->journalEntryService->create($journalEntryData, true);
+        // 5. Execute the action to create and post the entry.
+        return $this->createJournalEntryAction->execute($journalEntryDTO);
     }
 }

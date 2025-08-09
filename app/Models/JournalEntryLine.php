@@ -23,8 +23,8 @@ use RuntimeException; // Utilized for explicit enforcement of immutability and d
  * @property int|null $partner_id
  * @property int|null $currency_id
  * @property int|null $analytic_account_id
- * @property float $debit
- * @property float $credit
+ * @property \Brick\Money\Money $debit
+ * @property \Brick\Money\Money $credit
  * @property float $original_currency_amount
  * @property string $exchange_rate_at_transaction
  * @property string|null $description

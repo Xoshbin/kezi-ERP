@@ -5,8 +5,6 @@ namespace App\Actions\Adjustments;
 use App\DataTransferObjects\Adjustments\UpdateAdjustmentDocumentDTO;
 use App\Exceptions\UpdateNotAllowedException;
 use App\Models\AdjustmentDocument;
-use App\Models\Currency;
-use Brick\Money\Money;
 use Illuminate\Support\Facades\DB;
 
 class UpdateAdjustmentDocumentAction
@@ -33,14 +31,13 @@ class UpdateAdjustmentDocumentAction
             // Sync the lines: delete old ones, create new ones.
             $adjustmentDocument->lines()->delete();
 
-            $currencyCode = Currency::find($dto->currency_id)->code;
             $linesToCreate = [];
             foreach ($dto->lines as $lineDto) {
                 $linesToCreate[] = [
                     'product_id' => $lineDto->product_id,
                     'description' => $lineDto->description,
                     'quantity' => $lineDto->quantity,
-                    'unit_price' => Money::of($lineDto->unit_price, $currencyCode),
+                    'unit_price' => $lineDto->unit_price, // Already a Money object from DTO
                     'tax_id' => $lineDto->tax_id,
                     'account_id' => $lineDto->account_id,
                 ];

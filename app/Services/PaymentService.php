@@ -19,7 +19,11 @@ use App\Actions\Accounting\CreateJournalEntryForPaymentAction;
 
 class PaymentService
 {
-    public function __construct(protected JournalEntryService $journalEntryService) {}
+    public function __construct(
+        protected JournalEntryService $journalEntryService,
+        protected CreateJournalEntryForPaymentAction $createJournalEntryForPaymentAction
+    ) {
+    }
 
     /**
      * Confirm a draft payment, locking it and creating the journal entry.
@@ -32,7 +36,7 @@ class PaymentService
 
         return DB::transaction(function () use ($payment, $user) {
             // Create the corresponding journal entry.
-            $journalEntry = (new CreateJournalEntryForPaymentAction())->execute($payment, $user);
+            $journalEntry = $this->createJournalEntryForPaymentAction->execute($payment, $user);
 
             $payment->journal_entry_id = $journalEntry->id;
             $payment->status = Payment::STATUS_CONFIRMED;
@@ -82,7 +86,7 @@ class PaymentService
                 $totalPaid = Money::ofMinor($totalPaidMinor, $vendorBill->currency->code);
 
                 if ($totalPaid->isGreaterThanOrEqualTo($vendorBill->total_amount)) {
-                    $vendorBill->status = VendorBill::STATUS_PAID;
+                    $vendorBill->status = \App\Enums\Purchases\VendorBillStatus::Paid;
                     $vendorBill->save();
                 }
             }
@@ -103,7 +107,7 @@ class PaymentService
             if (!$originalEntry) {
                 throw new \Exception('Cannot cancel payment without a journal entry.');
             }
-            
+
             // Step 1: Create the explicit audit log with the reason.
             AuditLog::create([
                 'user_id' => $user->id,

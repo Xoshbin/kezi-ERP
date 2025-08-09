@@ -2,16 +2,19 @@
 
 namespace App\Listeners\Inventory;
 
-use App\Events\VendorBillConfirmed;
-use App\Enums\Products\ProductType;
-use App\Models\StockMove;
-use App\Enums\Inventory\StockMoveType;
+use App\Actions\Inventory\UpdateProductInventoryStatsAction;
 use App\Enums\Inventory\StockMoveStatus;
-use Brick\Math\RoundingMode;
-use Brick\Money\Money;
+use App\Enums\Inventory\StockMoveType;
+use App\Enums\Products\ProductType;
+use App\Events\VendorBillConfirmed;
+use App\Models\StockMove;
 
 class ProcessInventoryForConfirmedBill
 {
+    public function __construct(private readonly UpdateProductInventoryStatsAction $updateProductInventoryStatsAction)
+    {
+    }
+
     public function handle(VendorBillConfirmed $event): void
     {
         $vendorBill = $event->vendorBill;
@@ -27,8 +30,7 @@ class ProcessInventoryForConfirmedBill
     private function processStorableProductLine($vendorBill, $line, $user): void
     {
         $product = $line->product;
-        $product->refresh();
-        $company = $vendorBill->company->fresh();
+        $company = $vendorBill->company;
 
         if (!$company->vendorLocation || !$company->defaultStockLocation) {
             throw new \RuntimeException("Default Vendor or Stock Location is not configured for Company ID: {$company->id}.");
@@ -43,23 +45,16 @@ class ProcessInventoryForConfirmedBill
             'source_type' => get_class($vendorBill),
             'source_id' => $vendorBill->id,
             'move_date' => $vendorBill->accounting_date,
-            'created_by_user_id' => $user->id, // We now have the user context
+            'created_by_user_id' => $user->id,
             'move_type' => StockMoveType::INCOMING,
             'status' => StockMoveStatus::DONE,
             'completed_at' => now(),
         ]);
 
-        $purchaseValue = $line->unit_price->multipliedBy((string)$line->quantity, RoundingMode::HALF_UP);
-        $oldValue = ($product->average_cost ?? Money::zero($vendorBill->currency->code))->multipliedBy((string)($product->quantity_on_hand ?? 0), RoundingMode::HALF_UP);
-        $totalQuantity = ($product->quantity_on_hand ?? 0) + $line->quantity;
-        $totalValue = $oldValue->plus($purchaseValue);
-
-        $newAverageCost = $totalQuantity > 0
-            ? $totalValue->dividedBy($totalQuantity, RoundingMode::HALF_UP)
-            : Money::zero($vendorBill->currency->code);
-
-        $product->quantity_on_hand = $totalQuantity;
-        $product->average_cost = $newAverageCost;
-        $product->save();
+        $this->updateProductInventoryStatsAction->execute(
+            $product,
+            $line->quantity,
+            $line->unit_price
+        );
     }
 }

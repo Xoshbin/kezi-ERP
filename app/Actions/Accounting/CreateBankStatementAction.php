@@ -4,8 +4,6 @@ namespace App\Actions\Accounting;
 
 use App\DataTransferObjects\Accounting\CreateBankStatementDTO;
 use App\Models\BankStatement;
-use App\Models\Currency; // <-- Import the Currency model
-use Brick\Money\Money; // <-- Import the Money object
 use Illuminate\Support\Facades\DB;
 
 class CreateBankStatementAction
@@ -24,10 +22,7 @@ class CreateBankStatementAction
                 'ending_balance' => $dto->ending_balance,
             ]);
 
-            // 2. Find the currency code to create Money objects.
-            $currencyCode = Currency::find($dto->currency_id)->code;
-
-            // 3. Prepare the lines, creating Money objects directly.
+            // 2. Prepare the lines, using Money objects directly from DTO.
             $linesToCreate = [];
             foreach ($dto->lines as $lineDto) {
                 $linesToCreate[] = [
@@ -35,13 +30,11 @@ class CreateBankStatementAction
                     'date' => $lineDto->date,
                     'description' => $lineDto->description,
                     'partner_id' => $lineDto->partner_id,
-
-                    // THE FIX: Convert the string from the DTO into a Money object here.
-                    'amount' => Money::of($lineDto->amount, $currencyCode),
+                    'amount' => $lineDto->amount,
                 ];
             }
 
-            // 4. Create all lines at once. The MoneyCast will now receive a valid Money object.
+            // 3. Create all lines at once. The MoneyCast will receive valid Money objects.
             if (!empty($linesToCreate)) {
                 $bankStatement->bankStatementLines()->createMany($linesToCreate);
             }

@@ -9,10 +9,12 @@ use App\Filament\Resources\InvoiceResource;
 use App\Filament\Resources\PaymentResource;
 use App\Models\Invoice;
 use App\Services\InvoiceService;
+use Brick\Money\Money;
 use Filament\Actions;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
 
 class EditInvoice extends EditRecord
 {
@@ -76,20 +78,18 @@ class EditInvoice extends EditRecord
 
     protected function mutateFormDataBeforeFill(array $data): array
     {
-        $this->record->loadMissing('invoiceLines');
+        $this->record->loadMissing('invoiceLines', 'currency');
         $linesData = $this->record->invoiceLines->map(function ($line) {
             return [
                 'product_id' => $line->product_id,
                 'description' => $line->description,
                 'quantity' => $line->quantity,
-                'unit_price' => $line->unit_price?->getAmount()->toFloat(),
+                'unit_price' => $line->unit_price,
                 'tax_id' => $line->tax_id,
                 'income_account_id' => $line->income_account_id,
             ];
         })->toArray();
         $data['invoiceLines'] = $linesData;
-        $data['total_amount'] = $this->record->total_amount?->getAmount()->toFloat();
-        $data['total_tax'] = $this->record->total_tax?->getAmount()->toFloat();
         return $data;
     }
 
@@ -100,7 +100,7 @@ class EditInvoice extends EditRecord
             $lineDTOs[] = new UpdateInvoiceLineDTO(
                 description: $line['description'],
                 quantity: $line['quantity'],
-                unit_price: $line['unit_price'],
+                unit_price: Money::of($line['unit_price'], $record->currency->code),
                 income_account_id: $line['income_account_id'],
                 product_id: $line['product_id'] ?? null,
                 tax_id: $line['tax_id'] ?? null
@@ -117,6 +117,6 @@ class EditInvoice extends EditRecord
             fiscal_position_id: $data['fiscal_position_id'] ?? null
         );
 
-        return (new UpdateInvoiceAction())->execute($invoiceDTO);
+        return app(UpdateInvoiceAction::class)->execute($invoiceDTO);
     }
 }

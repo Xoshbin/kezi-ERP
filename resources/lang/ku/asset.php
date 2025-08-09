@@ -19,4 +19,8 @@ return [
     'depreciation_entries' => 'تۆمارەکانی بەکارهێنان',
     'depreciation_date' => 'بەرواری بەکارهێنان',
     'amount' => 'بڕ',
+
+    // Actions
+    'post' => 'پۆست',
+    'post_depreciation_success' => 'بەکارهێنان بە سەرکەوتوویی پۆست کرا.',
 ];

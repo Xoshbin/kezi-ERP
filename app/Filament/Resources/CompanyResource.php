@@ -21,6 +21,13 @@ class CompanyResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
+    protected static ?int $navigationSort = 1;
+
+    public static function getNavigationGroup(): ?string
+    {
+        return __('navigation.groups.configuration');
+    }
+
     public static function getModelLabel(): string
     {
         return __('company.singular');
@@ -147,7 +154,8 @@ class CompanyResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            RelationManagers\AccountsRelationManager::class,
+            RelationManagers\UsersRelationManager::class,
         ];
     }
 

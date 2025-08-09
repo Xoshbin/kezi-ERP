@@ -2,21 +2,17 @@
 
 namespace App\Actions\Accounting;
 
+use App\DataTransferObjects\Accounting\CreateJournalEntryDTO;
+use App\DataTransferObjects\Accounting\CreateJournalEntryLineDTO;
 use App\Models\DepreciationEntry;
 use App\Models\JournalEntry;
 use App\Models\User;
-use App\Services\JournalEntryService;
 use Brick\Money\Money;
-use Illuminate\Support\Facades\App;
 
 class CreateJournalEntryForDepreciationAction
 {
-    protected JournalEntryService $journalEntryService;
-
-    public function __construct()
+    public function __construct(private readonly CreateJournalEntryAction $createJournalEntryAction)
     {
-        // We still use the generic service, but it's now encapsulated here.
-        $this->journalEntryService = App::make(JournalEntryService::class);
     }
 
     public function execute(DepreciationEntry $entry, User $user): JournalEntry
@@ -33,39 +29,43 @@ class CreateJournalEntryForDepreciationAction
         }
 
         // 2. Build the journal entry lines based on depreciation accounting rules.
-        $lines = [
+        $lineDTOs = [
             // Rule: DEBIT the Depreciation Expense account.
-            [
-                'account_id' => $asset->depreciation_expense_account_id,
-                'debit' => $entry->amount,
-                'credit' => Money::of(0, $currencyCode),
-                'description' => 'Depreciation Expense for ' . $asset->name,
-            ],
+            new CreateJournalEntryLineDTO(
+                account_id: $asset->depreciation_expense_account_id,
+                debit: $entry->amount,
+                credit: Money::of(0, $currencyCode),
+                description: 'Depreciation Expense for ' . $asset->name,
+                partner_id: null,
+                analytic_account_id: null,
+            ),
             // Rule: CREDIT the Accumulated Depreciation contra-asset account.
-            [
-                'account_id' => $asset->accumulated_depreciation_account_id,
-                'credit' => $entry->amount,
-                'debit' => Money::of(0, $currencyCode),
-                'description' => 'Accumulated Depreciation for ' . $asset->name,
-            ],
+            new CreateJournalEntryLineDTO(
+                account_id: $asset->accumulated_depreciation_account_id,
+                debit: Money::of(0, $currencyCode),
+                credit: $entry->amount,
+                description: 'Accumulated Depreciation for ' . $asset->name,
+                partner_id: null,
+                analytic_account_id: null,
+            ),
         ];
 
-        // 3. Prepare the data payload for the generic JournalEntryService.
-        $journalEntryData = [
-            'company_id' => $asset->company_id,
-            'journal_id' => $journalId,
-            'entry_date' => $entry->depreciation_date,
-            'reference' => 'DEPR/' . $asset->name . '/' . $entry->depreciation_date->format('Y-m'),
-            'description' => 'Depreciation for ' . $asset->name,
-            'source_type' => DepreciationEntry::class,
-            'source_id' => $entry->id,
-            'created_by_user_id' => $user->id,
-            'lines' => $lines,
-            'currency_id' => $company->currency_id,
-        ];
+        // 3. Prepare the data payload for the action.
+        $journalEntryDTO = new CreateJournalEntryDTO(
+            company_id: $asset->company_id,
+            journal_id: $journalId,
+            currency_id: $company->currency_id,
+            entry_date: $entry->depreciation_date,
+            reference: 'DEPR/' . $asset->name . '/' . $entry->depreciation_date->format('Y-m'),
+            description: 'Depreciation for ' . $asset->name,
+            source_type: DepreciationEntry::class,
+            source_id: $entry->id,
+            created_by_user_id: $user->id,
+            is_posted: true,
+            lines: $lineDTOs
+        );
 
-        // 4. Execute the generic service and return the result.
-        // We pass 'true' to post it immediately.
-        return $this->journalEntryService->create($journalEntryData, true);
+        // 4. Execute the action and return the result.
+        return $this->createJournalEntryAction->execute($journalEntryDTO);
     }
 }

@@ -7,6 +7,9 @@ use App\Models\Company;
 use App\Models\Journal;
 use App\Models\JournalEntry;
 use App\Services\AccountService;
+use App\Actions\Accounting\CreateJournalEntryAction;
+use App\DataTransferObjects\Accounting\CreateJournalEntryDTO;
+use App\DataTransferObjects\Accounting\CreateJournalEntryLineDTO;
 use App\Services\JournalService;
 use Tests\Traits\CreatesApplication;
 use Tests\Traits\WithConfiguredCompany;
@@ -87,27 +90,44 @@ test('a deprecated account cannot be used for new financial transactions', funct
 
     // Arrange: Prepare the data for a journal entry that attempts to use the deprecated account.
     $currencyCode = $this->company->currency->code;
-    $journalEntryData = [
-        'company_id' => $this->company->id,
-        'entry_date' => now()->toDateString(),
-        'reference' => 'INVALID-USE-DEPRECATED',
-        'currency_id' => $this->company->currency_id,
-        'journal_id' => Journal::factory()->for($this->company)->create()->id,
-        'lines' => [
-            // This line uses the deprecated account, which should be rejected.
-            ['account_id' => $deprecatedAccount->id, 'debit' => Money::of(100, $currencyCode), 'credit' => Money::of(0, $currencyCode)],
-            // This line is valid.
-            ['account_id' => $activeAccount->id, 'credit' => Money::of(100, $currencyCode), 'debit' => Money::of(0, $currencyCode)],
-        ],
+    $lineDTOs = [
+        new CreateJournalEntryLineDTO(
+            account_id: $deprecatedAccount->id,
+            debit: Money::of(100, $currencyCode),
+            credit: Money::of(0, $currencyCode),
+            description: 'Deprecated account line',
+            partner_id: null,
+            analytic_account_id: null,
+        ),
+        new CreateJournalEntryLineDTO(
+            account_id: $activeAccount->id,
+            debit: Money::of(0, $currencyCode),
+            credit: Money::of(100, $currencyCode),
+            description: 'Active account line',
+            partner_id: null,
+            analytic_account_id: null,
+        ),
     ];
 
-    // Arrange: Instantiate the service that contains the business logic.
-    $journalEntryService = app(\App\Services\JournalEntryService::class);
+    $journalEntryDTO = new CreateJournalEntryDTO(
+        company_id: $this->company->id,
+        journal_id: Journal::factory()->for($this->company)->create()->id,
+        currency_id: $this->company->currency_id,
+        entry_date: now()->toDateString(),
+        reference: 'INVALID-USE-DEPRECATED',
+        description: 'Attempt to use deprecated account',
+        created_by_user_id: $this->user->id,
+        is_posted: true,
+        lines: $lineDTOs,
+    );
 
-    // Assert: Expect the service to throw a specific, clear exception when it detects
+    // Arrange: Instantiate the action that contains the business logic.
+    $createJournalEntryAction = app(CreateJournalEntryAction::class);
+
+    // Assert: Expect the action to throw a specific, clear exception when it detects
     // the use of a deprecated account. This confirms the backend rule is enforced.
-    expect(fn() => $journalEntryService->create($journalEntryData))
-        ->toThrow(Illuminate\Validation\ValidationException::class);
+    expect(fn() => $createJournalEntryAction->execute($journalEntryDTO))
+        ->toThrow(ValidationException::class);
 });
 
 test('creating a journal with an existing short code for the same company is prevented', function () {

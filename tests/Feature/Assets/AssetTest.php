@@ -40,8 +40,8 @@ test('running depreciation for an asset creates the correct journal entries', fu
     (app(AssetService::class))->computeDepreciation($asset);
     $draftEntry = $asset->depreciationEntries()->where('status', DepreciationEntryStatus::Draft)->first();
 
-    // Manually instantiate and execute the action
-    $postAction = new PostDepreciationEntryAction(new CreateJournalEntryForDepreciationAction());
+    // Resolve the action from the container to handle dependencies automatically
+    $postAction = app(PostDepreciationEntryAction::class);
     $postedDepreciationEntry = $postAction->execute($draftEntry, $this->user);
 
     // Assert: A depreciation entry was created and posted.

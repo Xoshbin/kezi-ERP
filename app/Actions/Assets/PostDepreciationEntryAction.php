@@ -24,7 +24,7 @@ class PostDepreciationEntryAction
                 'journal_entry_id' => $journalEntry->id,
             ]);
 
-            return $depreciationEntry;
+            return $depreciationEntry->fresh();
         });
     }
 }

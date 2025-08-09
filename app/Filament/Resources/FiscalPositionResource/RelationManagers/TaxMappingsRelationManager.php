@@ -14,7 +14,12 @@ class TaxMappingsRelationManager extends RelationManager
 {
     protected static string $relationship = 'taxMappings';
 
-    protected static ?string $title = 'Tax Mappings';
+    protected static ?string $title = null;
+
+    public static function getTitle(\Illuminate\Database\Eloquent\Model $ownerRecord, string $pageClass): string
+    {
+        return __('fiscal_position.relation_managers.tax_mappings.title');
+    }
 
     public function form(Form $form): Form
     {

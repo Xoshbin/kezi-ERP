@@ -2,6 +2,8 @@
 
 return [
     // General
+    'label' => 'پسووڵە',
+    'plural_label' => 'پسووڵەکان',
     'invoice' => 'پسووڵە',
     'invoices' => 'پسووڵەکان',
     'invoice_details' => 'وردەکاریی پسووڵە',
