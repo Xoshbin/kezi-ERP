@@ -404,6 +404,164 @@ Soran, an ambitious IT professional in Slemani, decides to start his own consult
 * **Expected Outcome:** The respective `BankStatementLine` records for these payments are marked as reconciled. The Payment records themselves might also update their status (e.g., from 'Confirmed' to 'Reconciled' if your system tracks this granularly).
 
 ---
+## Step 11: Inventory Management – Purchasing and Selling Physical Products
+
+*Goal: Implement and test perpetual inventory valuation, including cost layer management and automatic generation of inventory-related accounting entries (Inventory Asset, Cost of Goods Sold, Stock Input).*
+
+* **Accounting Rationale:** Perpetual inventory valuation continuously updates inventory records with quantities and values as transactions occur. Methods like Average Cost (AVCO), FIFO, and LIFO determine the cost of goods sold and the remaining inventory value, directly impacting financial statements. Anglo-Saxon accounting often uses a "Stock Input" interim account when goods are received before the vendor bill is processed, ensuring proper accrual.
+* **Technical Implementation:** Extend the `Product` model, introduce cost layer and stock move valuation models, and encapsulate logic in a dedicated service layer that interacts with the immutable Journal Entry system.
+
+### • 11.1. Create Inventory Accounts
+* **Resource:** `AccountResource`
+* **Action:** Click "New Account" for each:
+    * Code: `1100`, Name: `Inventory Asset`, Type: `Asset`
+    * Code: `6000`, Name: `Cost of Goods Sold`, Type: `Expense`
+    * Code: `2150`, Name: `Stock Interim (Received)`, Type: `Liability`
+    * Code: `6200`, Name: `Inventory Adjustment Expense`, Type: `Expense`
+* **Expected Outcome:** Accounts are available in the Chart of Accounts.
+
+### • 11.2. Create a Storable Product with Inventory Settings
+* **Story:** Soran adds "IT Workstation" as a product for sale.
+* **Resource:** `ProductResource`
+* **Action:** Click "New Product".
+* **Enter Data:**
+    * `name`: IT Workstation
+    * `sku`: ITWS001
+    * `unit_price`: 10,000,000 (selling price)
+    * `type`: storable_product
+    * `inventory_valuation_method`: avco
+    * `default_inventory_account_id`: 1100 - Inventory Asset
+    * `default_cogs_account_id`: 6000 - Cost of Goods Sold
+    * `default_stock_input_account_id`: 2150 - Stock Interim (Received)
+* **Expected Outcome:** Product is configured for perpetual inventory tracking.
+
+### • 11.3. Purchase Inventory (Vendor Bill & Incoming Stock)
+* **Story:** Buy 5 "IT Workstations" from "Global Tech Distributors" at 7,000,000 IQD each.
+* **Resource:** `VendorBillResource`
+* **Action:**
+    1. Create Partner: "Global Tech Distributors" (Vendor)
+    2. Create Vendor Bill:
+        * `vendor_id`: Global Tech Distributors
+        * `bill_date`: (Today's Date)
+        * `bill_reference`: GBL-WS-001
+    3. Add VendorBillLine:
+        * `description`: IT Workstation
+        * `quantity`: 5
+        * `unit_price`: 7,000,000
+        * `expense_account_id`: 1100 - Inventory Asset
+    4. Post the Vendor Bill.
+* **Expected Outcome:**
+    * Inventory increases by 5 units.
+    * Average cost updates to 7,000,000 IQD/unit.
+    * Journal Entry: Debit 1100 - Inventory Asset (35,000,000 IQD), Credit 2150 - Stock Interim (Received) (35,000,000 IQD).
+    * Entry is hashed and linked to the Vendor Bill.
+
+### • 11.4. Sell Inventory (Customer Invoice & Cost of Goods Sold)
+* **Story:** Sell 2 "IT Workstations" to "Zanyari Solutions" at 10,000,000 IQD each.
+* **Resource:** `InvoiceResource`
+* **Action:**
+    1. Create Partner: "Zanyari Solutions" (Customer)
+    2. Create Invoice:
+        * `customer_id`: Zanyari Solutions
+        * `invoice_date`: (Today's Date)
+    3. Add InvoiceLine:
+        * `description`: IT Workstation
+        * `quantity`: 2
+        * `unit_price`: 10,000,000
+        * `income_account_id`: 4000 - Consulting Revenue
+    4. Post the Invoice.
+* **Expected Outcome:**
+    * Inventory decreases by 2 units.
+    * COGS calculated at 7,000,000 IQD/unit (AVCO).
+    * Journal Entries:
+        * Sales: Debit 1200 - Accounts Receivable (20,000,000 IQD), Credit 4000 - Consulting Revenue (20,000,000 IQD).
+        * COGS: Debit 6000 - Cost of Goods Sold (14,000,000 IQD), Credit 1100 - Inventory Asset (14,000,000 IQD).
+    * Entries are hashed and linked to the Invoice.
+
+### • 11.5. Inventory Adjustment (Write-Off Damaged Goods)
+* **Story:** Write off 1 damaged "IT Workstation".
+* **Resource:** `JournalEntryResource`
+* **Action:** Create Journal Entry:
+    * `journal_id`: Miscellaneous
+    * `entry_date`: (Today's Date)
+    * `description`: Write-off for 1 damaged IT Workstation
+* **JournalEntryLines:**
+    * Debit: 6200 - Inventory Adjustment Expense (7,000,000 IQD)
+    * Credit: 1100 - Inventory Asset (7,000,000 IQD)
+* **Action:** Post the Journal Entry.
+* **Expected Outcome:** Inventory decreases by 1 unit; entry is hashed and immutable.
+
+---
+
+As AccounTech Pro, I will update your `scenario.md` with a detailed scenario for `Lock Date Enforcement`, seamlessly integrating it into the existing structure and aligning with your Laravel, Filament, and Pest stack. This is fundamental for maintaining the integrity and auditability of your financial records, a cornerstone of robust accounting inspired by Odoo's principles.
+
+Here is the appended scenario for `Lock Date Enforcement`, placed chronologically after the `Inventory Management` step.
+---
+
+## Step 12: Lock Date Enforcement
+
+*Goal: Ensure the system strictly enforces financial period lock dates, preventing creation or modification of transactions dated on or before a defined locked period. This is essential for compliance, auditability, and data integrity.*
+
+* **Accounting Rationale:** Once a financial period is closed, it must remain immutable to comply with accounting standards (IFRS/GAAP) and legal regulations. Lock dates prevent retroactive changes that could compromise financial statements or tax compliance. Systems like Odoo implement multiple lock levels (e.g., "Lock Tax Return Date", "Lock Everything Date") for granular control.
+
+* **Technical Implementation:** The application should use a dedicated validation service (e.g., `AccountingValidationService` or `LockDateService`) to check against the `lock_dates` table. Any attempt to bypass this validation should trigger a custom exception such as `PeriodIsLockedException`. Both UI actions (via Filament) and direct service calls must respect the lock.
+
+### • 12.1. Set a Lock Date
+
+* **Story:** Soran, as administrator, closes all records up to the end of the previous month for audit preparation.
+* **Resource:** `LockDateResource` (or admin panel section).
+* **Action:** Create a new Lock Date entry:
+    * `company_id`: Jmeryar ERP
+    * `lock_type`: everything_date
+    * `locked_until`: e.g., '2025-07-31'
+* **Expected Outcome:** The lock date is recorded in the `lock_dates` table for Jmeryar ERP.
+
+### • 12.2. Attempt to Create a Journal Entry in a Locked Period
+
+* **Story:** An accountant tries to back-date a miscellaneous expense within the locked period.
+* **Resource:** `JournalEntryResource`
+* **Action:** Attempt to create a new journal entry with `entry_date` set to a locked date (e.g., '2025-07-15').
+* **Expected Outcome:** The system blocks the action and throws `PeriodIsLockedException`.
+
+### • 12.3. Attempt to Modify a Posted Invoice in a Locked Period
+
+* **Story:** Soran attempts to edit an invoice from the locked period to fix a typo.
+* **Resource:** `InvoiceResource`
+* **Action:** Attempt to update or reset to draft an invoice dated within the locked period.
+* **Expected Outcome:** The system blocks the modification, throwing `PeriodIsLockedException` or `UpdateNotAllowedException`.
+
+### • 12.4. Attempt to Modify a Posted Vendor Bill in a Locked Period
+
+* **Story:** A user tries to adjust a posted vendor bill from the locked period.
+* **Resource:** `VendorBillResource`
+* **Action:** Attempt to modify a vendor bill dated within the locked period.
+* **Expected Outcome:** The system blocks the modification, throwing `PeriodIsLockedException` or `UpdateNotAllowedException`.
+
+---
+
+## Additional Post-Scenario Tests & Considerations for Robustness
+
+Beyond these core transactions, ensure your system rigorously tests the following principles:
+
+### Comprehensive Audit Logging
+
+* **Test:** Confirm all significant financial data changes (e.g., Draft to Posted, Reset to Draft) are logged in the `audit_logs` table, capturing `user_id`, `event_type`, `auditable_type`, `auditable_id`, `old_values`, `new_values`, and `created_at`.
+* **Expected Outcome:** An unalterable log of all critical actions.
+
+### Preventing Direct Deletion/Modification of Posted Entries
+
+* **Test:** Attempt to directly DELETE or UPDATE any posted invoice, vendor bill, payment, or adjustment document.
+* **Expected Outcome:** The system blocks these actions, throwing `DeletionNotAllowedException` or `UpdateNotAllowedException`, enforcing immutability.
+
+### Cryptographic Hashing Verification
+
+* **Test:** For every posted `JournalEntry`, verify the `hash` field contains a valid SHA-256 hash and `previous_hash` links to the prior entry, forming a cryptographic chain.
+* **Expected Outcome:** An unbroken, verifiable chain of financial transactions.
+
+By addressing these areas, your "Jmeryar ERP" application will achieve robust data integrity, compliance, and reliability, matching the standards of leading platforms like Odoo.
+
+
+This scenario covers inventory management from setup to purchasing, selling, and adjustments, maintaining strict immutability and auditability. Test these flows thoroughly, focusing on correct Journal Entry generation and hashing.
 
 * **Expected Outcome (Overall Scenario):**
     * The bank statement is successfully processed, including manual input of the two payments and a minor bank fee.
