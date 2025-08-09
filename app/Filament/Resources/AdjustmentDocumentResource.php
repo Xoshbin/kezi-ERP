@@ -34,7 +34,7 @@ class AdjustmentDocumentResource extends Resource
 
     public static function getNavigationGroup(): ?string
     {
-        return __('navigation.groups.administration');
+        return __('navigation.groups.core_accounting');
     }
 
     // Localization functions remain the same...

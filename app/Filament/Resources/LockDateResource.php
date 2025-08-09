@@ -2,14 +2,15 @@
 
 namespace App\Filament\Resources;
 
+use Filament\Forms;
+use Filament\Tables;
+use App\Models\LockDate;
+use Filament\Forms\Form;
+use Filament\Tables\Table;
+use Filament\Resources\Resource;
+use App\Filament\Clusters\Settings;
 use App\Enums\Accounting\LockDateType;
 use App\Filament\Resources\LockDateResource\Pages;
-use App\Models\LockDate;
-use Filament\Forms;
-use Filament\Forms\Form;
-use Filament\Resources\Resource;
-use Filament\Tables;
-use Filament\Tables\Table;
 
 class LockDateResource extends Resource
 {
@@ -17,10 +18,10 @@ class LockDateResource extends Resource
 
     protected static ?int $navigationSort = 7;
 
-    public static function getNavigationGroup(): ?string
-    {
-        return __('navigation.groups.configuration');
-    }
+    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+
+    protected static ?string $cluster = Settings::class;
+
 
     public static function getModelLabel(): string
     {

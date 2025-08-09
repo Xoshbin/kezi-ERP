@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources;
 
+use App\Filament\Clusters\Settings;
 use App\Filament\Resources\TaxResource\Pages;
 use App\Filament\Resources\TaxResource\RelationManagers;
 use App\Models\Tax;
@@ -24,10 +25,7 @@ class TaxResource extends Resource
 
     protected static ?int $navigationSort = 3;
 
-    public static function getNavigationGroup(): ?string
-    {
-        return __('navigation.groups.configuration');
-    }
+    protected static ?string $cluster = Settings::class;
 
     public static function getLabel(): string
     {

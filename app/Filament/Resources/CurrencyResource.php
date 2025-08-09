@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources;
 
+use App\Filament\Clusters\Settings;
 use App\Filament\Resources\CurrencyResource\Pages;
 use App\Filament\Resources\CurrencyResource\RelationManagers;
 use App\Models\Currency;
@@ -24,10 +25,7 @@ class CurrencyResource extends Resource
 
     protected static ?int $navigationSort = 2;
 
-    public static function getNavigationGroup(): ?string
-    {
-        return __('navigation.groups.configuration');
-    }
+    protected static ?string $cluster = Settings::class;
 
     public static function getLabel(): ?string
     {

@@ -33,7 +33,7 @@ class VendorBillResource extends Resource
 
     public static function getNavigationGroup(): ?string
     {
-        return __('navigation.groups.purchases_payables');
+        return __('navigation.groups.sales_purchases');
     }
 
     public static function getModelLabel(): string
