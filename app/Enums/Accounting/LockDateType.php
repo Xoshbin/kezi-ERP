@@ -8,12 +8,11 @@ enum LockDateType: string
     case ALL_USERS = 'everything_date';
     case HARD_LOCK = 'hard_lock';
 
-    public function getLabel(): string
+    /**
+     * Get the translated label for the lock date type.
+     */
+    public function label(): string
     {
-        return match ($this) {
-            self::TAX_RETURN => 'Tax Return Lock',
-            self::ALL_USERS => 'All Users Lock',
-            self::HARD_LOCK => 'Hard Lock (Immutable)',
-        };
+        return __('enums.lock_date_type.' . $this->value);
     }
 }

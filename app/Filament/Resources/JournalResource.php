@@ -57,10 +57,14 @@ class JournalResource extends Resource
                     ->label(__('journal.name'))
                     ->required()
                     ->maxLength(255),
-                Forms\Components\TextInput::make('type')
+                Forms\Components\Select::make('type')
                     ->label(__('journal.type'))
                     ->required()
-                    ->maxLength(255),
+                    ->options(
+                        collect(JournalType::cases())
+                            ->mapWithKeys(fn (JournalType $type) => [$type->value => $type->label()])
+                    )
+                    ->searchable(),
                 Forms\Components\TextInput::make('short_code')
                     ->label(__('journal.short_code'))
                     ->required()
