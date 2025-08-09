@@ -61,7 +61,10 @@ return [
     'no_partner' => 'No Partner',
     'no_unreconciled_payments' => 'No unreconciled payments found',
     'no_unreconciled_payments_description' => 'All payments have been reconciled or there are no confirmed payments for this period.',
+    'no_bank_statement_lines' => 'No bank statement lines',
+    'no_bank_statement_lines_description' => 'All bank statement lines have been reconciled or there are no unreconciled lines for this statement.',
     'select' => 'Select',
     'payment_date' => 'Payment Date',
     'type' => 'Type',
+    'write_off_reason' => 'Write-off Reason',
 ];

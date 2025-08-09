@@ -15,6 +15,9 @@ use Livewire\Livewire;
 uses(RefreshDatabase::class);
 
 beforeEach(function () {
+    // Set locale to English for consistent test assertions
+    app()->setLocale('en');
+
     $this->company = Company::factory()->create();
     $this->user = User::factory()->for($this->company)->create();
     $this->actingAs($this->user);

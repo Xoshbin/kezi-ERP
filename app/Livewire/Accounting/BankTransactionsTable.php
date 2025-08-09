@@ -92,7 +92,9 @@ class BankTransactionsTable extends Component implements HasTable, HasForms
                     }),
             ])
             ->paginated([10, 25, 50])
-            ->defaultSort('date', 'desc');
+            ->defaultSort('date', 'desc')
+            ->emptyStateHeading(__('bank_statement.no_bank_statement_lines'))
+            ->emptyStateDescription(__('bank_statement.no_bank_statement_lines_description'));
     }
 
     public function toggleBankLine(int $lineId): void
