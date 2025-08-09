@@ -8,7 +8,9 @@ use App\Models\Account;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
 use Filament\Resources\Resource;
+use App\Enums\Accounting\AccountType;
 use Illuminate\Database\Eloquent\Builder;
+use Filament\Resources\Concerns\Translatable;
 use App\Filament\Resources\AccountResource\Pages;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\AccountResource\RelationManagers;
@@ -16,6 +18,8 @@ use App\Filament\Resources\AccountResource\RelationManagers\JournalEntryLinesRel
 
 class AccountResource extends Resource
 {
+    use Translatable;
+
     protected static ?string $model = Account::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
@@ -53,10 +57,14 @@ class AccountResource extends Resource
                     ->label(__('account.name'))
                     ->required()
                     ->maxLength(255),
-                Forms\Components\TextInput::make('type')
+                Forms\Components\Select::make('type')
                     ->label(__('account.type'))
                     ->required()
-                    ->maxLength(255),
+                    ->options(
+                        collect(AccountType::cases())
+                            ->mapWithKeys(fn (AccountType $type) => [$type->value => $type->label()])
+                    )
+                    ->searchable(),
                 Forms\Components\Toggle::make('is_deprecated')
                     ->label(__('account.is_deprecated'))
                     ->required(),

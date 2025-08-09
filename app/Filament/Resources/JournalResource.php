@@ -5,9 +5,11 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\JournalResource\Pages;
 use App\Filament\Resources\JournalResource\RelationManagers;
 use App\Models\Journal;
+use App\Enums\Accounting\JournalType;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
+use Filament\Resources\Concerns\Translatable;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
@@ -15,6 +17,8 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class JournalResource extends Resource
 {
+    use Translatable;
+
     protected static ?string $model = Journal::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
@@ -53,10 +57,14 @@ class JournalResource extends Resource
                     ->label(__('journal.name'))
                     ->required()
                     ->maxLength(255),
-                Forms\Components\TextInput::make('type')
+                Forms\Components\Select::make('type')
                     ->label(__('journal.type'))
                     ->required()
-                    ->maxLength(255),
+                    ->options(
+                        collect(JournalType::cases())
+                            ->mapWithKeys(fn (JournalType $type) => [$type->value => $type->label()])
+                    )
+                    ->searchable(),
                 Forms\Components\TextInput::make('short_code')
                     ->label(__('journal.short_code'))
                     ->required()

@@ -56,8 +56,8 @@ test('a soft-deleted product can be retrieved with "withTrashed" for historical 
 });
 
 test('a product is correctly linked to its default income and expense general ledger accounts', function () {
-    $incomeAccount = Account::factory()->for($this->company)->create(['type' => 'Income']);
-    $expenseAccount = Account::factory()->for($this->company)->create(['type' => 'Expense']);
+    $incomeAccount = Account::factory()->for($this->company)->create(['type' => 'income']);
+    $expenseAccount = Account::factory()->for($this->company)->create(['type' => 'expense']);
     // MODIFIED: The product factory needs a Money object for unit_price
     $currencyCode = $this->company->currency->code;
     $product = Product::factory()->for($this->company)->create([
@@ -72,7 +72,7 @@ test('a product is correctly linked to its default income and expense general le
 });
 
 test('a tax is correctly linked to its designated general ledger tax account', function () {
-    $taxAccount = Account::factory()->for($this->company)->create(['type' => 'Liability']); // e.g., VAT Payable
+    $taxAccount = Account::factory()->for($this->company)->create(['type' => 'liability']); // e.g., VAT Payable
     // MODIFIED: The tax factory needs a Money object for rate
     $currencyCode = $this->company->currency->code;
     $tax = Tax::factory()->for($this->company)->create([

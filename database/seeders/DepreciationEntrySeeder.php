@@ -21,9 +21,9 @@ class DepreciationEntrySeeder extends Seeder
     {
         DB::transaction(function () {
             $depreciableAssets = Asset::where('is_depreciable', true)->get();
-            $journal = Journal::where('name', 'Fixed Assets Journal')->firstOrFail();
-            $depreciationExpenseAccount = Account::where('name', 'Depreciation Expense')->firstOrFail();
-            $accumulatedDepreciationAccount = Account::where('name', 'Accumulated Depreciation')->firstOrFail();
+            $journal = Journal::where('name->en', 'Fixed Assets Journal')->firstOrFail();
+            $depreciationExpenseAccount = Account::where('name->en', 'Depreciation Expense')->firstOrFail();
+            $accumulatedDepreciationAccount = Account::where('name->en', 'Accumulated Depreciation')->firstOrFail();
             $company = $depreciableAssets->first()->company;
 
             $referenceCounter = 1;

@@ -18,9 +18,9 @@ uses(RefreshDatabase::class, WithConfiguredCompany::class);
 
 test('running depreciation for an asset creates the correct journal entries', function () {
     // Arrange: Set up the necessary accounts and journal.
-    $fixedAssetAccount = Account::factory()->for($this->company)->create(['type' => 'Fixed Asset']);
-    $accumulatedDepreciationAccount = Account::factory()->for($this->company)->create(['type' => 'Accumulated Depreciation']);
-    $depreciationExpenseAccount = Account::factory()->for($this->company)->create(['type' => 'Expense']);
+    $fixedAssetAccount = Account::factory()->for($this->company)->create(['type' => 'asset']);
+    $accumulatedDepreciationAccount = Account::factory()->for($this->company)->create(['type' => 'asset']);
+    $depreciationExpenseAccount = Account::factory()->for($this->company)->create(['type' => 'expense']);
     $depreciationJournal = $this->company->default_depreciation_journal_id;
 
     // Arrange: Create an asset to be depreciated.

@@ -7,12 +7,13 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Spatie\Translatable\HasTranslations;
 
 /**
  * Class AnalyticPlan
  *
  * @package App\Models
- * 
+ *
  * This Eloquent model represents an Analytic Plan, a core concept in management
  * accounting systems like Odoo. Analytic plans are used to group and categorize
  * analytic accounts, enabling multi-dimensional analysis of costs and revenues
@@ -44,7 +45,9 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  */
 class AnalyticPlan extends Model
 {
-    use HasFactory;
+    use HasFactory, HasTranslations;
+
+    public array $translatable = ['name'];
 
     /**
      * The table associated with the model.

@@ -37,7 +37,7 @@ class AssetSeeder extends Seeder
         }
 
         // Fetch the journal
-        $journal = Journal::where('name', 'Fixed Assets')->where('company_id', $company->id)->first();
+        $journal = Journal::where('name->en', 'Fixed Assets')->where('company_id', $company->id)->first();
         if (!$journal) {
             throw new \Exception("Journal 'Fixed Assets' not found. Please run JournalSeeder.");
         }

@@ -61,7 +61,7 @@ test('a draft invoice can be confirmed, which posts it and dispatches an event',
 
 test('confirming an invoice generates the correct journal entry', function () {
     // Arrange: The company is already configured with default accounts and journals.
-    $productSalesAccount = Account::factory()->for($this->company)->create(['type' => 'Income']);
+    $productSalesAccount = Account::factory()->for($this->company)->create(['type' => 'income']);
     $currencyCode = $this->company->currency->code;
 
     // THE FIX: Ensure the product is created with a default income account.

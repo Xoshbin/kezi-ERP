@@ -8,6 +8,8 @@ use Filament\Resources\Pages\EditRecord;
 
 class EditAnalyticPlan extends EditRecord
 {
+    use EditRecord\Concerns\Translatable;
+
     protected static string $resource = AnalyticPlanResource::class;
 
     public function getTitle(): string
@@ -18,6 +20,7 @@ class EditAnalyticPlan extends EditRecord
     protected function getHeaderActions(): array
     {
         return [
+            Actions\LocaleSwitcher::make(),
             Actions\DeleteAction::make(),
         ];
     }

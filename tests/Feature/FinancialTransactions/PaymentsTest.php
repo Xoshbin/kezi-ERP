@@ -105,8 +105,8 @@ test('an outbound payment can be created and linked to a vendor bill', function 
 
 test('creating a payment generates the correct journal entry', function () {
     // Arrange: Set up the necessary accounts and journal.
-    $receivableAccount = Account::factory()->for($this->company)->create(['type' => 'Receivable']);
-    $bankAccount = Account::factory()->for($this->company)->create(['type' => 'Bank']);
+    $receivableAccount = Account::factory()->for($this->company)->create(['type' => 'asset']);
+    $bankAccount = Account::factory()->for($this->company)->create(['type' => 'asset']);
     $bankJournal = Journal::factory()->for($this->company)->create([
         'type' => JournalType::Bank,
         'default_debit_account_id' => $bankAccount->id,

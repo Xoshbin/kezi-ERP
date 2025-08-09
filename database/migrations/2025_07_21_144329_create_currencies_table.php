@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('currencies', function (Blueprint $table) {
             $table->id();
             $table->string('code')->unique(); // e.g., 'IQD', 'USD'
-            $table->string('name');
+            $table->json('name');
             $table->string('symbol', 5);
             $table->unsignedBigInteger('exchange_rate');
             $table->boolean('is_active')->default(true);

@@ -5,6 +5,7 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\ProductResource\Pages;
 use App\Filament\Resources\ProductResource\RelationManagers;
 use App\Models\Product;
+use App\Enums\Products\ProductType;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -72,10 +73,14 @@ class ProductResource extends Resource
                     ->label(__('product.unit_price'))
                     ->required()
                     ->numeric(),
-                Forms\Components\TextInput::make('type')
+                Forms\Components\Select::make('type')
                     ->label(__('product.type'))
                     ->required()
-                    ->maxLength(255),
+                    ->options(
+                        collect(ProductType::cases())
+                            ->mapWithKeys(fn (ProductType $type) => [$type->value => $type->label()])
+                    )
+                    ->searchable(),
                 Forms\Components\Toggle::make('is_active')
                     ->label(__('product.is_active'))
                     ->required(),
