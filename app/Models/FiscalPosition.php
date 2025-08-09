@@ -6,12 +6,13 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Spatie\Translatable\HasTranslations;
 
 /**
  * Class FiscalPosition
  *
  * @package App\Models
- * 
+ *
  * This Eloquent model represents a fiscal position, a crucial component in an accounting system
  * designed to automatically adjust taxes and accounts based on specific criteria, such as
  * the geographic location or business type of a customer or vendor. Fiscal positions are
@@ -43,7 +44,9 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  */
 class FiscalPosition extends Model
 {
-    use HasFactory;
+    use HasFactory, HasTranslations;
+
+    public array $translatable = ['name'];
 
     /**
      * The table associated with the model.
