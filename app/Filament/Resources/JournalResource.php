@@ -5,9 +5,11 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\JournalResource\Pages;
 use App\Filament\Resources\JournalResource\RelationManagers;
 use App\Models\Journal;
+use App\Enums\Accounting\JournalType;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
+use Filament\Resources\Concerns\Translatable;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
@@ -15,6 +17,8 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class JournalResource extends Resource
 {
+    use Translatable;
+
     protected static ?string $model = Journal::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
