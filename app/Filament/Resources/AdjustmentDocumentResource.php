@@ -41,6 +41,11 @@ class AdjustmentDocumentResource extends Resource
         return __('adjustment_document.plural_label');
     }
 
+    public static function getNavigationLabel(): string
+    {
+        return __('adjustment_document.plural_label');
+    }
+
 
     public static function form(Form $form): Form
     {
@@ -49,14 +54,14 @@ class AdjustmentDocumentResource extends Resource
         return $form->schema([
             Forms\Components\Grid::make(['lg' => 3])->schema([
                 Forms\Components\Group::make()->schema([
-                Section::make('Document Information')
-                    ->description('Basic information about the adjustment document')
+                Section::make(__('adjustment_document.document_information'))
+                    ->description(__('adjustment_document.document_information_description'))
                     ->icon('heroicon-o-document-text')
                     ->schema([
                         Forms\Components\Grid::make(3)->schema([
                             Forms\Components\Select::make('company_id')
                                 ->relationship('company', 'name')
-                                ->label('Company')
+                                ->label(__('adjustment_document.company'))
                                 ->required()
                                 ->live()
                                 ->default($company?->id)
@@ -70,7 +75,7 @@ class AdjustmentDocumentResource extends Resource
                                 ->preload(),
                             Forms\Components\Select::make('currency_id')
                                 ->relationship('currency', 'name')
-                                ->label('Currency')
+                                ->label(__('adjustment_document.currency'))
                                 ->required()
                                 ->live()
                                 ->default($company?->currency_id)
@@ -78,42 +83,42 @@ class AdjustmentDocumentResource extends Resource
                                 ->searchable()
                                 ->preload(),
                             Forms\Components\Select::make('type')
-                                ->label('Adjustment Type')
+                                ->label(__('adjustment_document.adjustment_type'))
                                 ->options(AdjustmentDocument::getTypes())
                                 ->required()
                                 ->searchable(),
                         ]),
                         Forms\Components\Grid::make(2)->schema([
                             Forms\Components\TextInput::make('reference_number')
-                                ->label('Reference Number')
+                                ->label(__('adjustment_document.reference_number'))
                                 ->required()
                                 ->maxLength(255)
                                 ->placeholder('e.g., ADJ-2024-001'),
                             Forms\Components\DatePicker::make('date')
-                                ->label('Adjustment Date')
+                                ->label(__('adjustment_document.adjustment_date'))
                                 ->required()
                                 ->rules([new NotInLockedPeriod()])
                                 ->default(now())
                                 ->native(false),
                         ]),
                         Forms\Components\Textarea::make('reason')
-                            ->label('Reason for Adjustment')
+                            ->label(__('adjustment_document.reason_for_adjustment'))
                             ->required()
                             ->placeholder('Describe the reason for this adjustment...')
                             ->rows(3)
                             ->columnSpanFull(),
                     ]),
-                Section::make('Link to Original Document')
-                    ->description('Optionally link this adjustment to an existing invoice or vendor bill')
+                Section::make(__('adjustment_document.link_to_original_document'))
+                    ->description(__('adjustment_document.link_to_original_document_description'))
                     ->icon('heroicon-o-link')
                     ->collapsible()
                     ->collapsed()
                     ->schema([
                         Forms\Components\Select::make('document_link_type')
-                            ->label('Document Type to Adjust')
+                            ->label(__('adjustment_document.document_type_to_adjust'))
                             ->options([
-                                'invoice' => 'Invoice',
-                                'vendor_bill' => 'Vendor Bill'
+                                'invoice' => __('adjustment_document.invoice'),
+                                'vendor_bill' => __('adjustment_document.vendor_bill')
                             ])
                             ->reactive()
                             ->afterStateUpdated(fn (Set $set) => [$set('original_invoice_id', null), $set('original_vendor_bill_id', null)])
@@ -154,22 +159,22 @@ class AdjustmentDocumentResource extends Resource
                     ]),
                 ])->columnSpan(['lg' => 2]),
                 Forms\Components\Group::make()->schema([
-                    Section::make('Document Status')
-                        ->description('Current status and metadata')
+                    Section::make(__('adjustment_document.document_status'))
+                        ->description(__('adjustment_document.document_status_description'))
                         ->icon('heroicon-o-flag')
                         ->schema([
                             Forms\Components\Select::make('status')
-                                ->label('Status')
+                                ->label(__('adjustment_document.status'))
                                 ->options(AdjustmentDocument::getStatuses())
                                 ->disabled()
                                 ->dehydrated(false)
                                 ->default('draft'),
                             Forms\Components\Placeholder::make('created_at')
-                                ->label('Created')
+                                ->label(__('adjustment_document.created'))
                                 ->content(fn (?AdjustmentDocument $record): string => $record?->created_at?->format('M j, Y g:i A') ?? 'Not saved yet')
                                 ->visible(fn (?AdjustmentDocument $record): bool => $record !== null),
                             Forms\Components\Placeholder::make('updated_at')
-                                ->label('Last Modified')
+                                ->label(__('adjustment_document.last_modified'))
                                 ->content(fn (?AdjustmentDocument $record): string => $record?->updated_at?->format('M j, Y g:i A') ?? 'Not saved yet')
                                 ->visible(fn (?AdjustmentDocument $record): bool => $record !== null),
                         ]),
@@ -177,8 +182,8 @@ class AdjustmentDocumentResource extends Resource
             ]),
 
             // Full-width Line Items Section
-            Section::make('Line Items')
-                ->description('Add items to adjust in this document')
+            Section::make(__('adjustment_document.line_items'))
+                ->description(__('adjustment_document.line_items_description'))
                 ->icon('heroicon-o-list-bullet')
                 ->schema([
                     Repeater::make('lines')
@@ -186,7 +191,7 @@ class AdjustmentDocumentResource extends Resource
                         ->live()
                         ->reorderable(false)
                         ->minItems(1)
-                        ->addActionLabel('+ Add Line')
+                        ->addActionLabel(__('adjustment_document.add_line'))
                         ->itemLabel(fn (array $state): ?string => $state['description'] ?? null)
                         ->schema([
                             Forms\Components\Grid::make([
@@ -196,7 +201,7 @@ class AdjustmentDocumentResource extends Resource
                                 'lg' => 12,
                             ])->schema([
                                 Forms\Components\Select::make('product_id')
-                                    ->label('Product')
+                                    ->label(__('adjustment_document.product'))
                                     ->searchable()
                                     ->getSearchResultsUsing(fn(string $search): array => Product::where('name', 'like', "%{$search}%")->limit(50)->pluck('name', 'id')->toArray())
                                     ->getOptionLabelUsing(fn($value): ?string => Product::find($value)?->name)
@@ -218,7 +223,7 @@ class AdjustmentDocumentResource extends Resource
                                         'lg' => 2,
                                     ]),
                                 Forms\Components\TextInput::make('description')
-                                    ->label('Description')
+                                    ->label(__('adjustment_document.description'))
                                     ->maxLength(255)
                                     ->required()
                                     ->placeholder('Item description')
@@ -228,7 +233,7 @@ class AdjustmentDocumentResource extends Resource
                                         'lg' => 3,
                                     ]),
                                 Forms\Components\TextInput::make('quantity')
-                                    ->label('Qty')
+                                    ->label(__('adjustment_document.qty'))
                                     ->required()
                                     ->numeric()
                                     ->default(1)
@@ -356,8 +361,8 @@ class AdjustmentDocumentResource extends Resource
                         ->requiresConfirmation(),
                 ]),
             ])
-            ->emptyStateHeading('No adjustment documents found')
-            ->emptyStateDescription('Create your first adjustment document to get started.')
+            ->emptyStateHeading(__('filament.empty_states.no_records_found'))
+            ->emptyStateDescription(__('filament.empty_states.create_first_record'))
             ->emptyStateIcon('heroicon-o-document-text');
     }
 

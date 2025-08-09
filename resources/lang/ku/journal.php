@@ -1,6 +1,19 @@
 <?php
 
 return [
+    // Labels
+    'label' => 'رۆژنامچە',
+    'plural_label' => 'رۆژنامچەکان',
+
+    // Basic fields
+    'company' => 'کۆمپانیا',
+    'name' => 'ناو',
+    'type' => 'جۆر',
+    'short_code' => 'کۆدی کورت',
+    'currency' => 'دراو',
+    'created_at' => 'کاتی دروستبوون',
+    'updated_at' => 'کاتی نوێکردنەوە',
+
     // JournalResource.php
     'default_debit_account' => 'هەژماری قەرزی بنەڕەت',
     'default_debit_account_helper' => 'بۆ رۆژنامچەی بانک/کاش، ئەمە ئەو هەژمارە بانکییەیە کە بۆ پارەدان بەکاردێت.',

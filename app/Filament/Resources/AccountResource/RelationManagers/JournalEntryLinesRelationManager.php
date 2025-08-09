@@ -15,7 +15,7 @@ class JournalEntryLinesRelationManager extends RelationManager
 {
     protected static string $relationship = 'journalEntryLines';
 
-    protected static ?string $title = 'Journal Entry Lines';
+    protected static ?string $title = null;
 
     public static function getTitle(Model $ownerRecord, string $pageClass): string
     {

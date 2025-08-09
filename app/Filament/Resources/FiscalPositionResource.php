@@ -19,6 +19,21 @@ class FiscalPositionResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
+    public static function getModelLabel(): string
+    {
+        return __('fiscal_position.label');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __('fiscal_position.plural_label');
+    }
+
+    public static function getNavigationLabel(): string
+    {
+        return __('fiscal_position.plural_label');
+    }
+
     public static function form(Form $form): Form
     {
         return $form
