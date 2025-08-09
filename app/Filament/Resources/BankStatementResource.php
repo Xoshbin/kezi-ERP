@@ -27,6 +27,13 @@ class BankStatementResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
+    protected static ?int $navigationSort = 2;
+
+    public static function getNavigationGroup(): ?string
+    {
+        return __('navigation.groups.banking_cash');
+    }
+
     public static function getModelLabel(): string
     {
         return __('bank_statement.bank_statement');

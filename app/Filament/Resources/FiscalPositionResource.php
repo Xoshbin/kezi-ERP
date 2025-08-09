@@ -19,6 +19,13 @@ class FiscalPositionResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
+    protected static ?int $navigationSort = 4;
+
+    public static function getNavigationGroup(): ?string
+    {
+        return __('navigation.groups.configuration');
+    }
+
     public static function getModelLabel(): string
     {
         return __('fiscal_position.label');
