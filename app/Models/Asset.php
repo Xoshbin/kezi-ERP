@@ -94,6 +94,8 @@ class Asset extends Model
         'accumulated_depreciation_account_id',
         'status',
         'currency_id',
+        'source_type',
+        'source_id',
     ];
 
     /**
