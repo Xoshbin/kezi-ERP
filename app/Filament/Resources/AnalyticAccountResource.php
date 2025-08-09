@@ -21,9 +21,11 @@ class AnalyticAccountResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
+    protected static ?int $navigationSort = 4;
+
     public static function getNavigationGroup(): ?string
     {
-        return __('analytic_account.navigation_group');
+        return __('navigation.groups.core_accounting');
     }
 
     public static function getNavigationLabel(): string

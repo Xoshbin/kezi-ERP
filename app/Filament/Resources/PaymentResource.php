@@ -31,9 +31,11 @@ class PaymentResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
+    protected static ?int $navigationSort = 1;
+
     public static function getNavigationGroup(): ?string
     {
-        return __('payment.navigation_group');
+        return __('navigation.groups.banking_cash');
     }
 
     public static function getNavigationLabel(): string

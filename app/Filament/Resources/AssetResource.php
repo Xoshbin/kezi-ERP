@@ -27,9 +27,11 @@ class AssetResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-archive-box';
 
+    protected static ?int $navigationSort = 2;
+
     public static function getNavigationGroup(): ?string
     {
-        return __('navigation.groups.accounting');
+        return __('navigation.groups.financial_planning');
     }
 
     public static function getModelLabel(): string
