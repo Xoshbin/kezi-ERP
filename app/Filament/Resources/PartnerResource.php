@@ -5,6 +5,7 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\PartnerResource\Pages;
 use App\Filament\Resources\PartnerResource\RelationManagers;
 use App\Models\Partner;
+use App\Enums\Partners\PartnerType;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -56,7 +57,10 @@ class PartnerResource extends Resource
                 Forms\Components\Select::make('type')
                     ->label(__('partner.type'))
                     ->required()
-                    ->options(Partner::getTypes()),
+                    ->options(
+                        collect(PartnerType::cases())
+                            ->mapWithKeys(fn (PartnerType $type) => [$type->value => $type->label()])
+                    ),
                 Forms\Components\TextInput::make('contact_person')
                     ->label(__('partner.contact_person'))
                     ->maxLength(255),
@@ -109,7 +113,10 @@ class PartnerResource extends Resource
                 Tables\Columns\SelectColumn::make('type')
                     ->label(__('partner.type'))
                     ->searchable()
-                    ->options(Partner::getTypes()),
+                    ->options(
+                        collect(PartnerType::cases())
+                            ->mapWithKeys(fn (PartnerType $type) => [$type->value => $type->label()])
+                    ),
                 Tables\Columns\TextColumn::make('contact_person')
                     ->label(__('partner.contact_person'))
                     ->searchable(),
