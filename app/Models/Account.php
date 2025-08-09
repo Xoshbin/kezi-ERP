@@ -7,6 +7,7 @@ use App\Observers\AuditLogObserver;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Spatie\Translatable\HasTranslations;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
@@ -66,7 +67,9 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 #[ObservedBy([AccountObserver::class, AuditLogObserver::class])] //(to log when accounts are created or deprecated)
 class Account extends Model
 {
-    use HasFactory;
+    use HasFactory, HasTranslations;
+
+    public array $translatable = ['name'];
 
     /**
      * The database table associated with the model.

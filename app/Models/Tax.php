@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
+use Spatie\Translatable\HasTranslations;
 
 // The SoftDeletes trait is intentionally omitted for the Tax model.
 // As per accounting principles, tax records, once used, should not be physically deleted.
@@ -47,7 +48,9 @@ use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 
 class Tax extends Model
 {
-    use HasFactory;
+    use HasFactory, HasTranslations;
+
+    public array $translatable = ['name', 'label_on_invoices'];
 
     /**
      * The table associated with the model.
