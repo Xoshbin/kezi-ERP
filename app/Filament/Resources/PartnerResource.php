@@ -24,7 +24,7 @@ class PartnerResource extends Resource
 
     public static function getNavigationGroup(): ?string
     {
-        return __('navigation.groups.configuration');
+        return __('navigation.groups.sales_purchases');
     }
 
     public static function getLabel(): ?string
@@ -95,6 +95,7 @@ class PartnerResource extends Resource
                     ->maxLength(255),
                 Forms\Components\Toggle::make('is_active')
                     ->label(__('partner.is_active'))
+                    ->default(true)
                     ->required(),
             ]);
     }

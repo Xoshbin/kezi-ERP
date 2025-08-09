@@ -36,7 +36,7 @@ class InvoiceResource extends Resource
 
     public static function getNavigationGroup(): ?string
     {
-        return __('navigation.groups.sales_receivables');
+        return __('navigation.groups.sales_purchases');
     }
 
     public static function getModelLabel(): string
