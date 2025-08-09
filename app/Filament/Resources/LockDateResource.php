@@ -42,7 +42,10 @@ class LockDateResource extends Resource
         return $form
             ->schema([
                 Forms\Components\Select::make('lock_type')
-                    ->options(collect(LockDateType::cases())->mapWithKeys(fn ($case) => [$case->value => $case->getLabel()]))
+                    ->options(
+                        collect(LockDateType::cases())
+                            ->mapWithKeys(fn (LockDateType $type) => [$type->value => $type->label()])
+                    )
                     ->required()
                     ->disabled(fn (?LockDate $record) => $record !== null && $record->lock_type === LockDateType::HARD_LOCK)
                     ->dehydrated(fn (?LockDate $record) => $record === null), // Only save on create

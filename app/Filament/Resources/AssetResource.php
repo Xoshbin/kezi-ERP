@@ -74,7 +74,10 @@ class AssetResource extends Resource
                     ->integer(),
                 Select::make('depreciation_method')
                     ->label(__('asset.depreciation_method'))
-                    ->options(DepreciationMethod::class)
+                    ->options(
+                        collect(DepreciationMethod::cases())
+                            ->mapWithKeys(fn (DepreciationMethod $method) => [$method->value => $method->label()])
+                    )
                     ->required(),
                 Select::make('asset_account_id')
                     ->label(__('asset.asset_account'))
