@@ -2,6 +2,8 @@
 
 return [
     // General
+    'label' => 'تۆماری ژمێریاری',
+    'plural_label' => 'تۆمارەکانی ژمێریاری',
     'journal_entry' => 'تۆماری ژمێریاری',
     'journal_entries' => 'تۆمارەکانی ژمێریاری',
 
@@ -27,6 +29,7 @@ return [
     'source_id' => 'ناسنامەی سەرچاوە',
     'total_debit' => 'کۆی قەرزدار',
     'total_credit' => 'کۆی قەرزدەر',
+    'balance' => 'بالانس',
     'created_at' => 'کاتی دروستکردن',
     'updated_at' => 'کاتی نوێکردنەوە',
 

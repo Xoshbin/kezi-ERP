@@ -19,4 +19,8 @@ return [
     'depreciation_entries' => 'Depreciation Entries',
     'depreciation_date' => 'Depreciation Date',
     'amount' => 'Amount',
+
+    // Actions
+    'post' => 'Post',
+    'post_depreciation_success' => 'Depreciation posted successfully.',
 ];

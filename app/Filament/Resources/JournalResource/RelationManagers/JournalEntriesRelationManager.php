@@ -12,8 +12,13 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class JournalEntriesRelationManager extends RelationManager
 {
-    protected static ?string $title = 'Journal Entries';
-    
+    protected static ?string $title = null;
+
+    public static function getTitle(\Illuminate\Database\Eloquent\Model $ownerRecord, string $pageClass): string
+    {
+        return __('journal.journal_entries');
+    }
+
     protected static string $relationship = 'journalEntries';
 
     public function form(Form $form): Form

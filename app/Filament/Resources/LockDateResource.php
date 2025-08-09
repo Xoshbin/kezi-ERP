@@ -14,8 +14,26 @@ use Filament\Tables\Table;
 class LockDateResource extends Resource
 {
     protected static ?string $model = LockDate::class;
-    protected static ?string $navigationGroup = 'Accounting';
+    public static function getNavigationGroup(): ?string
+    {
+        return __('navigation.groups.accounting');
+    }
     protected static ?int $navigationSort = 7;
+
+    public static function getModelLabel(): string
+    {
+        return __('lock_date.label');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __('lock_date.plural_label');
+    }
+
+    public static function getNavigationLabel(): string
+    {
+        return __('lock_date.plural_label');
+    }
 
     public static function form(Form $form): Form
     {

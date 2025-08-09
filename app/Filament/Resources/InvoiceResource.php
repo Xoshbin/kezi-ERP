@@ -32,6 +32,21 @@ class InvoiceResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
+    public static function getModelLabel(): string
+    {
+        return __('invoice.label');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __('invoice.plural_label');
+    }
+
+    public static function getNavigationLabel(): string
+    {
+        return __('invoice.plural_label');
+    }
+
     public static function form(Form $form): Form
     {
         $company = Company::first();

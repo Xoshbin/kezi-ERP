@@ -1,6 +1,10 @@
 <?php
 
 return [
+    // Labels
+    'label' => 'Audit Log',
+    'plural_label' => 'Audit Logs',
+
     'user_id' => 'User',
     'user_name' => 'User Name',
     'event_type' => 'Event Type',
