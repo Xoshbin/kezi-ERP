@@ -263,8 +263,8 @@ class AdjustmentDocumentResource extends Resource
                                 Forms\Components\Select::make('tax_id')
                                     ->label('Tax')
                                     ->searchable()
-                                    ->getSearchResultsUsing(fn(string $search): array => Tax::where('name', 'like', "%{$search}%")->limit(50)->pluck('name', 'id')->toArray())
-                                    ->getOptionLabelUsing(fn($value): ?string => Tax::find($value)?->name)
+                                    ->getSearchResultsUsing(fn(string $search): array => Tax::where('name->' . app()->getLocale(), 'like', "%{$search}%")->limit(50)->pluck('name->' . app()->getLocale(), 'id')->toArray())
+                                    ->getOptionLabelUsing(fn($value): ?string => Tax::find($value)?->getTranslation('name', app()->getLocale()))
                                     ->placeholder('No tax')
                                     ->columnSpan([
                                         'default' => 1,
@@ -274,8 +274,8 @@ class AdjustmentDocumentResource extends Resource
                                 Forms\Components\Select::make('account_id')
                                     ->label('Account')
                                     ->searchable()
-                                    ->getSearchResultsUsing(fn(string $search): array => Account::where('name', 'like', "%{$search}%")->limit(50)->pluck('name', 'id')->toArray())
-                                    ->getOptionLabelUsing(fn($value): ?string => Account::find($value)?->name)
+                                    ->getSearchResultsUsing(fn(string $search): array => Account::where('name->' . app()->getLocale(), 'like', "%{$search}%")->limit(50)->pluck('name->' . app()->getLocale(), 'id')->toArray())
+                                    ->getOptionLabelUsing(fn($value): ?string => Account::find($value)?->getTranslation('name', app()->getLocale()))
                                     ->required()
                                     ->placeholder('Select account...')
                                     ->columnSpan([
