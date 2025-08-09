@@ -149,13 +149,25 @@ class VendorBillResource extends Resource
                             Forms\Components\Select::make('tax_id')
                                 ->label(__('vendor_bill.tax'))
                                 ->searchable()
-                                ->getSearchResultsUsing(fn(string $search): array => Tax::where('name->' . app()->getLocale(), 'like', "%{$search}%")->limit(50)->pluck('name->' . app()->getLocale(), 'id')->toArray())
+                                ->getSearchResultsUsing(fn(string $search): array =>
+                                    Tax::whereRaw('LOWER(JSON_UNQUOTE(JSON_EXTRACT(name, "$.' . app()->getLocale() . '"))) LIKE ?', ['%' . strtolower($search) . '%'])
+                                        ->limit(50)
+                                        ->get()
+                                        ->mapWithKeys(fn($tax) => [$tax->id => $tax->getTranslation('name', app()->getLocale())])
+                                        ->toArray()
+                                )
                                 ->getOptionLabelUsing(fn($value): ?string => Tax::find($value)?->getTranslation('name', app()->getLocale()))
                                 ->columnSpan(1),
                             Forms\Components\Select::make('expense_account_id')
                                 ->label(__('vendor_bill.expense_account'))
                                 ->searchable()
-                                ->getSearchResultsUsing(fn(string $search): array => Account::where('name->' . app()->getLocale(), 'like', "%{$search}%")->limit(50)->pluck('name->' . app()->getLocale(), 'id')->toArray())
+                                ->getSearchResultsUsing(fn(string $search): array =>
+                                    Account::whereRaw('LOWER(JSON_UNQUOTE(JSON_EXTRACT(name, "$.' . app()->getLocale() . '"))) LIKE ?', ['%' . strtolower($search) . '%'])
+                                        ->limit(50)
+                                        ->get()
+                                        ->mapWithKeys(fn($account) => [$account->id => $account->getTranslation('name', app()->getLocale())])
+                                        ->toArray()
+                                )
                                 ->getOptionLabelUsing(fn($value): ?string => Account::find($value)?->getTranslation('name', app()->getLocale()))
                                 ->required()
                                 ->columnSpan(2),
