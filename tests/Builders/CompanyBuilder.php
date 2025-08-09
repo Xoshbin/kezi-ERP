@@ -40,13 +40,13 @@ class CompanyBuilder
     public function withDefaultAccounts(): self
     {
         $this->accounts = [
-            'default_accounts_payable_id' => ['type' => 'liability', 'name' => 'Accounts Payable'],
-            'default_accounts_receivable_id' => ['type' => 'asset', 'name' => 'Accounts Receivable'],
-            'default_bank_account_id' => ['type' => 'asset', 'name' => 'Bank'],
-            'default_outstanding_receipts_account_id' => ['type' => 'asset', 'name' => 'Outstanding Receipts'],
+            'default_accounts_payable_id' => ['type' => 'payable', 'name' => 'Accounts Payable'],
+            'default_accounts_receivable_id' => ['type' => 'receivable', 'name' => 'Accounts Receivable'],
+            'default_bank_account_id' => ['type' => 'bank_and_cash', 'name' => 'Bank'],
+            'default_outstanding_receipts_account_id' => ['type' => 'current_assets', 'name' => 'Outstanding Receipts'],
             'default_sales_discount_account_id' => ['type' => 'expense', 'name' => 'Sales Discount'],
-            'default_tax_account_id' => ['type' => 'liability', 'name' => 'Tax Payable'],
-            'default_tax_receivable_id' => ['type' => 'asset', 'name' => 'Tax Receivable'],
+            'default_tax_account_id' => ['type' => 'current_liabilities', 'name' => 'Tax Payable'],
+            'default_tax_receivable_id' => ['type' => 'current_assets', 'name' => 'Tax Receivable'],
             'default_gain_loss_account_id' => ['type' => 'income', 'name' => 'Gain/Loss on Asset Disposal'],
 
         ];

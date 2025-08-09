@@ -72,7 +72,7 @@ test('a product is correctly linked to its default income and expense general le
 });
 
 test('a tax is correctly linked to its designated general ledger tax account', function () {
-    $taxAccount = Account::factory()->for($this->company)->create(['type' => 'liability']); // e.g., VAT Payable
+    $taxAccount = Account::factory()->for($this->company)->create(['type' => 'current_liabilities']); // e.g., VAT Payable
     // MODIFIED: The tax factory needs a Money object for rate
     $currencyCode = $this->company->currency->code;
     $tax = Tax::factory()->for($this->company)->create([

@@ -22,17 +22,16 @@ class JournalSeeder extends Seeder
         $iqdCurrency = Currency::where('code', 'IQD')->firstOrFail();
         $usdCurrency = Currency::where('code', 'USD')->firstOrFail();
 
-        // Fetch Accounts
+        // Fetch Accounts using their unique codes for reliability
         $bankAccountIqd = Account::where('code', '110102')->firstOrFail();
         $bankAccountUsd = Account::where('code', '110101')->firstOrFail();
         $cashAccountIqd = Account::where('code', '110202')->firstOrFail();
         $cashAccountUsd = Account::where('code', '110201')->firstOrFail();
-        // You would also fetch other accounts for sales, purchases, etc. here
-        $accountsReceivable = Account::where('name->en', 'Accounts Receivable')->firstOrFail();
-        $productSales = Account::where('name->en', 'Product Sales')->firstOrFail();
-        $accountsPayable = Account::where('name->en', 'Accounts Payable')->firstOrFail();
-        $cogs = Account::where('name->en', 'Cost of Goods Sold (COGS)')->firstOrFail();
-
+        $accountsReceivable = Account::where('code', '120101')->firstOrFail();
+        $productSales = Account::where('code', '410101')->firstOrFail();
+        $accountsPayable = Account::where('code', '210101')->firstOrFail();
+        $cogs = Account::where('code', '510101')->firstOrFail();
+        $depreciationExpenseAccount = Account::where('code', '530301')->firstOrFail();
 
         $journals = [
             // == Primary Operational Journals ==
@@ -40,7 +39,7 @@ class JournalSeeder extends Seeder
                 'name' => ['en' => 'Sales', 'ckb' => 'فرۆشتن'],
                 'type' => JournalType::Sale,
                 'short_code' => 'INV',
-                'currency_id' => null, // Can be used for any currency
+                'currency_id' => null,
                 'default_debit_account_id' => $accountsReceivable->id,
                 'default_credit_account_id' => $productSales->id,
             ],
@@ -48,7 +47,7 @@ class JournalSeeder extends Seeder
                 'name' => ['en' => 'Purchases', 'ckb' => 'کڕین'],
                 'type' => JournalType::Purchase,
                 'short_code' => 'BILL',
-                'currency_id' => null, // Can be used for any currency
+                'currency_id' => null,
                 'default_debit_account_id' => $cogs->id,
                 'default_credit_account_id' => $accountsPayable->id,
             ],
@@ -87,32 +86,23 @@ class JournalSeeder extends Seeder
                 'default_credit_account_id' => $cashAccountUsd->id,
             ],
 
-            // == Example: Additional Future Bank Journals ==
+            // == Miscellaneous Journals ==
             [
-                'name' => ['en' => 'Cihan Bank', 'ckb' => 'بانکی جیھان'],
-                'type' => JournalType::Bank,
-                'short_code' => 'CIHAN',
-                'currency_id' => $iqdCurrency->id,
-                'default_debit_account_id' => $bankAccountIqd->id, // You might create a specific account for this later
-                'default_credit_account_id' => $bankAccountIqd->id,
-            ],
-            [
-                'name' => ['en' => 'NBI Bank', 'ckb' => 'بانکی NBI'],
-                'type' => JournalType::Bank,
-                'short_code' => 'NBI',
-                'currency_id' => $iqdCurrency->id,
-                'default_debit_account_id' => $bankAccountIqd->id, // You might create a specific account for this later
-                'default_credit_account_id' => $bankAccountIqd->id,
-            ],
-
-            // == Miscellaneous Journal ==
-            [
-                'name' => ['en' => 'Miscellaneous', 'ckb' => 'جۆراوجۆر'],
+                'name' => ['en' => 'Miscellaneous Operations', 'ckb' => 'کردارە جۆراوجۆرەکان'],
                 'type' => JournalType::Miscellaneous,
                 'short_code' => 'MISC',
                 'currency_id' => null,
                 'default_debit_account_id' => null,
                 'default_credit_account_id' => null,
+            ],
+            // ** NEW: Specific journal for depreciation entries **
+            [
+                'name' => ['en' => 'Depreciation', 'ckb' => 'داشکان'],
+                'type' => JournalType::Miscellaneous,
+                'short_code' => 'DEPR',
+                'currency_id' => null,
+                'default_debit_account_id' => $depreciationExpenseAccount->id,
+                'default_credit_account_id' => null, // Credit account will vary per asset type
             ],
         ];
 
