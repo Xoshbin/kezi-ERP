@@ -17,7 +17,7 @@ uses(RefreshDatabase::class, WithConfiguredCompany::class);
 
 test('a bank statement line can be reconciled with a payment', function () {
     // Arrange: Set up the necessary accounts and a payment.
-    $bankAccount = Account::factory()->for($this->company)->create(['type' => 'Bank']);
+    $bankAccount = Account::factory()->for($this->company)->create(['type' => 'asset']);
     $this->company->update(['default_bank_account_id' => $bankAccount->id]);
 
     $currencyCode = $this->company->currency->code;

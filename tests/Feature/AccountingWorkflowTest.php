@@ -39,10 +39,10 @@ test('the entire accounting workflow from setup to credit note', function () {
     $currencyCode = $currency->code;
     $bankAccount = $this->company->defaultBankAccount;
     $arAccount = $this->company->defaultAccountsReceivable;
-    $itEquipmentAccount = Account::factory()->for($this->company)->create(['type' => 'Fixed Asset']);
+    $itEquipmentAccount = Account::factory()->for($this->company)->create(['type' => 'asset']);
     $apAccount = $this->company->defaultAccountsPayable;
-    $equityAccount = Account::factory()->for($this->company)->create(['type' => 'Equity']);
-    $revenueAccount = Account::factory()->for($this->company)->create(['type' => 'Income']);
+    $equityAccount = Account::factory()->for($this->company)->create(['type' => 'equity']);
+    $revenueAccount = Account::factory()->for($this->company)->create(['type' => 'income']);
     $salesDiscountAccount = $this->company->defaultSalesDiscountAccount;
     $bankJournal = $this->company->defaultBankJournal;
 
