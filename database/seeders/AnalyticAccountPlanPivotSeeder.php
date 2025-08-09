@@ -25,7 +25,7 @@ class AnalyticAccountPlanPivotSeeder extends Seeder
         }
 
         try {
-            $plan = AnalyticPlan::where('name', 'Projects')->where('company_id', $company->id)->firstOrFail();
+            $plan = AnalyticPlan::where('name->en', 'Projects')->where('company_id', $company->id)->firstOrFail();
         } catch (ModelNotFoundException $e) {
             throw new \Exception("Analytic Plan 'Projects' not found. Please run the AnalyticPlanSeeder first.");
         }

@@ -24,7 +24,7 @@ class AnalyticAccountSeeder extends Seeder
         }
 
         try {
-            $plan = AnalyticPlan::where('name', 'Projects')->firstOrFail();
+            $plan = AnalyticPlan::where('name->en', 'Projects')->firstOrFail();
         } catch (ModelNotFoundException $e) {
             throw new \Exception("Analytic Plan 'Projects' not found. Please run the AnalyticPlanSeeder first.");
         }

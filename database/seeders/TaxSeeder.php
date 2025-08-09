@@ -31,13 +31,15 @@ class TaxSeeder extends Seeder
 
             $taxes = [
                 [
-                    'name' => 'VAT 10%',
+                    'name' => ['en' => 'VAT 10%', 'ckb' => 'باجی بەھای زیادکراو ١٠٪'],
+                    'label_on_invoices' => ['en' => 'VAT (10%)', 'ckb' => 'باجی بەھای زیادکراو (١٠٪)'],
                     'rate' => 0.10,
                     'type' => 'Both',
                     'tax_account_id' => $vatPayableAccount->id,
                 ],
                 [
-                    'name' => 'Tax Exempt',
+                    'name' => ['en' => 'Tax Exempt', 'ckb' => 'ئازادکراو لە باج'],
+                    'label_on_invoices' => ['en' => 'Tax Exempt', 'ckb' => 'ئازادکراو لە باج'],
                     'rate' => 0.00,
                     'type' => 'Both',
                     'tax_account_id' => $vatPayableAccount->id,
@@ -51,6 +53,8 @@ class TaxSeeder extends Seeder
                         'name' => $taxData['name'],
                     ],
                     [
+                        'name' => $taxData['name'],
+                        'label_on_invoices' => $taxData['label_on_invoices'],
                         'rate' => $taxData['rate'],
                         'type' => $taxData['type'],
                         'tax_account_id' => $taxData['tax_account_id'],

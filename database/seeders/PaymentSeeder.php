@@ -35,7 +35,7 @@ class PaymentSeeder extends Seeder
         }
 
         // Fetch Bank Journal
-        $journal = Journal::where('name', 'Bank (IQD)')->first();
+        $journal = Journal::where('name->en', 'Bank (IQD)')->first();
         if (!$journal) {
             throw new \Exception('Journal "Bank" not found. Please run JournalSeeder.');
         }
