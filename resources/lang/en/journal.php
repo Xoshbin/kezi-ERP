@@ -1,6 +1,19 @@
 <?php
 
 return [
+    // Labels
+    'label' => 'Journal',
+    'plural_label' => 'Journals',
+
+    // Basic fields
+    'company' => 'Company',
+    'name' => 'Name',
+    'type' => 'Type',
+    'short_code' => 'Short Code',
+    'currency' => 'Currency',
+    'created_at' => 'Created At',
+    'updated_at' => 'Updated At',
+
     // JournalResource.php
     'default_debit_account' => 'Default Debit Account',
     'default_debit_account_helper' => 'For Bank/Cash journals, this is the bank account to use for payments.',

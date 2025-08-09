@@ -29,6 +29,11 @@ class PartnerResource extends Resource
         return __('partner.plural_label');
     }
 
+    public static function getNavigationLabel(): string
+    {
+        return __('partner.plural_label');
+    }
+
     public static function form(Form $form): Form
     {
         return $form

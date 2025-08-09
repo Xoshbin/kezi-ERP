@@ -31,6 +31,9 @@ return [
     'bank_journal' => 'Bank Journal',
     'statement_lines' => 'Statement Lines',
     'transactions' => 'Transactions',
+    'statement_information' => 'Statement Information',
+    'company' => 'Company',
+    'status' => 'Status',
 
     // Reconciliation
     'reconcile' => 'Reconcile',

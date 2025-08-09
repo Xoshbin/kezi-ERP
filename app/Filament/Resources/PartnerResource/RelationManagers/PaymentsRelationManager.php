@@ -14,7 +14,12 @@ class PaymentsRelationManager extends RelationManager
 {
     protected static string $relationship = 'payments';
 
-    protected static ?string $title = 'partner.payments_relation_manager.title';
+    protected static ?string $title = null;
+
+    public static function getTitle(\Illuminate\Database\Eloquent\Model $ownerRecord, string $pageClass): string
+    {
+        return __('partner.payments_relation_manager.title');
+    }
 
     public function form(Form $form): Form
     {

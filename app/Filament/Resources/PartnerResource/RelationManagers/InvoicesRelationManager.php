@@ -15,7 +15,12 @@ class InvoicesRelationManager extends RelationManager
 {
     protected static string $relationship = 'invoices';
 
-    protected static ?string $title = 'partner.invoices_relation_manager.title';
+    protected static ?string $title = null;
+
+    public static function getTitle(\Illuminate\Database\Eloquent\Model $ownerRecord, string $pageClass): string
+    {
+        return __('partner.invoices_relation_manager.title');
+    }
 
     public function form(Form $form): Form
     {

@@ -35,11 +35,27 @@ class JournalEntryResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
+    public static function getModelLabel(): string
+    {
+        return __('journal_entry.label');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __('journal_entry.plural_label');
+    }
+
+    public static function getNavigationLabel(): string
+    {
+        return __('journal_entry.plural_label');
+    }
+
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
                 Forms\Components\Select::make('company_id')
+                    ->label(__('journal_entry.company'))
                     ->relationship('company', 'name')
                     ->searchable()
                     ->required()
@@ -47,43 +63,67 @@ class JournalEntryResource extends Resource
                     ->default(Company::first()?->id)
                     ->afterStateUpdated(fn(callable $set, ?string $state) => $set('currency_id', Company::find($state)?->currency_id)),
                 Forms\Components\Select::make('journal_id')
+                    ->label(__('journal_entry.journal'))
                     ->relationship('journal', 'name')
                     ->searchable()
                     ->required()
                     ->default(Journal::where('type', JournalType::Miscellaneous)->first()?->id),
                 Forms\Components\Select::make('currency_id')
+                    ->label(__('journal_entry.currency'))
                     ->relationship('currency', 'name')
                     ->searchable()
                     ->required()
                     ->live()
                     ->default(Company::first()?->currency_id),
                 Forms\Components\DatePicker::make('entry_date')
+                    ->label(__('journal_entry.entry_date'))
                     ->required()
                     ->default(now()),
                 Forms\Components\TextInput::make('reference')
+                    ->label(__('journal_entry.reference'))
                     ->required()
                     ->maxLength(255),
                 Forms\Components\Textarea::make('description')
+                    ->label(__('journal_entry.description'))
                     ->columnSpanFull(),
                 Repeater::make('lines')
+                    ->label(__('journal_entry.lines'))
                     ->schema([
                         Forms\Components\Select::make('account_id')
+                            ->label(__('journal_entry.account'))
                             ->options(Account::pluck('name', 'id'))
                             ->searchable()
                             ->rules([new ActiveAccount])
                             ->required()
                             ->columnSpan(2),
-                        MoneyInput::make('debit')->required()->currencyField('../../currency_id')->numeric()->columnSpan(1)->live(onBlur: true),
-                        MoneyInput::make('credit')->required()->currencyField('../../currency_id')->numeric()->columnSpan(1)->live(onBlur: true),
+                        MoneyInput::make('debit')
+                            ->label(__('journal_entry.debit'))
+                            ->required()
+                            ->currencyField('../../currency_id')
+                            ->numeric()
+                            ->columnSpan(1)
+                            ->live(onBlur: true),
+                        MoneyInput::make('credit')
+                            ->label(__('journal_entry.credit'))
+                            ->required()
+                            ->currencyField('../../currency_id')
+                            ->numeric()
+                            ->columnSpan(1)
+                            ->live(onBlur: true),
                         Forms\Components\Select::make('partner_id')
+                            ->label(__('journal_entry.partner'))
                             ->options(Partner::pluck('name', 'id'))
                             ->searchable()
                             ->columnSpan(2),
                         Forms\Components\Select::make('analytic_account_id')
+                            ->label(__('journal_entry.analytic_account'))
                             ->options(AnalyticAccountModel::pluck('name', 'id'))
                             ->searchable()
                             ->columnSpan(2),
-                        Forms\Components\TextInput::make('description')->maxLength(255)->columnSpanFull(),
+                        Forms\Components\TextInput::make('description')
+                            ->label(__('journal_entry.description'))
+                            ->maxLength(255)
+                            ->columnSpanFull(),
                     ])
                     ->columns(4)
                     ->columnSpanFull()
@@ -93,14 +133,17 @@ class JournalEntryResource extends Resource
                         self::updateTotals($set, $state);
                     }),
                 MoneyInput::make('total_debit')
+                    ->label(__('journal_entry.total_debit'))
                     ->numeric()
                     ->currencyField('currency_id')
                     ->readOnly(),
                 MoneyInput::make('total_credit')
+                    ->label(__('journal_entry.total_credit'))
                     ->numeric()
                     ->currencyField('currency_id')
                     ->readOnly(),
                 MoneyInput::make('balance')
+                    ->label(__('journal_entry.balance'))
                     ->numeric()
                     ->currencyField('currency_id')
                     ->readOnly(),
@@ -111,16 +154,41 @@ class JournalEntryResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('company.name')->sortable(),
-                Tables\Columns\TextColumn::make('journal.name')->sortable(),
-                Tables\Columns\IconColumn::make('is_posted')->boolean(),
-                Tables\Columns\TextColumn::make('currency.name')->sortable(),
-                Tables\Columns\TextColumn::make('entry_date')->date()->sortable(),
-                Tables\Columns\TextColumn::make('reference')->searchable(),
-                MoneyColumn::make('total_debit')->sortable(),
-                MoneyColumn::make('total_credit')->sortable(),
-                Tables\Columns\TextColumn::make('created_at')->dateTime()->sortable()->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('updated_at')->dateTime()->sortable()->toggleable(isToggledHiddenByDefault: true),
+                Tables\Columns\TextColumn::make('company.name')
+                    ->label(__('journal_entry.company'))
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('journal.name')
+                    ->label(__('journal_entry.journal'))
+                    ->sortable(),
+                Tables\Columns\IconColumn::make('is_posted')
+                    ->label(__('journal_entry.is_posted'))
+                    ->boolean(),
+                Tables\Columns\TextColumn::make('currency.name')
+                    ->label(__('journal_entry.currency'))
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('entry_date')
+                    ->label(__('journal_entry.entry_date'))
+                    ->date()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('reference')
+                    ->label(__('journal_entry.reference'))
+                    ->searchable(),
+                MoneyColumn::make('total_debit')
+                    ->label(__('journal_entry.total_debit'))
+                    ->sortable(),
+                MoneyColumn::make('total_credit')
+                    ->label(__('journal_entry.total_credit'))
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('created_at')
+                    ->label(__('journal_entry.created_at'))
+                    ->dateTime()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                Tables\Columns\TextColumn::make('updated_at')
+                    ->label(__('journal_entry.updated_at'))
+                    ->dateTime()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
                 //

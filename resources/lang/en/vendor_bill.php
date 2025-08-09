@@ -2,6 +2,8 @@
 
 return [
     // General
+    'label' => 'Vendor Bill',
+    'plural_label' => 'Vendor Bills',
     'vendor_bill' => 'Vendor Bill',
     'vendor_bills' => 'Vendor Bills',
 
