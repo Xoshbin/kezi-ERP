@@ -10,6 +10,7 @@ use App\Models\Payment;
 use App\Models\Currency;
 use App\Models\BankStatement;
 use App\Models\BankStatementLine;
+use App\Enums\Payments\PaymentStatus;
 use Illuminate\Support\Facades\Log;
 use App\Services\BankReconciliationService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -31,7 +32,7 @@ it('throws an exception if the company is missing default accounts', function ()
     $payment = Payment::factory()->create([
         'company_id' => $this->company->id,
         'journal_id' => $this->bankJournal->id,
-        'status' => Payment::STATUS_CONFIRMED,
+        'status' => PaymentStatus::Confirmed,
     ]);
 
     $service = new BankReconciliationService();
@@ -67,7 +68,7 @@ it('successfully reconciles a payment and a bank statement line', function () {
         'company_id' => $this->company->id,
         'journal_id' => $this->bankJournal->id,
         'currency_id' => $currency->id,
-        'status' => Payment::STATUS_CONFIRMED, // <-- FIX WAS HERE
+        'status' => PaymentStatus::Confirmed, // <-- FIX WAS HERE
         'amount' => Money::of(1000, 'USD'),
         'payment_type' => 'inbound',
     ]);
@@ -85,7 +86,7 @@ it('successfully reconciles a payment and a bank statement line', function () {
 
     $this->assertDatabaseHas('payments', [ // <-- Add $this->
         'id' => $payment->id,
-        'status' => Payment::STATUS_RECONCILED,
+        'status' => PaymentStatus::Reconciled,
     ]);
 
     $this->assertDatabaseHas('journal_entries', [ // <-- Add $this->

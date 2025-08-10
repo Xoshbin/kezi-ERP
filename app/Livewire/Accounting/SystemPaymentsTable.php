@@ -4,6 +4,7 @@ namespace App\Livewire\Accounting;
 
 use App\Models\BankStatement;
 use App\Models\Payment;
+use App\Enums\Payments\PaymentType;
 use Brick\Money\Money;
 use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
@@ -51,9 +52,9 @@ class SystemPaymentsTable extends Component implements HasTable, HasForms
                     ->sortable(),
                 TextColumn::make('payment_type')
                     ->label(__('bank_statement.type'))
-                    ->formatStateUsing(fn ($state) => ucfirst($state))
+                    ->formatStateUsing(fn ($state) => $state->label())
                     ->badge()
-                    ->color(fn ($state) => match($state) {
+                    ->color(fn ($state) => match($state->value) {
                         'inbound' => 'success',
                         'outbound' => 'danger',
                         default => 'gray',
@@ -87,7 +88,7 @@ class SystemPaymentsTable extends Component implements HasTable, HasForms
         if (!empty($this->selectedPayments)) {
             $payments = Payment::whereIn('id', $this->selectedPayments)->get();
             foreach ($payments as $payment) {
-                if ($payment->payment_type === 'outbound') {
+                if ($payment->payment_type === PaymentType::Outbound) {
                     $total = $total->minus($payment->amount);
                 } else {
                     $total = $total->plus($payment->amount);
