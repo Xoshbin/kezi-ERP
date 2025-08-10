@@ -34,6 +34,7 @@ use App\Enums\Accounting\JournalType;
 use App\Enums\Partners\PartnerType;
 use App\Enums\Products\ProductType;
 use App\Enums\Inventory\ValuationMethod;
+use App\Enums\Payments\PaymentStatus;
 use App\Enums\Adjustments\AdjustmentDocumentStatus;
 use Brick\Money\Money;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -417,7 +418,7 @@ test('Jmeryar ERP complete accounting scenario - Full Workflow', function () {
         ->assertHasNoErrors();
 
     $payment->refresh();
-    expect($payment->status)->toBe('confirmed');
+    expect($payment->status)->toBe(PaymentStatus::Confirmed);
     expect($payment->journalEntry)->not->toBeNull();
 
     // Verify invoice is now paid

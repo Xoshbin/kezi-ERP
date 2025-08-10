@@ -8,6 +8,7 @@ use App\Models\Journal;
 use App\Models\Payment;
 use App\Models\JournalEntry;
 use App\Models\BankStatementLine;
+use App\Enums\Payments\PaymentStatus;
 use Tests\Traits\CreatesApplication;
 use Tests\Traits\WithConfiguredCompany;
 use App\Services\BankReconciliationService;
@@ -26,7 +27,7 @@ test('a bank statement line can be reconciled with a payment', function () {
         ->create([
             'amount' => Money::of(100, $currencyCode),
             'currency_id' => $this->company->currency_id,
-            'status' => 'Confirmed'
+            'status' => PaymentStatus::Confirmed
         ]);
 
     // Arrange: Create a bank statement and a line that matches the payment.
@@ -58,5 +59,5 @@ test('a bank statement line can be reconciled with a payment', function () {
 
     // Assert: The payment is also marked as reconciled.
     $payment->refresh();
-    expect($payment->status)->toBe('Reconciled');
+    expect($payment->status)->toBe(PaymentStatus::Reconciled);
 });

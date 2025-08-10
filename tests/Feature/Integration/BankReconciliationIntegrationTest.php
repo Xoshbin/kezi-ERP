@@ -9,6 +9,7 @@ use App\Models\Account;
 use App\Models\Journal;
 use App\Models\Partner;
 use Brick\Money\Money;
+use App\Enums\Payments\PaymentStatus;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 uses(RefreshDatabase::class);
@@ -114,7 +115,7 @@ describe('Bank Reconciliation Integration Tests', function () {
             ->for($this->company)
             ->for($this->currency)
             ->for($this->bankJournal)
-            ->create(['status' => 'Reconciled']);
+            ->create(['status' => PaymentStatus::Reconciled]);
 
         $response = $this->get("/jmeryar/bank-statements/{$this->bankStatement->id}/reconcile");
 
@@ -159,7 +160,7 @@ describe('Bank Reconciliation Integration Tests', function () {
             ->for($this->company)
             ->for($this->currency)
             ->for($this->bankJournal)
-            ->create(['status' => 'Reconciled']);
+            ->create(['status' => PaymentStatus::Reconciled]);
 
         $response = $this->get("/jmeryar/bank-statements/{$this->bankStatement->id}/reconcile");
 

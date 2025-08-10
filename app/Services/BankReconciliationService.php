@@ -6,6 +6,8 @@ use App\Models\User;
 use RuntimeException;
 use App\Models\Account;
 use App\Models\Payment;
+use App\Enums\Payments\PaymentStatus;
+use App\Enums\Payments\PaymentType;
 use InvalidArgumentException;
 use App\Models\BankStatementLine;
 use Illuminate\Support\Facades\DB;
@@ -21,7 +23,7 @@ class BankReconciliationService
     {
         DB::transaction(function () use ($payment, $statementLine, $user) {
             // Update the status of the payment and the statement line.
-            $payment->status = 'Reconciled';
+            $payment->status = PaymentStatus::Reconciled;
             $payment->save();
 
             $statementLine->is_reconciled = true;
@@ -60,7 +62,7 @@ class BankReconciliationService
             }
 
             foreach ($payments as $payment) {
-                $payment->status = Payment::STATUS_RECONCILED;
+                $payment->status = PaymentStatus::Reconciled;
                 $payment->save();
 
                 (app(CreateJournalEntryForReconciliationAction::class))->execute($payment, $user);
@@ -110,7 +112,7 @@ class BankReconciliationService
                     $amount = \Brick\Money\Money::of($payment->amount->getAmount()->toFloat(), $currency->code);
                 }
 
-                $amount = $payment->payment_type === 'inbound' ? $amount : $amount->negated();
+                $amount = $payment->payment_type === PaymentType::Inbound ? $amount : $amount->negated();
                 $paymentTotal = $paymentTotal->plus($amount);
             }
 
@@ -125,7 +127,7 @@ class BankReconciliationService
 
             // Update all payments and create reconciliation journal entries
             foreach ($payments as $payment) {
-                $payment->update(['status' => 'Reconciled']);
+                $payment->update(['status' => PaymentStatus::Reconciled]);
 
                 // Create reconciliation journal entry for each payment
                 (app(CreateJournalEntryForReconciliationAction::class))->execute($payment, $user);
@@ -161,7 +163,7 @@ class BankReconciliationService
     public function getUnreconciledPayments(int $companyId)
     {
         return Payment::where('company_id', $companyId)
-            ->where('status', 'confirmed')
+            ->where('status', PaymentStatus::Confirmed)
             ->whereDoesntHave('bankStatementLines')
             ->with(['partner', 'currency'])
             ->get();

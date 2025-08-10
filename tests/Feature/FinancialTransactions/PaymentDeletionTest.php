@@ -5,6 +5,7 @@ namespace Tests\Feature\FinancialTransactions;
 use App\Models\User;
 use App\Models\Payment;
 use App\Services\PaymentService;
+use App\Enums\Payments\PaymentStatus;
 use Tests\Traits\CreatesApplication;
 use Tests\Traits\WithConfiguredCompany;
 use App\Exceptions\DeletionNotAllowedException;
@@ -19,7 +20,7 @@ beforeEach(function () {
 test('it prevents deletion of a confirmed payment', function () {
     // Arrange: Create a payment and confirm it.
     $payment = Payment::factory()->for($this->company)->create([
-        'status' => Payment::STATUS_CONFIRMED,
+        'status' => PaymentStatus::Confirmed,
     ]);
 
     // Act & Assert: Attempting to delete it should throw our specific exception.
@@ -33,7 +34,7 @@ test('it prevents deletion of a confirmed payment', function () {
 test('it allows deletion of a draft payment', function () {
     // Arrange: Create a draft payment.
     $payment = Payment::factory()->for($this->company)->create([
-        'status' => Payment::STATUS_DRAFT,
+        'status' => PaymentStatus::Draft,
     ]);
 
     // Act: Delete the draft payment.

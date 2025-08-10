@@ -9,6 +9,7 @@ use App\Models\Journal;
 use App\Models\Partner;
 use App\Livewire\Accounting\SystemPaymentsTable;
 use Brick\Money\Money;
+use App\Enums\Payments\PaymentStatus;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Livewire\Livewire;
 
@@ -75,7 +76,7 @@ describe('SystemPaymentsTable Livewire Component', function () {
             ->for($this->currency)
             ->for($this->bankJournal)
             ->create([
-                'status' => 'Reconciled',
+                'status' => PaymentStatus::Reconciled,
                 'amount' => Money::of(200, $this->currency->code),
             ]);
 
@@ -270,7 +271,7 @@ describe('SystemPaymentsTable Livewire Component', function () {
             ->for($this->company)
             ->for($this->currency)
             ->for($this->bankJournal)
-            ->create(['status' => 'Reconciled']);
+            ->create(['status' => PaymentStatus::Reconciled]);
 
         Livewire::test(SystemPaymentsTable::class, ['bankStatement' => $this->bankStatement])
             ->assertSee('No unreconciled payments found');

@@ -13,6 +13,7 @@ use App\Livewire\Accounting\BankReconciliationMatcher;
 use App\Livewire\Accounting\BankTransactionsTable;
 use App\Livewire\Accounting\SystemPaymentsTable;
 use Brick\Money\Money;
+use App\Enums\Payments\PaymentStatus;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Livewire\Livewire;
 
@@ -94,7 +95,7 @@ describe('BankReconciliationMatcher Livewire Component', function () {
             ->for($this->company)
             ->for($this->currency)
             ->for($this->bankJournal)
-            ->create(['status' => 'Reconciled']);
+            ->create(['status' => PaymentStatus::Reconciled]);
 
         // Test the SystemPaymentsTable component directly
         Livewire::test(SystemPaymentsTable::class, ['bankStatement' => $this->bankStatement])
@@ -263,7 +264,7 @@ describe('BankReconciliationMatcher Livewire Component', function () {
 
         // Verify reconciliation was performed
         expect($bankLine->fresh()->is_reconciled)->toBeTrue();
-        expect($payment->fresh()->status)->toBe('Reconciled');
+        expect($payment->fresh()->status)->toBe(PaymentStatus::Reconciled);
     });
 
     it('prevents reconciliation when not balanced', function () {
@@ -303,7 +304,7 @@ describe('BankReconciliationMatcher Livewire Component', function () {
 
         // Verify reconciliation was NOT performed
         expect($bankLine->fresh()->is_reconciled)->toBeFalse();
-        expect($payment->fresh()->status)->toBe('confirmed');
+        expect($payment->fresh()->status)->toBe(PaymentStatus::Confirmed);
     });
 
     it('can create write-offs through table action', function () {

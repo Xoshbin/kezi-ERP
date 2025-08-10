@@ -24,8 +24,7 @@ class PaymentService
     public function __construct(
         protected JournalEntryService $journalEntryService,
         protected CreateJournalEntryForPaymentAction $createJournalEntryForPaymentAction
-    ) {
-    }
+    ) {}
 
     /**
      * Confirm a draft payment, locking it and creating the journal entry.
@@ -67,8 +66,8 @@ class PaymentService
                 // --- START OF FIX ---
                 // Correctly sum the 'amount_applied' from the pivot table for this invoice.
                 $totalPaidMinor = $invoice->payments()
-                                          ->where('payments.status', '!=', PaymentStatus::Canceled)
-                                          ->sum('payment_document_links.amount_applied');
+                    ->where('payments.status', '!=', PaymentStatus::Canceled)
+                    ->sum('payment_document_links.amount_applied');
 
                 // Convert the summed integer back to a Money object for comparison.
                 $totalPaid = Money::ofMinor($totalPaidMinor, $invoice->currency->code);
@@ -83,8 +82,8 @@ class PaymentService
             if ($link->vendorBill) {
                 $vendorBill = $link->vendorBill;
                 $totalPaidMinor = $vendorBill->payments()
-                                             ->where('payments.status', '!=', Payment::STATUS_CANCELED)
-                                             ->sum('payment_document_links.amount_applied');
+                    ->where('payments.status', '!=', PaymentStatus::Canceled)
+                    ->sum('payment_document_links.amount_applied');
                 $totalPaid = Money::ofMinor($totalPaidMinor, $vendorBill->currency->code);
 
                 if ($totalPaid->isGreaterThanOrEqualTo($vendorBill->total_amount)) {
@@ -100,7 +99,7 @@ class PaymentService
      */
     public function cancel(Payment $payment, User $user, string $reason): void // Add $reason parameter
     {
-        if ($payment->status !== Payment::STATUS_CONFIRMED) {
+        if ($payment->status !== PaymentStatus::Confirmed) {
             throw new \Exception('Only confirmed payments can be cancelled.');
         }
 

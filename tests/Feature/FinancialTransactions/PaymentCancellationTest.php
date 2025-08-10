@@ -4,6 +4,7 @@ use App\Models\User;
 use App\Models\Payment;
 use Tests\Traits\MocksTime;
 use App\Services\PaymentService;
+use App\Enums\Payments\PaymentStatus;
 use Tests\Traits\CreatesApplication;
 use Tests\Traits\WithUnlockedPeriod;
 use Tests\Traits\WithConfiguredCompany;
@@ -20,7 +21,7 @@ test('cancelling a confirmed payment creates a reversing journal entry and an au
     $paymentService->confirm($payment, $this->user);
     $payment->refresh();
 
-    expect($payment->status)->toBe(Payment::STATUS_CONFIRMED);
+    expect($payment->status)->toBe(PaymentStatus::Confirmed);
     $originalEntry = $payment->journalEntry;
 
     // Act: Cancel the payment with a specific reason
@@ -30,7 +31,7 @@ test('cancelling a confirmed payment creates a reversing journal entry and an au
     $originalEntry->refresh();
 
     // Assert: Payment status and reversal are correct
-    expect($payment->status)->toBe(Payment::STATUS_CANCELED);
+    expect($payment->status)->toBe(PaymentStatus::Canceled);
     expect($originalEntry->state)->toBe(JournalEntryState::Reversed);
 
     // Assert: Audit log was created

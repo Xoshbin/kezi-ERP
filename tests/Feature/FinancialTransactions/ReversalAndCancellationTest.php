@@ -10,6 +10,7 @@ use App\Models\Payment;
 use Tests\Traits\MocksTime;
 use App\Models\JournalEntry;
 use App\Services\PaymentService;
+use App\Enums\Payments\PaymentStatus;
 use Tests\Traits\CreatesApplication;
 use Tests\Traits\WithUnlockedPeriod;
 use App\Services\JournalEntryService;
@@ -109,7 +110,7 @@ describe('Payment Cancellations', function () {
         // Act 1: Confirm the payment.
         $this->paymentService->confirm($payment, $this->user);
         $payment->refresh();
-        expect($payment->status)->toBe(Payment::STATUS_CONFIRMED);
+        expect($payment->status)->toBe(PaymentStatus::Confirmed);
         $originalEntryId = $payment->journal_entry_id;
         expect($originalEntryId)->not->toBeNull();
 
@@ -118,7 +119,7 @@ describe('Payment Cancellations', function () {
 
         // Assert: Check that the payment and its original entry are correctly cancelled/reversed.
         $payment->refresh();
-        expect($payment->status)->toBe(Payment::STATUS_CANCELED);
+        expect($payment->status)->toBe(PaymentStatus::Canceled);
         $this->assertDatabaseHas('journal_entries', [
             'id' => $originalEntryId,
             'state' => 'reversed',
@@ -128,7 +129,7 @@ describe('Payment Cancellations', function () {
 
     test('it prevents cancelling a draft payment', function () {
         // Arrange: Create a draft payment.
-        $draftPayment = Payment::factory()->for($this->company)->create(['status' => Payment::STATUS_DRAFT]);
+        $draftPayment = Payment::factory()->for($this->company)->create(['status' => PaymentStatus::Draft]);
 
         // Act & Assert: Expect an exception.
         expect(fn() => $this->paymentService->cancel($draftPayment, $this->user, 'Should fail')) // FIX
@@ -137,7 +138,7 @@ describe('Payment Cancellations', function () {
 
     test('it prevents cancelling a reconciled payment', function () {
         // Arrange: Create a reconciled payment.
-        $reconciledPayment = Payment::factory()->for($this->company)->create(['status' => Payment::STATUS_RECONCILED]);
+        $reconciledPayment = Payment::factory()->for($this->company)->create(['status' => PaymentStatus::Reconciled]);
 
         // Act & Assert: Expect an exception.
         expect(fn() => $this->paymentService->cancel($reconciledPayment, $this->user, 'Should fail')) // FIX
