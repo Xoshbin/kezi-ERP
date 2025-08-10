@@ -2,24 +2,25 @@
 
 namespace App\Filament\Resources;
 
-use App\DataTransferObjects\Assets\CreateAssetDTO;
-use App\DataTransferObjects\Assets\UpdateAssetDTO;
-use App\Enums\Assets\DepreciationMethod;
-use App\Filament\Resources\AssetResource\Pages;
-use App\Filament\Resources\AssetResource\RelationManagers;
-use App\Models\Account;
-use App\Models\Asset;
-use App\Services\AssetService;
 use Filament\Forms;
-use Filament\Forms\Form;
-use Filament\Resources\Resource;
 use Filament\Tables;
+use App\Models\Asset;
+use App\Models\Account;
+use Filament\Forms\Form;
 use Filament\Tables\Table;
+use App\Services\AssetService;
+use Filament\Resources\Resource;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\DatePicker;
 use Filament\Tables\Columns\TextColumn;
 use Illuminate\Database\Eloquent\Model;
+use App\Enums\Assets\DepreciationMethod;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\DatePicker;
+use App\Filament\Tables\Columns\MoneyColumn;
+use App\Filament\Resources\AssetResource\Pages;
+use App\DataTransferObjects\Assets\CreateAssetDTO;
+use App\DataTransferObjects\Assets\UpdateAssetDTO;
+use App\Filament\Resources\AssetResource\RelationManagers;
 
 class AssetResource extends Resource
 {
@@ -106,8 +107,9 @@ class AssetResource extends Resource
                 TextColumn::make('purchase_date')
                     ->label(__('asset.purchase_date'))
                     ->date(),
-                TextColumn::make('purchase_value')
-                    ->label(__('asset.purchase_value')),
+                MoneyColumn::make('purchase_value')
+                    ->label(__('asset.purchase_value'))
+                    ->sortable(),
             ])
             ->filters([
                 //
