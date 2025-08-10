@@ -4,6 +4,7 @@ namespace App\Actions\Adjustments;
 
 use App\DataTransferObjects\Adjustments\CreateAdjustmentDocumentDTO;
 use App\Models\AdjustmentDocument;
+use App\Enums\Adjustments\AdjustmentDocumentStatus;
 use App\Models\Company;
 use App\Models\Currency;
 use App\Services\Accounting\LockDateService;
@@ -37,7 +38,7 @@ class CreateAdjustmentDocumentAction
                 'original_vendor_bill_id' => $dto->original_vendor_bill_id,
                 'total_amount' => Money::of(0, $currencyCode), // Initialize with 0
                 'total_tax' => Money::of(0, $currencyCode),    // Initialize with 0
-                'status' => AdjustmentDocument::STATUS_DRAFT,
+                'status' => AdjustmentDocumentStatus::Draft,
             ]);
 
             // Create the lines from the DTO

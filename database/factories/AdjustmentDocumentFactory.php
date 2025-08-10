@@ -6,6 +6,7 @@ use Brick\Money\Money;
 use App\Models\Company;
 use App\Models\Currency;
 use App\Enums\Adjustments\AdjustmentDocumentType;
+use App\Enums\Adjustments\AdjustmentDocumentStatus;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -39,7 +40,7 @@ class AdjustmentDocumentFactory extends Factory
                 return Money::of($this->faker->randomFloat(2, 0, 2000), $currency->code);
             },
             'reason' => $this->faker->sentence(),
-            'status' => $this->faker->randomElement(['Draft', 'Posted']),
+            'status' => $this->faker->randomElement([AdjustmentDocumentStatus::Draft, AdjustmentDocumentStatus::Posted]),
             'journal_entry_id' => null,
         ];
     }
@@ -47,7 +48,7 @@ class AdjustmentDocumentFactory extends Factory
     public function draft(): self
     {
         return $this->state(fn (array $attributes) => [
-            'status' => 'Draft',
+            'status' => AdjustmentDocumentStatus::Draft,
             'posted_at' => null,
             'journal_entry_id' => null,
         ]);
@@ -57,7 +58,7 @@ class AdjustmentDocumentFactory extends Factory
     {
         return $this->state(function (array $attributes) {
             return [
-                'status' => 'Posted',
+                'status' => AdjustmentDocumentStatus::Posted,
                 'posted_at' => now(),
                 'journal_entry_id' => \App\Models\JournalEntry::factory()->create([
                     'company_id' => $attributes['company_id'],

@@ -6,6 +6,7 @@ use App\Models\AdjustmentDocument;
 use App\Models\Account;
 use App\Models\Tax;
 use App\Enums\Adjustments\AdjustmentDocumentType;
+use App\Enums\Adjustments\AdjustmentDocumentStatus;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\Traits\WithConfiguredCompany;
 use function Pest\Livewire\livewire;
@@ -63,7 +64,7 @@ it('can create an adjustment document', function () {
 
     $this->assertDatabaseHas('adjustment_documents', [
         'reference_number' => 'Test Adjustment Ref',
-        'status' => AdjustmentDocument::STATUS_DRAFT,
+        'status' => AdjustmentDocumentStatus::Draft->value,
     ]);
 
     $this->assertDatabaseHas('adjustment_document_lines', [
@@ -114,7 +115,7 @@ it('can edit an adjustment document', function () {
         'company_id' => $this->company->id,
         'currency_id' => $this->company->currency_id,
         'reference_number' => 'Old Ref',
-        'status' => AdjustmentDocument::STATUS_DRAFT,
+        'status' => AdjustmentDocumentStatus::Draft,
     ]);
 
     // Create a line manually to ensure proper setup
@@ -154,7 +155,7 @@ it('can post an adjustment document', function () {
     $adjustmentDocument = AdjustmentDocument::factory()->create([
         'company_id' => $this->company->id,
         'currency_id' => $this->company->currency_id,
-        'status' => AdjustmentDocument::STATUS_DRAFT,
+        'status' => AdjustmentDocumentStatus::Draft,
     ]);
 
     // Create a line manually to ensure proper setup
@@ -173,7 +174,7 @@ it('can post an adjustment document', function () {
         ->assertHasNoErrors();
 
     $adjustmentDocument->refresh();
-    expect($adjustmentDocument->status)->toBe(AdjustmentDocument::STATUS_POSTED);
+    expect($adjustmentDocument->status)->toBe(AdjustmentDocumentStatus::Posted);
 });
 
 // Note: resetToDraft action doesn't exist in current implementation

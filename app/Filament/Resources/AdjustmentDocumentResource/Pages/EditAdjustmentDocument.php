@@ -15,6 +15,7 @@ use App\Actions\Adjustments\UpdateAdjustmentDocumentAction;
 use App\DataTransferObjects\Adjustments\UpdateAdjustmentDocumentDTO;
 use App\DataTransferObjects\Adjustments\UpdateAdjustmentDocumentLineDTO;
 use App\Enums\Adjustments\AdjustmentDocumentType;
+use App\Enums\Adjustments\AdjustmentDocumentStatus;
 use App\Filament\Resources\AdjustmentDocumentResource;
 use App\Models\AdjustmentDocument;
 use App\Services\AdjustmentDocumentService;
@@ -35,7 +36,7 @@ class EditAdjustmentDocument extends EditRecord
                 ->label(__('adjustment_document.post_document'))
                 ->color('success')
                 ->requiresConfirmation()
-                ->visible(fn (AdjustmentDocument $record): bool => $record->status === AdjustmentDocument::STATUS_DRAFT)
+                ->visible(fn (AdjustmentDocument $record): bool => $record->status === AdjustmentDocumentStatus::Draft)
                 ->action(function (AdjustmentDocument $record): void {
                     $this->save(); // This triggers mutateFormDataBeforeSave -> handleRecordUpdate
                     $service = app(AdjustmentDocumentService::class);

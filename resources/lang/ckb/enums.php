@@ -103,6 +103,12 @@ return [
         'miscellaneous' => 'هەمەجۆر',
     ],
 
+    'adjustment_document_status' => [
+        'draft' => 'ڕەشنووس',
+        'posted' => 'پۆست کراو',
+        'cancelled' => 'هەڵوەشاوە',
+    ],
+
     'invoice_status' => [
         'draft' => 'ڕەشنووس',
         'posted' => 'پۆست کراو',

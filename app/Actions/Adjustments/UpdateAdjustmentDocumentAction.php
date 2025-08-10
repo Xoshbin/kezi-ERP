@@ -5,6 +5,7 @@ namespace App\Actions\Adjustments;
 use App\DataTransferObjects\Adjustments\UpdateAdjustmentDocumentDTO;
 use App\Exceptions\UpdateNotAllowedException;
 use App\Models\AdjustmentDocument;
+use App\Enums\Adjustments\AdjustmentDocumentStatus;
 use Illuminate\Support\Facades\DB;
 
 class UpdateAdjustmentDocumentAction
@@ -13,7 +14,7 @@ class UpdateAdjustmentDocumentAction
     {
         $adjustmentDocument = $dto->adjustmentDocument;
 
-        if ($adjustmentDocument->status !== AdjustmentDocument::STATUS_DRAFT) {
+        if ($adjustmentDocument->status !== AdjustmentDocumentStatus::Draft) {
             throw new UpdateNotAllowedException('Cannot modify a posted adjustment document.');
         }
 

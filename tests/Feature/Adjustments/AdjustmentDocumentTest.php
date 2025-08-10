@@ -7,6 +7,7 @@ use App\Models\Journal;
 use App\Enums\Accounting\JournalType;
 use App\Models\JournalEntry;
 use App\Models\AdjustmentDocument;
+use App\Enums\Adjustments\AdjustmentDocumentStatus;
 use Tests\Traits\CreatesApplication;
 use Illuminate\Support\Facades\Event;
 use Tests\Traits\WithConfiguredCompany;
@@ -29,7 +30,7 @@ test('an adjustment document can be posted, which creates a journal entry and di
     // MODIFIED: Create amounts using Money objects.
     $currencyCode = $this->company->currency->code;
     $document = AdjustmentDocument::factory()->for($this->company)->create([
-        'status' => AdjustmentDocument::STATUS_DRAFT,
+        'status' => AdjustmentDocumentStatus::Draft,
         'currency_id' => $this->company->currency_id,
         'total_amount' => Money::of(200, $currencyCode),
         'total_tax' => Money::of(0, $currencyCode),
@@ -41,7 +42,7 @@ test('an adjustment document can be posted, which creates a journal entry and di
     // Assert: The document's status is now 'posted'.
     $this->assertDatabaseHas('adjustment_documents', [
         'id' => $document->id,
-        'status' => AdjustmentDocument::STATUS_POSTED,
+        'status' => AdjustmentDocumentStatus::Posted->value,
     ]);
 
     // Assert: A journal entry was created and linked to the document.

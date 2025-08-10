@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Enums\Adjustments\AdjustmentDocumentType;
+use App\Enums\Adjustments\AdjustmentDocumentStatus;
 use App\Models\Account;
 use App\Models\AdjustmentDocument;
 use App\Models\Company;
@@ -58,7 +59,7 @@ class AdjustmentDocumentSeeder extends Seeder
             'date' => now(),
             'reason' => 'Goodwill discount for new client.',
             'total_amount' => $creditNoteAmount,
-            'status' => AdjustmentDocument::STATUS_DRAFT,
+            'status' => AdjustmentDocumentStatus::Draft,
             'currency_id' => $company->currency_id,
         ]);
 
@@ -72,7 +73,7 @@ class AdjustmentDocumentSeeder extends Seeder
 
         // 6. Post the Credit Note (The observer will handle Journal Entry creation)
         // In a real app, this would be an action `PostAdjustmentDocumentAction->execute($creditNote)`
-        $creditNote->update(['status' => AdjustmentDocument::STATUS_POSTED, 'posted_at' => now()]);
+        $creditNote->update(['status' => AdjustmentDocumentStatus::Posted, 'posted_at' => now()]);
 
         $this->command->info('Credit note for Hawre Trading Group created successfully.');
     }

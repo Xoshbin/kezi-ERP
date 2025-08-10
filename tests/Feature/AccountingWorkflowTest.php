@@ -24,6 +24,7 @@ use App\DataTransferObjects\Purchases\CreateVendorBillDTO;
 use App\DataTransferObjects\Purchases\CreateVendorBillLineDTO;
 use App\DataTransferObjects\Payments\CreatePaymentDocumentLinkDTO;
 use App\Enums\Adjustments\AdjustmentDocumentType;
+use App\Enums\Adjustments\AdjustmentDocumentStatus;
 
 uses(Illuminate\Foundation\Testing\RefreshDatabase::class, WithConfiguredCompany::class);
 
@@ -241,7 +242,7 @@ test('the entire accounting workflow from setup to credit note', function () {
         'reason' => 'Goodwill discount for new client',
         // MODIFIED: Use Money object for total amount
         'total_amount' => $goodwillDiscount,
-        'status' => 'Draft'
+        'status' => AdjustmentDocumentStatus::Draft
     ]);
 
     $adjustmentService->post($creditNote, $this->user);
