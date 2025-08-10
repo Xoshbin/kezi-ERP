@@ -6,6 +6,7 @@ use App\Models\Account;
 use App\Models\Company;
 use App\Models\Product;
 use Illuminate\Database\Seeder;
+use App\Enums\Products\ProductType;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 
 class ProductSeeder extends Seeder
@@ -42,7 +43,7 @@ class ProductSeeder extends Seeder
                 'name' => 'Consulting Services',
                 'description' => 'Standard consulting services.',
                 'unit_price' => 150000.00,
-                'type' => 'Service',
+                'type' => ProductType::SERVICE->value,
                 'income_account_id' => $incomeAccount->id,
                 'expense_account_id' => $expenseAccount->id,
             ]
@@ -57,7 +58,7 @@ class ProductSeeder extends Seeder
                 'name' => 'Development Services',
                 'description' => 'Custom software development services.',
                 'unit_price' => 250000.00,
-                'type' => 'Service',
+                'type' => ProductType::SERVICE->value,
                 'income_account_id' => $incomeAccount->id,
                 'expense_account_id' => $expenseAccount->id,
             ]
