@@ -4,6 +4,7 @@ namespace App\Enums\Inventory;
 
 enum ValuationMethod: string
 {
+    //TODO::Change the cases to PascalCase
     case FIFO = 'fifo';
     case LIFO = 'lifo';
     case AVCO = 'avco';
