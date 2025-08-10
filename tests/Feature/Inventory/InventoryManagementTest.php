@@ -83,8 +83,8 @@ it('correctly processes an incoming storable product using AVCO, creating a stoc
         'quantity' => $quantity,
         'from_location_id' => $this->vendorLocation->id,
         'to_location_id' => $this->stockLocation->id,
-        'move_type' => StockMoveType::INCOMING->value,
-        'status' => StockMoveStatus::DONE->value,
+        'move_type' => StockMoveType::Incoming->value,
+        'status' => StockMoveStatus::Done->value,
         'source_type' => VendorBill::class,
         'source_id' => $vendorBill->id,
     ]);

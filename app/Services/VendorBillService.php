@@ -89,8 +89,8 @@ class VendorBillService
             quantity: $line->quantity,
             from_location_id: $company->vendorLocation->id,
             to_location_id: $company->defaultStockLocation->id,
-            move_type: StockMoveType::INCOMING,
-            status: StockMoveStatus::DONE, // Moves from bills are immediately 'done'
+            move_type: StockMoveType::Incoming,
+            status: StockMoveStatus::Done, // Moves from bills are immediately 'done'
             move_date: $vendorBill->bill_date,
             reference: $vendorBill->bill_reference,
             source_type: VendorBill::class,
