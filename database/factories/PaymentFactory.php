@@ -8,6 +8,8 @@ use App\Models\Journal;
 use App\Models\Partner;
 use App\Models\Payment;
 use App\Models\Currency;
+use App\Enums\Payments\PaymentType;
+use App\Enums\Payments\PaymentStatus;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class PaymentFactory extends Factory
@@ -21,10 +23,10 @@ class PaymentFactory extends Factory
             'paid_to_from_partner_id' => Partner::factory(),
             'payment_date' => $this->faker->date(),
             'amount' => Money::of($this->faker->randomFloat(2, 100, 10000), 'USD'),
-            // Use model constants for clarity and maintainability.
-            'payment_type' => $this->faker->randomElement([Payment::TYPE_INBOUND, Payment::TYPE_OUTBOUND]),
+            // Use enum values for clarity and maintainability.
+            'payment_type' => $this->faker->randomElement([PaymentType::Inbound, PaymentType::Outbound]),
             'reference' => $this->faker->sentence(3),
-            'status' => Payment::STATUS_DRAFT,
+            'status' => PaymentStatus::Draft,
             'journal_entry_id' => null,
         ];
     }

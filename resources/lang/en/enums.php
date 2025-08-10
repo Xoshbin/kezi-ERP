@@ -81,6 +81,7 @@ return [
     'partner_type' => [
         'customer' => 'Customer',
         'vendor' => 'Vendor',
+        'both' => 'Both',
     ],
 
     'product_type' => [
@@ -101,5 +102,46 @@ return [
         'credit_note' => 'Credit Note',
         'debit_note' => 'Debit Note',
         'miscellaneous' => 'Miscellaneous',
+    ],
+
+    'adjustment_document_status' => [
+        'draft' => 'Draft',
+        'posted' => 'Posted',
+        'cancelled' => 'Cancelled',
+    ],
+
+    'invoice_status' => [
+        'draft' => 'Draft',
+        'posted' => 'Posted',
+        'paid' => 'Paid',
+        'cancelled' => 'Cancelled',
+    ],
+
+    'payment_type' => [
+        'inbound' => 'Inbound',
+        'outbound' => 'Outbound',
+    ],
+
+    'payment_status' => [
+        'draft' => 'Draft',
+        'confirmed' => 'Confirmed',
+        'reconciled' => 'Reconciled',
+        'canceled' => 'Canceled',
+    ],
+
+    'tax_type' => [
+        'sales' => 'Sales',
+        'purchase' => 'Purchase',
+        'both' => 'Both',
+    ],
+
+    'budget_type' => [
+        'analytic' => 'Analytic',
+        'financial' => 'Financial',
+    ],
+
+    'budget_status' => [
+        'draft' => 'Draft',
+        'finalized' => 'Finalized',
     ],
 ];

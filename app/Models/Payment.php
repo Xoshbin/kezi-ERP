@@ -5,6 +5,8 @@ namespace App\Models;
 use App\Casts\MoneyCast;
 use App\Observers\PaymentObserver;
 use App\Observers\AuditLogObserver;
+use App\Enums\Payments\PaymentType;
+use App\Enums\Payments\PaymentStatus;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
@@ -93,6 +95,8 @@ class Payment extends Model
     protected $casts = [
         'payment_date' => 'date', // Casts to a Carbon date object [3, 11].
         'amount' => MoneyCast::class, // Ensures the amount is treated as a decimal with 2 places for precision [3].
+        'payment_type' => PaymentType::class,
+        'status' => PaymentStatus::class,
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
     ];
@@ -104,40 +108,10 @@ class Payment extends Model
      * @var array<string, mixed>
      */
     protected $attributes = [
-        'status' => 'Draft',
+        'status' => 'draft',
     ];
 
-    public const TYPE_INBOUND = 'inbound';
-    public const TYPE_OUTBOUND = 'outbound';
 
-    public const STATUS_DRAFT = 'draft';
-    public const STATUS_CONFIRMED = 'confirmed';
-    public const STATUS_RECONCILED = 'reconciled';
-    public const STATUS_CANCELED = 'canceled';
-
-    /**
-     * Get available payment statuses.
-     *
-     * @return array<string, string>
-     */
-    public static function getStatuses(): array
-    {
-        return [
-            self::STATUS_DRAFT => 'Draft',
-            self::STATUS_CONFIRMED => 'Confirmed',
-            self::STATUS_RECONCILED => 'Reconciled',
-            self::STATUS_CANCELED => 'Canceled',
-        ];
-    }
-
-    // use it in Filament select options columns
-    public static function getTypes(): array
-    {
-        return [
-            self::TYPE_INBOUND => 'Inbound',
-            self::TYPE_OUTBOUND => 'Outbound',
-        ];
-    }
 
     /**
      * Get the Company that owns the Payment.

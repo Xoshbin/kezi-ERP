@@ -5,6 +5,7 @@ namespace App\Models;
 use Brick\Money\Money;
 use App\Casts\MoneyCast;
 use App\Enums\Adjustments\AdjustmentDocumentType;
+use App\Enums\Adjustments\AdjustmentDocumentStatus;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -97,23 +98,14 @@ class AdjustmentDocument extends Model
     protected $casts = [
         'date'         => 'date',       // [5, 6]
         'type'         => AdjustmentDocumentType::class,
+        'status'       => AdjustmentDocumentStatus::class,
         'total_amount' => MoneyCast::class,  // [5] Example precision, adjust as needed.
         'total_tax'    => MoneyCast::class,  // [5] Example precision, adjust as needed.
         'created_at'   => 'datetime',   // [5, 6]
         'updated_at'   => 'datetime',   // [5, 6]
     ];
 
-    public const STATUS_DRAFT = 'draft'; // [5]
-    public const STATUS_POSTED = 'posted'; // [5]
 
-    // use it in Filament select options columns
-    public static function getStatuses(): array
-    {
-        return [
-            self::STATUS_DRAFT => 'Draft',
-            self::STATUS_POSTED => 'Posted',
-        ];
-    }
 
 
 

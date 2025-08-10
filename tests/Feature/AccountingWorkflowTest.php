@@ -5,6 +5,8 @@ use Brick\Money\Money;
 use App\Models\Account;
 use App\Models\Invoice;
 use App\Models\Partner;
+use App\Enums\Sales\InvoiceStatus;
+use App\Enums\Partners\PartnerType;
 use App\Services\InvoiceService;
 use App\Services\PaymentService;
 use App\Services\VendorBillService;
@@ -23,6 +25,7 @@ use App\DataTransferObjects\Purchases\CreateVendorBillDTO;
 use App\DataTransferObjects\Purchases\CreateVendorBillLineDTO;
 use App\DataTransferObjects\Payments\CreatePaymentDocumentLinkDTO;
 use App\Enums\Adjustments\AdjustmentDocumentType;
+use App\Enums\Adjustments\AdjustmentDocumentStatus;
 
 uses(Illuminate\Foundation\Testing\RefreshDatabase::class, WithConfiguredCompany::class);
 
@@ -84,7 +87,7 @@ test('the entire accounting workflow from setup to credit note', function () {
     expect($capitalEntry->total_credit->isEqualTo($initialCapitalInvestment))->toBeTrue();
 
     // Step 4: Purchasing a Fixed Asset
-    $vendor = Partner::factory()->for($this->company)->create(['name' => 'Paykar Tech Supplies', 'type' => Partner::TYPE_VENDOR]);
+    $vendor = Partner::factory()->for($this->company)->create(['name' => 'Paykar Tech Supplies', 'type' => PartnerType::Vendor]);
     // Arrange: Prepare the DTOs for the Action.
     $lineDto = new CreateVendorBillLineDTO(
         description: 'High-End Laptop for Business Use',
@@ -128,7 +131,7 @@ test('the entire accounting workflow from setup to credit note', function () {
     expect($purchaseEntry->lines->where('account_id', $apAccount->id)->first()->credit->isEqualTo($highEndLaptopCost))->toBeTrue();
 
     // Step 5: Providing a Service & Invoicing
-    $customer = Partner::factory()->for($this->company)->create(['name' => 'Hawre Trading Group', 'type' => Partner::TYPE_CUSTOMER]);
+    $customer = Partner::factory()->for($this->company)->create(['name' => 'Hawre Trading Group', 'type' => PartnerType::Customer]);
     $lineDto = new CreateInvoiceLineDTO(
         description: 'On-site IT Infrastructure Setup',
         quantity: 1,
@@ -194,7 +197,7 @@ test('the entire accounting workflow from setup to credit note', function () {
     expect($customerPaymentEntry->total_debit->isEqualTo($itInfrastructureServiceCost))->toBeTrue();
     expect($customerPaymentEntry->lines->where('account_id', $bankAccount->id)->first()->debit->getAmount()->toFloat())->toEqual($itInfrastructureServiceCost->getAmount()->toFloat());
     expect($customerPaymentEntry->lines->where('account_id', $arAccount->id)->first()->credit->getAmount()->toFloat())->toEqual($itInfrastructureServiceCost->getAmount()->toFloat());
-    expect($invoice->fresh()->status)->toBe(Invoice::STATUS_PAID);
+    expect($invoice->fresh()->status)->toBe(InvoiceStatus::Paid);
 
     // Step 7: Paying a Vendor
     $vendorDocumentLinkDto = new CreatePaymentDocumentLinkDTO(
@@ -240,7 +243,7 @@ test('the entire accounting workflow from setup to credit note', function () {
         'reason' => 'Goodwill discount for new client',
         // MODIFIED: Use Money object for total amount
         'total_amount' => $goodwillDiscount,
-        'status' => 'Draft'
+        'status' => AdjustmentDocumentStatus::Draft
     ]);
 
     $adjustmentService->post($creditNote, $this->user);

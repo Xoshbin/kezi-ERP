@@ -10,6 +10,7 @@ use App\Models\Account;
 use App\Models\Journal;
 use App\Services\BankReconciliationService;
 use App\Enums\Accounting\JournalType;
+use App\Enums\Payments\PaymentStatus;
 use Brick\Money\Money;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\Traits\WithConfiguredCompany;
@@ -82,8 +83,8 @@ describe('BankReconciliationService', function () {
         expect($bankLine2->fresh()->is_reconciled)->toBeTrue();
 
         // Assert payments are reconciled
-        expect($payment1->fresh()->status)->toBe('Reconciled');
-        expect($payment2->fresh()->status)->toBe('Reconciled');
+        expect($payment1->fresh()->status)->toBe(PaymentStatus::Reconciled);
+        expect($payment2->fresh()->status)->toBe(PaymentStatus::Reconciled);
 
         // Assert first bank line is linked to first payment
         expect($bankLine1->fresh()->payment_id)->toBe($payment1->id);
@@ -139,7 +140,7 @@ describe('BankReconciliationService', function () {
         );
 
         expect($bankLine->fresh()->is_reconciled)->toBeTrue();
-        expect($payment->fresh()->status)->toBe('Reconciled');
+        expect($payment->fresh()->status)->toBe(PaymentStatus::Reconciled);
     });
 
     it('can create write-offs for bank statement lines', function () {
@@ -184,13 +185,13 @@ describe('BankReconciliationService', function () {
             ->for($this->company)
             ->for($this->company->currency)
             ->for($this->bankJournal)
-            ->create(['status' => 'Reconciled']);
+            ->create(['status' => PaymentStatus::Reconciled]);
 
         $unreconciledPayment = Payment::factory()
             ->for($this->company)
             ->for($this->company->currency)
             ->for($this->bankJournal)
-            ->create(['status' => 'confirmed']);
+            ->create(['status' => PaymentStatus::Confirmed]);
 
         $result = $this->service->getUnreconciledPayments($this->company->id);
 

@@ -81,6 +81,7 @@ return [
     'partner_type' => [
         'customer' => 'کڕیار',
         'vendor' => 'فرۆشیار',
+        'both' => 'هەردووک',
     ],
 
     'product_type' => [
@@ -101,5 +102,46 @@ return [
         'credit_note' => 'پسووڵەی گەڕاندنەوە',
         'debit_note' => 'پسووڵەی وەرگرتن',
         'miscellaneous' => 'هەمەجۆر',
+    ],
+
+    'adjustment_document_status' => [
+        'draft' => 'ڕەشنووس',
+        'posted' => 'پۆست کراو',
+        'cancelled' => 'هەڵوەشاوە',
+    ],
+
+    'invoice_status' => [
+        'draft' => 'ڕەشنووس',
+        'posted' => 'پۆست کراو',
+        'paid' => 'پارەدراو',
+        'cancelled' => 'هەڵوەشاوە',
+    ],
+
+    'payment_type' => [
+        'inbound' => 'هاتوو',
+        'outbound' => 'چووە دەرەوە',
+    ],
+
+    'payment_status' => [
+        'draft' => 'ڕەشنووس',
+        'confirmed' => 'پشتڕاستکراوە',
+        'reconciled' => 'ڕێکخراوە',
+        'canceled' => 'هەڵوەشاوە',
+    ],
+
+    'tax_type' => [
+        'sales' => 'فرۆشتن',
+        'purchase' => 'کڕین',
+        'both' => 'هەردووک',
+    ],
+
+    'budget_type' => [
+        'analytic' => 'شیکاری',
+        'financial' => 'دارایی',
+    ],
+
+    'budget_status' => [
+        'draft' => 'ڕەشنووس',
+        'finalized' => 'کۆتایی هاتووە',
     ],
 ];

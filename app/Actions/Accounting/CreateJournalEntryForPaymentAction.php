@@ -7,6 +7,7 @@ use App\DataTransferObjects\Accounting\CreateJournalEntryLineDTO;
 use App\Models\JournalEntry;
 use App\Models\Payment;
 use App\Models\User;
+use App\Enums\Payments\PaymentType;
 use Brick\Money\Money;
 use InvalidArgumentException;
 
@@ -45,7 +46,7 @@ class CreateJournalEntryForPaymentAction
             'payment_amount_in_base_minor' => $paymentAmountInBase->getMinorAmount()->toInt(),
         ]);
 
-        if ($payment->payment_type === Payment::TYPE_INBOUND) {
+        if ($payment->payment_type === PaymentType::Inbound) {
             $arAccountId = $company->default_accounts_receivable_id;
             if (!$arAccountId) {
                 throw new \RuntimeException('Default Accounts Receivable is not configured for this company.');
@@ -67,7 +68,7 @@ class CreateJournalEntryForPaymentAction
                 partner_id: null,
                 analytic_account_id: null,
             );
-        } elseif ($payment->payment_type === Payment::TYPE_OUTBOUND) {
+        } elseif ($payment->payment_type === PaymentType::Outbound) {
             $apAccountId = $company->default_accounts_payable_id;
             if (!$apAccountId) {
                 throw new \RuntimeException('Default Accounts Payable is not configured for this company.');

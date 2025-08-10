@@ -48,7 +48,7 @@ class LockDateResource extends Resource
                             ->mapWithKeys(fn (LockDateType $type) => [$type->value => $type->label()])
                     )
                     ->required()
-                    ->disabled(fn (?LockDate $record) => $record !== null && $record->lock_type === LockDateType::HARD_LOCK)
+                    ->disabled(fn (?LockDate $record) => $record !== null && $record->lock_type === LockDateType::HardLock)
                     ->dehydrated(fn (?LockDate $record) => $record === null), // Only save on create
                 Forms\Components\DatePicker::make('locked_until')
                     ->required(),
@@ -70,9 +70,9 @@ class LockDateResource extends Resource
             ])
             ->actions([
                 Tables\Actions\EditAction::make()
-                    ->disabled(fn (LockDate $record) => $record->lock_type === LockDateType::HARD_LOCK),
+                    ->disabled(fn (LockDate $record) => $record->lock_type === LockDateType::HardLock),
                 Tables\Actions\DeleteAction::make()
-                    ->disabled(fn (LockDate $record) => $record->lock_type === LockDateType::HARD_LOCK),
+                    ->disabled(fn (LockDate $record) => $record->lock_type === LockDateType::HardLock),
             ])
             ->bulkActions([]);
     }

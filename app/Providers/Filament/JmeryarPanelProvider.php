@@ -18,6 +18,7 @@ use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
+use pxlrbt\FilamentEnvironmentIndicator\EnvironmentIndicatorPlugin;
 use DutchCodingCompany\FilamentDeveloperLogins\FilamentDeveloperLoginsPlugin;
 
 class JmeryarPanelProvider extends PanelProvider
@@ -58,6 +59,9 @@ class JmeryarPanelProvider extends PanelProvider
             ])
             ->viteTheme('resources/js/filament/jmeryar/theme.js')
             ->plugins([
+                EnvironmentIndicatorPlugin::make()
+                ->showGitBranch()
+                ->showDebugModeWarningInProduction(),
                 SpatieLaravelTranslatablePlugin::make()
                     ->defaultLocales(['en', 'ckb']),
                 FilamentDeveloperLoginsPlugin::make()

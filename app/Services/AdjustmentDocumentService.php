@@ -7,6 +7,7 @@ use App\Events\AdjustmentDocumentPosted;
 use App\Exceptions\UpdateNotAllowedException;
 use App\Models\AdjustmentDocument;
 use App\Models\User;
+use App\Enums\Adjustments\AdjustmentDocumentStatus;
 use Illuminate\Support\Facades\DB;
 
 class AdjustmentDocumentService
@@ -22,7 +23,7 @@ class AdjustmentDocumentService
     {
         DB::transaction(function () use ($creditNote, $user) {
             // Update the credit note's status and save it.
-            $creditNote->status = AdjustmentDocument::STATUS_POSTED;
+            $creditNote->status = AdjustmentDocumentStatus::Posted;
             $creditNote->posted_at = now();
             $creditNote->save();
 

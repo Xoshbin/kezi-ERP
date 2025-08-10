@@ -3,6 +3,7 @@
 use App\Actions\Sales\GenerateInvoicePdfAction;
 use App\Models\Invoice;
 use App\Models\Company;
+use App\Enums\Sales\InvoiceStatus;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 
@@ -41,7 +42,7 @@ Route::middleware(['auth'])->group(function () {
         }
 
         // Find a sample invoice for preview
-        $invoice = $company->invoices()->where('status', '!=', Invoice::STATUS_DRAFT)->first();
+        $invoice = $company->invoices()->where('status', '!=', InvoiceStatus::Draft)->first();
 
         if (!$invoice) {
             return response()->json(['error' => 'No posted invoices found for preview'], 404);

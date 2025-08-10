@@ -13,7 +13,8 @@
         "filament/filament": "^3.3",
         "filament/spatie-laravel-translatable-plugin": "^3.2",
         "laravel/framework": "^12.0",
-        "laravel/tinker": "^2.10.1"
+        "laravel/tinker": "^2.10.1",
+        "pxlrbt/filament-environment-indicator": "^2.2"
     },
     "require-dev": {
         "barryvdh/laravel-ide-helper": "^3.6",

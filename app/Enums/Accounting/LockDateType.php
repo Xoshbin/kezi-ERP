@@ -4,9 +4,9 @@ namespace App\Enums\Accounting;
 
 enum LockDateType: string
 {
-    case TAX_RETURN = 'tax_return_date';
-    case ALL_USERS = 'everything_date';
-    case HARD_LOCK = 'hard_lock';
+    case TaxReturn = 'tax_return_date';
+    case AllUsers = 'everything_date';
+    case HardLock = 'hard_lock';
 
     /**
      * Get the translated label for the lock date type.

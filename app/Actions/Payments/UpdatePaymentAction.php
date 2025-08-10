@@ -8,6 +8,8 @@ use App\Models\Currency;
 use App\Models\Invoice;
 use App\Models\Payment;
 use App\Models\VendorBill;
+use App\Enums\Payments\PaymentType;
+use App\Enums\Payments\PaymentStatus;
 use App\Services\Accounting\LockDateService;
 use Brick\Money\Money;
 use Illuminate\Support\Facades\DB;
@@ -23,7 +25,7 @@ class UpdatePaymentAction
     {
         $payment = $dto->payment;
 
-        if ($payment->status !== Payment::STATUS_DRAFT) {
+        if ($payment->status !== PaymentStatus::Draft) {
             throw new UpdateNotAllowedException('Only draft payments can be updated.');
         }
 
@@ -56,7 +58,7 @@ class UpdatePaymentAction
             if (count($documentTypes) > 1) {
                 throw new InvalidArgumentException('A payment cannot be linked to both invoices and vendor bills simultaneously.');
             }
-            $paymentType = key($documentTypes) === 'invoice' ? Payment::TYPE_INBOUND : Payment::TYPE_OUTBOUND;
+            $paymentType = key($documentTypes) === 'invoice' ? PaymentType::Inbound : PaymentType::Outbound;
 
             // Update the parent Payment record
             $payment->update([

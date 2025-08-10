@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Casts\MoneyCast;
 use App\Observers\TaxObserver;
+use App\Enums\Accounting\TaxType;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -83,22 +84,12 @@ class Tax extends Model
     protected $casts = [
         'rate' => 'float', // Crucial for monetary precision in tax calculations [1]
         'is_active' => 'boolean', // Ensures boolean behavior for the active status [1]
+        'type' => TaxType::class,
         'created_at' => 'datetime', // Laravel automatically casts these, but explicit declaration is good practice.
         'updated_at' => 'datetime',
     ];
 
-    public const TYPE_SALES = 'sales';
-    public const TYPE_PURCHASE = 'purchase';
-    public const TYPE_BOTH = 'both';
 
-    public static function getTypes(): array
-    {
-        return [
-            self::TYPE_SALES => 'Sales',
-            self::TYPE_PURCHASE => 'Purchase',
-            self::TYPE_BOTH => 'Both',
-        ];
-    }
 
     /**
      * Get the Company that owns the Tax.
@@ -160,7 +151,7 @@ class Tax extends Model
      */
     public function isSalesTax(): bool
     {
-        return in_array($this->type, ['Sales', 'Both']);
+        return in_array($this->type, [TaxType::Sales, TaxType::Both]);
     }
 
     /**
@@ -170,7 +161,7 @@ class Tax extends Model
      */
     public function isPurchaseTax(): bool
     {
-        return in_array($this->type, ['Purchase', 'Both']);
+        return in_array($this->type, [TaxType::Purchase, TaxType::Both]);
     }
 
     public function invoiceLines(): HasMany

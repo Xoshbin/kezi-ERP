@@ -9,6 +9,7 @@ use App\Models\Partner;
 use App\Models\InvoiceLine;
 use App\Models\Product;
 use App\Models\Account;
+use App\Enums\Sales\InvoiceStatus;
 use Brick\Money\Money;
 use Illuminate\Http\Response;
 
@@ -34,7 +35,7 @@ test('it successfully generates a pdf for a posted invoice', function () {
         'company_id' => $this->company->id,
         'customer_id' => $this->customer->id,
         'currency_id' => $this->currency->id,
-        'status' => Invoice::STATUS_POSTED,
+        'status' => InvoiceStatus::Posted,
         'invoice_number' => 'INV-001',
         'total_amount' => Money::of(100, 'USD'),
         'total_tax' => Money::of(10, 'USD'),
@@ -70,7 +71,7 @@ test('it successfully generates pdf for a draft invoice', function () {
         'company_id' => $this->company->id,
         'customer_id' => $this->customer->id,
         'currency_id' => $this->currency->id,
-        'status' => Invoice::STATUS_DRAFT,
+        'status' => InvoiceStatus::Draft,
         'invoice_number' => null, // Draft invoices don't have numbers
         'total_amount' => Money::of(100, 'USD'),
         'total_tax' => Money::of(10, 'USD'),
@@ -104,7 +105,7 @@ test('it falls back to classic template when invalid template is provided', func
         'company_id' => $this->company->id,
         'customer_id' => $this->customer->id,
         'currency_id' => $this->currency->id,
-        'status' => Invoice::STATUS_POSTED,
+        'status' => InvoiceStatus::Posted,
         'invoice_number' => 'INV-002',
     ]);
 
@@ -130,7 +131,7 @@ test('it successfully generates pdf with modern template', function () {
         'company_id' => $this->company->id,
         'customer_id' => $this->customer->id,
         'currency_id' => $this->currency->id,
-        'status' => Invoice::STATUS_POSTED,
+        'status' => InvoiceStatus::Posted,
         'invoice_number' => 'INV-003',
     ]);
 
@@ -156,7 +157,7 @@ test('it successfully generates pdf with minimal template', function () {
         'company_id' => $this->company->id,
         'customer_id' => $this->customer->id,
         'currency_id' => $this->currency->id,
-        'status' => Invoice::STATUS_POSTED,
+        'status' => InvoiceStatus::Posted,
         'invoice_number' => 'INV-004',
     ]);
 
@@ -182,7 +183,7 @@ test('it successfully downloads pdf instead of streaming', function () {
         'company_id' => $this->company->id,
         'customer_id' => $this->customer->id,
         'currency_id' => $this->currency->id,
-        'status' => Invoice::STATUS_POSTED,
+        'status' => InvoiceStatus::Posted,
         'invoice_number' => 'INV-005',
     ]);
 
@@ -226,7 +227,7 @@ test('it loads all necessary relationships for pdf generation', function () {
         'company_id' => $this->company->id,
         'customer_id' => $this->customer->id,
         'currency_id' => $this->currency->id,
-        'status' => Invoice::STATUS_POSTED,
+        'status' => InvoiceStatus::Posted,
         'invoice_number' => 'INV-006',
     ]);
 
@@ -256,7 +257,7 @@ test('it successfully downloads pdf for a draft invoice', function () {
         'company_id' => $this->company->id,
         'customer_id' => $this->customer->id,
         'currency_id' => $this->currency->id,
-        'status' => Invoice::STATUS_DRAFT,
+        'status' => InvoiceStatus::Draft,
         'total_amount' => Money::of(100, 'USD'),
         'total_tax' => Money::of(10, 'USD'),
     ]);

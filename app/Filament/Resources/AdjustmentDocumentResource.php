@@ -17,6 +17,7 @@ use Filament\Tables\Table;
 use Filament\Resources\Resource;
 use App\Models\AdjustmentDocument;
 use App\Enums\Adjustments\AdjustmentDocumentType;
+use App\Enums\Adjustments\AdjustmentDocumentStatus;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Section;
 use App\Models\Account; // ADDED for Repeater schema
@@ -185,10 +186,10 @@ class AdjustmentDocumentResource extends Resource
                         ->schema([
                             Forms\Components\Select::make('status')
                                 ->label(__('adjustment_document.status'))
-                                ->options(AdjustmentDocument::getStatuses())
+                                ->options(collect(AdjustmentDocumentStatus::cases())->mapWithKeys(fn($case) => [$case->value => $case->label()]))
                                 ->disabled()
                                 ->dehydrated(false)
-                                ->default('draft'),
+                                ->default(AdjustmentDocumentStatus::Draft->value),
                             Forms\Components\Placeholder::make('created_at')
                                 ->label(__('adjustment_document.created'))
                                 ->content(fn (?AdjustmentDocument $record): string => $record?->created_at?->format('M j, Y g:i A') ?? 'Not saved yet')

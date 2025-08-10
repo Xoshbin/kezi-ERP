@@ -34,6 +34,8 @@ use App\Enums\Accounting\JournalType;
 use App\Enums\Partners\PartnerType;
 use App\Enums\Products\ProductType;
 use App\Enums\Inventory\ValuationMethod;
+use App\Enums\Payments\PaymentStatus;
+use App\Enums\Adjustments\AdjustmentDocumentStatus;
 use Brick\Money\Money;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use function Pest\Livewire\livewire;
@@ -360,7 +362,7 @@ test('Jmeryar ERP complete accounting scenario - Full Workflow', function () {
         ->assertHasNoErrors();
 
     $invoice->refresh();
-    expect($invoice->status)->toBe('posted');
+    expect($invoice->status)->toBe(\App\Enums\Sales\InvoiceStatus::Posted);
     expect($invoice->invoice_number)->not->toBeNull(); // Sequential numbering
 
     // Verify invoice journal entry
@@ -416,12 +418,12 @@ test('Jmeryar ERP complete accounting scenario - Full Workflow', function () {
         ->assertHasNoErrors();
 
     $payment->refresh();
-    expect($payment->status)->toBe('confirmed');
+    expect($payment->status)->toBe(PaymentStatus::Confirmed);
     expect($payment->journalEntry)->not->toBeNull();
 
     // Verify invoice is now paid
     $invoice->refresh();
-    expect($invoice->status)->toBe('paid');
+    expect($invoice->status)->toBe(\App\Enums\Sales\InvoiceStatus::Paid);
 
     // Step 8: Paying a Vendor
     livewire(PaymentResource\Pages\CreatePayment::class)
@@ -486,14 +488,14 @@ test('Jmeryar ERP complete accounting scenario - Full Workflow', function () {
     // Verify the credit note has lines before posting
     $creditNote->refresh();
     expect($creditNote->lines)->toHaveCount(1);
-    expect($creditNote->status)->toBe('draft');
+    expect($creditNote->status)->toBe(AdjustmentDocumentStatus::Draft);
 
     // Post the credit note using the service directly (Filament action has issues)
     $adjustmentService = app(\App\Services\AdjustmentDocumentService::class);
     $adjustmentService->post($creditNote, $user);
 
     $creditNote->refresh();
-    expect($creditNote->status)->toBe('posted');
+    expect($creditNote->status)->toBe(AdjustmentDocumentStatus::Posted);
     expect($creditNote->journalEntry)->not->toBeNull();
 
     // Verify the credit note journal entry

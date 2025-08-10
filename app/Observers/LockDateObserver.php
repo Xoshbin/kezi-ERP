@@ -11,14 +11,14 @@ class LockDateObserver
 {
     public function updating(LockDate $lockDate): void
     {
-        if ($lockDate->lock_type === LockDateType::HARD_LOCK) {
+        if ($lockDate->lock_type === LockDateType::HardLock) {
             throw new UpdateNotAllowedException('A hard lock date cannot be modified.');
         }
     }
 
     public function deleting(LockDate $lockDate): void
     {
-        if ($lockDate->lock_type === LockDateType::HARD_LOCK) {
+        if ($lockDate->lock_type === LockDateType::HardLock) {
             throw new UpdateNotAllowedException('A hard lock date cannot be removed.');
         }
     }

@@ -73,8 +73,8 @@ it('correctly processes an incoming storable product, creating a stock move and 
         'quantity' => $quantity,
         'from_location_id' => $this->company->vendorLocation->id,
         'to_location_id' => $this->company->defaultStockLocation->id,
-        'move_type' => StockMoveType::INCOMING->value,
-        'status' => StockMoveStatus::DONE->value,
+        'move_type' => StockMoveType::Incoming->value,
+        'status' => StockMoveStatus::Done->value,
         'source_type' => VendorBill::class,
         'source_id' => $vendorBill->id,
     ]);

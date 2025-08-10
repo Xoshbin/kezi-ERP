@@ -3,6 +3,8 @@
 namespace Database\Factories;
 
 use App\Models\Currency;
+use App\Enums\Budgets\BudgetType;
+use App\Enums\Budgets\BudgetStatus;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -22,8 +24,8 @@ class BudgetFactory extends Factory
             'name' => $this->faker->word,
             'period_start_date' => $this->faker->date(),
             'period_end_date' => $this->faker->dateTimeBetween('+1 month', '+1 year'),
-            'budget_type' => $this->faker->randomElement(['analytic', 'financial']),
-            'status' => $this->faker->randomElement(['draft', 'finalized']),
+            'budget_type' => $this->faker->randomElement([BudgetType::Analytic, BudgetType::Financial]),
+            'status' => $this->faker->randomElement([BudgetStatus::Draft, BudgetStatus::Finalized]),
             'currency_id' => Currency::factory()->create()->id,
         ];
     }

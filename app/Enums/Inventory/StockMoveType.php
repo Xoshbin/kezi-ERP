@@ -4,10 +4,10 @@ namespace App\Enums\Inventory;
 
 enum StockMoveType: string
 {
-    case INCOMING = 'incoming';
-    case OUTGOING = 'outgoing';
-    case INTERNAL_TRANSFER = 'internal_transfer';
-    case ADJUSTMENT = 'adjustment';
+    case Incoming = 'incoming';
+    case Outgoing = 'outgoing';
+    case InternalTransfer = 'internal_transfer';
+    case Adjustment = 'adjustment';
 
     /**
      * Get the translated label for the stock move type.
