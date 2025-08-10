@@ -5,6 +5,7 @@ use App\Models\BankStatement;
 use App\Models\Partner;
 use App\Models\Journal;
 use App\Enums\Accounting\JournalType;
+use App\Enums\Payments\PaymentStatus;
 use Brick\Money\Money;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\Traits\WithConfiguredCompany;
@@ -310,7 +311,7 @@ it('can reconcile bank statement lines with payments', function () {
         'currency_id' => $this->company->currency_id,
         'amount' => Money::of(1000, $this->company->currency->code),
         'payment_type' => 'inbound',
-        'status' => \App\Models\Payment::STATUS_CONFIRMED,
+        'status' => PaymentStatus::Confirmed,
     ]);
 
     // Test the BankReconciliationMatcher component reactivity
@@ -408,7 +409,7 @@ it('prevents reconciliation when totals do not match', function () {
         'currency_id' => $this->company->currency_id,
         'amount' => Money::of(500, $this->company->currency->code), // Different amount
         'payment_type' => 'inbound',
-        'status' => \App\Models\Payment::STATUS_CONFIRMED,
+        'status' => PaymentStatus::Confirmed,
     ]);
 
     // Test that reconciliation button is disabled when totals don't match
@@ -439,7 +440,7 @@ it('prevents reconciliation when totals do not match', function () {
     $payment->refresh();
 
     expect($statementLine->is_reconciled)->toBeFalse();
-    expect($payment->status)->toBe(\App\Models\Payment::STATUS_CONFIRMED);
+    expect($payment->status)->toBe(PaymentStatus::Confirmed);
 });
 
 it('can clear selections in reconciliation interface', function () {
@@ -506,7 +507,7 @@ it('has reactive reconciliation summary', function () {
         'currency_id' => $this->company->currency_id,
         'amount' => Money::of(1000, $this->company->currency->code),
         'payment_type' => 'inbound',
-        'status' => \App\Models\Payment::STATUS_CONFIRMED,
+        'status' => PaymentStatus::Confirmed,
     ]);
 
     // Test the BankReconciliationMatcher Livewire component directly
@@ -563,7 +564,7 @@ it('can toggle bank lines and payments in reconciliation interface', function ()
         'currency_id' => $this->company->currency_id,
         'amount' => Money::of(1000, $this->company->currency->code),
         'payment_type' => 'inbound',
-        'status' => \App\Models\Payment::STATUS_CONFIRMED,
+        'status' => PaymentStatus::Confirmed,
     ]);
 
     // Test the child table components directly since main component uses events
@@ -615,7 +616,7 @@ it('can perform reconciliation through the livewire component', function () {
         'currency_id' => $this->company->currency_id,
         'amount' => Money::of(1000, $this->company->currency->code),
         'payment_type' => 'inbound',
-        'status' => \App\Models\Payment::STATUS_CONFIRMED,
+        'status' => PaymentStatus::Confirmed,
     ]);
 
     $reconciliationComponent = livewire(\App\Livewire\Accounting\BankReconciliationMatcher::class, [
@@ -682,7 +683,7 @@ it('calculates totals correctly with different payment types', function () {
         'currency_id' => $this->company->currency_id,
         'amount' => Money::of(1000, $this->company->currency->code),
         'payment_type' => 'inbound',
-        'status' => \App\Models\Payment::STATUS_CONFIRMED,
+        'status' => PaymentStatus::Confirmed,
     ]);
 
     // Create an outbound payment (money going out)
@@ -692,7 +693,7 @@ it('calculates totals correctly with different payment types', function () {
         'currency_id' => $this->company->currency_id,
         'amount' => Money::of(500, $this->company->currency->code),
         'payment_type' => 'outbound',
-        'status' => \App\Models\Payment::STATUS_CONFIRMED,
+        'status' => PaymentStatus::Confirmed,
     ]);
 
     $reconciliationComponent = livewire(\App\Livewire\Accounting\BankReconciliationMatcher::class, [
@@ -815,7 +816,7 @@ it('can write off payments', function () {
         'currency_id' => $this->company->currency_id,
         'amount' => Money::of(100, $this->company->currency->code),
         'payment_type' => 'inbound',
-        'status' => \App\Models\Payment::STATUS_CONFIRMED,
+        'status' => PaymentStatus::Confirmed,
     ]);
 
     // Note: Payment write-off functionality is not implemented in the current architecture
@@ -830,5 +831,5 @@ it('can write off payments', function () {
 
     // Verify the payment is still in confirmed status (not reconciled yet)
     $payment->refresh();
-    expect($payment->status)->toBe(\App\Models\Payment::STATUS_CONFIRMED);
+    expect($payment->status)->toBe(PaymentStatus::Confirmed);
 });

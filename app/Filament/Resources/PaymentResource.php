@@ -10,6 +10,9 @@ use App\Models\Invoice;
 use App\Models\Payment;
 use App\Models\VendorBill;
 use App\Enums\Purchases\VendorBillStatus;
+use App\Enums\Payments\PaymentType;
+use App\Enums\Payments\PaymentStatus;
+use App\Enums\Sales\InvoiceStatus;
 use App\Services\PaymentService;
 use Filament\Forms;
 use Filament\Forms\Form;
@@ -97,12 +100,12 @@ class PaymentResource extends Resource
                         ->readOnly(),
                     Forms\Components\Select::make('payment_type')
                         ->label(__('payment.form.payment_type'))
-                        ->options(Payment::getTypes())
+                        ->options(collect(PaymentType::cases())->mapWithKeys(fn($case) => [$case->value => $case->label()]))
                         ->disabled()
                         ->dehydrated(false),
                     Forms\Components\Select::make('status')
                         ->label(__('payment.form.status'))
-                        ->options(Payment::getStatuses())
+                        ->options(collect(PaymentStatus::cases())->mapWithKeys(fn($case) => [$case->value => $case->label()]))
                         ->disabled()
                         ->dehydrated(false),
                 ])
@@ -115,7 +118,7 @@ class PaymentResource extends Resource
                         ->live()
                         ->reorderable(true)
                         ->minItems(1)
-                        ->disabled(fn (?Payment $record) => $record && $record->status !== Payment::STATUS_DRAFT)
+                        ->disabled(fn (?Payment $record) => $record && $record->status !== PaymentStatus::Draft)
                         ->schema([
                             Forms\Components\Select::make('document_type')
                                 ->label(__('payment.form.document_type'))
@@ -131,7 +134,7 @@ class PaymentResource extends Resource
                                 ->options(function (Get $get) {
                                     $type = $get('document_type');
                                     if ($type === 'invoice') {
-                                        return Invoice::where('status', 'posted')->pluck('invoice_number', 'id');
+                                        return Invoice::where('status', InvoiceStatus::Posted)->pluck('invoice_number', 'id');
                                     }
                                     if ($type === 'vendor_bill') {
                                         return VendorBill::where('status', VendorBillStatus::Posted)->pluck('bill_reference', 'id');
@@ -252,7 +255,7 @@ class PaymentResource extends Resource
                         app(PaymentService::class)->delete($record);
                     })
                     // Make the button disappear if deletion is not allowed
-                    ->visible(fn(Payment $record): bool => $record->status === Payment::STATUS_DRAFT),
+                    ->visible(fn(Payment $record): bool => $record->status === PaymentStatus::Draft),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

@@ -10,6 +10,7 @@ use App\Models\Journal;
 use App\Models\Partner;
 use App\Models\Payment;
 use App\Models\VendorBill;
+use App\Enums\Payments\PaymentType;
 use Tests\Traits\MocksTime;
 use App\Services\PaymentService;
 use Tests\Traits\CreatesApplication;
@@ -53,7 +54,7 @@ test('an inbound payment can be created and linked to an invoice', function () {
     // Assert: The payment was created successfully.
     $this->assertModelExists($payment);
     $this->assertTrue(Money::of(200, $currency->code)->isEqualTo($payment->amount));
-    expect($payment->payment_type)->toBe(Payment::TYPE_INBOUND);
+    expect($payment->payment_type)->toBe(PaymentType::Inbound);
 
     // Assert: The payment is correctly linked to the invoice.
     $this->assertDatabaseHas('payment_document_links', [
@@ -94,7 +95,7 @@ test('an outbound payment can be created and linked to a vendor bill', function 
     // Assert: The payment was created successfully.
     $this->assertModelExists($payment);
     $this->assertTrue(Money::of(150, $currency->code)->isEqualTo($payment->amount));
-    expect($payment->payment_type)->toBe(Payment::TYPE_OUTBOUND);
+    expect($payment->payment_type)->toBe(PaymentType::Outbound);
 
     // Assert: The payment is correctly linked to the vendor bill.
     $this->assertDatabaseHas('payment_document_links', [

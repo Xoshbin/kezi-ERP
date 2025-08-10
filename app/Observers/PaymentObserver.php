@@ -4,6 +4,7 @@ namespace App\Observers;
 
 use App\Models\Payment;
 use App\Exceptions\DeletionNotAllowedException;
+use App\Enums\Payments\PaymentStatus;
 
 class PaymentObserver
 {
@@ -15,7 +16,7 @@ class PaymentObserver
      */
     public function deleting(Payment $payment): void
     {
-        if ($payment->status !== Payment::STATUS_DRAFT) {
+        if ($payment->status !== PaymentStatus::Draft) {
             throw new DeletionNotAllowedException(
                 'Confirmed payments cannot be deleted. This action is blocked by a system-level integrity rule.'
             );

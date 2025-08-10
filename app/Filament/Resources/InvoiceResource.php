@@ -8,6 +8,7 @@ use Filament\Forms;
 use Filament\Tables;
 use App\Models\Invoice;
 use App\Models\Currency;
+use App\Enums\Sales\InvoiceStatus;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
 use App\Services\InvoiceService;
@@ -96,7 +97,10 @@ class InvoiceResource extends Resource
                         ->required(),
                     Forms\Components\Select::make('status')
                         ->label(__('invoice.status'))
-                        ->options(Invoice::getStatuses())
+                        ->options(
+                            collect(InvoiceStatus::cases())
+                                ->mapWithKeys(fn (InvoiceStatus $status) => [$status->value => $status->label()])
+                        )
                         ->disabled()
                         ->dehydrated(false),
                 ])
@@ -263,7 +267,7 @@ class InvoiceResource extends Resource
                 Action::make('confirm')
                     ->label(__('invoice.confirm'))
                     ->action(function (Invoice $record) {
-                        $invoiceService = new InvoiceService();
+                        $invoiceService = app(InvoiceService::class);
                         try {
                             $invoiceService->confirm($record, Auth::user());
                             Notification::make()
@@ -279,11 +283,11 @@ class InvoiceResource extends Resource
                         }
                     })
                     ->requiresConfirmation()
-                    ->visible(fn(Invoice $record) => $record->status === Invoice::STATUS_DRAFT),
+                    ->visible(fn(Invoice $record) => $record->status === InvoiceStatus::Draft),
                 Action::make('resetToDraft')
                     ->label(__('invoice.reset_to_draft'))
                     ->action(function (Invoice $record, array $data) {
-                        $invoiceService = new InvoiceService();
+                        $invoiceService = app(InvoiceService::class);
                         try {
                             $invoiceService->resetToDraft($record, Auth::user(), $data['reason']);
                             Notification::make()
@@ -302,7 +306,7 @@ class InvoiceResource extends Resource
                         Forms\Components\Textarea::make('reason')->label(__('invoice.reason'))->required(),
                     ])
                     ->requiresConfirmation()
-                    ->visible(fn(Invoice $record) => $record->status === 'Posted'),
+                    ->visible(fn(Invoice $record) => $record->status === InvoiceStatus::Posted),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

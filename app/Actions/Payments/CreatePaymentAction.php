@@ -9,6 +9,8 @@ use App\Models\Invoice;
 use App\Models\Payment;
 use App\Models\User;
 use App\Models\VendorBill;
+use App\Enums\Payments\PaymentType;
+use App\Enums\Payments\PaymentStatus;
 use App\Services\Accounting\LockDateService;
 use Brick\Money\Money;
 use Carbon\Carbon;
@@ -52,7 +54,7 @@ class CreatePaymentAction
             if (count($documentTypes) > 1) {
                 throw new InvalidArgumentException('A payment cannot be linked to both invoices and vendor bills simultaneously.');
             }
-            $paymentType = key($documentTypes) === 'invoice' ? Payment::TYPE_INBOUND : Payment::TYPE_OUTBOUND;
+            $paymentType = key($documentTypes) === 'invoice' ? PaymentType::Inbound : PaymentType::Outbound;
 
             // Create the parent Payment record
             $payment = Payment::create([
@@ -64,7 +66,7 @@ class CreatePaymentAction
                 'amount' => $totalAmount,
                 'payment_type' => $paymentType,
                 'paid_to_from_partner_id' => $partnerId,
-                'status' => Payment::STATUS_DRAFT,
+                'status' => PaymentStatus::Draft,
             ]);
 
             // Create the links

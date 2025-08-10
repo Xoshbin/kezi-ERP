@@ -56,8 +56,8 @@ class VendorBillObserver
             'source_id' => $vendorBill->id,
             'completed_at' => now(),
             'move_date' => $vendorBill->accounting_date,
-            'move_type' => StockMoveType::INCOMING,
-            'status' => StockMoveStatus::DONE,
+            'move_type' => StockMoveType::Incoming,
+            'status' => StockMoveStatus::Done,
             'created_by_user_id' => $vendorBill->user_id,
         ]);
 

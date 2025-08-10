@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Brick\Money\Money;
 use App\Casts\MoneyCast;
+use App\Enums\Sales\InvoiceStatus;
 use Illuminate\Support\Carbon;
 use App\Observers\AuditLogObserver;
 use Illuminate\Database\Eloquent\Model;
@@ -117,6 +118,7 @@ class Invoice extends Model
     protected $casts = [
         'invoice_date' => 'date',
         'due_date' => 'date',
+        'status' => InvoiceStatus::class,
         'total_amount' => MoneyCast::class,
         'total_tax' => MoneyCast::class,
         'reset_to_draft_log' => 'json', // Store as JSON/Text as per source [1]
@@ -125,21 +127,7 @@ class Invoice extends Model
         'posted_at' => 'datetime',
     ];
 
-    public const STATUS_DRAFT = 'draft';
-    public const STATUS_POSTED = 'posted';
-    public const STATUS_PAID = 'paid';
-    public const STATUS_CANCELLED = 'cancelled';
 
-    // use it in Filament select options columns
-    public static function getStatuses(): array
-    {
-        return [
-            self::STATUS_DRAFT => 'Draft',
-            self::STATUS_POSTED => 'Posted',
-            self::STATUS_PAID => 'Paid',
-            self::STATUS_CANCELLED => 'Cancelled',
-        ];
-    }
 
     /*
     |--------------------------------------------------------------------------
@@ -242,7 +230,7 @@ class Invoice extends Model
      */
     public function scopePosted($query)
     {
-        return $query->whereIn('status', [self::STATUS_POSTED, self::STATUS_PAID]);
+        return $query->whereIn('status', [InvoiceStatus::Posted, InvoiceStatus::Paid]);
     }
 
     /**
@@ -253,7 +241,7 @@ class Invoice extends Model
      */
     public function scopeDraft($query)
     {
-        return $query->where('status', 'Draft');
+        return $query->where('status', InvoiceStatus::Draft);
     }
 
     /*

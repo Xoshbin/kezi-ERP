@@ -266,7 +266,7 @@
                     <td class="label">{{ __('invoice.currency') }}</td>
                     <td>{{ $currency->code }}</td>
                     <td class="label">{{ __('invoice.status') }}</td>
-                    <td>{{ ucfirst($invoice->status) }}</td>
+                    <td>{{ $invoice->status->label() }}</td>
                 </tr>
             </table>
         </div>

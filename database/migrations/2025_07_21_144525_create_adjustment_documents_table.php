@@ -3,6 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use App\Enums\Adjustments\AdjustmentDocumentStatus;
 
 return new class extends Migration
 {
@@ -27,7 +28,7 @@ return new class extends Migration
             $table->unsignedBigInteger('total_amount');
             $table->unsignedBigInteger('total_tax');
             $table->text('reason');
-            $table->string('status')->default('draft'); // 'draft', 'posted'
+            $table->string('status')->default(AdjustmentDocumentStatus::Draft->value); // 'draft', 'posted'
             $table->timestamp('posted_at')->nullable();
             $table->timestamps();
 
