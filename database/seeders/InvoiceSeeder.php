@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use App\Actions\Sales\CreateInvoiceLineAction; // <-- Import the Action
 use App\DataTransferObjects\Sales\CreateInvoiceLineDTO; // <-- Import the DTO
+use App\Enums\Sales\InvoiceStatus;
 use App\Models\Account;
 use App\Models\Company;
 use App\Models\Invoice;
@@ -34,7 +35,7 @@ class InvoiceSeeder extends Seeder
                 'currency_id' => $company->currency_id,
                 'invoice_date' => now(),
                 'due_date' => now()->addDays(15),
-                'status' => Invoice::STATUS_DRAFT,
+                'status' => InvoiceStatus::Draft->value,
                 'total_amount' => Money::of(0, $currencyCode), // Will be updated by observer
                 'total_tax' => Money::of(0, $currencyCode),
             ]
