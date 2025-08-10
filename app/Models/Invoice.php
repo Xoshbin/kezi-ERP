@@ -242,7 +242,7 @@ class Invoice extends Model
      */
     public function scopePosted($query)
     {
-        return $query->where('status', 'Posted');
+        return $query->whereIn('status', [self::STATUS_POSTED, self::STATUS_PAID]);
     }
 
     /**

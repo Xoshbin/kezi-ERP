@@ -247,7 +247,7 @@ class VendorBill extends Model
      */
     public function scopePosted($query)
     {
-        return $query->where('status', 'Posted');
+        return $query->whereIn('status', [VendorBillStatus::Posted, VendorBillStatus::Paid]);
     }
 
     /**
@@ -258,7 +258,7 @@ class VendorBill extends Model
      */
     public function isPosted(): bool
     {
-        return $this->status === 'Posted';
+        return $this->status === VendorBillStatus::Posted;
     }
 
     /**
@@ -269,7 +269,7 @@ class VendorBill extends Model
      */
     public function isDraft(): bool
     {
-        return $this->status === 'Draft';
+        return $this->status === VendorBillStatus::Draft;
     }
 
     /**
