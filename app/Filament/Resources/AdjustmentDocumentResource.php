@@ -142,17 +142,17 @@ class AdjustmentDocumentResource extends Resource
                         Forms\Components\Select::make('original_invoice_id')
                             ->label('Original Invoice')
                             ->searchable()
-                            ->getSearchResultsUsing(fn(string $search): array =>
-                                Invoice::where(function($query) use ($search) {
-                                    $query->where('invoice_number', 'like', "%{$search}%")
-                                          ->orWhere('id', 'like', "%{$search}%");
-                                })
-                                ->limit(50)
-                                ->get()
-                                ->mapWithKeys(fn($invoice) => [$invoice->id => $invoice->invoice_number ?: 'Draft Invoice #' . $invoice->id])
-                                ->toArray()
+                            ->preload()
+                            ->relationship(
+                                'originalInvoice',
+                                'invoice_number',
+                                fn($query) => $query->posted()->with('customer')
                             )
-                            ->getOptionLabelUsing(fn($value): ?string => Invoice::find($value)?->invoice_number ?: 'Draft Invoice #' . $value)
+                            ->getOptionLabelUsing(function($value): ?string {
+                                $invoice = Invoice::posted()->with('customer')->find($value);
+                                if (!$invoice) return null;
+                                return $invoice->invoice_number . ' - ' . $invoice->customer->name;
+                            })
                             ->visible(fn (Get $get) => $get('document_link_type') === 'invoice')
                             ->reactive()
                             ->afterStateUpdated(function ($state, Set $set) {
@@ -166,7 +166,7 @@ class AdjustmentDocumentResource extends Resource
                             ->label('Original Vendor Bill')
                             ->searchable()
                             ->preload()
-                            ->relationship('originalVendorBill', 'bill_reference')
+                            ->relationship('originalVendorBill', 'bill_reference', fn($query) => $query->posted())
                             ->visible(fn (Get $get) => $get('document_link_type') === 'vendor_bill')
                             ->reactive()
                             ->afterStateUpdated(function ($state, Set $set) {
@@ -352,8 +352,7 @@ class AdjustmentDocumentResource extends Resource
                 Tables\Columns\TextColumn::make('total_amount')
                     ->label('Amount')
                     ->money(fn($record) => $record->currency->code)
-                    ->sortable()
-                    ->icon('heroicon-o-currency-dollar'),
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('status')
                     ->label('Status')
                     ->badge()
