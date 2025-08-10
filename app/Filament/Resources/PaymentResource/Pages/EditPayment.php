@@ -8,6 +8,7 @@ use App\DataTransferObjects\Payments\UpdatePaymentDocumentLinkDTO;
 use App\Filament\Resources\PaymentResource;
 use App\Models\Currency;
 use App\Models\Payment;
+use App\Enums\Payments\PaymentStatus;
 use App\Services\PaymentService;
 use Brick\Money\Money;
 use Filament\Actions;
@@ -27,7 +28,7 @@ class EditPayment extends EditRecord
                 ->label(__('payment.edit.action.confirm.label'))
                 ->color('success')
                 ->requiresConfirmation()
-                ->visible(fn(Payment $record): bool => $record->status === Payment::STATUS_DRAFT)
+                ->visible(fn(Payment $record): bool => $record->status === PaymentStatus::Draft)
                 ->action(function (Payment $record): void {
                     $this->save();
                     $service = app(PaymentService::class);
@@ -61,9 +62,9 @@ class EditPayment extends EditRecord
                     }
                 })
                 // Only show this button for Confirmed payments
-                ->visible(fn(Payment $record): bool => $record->status === Payment::STATUS_CONFIRMED),
+                ->visible(fn(Payment $record): bool => $record->status === PaymentStatus::Confirmed),
             Actions\DeleteAction::make()
-                ->visible(fn(Payment $record): bool => $record->status === Payment::STATUS_DRAFT),
+                ->visible(fn(Payment $record): bool => $record->status === PaymentStatus::Draft),
         ];
     }
 

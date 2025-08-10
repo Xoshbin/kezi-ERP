@@ -1,6 +1,6 @@
 <?php
 
-use App\Models\Payment;
+use App\Enums\Payments\PaymentStatus;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -23,7 +23,7 @@ return new class extends Migration
             $table->unsignedBigInteger('amount');
             $table->string('payment_type'); // 'inbound', 'outbound'
             $table->string('reference')->nullable();
-            $table->string('status')->default(Payment::STATUS_DRAFT)->index(); // 'draft', 'confirmed', 'reconciled'
+            $table->string('status')->default(PaymentStatus::Draft->value)->index(); // 'draft', 'confirmed', 'reconciled'
             $table->timestamps();
         });
     }

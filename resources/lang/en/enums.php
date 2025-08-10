@@ -109,4 +109,16 @@ return [
         'paid' => 'Paid',
         'cancelled' => 'Cancelled',
     ],
+
+    'payment_type' => [
+        'inbound' => 'Inbound',
+        'outbound' => 'Outbound',
+    ],
+
+    'payment_status' => [
+        'draft' => 'Draft',
+        'confirmed' => 'Confirmed',
+        'reconciled' => 'Reconciled',
+        'canceled' => 'Canceled',
+    ],
 ];
