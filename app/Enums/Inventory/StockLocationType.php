@@ -4,6 +4,7 @@ namespace App\Enums\Inventory;
 
 enum StockLocationType: string
 {
+    //TODO::Change the cases to PascalCase
     case INTERNAL = 'internal';
     case CUSTOMER = 'customer';
     case VENDOR = 'vendor';
