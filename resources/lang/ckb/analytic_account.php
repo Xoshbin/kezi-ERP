@@ -15,8 +15,8 @@ return [
     'updated_at' => 'کاتی نوێکردنەوە',
     'journal_entry' => 'تۆماری رۆژانە',
     'journal_entry_lines' => 'هێڵەکانی تۆماری رۆژانە',
-    'debit' => 'قەرزدار',
-    'credit' => 'قەرزدەر',
+    'debit' => 'قەرزدار (مدين)',
+    'credit' => 'قەرزدەر (دائن)',
     'description' => 'پێناسە',
 
     // Navigation
