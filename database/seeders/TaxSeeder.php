@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use App\Models\Account;
 use App\Models\Company;
 use App\Models\Tax;
+use App\Enums\Accounting\TaxType;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 
@@ -34,14 +35,14 @@ class TaxSeeder extends Seeder
                     'name' => ['en' => 'VAT 10%', 'ckb' => 'باجی بەھای زیادکراو ١٠٪'],
                     'label_on_invoices' => ['en' => 'VAT (10%)', 'ckb' => 'باجی بەھای زیادکراو (١٠٪)'],
                     'rate' => 0.10,
-                    'type' => 'Both',
+                    'type' => TaxType::Both,
                     'tax_account_id' => $vatPayableAccount->id,
                 ],
                 [
                     'name' => ['en' => 'Tax Exempt', 'ckb' => 'ئازادکراو لە باج'],
                     'label_on_invoices' => ['en' => 'Tax Exempt', 'ckb' => 'ئازادکراو لە باج'],
                     'rate' => 0.00,
-                    'type' => 'Both',
+                    'type' => TaxType::Both,
                     'tax_account_id' => $vatPayableAccount->id,
                 ],
             ];

@@ -6,6 +6,7 @@ use App\Filament\Clusters\Settings;
 use App\Filament\Resources\TaxResource\Pages;
 use App\Filament\Resources\TaxResource\RelationManagers;
 use App\Models\Tax;
+use App\Enums\Accounting\TaxType;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -64,11 +65,7 @@ class TaxResource extends Resource
                     ->numeric(),
                 Forms\Components\Select::make('type')
                     ->label(__('tax.type'))
-                    ->options([
-                        'sales' => __('tax.types.sales'),
-                        'purchases' => __('tax.types.purchases'),
-                        'none' => __('tax.types.none'),
-                    ])
+                    ->options(collect(TaxType::cases())->mapWithKeys(fn($case) => [$case->value => $case->label()]))
                     ->required(),
                 Forms\Components\Toggle::make('is_active')
                     ->label(__('tax.is_active'))

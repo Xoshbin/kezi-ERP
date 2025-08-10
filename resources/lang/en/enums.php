@@ -127,4 +127,10 @@ return [
         'reconciled' => 'Reconciled',
         'canceled' => 'Canceled',
     ],
+
+    'tax_type' => [
+        'sales' => 'Sales',
+        'purchase' => 'Purchase',
+        'both' => 'Both',
+    ],
 ];
