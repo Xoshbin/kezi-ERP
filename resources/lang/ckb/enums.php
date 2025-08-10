@@ -133,4 +133,14 @@ return [
         'purchase' => 'کڕین',
         'both' => 'هەردووک',
     ],
+
+    'budget_type' => [
+        'analytic' => 'شیکاری',
+        'financial' => 'دارایی',
+    ],
+
+    'budget_status' => [
+        'draft' => 'ڕەشنووس',
+        'finalized' => 'کۆتایی هاتووە',
+    ],
 ];

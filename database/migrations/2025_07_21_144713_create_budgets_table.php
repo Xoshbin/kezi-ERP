@@ -3,6 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use App\Enums\Budgets\BudgetStatus;
 
 return new class extends Migration
 {
@@ -19,7 +20,7 @@ return new class extends Migration
             $table->date('period_start_date');
             $table->date('period_end_date');
             $table->string('budget_type'); // 'analytic', 'financial'
-            $table->string('status')->default('draft'); // 'draft', 'finalized'
+            $table->string('status')->default(BudgetStatus::Draft->value); // 'draft', 'finalized'
             $table->timestamps();
         });
     }
