@@ -20,7 +20,7 @@ return new class extends Migration
             $table->bigInteger('amount');
             $table->boolean('is_reconciled')->default(false);
             $table->foreignId('payment_id')->nullable()->constrained()->nullOnDelete();
-            $table->foreignId('company_id')->constrained('companies')->after('id');
+            $table->foreignId('company_id')->constrained('companies');
             $table->timestamps();
         });
     }
