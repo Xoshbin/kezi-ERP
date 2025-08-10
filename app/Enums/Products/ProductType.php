@@ -6,8 +6,8 @@ enum ProductType: string
 {
     case Product = 'product';
     case Storable = 'storable';
-    case CONSUMABLE = 'consumable';
-    case SERVICE = 'service';
+    case Consumable = 'consumable';
+    case Service = 'service';
 
     /**
      * Get the translated label for the product type.
