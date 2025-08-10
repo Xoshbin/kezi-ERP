@@ -4,10 +4,10 @@ namespace App\Enums\Inventory;
 
 enum StockMoveStatus: string
 {
-    case DRAFT = 'draft';
-    case CONFIRMED = 'confirmed';
-    case DONE = 'done';
-    case CANCELLED = 'cancelled';
+    case Draft = 'draft';
+    case Confirmed = 'confirmed';
+    case Done = 'done';
+    case Cancelled = 'cancelled';
 
     /**
      * Get the translated label for the stock move status.

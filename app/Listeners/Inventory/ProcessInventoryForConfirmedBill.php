@@ -46,8 +46,8 @@ class ProcessInventoryForConfirmedBill
             'source_id' => $vendorBill->id,
             'move_date' => $vendorBill->accounting_date,
             'created_by_user_id' => $user->id,
-            'move_type' => StockMoveType::INCOMING,
-            'status' => StockMoveStatus::DONE,
+            'move_type' => StockMoveType::Incoming,
+            'status' => StockMoveStatus::Done,
             'completed_at' => now(),
         ]);
 
