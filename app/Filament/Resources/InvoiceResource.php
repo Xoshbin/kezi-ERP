@@ -9,6 +9,7 @@ use Filament\Tables;
 use App\Models\Invoice;
 use App\Models\Currency;
 use App\Enums\Sales\InvoiceStatus;
+use App\Enums\Shared\PaymentState;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
 use App\Services\InvoiceService;
@@ -26,6 +27,7 @@ use App\Models\Account;
 use App\Models\Product;
 use App\Models\Company;
 use App\Rules\NotInLockedPeriod;
+use App\Filament\Tables\Columns\MoneyColumn;
 
 class InvoiceResource extends Resource
 {
@@ -219,14 +221,23 @@ class InvoiceResource extends Resource
                     ->sortable(),
                 Tables\Columns\TextColumn::make('status')
                     ->label(__('invoice.status'))
+                    ->badge()
+                    ->colors([
+                        'success' => InvoiceStatus::Posted,
+                        'danger' => InvoiceStatus::Cancelled,
+                        'warning' => InvoiceStatus::Draft,
+                    ])
                     ->searchable(),
-                Tables\Columns\TextColumn::make('total_amount')
+                Tables\Columns\TextColumn::make('paymentState')
+                    ->label(__('invoice.payment_state'))
+                    ->formatStateUsing(fn(PaymentState $state): string => $state->label())
+                    ->badge()
+                    ->color(fn(PaymentState $state): string => $state->color()),
+                MoneyColumn::make('total_amount')
                     ->label(__('invoice.total_amount'))
-                    ->numeric()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('total_tax')
+                MoneyColumn::make('total_tax')
                     ->label(__('invoice.total_tax'))
-                    ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('posted_at')
                     ->label(__('invoice.posted_at'))

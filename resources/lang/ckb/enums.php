@@ -129,6 +129,12 @@ return [
         'canceled' => 'هەڵوەشاوە',
     ],
 
+    'payment_state' => [
+        'NotPaid' => 'نەدراوە',
+        'PartiallyPaid' => 'بەشێکی پارەدراو',
+        'Paid' => 'پارەدراو',
+    ],
+
     'tax_type' => [
         'sales' => 'فرۆشتن',
         'purchase' => 'کڕین',

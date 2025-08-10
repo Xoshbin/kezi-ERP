@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Brick\Money\Money;
 use App\Casts\MoneyCast;
+use App\Traits\HasPaymentState;
 use App\Enums\Sales\InvoiceStatus;
 use Illuminate\Support\Carbon;
 use App\Observers\AuditLogObserver;
@@ -74,7 +75,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 #[ObservedBy([AuditLogObserver::class])]
 class Invoice extends Model
 {
-    use HasFactory;
+    use HasFactory, HasPaymentState;
 
     /**
      * The table associated with the model.

@@ -16,6 +16,7 @@ return [
     'accounting_date' => 'Accounting Date',
     'due_date' => 'Due Date',
     'status' => 'Status',
+    'payment_state' => 'Payment State',
     'lines' => 'Lines',
     'product' => 'Product',
     'description' => 'Description',
