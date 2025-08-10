@@ -81,6 +81,7 @@ return [
     'partner_type' => [
         'customer' => 'کڕیار',
         'vendor' => 'فرۆشیار',
+        'both' => 'هەردووک',
     ],
 
     'product_type' => [

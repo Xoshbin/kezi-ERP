@@ -8,6 +8,7 @@ use App\Models\Partner;
 use App\Models\InvoiceLine;
 use App\Models\Account;
 use App\Enums\Sales\InvoiceStatus;
+use App\Enums\Partners\PartnerType;
 use Brick\Money\Money;
 
 beforeEach(function () {
@@ -18,7 +19,7 @@ beforeEach(function () {
     $this->currency = Currency::factory()->create(['code' => 'USD']);
     $this->customer = Partner::factory()->create([
         'company_id' => $this->company->id,
-        'type' => 'customer',
+        'type' => PartnerType::Customer,
     ]);
     $this->account = Account::factory()->create([
         'company_id' => $this->company->id,

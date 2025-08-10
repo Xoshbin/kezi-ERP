@@ -6,6 +6,7 @@ enum PartnerType: string
 {
     case Customer = 'customer';
     case Vendor = 'vendor';
+    case Both = 'both';
 
     /**
      * Get the translated label for the partner type.

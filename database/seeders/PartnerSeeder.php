@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use App\Models\Company;
 use App\Models\Partner;
+use App\Enums\Partners\PartnerType;
 use Illuminate\Database\Seeder;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 
@@ -23,12 +24,12 @@ class PartnerSeeder extends Seeder
         $partners = [
             [
                 'name' => 'Paykar Tech Supplies',
-                'type' => Partner::TYPE_VENDOR,
+                'type' => PartnerType::Vendor,
                 'country' => 'IQ',
             ],
             [
                 'name' => 'Hawre Trading Group',
-                'type' => Partner::TYPE_CUSTOMER,
+                'type' => PartnerType::Customer,
                 'country' => 'IQ',
             ],
         ];
