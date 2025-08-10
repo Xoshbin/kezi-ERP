@@ -23,6 +23,26 @@ class EditInvoice extends EditRecord
     protected function getHeaderActions(): array
     {
         return [
+            // PDF Actions - Available for all invoices (draft and posted)
+            Actions\ActionGroup::make([
+                Actions\Action::make('viewPdf')
+                    ->label(__('View PDF'))
+                    ->icon('heroicon-o-document-text')
+                    ->color('info')
+                    ->url(fn (Invoice $record) => route('invoices.pdf', $record))
+                    ->openUrlInNewTab(),
+
+                Actions\Action::make('downloadPdf')
+                    ->label(__('Download PDF'))
+                    ->icon('heroicon-o-arrow-down-tray')
+                    ->color('success')
+                    ->url(fn (Invoice $record) => route('invoices.pdf.download', $record)),
+            ])
+                ->label(__('PDF'))
+                ->icon('heroicon-o-document-text')
+                ->color('gray')
+                ->button(),
+
             Actions\Action::make('confirm')
                 ->label(__('invoice.confirm_invoice'))
                 ->color('success')
@@ -32,7 +52,7 @@ class EditInvoice extends EditRecord
                     $this->save();
                     $service = app(InvoiceService::class);
                     try {
-                        $service->confirm($record, auth()->user());
+                        $service->confirm($record, Auth::user());
                         Notification::make()->title(__('invoice.invoice_confirmed_successfully'))->success()->send();
                     } catch (\Exception $e) {
                         Notification::make()->title(__('invoice.error_confirming_invoice'))->body($e->getMessage())->danger()->send();
@@ -61,7 +81,7 @@ class EditInvoice extends EditRecord
                 ->action(function (Invoice $record, array $data): void {
                     $service = app(InvoiceService::class);
                     try {
-                        $service->resetToDraft($record, auth()->user(), $data['reason']);
+                        $service->resetToDraft($record, Auth::user(), $data['reason']);
                         Notification::make()->title(__('invoice.invoice_reset_to_draft'))->success()->send();
                     } catch (\Exception $e) {
                         Notification::make()->title(__('invoice.error_resetting_invoice'))->body($e->getMessage())->danger()->send();

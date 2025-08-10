@@ -118,6 +118,10 @@ class Company extends Model
         'inventory_adjustment_account_id',
         'default_stock_location_id',
         'default_vendor_location_id',
+        // PDF Settings
+        'pdf_template',
+        'pdf_logo_path',
+        'pdf_settings',
     ];
 
     /**
@@ -128,6 +132,7 @@ class Company extends Model
     protected $casts = [
         // No special casts explicitly mentioned in the schema beyond default timestamps.
         // 'created_at' and 'updated_at' are Carbon instances by default.
+        'pdf_settings' => 'json',
     ];
 
     /*
