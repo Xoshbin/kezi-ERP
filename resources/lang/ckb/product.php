@@ -2,8 +2,8 @@
 
 return [
     // Labels
-    'label' => 'بەرهەم',
-    'plural_label' => 'بەرهەمەکان',
+    'label' => 'کاڵا',
+    'plural_label' => 'کاڵاکان',
 
     'company_id' => 'کۆمپانیا',
     'income_account_id' => 'هەژماری داهات',
