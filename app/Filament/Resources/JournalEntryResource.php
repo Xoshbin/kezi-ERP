@@ -95,6 +95,7 @@ class JournalEntryResource extends Resource
                     ->columnSpanFull(),
                 Repeater::make('lines')
                     ->label(__('journal_entry.lines'))
+                    ->deletable(fn (?JournalEntry $record) => !$record || !$record->is_posted)
                     ->schema([
                         Forms\Components\Select::make('account_id')
                             ->label(__('journal_entry.account'))
