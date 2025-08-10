@@ -40,29 +40,29 @@ describe('LockDate Service', function () {
         LockDate::factory()->create([
             'company_id' => $this->company->id,
             'locked_until' => '2025-12-31',
-            'lock_type' => LockDateType::HARD_LOCK,
+            'lock_type' => LockDateType::HardLock,
         ]);
         $service = app(LockDateService::class);
         $date = Carbon::parse('2025-12-15');
-        expect($service->isPeriodLocked($this->company, $date, LockDateType::HARD_LOCK->value))->toBeTrue();
+        expect($service->isPeriodLocked($this->company, $date, LockDateType::HardLock->value))->toBeTrue();
     });
 
     it('returns false for a date outside a locked period', function () {
         LockDate::factory()->create([
             'company_id' => $this->company->id,
             'locked_until' => '2025-12-31',
-            'lock_type' => LockDateType::HARD_LOCK,
+            'lock_type' => LockDateType::HardLock,
         ]);
         $service = app(LockDateService::class);
         $date = Carbon::parse('2026-01-15');
-        expect($service->isPeriodLocked($this->company, $date, LockDateType::HARD_LOCK->value))->toBeFalse();
+        expect($service->isPeriodLocked($this->company, $date, LockDateType::HardLock->value))->toBeFalse();
     });
 
     it('throws PeriodIsLockedException for a locked date', function () {
         LockDate::factory()->create([
             'company_id' => $this->company->id,
             'locked_until' => '2025-12-31',
-            'lock_type' => LockDateType::HARD_LOCK,
+            'lock_type' => LockDateType::HardLock,
         ]);
         $service = app(LockDateService::class);
         $date = Carbon::parse('2025-12-15');
@@ -73,17 +73,17 @@ describe('LockDate Service', function () {
         $lockDate = LockDate::factory()->create([
             'company_id' => $this->company->id,
             'locked_until' => '2025-12-31',
-            'lock_type' => LockDateType::ALL_USERS,
+            'lock_type' => LockDateType::AllUsers,
         ]);
         $service = app(LockDateService::class);
         $date = Carbon::parse('2025-12-15');
-        $cacheKey = "lock_date_{$this->company->id}_" . LockDateType::ALL_USERS->value;
+        $cacheKey = "lock_date_{$this->company->id}_" . LockDateType::AllUsers->value;
 
         Cache::forget($cacheKey);
         expect(Cache::has($cacheKey))->toBeFalse();
 
         // First call should cache the result.
-        $service->isPeriodLocked($this->company, $date, LockDateType::ALL_USERS->value);
+        $service->isPeriodLocked($this->company, $date, LockDateType::AllUsers->value);
         expect(Cache::has($cacheKey))->toBeTrue();
 
         // Update the lock date, which should clear the cache via the observer.
@@ -97,7 +97,7 @@ describe('LockDate Observer', function () {
         $lockDate = LockDate::factory()->create([
             'company_id' => $this->company->id,
             'locked_until' => '2025-12-31',
-            'lock_type' => LockDateType::HARD_LOCK,
+            'lock_type' => LockDateType::HardLock,
         ]);
         $lockDate->update(['locked_until' => '2026-01-01']);
     })->throws(UpdateNotAllowedException::class);
@@ -106,7 +106,7 @@ describe('LockDate Observer', function () {
         $lockDate = LockDate::factory()->create([
             'company_id' => $this->company->id,
             'locked_until' => '2025-12-31',
-            'lock_type' => LockDateType::HARD_LOCK,
+            'lock_type' => LockDateType::HardLock,
         ]);
         $lockDate->delete();
     })->throws(UpdateNotAllowedException::class);
@@ -120,7 +120,7 @@ describe('Action Integration with Locked Periods', function () {
         LockDate::factory()->create([
             'company_id' => $this->company->id,
             'locked_until' => '2025-12-31',
-            'lock_type' => LockDateType::HARD_LOCK,
+            'lock_type' => LockDateType::HardLock,
         ]);
         \App\Models\Partner::factory()->for($this->company)->create();
     });
@@ -199,7 +199,7 @@ describe('Validation Rule (NotInLockedPeriod)', function () {
         LockDate::factory()->create([
             'company_id' => $this->company->id,
             'locked_until' => '2025-12-31',
-            'lock_type' => LockDateType::HARD_LOCK,
+            'lock_type' => LockDateType::HardLock,
         ]);
     });
 
@@ -217,16 +217,16 @@ describe('Validation Rule (NotInLockedPeriod)', function () {
 });
 
 describe('Filament Resource (LockDateResource)', function () {
-    it('disables edit and delete actions for HARD_LOCK records', function () {
+    it('disables edit and delete actions for HardLock records', function () {
         $hardLock = LockDate::factory()->create([
             'company_id' => $this->company->id,
             'locked_until' => '2025-12-31',
-            'lock_type' => LockDateType::HARD_LOCK,
+            'lock_type' => LockDateType::HardLock,
         ]);
         $softLock = LockDate::factory()->create([
             'company_id' => $this->company->id,
             'locked_until' => '2026-01-31',
-            'lock_type' => LockDateType::ALL_USERS,
+            'lock_type' => LockDateType::AllUsers,
         ]);
 
         \Livewire\Livewire::test(LockDateResource\Pages\ListLockDates::class, [
