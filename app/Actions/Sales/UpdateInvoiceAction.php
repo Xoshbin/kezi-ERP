@@ -7,6 +7,7 @@ use App\Exceptions\UpdateNotAllowedException;
 use App\Models\Currency;
 use App\Models\Invoice;
 use App\Models\Tax;
+use App\Enums\Sales\InvoiceStatus;
 use App\Services\Accounting\LockDateService;
 use Brick\Math\RoundingMode;
 use Brick\Money\Money;
@@ -22,7 +23,7 @@ class UpdateInvoiceAction
     {
         $invoice = $dto->invoice;
 
-        if ($invoice->status !== Invoice::STATUS_DRAFT) {
+        if ($invoice->status !== InvoiceStatus::Draft) {
             throw new UpdateNotAllowedException('Cannot modify a non-draft invoice.');
         }
 

@@ -8,6 +8,7 @@ use App\Models\Currency;
 use App\Models\Partner;
 use App\Models\InvoiceLine;
 use App\Models\Account;
+use App\Enums\Sales\InvoiceStatus;
 use Brick\Money\Money;
 use Livewire\Livewire;
 
@@ -15,7 +16,7 @@ beforeEach(function () {
     $this->user = User::factory()->create();
     $this->company = Company::factory()->create();
     $this->user->update(['company_id' => $this->company->id]);
-    
+
     $this->currency = Currency::factory()->create(['code' => 'USD']);
     $this->customer = Partner::factory()->create([
         'company_id' => $this->company->id,
@@ -32,7 +33,7 @@ test('edit page shows pdf actions for draft invoice', function () {
         'company_id' => $this->company->id,
         'customer_id' => $this->customer->id,
         'currency_id' => $this->currency->id,
-        'status' => Invoice::STATUS_DRAFT,
+        'status' => InvoiceStatus::Draft,
     ]);
 
     InvoiceLine::factory()->create([
@@ -57,7 +58,7 @@ test('edit page shows pdf actions for posted invoice', function () {
         'company_id' => $this->company->id,
         'customer_id' => $this->customer->id,
         'currency_id' => $this->currency->id,
-        'status' => Invoice::STATUS_POSTED,
+        'status' => InvoiceStatus::Posted,
         'invoice_number' => 'INV-001',
     ]);
 
@@ -83,7 +84,7 @@ test('edit page pdf actions work correctly', function () {
         'company_id' => $this->company->id,
         'customer_id' => $this->customer->id,
         'currency_id' => $this->currency->id,
-        'status' => Invoice::STATUS_DRAFT,
+        'status' => InvoiceStatus::Draft,
     ]);
 
     InvoiceLine::factory()->create([
@@ -106,7 +107,7 @@ test('edit page shows all expected actions', function () {
         'company_id' => $this->company->id,
         'customer_id' => $this->customer->id,
         'currency_id' => $this->currency->id,
-        'status' => Invoice::STATUS_DRAFT,
+        'status' => InvoiceStatus::Draft,
     ]);
 
     InvoiceLine::factory()->create([
@@ -132,7 +133,7 @@ test('edit page shows different actions for posted invoice', function () {
         'company_id' => $this->company->id,
         'customer_id' => $this->customer->id,
         'currency_id' => $this->currency->id,
-        'status' => Invoice::STATUS_POSTED,
+        'status' => InvoiceStatus::Posted,
         'invoice_number' => 'INV-001',
     ]);
 

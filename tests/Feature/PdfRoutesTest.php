@@ -7,6 +7,7 @@ use App\Models\Currency;
 use App\Models\Partner;
 use App\Models\InvoiceLine;
 use App\Models\Account;
+use App\Enums\Sales\InvoiceStatus;
 use Brick\Money\Money;
 
 beforeEach(function () {
@@ -30,7 +31,7 @@ test('authenticated user can view invoice pdf', function () {
         'company_id' => $this->company->id,
         'customer_id' => $this->customer->id,
         'currency_id' => $this->currency->id,
-        'status' => Invoice::STATUS_POSTED,
+        'status' => InvoiceStatus::Posted,
         'invoice_number' => 'INV-001',
     ]);
 
@@ -54,7 +55,7 @@ test('authenticated user can download invoice pdf', function () {
         'company_id' => $this->company->id,
         'customer_id' => $this->customer->id,
         'currency_id' => $this->currency->id,
-        'status' => Invoice::STATUS_POSTED,
+        'status' => InvoiceStatus::Posted,
         'invoice_number' => 'INV-002',
     ]);
 
@@ -85,7 +86,7 @@ test('user cannot access invoice from different company', function () {
         'company_id' => $otherCompany->id,
         'customer_id' => $otherCustomer->id,
         'currency_id' => $this->currency->id,
-        'status' => Invoice::STATUS_POSTED,
+        'status' => InvoiceStatus::Posted,
         'invoice_number' => 'INV-003',
     ]);
 
@@ -105,7 +106,7 @@ test('unauthenticated user cannot access pdf routes', function () {
         'company_id' => $this->company->id,
         'customer_id' => $this->customer->id,
         'currency_id' => $this->currency->id,
-        'status' => Invoice::STATUS_POSTED,
+        'status' => InvoiceStatus::Posted,
         'invoice_number' => 'INV-004',
     ]);
 
@@ -123,7 +124,7 @@ test('user can specify template parameter for pdf generation', function () {
         'company_id' => $this->company->id,
         'customer_id' => $this->customer->id,
         'currency_id' => $this->currency->id,
-        'status' => Invoice::STATUS_POSTED,
+        'status' => InvoiceStatus::Posted,
         'invoice_number' => 'INV-005',
     ]);
 
@@ -147,7 +148,7 @@ test('user can preview pdf from company settings', function () {
         'company_id' => $this->company->id,
         'customer_id' => $this->customer->id,
         'currency_id' => $this->currency->id,
-        'status' => Invoice::STATUS_POSTED,
+        'status' => InvoiceStatus::Posted,
         'invoice_number' => 'INV-006',
     ]);
 
@@ -195,7 +196,7 @@ test('pdf preview uses company default template', function () {
         'company_id' => $this->company->id,
         'customer_id' => $this->customer->id,
         'currency_id' => $this->currency->id,
-        'status' => Invoice::STATUS_POSTED,
+        'status' => InvoiceStatus::Posted,
         'invoice_number' => 'INV-007',
     ]);
 
@@ -221,7 +222,7 @@ test('pdf preview can override template with parameter', function () {
         'company_id' => $this->company->id,
         'customer_id' => $this->customer->id,
         'currency_id' => $this->currency->id,
-        'status' => Invoice::STATUS_POSTED,
+        'status' => InvoiceStatus::Posted,
         'invoice_number' => 'INV-008',
     ]);
 

@@ -6,6 +6,7 @@ use App\DataTransferObjects\Sales\CreateInvoiceDTO;
 use App\Models\Company;
 use App\Models\Currency;
 use App\Models\Invoice;
+use App\Enums\Sales\InvoiceStatus;
 use App\Services\Accounting\LockDateService;
 use Brick\Money\Money;
 use Carbon\Carbon;
@@ -34,7 +35,7 @@ class CreateInvoiceAction
                 'fiscal_position_id' => $dto->fiscal_position_id,
                 'invoice_date' => $dto->invoice_date,
                 'due_date' => $dto->due_date,
-                'status' => Invoice::STATUS_DRAFT,
+                'status' => InvoiceStatus::Draft,
                 'total_amount' => Money::of(0, $currencyCode),
                 'total_tax' => Money::of(0, $currencyCode),
             ]);

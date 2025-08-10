@@ -1,6 +1,6 @@
 <?php
 
-use App\Models\Invoice;
+use App\Enums\Sales\InvoiceStatus;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -22,7 +22,7 @@ return new class extends Migration
             $table->string('invoice_number')->nullable();
             $table->date('invoice_date');
             $table->date('due_date');
-            $table->string('status')->default(Invoice::STATUS_DRAFT)->index(); // 'draft', 'posted', 'paid', 'cancelled'
+            $table->string('status')->default(InvoiceStatus::Draft->value)->index(); // 'draft', 'posted', 'paid', 'cancelled'
             $table->unsignedBigInteger('total_amount');
             $table->unsignedBigInteger('total_tax');
             $table->timestamp('posted_at')->nullable();

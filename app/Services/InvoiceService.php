@@ -8,6 +8,7 @@ use App\Models\Company;
 use App\Models\Invoice;
 use App\Models\Currency;
 use App\Models\JournalEntry;
+use App\Enums\Sales\InvoiceStatus;
 use Brick\Math\RoundingMode;
 use App\Events\InvoiceConfirmed;
 use Illuminate\Support\Facades\DB;
@@ -38,8 +39,8 @@ class InvoiceService
 
     public function delete(Invoice $invoice): bool
     {
-        // Guard Clause: Only allow deleting if the status is Invoice::STATUS_DRAFT.
-        if ($invoice->status !== Invoice::STATUS_DRAFT) {
+        // Guard Clause: Only allow deleting if the status is InvoiceStatus::Draft.
+        if ($invoice->status !== InvoiceStatus::Draft) {
             throw new DeletionNotAllowedException('Cannot delete a posted invoice.');
         }
 
@@ -50,7 +51,7 @@ class InvoiceService
     public function confirm(Invoice $invoice, User $user): void
     {
         // Guard clause to prevent re-confirming.
-        if ($invoice->status !== Invoice::STATUS_DRAFT) {
+        if ($invoice->status !== InvoiceStatus::Draft) {
             // Or throw a custom exception
             return;
         }
@@ -59,7 +60,7 @@ class InvoiceService
 
         DB::transaction(function () use ($invoice, $user) {
             $invoice->invoice_number = $this->getNextInvoiceNumber($invoice->company);
-            $invoice->status = Invoice::STATUS_POSTED;
+            $invoice->status = InvoiceStatus::Posted;
             $invoice->posted_at = now();
 
             $journalEntry = $this->createJournalEntryForInvoiceAction->execute($invoice, $user);
@@ -107,7 +108,7 @@ class InvoiceService
      */
     public function resetToDraft(Invoice $invoice, User $user, string $reason): void
     {
-        if ($invoice->status !== Invoice::STATUS_POSTED) {
+        if ($invoice->status !== InvoiceStatus::Posted) {
             throw new \Exception('Only posted invoices can be reset to draft.');
         }
 
@@ -125,7 +126,7 @@ class InvoiceService
                 'auditable_id' => $invoice->id,
                 'description' => 'Invoice Reset to Draft: ' . $reason,
                 'old_values' => ['status' => $invoice->status],
-                'new_values' => ['status' => Invoice::STATUS_DRAFT],
+                'new_values' => ['status' => InvoiceStatus::Draft],
                 'ip_address' => request()->ip(),
             ]);
 
@@ -151,7 +152,7 @@ class InvoiceService
             ];
 
             // Step 5: Update the invoice's status and clear posted fields.
-            $invoice->status = Invoice::STATUS_DRAFT;
+            $invoice->status = InvoiceStatus::Draft;
             $invoice->posted_at = null;
             $invoice->journal_entry_id = null;
             $invoice->invoice_number = null;
@@ -168,7 +169,7 @@ class InvoiceService
     {
         Gate::forUser($user)->authorize('cancel', $invoice); // You may want a specific policy for this
 
-        if ($invoice->status !== Invoice::STATUS_POSTED) {
+        if ($invoice->status !== InvoiceStatus::Posted) {
             throw new \Exception('Only posted invoices can be cancelled.');
         }
 
@@ -186,7 +187,7 @@ class InvoiceService
                 'auditable_id' => $invoice->id,
                 'description' => 'Invoice Cancelled: ' . $reason,
                 'old_values' => ['status' => $invoice->status],
-                'new_values' => ['status' => Invoice::STATUS_CANCELLED],
+                'new_values' => ['status' => InvoiceStatus::Cancelled],
                 'ip_address' => request()->ip(),
             ]);
 
@@ -198,7 +199,7 @@ class InvoiceService
             );
 
             // Step 3: Update the invoice's status to reflect the cancellation.
-            $invoice->status = Invoice::STATUS_CANCELLED;
+            $invoice->status = InvoiceStatus::Cancelled;
             $invoice->save();
         });
     }

@@ -323,7 +323,7 @@
             </div>
             <div class="meta-item">
                 <div class="meta-label">{{ __('invoice.status') }}</div>
-                <div class="meta-value">{{ ucfirst($invoice->status) }}</div>
+                <div class="meta-value">{{ $invoice->status->label() }}</div>
             </div>
         </div>
 

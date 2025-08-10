@@ -8,6 +8,7 @@ use App\Models\Currency;
 use App\Models\Partner;
 use App\Models\InvoiceLine;
 use App\Models\Account;
+use App\Enums\Sales\InvoiceStatus;
 use Brick\Money\Money;
 
 beforeEach(function () {
@@ -27,7 +28,7 @@ beforeEach(function () {
         'company_id' => $this->company->id,
         'customer_id' => $this->customer->id,
         'currency_id' => $this->currency->id,
-        'status' => Invoice::STATUS_POSTED,
+        'status' => InvoiceStatus::Posted,
         'invoice_number' => 'INV-001',
         'total_amount' => Money::of(100, 'USD'),
         'total_tax' => Money::of(10, 'USD'),
@@ -177,7 +178,7 @@ test('draft invoices generate pdf with draft watermark', function () {
         'company_id' => $this->company->id,
         'customer_id' => $this->customer->id,
         'currency_id' => $this->currency->id,
-        'status' => Invoice::STATUS_DRAFT,
+        'status' => InvoiceStatus::Draft,
         'invoice_number' => null, // Draft invoices don't have numbers
         'total_amount' => Money::of(100, 'USD'),
         'total_tax' => Money::of(10, 'USD'),

@@ -360,7 +360,7 @@ test('Jmeryar ERP complete accounting scenario - Full Workflow', function () {
         ->assertHasNoErrors();
 
     $invoice->refresh();
-    expect($invoice->status)->toBe('posted');
+    expect($invoice->status)->toBe(\App\Enums\Sales\InvoiceStatus::Posted);
     expect($invoice->invoice_number)->not->toBeNull(); // Sequential numbering
 
     // Verify invoice journal entry
@@ -421,7 +421,7 @@ test('Jmeryar ERP complete accounting scenario - Full Workflow', function () {
 
     // Verify invoice is now paid
     $invoice->refresh();
-    expect($invoice->status)->toBe('paid');
+    expect($invoice->status)->toBe(\App\Enums\Sales\InvoiceStatus::Paid);
 
     // Step 8: Paying a Vendor
     livewire(PaymentResource\Pages\CreatePayment::class)

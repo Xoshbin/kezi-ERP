@@ -7,6 +7,7 @@ use App\Models\Company;
 use App\Models\Invoice;
 use App\Models\Partner;
 use App\Models\Currency;
+use App\Enums\Sales\InvoiceStatus;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class InvoiceFactory extends Factory
@@ -22,7 +23,7 @@ class InvoiceFactory extends Factory
             },
             'invoice_date' => $this->faker->date(),
             'due_date' => $this->faker->dateTimeBetween('+15 days', '+60 days')->format('Y-m-d'),
-            'status' => Invoice::STATUS_DRAFT,
+            'status' => InvoiceStatus::Draft,
             // Totals should be 0 by default and calculated by observers when lines are added.
             'total_amount' => Money::of($this->faker->randomFloat(2, 100, 10000), 'USD'),
             'total_tax' => Money::of($this->faker->randomFloat(2, 100, 10000), 'USD'),
@@ -36,7 +37,7 @@ class InvoiceFactory extends Factory
     {
         return $this->state(function (array $attributes) {
             return [
-                'status' => Invoice::STATUS_POSTED,
+                'status' => InvoiceStatus::Posted,
                 'posted_at' => now(),
             ];
         });
