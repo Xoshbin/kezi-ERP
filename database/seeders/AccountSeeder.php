@@ -98,6 +98,7 @@ class AccountSeeder extends Seeder
                 [
                     'name' => $accountData['name'],
                     'type' => $accountData['type'],
+                    'can_create_assets' => $accountData['can_create_assets'] ?? false,
                 ]
             );
         }
