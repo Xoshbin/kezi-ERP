@@ -28,7 +28,7 @@ class CreateAdjustmentDocumentAction
             // Create the header first with zero totals
             $adjustmentDocument = AdjustmentDocument::create([
                 'company_id' => $dto->company_id,
-                'type' => $dto->type,
+                'type' => $dto->type->value,
                 'date' => $dto->date,
                 'reference_number' => $dto->reference_number,
                 'reason' => $dto->reason,

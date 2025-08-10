@@ -16,6 +16,7 @@ use App\Models\VendorBill;
 use Filament\Tables\Table;
 use Filament\Resources\Resource;
 use App\Models\AdjustmentDocument;
+use App\Enums\Adjustments\AdjustmentDocumentType;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Section;
 use App\Models\Account; // ADDED for Repeater schema
@@ -91,7 +92,10 @@ class AdjustmentDocumentResource extends Resource
                                 ->preload(),
                             Forms\Components\Select::make('type')
                                 ->label(__('adjustment_document.adjustment_type'))
-                                ->options(AdjustmentDocument::getTypes())
+                                ->options(
+                                    collect(AdjustmentDocumentType::cases())
+                                        ->mapWithKeys(fn (AdjustmentDocumentType $type) => [$type->value => $type->label()])
+                                )
                                 ->required()
                                 ->searchable(),
                         ]),
@@ -334,12 +338,12 @@ class AdjustmentDocumentResource extends Resource
                     ->label('Type')
                     ->searchable()
                     ->badge()
-                    ->color(fn (string $state): string => match ($state) {
+                    ->color(fn (\App\Enums\Adjustments\AdjustmentDocumentType $state): string => match ($state->value) {
                         'credit_note' => 'success',
                         'debit_note' => 'warning',
                         default => 'gray',
                     })
-                    ->formatStateUsing(fn (string $state): string => ucfirst(str_replace('_', ' ', $state))),
+                    ->formatStateUsing(fn (\App\Enums\Adjustments\AdjustmentDocumentType $state): string => ucfirst(str_replace('_', ' ', $state->value))),
                 Tables\Columns\TextColumn::make('date')
                     ->label('Date')
                     ->date('M j, Y')
@@ -371,10 +375,10 @@ class AdjustmentDocumentResource extends Resource
                     ])
                     ->multiple(),
                 Tables\Filters\SelectFilter::make('type')
-                    ->options([
-                        'credit_note' => 'Credit Note',
-                        'debit_note' => 'Debit Note',
-                    ])
+                    ->options(
+                        collect(AdjustmentDocumentType::cases())
+                            ->mapWithKeys(fn (AdjustmentDocumentType $type) => [$type->value => $type->label()])
+                    )
                     ->multiple(),
             ])
             ->actions([

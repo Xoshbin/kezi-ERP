@@ -19,7 +19,7 @@ class UpdateAdjustmentDocumentAction
 
         return DB::transaction(function () use ($dto, $adjustmentDocument) {
             $adjustmentDocument->update([
-                'type' => $dto->type,
+                'type' => $dto->type->value,
                 'date' => $dto->date,
                 'reference_number' => $dto->reference_number,
                 'reason' => $dto->reason,

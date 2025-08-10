@@ -5,6 +5,7 @@ use App\Models\Product;
 use App\Models\AdjustmentDocument;
 use App\Models\Account;
 use App\Models\Tax;
+use App\Enums\Adjustments\AdjustmentDocumentType;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\Traits\WithConfiguredCompany;
 use function Pest\Livewire\livewire;
@@ -44,7 +45,7 @@ it('can create an adjustment document', function () {
             'currency_id' => $this->company->currency_id,
             'reference_number' => 'Test Adjustment Ref',
             'date' => now()->format('Y-m-d'),
-            'type' => AdjustmentDocument::TYPE_CREDIT_NOTE,
+            'type' => AdjustmentDocumentType::CreditNote->value,
             'reason' => 'Test adjustment reason',
         ])
         ->set('data.lines', [

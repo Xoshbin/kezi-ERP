@@ -3,6 +3,7 @@
 namespace App\DataTransferObjects\Adjustments;
 
 use App\Models\AdjustmentDocument;
+use App\Enums\Adjustments\AdjustmentDocumentType;
 
 class UpdateAdjustmentDocumentDTO
 {
@@ -11,7 +12,7 @@ class UpdateAdjustmentDocumentDTO
      */
     public function __construct(
         public readonly AdjustmentDocument $adjustmentDocument,
-        public readonly string $type,
+        public readonly AdjustmentDocumentType $type,
         public readonly string $date,
         public readonly string $reference_number,
         public readonly string $reason,

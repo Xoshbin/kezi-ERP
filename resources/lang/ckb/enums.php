@@ -96,4 +96,10 @@ return [
         'cancelled' => 'هەڵوەشاوە',
         'paid' => 'پارەدراو',
     ],
+
+    'adjustment_document_type' => [
+        'credit_note' => 'پسووڵەی گەڕاندنەوە',
+        'debit_note' => 'پسووڵەی وەرگرتن',
+        'miscellaneous' => 'هەمەجۆر',
+    ],
 ];

@@ -22,6 +22,7 @@ use App\DataTransferObjects\Accounting\CreateJournalEntryLineDTO;
 use App\DataTransferObjects\Purchases\CreateVendorBillDTO;
 use App\DataTransferObjects\Purchases\CreateVendorBillLineDTO;
 use App\DataTransferObjects\Payments\CreatePaymentDocumentLinkDTO;
+use App\Enums\Adjustments\AdjustmentDocumentType;
 
 uses(Illuminate\Foundation\Testing\RefreshDatabase::class, WithConfiguredCompany::class);
 
@@ -233,7 +234,7 @@ test('the entire accounting workflow from setup to credit note', function () {
         'currency_id' => $this->company->currency_id,
         'reference_number' => 'CN-001',
         'total_tax' => Money::of(0, $currency->code),
-        'type' => 'Credit Note',
+        'type' => AdjustmentDocumentType::CreditNote->value,
         'original_invoice_id' => $invoice->id,
         'date' => now()->toDateString(),
         'reason' => 'Goodwill discount for new client',

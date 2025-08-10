@@ -5,6 +5,7 @@ namespace Database\Factories;
 use Brick\Money\Money;
 use App\Models\Company;
 use App\Models\Currency;
+use App\Enums\Adjustments\AdjustmentDocumentType;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -26,7 +27,7 @@ class AdjustmentDocumentFactory extends Factory
             },
             'original_invoice_id' => null,
             'original_vendor_bill_id' => null,
-            'type' => $this->faker->randomElement(['Credit Note', 'Debit Note', 'Miscellaneous Adjustment']),
+            'type' => $this->faker->randomElement(AdjustmentDocumentType::cases())->value,
             'date' => $this->faker->date(),
             'reference_number' => $this->faker->unique()->bothify('ADJ-#####'),
             'total_amount' => function (array $attributes) {

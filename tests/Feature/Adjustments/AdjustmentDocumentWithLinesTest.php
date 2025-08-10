@@ -10,6 +10,7 @@ use App\Models\Account;
 use App\Models\Product;
 use Tests\Traits\MocksTime;
 use App\Models\AdjustmentDocument;
+use App\Enums\Adjustments\AdjustmentDocumentType;
 use Tests\Traits\CreatesApplication;
 use Tests\Traits\WithUnlockedPeriod;
 use Tests\Traits\WithConfiguredCompany;
@@ -88,7 +89,7 @@ test('create adjustment document action correctly creates document with lines', 
 
     $dto = new CreateAdjustmentDocumentDTO(
         company_id: $this->company->id,
-        type: AdjustmentDocument::TYPE_CREDIT_NOTE,
+        type: AdjustmentDocumentType::CreditNote,
         date: now()->toDateString(),
         reference_number: 'CN-TEST-001',
         reason: 'Test creation with lines',

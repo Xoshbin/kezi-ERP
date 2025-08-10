@@ -14,6 +14,7 @@ use App\DataTransferObjects\Payments\CreatePaymentDocumentLinkDTO;
 use App\DataTransferObjects\Purchases\CreateVendorBillDTO;
 use App\DataTransferObjects\Sales\CreateInvoiceDTO;
 use App\Enums\Accounting\LockDateType;
+use App\Enums\Adjustments\AdjustmentDocumentType;
 use App\Exceptions\PeriodIsLockedException;
 use App\Exceptions\UpdateNotAllowedException;
 use App\Filament\Resources\LockDateResource;
@@ -181,7 +182,7 @@ describe('Action Integration with Locked Periods', function () {
     it('throws PeriodIsLockedException for CreateAdjustmentDocumentAction', function () {
         app(CreateAdjustmentDocumentAction::class)->execute(new CreateAdjustmentDocumentDTO(
             company_id: $this->company->id,
-            type: 'credit',
+            type: AdjustmentDocumentType::CreditNote,
             date: '2025-12-15', // Date is inside locked period
             reference_number: 'ADJ-123',
             reason: 'test',
