@@ -133,4 +133,14 @@ return [
         'purchase' => 'Purchase',
         'both' => 'Both',
     ],
+
+    'budget_type' => [
+        'analytic' => 'Analytic',
+        'financial' => 'Financial',
+    ],
+
+    'budget_status' => [
+        'draft' => 'Draft',
+        'finalized' => 'Finalized',
+    ],
 ];

@@ -6,6 +6,8 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use App\Enums\Budgets\BudgetType;
+use App\Enums\Budgets\BudgetStatus;
 
 /**
  * Class Budget
@@ -78,33 +80,15 @@ class Budget extends Model
      * @var array<string, string>
      */
     protected $casts = [
+        'budget_type' => BudgetType::class,
+        'status' => BudgetStatus::class,
         'period_start_date' => 'date',
         'period_end_date' => 'date',
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
     ];
 
-    public const TYPE_ANALYTIC = 'analytic'; // For project/department-level budgets [3, 5]
-    public const TYPE_FINANCIAL = 'financial'; // For general ledger account budgets [3, 5]
 
-    public const STATUS_DRAFT = 'draft'; // Initial state for budget creation [3]
-    public const STATUS_FINALIZED = 'finalized'; // Indicates a budget is ready for use
-
-    public static function getTypes(): array
-    {
-        return [
-            self::TYPE_ANALYTIC => 'Analytic',
-            self::TYPE_FINANCIAL => 'Financial',
-        ];
-    }
-
-    public static function getStatuses(): array
-    {
-        return [
-            self::STATUS_DRAFT => 'Draft',
-            self::STATUS_FINALIZED => 'Finalized',
-        ];
-    }
 
     /*
     |--------------------------------------------------------------------------
