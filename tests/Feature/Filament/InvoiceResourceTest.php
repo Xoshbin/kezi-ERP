@@ -4,6 +4,7 @@ use App\Filament\Resources\InvoiceResource;
 use App\Models\Product;
 use App\Models\Invoice;
 use App\Models\Partner;
+use App\Enums\Sales\InvoiceStatus;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\Traits\WithConfiguredCompany;
 use function Pest\Livewire\livewire;
@@ -60,7 +61,7 @@ it('can create an invoice', function () {
 
     $this->assertDatabaseHas('invoices', [
         'customer_id' => $customer->id,
-        'status' => Invoice::STATUS_DRAFT,
+        'status' => InvoiceStatus::Draft->value,
     ]);
 
     $this->assertDatabaseHas('invoice_lines', [
@@ -129,7 +130,7 @@ it('can edit an invoice', function () {
 it('can confirm an invoice', function () {
     $invoice = Invoice::factory()->withLines(1)->create([
         'company_id' => $this->company->id,
-        'status' => Invoice::STATUS_DRAFT,
+        'status' => InvoiceStatus::Draft,
     ]);
 
     livewire(InvoiceResource\Pages\EditInvoice::class, [
@@ -139,7 +140,7 @@ it('can confirm an invoice', function () {
         ->assertHasNoErrors();
 
     $invoice->refresh();
-    expect($invoice->status)->toBe(Invoice::STATUS_POSTED);
+    expect($invoice->status)->toBe(InvoiceStatus::Posted);
 });
 
 it('can reset an invoice to draft', function () {
@@ -179,7 +180,7 @@ it('can reset an invoice to draft', function () {
 
     $invoice = Invoice::factory()->withLines(1)->create([
         'company_id' => $this->company->id,
-        'status' => Invoice::STATUS_POSTED,
+        'status' => InvoiceStatus::Posted,
         'posted_at' => now(),
         'invoice_number' => 'INV-00001',
         'journal_entry_id' => $journalEntry->id,
@@ -195,5 +196,5 @@ it('can reset an invoice to draft', function () {
     $response->assertHasNoErrors();
 
     $invoice->refresh();
-    expect($invoice->status)->toBe(Invoice::STATUS_DRAFT);
+    expect($invoice->status)->toBe(InvoiceStatus::Draft);
 });

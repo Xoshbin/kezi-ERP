@@ -8,6 +8,7 @@ use App\DataTransferObjects\Sales\UpdateInvoiceLineDTO;
 use App\Filament\Resources\InvoiceResource;
 use App\Filament\Resources\PaymentResource;
 use App\Models\Invoice;
+use App\Enums\Sales\InvoiceStatus;
 use App\Services\InvoiceService;
 use Brick\Money\Money;
 use Filament\Actions;
@@ -47,7 +48,7 @@ class EditInvoice extends EditRecord
                 ->label(__('invoice.confirm_invoice'))
                 ->color('success')
                 ->requiresConfirmation()
-                ->visible(fn (Invoice $record): bool => $record->status === Invoice::STATUS_DRAFT)
+                ->visible(fn (Invoice $record): bool => $record->status === InvoiceStatus::Draft)
                 ->action(function (Invoice $record): void {
                     $this->save();
                     $service = app(InvoiceService::class);
@@ -62,7 +63,7 @@ class EditInvoice extends EditRecord
             Actions\Action::make('registerPayment')
                 ->label(__('invoice.register_payment'))
                 ->color('info')
-                ->visible(fn (Invoice $record): bool => $record->status === Invoice::STATUS_POSTED)
+                ->visible(fn (Invoice $record): bool => $record->status === InvoiceStatus::Posted)
                 ->action(fn (Invoice $record) => redirect()->to(PaymentResource::getUrl('create', [
                     'invoice_id' => $record->id,
                     'amount' => $record->total_amount->getAmount()->toFloat(),
@@ -74,7 +75,7 @@ class EditInvoice extends EditRecord
                 ->label(__('invoice.reset_to_draft'))
                 ->color('warning')
                 ->requiresConfirmation()
-                ->visible(fn (Invoice $record): bool => $record->status === Invoice::STATUS_POSTED)
+                ->visible(fn (Invoice $record): bool => $record->status === InvoiceStatus::Posted)
                 ->form([
                     \Filament\Forms\Components\Textarea::make('reason')->label(__('invoice.reason'))->required(),
                 ])

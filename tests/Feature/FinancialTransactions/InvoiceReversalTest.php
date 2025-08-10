@@ -3,6 +3,7 @@
 use App\Actions\Sales\CreateInvoiceLineAction;
 use App\DataTransferObjects\Sales\CreateInvoiceLineDTO;
 use App\Models\Invoice;
+use App\Enums\Sales\InvoiceStatus;
 use Tests\Traits\MocksTime;
 use App\Services\InvoiceService;
 use Tests\Traits\WithConfiguredCompany;
@@ -32,7 +33,7 @@ test('cancelling a posted invoice creates a reversing journal entry and an audit
     $invoice->refresh();
 
     $originalEntry = $invoice->journalEntry;
-    expect($invoice->status)->toBe(Invoice::STATUS_POSTED);
+    expect($invoice->status)->toBe(InvoiceStatus::Posted);
     expect($originalEntry)->not->toBeNull();
 
     // Act 2: Cancel the invoice with a reason.
@@ -42,7 +43,7 @@ test('cancelling a posted invoice creates a reversing journal entry and an audit
     $originalEntry->refresh();
 
     // Assert: Invoice status and journal entry reversal are correct
-    expect($invoice->status)->toBe(Invoice::STATUS_CANCELLED);
+    expect($invoice->status)->toBe(InvoiceStatus::Cancelled);
     expect($originalEntry->state)->toBe(JournalEntryState::Reversed);
     expect($originalEntry->reversed_entry_id)->not->toBeNull();
 

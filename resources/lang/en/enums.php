@@ -102,4 +102,11 @@ return [
         'debit_note' => 'Debit Note',
         'miscellaneous' => 'Miscellaneous',
     ],
+
+    'invoice_status' => [
+        'draft' => 'Draft',
+        'posted' => 'Posted',
+        'paid' => 'Paid',
+        'cancelled' => 'Cancelled',
+    ],
 ];

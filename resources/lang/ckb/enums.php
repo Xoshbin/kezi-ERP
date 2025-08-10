@@ -102,4 +102,11 @@ return [
         'debit_note' => 'پسووڵەی وەرگرتن',
         'miscellaneous' => 'هەمەجۆر',
     ],
+
+    'invoice_status' => [
+        'draft' => 'ڕەشنووس',
+        'posted' => 'پۆست کراو',
+        'paid' => 'پارەدراو',
+        'cancelled' => 'هەڵوەشاوە',
+    ],
 ];

@@ -12,6 +12,7 @@ use App\Models\LockDate;
 use App\Models\JournalEntry;
 use App\Events\InvoiceConfirmed;
 use App\Services\InvoiceService;
+use App\Enums\Sales\InvoiceStatus;
 use Illuminate\Support\Facades\DB;
 use Tests\Traits\CreatesApplication;
 use Illuminate\Support\Facades\Event;
@@ -219,7 +220,7 @@ test('an invoice cannot be created or posted in a locked period', function () {
     // Arrange: Create a draft invoice with a date in the future (not locked).
     $draftInvoice = Invoice::factory()->create([
         'company_id' => $this->company->id,
-        'status' => Invoice::STATUS_DRAFT,
+        'status' => InvoiceStatus::Draft,
         'invoice_date' => now()->addDay()->toDateString(),
     ]);
 

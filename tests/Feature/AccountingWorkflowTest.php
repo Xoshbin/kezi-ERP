@@ -5,6 +5,7 @@ use Brick\Money\Money;
 use App\Models\Account;
 use App\Models\Invoice;
 use App\Models\Partner;
+use App\Enums\Sales\InvoiceStatus;
 use App\Services\InvoiceService;
 use App\Services\PaymentService;
 use App\Services\VendorBillService;
@@ -194,7 +195,7 @@ test('the entire accounting workflow from setup to credit note', function () {
     expect($customerPaymentEntry->total_debit->isEqualTo($itInfrastructureServiceCost))->toBeTrue();
     expect($customerPaymentEntry->lines->where('account_id', $bankAccount->id)->first()->debit->getAmount()->toFloat())->toEqual($itInfrastructureServiceCost->getAmount()->toFloat());
     expect($customerPaymentEntry->lines->where('account_id', $arAccount->id)->first()->credit->getAmount()->toFloat())->toEqual($itInfrastructureServiceCost->getAmount()->toFloat());
-    expect($invoice->fresh()->status)->toBe(Invoice::STATUS_PAID);
+    expect($invoice->fresh()->status)->toBe(InvoiceStatus::Paid);
 
     // Step 7: Paying a Vendor
     $vendorDocumentLinkDto = new CreatePaymentDocumentLinkDTO(

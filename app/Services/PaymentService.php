@@ -10,6 +10,7 @@ use App\Models\Payment;
 use App\Models\AuditLog;
 use App\Models\Currency;
 use App\Models\VendorBill;
+use App\Enums\Sales\InvoiceStatus;
 use InvalidArgumentException;
 use App\Events\PaymentConfirmed;
 use Illuminate\Support\Facades\DB;
@@ -73,7 +74,7 @@ class PaymentService
                 // --- END OF FIX ---
 
                 if ($totalPaid->isGreaterThanOrEqualTo($invoice->total_amount)) {
-                    $invoice->status = Invoice::STATUS_PAID;
+                    $invoice->status = InvoiceStatus::Paid;
                     $invoice->save();
                 }
             }
