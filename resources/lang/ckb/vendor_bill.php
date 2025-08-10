@@ -34,6 +34,9 @@ return [
     'account' => 'هەژمار',
     'debit' => 'قەرزدار',
     'credit' => 'قەرزدەر',
+    'attachments' => 'پاشکۆکان',
+    'attachments_description' => 'بەڵگەکانی پشتگیری بۆ ئەم پسوولەی فرۆشیارە بارکردن',
+    'attachments_helper' => 'فۆرماتە قبوولکراوەکان: PDF, DOC, DOCX, XLS, XLSX, JPG, PNG, GIF, TXT. زۆرترین ١٠ مێگابایت بۆ هەر فایلێک، تا ١٠ فایل.',
 
     // Actions
     'confirm' => 'پشتڕاستکردنەوە',

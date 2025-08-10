@@ -7,14 +7,19 @@ use App\DataTransferObjects\Purchases\CreateVendorBillDTO;
 use App\DataTransferObjects\Purchases\CreateVendorBillLineDTO;
 use App\Filament\Resources\VendorBillResource;
 use App\Models\Currency;
+use App\Models\VendorBill;
+use App\Models\VendorBillAttachment;
 use Brick\Money\Money;
 use Filament\Resources\Pages\CreateRecord;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 
 class CreateVendorBill extends CreateRecord
 {
     protected static string $resource = VendorBillResource::class;
+
+    protected array $attachments = [];
 
     protected function mutateFormDataBeforeCreate(array $data): array
     {
@@ -40,8 +45,45 @@ class CreateVendorBill extends CreateRecord
 
     protected function handleRecordCreation(array $data): Model
     {
-        $vendorBillDTO = new CreateVendorBillDTO(...$data);
+        // Store attachments separately and remove from data for DTO
+        $attachments = $data['attachments'] ?? [];
+        unset($data['attachments']);
 
-        return app(CreateVendorBillAction::class)->execute($vendorBillDTO);
+        $vendorBillDTO = new CreateVendorBillDTO(...$data);
+        $vendorBill = app(CreateVendorBillAction::class)->execute($vendorBillDTO);
+
+        // Store attachments for later processing
+        $this->attachments = $attachments;
+
+        return $vendorBill;
+    }
+
+    protected function afterCreate(): void
+    {
+        $this->handleFileUploads();
+    }
+
+    protected function handleFileUploads(): void
+    {
+        if (empty($this->attachments)) {
+            return;
+        }
+
+        foreach ($this->attachments as $filePath) {
+            if (Storage::disk('local')->exists($filePath)) {
+                $fileInfo = pathinfo($filePath);
+                $mimeType = Storage::disk('local')->mimeType($filePath);
+                $fileSize = Storage::disk('local')->size($filePath);
+
+                VendorBillAttachment::create([
+                    'vendor_bill_id' => $this->record->id,
+                    'file_name' => $fileInfo['basename'],
+                    'file_path' => $filePath,
+                    'file_size' => $fileSize,
+                    'mime_type' => $mimeType,
+                    'uploaded_by_user_id' => Auth::id(),
+                ]);
+            }
+        }
     }
 }

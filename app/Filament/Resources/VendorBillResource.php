@@ -183,6 +183,38 @@ class VendorBillResource extends Resource
                         ->columns(5)
                         ->columnSpanFull(),
                 ]),
+
+            Section::make(__('vendor_bill.attachments'))
+                ->description(__('vendor_bill.attachments_description'))
+                ->schema([
+                    Forms\Components\FileUpload::make('attachments')
+                        ->label(__('vendor_bill.attachments'))
+                        ->multiple()
+                        ->disk('local')
+                        ->directory('vendor-bill-attachments')
+                        ->visibility('private')
+                        ->acceptedFileTypes([
+                            'application/pdf',
+                            'application/msword',
+                            'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+                            'application/vnd.ms-excel',
+                            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                            'image/jpeg',
+                            'image/png',
+                            'image/gif',
+                            'text/plain',
+                        ])
+                        ->maxSize(10240) // 10MB max file size
+                        ->maxFiles(10)
+                        ->disabled(fn (?VendorBill $record) => $record && $record->status !== VendorBillStatus::Draft)
+                        ->helperText(__('vendor_bill.attachments_helper'))
+                        ->downloadable()
+                        ->openable()
+                        ->deletable(fn (?VendorBill $record) => !$record || $record->status === VendorBillStatus::Draft)
+                        ->reorderable(),
+                ])
+                ->collapsible()
+                ->collapsed(fn (?VendorBill $record) => $record && $record->attachments()->count() === 0),
         ]);
     }
 
