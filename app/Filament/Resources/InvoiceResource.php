@@ -112,6 +112,7 @@ class InvoiceResource extends Resource
                         ->label(__('invoice.invoice_lines'))
                         ->live()
                         ->reorderable(true)
+                        ->deletable(fn (?Invoice $record) => !$record || $record->status === InvoiceStatus::Draft)
                         ->minItems(1)
                         ->schema([
                             Forms\Components\Select::make('product_id')
