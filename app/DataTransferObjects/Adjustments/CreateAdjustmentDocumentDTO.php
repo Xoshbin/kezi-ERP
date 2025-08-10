@@ -2,6 +2,8 @@
 
 namespace App\DataTransferObjects\Adjustments;
 
+use App\Enums\Adjustments\AdjustmentDocumentType;
+
 class CreateAdjustmentDocumentDTO
 {
     /**
@@ -9,7 +11,7 @@ class CreateAdjustmentDocumentDTO
      */
     public function __construct(
         public readonly int $company_id,
-        public readonly string $type,
+        public readonly AdjustmentDocumentType $type,
         public readonly string $date,
         public readonly string $reference_number,
         public readonly string $reason,

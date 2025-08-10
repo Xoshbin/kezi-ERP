@@ -14,6 +14,7 @@ use Illuminate\Validation\ValidationException;
 use App\Actions\Adjustments\UpdateAdjustmentDocumentAction;
 use App\DataTransferObjects\Adjustments\UpdateAdjustmentDocumentDTO;
 use App\DataTransferObjects\Adjustments\UpdateAdjustmentDocumentLineDTO;
+use App\Enums\Adjustments\AdjustmentDocumentType;
 use App\Filament\Resources\AdjustmentDocumentResource;
 use App\Models\AdjustmentDocument;
 use App\Services\AdjustmentDocumentService;
@@ -126,7 +127,7 @@ class EditAdjustmentDocument extends EditRecord
 
         $dto = new UpdateAdjustmentDocumentDTO(
             adjustmentDocument: $record,
-            type: $data['type'],
+            type: AdjustmentDocumentType::from($data['type']),
             date: $data['date'],
             reference_number: $data['reference_number'],
             reason: $data['reason'],

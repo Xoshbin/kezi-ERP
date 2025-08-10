@@ -13,6 +13,7 @@ use Illuminate\Validation\ValidationException;
 use App\Actions\Adjustments\CreateAdjustmentDocumentAction;
 use App\DataTransferObjects\Adjustments\CreateAdjustmentDocumentDTO;
 use App\DataTransferObjects\Adjustments\CreateAdjustmentDocumentLineDTO;
+use App\Enums\Adjustments\AdjustmentDocumentType;
 use App\Filament\Resources\AdjustmentDocumentResource;
 use Filament\Resources\Pages\CreateRecord;
 use Illuminate\Database\Eloquent\Model;
@@ -73,7 +74,7 @@ class CreateAdjustmentDocument extends CreateRecord
 
         $dto = new CreateAdjustmentDocumentDTO(
             company_id: $data['company_id'],
-            type: $data['type'],
+            type: AdjustmentDocumentType::from($data['type']),
             date: $data['date'],
             reference_number: $data['reference_number'],
             reason: $data['reason'],

@@ -96,4 +96,10 @@ return [
         'cancelled' => 'Cancelled',
         'paid' => 'Paid',
     ],
+
+    'adjustment_document_type' => [
+        'credit_note' => 'Credit Note',
+        'debit_note' => 'Debit Note',
+        'miscellaneous' => 'Miscellaneous',
+    ],
 ];

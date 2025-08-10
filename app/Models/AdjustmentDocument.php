@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Brick\Money\Money;
 use App\Casts\MoneyCast;
+use App\Enums\Adjustments\AdjustmentDocumentType;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -95,6 +96,7 @@ class AdjustmentDocument extends Model
      */
     protected $casts = [
         'date'         => 'date',       // [5, 6]
+        'type'         => AdjustmentDocumentType::class,
         'total_amount' => MoneyCast::class,  // [5] Example precision, adjust as needed.
         'total_tax'    => MoneyCast::class,  // [5] Example precision, adjust as needed.
         'created_at'   => 'datetime',   // [5, 6]
@@ -113,18 +115,7 @@ class AdjustmentDocument extends Model
         ];
     }
 
-    public const TYPE_CREDIT_NOTE = 'credit note'; // [5]
-    public const TYPE_DEBIT_NOTE = 'debit note'; // [5]
-    public const TYPE_MISCELLANEOUS = 'miscellaneous'; // [5]
 
-    public static function getTypes(): array
-    {
-        return [
-            self::TYPE_CREDIT_NOTE => 'Credit Note',
-            self::TYPE_DEBIT_NOTE => 'Debit Note',
-            self::TYPE_MISCELLANEOUS => 'mMiscellaneous',
-        ];
-    }
 
     /**
      * The "booted" method of the model.

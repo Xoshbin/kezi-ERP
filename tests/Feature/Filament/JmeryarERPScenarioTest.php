@@ -480,7 +480,7 @@ test('Jmeryar ERP complete accounting scenario - Full Workflow', function () {
 
     $creditNote = AdjustmentDocument::where('original_invoice_id', $invoice->id)->first();
     expect($creditNote)->not->toBeNull();
-    expect($creditNote->type)->toBe('credit_note');
+    expect($creditNote->type->value)->toBe('credit_note');
     expect($creditNote->reason)->toBe('Goodwill discount for new client');
 
     // Verify the credit note has lines before posting
