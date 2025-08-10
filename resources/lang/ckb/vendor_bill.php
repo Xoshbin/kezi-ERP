@@ -2,10 +2,10 @@
 
 return [
     // General
-    'label' => 'پسوولەی فرۆشیار',
-    'plural_label' => 'پسوولەکانی فرۆشیار',
-    'vendor_bill' => 'پسوولەی فرۆشیار',
-    'vendor_bills' => 'پسوولەکانی فرۆشیار',
+    'label' => 'کڕین',
+    'plural_label' => 'کڕینەکان (مشتریات)',
+    'vendor_bill' => 'کڕین',
+    'vendor_bills' => 'کڕینەکان',
 
     // Fields
     'company' => 'کۆمپانیا',
@@ -32,8 +32,8 @@ return [
     'updated_at' => 'کاتی نوێکردنەوە',
     'reason' => 'هۆکار',
     'account' => 'هەژمار',
-    'debit' => 'قەرزدار',
-    'credit' => 'قەرزدەر',
+    'debit' => 'قەرزدار (مدين)',
+    'credit' => 'قەرزدەر (دائن)',
     'attachments' => 'پاشکۆکان',
     'attachments_description' => 'بەڵگەکانی پشتگیری بۆ ئەم پسوولەی فرۆشیارە بارکردن',
     'attachments_helper' => 'فۆرماتە قبوولکراوەکان: PDF, DOC, DOCX, XLS, XLSX, JPG, PNG, GIF, TXT. زۆرترین ١٠ مێگابایت بۆ هەر فایلێک، تا ١٠ فایل.',

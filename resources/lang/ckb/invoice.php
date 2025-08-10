@@ -2,11 +2,11 @@
 
 return [
     // General
-    'label' => 'پسووڵە',
-    'plural_label' => 'پسووڵەکان',
-    'invoice' => 'پسووڵە',
-    'invoices' => 'پسووڵەکان',
-    'invoice_details' => 'وردەکاریی پسووڵە',
+    'label' => 'فرۆشتن',
+    'plural_label' => 'فرۆشتنەکان (مبيعات)',
+    'invoice' => 'فرۆشتن',
+    'invoices' => 'فرۆشتنەکان',
+    'invoice_details' => 'وردەکاریی فرۆشتنە',
 
     // Form Fields
     'company' => 'کۆمپانیا',
