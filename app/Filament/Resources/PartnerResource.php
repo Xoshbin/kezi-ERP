@@ -5,6 +5,7 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\PartnerResource\Pages;
 use App\Filament\Resources\PartnerResource\RelationManagers;
 use App\Models\Partner;
+use App\Models\Company;
 use App\Enums\Partners\PartnerType;
 use Filament\Forms;
 use Filament\Forms\Form;
@@ -49,7 +50,33 @@ class PartnerResource extends Resource
                 Forms\Components\Select::make('company_id')
                     ->relationship('company', 'name')
                     ->label(__('partner.company'))
-                    ->required(),
+                    ->required()
+                    ->searchable()
+                    ->createOptionForm([
+                        Forms\Components\TextInput::make('name')
+                            ->label(__('company.name'))
+                            ->required()
+                            ->maxLength(255),
+                        Forms\Components\Textarea::make('address')
+                            ->label(__('company.address'))
+                            ->columnSpanFull(),
+                        Forms\Components\TextInput::make('tax_id')
+                            ->label(__('company.tax_id'))
+                            ->maxLength(255),
+                        Forms\Components\Select::make('currency_id')
+                            ->label(__('company.currency_id'))
+                            ->relationship('currency', 'name')
+                            ->required(),
+                        Forms\Components\TextInput::make('fiscal_country')
+                            ->label(__('company.fiscal_country'))
+                            ->required()
+                            ->maxLength(255),
+                    ])
+                    ->createOptionModalHeading(__('common.modal_title_create_company'))
+                    ->createOptionAction(function (Forms\Components\Actions\Action $action) {
+                        return $action
+                            ->modalWidth('lg');
+                    }),
                 Forms\Components\TextInput::make('name')
                     ->label(__('partner.name'))
                     ->required()

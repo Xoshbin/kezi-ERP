@@ -5,6 +5,7 @@ namespace App\Filament\Resources;
 use Filament\Forms;
 use Filament\Tables;
 use App\Models\Account;
+use App\Models\Company;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
 use Filament\Resources\Resource;
@@ -48,7 +49,33 @@ class AccountResource extends Resource
                 Forms\Components\Select::make('company_id')
                     ->label(__('account.company'))
                     ->relationship('company', 'name')
-                    ->required(),
+                    ->required()
+                    ->searchable()
+                    ->createOptionForm([
+                        Forms\Components\TextInput::make('name')
+                            ->label(__('company.name'))
+                            ->required()
+                            ->maxLength(255),
+                        Forms\Components\Textarea::make('address')
+                            ->label(__('company.address'))
+                            ->columnSpanFull(),
+                        Forms\Components\TextInput::make('tax_id')
+                            ->label(__('company.tax_id'))
+                            ->maxLength(255),
+                        Forms\Components\Select::make('currency_id')
+                            ->label(__('company.currency_id'))
+                            ->relationship('currency', 'name')
+                            ->required(),
+                        Forms\Components\TextInput::make('fiscal_country')
+                            ->label(__('company.fiscal_country'))
+                            ->required()
+                            ->maxLength(255),
+                    ])
+                    ->createOptionModalHeading(__('common.modal_title_create_company'))
+                    ->createOptionAction(function (Forms\Components\Actions\Action $action) {
+                        return $action
+                            ->modalWidth('lg');
+                    }),
                 Forms\Components\TextInput::make('code')
                     ->label(__('account.code'))
                     ->required()

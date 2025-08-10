@@ -7,6 +7,8 @@ use App\Filament\Resources\ProductResource\Pages;
 use App\Filament\Tables\Columns\MoneyColumn;
 use App\Models\Company;
 use App\Models\Product;
+use App\Models\Currency;
+use App\Models\Account;
 use App\Enums\Products\ProductType;
 use Filament\Forms;
 use Filament\Forms\Components\Section;
@@ -60,12 +62,38 @@ class ProductResource extends Resource
                             ->label(__('product.company'))
                             ->required()
                             ->live()
+                            ->searchable()
                             ->default($company?->id)
                             ->afterStateUpdated(function (callable $set, $state) {
                                 $company = Company::find($state);
                                 if ($company) {
                                     $set('currency_id', $company->currency_id);
                                 }
+                            })
+                            ->createOptionForm([
+                                Forms\Components\TextInput::make('name')
+                                    ->label(__('company.name'))
+                                    ->required()
+                                    ->maxLength(255),
+                                Forms\Components\Textarea::make('address')
+                                    ->label(__('company.address'))
+                                    ->columnSpanFull(),
+                                Forms\Components\TextInput::make('tax_id')
+                                    ->label(__('company.tax_id'))
+                                    ->maxLength(255),
+                                Forms\Components\Select::make('currency_id')
+                                    ->label(__('company.currency_id'))
+                                    ->relationship('currency', 'name')
+                                    ->required(),
+                                Forms\Components\TextInput::make('fiscal_country')
+                                    ->label(__('company.fiscal_country'))
+                                    ->required()
+                                    ->maxLength(255),
+                            ])
+                            ->createOptionModalHeading(__('common.modal_title_create_company'))
+                            ->createOptionAction(function (Forms\Components\Actions\Action $action) {
+                                return $action
+                                    ->modalWidth('lg');
                             }),
                         Forms\Components\TextInput::make('name')
                             ->label(__('product.name'))
@@ -115,13 +143,73 @@ class ProductResource extends Resource
                             ->label(__('product.income_account'))
                             ->required()
                             ->searchable()
-                            ->preload(),
+                            ->preload()
+                            ->createOptionForm([
+                                Forms\Components\Select::make('company_id')
+                                    ->label(__('account.company'))
+                                    ->relationship('company', 'name')
+                                    ->required(),
+                                Forms\Components\TextInput::make('code')
+                                    ->label(__('account.code'))
+                                    ->required()
+                                    ->maxLength(255),
+                                Forms\Components\TextInput::make('name')
+                                    ->label(__('account.name'))
+                                    ->required()
+                                    ->maxLength(255),
+                                Forms\Components\Select::make('type')
+                                    ->label(__('account.type'))
+                                    ->required()
+                                    ->options(
+                                        collect(\App\Enums\Accounting\AccountType::cases())
+                                            ->mapWithKeys(fn (\App\Enums\Accounting\AccountType $type) => [$type->value => $type->label()])
+                                    )
+                                    ->searchable(),
+                                Forms\Components\Toggle::make('is_deprecated')
+                                    ->label(__('account.is_deprecated'))
+                                    ->default(false),
+                            ])
+                            ->createOptionModalHeading(__('common.modal_title_create_account'))
+                            ->createOptionAction(function (Forms\Components\Actions\Action $action) {
+                                return $action
+                                    ->modalWidth('lg');
+                            }),
                         Forms\Components\Select::make('expense_account_id')
                             ->relationship('expenseAccount', 'name')
                             ->label(__('product.expense_account'))
                             ->required()
                             ->searchable()
-                            ->preload(),
+                            ->preload()
+                            ->createOptionForm([
+                                Forms\Components\Select::make('company_id')
+                                    ->label(__('account.company'))
+                                    ->relationship('company', 'name')
+                                    ->required(),
+                                Forms\Components\TextInput::make('code')
+                                    ->label(__('account.code'))
+                                    ->required()
+                                    ->maxLength(255),
+                                Forms\Components\TextInput::make('name')
+                                    ->label(__('account.name'))
+                                    ->required()
+                                    ->maxLength(255),
+                                Forms\Components\Select::make('type')
+                                    ->label(__('account.type'))
+                                    ->required()
+                                    ->options(
+                                        collect(\App\Enums\Accounting\AccountType::cases())
+                                            ->mapWithKeys(fn (\App\Enums\Accounting\AccountType $type) => [$type->value => $type->label()])
+                                    )
+                                    ->searchable(),
+                                Forms\Components\Toggle::make('is_deprecated')
+                                    ->label(__('account.is_deprecated'))
+                                    ->default(false),
+                            ])
+                            ->createOptionModalHeading(__('common.modal_title_create_account'))
+                            ->createOptionAction(function (Forms\Components\Actions\Action $action) {
+                                return $action
+                                    ->modalWidth('lg');
+                            }),
                     ]),
                 ]),
 

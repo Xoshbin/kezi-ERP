@@ -26,6 +26,9 @@ use App\Filament\Resources\InvoiceResource\RelationManagers;
 use App\Models\Account;
 use App\Models\Product;
 use App\Models\Company;
+use App\Models\Partner;
+use App\Models\Journal;
+use App\Models\FiscalPosition;
 use App\Rules\NotInLockedPeriod;
 use App\Filament\Tables\Columns\MoneyColumn;
 
@@ -69,23 +72,114 @@ class InvoiceResource extends Resource
                         ->label(__('invoice.company'))
                         ->required()
                         ->live()
+                        ->searchable()
                         ->default($company?->id)
                         ->afterStateUpdated(function (callable $set, $state) {
                             $company = Company::find($state);
                             if ($company) {
                                 $set('currency_id', $company->currency_id);
                             }
+                        })
+                        ->createOptionForm([
+                            Forms\Components\TextInput::make('name')
+                                ->label(__('company.name'))
+                                ->required()
+                                ->maxLength(255),
+                            Forms\Components\Textarea::make('address')
+                                ->label(__('company.address'))
+                                ->columnSpanFull(),
+                            Forms\Components\TextInput::make('tax_id')
+                                ->label(__('company.tax_id'))
+                                ->maxLength(255),
+                            Forms\Components\Select::make('currency_id')
+                                ->label(__('company.currency_id'))
+                                ->relationship('currency', 'name')
+                                ->required(),
+                            Forms\Components\TextInput::make('fiscal_country')
+                                ->label(__('company.fiscal_country'))
+                                ->required()
+                                ->maxLength(255),
+                        ])
+                        ->createOptionModalHeading(__('common.modal_title_create_company'))
+                        ->createOptionAction(function (Forms\Components\Actions\Action $action) {
+                            return $action
+                                ->modalWidth('lg');
                         }),
                     Forms\Components\Select::make('customer_id')
                         ->relationship('customer', 'name')
                         ->label(__('invoice.customer'))
-                        ->required(),
+                        ->required()
+                        ->searchable()
+                        ->createOptionForm([
+                            Forms\Components\Select::make('company_id')
+                                ->relationship('company', 'name')
+                                ->label(__('partner.company'))
+                                ->required(),
+                            Forms\Components\TextInput::make('name')
+                                ->label(__('partner.name'))
+                                ->required()
+                                ->maxLength(255),
+                            Forms\Components\Select::make('type')
+                                ->label(__('partner.type'))
+                                ->required()
+                                ->options(
+                                    collect(\App\Enums\Partners\PartnerType::cases())
+                                        ->mapWithKeys(fn (\App\Enums\Partners\PartnerType $type) => [$type->value => $type->label()])
+                                ),
+                            Forms\Components\TextInput::make('contact_person')
+                                ->label(__('partner.contact_person'))
+                                ->maxLength(255),
+                            Forms\Components\TextInput::make('email')
+                                ->label(__('partner.email'))
+                                ->email()
+                                ->maxLength(255),
+                            Forms\Components\TextInput::make('phone')
+                                ->label(__('partner.phone'))
+                                ->maxLength(255),
+                            Forms\Components\Textarea::make('address')
+                                ->label(__('partner.address'))
+                                ->columnSpanFull(),
+                        ])
+                        ->createOptionModalHeading(__('common.modal_title_create_partner'))
+                        ->createOptionAction(function (Forms\Components\Actions\Action $action) {
+                            return $action
+                                ->modalWidth('lg');
+                        }),
                     Forms\Components\Select::make('currency_id')
                         ->relationship('currency', 'name')
                         ->label(__('invoice.currency'))
                         ->required()
                         ->live()
-                        ->default($company?->currency_id),
+                        ->searchable()
+                        ->default($company?->currency_id)
+                        ->createOptionForm([
+                            Forms\Components\TextInput::make('code')
+                                ->label(__('currency.code'))
+                                ->required()
+                                ->maxLength(255),
+                            Forms\Components\TextInput::make('name')
+                                ->label(__('currency.name'))
+                                ->required()
+                                ->maxLength(255),
+                            Forms\Components\TextInput::make('symbol')
+                                ->label(__('currency.symbol'))
+                                ->required()
+                                ->maxLength(5),
+                            Forms\Components\TextInput::make('exchange_rate')
+                                ->label(__('currency.exchange_rate'))
+                                ->required()
+                                ->numeric()
+                                ->default(1),
+                            Forms\Components\Toggle::make('is_active')
+                                ->label(__('currency.is_active'))
+                                ->required()
+                                ->default(true),
+                        ])
+                        ->createOptionModalHeading(__('common.modal_title_create_currency'))
+                        ->createOptionAction(function (Forms\Components\Actions\Action $action) {
+                            return $action
+                                ->modalWidth('lg');
+                        }),
                     Forms\Components\Select::make('fiscal_position_id')
                         ->relationship('fiscalPosition', 'name')
                         ->label(__('invoice.fiscal_position')),

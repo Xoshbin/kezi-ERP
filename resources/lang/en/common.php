@@ -1,0 +1,34 @@
+<?php
+
+return [
+    'create_new' => 'Create New',
+    'create_new_item' => 'Create New :item',
+    'create_and_select' => 'Create and Select',
+    'cancel' => 'Cancel',
+    'save' => 'Save',
+    'create' => 'Create',
+    'created_successfully' => ':item created successfully',
+    'select_or_create' => 'Select existing or create new',
+    
+    // Model-specific create new labels
+    'create_new_account' => 'Create New Account',
+    'create_new_company' => 'Create New Company',
+    'create_new_partner' => 'Create New Partner',
+    'create_new_product' => 'Create New Product',
+    'create_new_currency' => 'Create New Currency',
+    'create_new_tax' => 'Create New Tax',
+    'create_new_journal' => 'Create New Journal',
+    'create_new_analytic_account' => 'Create New Analytic Account',
+    'create_new_user' => 'Create New User',
+    
+    // Modal titles
+    'modal_title_create_account' => 'Create New Account',
+    'modal_title_create_company' => 'Create New Company',
+    'modal_title_create_partner' => 'Create New Partner',
+    'modal_title_create_product' => 'Create New Product',
+    'modal_title_create_currency' => 'Create New Currency',
+    'modal_title_create_tax' => 'Create New Tax',
+    'modal_title_create_journal' => 'Create New Journal',
+    'modal_title_create_analytic_account' => 'Create New Analytic Account',
+    'modal_title_create_user' => 'Create New User',
+];
