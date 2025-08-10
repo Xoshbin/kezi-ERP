@@ -43,23 +43,23 @@ class EditVendorBill extends EditRecord
                     }
                 }),
 
-            Actions\Action::make('resetToDraft')
-                ->label(__('vendor_bill.reset_to_draft'))
-                ->color('warning')
-                ->requiresConfirmation()
-                ->visible(fn (VendorBill $record): bool => $record->status === VendorBillStatus::Posted)
-                ->form([
-                    Forms\Components\Textarea::make('reason')->label(__('vendor_bill.reason'))->required(),
-                ])
-                ->action(function (VendorBill $record, array $data): void {
-                    $vendorBillService = app(VendorBillService::class);
-                    try {
-                        $vendorBillService->resetToDraft($record, Auth::user(), $data['reason']);
-                        Notification::make()->title(__('vendor_bill.notification_bill_reset_success'))->success()->send();
-                    } catch (\Exception $e) {
-                        Notification::make()->title(__('vendor_bill.notification_reset_bill_error'))->body($e->getMessage())->danger()->send();
-                    }
-                }),
+            // Actions\Action::make('resetToDraft')
+            //     ->label(__('vendor_bill.reset_to_draft'))
+            //     ->color('warning')
+            //     ->requiresConfirmation()
+            //     ->visible(fn (VendorBill $record): bool => $record->status === VendorBillStatus::Posted)
+            //     ->form([
+            //         Forms\Components\Textarea::make('reason')->label(__('vendor_bill.reason'))->required(),
+            //     ])
+            //     ->action(function (VendorBill $record, array $data): void {
+            //         $vendorBillService = app(VendorBillService::class);
+            //         try {
+            //             $vendorBillService->resetToDraft($record, Auth::user(), $data['reason']);
+            //             Notification::make()->title(__('vendor_bill.notification_bill_reset_success'))->success()->send();
+            //         } catch (\Exception $e) {
+            //             Notification::make()->title(__('vendor_bill.notification_reset_bill_error'))->body($e->getMessage())->danger()->send();
+            //         }
+            //     }),
 
             Actions\DeleteAction::make()
                 ->action(function (Model $record) {
