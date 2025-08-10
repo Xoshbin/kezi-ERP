@@ -33,8 +33,12 @@ class UpdateJournalEntryAction
         $totalCredit = Money::zero($currency->code);
 
         foreach ($dto->lines as $line) {
-            $totalDebit = $totalDebit->plus(Money::of($line->debit, $currency->code));
-            $totalCredit = $totalCredit->plus(Money::of($line->credit, $currency->code));
+            // Handle different types of input for debit and credit
+            $debitMoney = $this->convertToMoney($line->debit, $currency->code);
+            $creditMoney = $this->convertToMoney($line->credit, $currency->code);
+
+            $totalDebit = $totalDebit->plus($debitMoney);
+            $totalCredit = $totalCredit->plus($creditMoney);
         }
 
         if (!$totalDebit->isEqualTo($totalCredit)) {
@@ -90,5 +94,38 @@ class UpdateJournalEntryAction
 
             return $journalEntry;
         });
+    }
+
+    /**
+     * Convert various input types to Money object
+     */
+    private function convertToMoney($value, string $currencyCode): Money
+    {
+        // If it's already a Money object, return it
+        if ($value instanceof Money) {
+            return $value;
+        }
+
+        // If it's null or empty, return zero
+        if ($value === null || $value === '' || $value === 0 || $value === '0') {
+            return Money::zero($currencyCode);
+        }
+
+        // If it's a string that might be formatted (e.g., "IQD 15000000.000")
+        if (is_string($value)) {
+            // Remove currency code and spaces, keep only numbers and decimal point
+            $cleanValue = preg_replace('/[^0-9.]/', '', $value);
+            if ($cleanValue === '' || $cleanValue === '.') {
+                return Money::zero($currencyCode);
+            }
+            $value = $cleanValue;
+        }
+
+        // Convert to Money with rounding if necessary
+        try {
+            return Money::of($value, $currencyCode);
+        } catch (\Brick\Math\Exception\RoundingNecessaryException) {
+            return Money::of($value, $currencyCode, null, \Brick\Math\RoundingMode::HALF_UP);
+        }
     }
 }
