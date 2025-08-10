@@ -98,15 +98,32 @@ class EditJournalEntry extends EditRecord
     protected function handleRecordUpdate(Model $record, array $data): Model
     {
         $lineDTOs = [];
-        foreach ($data['lines'] as $line) {
-            $lineDTOs[] = new UpdateJournalEntryLineDTO(
-                account_id: $line['account_id'],
-                debit: $line['debit'],
-                credit: $line['credit'],
-                description: $line['description'],
-                partner_id: $line['partner_id'],
-                analytic_account_id: $line['analytic_account_id']
-            );
+
+        // Handle case where lines might not be present in the data (e.g., when calling actions)
+        if (isset($data['lines']) && is_array($data['lines'])) {
+            foreach ($data['lines'] as $line) {
+                $lineDTOs[] = new UpdateJournalEntryLineDTO(
+                    account_id: $line['account_id'],
+                    debit: $this->convertMoneyToString($line['debit']),
+                    credit: $this->convertMoneyToString($line['credit']),
+                    description: $line['description'],
+                    partner_id: $line['partner_id'],
+                    analytic_account_id: $line['analytic_account_id']
+                );
+            }
+        } else {
+            // If lines are not provided, use existing lines from the record
+            $record->load('lines');
+            foreach ($record->lines as $line) {
+                $lineDTOs[] = new UpdateJournalEntryLineDTO(
+                    account_id: $line->account_id,
+                    debit: $this->convertMoneyToString($line->debit),
+                    credit: $this->convertMoneyToString($line->credit),
+                    description: $line->description,
+                    partner_id: $line->partner_id,
+                    analytic_account_id: $line->analytic_account_id
+                );
+            }
         }
 
         $updateDTO = new UpdateJournalEntryDTO(
@@ -121,5 +138,21 @@ class EditJournalEntry extends EditRecord
         );
 
         return app(UpdateJournalEntryAction::class)->execute($updateDTO);
+    }
+
+    /**
+     * Convert Money object or other value to string for DTO
+     */
+    private function convertMoneyToString($value): string
+    {
+        if ($value instanceof \Brick\Money\Money) {
+            return $value->getAmount()->__toString();
+        }
+
+        if ($value === null || $value === '') {
+            return '0';
+        }
+
+        return (string) $value;
     }
 }

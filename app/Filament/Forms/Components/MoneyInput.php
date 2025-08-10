@@ -125,7 +125,13 @@ class MoneyInput extends TextInput
 
         // If we have an amount and a currency, create the Money object.
         if (is_numeric($state) && $currencyCode) {
-            return Money::of($state, $currencyCode);
+            // Use Money::of with rounding mode to handle precision issues
+            try {
+                return Money::of($state, $currencyCode);
+            } catch (\Brick\Math\Exception\RoundingNecessaryException) {
+                // If rounding is necessary, use the default rounding mode (HALF_UP)
+                return Money::of($state, $currencyCode, null, \Brick\Math\RoundingMode::HALF_UP);
+            }
         }
 
         return null;
