@@ -43,7 +43,7 @@ class ProductSeeder extends Seeder
                 'name' => 'Consulting Services',
                 'description' => 'Standard consulting services.',
                 'unit_price' => 150000.00,
-                'type' => ProductType::SERVICE->value,
+                'type' => ProductType::Service->value,
                 'income_account_id' => $incomeAccount->id,
                 'expense_account_id' => $expenseAccount->id,
             ]
@@ -58,7 +58,7 @@ class ProductSeeder extends Seeder
                 'name' => 'Development Services',
                 'description' => 'Custom software development services.',
                 'unit_price' => 250000.00,
-                'type' => ProductType::SERVICE->value,
+                'type' => ProductType::Service->value,
                 'income_account_id' => $incomeAccount->id,
                 'expense_account_id' => $expenseAccount->id,
             ]
