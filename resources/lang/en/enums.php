@@ -103,6 +103,12 @@ return [
         'miscellaneous' => 'Miscellaneous',
     ],
 
+    'adjustment_document_status' => [
+        'draft' => 'Draft',
+        'posted' => 'Posted',
+        'cancelled' => 'Cancelled',
+    ],
+
     'invoice_status' => [
         'draft' => 'Draft',
         'posted' => 'Posted',

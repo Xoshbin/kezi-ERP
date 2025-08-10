@@ -34,6 +34,7 @@ use App\Enums\Accounting\JournalType;
 use App\Enums\Partners\PartnerType;
 use App\Enums\Products\ProductType;
 use App\Enums\Inventory\ValuationMethod;
+use App\Enums\Adjustments\AdjustmentDocumentStatus;
 use Brick\Money\Money;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use function Pest\Livewire\livewire;
@@ -486,14 +487,14 @@ test('Jmeryar ERP complete accounting scenario - Full Workflow', function () {
     // Verify the credit note has lines before posting
     $creditNote->refresh();
     expect($creditNote->lines)->toHaveCount(1);
-    expect($creditNote->status)->toBe('draft');
+    expect($creditNote->status)->toBe(AdjustmentDocumentStatus::Draft);
 
     // Post the credit note using the service directly (Filament action has issues)
     $adjustmentService = app(\App\Services\AdjustmentDocumentService::class);
     $adjustmentService->post($creditNote, $user);
 
     $creditNote->refresh();
-    expect($creditNote->status)->toBe('posted');
+    expect($creditNote->status)->toBe(AdjustmentDocumentStatus::Posted);
     expect($creditNote->journalEntry)->not->toBeNull();
 
     // Verify the credit note journal entry
