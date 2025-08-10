@@ -6,6 +6,7 @@ use App\Models\Account;
 use App\Models\Invoice;
 use App\Models\Partner;
 use App\Enums\Sales\InvoiceStatus;
+use App\Enums\Partners\PartnerType;
 use App\Services\InvoiceService;
 use App\Services\PaymentService;
 use App\Services\VendorBillService;
@@ -86,7 +87,7 @@ test('the entire accounting workflow from setup to credit note', function () {
     expect($capitalEntry->total_credit->isEqualTo($initialCapitalInvestment))->toBeTrue();
 
     // Step 4: Purchasing a Fixed Asset
-    $vendor = Partner::factory()->for($this->company)->create(['name' => 'Paykar Tech Supplies', 'type' => Partner::TYPE_VENDOR]);
+    $vendor = Partner::factory()->for($this->company)->create(['name' => 'Paykar Tech Supplies', 'type' => PartnerType::Vendor]);
     // Arrange: Prepare the DTOs for the Action.
     $lineDto = new CreateVendorBillLineDTO(
         description: 'High-End Laptop for Business Use',
@@ -130,7 +131,7 @@ test('the entire accounting workflow from setup to credit note', function () {
     expect($purchaseEntry->lines->where('account_id', $apAccount->id)->first()->credit->isEqualTo($highEndLaptopCost))->toBeTrue();
 
     // Step 5: Providing a Service & Invoicing
-    $customer = Partner::factory()->for($this->company)->create(['name' => 'Hawre Trading Group', 'type' => Partner::TYPE_CUSTOMER]);
+    $customer = Partner::factory()->for($this->company)->create(['name' => 'Hawre Trading Group', 'type' => PartnerType::Customer]);
     $lineDto = new CreateInvoiceLineDTO(
         description: 'On-site IT Infrastructure Setup',
         quantity: 1,

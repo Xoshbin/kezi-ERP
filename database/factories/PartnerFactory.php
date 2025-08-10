@@ -4,6 +4,7 @@ namespace Database\Factories;
 
 use App\Models\Company;
 use App\Models\Partner;
+use App\Enums\Partners\PartnerType;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -21,7 +22,7 @@ class PartnerFactory extends Factory
         return [
             'company_id' => Company::factory()->create()->id,
             'name' => $this->faker->company,
-            'type' => $this->faker->randomElement([Partner::TYPE_VENDOR, Partner::TYPE_CUSTOMER, Partner::TYPE_BOTH]),
+            'type' => $this->faker->randomElement([PartnerType::Vendor, PartnerType::Customer, PartnerType::Both]),
             'contact_person' => $this->faker->name,
             'email' => $this->faker->unique()->safeEmail,
             'phone' => $this->faker->phoneNumber,
@@ -39,14 +40,14 @@ class PartnerFactory extends Factory
     public function vendor(): self
     {
         return $this->state(fn (array $attributes) => [
-            'type' => Partner::TYPE_VENDOR,
+            'type' => PartnerType::Vendor,
         ]);
     }
 
     public function customer(): self
     {
         return $this->state(fn (array $attributes) => [
-            'type' => Partner::TYPE_CUSTOMER,
+            'type' => PartnerType::Customer,
         ]);
     }
 }

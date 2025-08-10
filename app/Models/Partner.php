@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Observers\PartnerObserver;
+use App\Enums\Partners\PartnerType;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -100,6 +101,7 @@ class Partner extends Model
      * @var array<string, string>
      */
     protected $casts = [
+        'type' => PartnerType::class,
         'is_active' => 'boolean',
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
@@ -115,20 +117,7 @@ class Partner extends Model
         'is_active' => true,
     ];
 
-    public const TYPE_VENDOR = 'vendor';
-    public const TYPE_CUSTOMER = 'customer';
-    public const TYPE_BOTH = 'both';
 
-
-    // use it in Filament select options columns
-    public static function getTypes(): array
-    {
-        return [
-            self::TYPE_VENDOR => 'Vendor',
-            self::TYPE_CUSTOMER => 'Customer',
-            self::TYPE_BOTH => 'Both',
-        ];
-    }
 
     /**
      * Get the company that owns the Partner.
