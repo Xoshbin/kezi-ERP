@@ -61,7 +61,7 @@ class DatabaseSeeder extends Seeder
                 // 8. Adjustments and statements
                 // For reconciliations and manual adjustments.
                 // AdjustmentDocumentSeeder::class,
-                // BankStatementSeeder::class,
+                BankStatementSeeder::class,
                 // BankStatementLineSeeder::class,
 
                 // 9. Finally

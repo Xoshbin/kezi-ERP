@@ -2,12 +2,14 @@
 
 namespace Database\Seeders;
 
+use App\Enums\Adjustments\AdjustmentDocumentType;
 use App\Models\Account;
 use App\Models\AdjustmentDocument;
+use App\Models\Company;
+use App\Models\Invoice;
 use App\Models\Journal;
-use App\Models\JournalEntry;
+use Brick\Money\Money;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Carbon;
 
 class AdjustmentDocumentSeeder extends Seeder
 {
@@ -18,69 +20,60 @@ class AdjustmentDocumentSeeder extends Seeder
      */
     public function run()
     {
-        // Fetch the "Adjustments" journal
-        $adjustmentJournal = Journal::where('name->en', 'Adjustments')->first();
+        $company = Company::where('name', 'Jmeryar Solutions')->firstOrFail();
+        $currencyCode = $company->currency->code;
 
-        if (!$adjustmentJournal) {
-            $this->command->error('The "Adjustments" journal was not found. Please run the JournalSeeder.');
+        // 1. Find the original invoice for "Hawre Trading Group"
+        $originalInvoice = Invoice::whereHas('customer', function ($query) {
+            $query->where('name', 'Hawre Trading Group');
+        })->latest()->first();
+
+        if (!$originalInvoice) {
+            $this->command->error('The original invoice for "Hawre Trading Group" was not found. Please run the InvoiceSeeder.');
             return;
         }
 
-        $accounts = Account::all();
-
-        if ($accounts->count() < 2) {
-            $this->command->error('Not enough accounts found. Please run the AccountSeeder.');
+        // 2. Find the "Sales" journal for creating the credit note
+        $salesJournal = Journal::where('name->en', 'Sales')->where('company_id', $company->id)->first();
+        if (!$salesJournal) {
+            $this->command->error('The "Sales" journal was not found. Please run the JournalSeeder.');
             return;
         }
 
-        for ($i = 1; $i <= 5; $i++) {
-            $amount = rand(10000, 100000) / 100; // Random amount between 100.00 and 1000.00
-            $isDebit = (bool)rand(0, 1);
-
-            // Get two random distinct accounts
-            $randomAccounts = $accounts->random(2);
-            $adjustmentAccount = $randomAccounts->first();
-            $offsettingAccount = $randomAccounts->last();
-
-            // Create the adjustment document
-            $document = AdjustmentDocument::create([
-                'company_id' => 1, // Assuming company_id 1 exists
-                'journal_id' => $adjustmentJournal->id,
-                'reference' => 'ADJ-' . str_pad($i, 4, '0', STR_PAD_LEFT),
-                'date' => Carbon::now(),
-                'posting_date' => Carbon::now(),
-                'status' => 'posted',
-                'notes' => 'Sample adjustment for various reasons.',
-                'total_amount' => $amount,
-            ]);
-
-            // Create the corresponding journal entry
-            $journalEntry = JournalEntry::create([
-                'company_id' => 1,
-                'journal_id' => $adjustmentJournal->id,
-                'date' => $document->posting_date,
-                'reference' => $document->reference,
-                'total_debit' => $amount,
-                'total_credit' => $amount,
-                'status' => 'posted',
-                'documentable_id' => $document->id,
-                'documentable_type' => AdjustmentDocument::class,
-            ]);
-
-            // Create journal entry lines
-            $journalEntry->lines()->create([
-                'account_id' => $adjustmentAccount->id,
-                'debit' => $isDebit ? $amount : 0,
-                'credit' => !$isDebit ? $amount : 0,
-                'label' => 'Adjustment Entry',
-            ]);
-
-            $journalEntry->lines()->create([
-                'account_id' => $offsettingAccount->id,
-                'debit' => !$isDebit ? $amount : 0,
-                'credit' => $isDebit ? $amount : 0,
-                'label' => 'Offsetting Entry for Adjustment',
-            ]);
+        // 3. Find the "Sales Discounts & Returns" account
+        $salesDiscountAccount = Account::where('name->en', 'Sales Discounts & Returns')->where('company_id', $company->id)->first();
+        if (!$salesDiscountAccount) {
+            $this->command->error('The "Sales Discounts & Returns" account was not found. Please run the AccountSeeder.');
+            return;
         }
+
+        // 4. Create the Credit Note (Adjustment Document)
+        $creditNoteAmount = Money::of('500000', $currencyCode);
+
+        $creditNote = AdjustmentDocument::create([
+            'company_id' => $company->id,
+            'original_invoice_id' => $originalInvoice->id,
+            'journal_id' => $salesJournal->id,
+            'type' => AdjustmentDocumentType::CreditNote,
+            'date' => now(),
+            'reason' => 'Goodwill discount for new client.',
+            'total_amount' => $creditNoteAmount,
+            'status' => AdjustmentDocument::STATUS_DRAFT,
+            'currency_id' => $company->currency_id,
+        ]);
+
+        // 5. Create the line for the Credit Note
+        $creditNote->lines()->create([
+            'account_id' => $salesDiscountAccount->id,
+            'description' => 'Refund for IT Setup Services',
+            'quantity' => 1,
+            'unit_price' => $creditNoteAmount,
+        ]);
+
+        // 6. Post the Credit Note (The observer will handle Journal Entry creation)
+        // In a real app, this would be an action `PostAdjustmentDocumentAction->execute($creditNote)`
+        $creditNote->update(['status' => AdjustmentDocument::STATUS_POSTED, 'posted_at' => now()]);
+
+        $this->command->info('Credit note for Hawre Trading Group created successfully.');
     }
 }
