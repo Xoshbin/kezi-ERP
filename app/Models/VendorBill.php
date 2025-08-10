@@ -228,6 +228,17 @@ class VendorBill extends Model
     }
 
     /**
+     * Get the attachments for the vendor bill.
+     * Defines a **HasMany** relationship for file attachments.
+     *
+     * @return HasMany
+     */
+    public function attachments(): HasMany
+    {
+        return $this->hasMany(VendorBillAttachment::class, 'vendor_bill_id');
+    }
+
+    /**
      * Scope a query to only include vendor bills that have been 'Posted'.
      * This facilitates querying for financial records that have had an accounting impact .
      *

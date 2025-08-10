@@ -8,6 +8,7 @@ use App\DataTransferObjects\Purchases\VendorBillLineDTO;
 use App\Enums\Purchases\VendorBillStatus;
 use App\Filament\Resources\VendorBillResource;
 use App\Models\VendorBill;
+use App\Models\VendorBillAttachment;
 use App\Services\VendorBillService;
 use Brick\Money\Money;
 use Filament\Actions;
@@ -16,10 +17,13 @@ use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 
 class EditVendorBill extends EditRecord
 {
     protected static string $resource = VendorBillResource::class;
+
+    protected array $newAttachments = [];
 
     protected function getHeaderActions(): array
     {
@@ -67,6 +71,10 @@ class EditVendorBill extends EditRecord
 
     protected function handleRecordUpdate(Model $record, array $data): Model
     {
+        // Store new attachments separately and remove from data for DTO
+        $this->newAttachments = $data['attachments'] ?? [];
+        unset($data['attachments']);
+
         $lineDTOs = [];
         foreach ($data['lines'] as $line) {
             $lineDTOs[] = new VendorBillLineDTO(
@@ -96,9 +104,47 @@ class EditVendorBill extends EditRecord
         return app(UpdateVendorBillAction::class)->execute($vendorBillDTO);
     }
 
+    protected function afterSave(): void
+    {
+        $this->handleFileUploads();
+    }
+
+    protected function handleFileUploads(): void
+    {
+        if (empty($this->newAttachments)) {
+            return;
+        }
+
+        // Get existing attachment file paths to avoid duplicates
+        $existingPaths = $this->record->attachments()->pluck('file_path')->toArray();
+
+        foreach ($this->newAttachments as $filePath) {
+            // Skip if this file is already attached
+            if (in_array($filePath, $existingPaths)) {
+                continue;
+            }
+
+            if (Storage::disk('local')->exists($filePath)) {
+                $fileInfo = pathinfo($filePath);
+                $mimeType = Storage::disk('local')->mimeType($filePath);
+                $fileSize = Storage::disk('local')->size($filePath);
+
+                VendorBillAttachment::create([
+                    'vendor_bill_id' => $this->record->id,
+                    'file_name' => $fileInfo['basename'],
+                    'file_path' => $filePath,
+                    'file_size' => $fileSize,
+                    'mime_type' => $mimeType,
+                    'uploaded_by_user_id' => Auth::id(),
+                ]);
+            }
+        }
+    }
+
     protected function mutateFormDataBeforeFill(array $data): array
     {
-        $this->record->loadMissing('lines', 'currency');
+        $this->record->loadMissing('lines', 'currency', 'attachments');
+
         $linesData = $this->record->lines->map(function ($line) {
             return [
                 'product_id' => $line->product_id,
@@ -110,7 +156,12 @@ class EditVendorBill extends EditRecord
                 'analytic_account_id' => $line->analytic_account_id,
             ];
         })->toArray();
+
+        $attachmentsData = $this->record->attachments->pluck('file_path')->toArray();
+
         $data['lines'] = $linesData;
+        $data['attachments'] = $attachmentsData;
+
         return $data;
     }
 }

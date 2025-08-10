@@ -34,6 +34,9 @@ return [
     'account' => 'Account',
     'debit' => 'Debit',
     'credit' => 'Credit',
+    'attachments' => 'Attachments',
+    'attachments_description' => 'Upload supporting documents for this vendor bill',
+    'attachments_helper' => 'Accepted formats: PDF, DOC, DOCX, XLS, XLSX, JPG, PNG, GIF, TXT. Maximum 10MB per file, up to 10 files.',
 
     // Actions
     'confirm' => 'Confirm',
