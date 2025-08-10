@@ -2,11 +2,13 @@
 
 namespace Database\Seeders;
 
-use App\Models\Account;
 use App\Models\BankStatement;
 use App\Models\Company;
+use App\Models\Journal;
+use App\Models\Partner;
+use App\Models\Payment;
+use Brick\Money\Money;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Carbon;
 
 class BankStatementSeeder extends Seeder
 {
@@ -15,32 +17,57 @@ class BankStatementSeeder extends Seeder
      */
     public function run(): void
     {
-        $company = Company::first();
-        if (!$company) {
-            $this->command->warn('No company found. Skipping BankStatementSeeder.');
-            return;
-        }
+        $company = Company::where('name', 'Jmeryar Solutions')->firstOrFail();
+        $currencyCode = $company->currency->code;
 
-        $bankAccounts = Account::where('type', 'bank')->where('company_id', $company->id)->get();
+        // 1. Get required partners
+        $hawrePartner = Partner::where('name', 'Hawre Trading Group')->firstOrFail();
+        $paykarPartner = Partner::where('name', 'Paykar Tech Supplies')->firstOrFail();
 
-        if ($bankAccounts->isEmpty()) {
-            $this->command->warn('No bank accounts found. Skipping BankStatementSeeder.');
-            return;
-        }
+        // 2. Calculate starting balance
+        $initialCapital = Money::of(15000000, $currencyCode);
+        $hawrePayment = Payment::where('paid_to_from_partner_id', $hawrePartner->id)->first()->amount;
+        $paykarPayment = Payment::where('paid_to_from_partner_id', $paykarPartner->id)->first()->amount;
+        $startingBalance = $initialCapital->plus($hawrePayment)->minus($paykarPayment);
 
-        for ($i = 1; $i <= 5; $i++) {
-            $bankAccount = $bankAccounts->random();
-            $date = Carbon::now()->subMonths($i)->endOfMonth();
+        // 3. Calculate ending balance
+        $bankFee = Money::of(500, $currencyCode);
+        $endingBalance = $startingBalance->minus($bankFee);
 
-            BankStatement::create([
-                'reference' => 'BS-000' . $i,
-                'statement_date' => $date,
-                'starting_balance' => 1000 * $i,
-                'ending_balance' => 1500 * $i, // This will be recalculated by lines later
-                'status' => 'posted',
-                'journal_id' => $bankAccount->journal_id,
-                'company_id' => $company->id,
-            ]);
-        }
+        // 4. Get the bank journal
+        $bankJournal = Journal::where('name->en', 'Bank (IQD)')->where('company_id', $company->id)->firstOrFail();
+
+        // 5. Create the Bank Statement
+        $bankStatement = BankStatement::create([
+            'company_id' => $company->id,
+            'journal_id' => $bankJournal->id,
+            'currency_id' => $company->currency_id,
+            'reference' => 'BS-2025-08-001',
+            'date' => now(),
+            'starting_balance' => $startingBalance,
+            'ending_balance' => $endingBalance,
+        ]);
+
+        // 6. Create Bank Statement Lines
+        $bankStatement->bankStatementLines()->createMany([
+            [
+                'date' => now(),
+                'description' => 'Hawre Trading Group Payment for Invoice INV-001',
+                'amount' => $hawrePayment,
+                'partner_id' => $hawrePartner->id,
+            ],
+            [
+                'date' => now(),
+                'description' => 'Payment to Paykar Tech Supplies for Laptop Bill BILL-001',
+                'amount' => $paykarPayment->negated(),
+                'partner_id' => $paykarPartner->id,
+            ],
+            [
+                'date' => now(),
+                'description' => 'Monthly Bank Service Fee',
+                'amount' => $bankFee->negated(),
+                'partner_id' => null,
+            ],
+        ]);
     }
 }
