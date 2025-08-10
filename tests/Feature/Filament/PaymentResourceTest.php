@@ -8,6 +8,8 @@ use App\Models\Partner;
 use App\Models\Journal;
 use App\Enums\Accounting\JournalType;
 use App\Enums\Purchases\VendorBillStatus;
+use App\Enums\Payments\PaymentType;
+use App\Enums\Payments\PaymentStatus;
 use Brick\Money\Money;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\Traits\WithConfiguredCompany;
@@ -71,8 +73,8 @@ it('can create an inbound payment linked to an invoice', function () {
         'journal_id' => $bankJournal->id,
         'currency_id' => $this->company->currency_id,
         'reference' => 'Test Payment',
-        'payment_type' => Payment::TYPE_INBOUND,
-        'status' => Payment::STATUS_DRAFT,
+        'payment_type' => PaymentType::Inbound,
+        'status' => PaymentStatus::Draft,
     ]);
 
     $payment = Payment::where('reference', 'Test Payment')->first();
@@ -126,8 +128,8 @@ it('can create an outbound payment linked to a vendor bill', function () {
         'journal_id' => $bankJournal->id,
         'currency_id' => $this->company->currency_id,
         'reference' => 'Vendor Payment',
-        'payment_type' => Payment::TYPE_OUTBOUND,
-        'status' => Payment::STATUS_DRAFT,
+        'payment_type' => PaymentType::Outbound,
+        'status' => PaymentStatus::Draft,
     ]);
 
     $payment = Payment::where('reference', 'Vendor Payment')->first();
@@ -185,7 +187,7 @@ it('can edit a draft payment', function () {
 
     $payment = Payment::factory()->create([
         'company_id' => $this->company->id,
-        'status' => Payment::STATUS_DRAFT,
+        'status' => PaymentStatus::Draft,
         'reference' => 'Old Reference',
         'amount' => Money::of(100, $this->company->currency->code),
         'currency_id' => $this->company->currency_id,
@@ -236,7 +238,7 @@ it('cannot edit a confirmed payment', function () {
 
     $payment = Payment::factory()->create([
         'company_id' => $this->company->id,
-        'status' => Payment::STATUS_CONFIRMED,
+        'status' => PaymentStatus::Confirmed,
         'reference' => 'Confirmed Payment',
         'amount' => Money::of(100, $this->company->currency->code),
         'currency_id' => $this->company->currency_id,
@@ -283,11 +285,11 @@ it('can confirm a draft payment', function () {
 
     $payment = Payment::factory()->create([
         'company_id' => $this->company->id,
-        'status' => Payment::STATUS_DRAFT,
+        'status' => PaymentStatus::Draft,
         'amount' => Money::of(100, $this->company->currency->code),
         'currency_id' => $this->company->currency_id,
         'paid_to_from_partner_id' => $customer->id,
-        'payment_type' => Payment::TYPE_INBOUND,
+        'payment_type' => PaymentType::Inbound,
     ]);
 
     // Create a payment document link
@@ -301,7 +303,7 @@ it('can confirm a draft payment', function () {
     ])
         ->callAction('confirm');
 
-    expect($payment->fresh()->status)->toBe(Payment::STATUS_CONFIRMED);
+    expect($payment->fresh()->status)->toBe(PaymentStatus::Confirmed);
 });
 
 it('shows cancel action for confirmed payments', function () {
@@ -319,11 +321,11 @@ it('shows cancel action for confirmed payments', function () {
 
     $payment = Payment::factory()->create([
         'company_id' => $this->company->id,
-        'status' => Payment::STATUS_CONFIRMED,
+        'status' => PaymentStatus::Confirmed,
         'amount' => Money::of(100, $this->company->currency->code),
         'currency_id' => $this->company->currency_id,
         'paid_to_from_partner_id' => $customer->id,
-        'payment_type' => Payment::TYPE_INBOUND,
+        'payment_type' => PaymentType::Inbound,
         'journal_entry_id' => $journalEntry->id,
     ]);
 
@@ -336,7 +338,7 @@ it('shows cancel action for confirmed payments', function () {
 it('can delete a draft payment', function () {
     $payment = Payment::factory()->create([
         'company_id' => $this->company->id,
-        'status' => Payment::STATUS_DRAFT,
+        'status' => PaymentStatus::Draft,
         'amount' => Money::of(100, $this->company->currency->code),
         'currency_id' => $this->company->currency_id,
     ]);
@@ -352,7 +354,7 @@ it('can delete a draft payment', function () {
 it('cannot delete a confirmed payment', function () {
     $payment = Payment::factory()->create([
         'company_id' => $this->company->id,
-        'status' => Payment::STATUS_CONFIRMED,
+        'status' => PaymentStatus::Confirmed,
     ]);
 
     livewire(PaymentResource\Pages\EditPayment::class, [

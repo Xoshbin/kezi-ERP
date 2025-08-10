@@ -109,4 +109,16 @@ return [
         'paid' => 'پارەدراو',
         'cancelled' => 'هەڵوەشاوە',
     ],
+
+    'payment_type' => [
+        'inbound' => 'هاتوو',
+        'outbound' => 'چووە دەرەوە',
+    ],
+
+    'payment_status' => [
+        'draft' => 'ڕەشنووس',
+        'confirmed' => 'پشتڕاستکراوە',
+        'reconciled' => 'ڕێکخراوە',
+        'canceled' => 'هەڵوەشاوە',
+    ],
 ];

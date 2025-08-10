@@ -11,6 +11,7 @@ use App\Models\AuditLog;
 use App\Models\Currency;
 use App\Models\VendorBill;
 use App\Enums\Sales\InvoiceStatus;
+use App\Enums\Payments\PaymentStatus;
 use InvalidArgumentException;
 use App\Events\PaymentConfirmed;
 use Illuminate\Support\Facades\DB;
@@ -31,7 +32,7 @@ class PaymentService
      */
     public function confirm(Payment $payment, User $user): Payment
     {
-        if ($payment->status !== Payment::STATUS_DRAFT) {
+        if ($payment->status !== PaymentStatus::Draft) {
             throw new UpdateNotAllowedException('Only draft payments can be confirmed.');
         }
 
@@ -40,7 +41,7 @@ class PaymentService
             $journalEntry = $this->createJournalEntryForPaymentAction->execute($payment, $user);
 
             $payment->journal_entry_id = $journalEntry->id;
-            $payment->status = Payment::STATUS_CONFIRMED;
+            $payment->status = PaymentStatus::Confirmed;
             $payment->save();
 
             // After confirming the payment, update the status of linked documents.
@@ -66,7 +67,7 @@ class PaymentService
                 // --- START OF FIX ---
                 // Correctly sum the 'amount_applied' from the pivot table for this invoice.
                 $totalPaidMinor = $invoice->payments()
-                                          ->where('payments.status', '!=', Payment::STATUS_CANCELED)
+                                          ->where('payments.status', '!=', PaymentStatus::Canceled)
                                           ->sum('payment_document_links.amount_applied');
 
                 // Convert the summed integer back to a Money object for comparison.
@@ -117,7 +118,7 @@ class PaymentService
                 'auditable_id' => $payment->id,
                 'description' => 'Payment Cancelled: ' . $reason,
                 'old_values' => ['status' => $payment->status],
-                'new_values' => ['status' => Payment::STATUS_CANCELED],
+                'new_values' => ['status' => PaymentStatus::Canceled],
                 'ip_address' => request()->ip(),
             ]);
 
@@ -129,7 +130,7 @@ class PaymentService
             );
 
             // Step 3: Update the payment's status.
-            $payment->status = Payment::STATUS_CANCELED;
+            $payment->status = PaymentStatus::Canceled;
             $payment->save();
         });
     }
@@ -144,7 +145,7 @@ class PaymentService
     public function delete(Payment $payment): void
     {
         // THE GUARD CLAUSE: This is the core of the fix.
-        if ($payment->status !== Payment::STATUS_DRAFT) {
+        if ($payment->status !== PaymentStatus::Draft) {
             throw new DeletionNotAllowedException('Confirmed payments cannot be deleted. Please create a reversal entry instead.');
         }
 
