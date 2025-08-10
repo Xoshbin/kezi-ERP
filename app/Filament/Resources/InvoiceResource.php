@@ -242,12 +242,30 @@ class InvoiceResource extends Resource
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\ActionGroup::make([
+                    Action::make('viewPdf')
+                        ->label(__('View PDF'))
+                        ->icon('heroicon-o-document-text')
+                        ->color('info')
+                        ->url(fn (Invoice $record) => route('invoices.pdf', $record))
+                        ->openUrlInNewTab(),
+
+                    Action::make('downloadPdf')
+                        ->label(__('Download PDF'))
+                        ->icon('heroicon-o-arrow-down-tray')
+                        ->color('success')
+                        ->url(fn (Invoice $record) => route('invoices.pdf.download', $record)),
+                ])
+                    ->label(__('PDF'))
+                    ->icon('heroicon-o-document-text')
+                    ->color('gray')
+                    ->button(),
                 Action::make('confirm')
                     ->label(__('invoice.confirm'))
                     ->action(function (Invoice $record) {
                         $invoiceService = new InvoiceService();
                         try {
-                            $invoiceService->confirm($record, auth()->user());
+                            $invoiceService->confirm($record, Auth::user());
                             Notification::make()
                                 ->title(__('invoice.invoice_confirmed_successfully'))
                                 ->success()
@@ -267,7 +285,7 @@ class InvoiceResource extends Resource
                     ->action(function (Invoice $record, array $data) {
                         $invoiceService = new InvoiceService();
                         try {
-                            $invoiceService->resetToDraft($record, auth()->user(), $data['reason']);
+                            $invoiceService->resetToDraft($record, Auth::user(), $data['reason']);
                             Notification::make()
                                 ->title(__('invoice.invoice_reset_to_draft_successfully'))
                                 ->success()

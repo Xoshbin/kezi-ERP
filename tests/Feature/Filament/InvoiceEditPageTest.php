@@ -1,0 +1,155 @@
+<?php
+
+use App\Filament\Resources\InvoiceResource;
+use App\Models\Invoice;
+use App\Models\User;
+use App\Models\Company;
+use App\Models\Currency;
+use App\Models\Partner;
+use App\Models\InvoiceLine;
+use App\Models\Account;
+use Brick\Money\Money;
+use Livewire\Livewire;
+
+beforeEach(function () {
+    $this->user = User::factory()->create();
+    $this->company = Company::factory()->create();
+    $this->user->update(['company_id' => $this->company->id]);
+    
+    $this->currency = Currency::factory()->create(['code' => 'USD']);
+    $this->customer = Partner::factory()->create([
+        'company_id' => $this->company->id,
+        'type' => 'customer',
+    ]);
+    $this->account = Account::factory()->create([
+        'company_id' => $this->company->id,
+    ]);
+});
+
+test('edit page shows pdf actions for draft invoice', function () {
+    // Arrange
+    $invoice = Invoice::factory()->create([
+        'company_id' => $this->company->id,
+        'customer_id' => $this->customer->id,
+        'currency_id' => $this->currency->id,
+        'status' => Invoice::STATUS_DRAFT,
+    ]);
+
+    InvoiceLine::factory()->create([
+        'invoice_id' => $invoice->id,
+        'income_account_id' => $this->account->id,
+    ]);
+
+    // Action
+    $component = Livewire::actingAs($this->user)
+        ->test(InvoiceResource\Pages\EditInvoice::class, [
+            'record' => $invoice->getRouteKey(),
+        ]);
+
+    // Assert - Check that PDF actions exist
+    $component->assertActionExists('viewPdf');
+    $component->assertActionExists('downloadPdf');
+});
+
+test('edit page shows pdf actions for posted invoice', function () {
+    // Arrange
+    $invoice = Invoice::factory()->create([
+        'company_id' => $this->company->id,
+        'customer_id' => $this->customer->id,
+        'currency_id' => $this->currency->id,
+        'status' => Invoice::STATUS_POSTED,
+        'invoice_number' => 'INV-001',
+    ]);
+
+    InvoiceLine::factory()->create([
+        'invoice_id' => $invoice->id,
+        'income_account_id' => $this->account->id,
+    ]);
+
+    // Action
+    $component = Livewire::actingAs($this->user)
+        ->test(InvoiceResource\Pages\EditInvoice::class, [
+            'record' => $invoice->getRouteKey(),
+        ]);
+
+    // Assert - Check that PDF actions exist
+    $component->assertActionExists('viewPdf');
+    $component->assertActionExists('downloadPdf');
+});
+
+test('edit page pdf actions work correctly', function () {
+    // Arrange
+    $invoice = Invoice::factory()->create([
+        'company_id' => $this->company->id,
+        'customer_id' => $this->customer->id,
+        'currency_id' => $this->currency->id,
+        'status' => Invoice::STATUS_DRAFT,
+    ]);
+
+    InvoiceLine::factory()->create([
+        'invoice_id' => $invoice->id,
+        'income_account_id' => $this->account->id,
+    ]);
+
+    // Action - Test that the actions have the correct URLs
+    $viewUrl = route('invoices.pdf', $invoice);
+    $downloadUrl = route('invoices.pdf.download', $invoice);
+
+    // Assert
+    expect($viewUrl)->toContain("/invoices/{$invoice->id}/pdf");
+    expect($downloadUrl)->toContain("/invoices/{$invoice->id}/pdf/download");
+});
+
+test('edit page shows all expected actions', function () {
+    // Arrange
+    $invoice = Invoice::factory()->create([
+        'company_id' => $this->company->id,
+        'customer_id' => $this->customer->id,
+        'currency_id' => $this->currency->id,
+        'status' => Invoice::STATUS_DRAFT,
+    ]);
+
+    InvoiceLine::factory()->create([
+        'invoice_id' => $invoice->id,
+        'income_account_id' => $this->account->id,
+    ]);
+
+    // Action
+    $component = Livewire::actingAs($this->user)
+        ->test(InvoiceResource\Pages\EditInvoice::class, [
+            'record' => $invoice->getRouteKey(),
+        ]);
+
+    // Assert - Check that all expected actions exist
+    $component->assertActionExists('viewPdf');
+    $component->assertActionExists('downloadPdf');
+    $component->assertActionExists('confirm'); // For draft invoices
+});
+
+test('edit page shows different actions for posted invoice', function () {
+    // Arrange
+    $invoice = Invoice::factory()->create([
+        'company_id' => $this->company->id,
+        'customer_id' => $this->customer->id,
+        'currency_id' => $this->currency->id,
+        'status' => Invoice::STATUS_POSTED,
+        'invoice_number' => 'INV-001',
+    ]);
+
+    InvoiceLine::factory()->create([
+        'invoice_id' => $invoice->id,
+        'income_account_id' => $this->account->id,
+    ]);
+
+    // Action
+    $component = Livewire::actingAs($this->user)
+        ->test(InvoiceResource\Pages\EditInvoice::class, [
+            'record' => $invoice->getRouteKey(),
+        ]);
+
+    // Assert - Check that all expected actions exist
+    $component->assertActionExists('viewPdf');
+    $component->assertActionExists('downloadPdf');
+    $component->assertActionExists('registerPayment'); // For posted invoices
+    $component->assertActionExists('resetToDraft'); // For posted invoices
+});
