@@ -138,8 +138,17 @@ class AdjustmentDocumentResource extends Resource
                         Forms\Components\Select::make('original_invoice_id')
                             ->label('Original Invoice')
                             ->searchable()
-                            ->preload()
-                            ->relationship('originalInvoice', 'invoice_number')
+                            ->getSearchResultsUsing(fn(string $search): array =>
+                                Invoice::where(function($query) use ($search) {
+                                    $query->where('invoice_number', 'like', "%{$search}%")
+                                          ->orWhere('id', 'like', "%{$search}%");
+                                })
+                                ->limit(50)
+                                ->get()
+                                ->mapWithKeys(fn($invoice) => [$invoice->id => $invoice->invoice_number ?: 'Draft Invoice #' . $invoice->id])
+                                ->toArray()
+                            )
+                            ->getOptionLabelUsing(fn($value): ?string => Invoice::find($value)?->invoice_number ?: 'Draft Invoice #' . $value)
                             ->visible(fn (Get $get) => $get('document_link_type') === 'invoice')
                             ->reactive()
                             ->afterStateUpdated(function ($state, Set $set) {
@@ -267,10 +276,10 @@ class AdjustmentDocumentResource extends Resource
                                         Tax::whereRaw('LOWER(JSON_UNQUOTE(JSON_EXTRACT(name, "$.' . app()->getLocale() . '"))) LIKE ?', ['%' . strtolower($search) . '%'])
                                             ->limit(50)
                                             ->get()
-                                            ->mapWithKeys(fn($tax) => [$tax->id => $tax->getTranslation('name', app()->getLocale())])
+                                            ->mapWithKeys(fn($tax) => [$tax->id => $tax->getTranslation('name', app()->getLocale()) ?: $tax->name])
                                             ->toArray()
                                     )
-                                    ->getOptionLabelUsing(fn($value): ?string => Tax::find($value)?->getTranslation('name', app()->getLocale()))
+                                    ->getOptionLabelUsing(fn($value): ?string => Tax::find($value)?->getTranslation('name', app()->getLocale()) ?: Tax::find($value)?->name)
                                     ->placeholder('No tax')
                                     ->columnSpan([
                                         'default' => 1,
@@ -284,10 +293,10 @@ class AdjustmentDocumentResource extends Resource
                                         Account::whereRaw('LOWER(JSON_UNQUOTE(JSON_EXTRACT(name, "$.' . app()->getLocale() . '"))) LIKE ?', ['%' . strtolower($search) . '%'])
                                             ->limit(50)
                                             ->get()
-                                            ->mapWithKeys(fn($account) => [$account->id => $account->getTranslation('name', app()->getLocale())])
+                                            ->mapWithKeys(fn($account) => [$account->id => $account->getTranslation('name', app()->getLocale()) ?: $account->name])
                                             ->toArray()
                                     )
-                                    ->getOptionLabelUsing(fn($value): ?string => Account::find($value)?->getTranslation('name', app()->getLocale()))
+                                    ->getOptionLabelUsing(fn($value): ?string => Account::find($value)?->getTranslation('name', app()->getLocale()) ?: Account::find($value)?->name)
                                     ->required()
                                     ->placeholder('Select account...')
                                     ->columnSpan([
