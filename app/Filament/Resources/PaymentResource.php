@@ -209,47 +209,47 @@ class PaymentResource extends Resource
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
-                Tables\Actions\Action::make('cancel')
-                    ->label('Cancel Payment')
-                    ->color('danger')
-                    ->requiresConfirmation()
-                    // This action is only visible for confirmed, but not yet reconciled, payments
-                    ->visible(fn(\App\Models\Payment $record): bool => $record->status === 'Confirmed')
-                    ->action(function (\App\Models\Payment $record, \App\Services\PaymentService $paymentService) {
-                        try {
-                            $paymentService->cancel($record, auth()->user(), 'Payment cancelled via table action');
-                            \Filament\Notifications\Notification::make()
-                                ->title('Payment Cancelled Successfully')
-                                ->success()
-                                ->send();
-                        } catch (\Exception $e) {
-                            \Filament\Notifications\Notification::make()
-                                ->title('Error Cancelling Payment')
-                                ->body($e->getMessage())
-                                ->danger()
-                                ->send();
-                        }
-                    }),
-                Action::make('confirm')
-                    ->label(__('payment.action.confirm.label'))
-                    ->action(function (Payment $record) {
-                        $paymentService = app(PaymentService::class);
-                        try {
-                            $paymentService->confirm($record, Auth::user());
-                            Notification::make()
-                                ->title(__('payment.action.confirm.notification.success'))
-                                ->success()
-                                ->send();
-                        } catch (\Exception $e) {
-                            Notification::make()
-                                ->title(__('payment.action.confirm.notification.error'))
-                                ->body($e->getMessage())
-                                ->danger()
-                                ->send();
-                        }
-                    })
-                    ->requiresConfirmation()
-                    ->visible(fn(Payment $record) => $record->status === 'Draft'),
+                // Tables\Actions\Action::make('cancel')
+                //     ->label('Cancel Payment')
+                //     ->color('danger')
+                //     ->requiresConfirmation()
+                //     // This action is only visible for confirmed, but not yet reconciled, payments
+                //     ->visible(fn(\App\Models\Payment $record): bool => $record->status === 'Confirmed')
+                //     ->action(function (\App\Models\Payment $record, \App\Services\PaymentService $paymentService) {
+                //         try {
+                //             $paymentService->cancel($record, auth()->user(), 'Payment cancelled via table action');
+                //             \Filament\Notifications\Notification::make()
+                //                 ->title('Payment Cancelled Successfully')
+                //                 ->success()
+                //                 ->send();
+                //         } catch (\Exception $e) {
+                //             \Filament\Notifications\Notification::make()
+                //                 ->title('Error Cancelling Payment')
+                //                 ->body($e->getMessage())
+                //                 ->danger()
+                //                 ->send();
+                //         }
+                //     }),
+                // Action::make('confirm')
+                //     ->label(__('payment.action.confirm.label'))
+                //     ->action(function (Payment $record) {
+                //         $paymentService = app(PaymentService::class);
+                //         try {
+                //             $paymentService->confirm($record, Auth::user());
+                //             Notification::make()
+                //                 ->title(__('payment.action.confirm.notification.success'))
+                //                 ->success()
+                //                 ->send();
+                //         } catch (\Exception $e) {
+                //             Notification::make()
+                //                 ->title(__('payment.action.confirm.notification.error'))
+                //                 ->body($e->getMessage())
+                //                 ->danger()
+                //                 ->send();
+                //         }
+                //     })
+                //     ->requiresConfirmation()
+                //     ->visible(fn(Payment $record) => $record->status === 'Draft'),
                 Tables\Actions\DeleteAction::make()
                     ->action(function (Payment $record) {
                         app(PaymentService::class)->delete($record);
