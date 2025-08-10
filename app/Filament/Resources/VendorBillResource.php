@@ -114,6 +114,8 @@ class VendorBillResource extends Resource
                         ->live()
                         ->reorderable(true)
                         ->minItems(1)
+                        ->disabled(fn (?VendorBill $record) => $record ? $record->status !== VendorBillStatus::Draft : false)
+                        ->deletable(fn (?VendorBill $record) => $record === null || $record->status === VendorBillStatus::Draft)
                         ->schema([
                             Forms\Components\Select::make('product_id')
                                 ->label(__('vendor_bill.product'))
