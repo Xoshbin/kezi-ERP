@@ -2,26 +2,27 @@
 
 namespace App\Filament\Resources;
 
-use App\Enums\Purchases\VendorBillStatus;
-use App\Filament\Forms\Components\MoneyInput;
-use App\Filament\Resources\VendorBillResource\Pages;
-use App\Filament\Tables\Columns\MoneyColumn;
+use App\Models\Tax;
+use Filament\Forms;
+use Filament\Tables;
 use App\Models\Account;
-use App\Models\AnalyticAccount;
 use App\Models\Company;
 use App\Models\Product;
-use App\Models\Tax;
-use App\Models\VendorBill;
-use App\Rules\NotInLockedPeriod;
-use App\Services\VendorBillService;
-use Filament\Forms;
-use Filament\Forms\Components\Section;
 use Filament\Forms\Form;
-use Filament\Resources\Resource;
-use Filament\Tables;
-use Filament\Tables\Actions\Action;
+use App\Models\VendorBill;
 use Filament\Tables\Table;
+use App\Models\AnalyticAccount;
+use App\Rules\NotInLockedPeriod;
+use Filament\Resources\Resource;
+use App\Enums\Shared\PaymentState;
+use App\Services\VendorBillService;
+use Filament\Tables\Actions\Action;
 use Illuminate\Support\Facades\Auth;
+use Filament\Forms\Components\Section;
+use App\Enums\Purchases\VendorBillStatus;
+use App\Filament\Tables\Columns\MoneyColumn;
+use App\Filament\Forms\Components\MoneyInput;
+use App\Filament\Resources\VendorBillResource\Pages;
 
 class VendorBillResource extends Resource
 {
@@ -100,7 +101,7 @@ class VendorBillResource extends Resource
                         ->label(__('vendor_bill.status'))
                         ->options(
                             collect(VendorBillStatus::cases())
-                                ->mapWithKeys(fn (VendorBillStatus $status) => [$status->value => $status->label()])
+                                ->mapWithKeys(fn(VendorBillStatus $status) => [$status->value => $status->label()])
                         )
                         ->disabled()
                         ->dehydrated(false),
@@ -114,8 +115,8 @@ class VendorBillResource extends Resource
                         ->live()
                         ->reorderable(true)
                         ->minItems(1)
-                        ->disabled(fn (?VendorBill $record) => $record ? $record->status !== VendorBillStatus::Draft : false)
-                        ->deletable(fn (?VendorBill $record) => $record === null || $record->status === VendorBillStatus::Draft)
+                        ->disabled(fn(?VendorBill $record) => $record ? $record->status !== VendorBillStatus::Draft : false)
+                        ->deletable(fn(?VendorBill $record) => $record === null || $record->status === VendorBillStatus::Draft)
                         ->schema([
                             Forms\Components\Select::make('product_id')
                                 ->label(__('vendor_bill.product'))
@@ -153,7 +154,8 @@ class VendorBillResource extends Resource
                             Forms\Components\Select::make('tax_id')
                                 ->label(__('vendor_bill.tax'))
                                 ->searchable()
-                                ->getSearchResultsUsing(fn(string $search): array =>
+                                ->getSearchResultsUsing(
+                                    fn(string $search): array =>
                                     Tax::whereRaw('LOWER(JSON_UNQUOTE(JSON_EXTRACT(name, "$.' . app()->getLocale() . '"))) LIKE ?', ['%' . strtolower($search) . '%'])
                                         ->limit(50)
                                         ->get()
@@ -165,7 +167,8 @@ class VendorBillResource extends Resource
                             Forms\Components\Select::make('expense_account_id')
                                 ->label(__('vendor_bill.expense_account'))
                                 ->searchable()
-                                ->getSearchResultsUsing(fn(string $search): array =>
+                                ->getSearchResultsUsing(
+                                    fn(string $search): array =>
                                     Account::whereRaw('LOWER(JSON_UNQUOTE(JSON_EXTRACT(name, "$.' . app()->getLocale() . '"))) LIKE ?', ['%' . strtolower($search) . '%'])
                                         ->limit(50)
                                         ->get()
@@ -208,15 +211,15 @@ class VendorBillResource extends Resource
                         ])
                         ->maxSize(10240) // 10MB max file size
                         ->maxFiles(10)
-                        ->disabled(fn (?VendorBill $record) => $record ? $record->status !== VendorBillStatus::Draft : false)
+                        ->disabled(fn(?VendorBill $record) => $record ? $record->status !== VendorBillStatus::Draft : false)
                         ->helperText(__('vendor_bill.attachments_helper'))
                         ->downloadable()
                         ->openable()
-                        ->deletable(fn (?VendorBill $record) => $record === null || $record->status === VendorBillStatus::Draft)
+                        ->deletable(fn(?VendorBill $record) => $record === null || $record->status === VendorBillStatus::Draft)
                         ->reorderable(),
                 ])
                 ->collapsible()
-                ->collapsed(fn (?VendorBill $record) => $record && $record->attachments()->count() === 0),
+                ->collapsed(fn(?VendorBill $record) => $record && $record->attachments()->count() === 0),
         ]);
     }
 
@@ -239,7 +242,8 @@ class VendorBillResource extends Resource
                     ->label(__('vendor_bill.bill_date'))
                     ->date()
                     ->sortable(),
-                Tables\Columns\BadgeColumn::make('status')
+                Tables\Columns\TextColumn::make('status')
+                    ->badge()
                     ->label(__('vendor_bill.status'))
                     ->colors([
                         'success' => VendorBillStatus::Posted,
@@ -247,6 +251,14 @@ class VendorBillResource extends Resource
                         'warning' => VendorBillStatus::Draft,
                     ])
                     ->searchable(),
+                Tables\Columns\TextColumn::make('paymentState')
+                    ->label('Payment State')
+                    // `formatStateUsing` receives the Enum object from the accessor.
+                    // We then call the `label()` method on it.
+                    ->formatStateUsing(fn(PaymentState $state): string => $state->label())
+                    ->badge()
+                    // The `color` closure also receives the Enum object directly.
+                    ->color(fn(PaymentState $state): string => $state->color()),
                 MoneyColumn::make('total_amount')
                     ->label(__('vendor_bill.total_amount'))
                     ->sortable(),

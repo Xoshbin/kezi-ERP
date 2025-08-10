@@ -129,6 +129,12 @@ return [
         'canceled' => 'Canceled',
     ],
 
+    'payment_state' => [
+        'not_paid' => 'Not Paid',
+        'partially_paid' => 'Partially Paid',
+        'paid' => 'Paid',
+    ],
+
     'tax_type' => [
         'sales' => 'Sales',
         'purchase' => 'Purchase',

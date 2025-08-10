@@ -16,6 +16,7 @@ return [
     'invoice_date' => 'ڕێکەوتی پسووڵە',
     'due_date' => 'ڕێکەوتی شایستە',
     'status' => 'دۆخ',
+    'payment_state' => 'دۆخی پارەدان',
     'invoice_lines' => 'هێڵەکانی پسووڵە',
     'product' => 'بەرهەم',
     'description' => 'پێناسە',

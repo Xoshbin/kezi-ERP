@@ -2,7 +2,9 @@
 
 namespace App\Models;
 
+use Brick\Money\Money;
 use App\Casts\MoneyCast;
+use App\Traits\HasPaymentState;
 use App\Observers\AuditLogObserver;
 use App\Observers\VendorBillObserver;
 use Illuminate\Database\Eloquent\Model;
@@ -70,7 +72,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 #[ObservedBy([AuditLogObserver::class, VendorBillObserver::class])]
 class VendorBill extends Model
 {
-    use HasFactory;
+    use HasFactory, HasPaymentState;
 
     /**
      * The database table associated with the model.
@@ -283,4 +285,6 @@ class VendorBill extends Model
     {
         return $this->isDraft();
     }
+
+
 }

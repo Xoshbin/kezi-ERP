@@ -16,6 +16,7 @@ return [
     'accounting_date' => 'ڕێکەوتی ژمێریاری',
     'due_date' => 'ڕێکەوتی شایستە',
     'status' => 'دۆخ',
+    'payment_state' => 'دۆخی پارەدان',
     'lines' => 'هێڵەکان',
     'product' => 'بەرهەم',
     'description' => 'پێناسە',

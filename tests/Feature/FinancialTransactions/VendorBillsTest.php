@@ -5,16 +5,20 @@ namespace Tests\Feature\FinancialTransactions;
 use Brick\Money\Money;
 use App\Models\Account;
 use App\Models\Partner;
+use App\Models\Payment;
 use App\Models\Product;
 use App\Models\LockDate;
 use App\Models\VendorBill;
 use Tests\Traits\MocksTime;
 use App\Models\JournalEntry;
 use App\Models\StockLocation;
+use App\Enums\Shared\PaymentState;
 use App\Events\VendorBillConfirmed;
 use App\Services\VendorBillService;
+use App\Enums\Payments\PaymentStatus;
 use Illuminate\Support\Facades\Event;
 use Tests\Traits\WithConfiguredCompany;
+use App\Enums\Purchases\VendorBillStatus;
 use App\Enums\Inventory\StockLocationType;
 use App\Exceptions\PeriodIsLockedException;
 use App\Exceptions\UpdateNotAllowedException;
@@ -26,7 +30,6 @@ use App\DataTransferObjects\Purchases\CreateVendorBillDTO;
 use App\DataTransferObjects\Purchases\UpdateVendorBillDTO;
 use App\Actions\Purchases\CreateVendorBillLineAction; // Import the Action
 use App\DataTransferObjects\Purchases\CreateVendorBillLineDTO; // Import the DTO
-use App\Enums\Purchases\VendorBillStatus;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class, MocksTime::class);
 
@@ -150,3 +153,34 @@ test('a vendor bill cannot be created in a locked period', function () {
     expect(fn() => app(CreateVendorBillAction::class)->execute($vendorBillDto))
         ->toThrow(PeriodIsLockedException::class);
 });
+
+test('it correctly computes its payment state via a many-to-many relationship', function (Money $paidAmount, Money $totalAmount, PaymentState $expectedState) {
+    // Arrange: Create the bill and a payment.
+    // Assuming $this->company->currency is available from a test setup trait.
+    $vendorBill = VendorBill::factory()->create([
+        'total_amount' => $totalAmount,
+        'currency_id' => $this->company->currency->id,
+    ]);
+
+    if (! $paidAmount->isZero()) {
+        $payment = Payment::factory()->create([
+            'currency_id' => $this->company->currency->id,
+            'status' => PaymentStatus::Confirmed // Only confirmed/reconciled payments count toward payment state
+        ]);
+
+        // Action: Attach the payment and explicitly provide the pivot data
+        // in the integer format the database expects.
+        $vendorBill->payments()->attach($payment->id, [
+            'amount_applied' => $paidAmount->getMinorAmount()->toInt() // <-- THE FIX
+        ]);
+    }
+
+    // Assert: Refresh the model to ensure the computed attribute is re-evaluated.
+    expect($vendorBill->refresh()->paymentState)->toBe($expectedState);
+
+})->with([
+    'not paid' => [Money::of(0, 'IQD'), Money::of(150000, 'IQD'), PaymentState::NotPaid],
+    'partially paid' => [Money::of(75000, 'IQD'), Money::of(150000, 'IQD'), PaymentState::PartiallyPaid],
+    'fully paid' => [Money::of(150000, 'IQD'), Money::of(150000, 'IQD'), PaymentState::Paid],
+    'overpaid' => [Money::of(160000, 'IQD'), Money::of(150000, 'IQD'), PaymentState::Paid],
+]);
