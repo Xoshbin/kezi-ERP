@@ -8,6 +8,7 @@ use App\Filament\Resources\CompanyResource\RelationManagers;
 use App\Filament\Resources\CompanyResource\RelationManagers\AccountsRelationManager;
 use App\Filament\Resources\CompanyResource\RelationManagers\UsersRelationManager;
 use App\Models\Company;
+use App\Models\Currency;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -53,14 +54,69 @@ class CompanyResource extends Resource
                 Forms\Components\Select::make('currency_id')
                     ->label(__('company.currency_id'))
                     ->relationship('currency', 'name')
-                    ->required(),
+                    ->required()
+                    ->searchable()
+                    ->createOptionForm([
+                        Forms\Components\TextInput::make('code')
+                            ->label(__('currency.code'))
+                            ->required()
+                            ->maxLength(255),
+                        Forms\Components\TextInput::make('name')
+                            ->label(__('currency.name'))
+                            ->required()
+                            ->maxLength(255),
+                        Forms\Components\TextInput::make('symbol')
+                            ->label(__('currency.symbol'))
+                            ->required()
+                            ->maxLength(5),
+                        Forms\Components\TextInput::make('exchange_rate')
+                            ->label(__('currency.exchange_rate'))
+                            ->required()
+                            ->numeric()
+                            ->default(1),
+                        Forms\Components\Toggle::make('is_active')
+                            ->label(__('currency.is_active'))
+                            ->required()
+                            ->default(true),
+                    ])
+                    ->createOptionModalHeading(__('common.modal_title_create_currency'))
+                    ->createOptionAction(function (Forms\Components\Actions\Action $action) {
+                        return $action
+                            ->modalWidth('lg');
+                    }),
                 Forms\Components\TextInput::make('fiscal_country')
                     ->label(__('company.fiscal_country'))
                     ->required()
                     ->maxLength(255),
                 Forms\Components\Select::make('parent_company_id')
                     ->label(__('company.parent_company_id'))
-                    ->relationship('parentCompany', 'name'),
+                    ->relationship('parentCompany', 'name')
+                    ->searchable()
+                    ->createOptionForm([
+                        Forms\Components\TextInput::make('name')
+                            ->label(__('company.name'))
+                            ->required()
+                            ->maxLength(255),
+                        Forms\Components\Textarea::make('address')
+                            ->label(__('company.address'))
+                            ->columnSpanFull(),
+                        Forms\Components\TextInput::make('tax_id')
+                            ->label(__('company.tax_id'))
+                            ->maxLength(255),
+                        Forms\Components\Select::make('currency_id')
+                            ->label(__('company.currency_id'))
+                            ->relationship('currency', 'name')
+                            ->required(),
+                        Forms\Components\TextInput::make('fiscal_country')
+                            ->label(__('company.fiscal_country'))
+                            ->required()
+                            ->maxLength(255),
+                    ])
+                    ->createOptionModalHeading(__('common.modal_title_create_company'))
+                    ->createOptionAction(function (Forms\Components\Actions\Action $action) {
+                        return $action
+                            ->modalWidth('lg');
+                    }),
                 Forms\Components\Select::make('default_accounts_payable_id')
                     ->relationship('defaultAccountsPayable', 'name')
                     ->searchable()
