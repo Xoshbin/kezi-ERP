@@ -297,29 +297,29 @@ class InvoiceResource extends Resource
                     })
                     ->requiresConfirmation()
                     ->visible(fn(Invoice $record) => $record->status === InvoiceStatus::Draft),
-                Action::make('resetToDraft')
-                    ->label(__('invoice.reset_to_draft'))
-                    ->action(function (Invoice $record, array $data) {
-                        $invoiceService = app(InvoiceService::class);
-                        try {
-                            $invoiceService->resetToDraft($record, Auth::user(), $data['reason']);
-                            Notification::make()
-                                ->title(__('invoice.invoice_reset_to_draft_successfully'))
-                                ->success()
-                                ->send();
-                        } catch (\Exception $e) {
-                            Notification::make()
-                                ->title(__('invoice.error_resetting_invoice_to_draft'))
-                                ->body($e->getMessage())
-                                ->danger()
-                                ->send();
-                        }
-                    })
-                    ->form([
-                        Forms\Components\Textarea::make('reason')->label(__('invoice.reason'))->required(),
-                    ])
-                    ->requiresConfirmation()
-                    ->visible(fn(Invoice $record) => $record->status === InvoiceStatus::Posted),
+                // Action::make('resetToDraft')
+                //     ->label(__('invoice.reset_to_draft'))
+                //     ->action(function (Invoice $record, array $data) {
+                //         $invoiceService = app(InvoiceService::class);
+                //         try {
+                //             $invoiceService->resetToDraft($record, Auth::user(), $data['reason']);
+                //             Notification::make()
+                //                 ->title(__('invoice.invoice_reset_to_draft_successfully'))
+                //                 ->success()
+                //                 ->send();
+                //         } catch (\Exception $e) {
+                //             Notification::make()
+                //                 ->title(__('invoice.error_resetting_invoice_to_draft'))
+                //                 ->body($e->getMessage())
+                //                 ->danger()
+                //                 ->send();
+                //         }
+                //     })
+                //     ->form([
+                //         Forms\Components\Textarea::make('reason')->label(__('invoice.reason'))->required(),
+                //     ])
+                //     ->requiresConfirmation()
+                //     ->visible(fn(Invoice $record) => $record->status === InvoiceStatus::Posted),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
