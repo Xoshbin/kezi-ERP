@@ -95,6 +95,7 @@ class JournalEntryResource extends Resource
                     ->columnSpanFull(),
                 Repeater::make('lines')
                     ->label(__('journal_entry.lines'))
+                    ->disabled(fn (?JournalEntry $record) => $record && $record->status !== 'draft')
                     ->deletable(fn (?JournalEntry $record) => !$record || !$record->is_posted)
                     ->schema([
                         Forms\Components\Select::make('account_id')
