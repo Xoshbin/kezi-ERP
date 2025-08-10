@@ -37,7 +37,7 @@ test('it throws an exception if the period is locked', function () {
     // Given
     LockDate::factory()->create([
         'company_id' => $this->company->id,
-        'lock_type' => LockDateType::ALL_USERS->value,
+        'lock_type' => LockDateType::AllUsers->value,
         'locked_until' => '2023-12-31',
     ]);
 
@@ -62,7 +62,7 @@ test('it throws an exception if the date is the same as the lock date', function
     $lockDate = '2023-12-31';
     LockDate::factory()->create([
         'company_id' => $this->company->id,
-        'lock_type' => LockDateType::HARD_LOCK->value,
+        'lock_type' => LockDateType::HardLock->value,
         'locked_until' => $lockDate,
     ]);
 

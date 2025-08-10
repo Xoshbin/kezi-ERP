@@ -25,8 +25,8 @@ class LockDateService
     public function enforce(Company $company, Carbon $date): void
     {
         $lockTypes = [
-            LockDateType::ALL_USERS->value,
-            LockDateType::HARD_LOCK->value,
+            LockDateType::AllUsers->value,
+            LockDateType::HardLock->value,
         ];
 
         foreach ($lockTypes as $lockType) {

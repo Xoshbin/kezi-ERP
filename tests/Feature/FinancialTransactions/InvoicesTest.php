@@ -172,7 +172,7 @@ test('an invoice cannot be created or posted in a locked period', function () {
     // Arrange: Lock the company's books for any date in the past.
     LockDate::factory()->for($this->company)->create([
         'locked_until' => now()->subDay(),
-        'lock_type' => \App\Enums\Accounting\LockDateType::ALL_USERS,
+        'lock_type' => \App\Enums\Accounting\LockDateType::AllUsers,
     ]);
 
     // Arrange: Prepare invoice DTO with a date that falls within the locked period.
