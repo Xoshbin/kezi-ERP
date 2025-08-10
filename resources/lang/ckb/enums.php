@@ -127,4 +127,10 @@ return [
         'reconciled' => 'ڕێکخراوە',
         'canceled' => 'هەڵوەشاوە',
     ],
+
+    'tax_type' => [
+        'sales' => 'فرۆشتن',
+        'purchase' => 'کڕین',
+        'both' => 'هەردووک',
+    ],
 ];
