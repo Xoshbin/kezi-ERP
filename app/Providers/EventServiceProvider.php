@@ -6,6 +6,7 @@ use App\Events\VendorBillConfirmed;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Auth\Events\Registered;
 use App\Events\Inventory\StockMoveConfirmed;
+use App\Listeners\Asset\CreateAssetFromVendorBillListener;
 use App\Listeners\Inventory\HandleStockMoveConfirmation;
 use App\Listeners\Inventory\ProcessInventoryForConfirmedBill;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
@@ -27,6 +28,7 @@ class EventServiceProvider extends ServiceProvider
         ],
         VendorBillConfirmed::class => [
             ProcessInventoryForConfirmedBill::class,
+            CreateAssetFromVendorBillListener::class,
         ],
     ];
 
