@@ -5,6 +5,7 @@ return [
     'groups' => [
         'core_accounting' => 'Core Accounting',
         'sales_purchases' => 'Sales & Purchases',
+        'inventory' => 'Inventory Management',
         'banking_cash' => 'Banking & Cash',
         'financial_planning' => 'Financial Planning',
         'reports' => 'Reports',
