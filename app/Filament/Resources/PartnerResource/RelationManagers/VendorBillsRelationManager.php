@@ -72,7 +72,7 @@ class VendorBillsRelationManager extends RelationManager
                 //
             ])
             ->headerActions([
-                Tables\Actions\CreateAction::make(),
+                // Create action removed - vendor bills should be created from VendorBill resource
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),

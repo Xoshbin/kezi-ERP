@@ -69,7 +69,7 @@ class InvoicesRelationManager extends RelationManager
                 //
             ])
             ->headerActions([
-                Tables\Actions\CreateAction::make(),
+                // Create action removed - invoices should be created from Invoice resource
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
