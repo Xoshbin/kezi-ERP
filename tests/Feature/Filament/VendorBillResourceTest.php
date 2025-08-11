@@ -155,21 +155,26 @@ it('can confirm a vendor bill', function () {
     expect($vendorBill->status)->toBe(VendorBillStatus::Posted);
 });
 
-it('can reset a vendor bill to draft', function () {
-    $vendorBill = VendorBill::factory()->create([
-        'company_id' => $this->company->id,
-        'status' => VendorBillStatus::Posted,
-        'posted_at' => now(),
-    ]);
+// TODO:: In future if you pland to add back the reset button just enable the test below and enable the action button in the VendorBill resource
+/*
+ * Temprarily disable resetToDraft button since we are not sure about this feature wheter it's good or no
+ * the feature is woking and passing tests */
 
-    livewire(VendorBillResource\Pages\EditVendorBill::class, [
-        'record' => $vendorBill->getRouteKey(),
-    ])
-        ->callAction('resetToDraft', data: [
-            'reason' => 'Test reason',
-        ])
-        ->assertHasNoErrors();
+// it('can reset a vendor bill to draft', function () {
+//     $vendorBill = VendorBill::factory()->create([
+//         'company_id' => $this->company->id,
+//         'status' => VendorBillStatus::Posted,
+//         'posted_at' => now(),
+//     ]);
 
-    $vendorBill->refresh();
-    expect($vendorBill->status)->toBe(VendorBillStatus::Draft);
-});
+//     livewire(VendorBillResource\Pages\EditVendorBill::class, [
+//         'record' => $vendorBill->getRouteKey(),
+//     ])
+//         ->callAction('resetToDraft', data: [
+//             'reason' => 'Test reason',
+//         ])
+//         ->assertHasNoErrors();
+
+//     $vendorBill->refresh();
+//     expect($vendorBill->status)->toBe(VendorBillStatus::Draft);
+// });

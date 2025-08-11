@@ -1,13 +1,18 @@
 <?php
 
-use App\Filament\Resources\InvoiceResource;
-use App\Models\Product;
+use Brick\Money\Money;
+use App\Models\Account;
 use App\Models\Invoice;
 use App\Models\Partner;
+use App\Models\Product;
+use App\Models\JournalEntry;
 use App\Enums\Sales\InvoiceStatus;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Tests\Traits\WithConfiguredCompany;
 use function Pest\Livewire\livewire;
+use Tests\Traits\WithConfiguredCompany;
+use App\Filament\Resources\InvoiceResource;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use App\Filament\Resources\InvoiceResource\Pages\EditInvoice;
+use App\Filament\Resources\InvoiceResource\Pages\CreateInvoice;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);
 
@@ -143,58 +148,62 @@ it('can confirm an invoice', function () {
     expect($invoice->status)->toBe(InvoiceStatus::Posted);
 });
 
-it('can reset an invoice to draft', function () {
-    // Create accounts for the journal entry
-    $receivableAccount = \App\Models\Account::factory()->create([
-        'company_id' => $this->company->id,
-        'type' => 'receivable',
-        'name' => 'Accounts Receivable',
-    ]);
+// TODO:: In future if you pland to add back the reset button just enable the test below and enable the action button in the Invoice resource
+/*
+ * Temprarily disable reset button since we are not sure about this feature wheter it's good or no
+ * the feature is woking and passing tests */
+// it('can reset an invoice to draft', function () {
+//     // Create accounts for the journal entry
+//     $receivableAccount = \App\Models\Account::factory()->create([
+//         'company_id' => $this->company->id,
+//         'type' => 'receivable',
+//         'name' => 'Accounts Receivable',
+//     ]);
 
-    $salesAccount = \App\Models\Account::factory()->create([
-        'company_id' => $this->company->id,
-        'type' => 'income',
-        'name' => 'Sales Revenue',
-    ]);
+//     $salesAccount = \App\Models\Account::factory()->create([
+//         'company_id' => $this->company->id,
+//         'type' => 'income',
+//         'name' => 'Sales Revenue',
+//     ]);
 
-    // Create a proper journal entry with lines for the invoice
-    $journalEntry = \App\Models\JournalEntry::factory()->create([
-        'company_id' => $this->company->id,
-        'is_posted' => true,
-    ]);
+//     // Create a proper journal entry with lines for the invoice
+//     $journalEntry = \App\Models\JournalEntry::factory()->create([
+//         'company_id' => $this->company->id,
+//         'is_posted' => true,
+//     ]);
 
-    // Add lines to the journal entry
-    $journalEntry->lines()->create([
-        'account_id' => $receivableAccount->id,
-        'debit' => \Brick\Money\Money::of(100, $this->company->currency->code),
-        'credit' => \Brick\Money\Money::of(0, $this->company->currency->code),
-        'description' => 'Test line',
-    ]);
+//     // Add lines to the journal entry
+//     $journalEntry->lines()->create([
+//         'account_id' => $receivableAccount->id,
+//         'debit' => \Brick\Money\Money::of(100, $this->company->currency->code),
+//         'credit' => \Brick\Money\Money::of(0, $this->company->currency->code),
+//         'description' => 'Test line',
+//     ]);
 
-    $journalEntry->lines()->create([
-        'account_id' => $salesAccount->id,
-        'debit' => \Brick\Money\Money::of(0, $this->company->currency->code),
-        'credit' => \Brick\Money\Money::of(100, $this->company->currency->code),
-        'description' => 'Test line 2',
-    ]);
+//     $journalEntry->lines()->create([
+//         'account_id' => $salesAccount->id,
+//         'debit' => \Brick\Money\Money::of(0, $this->company->currency->code),
+//         'credit' => \Brick\Money\Money::of(100, $this->company->currency->code),
+//         'description' => 'Test line 2',
+//     ]);
 
-    $invoice = Invoice::factory()->withLines(1)->create([
-        'company_id' => $this->company->id,
-        'status' => InvoiceStatus::Posted,
-        'posted_at' => now(),
-        'invoice_number' => 'INV-00001',
-        'journal_entry_id' => $journalEntry->id,
-    ]);
+//     $invoice = Invoice::factory()->withLines(1)->create([
+//         'company_id' => $this->company->id,
+//         'status' => InvoiceStatus::Posted,
+//         'posted_at' => now(),
+//         'invoice_number' => 'INV-00001',
+//         'journal_entry_id' => $journalEntry->id,
+//     ]);
 
-    $response = livewire(InvoiceResource\Pages\EditInvoice::class, [
-        'record' => $invoice->getRouteKey(),
-    ])
-        ->callAction('resetToDraft', data: [
-            'reason' => 'Test reason',
-        ]);
+//     $response = livewire(InvoiceResource\Pages\EditInvoice::class, [
+//         'record' => $invoice->getRouteKey(),
+//     ])
+//         ->callAction('resetToDraft', data: [
+//             'reason' => 'Test reason',
+//         ]);
 
-    $response->assertHasNoErrors();
+//     $response->assertHasNoErrors();
 
-    $invoice->refresh();
-    expect($invoice->status)->toBe(InvoiceStatus::Draft);
-});
+//     $invoice->refresh();
+//     expect($invoice->status)->toBe(InvoiceStatus::Draft);
+// });
