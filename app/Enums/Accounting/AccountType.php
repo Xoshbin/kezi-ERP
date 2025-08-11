@@ -86,4 +86,63 @@ enum AccountType: string
             self::CurrentYearEarnings,
         ]);
     }
+
+    /**
+     * Get all Asset account types.
+     *
+     * @return array<AccountType>
+     */
+    public static function assetTypes(): array
+    {
+        return [
+            self::Receivable,
+            self::BankAndCash,
+            self::CurrentAssets,
+            self::NonCurrentAssets,
+            self::Prepayments,
+            self::FixedAssets,
+        ];
+    }
+
+    /**
+     * Get all Liability account types.
+     *
+     * @return array<AccountType>
+     */
+    public static function liabilityTypes(): array
+    {
+        return [
+            self::Payable,
+            self::CreditCard,
+            self::CurrentLiabilities,
+            self::NonCurrentLiabilities,
+        ];
+    }
+
+    /**
+     * Get all Equity account types.
+     *
+     * @return array<AccountType>
+     */
+    public static function equityTypes(): array
+    {
+        return [
+            self::Equity,
+            self::CurrentYearEarnings,
+        ];
+    }
+
+    /**
+     * Get all Balance Sheet account types (Assets, Liabilities, and Equity).
+     *
+     * @return array<AccountType>
+     */
+    public static function balanceSheetTypes(): array
+    {
+        return array_merge(
+            self::assetTypes(),
+            self::liabilityTypes(),
+            self::equityTypes()
+        );
+    }
 }
