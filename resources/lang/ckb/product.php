@@ -26,6 +26,22 @@ return [
     'income_account' => 'هەژماری داهات',
     'expense_account' => 'هەژماری خەرجی',
 
+    // Inventory Management
+    'inventory_management' => 'بەڕێوەبردنی کۆگا',
+    'inventory_management_description' => 'شێوازی پێوانی کۆگا و ژمێریاری بۆ کاڵا هەڵگیراوەکان ڕێکبخە.',
+    'inventory_valuation_method' => 'شێوازی پێوانی',
+    'inventory_valuation_method_help' => 'شێوازی ژمارینی تێچووی کۆگا هەڵبژێرە (FIFO، LIFO، AVCO، یان نرخی ستاندارد).',
+    'average_cost' => 'تێچووی ناوەند',
+    'average_cost_help' => 'تێچووی ناوەندی ئێستای هەر یەکەیەک (بە شێوەیەکی خۆکارانە ژمێردەکرێت).',
+    'default_inventory_account' => 'هەژماری کۆگا',
+    'default_cogs_account' => 'هەژماری تێچووی کاڵا فرۆشراوەکان',
+    'default_stock_input_account' => 'هەژماری هاتنەژوورەوەی کۆگا',
+    'default_price_difference_account' => 'هەژماری جیاوازی نرخ',
+
+    // Stock Information
+    'stock_moves' => 'جووڵەی کۆگا',
+    'inventory_cost_layers' => 'چینەکانی تێچوو',
+
     // Status
     'status' => 'دۆخ',
     'status_description' => 'کۆنترۆڵی ئەوە بکە کە ئایا ئەم کاڵایە چالاکە و بۆ بەکارهێنان بەردەستە.',

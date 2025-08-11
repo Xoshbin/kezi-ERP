@@ -54,7 +54,6 @@ class JmeryarPanelProvider extends PanelProvider
                 DisableBladeIconComponents::class,
                 DispatchServingFilamentEvent::class,
             ])
-            ->topNavigation()
             ->authMiddleware([
                 Authenticate::class,
             ])
