@@ -6,16 +6,16 @@ use App\Filament\Resources\PartnerResource;
 use App\Filament\Resources\PartnerResource\Widgets\CustomerFinancialWidget;
 use App\Filament\Resources\PartnerResource\Widgets\VendorFinancialWidget;
 use Filament\Actions;
-use Filament\Resources\Pages\EditRecord;
+use Filament\Resources\Pages\ViewRecord;
 
-class EditPartner extends EditRecord
+class ViewPartner extends ViewRecord
 {
     protected static string $resource = PartnerResource::class;
 
     protected function getHeaderActions(): array
     {
         return [
-            Actions\ViewAction::make(),
+            Actions\EditAction::make(),
             Actions\DeleteAction::make(),
         ];
     }
@@ -23,8 +23,15 @@ class EditPartner extends EditRecord
     protected function getHeaderWidgets(): array
     {
         return [
-            // CustomerFinancialWidget::class,
+            CustomerFinancialWidget::class,
             VendorFinancialWidget::class,
+        ];
+    }
+
+    protected function getFooterWidgets(): array
+    {
+        return [
+            // Additional widgets can be added here if needed
         ];
     }
 }

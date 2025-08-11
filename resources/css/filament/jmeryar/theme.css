@@ -1,3 +1,85 @@
 @import '../../../../vendor/filament/filament/resources/css/theme.css';
 
 @config 'tailwind.config.js';
+
+/* Partner Financial Widgets Styling */
+
+/* Make widget text smaller and more compact */
+.fi-wi-stats-overview .fi-wi-stats-overview-stat {
+    @apply p-4;
+}
+
+.fi-wi-stats-overview .fi-wi-stats-overview-stat-value {
+    @apply text-lg font-semibold leading-tight;
+}
+
+.fi-wi-stats-overview .fi-wi-stats-overview-stat-label {
+    @apply text-xs font-medium text-gray-600 dark:text-gray-400 mb-1;
+}
+
+.fi-wi-stats-overview .fi-wi-stats-overview-stat-description {
+    @apply text-xs text-gray-500 dark:text-gray-500 mt-1;
+}
+
+/* Color variations for different financial states */
+.fi-wi-stats-overview .fi-wi-stats-overview-stat[data-color="success"] {
+    @apply bg-green-50 border-green-200 dark:bg-green-950 dark:border-green-800;
+}
+
+.fi-wi-stats-overview .fi-wi-stats-overview-stat[data-color="success"] .fi-wi-stats-overview-stat-value {
+    @apply text-green-700 dark:text-green-400;
+}
+
+.fi-wi-stats-overview .fi-wi-stats-overview-stat[data-color="danger"] {
+    @apply bg-red-50 border-red-200 dark:bg-red-950 dark:border-red-800;
+}
+
+.fi-wi-stats-overview .fi-wi-stats-overview-stat[data-color="danger"] .fi-wi-stats-overview-stat-value {
+    @apply text-red-700 dark:text-red-400;
+}
+
+.fi-wi-stats-overview .fi-wi-stats-overview-stat[data-color="warning"] {
+    @apply bg-orange-50 border-orange-200 dark:bg-orange-950 dark:border-orange-800;
+}
+
+.fi-wi-stats-overview .fi-wi-stats-overview-stat[data-color="warning"] .fi-wi-stats-overview-stat-value {
+    @apply text-orange-700 dark:text-orange-400;
+}
+
+.fi-wi-stats-overview .fi-wi-stats-overview-stat[data-color="info"] {
+    @apply bg-blue-50 border-blue-200 dark:bg-blue-950 dark:border-blue-800;
+}
+
+.fi-wi-stats-overview .fi-wi-stats-overview-stat[data-color="info"] .fi-wi-stats-overview-stat-value {
+    @apply text-blue-700 dark:text-blue-400;
+}
+
+.fi-wi-stats-overview .fi-wi-stats-overview-stat[data-color="gray"] {
+    @apply bg-gray-50 border-gray-200 dark:bg-gray-900 dark:border-gray-700;
+}
+
+.fi-wi-stats-overview .fi-wi-stats-overview-stat[data-color="gray"] .fi-wi-stats-overview-stat-value {
+    @apply text-gray-500 dark:text-gray-400;
+}
+
+/* Form section improvements */
+.fi-fo-section {
+    @apply mb-6 border border-gray-200 dark:border-gray-700 rounded-lg;
+}
+
+.fi-fo-section-header {
+    @apply mb-4 p-4 bg-gray-50 dark:bg-gray-800 rounded-t-lg border-b border-gray-200 dark:border-gray-700;
+}
+
+.fi-fo-section-content {
+    @apply p-4;
+}
+
+/* Input field improvements */
+.fi-input {
+    @apply transition-all duration-200;
+}
+
+.fi-input:focus {
+    @apply ring-2 ring-primary-500 border-primary-500;
+}
