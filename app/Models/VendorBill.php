@@ -241,6 +241,17 @@ class VendorBill extends Model
     }
 
     /**
+     * Get the Adjustment Documents (debit notes, etc.) that relate to this Vendor Bill.
+     * These are used for corrections, reversals, and adjustments to posted vendor bills.
+     *
+     * @return HasMany
+     */
+    public function adjustmentDocuments(): HasMany
+    {
+        return $this->hasMany(\App\Models\AdjustmentDocument::class, 'original_vendor_bill_id');
+    }
+
+    /**
      * Scope a query to only include vendor bills that have been 'Posted'.
      * This facilitates querying for financial records that have had an accounting impact .
      *

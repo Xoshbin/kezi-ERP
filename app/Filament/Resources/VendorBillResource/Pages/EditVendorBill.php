@@ -164,4 +164,12 @@ class EditVendorBill extends EditRecord
 
         return $data;
     }
+
+    protected function getHeaderWidgets(): array
+    {
+        return [
+            // VendorBillResource\Widgets\AgingAnalysisWidget::class,
+            VendorBillResource\Widgets\SettlementSummaryWidget::class,
+        ];
+    }
 }
