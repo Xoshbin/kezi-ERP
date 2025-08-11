@@ -4,12 +4,15 @@ namespace App\Filament\Resources;
 
 use App\Filament\Forms\Components\MoneyInput;
 use App\Filament\Resources\ProductResource\Pages;
+use App\Filament\Resources\ProductResource\RelationManagers;
 use App\Filament\Tables\Columns\MoneyColumn;
 use App\Models\Company;
 use App\Models\Product;
 use App\Models\Currency;
 use App\Models\Account;
 use App\Enums\Products\ProductType;
+use App\Enums\Inventory\ValuationMethod;
+use App\Enums\Accounting\AccountType;
 use Filament\Forms;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Form;
@@ -29,7 +32,7 @@ class ProductResource extends Resource
 
     public static function getNavigationGroup(): ?string
     {
-        return __('navigation.groups.sales_purchases');
+        return __('navigation.groups.inventory');
     }
 
     public static function getModelLabel(): string
@@ -213,6 +216,175 @@ class ProductResource extends Resource
                     ]),
                 ]),
 
+            Section::make(__('product.inventory_management'))
+                ->description(__('product.inventory_management_description'))
+                ->icon('heroicon-o-cube-transparent')
+                ->schema([
+                    Forms\Components\Grid::make(2)->schema([
+                        Forms\Components\Select::make('inventory_valuation_method')
+                            ->label(__('product.inventory_valuation_method'))
+                            ->options(
+                                collect(ValuationMethod::cases())
+                                    ->mapWithKeys(fn (ValuationMethod $method) => [$method->value => $method->label()])
+                            )
+                            ->searchable()
+                            ->live()
+                            ->visible(fn (Forms\Get $get) => $get('type') === ProductType::Storable->value)
+                            ->helperText(__('product.inventory_valuation_method_help')),
+                        MoneyInput::make('average_cost')
+                            ->label(__('product.average_cost'))
+                            ->currencyField('currency_id')
+                            ->disabled()
+                            ->visible(fn (Forms\Get $get) => $get('type') === ProductType::Storable->value)
+                            ->helperText(__('product.average_cost_help')),
+                    ]),
+                    Forms\Components\Grid::make(2)->schema([
+                        Forms\Components\Select::make('default_inventory_account_id')
+                            ->relationship('inventoryAccount', 'name')
+                            ->label(__('product.default_inventory_account'))
+                            ->searchable()
+                            ->preload()
+                            ->visible(fn (Forms\Get $get) => $get('type') === ProductType::Storable->value)
+                            ->createOptionForm([
+                                Forms\Components\Select::make('company_id')
+                                    ->label(__('account.company'))
+                                    ->relationship('company', 'name')
+                                    ->required(),
+                                Forms\Components\TextInput::make('code')
+                                    ->label(__('account.code'))
+                                    ->required()
+                                    ->maxLength(255),
+                                Forms\Components\TextInput::make('name')
+                                    ->label(__('account.name'))
+                                    ->required()
+                                    ->maxLength(255),
+                                Forms\Components\Select::make('type')
+                                    ->label(__('account.type'))
+                                    ->required()
+                                    ->options(
+                                        collect(AccountType::cases())
+                                            ->mapWithKeys(fn (AccountType $type) => [$type->value => $type->label()])
+                                    )
+                                    ->searchable(),
+                                Forms\Components\Toggle::make('is_deprecated')
+                                    ->label(__('account.is_deprecated'))
+                                    ->default(false),
+                            ])
+                            ->createOptionModalHeading(__('common.modal_title_create_account'))
+                            ->createOptionAction(function (Forms\Components\Actions\Action $action) {
+                                return $action->modalWidth('lg');
+                            }),
+                        Forms\Components\Select::make('default_cogs_account_id')
+                            ->relationship('defaultCogsAccount', 'name')
+                            ->label(__('product.default_cogs_account'))
+                            ->searchable()
+                            ->preload()
+                            ->visible(fn (Forms\Get $get) => $get('type') === ProductType::Storable->value)
+                            ->createOptionForm([
+                                Forms\Components\Select::make('company_id')
+                                    ->label(__('account.company'))
+                                    ->relationship('company', 'name')
+                                    ->required(),
+                                Forms\Components\TextInput::make('code')
+                                    ->label(__('account.code'))
+                                    ->required()
+                                    ->maxLength(255),
+                                Forms\Components\TextInput::make('name')
+                                    ->label(__('account.name'))
+                                    ->required()
+                                    ->maxLength(255),
+                                Forms\Components\Select::make('type')
+                                    ->label(__('account.type'))
+                                    ->required()
+                                    ->options(
+                                        collect(AccountType::cases())
+                                            ->mapWithKeys(fn (AccountType $type) => [$type->value => $type->label()])
+                                    )
+                                    ->searchable(),
+                                Forms\Components\Toggle::make('is_deprecated')
+                                    ->label(__('account.is_deprecated'))
+                                    ->default(false),
+                            ])
+                            ->createOptionModalHeading(__('common.modal_title_create_account'))
+                            ->createOptionAction(function (Forms\Components\Actions\Action $action) {
+                                return $action->modalWidth('lg');
+                            }),
+                    ]),
+                    Forms\Components\Grid::make(2)->schema([
+                        Forms\Components\Select::make('default_stock_input_account_id')
+                            ->relationship('stockInputAccount', 'name')
+                            ->label(__('product.default_stock_input_account'))
+                            ->searchable()
+                            ->preload()
+                            ->visible(fn (Forms\Get $get) => $get('type') === ProductType::Storable->value)
+                            ->createOptionForm([
+                                Forms\Components\Select::make('company_id')
+                                    ->label(__('account.company'))
+                                    ->relationship('company', 'name')
+                                    ->required(),
+                                Forms\Components\TextInput::make('code')
+                                    ->label(__('account.code'))
+                                    ->required()
+                                    ->maxLength(255),
+                                Forms\Components\TextInput::make('name')
+                                    ->label(__('account.name'))
+                                    ->required()
+                                    ->maxLength(255),
+                                Forms\Components\Select::make('type')
+                                    ->label(__('account.type'))
+                                    ->required()
+                                    ->options(
+                                        collect(AccountType::cases())
+                                            ->mapWithKeys(fn (AccountType $type) => [$type->value => $type->label()])
+                                    )
+                                    ->searchable(),
+                                Forms\Components\Toggle::make('is_deprecated')
+                                    ->label(__('account.is_deprecated'))
+                                    ->default(false),
+                            ])
+                            ->createOptionModalHeading(__('common.modal_title_create_account'))
+                            ->createOptionAction(function (Forms\Components\Actions\Action $action) {
+                                return $action->modalWidth('lg');
+                            }),
+                        Forms\Components\Select::make('default_price_difference_account_id')
+                            ->relationship('defaultPriceDifferenceAccount', 'name')
+                            ->label(__('product.default_price_difference_account'))
+                            ->searchable()
+                            ->preload()
+                            ->visible(fn (Forms\Get $get) => $get('type') === ProductType::Storable->value)
+                            ->createOptionForm([
+                                Forms\Components\Select::make('company_id')
+                                    ->label(__('account.company'))
+                                    ->relationship('company', 'name')
+                                    ->required(),
+                                Forms\Components\TextInput::make('code')
+                                    ->label(__('account.code'))
+                                    ->required()
+                                    ->maxLength(255),
+                                Forms\Components\TextInput::make('name')
+                                    ->label(__('account.name'))
+                                    ->required()
+                                    ->maxLength(255),
+                                Forms\Components\Select::make('type')
+                                    ->label(__('account.type'))
+                                    ->required()
+                                    ->options(
+                                        collect(AccountType::cases())
+                                            ->mapWithKeys(fn (AccountType $type) => [$type->value => $type->label()])
+                                    )
+                                    ->searchable(),
+                                Forms\Components\Toggle::make('is_deprecated')
+                                    ->label(__('account.is_deprecated'))
+                                    ->default(false),
+                            ])
+                            ->createOptionModalHeading(__('common.modal_title_create_account'))
+                            ->createOptionAction(function (Forms\Components\Actions\Action $action) {
+                                return $action->modalWidth('lg');
+                            }),
+                    ]),
+                ])
+                ->visible(fn (Forms\Get $get) => $get('type') === ProductType::Storable->value),
+
             Section::make(__('product.status'))
                 ->description(__('product.status_description'))
                 ->icon('heroicon-o-check-circle')
@@ -260,6 +432,24 @@ class ProductResource extends Resource
                 MoneyColumn::make('unit_price')
                     ->label(__('product.unit_price'))
                     ->sortable(),
+                Tables\Columns\TextColumn::make('inventory_valuation_method')
+                    ->label(__('product.inventory_valuation_method'))
+                    ->badge()
+                    ->formatStateUsing(fn (?ValuationMethod $state): string => $state?->label() ?? '-')
+                    ->color(fn (?ValuationMethod $state): string => match ($state) {
+                        ValuationMethod::AVCO => 'primary',
+                        ValuationMethod::FIFO => 'success',
+                        ValuationMethod::LIFO => 'warning',
+                        ValuationMethod::STANDARD => 'info',
+                        default => 'gray',
+                    })
+                    ->visible(fn () => request()->has('inventory_view'))
+                    ->toggleable(isToggledHiddenByDefault: true),
+                MoneyColumn::make('average_cost')
+                    ->label(__('product.average_cost'))
+                    ->sortable()
+                    ->visible(fn () => request()->has('inventory_view'))
+                    ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('incomeAccount.name')
                     ->label(__('product.income_account'))
                     ->sortable()
@@ -337,7 +527,8 @@ class ProductResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            RelationManagers\StockMovesRelationManager::class,
+            RelationManagers\InventoryCostLayersRelationManager::class,
         ];
     }
 
