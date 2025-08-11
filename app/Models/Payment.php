@@ -216,4 +216,17 @@ class Payment extends Model
     {
         return $this->hasMany(BankStatementLine::class);
     }
+
+    /**
+     * Get all JournalEntries related to this payment.
+     * This includes both the direct journal entry and any polymorphic entries (e.g., reconciliation entries).
+     * Note: This is used by the JournalEntriesRelationManager which handles the complex query logic.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function journalEntries()
+    {
+        return $this->hasMany(JournalEntry::class, 'source_id')
+            ->where('source_type', self::class);
+    }
 }

@@ -2,31 +2,32 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\PaymentResource\Pages;
-use App\Filament\Resources\PaymentResource\RelationManagers;
-use App\Filament\Forms\Components\MoneyInput;
+use Filament\Forms;
+use Filament\Tables;
 use App\Models\Company;
 use App\Models\Invoice;
 use App\Models\Payment;
-use App\Models\VendorBill;
-use App\Enums\Purchases\VendorBillStatus;
-use App\Enums\Payments\PaymentType;
-use App\Enums\Payments\PaymentStatus;
-use App\Enums\Sales\InvoiceStatus;
-use App\Services\PaymentService;
-use Filament\Forms;
-use Filament\Forms\Form;
-use Filament\Forms\Components\Section;
-use Filament\Resources\Resource;
-use Filament\Tables;
-use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
-use Filament\Tables\Actions\Action;
-use Filament\Notifications\Notification;
-use Illuminate\Support\Facades\Auth;
-use Filament\Forms\Components\Repeater;
 use Filament\Forms\Get;
+use Filament\Forms\Form;
+use App\Models\VendorBill;
+use Filament\Tables\Table;
+use App\Services\PaymentService;
+use Filament\Resources\Resource;
+use App\Enums\Sales\InvoiceStatus;
+use App\Enums\Payments\PaymentType;
+use Filament\Tables\Actions\Action;
+use Illuminate\Support\Facades\Auth;
+use App\Enums\Payments\PaymentStatus;
+use Filament\Forms\Components\Section;
+use Filament\Forms\Components\Repeater;
+use Filament\Notifications\Notification;
+use App\Enums\Purchases\VendorBillStatus;
+use Illuminate\Database\Eloquent\Builder;
+use App\Filament\Tables\Columns\MoneyColumn;
+use App\Filament\Forms\Components\MoneyInput;
+use App\Filament\Resources\PaymentResource\Pages;
+use Illuminate\Database\Eloquent\SoftDeletingScope;
+use App\Filament\Resources\PaymentResource\RelationManagers;
 
 class PaymentResource extends Resource
 {
@@ -183,9 +184,8 @@ class PaymentResource extends Resource
                     ->label(__('payment.table.payment_date'))
                     ->date()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('amount')
+                MoneyColumn::make('amount')
                     ->label(__('payment.table.amount'))
-                    ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('payment_type')
                     ->label(__('payment.table.payment_type'))
@@ -272,6 +272,8 @@ class PaymentResource extends Resource
         return [
             RelationManagers\InvoicesRelationManager::class,
             RelationManagers\VendorBillsRelationManager::class,
+            RelationManagers\JournalEntriesRelationManager::class,
+            RelationManagers\BankStatementLinesRelationManager::class,
         ];
     }
 
