@@ -2,65 +2,70 @@
 
 namespace Database\Seeders;
 
+use App\Enums\Products\ProductType;
 use App\Models\Account;
 use App\Models\Company;
 use App\Models\Product;
+use Brick\Money\Money;
 use Illuminate\Database\Seeder;
-use App\Enums\Products\ProductType;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 
 class ProductSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
     public function run(): void
     {
-        // Fetch the company
-        $company = Company::where('name', 'Jmeryar Solutions')->first();
-        if (!$company) {
-            throw new \Exception("Company 'Jmeryar Solutions' not found. Please run the CompanySeeder.");
-        }
+        $company = Company::where('name', 'Jmeryar Solutions')->firstOrFail();
+        $currencyCode = $company->currency->code;
 
-        // Fetch the income account
-        $incomeAccount = Account::where('code', '420101')->where('company_id', $company->id)->first();
-        if (!$incomeAccount) {
-            throw new \Exception("Account with code '420101' (Service Revenue) not found. Please run the AccountSeeder.");
-        }
+        // --- Fetch all necessary accounts using their unique codes ---
+        $consultingRevenueAccount = Account::where('code', '430101')->where('company_id', $company->id)->firstOrFail();
+        $serviceRevenueAccount = Account::where('code', '420101')->where('company_id', $company->id)->firstOrFail();
+        $productSalesAccount = Account::where('code', '410101')->where('company_id', $company->id)->firstOrFail();
+        $cogsAccount = Account::where('code', '510101')->where('company_id', $company->id)->firstOrFail();
 
-        // Fetch the expense account
-        $expenseAccount = Account::where('code', '510101')->where('company_id', $company->id)->first();
-        if (!$expenseAccount) {
-            throw new \Exception("Account with code '510101' (Cost of Goods Sold) not found. Please run the AccountSeeder.");
-        }
+        // FIXED: Fetching the required accounts for inventory management
+        $inventoryAccount = Account::where('code', '130101')->where('company_id', $company->id)->firstOrFail();
+        $stockInputAccount = Account::where('code', '210201')->where('company_id', $company->id)->firstOrFail();
+        $priceDifferenceAccount = Account::where('code', '510301')->where('company_id', $company->id)->firstOrFail();
 
+        // --- Service Products ---
         Product::updateOrCreate(
-            [
-                'company_id' => $company->id,
-                'sku' => 'CONS-001',
-            ],
-            [
-                'name' => 'Consulting Services',
-                'description' => 'Standard consulting services.',
-                'unit_price' => 150000.00,
-                'type' => ProductType::Service->value,
-                'income_account_id' => $incomeAccount->id,
-                'expense_account_id' => $expenseAccount->id,
-            ]
+            ['company_id' => $company->id, 'sku' => 'CONS-001'],
+            ['name' => 'Consulting Services', 'type' => ProductType::Service, 'unit_price' => Money::of(150000, $currencyCode), 'income_account_id' => $consultingRevenueAccount->id, 'expense_account_id' => $cogsAccount->id]
+        );
+        Product::updateOrCreate(
+            ['company_id' => $company->id, 'sku' => 'DEV-001'],
+            ['name' => 'Development Services', 'type' => ProductType::Service, 'unit_price' => Money::of(250000, $currencyCode), 'income_account_id' => $serviceRevenueAccount->id, 'expense_account_id' => $cogsAccount->id]
         );
 
+        // --- Storable Products (Now with full inventory account configuration) ---
         Product::updateOrCreate(
+            ['company_id' => $company->id, 'sku' => 'PROD-ROUTER-01'],
             [
-                'company_id' => $company->id,
-                'sku' => 'DEV-001',
-            ],
+                'name' => 'Wireless Router', 'type' => ProductType::Storable, 'unit_price' => Money::of('1200000', $currencyCode),
+                'income_account_id' => $productSalesAccount->id, 'expense_account_id' => $cogsAccount->id,
+                'default_inventory_account_id' => $inventoryAccount->id,
+                'default_stock_input_account_id' => $stockInputAccount->id,
+                'default_price_difference_account_id' => $priceDifferenceAccount->id,
+            ]
+        );
+        Product::updateOrCreate(
+            ['company_id' => $company->id, 'sku' => 'PROD-CABLE-01'],
             [
-                'name' => 'Development Services',
-                'description' => 'Custom software development services.',
-                'unit_price' => 250000.00,
-                'type' => ProductType::Service->value,
-                'income_account_id' => $incomeAccount->id,
-                'expense_account_id' => $expenseAccount->id,
+                'name' => 'CAT6 Ethernet Cable (30m)', 'type' => ProductType::Storable, 'unit_price' => Money::of('50000', $currencyCode),
+                'income_account_id' => $productSalesAccount->id, 'expense_account_id' => $cogsAccount->id,
+                'default_inventory_account_id' => $inventoryAccount->id,
+                'default_stock_input_account_id' => $stockInputAccount->id,
+                'default_price_difference_account_id' => $priceDifferenceAccount->id,
+            ]
+        );
+        Product::updateOrCreate(
+            ['company_id' => $company->id, 'sku' => 'PROD-SWITCH-01'],
+            [
+                'name' => 'Network Switch', 'type' => ProductType::Storable, 'unit_price' => Money::of('3500000', $currencyCode),
+                'income_account_id' => $productSalesAccount->id, 'expense_account_id' => $cogsAccount->id,
+                'default_inventory_account_id' => $inventoryAccount->id,
+                'default_stock_input_account_id' => $stockInputAccount->id,
+                'default_price_difference_account_id' => $priceDifferenceAccount->id,
             ]
         );
     }

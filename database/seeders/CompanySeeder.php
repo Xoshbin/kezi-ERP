@@ -2,12 +2,11 @@
 
 namespace Database\Seeders;
 
-use App\Models\Account;
 use App\Models\Company;
 use App\Models\Currency;
-use App\Models\Journal;
+use App\Models\StockLocation;
 use Illuminate\Database\Seeder;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use App\Enums\Inventory\StockLocationType;
 
 class CompanySeeder extends Seeder
 {
@@ -22,8 +21,8 @@ class CompanySeeder extends Seeder
             throw new \Exception('IQD currency not found. Please run the CurrencySeeder first.');
         }
 
-        // Create the main company record without default accounts or journals.
-        Company::updateOrCreate(
+        // Create the main company record.
+        $company = Company::updateOrCreate(
             ['name' => 'Jmeryar Solutions'],
             [
                 'address' => 'Slemani, Iraq',
@@ -32,5 +31,22 @@ class CompanySeeder extends Seeder
                 'fiscal_country' => 'IQ',
             ]
         );
+
+        // Create the default locations required by the company.
+        $defaultStockLocation = StockLocation::updateOrCreate(
+            ['company_id' => $company->id, 'type' => StockLocationType::Internal, 'name' => 'Warehouse'],
+            ['is_active' => true]
+        );
+
+        $defaultVendorLocation = StockLocation::updateOrCreate(
+            ['company_id' => $company->id, 'type' => StockLocationType::Internal, 'name' => 'Vendors'],
+            ['is_active' => false]
+        );
+
+        // Now, update the company with the IDs of the newly created locations.
+        $company->update([
+            'default_stock_location_id' => $defaultStockLocation->id,
+            'default_vendor_location_id' => $defaultVendorLocation->id,
+        ]);
     }
 }
