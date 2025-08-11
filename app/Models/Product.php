@@ -181,6 +181,16 @@ class Product extends Model
         return $this->hasMany(VendorBillLine::class);
     }
 
+    public function stockMoves(): HasMany
+    {
+        return $this->hasMany(\App\Models\StockMove::class);
+    }
+
+    public function inventoryCostLayers(): HasMany
+    {
+        return $this->hasMany(\App\Models\InventoryCostLayer::class);
+    }
+
     /**
      * Accessor to provide the currency_id to the MoneyCast.
      * This robust implementation prevents N+1 query issues.

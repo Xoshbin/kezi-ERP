@@ -26,6 +26,22 @@ return [
     'income_account' => 'Income Account',
     'expense_account' => 'Expense Account',
 
+    // Inventory Management
+    'inventory_management' => 'Inventory Management',
+    'inventory_management_description' => 'Configure inventory valuation method and accounting for storable products.',
+    'inventory_valuation_method' => 'Valuation Method',
+    'inventory_valuation_method_help' => 'Choose how inventory costs are calculated (FIFO, LIFO, AVCO, or Standard Price).',
+    'average_cost' => 'Average Cost',
+    'average_cost_help' => 'Current average cost per unit (automatically calculated).',
+    'default_inventory_account' => 'Inventory Account',
+    'default_cogs_account' => 'Cost of Goods Sold Account',
+    'default_stock_input_account' => 'Stock Input Account',
+    'default_price_difference_account' => 'Price Difference Account',
+
+    // Stock Information
+    'stock_moves' => 'Stock Movements',
+    'inventory_cost_layers' => 'Cost Layers',
+
     // Status
     'status' => 'Status',
     'status_description' => 'Control whether this product is active and available for use.',
