@@ -5,6 +5,14 @@ return [
     'label' => 'Partner',
     'plural_label' => 'Partners',
 
+    // Form Sections
+    'basic_information' => 'Basic Information',
+    'basic_information_description' => 'Essential partner details and business type',
+    'contact_information' => 'Contact Information',
+    'contact_information_description' => 'Communication details for this partner',
+    'address_information' => 'Address Information',
+    'address_information_description' => 'Physical location and mailing address',
+
     // Basic Information
     'company' => 'Company',
     'name' => 'Name',
@@ -16,12 +24,100 @@ return [
     'is_active' => 'Is Active',
 
     // Address
+    'address' => 'Address',
     'address_line_1' => 'Address Line 1',
     'address_line_2' => 'Address Line 2',
     'city' => 'City',
     'state' => 'State',
     'zip_code' => 'Zip Code',
     'country' => 'Country',
+
+    // Financial Information
+    'customer_outstanding' => 'Customer Outstanding',
+    'customer_overdue' => 'Customer Overdue',
+    'vendor_outstanding' => 'Vendor Outstanding',
+    'vendor_overdue' => 'Vendor Overdue',
+    'last_activity' => 'Last Activity',
+    'no_activity' => 'No Activity',
+    'has_overdue_amounts' => 'Has Overdue Amounts',
+    'has_outstanding_balance' => 'Has Outstanding Balance',
+
+    // Widget Labels
+    'widgets' => [
+        // Common
+        'includes_overdue' => 'Includes :amount overdue',
+        'days' => 'days',
+        'immediate_attention' => 'Immediate attention',
+        'payment_performance' => 'Payment performance',
+        'current_month_activity' => 'Current month activity',
+        'urgent_payments' => 'Urgent payments',
+        'our_payment_performance' => 'Our payment performance',
+        'last_month_payments' => 'Last month payments',
+
+        // Customer Widgets
+        'total_outstanding' => 'Total Outstanding',
+        'due_within_7_days' => 'Due Within 7 Days',
+        'average_payment_time' => 'Average Payment Time',
+        'received_this_month' => 'Received This Month',
+
+        // Vendor Widgets
+        'total_to_pay' => 'Total To Pay',
+        'paid_last_month' => 'Paid Last Month',
+
+        // Legacy (keeping for compatibility)
+        'customer_owes_us' => 'Customer owes us',
+        'overdue_amount' => 'Overdue Amount',
+        'no_overdue_amounts' => 'No overdue amounts',
+        'requires_attention' => 'Requires attention',
+        'due_within_30_days' => 'Due Within 30 Days',
+        'upcoming_collections' => 'Upcoming collections',
+        'avg_payment_days' => 'Avg Payment Days',
+        'no_payment_history' => 'No payment history',
+        'average_collection_time' => 'Average collection time',
+        'last_payment' => 'Last Payment',
+        'no_payments' => 'No Payments',
+        'no_payment_received' => 'No payment received',
+        'total_payable' => 'Total Payable',
+        'we_owe_vendor' => 'We owe vendor',
+        'overdue_payable' => 'Overdue Payable',
+        'no_overdue_payments' => 'No overdue payments',
+        'payment_required' => 'Payment required',
+        'pay_within_7_days' => 'Pay Within 7 Days',
+        'urgent_payments_needed' => 'Urgent payments needed',
+        'pay_within_30_days' => 'Pay Within 30 Days',
+        'upcoming_payments' => 'Upcoming payments',
+        'our_avg_payment_days' => 'Our Avg Payment Days',
+        'our_payment_time' => 'Our payment time',
+        'last_payment_made' => 'Last Payment Made',
+        'no_payment_made' => 'No payment made',
+
+        // Overview Widgets
+        'lifetime_value' => 'Lifetime Value',
+        'total_business_volume' => 'Total business volume',
+        'this_month' => 'This Month',
+        'no_activity_this_month' => 'No activity this month',
+        'current_month_volume' => 'Current month volume',
+        'performance_score' => 'Performance Score',
+        'excellent_performance' => 'Excellent performance',
+        'good_performance' => 'Good performance',
+        'average_performance' => 'Average performance',
+        'poor_performance' => 'Poor performance',
+        'very_poor_performance' => 'Very poor performance',
+        'last_activity' => 'Last Activity',
+        'today' => 'Today',
+        'days_ago' => ':days days ago',
+        'no_activity' => 'No Activity',
+        'no_transactions' => 'No transactions recorded',
+        'partner_type' => 'Partner Type',
+        'customer_only' => 'Customer only',
+        'vendor_only' => 'Vendor only',
+        'customer_and_vendor' => 'Customer and vendor',
+        'status' => 'Status',
+        'active' => 'Active',
+        'inactive' => 'Inactive',
+        'active_partner' => 'Active partner',
+        'inactive_partner' => 'Inactive partner',
+    ],
 
     // Timestamps
     'created_at' => 'Created At',
