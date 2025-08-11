@@ -507,6 +507,8 @@ class VendorBillResource extends Resource
     {
         return [
             // RelationManagers\VendorBillLinesRelationManager::class,
+            \App\Filament\Resources\VendorBillResource\RelationManagers\PaymentsRelationManager::class,
+            \App\Filament\Resources\VendorBillResource\RelationManagers\AdjustmentDocumentsRelationManager::class,
         ];
     }
 
