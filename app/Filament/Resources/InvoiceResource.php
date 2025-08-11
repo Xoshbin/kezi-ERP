@@ -426,6 +426,8 @@ class InvoiceResource extends Resource
     {
         return [
             RelationManagers\InvoiceLinesRelationManager::class,
+            RelationManagers\PaymentsRelationManager::class,
+            RelationManagers\AdjustmentDocumentsRelationManager::class,
         ];
     }
 

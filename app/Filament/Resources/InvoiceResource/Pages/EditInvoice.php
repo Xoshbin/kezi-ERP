@@ -140,4 +140,12 @@ class EditInvoice extends EditRecord
 
         return app(UpdateInvoiceAction::class)->execute($invoiceDTO);
     }
+
+    protected function getHeaderWidgets(): array
+    {
+        return [
+            // InvoiceResource\Widgets\AgingAnalysisWidget::class,
+            InvoiceResource\Widgets\SettlementSummaryWidget::class,
+        ];
+    }
 }
