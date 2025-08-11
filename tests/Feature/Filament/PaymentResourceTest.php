@@ -418,3 +418,98 @@ it('calculates total amount from multiple document links', function () {
     $payment = Payment::where('reference', 'Multi Invoice Payment')->first();
     expect($payment->amount->isEqualTo(Money::of(450, $this->company->currency->code)))->toBeTrue();
 });
+
+it('can display journal entries relation manager', function () {
+    /** @var \App\Models\Partner $customer */
+    $customer = Partner::factory()->customer()->create([
+        'company_id' => $this->company->id,
+    ]);
+
+    /** @var \App\Models\Journal $bankJournal */
+    $bankJournal = Journal::factory()->for($this->company)->create(['type' => JournalType::Bank]);
+
+    /** @var \App\Models\Payment $payment */
+    $payment = Payment::factory()->create([
+        'company_id' => $this->company->id,
+        'journal_id' => $bankJournal->id,
+        'currency_id' => $this->company->currency_id,
+        'paid_to_from_partner_id' => $customer->id,
+        'payment_type' => PaymentType::Inbound,
+        'status' => PaymentStatus::Confirmed,
+        'amount' => Money::of(1000, $this->company->currency->code),
+    ]);
+
+    // Create a journal entry linked to this payment
+    $journalEntry = \App\Models\JournalEntry::factory()->create([
+        'company_id' => $this->company->id,
+        'journal_id' => $bankJournal->id,
+        'currency_id' => $this->company->currency_id,
+        'source_type' => Payment::class,
+        'source_id' => $payment->id,
+        'reference' => 'PAY/' . $payment->id,
+        'description' => 'Payment journal entry',
+        'total_debit' => Money::of(1000, $this->company->currency->code),
+        'total_credit' => Money::of(1000, $this->company->currency->code),
+        'is_posted' => true,
+        'created_by_user_id' => $this->user->id,
+    ]);
+
+    // Test that the journal entries relation manager can be rendered
+    livewire(\App\Filament\Resources\PaymentResource\RelationManagers\JournalEntriesRelationManager::class, [
+        'ownerRecord' => $payment,
+        'pageClass' => \App\Filament\Resources\PaymentResource\Pages\EditPayment::class,
+    ])
+        ->assertCanSeeTableRecords([$journalEntry])
+        ->assertCanRenderTableColumn('reference')
+        ->assertCanRenderTableColumn('entry_date')
+        ->assertCanRenderTableColumn('total_debit')
+        ->assertCanRenderTableColumn('total_credit')
+        ->assertCanRenderTableColumn('source_type');
+});
+
+it('can display bank statement lines relation manager for reconciled payment', function () {
+    /** @var \App\Models\Partner $customer */
+    $customer = Partner::factory()->customer()->create([
+        'company_id' => $this->company->id,
+    ]);
+
+    /** @var \App\Models\Journal $bankJournal */
+    $bankJournal = Journal::factory()->for($this->company)->create(['type' => JournalType::Bank]);
+
+    /** @var \App\Models\Payment $payment */
+    $payment = Payment::factory()->create([
+        'company_id' => $this->company->id,
+        'journal_id' => $bankJournal->id,
+        'currency_id' => $this->company->currency_id,
+        'paid_to_from_partner_id' => $customer->id,
+        'payment_type' => PaymentType::Inbound,
+        'status' => PaymentStatus::Reconciled,
+        'amount' => Money::of(1000, $this->company->currency->code),
+    ]);
+
+    // Create a bank statement and line linked to this payment
+    $bankStatement = \App\Models\BankStatement::factory()->create([
+        'company_id' => $this->company->id,
+        'currency_id' => $this->company->currency_id,
+        'reference' => 'STMT-001',
+    ]);
+
+    $bankStatementLine = \App\Models\BankStatementLine::factory()->create([
+        'bank_statement_id' => $bankStatement->id,
+        'payment_id' => $payment->id,
+        'description' => 'Payment from customer',
+        'amount' => Money::of(1000, $this->company->currency->code),
+        'is_reconciled' => true,
+    ]);
+
+    // Test that the bank statement lines relation manager can be rendered
+    livewire(\App\Filament\Resources\PaymentResource\RelationManagers\BankStatementLinesRelationManager::class, [
+        'ownerRecord' => $payment,
+        'pageClass' => \App\Filament\Resources\PaymentResource\Pages\EditPayment::class,
+    ])
+        ->assertCanSeeTableRecords([$bankStatementLine])
+        ->assertCanRenderTableColumn('date')
+        ->assertCanRenderTableColumn('description')
+        ->assertCanRenderTableColumn('amount')
+        ->assertCanRenderTableColumn('is_reconciled');
+});
