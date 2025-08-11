@@ -24,9 +24,9 @@ class MoneyColumn extends TextColumn
                 return $state;
             }
 
-            $locale = app()->getLocale();
-            $formatter = new NumberFormatter($locale, NumberFormatter::CURRENCY);
-            
+            // $locale = app()->getLocale();
+            $formatter = new NumberFormatter('EN_us', NumberFormatter::CURRENCY);
+
             return $formatter->formatCurrency(
                 $state->getAmount()->toFloat(),
                 $state->getCurrency()->getCurrencyCode()

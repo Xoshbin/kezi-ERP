@@ -65,7 +65,7 @@ class MoneyInput extends TextInput
                 $money = $this->getMoneyObject($component, $get);
 
                 if ($money instanceof Money) {
-                    return $money->formatTo(app()->getLocale());
+                    return $money->formatTo('EN_us');
                 }
                 return null;
             });
