@@ -20,6 +20,7 @@ use Illuminate\Support\Facades\Validator;
 use App\Models\AuditLog; // Add this import
 use App\Services\Accounting\LockDateService;
 use App\Services\Inventory\StockMoveService;
+use App\Services\SequenceService;
 use App\Exceptions\UpdateNotAllowedException;
 use Illuminate\Validation\ValidationException;
 use App\Exceptions\DeletionNotAllowedException;
@@ -33,7 +34,8 @@ class InvoiceService
         protected LockDateService $lockDateService,
         protected JournalEntryService $journalEntryService,
         protected StockMoveService $stockMoveService,
-        protected CreateJournalEntryForInvoiceAction $createJournalEntryForInvoiceAction
+        protected CreateJournalEntryForInvoiceAction $createJournalEntryForInvoiceAction,
+        protected SequenceService $sequenceService
     ) {
     }
 
@@ -59,7 +61,7 @@ class InvoiceService
         $this->lockDateService->enforce(\App\Models\Company::find($invoice->company_id), \Carbon\Carbon::parse($invoice->invoice_date));
 
         DB::transaction(function () use ($invoice, $user) {
-            $invoice->invoice_number = $this->getNextInvoiceNumber($invoice->company);
+            $invoice->invoice_number = $this->sequenceService->getNextInvoiceNumber($invoice->company);
             $invoice->status = InvoiceStatus::Posted;
             $invoice->posted_at = now();
 
@@ -92,16 +94,7 @@ class InvoiceService
         });
     }
 
-    private function getNextInvoiceNumber(Company $company): string
-    {
-        // Simple (but not race-condition-proof) way to get the next number.
-        $lastNumber = Invoice::where('company_id', $company->id)
-            ->whereNotNull('invoice_number')
-            ->count();
 
-        // Format it nicely, e.g., INV-00001
-        return 'INV-' . str_pad($lastNumber + 1, 5, '0', STR_PAD_LEFT);
-    }
 
     /**
      * Resets a posted invoice back to draft status with a detailed audit log.
