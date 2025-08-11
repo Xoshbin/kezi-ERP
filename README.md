@@ -313,4 +313,4 @@ This layered architecture provides several key benefits:
 - [ ] Implement centralized exception handling for UI-triggered actions.
 - [ ] Add user-friendly error messages for common accounting errors (e.g., period locked, deletion not allowed).
 - [x] rearange the navigation bar, and hide some resources that are not used currently or not for the user to make the navigation clean, introduce clusters
-- [ ] temporarily disable cancel payment button in payments resource 
+- [x] temporarily disable cancel payment button in payments resource 
