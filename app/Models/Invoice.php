@@ -217,6 +217,17 @@ class Invoice extends Model
             ->withPivot('amount_applied');
     }
 
+    /**
+     * Get the Adjustment Documents (credit notes, etc.) that relate to this Invoice.
+     * These are used for corrections, reversals, and adjustments to posted invoices.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function adjustmentDocuments(): HasMany
+    {
+        return $this->hasMany(\App\Models\AdjustmentDocument::class, 'original_invoice_id');
+    }
+
     /*
     |--------------------------------------------------------------------------
     | Scopes (Example)
