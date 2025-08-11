@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Enums\Partners\PartnerType;
 use App\Models\Invoice;
 use App\Models\Partner;
 use App\Models\Payment;
@@ -37,7 +38,7 @@ class PaymentDocumentLinkSeeder extends Seeder
                         ]
                     );
                 }
-            } elseif ($payment->payment_type === Partner::TYPE_VENDOR) {
+            } elseif ($payment->payment_type === PartnerType::Vendor) {
                 $vendorBill = VendorBill::where('partner_id', $payment->partner_id)
                                         ->where('company_id', $payment->company_id)
                                         ->first();

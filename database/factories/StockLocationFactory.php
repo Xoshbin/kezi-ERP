@@ -29,7 +29,7 @@ class StockLocationFactory extends Factory
         return [
             'company_id' => Company::factory(),
             'name' => $this->faker->words(2, true),
-            'type' => StockLocationType::INTERNAL,
+            'type' => StockLocationType::Internal,
             'is_active' => true,
             'parent_id' => null,
         ];

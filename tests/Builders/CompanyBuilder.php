@@ -71,9 +71,9 @@ class CompanyBuilder
     public function withDefaultStockLocations(): self
     {
         $this->stockLocations = [
-            'default_stock_input_location_id' => ['name' => 'Stock Input', 'type' => StockLocationType::VENDOR->value],
-            'default_stock_output_location_id' => ['name' => 'Stock Output', 'type' => StockLocationType::CUSTOMER->value],
-            'default_stock_location_id' => ['name' => 'Default Stock', 'type' => StockLocationType::INTERNAL->value],
+            'default_stock_input_location_id' => ['name' => 'Stock Input', 'type' => StockLocationType::Vendor->value],
+            'default_stock_output_location_id' => ['name' => 'Stock Output', 'type' => StockLocationType::Customer->value],
+            'default_stock_location_id' => ['name' => 'Default Stock', 'type' => StockLocationType::Internal->value],
         ];
         return $this;
     }

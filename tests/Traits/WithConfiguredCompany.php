@@ -35,8 +35,8 @@ trait WithConfiguredCompany
         $this->stockInputAccount = Account::factory()->for($this->company)->create(['name' => 'Stock Input', 'type' => 'current_liabilities']);
 
         // 2. Create the necessary physical locations
-        $this->vendorLocation = StockLocation::factory()->for($this->company)->create(['type' => StockLocationType::VENDOR]);
-        $this->stockLocation = StockLocation::factory()->for($this->company)->create(['type' => StockLocationType::INTERNAL]);
+        $this->vendorLocation = StockLocation::factory()->for($this->company)->create(['type' => StockLocationType::Vendor]);
+        $this->stockLocation = StockLocation::factory()->for($this->company)->create(['type' => StockLocationType::Internal]);
 
         // 3. Associate accounts and locations with company defaults
         $this->company->update([
