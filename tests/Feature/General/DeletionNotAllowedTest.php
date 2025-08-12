@@ -47,6 +47,7 @@ test('a company with any financial records cannot be deleted', function (string 
     'with a Journal Entry' => [JournalEntry::class, ['total_debit' => 0, 'total_credit' => 0]],
     'with an Invoice' => [Invoice::class, ['total_amount' => 0, 'total_tax' => 0]],
     'with a Vendor Bill' => [VendorBill::class, ['total_amount' => 0, 'total_tax' => 0]],
+    'with an Asset' => [\App\Models\Asset::class, ['purchase_value' => 1000, 'salvage_value' => 0]],
 ]);
 
 

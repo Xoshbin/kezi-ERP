@@ -9,7 +9,9 @@ use App\Actions\Assets\UpdateAssetAction;
 use App\DataTransferObjects\Assets\CreateAssetDTO;
 use App\DataTransferObjects\Assets\DisposeAssetDTO;
 use App\DataTransferObjects\Assets\UpdateAssetDTO;
+use App\Enums\Assets\AssetStatus;
 use App\Enums\Assets\DepreciationEntryStatus;
+use App\Exceptions\DeletionNotAllowedException;
 use App\Models\Asset;
 use App\Models\DepreciationEntry;
 use App\Models\User;
@@ -46,6 +48,41 @@ class AssetService
     public function postDepreciation(DepreciationEntry $depreciationEntry, User $user): DepreciationEntry
     {
         return $this->postDepreciationEntryAction->execute($depreciationEntry, $user);
+    }
+
+    /**
+     * Delete an asset, but only if it is in draft status and has no associated financial records.
+     * Enforces the accounting principle of immutability for confirmed assets and those with financial history.
+     *
+     * @param Asset $asset The asset to be deleted.
+     * @return bool True on successful deletion.
+     * @throws DeletionNotAllowedException If the asset cannot be deleted due to business rules.
+     */
+    public function delete(Asset $asset): bool
+    {
+        // Guard Clause 1: Only allow deleting if the status is Draft.
+        if ($asset->status !== AssetStatus::Draft) {
+            throw new DeletionNotAllowedException(
+                'Cannot delete a confirmed asset. Only draft assets can be deleted.'
+            );
+        }
+
+        // Guard Clause 2: Check for any depreciation entries (even draft ones).
+        if ($asset->depreciationEntries()->exists()) {
+            throw new DeletionNotAllowedException(
+                'Cannot delete an asset with depreciation entries. Depreciation history must be preserved.'
+            );
+        }
+
+        // Guard Clause 3: Check for any journal entries.
+        if ($asset->journalEntries()->exists()) {
+            throw new DeletionNotAllowedException(
+                'Cannot delete an asset with associated journal entries. Financial records must be preserved.'
+            );
+        }
+
+        // If all guards pass, proceed with the deletion.
+        return $asset->delete();
     }
 
     public function computeDepreciation(Asset $asset): Collection
