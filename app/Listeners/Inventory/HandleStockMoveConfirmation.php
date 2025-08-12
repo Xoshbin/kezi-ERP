@@ -26,9 +26,9 @@ class HandleStockMoveConfirmation
     {
         $stockMove = $event->stockMove;
 
-        if ($stockMove->move_type === StockMoveType::INCOMING) {
+        if ($stockMove->move_type === StockMoveType::Incoming) {
             ProcessIncomingStockJob::dispatch($stockMove);
-        } elseif ($stockMove->move_type === StockMoveType::OUTGOING) {
+        } elseif ($stockMove->move_type === StockMoveType::Outgoing) {
             ProcessOutgoingStockJob::dispatch($stockMove);
         }
     }
