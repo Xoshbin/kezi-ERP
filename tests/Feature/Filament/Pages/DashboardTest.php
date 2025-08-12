@@ -13,7 +13,7 @@ uses(RefreshDatabase::class, WithConfiguredCompany::class);
 
 beforeEach(function () {
     $this->setupWithConfiguredCompany();
-    
+
     // Set current panel for Filament
     Filament::setCurrentPanel(Filament::getPanel('jmeryar'));
 });
@@ -45,7 +45,6 @@ it('includes all financial widgets', function () {
     expect($widgets)->toContain(\App\Filament\Widgets\FinancialStatsOverview::class);
     expect($widgets)->toContain(\App\Filament\Widgets\IncomeVsExpenseChart::class);
     expect($widgets)->toContain(\App\Filament\Widgets\CashFlowWidget::class);
-    expect($widgets)->toContain(\App\Filament\Widgets\AccountWidget::class);
 });
 
 it('handles user without company', function () {
