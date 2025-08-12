@@ -44,6 +44,7 @@ class ProductSeeder extends Seeder
                 'name' => 'Wireless Router', 'type' => ProductType::Storable, 'unit_price' => Money::of('1200000', $currencyCode),
                 'income_account_id' => $productSalesAccount->id, 'expense_account_id' => $cogsAccount->id,
                 'default_inventory_account_id' => $inventoryAccount->id,
+                'default_cogs_account_id' => $cogsAccount->id,
                 'default_stock_input_account_id' => $stockInputAccount->id,
                 'default_price_difference_account_id' => $priceDifferenceAccount->id,
             ]
@@ -54,6 +55,7 @@ class ProductSeeder extends Seeder
                 'name' => 'CAT6 Ethernet Cable (30m)', 'type' => ProductType::Storable, 'unit_price' => Money::of('50000', $currencyCode),
                 'income_account_id' => $productSalesAccount->id, 'expense_account_id' => $cogsAccount->id,
                 'default_inventory_account_id' => $inventoryAccount->id,
+                'default_cogs_account_id' => $cogsAccount->id,
                 'default_stock_input_account_id' => $stockInputAccount->id,
                 'default_price_difference_account_id' => $priceDifferenceAccount->id,
             ]
@@ -64,6 +66,7 @@ class ProductSeeder extends Seeder
                 'name' => 'Network Switch', 'type' => ProductType::Storable, 'unit_price' => Money::of('3500000', $currencyCode),
                 'income_account_id' => $productSalesAccount->id, 'expense_account_id' => $cogsAccount->id,
                 'default_inventory_account_id' => $inventoryAccount->id,
+                'default_cogs_account_id' => $cogsAccount->id,
                 'default_stock_input_account_id' => $stockInputAccount->id,
                 'default_price_difference_account_id' => $priceDifferenceAccount->id,
             ]
