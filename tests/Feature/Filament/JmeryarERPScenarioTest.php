@@ -1,44 +1,44 @@
 <?php
 
-use App\Filament\Resources\CurrencyResource;
-use App\Filament\Resources\CompanyResource;
-use App\Filament\Resources\UserResource;
-use App\Filament\Resources\AccountResource;
-use App\Filament\Resources\JournalResource;
-use App\Filament\Resources\JournalEntryResource;
-use App\Filament\Resources\PartnerResource;
-use App\Filament\Resources\VendorBillResource;
-use App\Filament\Resources\InvoiceResource;
-use App\Filament\Resources\PaymentResource;
-use App\Filament\Resources\BankStatementResource;
-use App\Filament\Resources\ProductResource;
-use App\Filament\Resources\LockDateResource;
-
-use App\Models\Currency;
-use App\Models\Company;
 use App\Models\User;
+use Brick\Money\Money;
 use App\Models\Account;
-use App\Models\Journal;
-use App\Models\JournalEntry;
-use App\Models\Partner;
-use App\Models\VendorBill;
+use App\Models\Company;
 use App\Models\Invoice;
+use App\Models\Journal;
+use App\Models\Partner;
 use App\Models\Payment;
-use App\Models\BankStatement;
 use App\Models\Product;
+use App\Models\Currency;
 use App\Models\LockDate;
-use App\Models\AdjustmentDocument;
+use App\Models\VendorBill;
 
-use App\Enums\Accounting\AccountType;
-use App\Enums\Accounting\JournalType;
+use App\Models\JournalEntry;
+use App\Models\BankStatement;
+use App\Models\AdjustmentDocument;
 use App\Enums\Partners\PartnerType;
 use App\Enums\Products\ProductType;
-use App\Enums\Inventory\ValuationMethod;
-use App\Enums\Payments\PaymentStatus;
-use App\Enums\Adjustments\AdjustmentDocumentStatus;
-use Brick\Money\Money;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use function Pest\Livewire\livewire;
+use App\Enums\Accounting\AccountType;
+use App\Enums\Accounting\JournalType;
+use App\Enums\Payments\PaymentStatus;
+use App\Enums\Inventory\ValuationMethod;
+use App\Filament\Resources\UserResource;
+use App\Filament\Clusters\Inventory\Resources\ProductResource\Pages\CreateProduct;
+use App\Filament\Resources\AccountResource;
+use App\Filament\Resources\CompanyResource;
+
+use App\Filament\Resources\InvoiceResource;
+use App\Filament\Resources\JournalResource;
+use App\Filament\Resources\PartnerResource;
+use App\Filament\Resources\PaymentResource;
+use App\Filament\Resources\CurrencyResource;
+use App\Filament\Resources\LockDateResource;
+use App\Filament\Resources\VendorBillResource;
+use App\Filament\Resources\JournalEntryResource;
+use App\Filament\Resources\BankStatementResource;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use App\Enums\Adjustments\AdjustmentDocumentStatus;
 
 uses(RefreshDatabase::class);
 
@@ -572,7 +572,7 @@ test('Jmeryar ERP complete accounting scenario - Full Workflow', function () {
     }
 
     // Create a Storable Product
-    livewire(ProductResource\Pages\CreateProduct::class)
+    livewire(CreateProduct::class)
         ->fillForm([
             'company_id' => $company->id,
             'name' => 'IT Workstation',

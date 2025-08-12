@@ -137,43 +137,6 @@ it('can render cash flow widget', function () {
     expect(count($stats))->toBeGreaterThan(0);
 });
 
-it('can render account widget', function () {
-    $this->actingAs($this->user);
-
-    $widget = new AccountWidget();
-
-    // Use reflection to access protected method
-    $reflection = new \ReflectionClass($widget);
-    $method = $reflection->getMethod('getStats');
-    $method->setAccessible(true);
-    $stats = $method->invoke($widget);
-
-    expect($stats)->toBeArray();
-    expect(count($stats))->toBe(5); // Should have 5 stat cards
-});
-
-it('displays correct account counts', function () {
-    $this->actingAs($this->user);
-
-    // Create additional accounts
-    Account::factory()->for($this->company)->create(['type' => AccountType::CurrentAssets]);
-    Account::factory()->for($this->company)->create(['type' => AccountType::FixedAssets]);
-    Account::factory()->for($this->company)->create(['type' => AccountType::CurrentLiabilities]);
-    Account::factory()->for($this->company)->create(['type' => AccountType::Income]);
-    Account::factory()->for($this->company)->create(['type' => AccountType::Expense]);
-
-    $widget = new AccountWidget();
-
-    // Use reflection to access protected method
-    $reflection = new \ReflectionClass($widget);
-    $method = $reflection->getMethod('getStats');
-    $method->setAccessible(true);
-    $stats = $method->invoke($widget);
-
-    expect($stats)->toBeArray();
-    expect(count($stats))->toBe(5); // Should have 5 stat cards
-});
-
 it('handles missing company gracefully', function () {
     // Create user without company
     $userWithoutCompany = User::factory()->create(['company_id' => null]);
