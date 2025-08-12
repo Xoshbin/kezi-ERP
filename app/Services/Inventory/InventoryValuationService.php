@@ -29,20 +29,23 @@ class InventoryValuationService
     {
         $this->lockDateService->enforce(\App\Models\Company::find($product->company_id), \Carbon\Carbon::parse($date));
 
-        // Logic will depend on the product's valuation method
-        if ($product->valuation_method === ValuationMethod::AVCO) {
-            // Recalculate average cost
-            Log::info("Processing incoming stock for AVCO product {$product->id}");
+        // Calculate total cost for this incoming stock
+        $totalCost = $costPerUnit->multipliedBy($quantity);
+
+        // Process based on valuation method
+        if ($product->inventory_valuation_method === ValuationMethod::AVCO) {
+            $this->processIncomingStockAVCO($product, $quantity, $costPerUnit);
         } else {
-            // Create InventoryCostLayer for FIFO/LIFO
-            Log::info("Processing incoming stock for FIFO/LIFO product {$product->id}");
+            $this->processIncomingStockFIFOLIFO($product, $quantity, $costPerUnit, $date);
         }
 
-        // Generate JournalEntry (to be implemented)
-        Log::info("Journal Entry creation for incoming stock of product {$product->id}");
+        // Create journal entry for incoming stock
+        $journalEntry = $this->createIncomingStockJournalEntry($product, $totalCost, $date, $sourceDocument);
 
-        // Create StockMoveValuation (to be implemented)
-        Log::info("StockMoveValuation creation for incoming stock of product {$product->id}");
+        // Create StockMoveValuation record
+        $this->createIncomingStockMoveValuation($product, $quantity, $totalCost, $journalEntry, $sourceDocument);
+
+        Log::info("Successfully processed incoming stock for product {$product->id}, Total cost: {$totalCost->getAmount()}");
     }
 
     public function processOutgoingStock(Product $product, float $quantity, Carbon $date, $sourceDocument): void
@@ -256,6 +259,155 @@ class InventoryValuationService
             'cost_impact' => $cogsAmount,
             'valuation_method' => $product->inventory_valuation_method,
             'move_type' => StockMoveType::Outgoing,
+            'journal_entry_id' => $journalEntry->id,
+            'source_type' => get_class($sourceDocument),
+            'source_id' => $sourceDocument->id ?? null,
+        ]);
+    }
+
+    /**
+     * Process incoming stock for AVCO valuation method
+     */
+    private function processIncomingStockAVCO(Product $product, float $quantity, Money $costPerUnit): void
+    {
+        $company = $product->company;
+        $currencyCode = $company->currency->code;
+
+        // Calculate new average cost using weighted average
+        $currentQuantity = $product->quantity_on_hand;
+        $currentValue = ($product->average_cost ?? Money::of(0, $currencyCode))->multipliedBy($currentQuantity);
+
+        $incomingValue = $costPerUnit->multipliedBy($quantity);
+        $totalQuantity = $currentQuantity + $quantity;
+        $totalValue = $currentValue->plus($incomingValue);
+
+        $newAverageCost = $totalQuantity > 0
+            ? $totalValue->dividedBy($totalQuantity, \Brick\Math\RoundingMode::HALF_UP)
+            : Money::of(0, $currencyCode);
+
+        // Update product's average cost and quantity
+        $product->update([
+            'average_cost' => $newAverageCost,
+            'quantity_on_hand' => $totalQuantity,
+        ]);
+
+        Log::info("Updated AVCO for product {$product->id}: new average cost {$newAverageCost->getAmount()}, quantity {$totalQuantity}");
+    }
+
+    /**
+     * Process incoming stock for FIFO/LIFO valuation methods
+     */
+    private function processIncomingStockFIFOLIFO(Product $product, float $quantity, Money $costPerUnit, Carbon $date): void
+    {
+        // Create a new cost layer for FIFO/LIFO tracking
+        InventoryCostLayer::create([
+            'company_id' => $product->company_id,
+            'product_id' => $product->id,
+            'quantity' => $quantity,
+            'remaining_quantity' => $quantity,
+            'unit_cost' => $costPerUnit,
+            'total_cost' => $costPerUnit->multipliedBy($quantity),
+            'layer_date' => $date,
+        ]);
+
+        // Update product quantity
+        $product->update([
+            'quantity_on_hand' => $product->quantity_on_hand + $quantity,
+        ]);
+
+        Log::info("Created cost layer for product {$product->id}: quantity {$quantity}, unit cost {$costPerUnit->getAmount()}");
+    }
+
+    /**
+     * Create a journal entry for incoming stock
+     */
+    private function createIncomingStockJournalEntry(Product $product, Money $totalCost, Carbon $date, $sourceDocument): JournalEntry
+    {
+        $company = $product->company;
+        $currencyCode = $company->currency->code;
+        $zero = Money::of(0, $currencyCode);
+
+        // Validate required accounts
+        if (!$product->default_inventory_account_id) {
+            throw new \Exception("Product {$product->id} does not have an inventory account configured");
+        }
+        if (!$product->default_stock_input_account_id) {
+            throw new \Exception("Product {$product->id} does not have a stock input account configured");
+        }
+
+        // Use the purchase journal for incoming stock entries
+        $journalId = $company->default_purchase_journal_id;
+        if (!$journalId) {
+            throw new \Exception("Company {$company->id} does not have a default purchase journal configured");
+        }
+
+        // Generate reference
+        $sourceType = class_basename($sourceDocument);
+        $sourceId = $sourceDocument->id ?? 'unknown';
+        $reference = "STOCK-IN-{$sourceType}-{$sourceId}";
+
+        // Create journal entry DTO
+        $journalEntryDTO = new CreateJournalEntryDTO(
+            company_id: $company->id,
+            journal_id: $journalId,
+            currency_id: $company->currency_id,
+            entry_date: $date->toDateString(),
+            reference: $reference,
+            description: "Stock receipt for {$product->name}",
+            created_by_user_id: Auth::id() ?? 1, // Fallback to system user if no auth context
+            is_posted: true, // Stock entries are posted immediately
+            lines: [
+                // Debit: Inventory Account (asset increases)
+                new CreateJournalEntryLineDTO(
+                    account_id: $product->default_inventory_account_id,
+                    debit: $totalCost,
+                    credit: $zero,
+                    description: "Stock receipt for {$product->name}",
+                    partner_id: null,
+                    analytic_account_id: null,
+                ),
+                // Credit: Stock Input Account (liability/expense decreases or payable increases)
+                new CreateJournalEntryLineDTO(
+                    account_id: $product->default_stock_input_account_id,
+                    debit: $zero,
+                    credit: $totalCost,
+                    description: "Stock input for {$product->name}",
+                    partner_id: null,
+                    analytic_account_id: null,
+                ),
+            ],
+            source_type: get_class($sourceDocument),
+            source_id: $sourceDocument->id ?? null,
+        );
+
+        // Create the journal entry using the action
+        return app(CreateJournalEntryAction::class)->execute($journalEntryDTO);
+    }
+
+    /**
+     * Create a StockMoveValuation record for incoming stock
+     */
+    private function createIncomingStockMoveValuation(Product $product, float $quantity, Money $totalCost, JournalEntry $journalEntry, $sourceDocument): StockMoveValuation
+    {
+        // Find the related stock move
+        $stockMove = StockMove::where('product_id', $product->id)
+            ->where('source_type', get_class($sourceDocument))
+            ->where('source_id', $sourceDocument->id ?? null)
+            ->where('move_type', StockMoveType::Incoming)
+            ->first();
+
+        if (!$stockMove) {
+            throw new \Exception("No incoming stock move found for product {$product->id} and source document");
+        }
+
+        return StockMoveValuation::create([
+            'company_id' => $product->company_id,
+            'product_id' => $product->id,
+            'stock_move_id' => $stockMove->id,
+            'quantity' => $quantity,
+            'cost_impact' => $totalCost,
+            'valuation_method' => $product->inventory_valuation_method,
+            'move_type' => StockMoveType::Incoming,
             'journal_entry_id' => $journalEntry->id,
             'source_type' => get_class($sourceDocument),
             'source_id' => $sourceDocument->id ?? null,
