@@ -83,4 +83,10 @@ return [
     '90_plus_days' => '90+ Days',
     'total' => 'Total',
     'no_outstanding_receivables' => 'No outstanding receivables found for the selected date.',
+
+    // Aged Payables
+    'aged_payables' => 'Aged Payables',
+    'aged_payables_report' => 'Aged Payables Report',
+    'vendor' => 'Vendor',
+    'no_outstanding_payables' => 'No outstanding payables found for the selected date.',
 ];
