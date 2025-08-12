@@ -89,4 +89,18 @@ return [
     'aged_payables_report' => 'Aged Payables Report',
     'vendor' => 'Vendor',
     'no_outstanding_payables' => 'No outstanding payables found for the selected date.',
+
+    // Trial Balance
+    'trial_balance' => 'Trial Balance',
+    'trial_balance_report' => 'Trial Balance Report',
+    'trial_balance_balanced' => 'Trial Balance is Balanced',
+    'trial_balance_not_balanced' => 'Trial Balance is NOT BALANCED',
+    'account' => 'Account',
+    'balance_verification' => 'Balance Verification',
+    'total_debits' => 'Total Debits',
+    'total_credits' => 'Total Credits',
+    'difference' => 'Difference',
+    'balanced' => 'Balanced',
+    'no_account_balances_found' => 'No account balances found for the selected date.',
+    'select_date_and_generate' => 'Select a date and click "Generate Report" to view the Trial Balance.',
 ];
