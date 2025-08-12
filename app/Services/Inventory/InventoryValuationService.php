@@ -192,10 +192,20 @@ class InventoryValuationService
             throw new \Exception("Company {$company->id} does not have a default sales journal configured");
         }
 
-        // Generate reference
+        // Generate reference - include product ID to make it unique per product
         $sourceType = class_basename($sourceDocument);
         $sourceId = $sourceDocument->id ?? 'unknown';
-        $reference = "COGS-{$sourceType}-{$sourceId}";
+        $reference = "COGS-{$sourceType}-{$sourceId}-P{$product->id}";
+
+        // Check if a COGS journal entry already exists for this source document and product
+        $existingEntry = JournalEntry::where('company_id', $company->id)
+            ->where('reference', $reference)
+            ->first();
+
+        if ($existingEntry) {
+            Log::info("COGS journal entry already exists for {$sourceType} {$sourceId} Product {$product->id}, skipping creation");
+            return $existingEntry;
+        }
 
         // Create journal entry DTO
         $journalEntryDTO = new CreateJournalEntryDTO(
