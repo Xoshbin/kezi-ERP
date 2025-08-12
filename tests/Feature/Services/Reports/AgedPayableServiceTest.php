@@ -194,7 +194,7 @@ test('it excludes draft vendor bills', function () {
     expect($report->grandTotalDue)->toEqual(Money::zero($currency));
 });
 
-test('it excludes fully paid vendor bills', function () {
+test('it shows fully paid vendor bills with zero amounts', function () {
     // Arrange
     $currency = $this->company->currency->code;
     $partner = Partner::factory()->for($this->company)->create();
@@ -227,9 +227,12 @@ test('it excludes fully paid vendor bills', function () {
     $service = app(AgedPayableService::class);
     $report = $service->generate($this->company, $asOfDate);
 
-    // Assert
-    expect($report->reportLines)->toHaveCount(0);
+    // Assert - UPDATED: Now shows vendor with zero amounts instead of excluding
+    expect($report->reportLines)->toHaveCount(1);
     expect($report->grandTotalDue)->toEqual(Money::zero($currency));
+
+    $vendorLine = $report->reportLines->first();
+    expect($vendorLine->totalDue)->toEqual(Money::zero($currency));
 });
 
 test('it handles multiple partners correctly', function () {
@@ -274,6 +277,176 @@ test('it handles multiple partners correctly', function () {
 
     expect($partnerALine->current)->toEqual(Money::of(1000, $currency));
     expect($partnerBLine->bucket1_30)->toEqual(Money::of(2000, $currency));
+});
+
+// 🚨 NEW FAILING TESTS - These describe the CORRECT behavior for overpayment scenarios
+
+test('it correctly handles overpaid vendors by showing them with zero or negative amounts', function () {
+    // This test will FAIL with current implementation but describes correct behavior
+
+    // Arrange
+    $currency = $this->company->currency->code;
+    $vendor = Partner::factory()->for($this->company)->create(['name' => 'Overpaid Vendor']);
+    $asOfDate = Carbon::parse('2025-08-12');
+
+    // Create vendor bill for 1,000,000 IQD
+    $vendorBill = VendorBill::factory()->for($this->company)->create([
+        'vendor_id' => $vendor->id,
+        'currency_id' => $this->company->currency_id,
+        'due_date' => '2025-07-15', // Past due
+        'bill_date' => '2025-07-01',
+        'total_amount' => Money::of(1000000, $currency),
+        'status' => VendorBillStatus::Posted,
+    ]);
+
+    // Create overpayment of 1,500,000 IQD (500,000 more than bill)
+    $payment = Payment::factory()->for($this->company)->create([
+        'amount' => Money::of(1500000, $currency),
+        'currency_id' => $this->company->currency_id,
+        'status' => PaymentStatus::Confirmed,
+    ]);
+
+    PaymentDocumentLink::create([
+        'payment_id' => $payment->id,
+        'vendor_bill_id' => $vendorBill->id,
+        'amount_applied' => Money::of(1500000, $currency), // Overpayment
+    ]);
+
+    // Action
+    $service = app(AgedPayableService::class);
+    $report = $service->generate($this->company, $asOfDate);
+
+    // Assert - CORRECT behavior: Should show vendor with negative balance or special handling
+    // Current implementation skips overpaid vendors, but it should show them
+    expect($report->reportLines)->toHaveCount(1);
+
+    $vendorLine = $report->reportLines->first();
+    expect($vendorLine->partnerName)->toBe('Overpaid Vendor');
+
+    // Should show negative total due (they owe us money back)
+    expect($vendorLine->totalDue)->toEqual(Money::of(-500000, $currency));
+
+    // All buckets should be zero since it's overpaid
+    expect($vendorLine->current)->toEqual(Money::of(0, $currency));
+    expect($vendorLine->bucket1_30)->toEqual(Money::of(0, $currency));
+    expect($vendorLine->bucket31_60)->toEqual(Money::of(0, $currency));
+    expect($vendorLine->bucket61_90)->toEqual(Money::of(0, $currency));
+    expect($vendorLine->bucket90_plus)->toEqual(Money::of(0, $currency));
+});
+
+test('it reconciles with general ledger account balances', function () {
+    // This test ensures aged payables reconciles with GL account balances
+
+    // Arrange
+    $currency = $this->company->currency->code;
+    $vendor1 = Partner::factory()->for($this->company)->create(['name' => 'Vendor A']);
+    $vendor2 = Partner::factory()->for($this->company)->create(['name' => 'Vendor B']);
+    $asOfDate = Carbon::parse('2025-08-12');
+
+    // Create bills and payments that should reconcile with GL
+
+    // Vendor A: Bill 1,000,000, Payment 600,000 = Outstanding 400,000
+    $billA = VendorBill::factory()->for($this->company)->create([
+        'vendor_id' => $vendor1->id,
+        'currency_id' => $this->company->currency_id,
+        'due_date' => '2025-07-15',
+        'bill_date' => '2025-07-01',
+        'total_amount' => Money::of(1000000, $currency),
+        'status' => VendorBillStatus::Posted,
+    ]);
+
+    $paymentA = Payment::factory()->for($this->company)->create([
+        'amount' => Money::of(600000, $currency),
+        'currency_id' => $this->company->currency_id,
+        'status' => PaymentStatus::Confirmed,
+    ]);
+
+    PaymentDocumentLink::create([
+        'payment_id' => $paymentA->id,
+        'vendor_bill_id' => $billA->id,
+        'amount_applied' => Money::of(600000, $currency),
+    ]);
+
+    // Vendor B: Bill 800,000, Payment 1,000,000 = Overpaid by 200,000
+    $billB = VendorBill::factory()->for($this->company)->create([
+        'vendor_id' => $vendor2->id,
+        'currency_id' => $this->company->currency_id,
+        'due_date' => '2025-07-20',
+        'bill_date' => '2025-07-05',
+        'total_amount' => Money::of(800000, $currency),
+        'status' => VendorBillStatus::Posted,
+    ]);
+
+    $paymentB = Payment::factory()->for($this->company)->create([
+        'amount' => Money::of(1000000, $currency),
+        'currency_id' => $this->company->currency_id,
+        'status' => PaymentStatus::Confirmed,
+    ]);
+
+    PaymentDocumentLink::create([
+        'payment_id' => $paymentB->id,
+        'vendor_bill_id' => $billB->id,
+        'amount_applied' => Money::of(1000000, $currency),
+    ]);
+
+    // Action
+    $service = app(AgedPayableService::class);
+    $report = $service->generate($this->company, $asOfDate);
+
+    // Assert - Should show both vendors and reconcile properly
+    expect($report->reportLines)->toHaveCount(2);
+
+    // Net total should be 400,000 - 200,000 = 200,000 outstanding
+    expect($report->grandTotalDue)->toEqual(Money::of(200000, $currency));
+
+    // Individual vendor checks
+    $vendorALine = $report->reportLines->firstWhere('partnerName', 'Vendor A');
+    $vendorBLine = $report->reportLines->firstWhere('partnerName', 'Vendor B');
+
+    expect($vendorALine->totalDue)->toEqual(Money::of(400000, $currency));
+    expect($vendorBLine->totalDue)->toEqual(Money::of(-200000, $currency)); // Overpaid
+});
+
+test('it shows zero amounts for fully paid vendors instead of excluding them', function () {
+    // This test ensures fully paid vendors are shown with zero amounts
+
+    // Arrange
+    $currency = $this->company->currency->code;
+    $vendor = Partner::factory()->for($this->company)->create(['name' => 'Fully Paid Vendor']);
+    $asOfDate = Carbon::parse('2025-08-12');
+
+    // Create bill and exact payment
+    $vendorBill = VendorBill::factory()->for($this->company)->create([
+        'vendor_id' => $vendor->id,
+        'currency_id' => $this->company->currency_id,
+        'due_date' => '2025-07-15',
+        'bill_date' => '2025-07-01',
+        'total_amount' => Money::of(1000000, $currency),
+        'status' => VendorBillStatus::Posted,
+    ]);
+
+    $payment = Payment::factory()->for($this->company)->create([
+        'amount' => Money::of(1000000, $currency),
+        'currency_id' => $this->company->currency_id,
+        'status' => PaymentStatus::Confirmed,
+    ]);
+
+    PaymentDocumentLink::create([
+        'payment_id' => $payment->id,
+        'vendor_bill_id' => $vendorBill->id,
+        'amount_applied' => Money::of(1000000, $currency),
+    ]);
+
+    // Action
+    $service = app(AgedPayableService::class);
+    $report = $service->generate($this->company, $asOfDate);
+
+    // Assert - Should show vendor with zero amounts (current implementation excludes them)
+    expect($report->reportLines)->toHaveCount(1);
+
+    $vendorLine = $report->reportLines->first();
+    expect($vendorLine->partnerName)->toBe('Fully Paid Vendor');
+    expect($vendorLine->totalDue)->toEqual(Money::of(0, $currency));
 });
 
 test('it excludes vendor bills dated after as of date', function () {
