@@ -106,7 +106,7 @@ class CreateStockMovesForInvoiceAction
             to_location_id: $vendorLocation->id,
             move_type: StockMoveType::Outgoing,
             status: StockMoveStatus::Done,
-            move_date: $invoice->invoice_date,
+            move_date: $invoice->posted_at ?? now(),
             reference: $invoice->invoice_number,
             source_id: $invoice->id,
             source_type: Invoice::class,
