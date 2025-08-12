@@ -8,6 +8,7 @@ use Livewire\Component;
 use Filament\Tables\Table;
 use App\Models\BankStatement;
 use App\Enums\Payments\PaymentType;
+use App\Enums\Payments\PaymentStatus;
 use Filament\Forms\Contracts\HasForms;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Columns\ViewColumn;
@@ -35,7 +36,8 @@ class SystemPaymentsTable extends Component implements HasTable, HasForms
             ->query(
                 Payment::query()
                     ->where('company_id', $this->bankStatement->company_id)
-                    ->where('status', 'confirmed')
+                    ->where('status', PaymentStatus::Confirmed)
+                    ->whereDoesntHave('bankStatementLines')  // Only show unreconciled payments
                     ->with(['partner'])
             )
             ->columns([
