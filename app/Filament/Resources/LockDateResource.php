@@ -18,7 +18,7 @@ class LockDateResource extends Resource
 
     protected static ?int $navigationSort = 7;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-lock-closed';
 
     protected static ?string $cluster = Settings::class;
 

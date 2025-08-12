@@ -19,7 +19,7 @@ class AnalyticAccountResource extends Resource
 {
     protected static ?string $model = AnalyticAccount::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-chart-pie';
 
     protected static ?int $navigationSort = 4;
 
