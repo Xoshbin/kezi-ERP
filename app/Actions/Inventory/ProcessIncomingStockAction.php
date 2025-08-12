@@ -3,8 +3,10 @@
 namespace App\Actions\Inventory;
 
 use App\Models\StockMove;
+use App\Models\VendorBill;
 use App\Services\Inventory\InventoryValuationService;
 use Illuminate\Support\Facades\DB;
+use Brick\Money\Money;
 
 class ProcessIncomingStockAction
 {
@@ -15,9 +17,9 @@ class ProcessIncomingStockAction
     public function execute(StockMove $stockMove): void
     {
         DB::transaction(function () use ($stockMove) {
-            // We need to get the cost from the source document, which is not yet implemented.
-            // For now, we'll assume a placeholder cost.
-            $costPerUnit = \Brick\Money\Money::of(10, 'USD'); // Placeholder
+            // Extract the cost per unit from the source document
+            $costPerUnit = $this->extractCostFromSource($stockMove);
+
             $this->inventoryValuationService->processIncomingStock(
                 $stockMove->product,
                 $stockMove->quantity,
@@ -26,5 +28,39 @@ class ProcessIncomingStockAction
                 $stockMove->source
             );
         });
+    }
+
+    /**
+     * Extract the cost per unit from the source document
+     */
+    private function extractCostFromSource(StockMove $stockMove): Money
+    {
+        $sourceDocument = $stockMove->source;
+
+        if ($sourceDocument instanceof VendorBill) {
+            return $this->extractCostFromVendorBill($stockMove, $sourceDocument);
+        }
+
+        // For other source types (future: inventory adjustments, transfers, etc.)
+        // we can add more extraction logic here
+
+        throw new \Exception("Unable to extract cost from source document type: " . get_class($sourceDocument));
+    }
+
+    /**
+     * Extract cost from vendor bill line
+     */
+    private function extractCostFromVendorBill(StockMove $stockMove, VendorBill $vendorBill): Money
+    {
+        // Find the vendor bill line that corresponds to this product
+        $line = $vendorBill->lines()
+            ->where('product_id', $stockMove->product_id)
+            ->first();
+
+        if (!$line) {
+            throw new \Exception("No vendor bill line found for product {$stockMove->product_id} in vendor bill {$vendorBill->id}");
+        }
+
+        return $line->unit_price;
     }
 }
