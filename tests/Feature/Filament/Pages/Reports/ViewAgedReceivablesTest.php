@@ -22,10 +22,10 @@ beforeEach(function () {
 test('it can render the aged receivables page', function () {
     Livewire::test(ViewAgedReceivables::class)
         ->assertSuccessful()
-        ->assertSee('Aged Receivables Report')
-        ->assertSee('Report Parameters')
-        ->assertSee('As of Date')
-        ->assertSee('Generate Report');
+        ->assertSee(__('reports.aged_receivables_report'))
+        ->assertSee(__('reports.report_parameters'))
+        ->assertSee(__('reports.as_of_date'))
+        ->assertSee(__('reports.generate_report'));
 });
 
 test('it can generate aged receivables report', function () {
@@ -50,7 +50,7 @@ test('it can generate aged receivables report', function () {
         ->call('generateReport')
         ->assertSuccessful()
         ->assertSee('Test Partner')
-        ->assertSee('Total');
+        ->assertSee(__('reports.total'));
 
     // Check that the report data contains the expected values
     expect($component->get('reportData'))->not->toBeNull();
@@ -70,5 +70,5 @@ test('it shows no data message when no receivables exist', function () {
         ->set('asOfDate', Carbon::now()->toDateString())
         ->call('generateReport')
         ->assertSuccessful()
-        ->assertSee('No outstanding receivables found');
+        ->assertSee(__('reports.no_outstanding_receivables'));
 });

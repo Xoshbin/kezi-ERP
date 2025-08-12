@@ -42,6 +42,7 @@ test('it can generate aged payables report', function () {
     ]);
 
     // Action & Assert
+    $expectedAmount = Money::of(1000, $currency)->formatTo(app()->getLocale());
     Livewire::test(ViewAgedPayables::class)
         ->fillForm([
             'asOfDate' => $asOfDate->toDateString(),
@@ -49,7 +50,7 @@ test('it can generate aged payables report', function () {
         ->call('generateReport')
         ->assertSuccessful()
         ->assertSee('Test Vendor')
-        ->assertSee('1,000.00') // Should show in 1-30 days bucket
+        ->assertSee($expectedAmount) // Should show in 1-30 days bucket
         ->assertSee(__('reports.aged_payables_report'));
 });
 
@@ -120,6 +121,11 @@ test('it displays correct aging buckets', function () {
     ]);
 
     // Action & Assert
+    $amount1 = Money::of(1000, $currency)->formatTo(app()->getLocale());
+    $amount2 = Money::of(2000, $currency)->formatTo(app()->getLocale());
+    $amount3 = Money::of(3000, $currency)->formatTo(app()->getLocale());
+    $total = Money::of(6000, $currency)->formatTo(app()->getLocale());
+
     Livewire::test(ViewAgedPayables::class)
         ->fillForm([
             'asOfDate' => $asOfDate->toDateString(),
@@ -127,8 +133,8 @@ test('it displays correct aging buckets', function () {
         ->call('generateReport')
         ->assertSuccessful()
         ->assertSee('Test Vendor')
-        ->assertSee('1,000.00') // Current bucket
-        ->assertSee('2,000.00') // 1-30 days bucket
-        ->assertSee('3,000.00') // 31-60 days bucket
-        ->assertSee('6,000.00'); // Total
+        ->assertSee($amount1) // Current bucket
+        ->assertSee($amount2) // 1-30 days bucket
+        ->assertSee($amount3) // 31-60 days bucket
+        ->assertSee($total); // Total
 });
