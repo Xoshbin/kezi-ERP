@@ -103,4 +103,22 @@ return [
     'balanced' => 'Balanced',
     'no_account_balances_found' => 'No account balances found for the selected date.',
     'select_date_and_generate' => 'Select a date and click "Generate Report" to view the Trial Balance.',
+
+    // Tax Report
+    'tax_report' => 'Tax Report',
+    'output_tax_on_sales' => 'Output Tax (On Sales)',
+    'input_tax_on_purchases' => 'Input Tax (On Purchases)',
+    'tax_name' => 'Tax Name',
+    'tax_rate' => 'Tax Rate',
+    'net_amount' => 'Net Amount',
+    'tax_amount' => 'Tax Amount',
+    'total_output_tax' => 'Total Output Tax',
+    'total_input_tax' => 'Total Input Tax',
+    'net_tax_payable' => 'Net Tax Payable',
+    'tax_summary' => 'Tax Summary',
+    'payable' => 'Payable',
+    'refundable' => 'Refundable',
+    'no_output_tax_transactions' => 'No output tax transactions found for this period.',
+    'no_input_tax_transactions' => 'No input tax transactions found for this period.',
+    'select_date_range_and_generate' => 'Select a date range and click "Generate Report" to view the Tax Report.',
 ];
