@@ -27,6 +27,8 @@ return new class extends Migration
             $table->string('country')->nullable();
             $table->string('tax_id')->nullable();
             $table->boolean('is_active')->default(true);
+            $table->foreignId('receivable_account_id')->nullable()->constrained('accounts')->after('tax_id');
+            $table->foreignId('payable_account_id')->nullable()->constrained('accounts')->after('receivable_account_id');
             $table->timestamps();
             $table->softDeletes();
         });
