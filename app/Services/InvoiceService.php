@@ -12,20 +12,16 @@ use App\Enums\Sales\InvoiceStatus;
 use Brick\Math\RoundingMode;
 use App\Events\InvoiceConfirmed;
 use Illuminate\Support\Facades\DB;
-use App\Enums\Products\ProductType;
 use Illuminate\Support\Facades\Gate;
-use App\Enums\Inventory\StockMoveType;
-use App\Enums\Inventory\StockMoveStatus;
 use Illuminate\Support\Facades\Validator;
 use App\Models\AuditLog; // Add this import
 use App\Services\Accounting\LockDateService;
-use App\Services\Inventory\StockMoveService;
 use App\Services\SequenceService;
 use App\Exceptions\UpdateNotAllowedException;
 use Illuminate\Validation\ValidationException;
 use App\Exceptions\DeletionNotAllowedException;
-use App\Actions\Inventory\CreateStockMoveAction;
-use App\DataTransferObjects\Inventory\CreateStockMoveDTO;
+use App\Actions\Sales\CreateStockMovesForInvoiceAction;
+use App\DataTransferObjects\Sales\CreateStockMovesForInvoiceDTO;
 use App\Actions\Accounting\CreateJournalEntryForInvoiceAction;
 
 class InvoiceService
@@ -33,8 +29,8 @@ class InvoiceService
     public function __construct(
         protected LockDateService $lockDateService,
         protected JournalEntryService $journalEntryService,
-        protected StockMoveService $stockMoveService,
         protected CreateJournalEntryForInvoiceAction $createJournalEntryForInvoiceAction,
+        protected CreateStockMovesForInvoiceAction $createStockMovesForInvoiceAction,
         protected SequenceService $sequenceService
     ) {
     }
@@ -71,24 +67,9 @@ class InvoiceService
             $invoice->save();
 
             // Create stock moves for storable products
-            foreach ($invoice->invoiceLines as $line) {
-                if ($line->product && $line->product->product_type === ProductType::Storable->value) {
-                    (new CreateStockMoveAction($this->stockMoveService))->execute(new CreateStockMoveDTO(
-                        company_id: $invoice->company_id,
-                        product_id: $line->product_id,
-                        quantity: $line->quantity,
-                        from_location_id: $invoice->company->stock_location_id,
-                        to_location_id: $invoice->partner->stock_location_id,
-                        move_type: StockMoveType::OUTGOING,
-                        status: StockMoveStatus::DONE,
-                        move_date: $invoice->invoice_date,
-                        reference: $invoice->invoice_number,
-                        source_id: $invoice->id,
-                        source_type: Invoice::class,
-                        created_by_user_id: $user->id,
-                    ));
-                }
-            }
+            $this->createStockMovesForInvoiceAction->execute(
+                new CreateStockMovesForInvoiceDTO($invoice, $user)
+            );
 
             InvoiceConfirmed::dispatch($invoice);
         });
