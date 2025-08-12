@@ -36,7 +36,7 @@ class JournalSeeder extends Seeder
         $journals = [
             // == Primary Operational Journals ==
             [
-                'name' => ['en' => 'Sales', 'ckb' => 'فرۆشتن'],
+                'name' => ['en' => 'Sales', 'ckb' => 'فرۆشتن', 'ar' => 'مبيعات'],
                 'type' => JournalType::Sale,
                 'short_code' => 'INV',
                 'currency_id' => null,
@@ -44,7 +44,7 @@ class JournalSeeder extends Seeder
                 'default_credit_account_id' => $productSales->id,
             ],
             [
-                'name' => ['en' => 'Purchases', 'ckb' => 'کڕین'],
+                'name' => ['en' => 'Purchases', 'ckb' => 'کڕین', 'ar' => 'مشتريات'],
                 'type' => JournalType::Purchase,
                 'short_code' => 'BILL',
                 'currency_id' => null,
@@ -54,7 +54,7 @@ class JournalSeeder extends Seeder
 
             // == Main Bank & Cash Journals ==
             [
-                'name' => ['en' => 'Bank (IQD)', 'ckb' => 'بانک (دینار)'],
+                'name' => ['en' => 'Bank (IQD)', 'ckb' => 'بانک (دینار)', 'ar' => 'بنك (دينار عراقي)'],
                 'type' => JournalType::Bank,
                 'short_code' => 'BNK-IQD',
                 'currency_id' => $iqdCurrency->id,
@@ -62,7 +62,7 @@ class JournalSeeder extends Seeder
                 'default_credit_account_id' => $bankAccountIqd->id,
             ],
             [
-                'name' => ['en' => 'Bank (USD)', 'ckb' => 'بانک (دۆلار)'],
+                'name' => ['en' => 'Bank (USD)', 'ckb' => 'بانک (دۆلار)', 'ar' => 'بنك (دولار أمريكي)'],
                 'type' => JournalType::Bank,
                 'short_code' => 'BNK-USD',
                 'currency_id' => $usdCurrency->id,
@@ -70,7 +70,7 @@ class JournalSeeder extends Seeder
                 'default_credit_account_id' => $bankAccountUsd->id,
             ],
             [
-                'name' => ['en' => 'Cash (IQD)', 'ckb' => 'پارەی نەخت (دینار)'],
+                'name' => ['en' => 'Cash (IQD)', 'ckb' => 'پارەی نەخت (دینار)', 'ar' => 'نقد (دينار عراقي)'],
                 'type' => JournalType::Cash,
                 'short_code' => 'CSH-IQD',
                 'currency_id' => $iqdCurrency->id,
@@ -78,7 +78,7 @@ class JournalSeeder extends Seeder
                 'default_credit_account_id' => $cashAccountIqd->id,
             ],
             [
-                'name' => ['en' => 'Cash (USD)', 'ckb' => 'پارەی نەخت (دۆلار)'],
+                'name' => ['en' => 'Cash (USD)', 'ckb' => 'پارەی نەخت (دۆلار)', 'ar' => 'نقد (دولار أمريكي)'],
                 'type' => JournalType::Cash,
                 'short_code' => 'CSH-USD',
                 'currency_id' => $usdCurrency->id,
@@ -88,7 +88,7 @@ class JournalSeeder extends Seeder
 
             // == Miscellaneous Journals ==
             [
-                'name' => ['en' => 'Miscellaneous Operations', 'ckb' => 'کردارە جۆراوجۆرەکان'],
+                'name' => ['en' => 'Miscellaneous Operations', 'ckb' => 'کردارە جۆراوجۆرەکان', 'ar' => 'عمليات متنوعة'],
                 'type' => JournalType::Miscellaneous,
                 'short_code' => 'MISC',
                 'currency_id' => null,
@@ -97,7 +97,7 @@ class JournalSeeder extends Seeder
             ],
             // ** NEW: Specific journal for depreciation entries **
             [
-                'name' => ['en' => 'Depreciation', 'ckb' => 'داشکان'],
+                'name' => ['en' => 'Depreciation', 'ckb' => 'داشکان', 'ar' => 'إهلاك'],
                 'type' => JournalType::Miscellaneous,
                 'short_code' => 'DEPR',
                 'currency_id' => null,
