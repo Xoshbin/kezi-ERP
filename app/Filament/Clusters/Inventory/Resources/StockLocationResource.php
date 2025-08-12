@@ -1,11 +1,12 @@
 <?php
 
-namespace App\Filament\Resources;
+namespace App\Filament\Clusters\Inventory\Resources;
 
 use App\Enums\Inventory\StockLocationType;
-use App\Filament\Resources\StockLocationResource\Pages;
+use App\Filament\Clusters\Inventory\Resources\StockLocationResource\Pages;
 use App\Models\Company;
 use App\Models\StockLocation;
+use App\Filament\Clusters\Inventory;
 use Filament\Forms;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Form;
@@ -19,14 +20,11 @@ class StockLocationResource extends Resource
 {
     protected static ?string $model = StockLocation::class;
 
+    protected static ?string $cluster = Inventory::class;
+
     protected static ?string $navigationIcon = 'heroicon-o-building-storefront';
 
-    protected static ?int $navigationSort = 6;
-
-    public static function getNavigationGroup(): ?string
-    {
-        return __('navigation.groups.inventory');
-    }
+    protected static ?int $navigationSort = 2;
 
     public static function getModelLabel(): string
     {

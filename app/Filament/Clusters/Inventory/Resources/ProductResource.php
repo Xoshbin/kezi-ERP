@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Filament\Resources;
+namespace App\Filament\Clusters\Inventory\Resources;
 
 use App\Filament\Forms\Components\MoneyInput;
-use App\Filament\Resources\ProductResource\Pages;
-use App\Filament\Resources\ProductResource\RelationManagers;
+use App\Filament\Clusters\Inventory\Resources\ProductResource\Pages;
+use App\Filament\Clusters\Inventory\Resources\ProductResource\RelationManagers;
 use App\Filament\Tables\Columns\MoneyColumn;
 use App\Models\Company;
 use App\Models\Product;
@@ -13,6 +13,7 @@ use App\Models\Account;
 use App\Enums\Products\ProductType;
 use App\Enums\Inventory\ValuationMethod;
 use App\Enums\Accounting\AccountType;
+use App\Filament\Clusters\Inventory;
 use Filament\Forms;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Form;
@@ -26,14 +27,11 @@ class ProductResource extends Resource
 {
     protected static ?string $model = Product::class;
 
+    protected static ?string $cluster = Inventory::class;
+
     protected static ?string $navigationIcon = 'heroicon-o-cube';
 
-    protected static ?int $navigationSort = 5;
-
-    public static function getNavigationGroup(): ?string
-    {
-        return __('navigation.groups.inventory');
-    }
+    protected static ?int $navigationSort = 1;
 
     public static function getModelLabel(): string
     {

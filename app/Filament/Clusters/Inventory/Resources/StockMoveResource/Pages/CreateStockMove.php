@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Filament\Resources\StockMoveResource\Pages;
+namespace App\Filament\Clusters\Inventory\Resources\StockMoveResource\Pages;
 
 use App\Actions\Inventory\CreateStockMoveAction;
 use App\DataTransferObjects\Inventory\CreateStockMoveDTO;
 use App\Enums\Inventory\StockMoveStatus;
 use App\Enums\Inventory\StockMoveType;
-use App\Filament\Resources\StockMoveResource;
+use App\Filament\Clusters\Inventory\Resources\StockMoveResource;
 use Carbon\Carbon;
 use Filament\Facades\Filament;
 use Filament\Resources\Pages\CreateRecord;

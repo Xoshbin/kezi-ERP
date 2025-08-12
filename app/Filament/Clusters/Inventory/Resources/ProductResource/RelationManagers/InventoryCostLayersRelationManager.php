@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Resources\ProductResource\RelationManagers;
+namespace App\Filament\Clusters\Inventory\Resources\ProductResource\RelationManagers;
 
 use App\Filament\Tables\Columns\MoneyColumn;
 use App\Models\InventoryCostLayer;

@@ -14,5 +14,6 @@ return [
     // Navigation Clusters
     'clusters' => [
         'settings' => 'Settings',
+        'inventory' => 'Inventory Management',
     ],
 ];
