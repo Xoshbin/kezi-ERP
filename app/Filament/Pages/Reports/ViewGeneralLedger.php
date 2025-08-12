@@ -5,6 +5,7 @@ namespace App\Filament\Pages\Reports;
 use App\Models\Account;
 use App\Models\Company;
 use App\Services\Reports\GeneralLedgerService;
+use App\Support\NumberFormatter;
 use Carbon\Carbon;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Section;
@@ -133,9 +134,9 @@ class ViewGeneralLedger extends Page
                 'accountId' => $account->accountId,
                 'accountCode' => $account->accountCode,
                 'accountName' => $account->accountName,
-                'openingBalance' => $account->openingBalance->formatTo(app()->getLocale()),
+                'openingBalance' => NumberFormatter::formatMoneyTo($account->openingBalance),
                 'openingBalanceAmount' => $account->openingBalance->getAmount()->toFloat(),
-                'closingBalance' => $account->closingBalance->formatTo(app()->getLocale()),
+                'closingBalance' => NumberFormatter::formatMoneyTo($account->closingBalance),
                 'closingBalanceAmount' => $account->closingBalance->getAmount()->toFloat(),
                 'transactionLines' => $account->transactionLines->map(fn($line) => [
                     'journalEntryId' => $line->journalEntryId,
@@ -143,11 +144,11 @@ class ViewGeneralLedger extends Page
                     'reference' => $line->reference,
                     'description' => $line->description,
                     'contraAccount' => $line->contraAccount,
-                    'debit' => $line->debit->formatTo(app()->getLocale()),
+                    'debit' => NumberFormatter::formatMoneyTo($line->debit),
                     'debitAmount' => $line->debit->getAmount()->toFloat(),
-                    'credit' => $line->credit->formatTo(app()->getLocale()),
+                    'credit' => NumberFormatter::formatMoneyTo($line->credit),
                     'creditAmount' => $line->credit->getAmount()->toFloat(),
-                    'balance' => $line->balance->formatTo(app()->getLocale()),
+                    'balance' => NumberFormatter::formatMoneyTo($line->balance),
                     'balanceAmount' => $line->balance->getAmount()->toFloat(),
                 ])->toArray(),
             ])->toArray(),

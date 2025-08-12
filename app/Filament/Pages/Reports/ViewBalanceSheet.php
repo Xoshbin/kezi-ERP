@@ -3,6 +3,7 @@
 namespace App\Filament\Pages\Reports;
 
 use App\Services\Reports\BalanceSheetService;
+use App\Support\NumberFormatter;
 use Carbon\Carbon;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Section;
@@ -93,31 +94,31 @@ class ViewBalanceSheet extends Page
                 'accountId' => $line->accountId,
                 'accountCode' => $line->accountCode,
                 'accountName' => $line->accountName,
-                'balance' => $line->balance->formatTo(app()->getLocale()),
+                'balance' => NumberFormatter::formatMoneyTo($line->balance),
                 'balanceAmount' => $line->balance->getAmount()->toFloat(),
             ])->toArray(),
             'liabilityLines' => $report->liabilityLines->map(fn($line) => [
                 'accountId' => $line->accountId,
                 'accountCode' => $line->accountCode,
                 'accountName' => $line->accountName,
-                'balance' => $line->balance->formatTo(app()->getLocale()),
+                'balance' => NumberFormatter::formatMoneyTo($line->balance),
                 'balanceAmount' => $line->balance->getAmount()->toFloat(),
             ])->toArray(),
             'equityLines' => $report->equityLines->map(fn($line) => [
                 'accountId' => $line->accountId,
                 'accountCode' => $line->accountCode,
                 'accountName' => $line->accountName,
-                'balance' => $line->balance->formatTo(app()->getLocale()),
+                'balance' => NumberFormatter::formatMoneyTo($line->balance),
                 'balanceAmount' => $line->balance->getAmount()->toFloat(),
             ])->toArray(),
-            'totalAssets' => $report->totalAssets->formatTo(app()->getLocale()),
-            'totalLiabilities' => $report->totalLiabilities->formatTo(app()->getLocale()),
-            'retainedEarnings' => $report->retainedEarnings->formatTo(app()->getLocale()),
-            'currentYearEarnings' => $report->currentYearEarnings->formatTo(app()->getLocale()),
+            'totalAssets' => NumberFormatter::formatMoneyTo($report->totalAssets),
+            'totalLiabilities' => NumberFormatter::formatMoneyTo($report->totalLiabilities),
+            'retainedEarnings' => NumberFormatter::formatMoneyTo($report->retainedEarnings),
+            'currentYearEarnings' => NumberFormatter::formatMoneyTo($report->currentYearEarnings),
             'currentYearEarningsAmount' => $report->currentYearEarnings->getAmount()->toFloat(),
             'isCurrentYearLoss' => $report->currentYearEarnings->isNegative(),
-            'totalEquity' => $report->totalEquity->formatTo(app()->getLocale()),
-            'totalLiabilitiesAndEquity' => $report->totalLiabilitiesAndEquity->formatTo(app()->getLocale()),
+            'totalEquity' => NumberFormatter::formatMoneyTo($report->totalEquity),
+            'totalLiabilitiesAndEquity' => NumberFormatter::formatMoneyTo($report->totalLiabilitiesAndEquity),
         ];
 
         $this->dispatch('report-generated');

@@ -5,6 +5,7 @@ namespace App\Filament\Pages\Reports;
 use App\Models\Company;
 use App\Models\Partner;
 use App\Services\Reports\PartnerLedgerService;
+use App\Support\NumberFormatter;
 use Carbon\Carbon;
 use Filament\Facades\Filament;
 use Filament\Forms\Components\DatePicker;
@@ -127,19 +128,19 @@ class ViewPartnerLedger extends Page
             'partnerId' => $report->partnerId,
             'partnerName' => $report->partnerName,
             'currency' => $report->currency,
-            'openingBalance' => $report->openingBalance->formatTo(app()->getLocale()),
+            'openingBalance' => NumberFormatter::formatMoneyTo($report->openingBalance),
             'openingBalanceAmount' => $report->openingBalance->getAmount()->toFloat(),
-            'closingBalance' => $report->closingBalance->formatTo(app()->getLocale()),
+            'closingBalance' => NumberFormatter::formatMoneyTo($report->closingBalance),
             'closingBalanceAmount' => $report->closingBalance->getAmount()->toFloat(),
             'transactionLines' => $report->transactionLines->map(fn($line) => [
                 'date' => $line->date->format('Y-m-d'),
                 'reference' => $line->reference,
                 'transactionType' => $line->transactionType,
-                'debit' => $line->debit->formatTo(app()->getLocale()),
+                'debit' => NumberFormatter::formatMoneyTo($line->debit),
                 'debitAmount' => $line->debit->getAmount()->toFloat(),
-                'credit' => $line->credit->formatTo(app()->getLocale()),
+                'credit' => NumberFormatter::formatMoneyTo($line->credit),
                 'creditAmount' => $line->credit->getAmount()->toFloat(),
-                'balance' => $line->balance->formatTo(app()->getLocale()),
+                'balance' => NumberFormatter::formatMoneyTo($line->balance),
                 'balanceAmount' => $line->balance->getAmount()->toFloat(),
             ])->toArray(),
         ];

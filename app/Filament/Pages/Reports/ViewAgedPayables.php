@@ -4,6 +4,7 @@ namespace App\Filament\Pages\Reports;
 
 use App\Models\Company;
 use App\Services\Reports\AgedPayableService;
+use App\Support\NumberFormatter;
 use Carbon\Carbon;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Section;
@@ -94,30 +95,30 @@ class ViewAgedPayables extends Page
             'reportLines' => $report->reportLines->map(fn($line) => [
                 'partnerId' => $line->partnerId,
                 'partnerName' => $line->partnerName,
-                'current' => $line->current->formatTo(app()->getLocale()),
+                'current' => NumberFormatter::formatMoneyTo($line->current),
                 'currentAmount' => $line->current->getAmount()->toFloat(),
-                'bucket1_30' => $line->bucket1_30->formatTo(app()->getLocale()),
+                'bucket1_30' => NumberFormatter::formatMoneyTo($line->bucket1_30),
                 'bucket1_30Amount' => $line->bucket1_30->getAmount()->toFloat(),
-                'bucket31_60' => $line->bucket31_60->formatTo(app()->getLocale()),
+                'bucket31_60' => NumberFormatter::formatMoneyTo($line->bucket31_60),
                 'bucket31_60Amount' => $line->bucket31_60->getAmount()->toFloat(),
-                'bucket61_90' => $line->bucket61_90->formatTo(app()->getLocale()),
+                'bucket61_90' => NumberFormatter::formatMoneyTo($line->bucket61_90),
                 'bucket61_90Amount' => $line->bucket61_90->getAmount()->toFloat(),
-                'bucket90_plus' => $line->bucket90_plus->formatTo(app()->getLocale()),
+                'bucket90_plus' => NumberFormatter::formatMoneyTo($line->bucket90_plus),
                 'bucket90_plusAmount' => $line->bucket90_plus->getAmount()->toFloat(),
-                'totalDue' => $line->totalDue->formatTo(app()->getLocale()),
+                'totalDue' => NumberFormatter::formatMoneyTo($line->totalDue),
                 'totalDueAmount' => $line->totalDue->getAmount()->toFloat(),
             ])->toArray(),
-            'totalCurrent' => $report->totalCurrent->formatTo(app()->getLocale()),
+            'totalCurrent' => NumberFormatter::formatMoneyTo($report->totalCurrent),
             'totalCurrentAmount' => $report->totalCurrent->getAmount()->toFloat(),
-            'totalBucket1_30' => $report->totalBucket1_30->formatTo(app()->getLocale()),
+            'totalBucket1_30' => NumberFormatter::formatMoneyTo($report->totalBucket1_30),
             'totalBucket1_30Amount' => $report->totalBucket1_30->getAmount()->toFloat(),
-            'totalBucket31_60' => $report->totalBucket31_60->formatTo(app()->getLocale()),
+            'totalBucket31_60' => NumberFormatter::formatMoneyTo($report->totalBucket31_60),
             'totalBucket31_60Amount' => $report->totalBucket31_60->getAmount()->toFloat(),
-            'totalBucket61_90' => $report->totalBucket61_90->formatTo(app()->getLocale()),
+            'totalBucket61_90' => NumberFormatter::formatMoneyTo($report->totalBucket61_90),
             'totalBucket61_90Amount' => $report->totalBucket61_90->getAmount()->toFloat(),
-            'totalBucket90_plus' => $report->totalBucket90_plus->formatTo(app()->getLocale()),
+            'totalBucket90_plus' => NumberFormatter::formatMoneyTo($report->totalBucket90_plus),
             'totalBucket90_plusAmount' => $report->totalBucket90_plus->getAmount()->toFloat(),
-            'grandTotalDue' => $report->grandTotalDue->formatTo(app()->getLocale()),
+            'grandTotalDue' => NumberFormatter::formatMoneyTo($report->grandTotalDue),
             'grandTotalDueAmount' => $report->grandTotalDue->getAmount()->toFloat(),
             'companyName' => $company->name,
             'asOfDate' => $this->asOfDate,
