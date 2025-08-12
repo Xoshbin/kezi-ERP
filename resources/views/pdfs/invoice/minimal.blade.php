@@ -290,7 +290,7 @@
                             @endif
                             {{ $line->description }}
                         </td>
-                        <td class="amount-column">{{ number_format($line->quantity, 2) }}</td>
+                        <td class="amount-column">{{ \App\Support\NumberFormatter::formatNumber($line->quantity, 2) }}</td>
                         <td class="amount-column">{{ $line->unit_price }}</td>
                         <td class="amount-column">{{ $line->subtotal }}</td>
                     </tr>

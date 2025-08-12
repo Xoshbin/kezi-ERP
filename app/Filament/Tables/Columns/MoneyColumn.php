@@ -5,7 +5,7 @@ namespace App\Filament\Tables\Columns;
 use Brick\Money\Money;
 use Filament\Tables\Columns\TextColumn;
 use Illuminate\Database\Eloquent\Model;
-use NumberFormatter;
+use App\Support\NumberFormatter;
 use App\Models\Currency;
 
 class MoneyColumn extends TextColumn
@@ -23,22 +23,14 @@ class MoneyColumn extends TextColumn
 
             // If it's already a Money object, format it directly
             if ($state instanceof Money) {
-                $formatter = new NumberFormatter('EN_us', NumberFormatter::CURRENCY);
-                return $formatter->formatCurrency(
-                    $state->getAmount()->toFloat(),
-                    $state->getCurrency()->getCurrencyCode()
-                );
+                return NumberFormatter::formatMoney($state);
             }
 
             // Handle raw numeric values (like pivot fields) - construct Money object
             if (is_numeric($state) && $record) {
                 $money = $this->getMoneyObject($state, $record);
                 if ($money instanceof Money) {
-                    $formatter = new NumberFormatter('EN_us', NumberFormatter::CURRENCY);
-                    return $formatter->formatCurrency(
-                        $money->getAmount()->toFloat(),
-                        $money->getCurrency()->getCurrencyCode()
-                    );
+                    return NumberFormatter::formatMoney($money);
                 }
             }
 
