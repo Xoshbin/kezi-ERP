@@ -41,7 +41,7 @@ class JmeryarPanelProvider extends PanelProvider
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\\Filament\\Widgets')
             ->discoverClusters(in: app_path('Filament/Clusters'), for: 'App\\Filament\\Clusters')
             ->widgets([
-                Widgets\AccountWidget::class
+                // Widgets\AccountWidget::class
             ])
             ->middleware([
                 EncryptCookies::class,
