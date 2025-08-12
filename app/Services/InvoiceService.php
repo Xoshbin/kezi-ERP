@@ -11,6 +11,7 @@ use App\Models\JournalEntry;
 use App\Enums\Sales\InvoiceStatus;
 use Brick\Math\RoundingMode;
 use App\Events\InvoiceConfirmed;
+use App\Events\Inventory\StockMoveConfirmed;
 use Illuminate\Support\Facades\DB;
 use App\Enums\Products\ProductType;
 use Illuminate\Support\Facades\Gate;
@@ -72,21 +73,28 @@ class InvoiceService
 
             // Create stock moves for storable products
             foreach ($invoice->invoiceLines as $line) {
-                if ($line->product && $line->product->product_type === ProductType::Storable->value) {
-                    (new CreateStockMoveAction($this->stockMoveService))->execute(new CreateStockMoveDTO(
+                if ($line->product && $line->product->type === ProductType::Storable) {
+                    // Get default stock locations
+                    $warehouseLocation = \App\Models\StockLocation::where('name', 'Warehouse')->first();
+                    $vendorLocation = \App\Models\StockLocation::where('name', 'Vendors')->first();
+
+                    $stockMove = (new CreateStockMoveAction($this->stockMoveService))->execute(new CreateStockMoveDTO(
                         company_id: $invoice->company_id,
                         product_id: $line->product_id,
                         quantity: $line->quantity,
-                        from_location_id: $invoice->company->stock_location_id,
-                        to_location_id: $invoice->partner->stock_location_id,
-                        move_type: StockMoveType::OUTGOING,
-                        status: StockMoveStatus::DONE,
+                        from_location_id: $warehouseLocation->id,
+                        to_location_id: $vendorLocation->id,
+                        move_type: StockMoveType::Outgoing,
+                        status: StockMoveStatus::Done,
                         move_date: $invoice->invoice_date,
                         reference: $invoice->invoice_number,
                         source_id: $invoice->id,
                         source_type: Invoice::class,
                         created_by_user_id: $user->id,
                     ));
+
+                    // Dispatch the StockMoveConfirmed event to trigger COGS calculation
+                    StockMoveConfirmed::dispatch($stockMove);
                 }
             }
 
