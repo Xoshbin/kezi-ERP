@@ -4,7 +4,7 @@ namespace App\Services\Reports;
 
 use App\DataTransferObjects\Reports\PartnerLedgerDTO;
 use App\DataTransferObjects\Reports\PartnerLedgerTransactionLineDTO;
-
+use App\Enums\Accounting\AccountType;
 use App\Models\Company;
 use App\Models\JournalEntryLine;
 use App\Models\Partner;
@@ -24,18 +24,38 @@ class PartnerLedgerService
         }
 
         $currency = $company->currency->code;
-        $partnerAccountIds = [$partner->receivable_account_id, $partner->payable_account_id];
 
-        $openingBalance = $this->getOpeningBalance($partnerAccountIds, $startDate, $currency);
-        $transactions = $this->getTransactionsForPeriod($partnerAccountIds, $startDate, $endDate);
+        // Load account information to understand account types
+        $partner->load(['receivableAccount', 'payableAccount']);
+
+        // Get transactions for both accounts but process them separately to maintain context
+        $receivableTransactions = $this->getTransactionsForAccount($partner->receivable_account_id, $startDate, $endDate);
+        $payableTransactions = $this->getTransactionsForAccount($partner->payable_account_id, $startDate, $endDate);
+
+        // Calculate opening balances for each account type
+        $receivableOpeningBalance = $this->getAccountOpeningBalance($partner->receivable_account_id, $startDate, $currency);
+        $payableOpeningBalance = $this->getAccountOpeningBalance($partner->payable_account_id, $startDate, $currency);
+
+        // Combine and sort all transactions by date
+        $allTransactions = $receivableTransactions->concat($payableTransactions)
+            ->sortBy(['journalEntry.entry_date', 'journalEntry.id']);
+
+        // Calculate the partner's opening balance (receivable balance - payable balance)
+        // For partner ledger: positive = partner owes us (customer) or we owe partner (vendor)
+        $openingBalance = $this->calculatePartnerBalance($receivableOpeningBalance, $payableOpeningBalance, $partner);
 
         $runningBalance = $openingBalance;
         $transactionLines = new Collection();
 
-        foreach ($transactions as $line) {
-            $debit = $line->debit; // Already a Money object due to MoneyCast
-            $credit = $line->credit; // Already a Money object due to MoneyCast
-            $runningBalance = $runningBalance->plus($debit)->minus($credit);
+        foreach ($allTransactions as $line) {
+            $debit = $line->debit;
+            $credit = $line->credit;
+
+            // Determine if this is a receivable or payable account transaction
+            $isReceivableAccount = $line->account_id === $partner->receivable_account_id;
+
+            // Update running balance based on account type and partner context
+            $runningBalance = $this->updatePartnerBalance($runningBalance, $debit, $credit, $isReceivableAccount, $partner);
 
             $transactionLines->push(new PartnerLedgerTransactionLineDTO(
                 date: $line->journalEntry->entry_date,
@@ -57,11 +77,11 @@ class PartnerLedgerService
         );
     }
 
-    private function getOpeningBalance(array $accountIds, Carbon $startDate, string $currency): Money
+    private function getAccountOpeningBalance(int $accountId, Carbon $startDate, string $currency): Money
     {
         $balance = JournalEntryLine::query()
             ->join('journal_entries', 'journal_entry_lines.journal_entry_id', '=', 'journal_entries.id')
-            ->whereIn('journal_entry_lines.account_id', $accountIds)
+            ->where('journal_entry_lines.account_id', $accountId)
             ->where('journal_entries.state', 'posted')
             ->where('journal_entries.entry_date', '<', $startDate->toDateString())
             ->sum(DB::raw('journal_entry_lines.debit - journal_entry_lines.credit'));
@@ -69,18 +89,47 @@ class PartnerLedgerService
         return Money::ofMinor($balance ?: 0, $currency);
     }
 
-    private function getTransactionsForPeriod(array $accountIds, Carbon $startDate, Carbon $endDate): Collection
+    private function getTransactionsForAccount(int $accountId, Carbon $startDate, Carbon $endDate): Collection
     {
         return JournalEntryLine::query()
             ->with(['journalEntry' => fn($q) => $q->with('journal')]) // Eager load for type lookup
             ->join('journal_entries', 'journal_entry_lines.journal_entry_id', '=', 'journal_entries.id')
-            ->whereIn('journal_entry_lines.account_id', $accountIds)
+            ->where('journal_entry_lines.account_id', $accountId)
             ->where('journal_entries.state', 'posted')
             ->whereBetween('journal_entries.entry_date', [$startDate, $endDate])
-            ->orderBy('journal_entries.entry_date')
-            ->orderBy('journal_entries.id')
             ->select('journal_entry_lines.*') // Select only the line columns to avoid conflicts
             ->get();
+    }
+
+    /**
+     * Calculate the partner's opening balance by combining receivable and payable balances.
+     *
+     * For partner ledger interpretation:
+     * - Receivable balance (asset): positive = customer owes us
+     * - Payable balance (liability): positive = we owe vendor
+     * - Combined: receivable - payable = net amount partner owes us (if positive) or we owe partner (if negative)
+     */
+    private function calculatePartnerBalance(Money $receivableBalance, Money $payableBalance, Partner $partner): Money
+    {
+        // Net partner balance = receivable balance - payable balance
+        // Positive = partner owes us (customer scenario)
+        // Negative = we owe partner (vendor scenario)
+        return $receivableBalance->minus($payableBalance);
+    }
+
+    /**
+     * Update the running partner balance based on the transaction and account type.
+     */
+    private function updatePartnerBalance(Money $currentBalance, Money $debit, Money $credit, bool $isReceivableAccount, Partner $partner): Money
+    {
+        if ($isReceivableAccount) {
+            // Receivable account: debit increases what partner owes us, credit decreases it
+            return $currentBalance->plus($debit)->minus($credit);
+        } else {
+            // Payable account: credit increases what we owe partner, debit decreases it
+            // Since partner balance = receivable - payable, payable changes are subtracted
+            return $currentBalance->minus($debit)->plus($credit);
+        }
     }
 
     private function getTransactionType(JournalEntryLine $line): string
