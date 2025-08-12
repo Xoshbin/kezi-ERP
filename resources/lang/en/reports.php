@@ -71,4 +71,16 @@ return [
     'we_owe_vendor' => 'We owe money to this vendor.',
     'account_balanced' => 'The account is balanced.',
     'partner_accounts_required' => 'Partners must have receivable and payable accounts assigned to generate ledger reports.',
+
+    // Aged Receivables
+    'aged_receivables' => 'Aged Receivables',
+    'aged_receivables_report' => 'Aged Receivables Report',
+    'report_parameters' => 'Report Parameters',
+    'current' => 'Current',
+    '1_30_days' => '1-30 Days',
+    '31_60_days' => '31-60 Days',
+    '61_90_days' => '61-90 Days',
+    '90_plus_days' => '90+ Days',
+    'total' => 'Total',
+    'no_outstanding_receivables' => 'No outstanding receivables found for the selected date.',
 ];
