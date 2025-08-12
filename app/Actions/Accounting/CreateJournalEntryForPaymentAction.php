@@ -24,6 +24,9 @@ class CreateJournalEntryForPaymentAction
         $baseCurrency = $company->currency;
         $paymentCurrency = $payment->currency;
 
+        // Load the partner to access individual accounts
+        $payment->load('partner');
+
         // Determine the exchange rate. If it's the same currency, the rate is 1.
         $exchangeRate = ($baseCurrency->id === $paymentCurrency->id) ? 1.0 : $paymentCurrency->exchange_rate;
 
@@ -47,7 +50,8 @@ class CreateJournalEntryForPaymentAction
         ]);
 
         if ($payment->payment_type === PaymentType::Inbound) {
-            $arAccountId = $company->default_accounts_receivable_id;
+            // Use partner's individual receivable account if available, otherwise fall back to default
+            $arAccountId = $payment->partner->receivable_account_id ?? $company->default_accounts_receivable_id;
             if (!$arAccountId) {
                 throw new \RuntimeException('Default Accounts Receivable is not configured for this company.');
             }
@@ -69,7 +73,8 @@ class CreateJournalEntryForPaymentAction
                 analytic_account_id: null,
             );
         } elseif ($payment->payment_type === PaymentType::Outbound) {
-            $apAccountId = $company->default_accounts_payable_id;
+            // Use partner's individual payable account if available, otherwise fall back to default
+            $apAccountId = $payment->partner->payable_account_id ?? $company->default_accounts_payable_id;
             if (!$apAccountId) {
                 throw new \RuntimeException('Default Accounts Payable is not configured for this company.');
             }

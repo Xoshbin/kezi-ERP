@@ -20,12 +20,14 @@ class CreateJournalEntryForInvoiceAction
     public function execute(Invoice $invoice, User $user): JournalEntry
     {
         // 1. Load all necessary related data for efficiency.
-        $invoice->load('company.currency', 'currency', 'invoiceLines.tax', 'invoiceLines.incomeAccount');
+        $invoice->load('company.currency', 'currency', 'invoiceLines.tax', 'invoiceLines.incomeAccount', 'customer');
 
         $company = $invoice->company;
         $baseCurrency = $company->currency;
         $foreignCurrency = $invoice->currency;
-        $arAccountId = $company->default_accounts_receivable_id;
+
+        // Use customer's individual receivable account if available, otherwise fall back to default
+        $arAccountId = $invoice->customer->receivable_account_id ?? $company->default_accounts_receivable_id;
         $salesJournalId = $company->default_sales_journal_id;
 
         if (!$arAccountId || !$salesJournalId) {
