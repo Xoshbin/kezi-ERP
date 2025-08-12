@@ -83,4 +83,10 @@ return [
     '90_plus_days' => '٩٠+ ڕۆژ',
     'total' => 'کۆی گشتی',
     'no_outstanding_receivables' => 'هیچ وەرگرتنێکی ماوە نەدۆزرایەوە بۆ بەرواری دیاریکراو.',
+
+    // Aged Payables
+    'aged_payables' => 'پارەدانی کۆن',
+    'aged_payables_report' => 'ڕاپۆرتی پارەدانی کۆن',
+    'vendor' => 'فرۆشیار',
+    'no_outstanding_payables' => 'هیچ پارەدانێکی ماوە نەدۆزرایەوە بۆ بەرواری دیاریکراو.',
 ];
