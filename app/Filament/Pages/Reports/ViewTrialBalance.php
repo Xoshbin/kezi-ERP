@@ -76,7 +76,7 @@ class ViewTrialBalance extends Page
             'asOfDate' => 'required|date',
         ]);
 
-        $company = Company::find(auth()->user()->company_id);
+        $company = Company::find(Filament::auth()->user()->company_id);
         $service = app(TrialBalanceService::class);
 
         $report = $service->generate(
