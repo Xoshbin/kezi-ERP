@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Resources;
+namespace App\Filament\Clusters\Inventory\Resources;
 
 use App\Actions\Inventory\CreateStockMoveAction;
 use App\Actions\Inventory\UpdateStockMoveAction;
@@ -8,9 +8,10 @@ use App\DataTransferObjects\Inventory\CreateStockMoveDTO;
 use App\DataTransferObjects\Inventory\UpdateStockMoveDTO;
 use App\Enums\Inventory\StockMoveStatus;
 use App\Enums\Inventory\StockMoveType;
-use App\Filament\Resources\StockMoveResource\Pages;
+use App\Filament\Clusters\Inventory\Resources\StockMoveResource\Pages;
 use App\Models\Company;
 use App\Models\StockMove;
+use App\Filament\Clusters\Inventory;
 use Filament\Facades\Filament;
 use Filament\Forms;
 use Filament\Forms\Components\Section;
@@ -24,14 +25,11 @@ class StockMoveResource extends Resource
 {
     protected static ?string $model = StockMove::class;
 
+    protected static ?string $cluster = Inventory::class;
+
     protected static ?string $navigationIcon = 'heroicon-o-arrow-path';
 
-    protected static ?int $navigationSort = 7;
-
-    public static function getNavigationGroup(): ?string
-    {
-        return __('navigation.groups.inventory');
-    }
+    protected static ?int $navigationSort = 3;
 
     public static function getModelLabel(): string
     {

@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Filament\Resources\StockMoveResource\Pages;
+namespace App\Filament\Clusters\Inventory\Resources\StockMoveResource\Pages;
 
 use App\Enums\Inventory\StockMoveStatus;
-use App\Filament\Resources\StockMoveResource;
+use App\Filament\Clusters\Inventory\Resources\StockMoveResource;
 use Filament\Actions;
 use Filament\Resources\Pages\ViewRecord;
 

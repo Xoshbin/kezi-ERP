@@ -14,6 +14,7 @@ return [
     // Navigation Clusters
     'clusters' => [
         'settings' => 'ڕێکخستنەکان',
+        'inventory' => 'بەڕێوەبردنی کۆگا',
     ],
 
     // Global Navigation Elements

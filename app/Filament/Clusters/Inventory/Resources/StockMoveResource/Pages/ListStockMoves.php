@@ -1,14 +1,14 @@
 <?php
 
-namespace App\Filament\Resources\StockLocationResource\Pages;
+namespace App\Filament\Clusters\Inventory\Resources\StockMoveResource\Pages;
 
-use App\Filament\Resources\StockLocationResource;
+use App\Filament\Clusters\Inventory\Resources\StockMoveResource;
 use Filament\Actions;
 use Filament\Resources\Pages\ListRecords;
 
-class ListStockLocations extends ListRecords
+class ListStockMoves extends ListRecords
 {
-    protected static string $resource = StockLocationResource::class;
+    protected static string $resource = StockMoveResource::class;
 
     protected function getHeaderActions(): array
     {
@@ -20,6 +20,6 @@ class ListStockLocations extends ListRecords
 
     public function getTitle(): string
     {
-        return __('stock_location.plural_label');
+        return __('stock_move.plural_label');
     }
 }
