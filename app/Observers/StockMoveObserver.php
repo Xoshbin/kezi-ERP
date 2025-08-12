@@ -26,13 +26,8 @@ class StockMoveObserver
     {
         $user = auth()->user();
 
-        // Skip audit logging if no authenticated user (e.g., in console/tinker context)
-        if (!$user) {
-            return;
-        }
-
         AuditLog::create([
-            'user_id' => $user->id,
+            'user_id' => $user?->id,
             'auditable_id' => $stockMove->id,
             'auditable_type' => StockMove::class,
             'event_type' => $action,
