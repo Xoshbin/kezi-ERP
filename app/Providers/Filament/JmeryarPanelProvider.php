@@ -63,7 +63,7 @@ class JmeryarPanelProvider extends PanelProvider
                 ->showGitBranch()
                 ->showDebugModeWarningInProduction(),
                 SpatieLaravelTranslatablePlugin::make()
-                    ->defaultLocales(['en', 'ckb']),
+                    ->defaultLocales(['en', 'ckb', 'ar']),
                 FilamentDeveloperLoginsPlugin::make()
                     ->enabled(app()->environment('local'))
                     ->users([

@@ -15,7 +15,7 @@ class CurrencySeeder extends Seeder
         Currency::updateOrCreate(
             ['code' => 'USD'],
             [
-                'name' => ['en' => 'US Dollar', 'ckb' => 'دۆلاری ئەمریکی'],
+                'name' => ['en' => 'US Dollar', 'ckb' => 'دۆلاری ئەمریکی', 'ar' => 'دولار أمريكي'],
                 'symbol' => '$',
                 'exchange_rate' => 1.0,
                 'is_active' => true,
@@ -26,7 +26,7 @@ class CurrencySeeder extends Seeder
         Currency::updateOrCreate(
             ['code' => 'IQD'],
             [
-                'name' => ['en' => 'Iraqi Dinar', 'ckb' => 'دیناری عێراقی'],
+                'name' => ['en' => 'Iraqi Dinar', 'ckb' => 'دیناری عێراقی', 'ar' => 'دينار عراقي'],
                 'symbol' => 'ع.د',
                 'exchange_rate' => 1460.0,
                 'is_active' => true,
