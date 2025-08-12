@@ -5,7 +5,6 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\PartnerResource\Pages;
 use App\Filament\Resources\PartnerResource\RelationManagers;
 use App\Models\Partner;
-use App\Models\Company;
 use App\Enums\Partners\PartnerType;
 use Filament\Forms;
 use Filament\Forms\Form;
@@ -174,6 +173,67 @@ class PartnerResource extends Resource
                             ->columnSpan(1),
                     ])
                     ->columns(2)
+                    ->collapsible(),
+
+                Forms\Components\Section::make(__('partner.accounting_configuration'))
+                    ->description(__('partner.accounting_configuration_description'))
+                    ->icon('heroicon-m-calculator')
+                    ->schema([
+                        Forms\Components\Grid::make(2)
+                            ->schema([
+                                Forms\Components\Select::make('receivable_account_id')
+                                    ->label(__('partner.receivable_account'))
+                                    ->relationship('receivableAccount', 'name', function ($query) {
+                                        return $query->where('type', \App\Enums\Accounting\AccountType::Receivable);
+                                    })
+                                    ->searchable()
+                                    ->preload()
+                                    ->createOptionForm([
+                                        Forms\Components\TextInput::make('name')
+                                            ->label(__('account.name'))
+                                            ->required()
+                                            ->maxLength(255),
+                                        Forms\Components\TextInput::make('code')
+                                            ->label(__('account.code'))
+                                            ->required()
+                                            ->maxLength(255),
+                                        Forms\Components\Select::make('type')
+                                            ->label(__('account.type'))
+                                            ->options([\App\Enums\Accounting\AccountType::Receivable->value => 'Receivable'])
+                                            ->default(\App\Enums\Accounting\AccountType::Receivable->value)
+                                            ->required(),
+                                    ])
+                                    ->createOptionModalHeading(__('partner.create_receivable_account'))
+                                    ->helperText(__('partner.receivable_account_help'))
+                                    ->prefixIcon('heroicon-m-arrow-trending-up'),
+
+                                Forms\Components\Select::make('payable_account_id')
+                                    ->label(__('partner.payable_account'))
+                                    ->relationship('payableAccount', 'name', function ($query) {
+                                        return $query->where('type', \App\Enums\Accounting\AccountType::Payable);
+                                    })
+                                    ->searchable()
+                                    ->preload()
+                                    ->createOptionForm([
+                                        Forms\Components\TextInput::make('name')
+                                            ->label(__('account.name'))
+                                            ->required()
+                                            ->maxLength(255),
+                                        Forms\Components\TextInput::make('code')
+                                            ->label(__('account.code'))
+                                            ->required()
+                                            ->maxLength(255),
+                                        Forms\Components\Select::make('type')
+                                            ->label(__('account.type'))
+                                            ->options([\App\Enums\Accounting\AccountType::Payable->value => 'Payable'])
+                                            ->default(\App\Enums\Accounting\AccountType::Payable->value)
+                                            ->required(),
+                                    ])
+                                    ->createOptionModalHeading(__('partner.create_payable_account'))
+                                    ->helperText(__('partner.payable_account_help'))
+                                    ->prefixIcon('heroicon-m-arrow-trending-down'),
+                            ]),
+                    ])
                     ->collapsible(),
             ]);
     }

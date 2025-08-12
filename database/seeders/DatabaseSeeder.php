@@ -2,7 +2,6 @@
 
 namespace Database\Seeders;
 
-use App\Models\Invoice;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 
@@ -67,6 +66,10 @@ class DatabaseSeeder extends Seeder
                 // 9. Finally
                 // Lock dates to prevent changes to closed periods.
                 // LockDateSeeder::class,
+
+                // Note: PostTransactionsSeeder is available for manual execution
+                // Run: php artisan db:seed --class=PostTransactionsSeeder
+                // This posts some transactions to demonstrate Partner Ledger functionality
             ]);
         });
     }

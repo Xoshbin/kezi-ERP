@@ -12,6 +12,8 @@ return [
     'contact_information_description' => 'وردەکاری پەیوەندی بۆ ئەم هاوبەشە',
     'address_information' => 'زانیاری ناونیشان',
     'address_information_description' => 'شوێنی فیزیکی و ناونیشانی پۆستە',
+    'accounting_configuration' => 'ڕێکخستنی ژمێریاری',
+    'accounting_configuration_description' => 'دیاریکردنی هەژمار بۆ مامەڵە داراییەکان',
 
     // Basic Information
     'company' => 'کۆمپانیا',
@@ -22,6 +24,12 @@ return [
     'phone' => 'تەلەفۆن',
     'tax_id' => 'ژمارەی باج',
     'is_active' => 'چالاکە',
+    'receivable_account' => 'هەژماری وەرگرتن',
+    'payable_account' => 'هەژماری پارەدان',
+    'receivable_account_help' => 'هەژمار بۆ بەدواداچوونی ئەو پارەیەی ئەم هاوبەشە قەرزاری ئێمەیە (پسوڵەی کڕیار)',
+    'payable_account_help' => 'هەژمار بۆ بەدواداچوونی ئەو پارەیەی ئێمە قەرزاری ئەم هاوبەشەین (پسوڵەی فرۆشیار)',
+    'create_receivable_account' => 'دروستکردنی هەژماری وەرگرتن',
+    'create_payable_account' => 'دروستکردنی هەژماری پارەدان',
 
     // Address
     'address' => 'ناونیشان',
