@@ -5,6 +5,7 @@ namespace App\Filament\Resources\VendorBillResource\Widgets;
 use App\Models\VendorBill;
 use App\Enums\Purchases\VendorBillStatus;
 use App\Enums\Shared\PaymentState;
+use App\Support\NumberFormatter;
 use Brick\Money\Money;
 use Brick\Math\RoundingMode;
 use Carbon\Carbon;
@@ -137,7 +138,7 @@ class AgingAnalysisWidget extends BaseWidget
 
         $percentage = $paidAmount->dividedBy($totalAmount->getAmount(), RoundingMode::HALF_UP)->multipliedBy(100);
 
-        return number_format($percentage->getAmount()->toFloat(), 1) . '%';
+        return NumberFormatter::formatPercentage($percentage->getAmount()->toFloat(), 1);
     }
 
     private function getPaymentProgressColor(VendorBill $vendorBill): string
@@ -151,11 +152,7 @@ class AgingAnalysisWidget extends BaseWidget
 
     private function formatMoney(Money $money): string
     {
-        $formatter = new \NumberFormatter('en_US', \NumberFormatter::CURRENCY);
-        return $formatter->formatCurrency(
-            $money->getAmount()->toFloat(),
-            $money->getCurrency()->getCurrencyCode()
-        );
+        return NumberFormatter::formatMoney($money);
     }
 
     protected function getColumns(): int

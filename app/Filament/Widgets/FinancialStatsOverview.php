@@ -111,7 +111,7 @@ class FinancialStatsOverview extends BaseWidget
                 ->color($cashBalance->isPositive() ? 'success' : ($cashBalance->isNegative() ? 'danger' : 'gray')),
 
             // Gross Profit Margin
-            Stat::make(__('dashboard.financial.gross_margin'), number_format($grossProfitMargin, 1) . '%')
+            Stat::make(__('dashboard.financial.gross_margin'), NumberFormatter::formatPercentage($grossProfitMargin, 1))
                 ->description(__('dashboard.financial.profitability_ratio'))
                 ->descriptionIcon('heroicon-m-chart-pie')
                 ->color($grossProfitMargin > 20 ? 'success' : ($grossProfitMargin > 10 ? 'warning' : 'danger')),
