@@ -23,14 +23,14 @@ class MoneyColumn extends TextColumn
 
             // If it's already a Money object, format it directly
             if ($state instanceof Money) {
-                return NumberFormatter::formatMoney($state);
+                return NumberFormatter::formatMoneyTo($state);
             }
 
             // Handle raw numeric values (like pivot fields) - construct Money object
             if (is_numeric($state) && $record) {
                 $money = $this->getMoneyObject($state, $record);
                 if ($money instanceof Money) {
-                    return NumberFormatter::formatMoney($money);
+                    return NumberFormatter::formatMoneyTo($money);
                 }
             }
 

@@ -198,7 +198,7 @@ describe('Bank Reconciliation Integration Tests', function () {
 
         $response = $this->get("/jmeryar/bank-statements/{$this->bankStatement->id}/reconcile");
 
-        // Check that amounts are formatted with 3 decimal places for IQD
+        // Check that amounts are formatted with 3 decimal places for IQD using NumberFormatter
         $response->assertSee('1,234.567');
         $response->assertSee('5,678.901');
         $response->assertSee('123.456');
