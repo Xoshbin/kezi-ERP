@@ -89,4 +89,18 @@ return [
     'aged_payables_report' => 'ڕاپۆرتی پارەدانی کۆن',
     'vendor' => 'فرۆشیار',
     'no_outstanding_payables' => 'هیچ پارەدانێکی ماوە نەدۆزرایەوە بۆ بەرواری دیاریکراو.',
+
+    // Trial Balance
+    'trial_balance' => 'تەرازووی تاقیکردنەوە',
+    'trial_balance_report' => 'ڕاپۆرتی تەرازووی تاقیکردنەوە',
+    'trial_balance_balanced' => 'تەرازووی تاقیکردنەوە هاوسەنگە',
+    'trial_balance_not_balanced' => 'تەرازووی تاقیکردنەوە هاوسەنگ نییە',
+    'account' => 'هەژمار',
+    'balance_verification' => 'پشتڕاستکردنەوەی هاوسەنگی',
+    'total_debits' => 'کۆی قەرزدارەکان',
+    'total_credits' => 'کۆی قەرزدەرەکان',
+    'difference' => 'جیاوازی',
+    'balanced' => 'هاوسەنگ',
+    'no_account_balances_found' => 'هیچ هاوسەنگییەکی هەژمار نەدۆزرایەوە بۆ بەرواری دیاریکراو.',
+    'select_date_and_generate' => 'بەرواری هەڵبژێرە و کلیک لە "دروستکردنی ڕاپۆرت" بکە بۆ بینینی تەرازووی تاقیکردنەوە.',
 ];
