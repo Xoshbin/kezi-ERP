@@ -71,4 +71,16 @@ return [
     'we_owe_vendor' => 'ئێمە قەرزاری ئەم فرۆشیارەین.',
     'account_balanced' => 'هەژمارەکە هاوسەنگە.',
     'partner_accounts_required' => 'هاوبەشەکان دەبێت هەژماری وەرگرتن و پارەدان بۆیان دیاری کرابێت بۆ دروستکردنی ڕاپۆرتی دەفتەر.',
+
+    // Aged Receivables
+    'aged_receivables' => 'وەرگرتنی کۆن',
+    'aged_receivables_report' => 'ڕاپۆرتی وەرگرتنی کۆن',
+    'report_parameters' => 'پارامەتەرەکانی ڕاپۆرت',
+    'current' => 'ئێستا',
+    '1_30_days' => '١-٣٠ ڕۆژ',
+    '31_60_days' => '٣١-٦٠ ڕۆژ',
+    '61_90_days' => '٦١-٩٠ ڕۆژ',
+    '90_plus_days' => '٩٠+ ڕۆژ',
+    'total' => 'کۆی گشتی',
+    'no_outstanding_receivables' => 'هیچ وەرگرتنێکی ماوە نەدۆزرایەوە بۆ بەرواری دیاریکراو.',
 ];
