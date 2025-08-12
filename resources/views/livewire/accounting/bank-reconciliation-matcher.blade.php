@@ -13,11 +13,11 @@
             </div>
             <div class="flex flex-col flex-1 items-start">
             <dt class="text-sm font-medium text-gray-500">{{ __('bank_statement.starting_balance') }}</dt>
-            <dd class="mt-1 text-sm text-gray-900">{{ $bankStatement->starting_balance->formatTo('en_US') }}</dd>
+            <dd class="mt-1 text-sm text-gray-900">{{ \App\Support\NumberFormatter::formatMoneyTo($bankStatement->starting_balance) }}</dd>
             </div>
             <div class="flex flex-col flex-1 items-start">
             <dt class="text-sm font-medium text-gray-500">{{ __('bank_statement.ending_balance') }}</dt>
-            <dd class="mt-1 text-sm text-gray-900">{{ $bankStatement->ending_balance->formatTo('en_US') }}</dd>
+            <dd class="mt-1 text-sm text-gray-900">{{ \App\Support\NumberFormatter::formatMoneyTo($bankStatement->ending_balance) }}</dd>
             </div>
         </dl>
     </div>
