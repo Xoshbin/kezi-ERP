@@ -64,7 +64,7 @@ class PartnerSeeder extends Seeder
             $receivableAccount = Account::updateOrCreate(
                 [
                     'company_id' => $company->id,
-                    'name' => ['en' => "Accounts Receivable - {$partnerData['name']}", 'ckb' => "هەژماری وەرگرتن - {$partnerData['name']}"],
+                    'name' => ['en' => "Accounts Receivable - {$partnerData['name']}", 'ckb' => "هەژماری وەرگرتن - {$partnerData['name']}", 'ar' => "حسابات مدينة - {$partnerData['name']}"],
                 ],
                 [
                     'code' => $this->getNextAvailableCode($company->id, 1200),
@@ -75,7 +75,7 @@ class PartnerSeeder extends Seeder
             $payableAccount = Account::updateOrCreate(
                 [
                     'company_id' => $company->id,
-                    'name' => ['en' => "Accounts Payable - {$partnerData['name']}", 'ckb' => "هەژماری پارەدان - {$partnerData['name']}"],
+                    'name' => ['en' => "Accounts Payable - {$partnerData['name']}", 'ckb' => "هەژماری پارەدان - {$partnerData['name']}", 'ar' => "حسابات دائنة - {$partnerData['name']}"],
                 ],
                 [
                     'code' => $this->getNextAvailableCode($company->id, 2100),
