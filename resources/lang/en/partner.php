@@ -12,6 +12,8 @@ return [
     'contact_information_description' => 'Communication details for this partner',
     'address_information' => 'Address Information',
     'address_information_description' => 'Physical location and mailing address',
+    'accounting_configuration' => 'Accounting Configuration',
+    'accounting_configuration_description' => 'Account assignments for financial transactions',
 
     // Basic Information
     'company' => 'Company',
@@ -22,6 +24,12 @@ return [
     'phone' => 'Phone',
     'tax_id' => 'Tax ID',
     'is_active' => 'Is Active',
+    'receivable_account' => 'Receivable Account',
+    'payable_account' => 'Payable Account',
+    'receivable_account_help' => 'Account used to track money this partner owes us (customer invoices)',
+    'payable_account_help' => 'Account used to track money we owe this partner (vendor bills)',
+    'create_receivable_account' => 'Create Receivable Account',
+    'create_payable_account' => 'Create Payable Account',
 
     // Address
     'address' => 'Address',

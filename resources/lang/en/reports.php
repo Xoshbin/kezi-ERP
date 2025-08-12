@@ -57,4 +57,18 @@ return [
     'no_data' => 'No Data Available',
     'no_transactions_found' => 'No transactions found for the selected criteria.',
     'select_date_and_generate' => 'Select an as-of date and click "Generate Report" to view the Balance Sheet.',
+
+    // Partner Ledger
+    'partner_ledger' => 'Partner Ledger',
+    'partner' => 'Partner',
+    'select_partner' => 'Select a partner',
+    'filter_options' => 'Filter Options',
+    'type' => 'Type',
+    'no_transactions' => 'No Transactions',
+    'no_transactions_found_for_period' => 'No transactions found for the selected partner and period.',
+    'select_partner_and_generate' => 'Select a partner and date range, then click "Generate Report" to view the Partner Ledger.',
+    'customer_owes_us' => 'This customer owes us money.',
+    'we_owe_vendor' => 'We owe money to this vendor.',
+    'account_balanced' => 'The account is balanced.',
+    'partner_accounts_required' => 'Partners must have receivable and payable accounts assigned to generate ledger reports.',
 ];

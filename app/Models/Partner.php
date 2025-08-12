@@ -96,6 +96,8 @@ class Partner extends Model
         'zip_code',
         'country',
         'tax_id',
+        'receivable_account_id',
+        'payable_account_id',
         'is_active',
     ];
 
@@ -131,6 +133,26 @@ class Partner extends Model
     public function company()
     {
         return $this->belongsTo(Company::class);
+    }
+
+    /**
+     * Get the receivable account for this partner.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function receivableAccount()
+    {
+        return $this->belongsTo(Account::class, 'receivable_account_id');
+    }
+
+    /**
+     * Get the payable account for this partner.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function payableAccount()
+    {
+        return $this->belongsTo(Account::class, 'payable_account_id');
     }
 
     /**

@@ -20,11 +20,13 @@ class CreateJournalEntryForExpenseBillAction
     public function execute(VendorBill $vendorBill, User $user): JournalEntry
     {
         return DB::transaction(function () use ($vendorBill, $user) {
-            $vendorBill->load('company', 'currency', 'lines.tax');
+            $vendorBill->load('company', 'currency', 'lines.tax', 'vendor');
 
             $company = $vendorBill->company;
             $currency = $vendorBill->currency;
-            $apAccountId = $company->default_accounts_payable_id;
+
+            // Use vendor's individual payable account if available, otherwise fall back to default
+            $apAccountId = $vendorBill->vendor->payable_account_id ?? $company->default_accounts_payable_id;
 
             if (!$apAccountId) {
                 throw new RuntimeException('Default Accounts Payable account is not configured for this company.');
