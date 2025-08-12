@@ -317,3 +317,4 @@ This layered architecture provides several key benefits:
 - [ ] Find alternative to spatie/laravel-translatable or make a built in alternative plugin
 - [ ] make a plugin to change the local in the filament interface
 - [ ] make a beutifull welcome page to mirror the work and demonstrate the project
+- [x] bug: It's allowed to pay for an invoice or bill that is not posted, and it marks them as paid.

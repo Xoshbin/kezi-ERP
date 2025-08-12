@@ -12,6 +12,7 @@ use App\Models\Currency;
 use App\Models\VendorBill;
 use App\Enums\Sales\InvoiceStatus;
 use App\Enums\Payments\PaymentStatus;
+use App\Enums\Purchases\VendorBillStatus;
 use InvalidArgumentException;
 use App\Events\PaymentConfirmed;
 use Illuminate\Support\Facades\DB;
@@ -23,7 +24,9 @@ class PaymentService
 {
     public function __construct(
         protected JournalEntryService $journalEntryService,
-        protected CreateJournalEntryForPaymentAction $createJournalEntryForPaymentAction
+        protected CreateJournalEntryForPaymentAction $createJournalEntryForPaymentAction,
+        protected InvoiceService $invoiceService,
+        protected VendorBillService $vendorBillService
     ) {}
 
     /**
@@ -44,7 +47,7 @@ class PaymentService
             $payment->save();
 
             // After confirming the payment, update the status of linked documents.
-            $this->updateLinkedDocumentStatus($payment);
+            $this->updateLinkedDocumentStatus($payment, $user);
 
             PaymentConfirmed::dispatch($payment);
 
@@ -54,8 +57,9 @@ class PaymentService
 
     /**
      * Checks linked documents and updates their status to 'Paid' if fully paid.
+     * Ensures documents are properly posted before marking as paid.
      */
-    protected function updateLinkedDocumentStatus(Payment $payment): void
+    protected function updateLinkedDocumentStatus(Payment $payment, User $user): void
     {
         $payment->load('paymentDocumentLinks.invoice', 'paymentDocumentLinks.vendorBill');
 
@@ -63,19 +67,25 @@ class PaymentService
             if ($link->invoice) {
                 $invoice = $link->invoice;
 
-                // --- START OF FIX ---
-                // Correctly sum the 'amount_applied' from the pivot table for this invoice.
+                // Calculate total paid amount for this invoice
                 $totalPaidMinor = $invoice->payments()
                     ->where('payments.status', '!=', PaymentStatus::Canceled)
                     ->sum('payment_document_links.amount_applied');
 
-                // Convert the summed integer back to a Money object for comparison.
                 $totalPaid = Money::ofMinor($totalPaidMinor, $invoice->currency->code);
-                // --- END OF FIX ---
 
                 if ($totalPaid->isGreaterThanOrEqualTo($invoice->total_amount)) {
-                    $invoice->status = InvoiceStatus::Paid;
-                    $invoice->save();
+                    // If invoice is still draft, post it first to ensure all business logic is executed
+                    if ($invoice->status === InvoiceStatus::Draft) {
+                        $this->invoiceService->confirm($invoice, $user);
+                        $invoice->refresh(); // Reload to get the updated status
+                    }
+
+                    // Only mark as paid if it's already posted
+                    if ($invoice->status === InvoiceStatus::Posted) {
+                        $invoice->status = InvoiceStatus::Paid;
+                        $invoice->save();
+                    }
                 }
             }
 
@@ -87,8 +97,17 @@ class PaymentService
                 $totalPaid = Money::ofMinor($totalPaidMinor, $vendorBill->currency->code);
 
                 if ($totalPaid->isGreaterThanOrEqualTo($vendorBill->total_amount)) {
-                    $vendorBill->status = \App\Enums\Purchases\VendorBillStatus::Paid;
-                    $vendorBill->save();
+                    // If vendor bill is still draft, post it first to ensure all business logic is executed
+                    if ($vendorBill->status === VendorBillStatus::Draft) {
+                        $this->vendorBillService->post($vendorBill, $user);
+                        $vendorBill->refresh(); // Reload to get the updated status
+                    }
+
+                    // Only mark as paid if it's already posted
+                    if ($vendorBill->status === VendorBillStatus::Posted) {
+                        $vendorBill->status = VendorBillStatus::Paid;
+                        $vendorBill->save();
+                    }
                 }
             }
         }
