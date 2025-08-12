@@ -4,6 +4,7 @@ namespace App\Livewire\Accounting;
 
 use App\Models\BankStatement;
 use App\Services\BankReconciliationService;
+use App\Support\NumberFormatter;
 use Brick\Money\Money;
 use Filament\Notifications\Notification;
 use Illuminate\Support\Facades\Auth;
@@ -56,9 +57,9 @@ class BankReconciliationMatcher extends Component
             'systemTotal' => $this->systemTotal,
             'difference' => $difference,
             'isBalanced' => $difference->isZero(),
-            'bankTotalFormatted' => $this->bankTotal->formatTo('en_US'),
-            'systemTotalFormatted' => $this->systemTotal->formatTo('en_US'),
-            'differenceFormatted' => $difference->formatTo('en_US'),
+            'bankTotalFormatted' => NumberFormatter::formatMoneyTo($this->bankTotal),
+            'systemTotalFormatted' => NumberFormatter::formatMoneyTo($this->systemTotal),
+            'differenceFormatted' => NumberFormatter::formatMoneyTo($difference),
         ];
     }
 
