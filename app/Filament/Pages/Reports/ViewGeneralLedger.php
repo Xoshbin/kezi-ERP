@@ -18,7 +18,12 @@ class ViewGeneralLedger extends Page
 {
     protected static ?string $navigationIcon = 'heroicon-o-document-text';
     protected static string $view = 'filament.pages.reports.view-general-ledger';
-    protected static ?string $navigationGroup = 'Reports';
+    protected static ?string $navigationGroup = null;
+
+    public static function getNavigationGroup(): ?string
+    {
+        return __('navigation.groups.reports');
+    }
     protected static ?int $navigationSort = 3;
 
     public ?string $startDate = null;
