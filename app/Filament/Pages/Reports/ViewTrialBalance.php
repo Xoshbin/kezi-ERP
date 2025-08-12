@@ -17,7 +17,12 @@ class ViewTrialBalance extends Page
 {
     protected static ?string $navigationIcon = 'heroicon-o-scale';
     protected static string $view = 'filament.pages.reports.view-trial-balance';
-    protected static ?string $navigationGroup = 'Reports';
+    protected static ?string $navigationGroup = null;
+
+    public static function getNavigationGroup(): ?string
+    {
+        return __('navigation.groups.reports');
+    }
     protected static ?int $navigationSort = 3;
 
     public ?string $asOfDate = null;
