@@ -56,10 +56,8 @@ class AgedPayableService
             $paidAmount = Money::ofMinor($row->total_paid, $currency);
             $remainingAmount = $totalAmount->minus($paidAmount);
 
-            // Skip if fully paid or overpaid
-            if ($remainingAmount->isZero() || $remainingAmount->isNegative()) {
-                continue;
-            }
+            // Don't skip fully paid or overpaid vendors - show them with appropriate amounts
+            // This ensures the report reconciles with General Ledger balances
 
             // Initialize partner data if not exists
             if (!isset($partnerData[$partnerId])) {
@@ -74,37 +72,56 @@ class AgedPayableService
                 ];
             }
 
-            // Calculate days past due
-            $dueDate = Carbon::parse($row->due_date);
-            $daysPastDue = $dueDate->diffInDays($asOfDate, false);
-
-            // Categorize into aging buckets
-            if ($daysPastDue <= 0) {
-                // Current (not yet due)
-                $partnerData[$partnerId]['current'] = $partnerData[$partnerId]['current']->plus($remainingAmount);
-            } elseif ($daysPastDue <= 30) {
-                // 1-30 days past due
-                $partnerData[$partnerId]['bucket1_30'] = $partnerData[$partnerId]['bucket1_30']->plus($remainingAmount);
-            } elseif ($daysPastDue <= 60) {
-                // 31-60 days past due
-                $partnerData[$partnerId]['bucket31_60'] = $partnerData[$partnerId]['bucket31_60']->plus($remainingAmount);
-            } elseif ($daysPastDue <= 90) {
-                // 61-90 days past due
-                $partnerData[$partnerId]['bucket61_90'] = $partnerData[$partnerId]['bucket61_90']->plus($remainingAmount);
+            // Handle aging buckets based on remaining amount
+            if ($remainingAmount->isZero()) {
+                // Fully paid - no amounts in any bucket (already initialized to zero)
+                continue;
+            } elseif ($remainingAmount->isNegative()) {
+                // Overpaid - show negative total due but zero in aging buckets
+                // The negative amount represents credit balance (they owe us money back)
+                continue; // Buckets remain zero, but partner will show negative totalDue
             } else {
-                // 90+ days past due
-                $partnerData[$partnerId]['bucket90_plus'] = $partnerData[$partnerId]['bucket90_plus']->plus($remainingAmount);
+                // Positive remaining amount - categorize by aging
+                $dueDate = Carbon::parse($row->due_date);
+                $daysPastDue = $dueDate->diffInDays($asOfDate, false);
+
+                if ($daysPastDue <= 0) {
+                    // Current (not yet due)
+                    $partnerData[$partnerId]['current'] = $partnerData[$partnerId]['current']->plus($remainingAmount);
+                } elseif ($daysPastDue <= 30) {
+                    // 1-30 days past due
+                    $partnerData[$partnerId]['bucket1_30'] = $partnerData[$partnerId]['bucket1_30']->plus($remainingAmount);
+                } elseif ($daysPastDue <= 60) {
+                    // 31-60 days past due
+                    $partnerData[$partnerId]['bucket31_60'] = $partnerData[$partnerId]['bucket31_60']->plus($remainingAmount);
+                } elseif ($daysPastDue <= 90) {
+                    // 61-90 days past due
+                    $partnerData[$partnerId]['bucket61_90'] = $partnerData[$partnerId]['bucket61_90']->plus($remainingAmount);
+                } else {
+                    // 90+ days past due
+                    $partnerData[$partnerId]['bucket90_plus'] = $partnerData[$partnerId]['bucket90_plus']->plus($remainingAmount);
+                }
             }
+        }
+
+        // Calculate total due for each partner by summing all their bills
+        foreach ($partnerData as $partnerId => &$data) {
+            $partnerTotalDue = Money::zero($currency);
+
+            // Get all bills for this partner and calculate net amount
+            $partnerBills = $results->where('partner_id', $partnerId);
+            foreach ($partnerBills as $bill) {
+                $billTotal = Money::ofMinor($bill->total_amount, $currency);
+                $billPaid = Money::ofMinor($bill->total_paid, $currency);
+                $billRemaining = $billTotal->minus($billPaid);
+                $partnerTotalDue = $partnerTotalDue->plus($billRemaining);
+            }
+
+            $data['totalDue'] = $partnerTotalDue;
         }
 
         // Convert to DTOs
         $reportLines = collect($partnerData)->map(function ($data) {
-            $totalDue = $data['current']
-                ->plus($data['bucket1_30'])
-                ->plus($data['bucket31_60'])
-                ->plus($data['bucket61_90'])
-                ->plus($data['bucket90_plus']);
-
             return new AgedPayableLineDTO(
                 partnerId: $data['partnerId'],
                 partnerName: $data['partnerName'],
@@ -113,7 +130,7 @@ class AgedPayableService
                 bucket31_60: $data['bucket31_60'],
                 bucket61_90: $data['bucket61_90'],
                 bucket90_plus: $data['bucket90_plus'],
-                totalDue: $totalDue,
+                totalDue: $data['totalDue'],
             );
         })->values();
 
@@ -123,7 +140,7 @@ class AgedPayableService
     private function calculateTotals(Collection $reportLines, string $currency): AgedPayableDTO
     {
         $zero = Money::zero($currency);
-        
+
         $totalCurrent = $reportLines->reduce(fn(Money $carry, $line) => $carry->plus($line->current), $zero);
         $totalBucket1_30 = $reportLines->reduce(fn(Money $carry, $line) => $carry->plus($line->bucket1_30), $zero);
         $totalBucket31_60 = $reportLines->reduce(fn(Money $carry, $line) => $carry->plus($line->bucket31_60), $zero);
