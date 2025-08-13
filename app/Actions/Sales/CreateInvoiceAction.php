@@ -33,6 +33,7 @@ class CreateInvoiceAction
                 'customer_id' => $dto->customer_id,
                 'currency_id' => $dto->currency_id,
                 'fiscal_position_id' => $dto->fiscal_position_id,
+                'reference' => $dto->reference,
                 'invoice_date' => $dto->invoice_date,
                 'due_date' => $dto->due_date,
                 'status' => InvoiceStatus::Draft,

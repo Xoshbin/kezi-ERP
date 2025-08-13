@@ -10,7 +10,13 @@ return [
     // Fields
     'company' => 'Company',
     'vendor' => 'Vendor',
+    'vendor_helper_text' => 'Partners with 🏢 🏛️ 🤝 icons represent inter-company relationships that will trigger automatic invoice creation.',
     'currency' => 'Currency',
+
+    // Inter-company indicators
+    'child_company_indicator' => '(Child Company)',
+    'parent_company_indicator' => '(Parent Company)',
+    'sibling_company_indicator' => '(Sister Company)',
     'bill_reference' => 'Bill Reference',
     'bill_date' => 'Bill Date',
     'accounting_date' => 'Accounting Date',

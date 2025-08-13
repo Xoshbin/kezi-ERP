@@ -10,6 +10,7 @@ use App\Events\Inventory\StockMoveConfirmed;
 use App\Listeners\Inventory\HandleStockMoveConfirmation;
 use App\Listeners\Asset\CreateAssetFromVendorBillListener;
 use App\Listeners\Purchases\CreateInterCompanyBillListener;
+use App\Listeners\Sales\CreateInterCompanyInvoiceListener;
 use App\Listeners\Inventory\ProcessInventoryForConfirmedBill;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
@@ -31,6 +32,7 @@ class EventServiceProvider extends ServiceProvider
         VendorBillConfirmed::class => [
             ProcessInventoryForConfirmedBill::class,
             CreateAssetFromVendorBillListener::class,
+            CreateInterCompanyInvoiceListener::class,
         ],
         InvoiceConfirmed::class => [
             CreateInterCompanyBillListener::class,
