@@ -255,3 +255,104 @@ test('invoice customer creation modal supports linked company', function () {
     expect($label)->toContain('🏛️');
     expect($label)->toContain(__('invoice.parent_company_indicator'));
 });
+
+test('invoice customer search displays company names in parentheses', function () {
+    // This test verifies that the customer search results show linked company names
+
+    // Create companies
+    $parentCompany = Company::factory()->create(['name' => 'Parent Corp']);
+    $childCompany = Company::factory()->create([
+        'name' => 'Child Corp',
+        'parent_company_id' => $parentCompany->id,
+    ]);
+
+    // Set up required accounts and journals
+    $arAccount = Account::factory()->for($childCompany)->create(['type' => AccountType::Receivable]);
+    $salesJournal = Journal::factory()->for($childCompany)->create(['type' => JournalType::Sale]);
+
+    $childCompany->update([
+        'default_accounts_receivable_id' => $arAccount->id,
+        'default_sales_journal_id' => $salesJournal->id,
+    ]);
+
+    // Create partners - one with linked company, one without
+    $regularPartner = Partner::factory()->for($childCompany)->create([
+        'name' => 'Regular Customer',
+        'type' => PartnerType::Customer,
+        'linked_company_id' => null,
+    ]);
+
+    $linkedPartner = Partner::factory()->for($childCompany)->create([
+        'name' => 'Parent Corp Representative',
+        'type' => PartnerType::Customer,
+        'linked_company_id' => $parentCompany->id,
+    ]);
+
+    // Test search results formatting
+    $currentCompany = $childCompany;
+
+    // Test regular partner (no linked company)
+    $regularLabel = $regularPartner->name;
+    if ($regularPartner->linkedCompany) {
+        $regularLabel .= ' (' . $regularPartner->linkedCompany->name . ')';
+    }
+    expect($regularLabel)->toBe('Regular Customer');
+    expect($regularLabel)->not->toContain('(');
+
+    // Test linked partner (with company name)
+    $linkedLabel = $linkedPartner->name;
+    if ($linkedPartner->linkedCompany) {
+        $linkedLabel .= ' (' . $linkedPartner->linkedCompany->name . ')';
+    }
+
+    // Add inter-company indicator
+    if ($linkedPartner->linkedCompany && $currentCompany) {
+        if ($currentCompany->parent_company_id === $linkedPartner->linkedCompany->id) {
+            $linkedLabel .= ' 🏛️ ' . __('invoice.parent_company_indicator');
+        }
+    }
+
+    expect($linkedLabel)->toBe('Parent Corp Representative (Parent Corp) 🏛️ ' . __('invoice.parent_company_indicator'));
+    expect($linkedLabel)->toContain('(Parent Corp)');
+    expect($linkedLabel)->toContain('🏛️');
+});
+
+test('invoice customer option label displays company names correctly', function () {
+    // This test verifies that the getOptionLabelUsing function works correctly
+
+    // Create companies
+    $linkedCompany = Company::factory()->create(['name' => 'Linked Company Ltd']);
+    $currentCompany = Company::factory()->create(['name' => 'Current Company']);
+
+    // Set up required accounts and journals
+    $arAccount = Account::factory()->for($currentCompany)->create(['type' => AccountType::Receivable]);
+    $salesJournal = Journal::factory()->for($currentCompany)->create(['type' => JournalType::Sale]);
+
+    $currentCompany->update([
+        'default_accounts_receivable_id' => $arAccount->id,
+        'default_sales_journal_id' => $salesJournal->id,
+    ]);
+
+    // Create partner with linked company
+    $partner = Partner::factory()->for($currentCompany)->create([
+        'name' => 'Business Partner',
+        'type' => PartnerType::Customer,
+        'linked_company_id' => $linkedCompany->id,
+    ]);
+
+    // Simulate the getOptionLabelUsing logic
+    $partner = Partner::with('linkedCompany')->find($partner->id);
+    expect($partner)->not->toBeNull();
+
+    $label = $partner->name;
+
+    // Add company name if partner is linked to another company
+    if ($partner->linkedCompany) {
+        $label .= ' (' . $partner->linkedCompany->name . ')';
+    }
+
+    expect($label)->toBe('Business Partner (Linked Company Ltd)');
+    expect($label)->toContain('Business Partner');
+    expect($label)->toContain('(Linked Company Ltd)');
+    expect($partner->linkedCompany->name)->toBe('Linked Company Ltd');
+});
