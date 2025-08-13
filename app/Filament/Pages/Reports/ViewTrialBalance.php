@@ -2,7 +2,7 @@
 
 namespace App\Filament\Pages\Reports;
 
-use App\Models\Company;
+
 use App\Services\Reports\TrialBalanceService;
 use App\Support\NumberFormatter;
 use Carbon\Carbon;
@@ -82,7 +82,7 @@ class ViewTrialBalance extends Page
             'asOfDate' => 'required|date',
         ]);
 
-        $company = Company::find(Filament::auth()->user()->company_id);
+        $company = \Filament\Facades\Filament::getTenant();
         $service = app(TrialBalanceService::class);
 
         $report = $service->generate(

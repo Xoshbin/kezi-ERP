@@ -154,7 +154,7 @@ test('Jmeryar ERP complete accounting scenario - Full Workflow', function () {
     expect($currency)->not->toBeNull();
     expect($company)->not->toBeNull();
     expect($user)->not->toBeNull();
-    expect($user->company_id)->toBe($company->id);
+    expect($user->companies->first()->id)->toBe($company->id);
 
     // Authenticate as the user
     $this->actingAs($user);

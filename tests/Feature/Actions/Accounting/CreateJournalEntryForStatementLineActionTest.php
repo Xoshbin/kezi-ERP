@@ -44,7 +44,8 @@ it('correctly creates a journal entry and links it to the statement line via a p
 it('updates the statement line status to reconciled within the same atomic transaction', function () {
     // Arrange
     $this->company = Company::factory()->create();
-    $user = User::factory()->for($this->company)->create();
+    $user = User::factory()->create();
+    $user->companies()->attach($this->company);
     $line = BankStatementLine::factory()->for(BankStatement::factory()->for($this->company)->for(Journal::factory()->for($this->company)->create())->create())->create(['is_reconciled' => false]);
     $writeOffAccount = Account::factory()->for($this->company)->create();
 
@@ -71,7 +72,8 @@ it('updates the statement line status to reconciled within the same atomic trans
 it('rolls back the entire transaction if updating the statement line fails', function () {
     // Arrange
     $this->company = Company::factory()->create();
-    $user = User::factory()->for($this->company)->create();
+    $user = User::factory()->create();
+    $user->companies()->attach($this->company);
     $line = BankStatementLine::factory()->for(BankStatement::factory()->for($this->company)->for(Journal::factory()->for($this->company)->create())->create())->create();
     $writeOffAccount = Account::factory()->for($this->company)->create();
 
@@ -109,7 +111,8 @@ it('handles multi-currency scenarios correctly', function (string $currencyCode,
     $currency->update(['decimal_places' => $currencyCode === 'IQD' ? 3 : 2]);
     $this->company->update(['currency_id' => $currency->id]);
 
-    $user = User::factory()->for($this->company)->create();
+    $user = User::factory()->create();
+    $user->companies()->attach($this->company);
     $journal = Journal::factory()->for($this->company)->create();
     $bankStatement = BankStatement::factory()->for($this->company)->for($journal)->create(['currency_id' => $currency->id]);
     $line = BankStatementLine::factory()->for($bankStatement)->create(['amount' => Money::ofMinor($minorAmount, $currencyCode)]);

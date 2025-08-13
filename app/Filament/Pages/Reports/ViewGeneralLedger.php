@@ -3,7 +3,7 @@
 namespace App\Filament\Pages\Reports;
 
 use App\Models\Account;
-use App\Models\Company;
+
 use App\Services\Reports\GeneralLedgerService;
 use App\Support\NumberFormatter;
 use Carbon\Carbon;
@@ -77,7 +77,7 @@ class ViewGeneralLedger extends Page
                             ->multiple()
                             ->searchable()
                             ->getSearchResultsUsing(function (string $search): array {
-                                $company = Company::find(auth()->user()->company_id);
+                                $company = \Filament\Facades\Filament::getTenant();
                                 return Account::where('company_id', $company->id)
                                     ->where(function ($query) use ($search) {
                                         $query->where('code', 'like', "%{$search}%")
@@ -118,7 +118,7 @@ class ViewGeneralLedger extends Page
             'endDate' => 'required|date|after_or_equal:startDate',
         ]);
 
-        $company = Company::find(auth()->user()->company_id);
+        $company = \Filament\Facades\Filament::getTenant();
         $service = app(GeneralLedgerService::class);
 
         $report = $service->generate(
