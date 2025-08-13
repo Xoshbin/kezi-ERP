@@ -28,6 +28,12 @@ return [
     'total_tax' => 'کۆی باج',
     'reason' => 'هۆکار',
 
+    // Inter-company indicators
+    'child_company_indicator' => '(کۆمپانیای منداڵ)',
+    'parent_company_indicator' => '(کۆمپانیای دایک)',
+    'sibling_company_indicator' => '(کۆمپانیای خوشک)',
+    'customer_helper_text' => 'هاوبەشەکان کە نیشانەی 🏢 🏛️ 🤝 یان هەیە پەیوەندی نێوان کۆمپانیاکان دەردەخەن کە بەڵگەی کڕیاری خۆکار دروست دەکەن.',
+
     // Table Columns
     'company_name' => 'کۆمپانیا',
     'customer_name' => 'کڕیار',

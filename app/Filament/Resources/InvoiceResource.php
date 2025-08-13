@@ -106,40 +106,116 @@ class InvoiceResource extends Resource
                                 ->modalWidth('lg');
                         }),
                     Forms\Components\Select::make('customer_id')
-                        ->relationship('customer', 'name')
                         ->label(__('invoice.customer'))
+                        ->helperText(__('invoice.customer_helper_text'))
                         ->required()
                         ->searchable()
+                        ->getSearchResultsUsing(function (string $search, $get): array {
+                            $currentCompanyId = $get('company_id') ?? \App\Models\Company::first()?->id;
+                            $currentCompany = \App\Models\Company::find($currentCompanyId);
+
+                            return \App\Models\Partner::where('type', 'customer')
+                                ->where('name', 'like', "%{$search}%")
+                                ->with('linkedCompany')
+                                ->limit(50)
+                                ->get()
+                                ->mapWithKeys(function ($partner) use ($currentCompany) {
+                                    $label = $partner->name;
+
+                                    // Add inter-company indicator if partner is linked to another company
+                                    if ($partner->linkedCompany && $currentCompany) {
+                                        if ($partner->linkedCompany->parent_company_id === $currentCompany->id) {
+                                            // This partner represents a child company
+                                            $label .= ' 🏢 ' . __('invoice.child_company_indicator');
+                                        } elseif ($currentCompany->parent_company_id === $partner->linkedCompany->id) {
+                                            // This partner represents the parent company
+                                            $label .= ' 🏛️ ' . __('invoice.parent_company_indicator');
+                                        } elseif ($partner->linkedCompany->parent_company_id === $currentCompany->parent_company_id && $currentCompany->parent_company_id) {
+                                            // This partner represents a sibling company
+                                            $label .= ' 🤝 ' . __('invoice.sibling_company_indicator');
+                                        }
+                                    }
+
+                                    return [$partner->id => $label];
+                                })
+                                ->toArray();
+                        })
+                        ->getOptionLabelUsing(function ($value, $get): ?string {
+                            $partner = \App\Models\Partner::with('linkedCompany')->find($value);
+                            if (!$partner) return null;
+
+                            $currentCompanyId = $get('company_id') ?? \App\Models\Company::first()?->id;
+                            $currentCompany = \App\Models\Company::find($currentCompanyId);
+
+                            $label = $partner->name;
+
+                            // Add inter-company indicator if partner is linked to another company
+                            if ($partner->linkedCompany && $currentCompany) {
+                                if ($partner->linkedCompany->parent_company_id === $currentCompany->id) {
+                                    // This partner represents a child company
+                                    $label .= ' 🏢 ' . __('invoice.child_company_indicator');
+                                } elseif ($currentCompany->parent_company_id === $partner->linkedCompany->id) {
+                                    // This partner represents the parent company
+                                    $label .= ' 🏛️ ' . __('invoice.parent_company_indicator');
+                                } elseif ($partner->linkedCompany->parent_company_id === $currentCompany->parent_company_id && $currentCompany->parent_company_id) {
+                                    // This partner represents a sibling company
+                                    $label .= ' 🤝 ' . __('invoice.sibling_company_indicator');
+                                }
+                            }
+
+                            return $label;
+                        })
                         ->createOptionForm([
-                            Forms\Components\Select::make('company_id')
-                                ->relationship('company', 'name')
-                                ->label(__('partner.company'))
-                                ->required(),
+                            Forms\Components\Hidden::make('company_id')
+                                ->default(fn () => \Illuminate\Support\Facades\Auth::user()->company_id),
+
                             Forms\Components\TextInput::make('name')
                                 ->label(__('partner.name'))
                                 ->required()
-                                ->maxLength(255),
+                                ->maxLength(255)
+                                ->columnSpanFull(),
+
                             Forms\Components\Select::make('type')
                                 ->label(__('partner.type'))
                                 ->required()
                                 ->options(
                                     collect(\App\Enums\Partners\PartnerType::cases())
                                         ->mapWithKeys(fn (\App\Enums\Partners\PartnerType $type) => [$type->value => $type->label()])
-                                ),
-                            Forms\Components\TextInput::make('contact_person')
-                                ->label(__('partner.contact_person'))
-                                ->maxLength(255),
+                                )
+                                ->default(\App\Enums\Partners\PartnerType::Customer)
+                                ->columnSpan(1),
+
+                            Forms\Components\Select::make('linked_company_id')
+                                ->label(__('partner.linked_company'))
+                                ->helperText(__('partner.linked_company_helper'))
+                                ->options(function () {
+                                    $currentCompanyId = \Illuminate\Support\Facades\Auth::user()->company_id;
+                                    return \App\Models\Company::where('id', '!=', $currentCompanyId)
+                                        ->pluck('name', 'id');
+                                })
+                                ->searchable()
+                                ->preload()
+                                ->columnSpan(1),
+
                             Forms\Components\TextInput::make('email')
                                 ->label(__('partner.email'))
                                 ->email()
-                                ->maxLength(255),
+                                ->maxLength(255)
+                                ->columnSpan(1),
+
                             Forms\Components\TextInput::make('phone')
                                 ->label(__('partner.phone'))
-                                ->maxLength(255),
-                            Forms\Components\Textarea::make('address')
-                                ->label(__('partner.address'))
-                                ->columnSpanFull(),
+                                ->maxLength(255)
+                                ->columnSpan(1),
+
+                            Forms\Components\Hidden::make('is_active')
+                                ->default(true),
                         ])
+                        ->createOptionModalHeading(__('partner.create_new_partner'))
+                        ->createOptionUsing(function (array $data): int {
+                            $partner = \App\Models\Partner::create($data);
+                            return $partner->id;
+                        })
                         ->createOptionModalHeading(__('common.modal_title_create_partner'))
                         ->createOptionAction(function (Forms\Components\Actions\Action $action) {
                             return $action
@@ -288,7 +364,28 @@ class InvoiceResource extends Resource
                     ->sortable(),
                 Tables\Columns\TextColumn::make('customer.name')
                     ->label(__('invoice.customer_name'))
-                    ->numeric()
+                    ->formatStateUsing(function ($record) {
+                        $customer = $record->customer;
+                        $label = $customer->name;
+
+                        // Add inter-company indicator if customer is linked to another company
+                        if ($customer->linkedCompany) {
+                            $currentCompany = $record->company;
+
+                            if ($customer->linkedCompany->parent_company_id === $currentCompany->id) {
+                                // This customer represents a child company
+                                $label .= ' 🏢';
+                            } elseif ($currentCompany->parent_company_id === $customer->linkedCompany->id) {
+                                // This customer represents the parent company
+                                $label .= ' 🏛️';
+                            } elseif ($customer->linkedCompany->parent_company_id === $currentCompany->parent_company_id && $currentCompany->parent_company_id) {
+                                // This customer represents a sibling company
+                                $label .= ' 🤝';
+                            }
+                        }
+
+                        return $label;
+                    })
                     ->sortable(),
                 Tables\Columns\TextColumn::make('currency.name')
                     ->label(__('invoice.currency_name'))

@@ -97,6 +97,38 @@ class PartnerResource extends Resource
                                             ->mapWithKeys(fn (PartnerType $type) => [$type->value => $type->label()])
                                     )
                                     ->prefixIcon('heroicon-m-tag'),
+                                Forms\Components\Select::make('linked_company_id')
+                                    ->label(__('partner.linked_company'))
+                                    ->relationship('linkedCompany', 'name')
+                                    ->searchable()
+                                    ->preload()
+                                    ->helperText(__('partner.linked_company_helper'))
+                                    ->prefixIcon('heroicon-m-building-office-2')
+                                    ->createOptionForm([
+                                        Forms\Components\TextInput::make('name')
+                                            ->label(__('company.name'))
+                                            ->required()
+                                            ->maxLength(255),
+                                        Forms\Components\Textarea::make('address')
+                                            ->label(__('company.address'))
+                                            ->columnSpanFull(),
+                                        Forms\Components\TextInput::make('tax_id')
+                                            ->label(__('company.tax_id'))
+                                            ->maxLength(255),
+                                        Forms\Components\Select::make('currency_id')
+                                            ->label(__('company.currency_id'))
+                                            ->relationship('currency', 'name')
+                                            ->required(),
+                                        Forms\Components\TextInput::make('fiscal_country')
+                                            ->label(__('company.fiscal_country'))
+                                            ->required()
+                                            ->maxLength(255),
+                                    ])
+                                    ->createOptionModalHeading(__('common.modal_title_create_company'))
+                                    ->createOptionAction(function (Forms\Components\Actions\Action $action) {
+                                        return $action
+                                            ->modalWidth('lg');
+                                    }),
                                 Forms\Components\TextInput::make('tax_id')
                                     ->label(__('partner.tax_id'))
                                     ->maxLength(255)
@@ -257,6 +289,34 @@ class PartnerResource extends Resource
                         collect(PartnerType::cases())
                             ->mapWithKeys(fn (PartnerType $type) => [$type->value => $type->label()])
                     ),
+                Tables\Columns\TextColumn::make('linkedCompany.name')
+                    ->label(__('partner.linked_company'))
+                    ->searchable()
+                    ->sortable()
+                    ->placeholder(__('common.none'))
+                    ->formatStateUsing(function ($state, Partner $record) {
+                        if (!$record->linkedCompany) {
+                            return __('common.none');
+                        }
+
+                        // Add inter-company indicator
+                        $currentCompany = $record->company;
+                        $label = $state;
+
+                        if ($record->linkedCompany->parent_company_id === $currentCompany->id) {
+                            // This partner represents a child company
+                            $label .= ' 🏢';
+                        } elseif ($currentCompany->parent_company_id === $record->linkedCompany->id) {
+                            // This partner represents the parent company
+                            $label .= ' 🏛️';
+                        } elseif ($record->linkedCompany->parent_company_id === $currentCompany->parent_company_id && $currentCompany->parent_company_id) {
+                            // This partner represents a sibling company
+                            $label .= ' 🤝';
+                        }
+
+                        return $label;
+                    })
+                    ->toggleable(isToggledHiddenByDefault: true),
 
                 // Financial Information - Customer Balances
                 Tables\Columns\TextColumn::make('customer_balance')
