@@ -65,8 +65,8 @@ class ViewPartnerLedger extends Page
                             ->required()
                             ->searchable()
                             ->options(function () {
-                                $user = Filament::auth()->user();
-                                return Partner::where('company_id', $user->company_id)
+                                $company = Filament::getTenant();
+                                return Partner::where('company_id', $company->id)
                                     ->with(['receivableAccount', 'payableAccount'])
                                     ->get()
                                     ->mapWithKeys(function ($partner) {

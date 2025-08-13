@@ -25,13 +25,17 @@ class UserSeeder extends Seeder
         }
 
         // Create the admin user
-        User::updateOrCreate(
+        $user = User::updateOrCreate(
             ['email' => 'admin@jmeryar.com'],
             [
                 'name' => 'Admin',
                 'password' => Hash::make('password'),
-                'company_id' => $company->id,
             ]
         );
+
+        // Attach the user to the company using the many-to-many relationship
+        if (!$user->companies()->where('company_id', $company->id)->exists()) {
+            $user->companies()->attach($company);
+        }
     }
 }

@@ -142,6 +142,9 @@ function setupFoundation() {
     test()->journals = $journals;
 
     test()->actingAs($user);
+
+    // Set Filament tenant context
+    \Filament\Facades\Filament::setTenant($company);
 }
 
 test('Jmeryar ERP complete accounting scenario - Full Workflow', function () {

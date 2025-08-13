@@ -16,7 +16,8 @@ Route::middleware(['auth'])->group(function () {
     // Invoice PDF routes
     Route::get('/invoices/{invoice}/pdf', function (Invoice $invoice, GenerateInvoicePdfAction $action) {
         // Check if user can view this invoice
-        if ($invoice->company_id !== Auth::user()->company_id) {
+        $user = Auth::user();
+        if (!$user->companies()->where('company_id', $invoice->company_id)->exists()) {
             abort(403, 'Unauthorized access to invoice.');
         }
 
@@ -26,7 +27,8 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('/invoices/{invoice}/pdf/download', function (Invoice $invoice, GenerateInvoicePdfAction $action) {
         // Check if user can view this invoice
-        if ($invoice->company_id !== Auth::user()->company_id) {
+        $user = Auth::user();
+        if (!$user->companies()->where('company_id', $invoice->company_id)->exists()) {
             abort(403, 'Unauthorized access to invoice.');
         }
 
@@ -37,7 +39,8 @@ Route::middleware(['auth'])->group(function () {
     // PDF Preview route for settings
     Route::get('/pdf/preview/{company}', function (Company $company) {
         // Check if user can access this company
-        if ($company->id !== Auth::user()->company_id) {
+        $user = Auth::user();
+        if (!$user->companies()->where('company_id', $company->id)->exists()) {
             abort(403, 'Unauthorized access to company settings.');
         }
 

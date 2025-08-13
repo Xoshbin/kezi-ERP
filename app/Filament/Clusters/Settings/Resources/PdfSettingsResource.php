@@ -22,6 +22,9 @@ class PdfSettingsResource extends Resource
 
     protected static ?int $navigationSort = 50;
 
+    // Disable tenant scoping since this resource manages the Company model directly
+    protected static bool $isScopedToTenant = false;
+
     public static function getNavigationLabel(): string
     {
         return __('PDF Settings');
@@ -144,6 +147,13 @@ class PdfSettingsResource extends Resource
     }
 
 
+
+    public static function getEloquentQuery(): Builder
+    {
+        // Only show the current tenant company
+        $tenant = \Filament\Facades\Filament::getTenant();
+        return parent::getEloquentQuery()->where('id', $tenant?->id);
+    }
 
     public static function getPages(): array
     {

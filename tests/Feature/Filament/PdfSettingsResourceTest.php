@@ -1,13 +1,17 @@
 <?php
 
 use App\Filament\Clusters\Settings\Resources\PdfSettingsResource;
-use App\Models\User;
 use App\Models\Company;
 use Livewire\Livewire;
+use Tests\Traits\WithConfiguredCompany;
+
+uses(WithConfiguredCompany::class);
 
 beforeEach(function () {
-    $this->user = User::factory()->create();
-    $this->company = Company::factory()->create([
+    $this->setupWithConfiguredCompany();
+
+    // Update company with PDF settings for testing
+    $this->company->update([
         'pdf_template' => 'classic',
         'pdf_settings' => [
             'font_size' => '12',
@@ -15,20 +19,17 @@ beforeEach(function () {
             'show_company_logo' => 'true',
         ],
     ]);
-    $this->user->update(['company_id' => $this->company->id]);
 });
 
 test('user can view pdf settings list page', function () {
     // Action & Assert
-    $this->actingAs($this->user)
-        ->get(PdfSettingsResource::getUrl('index'))
+    $this->get(PdfSettingsResource::getUrl('index'))
         ->assertSuccessful();
 });
 
 test('user can view pdf settings edit page', function () {
     // Action & Assert
-    $this->actingAs($this->user)
-        ->get(PdfSettingsResource::getUrl('edit', ['record' => $this->company]))
+    $this->get(PdfSettingsResource::getUrl('edit', ['record' => $this->company]))
         ->assertSuccessful();
 });
 
@@ -157,18 +158,14 @@ test('pdf settings table shows company information', function () {
         ->assertTableColumnExists('updated_at');
 });
 
-test('pdf settings table filters by template', function () {
-    // Arrange
-    $modernCompany = Company::factory()->create([
-        'pdf_template' => 'modern',
-    ]);
-    $this->user->update(['company_id' => $modernCompany->id]);
+test('pdf settings table shows current company', function () {
+    // Update the current company's template
+    $this->company->update(['pdf_template' => 'modern']);
 
     // Action & Assert
-    Livewire::actingAs($this->user)
-        ->test(PdfSettingsResource\Pages\ListPdfSettings::class)
-        ->filterTable('pdf_template', 'modern')
-        ->assertCanSeeTableRecords([$modernCompany]);
+    Livewire::test(PdfSettingsResource\Pages\ListPdfSettings::class)
+        ->assertCanSeeTableRecords([$this->company])
+        ->assertTableColumnStateSet('pdf_template', 'modern', $this->company);
 });
 
 test('edit page shows preview pdf action', function () {
