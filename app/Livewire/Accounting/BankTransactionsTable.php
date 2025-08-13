@@ -2,23 +2,24 @@
 
 namespace App\Livewire\Accounting;
 
+use Brick\Money\Money;
 use App\Models\Account;
+use Livewire\Component;
+use Filament\Tables\Table;
 use App\Models\BankStatement;
 use App\Models\BankStatementLine;
-use App\Services\BankReconciliationService;
-use Brick\Money\Money;
-use Filament\Forms\Components\Select;
-use Filament\Forms\Components\Textarea;
-use Filament\Forms\Concerns\InteractsWithForms;
-use Filament\Forms\Contracts\HasForms;
 use Filament\Tables\Actions\Action;
+use Illuminate\Support\Facades\Auth;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Contracts\HasForms;
+use Filament\Forms\Components\Textarea;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Columns\ViewColumn;
-use Filament\Tables\Concerns\InteractsWithTable;
 use Filament\Tables\Contracts\HasTable;
-use Filament\Tables\Table;
-use Illuminate\Support\Facades\Auth;
-use Livewire\Component;
+use App\Services\BankReconciliationService;
+use App\Filament\Tables\Columns\MoneyColumn;
+use Filament\Forms\Concerns\InteractsWithForms;
+use Filament\Tables\Concerns\InteractsWithTable;
 
 class BankTransactionsTable extends Component implements HasTable, HasForms
 {
@@ -54,9 +55,8 @@ class BankTransactionsTable extends Component implements HasTable, HasForms
                     ->label(__('bank_statement.description'))
                     ->searchable()
                     ->limit(50),
-                TextColumn::make('amount')
+                MoneyColumn::make('amount')
                     ->label(__('bank_statement.amount'))
-                    ->formatStateUsing(fn ($state) => $state->formatTo('en_US'))
                     ->sortable(),
             ])
             ->actions([

@@ -15,18 +15,13 @@ use App\Services\PaymentService;
 use Filament\Resources\Resource;
 use App\Enums\Sales\InvoiceStatus;
 use App\Enums\Payments\PaymentType;
-use Filament\Tables\Actions\Action;
-use Illuminate\Support\Facades\Auth;
 use App\Enums\Payments\PaymentStatus;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Repeater;
-use Filament\Notifications\Notification;
 use App\Enums\Purchases\VendorBillStatus;
-use Illuminate\Database\Eloquent\Builder;
 use App\Filament\Tables\Columns\MoneyColumn;
 use App\Filament\Forms\Components\MoneyInput;
 use App\Filament\Resources\PaymentResource\Pages;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\PaymentResource\RelationManagers;
 
 class PaymentResource extends Resource
@@ -189,9 +184,24 @@ class PaymentResource extends Resource
                     ->sortable(),
                 Tables\Columns\TextColumn::make('payment_type')
                     ->label(__('payment.table.payment_type'))
+                    ->formatStateUsing(fn(PaymentType $state): string => $state->label())
+                    ->badge()
+                    ->color(fn(PaymentType $state): string => match($state) {
+                        PaymentType::Inbound => 'success',
+                        PaymentType::Outbound => 'danger',
+                    })
                     ->searchable(),
+
                 Tables\Columns\TextColumn::make('status')
                     ->label(__('payment.table.status'))
+                    ->formatStateUsing(fn(PaymentStatus $state): string => $state->label())
+                    ->badge()
+                    ->color(fn(PaymentStatus $state): string => match($state) {
+                        PaymentStatus::Draft => 'gray',
+                        PaymentStatus::Confirmed => 'warning',
+                        PaymentStatus::Reconciled => 'success',
+                        PaymentStatus::Canceled => 'danger',
+                    })
                     ->searchable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->label(__('payment.table.created_at'))

@@ -4,6 +4,7 @@ namespace App\Filament\Pages\Reports;
 
 use App\Models\Company;
 use App\Services\Reports\TaxReportService;
+use App\Support\NumberFormatter;
 use Carbon\Carbon;
 use Filament\Actions\Action;
 use Filament\Facades\Filament;
@@ -101,8 +102,8 @@ class ViewTaxReport extends Page
                     'taxId' => $line->taxId,
                     'taxName' => $line->taxName,
                     'taxRate' => $line->taxRate,
-                    'netAmount' => $line->netAmount->formatTo('en'),
-                    'taxAmount' => $line->taxAmount->formatTo('en'),
+                    'netAmount' => NumberFormatter::formatMoneyTo($line->netAmount),
+                    'taxAmount' => NumberFormatter::formatMoneyTo($line->taxAmount),
                     'netAmountRaw' => $line->netAmount->getAmount()->toFloat(),
                     'taxAmountRaw' => $line->taxAmount->getAmount()->toFloat(),
                 ];
@@ -112,15 +113,15 @@ class ViewTaxReport extends Page
                     'taxId' => $line->taxId,
                     'taxName' => $line->taxName,
                     'taxRate' => $line->taxRate,
-                    'netAmount' => $line->netAmount->formatTo('en'),
-                    'taxAmount' => $line->taxAmount->formatTo('en'),
+                    'netAmount' => NumberFormatter::formatMoneyTo($line->netAmount),
+                    'taxAmount' => NumberFormatter::formatMoneyTo($line->taxAmount),
                     'netAmountRaw' => $line->netAmount->getAmount()->toFloat(),
                     'taxAmountRaw' => $line->taxAmount->getAmount()->toFloat(),
                 ];
             })->toArray(),
-            'totalOutputTax' => $report->totalOutputTax->formatTo('en'),
-            'totalInputTax' => $report->totalInputTax->formatTo('en'),
-            'netTaxPayable' => $report->netTaxPayable->formatTo('en'),
+            'totalOutputTax' => NumberFormatter::formatMoneyTo($report->totalOutputTax),
+            'totalInputTax' => NumberFormatter::formatMoneyTo($report->totalInputTax),
+            'netTaxPayable' => NumberFormatter::formatMoneyTo($report->netTaxPayable),
             'netTaxPayableRaw' => $report->netTaxPayable->getAmount()->toFloat(),
             'companyName' => $company->name,
         ];

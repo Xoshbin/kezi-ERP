@@ -6,6 +6,7 @@ use App\Services\Reports\ProfitAndLossStatementService;
 use App\Services\Reports\BalanceSheetService;
 use App\Services\Reports\AgedReceivableService;
 use App\Services\Reports\AgedPayableService;
+use App\Support\NumberFormatter;
 use App\Models\Company;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
@@ -79,38 +80,38 @@ class FinancialStatsOverview extends BaseWidget
 
         return [
             // Current Month Net Profit
-            Stat::make(__('dashboard.financial.current_month_profit'), $netProfit->formatTo(app()->getLocale()))
+            Stat::make(__('dashboard.financial.current_month_profit'), NumberFormatter::formatMoneyTo($netProfit))
                 ->description(__('dashboard.financial.profit_after_expenses'))
                 ->descriptionIcon($netProfit->isPositive() ? 'heroicon-m-arrow-trending-up' : 'heroicon-m-arrow-trending-down')
                 ->color($netProfit->isPositive() ? 'success' : ($netProfit->isNegative() ? 'danger' : 'gray'))
                 ->chart($this->getMonthlyProfitTrend($company, $plService)),
 
             // Year-to-Date Net Profit
-            Stat::make(__('dashboard.financial.ytd_profit'), $ytdNetProfit->formatTo(app()->getLocale()))
+            Stat::make(__('dashboard.financial.ytd_profit'), NumberFormatter::formatMoneyTo($ytdNetProfit))
                 ->description(__('dashboard.financial.year_to_date_performance'))
                 ->descriptionIcon($ytdNetProfit->isPositive() ? 'heroicon-m-arrow-trending-up' : 'heroicon-m-arrow-trending-down')
                 ->color($ytdNetProfit->isPositive() ? 'success' : ($ytdNetProfit->isNegative() ? 'danger' : 'gray')),
 
             // Total Outstanding Receivables
-            Stat::make(__('dashboard.financial.total_receivables'), $totalReceivables->formatTo(app()->getLocale()))
+            Stat::make(__('dashboard.financial.total_receivables'), NumberFormatter::formatMoneyTo($totalReceivables))
                 ->description(__('dashboard.financial.outstanding_customer_invoices'))
                 ->descriptionIcon('heroicon-m-banknotes')
                 ->color($totalReceivables->isZero() ? 'gray' : 'warning'),
 
             // Total Outstanding Payables
-            Stat::make(__('dashboard.financial.total_payables'), $totalPayables->formatTo(app()->getLocale()))
+            Stat::make(__('dashboard.financial.total_payables'), NumberFormatter::formatMoneyTo($totalPayables))
                 ->description(__('dashboard.financial.outstanding_vendor_bills'))
                 ->descriptionIcon('heroicon-m-credit-card')
                 ->color($totalPayables->isZero() ? 'gray' : 'danger'),
 
             // Cash Balance
-            Stat::make(__('dashboard.financial.cash_balance'), $cashBalance->formatTo(app()->getLocale()))
+            Stat::make(__('dashboard.financial.cash_balance'), NumberFormatter::formatMoneyTo($cashBalance))
                 ->description(__('dashboard.financial.total_cash_all_accounts'))
                 ->descriptionIcon('heroicon-m-currency-dollar')
                 ->color($cashBalance->isPositive() ? 'success' : ($cashBalance->isNegative() ? 'danger' : 'gray')),
 
             // Gross Profit Margin
-            Stat::make(__('dashboard.financial.gross_margin'), number_format($grossProfitMargin, 1) . '%')
+            Stat::make(__('dashboard.financial.gross_margin'), NumberFormatter::formatPercentage($grossProfitMargin, 1))
                 ->description(__('dashboard.financial.profitability_ratio'))
                 ->descriptionIcon('heroicon-m-chart-pie')
                 ->color($grossProfitMargin > 20 ? 'success' : ($grossProfitMargin > 10 ? 'warning' : 'danger')),

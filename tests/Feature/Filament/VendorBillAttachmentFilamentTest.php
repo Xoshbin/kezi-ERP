@@ -34,7 +34,7 @@ class VendorBillAttachmentFilamentTest extends TestCase
         // Create test data
         $this->company = Company::factory()->create();
         $this->user = User::factory()->create(['company_id' => $this->company->id]);
-        $this->currency = Currency::factory()->create();
+        $this->currency = Currency::factory()->create(['code' => 'USD', 'decimal_places' => 2]);
         $this->vendor = Partner::factory()->create(['company_id' => $this->company->id]);
         $this->expenseAccount = Account::factory()->create(['company_id' => $this->company->id]);
         $this->product = Product::factory()->create([

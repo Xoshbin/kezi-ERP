@@ -219,3 +219,11 @@ foreach ($lines as $line) {
       └── messages.php
   ```
 - **No Hardcoded Strings:** Under no circumstances should user-facing text be hardcoded directly in PHP files or Blade templates.
+
+6. Git Commit & Branching Conventions
+After each task you complete, output:
+
+Commit: <imperative message, ≤72 chars, specific, no punctuation, ref issue if any>
+Branch: <type>/<short-kebab-description>
+Types: feature, bugfix, hotfix, release
+Branch rules: lowercase, hyphens, ≤6 words

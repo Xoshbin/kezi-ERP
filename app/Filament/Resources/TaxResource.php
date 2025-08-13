@@ -7,6 +7,7 @@ use App\Filament\Resources\TaxResource\Pages;
 use App\Filament\Resources\TaxResource\RelationManagers;
 use App\Models\Tax;
 use App\Enums\Accounting\TaxType;
+use App\Support\NumberFormatter;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -88,7 +89,7 @@ class TaxResource extends Resource
                     ->searchable(),
                 Tables\Columns\TextColumn::make('rate')
                     ->label(__('tax.rate'))
-                    ->numeric()
+                    ->formatStateUsing(fn ($state) => NumberFormatter::formatPercentage($state / 100))
                     ->sortable(),
                 Tables\Columns\TextColumn::make('type')
                     ->label(__('tax.type'))
