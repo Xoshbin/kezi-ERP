@@ -122,6 +122,11 @@ class InvoiceResource extends Resource
                                 ->mapWithKeys(function ($partner) use ($currentCompany) {
                                     $label = $partner->name;
 
+                                    // Add company name if partner is linked to another company
+                                    if ($partner->linkedCompany) {
+                                        $label .= ' (' . $partner->linkedCompany->name . ')';
+                                    }
+
                                     // Add inter-company indicator if partner is linked to another company
                                     if ($partner->linkedCompany && $currentCompany) {
                                         if ($partner->linkedCompany->parent_company_id === $currentCompany->id) {
@@ -148,6 +153,11 @@ class InvoiceResource extends Resource
                             $currentCompany = \App\Models\Company::find($currentCompanyId);
 
                             $label = $partner->name;
+
+                            // Add company name if partner is linked to another company
+                            if ($partner->linkedCompany) {
+                                $label .= ' (' . $partner->linkedCompany->name . ')';
+                            }
 
                             // Add inter-company indicator if partner is linked to another company
                             if ($partner->linkedCompany && $currentCompany) {
