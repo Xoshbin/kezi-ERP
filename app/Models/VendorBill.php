@@ -103,6 +103,8 @@ class VendorBill extends Model
         'total_tax',            // The total tax amount on the vendor bill .
         'journal_entry_id',     // Nullable foreign key to journal_entries.id, linking to the immutable
         // financial transaction once the bill is posted .
+        'recurring_template_id', // Nullable foreign key to recurring_invoice_templates.id for tracking
+        // vendor bills generated from recurring templates .
         'posted_at',            // Nullable timestamp indicating when the vendor bill was confirmed/posted .
         'reset_to_draft_log',   // JSON/Text field to log instances where a 'Posted' bill was
         // **reset to 'Draft' for modification**, crucial for maintaining an audit trail .
@@ -238,6 +240,17 @@ class VendorBill extends Model
     public function attachments(): HasMany
     {
         return $this->hasMany(VendorBillAttachment::class, 'vendor_bill_id');
+    }
+
+    /**
+     * Get the recurring template that generated this vendor bill.
+     * This relationship is used for tracking vendor bills generated from recurring templates.
+     *
+     * @return BelongsTo
+     */
+    public function recurringTemplate(): BelongsTo
+    {
+        return $this->belongsTo('App\Models\RecurringInvoiceTemplate', 'recurring_template_id');
     }
 
     /**

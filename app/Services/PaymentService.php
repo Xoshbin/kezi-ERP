@@ -10,15 +10,18 @@ use App\Models\Payment;
 use App\Models\AuditLog;
 use App\Models\Currency;
 use App\Models\VendorBill;
+use App\Models\Partner;
 use App\Enums\Sales\InvoiceStatus;
 use App\Enums\Payments\PaymentStatus;
 use App\Enums\Purchases\VendorBillStatus;
 use InvalidArgumentException;
 use App\Events\PaymentConfirmed;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use App\Exceptions\UpdateNotAllowedException;
 use App\Exceptions\DeletionNotAllowedException;
 use App\Actions\Accounting\CreateJournalEntryForPaymentAction;
+use App\Services\Payments\InterCompanyPaymentService;
 
 class PaymentService
 {
@@ -26,7 +29,8 @@ class PaymentService
         protected JournalEntryService $journalEntryService,
         protected CreateJournalEntryForPaymentAction $createJournalEntryForPaymentAction,
         protected InvoiceService $invoiceService,
-        protected VendorBillService $vendorBillService
+        protected VendorBillService $vendorBillService,
+        protected InterCompanyPaymentService $interCompanyPaymentService
     ) {}
 
     /**
@@ -39,6 +43,9 @@ class PaymentService
         }
 
         return DB::transaction(function () use ($payment, $user) {
+            // Check if this is an inter-company payment and handle accordingly
+            $this->handleInterCompanyPayment($payment, $user);
+
             // Create the corresponding journal entry.
             $journalEntry = $this->createJournalEntryForPaymentAction->execute($payment, $user);
 
@@ -169,5 +176,21 @@ class PaymentService
 
         // If the payment is a draft, proceed with deletion.
         $payment->delete();
+    }
+
+    /**
+     * Handle inter-company payment processing
+     */
+    protected function handleInterCompanyPayment(Payment $payment, User $user): void
+    {
+        $this->interCompanyPaymentService->processInterCompanyPayment($payment, $user);
+    }
+
+    /**
+     * Check if a payment involves inter-company transactions
+     */
+    public function isInterCompanyPayment(Payment $payment): bool
+    {
+        return $this->interCompanyPaymentService->isInterCompanyPayment($payment);
     }
 }

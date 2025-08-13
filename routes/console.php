@@ -9,5 +9,7 @@ Artisan::command('inspire', function () {
 
 use Illuminate\Support\Facades\Schedule;
 use App\Console\Commands\ProcessDepreciations;
+use App\Console\Commands\ProcessRecurringInterCompanyCharges;
 
 Schedule::command(ProcessDepreciations::class)->daily();
+Schedule::command(ProcessRecurringInterCompanyCharges::class)->daily();

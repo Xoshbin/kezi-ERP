@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Event;
 use Illuminate\Auth\Events\Registered;
 use App\Events\Inventory\StockMoveConfirmed;
 use App\Listeners\Inventory\HandleStockMoveConfirmation;
+use App\Listeners\Inventory\CreateInterCompanyStockTransferListener;
 use App\Listeners\Asset\CreateAssetFromVendorBillListener;
 use App\Listeners\Purchases\CreateInterCompanyBillListener;
 use App\Listeners\Sales\CreateInterCompanyInvoiceListener;
@@ -28,6 +29,7 @@ class EventServiceProvider extends ServiceProvider
         ],
         StockMoveConfirmed::class => [
             HandleStockMoveConfirmation::class,
+            CreateInterCompanyStockTransferListener::class,
         ],
         VendorBillConfirmed::class => [
             ProcessInventoryForConfirmedBill::class,

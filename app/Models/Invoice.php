@@ -100,6 +100,7 @@ class Invoice extends Model
         'currency_id',
         'journal_entry_id',
         'fiscal_position_id',
+        'recurring_template_id',
         'invoice_number',
         'reference',
         'invoice_date',
@@ -227,6 +228,17 @@ class Invoice extends Model
     public function adjustmentDocuments(): HasMany
     {
         return $this->hasMany(\App\Models\AdjustmentDocument::class, 'original_invoice_id');
+    }
+
+    /**
+     * Get the recurring template that generated this invoice.
+     * This relationship is used for tracking invoices generated from recurring templates.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function recurringTemplate(): BelongsTo
+    {
+        return $this->belongsTo('App\Models\RecurringInvoiceTemplate', 'recurring_template_id');
     }
 
     /*
