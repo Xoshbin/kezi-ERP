@@ -2,16 +2,18 @@
 
 namespace App\Models;
 
+use Brick\Money\Money;
+use Illuminate\Support\Carbon;
+use App\Enums\Sales\InvoiceStatus;
 use App\Observers\PartnerObserver;
 use App\Enums\Partners\PartnerType;
-use App\Enums\Sales\InvoiceStatus;
-use App\Enums\Purchases\VendorBillStatus;
-use Brick\Money\Money;
 use Illuminate\Database\Eloquent\Model;
+use App\Enums\Purchases\VendorBillStatus;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
-use Illuminate\Support\Carbon;
 
 /**
  * Class Partner
@@ -99,6 +101,7 @@ class Partner extends Model
         'receivable_account_id',
         'payable_account_id',
         'is_active',
+        'linked_company_id'
     ];
 
     /**
@@ -124,13 +127,30 @@ class Partner extends Model
     ];
 
 
+    /**
+     * Purpose Representation / Link
+     * Analogy	Does this file have a cross-reference tag pointing to another cabinet?
+     * Value in our Example	The ID of the other company this partner represents (e.g., ParentCo).
+     * Is it Nullable? Yes. Most partners are external and will have this as NULL.
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function linkedCompany(): BelongsTo
+    {
+        return $this->belongsTo(Company::class, 'linked_company_id');
+    }
+
+
 
     /**
      * Get the company that owns the Partner.
      *
+     * Purpose	Ownership
+     * Analogy	Which filing cabinet is this file in?
+     * Value in our Example	The ID of the company whose books the partner record belongs to (e.g., ChildCo).
+     * Is it Nullable?	No. Every partner must belong to a company.
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    public function company()
+    public function company(): BelongsTo
     {
         return $this->belongsTo(Company::class);
     }
@@ -140,7 +160,7 @@ class Partner extends Model
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    public function receivableAccount()
+    public function receivableAccount(): BelongsTo
     {
         return $this->belongsTo(Account::class, 'receivable_account_id');
     }
@@ -150,7 +170,7 @@ class Partner extends Model
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    public function payableAccount()
+    public function payableAccount(): BelongsTo
     {
         return $this->belongsTo(Account::class, 'payable_account_id');
     }
@@ -160,7 +180,7 @@ class Partner extends Model
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
-    public function invoices()
+    public function invoices(): HasMany
     {
         return $this->hasMany(Invoice::class, 'customer_id');
     }
@@ -170,7 +190,7 @@ class Partner extends Model
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
-    public function vendorBills()
+    public function vendorBills(): HasMany
     {
         return $this->hasMany(VendorBill::class, 'vendor_id');
     }
@@ -180,7 +200,7 @@ class Partner extends Model
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
-    public function payments()
+    public function payments(): HasMany
     {
         // payments.paid_to_from_partner_id is FK to partners.id [5]
         return $this->hasMany(Payment::class, 'paid_to_from_partner_id');
@@ -191,7 +211,7 @@ class Partner extends Model
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
-    public function journalEntryLines()
+    public function journalEntryLines(): HasMany
     {
         // journal_entry_lines.partner_id is Nullable FK to partners.id [6]
         return $this->hasMany(JournalEntryLine::class, 'partner_id');

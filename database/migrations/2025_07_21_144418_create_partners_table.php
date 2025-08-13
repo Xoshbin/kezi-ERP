@@ -29,6 +29,12 @@ return new class extends Migration
             $table->boolean('is_active')->default(true);
             $table->foreignId('receivable_account_id')->nullable()->constrained('accounts')->after('tax_id');
             $table->foreignId('payable_account_id')->nullable()->constrained('accounts')->after('receivable_account_id');
+            // This column links a partner record to a company record in our system.
+            // It's nullable because not all partners are internal companies.
+            $table->foreignId('linked_company_id')
+                  ->nullable()
+                  ->constrained('companies')
+                  ->onDelete('cascade'); // If a company is deleted, its partner link is also removed.
             $table->timestamps();
             $table->softDeletes();
         });
