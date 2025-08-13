@@ -59,18 +59,7 @@ class PaymentResource extends Resource
         return $form->schema([
             Section::make()
                 ->schema([
-                    Forms\Components\Select::make('company_id')
-                        ->relationship('company', 'name')
-                        ->label(__('payment.form.company_id'))
-                        ->required()
-                        ->live()
-                        ->default($company?->id)
-                        ->afterStateUpdated(function (callable $set, $state) {
-                            $company = Company::find($state);
-                            if ($company) {
-                                $set('currency_id', $company->currency_id);
-                            }
-                        }),
+
                     Forms\Components\Select::make('journal_id')
                         ->relationship('journal', 'name')
                         ->label(__('payment.form.journal_id'))

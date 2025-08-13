@@ -56,18 +56,7 @@ class BankStatementResource extends Resource
         return $form->schema([
             Section::make()
                 ->schema([
-                    Forms\Components\Select::make('company_id')
-                        ->relationship('company', 'name')
-                        ->label(__('bank_statement.company'))
-                        ->required()
-                        ->live()
-                        ->default($company?->id)
-                        ->afterStateUpdated(function (callable $set, $state) {
-                            $company = Company::find($state);
-                            if ($company) {
-                                $set('currency_id', $company->currency_id);
-                            }
-                        }),
+
                     Forms\Components\Select::make('currency_id')
                         ->relationship('currency', 'name')
                         ->label(__('bank_statement.currency'))
@@ -189,10 +178,7 @@ class BankStatementResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('company_id')
-                    ->label(__('bank_statement.company_id'))
-                    ->numeric()
-                    ->sortable(),
+
                 Tables\Columns\TextColumn::make('journal_id')
                     ->label(__('bank_statement.journal_id'))
                     ->numeric()
@@ -242,12 +228,7 @@ class BankStatementResource extends Resource
             ]);
     }
 
-    public static function getEloquentQuery(): Builder
-    {
-        // This line ensures that this resource will ONLY ever see/find
-        // bank statements that belong to the logged-in user's company.
-        return parent::getEloquentQuery()->where('company_id', auth()->user()->company_id);
-    }
+
 
     public static function getRelations(): array
     {

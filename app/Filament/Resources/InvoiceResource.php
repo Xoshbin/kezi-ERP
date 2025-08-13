@@ -67,54 +67,13 @@ class InvoiceResource extends Resource
         return $form->schema([
             Section::make()
                 ->schema([
-                    Forms\Components\Select::make('company_id')
-                        ->relationship('company', 'name')
-                        ->label(__('invoice.company'))
-                        ->required()
-                        ->live()
-                        ->searchable()
-                        ->default($company?->id)
-                        ->afterStateUpdated(function (callable $set, $state) {
-                            $company = Company::find($state);
-                            if ($company) {
-                                $set('currency_id', $company->currency_id);
-                            }
-                        })
-                        ->createOptionForm([
-                            Forms\Components\TextInput::make('name')
-                                ->label(__('company.name'))
-                                ->required()
-                                ->maxLength(255),
-                            Forms\Components\Textarea::make('address')
-                                ->label(__('company.address'))
-                                ->columnSpanFull(),
-                            Forms\Components\TextInput::make('tax_id')
-                                ->label(__('company.tax_id'))
-                                ->maxLength(255),
-                            Forms\Components\Select::make('currency_id')
-                                ->label(__('company.currency_id'))
-                                ->relationship('currency', 'name')
-                                ->required(),
-                            Forms\Components\TextInput::make('fiscal_country')
-                                ->label(__('company.fiscal_country'))
-                                ->required()
-                                ->maxLength(255),
-                        ])
-                        ->createOptionModalHeading(__('common.modal_title_create_company'))
-                        ->createOptionAction(function (Forms\Components\Actions\Action $action) {
-                            return $action
-                                ->modalWidth('lg');
-                        }),
+
                     Forms\Components\Select::make('customer_id')
                         ->relationship('customer', 'name')
                         ->label(__('invoice.customer'))
                         ->required()
                         ->searchable()
                         ->createOptionForm([
-                            Forms\Components\Select::make('company_id')
-                                ->relationship('company', 'name')
-                                ->label(__('partner.company'))
-                                ->required(),
                             Forms\Components\TextInput::make('name')
                                 ->label(__('partner.name'))
                                 ->required()

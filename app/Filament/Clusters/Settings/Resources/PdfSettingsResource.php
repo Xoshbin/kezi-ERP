@@ -143,12 +143,7 @@ class PdfSettingsResource extends Resource
             ]);
     }
 
-    public static function getEloquentQuery(): Builder
-    {
-        // Only show companies that the current user has access to
-        return parent::getEloquentQuery()
-            ->where('id', Auth::user()->company_id);
-    }
+
 
     public static function getPages(): array
     {
