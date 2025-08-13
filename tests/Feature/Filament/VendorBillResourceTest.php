@@ -28,13 +28,10 @@ it('can render the create page', function () {
 
 it('can create a vendor bill', function () {
     /** @var \App\Models\Partner $vendor */
-    $vendor = Partner::factory()->vendor()->create([
-        'company_id' => $this->company->id,
-    ]);
+    $vendor = Partner::factory()->vendor()->for($this->company)->create();
 
     /** @var \App\Models\Product $product */
-    $product = Product::factory()->create([
-        'company_id' => $this->company->id,
+    $product = Product::factory()->for($this->company)->create([
         'name' => 'Test Product Line', // Set a specific name to match the database assertion
         'unit_price' => \Brick\Money\Money::of(100, $this->company->currency->code), // Set a specific price for predictable total
     ]);
@@ -43,7 +40,6 @@ it('can create a vendor bill', function () {
 
     livewire(VendorBillResource\Pages\CreateVendorBill::class)
         ->fillForm([
-            'company_id' => $this->company->id,
             'vendor_id' => $vendor->id,
             'currency_id' => $this->company->currency_id,
             'bill_reference' => 'Test Bill Ref',
@@ -56,7 +52,7 @@ it('can create a vendor bill', function () {
                 'product_id' => $product->id,
                 'description' => 'Test Product Line',
                 'quantity' => 2,
-                'unit_price' => $product->unit_price->getAmount()->toFloat(),
+                'unit_price' => 100, // Use numeric value for MoneyInput in tests
                 'expense_account_id' => $product->expense_account_id,
                 'tax_id' => null,
                 'analytic_account_id' => null,
@@ -101,24 +97,19 @@ it('can validate input on create', function () {
 });
 
 it('can render the edit page', function () {
-    $vendorBill = VendorBill::factory()->create([
-        'company_id' => $this->company->id,
-    ]);
+    $vendorBill = VendorBill::factory()->for($this->company)->create();
 
     $this->get(VendorBillResource::getUrl('edit', ['record' => $vendorBill]))
         ->assertSuccessful();
 });
 
 it('can edit a vendor bill', function () {
-    $vendorBill = VendorBill::factory()->withLines(1)->create([
-        'company_id' => $this->company->id,
+    $vendorBill = VendorBill::factory()->withLines(1)->for($this->company)->create([
         'bill_reference' => 'Old Ref',
     ]);
 
     /** @var \App\Models\Partner $newVendor */
-    $newVendor = Partner::factory()->vendor()->create([
-        'company_id' => $this->company->id,
-    ]);
+    $newVendor = Partner::factory()->vendor()->for($this->company)->create();
 
     // The mutateFormDataBeforeFill method in EditVendorBill already handles
     // the conversion of line data with Money objects properly, so we don't need to override it
@@ -140,8 +131,7 @@ it('can edit a vendor bill', function () {
 });
 
 it('can confirm a vendor bill', function () {
-    $vendorBill = VendorBill::factory()->create([
-        'company_id' => $this->company->id,
+    $vendorBill = VendorBill::factory()->for($this->company)->create([
         'status' => VendorBillStatus::Draft,
     ]);
 
@@ -161,8 +151,7 @@ it('can confirm a vendor bill', function () {
  * the feature is woking and passing tests */
 
 // it('can reset a vendor bill to draft', function () {
-//     $vendorBill = VendorBill::factory()->create([
-//         'company_id' => $this->company->id,
+//     $vendorBill = VendorBill::factory()->for($this->company)->create([
 //         'status' => VendorBillStatus::Posted,
 //         'posted_at' => now(),
 //     ]);

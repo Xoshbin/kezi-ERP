@@ -64,7 +64,7 @@ class EditVendorBill extends EditRecord
             Actions\DeleteAction::make()
                 ->action(function (Model $record) {
                     app(VendorBillService::class)->delete($record);
-                    $this->redirect(VendorBillResource::getUrl('index'));
+                    $this->redirect(static::getResource()::getUrl('index'));
                 }),
         ];
     }

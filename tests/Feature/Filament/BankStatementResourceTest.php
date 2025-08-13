@@ -29,16 +29,13 @@ it('can render the create page', function () {
 
 it('can create a bank statement', function () {
     /** @var \App\Models\Partner $partner */
-    $partner = Partner::factory()->create([
-        'company_id' => $this->company->id,
-    ]);
+    $partner = Partner::factory()->for($this->company)->create();
 
     /** @var \App\Models\Journal $bankJournal */
     $bankJournal = Journal::factory()->for($this->company)->create(['type' => JournalType::Bank]);
 
     livewire(BankStatementResource\Pages\CreateBankStatement::class)
         ->fillForm([
-            'company_id' => $this->company->id,
             'currency_id' => $this->company->currency_id,
             'journal_id' => $bankJournal->id,
             'reference' => 'Test Statement Ref',
@@ -58,7 +55,6 @@ it('can create a bank statement', function () {
         ->assertHasNoFormErrors();
 
     $this->assertDatabaseHas('bank_statements', [
-        'company_id' => $this->company->id,
         'journal_id' => $bankJournal->id,
         'reference' => 'Test Statement Ref',
     ]);

@@ -32,13 +32,10 @@ it('can render the create page', function () {
 
 it('can create an invoice', function () {
     /** @var \App\Models\Partner $customer */
-    $customer = Partner::factory()->customer()->create([
-        'company_id' => $this->company->id,
-    ]);
+    $customer = Partner::factory()->customer()->for($this->company)->create();
 
     /** @var \App\Models\Product $product */
-    $product = Product::factory()->create([
-        'company_id' => $this->company->id,
+    $product = Product::factory()->for($this->company)->create([
         'name' => 'Test Product Line', // Set a specific name to match the database assertion
         'unit_price' => \Brick\Money\Money::of(100, $this->company->currency->code), // Set a specific price for predictable total
     ]);

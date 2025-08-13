@@ -467,7 +467,6 @@ test('Jmeryar ERP complete accounting scenario - Full Workflow', function () {
     // Step 9: Handling a Correction (Credit Note) using AdjustmentDocumentResource
     livewire(\App\Filament\Resources\AdjustmentDocumentResource\Pages\CreateAdjustmentDocument::class)
         ->fillForm([
-            'company_id' => $company->id,
             'type' => 'credit_note',
             'document_link_type' => 'invoice',
             'original_invoice_id' => $invoice->id,

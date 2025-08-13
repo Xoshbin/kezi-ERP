@@ -47,14 +47,18 @@ it('includes all financial widgets', function () {
     expect($widgets)->toContain(\App\Filament\Widgets\CashFlowWidget::class);
 });
 
-it('handles user without company', function () {
+it('denies access to user without company', function () {
     $userWithoutCompany = User::factory()->create();
     // Don't attach any companies to this user
     $this->actingAs($userWithoutCompany);
 
-    $component = Livewire::test(Dashboard::class);
+    // With Filament tenancy, a user without companies should not be able to access tenant-scoped pages
+    // Filament should handle this automatically through its tenancy system
 
-    $component->assertOk();
-    // Check for the English translation since tests run in English locale
-    $component->assertSeeText('No Company');
+    // Try to access the dashboard directly via HTTP request (more realistic test)
+    $response = $this->get('/jmeryar');
+
+    // User should be redirected or get an error, not see the dashboard
+    // Filament typically redirects to tenant selection or registration page
+    expect($response->status())->not->toBe(200);
 });
