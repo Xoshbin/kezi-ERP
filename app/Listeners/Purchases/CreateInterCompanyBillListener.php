@@ -17,6 +17,12 @@ class CreateInterCompanyBillListener implements ShouldQueue
     {
         $invoice = $event->invoice;
 
+        // Prevent circular inter-company transactions
+        // If this invoice was created from an inter-company vendor bill, don't create another vendor bill
+        if (str_starts_with($invoice->reference ?? '', 'IC-BILL-')) {
+            return;
+        }
+
         // Check if the customer is a related company
         $customerPartner = $invoice->customer;
         $targetCompany = $customerPartner->linkedCompany;

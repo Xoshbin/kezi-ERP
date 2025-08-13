@@ -101,15 +101,76 @@ class VendorBillResource extends Resource
                                 ->modalWidth('lg');
                         }),
                     Forms\Components\Select::make('vendor_id')
-                        ->relationship('vendor', 'name')
                         ->label(__('vendor_bill.vendor'))
+                        ->helperText(__('vendor_bill.vendor_helper_text'))
                         ->required()
                         ->searchable()
+                        ->getSearchResultsUsing(function (string $search, $get): array {
+                            $currentCompanyId = $get('company_id') ?? \App\Models\Company::first()?->id;
+                            $currentCompany = \App\Models\Company::find($currentCompanyId);
+
+                            return \App\Models\Partner::where('type', 'vendor')
+                                ->where('name', 'like', "%{$search}%")
+                                ->with('linkedCompany')
+                                ->limit(50)
+                                ->get()
+                                ->mapWithKeys(function ($partner) use ($currentCompany) {
+                                    $label = $partner->name;
+
+                                    // Add company name if partner is linked to another company
+                                    if ($partner->linkedCompany) {
+                                        $label .= ' (' . $partner->linkedCompany->name . ')';
+                                    }
+
+                                    // Add inter-company indicator if partner is linked to another company
+                                    if ($partner->linkedCompany && $currentCompany) {
+                                        if ($partner->linkedCompany->parent_company_id === $currentCompany->id) {
+                                            // This partner represents a child company
+                                            $label .= ' 🏢 ' . __('vendor_bill.child_company_indicator');
+                                        } elseif ($currentCompany->parent_company_id === $partner->linkedCompany->id) {
+                                            // This partner represents the parent company
+                                            $label .= ' 🏛️ ' . __('vendor_bill.parent_company_indicator');
+                                        } elseif ($partner->linkedCompany->parent_company_id === $currentCompany->parent_company_id && $currentCompany->parent_company_id) {
+                                            // This partner represents a sibling company
+                                            $label .= ' 🤝 ' . __('vendor_bill.sibling_company_indicator');
+                                        }
+                                    }
+
+                                    return [$partner->id => $label];
+                                })
+                                ->toArray();
+                        })
+                        ->getOptionLabelUsing(function ($value, $get): ?string {
+                            $partner = \App\Models\Partner::with('linkedCompany')->find($value);
+                            if (!$partner) return null;
+
+                            $currentCompanyId = $get('company_id') ?? \App\Models\Company::first()?->id;
+                            $currentCompany = \App\Models\Company::find($currentCompanyId);
+
+                            $label = $partner->name;
+
+                            // Add company name if partner is linked to another company
+                            if ($partner->linkedCompany) {
+                                $label .= ' (' . $partner->linkedCompany->name . ')';
+                            }
+
+                            // Add inter-company indicator if partner is linked to another company
+                            if ($partner->linkedCompany && $currentCompany) {
+                                if ($partner->linkedCompany->parent_company_id === $currentCompany->id) {
+                                    // This partner represents a child company
+                                    $label .= ' 🏢 ' . __('vendor_bill.child_company_indicator');
+                                } elseif ($currentCompany->parent_company_id === $partner->linkedCompany->id) {
+                                    // This partner represents the parent company
+                                    $label .= ' 🏛️ ' . __('vendor_bill.parent_company_indicator');
+                                } elseif ($partner->linkedCompany->parent_company_id === $currentCompany->parent_company_id && $currentCompany->parent_company_id) {
+                                    // This partner represents a sibling company
+                                    $label .= ' 🤝 ' . __('vendor_bill.sibling_company_indicator');
+                                }
+                            }
+
+                            return $label;
+                        })
                         ->createOptionForm([
-                            Forms\Components\Select::make('company_id')
-                                ->relationship('company', 'name')
-                                ->label(__('partner.company'))
-                                ->required(),
                             Forms\Components\TextInput::make('name')
                                 ->label(__('partner.name'))
                                 ->required()
@@ -117,25 +178,35 @@ class VendorBillResource extends Resource
                             Forms\Components\Select::make('type')
                                 ->label(__('partner.type'))
                                 ->required()
+                                ->default('vendor')
                                 ->options(
                                     collect(\App\Enums\Partners\PartnerType::cases())
                                         ->mapWithKeys(fn (\App\Enums\Partners\PartnerType $type) => [$type->value => $type->label()])
                                 ),
-                            Forms\Components\TextInput::make('contact_person')
-                                ->label(__('partner.contact_person'))
-                                ->maxLength(255),
-                            Forms\Components\TextInput::make('email')
-                                ->label(__('partner.email'))
-                                ->email()
-                                ->maxLength(255),
-                            Forms\Components\TextInput::make('phone')
-                                ->label(__('partner.phone'))
-                                ->maxLength(255),
-                            Forms\Components\Textarea::make('address')
-                                ->label(__('partner.address'))
-                                ->columnSpanFull(),
+                            Forms\Components\Select::make('linked_company_id')
+                                ->label(__('partner.linked_company'))
+                                ->helperText(__('partner.linked_company_helper_text'))
+                                ->searchable()
+                                ->getSearchResultsUsing(function (string $search): array {
+                                    return \App\Models\Company::where('name', 'like', "%{$search}%")
+                                        ->limit(50)
+                                        ->get()
+                                        ->mapWithKeys(fn($company) => [$company->id => $company->name])
+                                        ->toArray();
+                                })
+                                ->getOptionLabelUsing(fn($value): ?string => \App\Models\Company::find($value)?->name),
                         ])
-                        ->createOptionModalHeading(__('common.modal_title_create_partner'))
+                        ->createOptionModalHeading(__('partner.create_new_partner'))
+                        ->createOptionUsing(function (array $data, $get): int {
+                            $currentCompanyId = $get('company_id') ?? \App\Models\Company::first()?->id;
+
+                            return \App\Models\Partner::create([
+                                'company_id' => $currentCompanyId,
+                                'name' => $data['name'],
+                                'type' => $data['type'],
+                                'linked_company_id' => $data['linked_company_id'] ?? null,
+                            ])->id;
+                        })
                         ->createOptionAction(function (Forms\Components\Actions\Action $action) {
                             return $action
                                 ->modalWidth('lg');

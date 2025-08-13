@@ -101,6 +101,7 @@ class Invoice extends Model
         'journal_entry_id',
         'fiscal_position_id',
         'invoice_number',
+        'reference',
         'invoice_date',
         'due_date',
         'status',

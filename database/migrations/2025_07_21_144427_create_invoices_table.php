@@ -27,6 +27,7 @@ return new class extends Migration
             $table->unsignedBigInteger('total_tax');
             $table->timestamp('posted_at')->nullable();
             $table->json('reset_to_draft_log')->nullable();
+            $table->string('reference')->nullable()->after('invoice_number');
             $table->timestamps();
 
             // A truly conditional unique index requires raw SQL.

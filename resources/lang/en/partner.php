@@ -21,6 +21,7 @@ return [
     'type' => 'Type',
     'linked_company' => 'Linked Company',
     'linked_company_helper' => 'Select a company if this partner represents another company in your system (for inter-company transactions)',
+    'linked_company_helper_text' => 'Link this vendor to a company to enable automatic inter-company invoice creation',
     'create_new_partner' => 'Create New Partner',
     'contact_person' => 'Contact Person',
     'email' => 'Email',
