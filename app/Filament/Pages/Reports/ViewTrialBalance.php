@@ -4,6 +4,7 @@ namespace App\Filament\Pages\Reports;
 
 use App\Models\Company;
 use App\Services\Reports\TrialBalanceService;
+use App\Support\NumberFormatter;
 use Carbon\Carbon;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Section;
@@ -98,13 +99,13 @@ class ViewTrialBalance extends Page
                 'accountCode' => $line->accountCode,
                 'accountName' => $line->accountName,
                 'accountType' => $line->accountType->value,
-                'debit' => $line->debit->formatTo(app()->getLocale()),
-                'credit' => $line->credit->formatTo(app()->getLocale()),
+                'debit' => NumberFormatter::formatMoneyTo($line->debit),
+                'credit' => NumberFormatter::formatMoneyTo($line->credit),
                 'debitAmount' => $line->debit->getAmount()->toFloat(),
                 'creditAmount' => $line->credit->getAmount()->toFloat(),
             ])->toArray(),
-            'totalDebit' => $report->totalDebit->formatTo(app()->getLocale()),
-            'totalCredit' => $report->totalCredit->formatTo(app()->getLocale()),
+            'totalDebit' => NumberFormatter::formatMoneyTo($report->totalDebit),
+            'totalCredit' => NumberFormatter::formatMoneyTo($report->totalCredit),
             'totalDebitAmount' => $report->totalDebit->getAmount()->toFloat(),
             'totalCreditAmount' => $report->totalCredit->getAmount()->toFloat(),
             'isBalanced' => $report->isBalanced,

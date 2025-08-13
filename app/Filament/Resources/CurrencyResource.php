@@ -6,6 +6,7 @@ use App\Filament\Clusters\Settings;
 use App\Filament\Resources\CurrencyResource\Pages;
 use App\Filament\Resources\CurrencyResource\RelationManagers;
 use App\Models\Currency;
+use App\Support\NumberFormatter;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -80,7 +81,7 @@ class CurrencyResource extends Resource
                     ->searchable(),
                 Tables\Columns\TextColumn::make('exchange_rate')
                     ->label(__('currency.exchange_rate'))
-                    ->numeric()
+                    ->formatStateUsing(fn ($state) => NumberFormatter::formatNumber($state, 4))
                     ->sortable(),
                 Tables\Columns\IconColumn::make('is_active')
                     ->label(__('currency.is_active'))

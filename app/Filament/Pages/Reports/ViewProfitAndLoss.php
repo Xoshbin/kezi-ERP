@@ -3,6 +3,7 @@
 namespace App\Filament\Pages\Reports;
 
 use App\Services\Reports\ProfitAndLossStatementService;
+use App\Support\NumberFormatter;
 use Carbon\Carbon;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Section;
@@ -102,19 +103,19 @@ class ViewProfitAndLoss extends Page
                 'accountId' => $line->accountId,
                 'accountCode' => $line->accountCode,
                 'accountName' => $line->accountName,
-                'balance' => $line->balance->formatTo(app()->getLocale()),
+                'balance' => NumberFormatter::formatMoneyTo($line->balance),
                 'balanceAmount' => $line->balance->getAmount()->toFloat(),
             ])->toArray(),
             'expenseLines' => $report->expenseLines->map(fn($line) => [
                 'accountId' => $line->accountId,
                 'accountCode' => $line->accountCode,
                 'accountName' => $line->accountName,
-                'balance' => $line->balance->formatTo(app()->getLocale()),
+                'balance' => NumberFormatter::formatMoneyTo($line->balance),
                 'balanceAmount' => $line->balance->getAmount()->toFloat(),
             ])->toArray(),
-            'totalRevenue' => $report->totalRevenue->formatTo(app()->getLocale()),
-            'totalExpenses' => $report->totalExpenses->formatTo(app()->getLocale()),
-            'netIncome' => $report->netIncome->formatTo(app()->getLocale()),
+            'totalRevenue' => NumberFormatter::formatMoneyTo($report->totalRevenue),
+            'totalExpenses' => NumberFormatter::formatMoneyTo($report->totalExpenses),
+            'netIncome' => NumberFormatter::formatMoneyTo($report->netIncome),
             'netIncomeAmount' => $report->netIncome->getAmount()->toFloat(),
             'isNetLoss' => $report->netIncome->isNegative(),
         ];

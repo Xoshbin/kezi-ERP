@@ -2,14 +2,13 @@
 
 namespace App\Filament\Resources\PaymentResource\RelationManagers;
 
-use App\Models\VendorBill;
 use Filament\Forms;
 use Filament\Forms\Form;
+use App\Enums\Purchases\VendorBillStatus;
+use App\Filament\Tables\Columns\MoneyColumn;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class VendorBillsRelationManager extends RelationManager
 {
@@ -30,11 +29,16 @@ class VendorBillsRelationManager extends RelationManager
                     ->label(__('payment.relation_manager.vendor_bills.form.accounting_date'))
                     ->required(),
                 Forms\Components\DatePicker::make('due_date')->label(__('payment.relation_manager.vendor_bills.form.due_date')),
-                Forms\Components\TextInput::make('status')
+                Forms\Components\Select::make('status')
                     ->label(__('payment.relation_manager.vendor_bills.form.status'))
+                    ->options([
+                        VendorBillStatus::Draft->value => VendorBillStatus::Draft->label(),
+                        VendorBillStatus::Posted->value => VendorBillStatus::Posted->label(),
+                        VendorBillStatus::Paid->value => VendorBillStatus::Paid->label(),
+                        VendorBillStatus::Cancelled->value => VendorBillStatus::Cancelled->label(),
+                    ])
                     ->required()
-                    ->maxLength(255)
-                    ->default(VendorBill::TYPE_DRAFT),
+                    ->default(VendorBillStatus::Draft->value),
                 Forms\Components\TextInput::make('total_amount')
                     ->label(__('payment.relation_manager.vendor_bills.form.total_amount'))
                     ->required()
@@ -47,16 +51,39 @@ class VendorBillsRelationManager extends RelationManager
         return $table
             ->recordTitleAttribute('bill_reference')
             ->columns([
-                Tables\Columns\TextColumn::make('bill_reference')->label(__('payment.relation_manager.vendor_bills.column.bill_reference')),
+                Tables\Columns\TextColumn::make('bill_reference')
+                    ->label(__('payment.relation_manager.vendor_bills.column.bill_reference'))
+                    ->searchable()
+                    ->sortable(),
+
                 Tables\Columns\TextColumn::make('bill_date')
                     ->label(__('payment.relation_manager.vendor_bills.column.bill_date'))
-                    ->date(),
+                    ->date()
+                    ->sortable(),
+
                 Tables\Columns\TextColumn::make('due_date')
                     ->label(__('payment.relation_manager.vendor_bills.column.due_date'))
-                    ->date(),
-                Tables\Columns\TextColumn::make('status')->label(__('payment.relation_manager.vendor_bills.column.status')),
-                Tables\Columns\TextColumn::make('total_amount')->label(__('payment.relation_manager.vendor_bills.column.total_amount')),
-                Tables\Columns\TextColumn::make('pivot.amount_applied')->label(__('payment.relation_manager.vendor_bills.column.amount_applied')),
+                    ->date()
+                    ->sortable(),
+
+                Tables\Columns\TextColumn::make('status')
+                    ->label(__('payment.relation_manager.vendor_bills.column.status'))
+                    ->formatStateUsing(fn(VendorBillStatus $state): string => $state->label())
+                    ->badge()
+                    ->color(fn(VendorBillStatus $state): string => match($state) {
+                        VendorBillStatus::Draft => 'warning',
+                        VendorBillStatus::Posted => 'success',
+                        VendorBillStatus::Paid => 'info',
+                        VendorBillStatus::Cancelled => 'danger',
+                    }),
+
+                MoneyColumn::make('total_amount')
+                    ->label(__('payment.relation_manager.vendor_bills.column.total_amount'))
+                    ->sortable(),
+
+                MoneyColumn::make('pivot.amount_applied')
+                    ->label(__('payment.relation_manager.vendor_bills.column.amount_applied'))
+                    ->sortable(),
             ])
             ->filters([
                 //

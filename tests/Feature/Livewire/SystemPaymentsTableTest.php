@@ -10,6 +10,7 @@ use App\Models\Partner;
 use App\Livewire\Accounting\SystemPaymentsTable;
 use Brick\Money\Money;
 use App\Enums\Payments\PaymentStatus;
+use App\Enums\Payments\PaymentType;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Livewire\Livewire;
 
@@ -67,7 +68,7 @@ describe('SystemPaymentsTable Livewire Component', function () {
             ->for($this->bankJournal)
             ->for($partner, 'partner')
             ->create([
-                'status' => 'confirmed',
+                'status' => PaymentStatus::Confirmed,
                 'amount' => Money::of(100, $this->currency->code),
             ]);
 
@@ -85,7 +86,7 @@ describe('SystemPaymentsTable Livewire Component', function () {
             ->for($this->currency)
             ->for($this->bankJournal)
             ->create([
-                'status' => 'draft',
+                'status' => PaymentStatus::Draft,
                 'amount' => Money::of(300, $this->currency->code),
             ]);
 
@@ -100,7 +101,7 @@ describe('SystemPaymentsTable Livewire Component', function () {
             ->for($this->company)
             ->for($this->currency)
             ->for($this->bankJournal)
-            ->create(['status' => 'confirmed']);
+            ->create(['status' => PaymentStatus::Confirmed]);
 
         $component = Livewire::test(SystemPaymentsTable::class, ['bankStatement' => $this->bankStatement]);
 
@@ -126,7 +127,7 @@ describe('SystemPaymentsTable Livewire Component', function () {
             ->create([
                 'amount' => Money::of(100, $this->currency->code),
                 'payment_type' => 'inbound',
-                'status' => 'confirmed',
+                'status' => PaymentStatus::Confirmed,
             ]);
 
         Livewire::test(SystemPaymentsTable::class, ['bankStatement' => $this->bankStatement])
@@ -146,7 +147,7 @@ describe('SystemPaymentsTable Livewire Component', function () {
             ->create([
                 'amount' => Money::of(100, $this->currency->code),
                 'payment_type' => 'inbound',
-                'status' => 'confirmed',
+                'status' => PaymentStatus::Confirmed,
             ]);
 
         Livewire::test(SystemPaymentsTable::class, ['bankStatement' => $this->bankStatement])
@@ -166,7 +167,7 @@ describe('SystemPaymentsTable Livewire Component', function () {
             ->create([
                 'amount' => Money::of(100, $this->currency->code),
                 'payment_type' => 'outbound',
-                'status' => 'confirmed',
+                'status' => PaymentStatus::Confirmed,
             ]);
 
         Livewire::test(SystemPaymentsTable::class, ['bankStatement' => $this->bankStatement])
@@ -186,7 +187,7 @@ describe('SystemPaymentsTable Livewire Component', function () {
             ->create([
                 'amount' => Money::of(150, $this->currency->code),
                 'payment_type' => 'inbound',
-                'status' => 'confirmed',
+                'status' => PaymentStatus::Confirmed,
             ]);
 
         $outboundPayment = Payment::factory()
@@ -196,7 +197,7 @@ describe('SystemPaymentsTable Livewire Component', function () {
             ->create([
                 'amount' => Money::of(50, $this->currency->code),
                 'payment_type' => 'outbound',
-                'status' => 'confirmed',
+                'status' => PaymentStatus::Confirmed,
             ]);
 
         $component = Livewire::test(SystemPaymentsTable::class, ['bankStatement' => $this->bankStatement]);
@@ -224,14 +225,26 @@ describe('SystemPaymentsTable Livewire Component', function () {
             ->create([
                 'amount' => Money::of(250, $this->currency->code),
                 'payment_type' => 'inbound',
-                'status' => 'confirmed',
+                'status' => PaymentStatus::Confirmed,
                 'reference' => 'PAY-001',
             ]);
 
-        Livewire::test(SystemPaymentsTable::class, ['bankStatement' => $this->bankStatement])
-            ->assertSee('Test Partner')
-            ->assertSee('Inbound') // Payment type is displayed
-            ->assertSee('250.000'); // Amount display
+        $livewire = Livewire::test(SystemPaymentsTable::class, ['bankStatement' => $this->bankStatement]);
+
+        // Debug: Check what's actually in the HTML
+        $html = $livewire->html();
+
+        // Check if the table has any content at all
+        expect($html)->toContain('System Payments');
+
+        // Check if we can see the partner name
+        expect($html)->toContain('Test Partner');
+
+        // Check if we can see the payment type
+        expect($html)->toContain('Inbound');
+
+        // Check if we can see the amount formatted correctly
+        $livewire->assertSee('250.000'); // Amount display with NumberFormatter formatting
     });
 
     it('filters payments by company', function () {
@@ -246,7 +259,7 @@ describe('SystemPaymentsTable Livewire Component', function () {
             ->for($this->bankJournal)
             ->for($companyPartner, 'partner')
             ->create([
-                'status' => 'confirmed',
+                'status' => PaymentStatus::Confirmed,
                 'reference' => 'COMPANY-PAY',
             ]);
 
@@ -256,7 +269,7 @@ describe('SystemPaymentsTable Livewire Component', function () {
             ->for($this->bankJournal)
             ->for($otherPartner, 'partner')
             ->create([
-                'status' => 'confirmed',
+                'status' => PaymentStatus::Confirmed,
                 'reference' => 'OTHER-PAY',
             ]);
 

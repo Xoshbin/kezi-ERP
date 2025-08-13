@@ -2,18 +2,20 @@
 
 namespace App\Livewire\Accounting;
 
-use App\Models\BankStatement;
-use App\Models\Payment;
-use App\Enums\Payments\PaymentType;
 use Brick\Money\Money;
-use Filament\Forms\Concerns\InteractsWithForms;
+use App\Models\Payment;
+use Livewire\Component;
+use Filament\Tables\Table;
+use App\Models\BankStatement;
+use App\Enums\Payments\PaymentType;
+use App\Enums\Payments\PaymentStatus;
 use Filament\Forms\Contracts\HasForms;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Columns\ViewColumn;
-use Filament\Tables\Concerns\InteractsWithTable;
 use Filament\Tables\Contracts\HasTable;
-use Filament\Tables\Table;
-use Livewire\Component;
+use App\Filament\Tables\Columns\MoneyColumn;
+use Filament\Forms\Concerns\InteractsWithForms;
+use Filament\Tables\Concerns\InteractsWithTable;
 
 class SystemPaymentsTable extends Component implements HasTable, HasForms
 {
@@ -34,7 +36,8 @@ class SystemPaymentsTable extends Component implements HasTable, HasForms
             ->query(
                 Payment::query()
                     ->where('company_id', $this->bankStatement->company_id)
-                    ->where('status', 'confirmed')
+                    ->where('status', PaymentStatus::Confirmed)
+                    ->whereDoesntHave('bankStatementLines')  // Only show unreconciled payments
                     ->with(['partner'])
             )
             ->columns([
@@ -59,9 +62,8 @@ class SystemPaymentsTable extends Component implements HasTable, HasForms
                         'outbound' => 'danger',
                         default => 'gray',
                     }),
-                TextColumn::make('amount')
+                MoneyColumn::make('amount')
                     ->label(__('bank_statement.amount'))
-                    ->formatStateUsing(fn ($state) => $state->formatTo('en_US'))
                     ->sortable(),
             ])
             ->paginated([10, 25, 50])

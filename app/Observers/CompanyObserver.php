@@ -39,7 +39,8 @@ class CompanyObserver
             $company->journalEntries()->exists() ||
             $company->invoices()->exists() ||
             $company->vendorBills()->exists() ||
-            $company->payments()->exists()
+            $company->payments()->exists() ||
+            $company->assets()->exists()
         ) {
             throw new DeletionNotAllowedException('Cannot delete a company with associated financial records.');
         }

@@ -19,7 +19,11 @@ class EditAsset extends EditRecord
             Actions\Action::make('computeDepreciation')
                 ->label('Compute Depreciation Board')
                 ->action('computeDepreciation'),
-            Actions\DeleteAction::make(),
+            Actions\DeleteAction::make()
+                ->using(function ($record) {
+                    // Use the AssetService to handle deletion with proper business logic
+                    return app(AssetService::class)->delete($record);
+                }),
         ];
     }
 

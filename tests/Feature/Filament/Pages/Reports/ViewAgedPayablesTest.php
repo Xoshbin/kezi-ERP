@@ -6,6 +6,7 @@ use App\Enums\Purchases\VendorBillStatus;
 use App\Filament\Pages\Reports\ViewAgedPayables;
 use App\Models\Partner;
 use App\Models\VendorBill;
+use App\Support\NumberFormatter;
 use Brick\Money\Money;
 use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -42,7 +43,7 @@ test('it can generate aged payables report', function () {
     ]);
 
     // Action & Assert
-    $expectedAmount = Money::of(1000, $currency)->formatTo(app()->getLocale());
+    $expectedAmount = NumberFormatter::formatMoneyTo(Money::of(1000, $currency));
     Livewire::test(ViewAgedPayables::class)
         ->fillForm([
             'asOfDate' => $asOfDate->toDateString(),
@@ -121,10 +122,10 @@ test('it displays correct aging buckets', function () {
     ]);
 
     // Action & Assert
-    $amount1 = Money::of(1000, $currency)->formatTo(app()->getLocale());
-    $amount2 = Money::of(2000, $currency)->formatTo(app()->getLocale());
-    $amount3 = Money::of(3000, $currency)->formatTo(app()->getLocale());
-    $total = Money::of(6000, $currency)->formatTo(app()->getLocale());
+    $amount1 = NumberFormatter::formatMoneyTo(Money::of(1000, $currency));
+    $amount2 = NumberFormatter::formatMoneyTo(Money::of(2000, $currency));
+    $amount3 = NumberFormatter::formatMoneyTo(Money::of(3000, $currency));
+    $total = NumberFormatter::formatMoneyTo(Money::of(6000, $currency));
 
     Livewire::test(ViewAgedPayables::class)
         ->fillForm([

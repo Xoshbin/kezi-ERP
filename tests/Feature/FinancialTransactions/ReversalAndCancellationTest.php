@@ -129,7 +129,11 @@ describe('Payment Cancellations', function () {
 
     test('it prevents cancelling a draft payment', function () {
         // Arrange: Create a draft payment.
-        $draftPayment = Payment::factory()->for($this->company)->create(['status' => PaymentStatus::Draft]);
+        $draftPayment = Payment::factory()
+            ->for($this->company)
+            ->for($this->company->currency)
+            ->for($this->company->journals()->first())
+            ->create(['status' => PaymentStatus::Draft]);
 
         // Act & Assert: Expect an exception.
         expect(fn() => $this->paymentService->cancel($draftPayment, $this->user, 'Should fail')) // FIX
@@ -138,7 +142,11 @@ describe('Payment Cancellations', function () {
 
     test('it prevents cancelling a reconciled payment', function () {
         // Arrange: Create a reconciled payment.
-        $reconciledPayment = Payment::factory()->for($this->company)->create(['status' => PaymentStatus::Reconciled]);
+        $reconciledPayment = Payment::factory()
+            ->for($this->company)
+            ->for($this->company->currency)
+            ->for($this->company->journals()->first())
+            ->create(['status' => PaymentStatus::Reconciled]);
 
         // Act & Assert: Expect an exception.
         expect(fn() => $this->paymentService->cancel($reconciledPayment, $this->user, 'Should fail')) // FIX
