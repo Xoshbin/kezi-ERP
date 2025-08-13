@@ -48,11 +48,13 @@ it('includes all financial widgets', function () {
 });
 
 it('handles user without company', function () {
-    $userWithoutCompany = User::factory()->create(['company_id' => null]);
+    $userWithoutCompany = User::factory()->create();
+    // Don't attach any companies to this user
     $this->actingAs($userWithoutCompany);
 
     $component = Livewire::test(Dashboard::class);
 
     $component->assertOk();
-    $component->assertSeeText(__('dashboard.no_company'));
+    // Check for the English translation since tests run in English locale
+    $component->assertSeeText('No Company');
 });

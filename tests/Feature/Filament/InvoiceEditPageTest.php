@@ -15,7 +15,7 @@ use Livewire\Livewire;
 beforeEach(function () {
     $this->user = User::factory()->create();
     $this->company = Company::factory()->create();
-    $this->user->update(['company_id' => $this->company->id]);
+    $this->user->companies()->attach($this->company);
 
     $this->currency = Currency::factory()->create(['code' => 'USD']);
     $this->customer = Partner::factory()->create([
@@ -42,10 +42,12 @@ test('edit page shows pdf actions for draft invoice', function () {
     ]);
 
     // Action
-    $component = Livewire::actingAs($this->user)
-        ->test(InvoiceResource\Pages\EditInvoice::class, [
-            'record' => $invoice->getRouteKey(),
-        ]);
+    $this->actingAs($this->user);
+    \Filament\Facades\Filament::setTenant($this->company);
+
+    $component = Livewire::test(InvoiceResource\Pages\EditInvoice::class, [
+        'record' => $invoice->getRouteKey(),
+    ]);
 
     // Assert - Check that PDF actions exist
     $component->assertActionExists('viewPdf');
@@ -68,10 +70,12 @@ test('edit page shows pdf actions for posted invoice', function () {
     ]);
 
     // Action
-    $component = Livewire::actingAs($this->user)
-        ->test(InvoiceResource\Pages\EditInvoice::class, [
-            'record' => $invoice->getRouteKey(),
-        ]);
+    $this->actingAs($this->user);
+    \Filament\Facades\Filament::setTenant($this->company);
+
+    $component = Livewire::test(InvoiceResource\Pages\EditInvoice::class, [
+        'record' => $invoice->getRouteKey(),
+    ]);
 
     // Assert - Check that PDF actions exist
     $component->assertActionExists('viewPdf');
@@ -93,6 +97,9 @@ test('edit page pdf actions work correctly', function () {
     ]);
 
     // Action - Test that the actions have the correct URLs
+    $this->actingAs($this->user);
+    \Filament\Facades\Filament::setTenant($this->company);
+
     $viewUrl = route('invoices.pdf', $invoice);
     $downloadUrl = route('invoices.pdf.download', $invoice);
 
@@ -116,8 +123,10 @@ test('edit page shows all expected actions', function () {
     ]);
 
     // Action
-    $component = Livewire::actingAs($this->user)
-        ->test(InvoiceResource\Pages\EditInvoice::class, [
+    $this->actingAs($this->user);
+    \Filament\Facades\Filament::setTenant($this->company);
+
+    $component = Livewire::test(InvoiceResource\Pages\EditInvoice::class, [
             'record' => $invoice->getRouteKey(),
         ]);
 

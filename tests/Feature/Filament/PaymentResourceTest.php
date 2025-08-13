@@ -144,7 +144,6 @@ it('can create an outbound payment linked to a vendor bill', function () {
 it('can validate input on create', function () {
     livewire(PaymentResource\Pages\CreatePayment::class)
         ->fillForm([
-            'company_id' => null,
             'journal_id' => null,
             'currency_id' => null,
             'payment_date' => null,
@@ -152,7 +151,6 @@ it('can validate input on create', function () {
         ])
         ->call('create')
         ->assertHasFormErrors([
-            'company_id' => 'required',
             'journal_id' => 'required',
             'currency_id' => 'required',
             'payment_date' => 'required',

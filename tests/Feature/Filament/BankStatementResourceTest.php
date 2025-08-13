@@ -77,7 +77,6 @@ it('can create a bank statement', function () {
 it('can validate input on create', function () {
     livewire(BankStatementResource\Pages\CreateBankStatement::class)
         ->fillForm([
-            'company_id' => null,
             'currency_id' => null,
             'journal_id' => null,
             'reference' => null,
@@ -88,7 +87,6 @@ it('can validate input on create', function () {
         ])
         ->call('create')
         ->assertHasFormErrors([
-            'company_id' => 'required',
             'currency_id' => 'required',
             'journal_id' => 'required',
             'reference' => 'required',

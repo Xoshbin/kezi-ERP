@@ -8,6 +8,7 @@ use Closure;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
+use Filament\Facades\Filament;
 
 class NotInLockedPeriod implements ValidationRule
 {
@@ -18,11 +19,18 @@ class NotInLockedPeriod implements ValidationRule
         if ($company) {
             $this->company = $company;
         } else {
-            $user = Auth::user();
-            if (!$user || !$user->company) {
-                throw new \InvalidArgumentException('Company is required for lock date validation');
+            // Try to get company from Filament tenant first
+            $tenant = Filament::getTenant();
+            if ($tenant) {
+                $this->company = $tenant;
+            } else {
+                // Fallback to user's first company for non-Filament contexts
+                $user = Auth::user();
+                if (!$user || $user->companies->isEmpty()) {
+                    throw new \InvalidArgumentException('Company is required for lock date validation');
+                }
+                $this->company = $user->companies->first();
             }
-            $this->company = $user->company;
         }
     }
 

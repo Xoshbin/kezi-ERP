@@ -45,7 +45,6 @@ it('can create an invoice', function () {
 
     livewire(InvoiceResource\Pages\CreateInvoice::class)
         ->fillForm([
-            'company_id' => $this->company->id,
             'customer_id' => $customer->id,
             'currency_id' => $this->company->currency_id,
             'invoice_date' => now()->format('Y-m-d'),

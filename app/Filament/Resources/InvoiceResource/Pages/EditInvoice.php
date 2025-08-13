@@ -92,7 +92,7 @@ class EditInvoice extends EditRecord
             Actions\DeleteAction::make()
                 ->action(function (Model $record) {
                     app(InvoiceService::class)->delete($record);
-                    $this->redirect(InvoiceResource::getUrl('index'));
+                    $this->redirect(InvoiceResource::getUrl('index', ['tenant' => \Filament\Facades\Filament::getTenant()]));
                 }),
         ];
     }

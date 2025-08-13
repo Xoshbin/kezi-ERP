@@ -7,7 +7,6 @@ use App\Models\Tax;
 use Filament\Forms;
 use Filament\Tables;
 use App\Models\Invoice;
-use App\Models\Currency;
 use App\Enums\Sales\InvoiceStatus;
 use App\Enums\Shared\PaymentState;
 use Filament\Forms\Form;
@@ -16,19 +15,13 @@ use App\Services\InvoiceService;
 use Filament\Resources\Resource;
 use Filament\Tables\Actions\Action;
 use Illuminate\Support\Facades\Auth;
-use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Section;
 use Filament\Notifications\Notification;
-use Illuminate\Database\Eloquent\Builder;
 use App\Filament\Resources\InvoiceResource\Pages;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\InvoiceResource\RelationManagers;
 use App\Models\Account;
 use App\Models\Product;
-use App\Models\Company;
-use App\Models\Partner;
-use App\Models\Journal;
-use App\Models\FiscalPosition;
+
 use App\Rules\NotInLockedPeriod;
 use App\Filament\Tables\Columns\MoneyColumn;
 
@@ -62,7 +55,7 @@ class InvoiceResource extends Resource
 
     public static function form(Form $form): Form
     {
-        $company = Company::first();
+        $company = \Filament\Facades\Filament::getTenant();
 
         return $form->schema([
             Section::make()

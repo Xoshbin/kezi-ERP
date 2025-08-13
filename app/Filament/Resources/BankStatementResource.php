@@ -10,12 +10,9 @@ use Filament\Tables\Table;
 use App\Models\BankStatement;
 use Filament\Resources\Resource;
 use Filament\Tables\Actions\Action;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\BankStatementResource\Pages;
 use App\Filament\Resources\BankStatementResource\RelationManagers;
 use App\Models\Partner;
-use App\Models\Company;
 use App\Filament\Forms\Components\MoneyInput;
 use Filament\Forms\Components\Section;
 use Filament\Infolists;
@@ -51,7 +48,7 @@ class BankStatementResource extends Resource
 
     public static function form(Form $form): Form
     {
-        $company = Company::first();
+        $company = \Filament\Facades\Filament::getTenant();
 
         return $form->schema([
             Section::make()

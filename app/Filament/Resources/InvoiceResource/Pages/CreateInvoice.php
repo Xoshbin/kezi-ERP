@@ -11,6 +11,7 @@ use Brick\Money\Money;
 use Filament\Resources\Pages\CreateRecord;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
+use Filament\Facades\Filament;
 
 class CreateInvoice extends CreateRecord
 {
@@ -39,7 +40,7 @@ class CreateInvoice extends CreateRecord
     protected function handleRecordCreation(array $data): Model
     {
         $invoiceDTO = new CreateInvoiceDTO(
-            company_id: $data['company_id'],
+            company_id: Filament::getTenant()->id,
             customer_id: $data['customer_id'],
             currency_id: $data['currency_id'],
             invoice_date: $data['invoice_date'],

@@ -30,8 +30,8 @@ class Dashboard extends BaseDashboard
 
     public function getSubheading(): ?string
     {
-        $user = auth()->user();
-        $companyName = $user?->company?->name ?? __('dashboard.no_company');
+        $tenant = \Filament\Facades\Filament::getTenant();
+        $companyName = $tenant?->name ?? __('dashboard.no_company');
 
         return __('dashboard.welcome_message', [
             'company' => $companyName,
