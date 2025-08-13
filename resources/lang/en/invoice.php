@@ -28,6 +28,12 @@ return [
     'total_tax' => 'Total Tax',
     'reason' => 'Reason',
 
+    // Inter-company indicators
+    'child_company_indicator' => '(Child Company)',
+    'parent_company_indicator' => '(Parent Company)',
+    'sibling_company_indicator' => '(Sister Company)',
+    'customer_helper_text' => 'Partners with 🏢 🏛️ 🤝 icons represent inter-company relationships that will trigger automatic vendor bill creation.',
+
     // Table Columns
     'company_name' => 'Company',
     'customer_name' => 'Customer',
