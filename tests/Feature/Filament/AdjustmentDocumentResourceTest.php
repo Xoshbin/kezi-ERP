@@ -20,11 +20,11 @@ beforeEach(function () {
 });
 
 it('can render the list page', function () {
-    $this->get(AdjustmentDocumentResource::getUrl('index'))->assertSuccessful();
+    $this->get(AdjustmentDocumentResource::getUrl('index', ['tenant' => $this->company]))->assertSuccessful();
 });
 
 it('can render the create page', function () {
-    $this->get(AdjustmentDocumentResource::getUrl('create'))->assertSuccessful();
+    $this->get(AdjustmentDocumentResource::getUrl('create', ['tenant' => $this->company]))->assertSuccessful();
 });
 
 it('can create an adjustment document', function () {
@@ -42,7 +42,6 @@ it('can create an adjustment document', function () {
 
     livewire(AdjustmentDocumentResource\Pages\CreateAdjustmentDocument::class)
         ->fillForm([
-            'company_id' => $this->company->id,
             'currency_id' => $this->company->currency_id,
             'reference_number' => 'Test Adjustment Ref',
             'date' => now()->format('Y-m-d'),
@@ -101,7 +100,7 @@ it('can render the edit page', function () {
         'company_id' => $this->company->id,
     ]);
 
-    $this->get(AdjustmentDocumentResource::getUrl('edit', ['record' => $adjustmentDocument]))
+    $this->get(AdjustmentDocumentResource::getUrl('edit', ['record' => $adjustmentDocument, 'tenant' => $this->company]))
         ->assertSuccessful();
 });
 

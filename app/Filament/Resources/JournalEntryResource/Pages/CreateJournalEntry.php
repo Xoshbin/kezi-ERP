@@ -45,7 +45,7 @@ class CreateJournalEntry extends CreateRecord
     protected function handleRecordCreation(array $data): Model
     {
         $journalEntryDTO = new CreateJournalEntryDTO(
-            company_id: $data['company_id'],
+            company_id: \Filament\Facades\Filament::getTenant()->id,
             journal_id: $data['journal_id'],
             currency_id: $data['currency_id'],
             entry_date: $data['entry_date'],

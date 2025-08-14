@@ -64,7 +64,7 @@ class EditVendorBill extends EditRecord
             Actions\DeleteAction::make()
                 ->action(function (Model $record) {
                     app(VendorBillService::class)->delete($record);
-                    $this->redirect(VendorBillResource::getUrl('index'));
+                    $this->redirect(static::getResource()::getUrl('index'));
                 }),
         ];
     }
@@ -90,7 +90,7 @@ class EditVendorBill extends EditRecord
 
         $vendorBillDTO = new UpdateVendorBillDTO(
             vendorBill: $record,
-            company_id: $data['company_id'],
+            company_id: \Filament\Facades\Filament::getTenant()->id,
             vendor_id: $data['vendor_id'],
             currency_id: $data['currency_id'],
             bill_reference: $data['bill_reference'],

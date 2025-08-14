@@ -68,20 +68,7 @@ class AdjustmentDocumentResource extends Resource
                     ->icon('heroicon-o-document-text')
                     ->schema([
                         Forms\Components\Grid::make(3)->schema([
-                            Forms\Components\Select::make('company_id')
-                                ->relationship('company', 'name')
-                                ->label(__('adjustment_document.company'))
-                                ->required()
-                                ->live()
-                                ->default($company?->id)
-                                ->afterStateUpdated(function (callable $set, $state) {
-                                    $company = Company::find($state);
-                                    if ($company) {
-                                        $set('currency_id', $company->currency_id);
-                                    }
-                                })
-                                ->searchable()
-                                ->preload(),
+
                             Forms\Components\Select::make('currency_id')
                                 ->relationship('currency', 'name')
                                 ->label(__('adjustment_document.currency'))

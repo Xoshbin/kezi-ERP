@@ -18,12 +18,7 @@ class CashFlowWidget extends BaseWidget
 
     protected function getStats(): array
     {
-        $user = Filament::auth()->user();
-        if (!$user || !$user->company_id) {
-            return [];
-        }
-
-        $company = Company::find($user->company_id);
+        $company = Filament::getTenant();
         if (!$company) {
             return [];
         }

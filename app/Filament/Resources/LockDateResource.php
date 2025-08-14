@@ -55,7 +55,7 @@ class LockDateResource extends Resource
                 Forms\Components\Select::make('company_id')
                     ->relationship('company', 'name')
                     ->required()
-                    ->default(fn () => auth()->user()->company_id)
+                    ->default(fn () => \Filament\Facades\Filament::getTenant()?->id)
                     ->disabled(),
             ]);
     }

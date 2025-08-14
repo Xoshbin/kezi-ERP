@@ -2,7 +2,6 @@
 
 namespace App\Filament\Resources\BankStatementResource\Pages;
 
-use Filament\Actions;
 use Filament\Resources\Pages\CreateRecord;
 use App\Filament\Resources\BankStatementResource;
 use App\Actions\Accounting\CreateBankStatementAction;
@@ -12,6 +11,7 @@ use App\Models\Currency;
 use Brick\Money\Money;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
+use Filament\Facades\Filament;
 
 class CreateBankStatement extends CreateRecord
 {
@@ -43,7 +43,7 @@ class CreateBankStatement extends CreateRecord
     protected function handleRecordCreation(array $data): Model
     {
         $bankStatementDTO = new CreateBankStatementDTO(
-            company_id: $data['company_id'],
+            company_id: Filament::getTenant()->id,
             currency_id: $data['currency_id'],
             journal_id: $data['journal_id'],
             reference: $data['reference'],

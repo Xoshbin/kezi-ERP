@@ -71,11 +71,13 @@ function setupFoundation() {
     // Create user (ensure clean state)
     User::where('email', 'soran@jmeryarerp.com')->delete();
     $user = User::create([
-        'company_id' => $company->id,
         'name' => 'Soran',
         'email' => 'soran@jmeryarerp.com',
         'password' => \Hash::make('SecurePassword123!'),
     ]);
+
+    // Attach user to company using many-to-many relationship
+    $user->companies()->attach($company);
 
     // Create accounts
     $accountsData = [
@@ -140,6 +142,9 @@ function setupFoundation() {
     test()->journals = $journals;
 
     test()->actingAs($user);
+
+    // Set Filament tenant context
+    \Filament\Facades\Filament::setTenant($company);
 }
 
 test('Jmeryar ERP complete accounting scenario - Full Workflow', function () {
@@ -154,16 +159,18 @@ test('Jmeryar ERP complete accounting scenario - Full Workflow', function () {
     expect($currency)->not->toBeNull();
     expect($company)->not->toBeNull();
     expect($user)->not->toBeNull();
-    expect($user->company_id)->toBe($company->id);
+    expect($user->companies->first()->id)->toBe($company->id);
 
     // Authenticate as the user
     $this->actingAs($user);
+
+    // Set up Filament tenant context
+    \Filament\Facades\Filament::setTenant($company);
 
     // Step 4: Capital Injection (Owner's Investment)
     // Create manual journal entry for 15,000,000 IQD capital injection
     livewire(JournalEntryResource\Pages\CreateJournalEntry::class)
         ->fillForm([
-            'company_id' => $company->id,
             'journal_id' => $journals['Bank']->id,
             'currency_id' => $currency->id,
             'entry_date' => now()->format('Y-m-d'),
@@ -460,7 +467,6 @@ test('Jmeryar ERP complete accounting scenario - Full Workflow', function () {
     // Step 9: Handling a Correction (Credit Note) using AdjustmentDocumentResource
     livewire(\App\Filament\Resources\AdjustmentDocumentResource\Pages\CreateAdjustmentDocument::class)
         ->fillForm([
-            'company_id' => $company->id,
             'type' => 'credit_note',
             'document_link_type' => 'invoice',
             'original_invoice_id' => $invoice->id,

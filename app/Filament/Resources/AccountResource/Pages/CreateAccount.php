@@ -28,6 +28,9 @@ class CreateAccount extends CreateRecord
 
     protected function handleRecordCreation(array $data): Model
     {
+        // Add company_id from tenant
+        $data['company_id'] = \Filament\Facades\Filament::getTenant()->id;
+
         $accountService = new AccountService();
         return $accountService->create($data);
     }

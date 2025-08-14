@@ -21,6 +21,13 @@ class WebInterfaceInvoicePostingTest extends TestCase
 
         // Run seeders to set up the test environment
         $this->seed();
+
+        // Set up tenant context for Filament
+        $user = User::first();
+        if ($user && $user->companies->isNotEmpty()) {
+            $this->actingAs($user); // Authenticate first
+            \Filament\Facades\Filament::setTenant($user->companies->first());
+        }
     }
 
     public function test_posting_multiple_invoices_via_web_interface_works_correctly()

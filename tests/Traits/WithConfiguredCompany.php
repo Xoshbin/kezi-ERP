@@ -20,8 +20,12 @@ trait WithConfiguredCompany
             ->withDefaultStockLocations()
             ->create();
 
-        $this->user = User::factory()->for($this->company)->create();
+        $this->user = User::factory()->create();
+        $this->user->companies()->attach($this->company);
         $this->actingAs($this->user);
+
+        // Set up Filament tenant context
+        \Filament\Facades\Filament::setTenant($this->company);
     }
 
     /**

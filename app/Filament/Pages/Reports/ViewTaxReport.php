@@ -2,7 +2,7 @@
 
 namespace App\Filament\Pages\Reports;
 
-use App\Models\Company;
+
 use App\Services\Reports\TaxReportService;
 use App\Support\NumberFormatter;
 use Carbon\Carbon;
@@ -86,7 +86,7 @@ class ViewTaxReport extends Page
             'endDate' => 'required|date|after_or_equal:startDate',
         ]);
 
-        $company = Company::find(Filament::auth()->user()->company_id);
+        $company = \Filament\Facades\Filament::getTenant();
         $service = app(TaxReportService::class);
 
         $report = $service->generate(

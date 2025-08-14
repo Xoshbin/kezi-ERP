@@ -7,7 +7,6 @@ use App\Models\Tax;
 use Filament\Forms;
 use Filament\Tables;
 use App\Models\Invoice;
-use App\Models\Currency;
 use App\Enums\Sales\InvoiceStatus;
 use App\Enums\Shared\PaymentState;
 use Filament\Forms\Form;
@@ -16,19 +15,13 @@ use App\Services\InvoiceService;
 use Filament\Resources\Resource;
 use Filament\Tables\Actions\Action;
 use Illuminate\Support\Facades\Auth;
-use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Section;
 use Filament\Notifications\Notification;
-use Illuminate\Database\Eloquent\Builder;
 use App\Filament\Resources\InvoiceResource\Pages;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\InvoiceResource\RelationManagers;
 use App\Models\Account;
 use App\Models\Product;
-use App\Models\Company;
-use App\Models\Partner;
-use App\Models\Journal;
-use App\Models\FiscalPosition;
+
 use App\Rules\NotInLockedPeriod;
 use App\Filament\Tables\Columns\MoneyColumn;
 
@@ -62,59 +55,18 @@ class InvoiceResource extends Resource
 
     public static function form(Form $form): Form
     {
-        $company = Company::first();
+        $company = \Filament\Facades\Filament::getTenant();
 
         return $form->schema([
             Section::make()
                 ->schema([
-                    Forms\Components\Select::make('company_id')
-                        ->relationship('company', 'name')
-                        ->label(__('invoice.company'))
-                        ->required()
-                        ->live()
-                        ->searchable()
-                        ->default($company?->id)
-                        ->afterStateUpdated(function (callable $set, $state) {
-                            $company = Company::find($state);
-                            if ($company) {
-                                $set('currency_id', $company->currency_id);
-                            }
-                        })
-                        ->createOptionForm([
-                            Forms\Components\TextInput::make('name')
-                                ->label(__('company.name'))
-                                ->required()
-                                ->maxLength(255),
-                            Forms\Components\Textarea::make('address')
-                                ->label(__('company.address'))
-                                ->columnSpanFull(),
-                            Forms\Components\TextInput::make('tax_id')
-                                ->label(__('company.tax_id'))
-                                ->maxLength(255),
-                            Forms\Components\Select::make('currency_id')
-                                ->label(__('company.currency_id'))
-                                ->relationship('currency', 'name')
-                                ->required(),
-                            Forms\Components\TextInput::make('fiscal_country')
-                                ->label(__('company.fiscal_country'))
-                                ->required()
-                                ->maxLength(255),
-                        ])
-                        ->createOptionModalHeading(__('common.modal_title_create_company'))
-                        ->createOptionAction(function (Forms\Components\Actions\Action $action) {
-                            return $action
-                                ->modalWidth('lg');
-                        }),
+
                     Forms\Components\Select::make('customer_id')
                         ->relationship('customer', 'name')
                         ->label(__('invoice.customer'))
                         ->required()
                         ->searchable()
                         ->createOptionForm([
-                            Forms\Components\Select::make('company_id')
-                                ->relationship('company', 'name')
-                                ->label(__('partner.company'))
-                                ->required(),
                             Forms\Components\TextInput::make('name')
                                 ->label(__('partner.name'))
                                 ->required()

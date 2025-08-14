@@ -58,44 +58,7 @@ class ProductResource extends Resource
                 ->icon('heroicon-o-cube')
                 ->schema([
                     Forms\Components\Grid::make(3)->schema([
-                        Forms\Components\Select::make('company_id')
-                            ->relationship('company', 'name')
-                            ->label(__('product.company'))
-                            ->required()
-                            ->live()
-                            ->searchable()
-                            ->default($company?->id)
-                            ->afterStateUpdated(function (callable $set, $state) {
-                                $company = Company::find($state);
-                                if ($company) {
-                                    $set('currency_id', $company->currency_id);
-                                }
-                            })
-                            ->createOptionForm([
-                                Forms\Components\TextInput::make('name')
-                                    ->label(__('company.name'))
-                                    ->required()
-                                    ->maxLength(255),
-                                Forms\Components\Textarea::make('address')
-                                    ->label(__('company.address'))
-                                    ->columnSpanFull(),
-                                Forms\Components\TextInput::make('tax_id')
-                                    ->label(__('company.tax_id'))
-                                    ->maxLength(255),
-                                Forms\Components\Select::make('currency_id')
-                                    ->label(__('company.currency_id'))
-                                    ->relationship('currency', 'name')
-                                    ->required(),
-                                Forms\Components\TextInput::make('fiscal_country')
-                                    ->label(__('company.fiscal_country'))
-                                    ->required()
-                                    ->maxLength(255),
-                            ])
-                            ->createOptionModalHeading(__('common.modal_title_create_company'))
-                            ->createOptionAction(function (Forms\Components\Actions\Action $action) {
-                                return $action
-                                    ->modalWidth('lg');
-                            }),
+
                         Forms\Components\TextInput::make('name')
                             ->label(__('product.name'))
                             ->required()
@@ -146,10 +109,6 @@ class ProductResource extends Resource
                             ->searchable()
                             ->preload()
                             ->createOptionForm([
-                                Forms\Components\Select::make('company_id')
-                                    ->label(__('account.company'))
-                                    ->relationship('company', 'name')
-                                    ->required(),
                                 Forms\Components\TextInput::make('code')
                                     ->label(__('account.code'))
                                     ->required()
@@ -182,10 +141,6 @@ class ProductResource extends Resource
                             ->searchable()
                             ->preload()
                             ->createOptionForm([
-                                Forms\Components\Select::make('company_id')
-                                    ->label(__('account.company'))
-                                    ->relationship('company', 'name')
-                                    ->required(),
                                 Forms\Components\TextInput::make('code')
                                     ->label(__('account.code'))
                                     ->required()
@@ -244,10 +199,6 @@ class ProductResource extends Resource
                             ->preload()
                             ->visible(fn (Forms\Get $get) => $get('type') === ProductType::Storable->value)
                             ->createOptionForm([
-                                Forms\Components\Select::make('company_id')
-                                    ->label(__('account.company'))
-                                    ->relationship('company', 'name')
-                                    ->required(),
                                 Forms\Components\TextInput::make('code')
                                     ->label(__('account.code'))
                                     ->required()
@@ -279,10 +230,6 @@ class ProductResource extends Resource
                             ->preload()
                             ->visible(fn (Forms\Get $get) => $get('type') === ProductType::Storable->value)
                             ->createOptionForm([
-                                Forms\Components\Select::make('company_id')
-                                    ->label(__('account.company'))
-                                    ->relationship('company', 'name')
-                                    ->required(),
                                 Forms\Components\TextInput::make('code')
                                     ->label(__('account.code'))
                                     ->required()
@@ -316,10 +263,6 @@ class ProductResource extends Resource
                             ->preload()
                             ->visible(fn (Forms\Get $get) => $get('type') === ProductType::Storable->value)
                             ->createOptionForm([
-                                Forms\Components\Select::make('company_id')
-                                    ->label(__('account.company'))
-                                    ->relationship('company', 'name')
-                                    ->required(),
                                 Forms\Components\TextInput::make('code')
                                     ->label(__('account.code'))
                                     ->required()
@@ -351,10 +294,6 @@ class ProductResource extends Resource
                             ->preload()
                             ->visible(fn (Forms\Get $get) => $get('type') === ProductType::Storable->value)
                             ->createOptionForm([
-                                Forms\Components\Select::make('company_id')
-                                    ->label(__('account.company'))
-                                    ->relationship('company', 'name')
-                                    ->required(),
                                 Forms\Components\TextInput::make('code')
                                     ->label(__('account.code'))
                                     ->required()
@@ -476,11 +415,7 @@ class ProductResource extends Resource
             ])
             ->defaultSort('created_at', 'desc')
             ->filters([
-                Tables\Filters\SelectFilter::make('company_id')
-                    ->relationship('company', 'name')
-                    ->label(__('product.company'))
-                    ->multiple()
-                    ->preload(),
+
                 Tables\Filters\SelectFilter::make('type')
                     ->label(__('product.type'))
                     ->options(

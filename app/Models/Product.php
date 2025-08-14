@@ -197,7 +197,26 @@ class Product extends Model
      */
     public function getCurrencyIdAttribute(): int
     {
-        // If the company relationship is loaded, use it. If not, lazy-load it.
-        return $this->company->currency_id ?? $this->company()->first()->currency_id;
+        // If the company relationship is loaded, use it
+        if ($this->relationLoaded('company') && $this->company) {
+            return $this->company->currency_id;
+        }
+
+        // If we have a company_id, fetch the currency_id directly
+        if ($this->company_id) {
+            $company = $this->company()->first();
+            if ($company) {
+                return $company->currency_id;
+            }
+        }
+
+        // Fallback: try to get from Filament tenant context
+        $tenant = \Filament\Facades\Filament::getTenant();
+        if ($tenant) {
+            return $tenant->currency_id;
+        }
+
+        // Last resort: throw an exception
+        throw new \RuntimeException('Cannot determine currency_id for Product. Company relationship not available.');
     }
 }

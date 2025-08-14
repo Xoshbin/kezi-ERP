@@ -21,8 +21,12 @@ beforeEach(function () {
     app()->setLocale('en');
 
     $this->company = Company::factory()->create();
-    $this->user = User::factory()->for($this->company)->create();
+    $this->user = User::factory()->create();
+    $this->user->companies()->attach($this->company);
     $this->actingAs($this->user);
+
+    // Set Filament tenant context
+    \Filament\Facades\Filament::setTenant($this->company);
 
     $this->currency = $this->company->currency;
 

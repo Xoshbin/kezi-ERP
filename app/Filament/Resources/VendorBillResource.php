@@ -62,54 +62,13 @@ class VendorBillResource extends Resource
         return $form->schema([
             Section::make()
                 ->schema([
-                    Forms\Components\Select::make('company_id')
-                        ->relationship('company', 'name')
-                        ->label(__('vendor_bill.company'))
-                        ->required()
-                        ->live()
-                        ->searchable()
-                        ->default($company?->id)
-                        ->afterStateUpdated(function (callable $set, $state) {
-                            $company = Company::find($state);
-                            if ($company) {
-                                $set('currency_id', $company->currency_id);
-                            }
-                        })
-                        ->createOptionForm([
-                            Forms\Components\TextInput::make('name')
-                                ->label(__('company.name'))
-                                ->required()
-                                ->maxLength(255),
-                            Forms\Components\Textarea::make('address')
-                                ->label(__('company.address'))
-                                ->columnSpanFull(),
-                            Forms\Components\TextInput::make('tax_id')
-                                ->label(__('company.tax_id'))
-                                ->maxLength(255),
-                            Forms\Components\Select::make('currency_id')
-                                ->label(__('company.currency_id'))
-                                ->relationship('currency', 'name')
-                                ->required(),
-                            Forms\Components\TextInput::make('fiscal_country')
-                                ->label(__('company.fiscal_country'))
-                                ->required()
-                                ->maxLength(255),
-                        ])
-                        ->createOptionModalHeading(__('common.modal_title_create_company'))
-                        ->createOptionAction(function (Forms\Components\Actions\Action $action) {
-                            return $action
-                                ->modalWidth('lg');
-                        }),
+
                     Forms\Components\Select::make('vendor_id')
                         ->relationship('vendor', 'name')
                         ->label(__('vendor_bill.vendor'))
                         ->required()
                         ->searchable()
                         ->createOptionForm([
-                            Forms\Components\Select::make('company_id')
-                                ->relationship('company', 'name')
-                                ->label(__('partner.company'))
-                                ->required(),
                             Forms\Components\TextInput::make('name')
                                 ->label(__('partner.name'))
                                 ->required()
@@ -229,10 +188,6 @@ class VendorBillResource extends Resource
                                     }
                                 })
                                 ->createOptionForm([
-                                    Forms\Components\Select::make('company_id')
-                                        ->relationship('company', 'name')
-                                        ->label(__('product.company'))
-                                        ->required(),
                                     Forms\Components\TextInput::make('name')
                                         ->label(__('product.name'))
                                         ->required()
@@ -290,10 +245,6 @@ class VendorBillResource extends Resource
                                 )
                                 ->getOptionLabelUsing(fn($value): ?string => Tax::find($value)?->getTranslation('name', app()->getLocale()))
                                 ->createOptionForm([
-                                    Forms\Components\Select::make('company_id')
-                                        ->relationship('company', 'name')
-                                        ->label(__('tax.company'))
-                                        ->required(),
                                     Forms\Components\Select::make('tax_account_id')
                                         ->relationship('taxAccount', 'name')
                                         ->label(__('tax.tax_account'))
@@ -334,10 +285,6 @@ class VendorBillResource extends Resource
                                 ->getOptionLabelUsing(fn($value): ?string => Account::find($value)?->getTranslation('name', app()->getLocale()))
                                 ->required()
                                 ->createOptionForm([
-                                    Forms\Components\Select::make('company_id')
-                                        ->label(__('account.company'))
-                                        ->relationship('company', 'name')
-                                        ->required(),
                                     Forms\Components\TextInput::make('code')
                                         ->label(__('account.code'))
                                         ->required()
@@ -370,10 +317,6 @@ class VendorBillResource extends Resource
                                 ->getSearchResultsUsing(fn(string $search): array => AnalyticAccount::where('name', 'like', "%{$search}%")->limit(50)->pluck('name', 'id')->toArray())
                                 ->getOptionLabelUsing(fn($value): ?string => AnalyticAccount::find($value)?->name)
                                 ->createOptionForm([
-                                    Forms\Components\Select::make('company_id')
-                                        ->relationship('company', 'name')
-                                        ->label(__('analytic_account.company'))
-                                        ->required(),
                                     Forms\Components\Select::make('currency_id')
                                         ->relationship('currency', 'name')
                                         ->label(__('analytic_account.currency')),

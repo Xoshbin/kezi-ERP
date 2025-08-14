@@ -21,18 +21,13 @@ class IncomeVsExpenseChart extends ChartWidget
 
     protected function getData(): array
     {
-        $user = Filament::auth()->user();
-        if (!$user || !$user->company_id) {
-            return $this->getEmptyData();
-        }
-
-        $company = Company::find($user->company_id);
+        $company = Filament::getTenant();
         if (!$company) {
             return $this->getEmptyData();
         }
 
         $plService = app(ProfitAndLossStatementService::class);
-        
+
         $revenueData = [];
         $expenseData = [];
         $netIncomeData = [];
@@ -43,7 +38,7 @@ class IncomeVsExpenseChart extends ChartWidget
                 $date = Carbon::now()->subMonths($i);
                 $startDate = $date->copy()->startOfMonth();
                 $endDate = $date->copy()->endOfMonth();
-                
+
                 $plDto = $plService->generate($company, $startDate, $endDate);
 
                 // Convert to float for chart display

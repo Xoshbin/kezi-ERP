@@ -2,7 +2,7 @@
 
 namespace App\Filament\Pages\Reports;
 
-use App\Models\Company;
+
 use App\Models\Partner;
 use App\Services\Reports\PartnerLedgerService;
 use App\Support\NumberFormatter;
@@ -65,8 +65,8 @@ class ViewPartnerLedger extends Page
                             ->required()
                             ->searchable()
                             ->options(function () {
-                                $user = Filament::auth()->user();
-                                return Partner::where('company_id', $user->company_id)
+                                $company = Filament::getTenant();
+                                return Partner::where('company_id', $company->id)
                                     ->with(['receivableAccount', 'payableAccount'])
                                     ->get()
                                     ->mapWithKeys(function ($partner) {
@@ -112,7 +112,7 @@ class ViewPartnerLedger extends Page
             'endDate' => 'required|date|after_or_equal:startDate',
         ]);
 
-        $company = Company::find(Filament::auth()->user()->company_id);
+        $company = \Filament\Facades\Filament::getTenant();
         $partner = Partner::find($this->partnerId);
         $service = app(PartnerLedgerService::class);
 
