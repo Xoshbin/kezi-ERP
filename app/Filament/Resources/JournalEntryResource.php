@@ -6,6 +6,7 @@ use Filament\Forms;
 use Filament\Tables;
 use App\Models\Account;
 use App\Models\Company;
+use App\Models\Currency;
 use App\Models\Journal;
 use App\Models\Partner;
 use Filament\Forms\Form;
@@ -70,11 +71,31 @@ class JournalEntryResource extends Resource
                     ->default(Journal::where('type', JournalType::Miscellaneous)->first()?->id),
                 Forms\Components\Select::make('currency_id')
                     ->label(__('journal_entry.currency'))
-                    ->relationship('currency', 'name')
                     ->searchable()
                     ->required()
                     ->live()
-                    ->default(Company::first()?->currency_id),
+                    ->default(Company::first()?->currency_id)
+                    ->getSearchResultsUsing(fn(string $search): array =>
+                        Currency::where('is_active', true)
+                            ->where(function ($query) use ($search) {
+                                $searchLower = strtolower($search);
+                                $query->whereRaw('LOWER(code) LIKE ?', ["%{$searchLower}%"])
+                                    ->orWhereRaw('LOWER(symbol) LIKE ?', ["%{$searchLower}%"])
+                                    ->orWhereRaw('LOWER(JSON_UNQUOTE(JSON_EXTRACT(name, "$.en"))) LIKE ?', ["%{$searchLower}%"])
+                                    ->orWhereRaw('LOWER(JSON_UNQUOTE(JSON_EXTRACT(name, "$.ckb"))) LIKE ?', ["%{$searchLower}%"])
+                                    ->orWhereRaw('LOWER(JSON_UNQUOTE(JSON_EXTRACT(name, "$.ar"))) LIKE ?', ["%{$searchLower}%"]);
+                            })
+                            ->limit(50)
+                            ->get()
+                            ->mapWithKeys(fn($currency) => [
+                                $currency->id => $currency->getTranslation('name', app()->getLocale()) . ' (' . $currency->code . ')'
+                            ])
+                            ->toArray()
+                    )
+                    ->getOptionLabelUsing(function ($value): ?string {
+                        $currency = Currency::find($value);
+                        return $currency ? $currency->getTranslation('name', app()->getLocale()) . ' (' . $currency->code . ')' : null;
+                    }),
                 Forms\Components\DatePicker::make('entry_date')
                     ->label(__('journal_entry.entry_date'))
                     ->required()
