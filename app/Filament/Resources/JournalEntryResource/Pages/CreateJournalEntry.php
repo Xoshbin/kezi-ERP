@@ -22,16 +22,47 @@ class CreateJournalEntry extends CreateRecord
     {
         $lineDTOs = [];
         if (isset($data['lines']) && is_array($data['lines'])) {
-            $currency = \App\Models\Currency::find($data['currency_id']);
-            if ($currency) {
+            // Get the selected currency and company base currency
+            $selectedCurrency = \App\Models\Currency::find($data['currency_id']);
+            $company = \Filament\Facades\Filament::getTenant();
+            $baseCurrency = $company->currency;
+
+            if ($selectedCurrency && $baseCurrency) {
+                // Determine exchange rate for conversion
+                $exchangeRate = ($baseCurrency->id === $selectedCurrency->id) ? 1.0 : $selectedCurrency->exchange_rate;
+
                 foreach ($data['lines'] as $line) {
+                    // Create original amounts in selected currency
+                    $originalDebit = Money::of($line['debit'] ?? 0, $selectedCurrency->code);
+                    $originalCredit = Money::of($line['credit'] ?? 0, $selectedCurrency->code);
+
+                    // Convert amounts to company base currency
+                    $convertedDebit = Money::of(
+                        $originalDebit->getAmount()->multipliedBy($exchangeRate),
+                        $baseCurrency->code,
+                        null,
+                        \Brick\Math\RoundingMode::HALF_UP
+                    );
+                    $convertedCredit = Money::of(
+                        $originalCredit->getAmount()->multipliedBy($exchangeRate),
+                        $baseCurrency->code,
+                        null,
+                        \Brick\Math\RoundingMode::HALF_UP
+                    );
+
+                    // Determine which original amount to store (the non-zero one)
+                    $originalAmount = $originalDebit->isPositive() ? $originalDebit : $originalCredit;
+
                     $lineDTOs[] = new CreateJournalEntryLineDTO(
                         account_id: $line['account_id'],
-                        debit: Money::of($line['debit'] ?? 0, $currency->code),
-                        credit: Money::of($line['credit'] ?? 0, $currency->code),
+                        debit: $convertedDebit,
+                        credit: $convertedCredit,
                         description: $line['description'],
                         partner_id: $line['partner_id'],
-                        analytic_account_id: $line['analytic_account_id']
+                        analytic_account_id: $line['analytic_account_id'],
+                        original_currency_amount: $originalAmount,
+                        original_currency_id: $selectedCurrency->id,
+                        exchange_rate_at_transaction: $exchangeRate
                     );
                 }
             }
@@ -44,10 +75,13 @@ class CreateJournalEntry extends CreateRecord
 
     protected function handleRecordCreation(array $data): Model
     {
+        // Always use company base currency for journal entries
+        $company = \Filament\Facades\Filament::getTenant();
+
         $journalEntryDTO = new CreateJournalEntryDTO(
-            company_id: \Filament\Facades\Filament::getTenant()->id,
+            company_id: $company->id,
             journal_id: $data['journal_id'],
-            currency_id: $data['currency_id'],
+            currency_id: $company->currency_id, // Always use company base currency
             entry_date: $data['entry_date'],
             reference: $data['reference'],
             description: $data['description'],
