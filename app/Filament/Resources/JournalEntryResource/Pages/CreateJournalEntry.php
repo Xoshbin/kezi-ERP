@@ -6,14 +6,10 @@ use App\Actions\Accounting\CreateJournalEntryAction;
 use App\DataTransferObjects\Accounting\CreateJournalEntryDTO;
 use App\DataTransferObjects\Accounting\CreateJournalEntryLineDTO;
 use App\Filament\Resources\JournalEntryResource;
-use App\Models\Company;
-use App\Models\Journal;
-use App\Models\LockDate;
 use App\Services\CurrencyConverterService;
 use Brick\Money\Money;
 use Filament\Resources\Pages\CreateRecord;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Validation\ValidationException;
 
 class CreateJournalEntry extends CreateRecord
 {
@@ -30,9 +26,21 @@ class CreateJournalEntry extends CreateRecord
 
             if ($selectedCurrency && $company) {
                 foreach ($data['lines'] as $line) {
+                    // Handle both Money objects and numeric values from form
+                    $debitValue = $line['debit'] ?? 0;
+                    $creditValue = $line['credit'] ?? 0;
+
+                    // If the values are already Money objects (from MoneyInput), extract the amount
+                    if ($debitValue instanceof Money) {
+                        $debitValue = $debitValue->getAmount()->toFloat();
+                    }
+                    if ($creditValue instanceof Money) {
+                        $creditValue = $creditValue->getAmount()->toFloat();
+                    }
+
                     // Create original amounts in selected currency
-                    $originalDebit = Money::of($line['debit'] ?? 0, $selectedCurrency->code);
-                    $originalCredit = Money::of($line['credit'] ?? 0, $selectedCurrency->code);
+                    $originalDebit = Money::of($debitValue, $selectedCurrency->code);
+                    $originalCredit = Money::of($creditValue, $selectedCurrency->code);
 
                     // Use CurrencyConverterService for conversion
                     $debitConversion = $currencyConverter->convertToCompanyBaseCurrency(
