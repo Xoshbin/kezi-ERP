@@ -81,6 +81,17 @@ class CreateJournalEntryAction
                 // Now, fill the attributes. The MoneyCast on 'debit' and 'credit' will be
                 // triggered here, but it can now successfully call getCurrencyIdAttribute()
                 // because the journalEntry relationship is established.
+
+                // Determine the amount to use for original currency (fallback to debit/credit if not provided)
+                $originalAmount = $lineDto->original_currency_amount;
+                if ($originalAmount === null) {
+                    // Fallback: use the larger of debit or credit amount
+                    $originalAmount = $lineDto->debit->isPositive() ? $lineDto->debit->getAmount()->toFloat() : $lineDto->credit->getAmount()->toFloat();
+                }
+
+                // Determine exchange rate (fallback to 1.0 if not provided)
+                $exchangeRate = $lineDto->exchange_rate_at_transaction ?? 1.0;
+
                 $line->fill([
                     'account_id' => $lineDto->account_id,
                     'partner_id' => $lineDto->partner_id,
@@ -88,6 +99,8 @@ class CreateJournalEntryAction
                     'description' => $lineDto->description,
                     'debit' => $lineDto->debit,
                     'credit' => $lineDto->credit,
+                    'original_currency_amount' => $originalAmount,
+                    'exchange_rate_at_transaction' => $exchangeRate,
                 ]);
 
                 // Finally, save the fully prepared line.

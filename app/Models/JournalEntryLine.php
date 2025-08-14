@@ -97,7 +97,8 @@ class JournalEntryLine extends Model
     protected $casts = [
         'debit' => MoneyCast::class,  // Enforces two decimal places for currency amounts.
         'credit' => MoneyCast::class, // Ensures consistency for credit amounts.
-        'original_currency_amount' => MoneyCast::class
+        'original_currency_amount' => 'float', // Store as raw amount without currency conversion
+        'exchange_rate_at_transaction' => 'float'
     ];
 
     /**
