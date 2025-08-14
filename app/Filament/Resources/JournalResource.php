@@ -49,10 +49,6 @@ class JournalResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\Select::make('company_id')
-                    ->label(__('journal.company'))
-                    ->relationship('company', 'name')
-                    ->required(),
                 Forms\Components\TextInput::make('name')
                     ->label(__('journal.name'))
                     ->required()
@@ -92,10 +88,6 @@ class JournalResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('company.name')
-                    ->label(__('journal.company'))
-                    ->numeric()
-                    ->sortable(),
                 Tables\Columns\TextColumn::make('name')
                     ->label(__('journal.name'))
                     ->searchable(),

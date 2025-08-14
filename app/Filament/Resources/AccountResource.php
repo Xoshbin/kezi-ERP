@@ -5,7 +5,6 @@ namespace App\Filament\Resources;
 use Filament\Forms;
 use Filament\Tables;
 use App\Models\Account;
-use App\Models\Company;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
 use Filament\Resources\Resource;
@@ -46,7 +45,6 @@ class AccountResource extends Resource
     {
         return $form
             ->schema([
-
                 Forms\Components\TextInput::make('code')
                     ->label(__('account.code'))
                     ->required()
@@ -73,10 +71,6 @@ class AccountResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('company.name')
-                    ->label(__('account.company'))
-                    ->numeric()
-                    ->sortable(),
                 Tables\Columns\TextColumn::make('code')
                     ->label(__('account.code'))
                     ->searchable(),

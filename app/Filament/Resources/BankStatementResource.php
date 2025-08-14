@@ -129,8 +129,6 @@ class BankStatementResource extends Resource
                         Infolists\Components\TextEntry::make('date')
                             ->label(__('bank_statement.date'))
                             ->date(),
-                        Infolists\Components\TextEntry::make('company.name')
-                            ->label(__('bank_statement.company')),
                         Infolists\Components\TextEntry::make('currency.name')
                             ->label(__('bank_statement.currency')),
                         Infolists\Components\TextEntry::make('journal.name')

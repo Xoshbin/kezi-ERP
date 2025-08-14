@@ -48,10 +48,6 @@ class TaxResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\Select::make('company_id')
-                    ->relationship('company', 'name')
-                    ->label(__('tax.company'))
-                    ->required(),
                 Forms\Components\Select::make('tax_account_id')
                     ->relationship('taxAccount', 'name')
                     ->label(__('tax.tax_account'))
@@ -78,9 +74,6 @@ class TaxResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('company.name')
-                    ->label(__('tax.company'))
-                    ->sortable(),
                 Tables\Columns\TextColumn::make('taxAccount.name')
                     ->label(__('tax.tax_account'))
                     ->sortable(),

@@ -103,10 +103,6 @@ class PdfSettingsResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('name')
-                    ->label(__('Company Name'))
-                    ->searchable()
-                    ->sortable(),
 
                 Tables\Columns\TextColumn::make('pdf_template')
                     ->label(__('PDF Template'))

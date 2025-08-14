@@ -56,12 +56,6 @@ class StockMoveResource extends Resource
                 ->icon('heroicon-o-arrow-path')
                 ->schema([
                     Forms\Components\Grid::make(3)->schema([
-                        Forms\Components\Select::make('company_id')
-                            ->relationship('company', 'name')
-                            ->label(__('stock_move.company'))
-                            ->required()
-                            ->searchable()
-                            ->default($company?->id),
                         Forms\Components\Select::make('product_id')
                             ->relationship('product', 'name')
                             ->label(__('stock_move.product'))

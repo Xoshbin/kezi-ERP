@@ -61,14 +61,6 @@ class JournalEntryResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\Select::make('company_id')
-                    ->label(__('journal_entry.company'))
-                    ->relationship('company', 'name')
-                    ->searchable()
-                    ->required()
-                    ->live()
-                    ->default(Company::first()?->id)
-                    ->afterStateUpdated(fn(callable $set, ?string $state) => $set('currency_id', Company::find($state)?->currency_id)),
                 Forms\Components\Select::make('journal_id')
                     ->label(__('journal_entry.journal'))
                     ->relationship('journal', 'name')
@@ -110,6 +102,7 @@ class JournalEntryResource extends Resource
                             ->required()
                             ->currencyField('../../currency_id')
                             ->numeric()
+                            ->default(0)
                             ->columnSpan(1)
                             ->live(onBlur: true),
                         MoneyInput::make('credit')
@@ -117,6 +110,7 @@ class JournalEntryResource extends Resource
                             ->required()
                             ->currencyField('../../currency_id')
                             ->numeric()
+                            ->default(0)
                             ->columnSpan(1)
                             ->live(onBlur: true),
                         Forms\Components\Select::make('partner_id')
@@ -137,7 +131,7 @@ class JournalEntryResource extends Resource
                     ->columns(4)
                     ->columnSpanFull()
                     ->live()
-                    ->defaultItems(0)
+                    ->defaultItems(2)
                     ->afterStateUpdated(function (callable $set, $state) {
                         self::updateTotals($set, $state);
                     }),
@@ -163,9 +157,6 @@ class JournalEntryResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('company.name')
-                    ->label(__('journal_entry.company'))
-                    ->sortable(),
                 Tables\Columns\TextColumn::make('journal.name')
                     ->label(__('journal_entry.journal'))
                     ->sortable(),

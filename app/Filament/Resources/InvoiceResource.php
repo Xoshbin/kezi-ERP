@@ -234,10 +234,6 @@ class InvoiceResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('company.name')
-                    ->label(__('invoice.company_name'))
-                    ->numeric()
-                    ->sortable(),
                 Tables\Columns\TextColumn::make('customer.name')
                     ->label(__('invoice.customer_name'))
                     ->numeric()
