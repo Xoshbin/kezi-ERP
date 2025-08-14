@@ -21,6 +21,8 @@ return new class extends Migration
             $table->unsignedBigInteger('credit')->default(0);
             $table->unsignedBigInteger('original_currency_amount')->default(0);
             $table->unsignedBigInteger('exchange_rate_at_transaction')->default(0);
+            // Add original currency ID to track the currency of the original transaction
+            $table->foreignId('original_currency_id')->nullable()->constrained('currencies')->after('analytic_account_id');
             $table->text('description')->nullable();
             $table->timestamps();
         });

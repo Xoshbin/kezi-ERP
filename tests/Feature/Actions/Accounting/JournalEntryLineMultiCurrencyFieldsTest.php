@@ -93,7 +93,8 @@ test('journal entry lines store original currency amount and exchange rate for f
                 description: 'Expense in USD converted to IQD',
                 partner_id: null,
                 analytic_account_id: null,
-                original_currency_amount: $originalAmountUSD->getAmount()->toFloat(), // Original amount in USD
+                original_currency_amount: $originalAmountUSD, // Original Money object in USD
+                original_currency_id: $this->usd->id, // Original currency ID
                 exchange_rate_at_transaction: $exchangeRate
             ),
             new CreateJournalEntryLineDTO(
@@ -103,7 +104,8 @@ test('journal entry lines store original currency amount and exchange rate for f
                 description: 'AP in USD converted to IQD',
                 partner_id: null,
                 analytic_account_id: null,
-                original_currency_amount: $originalAmountUSD->getAmount()->toFloat(), // Original amount in USD
+                original_currency_amount: $originalAmountUSD, // Original Money object in USD
+                original_currency_id: $this->usd->id, // Original currency ID
                 exchange_rate_at_transaction: $exchangeRate
             ),
         ]
@@ -120,9 +122,14 @@ test('journal entry lines store original currency amount and exchange rate for f
     expect($journalEntry->lines)->toHaveCount(2);
 
     foreach ($journalEntry->lines as $line) {
-        // EXPECTED: Original currency amount should be stored as raw amount
+        // EXPECTED: Original currency amount should be stored as Money object in USD
         expect($line->original_currency_amount)->not->toBeNull('Original currency amount must be stored');
-        expect($line->original_currency_amount)->toBe($originalAmountUSD->getAmount()->toFloat(), 'Original amount should match the USD amount');
+        expect($line->original_currency_amount)->toBeInstanceOf(\Brick\Money\Money::class, 'Should be Money object');
+        expect($line->original_currency_amount->getCurrency()->getCurrencyCode())->toBe('USD', 'Original currency should be USD');
+        expect($line->original_currency_amount->isEqualTo($originalAmountUSD))->toBeTrue('Original amount should match the USD amount');
+
+        // EXPECTED: Original currency ID should be stored
+        expect($line->original_currency_id)->toBe($this->usd->id, 'Original currency ID should be USD');
 
         // EXPECTED: Exchange rate should be stored
         expect($line->exchange_rate_at_transaction)->toBe($exchangeRate, 'Exchange rate should be stored');
@@ -131,12 +138,12 @@ test('journal entry lines store original currency amount and exchange rate for f
     // Verify the debit line specifically
     $debitLine = $journalEntry->lines->where('account_id', $expenseAccount->id)->first();
     expect($debitLine->debit->isEqualTo($convertedAmountIQD))->toBeTrue('Debit should be in base currency');
-    expect($debitLine->original_currency_amount)->toBe($originalAmountUSD->getAmount()->toFloat(), 'Original amount preserved');
+    expect($debitLine->original_currency_amount->isEqualTo($originalAmountUSD))->toBeTrue('Original amount preserved');
 
     // Verify the credit line specifically
     $creditLine = $journalEntry->lines->where('account_id', $apAccount->id)->first();
     expect($creditLine->credit->isEqualTo($convertedAmountIQD))->toBeTrue('Credit should be in base currency');
-    expect($creditLine->original_currency_amount)->toBe($originalAmountUSD->getAmount()->toFloat(), 'Original amount preserved');
+    expect($creditLine->original_currency_amount->isEqualTo($originalAmountUSD))->toBeTrue('Original amount preserved');
 });
 
 test('journal entry lines handle same currency transactions correctly', function () {
@@ -174,7 +181,8 @@ test('journal entry lines handle same currency transactions correctly', function
                 description: 'Expense in IQD',
                 partner_id: null,
                 analytic_account_id: null,
-                original_currency_amount: $amountIQD->getAmount()->toFloat(), // Same as converted amount
+                original_currency_amount: $amountIQD, // Same Money object
+                original_currency_id: $this->iqd->id, // Same currency ID
                 exchange_rate_at_transaction: $exchangeRate
             ),
             new CreateJournalEntryLineDTO(
@@ -184,7 +192,8 @@ test('journal entry lines handle same currency transactions correctly', function
                 description: 'AP in IQD',
                 partner_id: null,
                 analytic_account_id: null,
-                original_currency_amount: $amountIQD->getAmount()->toFloat(), // Same as converted amount
+                original_currency_amount: $amountIQD, // Same Money object
+                original_currency_id: $this->iqd->id, // Same currency ID
                 exchange_rate_at_transaction: $exchangeRate
             ),
         ]
@@ -194,7 +203,8 @@ test('journal entry lines handle same currency transactions correctly', function
 
     // Verify same currency handling
     $line = $journalEntry->lines->first();
-    expect($line->original_currency_amount)->toBe($amountIQD->getAmount()->toFloat());
+    expect($line->original_currency_amount->isEqualTo($amountIQD))->toBeTrue();
+    expect($line->original_currency_id)->toBe($this->iqd->id);
     expect($line->exchange_rate_at_transaction)->toBe(1.0);
     expect($line->debit->isEqualTo($amountIQD))->toBeTrue();
 });

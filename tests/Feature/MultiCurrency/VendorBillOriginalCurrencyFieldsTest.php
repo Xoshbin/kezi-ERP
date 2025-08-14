@@ -141,9 +141,14 @@ test('vendor bill journal entries store original currency amount and exchange ra
     expect($journalEntry->lines)->toHaveCount(2); // Expense debit + AP credit
 
     foreach ($journalEntry->lines as $line) {
-        // EXPECTED: Original currency amount should be stored as raw USD amount
+        // EXPECTED: Original currency amount should be stored as Money object in USD
         expect($line->original_currency_amount)->not->toBeNull('Original currency amount must be stored');
-        expect($line->original_currency_amount)->toBe(100.0, 'Original amount should be $100 USD');
+        expect($line->original_currency_amount)->toBeInstanceOf(\Brick\Money\Money::class, 'Should be Money object');
+        expect($line->original_currency_amount->getCurrency()->getCurrencyCode())->toBe('USD', 'Original currency should be USD');
+        expect($line->original_currency_amount->isEqualTo(Money::of(100, 'USD')))->toBeTrue('Original amount should be $100 USD');
+
+        // EXPECTED: Original currency ID should be stored
+        expect($line->original_currency_id)->not->toBeNull('Original currency ID must be stored');
 
         // EXPECTED: Exchange rate should be stored
         expect($line->exchange_rate_at_transaction)->toBe(1460.0, 'Exchange rate should be stored');
@@ -153,14 +158,14 @@ test('vendor bill journal entries store original currency amount and exchange ra
     $debitLine = $journalEntry->lines->filter(fn($line) => $line->debit->isPositive())->first();
     expect($debitLine->account_id)->toBe($expenseAccount->id);
     expect($debitLine->debit->isEqualTo(Money::of(146000, 'IQD')))->toBeTrue('Debit should be converted to IQD');
-    expect($debitLine->original_currency_amount)->toBe(100.0, 'Original expense amount preserved');
+    expect($debitLine->original_currency_amount->isEqualTo(Money::of(100, 'USD')))->toBeTrue('Original expense amount preserved');
     expect($debitLine->exchange_rate_at_transaction)->toBe(1460.0);
 
     // Verify the credit line (AP)
     $creditLine = $journalEntry->lines->filter(fn($line) => $line->credit->isPositive())->first();
     expect($creditLine->account_id)->toBe($apAccount->id);
     expect($creditLine->credit->isEqualTo(Money::of(146000, 'IQD')))->toBeTrue('Credit should be converted to IQD');
-    expect($creditLine->original_currency_amount)->toBe(100.0, 'Original AP amount preserved');
+    expect($creditLine->original_currency_amount->isEqualTo(Money::of(100, 'USD')))->toBeTrue('Original AP amount preserved');
     expect($creditLine->exchange_rate_at_transaction)->toBe(1460.0);
 });
 
@@ -176,7 +181,7 @@ test('vendor bill journal entries handle same currency correctly for original cu
     // Setup minimal required accounts and configuration
     $expenseAccount = Account::factory()->create(['company_id' => $company->id, 'type' => 'expense']);
     $apAccount = Account::factory()->create(['company_id' => $company->id, 'type' => 'payable']);
-    
+
     $purchaseJournal = Journal::factory()->create([
         'company_id' => $company->id,
         'type' => JournalType::Purchase,
@@ -227,10 +232,12 @@ test('vendor bill journal entries handle same currency correctly for original cu
 
     // Verify same currency handling
     expect($journalEntry->currency->code)->toBe('IQD');
-    
+
     foreach ($journalEntry->lines as $line) {
-        // For same currency, original amount should equal the IQD amount
-        expect($line->original_currency_amount)->toBe(146000.0, 'Original amount should be 146,000 IQD');
+        // For same currency, original amount should equal the IQD amount as Money object
+        expect($line->original_currency_amount)->toBeInstanceOf(\Brick\Money\Money::class, 'Should be Money object');
+        expect($line->original_currency_amount->getCurrency()->getCurrencyCode())->toBe('IQD', 'Original currency should be IQD');
+        expect($line->original_currency_amount->isEqualTo(Money::of(146000, 'IQD')))->toBeTrue('Original amount should be 146,000 IQD');
         expect($line->exchange_rate_at_transaction)->toBe(1.0, 'Exchange rate should be 1.0 for same currency');
     }
 });

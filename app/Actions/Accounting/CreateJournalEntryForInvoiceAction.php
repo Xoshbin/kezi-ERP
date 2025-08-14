@@ -58,7 +58,8 @@ class CreateJournalEntryForInvoiceAction
             description: 'A/R for ' . $invoice->invoice_number,
             partner_id: null,
             analytic_account_id: null,
-            original_currency_amount: $invoice->total_amount->getAmount()->toFloat(),
+            original_currency_amount: $invoice->total_amount, // Original Money object
+            original_currency_id: $invoice->currency_id, // Original currency ID
             exchange_rate_at_transaction: $exchangeRate,
         );
 
@@ -72,7 +73,8 @@ class CreateJournalEntryForInvoiceAction
                 description: $line->description,
                 partner_id: null,
                 analytic_account_id: null,
-                original_currency_amount: $line->subtotal->getAmount()->toFloat(),
+                original_currency_amount: $line->subtotal, // Original Money object
+                original_currency_id: $invoice->currency_id, // Original currency ID
                 exchange_rate_at_transaction: $exchangeRate,
             );
 
@@ -84,7 +86,8 @@ class CreateJournalEntryForInvoiceAction
                     description: 'Tax for ' . $invoice->invoice_number,
                     partner_id: null,
                     analytic_account_id: null,
-                    original_currency_amount: $line->total_line_tax->getAmount()->toFloat(),
+                    original_currency_amount: $line->total_line_tax, // Original Money object
+                    original_currency_id: $invoice->currency_id, // Original currency ID
                     exchange_rate_at_transaction: $exchangeRate,
                 );
             }

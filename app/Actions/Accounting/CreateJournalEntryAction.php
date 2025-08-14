@@ -82,11 +82,20 @@ class CreateJournalEntryAction
                 // triggered here, but it can now successfully call getCurrencyIdAttribute()
                 // because the journalEntry relationship is established.
 
-                // Determine the amount to use for original currency (fallback to debit/credit if not provided)
+                // Determine the original currency amount and currency ID
                 $originalAmount = $lineDto->original_currency_amount;
+                $originalCurrencyId = $lineDto->original_currency_id;
+
+                // Fallback logic for backward compatibility
                 if ($originalAmount === null) {
-                    // Fallback: use the larger of debit or credit amount
-                    $originalAmount = $lineDto->debit->isPositive() ? $lineDto->debit->getAmount()->toFloat() : $lineDto->credit->getAmount()->toFloat();
+                    // Use the larger of debit or credit amount in the journal entry's currency
+                    $originalAmount = $lineDto->debit->isPositive() ? $lineDto->debit : $lineDto->credit;
+                    $originalCurrencyId = $journalEntry->currency_id;
+                }
+
+                if ($originalCurrencyId === null) {
+                    // Default to journal entry's currency if not specified
+                    $originalCurrencyId = $journalEntry->currency_id;
                 }
 
                 // Determine exchange rate (fallback to 1.0 if not provided)
@@ -100,6 +109,7 @@ class CreateJournalEntryAction
                     'debit' => $lineDto->debit,
                     'credit' => $lineDto->credit,
                     'original_currency_amount' => $originalAmount,
+                    'original_currency_id' => $originalCurrencyId,
                     'exchange_rate_at_transaction' => $exchangeRate,
                 ]);
 
