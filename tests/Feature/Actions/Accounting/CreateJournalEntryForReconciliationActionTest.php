@@ -14,6 +14,7 @@ test('it creates a correct journal entry for a payment reconciliation', function
         ->for($this->company)
         ->create([
             'amount' => Money::of(250, $this->company->currency->code),
+            'currency_id' => $this->company->currency_id, // Ensure payment uses company currency
             'journal_id' => $this->company->default_bank_journal_id,
         ]);
 
