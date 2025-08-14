@@ -62,7 +62,7 @@ class CreateJournalEntryAction
                 'description' => $dto->description,
                 'created_by_user_id' => $dto->created_by_user_id,
                 'is_posted' => $dto->is_posted,
-                'state' => JournalEntryState::Draft, // Explicitly set state to Draft
+                'state' => $dto->is_posted ? JournalEntryState::Posted : JournalEntryState::Draft, // Set correct state based on is_posted
                 'total_debit' => $totalDebit,
                 'total_credit' => $totalCredit,
                 'source_type' => $dto->source_type,

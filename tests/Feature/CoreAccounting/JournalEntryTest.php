@@ -3,6 +3,7 @@
 use App\Actions\Accounting\CreateJournalEntryAction;
 use App\DataTransferObjects\Accounting\CreateJournalEntryDTO;
 use App\DataTransferObjects\Accounting\CreateJournalEntryLineDTO;
+use App\Enums\Accounting\JournalEntryState;
 use App\Exceptions\DeletionNotAllowedException;
 use App\Exceptions\PeriodIsLockedException;
 use App\Exceptions\UpdateNotAllowedException;
@@ -97,11 +98,13 @@ test('a balanced draft journal entry can be posted', function () {
 
     $journalEntry = (app(CreateJournalEntryAction::class))->execute($dto);
     expect($journalEntry->is_posted)->toBeFalse();
+    expect($journalEntry->state)->toBe(JournalEntryState::Draft);
 
     (app(JournalEntryService::class))->post($journalEntry);
 
     $journalEntry->refresh();
     expect($journalEntry->is_posted)->toBeTrue();
+    expect($journalEntry->state)->toBe(JournalEntryState::Posted);
 });
 
 test('an unbalanced draft journal entry cannot be posted', function () {
