@@ -19,11 +19,21 @@ uses(Tests\TestCase::class, RefreshDatabase::class);
 
 // Setup a default company, user, and journal for all tests
 beforeEach(function () {
-    $this->company = Company::factory()->create();
+    // Create a base currency for the company
+    $this->baseCurrency = Currency::firstOrCreate(['code' => 'IQD'], [
+        'name' => 'Iraqi Dinar',
+        'symbol' => 'IQD',
+        'exchange_rate' => 1.0,
+        'is_active' => true,
+        'decimal_places' => 3
+    ]);
+
+    $this->company = Company::factory()->create(['currency_id' => $this->baseCurrency->id]);
     $this->user = User::factory()->create(['company_id' => $this->company->id]);
     $this->bankJournal = Journal::factory()->create([
         'company_id' => $this->company->id,
         'type' => JournalType::Bank,
+        'currency_id' => $this->baseCurrency->id,
     ]);
 });
 
@@ -49,7 +59,7 @@ it('successfully reconciles a payment and a bank statement line', function () {
         'default_outstanding_receipts_account_id' => Account::factory()->create(['company_id' => $this->company->id])->id,
     ]);
 
-    $currency = Currency::firstOrCreate(['code' => 'USD'], ['name' => 'US Dollar', 'symbol' => '$', 'exchange_rate' => 1, 'is_active' => true, 'decimal_places' => 2]);
+    $currency = Currency::firstOrCreate(['code' => 'USD'], ['name' => 'US Dollar', 'symbol' => '$', 'exchange_rate' => 1460.0, 'is_active' => true, 'decimal_places' => 2]);
 
     $statement = BankStatement::factory()->create([
         'company_id' => $this->company->id,

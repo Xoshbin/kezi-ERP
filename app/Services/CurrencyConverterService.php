@@ -29,12 +29,19 @@ class CurrencyConverterService
      * Convert a Money amount from one currency to another.
      */
     public function convertAmount(
-        Money $amount, 
-        Currency $targetCurrency, 
+        Money $amount,
+        Currency $targetCurrency,
         ?float $exchangeRate = null
     ): Money {
-        $sourceCurrency = Currency::where('code', $amount->getCurrency()->getCurrencyCode())->firstOrFail();
-        
+        $sourceCurrency = Currency::where('code', $amount->getCurrency()->getCurrencyCode())->first();
+
+        // If source currency doesn't exist in database, we can't convert
+        if (!$sourceCurrency) {
+            throw new \InvalidArgumentException(
+                "Source currency '{$amount->getCurrency()->getCurrencyCode()}' not found in database"
+            );
+        }
+
         // Calculate exchange rate if not provided
         if ($exchangeRate === null) {
             $exchangeRate = $this->getExchangeRate($sourceCurrency, $targetCurrency);
@@ -64,7 +71,7 @@ class CurrencyConverterService
     ): CurrencyConversionResult {
         $baseCurrency = $company->currency;
         $exchangeRate = $this->getExchangeRate($originalCurrency, $baseCurrency);
-        
+
         $convertedAmount = $this->convertAmount($originalAmount, $baseCurrency, $exchangeRate);
 
         return new CurrencyConversionResult(
@@ -86,7 +93,7 @@ class CurrencyConverterService
         Company $company
     ): array {
         $results = [];
-        
+
         foreach ($amounts as $key => $amount) {
             $results[$key] = $this->convertToCompanyBaseCurrency(
                 $amount,
@@ -124,7 +131,7 @@ class CurrencyConverterService
 
     /**
      * Validate that currencies are compatible for conversion.
-     * 
+     *
      * @throws \InvalidArgumentException
      */
     public function validateCurrenciesForConversion(Currency $fromCurrency, Currency $toCurrency): void

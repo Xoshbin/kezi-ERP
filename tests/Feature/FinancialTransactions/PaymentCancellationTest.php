@@ -15,8 +15,12 @@ uses(RefreshDatabase::class, WithConfiguredCompany::class, MocksTime::class);
 
 test('cancelling a confirmed payment creates a reversing journal entry and an audit log', function () {
 
-    // Create and confirm a payment
-    $payment = Payment::factory()->for($this->company)->create(['status' => 'draft']);
+    // Create and confirm a payment in the company's currency
+    $payment = Payment::factory()->for($this->company)->create([
+        'status' => 'draft',
+        'currency_id' => $this->company->currency_id,
+        'amount' => \Brick\Money\Money::of(1000, $this->company->currency->code),
+    ]);
     $paymentService = app(PaymentService::class);
     $paymentService->confirm($payment, $this->user);
     $payment->refresh();

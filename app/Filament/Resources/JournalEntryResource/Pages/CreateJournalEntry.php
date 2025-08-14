@@ -9,6 +9,7 @@ use App\Filament\Resources\JournalEntryResource;
 use App\Models\Company;
 use App\Models\Journal;
 use App\Models\LockDate;
+use App\Services\CurrencyConverterService;
 use Brick\Money\Money;
 use Filament\Resources\Pages\CreateRecord;
 use Illuminate\Database\Eloquent\Model;
@@ -25,44 +26,40 @@ class CreateJournalEntry extends CreateRecord
             // Get the selected currency and company base currency
             $selectedCurrency = \App\Models\Currency::find($data['currency_id']);
             $company = \Filament\Facades\Filament::getTenant();
-            $baseCurrency = $company->currency;
+            $currencyConverter = app(CurrencyConverterService::class);
 
-            if ($selectedCurrency && $baseCurrency) {
-                // Determine exchange rate for conversion
-                $exchangeRate = ($baseCurrency->id === $selectedCurrency->id) ? 1.0 : $selectedCurrency->exchange_rate;
-
+            if ($selectedCurrency && $company) {
                 foreach ($data['lines'] as $line) {
                     // Create original amounts in selected currency
                     $originalDebit = Money::of($line['debit'] ?? 0, $selectedCurrency->code);
                     $originalCredit = Money::of($line['credit'] ?? 0, $selectedCurrency->code);
 
-                    // Convert amounts to company base currency
-                    $convertedDebit = Money::of(
-                        $originalDebit->getAmount()->multipliedBy($exchangeRate),
-                        $baseCurrency->code,
-                        null,
-                        \Brick\Math\RoundingMode::HALF_UP
+                    // Use CurrencyConverterService for conversion
+                    $debitConversion = $currencyConverter->convertToCompanyBaseCurrency(
+                        $originalDebit,
+                        $selectedCurrency,
+                        $company
                     );
-                    $convertedCredit = Money::of(
-                        $originalCredit->getAmount()->multipliedBy($exchangeRate),
-                        $baseCurrency->code,
-                        null,
-                        \Brick\Math\RoundingMode::HALF_UP
+                    $creditConversion = $currencyConverter->convertToCompanyBaseCurrency(
+                        $originalCredit,
+                        $selectedCurrency,
+                        $company
                     );
 
                     // Determine which original amount to store (the non-zero one)
                     $originalAmount = $originalDebit->isPositive() ? $originalDebit : $originalCredit;
+                    $conversion = $originalDebit->isPositive() ? $debitConversion : $creditConversion;
 
                     $lineDTOs[] = new CreateJournalEntryLineDTO(
                         account_id: $line['account_id'],
-                        debit: $convertedDebit,
-                        credit: $convertedCredit,
+                        debit: $debitConversion->convertedAmount,
+                        credit: $creditConversion->convertedAmount,
                         description: $line['description'],
                         partner_id: $line['partner_id'],
                         analytic_account_id: $line['analytic_account_id'],
                         original_currency_amount: $originalAmount,
-                        original_currency_id: $selectedCurrency->id,
-                        exchange_rate_at_transaction: $exchangeRate
+                        original_currency_id: $conversion->originalCurrency->id,
+                        exchange_rate_at_transaction: $conversion->exchangeRate
                     );
                 }
             }

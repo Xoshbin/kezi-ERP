@@ -8,27 +8,30 @@ use App\Models\JournalEntry;
 use App\Models\Payment;
 use App\Models\User;
 use App\Enums\Payments\PaymentType;
-use Brick\Money\Money;
+use App\Services\CurrencyConverterService;
 use InvalidArgumentException;
 
 class CreateJournalEntryForPaymentAction
 {
     public function __construct(
-        private readonly CreateJournalEntryAction $createJournalEntryAction
+        private readonly CreateJournalEntryAction $createJournalEntryAction,
+        private readonly CurrencyConverterService $currencyConverter
     ) {
     }
 
     public function execute(Payment $payment, User $user): JournalEntry
     {
         $company = $payment->company->load('currency');
-        $baseCurrency = $company->currency;
-        $paymentCurrency = $payment->currency;
 
         // Load the partner to access individual accounts
         $payment->load('partner');
 
-        // Determine the exchange rate. If it's the same currency, the rate is 1.
-        $exchangeRate = ($baseCurrency->id === $paymentCurrency->id) ? 1.0 : $paymentCurrency->exchange_rate;
+        // Use CurrencyConverterService for all currency conversion logic
+        $conversion = $this->currencyConverter->convertToCompanyBaseCurrency(
+            $payment->amount,
+            $payment->currency,
+            $company
+        );
 
         // 1. Determine the correct accounts based on accounting rules.
         $bankAccountId = $payment->journal->default_debit_account_id;
@@ -37,16 +40,13 @@ class CreateJournalEntryForPaymentAction
         }
 
         $lines = [];
-        $zeroAmount = Money::zero($baseCurrency->code);
-        $amountInPaymentCurrency = $payment->amount->getAmount();
-        $amountInBaseCurrency = $amountInPaymentCurrency->multipliedBy($exchangeRate);
-        $paymentAmountInBase = Money::of($amountInBaseCurrency, $baseCurrency->code, null, \Brick\Math\RoundingMode::HALF_UP);
+        $zeroAmount = $conversion->createZeroInTargetCurrency();
 
         \Illuminate\Support\Facades\Log::info('CreateJournalEntryForPaymentAction', [
             'payment_amount' => $payment->amount->getAmount()->toFloat(),
-            'exchange_rate' => $exchangeRate,
-            'amount_in_base_currency' => $amountInBaseCurrency->toFloat(),
-            'payment_amount_in_base_minor' => $paymentAmountInBase->getMinorAmount()->toInt(),
+            'exchange_rate' => $conversion->exchangeRate,
+            'amount_in_base_currency' => $conversion->convertedAmount->getAmount()->toFloat(),
+            'payment_amount_in_base_minor' => $conversion->convertedAmount->getMinorAmount()->toInt(),
         ]);
 
         if ($payment->payment_type === PaymentType::Inbound) {
@@ -58,25 +58,25 @@ class CreateJournalEntryForPaymentAction
             // Rule: Inbound payment DEBITS the bank, CREDITS Accounts Receivable.
             $lines[] = new CreateJournalEntryLineDTO(
                 account_id: $bankAccountId,
-                debit: $paymentAmountInBase,
+                debit: $conversion->convertedAmount,
                 credit: $zeroAmount,
                 description: null,
                 partner_id: null,
                 analytic_account_id: null,
-                original_currency_amount: $payment->amount, // Original Money object
-                original_currency_id: $payment->currency_id, // Original currency ID
-                exchange_rate_at_transaction: $exchangeRate,
+                original_currency_amount: $conversion->originalAmount,
+                original_currency_id: $conversion->originalCurrency->id,
+                exchange_rate_at_transaction: $conversion->exchangeRate,
             );
             $lines[] = new CreateJournalEntryLineDTO(
                 account_id: $arAccountId,
                 debit: $zeroAmount,
-                credit: $paymentAmountInBase,
+                credit: $conversion->convertedAmount,
                 description: null,
                 partner_id: null,
                 analytic_account_id: null,
-                original_currency_amount: $payment->amount, // Original Money object
-                original_currency_id: $payment->currency_id, // Original currency ID
-                exchange_rate_at_transaction: $exchangeRate,
+                original_currency_amount: $conversion->originalAmount,
+                original_currency_id: $conversion->originalCurrency->id,
+                exchange_rate_at_transaction: $conversion->exchangeRate,
             );
         } elseif ($payment->payment_type === PaymentType::Outbound) {
             // Use partner's individual payable account if available, otherwise fall back to default
@@ -87,25 +87,25 @@ class CreateJournalEntryForPaymentAction
             // Rule: Outbound payment DEBITS Accounts Payable, CREDITS the bank.
             $lines[] = new CreateJournalEntryLineDTO(
                 account_id: $apAccountId,
-                debit: $paymentAmountInBase,
+                debit: $conversion->convertedAmount,
                 credit: $zeroAmount,
                 description: null,
                 partner_id: null,
                 analytic_account_id: null,
-                original_currency_amount: $payment->amount, // Original Money object
-                original_currency_id: $payment->currency_id, // Original currency ID
-                exchange_rate_at_transaction: $exchangeRate,
+                original_currency_amount: $conversion->originalAmount,
+                original_currency_id: $conversion->originalCurrency->id,
+                exchange_rate_at_transaction: $conversion->exchangeRate,
             );
             $lines[] = new CreateJournalEntryLineDTO(
                 account_id: $bankAccountId,
                 debit: $zeroAmount,
-                credit: $paymentAmountInBase,
+                credit: $conversion->convertedAmount,
                 description: null,
                 partner_id: null,
                 analytic_account_id: null,
-                original_currency_amount: $payment->amount, // Original Money object
-                original_currency_id: $payment->currency_id, // Original currency ID
-                exchange_rate_at_transaction: $exchangeRate,
+                original_currency_amount: $conversion->originalAmount,
+                original_currency_id: $conversion->originalCurrency->id,
+                exchange_rate_at_transaction: $conversion->exchangeRate,
             );
         }
 
@@ -113,7 +113,7 @@ class CreateJournalEntryForPaymentAction
         $journalEntryDTO = new CreateJournalEntryDTO(
             company_id: $payment->company_id,
             journal_id: $payment->journal_id,
-            currency_id: $baseCurrency->id, // Journal Entry is always in the company's base currency
+            currency_id: $conversion->targetCurrency->id, // Journal Entry is always in the company's base currency
             entry_date: $payment->payment_date,
             reference: 'Payment #' . $payment->id,
             description: 'Payment from/to ' . $payment->partner->name,
