@@ -36,23 +36,23 @@ it('can create a journal entry', function () {
             'entry_date' => now()->format('Y-m-d'),
             'reference' => 'Test Reference',
             'description' => 'Test Description',
-            'lines' => [
-                [
-                    'account_id' => $this->company->default_bank_account_id,
-                    'debit' => 100,
-                    'credit' => 0,
-                    'partner_id' => null,
-                    'analytic_account_id' => null,
-                    'description' => 'Line 1',
-                ],
-                [
-                    'account_id' => $this->company->default_accounts_payable_id,
-                    'debit' => 0,
-                    'credit' => 100,
-                    'partner_id' => null,
-                    'analytic_account_id' => null,
-                    'description' => 'Line 2',
-                ],
+        ])
+        ->set('data.lines', [
+            [
+                'account_id' => $this->company->default_bank_account_id,
+                'debit' => 100,
+                'credit' => 0,
+                'partner_id' => null,
+                'analytic_account_id' => null,
+                'description' => 'Line 1',
+            ],
+            [
+                'account_id' => $this->company->default_accounts_payable_id,
+                'debit' => 0,
+                'credit' => 100,
+                'partner_id' => null,
+                'analytic_account_id' => null,
+                'description' => 'Line 2',
             ],
         ])
         ->call('create')

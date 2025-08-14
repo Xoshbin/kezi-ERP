@@ -27,6 +27,9 @@ class CompanyResource extends Resource
 
     protected static ?string $cluster = Settings::class;
 
+    // Disable tenant scoping since this resource manages the Company model directly
+    protected static bool $isScopedToTenant = false;
+
     public static function getModelLabel(): string
     {
         return __('company.singular');

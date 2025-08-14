@@ -7,6 +7,7 @@ use App\Models\User;
 use Brick\Money\Money;
 use App\Models\Company;
 use App\Models\JournalEntry;
+use App\Enums\Accounting\JournalEntryState;
 use Illuminate\Support\Facades\DB;
 use App\Exceptions\PeriodIsLockedException;
 use App\Services\Accounting\LockDateService;
@@ -44,11 +45,15 @@ class JournalEntryService
         // Add other checks here (lock dates, etc.)
 
         // 2. Update the totals and post the entry.
-        $journalEntry->total_debit = $totalDebit;
-        $journalEntry->total_credit = $totalCredit;
-        $journalEntry->is_posted = true;
+        // Use a database transaction to ensure both is_posted and state are updated atomically
+        return DB::transaction(function () use ($journalEntry, $totalDebit, $totalCredit) {
+            $journalEntry->total_debit = $totalDebit;
+            $journalEntry->total_credit = $totalCredit;
+            $journalEntry->is_posted = true;
+            $journalEntry->state = JournalEntryState::Posted; // Update state to Posted
 
-        return $journalEntry->save();
+            return $journalEntry->save();
+        });
     }
 
     /**

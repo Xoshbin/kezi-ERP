@@ -318,10 +318,6 @@ class AdjustmentDocumentResource extends Resource
                     ->copyable()
                     ->copyMessage('Reference copied!')
                     ->icon('heroicon-o-hashtag'),
-                Tables\Columns\TextColumn::make('company.name')
-                    ->label('Company')
-                    ->sortable()
-                    ->icon('heroicon-o-building-office'),
                 Tables\Columns\TextColumn::make('type')
                     ->label('Type')
                     ->searchable()

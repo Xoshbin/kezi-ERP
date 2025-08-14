@@ -58,6 +58,9 @@ class CreateJournalEntryForInvoiceAction
             description: 'A/R for ' . $invoice->invoice_number,
             partner_id: null,
             analytic_account_id: null,
+            original_currency_amount: $invoice->total_amount, // Original Money object
+            original_currency_id: $invoice->currency_id, // Original currency ID
+            exchange_rate_at_transaction: $exchangeRate,
         );
 
         // Rule: Each line item's subtotal CREDITS its respective income account.
@@ -70,6 +73,9 @@ class CreateJournalEntryForInvoiceAction
                 description: $line->description,
                 partner_id: null,
                 analytic_account_id: null,
+                original_currency_amount: $line->subtotal, // Original Money object
+                original_currency_id: $invoice->currency_id, // Original currency ID
+                exchange_rate_at_transaction: $exchangeRate,
             );
 
             if ($line->total_line_tax->isPositive() && $line->tax) {
@@ -80,6 +86,9 @@ class CreateJournalEntryForInvoiceAction
                     description: 'Tax for ' . $invoice->invoice_number,
                     partner_id: null,
                     analytic_account_id: null,
+                    original_currency_amount: $line->total_line_tax, // Original Money object
+                    original_currency_id: $invoice->currency_id, // Original currency ID
+                    exchange_rate_at_transaction: $exchangeRate,
                 );
             }
         }

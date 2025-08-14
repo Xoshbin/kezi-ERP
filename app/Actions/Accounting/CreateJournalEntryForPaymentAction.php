@@ -63,6 +63,9 @@ class CreateJournalEntryForPaymentAction
                 description: null,
                 partner_id: null,
                 analytic_account_id: null,
+                original_currency_amount: $payment->amount, // Original Money object
+                original_currency_id: $payment->currency_id, // Original currency ID
+                exchange_rate_at_transaction: $exchangeRate,
             );
             $lines[] = new CreateJournalEntryLineDTO(
                 account_id: $arAccountId,
@@ -71,6 +74,9 @@ class CreateJournalEntryForPaymentAction
                 description: null,
                 partner_id: null,
                 analytic_account_id: null,
+                original_currency_amount: $payment->amount, // Original Money object
+                original_currency_id: $payment->currency_id, // Original currency ID
+                exchange_rate_at_transaction: $exchangeRate,
             );
         } elseif ($payment->payment_type === PaymentType::Outbound) {
             // Use partner's individual payable account if available, otherwise fall back to default
@@ -86,6 +92,9 @@ class CreateJournalEntryForPaymentAction
                 description: null,
                 partner_id: null,
                 analytic_account_id: null,
+                original_currency_amount: $payment->amount, // Original Money object
+                original_currency_id: $payment->currency_id, // Original currency ID
+                exchange_rate_at_transaction: $exchangeRate,
             );
             $lines[] = new CreateJournalEntryLineDTO(
                 account_id: $bankAccountId,
@@ -94,6 +103,9 @@ class CreateJournalEntryForPaymentAction
                 description: null,
                 partner_id: null,
                 analytic_account_id: null,
+                original_currency_amount: $payment->amount, // Original Money object
+                original_currency_id: $payment->currency_id, // Original currency ID
+                exchange_rate_at_transaction: $exchangeRate,
             );
         }
 

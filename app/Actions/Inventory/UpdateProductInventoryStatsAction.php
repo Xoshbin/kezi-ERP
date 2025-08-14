@@ -15,14 +15,31 @@ class UpdateProductInventoryStatsAction
             // Lock the product row to prevent race conditions during calculation.
             $product = Product::lockForUpdate()->find($product->id);
 
-            $purchaseValue = $purchasePricePerUnit->multipliedBy($quantityChange, RoundingMode::HALF_UP);
+            // Ensure all calculations are in the company's base currency
+            $companyCurrency = $product->company->currency;
+            $purchaseCurrency = $purchasePricePerUnit->getCurrency();
+
+            // Convert purchase price to company base currency if needed
+            if ($companyCurrency->code !== $purchaseCurrency->getCurrencyCode()) {
+                // Find the exchange rate for the purchase currency
+                $foreignCurrency = \App\Models\Currency::where('code', $purchaseCurrency->getCurrencyCode())->first();
+                if (!$foreignCurrency) {
+                    throw new \RuntimeException("Currency {$purchaseCurrency->getCurrencyCode()} not found in system");
+                }
+                $exchangeRate = $foreignCurrency->exchange_rate;
+                $purchasePriceInBaseCurrency = Money::of($purchasePricePerUnit->getAmount(), $companyCurrency->code)->multipliedBy($exchangeRate, RoundingMode::HALF_UP);
+            } else {
+                $purchasePriceInBaseCurrency = $purchasePricePerUnit;
+            }
+
+            $purchaseValue = $purchasePriceInBaseCurrency->multipliedBy($quantityChange, RoundingMode::HALF_UP);
             $oldValue = $product->average_cost->multipliedBy($product->quantity_on_hand, RoundingMode::HALF_UP);
             $totalQuantity = $product->quantity_on_hand + $quantityChange;
             $totalValue = $oldValue->plus($purchaseValue);
 
             $newAverageCost = $totalQuantity > 0
                 ? $totalValue->dividedBy($totalQuantity, RoundingMode::HALF_UP)
-                : Money::zero($product->company->currency->code);
+                : Money::zero($companyCurrency->code);
 
             \Illuminate\Support\Facades\Log::info('Before product update', [
                 'product_id' => $product->id,

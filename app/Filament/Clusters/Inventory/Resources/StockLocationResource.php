@@ -51,36 +51,6 @@ class StockLocationResource extends Resource
                 ->icon('heroicon-o-building-storefront')
                 ->schema([
                     Forms\Components\Grid::make(2)->schema([
-                        Forms\Components\Select::make('company_id')
-                            ->relationship('company', 'name')
-                            ->label(__('stock_location.company'))
-                            ->required()
-                            ->searchable()
-                            ->default($company?->id)
-                            ->createOptionForm([
-                                Forms\Components\TextInput::make('name')
-                                    ->label(__('company.name'))
-                                    ->required()
-                                    ->maxLength(255),
-                                Forms\Components\Textarea::make('address')
-                                    ->label(__('company.address'))
-                                    ->columnSpanFull(),
-                                Forms\Components\TextInput::make('tax_id')
-                                    ->label(__('company.tax_id'))
-                                    ->maxLength(255),
-                                Forms\Components\Select::make('currency_id')
-                                    ->label(__('company.currency_id'))
-                                    ->relationship('currency', 'name')
-                                    ->required(),
-                                Forms\Components\TextInput::make('fiscal_country')
-                                    ->label(__('company.fiscal_country'))
-                                    ->required()
-                                    ->maxLength(255),
-                            ])
-                            ->createOptionModalHeading(__('common.modal_title_create_company'))
-                            ->createOptionAction(function (Forms\Components\Actions\Action $action) {
-                                return $action->modalWidth('lg');
-                            }),
                         Forms\Components\TextInput::make('name')
                             ->label(__('stock_location.name'))
                             ->required()
@@ -120,11 +90,6 @@ class StockLocationResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('company.name')
-                    ->label(__('stock_location.company'))
-                    ->sortable()
-                    ->searchable()
-                    ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('name')
                     ->label(__('stock_location.name'))
                     ->searchable()

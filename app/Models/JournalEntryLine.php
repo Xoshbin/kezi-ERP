@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Casts\MoneyCast;
+use App\Casts\OriginalMoneyCast;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Log;
@@ -83,6 +84,7 @@ class JournalEntryLine extends Model
         'description',
         'analytic_account_id',
         'original_currency_amount',
+        'original_currency_id',
         'exchange_rate_at_transaction',
     ];
 
@@ -97,7 +99,8 @@ class JournalEntryLine extends Model
     protected $casts = [
         'debit' => MoneyCast::class,  // Enforces two decimal places for currency amounts.
         'credit' => MoneyCast::class, // Ensures consistency for credit amounts.
-        'original_currency_amount' => MoneyCast::class
+        'original_currency_amount' => OriginalMoneyCast::class, // Uses original_currency_id for proper Money object
+        'exchange_rate_at_transaction' => 'float'
     ];
 
     /**
@@ -219,6 +222,18 @@ class JournalEntryLine extends Model
     public function analyticAccount(): BelongsTo
     {
         return $this->belongsTo(AnalyticAccount::class);
+    }
+
+    /**
+     * Get the `Currency` model for the original transaction currency.
+     *
+     * This represents the currency of the original transaction before conversion to the company's base currency.
+     *
+     * @return BelongsTo An Eloquent relationship instance for the `Currency` model.
+     */
+    public function originalCurrency(): BelongsTo
+    {
+        return $this->belongsTo(Currency::class, 'original_currency_id');
     }
 
     /**

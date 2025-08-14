@@ -4,29 +4,31 @@ namespace App\Filament\Resources;
 
 use Filament\Forms;
 use Filament\Tables;
+use App\Models\Account;
+use App\Models\Company;
+use App\Models\Currency;
+use App\Models\Journal;
+use App\Models\Partner;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
 use App\Models\JournalEntry;
+use App\Rules\ActiveAccount;
 use Filament\Resources\Resource;
+use App\Enums\Accounting\JournalType;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Toggle;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Textarea;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
-use App\Filament\Forms\Components\MoneyInput;
-use App\Filament\Tables\Columns\MoneyColumn;
 use Filament\Forms\Components\DatePicker;
 use Illuminate\Database\Eloquent\Builder;
+use App\Enums\Accounting\JournalEntryState;
+use App\Filament\Tables\Columns\MoneyColumn;
+use App\Filament\Forms\Components\MoneyInput;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
-use App\Rules\ActiveAccount;
 use App\Filament\Resources\JournalEntryResource\Pages;
 use App\Filament\Resources\JournalEntryResource\RelationManagers;
-use App\Models\Account;
-use App\Models\Company;
-use App\Models\Journal;
-use App\Models\Partner;
-use App\Enums\Accounting\JournalType;
 use App\Models\AnalyticAccount as AnalyticAccountModel; // Use an alias to avoid conflict with the relationship name
 
 class JournalEntryResource extends Resource
@@ -61,14 +63,6 @@ class JournalEntryResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\Select::make('company_id')
-                    ->label(__('journal_entry.company'))
-                    ->relationship('company', 'name')
-                    ->searchable()
-                    ->required()
-                    ->live()
-                    ->default(Company::first()?->id)
-                    ->afterStateUpdated(fn(callable $set, ?string $state) => $set('currency_id', Company::find($state)?->currency_id)),
                 Forms\Components\Select::make('journal_id')
                     ->label(__('journal_entry.journal'))
                     ->relationship('journal', 'name')
@@ -77,11 +71,31 @@ class JournalEntryResource extends Resource
                     ->default(Journal::where('type', JournalType::Miscellaneous)->first()?->id),
                 Forms\Components\Select::make('currency_id')
                     ->label(__('journal_entry.currency'))
-                    ->relationship('currency', 'name')
                     ->searchable()
                     ->required()
                     ->live()
-                    ->default(Company::first()?->currency_id),
+                    ->default(Company::first()?->currency_id)
+                    ->getSearchResultsUsing(fn(string $search): array =>
+                        Currency::where('is_active', true)
+                            ->where(function ($query) use ($search) {
+                                $searchLower = strtolower($search);
+                                $query->whereRaw('LOWER(code) LIKE ?', ["%{$searchLower}%"])
+                                    ->orWhereRaw('LOWER(symbol) LIKE ?', ["%{$searchLower}%"])
+                                    ->orWhereRaw('LOWER(JSON_UNQUOTE(JSON_EXTRACT(name, "$.en"))) LIKE ?', ["%{$searchLower}%"])
+                                    ->orWhereRaw('LOWER(JSON_UNQUOTE(JSON_EXTRACT(name, "$.ckb"))) LIKE ?', ["%{$searchLower}%"])
+                                    ->orWhereRaw('LOWER(JSON_UNQUOTE(JSON_EXTRACT(name, "$.ar"))) LIKE ?', ["%{$searchLower}%"]);
+                            })
+                            ->limit(50)
+                            ->get()
+                            ->mapWithKeys(fn($currency) => [
+                                $currency->id => $currency->getTranslation('name', app()->getLocale()) . ' (' . $currency->code . ')'
+                            ])
+                            ->toArray()
+                    )
+                    ->getOptionLabelUsing(function ($value): ?string {
+                        $currency = Currency::find($value);
+                        return $currency ? $currency->getTranslation('name', app()->getLocale()) . ' (' . $currency->code . ')' : null;
+                    }),
                 Forms\Components\DatePicker::make('entry_date')
                     ->label(__('journal_entry.entry_date'))
                     ->required()
@@ -95,7 +109,7 @@ class JournalEntryResource extends Resource
                     ->columnSpanFull(),
                 Repeater::make('lines')
                     ->label(__('journal_entry.lines'))
-                    ->disabled(fn (?JournalEntry $record) => $record && $record->status !== 'draft')
+                    ->disabled(fn (?JournalEntry $record) => $record && $record->state !== JournalEntryState::Draft)
                     ->deletable(fn (?JournalEntry $record) => !$record || !$record->is_posted)
                     ->schema([
                         Forms\Components\Select::make('account_id')
@@ -137,7 +151,7 @@ class JournalEntryResource extends Resource
                     ->columns(4)
                     ->columnSpanFull()
                     ->live()
-                    ->defaultItems(0)
+                    ->defaultItems(2)
                     ->afterStateUpdated(function (callable $set, $state) {
                         self::updateTotals($set, $state);
                     }),
@@ -163,9 +177,6 @@ class JournalEntryResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('company.name')
-                    ->label(__('journal_entry.company'))
-                    ->sortable(),
                 Tables\Columns\TextColumn::make('journal.name')
                     ->label(__('journal_entry.journal'))
                     ->sortable(),

@@ -42,7 +42,7 @@ return new class extends Migration
 
             state would be reversed.
              */
-            $table->string('state')->default(JournalEntryState::Posted)->index(); // Add this: draft, posted, reversed
+            $table->string('state')->default(JournalEntryState::Draft)->index(); // Add this: draft, posted, reversed
             $table->foreignId('reversed_entry_id')->nullable()->constrained('journal_entries');
             $table->string('hash', 64)->nullable()->index();
             $table->string('previous_hash', 64)->nullable()->index();

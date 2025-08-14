@@ -3,6 +3,7 @@
 namespace App\Actions\Accounting;
 
 use App\DataTransferObjects\Accounting\CreateJournalEntryDTO;
+use App\Enums\Accounting\JournalEntryState;
 use App\Models\Company;
 use App\Models\Currency;
 use App\Models\JournalEntry;
@@ -51,7 +52,7 @@ class CreateJournalEntryAction
         }
 
         // --- FIX IS HERE: Add $totalDebit and $totalCredit to the 'use' statement ---
-        return DB::transaction(function () use ($dto, $totalDebit, $totalCredit, $currencyCode, $currency) {
+        return DB::transaction(function () use ($dto, $totalDebit, $totalCredit) {
             $journalEntry = JournalEntry::create([
                 'company_id' => $dto->company_id,
                 'journal_id' => $dto->journal_id,
@@ -61,6 +62,7 @@ class CreateJournalEntryAction
                 'description' => $dto->description,
                 'created_by_user_id' => $dto->created_by_user_id,
                 'is_posted' => $dto->is_posted,
+                'state' => $dto->is_posted ? JournalEntryState::Posted : JournalEntryState::Draft, // Set correct state based on is_posted
                 'total_debit' => $totalDebit,
                 'total_credit' => $totalCredit,
                 'source_type' => $dto->source_type,
@@ -81,6 +83,26 @@ class CreateJournalEntryAction
                 // Now, fill the attributes. The MoneyCast on 'debit' and 'credit' will be
                 // triggered here, but it can now successfully call getCurrencyIdAttribute()
                 // because the journalEntry relationship is established.
+
+                // Determine the original currency amount and currency ID
+                $originalAmount = $lineDto->original_currency_amount;
+                $originalCurrencyId = $lineDto->original_currency_id;
+
+                // Fallback logic for backward compatibility
+                if ($originalAmount === null) {
+                    // Use the larger of debit or credit amount in the journal entry's currency
+                    $originalAmount = $lineDto->debit->isPositive() ? $lineDto->debit : $lineDto->credit;
+                    $originalCurrencyId = $journalEntry->currency_id;
+                }
+
+                if ($originalCurrencyId === null) {
+                    // Default to journal entry's currency if not specified
+                    $originalCurrencyId = $journalEntry->currency_id;
+                }
+
+                // Determine exchange rate (fallback to 1.0 if not provided)
+                $exchangeRate = $lineDto->exchange_rate_at_transaction ?? 1.0;
+
                 $line->fill([
                     'account_id' => $lineDto->account_id,
                     'partner_id' => $lineDto->partner_id,
@@ -88,6 +110,9 @@ class CreateJournalEntryAction
                     'description' => $lineDto->description,
                     'debit' => $lineDto->debit,
                     'credit' => $lineDto->credit,
+                    'original_currency_amount' => $originalAmount,
+                    'original_currency_id' => $originalCurrencyId,
+                    'exchange_rate_at_transaction' => $exchangeRate,
                 ]);
 
                 // Finally, save the fully prepared line.

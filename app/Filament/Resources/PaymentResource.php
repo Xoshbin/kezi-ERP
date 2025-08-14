@@ -152,9 +152,6 @@ class PaymentResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('company.name')
-                    ->label(__('payment.table.company.name'))
-                    ->sortable(),
                 Tables\Columns\TextColumn::make('journal.name')
                     ->label(__('payment.table.journal.name'))
                     ->sortable(),

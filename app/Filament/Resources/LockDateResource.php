@@ -52,11 +52,6 @@ class LockDateResource extends Resource
                     ->dehydrated(fn (?LockDate $record) => $record === null), // Only save on create
                 Forms\Components\DatePicker::make('locked_until')
                     ->required(),
-                Forms\Components\Select::make('company_id')
-                    ->relationship('company', 'name')
-                    ->required()
-                    ->default(fn () => \Filament\Facades\Filament::getTenant()?->id)
-                    ->disabled(),
             ]);
     }
 
@@ -66,7 +61,6 @@ class LockDateResource extends Resource
             ->columns([
                 Tables\Columns\TextColumn::make('lock_type')->badge(),
                 Tables\Columns\TextColumn::make('locked_until')->date(),
-                Tables\Columns\TextColumn::make('company.name')->sortable(),
             ])
             ->actions([
                 Tables\Actions\EditAction::make()

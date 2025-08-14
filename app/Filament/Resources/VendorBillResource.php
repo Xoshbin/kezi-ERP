@@ -380,9 +380,6 @@ class VendorBillResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('company.name')
-                    ->label(__('vendor_bill.company'))
-                    ->sortable(),
                 Tables\Columns\TextColumn::make('vendor.name')
                     ->label(__('vendor_bill.vendor'))
                     ->sortable(),
