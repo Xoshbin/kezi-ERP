@@ -19,10 +19,19 @@ class PaymentFactory extends Factory
         return [
             'company_id' => Company::factory(),
             'journal_id' => Journal::factory(),
-            'currency_id' => Currency::factory(),
+            'currency_id' => Currency::firstOrCreate(
+                ['code' => 'IQD'],
+                [
+                    'name' => 'Iraqi Dinar',
+                    'symbol' => 'IQD',
+                    'exchange_rate' => 1.0,
+                    'is_active' => true,
+                    'decimal_places' => 3
+                ]
+            )->id,
             'paid_to_from_partner_id' => Partner::factory(),
             'payment_date' => $this->faker->date(),
-            'amount' => Money::of($this->faker->randomFloat(2, 100, 10000), 'USD'),
+            'amount' => Money::of($this->faker->randomFloat(2, 100, 10000), 'IQD'),
             // Use enum values for clarity and maintainability.
             'payment_type' => $this->faker->randomElement([PaymentType::Inbound, PaymentType::Outbound]),
             'reference' => $this->faker->sentence(3),
