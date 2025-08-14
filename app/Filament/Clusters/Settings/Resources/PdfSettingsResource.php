@@ -10,7 +10,6 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Support\Facades\Auth;
 
 class PdfSettingsResource extends Resource
 {
@@ -103,6 +102,10 @@ class PdfSettingsResource extends Resource
     {
         return $table
             ->columns([
+                Tables\Columns\TextColumn::make('name')
+                    ->label(__('Company Name'))
+                    ->searchable()
+                    ->sortable(),
 
                 Tables\Columns\TextColumn::make('pdf_template')
                     ->label(__('PDF Template'))
