@@ -28,6 +28,9 @@ class CurrencyResource extends Resource
 
     protected static ?string $cluster = Settings::class;
 
+    // Disable tenant scoping since currencies are global entities used across companies
+    protected static bool $isScopedToTenant = false;
+
     public static function getLabel(): ?string
     {
         return __('currency.label');
