@@ -102,7 +102,6 @@ class JournalEntryResource extends Resource
                             ->required()
                             ->currencyField('../../currency_id')
                             ->numeric()
-                            ->default(0)
                             ->columnSpan(1)
                             ->live(onBlur: true),
                         MoneyInput::make('credit')
@@ -110,7 +109,6 @@ class JournalEntryResource extends Resource
                             ->required()
                             ->currencyField('../../currency_id')
                             ->numeric()
-                            ->default(0)
                             ->columnSpan(1)
                             ->live(onBlur: true),
                         Forms\Components\Select::make('partner_id')
