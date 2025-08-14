@@ -3,6 +3,7 @@
 namespace App\Actions\Accounting;
 
 use App\DataTransferObjects\Accounting\CreateJournalEntryDTO;
+use App\Enums\Accounting\JournalEntryState;
 use App\Models\Company;
 use App\Models\Currency;
 use App\Models\JournalEntry;
@@ -51,7 +52,7 @@ class CreateJournalEntryAction
         }
 
         // --- FIX IS HERE: Add $totalDebit and $totalCredit to the 'use' statement ---
-        return DB::transaction(function () use ($dto, $totalDebit, $totalCredit, $currencyCode, $currency) {
+        return DB::transaction(function () use ($dto, $totalDebit, $totalCredit) {
             $journalEntry = JournalEntry::create([
                 'company_id' => $dto->company_id,
                 'journal_id' => $dto->journal_id,
@@ -61,6 +62,7 @@ class CreateJournalEntryAction
                 'description' => $dto->description,
                 'created_by_user_id' => $dto->created_by_user_id,
                 'is_posted' => $dto->is_posted,
+                'state' => JournalEntryState::Draft, // Explicitly set state to Draft
                 'total_debit' => $totalDebit,
                 'total_credit' => $totalCredit,
                 'source_type' => $dto->source_type,
