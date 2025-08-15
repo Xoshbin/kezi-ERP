@@ -26,6 +26,8 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class UserResource extends Resource
 {
+    protected static bool $isScopedToTenant = false;
+
     protected static ?string $model = User::class;
 
     protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-users';
@@ -54,7 +56,7 @@ class UserResource extends Resource
         return $schema
             ->components([
                 Select::make('company_id')
-                    ->relationship('company', 'name')
+                    ->relationship('companies', 'name')
                     ->label(__('user.form.company.label')),
                 TextInput::make('name')
                     ->label(__('user.form.name.label'))
