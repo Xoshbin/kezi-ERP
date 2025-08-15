@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use Exception;
 use App\Models\Company;
 use App\Models\User;
 use Illuminate\Database\Seeder;
@@ -21,7 +22,7 @@ class UserSeeder extends Seeder
 
         // If the company is not found, throw an exception.
         if (!$company) {
-            throw new \Exception('Company "Jmeryar Solutions" not found. Please run the CompanySeeder first.');
+            throw new Exception('Company "Jmeryar Solutions" not found. Please run the CompanySeeder first.');
         }
 
         // Create the admin user

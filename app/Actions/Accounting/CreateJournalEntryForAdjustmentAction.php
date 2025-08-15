@@ -2,6 +2,7 @@
 
 namespace App\Actions\Accounting;
 
+use RuntimeException;
 use App\DataTransferObjects\Accounting\CreateJournalEntryDTO;
 use App\DataTransferObjects\Accounting\CreateJournalEntryLineDTO;
 use App\Models\AdjustmentDocument;
@@ -29,7 +30,7 @@ class CreateJournalEntryForAdjustmentAction
         $salesJournalId = $company->default_sales_journal_id;
 
         if (!$arAccountId || !$salesDiscountAccountId || !$taxAccountId || !$salesJournalId) {
-            throw new \RuntimeException('Default accounting accounts for adjustments are not configured for this company.');
+            throw new RuntimeException('Default accounting accounts for adjustments are not configured for this company.');
         }
 
         // 3. Build the journal entry lines based on credit note accounting rules (reversing a sale).

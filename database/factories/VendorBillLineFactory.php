@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\VendorBillLine;
 use App\Models\Tax;
 use Brick\Money\Money;
 use App\Models\Account;
@@ -11,7 +12,7 @@ use App\Models\AnalyticAccount;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\VendorBillLine>
+ * @extends Factory<VendorBillLine>
  */
 class VendorBillLineFactory extends Factory
 {

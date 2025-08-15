@@ -2,6 +2,9 @@
 
 namespace App\Models;
 
+use Illuminate\Support\Carbon;
+use Database\Factories\InvoiceLineFactory;
+use Illuminate\Database\Eloquent\Builder;
 use App\Casts\MoneyCast;
 use App\Observers\InvoiceLineObserver;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
@@ -20,29 +23,29 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property float $unit_price
  * @property float $subtotal
  * @property float $total_line_tax
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \App\Models\AnalyticAccount|null $analyticAccount
- * @property-read \App\Models\Account $incomeAccount
- * @property-read \App\Models\Invoice $invoice
- * @property-read \App\Models\Product|null $product
- * @property-read \App\Models\Tax|null $tax
- * @method static \Database\Factories\InvoiceLineFactory factory($count = null, $state = [])
- * @method static \Illuminate\Database\Eloquent\Builder<static>|InvoiceLine newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|InvoiceLine newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|InvoiceLine query()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|InvoiceLine whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|InvoiceLine whereDescription($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|InvoiceLine whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|InvoiceLine whereIncomeAccountId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|InvoiceLine whereInvoiceId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|InvoiceLine whereProductId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|InvoiceLine whereQuantity($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|InvoiceLine whereSubtotal($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|InvoiceLine whereTaxId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|InvoiceLine whereTotalLineTax($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|InvoiceLine whereUnitPrice($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|InvoiceLine whereUpdatedAt($value)
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property-read AnalyticAccount|null $analyticAccount
+ * @property-read Account $incomeAccount
+ * @property-read Invoice $invoice
+ * @property-read Product|null $product
+ * @property-read Tax|null $tax
+ * @method static InvoiceLineFactory factory($count = null, $state = [])
+ * @method static Builder<static>|InvoiceLine newModelQuery()
+ * @method static Builder<static>|InvoiceLine newQuery()
+ * @method static Builder<static>|InvoiceLine query()
+ * @method static Builder<static>|InvoiceLine whereCreatedAt($value)
+ * @method static Builder<static>|InvoiceLine whereDescription($value)
+ * @method static Builder<static>|InvoiceLine whereId($value)
+ * @method static Builder<static>|InvoiceLine whereIncomeAccountId($value)
+ * @method static Builder<static>|InvoiceLine whereInvoiceId($value)
+ * @method static Builder<static>|InvoiceLine whereProductId($value)
+ * @method static Builder<static>|InvoiceLine whereQuantity($value)
+ * @method static Builder<static>|InvoiceLine whereSubtotal($value)
+ * @method static Builder<static>|InvoiceLine whereTaxId($value)
+ * @method static Builder<static>|InvoiceLine whereTotalLineTax($value)
+ * @method static Builder<static>|InvoiceLine whereUnitPrice($value)
+ * @method static Builder<static>|InvoiceLine whereUpdatedAt($value)
  * @mixin \Eloquent
  */
 #[ObservedBy([InvoiceLineObserver::class])]

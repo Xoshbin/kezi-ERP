@@ -2,6 +2,10 @@
 
 namespace App\Services;
 
+use App\Models\Company;
+use Carbon\Carbon;
+use App\Models\VendorBillLine;
+use Exception;
 use App\Models\User;
 use RuntimeException;
 use App\Models\AuditLog;
@@ -36,7 +40,7 @@ class VendorBillService
             return;
         }
 
-        $this->lockDateService->enforce(\App\Models\Company::find($vendorBill->company_id), \Carbon\Carbon::parse($vendorBill->bill_date));
+        $this->lockDateService->enforce(Company::find($vendorBill->company_id), Carbon::parse($vendorBill->bill_date));
 
 
         Gate::forUser($user)->authorize('post', $vendorBill);
@@ -75,7 +79,7 @@ class VendorBillService
     /**
      * Creates a stock move for a given vendor bill line.
      */
-    private function createStockMoveForLine(VendorBill $vendorBill, \App\Models\VendorBillLine $line, User $user): void
+    private function createStockMoveForLine(VendorBill $vendorBill, VendorBillLine $line, User $user): void
     {
         $company = $vendorBill->company;
 
@@ -106,7 +110,7 @@ class VendorBillService
      */
     public function delete(VendorBill $vendorBill): bool
     {
-        $this->lockDateService->enforce(\App\Models\Company::find($vendorBill->company_id), \Carbon\Carbon::parse($vendorBill->bill_date));
+        $this->lockDateService->enforce(Company::find($vendorBill->company_id), Carbon::parse($vendorBill->bill_date));
 
         if ($vendorBill->status !== VendorBillStatus::Draft) {
             throw new DeletionNotAllowedException(
@@ -127,13 +131,13 @@ class VendorBillService
         Gate::forUser($user)->authorize('cancel', $vendorBill);
 
         if ($vendorBill->status !== VendorBillStatus::Posted) {
-            throw new \Exception('Only posted vendor bills can be cancelled.');
+            throw new Exception('Only posted vendor bills can be cancelled.');
         }
 
         DB::transaction(function () use ($vendorBill, $user, $reason) {
             $originalEntry = $vendorBill->journalEntry;
             if (!$originalEntry) {
-                throw new \Exception('Cannot cancel a bill without a journal entry.');
+                throw new Exception('Cannot cancel a bill without a journal entry.');
             }
 
             // Step 1: Create a detailed audit log *before* making changes.
@@ -172,8 +176,8 @@ class VendorBillService
     {
         Gate::forUser($user)->authorize('resetToDraft', $vendorBill);
 
-        if ($vendorBill->status !== \App\Enums\Purchases\VendorBillStatus::Posted) {
-            throw new \Exception('Only posted vendor bills can be reset to draft.');
+        if ($vendorBill->status !== VendorBillStatus::Posted) {
+            throw new Exception('Only posted vendor bills can be reset to draft.');
         }
 
         DB::transaction(function () use ($vendorBill, $user, $reason) {
@@ -191,7 +195,7 @@ class VendorBillService
             ];
 
             $vendorBill->update([
-                'status' => \App\Enums\Purchases\VendorBillStatus::Draft,
+                'status' => VendorBillStatus::Draft,
                 'posted_at' => null,
                 'journal_entry_id' => null,
                 'reset_to_draft_log' => array_merge($vendorBill->reset_to_draft_log ?? [], [$logEntry]),

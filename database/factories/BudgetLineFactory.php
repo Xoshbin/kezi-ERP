@@ -2,10 +2,12 @@
 
 namespace Database\Factories;
 
+use App\Models\Budget;
+use App\Models\BudgetLine;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\BudgetLine>
+ * @extends Factory<BudgetLine>
  */
 class BudgetLineFactory extends Factory
 {
@@ -17,7 +19,7 @@ class BudgetLineFactory extends Factory
     public function definition(): array
     {
         return [
-            'budget_id' => \App\Models\Budget::factory(),
+            'budget_id' => Budget::factory(),
             'budgeted_amount' => $this->faker->numberBetween(1000, 100000),
             'achieved_amount' => $this->faker->numberBetween(0, 100000),
             'committed_amount' => $this->faker->numberBetween(0, 100000),

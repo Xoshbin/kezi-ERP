@@ -2,13 +2,13 @@
 
 namespace App\Filament\Pages\Reports;
 
+use Filament\Schemas\Schema;
+use Filament\Schemas\Components\Section;
 use App\Models\Company;
 use App\Services\Reports\AgedPayableService;
 use App\Support\NumberFormatter;
 use Carbon\Carbon;
 use Filament\Forms\Components\DatePicker;
-use Filament\Forms\Components\Section;
-use Filament\Forms\Form;
 use Filament\Pages\Page;
 use Filament\Actions\Action;
 use Filament\Facades\Filament;
@@ -16,9 +16,9 @@ use Illuminate\Contracts\Support\Htmlable;
 
 class ViewAgedPayables extends Page
 {
-    protected static ?string $navigationIcon = 'heroicon-o-clock';
-    protected static string $view = 'filament.pages.reports.view-aged-payables';
-    protected static ?string $navigationGroup = null;
+    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-clock';
+    protected string $view = 'filament.pages.reports.view-aged-payables';
+    protected static string | \UnitEnum | null $navigationGroup = null;
 
     public static function getNavigationGroup(): ?string
     {
@@ -51,10 +51,10 @@ class ViewAgedPayables extends Page
         ]);
     }
 
-    public function form(Form $form): Form
+    public function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
+        return $schema
+            ->components([
                 Section::make(__('reports.report_parameters'))
                     ->schema([
                         DatePicker::make('asOfDate')

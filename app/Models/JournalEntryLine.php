@@ -2,13 +2,15 @@
 
 namespace App\Models;
 
+use Brick\Money\Money;
+use Illuminate\Support\Carbon;
+use Illuminate\Database\Eloquent\Builder;
 use App\Casts\MoneyCast;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use RuntimeException; // Utilized for explicit enforcement of immutability and data integrity.
-
 /**
  * Class JournalEntryLine
  *
@@ -23,33 +25,33 @@ use RuntimeException; // Utilized for explicit enforcement of immutability and d
  * @property int|null $partner_id
  * @property int|null $currency_id
  * @property int|null $analytic_account_id
- * @property \Brick\Money\Money $debit
- * @property \Brick\Money\Money $credit
+ * @property Money $debit
+ * @property Money $credit
  * @property float $original_currency_amount
  * @property string $exchange_rate_at_transaction
  * @property string|null $description
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \App\Models\Account $account
- * @property-read \App\Models\AnalyticAccount|null $analyticAccount
- * @property-read \App\Models\JournalEntry $journalEntry
- * @property-read \App\Models\Partner|null $partner
- * @method static \Illuminate\Database\Eloquent\Builder<static>|JournalEntryLine newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|JournalEntryLine newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|JournalEntryLine query()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|JournalEntryLine whereAccountId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|JournalEntryLine whereAnalyticAccountId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|JournalEntryLine whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|JournalEntryLine whereCredit($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|JournalEntryLine whereCurrencyId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|JournalEntryLine whereDebit($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|JournalEntryLine whereDescription($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|JournalEntryLine whereExchangeRateAtTransaction($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|JournalEntryLine whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|JournalEntryLine whereJournalEntryId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|JournalEntryLine whereOriginalCurrencyAmount($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|JournalEntryLine wherePartnerId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|JournalEntryLine whereUpdatedAt($value)
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property-read Account $account
+ * @property-read AnalyticAccount|null $analyticAccount
+ * @property-read JournalEntry $journalEntry
+ * @property-read Partner|null $partner
+ * @method static Builder<static>|JournalEntryLine newModelQuery()
+ * @method static Builder<static>|JournalEntryLine newQuery()
+ * @method static Builder<static>|JournalEntryLine query()
+ * @method static Builder<static>|JournalEntryLine whereAccountId($value)
+ * @method static Builder<static>|JournalEntryLine whereAnalyticAccountId($value)
+ * @method static Builder<static>|JournalEntryLine whereCreatedAt($value)
+ * @method static Builder<static>|JournalEntryLine whereCredit($value)
+ * @method static Builder<static>|JournalEntryLine whereCurrencyId($value)
+ * @method static Builder<static>|JournalEntryLine whereDebit($value)
+ * @method static Builder<static>|JournalEntryLine whereDescription($value)
+ * @method static Builder<static>|JournalEntryLine whereExchangeRateAtTransaction($value)
+ * @method static Builder<static>|JournalEntryLine whereId($value)
+ * @method static Builder<static>|JournalEntryLine whereJournalEntryId($value)
+ * @method static Builder<static>|JournalEntryLine whereOriginalCurrencyAmount($value)
+ * @method static Builder<static>|JournalEntryLine wherePartnerId($value)
+ * @method static Builder<static>|JournalEntryLine whereUpdatedAt($value)
  * @mixin \Eloquent
  */
 class JournalEntryLine extends Model
@@ -240,7 +242,7 @@ class JournalEntryLine extends Model
         }
 
         // If we have no relationship and no foreign key, we cannot determine the currency.
-        throw new \RuntimeException('Could not determine currency for JournalEntryLine.');
+        throw new RuntimeException('Could not determine currency for JournalEntryLine.');
     }
 
 }

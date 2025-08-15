@@ -2,6 +2,7 @@
 
 namespace App\Actions\Sales;
 
+use App\Enums\Inventory\StockLocationType;
 use App\Actions\Inventory\CreateStockMoveAction;
 use App\DataTransferObjects\Inventory\CreateStockMoveDTO;
 use App\DataTransferObjects\Sales\CreateStockMovesForInvoiceDTO;
@@ -72,13 +73,13 @@ class CreateStockMovesForInvoiceAction
         // Get stock locations - use company defaults or fallback to any available locations
         $warehouseLocation = $invoice->company->defaultStockLocation
             ?? StockLocation::where('company_id', $invoice->company_id)
-                ->where('type', \App\Enums\Inventory\StockLocationType::Internal)
+                ->where('type', StockLocationType::Internal)
                 ->first()
             ?? StockLocation::where('name', 'Warehouse')->first();
 
         $vendorLocation = $invoice->company->vendorLocation
             ?? StockLocation::where('company_id', $invoice->company_id)
-                ->where('type', \App\Enums\Inventory\StockLocationType::Vendor)
+                ->where('type', StockLocationType::Vendor)
                 ->first()
             ?? StockLocation::where('name', 'Vendors')->first();
 

@@ -2,13 +2,14 @@
 
 namespace App\Providers\Filament;
 
+use Filament\Pages\Dashboard;
+use LaraZeus\SpatieTranslatable\SpatieTranslatablePlugin;
 use Filament\Pages;
 use Filament\Panel;
 use Filament\Widgets;
 use Filament\PanelProvider;
 use Filament\Support\Colors\Color;
 use Filament\Http\Middleware\Authenticate;
-use Filament\SpatieLaravelTranslatablePlugin;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\Cookie\Middleware\EncryptCookies;
 use Filament\Http\Middleware\AuthenticateSession;
@@ -36,7 +37,7 @@ class JmeryarPanelProvider extends PanelProvider
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')
             ->pages([
-                Pages\Dashboard::class,
+                Dashboard::class,
             ])
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\\Filament\\Widgets')
             ->discoverClusters(in: app_path('Filament/Clusters'), for: 'App\\Filament\\Clusters')
@@ -59,17 +60,8 @@ class JmeryarPanelProvider extends PanelProvider
             ])
             ->viteTheme('resources/js/filament/jmeryar/theme.js')
             ->plugins([
-                EnvironmentIndicatorPlugin::make()
-                ->showGitBranch()
-                ->showDebugModeWarningInProduction(),
-                SpatieLaravelTranslatablePlugin::make()
+                SpatieTranslatablePlugin::make()
                     ->defaultLocales(['en', 'ckb', 'ar']),
-                FilamentDeveloperLoginsPlugin::make()
-                    ->enabled(app()->environment('local'))
-                    ->users([
-                        'Admin' => 'admin@jmeryar.com',
-                        'User' => 'user@jmeryar.com',
-                    ])
             ]);
     }
 }

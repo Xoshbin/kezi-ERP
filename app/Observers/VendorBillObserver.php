@@ -2,6 +2,8 @@
 
 namespace App\Observers;
 
+use RuntimeException;
+use Illuminate\Support\Facades\DB;
 use App\Enums\Inventory\StockMoveStatus;
 use App\Enums\Inventory\StockMoveType;
 use App\Enums\Products\ProductType;
@@ -40,7 +42,7 @@ class VendorBillObserver
         $company = $vendorBill->company->fresh();
 
         if (!$company->vendorLocation || !$company->defaultStockLocation) {
-            throw new \RuntimeException("Default Vendor or Stock Location is not configured for Company ID: {$company->id}.");
+            throw new RuntimeException("Default Vendor or Stock Location is not configured for Company ID: {$company->id}.");
         }
 
         $currency = $vendorBill->currency;
@@ -72,7 +74,7 @@ class VendorBillObserver
             : Money::zero($currency->code);
 
         // Bypass Eloquent and update the database directly.
-        \Illuminate\Support\Facades\DB::table('products')
+        DB::table('products')
             ->where('id', $product->id)
             ->update([
                 'quantity_on_hand' => $totalQuantity,

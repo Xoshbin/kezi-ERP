@@ -1,13 +1,13 @@
 <x-filament-panels::page>
     <div class="space-y-6">
         <!-- Filter Form -->
-        <x-filament-panels::form wire:submit="generateReport">
+        <form wire:submit="generateReport">
             {{ $this->form }}
-        </x-filament-panels::form>
+        </form>
 
         <!-- Report Display -->
         @if($reportData)
-            <div class="bg-white dark:bg-gray-800 shadow rounded-lg p-6">
+            <div class="bg-white dark:bg-gray-800 shadow-sm rounded-lg p-6">
                 <div class="mb-6">
                     <h2 class="text-xl font-semibold text-gray-900 dark:text-white">
                         {{ __('reports.tax_report') }}

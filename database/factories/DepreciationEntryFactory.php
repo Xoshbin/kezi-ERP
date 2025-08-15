@@ -10,7 +10,7 @@ use App\Enums\Assets\DepreciationEntryStatus;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\DepreciationEntry>
+ * @extends Factory<DepreciationEntry>
  */
 class DepreciationEntryFactory extends Factory
 {
