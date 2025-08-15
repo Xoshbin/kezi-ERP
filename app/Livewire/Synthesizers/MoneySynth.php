@@ -38,7 +38,7 @@ class MoneySynth extends Synth
      * "Dehydrates" the Money object into a simple payload and metadata.
      * This is called when PHP data is being sent TO the browser.
      *
-     * @param \Brick\Money\Money $value The Money object instance.
+     * @param Money $value The Money object instance.
      * @return array A tuple array: [$payload, $meta] that the browser can understand.
      */
     public function dehydrate($value)
@@ -59,7 +59,7 @@ class MoneySynth extends Synth
      * This is called when data is coming FROM the browser back to the server.
      *
      * @param array $payload The simple array from the frontend.
-     * @return \Brick\Money\Money|null
+     * @return Money|null
      */
     public function hydrate($payload)
     {

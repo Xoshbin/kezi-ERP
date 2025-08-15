@@ -2,6 +2,11 @@
 
 namespace App\Models;
 
+use Illuminate\Support\Carbon;
+use Brick\Money\Money;
+use Illuminate\Database\Eloquent\Collection;
+use Database\Factories\AssetFactory;
+use Illuminate\Database\Eloquent\Builder;
 use App\Casts\MoneyCast;
 use App\Observers\AssetObserver;
 use App\Enums\Assets\AssetStatus;
@@ -28,38 +33,38 @@ use Illuminate\Database\Eloquent\Attributes\ObservedBy;
  * @property int $depreciation_expense_account_id
  * @property int $accumulated_depreciation_account_id
  * @property string $name
- * @property \Illuminate\Support\Carbon $purchase_date
- * @property \Brick\Money\Money $purchase_value
- * @property \Brick\Money\Money $salvage_value
+ * @property Carbon $purchase_date
+ * @property Money $purchase_value
+ * @property Money $salvage_value
  * @property int $useful_life_years
  * @property string $depreciation_method
  * @property string $status
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \App\Models\Account $accumulatedDepreciationAccount
- * @property-read \App\Models\Account $assetAccount
- * @property-read \App\Models\Company $company
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\DepreciationEntry> $depreciationEntries
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property-read Account $accumulatedDepreciationAccount
+ * @property-read Account $assetAccount
+ * @property-read Company $company
+ * @property-read Collection<int, DepreciationEntry> $depreciationEntries
  * @property-read int|null $depreciation_entries_count
- * @property-read \App\Models\Account $depreciationExpenseAccount
- * @method static \Database\Factories\AssetFactory factory($count = null, $state = [])
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Asset newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Asset newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Asset query()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Asset whereAccumulatedDepreciationAccountId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Asset whereAssetAccountId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Asset whereCompanyId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Asset whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Asset whereDepreciationExpenseAccountId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Asset whereDepreciationMethod($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Asset whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Asset whereName($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Asset wherePurchaseDate($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Asset wherePurchaseValue($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Asset whereSalvageValue($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Asset whereStatus($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Asset whereUpdatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Asset whereUsefulLifeYears($value)
+ * @property-read Account $depreciationExpenseAccount
+ * @method static AssetFactory factory($count = null, $state = [])
+ * @method static Builder<static>|Asset newModelQuery()
+ * @method static Builder<static>|Asset newQuery()
+ * @method static Builder<static>|Asset query()
+ * @method static Builder<static>|Asset whereAccumulatedDepreciationAccountId($value)
+ * @method static Builder<static>|Asset whereAssetAccountId($value)
+ * @method static Builder<static>|Asset whereCompanyId($value)
+ * @method static Builder<static>|Asset whereCreatedAt($value)
+ * @method static Builder<static>|Asset whereDepreciationExpenseAccountId($value)
+ * @method static Builder<static>|Asset whereDepreciationMethod($value)
+ * @method static Builder<static>|Asset whereId($value)
+ * @method static Builder<static>|Asset whereName($value)
+ * @method static Builder<static>|Asset wherePurchaseDate($value)
+ * @method static Builder<static>|Asset wherePurchaseValue($value)
+ * @method static Builder<static>|Asset whereSalvageValue($value)
+ * @method static Builder<static>|Asset whereStatus($value)
+ * @method static Builder<static>|Asset whereUpdatedAt($value)
+ * @method static Builder<static>|Asset whereUsefulLifeYears($value)
  * @mixin \Eloquent
  */
 #[ObservedBy([AssetObserver::class])]
@@ -123,12 +128,11 @@ class Asset extends Model
     | specifically the company they belong to, the relevant general ledger
     | accounts, and their associated depreciation schedules.
     */
-
     /**
      * Get the company that owns this asset.
      * An asset is always associated with a specific company in a multi-company setup. [1]
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
     public function company(): BelongsTo
     {
@@ -139,7 +143,7 @@ class Asset extends Model
      * Get the general ledger account (balance sheet) for this asset.
      * This links the asset to its representation on the company's balance sheet. [1]
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
     public function assetAccount(): BelongsTo
     {
@@ -150,7 +154,7 @@ class Asset extends Model
      * Get the depreciation expense account (profit & loss) for this asset.
      * This account records the periodic expense of the asset's wear and tear. [1]
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
     public function depreciationExpenseAccount(): BelongsTo
     {
@@ -161,7 +165,7 @@ class Asset extends Model
      * Get the accumulated depreciation account (contra-asset) for this asset.
      * This account accumulates the total depreciation charged against the asset over its life. [1]
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
     public function accumulatedDepreciationAccount(): BelongsTo
     {
@@ -172,7 +176,7 @@ class Asset extends Model
      * Get the depreciation entries associated with this asset.
      * Each asset generates multiple depreciation entries over its useful life. [1]
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return HasMany
      */
     public function depreciationEntries(): HasMany
     {
@@ -187,7 +191,7 @@ class Asset extends Model
      * Get the parent source model (e.g., VendorBill).
      * This relationship links the asset to its acquisition document.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\MorphTo
+     * @return MorphTo
      */
     public function source(): MorphTo
     {

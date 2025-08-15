@@ -2,10 +2,11 @@
 
 namespace Database\Factories;
 
+use App\Models\AnalyticPlan;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\AnalyticPlan>
+ * @extends Factory<AnalyticPlan>
  */
 class AnalyticPlanFactory extends Factory
 {

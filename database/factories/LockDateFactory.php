@@ -2,11 +2,12 @@
 
 namespace Database\Factories;
 
+use App\Models\LockDate;
 use App\Models\Company;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\LockDate>
+ * @extends Factory<LockDate>
  */
 class LockDateFactory extends Factory
 {

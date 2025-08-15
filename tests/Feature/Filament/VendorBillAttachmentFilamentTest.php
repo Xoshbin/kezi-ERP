@@ -2,7 +2,7 @@
 
 namespace Tests\Feature\Filament;
 
-use App\Filament\Resources\VendorBillResource;
+use App\Filament\Resources\VendorBills\VendorBillResource;
 use App\Models\Account;
 use App\Models\Company;
 use App\Models\Currency;
@@ -55,7 +55,7 @@ class VendorBillAttachmentFilamentTest extends TestCase
     {
         $file = UploadedFile::fake()->create('test-invoice.pdf', 100, 'application/pdf');
 
-        Livewire::test(VendorBillResource\Pages\CreateVendorBill::class)
+        Livewire::test(VendorBills\Pages\CreateVendorBill::class)
             ->fillForm([
                 'company_id' => $this->company->id,
                 'vendor_id' => $this->vendor->id,

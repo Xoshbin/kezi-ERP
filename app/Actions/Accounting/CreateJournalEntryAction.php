@@ -2,6 +2,8 @@
 
 namespace App\Actions\Accounting;
 
+use Exception;
+use App\Models\JournalEntryLine;
 use App\DataTransferObjects\Accounting\CreateJournalEntryDTO;
 use App\Models\Company;
 use App\Models\Currency;
@@ -26,7 +28,7 @@ class CreateJournalEntryAction
 
         $currency = Currency::find($dto->currency_id);
         if (!$currency) {
-            throw new \Exception("Currency with ID {$dto->currency_id} not found.");
+            throw new Exception("Currency with ID {$dto->currency_id} not found.");
         }
         $currencyCode = $currency->code;
 
@@ -71,7 +73,7 @@ class CreateJournalEntryAction
             $journalEntry = $journalEntry->fresh()->load('currency');
 
             foreach ($dto->lines as $lineDto) {
-                $line = new \App\Models\JournalEntryLine();
+                $line = new JournalEntryLine();
 
                 // First, establish the relationship. This makes the parent's context (like currency)
                 // available to the line model *before* any attributes are set. This is the key

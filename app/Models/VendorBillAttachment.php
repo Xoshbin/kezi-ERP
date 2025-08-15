@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Support\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -15,10 +16,10 @@ use Illuminate\Support\Facades\Storage;
  * @property int $file_size
  * @property string $mime_type
  * @property int $uploaded_by_user_id
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \App\Models\VendorBill $vendorBill
- * @property-read \App\Models\User $uploadedBy
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property-read VendorBill $vendorBill
+ * @property-read User $uploadedBy
  */
 class VendorBillAttachment extends Model
 {
@@ -59,7 +60,7 @@ class VendorBillAttachment extends Model
     /**
      * Get the vendor bill that owns the attachment.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
     public function vendorBill(): BelongsTo
     {
@@ -69,7 +70,7 @@ class VendorBillAttachment extends Model
     /**
      * Get the user who uploaded the attachment.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
     public function uploadedBy(): BelongsTo
     {

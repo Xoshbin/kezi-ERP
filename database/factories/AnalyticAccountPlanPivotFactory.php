@@ -2,10 +2,11 @@
 
 namespace Database\Factories;
 
+use App\Models\AnalyticAccountPlanPivot;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\AnalyticAccountPlanPivot>
+ * @extends Factory<AnalyticAccountPlanPivot>
  */
 class AnalyticAccountPlanPivotFactory extends Factory
 {

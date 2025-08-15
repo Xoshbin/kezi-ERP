@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Enums\Accounting\AccountType;
 use App\Models\Account;
 use App\Models\Company;
 use Illuminate\Database\Eloquent\Factories\Factory;
@@ -30,7 +31,7 @@ class AccountFactory extends Factory
             // If a code hasn't been explicitly set by a state, generate it
             // based on the account's final type. This is our single source of truth.
             if (empty($account->code)) {
-                $typeValue = $account->type instanceof \App\Enums\Accounting\AccountType
+                $typeValue = $account->type instanceof AccountType
                     ? $account->type->value
                     : $account->type;
                 $account->code = $this->generateCodeForType($typeValue);

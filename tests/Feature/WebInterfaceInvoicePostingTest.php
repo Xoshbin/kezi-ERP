@@ -7,7 +7,7 @@ use App\Models\User;
 use App\Models\Invoice;
 use App\Models\JournalEntry;
 use App\Enums\Sales\InvoiceStatus;
-use App\Filament\Resources\InvoiceResource;
+use App\Filament\Resources\Invoices\InvoiceResource;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Livewire\Livewire;
 
@@ -40,7 +40,7 @@ class WebInterfaceInvoicePostingTest extends TestCase
         // Post each invoice one by one (simulating the web interface scenario)
         foreach ($draftInvoices as $invoice) {
             // Simulate the web interface posting action using Livewire
-            Livewire::test(InvoiceResource\Pages\EditInvoice::class, [
+            Livewire::test(Invoices\Pages\EditInvoice::class, [
                 'record' => $invoice->getRouteKey(),
             ])
                 ->callAction('confirm')
@@ -109,7 +109,7 @@ class WebInterfaceInvoicePostingTest extends TestCase
         // Post all invoices rapidly (simulating the original error scenario)
         foreach ($draftInvoices as $invoice) {
             // Use Livewire to simulate the web interface action
-            Livewire::test(InvoiceResource\Pages\EditInvoice::class, [
+            Livewire::test(Invoices\Pages\EditInvoice::class, [
                 'record' => $invoice->getRouteKey(),
             ])
                 ->callAction('confirm')

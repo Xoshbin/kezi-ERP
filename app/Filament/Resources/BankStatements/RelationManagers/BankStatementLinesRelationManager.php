@@ -1,0 +1,120 @@
+<?php
+
+namespace App\Filament\Resources\BankStatements\RelationManagers;
+
+use Filament\Schemas\Schema;
+use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Toggle;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Columns\IconColumn;
+use Filament\Actions\CreateAction;
+use Filament\Actions\EditAction;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\Action;
+use Exception;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteBulkAction;
+use App\Actions\Accounting\ReverseJournalEntryAction;
+use App\Enums\Accounting\JournalEntryState;
+use Filament\Forms;
+use Filament\Notifications\Notification;
+use Filament\Resources\RelationManagers\RelationManager;
+use Filament\Tables;
+use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Support\Facades\Gate;
+
+class BankStatementLinesRelationManager extends RelationManager
+{
+    protected static string $relationship = 'bankStatementLines';
+
+    protected static ?string $title = 'Bank Statement Lines';
+
+    public function form(Schema $schema): Schema
+    {
+        return $schema
+            ->components([
+                DatePicker::make('date')
+                    ->label(__('bank_statement.date'))
+                    ->required(),
+                TextInput::make('description')
+                    ->label(__('bank_statement.description'))
+                    ->required()
+                    ->maxLength(255),
+                TextInput::make('partner_name')
+                    ->label(__('bank_statement.partner_name'))
+                    ->maxLength(255),
+                TextInput::make('amount')
+                    ->label(__('bank_statement.amount'))
+                    ->required()
+                    ->numeric(),
+                Toggle::make('is_reconciled')
+                    ->label(__('bank_statement.is_reconciled'))
+                    ->required(),
+            ]);
+    }
+
+    public function table(Table $table): Table
+    {
+        return $table
+            ->recordTitleAttribute(null)
+            ->modifyQueryUsing(fn (Builder $query) => $query->with('journalEntry'))
+            ->columns([
+                TextColumn::make('date')
+                    ->label(__('bank_statement.date'))
+                    ->date(),
+                TextColumn::make('description')
+                    ->label(__('bank_statement.description')),
+                TextColumn::make('partner_name')
+                    ->label(__('bank_statement.partner_name')),
+                TextColumn::make('amount')
+                    ->label(__('bank_statement.amount')),
+                IconColumn::make('is_reconciled')
+                    ->label(__('bank_statement.is_reconciled'))
+                    ->boolean(),
+            ])
+            ->filters([
+                //
+            ])
+            ->headerActions([
+                CreateAction::make(),
+            ])
+            ->recordActions([
+                EditAction::make(),
+                DeleteAction::make(),
+                Action::make('reverse')
+                    ->label('Reverse Write-Off')
+                    ->icon('heroicon-o-arrow-uturn-left')
+                    ->color('danger')
+                    ->visible(fn ($record) => $record->is_reconciled && $record->journalEntry?->state === JournalEntryState::Posted)
+                    ->authorize(fn ($record) => Gate::allows('reverse', $record->journalEntry))
+                    ->requiresConfirmation()
+                    ->modalHeading('Reverse Write-Off')
+                    ->modalDescription('Are you sure you want to reverse this write-off? This will create a reversing journal entry and mark the bank statement line as unreconciled.')
+                    ->action(function ($record) {
+                        try {
+                            $reverseAction = app(ReverseJournalEntryAction::class);
+                            $reverseAction->execute($record->journalEntry);
+
+                            Notification::make()
+                                ->title('Write-off reversed successfully')
+                                ->success()
+                                ->send();
+                        } catch (Exception $e) {
+                            Notification::make()
+                                ->title('Error reversing write-off')
+                                ->body($e->getMessage())
+                                ->danger()
+                                ->send();
+                        }
+                    }),
+            ])
+            ->toolbarActions([
+                BulkActionGroup::make([
+                    DeleteBulkAction::make(),
+                ]),
+            ]);
+    }
+}

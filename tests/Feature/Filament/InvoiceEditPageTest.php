@@ -1,6 +1,6 @@
 <?php
 
-use App\Filament\Resources\InvoiceResource;
+use App\Filament\Resources\Invoices\InvoiceResource;
 use App\Models\Invoice;
 use App\Models\User;
 use App\Models\Company;
@@ -43,7 +43,7 @@ test('edit page shows pdf actions for draft invoice', function () {
 
     // Action
     $component = Livewire::actingAs($this->user)
-        ->test(InvoiceResource\Pages\EditInvoice::class, [
+        ->test(Invoices\Pages\EditInvoice::class, [
             'record' => $invoice->getRouteKey(),
         ]);
 
@@ -69,7 +69,7 @@ test('edit page shows pdf actions for posted invoice', function () {
 
     // Action
     $component = Livewire::actingAs($this->user)
-        ->test(InvoiceResource\Pages\EditInvoice::class, [
+        ->test(Invoices\Pages\EditInvoice::class, [
             'record' => $invoice->getRouteKey(),
         ]);
 
@@ -117,7 +117,7 @@ test('edit page shows all expected actions', function () {
 
     // Action
     $component = Livewire::actingAs($this->user)
-        ->test(InvoiceResource\Pages\EditInvoice::class, [
+        ->test(Invoices\Pages\EditInvoice::class, [
             'record' => $invoice->getRouteKey(),
         ]);
 

@@ -2,11 +2,12 @@
 
 namespace Database\Factories;
 
+use App\Models\AuditLog;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\AuditLog>
+ * @extends Factory<AuditLog>
  */
 class AuditLogFactory extends Factory
 {

@@ -26,7 +26,7 @@ class AuditLogObserver
     public function deleted(Model $model): void
     {
         // Prevent logging the deletion of an audit log itself.
-        if ($model instanceof \App\Models\AuditLog) {
+        if ($model instanceof AuditLog) {
             return;
         }
         $this->logAction('record_deleted', $model);

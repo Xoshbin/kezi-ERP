@@ -2,6 +2,9 @@
 
 namespace App\Livewire\Accounting;
 
+use Filament\Actions\Contracts\HasActions;
+use Filament\Actions\Concerns\InteractsWithActions;
+use Filament\Support\Contracts\TranslatableContentDriver;
 use Brick\Money\Money;
 use App\Models\Payment;
 use Livewire\Component;
@@ -17,8 +20,9 @@ use App\Filament\Tables\Columns\MoneyColumn;
 use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Tables\Concerns\InteractsWithTable;
 
-class SystemPaymentsTable extends Component implements HasTable, HasForms
+class SystemPaymentsTable extends Component implements HasTable, HasForms, HasActions
 {
+    use InteractsWithActions;
     use InteractsWithTable;
     use InteractsWithForms;
 
@@ -105,7 +109,7 @@ class SystemPaymentsTable extends Component implements HasTable, HasForms
         ]);
     }
 
-    public function makeFilamentTranslatableContentDriver(): ?\Filament\Support\Contracts\TranslatableContentDriver
+    public function makeFilamentTranslatableContentDriver(): ?TranslatableContentDriver
     {
         return null;
     }

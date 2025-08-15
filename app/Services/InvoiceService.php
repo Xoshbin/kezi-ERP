@@ -2,6 +2,8 @@
 
 namespace App\Services;
 
+use Carbon\Carbon;
+use Exception;
 use App\Models\User;
 use Brick\Money\Money;
 use App\Models\Company;
@@ -54,7 +56,7 @@ class InvoiceService
             return;
         }
 
-        $this->lockDateService->enforce(\App\Models\Company::find($invoice->company_id), \Carbon\Carbon::parse($invoice->invoice_date));
+        $this->lockDateService->enforce(Company::find($invoice->company_id), Carbon::parse($invoice->invoice_date));
 
         DB::transaction(function () use ($invoice, $user) {
             $invoice->invoice_number = $this->sequenceService->getNextInvoiceNumber($invoice->company);
@@ -83,17 +85,17 @@ class InvoiceService
     public function resetToDraft(Invoice $invoice, User $user, string $reason): void
     {
         if ($invoice->status !== InvoiceStatus::Posted) {
-            throw new \Exception('Only posted invoices can be reset to draft.');
+            throw new Exception('Only posted invoices can be reset to draft.');
         }
 
         DB::transaction(function () use ($invoice, $user, $reason) {
             $originalEntry = $invoice->journalEntry;
             if (!$originalEntry) {
-                throw new \Exception('Cannot reset an invoice without a journal entry.');
+                throw new Exception('Cannot reset an invoice without a journal entry.');
             }
 
             // Step 1: Create a detailed audit log explaining the action.
-            \App\Models\AuditLog::create([
+            AuditLog::create([
                 'user_id' => $user->id,
                 'event_type' => 'reset_to_draft',
                 'auditable_type' => get_class($invoice),
@@ -144,17 +146,17 @@ class InvoiceService
         Gate::forUser($user)->authorize('cancel', $invoice); // You may want a specific policy for this
 
         if ($invoice->status !== InvoiceStatus::Posted) {
-            throw new \Exception('Only posted invoices can be cancelled.');
+            throw new Exception('Only posted invoices can be cancelled.');
         }
 
         DB::transaction(function () use ($invoice, $user, $reason) {
             $originalEntry = $invoice->journalEntry;
             if (!$originalEntry) {
-                throw new \Exception('Cannot cancel an invoice without a journal entry.');
+                throw new Exception('Cannot cancel an invoice without a journal entry.');
             }
 
             // Step 1: Create a detailed audit log explaining the action.
-            \App\Models\AuditLog::create([
+            AuditLog::create([
                 'user_id' => $user->id,
                 'event_type' => 'cancellation',
                 'auditable_type' => get_class($invoice),

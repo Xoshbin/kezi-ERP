@@ -2,6 +2,7 @@
 
 namespace App\Exceptions;
 
+use Illuminate\Http\Request;
 use Exception;
 use Throwable;
 // We will use the Symfony Response class as it is the foundational
@@ -29,7 +30,7 @@ class DeletionNotAllowedException extends Exception
      * This method is crucial for how your application presents errors to the user,
      * whether they are using a web browser or an API client.
      *
-     * @param \Illuminate\Http\Request $request
+     * @param Request $request
      * @return SymfonyResponse // Changed the return type hint to the more general SymfonyResponse
      */
     public function render($request): SymfonyResponse

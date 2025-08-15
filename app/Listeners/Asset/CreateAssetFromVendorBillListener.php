@@ -2,6 +2,7 @@
 
 namespace App\Listeners\Asset;
 
+use Exception;
 use App\Actions\Assets\CreateAssetAction;
 use App\DataTransferObjects\Assets\CreateAssetDTO;
 use App\Enums\Assets\DepreciationMethod;
@@ -58,7 +59,7 @@ class CreateAssetFromVendorBillListener implements ShouldQueue
 
                     $this->createAssetAction->execute($assetDTO);
 
-                } catch (\Exception $e) {
+                } catch (Exception $e) {
                     Log::error('Failed to create asset from vendor bill line.', [
                         'vendor_bill_id' => $vendorBill->id,
                         'vendor_bill_line_id' => $line->id,

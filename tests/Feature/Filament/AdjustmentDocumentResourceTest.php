@@ -1,6 +1,6 @@
 <?php
 
-use App\Filament\Resources\AdjustmentDocumentResource;
+use App\Filament\Resources\AdjustmentDocuments\AdjustmentDocumentResource;
 use App\Models\Product;
 use App\Models\AdjustmentDocument;
 use App\Models\Account;
@@ -40,7 +40,7 @@ it('can create an adjustment document', function () {
         'unit_price' => \Brick\Money\Money::of(100, $this->company->currency->code), // Set a specific price for predictable total
     ]);
 
-    livewire(AdjustmentDocumentResource\Pages\CreateAdjustmentDocument::class)
+    livewire(AdjustmentDocuments\Pages\CreateAdjustmentDocument::class)
         ->fillForm([
             'company_id' => $this->company->id,
             'currency_id' => $this->company->currency_id,
@@ -78,7 +78,7 @@ it('can create an adjustment document', function () {
 });
 
 it('can validate input on create', function () {
-    livewire(AdjustmentDocumentResource\Pages\CreateAdjustmentDocument::class)
+    livewire(AdjustmentDocuments\Pages\CreateAdjustmentDocument::class)
         ->fillForm([
             'reference_number' => null,
             'date' => null,
@@ -129,7 +129,7 @@ it('can edit an adjustment document', function () {
 
     // The mutateFormDataBeforeFill method in EditAdjustmentDocument already handles
     // the conversion of line data with Money objects properly, so we don't need to override it
-    livewire(AdjustmentDocumentResource\Pages\EditAdjustmentDocument::class, [
+    livewire(AdjustmentDocuments\Pages\EditAdjustmentDocument::class, [
         'record' => $adjustmentDocument->getRouteKey(),
     ])
         ->fillForm([
@@ -167,7 +167,7 @@ it('can post an adjustment document', function () {
         'tax_id' => null,
     ]);
 
-    livewire(AdjustmentDocumentResource\Pages\EditAdjustmentDocument::class, [
+    livewire(AdjustmentDocuments\Pages\EditAdjustmentDocument::class, [
         'record' => $adjustmentDocument->getRouteKey(),
     ])
         ->callAction('post')

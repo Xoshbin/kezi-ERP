@@ -9,10 +9,10 @@ use App\Models\JournalEntry;
 use App\Enums\Sales\InvoiceStatus;
 use function Pest\Livewire\livewire;
 use Tests\Traits\WithConfiguredCompany;
-use App\Filament\Resources\InvoiceResource;
+use App\Filament\Resources\Invoices\InvoiceResource;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use App\Filament\Resources\InvoiceResource\Pages\EditInvoice;
-use App\Filament\Resources\InvoiceResource\Pages\CreateInvoice;
+use App\Filament\Resources\Invoices\Pages\EditInvoice;
+use App\Filament\Resources\Invoices\Pages\CreateInvoice;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);
 
@@ -43,7 +43,7 @@ it('can create an invoice', function () {
         'unit_price' => \Brick\Money\Money::of(100, $this->company->currency->code), // Set a specific price for predictable total
     ]);
 
-    livewire(InvoiceResource\Pages\CreateInvoice::class)
+    livewire(Invoices\Pages\CreateInvoice::class)
         ->fillForm([
             'company_id' => $this->company->id,
             'customer_id' => $customer->id,
@@ -80,7 +80,7 @@ it('can create an invoice', function () {
 });
 
 it('can validate input on create', function () {
-    livewire(InvoiceResource\Pages\CreateInvoice::class)
+    livewire(Invoices\Pages\CreateInvoice::class)
         ->fillForm([
             'customer_id' => null,
             'invoice_date' => null,
@@ -117,7 +117,7 @@ it('can edit an invoice', function () {
 
     // The mutateFormDataBeforeFill method in EditInvoice already handles
     // the conversion of line data with Money objects properly, so we don't need to override it
-    livewire(InvoiceResource\Pages\EditInvoice::class, [
+    livewire(Invoices\Pages\EditInvoice::class, [
         'record' => $invoice->getRouteKey(),
     ])
         ->fillForm([
@@ -138,7 +138,7 @@ it('can confirm an invoice', function () {
         'status' => InvoiceStatus::Draft,
     ]);
 
-    livewire(InvoiceResource\Pages\EditInvoice::class, [
+    livewire(Invoices\Pages\EditInvoice::class, [
         'record' => $invoice->getRouteKey(),
     ])
         ->callAction('confirm')

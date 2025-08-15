@@ -2,6 +2,13 @@
 
 namespace App\Models;
 
+use Illuminate\Support\Carbon;
+use Illuminate\Database\Eloquent\Collection;
+use Database\Factories\PaymentFactory;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use App\Casts\MoneyCast;
 use App\Observers\PaymentObserver;
 use App\Observers\AuditLogObserver;
@@ -14,7 +21,6 @@ use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 // Note: SoftDeletes trait is intentionally excluded.
 // Financial transaction records like Payments, once confirmed, are immutable
 // and should not be soft-deleted to maintain data integrity and audit trails [1-3].
-
 /**
  * Class Payment
  *
@@ -25,41 +31,41 @@ use Illuminate\Database\Eloquent\Attributes\ObservedBy;
  * @property int $currency_id
  * @property int $paid_to_from_partner_id
  * @property int|null $journal_entry_id
- * @property \Illuminate\Support\Carbon $payment_date
+ * @property Carbon $payment_date
  * @property float $amount
  * @property string $payment_type
  * @property string|null $reference
  * @property string $status
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \App\Models\Company $company
- * @property-read \App\Models\Currency $currency
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Invoice> $invoices
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property-read Company $company
+ * @property-read Currency $currency
+ * @property-read Collection<int, Invoice> $invoices
  * @property-read int|null $invoices_count
- * @property-read \App\Models\Journal $journal
- * @property-read \App\Models\JournalEntry|null $journalEntry
- * @property-read \App\Models\Partner $partner
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\PaymentDocumentLink> $paymentDocumentLinks
+ * @property-read Journal $journal
+ * @property-read JournalEntry|null $journalEntry
+ * @property-read Partner $partner
+ * @property-read Collection<int, PaymentDocumentLink> $paymentDocumentLinks
  * @property-read int|null $payment_document_links_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\VendorBill> $vendorBills
+ * @property-read Collection<int, VendorBill> $vendorBills
  * @property-read int|null $vendor_bills_count
- * @method static \Database\Factories\PaymentFactory factory($count = null, $state = [])
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Payment newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Payment newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Payment query()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Payment whereAmount($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Payment whereCompanyId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Payment whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Payment whereCurrencyId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Payment whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Payment whereJournalEntryId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Payment whereJournalId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Payment wherePaidToFromPartnerId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Payment wherePaymentDate($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Payment wherePaymentType($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Payment whereReference($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Payment whereStatus($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Payment whereUpdatedAt($value)
+ * @method static PaymentFactory factory($count = null, $state = [])
+ * @method static Builder<static>|Payment newModelQuery()
+ * @method static Builder<static>|Payment newQuery()
+ * @method static Builder<static>|Payment query()
+ * @method static Builder<static>|Payment whereAmount($value)
+ * @method static Builder<static>|Payment whereCompanyId($value)
+ * @method static Builder<static>|Payment whereCreatedAt($value)
+ * @method static Builder<static>|Payment whereCurrencyId($value)
+ * @method static Builder<static>|Payment whereId($value)
+ * @method static Builder<static>|Payment whereJournalEntryId($value)
+ * @method static Builder<static>|Payment whereJournalId($value)
+ * @method static Builder<static>|Payment wherePaidToFromPartnerId($value)
+ * @method static Builder<static>|Payment wherePaymentDate($value)
+ * @method static Builder<static>|Payment wherePaymentType($value)
+ * @method static Builder<static>|Payment whereReference($value)
+ * @method static Builder<static>|Payment whereStatus($value)
+ * @method static Builder<static>|Payment whereUpdatedAt($value)
  * @mixin \Eloquent
  */
 #[ObservedBy([AuditLogObserver::class, PaymentObserver::class])]
@@ -117,7 +123,7 @@ class Payment extends Model
      * Get the Company that owns the Payment.
      * A payment is always associated with a specific company in a multi-company setup [3].
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
     public function company()
     {
@@ -128,7 +134,7 @@ class Payment extends Model
      * Get the Journal where this payment was recorded.
      * Payments are recorded in 'Bank' or 'Cash' type journals [3].
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
     public function journal()
     {
@@ -139,7 +145,7 @@ class Payment extends Model
      * Get the Currency of the Payment.
      * Every payment has a defined currency [3].
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
     public function currency()
     {
@@ -150,7 +156,7 @@ class Payment extends Model
      * Get the Partner (customer or vendor) associated with this Payment.
      * This relationship uses the custom foreign key 'paid_to_from_partner_id' [3].
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
     public function partner()
     {
@@ -161,7 +167,7 @@ class Payment extends Model
      * Get the JournalEntry that is generated when the Payment is confirmed.
      * This link becomes active once the payment impacts the general ledger [1, 3].
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
     public function journalEntry()
     {
@@ -174,7 +180,7 @@ class Payment extends Model
      * allowing for partial payments and granular application tracking [3, 12].
      * The `amount_applied` pivot field captures the specific amount allocated to each invoice [3].
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     * @return BelongsToMany
      */
     public function invoices()
     {
@@ -187,7 +193,7 @@ class Payment extends Model
      * Similar to invoices, payments can cover multiple vendor bills,
      * with `amount_applied` tracking the distribution [3, 12].
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     * @return BelongsToMany
      */
     public function vendorBills()
     {
@@ -199,7 +205,7 @@ class Payment extends Model
      * Get the direct PaymentDocumentLink records for this payment.
      * This provides access to the raw pivot data, enabling more complex logic if needed [3, 12].
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return HasMany
      */
     public function paymentDocumentLinks()
     {
@@ -210,7 +216,7 @@ class Payment extends Model
      * Get the BankStatementLines that are linked to this payment.
      * This relationship is established when a payment is reconciled with bank statement lines.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return HasMany
      */
     public function bankStatementLines()
     {
@@ -222,7 +228,7 @@ class Payment extends Model
      * This includes both the direct journal entry and any polymorphic entries (e.g., reconciliation entries).
      * Note: This is used by the JournalEntriesRelationManager which handles the complex query logic.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return HasMany
      */
     public function journalEntries()
     {

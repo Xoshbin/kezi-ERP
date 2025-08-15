@@ -2,6 +2,9 @@
 
 namespace App\Models;
 
+use Illuminate\Support\Carbon;
+use Database\Factories\DepreciationEntryFactory;
+use Illuminate\Database\Eloquent\Builder;
 use App\Casts\MoneyCast;
 use Illuminate\Database\Eloquent\Model;
 use App\Observers\DepreciationEntryObserver;
@@ -23,25 +26,25 @@ use Illuminate\Database\Eloquent\Attributes\ObservedBy;
  * @property int $id
  * @property int $asset_id
  * @property int|null $journal_entry_id
- * @property \Illuminate\Support\Carbon $depreciation_date
+ * @property Carbon $depreciation_date
  * @property float $amount
  * @property string $status
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \App\Models\Asset $asset
- * @property-read \App\Models\JournalEntry|null $journalEntry
- * @method static \Database\Factories\DepreciationEntryFactory factory($count = null, $state = [])
- * @method static \Illuminate\Database\Eloquent\Builder<static>|DepreciationEntry newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|DepreciationEntry newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|DepreciationEntry query()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|DepreciationEntry whereAmount($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|DepreciationEntry whereAssetId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|DepreciationEntry whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|DepreciationEntry whereDepreciationDate($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|DepreciationEntry whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|DepreciationEntry whereJournalEntryId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|DepreciationEntry whereStatus($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|DepreciationEntry whereUpdatedAt($value)
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property-read Asset $asset
+ * @property-read JournalEntry|null $journalEntry
+ * @method static DepreciationEntryFactory factory($count = null, $state = [])
+ * @method static Builder<static>|DepreciationEntry newModelQuery()
+ * @method static Builder<static>|DepreciationEntry newQuery()
+ * @method static Builder<static>|DepreciationEntry query()
+ * @method static Builder<static>|DepreciationEntry whereAmount($value)
+ * @method static Builder<static>|DepreciationEntry whereAssetId($value)
+ * @method static Builder<static>|DepreciationEntry whereCreatedAt($value)
+ * @method static Builder<static>|DepreciationEntry whereDepreciationDate($value)
+ * @method static Builder<static>|DepreciationEntry whereId($value)
+ * @method static Builder<static>|DepreciationEntry whereJournalEntryId($value)
+ * @method static Builder<static>|DepreciationEntry whereStatus($value)
+ * @method static Builder<static>|DepreciationEntry whereUpdatedAt($value)
  * @mixin \Eloquent
  */
 #[ObservedBy([DepreciationEntryObserver::class])]
@@ -106,7 +109,7 @@ class DepreciationEntry extends Model
      * Get the asset that this depreciation entry belongs to.
      * Each depreciation entry corresponds to a specific fixed asset.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
     public function asset(): BelongsTo
     {
@@ -119,7 +122,7 @@ class DepreciationEntry extends Model
      * The 'journal_entry_id' is nullable while the depreciation entry is in 'Draft'
      * but becomes mandatory upon 'Posting' when the actual financial impact occurs.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
     public function journalEntry(): BelongsTo
     {
