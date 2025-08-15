@@ -36,7 +36,7 @@ it('can create a bank statement', function () {
     /** @var \App\Models\Journal $bankJournal */
     $bankJournal = Journal::factory()->for($this->company)->create(['type' => JournalType::Bank]);
 
-    livewire(BankStatements\Pages\CreateBankStatement::class)
+    livewire(\App\Filament\Resources\BankStatements\Pages\CreateBankStatement::class)
         ->fillForm([
             'company_id' => $this->company->id,
             'currency_id' => $this->company->currency_id,
@@ -75,7 +75,7 @@ it('can create a bank statement', function () {
 });
 
 it('can validate input on create', function () {
-    livewire(BankStatements\Pages\CreateBankStatement::class)
+    livewire(\App\Filament\Resources\BankStatements\Pages\CreateBankStatement::class)
         ->fillForm([
             'company_id' => null,
             'currency_id' => null,
@@ -127,7 +127,7 @@ it('can edit a bank statement', function () {
         'company_id' => $this->company->id,
     ]);
 
-    livewire(BankStatements\Pages\EditBankStatement::class, [
+    livewire(\App\Filament\Resources\BankStatements\Pages\EditBankStatement::class, [
         'record' => $bankStatement->getRouteKey(),
     ])
         ->fillForm([
@@ -179,7 +179,7 @@ it('preserves the reconcile button in the table', function () {
         'company_id' => $this->company->id,
     ]);
 
-    livewire(BankStatements\Pages\ListBankStatements::class)
+    livewire(\App\Filament\Resources\BankStatements\Pages\ListBankStatements::class)
         ->assertCanSeeTableRecords([$bankStatement])
         ->assertTableActionExists('reconcile');
 });
@@ -199,7 +199,7 @@ it('shows reconcile action in view page', function () {
         'company_id' => $this->company->id,
     ]);
 
-    livewire(BankStatements\Pages\ViewBankStatement::class, ['record' => $bankStatement->id])
+    livewire(\App\Filament\Resources\BankStatements\Pages\ViewBankStatement::class, ['record' => $bankStatement->id])
         ->assertActionExists('reconcile');
 });
 
@@ -213,7 +213,7 @@ it('can handle multiple lines in create', function () {
     /** @var \App\Models\Journal $bankJournal */
     $bankJournal = Journal::factory()->for($this->company)->create(['type' => JournalType::Bank]);
 
-    livewire(BankStatements\Pages\CreateBankStatement::class)
+    livewire(\App\Filament\Resources\BankStatements\Pages\CreateBankStatement::class)
         ->fillForm([
             'company_id' => $this->company->id,
             'currency_id' => $this->company->currency_id,
@@ -267,7 +267,7 @@ it('handles money objects correctly in forms', function () {
     ]);
 
     // Test that the edit page loads correctly with Money objects
-    livewire(BankStatements\Pages\EditBankStatement::class, [
+    livewire(\App\Filament\Resources\BankStatements\Pages\EditBankStatement::class, [
         'record' => $bankStatement->getRouteKey(),
     ])
         ->assertFormSet([

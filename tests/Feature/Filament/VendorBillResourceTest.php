@@ -41,7 +41,7 @@ it('can create a vendor bill', function () {
 
 
 
-    livewire(VendorBills\Pages\CreateVendorBill::class)
+    livewire(\App\Filament\Resources\VendorBills\Pages\CreateVendorBill::class)
         ->fillForm([
             'company_id' => $this->company->id,
             'vendor_id' => $vendor->id,
@@ -82,7 +82,7 @@ it('can create a vendor bill', function () {
 });
 
 it('can validate input on create', function () {
-    livewire(VendorBills\Pages\CreateVendorBill::class)
+    livewire(\App\Filament\Resources\VendorBills\Pages\CreateVendorBill::class)
         ->fillForm([
             'vendor_id' => null,
             'bill_reference' => null,
@@ -122,7 +122,7 @@ it('can edit a vendor bill', function () {
 
     // The mutateFormDataBeforeFill method in EditVendorBill already handles
     // the conversion of line data with Money objects properly, so we don't need to override it
-    livewire(VendorBills\Pages\EditVendorBill::class, [
+    livewire(\App\Filament\Resources\VendorBills\Pages\EditVendorBill::class, [
         'record' => $vendorBill->getRouteKey(),
     ])
         ->fillForm([
@@ -145,7 +145,7 @@ it('can confirm a vendor bill', function () {
         'status' => VendorBillStatus::Draft,
     ]);
 
-    livewire(VendorBills\Pages\EditVendorBill::class, [
+    livewire(\App\Filament\Resources\VendorBills\Pages\EditVendorBill::class, [
         'record' => $vendorBill->getRouteKey(),
     ])
         ->callAction('confirm')

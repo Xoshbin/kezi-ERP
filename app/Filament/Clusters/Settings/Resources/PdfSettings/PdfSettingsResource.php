@@ -24,6 +24,8 @@ use Illuminate\Support\Facades\Auth;
 
 class PdfSettingsResource extends Resource
 {
+    public static null|string $tenantOwnershipRelationshipName = 'users';
+
     protected static ?string $model = Company::class;
 
     protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-document-text';
@@ -155,9 +157,8 @@ class PdfSettingsResource extends Resource
 
     public static function getEloquentQuery(): Builder
     {
-        // Only show companies that the current user has access to
-        return parent::getEloquentQuery()
-            ->where('id', Auth::user()->company_id);
+        // Tenancy automatically handles company filtering
+        return parent::getEloquentQuery();
     }
 
     public static function getPages(): array

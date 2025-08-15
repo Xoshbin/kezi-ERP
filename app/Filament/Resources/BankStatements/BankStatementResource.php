@@ -260,9 +260,8 @@ class BankStatementResource extends Resource
 
     public static function getEloquentQuery(): Builder
     {
-        // This line ensures that this resource will ONLY ever see/find
-        // bank statements that belong to the logged-in user's company.
-        return parent::getEloquentQuery()->where('company_id', auth()->user()->company_id);
+        // Tenancy automatically handles company filtering
+        return parent::getEloquentQuery();
     }
 
     public static function getRelations(): array

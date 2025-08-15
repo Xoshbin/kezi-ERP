@@ -50,7 +50,7 @@ it('can create an inbound payment linked to an invoice', function () {
     /** @var \App\Models\Journal $bankJournal */
     $bankJournal = Journal::factory()->for($this->company)->create(['type' => JournalType::Bank]);
 
-    livewire(Payments\Pages\CreatePayment::class)
+    livewire(\App\Filament\Resources\Payments\Pages\CreatePayment::class)
         ->fillForm([
             'company_id' => $this->company->id,
             'journal_id' => $bankJournal->id,
@@ -105,7 +105,7 @@ it('can create an outbound payment linked to a vendor bill', function () {
     /** @var \App\Models\Journal $bankJournal */
     $bankJournal = Journal::factory()->for($this->company)->create(['type' => JournalType::Bank]);
 
-    livewire(Payments\Pages\CreatePayment::class)
+    livewire(\App\Filament\Resources\Payments\Pages\CreatePayment::class)
         ->fillForm([
             'company_id' => $this->company->id,
             'journal_id' => $bankJournal->id,
@@ -142,7 +142,7 @@ it('can create an outbound payment linked to a vendor bill', function () {
 });
 
 it('can validate input on create', function () {
-    livewire(Payments\Pages\CreatePayment::class)
+    livewire(\App\Filament\Resources\Payments\Pages\CreatePayment::class)
         ->fillForm([
             'company_id' => null,
             'journal_id' => null,
@@ -199,7 +199,7 @@ it('can edit a draft payment', function () {
         'amount_applied' => Money::of(100, $this->company->currency->code),
     ]);
 
-    livewire(Payments\Pages\EditPayment::class, [
+    livewire(\App\Filament\Resources\Payments\Pages\EditPayment::class, [
         'record' => $payment->getRouteKey(),
     ])
         ->fillForm([
@@ -252,7 +252,7 @@ it('cannot edit a confirmed payment', function () {
 
     // Attempting to edit a confirmed payment should throw an exception
     expect(function () use ($payment) {
-        livewire(Payments\Pages\EditPayment::class, [
+        livewire(\App\Filament\Resources\Payments\Pages\EditPayment::class, [
             'record' => $payment->getRouteKey(),
         ])
             ->fillForm([
@@ -298,7 +298,7 @@ it('can confirm a draft payment', function () {
         'amount_applied' => Money::of(100, $this->company->currency->code),
     ]);
 
-    livewire(Payments\Pages\EditPayment::class, [
+    livewire(\App\Filament\Resources\Payments\Pages\EditPayment::class, [
         'record' => $payment->getRouteKey(),
     ])
         ->callAction('confirm');
@@ -329,7 +329,7 @@ it('shows cancel action for confirmed payments', function () {
         'journal_entry_id' => $journalEntry->id,
     ]);
 
-    livewire(Payments\Pages\EditPayment::class, [
+    livewire(\App\Filament\Resources\Payments\Pages\EditPayment::class, [
         'record' => $payment->getRouteKey(),
     ])
         ->assertActionVisible('cancel');
@@ -343,7 +343,7 @@ it('can delete a draft payment', function () {
         'currency_id' => $this->company->currency_id,
     ]);
 
-    livewire(Payments\Pages\EditPayment::class, [
+    livewire(\App\Filament\Resources\Payments\Pages\EditPayment::class, [
         'record' => $payment->getRouteKey(),
     ])
         ->callAction('delete');
@@ -357,7 +357,7 @@ it('cannot delete a confirmed payment', function () {
         'status' => PaymentStatus::Confirmed,
     ]);
 
-    livewire(Payments\Pages\EditPayment::class, [
+    livewire(\App\Filament\Resources\Payments\Pages\EditPayment::class, [
         'record' => $payment->getRouteKey(),
     ])
         ->assertActionHidden('delete');
@@ -392,7 +392,7 @@ it('calculates total amount from multiple document links', function () {
     /** @var \App\Models\Journal $bankJournal */
     $bankJournal = Journal::factory()->for($this->company)->create(['type' => JournalType::Bank]);
 
-    livewire(Payments\Pages\CreatePayment::class)
+    livewire(\App\Filament\Resources\Payments\Pages\CreatePayment::class)
         ->fillForm([
             'company_id' => $this->company->id,
             'journal_id' => $bankJournal->id,

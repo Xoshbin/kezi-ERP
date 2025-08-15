@@ -20,7 +20,8 @@ uses(Tests\TestCase::class, RefreshDatabase::class);
 // Setup a default company, user, and journal for all tests
 beforeEach(function () {
     $this->company = Company::factory()->create();
-    $this->user = User::factory()->create(['company_id' => $this->company->id]);
+    $this->user = User::factory()->create();
+    $this->user->companies()->attach($this->company);
     $this->bankJournal = Journal::factory()->create([
         'company_id' => $this->company->id,
         'type' => JournalType::Bank,
