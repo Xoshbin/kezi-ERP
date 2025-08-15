@@ -201,6 +201,22 @@ class Product extends Model
     public function getCurrencyIdAttribute(): int
     {
         // If the company relationship is loaded, use it. If not, lazy-load it.
-        return $this->company->currency_id ?? $this->company()->first()->currency_id;
+        $company = $this->company ?? $this->company()->first();
+
+        if (!$company && $this->company_id) {
+            // Try to find the company directly by ID
+            $company = \App\Models\Company::find($this->company_id);
+        }
+
+        if (!$company) {
+            // As a last resort, try to get from current tenant
+            $tenant = \Filament\Facades\Filament::getTenant();
+            if ($tenant) {
+                return $tenant->currency_id;
+            }
+            throw new \Exception("Product {$this->id} has no company relationship. Company ID: {$this->company_id}");
+        }
+
+        return $company->currency_id;
     }
 }
