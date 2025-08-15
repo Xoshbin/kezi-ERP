@@ -229,7 +229,7 @@ describe('Filament Resource (LockDateResource)', function () {
             'lock_type' => LockDateType::AllUsers,
         ]);
 
-        \Livewire\Livewire::test(LockDates\Pages\ListLockDates::class, [
+        \Livewire\Livewire::test(\App\Filament\Resources\LockDates\Pages\ListLockDates::class, [
             'record' => $this->company,
         ])
             ->assertTableActionDisabled('edit', $hardLock)

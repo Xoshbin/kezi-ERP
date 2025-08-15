@@ -7,11 +7,11 @@ use App\Filament\Widgets\IncomeVsExpenseChart;
 use App\Filament\Widgets\CashFlowWidget;
 use App\Filament\Widgets\AccountWidget;
 use Filament\Pages\Dashboard as BaseDashboard;
+use Filament\Facades\Filament;
 
 class Dashboard extends BaseDashboard
 {
     protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-home';
-    protected string $view = 'filament-panels::pages.dashboard';
 
     public static function getNavigationLabel(): string
     {
@@ -30,8 +30,8 @@ class Dashboard extends BaseDashboard
 
     public function getSubheading(): ?string
     {
-        $user = auth()->user();
-        $companyName = $user?->company?->name ?? __('dashboard.no_company');
+        $company = Filament::getTenant();
+        $companyName = $company?->name ?? __('dashboard.no_company');
 
         return __('dashboard.welcome_message', [
             'company' => $companyName,

@@ -139,7 +139,7 @@ it('can render cash flow widget', function () {
 
 it('handles missing company gracefully', function () {
     // Create user without company
-    $userWithoutCompany = User::factory()->create(['company_id' => null]);
+    $userWithoutCompany = User::factory()->create();
     $this->actingAs($userWithoutCompany);
 
     $widget = new FinancialStatsOverview();
