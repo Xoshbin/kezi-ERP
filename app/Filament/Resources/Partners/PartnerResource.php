@@ -6,6 +6,7 @@ use Filament\Schemas\Schema;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Grid;
 use Filament\Forms\Components\Select;
+use App\Filament\Support\TranslatableSelect;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
 use Filament\Actions\Action;
@@ -176,12 +177,15 @@ class PartnerResource extends Resource
                     ->schema([
                         Grid::make(2)
                             ->schema([
-                                Select::make('receivable_account_id')
-                                    ->label(__('partner.receivable_account'))
-                                    ->relationship('receivableAccount', 'name', function ($query) {
-                                        return $query->where('type', AccountType::Receivable);
-                                    })
-                                    ->searchable()
+                                TranslatableSelect::relationship(
+                                    'receivable_account_id',
+                                    'receivableAccount',
+                                    \App\Models\Account::class,
+                                    __('partner.receivable_account'),
+                                    'name',
+                                    null,
+                                    fn($query) => $query->where('type', AccountType::Receivable)
+                                )
                                     ->preload()
                                     ->createOptionForm([
                                         TextInput::make('name')
@@ -202,12 +206,15 @@ class PartnerResource extends Resource
                                     ->helperText(__('partner.receivable_account_help'))
                                     ->prefixIcon('heroicon-m-arrow-trending-up'),
 
-                                Select::make('payable_account_id')
-                                    ->label(__('partner.payable_account'))
-                                    ->relationship('payableAccount', 'name', function ($query) {
-                                        return $query->where('type', AccountType::Payable);
-                                    })
-                                    ->searchable()
+                                TranslatableSelect::relationship(
+                                    'payable_account_id',
+                                    'payableAccount',
+                                    \App\Models\Account::class,
+                                    __('partner.payable_account'),
+                                    'name',
+                                    null,
+                                    fn($query) => $query->where('type', AccountType::Payable)
+                                )
                                     ->preload()
                                     ->createOptionForm([
                                         TextInput::make('name')

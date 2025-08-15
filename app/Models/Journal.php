@@ -50,6 +50,7 @@ use Spatie\Translatable\HasTranslations;
 class Journal extends Model
 {
     use HasFactory, HasTranslations;
+    use \App\Traits\TranslatableSearch;
 
     public array $translatable = ['name'];
 

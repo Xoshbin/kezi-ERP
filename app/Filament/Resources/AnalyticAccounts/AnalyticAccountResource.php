@@ -16,6 +16,7 @@ use App\Filament\Resources\AnalyticAccounts\Pages\CreateAnalyticAccount;
 use App\Filament\Resources\AnalyticAccounts\Pages\EditAnalyticAccount;
 use App\Filament\Resources\AnalyticAccountResource\Pages;
 use App\Filament\Resources\AnalyticAccountResource\RelationManagers;
+use App\Filament\Support\TranslatableSelect;
 use App\Filament\Resources\AnalyticAccounts\RelationManagers\JournalEntryLinesRelationManager;
 use App\Filament\Resources\AnalyticAccounts\RelationManagers\AnalyticPlansRelationManager;
 use App\Models\AnalyticAccount;
@@ -63,10 +64,7 @@ class AnalyticAccountResource extends Resource
                     ->label(__('analytic_account.company'))
                     ->placeholder(__('analytic_account.select_company'))
                     ->required(),
-                Select::make('currency_id')
-                    ->relationship('currency', 'name')
-                    ->label(__('analytic_account.currency'))
-                    ->placeholder(__('analytic_account.select_currency')),
+                TranslatableSelect::make('currency_id', \App\Models\Currency::class, __('analytic_account.currency')),
                 TextInput::make('name')
                     ->label(__('analytic_account.name'))
                     ->required()

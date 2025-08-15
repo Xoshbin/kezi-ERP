@@ -29,6 +29,7 @@ use App\Filament\Resources\AccountResource\Pages;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\AccountResource\RelationManagers;
 use App\Filament\Resources\Accounts\RelationManagers\JournalEntryLinesRelationManager;
+use App\Filament\Support\TranslatableSelect;
 
 class AccountResource extends Resource
 {
@@ -75,9 +76,7 @@ class AccountResource extends Resource
                         TextInput::make('tax_id')
                             ->label(__('company.tax_id'))
                             ->maxLength(255),
-                        Select::make('currency_id')
-                            ->label(__('company.currency_id'))
-                            ->relationship('currency', 'name')
+                        TranslatableSelect::make('currency_id', \App\Models\Currency::class, __('company.currency_id'))
                             ->required(),
                         TextInput::make('fiscal_country')
                             ->label(__('company.fiscal_country'))

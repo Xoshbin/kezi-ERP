@@ -8,6 +8,7 @@ use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Group;
 use Filament\Schemas\Components\Section;
 use Filament\Forms\Components\Select;
+use App\Filament\Support\TranslatableSelect;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\DatePicker;
@@ -274,34 +275,19 @@ class AdjustmentDocumentResource extends Resource
                                         'md' => 1,
                                         'lg' => 2,
                                     ]),
-                                Select::make('tax_id')
-                                    ->label('Tax')
-                                    ->searchable()
-                                    ->getSearchResultsUsing(fn(string $search): array =>
-                                        Tax::whereRaw('LOWER(JSON_UNQUOTE(JSON_EXTRACT(name, "$.' . app()->getLocale() . '"))) LIKE ?', ['%' . strtolower($search) . '%'])
-                                            ->limit(50)
-                                            ->get()
-                                            ->mapWithKeys(fn($tax) => [$tax->id => $tax->getTranslation('name', app()->getLocale()) ?: $tax->name])
-                                            ->toArray()
-                                    )
-                                    ->getOptionLabelUsing(fn($value): ?string => Tax::find($value)?->getTranslation('name', app()->getLocale()) ?: Tax::find($value)?->name)
+                                TranslatableSelect::make('tax_id', \App\Models\Tax::class, 'Tax')
                                     ->placeholder('No tax')
                                     ->columnSpan([
                                         'default' => 1,
                                         'md' => 1,
                                         'lg' => 2,
                                     ]),
-                                Select::make('account_id')
-                                    ->label('Account')
-                                    ->searchable()
-                                    ->getSearchResultsUsing(fn(string $search): array =>
-                                        Account::whereRaw('LOWER(JSON_UNQUOTE(JSON_EXTRACT(name, "$.' . app()->getLocale() . '"))) LIKE ?', ['%' . strtolower($search) . '%'])
-                                            ->limit(50)
-                                            ->get()
-                                            ->mapWithKeys(fn($account) => [$account->id => $account->getTranslation('name', app()->getLocale()) ?: $account->name])
-                                            ->toArray()
-                                    )
-                                    ->getOptionLabelUsing(fn($value): ?string => Account::find($value)?->getTranslation('name', app()->getLocale()) ?: Account::find($value)?->name)
+                                TranslatableSelect::withFormatter(
+                                    'account_id',
+                                    \App\Models\Account::class,
+                                    fn($account) => [$account->id => $account->getTranslatedLabel('name') . ' (' . $account->code . ')'],
+                                    'Account'
+                                )
                                     ->required()
                                     ->placeholder('Select account...')
                                     ->columnSpan([

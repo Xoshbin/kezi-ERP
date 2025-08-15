@@ -49,6 +49,7 @@ use Spatie\Translatable\HasTranslations;
 class FiscalPosition extends Model
 {
     use HasFactory, HasTranslations;
+    use \App\Traits\TranslatableSearch;
 
     public array $translatable = ['name'];
 

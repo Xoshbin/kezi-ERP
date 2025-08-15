@@ -52,8 +52,19 @@ use Spatie\Translatable\HasTranslations;
 class Tax extends Model
 {
     use HasFactory, HasTranslations;
+    use \App\Traits\TranslatableSearch;
 
     public array $translatable = ['name', 'label_on_invoices'];
+
+    /**
+     * Get the translatable fields that should be searched.
+     *
+     * @return array
+     */
+    public function getTranslatableSearchFields(): array
+    {
+        return ['name', 'label_on_invoices'];
+    }
 
     /**
      * The table associated with the model.

@@ -72,8 +72,19 @@ use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 class Account extends Model
 {
     use HasFactory, HasTranslations;
+    use \App\Traits\TranslatableSearch;
 
     public array $translatable = ['name'];
+
+    /**
+     * Get the non-translatable fields that should be searched.
+     *
+     * @return array
+     */
+    public function getNonTranslatableSearchFields(): array
+    {
+        return ['code'];
+    }
 
     /**
      * The database table associated with the model.
