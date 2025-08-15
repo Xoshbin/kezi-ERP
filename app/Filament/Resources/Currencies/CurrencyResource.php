@@ -31,6 +31,8 @@ class CurrencyResource extends Resource
 {
     use Translatable;
 
+    protected static bool $isScopedToTenant = false;
+
     protected static ?string $model = Currency::class;
 
     protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-currency-dollar';

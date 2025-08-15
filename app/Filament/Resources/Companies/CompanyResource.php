@@ -31,6 +31,8 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class CompanyResource extends Resource
 {
+    public static null|string $tenantOwnershipRelationshipName = 'users';
+
     protected static ?string $model = Company::class;
 
     protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-building-office';
