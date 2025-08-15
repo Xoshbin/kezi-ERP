@@ -6,6 +6,7 @@ use App\Models\User;
 use App\Models\Account;
 use App\Models\Partner;
 use App\Models\StockLocation;
+use Filament\Facades\Filament;
 use Tests\Builders\CompanyBuilder;
 use App\Enums\Partners\PartnerType;
 use App\Enums\Inventory\StockLocationType;
@@ -20,8 +21,12 @@ trait WithConfiguredCompany
             ->withDefaultStockLocations()
             ->create();
 
-        $this->user = User::factory()->for($this->company)->create();
+        $this->user = User::factory()->create();
+        $this->user->companies()->attach($this->company);
         $this->actingAs($this->user);
+
+        // Set up Filament tenant context
+        \Filament\Facades\Filament::setTenant($this->company);
     }
 
     /**
