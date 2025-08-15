@@ -38,6 +38,7 @@ use App\Filament\Tables\Columns\MoneyColumn;
 use App\Filament\Forms\Components\MoneyInput;
 use App\Filament\Resources\PaymentResource\Pages;
 use App\Filament\Resources\PaymentResource\RelationManagers;
+use App\Filament\Support\TranslatableSelect;
 
 class PaymentResource extends Resource
 {
@@ -72,13 +73,9 @@ class PaymentResource extends Resource
         return $schema->components([
             Section::make()
                 ->schema([
-                    Select::make('journal_id')
-                        ->relationship('journal', 'name')
-                        ->label(__('payment.form.journal_id'))
+                    TranslatableSelect::make('journal_id', \App\Models\Journal::class, __('payment.form.journal_id'))
                         ->required(),
-                    Select::make('currency_id')
-                        ->relationship('currency', 'name')
-                        ->label(__('payment.form.currency_id'))
+                    TranslatableSelect::make('currency_id', \App\Models\Currency::class, __('payment.form.currency_id'))
                         ->required()
                         ->live()
                         ->default(fn() => \Filament\Facades\Filament::getTenant()?->currency_id),

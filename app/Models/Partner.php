@@ -80,6 +80,7 @@ use Illuminate\Support\Carbon;
 class Partner extends Model
 {
     use HasFactory, SoftDeletes;
+    use \App\Traits\TranslatableSearch;
 
     /**
      * The attributes that are mass assignable.
@@ -126,6 +127,16 @@ class Partner extends Model
     protected $attributes = [
         'is_active' => true,
     ];
+
+    /**
+     * Get the non-translatable fields that should be searched.
+     *
+     * @return array
+     */
+    public function getNonTranslatableSearchFields(): array
+    {
+        return ['name', 'email', 'contact_person'];
+    }
 
 
 

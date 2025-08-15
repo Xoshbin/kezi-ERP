@@ -45,6 +45,7 @@ use App\Enums\Purchases\VendorBillStatus;
 use App\Filament\Tables\Columns\MoneyColumn;
 use App\Filament\Forms\Components\MoneyInput;
 use App\Filament\Resources\VendorBillResource\Pages;
+use App\Filament\Support\TranslatableSelect;
 
 class VendorBillResource extends Resource
 {
@@ -79,11 +80,13 @@ class VendorBillResource extends Resource
         return $schema->components([
             Section::make()
                 ->schema([
-                    Select::make('vendor_id')
-                        ->relationship('vendor', 'name')
-                        ->label(__('vendor_bill.vendor'))
+                    TranslatableSelect::standard(
+                        'vendor_id',
+                        \App\Models\Partner::class,
+                        ['name', 'email', 'contact_person'],
+                        __('vendor_bill.vendor')
+                    )
                         ->required()
-                        ->searchable()
                         ->createOptionForm([
                             TextInput::make('name')
                                 ->label(__('partner.name'))
@@ -115,12 +118,9 @@ class VendorBillResource extends Resource
                             return $action
                                 ->modalWidth('lg');
                         }),
-                    Select::make('currency_id')
-                        ->relationship('currency', 'name')
-                        ->label(__('vendor_bill.currency'))
+                    TranslatableSelect::make('currency_id', \App\Models\Currency::class, __('vendor_bill.currency'))
                         ->required()
                         ->live()
-                        ->searchable()
                         ->default(fn() => \Filament\Facades\Filament::getTenant()?->currency_id)
                         ->createOptionForm([
                             TextInput::make('code')
@@ -187,11 +187,12 @@ class VendorBillResource extends Resource
                         ->disabled(fn(?VendorBill $record) => $record ? $record->status !== VendorBillStatus::Draft : false)
                         ->deletable(fn(?VendorBill $record) => $record === null || $record->status === VendorBillStatus::Draft)
                         ->schema([
-                            Select::make('product_id')
-                                ->label(__('vendor_bill.product'))
-                                ->searchable()
-                                ->getSearchResultsUsing(fn(string $search): array => Product::where('name', 'like', "%{$search}%")->limit(50)->pluck('name', 'id')->toArray())
-                                ->getOptionLabelUsing(fn($value): ?string => Product::find($value)?->name)
+                            TranslatableSelect::standard(
+                                'product_id',
+                                \App\Models\Product::class,
+                                ['name', 'sku', 'description'],
+                                __('vendor_bill.product')
+                            )
                                 ->reactive()
                                 ->afterStateUpdated(function (callable $set, $state) {
                                     if ($state) {
@@ -252,18 +253,7 @@ class VendorBillResource extends Resource
                                 ->currencyField('../../currency_id')
                                 ->required()
                                 ->columnSpan(1),
-                            Select::make('tax_id')
-                                ->label(__('vendor_bill.tax'))
-                                ->searchable()
-                                ->getSearchResultsUsing(
-                                    fn(string $search): array =>
-                                    Tax::whereRaw('LOWER(JSON_UNQUOTE(JSON_EXTRACT(name, "$.' . app()->getLocale() . '"))) LIKE ?', ['%' . strtolower($search) . '%'])
-                                        ->limit(50)
-                                        ->get()
-                                        ->mapWithKeys(fn($tax) => [$tax->id => $tax->getTranslation('name', app()->getLocale())])
-                                        ->toArray()
-                                )
-                                ->getOptionLabelUsing(fn($value): ?string => Tax::find($value)?->getTranslation('name', app()->getLocale()))
+                            TranslatableSelect::make('tax_id', \App\Models\Tax::class, __('vendor_bill.tax'))
                                 ->createOptionForm([
                                     Select::make('company_id')
                                         ->relationship('company', 'name')
@@ -295,18 +285,12 @@ class VendorBillResource extends Resource
                                         ->modalWidth('lg');
                                 })
                                 ->columnSpan(1),
-                            Select::make('expense_account_id')
-                                ->label(__('vendor_bill.expense_account'))
-                                ->searchable()
-                                ->getSearchResultsUsing(
-                                    fn(string $search): array =>
-                                    Account::whereRaw('LOWER(JSON_UNQUOTE(JSON_EXTRACT(name, "$.' . app()->getLocale() . '"))) LIKE ?', ['%' . strtolower($search) . '%'])
-                                        ->limit(50)
-                                        ->get()
-                                        ->mapWithKeys(fn($account) => [$account->id => $account->getTranslation('name', app()->getLocale())])
-                                        ->toArray()
-                                )
-                                ->getOptionLabelUsing(fn($value): ?string => Account::find($value)?->getTranslation('name', app()->getLocale()))
+                            TranslatableSelect::withFormatter(
+                                'expense_account_id',
+                                \App\Models\Account::class,
+                                fn($account) => [$account->id => $account->getTranslatedLabel('name') . ' (' . $account->code . ')'],
+                                __('vendor_bill.expense_account')
+                            )
                                 ->required()
                                 ->createOptionForm([
                                     Select::make('company_id')
@@ -339,19 +323,18 @@ class VendorBillResource extends Resource
                                         ->modalWidth('lg');
                                 })
                                 ->columnSpan(2),
-                            Select::make('analytic_account_id')
-                                ->label(__('vendor_bill.analytic_account'))
-                                ->searchable()
-                                ->getSearchResultsUsing(fn(string $search): array => AnalyticAccount::where('name', 'like', "%{$search}%")->limit(50)->pluck('name', 'id')->toArray())
-                                ->getOptionLabelUsing(fn($value): ?string => AnalyticAccount::find($value)?->name)
+                            TranslatableSelect::standard(
+                                'analytic_account_id',
+                                \App\Models\AnalyticAccount::class,
+                                ['name'],
+                                __('vendor_bill.analytic_account')
+                            )
                                 ->createOptionForm([
                                     Select::make('company_id')
                                         ->relationship('company', 'name')
                                         ->label(__('analytic_account.company'))
                                         ->required(),
-                                    Select::make('currency_id')
-                                        ->relationship('currency', 'name')
-                                        ->label(__('analytic_account.currency')),
+                                    TranslatableSelect::make('currency_id', \App\Models\Currency::class, __('analytic_account.currency')),
                                     TextInput::make('name')
                                         ->label(__('analytic_account.name'))
                                         ->required()
