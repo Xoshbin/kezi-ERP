@@ -75,57 +75,16 @@ class ProductResource extends Resource
 
     public static function form(Schema $schema): Schema
     {
-        $company = Company::first();
-
         return $schema->components([
             Section::make(__('product.basic_information'))
                 ->description(__('product.basic_information_description'))
                 ->icon('heroicon-o-cube')
                 ->schema([
-                    Grid::make(3)->schema([
-                        Select::make('company_id')
-                            ->relationship('company', 'name')
-                            ->label(__('product.company'))
-                            ->required()
-                            ->live()
-                            ->searchable()
-                            ->default($company?->id)
-                            ->afterStateUpdated(function (callable $set, $state) {
-                                $company = Company::find($state);
-                                if ($company) {
-                                    $set('currency_id', $company->currency_id);
-                                }
-                            })
-                            ->createOptionForm([
-                                TextInput::make('name')
-                                    ->label(__('company.name'))
-                                    ->required()
-                                    ->maxLength(255),
-                                Textarea::make('address')
-                                    ->label(__('company.address'))
-                                    ->columnSpanFull(),
-                                TextInput::make('tax_id')
-                                    ->label(__('company.tax_id'))
-                                    ->maxLength(255),
-                                Select::make('currency_id')
-                                    ->label(__('company.currency_id'))
-                                    ->relationship('currency', 'name')
-                                    ->required(),
-                                TextInput::make('fiscal_country')
-                                    ->label(__('company.fiscal_country'))
-                                    ->required()
-                                    ->maxLength(255),
-                            ])
-                            ->createOptionModalHeading(__('common.modal_title_create_company'))
-                            ->createOptionAction(function (Action $action) {
-                                return $action
-                                    ->modalWidth('lg');
-                            }),
+                    Grid::make(2)->schema([
                         TextInput::make('name')
                             ->label(__('product.name'))
                             ->required()
-                            ->maxLength(255)
-                            ->columnSpan(2),
+                            ->maxLength(255),
                     ]),
                     Grid::make(2)->schema([
                         TextInput::make('sku')

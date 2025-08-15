@@ -10,8 +10,8 @@ use Carbon\Carbon;
 use Filament\Forms\Components\DatePicker;
 use Filament\Pages\Page;
 use Filament\Actions\Action;
+use Filament\Facades\Filament;
 use Illuminate\Contracts\Support\Htmlable;
-use App\Models\Company;
 
 class ViewBalanceSheet extends Page
 {
@@ -80,7 +80,7 @@ class ViewBalanceSheet extends Page
             'asOfDate' => 'required|date',
         ]);
 
-        $company = Company::find(auth()->user()->company_id);
+        $company = Filament::getTenant();
         $service = app(BalanceSheetService::class);
 
         $report = $service->generate(

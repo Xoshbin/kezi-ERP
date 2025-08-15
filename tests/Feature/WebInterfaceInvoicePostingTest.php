@@ -40,7 +40,7 @@ class WebInterfaceInvoicePostingTest extends TestCase
         // Post each invoice one by one (simulating the web interface scenario)
         foreach ($draftInvoices as $invoice) {
             // Simulate the web interface posting action using Livewire
-            Livewire::test(Invoices\Pages\EditInvoice::class, [
+            Livewire::test(\App\Filament\Resources\Invoices\Pages\EditInvoice::class, [
                 'record' => $invoice->getRouteKey(),
             ])
                 ->callAction('confirm')
@@ -109,7 +109,7 @@ class WebInterfaceInvoicePostingTest extends TestCase
         // Post all invoices rapidly (simulating the original error scenario)
         foreach ($draftInvoices as $invoice) {
             // Use Livewire to simulate the web interface action
-            Livewire::test(Invoices\Pages\EditInvoice::class, [
+            Livewire::test(\App\Filament\Resources\Invoices\Pages\EditInvoice::class, [
                 'record' => $invoice->getRouteKey(),
             ])
                 ->callAction('confirm')

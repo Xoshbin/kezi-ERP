@@ -15,13 +15,11 @@ use Filament\Models\Contracts\FilamentUser;
 use Illuminate\Notifications\DatabaseNotification;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Notifications\DatabaseNotificationCollection;
 
 /**
  * @property int $id
- * @property int|null $company_id
  * @property string $name
  * @property string $email
  * @property Carbon|null $email_verified_at
@@ -61,7 +59,6 @@ class User extends Authenticatable implements FilamentUser, HasTenants
         'name',
         'email',
         'password',
-        'company_id',
     ];
 
     /**

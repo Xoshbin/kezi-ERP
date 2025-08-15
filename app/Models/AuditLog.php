@@ -74,6 +74,7 @@ class AuditLog extends Model
      */
     protected $fillable = [
         'user_id',
+        'company_id',
         'event_type',
         'auditable_type',
         'auditable_id',
@@ -110,6 +111,17 @@ class AuditLog extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    /**
+     * Get the company that this audit log belongs to.
+     * Audit logs should be company-specific for proper accounting audit trails.
+     *
+     * @return BelongsTo
+     */
+    public function company(): BelongsTo
+    {
+        return $this->belongsTo(Company::class);
     }
 
     /**

@@ -3,6 +3,7 @@
 namespace Tests\Feature\Filament;
 
 use App\Filament\Resources\VendorBills\VendorBillResource;
+use App\Filament\Resources\VendorBills\Pages\CreateVendorBill;
 use App\Models\Account;
 use App\Models\Company;
 use App\Models\Currency;
@@ -33,7 +34,13 @@ class VendorBillAttachmentFilamentTest extends TestCase
 
         // Create test data
         $this->company = Company::factory()->create();
-        $this->user = User::factory()->create(['company_id' => $this->company->id]);
+        $this->user = User::factory()->create();
+        $this->user->companies()->attach($this->company);
+        $this->actingAs($this->user);
+
+        // Set up Filament tenant context
+        \Filament\Facades\Filament::setTenant($this->company);
+
         $this->currency = Currency::factory()->create(['code' => 'USD', 'decimal_places' => 2]);
         $this->vendor = Partner::factory()->create(['company_id' => $this->company->id]);
         $this->expenseAccount = Account::factory()->create(['company_id' => $this->company->id]);
@@ -55,9 +62,8 @@ class VendorBillAttachmentFilamentTest extends TestCase
     {
         $file = UploadedFile::fake()->create('test-invoice.pdf', 100, 'application/pdf');
 
-        Livewire::test(VendorBills\Pages\CreateVendorBill::class)
+        Livewire::test(CreateVendorBill::class)
             ->fillForm([
-                'company_id' => $this->company->id,
                 'vendor_id' => $this->vendor->id,
                 'currency_id' => $this->currency->id,
                 'bill_reference' => 'BILL-001',

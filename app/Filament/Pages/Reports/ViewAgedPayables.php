@@ -4,7 +4,6 @@ namespace App\Filament\Pages\Reports;
 
 use Filament\Schemas\Schema;
 use Filament\Schemas\Components\Section;
-use App\Models\Company;
 use App\Services\Reports\AgedPayableService;
 use App\Support\NumberFormatter;
 use Carbon\Carbon;
@@ -82,7 +81,7 @@ class ViewAgedPayables extends Page
             'asOfDate' => 'required|date',
         ]);
 
-        $company = Company::find(Filament::auth()->user()->company_id);
+        $company = Filament::getTenant();
         $service = app(AgedPayableService::class);
 
         $report = $service->generate(
