@@ -28,6 +28,7 @@ use App\Filament\Resources\AssetResource\Pages;
 use App\DataTransferObjects\Assets\CreateAssetDTO;
 use App\DataTransferObjects\Assets\UpdateAssetDTO;
 use App\Filament\Resources\AssetResource\RelationManagers;
+use App\Filament\Support\TranslatableSelect;
 
 class AssetResource extends Resource
 {
@@ -87,17 +88,26 @@ class AssetResource extends Resource
                             ->mapWithKeys(fn (DepreciationMethod $method) => [$method->value => $method->label()])
                     )
                     ->required(),
-                Select::make('asset_account_id')
-                    ->label(__('asset.asset_account'))
-                    ->relationship('assetAccount', 'name')
+                TranslatableSelect::withFormatter(
+                    'asset_account_id',
+                    \App\Models\Account::class,
+                    fn($account) => [$account->id => $account->getTranslatedLabel('name') . ' (' . $account->code . ')'],
+                    __('asset.asset_account')
+                )
                     ->required(),
-                Select::make('depreciation_expense_account_id')
-                    ->label(__('asset.depreciation_expense_account'))
-                    ->relationship('depreciationExpenseAccount', 'name')
+                TranslatableSelect::withFormatter(
+                    'depreciation_expense_account_id',
+                    \App\Models\Account::class,
+                    fn($account) => [$account->id => $account->getTranslatedLabel('name') . ' (' . $account->code . ')'],
+                    __('asset.depreciation_expense_account')
+                )
                     ->required(),
-                Select::make('accumulated_depreciation_account_id')
-                    ->label(__('asset.accumulated_depreciation_account'))
-                    ->relationship('accumulatedDepreciationAccount', 'name')
+                TranslatableSelect::withFormatter(
+                    'accumulated_depreciation_account_id',
+                    \App\Models\Account::class,
+                    fn($account) => [$account->id => $account->getTranslatedLabel('name') . ' (' . $account->code . ')'],
+                    __('asset.accumulated_depreciation_account')
+                )
                     ->required(),
             ]);
     }
