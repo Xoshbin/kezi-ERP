@@ -130,10 +130,6 @@ class ProductResource extends Resource
                             ->searchable()
                             ->preload()
                             ->createOptionForm([
-                                Select::make('company_id')
-                                    ->label(__('account.company'))
-                                    ->relationship('company', 'name')
-                                    ->required(),
                                 TextInput::make('code')
                                     ->label(__('account.code'))
                                     ->required()
@@ -166,10 +162,6 @@ class ProductResource extends Resource
                             ->searchable()
                             ->preload()
                             ->createOptionForm([
-                                Select::make('company_id')
-                                    ->label(__('account.company'))
-                                    ->relationship('company', 'name')
-                                    ->required(),
                                 TextInput::make('code')
                                     ->label(__('account.code'))
                                     ->required()
@@ -228,10 +220,6 @@ class ProductResource extends Resource
                             ->preload()
                             ->visible(fn (Get $get) => $get('type') === ProductType::Storable->value)
                             ->createOptionForm([
-                                Select::make('company_id')
-                                    ->label(__('account.company'))
-                                    ->relationship('company', 'name')
-                                    ->required(),
                                 TextInput::make('code')
                                     ->label(__('account.code'))
                                     ->required()
@@ -263,10 +251,6 @@ class ProductResource extends Resource
                             ->preload()
                             ->visible(fn (Get $get) => $get('type') === ProductType::Storable->value)
                             ->createOptionForm([
-                                Select::make('company_id')
-                                    ->label(__('account.company'))
-                                    ->relationship('company', 'name')
-                                    ->required(),
                                 TextInput::make('code')
                                     ->label(__('account.code'))
                                     ->required()
@@ -300,10 +284,6 @@ class ProductResource extends Resource
                             ->preload()
                             ->visible(fn (Get $get) => $get('type') === ProductType::Storable->value)
                             ->createOptionForm([
-                                Select::make('company_id')
-                                    ->label(__('account.company'))
-                                    ->relationship('company', 'name')
-                                    ->required(),
                                 TextInput::make('code')
                                     ->label(__('account.code'))
                                     ->required()
@@ -335,10 +315,6 @@ class ProductResource extends Resource
                             ->preload()
                             ->visible(fn (Get $get) => $get('type') === ProductType::Storable->value)
                             ->createOptionForm([
-                                Select::make('company_id')
-                                    ->label(__('account.company'))
-                                    ->relationship('company', 'name')
-                                    ->required(),
                                 TextInput::make('code')
                                     ->label(__('account.code'))
                                     ->required()

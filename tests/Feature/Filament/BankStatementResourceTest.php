@@ -36,6 +36,10 @@ it('can create a bank statement', function () {
     /** @var \App\Models\Journal $bankJournal */
     $bankJournal = Journal::factory()->for($this->company)->create(['type' => JournalType::Bank]);
 
+    // Verify the journal setup is correct
+    expect($bankJournal->company_id)->toBe($this->company->id);
+    expect($bankJournal->type)->toBe(JournalType::Bank);
+
     livewire(\App\Filament\Resources\BankStatements\Pages\CreateBankStatement::class)
         ->fillForm([
             'company_id' => $this->company->id,
@@ -88,7 +92,6 @@ it('can validate input on create', function () {
         ])
         ->call('create')
         ->assertHasFormErrors([
-            'company_id' => 'required',
             'currency_id' => 'required',
             'journal_id' => 'required',
             'reference' => 'required',
@@ -109,8 +112,15 @@ it('can render the edit page', function () {
 });
 
 it('can edit a bank statement', function () {
+    // Create a Bank journal for the bank statement
+    $bankJournal = Journal::factory()->create([
+        'company_id' => $this->company->id,
+        'type' => \App\Enums\Accounting\JournalType::Bank,
+    ]);
+
     $bankStatement = BankStatement::factory()->create([
         'company_id' => $this->company->id,
+        'journal_id' => $bankJournal->id,
         'reference' => 'Old Ref',
     ]);
 
@@ -132,6 +142,7 @@ it('can edit a bank statement', function () {
     ])
         ->fillForm([
             'reference' => 'New Ref',
+            'journal_id' => $bankJournal->id,
             'starting_balance' => 2000.00,
             'ending_balance' => 2500.00,
         ])

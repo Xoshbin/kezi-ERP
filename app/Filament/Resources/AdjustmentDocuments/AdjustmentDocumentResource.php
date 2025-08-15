@@ -74,8 +74,6 @@ class AdjustmentDocumentResource extends Resource
 
     public static function form(Schema $schema): Schema
     {
-        $company = Company::first();
-
         return $schema->components([
             Grid::make(['lg' => 3])->schema([
                 Group::make()->schema([
@@ -84,26 +82,12 @@ class AdjustmentDocumentResource extends Resource
                     ->icon('heroicon-o-document-text')
                     ->schema([
                         Grid::make(3)->schema([
-                            Select::make('company_id')
-                                ->relationship('company', 'name')
-                                ->label(__('adjustment_document.company'))
-                                ->required()
-                                ->live()
-                                ->default($company?->id)
-                                ->afterStateUpdated(function (callable $set, $state) {
-                                    $company = Company::find($state);
-                                    if ($company) {
-                                        $set('currency_id', $company->currency_id);
-                                    }
-                                })
-                                ->searchable()
-                                ->preload(),
                             Select::make('currency_id')
                                 ->relationship('currency', 'name')
                                 ->label(__('adjustment_document.currency'))
                                 ->required()
                                 ->live()
-                                ->default($company?->currency_id)
+                                ->default(fn() => \Filament\Facades\Filament::getTenant()?->currency_id)
                                 ->disabled(fn (Get $get): bool => !empty($get('original_invoice_id')) || !empty($get('original_vendor_bill_id')))
                                 ->searchable()
                                 ->preload(),
@@ -125,7 +109,7 @@ class AdjustmentDocumentResource extends Resource
                             DatePicker::make('date')
                                 ->label(__('adjustment_document.adjustment_date'))
                                 ->required()
-                                ->rules([new NotInLockedPeriod($company)])
+                                ->rules([new NotInLockedPeriod()])
                                 ->default(now())
                                 ->native(false),
                         ]),

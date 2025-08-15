@@ -35,7 +35,7 @@ class CreatePayment extends CreateRecord
     protected function handleRecordCreation(array $data): Model
     {
         $paymentDTO = new CreatePaymentDTO(
-            company_id: $data['company_id'],
+            company_id: \Filament\Facades\Filament::getTenant()->id,
             journal_id: $data['journal_id'],
             currency_id: $data['currency_id'],
             payment_date: $data['payment_date'],

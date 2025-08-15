@@ -49,6 +49,9 @@ class CreateVendorBill extends CreateRecord
         $attachments = $data['attachments'] ?? [];
         unset($data['attachments']);
 
+        // Add company_id from tenant context
+        $data['company_id'] = \Filament\Facades\Filament::getTenant()->id;
+
         $vendorBillDTO = new CreateVendorBillDTO(...$data);
         $vendorBill = app(CreateVendorBillAction::class)->execute($vendorBillDTO);
 

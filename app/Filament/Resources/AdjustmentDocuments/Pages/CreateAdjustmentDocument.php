@@ -73,7 +73,7 @@ class CreateAdjustmentDocument extends CreateRecord
         }
 
         $dto = new CreateAdjustmentDocumentDTO(
-            company_id: $data['company_id'],
+            company_id: \Filament\Facades\Filament::getTenant()->id,
             type: AdjustmentDocumentType::from($data['type']),
             date: $data['date'],
             reference_number: $data['reference_number'],

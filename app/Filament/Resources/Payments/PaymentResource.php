@@ -69,23 +69,9 @@ class PaymentResource extends Resource
 
     public static function form(Schema $schema): Schema
     {
-        $company = Company::first();
-
         return $schema->components([
             Section::make()
                 ->schema([
-                    Select::make('company_id')
-                        ->relationship('company', 'name')
-                        ->label(__('payment.form.company_id'))
-                        ->required()
-                        ->live()
-                        ->default($company?->id)
-                        ->afterStateUpdated(function (callable $set, $state) {
-                            $company = Company::find($state);
-                            if ($company) {
-                                $set('currency_id', $company->currency_id);
-                            }
-                        }),
                     Select::make('journal_id')
                         ->relationship('journal', 'name')
                         ->label(__('payment.form.journal_id'))
@@ -95,7 +81,7 @@ class PaymentResource extends Resource
                         ->label(__('payment.form.currency_id'))
                         ->required()
                         ->live()
-                        ->default($company?->currency_id),
+                        ->default(fn() => \Filament\Facades\Filament::getTenant()?->currency_id),
                     DatePicker::make('payment_date')
                         ->default(now())
                         ->label(__('payment.form.payment_date'))
