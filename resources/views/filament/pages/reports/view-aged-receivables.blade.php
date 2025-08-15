@@ -7,7 +7,7 @@
 
         <!-- Report Display -->
         @if($reportData)
-            <div class="bg-white dark:bg-gray-800 shadow rounded-lg p-6">
+            <div class="bg-white dark:bg-gray-800 shadow-sm rounded-lg p-6">
                 <div class="mb-6">
                     <h2 class="text-xl font-semibold text-gray-900 dark:text-white">
                         {{ __('reports.aged_receivables_report') }}
