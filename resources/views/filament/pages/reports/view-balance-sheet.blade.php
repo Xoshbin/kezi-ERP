@@ -1,9 +1,9 @@
 <x-filament-panels::page>
     <div class="space-y-6">
         <!-- Date Form -->
-        <x-filament-panels::form wire:submit="generateReport">
+        <form wire:submit="generateReport">
             {{ $this->form }}
-        </x-filament-panels::form>
+        </form>
 
         <!-- Report Display -->
         @if($reportData)
