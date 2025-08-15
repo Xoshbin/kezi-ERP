@@ -189,9 +189,9 @@ class Company extends Model
      * @return BelongToMany
      */
     public function users(): BelongsToMany
-     {
-        return $this->belongsToMany(User::class,'company_user')->withTimestamps();
-     }
+    {
+        return $this->belongsToMany(User::class, 'company_user')->withTimestamps();
+    }
 
     /**
      * Get the audit logs associated with actions performed within this company.
