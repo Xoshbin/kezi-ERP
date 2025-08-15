@@ -5,6 +5,7 @@ namespace App\Filament\Resources\Invoices;
 use Filament\Schemas\Schema;
 use Filament\Schemas\Components\Section;
 use Filament\Forms\Components\Select;
+use App\Filament\Support\TranslatableSelect;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
 use Filament\Actions\Action;
@@ -82,11 +83,13 @@ class InvoiceResource extends Resource
         return $schema->components([
             Section::make()
                 ->schema([
-                    Select::make('customer_id')
-                        ->relationship('customer', 'name')
-                        ->label(__('invoice.customer'))
+                    TranslatableSelect::standard(
+                        'customer_id',
+                        \App\Models\Partner::class,
+                        ['name', 'email', 'contact_person'],
+                        __('invoice.customer')
+                    )
                         ->required()
-                        ->searchable()
                         ->createOptionForm([
                             TextInput::make('name')
                                 ->label(__('partner.name'))
@@ -118,12 +121,9 @@ class InvoiceResource extends Resource
                             return $action
                                 ->modalWidth('lg');
                         }),
-                    Select::make('currency_id')
-                        ->relationship('currency', 'name')
-                        ->label(__('invoice.currency'))
+                    TranslatableSelect::make('currency_id', \App\Models\Currency::class, __('invoice.currency'))
                         ->required()
                         ->live()
-                        ->searchable()
                         ->default(fn() => \Filament\Facades\Filament::getTenant()?->currency_id)
                         ->createOptionForm([
                             TextInput::make('code')
@@ -153,9 +153,7 @@ class InvoiceResource extends Resource
                             return $action
                                 ->modalWidth('lg');
                         }),
-                    Select::make('fiscal_position_id')
-                        ->relationship('fiscalPosition', 'name')
-                        ->label(__('invoice.fiscal_position')),
+                    TranslatableSelect::make('fiscal_position_id', \App\Models\FiscalPosition::class, __('invoice.fiscal_position')),
                     DatePicker::make('invoice_date')
                         ->label(__('invoice.invoice_date'))
                         ->default(now())

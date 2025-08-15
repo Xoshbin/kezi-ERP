@@ -36,6 +36,7 @@ use App\Models\Partner;
 use App\Models\Company;
 use App\Filament\Forms\Components\MoneyInput;
 use Filament\Infolists;
+use App\Filament\Support\TranslatableSelect;
 
 class BankStatementResource extends Resource
 {
@@ -70,9 +71,7 @@ class BankStatementResource extends Resource
         return $schema->components([
             Section::make()
                 ->schema([
-                    Select::make('currency_id')
-                        ->relationship('currency', 'name')
-                        ->label(__('bank_statement.currency'))
+                    TranslatableSelect::make('currency_id', \App\Models\Currency::class, __('bank_statement.currency'))
                         ->required()
                         ->live()
                         ->default(fn() => \Filament\Facades\Filament::getTenant()?->currency_id),
@@ -137,11 +136,12 @@ class BankStatementResource extends Resource
                                 ->required()
                                 ->maxLength(255)
                                 ->columnSpan(4),
-                            Select::make('partner_id')
-                                ->label(__('bank_statement.partner'))
-                                ->searchable()
-                                ->getSearchResultsUsing(fn(string $search): array => Partner::where('name', 'like', "%{$search}%")->limit(50)->pluck('name', 'id')->toArray())
-                                ->getOptionLabelUsing(fn($value): ?string => Partner::find($value)?->name)
+                            TranslatableSelect::standard(
+                                'partner_id',
+                                \App\Models\Partner::class,
+                                ['name', 'email', 'contact_person'],
+                                __('bank_statement.partner')
+                            )
                                 ->columnSpan(3),
                             MoneyInput::make('amount')
                                 ->label(__('bank_statement.amount'))

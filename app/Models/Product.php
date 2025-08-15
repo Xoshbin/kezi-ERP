@@ -61,6 +61,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class Product extends Model
 {
     use HasFactory, SoftDeletes;
+    use \App\Traits\TranslatableSearch;
 
     protected $table = 'products';
 
@@ -92,6 +93,16 @@ class Product extends Model
         'deleted_at' => 'datetime',
         'type' => ProductType::class,
     ];
+
+    /**
+     * Get the non-translatable fields that should be searched.
+     *
+     * @return array
+     */
+    public function getNonTranslatableSearchFields(): array
+    {
+        return ['name', 'sku', 'description'];
+    }
 
     /**
      * Get the Company that owns the Product.

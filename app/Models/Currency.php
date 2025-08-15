@@ -16,6 +16,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Spatie\Translatable\HasTranslations;
+use App\Traits\TranslatableSearch;
 
 /**
  * Class Currency
@@ -64,7 +65,7 @@ use Spatie\Translatable\HasTranslations;
 #[ObservedBy([CurrencyObserver::class])]
 class Currency extends Model
 {
-    use HasFactory, HasTranslations;
+    use HasFactory, HasTranslations, TranslatableSearch;
 
     public array $translatable = ['name'];
 

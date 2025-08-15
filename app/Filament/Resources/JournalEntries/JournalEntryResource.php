@@ -28,6 +28,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Rules\ActiveAccount;
 use App\Filament\Resources\JournalEntryResource\Pages;
+use App\Filament\Support\TranslatableSelect;
 use App\Filament\Resources\JournalEntryResource\RelationManagers;
 use App\Models\Account;
 use App\Models\Company;
@@ -68,16 +69,10 @@ class JournalEntryResource extends Resource
     {
         return $schema
             ->components([
-                Select::make('journal_id')
-                    ->label(__('journal_entry.journal'))
-                    ->relationship('journal', 'name')
-                    ->searchable()
+                TranslatableSelect::make('journal_id', \App\Models\Journal::class, __('journal_entry.journal'))
                     ->required()
                     ->default(Journal::where('type', JournalType::Miscellaneous)->first()?->id),
-                Select::make('currency_id')
-                    ->label(__('journal_entry.currency'))
-                    ->relationship('currency', 'name')
-                    ->searchable()
+                TranslatableSelect::make('currency_id', \App\Models\Currency::class, __('journal_entry.currency'))
                     ->required()
                     ->live()
                     ->default(fn() => \Filament\Facades\Filament::getTenant()?->currency_id),
@@ -97,10 +92,12 @@ class JournalEntryResource extends Resource
                     ->disabled(fn (?JournalEntry $record) => $record && $record->status !== 'draft')
                     ->deletable(fn (?JournalEntry $record) => !$record || !$record->is_posted)
                     ->schema([
-                        Select::make('account_id')
-                            ->label(__('journal_entry.account'))
-                            ->options(Account::pluck('name', 'id'))
-                            ->searchable()
+                        TranslatableSelect::withFormatter(
+                            'account_id',
+                            \App\Models\Account::class,
+                            fn($account) => [$account->id => $account->getTranslatedLabel('name') . ' (' . $account->code . ')'],
+                            __('journal_entry.account')
+                        )
                             ->rules([new ActiveAccount])
                             ->required()
                             ->columnSpan(2),
@@ -116,15 +113,19 @@ class JournalEntryResource extends Resource
                             ->currencyField('../../currency_id')
                             ->columnSpan(1)
                             ->live(onBlur: true),
-                        Select::make('partner_id')
-                            ->label(__('journal_entry.partner'))
-                            ->options(Partner::pluck('name', 'id'))
-                            ->searchable()
+                        TranslatableSelect::standard(
+                            'partner_id',
+                            \App\Models\Partner::class,
+                            ['name', 'email', 'contact_person'],
+                            __('journal_entry.partner')
+                        )
                             ->columnSpan(2),
-                        Select::make('analytic_account_id')
-                            ->label(__('journal_entry.analytic_account'))
-                            ->options(AnalyticAccountModel::pluck('name', 'id'))
-                            ->searchable()
+                        TranslatableSelect::standard(
+                            'analytic_account_id',
+                            \App\Models\AnalyticAccount::class,
+                            ['name'],
+                            __('journal_entry.analytic_account')
+                        )
                             ->columnSpan(2),
                         TextInput::make('description')
                             ->label(__('journal_entry.description'))
