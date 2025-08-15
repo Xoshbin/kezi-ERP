@@ -3,15 +3,16 @@
 namespace App\Models;
 
 use Carbon\Carbon;
-use Illuminate\Database\Eloquent\Collection;
-use Database\Factories\CompanyFactory;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use App\Observers\CompanyObserver;
+use Database\Factories\CompanyFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 /**
  * Class Company
@@ -185,12 +186,12 @@ class Company extends Model
      * Get the users associated with this company.
      * In a multi-company setup, users typically belong to a specific company [1].
      *
-     * @return HasMany
+     * @return BelongToMany
      */
-    public function users(): HasMany
-    {
-        return $this->hasMany(User::class);
-    }
+    public function users(): BelongsToMany
+     {
+        return $this->belongsToMany(User::class,'company_user')->withTimestamps();
+     }
 
     /**
      * Get the audit logs associated with actions performed within this company.
