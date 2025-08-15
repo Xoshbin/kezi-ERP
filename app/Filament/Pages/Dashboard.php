@@ -10,8 +10,8 @@ use Filament\Pages\Dashboard as BaseDashboard;
 
 class Dashboard extends BaseDashboard
 {
-    protected static ?string $navigationIcon = 'heroicon-o-home';
-    protected static string $view = 'filament-panels::pages.dashboard';
+    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-home';
+    protected string $view = 'filament-panels::pages.dashboard';
 
     public static function getNavigationLabel(): string
     {
@@ -48,7 +48,7 @@ class Dashboard extends BaseDashboard
         ];
     }
 
-    public function getColumns(): int | string | array
+    public function getColumns(): int|array
     {
         return [
             'md' => 2,

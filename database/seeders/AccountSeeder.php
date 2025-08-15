@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use Exception;
 use App\Models\Account;
 use App\Models\Company;
 use Illuminate\Database\Seeder;
@@ -17,7 +18,7 @@ class AccountSeeder extends Seeder
         $company = Company::where('name', 'Jmeryar Solutions')->first();
 
         if (!$company) {
-            throw new \Exception('Company "Jmeryar Solutions" not found. Please run the CompanySeeder first.');
+            throw new Exception('Company "Jmeryar Solutions" not found. Please run the CompanySeeder first.');
         }
 
         $accounts = [

@@ -2,12 +2,13 @@
 
 namespace Database\Factories;
 
+use App\Models\BankStatementLine;
 use App\Models\BankStatement;
 use Brick\Money\Money;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\BankStatementLine>
+ * @extends Factory<BankStatementLine>
  */
 class BankStatementLineFactory extends Factory
 {

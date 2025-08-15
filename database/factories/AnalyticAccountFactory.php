@@ -2,12 +2,13 @@
 
 namespace Database\Factories;
 
+use App\Models\AnalyticAccount;
 use App\Models\Company;
 use App\Models\Currency;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\AnalyticAccount>
+ * @extends Factory<AnalyticAccount>
  */
 class AnalyticAccountFactory extends Factory
 {

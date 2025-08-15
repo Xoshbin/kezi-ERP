@@ -2,6 +2,7 @@
 
 namespace App\Exceptions;
 
+use Illuminate\Http\Request;
 use Exception;
 use Throwable;
 use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
@@ -24,7 +25,7 @@ class BalanceSheetNotBalancedException extends Exception
     /**
      * Render the exception into an HTTP response.
      *
-     * @param \Illuminate\Http\Request $request
+     * @param Request $request
      * @return SymfonyResponse
      */
     public function render($request): SymfonyResponse

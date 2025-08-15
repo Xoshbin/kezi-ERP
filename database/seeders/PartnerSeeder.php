@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use Exception;
 use App\Enums\Accounting\AccountType;
 use App\Models\Account;
 use App\Models\Company;
@@ -20,7 +21,7 @@ class PartnerSeeder extends Seeder
         try {
             $company = Company::where('name', 'Jmeryar Solutions')->firstOrFail();
         } catch (ModelNotFoundException) {
-            throw new \Exception("Company 'Jmeryar Solutions' not found. Please run the CompanySeeder first.");
+            throw new Exception("Company 'Jmeryar Solutions' not found. Please run the CompanySeeder first.");
         }
 
         // Get default accounts for partner assignment
@@ -33,7 +34,7 @@ class PartnerSeeder extends Seeder
             ->first();
 
         if (!$defaultReceivableAccount || !$defaultPayableAccount) {
-            throw new \Exception("Default receivable/payable accounts not found. Please run the AccountSeeder first.");
+            throw new Exception("Default receivable/payable accounts not found. Please run the AccountSeeder first.");
         }
 
         $partners = [

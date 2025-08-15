@@ -2,6 +2,8 @@
 
 namespace App\Filament\Pages\Reports;
 
+use Filament\Schemas\Schema;
+use Filament\Schemas\Components\Section;
 use App\Models\Company;
 use App\Models\Partner;
 use App\Services\Reports\PartnerLedgerService;
@@ -9,18 +11,16 @@ use App\Support\NumberFormatter;
 use Carbon\Carbon;
 use Filament\Facades\Filament;
 use Filament\Forms\Components\DatePicker;
-use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Form;
 use Filament\Pages\Page;
 use Filament\Actions\Action;
 use Illuminate\Contracts\Support\Htmlable;
 
 class ViewPartnerLedger extends Page
 {
-    protected static ?string $navigationIcon = 'heroicon-o-document-text';
-    protected static string $view = 'filament.pages.reports.view-partner-ledger';
-    protected static ?string $navigationGroup = null;
+    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-document-text';
+    protected string $view = 'filament.pages.reports.view-partner-ledger';
+    protected static string | \UnitEnum | null $navigationGroup = null;
 
     public static function getNavigationGroup(): ?string
     {
@@ -54,10 +54,10 @@ class ViewPartnerLedger extends Page
         $this->endDate = Carbon::now()->endOfMonth()->toDateString();
     }
 
-    public function form(Form $form): Form
+    public function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
+        return $schema
+            ->components([
                 Section::make(__('reports.filter_options'))
                     ->schema([
                         Select::make('partnerId')

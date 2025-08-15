@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use Exception;
 use App\Models\Account;
 use App\Models\Asset;
 use App\Models\Company;
@@ -15,31 +16,31 @@ class AssetSeeder extends Seeder
      * Run the database seeds.
      *
      * @return void
-     * @throws \Exception
+     * @throws Exception
      */
     public function run()
     {
         // Fetch the company
         $company = Company::where('name', 'Jmeryar Solutions')->first();
         if (!$company) {
-            throw new \Exception("Company 'Jmeryar Solutions' not found. Please run CompanySeeder.");
+            throw new Exception("Company 'Jmeryar Solutions' not found. Please run CompanySeeder.");
         }
 
         // Fetch accounts
         $assetAccount = Account::where('code', '1200')->where('company_id', $company->id)->first();
         if (!$assetAccount) {
-            throw new \Exception("Account with code 1200 (Fixed Assets) not found. Please run AccountSeeder.");
+            throw new Exception("Account with code 1200 (Fixed Assets) not found. Please run AccountSeeder.");
         }
 
         $depreciationAccount = Account::where('code', '5100')->where('company_id', $company->id)->first();
         if (!$depreciationAccount) {
-            throw new \Exception("Account with code 5100 (Depreciation Expense) not found. Please run AccountSeeder.");
+            throw new Exception("Account with code 5100 (Depreciation Expense) not found. Please run AccountSeeder.");
         }
 
         // Fetch the journal
         $journal = Journal::where('name->en', 'Fixed Assets')->where('company_id', $company->id)->first();
         if (!$journal) {
-            throw new \Exception("Journal 'Fixed Assets' not found. Please run JournalSeeder.");
+            throw new Exception("Journal 'Fixed Assets' not found. Please run JournalSeeder.");
         }
 
         Asset::updateOrCreate(

@@ -1,6 +1,6 @@
 <?php
 
-use App\Filament\Resources\JournalEntryResource;
+use App\Filament\Resources\JournalEntries\JournalEntryResource;
 use App\Models\Account;
 use App\Models\Company;
 use App\Models\Currency;
@@ -28,7 +28,7 @@ it('can render the create page', function () {
 });
 
 it('can create a journal entry', function () {
-    livewire(JournalEntryResource\Pages\CreateJournalEntry::class)
+    livewire(JournalEntries\Pages\CreateJournalEntry::class)
         ->fillForm([
             'company_id' => $this->company->id,
             'journal_id' => $this->company->default_bank_journal_id,
@@ -81,7 +81,7 @@ it('can create a journal entry', function () {
 });
 
 it('can validate input', function () {
-    livewire(JournalEntryResource\Pages\CreateJournalEntry::class)
+    livewire(JournalEntries\Pages\CreateJournalEntry::class)
         ->fillForm([
             'company_id' => $this->company->id,
             'journal_id' => $this->company->default_bank_journal_id,
@@ -101,7 +101,7 @@ it('can render the edit page', function () {
 it('can edit a journal entry', function () {
     $journalEntry = JournalEntry::factory()->for($this->company)->create();
 
-    livewire(JournalEntryResource\Pages\EditJournalEntry::class, [
+    livewire(JournalEntries\Pages\EditJournalEntry::class, [
         'record' => $journalEntry->getRouteKey(),
     ])
         ->fillForm([
@@ -137,7 +137,7 @@ it('can edit a journal entry', function () {
 it('can delete a journal entry', function () {
     $journalEntry = JournalEntry::factory()->for($this->company)->create(['is_posted' => false]);
 
-    livewire(JournalEntryResource\Pages\EditJournalEntry::class, [
+    livewire(JournalEntries\Pages\EditJournalEntry::class, [
         'record' => $journalEntry->getRouteKey(),
     ])
         ->callAction(DeleteAction::class);
@@ -168,7 +168,7 @@ it('can display correct major amount in edit form', function () {
     ]);
 
     // Act & Assert
-    $livewire = livewire(JournalEntryResource\Pages\EditJournalEntry::class, [
+    $livewire = livewire(JournalEntries\Pages\EditJournalEntry::class, [
         'record' => $journalEntry->getRouteKey(),
     ]);
 
@@ -183,7 +183,7 @@ it('can display correct major amount in edit form', function () {
 
 
 it('reactively updates totals when lines change', function () {
-    $wire = livewire(JournalEntryResource\Pages\CreateJournalEntry::class)
+    $wire = livewire(JournalEntries\Pages\CreateJournalEntry::class)
         ->fillForm([
             'company_id' => $this->company->id,
             'journal_id' => $this->company->default_bank_journal_id,
@@ -271,7 +271,7 @@ it('calculates and fills totals on edit page load', function () {
     ]);
 
     // Act & Assert
-    livewire(JournalEntryResource\Pages\EditJournalEntry::class, [
+    livewire(JournalEntries\Pages\EditJournalEntry::class, [
         'record' => $journalEntry->getRouteKey(),
     ])
     ->assertFormSet([

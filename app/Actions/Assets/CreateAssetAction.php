@@ -2,6 +2,7 @@
 
 namespace App\Actions\Assets;
 
+use App\Enums\Assets\AssetStatus;
 use App\DataTransferObjects\Assets\CreateAssetDTO;
 use App\Models\Asset;
 use Illuminate\Support\Facades\DB;
@@ -20,7 +21,7 @@ class CreateAssetAction
                 'depreciation_method' => $dto->depreciation_method,
                 'useful_life_years' => $dto->useful_life_years,
                 'salvage_value' => $dto->salvage_value,
-                'status' => \App\Enums\Assets\AssetStatus::Draft,
+                'status' => AssetStatus::Draft,
                 'asset_account_id' => $dto->asset_account_id,
                 'accumulated_depreciation_account_id' => $dto->accumulated_depreciation_account_id,
                 'depreciation_expense_account_id' => $dto->depreciation_expense_account_id,

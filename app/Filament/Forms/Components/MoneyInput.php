@@ -2,9 +2,11 @@
 
 namespace App\Filament\Forms\Components;
 
+use Filament\Schemas\Components\Utilities\Get;
+use Brick\Math\Exception\RoundingNecessaryException;
+use Brick\Math\RoundingMode;
 use Brick\Money\Money;
-use Filament\Forms\Components\TextInput;
-use Filament\Forms\Get; // Import the Get helper
+use Filament\Forms\Components\TextInput; // Import the Get helper
 use App\Models\Currency; // Make sure to import your Currency model
 
 class MoneyInput extends TextInput
@@ -128,9 +130,9 @@ class MoneyInput extends TextInput
             // Use Money::of with rounding mode to handle precision issues
             try {
                 return Money::of($state, $currencyCode);
-            } catch (\Brick\Math\Exception\RoundingNecessaryException) {
+            } catch (RoundingNecessaryException) {
                 // If rounding is necessary, use the default rounding mode (HALF_UP)
-                return Money::of($state, $currencyCode, null, \Brick\Math\RoundingMode::HALF_UP);
+                return Money::of($state, $currencyCode, null, RoundingMode::HALF_UP);
             }
         }
 

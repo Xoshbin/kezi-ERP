@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use App\Enums\Inventory\StockLocationType;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -43,9 +44,9 @@ class StockLocation extends Model
     /**
      * Scope a query to only include locations of a specific type.
      *
-     * @param \Illuminate\Database\Eloquent\Builder $query
-     * @param \App\Enums\Inventory\StockLocationType $type
-     * @return \Illuminate\Database\Eloquent\Builder
+     * @param Builder $query
+     * @param StockLocationType $type
+     * @return Builder
      */
     public function scopeOfType($query, StockLocationType $type)
     {

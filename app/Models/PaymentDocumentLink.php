@@ -2,6 +2,10 @@
 
 namespace App\Models;
 
+use InvalidArgumentException;
+use Illuminate\Support\Carbon;
+use Database\Factories\PaymentDocumentLinkFactory;
+use Illuminate\Database\Eloquent\Builder;
 use App\Casts\MoneyCast;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -14,22 +18,22 @@ use Illuminate\Database\Eloquent\Relations\HasOneThrough;
  * @property int|null $invoice_id
  * @property int|null $vendor_bill_id
  * @property float $amount_applied
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \App\Models\Invoice|null $invoice
- * @property-read \App\Models\Payment $payment
- * @property-read \App\Models\VendorBill|null $vendorBill
- * @method static \Database\Factories\PaymentDocumentLinkFactory factory($count = null, $state = [])
- * @method static \Illuminate\Database\Eloquent\Builder<static>|PaymentDocumentLink newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|PaymentDocumentLink newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|PaymentDocumentLink query()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|PaymentDocumentLink whereAmountApplied($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|PaymentDocumentLink whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|PaymentDocumentLink whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|PaymentDocumentLink whereInvoiceId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|PaymentDocumentLink wherePaymentId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|PaymentDocumentLink whereUpdatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|PaymentDocumentLink whereVendorBillId($value)
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property-read Invoice|null $invoice
+ * @property-read Payment $payment
+ * @property-read VendorBill|null $vendorBill
+ * @method static PaymentDocumentLinkFactory factory($count = null, $state = [])
+ * @method static Builder<static>|PaymentDocumentLink newModelQuery()
+ * @method static Builder<static>|PaymentDocumentLink newQuery()
+ * @method static Builder<static>|PaymentDocumentLink query()
+ * @method static Builder<static>|PaymentDocumentLink whereAmountApplied($value)
+ * @method static Builder<static>|PaymentDocumentLink whereCreatedAt($value)
+ * @method static Builder<static>|PaymentDocumentLink whereId($value)
+ * @method static Builder<static>|PaymentDocumentLink whereInvoiceId($value)
+ * @method static Builder<static>|PaymentDocumentLink wherePaymentId($value)
+ * @method static Builder<static>|PaymentDocumentLink whereUpdatedAt($value)
+ * @method static Builder<static>|PaymentDocumentLink whereVendorBillId($value)
  * @mixin \Eloquent
  */
 class PaymentDocumentLink extends Model
@@ -73,7 +77,7 @@ class PaymentDocumentLink extends Model
      * Get the payment that owns this document link.
      * This defines a one-to-many (inverse) relationship, where a PaymentDocumentLink belongs to a Payment.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
     public function payment(): BelongsTo
     {
@@ -84,7 +88,7 @@ class PaymentDocumentLink extends Model
      * Get the customer invoice that this document link is associated with.
      * This is a conditional relationship, as a link will be to either an invoice or a vendor bill.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
     public function invoice(): BelongsTo
     {
@@ -95,7 +99,7 @@ class PaymentDocumentLink extends Model
      * Get the vendor bill that this document link is associated with.
      * This is a conditional relationship, as a link will be to either a vendor bill or an invoice.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
     public function vendorBill(): BelongsTo
     {
@@ -106,7 +110,7 @@ class PaymentDocumentLink extends Model
      * Get the currency for this payment document link through the payment.
      * This is needed for the MoneyCast to work properly.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasOneThrough
+     * @return HasOneThrough
      */
     public function currency()
     {
@@ -137,7 +141,7 @@ class PaymentDocumentLink extends Model
         static::creating(function (PaymentDocumentLink $link) {
             // Ensure at least one of invoice_id or vendor_bill_id is present upon creation.
             if (is_null($link->invoice_id) && is_null($link->vendor_bill_id)) {
-                throw new \InvalidArgumentException('A PaymentDocumentLink must be associated with either an invoice or a vendor bill.');
+                throw new InvalidArgumentException('A PaymentDocumentLink must be associated with either an invoice or a vendor bill.');
             }
         });
 
@@ -146,7 +150,7 @@ class PaymentDocumentLink extends Model
             // Direct modification of posted financial transactions is generally prevented,
             // but this safeguards against logical inconsistencies if updates were permitted in specific contexts. [6]
             if (is_null($link->invoice_id) && is_null($link->vendor_bill_id)) {
-                throw new \InvalidArgumentException('A PaymentDocumentLink must be associated with either an invoice or a vendor bill.');
+                throw new InvalidArgumentException('A PaymentDocumentLink must be associated with either an invoice or a vendor bill.');
             }
         });
     }

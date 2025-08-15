@@ -7,7 +7,7 @@ use App\Models\VendorBill;
 readonly class UpdateVendorBillDTO
 {
     /**
-     * @param \App\DataTransferObjects\Purchases\VendorBillLineDTO[] $lines
+     * @param VendorBillLineDTO[] $lines
      */
     public function __construct(
         public VendorBill $vendorBill,

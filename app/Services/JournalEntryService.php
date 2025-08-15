@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use Exception;
 use Carbon\Carbon;
 use App\Models\User;
 use Brick\Money\Money;
@@ -91,12 +92,12 @@ class JournalEntryService
      * @param string $reason The reason for the reversal.
      * @param User $user The user performing the action.
      * @return JournalEntry The newly created reversing entry.
-     * @throws \Exception
+     * @throws Exception
      */
     public function createReversal(JournalEntry $originalEntry, string $reason, User $user): JournalEntry
     {
         if (!$originalEntry->is_posted) {
-            throw new \Exception('Only posted journal entries can be reversed.');
+            throw new Exception('Only posted journal entries can be reversed.');
         }
 
         return app(ReverseJournalEntryAction::class)->execute($originalEntry, $reason, $user);

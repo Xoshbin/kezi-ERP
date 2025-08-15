@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use Exception;
 use App\Models\User;
 use Brick\Money\Money;
 use App\Models\Company;
@@ -119,13 +120,13 @@ class PaymentService
     public function cancel(Payment $payment, User $user, string $reason): void // Add $reason parameter
     {
         if ($payment->status !== PaymentStatus::Confirmed) {
-            throw new \Exception('Only confirmed payments can be cancelled.');
+            throw new Exception('Only confirmed payments can be cancelled.');
         }
 
         DB::transaction(function () use ($payment, $user, $reason) {
             $originalEntry = $payment->journalEntry;
             if (!$originalEntry) {
-                throw new \Exception('Cannot cancel payment without a journal entry.');
+                throw new Exception('Cannot cancel payment without a journal entry.');
             }
 
             // Step 1: Create the explicit audit log with the reason.

@@ -98,7 +98,7 @@ class AdjustmentDocumentLine extends Model
      * Get the line items for this adjustment document.
      * An adjustment document consists of multiple detail lines.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return HasMany
      */
     public function lines(): HasMany
     {

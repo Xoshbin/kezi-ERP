@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\JournalEntry;
 use App\Models\User;
 use Brick\Money\Money;
 use App\Models\Company;
@@ -10,7 +11,7 @@ use App\Models\Currency;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\JournalEntry>
+ * @extends Factory<JournalEntry>
  */
 class JournalEntryFactory extends Factory
 {

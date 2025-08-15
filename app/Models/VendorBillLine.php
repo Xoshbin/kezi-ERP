@@ -2,6 +2,10 @@
 
 namespace App\Models;
 
+use Brick\Money\Money;
+use Illuminate\Support\Carbon;
+use Database\Factories\VendorBillLineFactory;
+use Illuminate\Database\Eloquent\Builder;
 use App\Casts\MoneyCast;
 use App\Observers\VendorBillLineObserver;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
@@ -16,7 +20,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 // the integrity and auditability of historical accounting data [3].
 // Any corrections to posted lines must be handled via new, offsetting entries
 // (e.g., adjustment documents like credit notes or new journal entries) [3].
-
 /**
  * @property int $id
  * @property int $vendor_bill_id
@@ -26,33 +29,33 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property int|null $analytic_account_id
  * @property string $description
  * @property numeric $quantity
- * @property \Brick\Money\Money $unit_price
- * @property \Brick\Money\Money $subtotal
- * @property \Brick\Money\Money $total_line_tax
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \App\Models\AnalyticAccount|null $analyticAccount
- * @property-read \App\Models\Account $expenseAccount
- * @property-read \App\Models\Product|null $product
- * @property-read \App\Models\Tax|null $tax
- * @property-read \App\Models\VendorBill $vendorBill
- * @method static \Database\Factories\VendorBillLineFactory factory($count = null, $state = [])
- * @method static \Illuminate\Database\Eloquent\Builder<static>|VendorBillLine newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|VendorBillLine newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|VendorBillLine query()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|VendorBillLine whereAnalyticAccountId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|VendorBillLine whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|VendorBillLine whereDescription($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|VendorBillLine whereExpenseAccountId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|VendorBillLine whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|VendorBillLine whereProductId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|VendorBillLine whereQuantity($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|VendorBillLine whereSubtotal($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|VendorBillLine whereTaxId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|VendorBillLine whereTotalLineTax($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|VendorBillLine whereUnitPrice($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|VendorBillLine whereUpdatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|VendorBillLine whereVendorBillId($value)
+ * @property Money $unit_price
+ * @property Money $subtotal
+ * @property Money $total_line_tax
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property-read AnalyticAccount|null $analyticAccount
+ * @property-read Account $expenseAccount
+ * @property-read Product|null $product
+ * @property-read Tax|null $tax
+ * @property-read VendorBill $vendorBill
+ * @method static VendorBillLineFactory factory($count = null, $state = [])
+ * @method static Builder<static>|VendorBillLine newModelQuery()
+ * @method static Builder<static>|VendorBillLine newQuery()
+ * @method static Builder<static>|VendorBillLine query()
+ * @method static Builder<static>|VendorBillLine whereAnalyticAccountId($value)
+ * @method static Builder<static>|VendorBillLine whereCreatedAt($value)
+ * @method static Builder<static>|VendorBillLine whereDescription($value)
+ * @method static Builder<static>|VendorBillLine whereExpenseAccountId($value)
+ * @method static Builder<static>|VendorBillLine whereId($value)
+ * @method static Builder<static>|VendorBillLine whereProductId($value)
+ * @method static Builder<static>|VendorBillLine whereQuantity($value)
+ * @method static Builder<static>|VendorBillLine whereSubtotal($value)
+ * @method static Builder<static>|VendorBillLine whereTaxId($value)
+ * @method static Builder<static>|VendorBillLine whereTotalLineTax($value)
+ * @method static Builder<static>|VendorBillLine whereUnitPrice($value)
+ * @method static Builder<static>|VendorBillLine whereUpdatedAt($value)
+ * @method static Builder<static>|VendorBillLine whereVendorBillId($value)
  * @mixin \Eloquent
  */
 #[ObservedBy([VendorBillLineObserver::class])]

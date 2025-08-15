@@ -2,6 +2,7 @@
 
 namespace App\Actions\Accounting;
 
+use RuntimeException;
 use App\DataTransferObjects\Accounting\CreateJournalEntryDTO;
 use App\DataTransferObjects\Accounting\CreateJournalEntryLineDTO;
 use App\Models\Invoice;
@@ -31,7 +32,7 @@ class CreateJournalEntryForInvoiceAction
         $salesJournalId = $company->default_sales_journal_id;
 
         if (!$arAccountId || !$salesJournalId) {
-            throw new \RuntimeException('Default Accounts Receivable or Sales Journal is not configured for this company.');
+            throw new RuntimeException('Default Accounts Receivable or Sales Journal is not configured for this company.');
         }
 
         // 2. Determine the exchange rate. If it's the same currency, the rate is 1.

@@ -8,7 +8,7 @@ use App\Models\VendorBillAttachment;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\VendorBillAttachment>
+ * @extends Factory<VendorBillAttachment>
  */
 class VendorBillAttachmentFactory extends Factory
 {

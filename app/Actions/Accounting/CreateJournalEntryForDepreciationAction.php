@@ -2,6 +2,7 @@
 
 namespace App\Actions\Accounting;
 
+use RuntimeException;
 use App\DataTransferObjects\Accounting\CreateJournalEntryDTO;
 use App\DataTransferObjects\Accounting\CreateJournalEntryLineDTO;
 use App\Models\DepreciationEntry;
@@ -25,7 +26,7 @@ class CreateJournalEntryForDepreciationAction
         $currencyCode = $company->currency->code;
 
         if (!$journalId) {
-            throw new \RuntimeException('Default depreciation journal is not configured for this company.');
+            throw new RuntimeException('Default depreciation journal is not configured for this company.');
         }
 
         // 2. Build the journal entry lines based on depreciation accounting rules.

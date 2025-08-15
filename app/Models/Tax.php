@@ -2,6 +2,10 @@
 
 namespace App\Models;
 
+use Illuminate\Support\Carbon;
+use Illuminate\Database\Eloquent\Builder;
+use Database\Factories\TaxFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use App\Casts\MoneyCast;
 use App\Observers\TaxObserver;
 use App\Enums\Accounting\TaxType;
@@ -14,7 +18,6 @@ use Spatie\Translatable\HasTranslations;
 // The SoftDeletes trait is intentionally omitted for the Tax model.
 // As per accounting principles, tax records, once used, should not be physically deleted.
 // Instead, they are managed via an 'is_active' flag for historical auditability.
-
 /**
  * @property int $id
  * @property int $company_id
@@ -23,28 +26,27 @@ use Spatie\Translatable\HasTranslations;
  * @property float $rate
  * @property string $type
  * @property bool $is_active
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \App\Models\Company $company
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property-read Company $company
  * @property-read float $rate_percentage
- * @property-read \App\Models\Account $taxAccount
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Tax active()
- * @method static \Database\Factories\TaxFactory factory($count = null, $state = [])
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Tax newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Tax newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Tax query()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Tax whereCompanyId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Tax whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Tax whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Tax whereIsActive($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Tax whereName($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Tax whereRate($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Tax whereTaxAccountId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Tax whereType($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Tax whereUpdatedAt($value)
+ * @property-read Account $taxAccount
+ * @method static Builder<static>|Tax active()
+ * @method static TaxFactory factory($count = null, $state = [])
+ * @method static Builder<static>|Tax newModelQuery()
+ * @method static Builder<static>|Tax newQuery()
+ * @method static Builder<static>|Tax query()
+ * @method static Builder<static>|Tax whereCompanyId($value)
+ * @method static Builder<static>|Tax whereCreatedAt($value)
+ * @method static Builder<static>|Tax whereId($value)
+ * @method static Builder<static>|Tax whereIsActive($value)
+ * @method static Builder<static>|Tax whereName($value)
+ * @method static Builder<static>|Tax whereRate($value)
+ * @method static Builder<static>|Tax whereTaxAccountId($value)
+ * @method static Builder<static>|Tax whereType($value)
+ * @method static Builder<static>|Tax whereUpdatedAt($value)
  * @mixin \Eloquent
  */
-
 #[ObservedBy([TaxObserver::class])]
 
 class Tax extends Model
@@ -96,7 +98,7 @@ class Tax extends Model
      * This relationship enforces the multi-company architecture, ensuring that each tax
      * is correctly associated with a specific legal entity for localized compliance.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
     public function company()
     {
@@ -108,7 +110,7 @@ class Tax extends Model
      * This is a fundamental link for automating journal entries (e.g., VAT Payable/Receivable)
      * and ensures accurate financial reporting and reconciliation.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
     public function taxAccount()
     {
@@ -121,8 +123,8 @@ class Tax extends Model
      * reflecting the principle that taxes are deactivated rather than deleted
      * to preserve historical transaction integrity [2].
      *
-     * @param  \Illuminate\Database\Eloquent\Builder  $query
-     * @return \Illuminate\Database\Eloquent\Builder
+     * @param Builder $query
+     * @return Builder
      */
     public function scopeActive($query)
     {
