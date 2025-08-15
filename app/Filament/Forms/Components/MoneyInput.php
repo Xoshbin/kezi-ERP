@@ -21,8 +21,9 @@ class MoneyInput extends TextInput
         parent::setUp();
 
         $this
-            ->numeric()
             ->inputMode('decimal')
+            // Don't use ->numeric() as it conflicts with Money objects
+            ->rule('numeric')
             ->afterStateHydrated(function (MoneyInput $component, $state) {
                 if ($state instanceof Money) {
                     // This still works perfectly for the initial load on the edit page.
