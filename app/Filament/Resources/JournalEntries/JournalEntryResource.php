@@ -68,14 +68,6 @@ class JournalEntryResource extends Resource
     {
         return $schema
             ->components([
-                Select::make('company_id')
-                    ->label(__('journal_entry.company'))
-                    ->relationship('company', 'name')
-                    ->searchable()
-                    ->required()
-                    ->live()
-                    ->default(Company::first()?->id)
-                    ->afterStateUpdated(fn(callable $set, ?string $state) => $set('currency_id', Company::find($state)?->currency_id)),
                 Select::make('journal_id')
                     ->label(__('journal_entry.journal'))
                     ->relationship('journal', 'name')
@@ -88,7 +80,7 @@ class JournalEntryResource extends Resource
                     ->searchable()
                     ->required()
                     ->live()
-                    ->default(Company::first()?->currency_id),
+                    ->default(fn() => \Filament\Facades\Filament::getTenant()?->currency_id),
                 DatePicker::make('entry_date')
                     ->label(__('journal_entry.entry_date'))
                     ->required()

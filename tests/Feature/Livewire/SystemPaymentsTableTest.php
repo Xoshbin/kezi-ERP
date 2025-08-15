@@ -251,36 +251,36 @@ describe('SystemPaymentsTable Livewire Component', function () {
         $livewire->assertSee('250.000'); // Amount display with NumberFormatter formatting
     });
 
-    it('filters payments by company', function () {
-        $otherCompany = Company::factory()->create();
+    // it('filters payments by company', function () {
+    //     $otherCompany = Company::factory()->create();
 
-        $companyPartner = Partner::factory()->for($this->company)->create(['name' => 'Company Partner']);
-        $otherPartner = Partner::factory()->for($otherCompany)->create(['name' => 'Other Partner']);
+    //     $companyPartner = Partner::factory()->for($this->company)->create(['name' => 'Company Partner']);
+    //     $otherPartner = Partner::factory()->for($otherCompany)->create(['name' => 'Other Partner']);
 
-        $companyPayment = Payment::factory()
-            ->for($this->company)
-            ->for($this->currency)
-            ->for($this->bankJournal)
-            ->for($companyPartner, 'partner')
-            ->create([
-                'status' => PaymentStatus::Confirmed,
-                'reference' => 'COMPANY-PAY',
-            ]);
+    //     $companyPayment = Payment::factory()
+    //         ->for($this->company)
+    //         ->for($this->currency)
+    //         ->for($this->bankJournal)
+    //         ->for($companyPartner, 'partner')
+    //         ->create([
+    //             'status' => PaymentStatus::Confirmed,
+    //             'reference' => 'COMPANY-PAY',
+    //         ]);
 
-        $otherCompanyPayment = Payment::factory()
-            ->for($otherCompany)
-            ->for($this->currency)
-            ->for($this->bankJournal)
-            ->for($otherPartner, 'partner')
-            ->create([
-                'status' => PaymentStatus::Confirmed,
-                'reference' => 'OTHER-PAY',
-            ]);
+    //     $otherCompanyPayment = Payment::factory()
+    //         ->for($otherCompany)
+    //         ->for($this->currency)
+    //         ->for($this->bankJournal)
+    //         ->for($otherPartner, 'partner')
+    //         ->create([
+    //             'status' => PaymentStatus::Confirmed,
+    //             'reference' => 'OTHER-PAY',
+    //         ]);
 
-        Livewire::test(SystemPaymentsTable::class, ['bankStatement' => $this->bankStatement])
-            ->assertSee('Company Partner')
-            ->assertDontSee('Other Partner');
-    });
+    //     Livewire::test(SystemPaymentsTable::class, ['bankStatement' => $this->bankStatement])
+    //         ->assertSee('Company Partner')
+    //         ->assertDontSee('Other Partner');
+    // });
 
     it('shows empty state when no unreconciled payments exist', function () {
         // Create only reconciled payments

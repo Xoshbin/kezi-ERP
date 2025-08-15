@@ -67,34 +67,42 @@ class BankStatementResource extends Resource
 
     public static function form(Schema $schema): Schema
     {
-        $company = Company::first();
-
         return $schema->components([
             Section::make()
                 ->schema([
-                    Select::make('company_id')
-                        ->relationship('company', 'name')
-                        ->label(__('bank_statement.company'))
-                        ->required()
-                        ->live()
-                        ->default($company?->id)
-                        ->afterStateUpdated(function (callable $set, $state) {
-                            $company = Company::find($state);
-                            if ($company) {
-                                $set('currency_id', $company->currency_id);
-                            }
-                        }),
                     Select::make('currency_id')
                         ->relationship('currency', 'name')
                         ->label(__('bank_statement.currency'))
                         ->required()
                         ->live()
-                        ->default($company?->currency_id),
+                        ->default(fn() => \Filament\Facades\Filament::getTenant()?->currency_id),
                     Select::make('journal_id')
                         ->label(__('bank_statement.bank_journal'))
-                        ->options(Journal::where('type', 'Bank')->pluck('name', 'id'))
+                        ->options(function () {
+                            $company = \Filament\Facades\Filament::getTenant();
+                            if (!$company) {
+                                return [];
+                            }
+                            return Journal::where('type', \App\Enums\Accounting\JournalType::Bank)
+                                ->where('company_id', $company->id)
+                                ->pluck('name', 'id');
+                        })
                         ->searchable()
-                        ->required(),
+                        ->required()
+                        ->rule(function () {
+                            return function (string $attribute, $value, \Closure $fail) {
+                                $company = \Filament\Facades\Filament::getTenant();
+                                if (!$company) {
+                                    $fail('Company context is required.');
+                                    return;
+                                }
+
+                                $journal = Journal::find($value);
+                                if (!$journal || $journal->company_id !== $company->id || $journal->type !== \App\Enums\Accounting\JournalType::Bank) {
+                                    $fail('The selected bank journal is invalid.');
+                                }
+                            };
+                        }),
                     TextInput::make('reference')
                         ->label(__('bank_statement.reference'))
                         ->required()
@@ -205,10 +213,6 @@ class BankStatementResource extends Resource
     {
         return $table
             ->columns([
-                TextColumn::make('company_id')
-                    ->label(__('bank_statement.company_id'))
-                    ->numeric()
-                    ->sortable(),
                 TextColumn::make('journal_id')
                     ->label(__('bank_statement.journal_id'))
                     ->numeric()

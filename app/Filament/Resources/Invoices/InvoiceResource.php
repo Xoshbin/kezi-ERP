@@ -79,59 +79,15 @@ class InvoiceResource extends Resource
 
     public static function form(Schema $schema): Schema
     {
-        $company = Company::first();
-
         return $schema->components([
             Section::make()
                 ->schema([
-                    Select::make('company_id')
-                        ->relationship('company', 'name')
-                        ->label(__('invoice.company'))
-                        ->required()
-                        ->live()
-                        ->searchable()
-                        ->default($company?->id)
-                        ->afterStateUpdated(function (callable $set, $state) {
-                            $company = Company::find($state);
-                            if ($company) {
-                                $set('currency_id', $company->currency_id);
-                            }
-                        })
-                        ->createOptionForm([
-                            TextInput::make('name')
-                                ->label(__('company.name'))
-                                ->required()
-                                ->maxLength(255),
-                            Textarea::make('address')
-                                ->label(__('company.address'))
-                                ->columnSpanFull(),
-                            TextInput::make('tax_id')
-                                ->label(__('company.tax_id'))
-                                ->maxLength(255),
-                            Select::make('currency_id')
-                                ->label(__('company.currency_id'))
-                                ->relationship('currency', 'name')
-                                ->required(),
-                            TextInput::make('fiscal_country')
-                                ->label(__('company.fiscal_country'))
-                                ->required()
-                                ->maxLength(255),
-                        ])
-                        ->createOptionModalHeading(__('common.modal_title_create_company'))
-                        ->createOptionAction(function (Action $action) {
-                            return $action
-                                ->modalWidth('lg');
-                        }),
                     Select::make('customer_id')
                         ->relationship('customer', 'name')
                         ->label(__('invoice.customer'))
                         ->required()
                         ->searchable()
                         ->createOptionForm([
-                            Select::make('company_id')
-                                ->relationship('company', 'name')
-                                ->label(__('partner.company'))
-                                ->required(),
                             TextInput::make('name')
                                 ->label(__('partner.name'))
                                 ->required()
@@ -168,7 +124,7 @@ class InvoiceResource extends Resource
                         ->required()
                         ->live()
                         ->searchable()
-                        ->default($company?->currency_id)
+                        ->default(fn() => \Filament\Facades\Filament::getTenant()?->currency_id)
                         ->createOptionForm([
                             TextInput::make('code')
                                 ->label(__('currency.code'))
@@ -204,7 +160,7 @@ class InvoiceResource extends Resource
                         ->label(__('invoice.invoice_date'))
                         ->default(now())
                         ->required()
-                        ->rules([new NotInLockedPeriod($company)]),
+                        ->rules([new NotInLockedPeriod()]),
                     DatePicker::make('due_date')
                         ->label(__('invoice.due_date'))
                         ->required(),

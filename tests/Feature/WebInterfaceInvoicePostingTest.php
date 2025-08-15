@@ -21,13 +21,16 @@ class WebInterfaceInvoicePostingTest extends TestCase
 
         // Run seeders to set up the test environment
         $this->seed();
+
+        // Set up tenant context for Filament
+        $user = User::first();
+        $company = $user->companies()->first();
+        $this->actingAs($user);
+        \Filament\Facades\Filament::setTenant($company);
     }
 
     public function test_posting_multiple_invoices_via_web_interface_works_correctly()
     {
-        // Get a user to authenticate as
-        $user = User::first();
-        $this->actingAs($user);
 
         // Get some draft invoices from the seeded data
         $draftInvoices = Invoice::where('status', InvoiceStatus::Draft)->take(3)->get();
@@ -98,8 +101,6 @@ class WebInterfaceInvoicePostingTest extends TestCase
 
     public function test_no_duplicate_journal_entry_constraint_violations_occur()
     {
-        $user = User::first();
-        $this->actingAs($user);
 
         // Get multiple draft invoices
         $draftInvoices = Invoice::where('status', InvoiceStatus::Draft)->take(3)->get();
