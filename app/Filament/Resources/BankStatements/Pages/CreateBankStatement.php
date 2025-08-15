@@ -43,7 +43,7 @@ class CreateBankStatement extends CreateRecord
     protected function handleRecordCreation(array $data): Model
     {
         $bankStatementDTO = new CreateBankStatementDTO(
-            company_id: $data['company_id'],
+            company_id: \Filament\Facades\Filament::getTenant()->id,
             currency_id: $data['currency_id'],
             journal_id: $data['journal_id'],
             reference: $data['reference'],

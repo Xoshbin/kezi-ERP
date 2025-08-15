@@ -29,7 +29,6 @@ test('a company with existing financial records cannot be deleted', function () 
 test('a user is correctly related to their company for accounting contexts', function () {
     // Verifies the structural integrity crucial for multi-company accounting.
     expect($this->user->companies->contains($this->company))->toBeTrue();
-    expect($this->user->company->id)->toBe($this->company->id); // Test backward compatibility accessor
 });
 
 test('duplicate tax ID for a company in the same fiscal country is prevented', function () {

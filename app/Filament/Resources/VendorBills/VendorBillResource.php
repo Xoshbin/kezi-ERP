@@ -76,59 +76,15 @@ class VendorBillResource extends Resource
 
     public static function form(Schema $schema): Schema
     {
-        $company = Company::first();
-
         return $schema->components([
             Section::make()
                 ->schema([
-                    Select::make('company_id')
-                        ->relationship('company', 'name')
-                        ->label(__('vendor_bill.company'))
-                        ->required()
-                        ->live()
-                        ->searchable()
-                        ->default($company?->id)
-                        ->afterStateUpdated(function (callable $set, $state) {
-                            $company = Company::find($state);
-                            if ($company) {
-                                $set('currency_id', $company->currency_id);
-                            }
-                        })
-                        ->createOptionForm([
-                            TextInput::make('name')
-                                ->label(__('company.name'))
-                                ->required()
-                                ->maxLength(255),
-                            Textarea::make('address')
-                                ->label(__('company.address'))
-                                ->columnSpanFull(),
-                            TextInput::make('tax_id')
-                                ->label(__('company.tax_id'))
-                                ->maxLength(255),
-                            Select::make('currency_id')
-                                ->label(__('company.currency_id'))
-                                ->relationship('currency', 'name')
-                                ->required(),
-                            TextInput::make('fiscal_country')
-                                ->label(__('company.fiscal_country'))
-                                ->required()
-                                ->maxLength(255),
-                        ])
-                        ->createOptionModalHeading(__('common.modal_title_create_company'))
-                        ->createOptionAction(function (\Filament\Actions\Action $action) {
-                            return $action
-                                ->modalWidth('lg');
-                        }),
                     Select::make('vendor_id')
                         ->relationship('vendor', 'name')
                         ->label(__('vendor_bill.vendor'))
                         ->required()
                         ->searchable()
                         ->createOptionForm([
-                            Select::make('company_id')
-                                ->relationship('company', 'name')
-                                ->label(__('partner.company'))
-                                ->required(),
                             TextInput::make('name')
                                 ->label(__('partner.name'))
                                 ->required()
@@ -165,7 +121,7 @@ class VendorBillResource extends Resource
                         ->required()
                         ->live()
                         ->searchable()
-                        ->default($company?->currency_id)
+                        ->default(fn() => \Filament\Facades\Filament::getTenant()?->currency_id)
                         ->createOptionForm([
                             TextInput::make('code')
                                 ->label(__('currency.code'))
@@ -202,7 +158,7 @@ class VendorBillResource extends Resource
                         ->label(__('vendor_bill.bill_date'))
                         ->default(now())
                         ->required()
-                        ->rules([new NotInLockedPeriod($company)]),
+                        ->rules([new NotInLockedPeriod()]),
                     DatePicker::make('accounting_date')
                         ->default(now())
                         ->label(__('vendor_bill.accounting_date'))

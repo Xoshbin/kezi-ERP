@@ -140,6 +140,9 @@ function setupFoundation() {
     test()->journals = $journals;
 
     test()->actingAs($user);
+
+    // Set up Filament tenant context
+    \Filament\Facades\Filament::setTenant($company);
 }
 
 test('Jmeryar ERP complete accounting scenario - Full Workflow', function () {
@@ -163,7 +166,6 @@ test('Jmeryar ERP complete accounting scenario - Full Workflow', function () {
     // Create manual journal entry for 15,000,000 IQD capital injection
     livewire(\App\Filament\Resources\JournalEntries\Pages\CreateJournalEntry::class)
         ->fillForm([
-            'company_id' => $company->id,
             'journal_id' => $journals['Bank']->id,
             'currency_id' => $currency->id,
             'entry_date' => now()->format('Y-m-d'),
@@ -197,7 +199,7 @@ test('Jmeryar ERP complete accounting scenario - Full Workflow', function () {
     expect($capitalJournalEntry->company_id)->toBe($company->id);
 
     // Post the journal entry using Filament action
-    livewire(JournalEntries\Pages\EditJournalEntry::class, [
+    livewire(\App\Filament\Resources\JournalEntries\Pages\EditJournalEntry::class, [
         'record' => $capitalJournalEntry->getRouteKey(),
     ])
         ->callAction('post')
@@ -233,7 +235,6 @@ test('Jmeryar ERP complete accounting scenario - Full Workflow', function () {
     // Create the Vendor ("Paykar Tech Supplies")
     livewire(\App\Filament\Resources\Partners\Pages\CreatePartner::class)
         ->fillForm([
-            'company_id' => $company->id,
             'name' => 'Paykar Tech Supplies',
             'type' => PartnerType::Vendor->value,
         ])
@@ -246,7 +247,6 @@ test('Jmeryar ERP complete accounting scenario - Full Workflow', function () {
     // Record the Vendor Bill
     livewire(\App\Filament\Resources\VendorBills\Pages\CreateVendorBill::class)
         ->fillForm([
-            'company_id' => $company->id,
             'vendor_id' => $vendor->id,
             'currency_id' => $currency->id,
             'bill_date' => now()->format('Y-m-d'),
@@ -270,7 +270,7 @@ test('Jmeryar ERP complete accounting scenario - Full Workflow', function () {
     expect($vendorBill)->not->toBeNull();
 
     // Post the vendor bill using Filament action
-    livewire(VendorBills\Pages\EditVendorBill::class, [
+    livewire(\App\Filament\Resources\VendorBills\Pages\EditVendorBill::class, [
         'record' => $vendorBill->getRouteKey(),
     ])
         ->callAction('confirm')
@@ -319,7 +319,6 @@ test('Jmeryar ERP complete accounting scenario - Full Workflow', function () {
     // Create the Customer ("Hawre Trading Group")
     livewire(\App\Filament\Resources\Partners\Pages\CreatePartner::class)
         ->fillForm([
-            'company_id' => $company->id,
             'name' => 'Hawre Trading Group',
             'type' => PartnerType::Customer->value,
         ])
@@ -332,7 +331,6 @@ test('Jmeryar ERP complete accounting scenario - Full Workflow', function () {
     // Create the Customer Invoice
     livewire(\App\Filament\Resources\Invoices\Pages\CreateInvoice::class)
         ->fillForm([
-            'company_id' => $company->id,
             'customer_id' => $customer->id,
             'currency_id' => $currency->id,
             'invoice_date' => now()->format('Y-m-d'),
@@ -355,7 +353,7 @@ test('Jmeryar ERP complete accounting scenario - Full Workflow', function () {
     expect($invoice->invoice_number)->toBeNull(); // Should be null in draft
 
     // Post the invoice using Filament action
-    livewire(Invoices\Pages\EditInvoice::class, [
+    livewire(\App\Filament\Resources\Invoices\Pages\EditInvoice::class, [
         'record' => $invoice->getRouteKey(),
     ])
         ->callAction('confirm')
@@ -391,7 +389,6 @@ test('Jmeryar ERP complete accounting scenario - Full Workflow', function () {
     // Step 7: Receiving Payment from Customer
     livewire(\App\Filament\Resources\Payments\Pages\CreatePayment::class)
         ->fillForm([
-            'company_id' => $company->id,
             'journal_id' => $journals['Bank']->id,
             'currency_id' => $currency->id,
             'payment_date' => now()->format('Y-m-d'),
@@ -411,7 +408,7 @@ test('Jmeryar ERP complete accounting scenario - Full Workflow', function () {
     expect($payment)->not->toBeNull();
 
     // Confirm the payment using Filament action
-    livewire(Payments\Pages\EditPayment::class, [
+    livewire(\App\Filament\Resources\Payments\Pages\EditPayment::class, [
         'record' => $payment->getRouteKey(),
     ])
         ->callAction('confirm')
@@ -428,7 +425,6 @@ test('Jmeryar ERP complete accounting scenario - Full Workflow', function () {
     // Step 8: Paying a Vendor
     livewire(\App\Filament\Resources\Payments\Pages\CreatePayment::class)
         ->fillForm([
-            'company_id' => $company->id,
             'journal_id' => $journals['Bank']->id,
             'currency_id' => $currency->id,
             'payment_date' => now()->format('Y-m-d'),
@@ -448,7 +444,7 @@ test('Jmeryar ERP complete accounting scenario - Full Workflow', function () {
     expect($vendorPayment)->not->toBeNull();
 
     // Confirm the vendor payment using Filament action
-    livewire(Payments\Pages\EditPayment::class, [
+    livewire(\App\Filament\Resources\Payments\Pages\EditPayment::class, [
         'record' => $vendorPayment->getRouteKey(),
     ])
         ->callAction('confirm')
@@ -572,9 +568,8 @@ test('Jmeryar ERP complete accounting scenario - Full Workflow', function () {
     }
 
     // Create a Storable Product
-    livewire(CreateProduct::class)
+    livewire(\App\Filament\Clusters\Inventory\Resources\Products\Pages\CreateProduct::class)
         ->fillForm([
-            'company_id' => $company->id,
             'name' => 'IT Workstation',
             'sku' => 'ITWS001',
             'unit_price' => 10000000,
@@ -596,7 +591,6 @@ test('Jmeryar ERP complete accounting scenario - Full Workflow', function () {
     // Create inventory vendor
     livewire(\App\Filament\Resources\Partners\Pages\CreatePartner::class)
         ->fillForm([
-            'company_id' => $company->id,
             'name' => 'Global Tech Distributors',
             'type' => PartnerType::Vendor->value,
         ])
@@ -609,7 +603,6 @@ test('Jmeryar ERP complete accounting scenario - Full Workflow', function () {
     // Create inventory purchase bill
     livewire(\App\Filament\Resources\VendorBills\Pages\CreateVendorBill::class)
         ->fillForm([
-            'company_id' => $company->id,
             'vendor_id' => $inventoryVendor->id,
             'currency_id' => $currency->id,
             'bill_date' => now()->format('Y-m-d'),
@@ -633,7 +626,7 @@ test('Jmeryar ERP complete accounting scenario - Full Workflow', function () {
     expect($inventoryBill)->not->toBeNull();
 
     // Post the inventory bill using Filament action
-    livewire(VendorBills\Pages\EditVendorBill::class, [
+    livewire(\App\Filament\Resources\VendorBills\Pages\EditVendorBill::class, [
         'record' => $inventoryBill->getRouteKey(),
     ])
         ->callAction('confirm')

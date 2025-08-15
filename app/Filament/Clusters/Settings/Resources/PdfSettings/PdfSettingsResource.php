@@ -157,8 +157,9 @@ class PdfSettingsResource extends Resource
 
     public static function getEloquentQuery(): Builder
     {
-        // Tenancy automatically handles company filtering
-        return parent::getEloquentQuery();
+        // Only show the current tenant company
+        $tenant = \Filament\Facades\Filament::getTenant();
+        return parent::getEloquentQuery()->where('id', $tenant?->id);
     }
 
     public static function getPages(): array
