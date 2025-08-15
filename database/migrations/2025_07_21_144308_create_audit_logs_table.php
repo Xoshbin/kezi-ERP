@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('audit_logs', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained('users');
-            $table->foreignId('company_id')->nullable()->constrained('companies')->after('user_id');
+            $table->foreignId('company_id')->nullable();
             $table->string('event_type');
             $table->morphs('auditable'); // Creates auditable_id and auditable_type
             $table->json('old_values')->nullable();

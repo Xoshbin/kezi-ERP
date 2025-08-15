@@ -41,9 +41,7 @@ return new class extends Migration
             $table->timestamps();
         });
 
-        Schema::table('accounts', function (Blueprint $table) {
-            $table->foreign('company_id')->references('id')->on('companies')->onDelete('cascade');
-        });
+
     }
 
     /**
@@ -51,12 +49,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('accounts', function (Blueprint $table) {
-            // The name of the foreign key constraint is generated automatically by Laravel
-            // following the convention: table_column_foreign
-            $table->dropForeign(['company_id']);
-        });
-
         Schema::dropIfExists('companies');
     }
 };
