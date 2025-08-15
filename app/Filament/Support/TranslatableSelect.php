@@ -8,17 +8,17 @@ use Illuminate\Support\Str;
 
 /**
  * Class TranslatableSelect
- * 
+ *
  * Provides helper methods for creating Filament select components with multi-locale search functionality.
  * Standardizes the implementation across all resources for consistent behavior.
- * 
+ *
  * @package App\Filament\Support
  */
 class TranslatableSelect
 {
     /**
      * Create a select component for translatable models with smart multi-locale search.
-     * 
+     *
      * @param string $name Field name
      * @param string $modelClass Model class that uses TranslatableSearch trait
      * @param string|null $label Field label (will be auto-generated if null)
@@ -76,7 +76,7 @@ class TranslatableSelect
 
     /**
      * Create a select component for relationship fields with multi-locale search.
-     * 
+     *
      * @param string $name Field name
      * @param string $relationship Relationship method name
      * @param string $modelClass Related model class
@@ -105,14 +105,14 @@ class TranslatableSelect
             ->label($label)
             ->searchable()
             ->getSearchResultsUsing(function (string $search) use ($modelClass, $labelField, $searchFields, $queryModifier): array {
-                if (!method_exists($modelClass, 'searchTranslatable')) {
+                if (!method_exists($modelClass, 'getFilamentSearchResults')) {
                     throw new \InvalidArgumentException(
                         "Model {$modelClass} must use the TranslatableSearch trait to use TranslatableSelect."
                     );
                 }
 
                 $query = $modelClass::searchTranslatable($search, $searchFields);
-                
+
                 if ($queryModifier) {
                     $query = $queryModifier($query);
                 }
@@ -143,7 +143,7 @@ class TranslatableSelect
     /**
      * Create a select component with complex formatting for option labels.
      * Useful for cases where you need to show additional context (e.g., "Account Name (Code)").
-     * 
+     *
      * @param string $name Field name
      * @param string $modelClass Model class
      * @param callable $formatter Formatter function that receives the model and returns [id => label]
@@ -168,24 +168,20 @@ class TranslatableSelect
             ->label($label)
             ->searchable()
             ->getSearchResultsUsing(function (string $search) use ($modelClass, $formatter, $searchFields): array {
-                if (!method_exists($modelClass, 'searchTranslatable')) {
+                if (!method_exists($modelClass, 'getFormattedSearchResults')) {
                     throw new \InvalidArgumentException(
                         "Model {$modelClass} must use the TranslatableSearch trait to use TranslatableSelect."
                     );
                 }
 
-                return $modelClass::searchTranslatable($search, $searchFields)
-                    ->limit(50)
-                    ->get()
-                    ->mapWithKeys($formatter)
-                    ->toArray();
+                return $modelClass::getFormattedSearchResults($search, 50, $formatter, $searchFields);
             })
             ->getOptionLabelUsing(function ($value) use ($modelClass, $formatter): ?string {
                 $model = $modelClass::find($value);
                 if (!$model) {
                     return null;
                 }
-                
+
                 $formatted = $formatter($model);
                 return is_array($formatted) ? $formatted[$model->id] ?? null : $formatted;
             });
@@ -203,7 +199,7 @@ class TranslatableSelect
     /**
      * Create a select component for non-translatable models with standard search.
      * Provides consistency with translatable selects but for regular string fields.
-     * 
+     *
      * @param string $name Field name
      * @param string $modelClass Model class
      * @param array $searchFields Fields to search in
@@ -231,7 +227,7 @@ class TranslatableSelect
             ->searchable()
             ->getSearchResultsUsing(function (string $search) use ($modelClass, $searchFields, $labelField, $queryModifier): array {
                 $query = $modelClass::query();
-                
+
                 if (!empty($search)) {
                     $query->where(function ($subQuery) use ($search, $searchFields) {
                         foreach ($searchFields as $field) {
@@ -239,7 +235,7 @@ class TranslatableSelect
                         }
                     });
                 }
-                
+
                 if ($queryModifier) {
                     $query = $queryModifier($query);
                 }
