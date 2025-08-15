@@ -7,7 +7,7 @@
 
         <!-- Report Display -->
         @if($reportData)
-            <div class="bg-white dark:bg-gray-800 shadow rounded-lg p-6">
+            <div class="bg-white dark:bg-gray-800 shadow-sm rounded-lg p-6">
                 <!-- Balance Status Banner -->
                 <div class="mb-6">
                     @if($reportData['isBalanced'])
