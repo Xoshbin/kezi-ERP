@@ -2,6 +2,7 @@
 
 namespace App\Actions\Accounting;
 
+use RuntimeException;
 use App\DataTransferObjects\Accounting\CreateJournalEntryDTO;
 use App\DataTransferObjects\Accounting\CreateJournalEntryLineDTO;
 use App\Models\JournalEntry;
@@ -33,7 +34,7 @@ class CreateJournalEntryForReconciliationAction
         $outstandingAccountId = $company->default_outstanding_receipts_account_id;
 
         if (!$bankAccountId || !$outstandingAccountId) {
-            throw new \RuntimeException('Default bank or outstanding receipts account is not configured for this company.');
+            throw new RuntimeException('Default bank or outstanding receipts account is not configured for this company.');
         }
 
         // 3. Build the journal entry lines based on reconciliation accounting rules.

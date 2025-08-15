@@ -2,6 +2,8 @@
 
 namespace App\Rules;
 
+use InvalidArgumentException;
+use App\Exceptions\PeriodIsLockedException;
 use App\Models\Company;
 use App\Services\Accounting\LockDateService;
 use Closure;
@@ -20,7 +22,7 @@ class NotInLockedPeriod implements ValidationRule
         } else {
             $user = Auth::user();
             if (!$user || !$user->company) {
-                throw new \InvalidArgumentException('Company is required for lock date validation');
+                throw new InvalidArgumentException('Company is required for lock date validation');
             }
             $this->company = $user->company;
         }
@@ -35,7 +37,7 @@ class NotInLockedPeriod implements ValidationRule
         try {
             $date = Carbon::parse($value);
             app(LockDateService::class)->enforce($this->company, $date);
-        } catch (\App\Exceptions\PeriodIsLockedException $e) {
+        } catch (PeriodIsLockedException $e) {
             $fail($e->getMessage());
         }
     }

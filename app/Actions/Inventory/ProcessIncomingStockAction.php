@@ -2,6 +2,7 @@
 
 namespace App\Actions\Inventory;
 
+use Exception;
 use App\Models\StockMove;
 use App\Models\VendorBill;
 use App\Services\Inventory\InventoryValuationService;
@@ -44,7 +45,7 @@ class ProcessIncomingStockAction
         // For other source types (future: inventory adjustments, transfers, etc.)
         // we can add more extraction logic here
 
-        throw new \Exception("Unable to extract cost from source document type: " . get_class($sourceDocument));
+        throw new Exception("Unable to extract cost from source document type: " . get_class($sourceDocument));
     }
 
     /**
@@ -58,7 +59,7 @@ class ProcessIncomingStockAction
             ->first();
 
         if (!$line) {
-            throw new \Exception("No vendor bill line found for product {$stockMove->product_id} in vendor bill {$vendorBill->id}");
+            throw new Exception("No vendor bill line found for product {$stockMove->product_id} in vendor bill {$vendorBill->id}");
         }
 
         return $line->unit_price;

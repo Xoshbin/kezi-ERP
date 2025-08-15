@@ -10,7 +10,7 @@ class JournalEntryLineObserver
     /**
      * Handle the JournalEntryLine "creating" event.
      *
-     * @param  \App\Models\JournalEntryLine  $journalEntryLine
+     * @param JournalEntryLine $journalEntryLine
      * @return void
      */
     public function creating(JournalEntryLine $journalEntryLine): void

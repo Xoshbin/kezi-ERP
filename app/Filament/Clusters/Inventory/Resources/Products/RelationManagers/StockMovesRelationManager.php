@@ -1,0 +1,187 @@
+<?php
+
+namespace App\Filament\Clusters\Inventory\Resources\Products\RelationManagers;
+
+use Illuminate\Database\Eloquent\Model;
+use Filament\Schemas\Schema;
+use Filament\Schemas\Components\Grid;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\DatePicker;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\SelectFilter;
+use Filament\Actions\CreateAction;
+use Filament\Actions\ViewAction;
+use Filament\Actions\EditAction;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteBulkAction;
+use App\Enums\Inventory\StockMoveStatus;
+use App\Enums\Inventory\StockMoveType;
+use App\Models\StockMove;
+use Filament\Facades\Filament;
+use Filament\Forms;
+use Filament\Resources\RelationManagers\RelationManager;
+use Filament\Tables;
+use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
+
+class StockMovesRelationManager extends RelationManager
+{
+    protected static string $relationship = 'stockMoves';
+
+    public static function getTitle(Model $ownerRecord, string $pageClass): string
+    {
+        return __('product.stock_moves');
+    }
+
+    public function form(Schema $schema): Schema
+    {
+        return $schema
+            ->components([
+                Grid::make(2)->schema([
+                    Select::make('from_location_id')
+                        ->relationship('fromLocation', 'name')
+                        ->label(__('stock_move.from_location'))
+                        ->required()
+                        ->searchable()
+                        ->preload(),
+                    Select::make('to_location_id')
+                        ->relationship('toLocation', 'name')
+                        ->label(__('stock_move.to_location'))
+                        ->required()
+                        ->searchable()
+                        ->preload(),
+                ]),
+                Grid::make(3)->schema([
+                    TextInput::make('quantity')
+                        ->label(__('stock_move.quantity'))
+                        ->required()
+                        ->numeric()
+                        ->minValue(0.0001),
+                    Select::make('move_type')
+                        ->label(__('stock_move.move_type'))
+                        ->required()
+                        ->options(
+                            collect(StockMoveType::cases())
+                                ->mapWithKeys(fn (StockMoveType $type) => [$type->value => $type->label()])
+                        ),
+                    Select::make('status')
+                        ->label(__('stock_move.status'))
+                        ->required()
+                        ->options(
+                            collect(StockMoveStatus::cases())
+                                ->mapWithKeys(fn (StockMoveStatus $status) => [$status->value => $status->label()])
+                        )
+                        ->default(StockMoveStatus::Draft->value),
+                ]),
+                Grid::make(2)->schema([
+                    DatePicker::make('move_date')
+                        ->label(__('stock_move.move_date'))
+                        ->required()
+                        ->default(now()),
+                    TextInput::make('reference')
+                        ->label(__('stock_move.reference'))
+                        ->maxLength(255),
+                ]),
+            ]);
+    }
+
+    public function table(Table $table): Table
+    {
+        return $table
+            ->recordTitleAttribute('reference')
+            ->columns([
+                TextColumn::make('move_date')
+                    ->label(__('stock_move.move_date'))
+                    ->date()
+                    ->sortable(),
+                TextColumn::make('reference')
+                    ->label(__('stock_move.reference'))
+                    ->searchable()
+                    ->copyable(),
+                TextColumn::make('fromLocation.name')
+                    ->label(__('stock_move.from_location'))
+                    ->searchable(),
+                TextColumn::make('toLocation.name')
+                    ->label(__('stock_move.to_location'))
+                    ->searchable(),
+                TextColumn::make('quantity')
+                    ->label(__('stock_move.quantity'))
+                    ->numeric(decimalPlaces: 4)
+                    ->sortable(),
+                TextColumn::make('move_type')
+                    ->label(__('stock_move.move_type'))
+                    ->badge()
+                    ->formatStateUsing(fn (StockMoveType $state): string => $state->label())
+                    ->color(fn (StockMoveType $state): string => match ($state) {
+                        StockMoveType::Incoming => 'success',
+                        StockMoveType::Outgoing => 'danger',
+                        StockMoveType::InternalTransfer => 'info',
+                        StockMoveType::Adjustment => 'warning',
+                        default => 'gray',
+                    }),
+                TextColumn::make('status')
+                    ->label(__('stock_move.status'))
+                    ->badge()
+                    ->formatStateUsing(fn (StockMoveStatus $state): string => $state->label())
+                    ->color(fn (StockMoveStatus $state): string => match ($state) {
+                        StockMoveStatus::Draft => 'gray',
+                        StockMoveStatus::Confirmed => 'warning',
+                        StockMoveStatus::Done => 'success',
+                        StockMoveStatus::Cancelled => 'danger',
+                        default => 'gray',
+                    }),
+                TextColumn::make('source_type')
+                    ->label(__('stock_move.source'))
+                    ->formatStateUsing(fn (?string $state): string => $state ? class_basename($state) : '-')
+                    ->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('created_at')
+                    ->label(__('stock_move.created_at'))
+                    ->dateTime()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+            ])
+            ->defaultSort('move_date', 'desc')
+            ->filters([
+                SelectFilter::make('move_type')
+                    ->label(__('stock_move.move_type'))
+                    ->options(
+                        collect(StockMoveType::cases())
+                            ->mapWithKeys(fn (StockMoveType $type) => [$type->value => $type->label()])
+                    ),
+                SelectFilter::make('status')
+                    ->label(__('stock_move.status'))
+                    ->options(
+                        collect(StockMoveStatus::cases())
+                            ->mapWithKeys(fn (StockMoveStatus $status) => [$status->value => $status->label()])
+                    ),
+            ])
+            ->headerActions([
+                CreateAction::make()
+                    ->icon('heroicon-o-plus')
+                    ->mutateDataUsing(function (array $data): array {
+                        $data['company_id'] = $this->getOwnerRecord()->company_id;
+                        $data['product_id'] = $this->getOwnerRecord()->id;
+                        $data['created_by_user_id'] = Filament::auth()->id();
+                        return $data;
+                    }),
+            ])
+            ->recordActions([
+                ViewAction::make()
+                    ->icon('heroicon-o-eye'),
+                EditAction::make()
+                    ->icon('heroicon-o-pencil-square')
+                    ->visible(fn (StockMove $record): bool => $record->status === StockMoveStatus::Draft),
+                DeleteAction::make()
+                    ->icon('heroicon-o-trash')
+                    ->visible(fn (StockMove $record): bool => $record->status === StockMoveStatus::Draft),
+            ])
+            ->toolbarActions([
+                BulkActionGroup::make([
+                    DeleteBulkAction::make()
+                        ->requiresConfirmation(),
+                ]),
+            ]);
+    }
+}

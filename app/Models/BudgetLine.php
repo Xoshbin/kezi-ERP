@@ -2,6 +2,9 @@
 
 namespace App\Models;
 
+use Illuminate\Support\Carbon;
+use Database\Factories\BudgetLineFactory;
+use Illuminate\Database\Eloquent\Builder;
 use App\Casts\MoneyCast;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -23,24 +26,24 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property float $budgeted_amount
  * @property float $achieved_amount
  * @property float $committed_amount
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \App\Models\Account|null $account
- * @property-read \App\Models\AnalyticAccount|null $analyticAccount
- * @property-read \App\Models\Budget $budget
- * @method static \Database\Factories\BudgetLineFactory factory($count = null, $state = [])
- * @method static \Illuminate\Database\Eloquent\Builder<static>|BudgetLine newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|BudgetLine newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|BudgetLine query()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|BudgetLine whereAccountId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|BudgetLine whereAchievedAmount($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|BudgetLine whereAnalyticAccountId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|BudgetLine whereBudgetId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|BudgetLine whereBudgetedAmount($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|BudgetLine whereCommittedAmount($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|BudgetLine whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|BudgetLine whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|BudgetLine whereUpdatedAt($value)
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property-read Account|null $account
+ * @property-read AnalyticAccount|null $analyticAccount
+ * @property-read Budget $budget
+ * @method static BudgetLineFactory factory($count = null, $state = [])
+ * @method static Builder<static>|BudgetLine newModelQuery()
+ * @method static Builder<static>|BudgetLine newQuery()
+ * @method static Builder<static>|BudgetLine query()
+ * @method static Builder<static>|BudgetLine whereAccountId($value)
+ * @method static Builder<static>|BudgetLine whereAchievedAmount($value)
+ * @method static Builder<static>|BudgetLine whereAnalyticAccountId($value)
+ * @method static Builder<static>|BudgetLine whereBudgetId($value)
+ * @method static Builder<static>|BudgetLine whereBudgetedAmount($value)
+ * @method static Builder<static>|BudgetLine whereCommittedAmount($value)
+ * @method static Builder<static>|BudgetLine whereCreatedAt($value)
+ * @method static Builder<static>|BudgetLine whereId($value)
+ * @method static Builder<static>|BudgetLine whereUpdatedAt($value)
  * @mixin \Eloquent
  */
 class BudgetLine extends Model
@@ -91,11 +94,10 @@ class BudgetLine extends Model
     | Budget lines connect to their parent budget and optionally to specific
     | general ledger or analytic accounts [3].
     */
-
     /**
      * Get the budget that owns this budget line.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
     public function budget(): BelongsTo
     {
@@ -106,7 +108,7 @@ class BudgetLine extends Model
      * Get the analytic account associated with this budget line (if applicable).
      * This is crucial for granular cost and revenue tracking against projects or departments [3, 5].
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
     public function analyticAccount(): BelongsTo
     {
@@ -118,7 +120,7 @@ class BudgetLine extends Model
      * Get the general ledger account associated with this budget line (if applicable).
      * This links the budget line to the Chart of Accounts [3, 4].
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
     public function account(): BelongsTo
     {

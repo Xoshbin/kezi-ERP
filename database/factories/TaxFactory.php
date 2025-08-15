@@ -2,13 +2,14 @@
 
 namespace Database\Factories;
 
+use App\Models\Tax;
 use App\Models\Account;
 use App\Models\Company;
 use App\Enums\Accounting\TaxType;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Tax>
+ * @extends Factory<Tax>
  */
 class TaxFactory extends Factory
 {

@@ -2,6 +2,7 @@
 
 namespace App\Actions\Assets;
 
+use Brick\Math\RoundingMode;
 use App\Enums\Assets\DepreciationEntryStatus;
 use App\Enums\Assets\DepreciationMethod;
 use App\Models\Asset;
@@ -32,7 +33,7 @@ class ComputeDepreciationScheduleAction
             return;
         }
 
-        $monthlyDepreciation = $depreciableValue->dividedBy($totalMonths, \Brick\Math\RoundingMode::HALF_UP);
+        $monthlyDepreciation = $depreciableValue->dividedBy($totalMonths, RoundingMode::HALF_UP);
 
         $depreciationDate = $asset->purchase_date->copy()->startOfMonth()->addMonth();
 

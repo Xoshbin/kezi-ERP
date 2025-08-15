@@ -2,6 +2,9 @@
 
 namespace App\Models;
 
+use Illuminate\Support\Carbon;
+use Database\Factories\FiscalPositionTaxMappingFactory;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -10,7 +13,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * Class FiscalPositionTaxMapping
  *
  * @package App\Models
- * 
+ *
  * This Eloquent model defines a specific rule for tax re-mapping within a Fiscal Position.
  * It is a crucial component for adapting default tax applications to specific
  * business scenarios or regulatory requirements based on the applied fiscal position.
@@ -19,20 +22,20 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property int $fiscal_position_id
  * @property int $original_tax_id
  * @property int $mapped_tax_id
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \App\Models\FiscalPosition $fiscalPosition
- * @property-read \App\Models\Tax $mappedTax
- * @property-read \App\Models\Tax $originalTax
- * @method static \Database\Factories\FiscalPositionTaxMappingFactory factory($count = null, $state = [])
- * @method static \Illuminate\Database\Eloquent\Builder<static>|FiscalPositionTaxMapping newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|FiscalPositionTaxMapping newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|FiscalPositionTaxMapping query()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|FiscalPositionTaxMapping whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|FiscalPositionTaxMapping whereFiscalPositionId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|FiscalPositionTaxMapping whereMappedTaxId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|FiscalPositionTaxMapping whereOriginalTaxId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|FiscalPositionTaxMapping whereUpdatedAt($value)
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property-read FiscalPosition $fiscalPosition
+ * @property-read Tax $mappedTax
+ * @property-read Tax $originalTax
+ * @method static FiscalPositionTaxMappingFactory factory($count = null, $state = [])
+ * @method static Builder<static>|FiscalPositionTaxMapping newModelQuery()
+ * @method static Builder<static>|FiscalPositionTaxMapping newQuery()
+ * @method static Builder<static>|FiscalPositionTaxMapping query()
+ * @method static Builder<static>|FiscalPositionTaxMapping whereCreatedAt($value)
+ * @method static Builder<static>|FiscalPositionTaxMapping whereFiscalPositionId($value)
+ * @method static Builder<static>|FiscalPositionTaxMapping whereMappedTaxId($value)
+ * @method static Builder<static>|FiscalPositionTaxMapping whereOriginalTaxId($value)
+ * @method static Builder<static>|FiscalPositionTaxMapping whereUpdatedAt($value)
  * @mixin \Eloquent
  */
 class FiscalPositionTaxMapping extends Model
@@ -79,13 +82,12 @@ class FiscalPositionTaxMapping extends Model
     | These relationships are fundamental for linking tax mapping rules
     | to their respective fiscal positions and the actual tax definitions.
     */
-
     /**
      * Get the fiscal position that this tax mapping belongs to.
      * This defines the overarching context or set of rules under which the
      * tax re-mapping is applied [1, 2].
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
     public function fiscalPosition(): BelongsTo
     {
@@ -98,7 +100,7 @@ class FiscalPositionTaxMapping extends Model
      * This represents the default tax rate or rule that would typically be applied
      * before any fiscal position adjustments [1, 3].
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
     public function originalTax(): BelongsTo
     {
@@ -113,7 +115,7 @@ class FiscalPositionTaxMapping extends Model
      * This is the effective tax rate or rule that will be applied once the
      * fiscal position's mapping rule is triggered [1, 3].
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
     public function mappedTax(): BelongsTo
     {

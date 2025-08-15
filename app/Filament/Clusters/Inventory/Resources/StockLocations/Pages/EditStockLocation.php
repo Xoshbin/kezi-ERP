@@ -1,0 +1,34 @@
+<?php
+
+namespace App\Filament\Clusters\Inventory\Resources\StockLocations\Pages;
+
+use Filament\Actions\ViewAction;
+use Filament\Actions\DeleteAction;
+use App\Filament\Clusters\Inventory\Resources\StockLocations\StockLocationResource;
+use Filament\Actions;
+use Filament\Resources\Pages\EditRecord;
+
+class EditStockLocation extends EditRecord
+{
+    protected static string $resource = StockLocationResource::class;
+
+    protected function getHeaderActions(): array
+    {
+        return [
+            ViewAction::make()
+                ->icon('heroicon-o-eye'),
+            DeleteAction::make()
+                ->icon('heroicon-o-trash'),
+        ];
+    }
+
+    public function getTitle(): string
+    {
+        return __('stock_location.edit_title', ['name' => $this->record->name]);
+    }
+
+    protected function getRedirectUrl(): string
+    {
+        return $this->getResource()::getUrl('index');
+    }
+}

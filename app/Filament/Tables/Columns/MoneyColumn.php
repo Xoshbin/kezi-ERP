@@ -2,6 +2,7 @@
 
 namespace App\Filament\Tables\Columns;
 
+use Exception;
 use Brick\Money\Money;
 use Filament\Tables\Columns\TextColumn;
 use Illuminate\Database\Eloquent\Model;
@@ -77,11 +78,11 @@ class MoneyColumn extends TextColumn
         if ($currencyCode) {
             try {
                 return Money::ofMinor((int)$state, $currencyCode);
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
                 // If minor units fail, try as major units
                 try {
                     return Money::of($state, $currencyCode);
-                } catch (\Exception $e) {
+                } catch (Exception $e) {
                     // Fall through to return null
                 }
             }

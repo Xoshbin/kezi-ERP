@@ -1,6 +1,6 @@
 <div>
     {{-- Bank Statement Information --}}
-    <div class="mb-6 bg-white shadow rounded-lg p-6">
+    <div class="mb-6 bg-white shadow-sm rounded-lg p-6">
         <h2 class="text-lg font-medium text-gray-900 mb-4">{{ __('bank_statement.statement_details') }}</h2>
         <dl class="flex flex-row justify-between w-full space-x-8">
             <div class="flex flex-col flex-1 items-start">
@@ -32,7 +32,7 @@
     </div>
 
     {{-- Summary Section --}}
-    <div class="mt-6 bg-white shadow rounded-lg p-6">
+    <div class="mt-6 bg-white shadow-sm rounded-lg p-6">
         <h3 class="text-lg font-medium leading-6 text-gray-900 mb-4">{{ __('bank_statement.reconciliation_summary') }}</h3>
         <dl class="flex flex-row justify-between w-full space-x-8">
             <div class="flex flex-col flex-1 items-start">

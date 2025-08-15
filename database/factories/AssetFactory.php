@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\Asset;
 use Brick\Money\Money;
 use App\Models\Account;
 use App\Models\Company;
@@ -10,7 +11,7 @@ use App\Enums\Assets\AssetStatus;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Asset>
+ * @extends Factory<Asset>
  */
 class AssetFactory extends Factory
 {

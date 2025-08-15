@@ -2,10 +2,11 @@
 
 namespace Database\Factories;
 
+use App\Models\Currency;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Currency>
+ * @extends Factory<Currency>
  */
 class CurrencyFactory extends Factory
 {
@@ -27,9 +28,9 @@ class CurrencyFactory extends Factory
 
     public function configure(): self
     {
-        return $this->afterMaking(function (\App\Models\Currency $currency) {
+        return $this->afterMaking(function (Currency $currency) {
             //
-        })->afterCreating(function (\App\Models\Currency $currency) {
+        })->afterCreating(function (Currency $currency) {
             if ($currency->code === 'IQD') {
                 $currency->decimal_places = 3;
                 $currency->save();

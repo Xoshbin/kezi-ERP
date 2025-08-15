@@ -2,6 +2,11 @@
 
 namespace App\Actions\Accounting;
 
+use App\Models\Company;
+use Carbon\Carbon;
+use App\Models\JournalEntryLine;
+use Brick\Math\Exception\RoundingNecessaryException;
+use Brick\Math\RoundingMode;
 use Brick\Money\Money;
 use App\Models\Currency;
 use App\Models\JournalEntry;
@@ -22,7 +27,7 @@ class UpdateJournalEntryAction
         $journalEntry = $dto->journalEntry;
 
         // 1. Perform all necessary validation before touching the database.
-        $this->lockDateService->enforce(\App\Models\Company::find($journalEntry->company_id), \Carbon\Carbon::parse($journalEntry->entry_date));
+        $this->lockDateService->enforce(Company::find($journalEntry->company_id), Carbon::parse($journalEntry->entry_date));
 
         if ($journalEntry->is_posted) {
             throw new UpdateNotAllowedException('Cannot modify a posted journal entry.');
@@ -64,7 +69,7 @@ class UpdateJournalEntryAction
             // Create the new lines from the DTO
             if (!empty($dto->lines)) {
                 foreach ($dto->lines as $lineDto) {
-                    $line = new \App\Models\JournalEntryLine();
+                    $line = new JournalEntryLine();
 
                     // First, establish the relationship. This makes the parent's context (like currency)
                     // available to the line model *before* any attributes are set. This is the key
@@ -124,8 +129,8 @@ class UpdateJournalEntryAction
         // Convert to Money with rounding if necessary
         try {
             return Money::of($value, $currencyCode);
-        } catch (\Brick\Math\Exception\RoundingNecessaryException) {
-            return Money::of($value, $currencyCode, null, \Brick\Math\RoundingMode::HALF_UP);
+        } catch (RoundingNecessaryException) {
+            return Money::of($value, $currencyCode, null, RoundingMode::HALF_UP);
         }
     }
 }

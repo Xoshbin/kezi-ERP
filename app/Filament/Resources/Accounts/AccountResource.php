@@ -1,0 +1,173 @@
+<?php
+
+namespace App\Filament\Resources\Accounts;
+
+use LaraZeus\SpatieTranslatable\Resources\Concerns\Translatable;
+use Filament\Schemas\Schema;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Textarea;
+use Filament\Actions\Action;
+use Filament\Forms\Components\Toggle;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Columns\IconColumn;
+use Filament\Actions\EditAction;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteBulkAction;
+use App\Filament\Resources\Accounts\Pages\ListAccounts;
+use App\Filament\Resources\Accounts\Pages\CreateAccount;
+use App\Filament\Resources\Accounts\Pages\EditAccount;
+use Filament\Forms;
+use Filament\Tables;
+use App\Models\Account;
+use App\Models\Company;
+use Filament\Tables\Table;
+use Filament\Resources\Resource;
+use App\Enums\Accounting\AccountType;
+use Illuminate\Database\Eloquent\Builder;
+use App\Filament\Resources\AccountResource\Pages;
+use Illuminate\Database\Eloquent\SoftDeletingScope;
+use App\Filament\Resources\AccountResource\RelationManagers;
+use App\Filament\Resources\Accounts\RelationManagers\JournalEntryLinesRelationManager;
+
+class AccountResource extends Resource
+{
+    use Translatable;
+
+    protected static ?string $model = Account::class;
+
+    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-calculator';
+
+    protected static ?int $navigationSort = 3;
+
+    public static function getNavigationGroup(): ?string
+    {
+        return __('navigation.groups.core_accounting');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __('account.plural_label');
+    }
+
+    public static function getNavigationLabel(): string
+    {
+        return __('account.plural_label');
+    }
+
+    public static function form(Schema $schema): Schema
+    {
+        return $schema
+            ->components([
+                Select::make('company_id')
+                    ->label(__('account.company'))
+                    ->relationship('company', 'name')
+                    ->required()
+                    ->searchable()
+                    ->createOptionForm([
+                        TextInput::make('name')
+                            ->label(__('company.name'))
+                            ->required()
+                            ->maxLength(255),
+                        Textarea::make('address')
+                            ->label(__('company.address'))
+                            ->columnSpanFull(),
+                        TextInput::make('tax_id')
+                            ->label(__('company.tax_id'))
+                            ->maxLength(255),
+                        Select::make('currency_id')
+                            ->label(__('company.currency_id'))
+                            ->relationship('currency', 'name')
+                            ->required(),
+                        TextInput::make('fiscal_country')
+                            ->label(__('company.fiscal_country'))
+                            ->required()
+                            ->maxLength(255),
+                    ])
+                    ->createOptionModalHeading(__('common.modal_title_create_company'))
+                    ->createOptionAction(function (Action $action) {
+                        return $action
+                            ->modalWidth('lg');
+                    }),
+                TextInput::make('code')
+                    ->label(__('account.code'))
+                    ->required()
+                    ->maxLength(255),
+                TextInput::make('name')
+                    ->label(__('account.name'))
+                    ->required()
+                    ->maxLength(255),
+                Select::make('type')
+                    ->label(__('account.type'))
+                    ->required()
+                    ->options(
+                        collect(AccountType::cases())
+                            ->mapWithKeys(fn (AccountType $type) => [$type->value => $type->label()])
+                    )
+                    ->searchable(),
+                Toggle::make('is_deprecated')
+                    ->label(__('account.is_deprecated'))
+                    ->required(),
+            ]);
+    }
+
+    public static function table(Table $table): Table
+    {
+        return $table
+            ->columns([
+                TextColumn::make('company.name')
+                    ->label(__('account.company'))
+                    ->numeric()
+                    ->sortable(),
+                TextColumn::make('code')
+                    ->label(__('account.code'))
+                    ->searchable(),
+                TextColumn::make('name')
+                    ->label(__('account.name'))
+                    ->searchable(),
+                TextColumn::make('type')
+                    ->label(__('account.type'))
+                    ->searchable(),
+                IconColumn::make('is_deprecated')
+                    ->label(__('account.is_deprecated'))
+                    ->boolean(),
+                TextColumn::make('created_at')
+                    ->label(__('account.created_at'))
+                    ->dateTime()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('updated_at')
+                    ->label(__('account.updated_at'))
+                    ->dateTime()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+            ])
+            ->filters([
+                //
+            ])
+            ->recordActions([
+                EditAction::make(),
+            ])
+            ->toolbarActions([
+                BulkActionGroup::make([
+                    DeleteBulkAction::make(),
+                ]),
+            ]);
+    }
+
+    public static function getRelations(): array
+    {
+        return [
+            JournalEntryLinesRelationManager::class,
+        ];
+    }
+
+    public static function getPages(): array
+    {
+        return [
+            'index' => ListAccounts::route('/'),
+            'create' => CreateAccount::route('/create'),
+            'edit' => EditAccount::route('/{record}/edit'),
+        ];
+    }
+}

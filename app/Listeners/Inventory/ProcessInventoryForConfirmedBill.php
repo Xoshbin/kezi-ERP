@@ -2,6 +2,7 @@
 
 namespace App\Listeners\Inventory;
 
+use RuntimeException;
 use App\Actions\Inventory\UpdateProductInventoryStatsAction;
 use App\Enums\Inventory\StockMoveStatus;
 use App\Enums\Inventory\StockMoveType;
@@ -33,7 +34,7 @@ class ProcessInventoryForConfirmedBill
         $company = $vendorBill->company;
 
         if (!$company->vendorLocation || !$company->defaultStockLocation) {
-            throw new \RuntimeException("Default Vendor or Stock Location is not configured for Company ID: {$company->id}.");
+            throw new RuntimeException("Default Vendor or Stock Location is not configured for Company ID: {$company->id}.");
         }
 
         StockMove::create([

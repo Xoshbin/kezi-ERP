@@ -2,6 +2,7 @@
 
 namespace App\Filament\Widgets;
 
+use Exception;
 use App\Services\Reports\AgedReceivableService;
 use App\Services\Reports\AgedPayableService;
 use App\Support\NumberFormatter;
@@ -57,7 +58,7 @@ class CashFlowWidget extends BaseWidget
             $netCashFlowSoon = $receivablesDueSoon->minus($payablesDueSoon);
             $netCashFlow30Days = $receivablesDue30Days->minus($payablesDue30Days);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $currency = $company->currency->code;
             $zero = Money::zero($currency);
 
