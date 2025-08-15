@@ -108,14 +108,12 @@ class JournalEntryResource extends Resource
                             ->label(__('journal_entry.debit'))
                             ->required()
                             ->currencyField('../../currency_id')
-                            ->numeric()
                             ->columnSpan(1)
                             ->live(onBlur: true),
                         MoneyInput::make('credit')
                             ->label(__('journal_entry.credit'))
                             ->required()
                             ->currencyField('../../currency_id')
-                            ->numeric()
                             ->columnSpan(1)
                             ->live(onBlur: true),
                         Select::make('partner_id')
@@ -142,17 +140,14 @@ class JournalEntryResource extends Resource
                     }),
                 MoneyInput::make('total_debit')
                     ->label(__('journal_entry.total_debit'))
-                    ->numeric()
                     ->currencyField('currency_id')
                     ->readOnly(),
                 MoneyInput::make('total_credit')
                     ->label(__('journal_entry.total_credit'))
-                    ->numeric()
                     ->currencyField('currency_id')
                     ->readOnly(),
                 MoneyInput::make('balance')
                     ->label(__('journal_entry.balance'))
-                    ->numeric()
                     ->currencyField('currency_id')
                     ->readOnly(),
             ]);
