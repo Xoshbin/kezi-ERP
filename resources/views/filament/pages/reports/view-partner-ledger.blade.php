@@ -1,9 +1,9 @@
 <x-filament-panels::page>
     <div class="space-y-6">
         <!-- Filter Form -->
-        <x-filament-panels::form wire:submit="generateReport">
+        <form wire:submit="generateReport">
             {{ $this->form }}
-        </x-filament-panels::form>
+        </form>
 
         <!-- Report Display -->
         @if($reportData)
@@ -13,8 +13,8 @@
                         {{ __('reports.partner_ledger') }}
                     </h2>
                     <p class="text-sm text-gray-600 dark:text-gray-400">
-                        {{ $reportData['partnerName'] }} - 
-                        {{ __('reports.period') }}: {{ Carbon\Carbon::parse($startDate)->format('M j, Y') }} 
+                        {{ $reportData['partnerName'] }} -
+                        {{ __('reports.period') }}: {{ Carbon\Carbon::parse($startDate)->format('M j, Y') }}
                         {{ __('reports.to') }} {{ Carbon\Carbon::parse($endDate)->format('M j, Y') }}
                     </p>
                 </div>
