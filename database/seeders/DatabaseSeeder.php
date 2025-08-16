@@ -18,8 +18,8 @@ class DatabaseSeeder extends Seeder
                 // 1. Core entities
                 // These are the fundamental records required for the system to operate.
                 CurrencySeeder::class,
-                CurrencyRateSeeder::class,
                 CompanySeeder::class,
+                CurrencyRateSeeder::class,
                 AccountSeeder::class,
                 JournalSeeder::class,
                 UpdateCompanyDefaultsSeeder::class,

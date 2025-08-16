@@ -118,6 +118,11 @@ class CurrencyRate extends Model
      */
     public function scopeLatestRateForDate(Builder $query, int $currencyId, $date, int $companyId): Builder
     {
+        // Ensure date is a Carbon instance for proper comparison
+        if (!$date instanceof Carbon) {
+            $date = Carbon::parse($date);
+        }
+
         return $query->where('currency_id', $currencyId)
             ->where('company_id', $companyId)
             ->where('effective_date', '<=', $date)
