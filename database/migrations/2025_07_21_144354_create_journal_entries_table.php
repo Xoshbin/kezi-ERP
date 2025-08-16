@@ -23,12 +23,6 @@ return new class extends Migration
             $table->text('description')->nullable();
             $table->unsignedBigInteger('total_debit');
             $table->unsignedBigInteger('total_credit');
-            // Add company base currency totals for multi-currency support
-            $table->unsignedBigInteger('total_debit_company_currency')->nullable();
-            $table->unsignedBigInteger('total_credit_company_currency')->nullable();
-
-            // Add exchange rate captured at journal entry creation
-            $table->decimal('exchange_rate_at_entry', 20, 10)->nullable();
 
             // Add index for performance on currency queries
             $table->index(['currency_id', 'entry_date']);

@@ -105,8 +105,6 @@ Based on the above principles, let's define the key models and their currency-re
         *   `account_id`: Foreign key to `Account`.
         *   `debit_foreign_currency`: Amount debited in the transaction's original currency.
         *   `credit_foreign_currency`: Amount credited in the transaction's original currency.
-        *   `debit_company_currency`: Amount debited in the company's main currency.
-        *   `credit_company_currency`: Amount credited in the company's main currency.
         *   `currency_id`: Foreign key to `Currency` (the original currency of *this specific line item* if different from `JournalEntry`'s overall currency, useful for complex cases, or null if it's the main currency).
         *   `exchange_rate_at_transaction`: The rate used for this specific item's conversion to company currency.
 
@@ -143,8 +141,6 @@ Now, let's detail the operational flow, emphasizing accounting accuracy.
         *   **Real-time Conversion Preview:** If a foreign currency is selected, display the current exchange rate and a "converted amount in main currency" preview next to each line item and the total. This is a key "better than Odoo" UX point.
     *   **Confirmation/Posting:**
         *   Upon confirmation (e.g., changing status from `Draft` to `Posted`), capture the *exact* `CurrencyRate` from the `CurrencyRate` table for the selected `currency_id` as of the `Invoice Date` (or `Bill Date`). Store this as `exchange_rate_at_creation` on the `CustomerInvoice`/`VendorBill` record.
-        *   Calculate and store all `*_company_currency` amounts on the `InvoiceLine`/`BillLine` records using this `exchange_rate_at_creation`.
-        *   Generate corresponding `JournalEntry` and `JournalItem` records. Each `JournalItem` must have both `debit_foreign_currency`/`credit_foreign_currency` and `debit_company_currency`/`credit_company_currency` values. The main currency values are always derived from the `foreign_currency` amounts using the `exchange_rate_at_creation`.
 
 4.  **Payment Registration:**
     *   **Filament Form:**
