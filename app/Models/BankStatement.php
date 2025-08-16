@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Support\Carbon;
 use Database\Factories\BankStatementFactory;
 use Illuminate\Database\Eloquent\Builder;
-use App\Casts\MoneyCast;
+use App\Casts\DocumentCurrencyMoneyCast;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -55,8 +55,8 @@ class BankStatement extends Model
 
     protected $casts = [
         'date' => 'date',
-        'starting_balance' => MoneyCast::class,
-        'ending_balance' => MoneyCast::class,
+        'starting_balance' => DocumentCurrencyMoneyCast::class,
+        'ending_balance' => DocumentCurrencyMoneyCast::class,
     ];
 
     public function company()

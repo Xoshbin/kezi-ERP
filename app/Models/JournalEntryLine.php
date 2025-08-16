@@ -7,7 +7,7 @@ use Brick\Money\Money;
 use Illuminate\Support\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use App\Casts\BaseCurrencyMoneyCast;
-use App\Casts\MoneyCast;
+
 use App\Casts\OriginalCurrencyMoneyCast;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -111,9 +111,7 @@ class JournalEntryLine extends Model
         'debit' => BaseCurrencyMoneyCast::class,
         'credit' => BaseCurrencyMoneyCast::class,
 
-        // Company base currency amounts (legacy fields)
-        'debit_company_currency' => MoneyCast::class,
-        'credit_company_currency' => MoneyCast::class,
+
 
         // This field is in the foreign currency
         'original_currency_amount' => OriginalCurrencyMoneyCast::class,
@@ -122,6 +120,17 @@ class JournalEntryLine extends Model
         'exchange_rate_at_transaction' => 'float',
         'exchange_rate_at_transaction_decimal' => 'decimal:10', // Proper decimal precision for exchange rates
     ];
+
+    /**
+     * The relationships that should always be loaded.
+     * Eager-loading the `journalEntry.company.currency` relationship is critical because the `BaseCurrencyMoneyCast`
+     * for monetary fields on this model depends on the currency context provided by the parent journal entry's company.
+     * Without this, any retrieval of a `JournalEntryLine` would fail when casting monetary values
+     * due to the missing currency information, leading to a "currency_id on null" error.
+     *
+     * @var array
+     */
+    protected $with = ['journalEntry.company.currency'];
 
     /**
      * The "booted" method of the model.

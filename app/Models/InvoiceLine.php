@@ -5,7 +5,8 @@ namespace App\Models;
 use Illuminate\Support\Carbon;
 use Database\Factories\InvoiceLineFactory;
 use Illuminate\Database\Eloquent\Builder;
-use App\Casts\MoneyCast;
+use App\Casts\DocumentCurrencyMoneyCast;
+use App\Casts\BaseCurrencyMoneyCast;
 use App\Observers\InvoiceLineObserver;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -94,15 +95,26 @@ class InvoiceLine extends Model
      */
     protected $casts = [
         'quantity' => 'decimal:2',
-        'unit_price' => MoneyCast::class,
-        'unit_price_company_currency' => MoneyCast::class,
-        'subtotal' => MoneyCast::class,
-        'subtotal_company_currency' => MoneyCast::class,
-        'total_line_tax' => MoneyCast::class,
-        'total_line_tax_company_currency' => MoneyCast::class,
+        'unit_price' => DocumentCurrencyMoneyCast::class,
+        'unit_price_company_currency' => BaseCurrencyMoneyCast::class,
+        'subtotal' => DocumentCurrencyMoneyCast::class,
+        'subtotal_company_currency' => BaseCurrencyMoneyCast::class,
+        'total_line_tax' => DocumentCurrencyMoneyCast::class,
+        'total_line_tax_company_currency' => BaseCurrencyMoneyCast::class,
         'created_at' => 'datetime', // Eloquent automatically manages these, but explicit casting is robust [12, 13].
         'updated_at' => 'datetime',
     ];
+
+    /**
+     * The relationships that should always be loaded.
+     * Eager-loading the `invoice` relationship is critical because the `DocumentCurrencyMoneyCast`
+     * for monetary fields on this model depends on the currency context provided by the parent invoice.
+     * Without this, any retrieval of an `InvoiceLine` would fail when casting monetary values
+     * due to the missing currency information, leading to a "currency_id on null" error.
+     *
+     * @var array
+     */
+    protected $with = ['invoice.currency'];
 
     /**
      * Get the company that this rate belongs to.
@@ -166,13 +178,5 @@ class InvoiceLine extends Model
     // The immutability and correction mechanisms (contra-entries) are handled at the parent Invoice level [1-3].
     // The migration's `cascadeOnDelete()` for `invoice_id` ensures that if a draft invoice is deleted, its lines follow [4].
 
-    /**
-     * Accessor to provide the currency_id to the MoneyCast.
-     * This robust implementation prevents N+1 query issues.
-     */
-    public function getCurrencyIdAttribute(): int
-    {
-        // If the relationship is already loaded, use it. Otherwise, use the foreign key.
-        return $this->invoice->currency_id ?? $this->invoice()->getForeignKeyResults()->first()->currency_id;
-    }
+
 }

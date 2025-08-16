@@ -60,7 +60,7 @@ class BankStatementLinesRelationManager extends RelationManager
     {
         return $table
             ->recordTitleAttribute(null)
-            ->modifyQueryUsing(fn (Builder $query) => $query->with('journalEntry'))
+            ->modifyQueryUsing(fn (Builder $query) => $query->with(['journalEntry', 'bankStatement.currency']))
             ->columns([
                 TextColumn::make('date')
                     ->label(__('bank_statement.date'))

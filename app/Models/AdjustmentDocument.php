@@ -6,7 +6,7 @@ use Illuminate\Support\Carbon;
 use Database\Factories\AdjustmentDocumentFactory;
 use Illuminate\Database\Eloquent\Builder;
 use Brick\Money\Money;
-use App\Casts\MoneyCast;
+use App\Casts\DocumentCurrencyMoneyCast;
 use App\Enums\Adjustments\AdjustmentDocumentType;
 use App\Enums\Adjustments\AdjustmentDocumentStatus;
 use Illuminate\Database\Eloquent\Model;
@@ -102,8 +102,8 @@ class AdjustmentDocument extends Model
         'date'         => 'date',       // [5, 6]
         'type'         => AdjustmentDocumentType::class,
         'status'       => AdjustmentDocumentStatus::class,
-        'total_amount' => MoneyCast::class,  // [5] Example precision, adjust as needed.
-        'total_tax'    => MoneyCast::class,  // [5] Example precision, adjust as needed.
+        'total_amount' => DocumentCurrencyMoneyCast::class,  // Document currency amounts
+        'total_tax'    => DocumentCurrencyMoneyCast::class,  // Document currency amounts
         'created_at'   => 'datetime',   // [5, 6]
         'updated_at'   => 'datetime',   // [5, 6]
     ];

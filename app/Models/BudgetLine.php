@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Support\Carbon;
 use Database\Factories\BudgetLineFactory;
 use Illuminate\Database\Eloquent\Builder;
-use App\Casts\MoneyCast;
+use App\Casts\BaseCurrencyMoneyCast;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -81,9 +81,9 @@ class BudgetLine extends Model
      * @var array<string, string>
      */
     protected $casts = [
-        'budgeted_amount' => MoneyCast::class,
-        'achieved_amount' => MoneyCast::class,
-        'committed_amount' => MoneyCast::class,
+        'budgeted_amount' => BaseCurrencyMoneyCast::class,
+        'achieved_amount' => BaseCurrencyMoneyCast::class,
+        'committed_amount' => BaseCurrencyMoneyCast::class,
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
     ];
@@ -141,13 +141,5 @@ class BudgetLine extends Model
         return $this->belongsTo(Account::class);
     }
 
-    /**
-     * Accessor to provide the currency_id to the MoneyCast.
-     * This robust implementation prevents N+1 query issues.
-     */
-    public function getCurrencyIdAttribute(): int
-    {
-        // If the relationship is already loaded, use it. Otherwise, use the foreign key.
-        return $this->budget->currency_id ?? $this->budget()->getForeignKeyResults()->first()->currency_id;
-    }
+
 }

@@ -4,6 +4,7 @@ namespace App\Casts;
 
 use App\Models\Currency;
 use Illuminate\Database\Eloquent\Model;
+use InvalidArgumentException;
 
 /**
  * OriginalCurrencyMoneyCast - Uses the original transaction currency.
@@ -15,20 +16,16 @@ use Illuminate\Database\Eloquent\Model;
 class OriginalCurrencyMoneyCast extends MoneyCast
 {
     /**
-     * Resolve the currency for this cast.
-     * Returns the original transaction currency from original_currency_id.
+     * Resolve the currency from the 'original_currency_id' field on the line itself.
+     * This cast is now strict and will not fall back to ambiguous logic.
      */
     protected function resolveCurrency(Model $model): Currency
     {
-        // Get the original currency ID from the model
-        $originalCurrencyId = $model->original_currency_id ?? null;
-
-        if (!$originalCurrencyId) {
-            // Fallback to parent implementation if no original_currency_id
-            return parent::resolveCurrency($model);
+        if (isset($model->original_currency_id)) {
+            return Currency::findOrFail($model->original_currency_id);
         }
 
         // Return the currency by ID
-        return Currency::findOrFail($originalCurrencyId);
+        throw new InvalidArgumentException('Model does not have an original_currency_id for OriginalCurrencyMoneyCast.');
     }
 }

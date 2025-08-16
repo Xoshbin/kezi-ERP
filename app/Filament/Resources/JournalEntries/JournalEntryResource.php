@@ -154,6 +154,12 @@ class JournalEntryResource extends Resource
             ]);
     }
 
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()
+            ->with(['company.currency', 'journal', 'currency']);
+    }
+
     public static function table(Table $table): Table
     {
         return $table
