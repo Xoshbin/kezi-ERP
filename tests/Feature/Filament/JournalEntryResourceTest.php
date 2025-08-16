@@ -621,3 +621,189 @@ it('calculates and fills totals on edit page load', function () {
         'balance' => '300.000',
     ]);
 });
+
+it('can create multi-currency capital injection journal entry in USD with proper conversion to IQD base currency', function () {
+    // Arrange: Create USD currency
+    $usdCurrency = Currency::firstOrCreate(
+        ['code' => 'USD'],
+        [
+            'name' => ['en' => 'US Dollar', 'ckb' => 'دۆلاری ئەمریکی', 'ar' => 'دولار أمريكي'],
+            'symbol' => '$',
+            'is_active' => true,
+            'decimal_places' => 2,
+        ]
+    );
+
+    // Set up exchange rate: 1 USD = 1460 IQD
+    // Use updateOrCreate to handle potential existing rates
+    $transactionDate = \Carbon\Carbon::parse('2024-01-01');
+    $currencyRate = \App\Models\CurrencyRate::updateOrCreate(
+        [
+            'currency_id' => $usdCurrency->id,
+            'effective_date' => $transactionDate->toDateString(),
+        ],
+        [
+            'company_id' => $this->company->id,
+            'rate' => 1460.0,
+            'source' => 'manual',
+        ]
+    );
+
+    // Debug: Verify the rate was created correctly
+    expect($currencyRate)->not->toBeNull();
+    expect($currencyRate->rate)->toBe('1460.0000000000');
+
+    // Verify the exchange rate was created correctly
+    expect($currencyRate)->not->toBeNull();
+    expect($currencyRate->rate)->toBe('1460.0000000000');
+
+    // Create the specific accounts mentioned in the scenario
+    $cashUsdAccount = Account::factory()->for($this->company)->create([
+        'code' => '110201',
+        'name' => 'Cash (USD)',
+        'type' => 'bank_and_cash',
+        'currency_id' => $usdCurrency->id, // Currency locked to USD
+    ]);
+
+    $ownersEquityAccount = Account::factory()->for($this->company)->create([
+        'code' => '320101',
+        'name' => "Owner's Equity",
+        'type' => 'equity',
+        'currency_id' => null, // Not currency locked
+    ]);
+
+    // Create Miscellaneous Operations journal
+    $miscJournal = Journal::factory()->for($this->company)->create([
+        'name' => ['en' => 'Miscellaneous Operations'],
+        'type' => 'miscellaneous',
+        'short_code' => 'MISC',
+    ]);
+
+    $uniqueReference = 'CAPITAL-001-' . now()->timestamp;
+
+    // Act: Create the capital injection journal entry using Filament form
+    // User enters amounts in USD as described in the scenario
+    livewire(\App\Filament\Resources\JournalEntries\Pages\CreateJournalEntry::class)
+        ->fillForm([
+            'journal_id' => $miscJournal->id,
+            'currency_id' => $usdCurrency->id, // User selects USD in the currency dropdown
+            'entry_date' => $transactionDate->toDateString(),
+            'reference' => $uniqueReference,
+            'description' => 'Capital injection in USD',
+            'lines' => [
+                [
+                    'account_id' => $cashUsdAccount->id,
+                    'debit' => 50000.00, // $50,000.00 USD (entered as major units)
+                    'credit' => 0,
+                    'partner_id' => null,
+                    'analytic_account_id' => null,
+                    'description' => 'Cash injection in USD',
+                ],
+                [
+                    'account_id' => $ownersEquityAccount->id,
+                    'debit' => 0,
+                    'credit' => 50000.00, // $50,000.00 USD (entered as major units)
+                    'partner_id' => null,
+                    'analytic_account_id' => null,
+                    'description' => "Owner's personal investment",
+                ],
+            ],
+        ])
+        ->call('create')
+        ->assertHasNoFormErrors();
+
+    // Assert: Verify the journal entry was created correctly
+    $this->assertDatabaseHas('journal_entries', [
+        'reference' => $uniqueReference,
+        'currency_id' => $usdCurrency->id, // Entry currency is USD
+        'is_posted' => false,
+    ]);
+
+    $journalEntry = JournalEntry::where('reference', $uniqueReference)->firstOrFail();
+
+    // Verify journal entry totals are in company base currency (IQD)
+    // $50,000 USD × 1460 = 73,000,000 IQD
+    $expectedIqdAmount = Money::of(73000000, 'IQD'); // 73M IQD
+    expect($journalEntry->total_debit->isEqualTo($expectedIqdAmount))->toBeTrue();
+    expect($journalEntry->total_credit->isEqualTo($expectedIqdAmount))->toBeTrue();
+
+    // Verify the lines were created correctly with multi-currency data
+    $this->assertCount(2, $journalEntry->lines);
+
+    // Verify Cash (USD) debit line
+    $debitLine = $journalEntry->lines()->where('account_id', $cashUsdAccount->id)->first();
+    expect($debitLine)->not->toBeNull();
+
+    // GL amounts should be in company base currency (IQD)
+    expect($debitLine->debit->isEqualTo(Money::of(73000000, 'IQD')))->toBeTrue();
+    expect($debitLine->credit->isEqualTo(Money::zero('IQD')))->toBeTrue();
+
+    // Original currency data should be preserved
+    expect($debitLine->original_currency_amount->isEqualTo(Money::of(50000, 'USD')))->toBeTrue();
+    expect($debitLine->original_currency_id)->toBe($usdCurrency->id);
+    expect($debitLine->exchange_rate_at_transaction)->toBe(1460.0);
+
+    // Verify Owner's Equity credit line
+    $creditLine = $journalEntry->lines()->where('account_id', $ownersEquityAccount->id)->first();
+    expect($creditLine)->not->toBeNull();
+
+    // GL amounts should be in company base currency (IQD)
+    expect($creditLine->debit->isEqualTo(Money::zero('IQD')))->toBeTrue();
+    expect($creditLine->credit->isEqualTo(Money::of(73000000, 'IQD')))->toBeTrue();
+
+    // Original currency data should be preserved
+    expect($creditLine->original_currency_amount->isEqualTo(Money::of(50000, 'USD')))->toBeTrue();
+    expect($creditLine->original_currency_id)->toBe($usdCurrency->id);
+    expect($creditLine->exchange_rate_at_transaction)->toBe(1460.0);
+
+    // Verify database storage (minor units)
+    $this->assertDatabaseHas('journal_entries', [
+        'id' => $journalEntry->id,
+        'currency_id' => $usdCurrency->id,
+        'total_debit' => 73000000000, // 73M IQD in fils (minor units)
+        'total_credit' => 73000000000, // 73M IQD in fils (minor units)
+    ]);
+
+    $this->assertDatabaseHas('journal_entry_lines', [
+        'journal_entry_id' => $journalEntry->id,
+        'account_id' => $cashUsdAccount->id,
+        'debit' => 73000000000, // 73M IQD in fils (minor units)
+        'credit' => 0,
+        'original_currency_amount' => 5000000, // $50,000 in cents (minor units)
+        'original_currency_id' => $usdCurrency->id,
+        'exchange_rate_at_transaction' => 1460.0,
+    ]);
+
+    $this->assertDatabaseHas('journal_entry_lines', [
+        'journal_entry_id' => $journalEntry->id,
+        'account_id' => $ownersEquityAccount->id,
+        'debit' => 0,
+        'credit' => 73000000000, // 73M IQD in fils (minor units)
+        'original_currency_amount' => 5000000, // $50,000 in cents (minor units)
+        'original_currency_id' => $usdCurrency->id,
+        'exchange_rate_at_transaction' => 1460.0,
+    ]);
+
+    // Act: Post the journal entry
+    $editWire = livewire(\App\Filament\Resources\JournalEntries\Pages\EditJournalEntry::class, [
+        'record' => $journalEntry->getRouteKey(),
+    ]);
+
+    $editWire->assertActionVisible('post');
+    $editWire->callAction('post');
+
+    // Assert: Verify posting was successful and audit trail is complete
+    $journalEntry->refresh();
+    expect($journalEntry->is_posted)->toBeTrue();
+    expect($journalEntry->hash)->not->toBeNull();
+
+    // Verify the accounting equation remains balanced in base currency
+    // Assets (Cash USD converted to IQD): +73,000,000 IQD
+    // Equity (Owner's Equity): +73,000,000 IQD
+    // Assets = Liabilities + Equity ✓
+
+    // Verify immutability after posting
+    $journalEntry->description = 'Attempted unauthorized update';
+    expect(fn() => $journalEntry->save())
+        ->toThrow(\RuntimeException::class, "Attempted to modify immutable posted journal entry field: 'description'");
+});
