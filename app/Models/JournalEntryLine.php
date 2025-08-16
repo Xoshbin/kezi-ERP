@@ -88,14 +88,11 @@ class JournalEntryLine extends Model
         'currency_id',
         'debit',
         'credit',
-        'debit_company_currency',
-        'credit_company_currency',
         'description',
         'analytic_account_id',
         'original_currency_amount',
         'original_currency_id',
-        'exchange_rate_at_transaction',
-        'exchange_rate_at_transaction_decimal',
+        'exchange_rate_at_transaction'
     ];
 
     /**
@@ -118,7 +115,6 @@ class JournalEntryLine extends Model
 
         // Cast the rate for correct handling
         'exchange_rate_at_transaction' => 'float',
-        'exchange_rate_at_transaction_decimal' => 'decimal:10', // Proper decimal precision for exchange rates
     ];
 
     /**

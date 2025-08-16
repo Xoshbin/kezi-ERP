@@ -25,13 +25,6 @@ return new class extends Migration
             // Add currency_id field for the original transaction currency
             $table->foreignId('currency_id')->nullable()->constrained('currencies');
 
-            // Fix exchange_rate_at_transaction to be decimal instead of integer
-            $table->decimal('exchange_rate_at_transaction_decimal', 20, 10)->nullable();
-
-            // Add company base currency amounts
-            $table->unsignedBigInteger('debit_company_currency')->default(0);
-            $table->unsignedBigInteger('credit_company_currency')->default(0);
-
             // Add index for performance
             $table->index(['journal_entry_id', 'account_id']);
             $table->index(['currency_id']);
