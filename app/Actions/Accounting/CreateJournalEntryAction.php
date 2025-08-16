@@ -10,6 +10,7 @@ use App\Models\Currency;
 use App\Models\JournalEntry;
 use App\Models\Account;
 use App\Services\Accounting\LockDateService;
+use App\Services\CurrencyConverterService;
 use Brick\Money\Money;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -17,8 +18,10 @@ use Illuminate\Validation\ValidationException;
 
 class CreateJournalEntryAction
 {
-    public function __construct(private readonly LockDateService $lockDateService)
-    {
+    public function __construct(
+        private readonly LockDateService $lockDateService,
+        private readonly CurrencyConverterService $currencyConverter
+    ) {
     }
 
     public function execute(CreateJournalEntryDTO $dto): JournalEntry
@@ -52,9 +55,39 @@ class CreateJournalEntryAction
             ]);
         }
 
-        // --- FIX IS HERE: Add $totalDebit and $totalCredit to the 'use' statement ---
-        return DB::transaction(function () use ($dto, $totalDebit, $totalCredit, $currencyCode, $currency) {
-            $journalEntry = JournalEntry::create([
+        // Calculate multi-currency totals if needed
+        $exchangeRate = null;
+        $totalDebitCompanyCurrency = null;
+        $totalCreditCompanyCurrency = null;
+
+        if ($currency->id !== $company->currency_id) {
+            // Get exchange rate for the entry date
+            $exchangeRate = $this->currencyConverter->getExchangeRate($currency, $dto->entry_date, $company);
+
+            if (!$exchangeRate) {
+                throw new Exception("No exchange rate found for {$currency->code} on {$dto->entry_date}");
+            }
+
+            // Convert totals to company currency
+            $totalDebitCompanyCurrency = $this->currencyConverter->convertToBaseCurrency(
+                $totalDebit,
+                $currency,
+                $company->currency,
+                $dto->entry_date,
+                $company
+            );
+
+            $totalCreditCompanyCurrency = $this->currencyConverter->convertToBaseCurrency(
+                $totalCredit,
+                $currency,
+                $company->currency,
+                $dto->entry_date,
+                $company
+            );
+        }
+
+        return DB::transaction(function () use ($dto, $totalDebit, $totalCredit, $exchangeRate, $totalDebitCompanyCurrency, $totalCreditCompanyCurrency, $currency, $company) {
+            $journalEntryData = [
                 'company_id' => $dto->company_id,
                 'journal_id' => $dto->journal_id,
                 'currency_id' => $dto->currency_id,
@@ -67,7 +100,16 @@ class CreateJournalEntryAction
                 'total_credit' => $totalCredit,
                 'source_type' => $dto->source_type,
                 'source_id' => $dto->source_id,
-            ]);
+            ];
+
+            // Add multi-currency fields if applicable
+            if ($exchangeRate !== null) {
+                $journalEntryData['exchange_rate_at_entry'] = $exchangeRate;
+                $journalEntryData['total_debit_company_currency'] = $totalDebitCompanyCurrency;
+                $journalEntryData['total_credit_company_currency'] = $totalCreditCompanyCurrency;
+            }
+
+            $journalEntry = JournalEntry::create($journalEntryData);
 
             // This ensures the $journalEntry object is fully hydrated before we use it.
             $journalEntry = $journalEntry->fresh()->load('currency');
@@ -80,19 +122,47 @@ class CreateJournalEntryAction
                 // to solving the MoneyCast issue without schema changes.
                 $line->journalEntry()->associate($journalEntry);
 
-                // Now, fill the attributes. The MoneyCast on 'debit' and 'credit' will be
-                // triggered here, but it can now successfully call getCurrencyIdAttribute()
-                // because the journalEntry relationship is established.
-                $line->fill([
+                // Prepare line data
+                $lineData = [
+                    'company_id' => $dto->company_id,
                     'account_id' => $lineDto->account_id,
                     'partner_id' => $lineDto->partner_id,
                     'analytic_account_id' => $lineDto->analytic_account_id,
                     'description' => $lineDto->description,
                     'debit' => $lineDto->debit,
                     'credit' => $lineDto->credit,
-                ]);
+                ];
 
-                // Finally, save the fully prepared line.
+                // Add multi-currency fields if applicable
+                if ($exchangeRate !== null) {
+                    // Convert line amounts to company currency
+                    $debitCompanyCurrency = $this->currencyConverter->convertToBaseCurrency(
+                        $lineDto->debit,
+                        $currency,
+                        $company->currency,
+                        $dto->entry_date,
+                        $company
+                    );
+
+                    $creditCompanyCurrency = $this->currencyConverter->convertToBaseCurrency(
+                        $lineDto->credit,
+                        $currency,
+                        $company->currency,
+                        $dto->entry_date,
+                        $company
+                    );
+
+                    $lineData['debit_company_currency'] = $debitCompanyCurrency;
+                    $lineData['credit_company_currency'] = $creditCompanyCurrency;
+                    $lineData['exchange_rate_at_transaction_decimal'] = $exchangeRate;
+
+                    // Store original currency amount (the larger of debit or credit)
+                    $originalAmount = $lineDto->debit->isGreaterThan($lineDto->credit) ? $lineDto->debit : $lineDto->credit;
+                    $lineData['original_currency_amount'] = $originalAmount;
+                }
+
+                // Fill the attributes and save
+                $line->fill($lineData);
                 $line->save();
             }
 

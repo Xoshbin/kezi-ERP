@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Database\Factories\CurrencyRateFactory;
 use Illuminate\Database\Eloquent\Builder;
 
+
 /**
  * Class CurrencyRate
  *
@@ -107,16 +108,18 @@ class CurrencyRate extends Model
     */
 
     /**
-     * Scope to get the latest rate for a currency on or before a specific date.
+     * Scope to get the latest rate for a currency on or before a specific date for a specific company.
      *
      * @param Builder $query
      * @param int $currencyId
      * @param Carbon|string $date
+     * @param int $companyId
      * @return Builder
      */
-    public function scopeLatestRateForDate(Builder $query, int $currencyId, $date): Builder
+    public function scopeLatestRateForDate(Builder $query, int $currencyId, $date, int $companyId): Builder
     {
         return $query->where('currency_id', $currencyId)
+            ->where('company_id', $companyId)
             ->where('effective_date', '<=', $date)
             ->orderBy('effective_date', 'desc')
             ->limit(1);
@@ -141,32 +144,36 @@ class CurrencyRate extends Model
     */
 
     /**
-     * Get the exchange rate for a currency on a specific date.
+     * Get the exchange rate for a currency on a specific date for a specific company.
      * Returns the most recent rate on or before the given date.
      *
      * @param int $currencyId
      * @param Carbon|string $date
+     * @param int $companyId
      * @return float|null
      */
-    public static function getRateForDate(int $currencyId, $date): ?float
+    public static function getRateForDate(int $currencyId, $date, int $companyId): ?float
     {
-        $rate = static::latestRateForDate($currencyId, $date)->first();
+        $rate = static::latestRateForDate($currencyId, $date, $companyId)->first();
 
         return $rate?->rate;
     }
 
     /**
-     * Get the latest exchange rate for a currency.
+     * Get the latest exchange rate for a currency for a specific company.
      *
      * @param int $currencyId
+     * @param int $companyId
      * @return float|null
      */
-    public static function getLatestRate(int $currencyId): ?float
+    public static function getLatestRate(int $currencyId, int $companyId): ?float
     {
         $rate = static::forCurrency($currencyId)
+            ->where('company_id', $companyId)
             ->orderBy('effective_date', 'desc')
             ->first();
 
         return $rate?->rate;
     }
+
 }

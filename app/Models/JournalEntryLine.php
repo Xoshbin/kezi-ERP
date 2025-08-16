@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Observers\JournalEntryLineObserver;
 use Brick\Money\Money;
 use Illuminate\Support\Carbon;
 use Illuminate\Database\Eloquent\Builder;
@@ -11,6 +12,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use RuntimeException; // Utilized for explicit enforcement of immutability and data integrity.
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 /**
  * Class JournalEntryLine
  *
@@ -54,6 +56,7 @@ use RuntimeException; // Utilized for explicit enforcement of immutability and d
  * @method static Builder<static>|JournalEntryLine whereUpdatedAt($value)
  * @mixin \Eloquent
  */
+#[ObservedBy([JournalEntryLineObserver::class])]
 class JournalEntryLine extends Model
 {
     use HasFactory;

@@ -46,13 +46,13 @@ class CurrencyConverterService
         $baseCurrency = $company->currency;
 
         // Convert to base currency first, then to target currency
-        $amountInBaseCurrency = $this->convertToBaseCurrency($amount, $fromCurrency, $baseCurrency, $date);
+        $amountInBaseCurrency = $this->convertToBaseCurrency($amount, $fromCurrency, $baseCurrency, $date, $company);
 
         if ($toCurrency->id === $baseCurrency->id) {
             return $amountInBaseCurrency;
         }
 
-        return $this->convertFromBaseCurrency($amountInBaseCurrency, $toCurrency, $date);
+        return $this->convertFromBaseCurrency($amountInBaseCurrency, $toCurrency, $date, $company);
     }
 
     /**
@@ -62,16 +62,17 @@ class CurrencyConverterService
      * @param Currency $fromCurrency
      * @param Currency $baseCurrency
      * @param Carbon|string $date
+     * @param Company $company
      * @return Money
      * @throws InvalidArgumentException
      */
-    public function convertToBaseCurrency(Money $amount, Currency $fromCurrency, Currency $baseCurrency, $date): Money
+    public function convertToBaseCurrency(Money $amount, Currency $fromCurrency, Currency $baseCurrency, $date, Company $company): Money
     {
         if ($fromCurrency->id === $baseCurrency->id) {
             return $amount;
         }
 
-        $rate = $this->getExchangeRate($fromCurrency, $date);
+        $rate = $this->getExchangeRate($fromCurrency, $date, $company);
 
         if ($rate === null) {
             throw new InvalidArgumentException("No exchange rate found for {$fromCurrency->code} on {$date}");
@@ -89,12 +90,13 @@ class CurrencyConverterService
      * @param Money $amount
      * @param Currency $toCurrency
      * @param Carbon|string $date
+     * @param Company $company
      * @return Money
      * @throws InvalidArgumentException
      */
-    public function convertFromBaseCurrency(Money $amount, Currency $toCurrency, $date): Money
+    public function convertFromBaseCurrency(Money $amount, Currency $toCurrency, $date, Company $company): Money
     {
-        $rate = $this->getExchangeRate($toCurrency, $date);
+        $rate = $this->getExchangeRate($toCurrency, $date, $company);
 
         if ($rate === null) {
             throw new InvalidArgumentException("No exchange rate found for {$toCurrency->code} on {$date}");
@@ -107,27 +109,29 @@ class CurrencyConverterService
     }
 
     /**
-     * Get the exchange rate for a currency on a specific date.
+     * Get the exchange rate for a currency on a specific date for a specific company.
      * The rate represents how much of the base currency equals 1 unit of the foreign currency.
      *
      * @param Currency $currency
      * @param Carbon|string $date
+     * @param Company $company
      * @return float|null
      */
-    public function getExchangeRate(Currency $currency, $date): ?float
+    public function getExchangeRate(Currency $currency, $date, Company $company): ?float
     {
-        return CurrencyRate::getRateForDate($currency->id, $date);
+        return CurrencyRate::getRateForDate($currency->id, $date, $company->id);
     }
 
     /**
-     * Get the latest exchange rate for a currency.
+     * Get the latest exchange rate for a currency for a specific company.
      *
      * @param Currency $currency
+     * @param Company $company
      * @return float|null
      */
-    public function getLatestExchangeRate(Currency $currency): ?float
+    public function getLatestExchangeRate(Currency $currency, Company $company): ?float
     {
-        return CurrencyRate::getLatestRate($currency->id);
+        return CurrencyRate::getLatestRate($currency->id, $company->id);
     }
 
     /**

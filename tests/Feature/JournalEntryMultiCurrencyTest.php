@@ -1,5 +1,8 @@
 <?php
 
+use App\Actions\Accounting\CreateJournalEntryAction;
+use App\DataTransferObjects\Accounting\CreateJournalEntryDTO;
+use App\DataTransferObjects\Accounting\CreateJournalEntryLineDTO;
 use App\Models\Company;
 use App\Models\Currency;
 use App\Models\CurrencyRate;
@@ -8,31 +11,65 @@ use App\Models\JournalEntryLine;
 use App\Models\Journal;
 use App\Models\Account;
 use App\Models\User;
-use App\Services\JournalEntryMultiCurrencyService;
+use App\Services\JournalEntryService;
 use Brick\Money\Money;
 use Carbon\Carbon;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\Traits\WithConfiguredCompany;
+
+uses(RefreshDatabase::class, WithConfiguredCompany::class);
 
 test('journal entry can store multi-currency amounts', function () {
-    $company = Company::factory()->create();
-    $baseCurrency = $company->currency;
-    $foreignCurrency = Currency::factory()->create(['code' => 'EUR']);
-    $user = User::factory()->create();
+    $this->setupWithConfiguredCompany();
 
-    $journalEntry = JournalEntry::create([
-        'company_id' => $company->id,
-        'journal_id' => Journal::factory()->create(['company_id' => $company->id])->id,
+    $foreignCurrency = Currency::factory()->create(['code' => 'EUR']);
+    $journal = Journal::factory()->create(['company_id' => $this->company->id]);
+    $account1 = Account::factory()->create(['company_id' => $this->company->id]);
+    $account2 = Account::factory()->create(['company_id' => $this->company->id]);
+
+    // Create exchange rate for the foreign currency
+    \App\Models\CurrencyRate::factory()->create([
         'currency_id' => $foreignCurrency->id,
-        'created_by_user_id' => $user->id,
-        'entry_date' => Carbon::today(),
-        'reference' => 'TEST-001',
-        'description' => 'Multi-currency test entry',
-        'total_debit' => Money::of(100, 'EUR'),
-        'total_credit' => Money::of(100, 'EUR'),
-        'total_debit_company_currency' => Money::of(150, $baseCurrency->code),
-        'total_credit_company_currency' => Money::of(150, $baseCurrency->code),
-        'exchange_rate_at_entry' => 1.5,
-        'is_posted' => true,
+        'company_id' => $this->company->id,
+        'rate' => 1.5,
+        'effective_date' => Carbon::today(),
     ]);
+
+    // Create line DTOs
+    $lineDTOs = [
+        new CreateJournalEntryLineDTO(
+            account_id: $account1->id,
+            debit: Money::of(100, 'EUR'),
+            credit: Money::of(0, 'EUR'),
+            description: 'Test debit line',
+            partner_id: null,
+            analytic_account_id: null
+        ),
+        new CreateJournalEntryLineDTO(
+            account_id: $account2->id,
+            debit: Money::of(0, 'EUR'),
+            credit: Money::of(100, 'EUR'),
+            description: 'Test credit line',
+            partner_id: null,
+            analytic_account_id: null
+        ),
+    ];
+
+    // Create journal entry DTO
+    $journalEntryDTO = new CreateJournalEntryDTO(
+        company_id: $this->company->id,
+        journal_id: $journal->id,
+        currency_id: $foreignCurrency->id,
+        entry_date: Carbon::today()->format('Y-m-d'),
+        reference: 'TEST-001',
+        description: 'Multi-currency test entry',
+        created_by_user_id: $this->user->id,
+        is_posted: true,
+        lines: $lineDTOs
+    );
+
+    // Create journal entry using the Action
+    $journalEntry = app(CreateJournalEntryAction::class)->execute($journalEntryDTO);
 
     expect($journalEntry->currency_id)->toBe($foreignCurrency->id);
     expect($journalEntry->total_debit->getAmount()->toFloat())->toBe(100.0);

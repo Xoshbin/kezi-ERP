@@ -16,6 +16,8 @@ use Filament\Tables\Table;
 
 class CurrencyRateResource extends Resource
 {
+    protected static bool $isScopedToTenant = false;
+
     protected static ?string $model = CurrencyRate::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedCurrencyDollar;

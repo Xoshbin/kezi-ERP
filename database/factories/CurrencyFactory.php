@@ -27,7 +27,6 @@ class CurrencyFactory extends Factory
             'name' => $currencyCode . ' Currency',
             'code' => $currencyCode,
             'symbol' => '$',
-            'exchange_rate' => $this->faker->randomFloat(4, 0.5, 1.5),
             'decimal_places' => 2,
             'is_active' => true,
         ];

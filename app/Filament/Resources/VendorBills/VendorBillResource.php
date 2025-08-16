@@ -128,8 +128,8 @@ class VendorBillResource extends Resource
                                 $company = \Filament\Facades\Filament::getTenant();
 
                                 if ($currency && $company && $currency->id !== $company->currency_id) {
-                                    // Get latest exchange rate
-                                    $latestRate = \App\Models\CurrencyRate::getLatestRate($currency->id);
+                                    // Get latest exchange rate for this company
+                                    $latestRate = \App\Models\CurrencyRate::getLatestRate($currency->id, $company->id);
                                     if ($latestRate) {
                                         $set('current_exchange_rate', $latestRate);
                                     }

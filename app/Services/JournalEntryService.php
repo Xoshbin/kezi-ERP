@@ -111,63 +111,39 @@ class JournalEntryService
     /**
      * Create a multi-currency journal entry with proper currency conversion.
      * This method handles journal entries where the transaction currency differs from the company base currency.
+     * Now uses the CreateJournalEntryAction for consistency.
      */
-    public function createMultiCurrencyEntry(array $entryData, array $lines, Currency $transactionCurrency): JournalEntry
+    public function createMultiCurrencyEntry(array $entryData, array $lines, Currency $transactionCurrency, User $user): JournalEntry
     {
-        $company = Company::find($entryData['company_id']);
-        $exchangeRate = null;
-
-        // Get exchange rate if not in company base currency
-        if ($transactionCurrency->id !== $company->currency_id) {
-            $exchangeRate = $this->currencyConverter->getExchangeRate(
-                $transactionCurrency,
-                $entryData['entry_date']
-            );
-
-            if (!$exchangeRate) {
-                throw new Exception("No exchange rate found for {$transactionCurrency->code} on {$entryData['entry_date']}");
-            }
-        }
-
-        // Calculate company currency totals
-        $totalDebitCompanyCurrency = Money::zero($company->currency->code);
-        $totalCreditCompanyCurrency = Money::zero($company->currency->code);
-
+        // Convert the array-based line data to DTOs
+        $lineDTOs = [];
         foreach ($lines as $lineData) {
-            $debitAmount = $lineData['debit'] ?? Money::zero($transactionCurrency->code);
-            $creditAmount = $lineData['credit'] ?? Money::zero($transactionCurrency->code);
-
-            if ($transactionCurrency->id !== $company->currency_id) {
-                // Convert to company currency
-                $debitCompanyCurrency = $this->currencyConverter->convertToBaseCurrency(
-                    $debitAmount,
-                    $transactionCurrency,
-                    $company->currency,
-                    $entryData['entry_date']
-                );
-
-                $creditCompanyCurrency = $this->currencyConverter->convertToBaseCurrency(
-                    $creditAmount,
-                    $transactionCurrency,
-                    $company->currency,
-                    $entryData['entry_date']
-                );
-
-                $totalDebitCompanyCurrency = $totalDebitCompanyCurrency->plus($debitCompanyCurrency);
-                $totalCreditCompanyCurrency = $totalCreditCompanyCurrency->plus($creditCompanyCurrency);
-            } else {
-                // Same currency, no conversion needed
-                $totalDebitCompanyCurrency = $totalDebitCompanyCurrency->plus($debitAmount);
-                $totalCreditCompanyCurrency = $totalCreditCompanyCurrency->plus($creditAmount);
-            }
+            $lineDTOs[] = new \App\DataTransferObjects\Accounting\CreateJournalEntryLineDTO(
+                account_id: $lineData['account_id'],
+                debit: $lineData['debit'] ?? Money::zero($transactionCurrency->code),
+                credit: $lineData['credit'] ?? Money::zero($transactionCurrency->code),
+                description: $lineData['description'] ?? null,
+                partner_id: $lineData['partner_id'] ?? null,
+                analytic_account_id: $lineData['analytic_account_id'] ?? null
+            );
         }
 
-        // Create the journal entry with multi-currency fields
-        return JournalEntry::create(array_merge($entryData, [
-            'currency_id' => $transactionCurrency->id,
-            'exchange_rate_at_entry' => $exchangeRate,
-            'total_debit_company_currency' => $totalDebitCompanyCurrency,
-            'total_credit_company_currency' => $totalCreditCompanyCurrency,
-        ]));
+        // Create the DTO for the journal entry
+        $journalEntryDTO = new \App\DataTransferObjects\Accounting\CreateJournalEntryDTO(
+            company_id: $entryData['company_id'],
+            journal_id: $entryData['journal_id'],
+            currency_id: $transactionCurrency->id,
+            entry_date: $entryData['entry_date'],
+            reference: $entryData['reference'],
+            description: $entryData['description'] ?? null,
+            created_by_user_id: $user->id,
+            is_posted: $entryData['is_posted'] ?? false,
+            lines: $lineDTOs,
+            source_type: $entryData['source_type'] ?? null,
+            source_id: $entryData['source_id'] ?? null
+        );
+
+        // Use the CreateJournalEntryAction which now handles multi-currency
+        return app(\App\Actions\Accounting\CreateJournalEntryAction::class)->execute($journalEntryDTO);
     }
 }

@@ -80,6 +80,7 @@ class UpdateJournalEntryAction
                     // triggered here, but it can now successfully call getCurrencyIdAttribute()
                     // because the journalEntry relationship is established.
                     $line->fill([
+                        'company_id' => $journalEntry->company_id,
                         'account_id' => $lineDto->account_id,
                         'partner_id' => $lineDto->partner_id,
                         'analytic_account_id' => $lineDto->analytic_account_id,

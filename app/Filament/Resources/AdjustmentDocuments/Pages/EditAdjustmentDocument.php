@@ -141,6 +141,6 @@ class EditAdjustmentDocument extends EditRecord
             lines: $lineDTOs
         );
 
-        return (new UpdateAdjustmentDocumentAction())->execute($dto);
+        return app(UpdateAdjustmentDocumentAction::class)->execute($dto);
     }
 }

@@ -1,13 +1,16 @@
 <?php
 
+use App\Models\Company;
 use App\Models\Currency;
 use App\Models\CurrencyRate;
 use Carbon\Carbon;
 
 test('currency rate can be created', function () {
+    $company = Company::factory()->create();
     $currency = Currency::factory()->create();
 
     $rate = CurrencyRate::create([
+        'company_id' => $company->id,
         'currency_id' => $currency->id,
         'rate' => 1.2345,
         'effective_date' => Carbon::today(),
@@ -40,57 +43,66 @@ test('currency has many rates', function () {
 });
 
 test('get rate for date returns correct rate', function () {
+    $company = Company::factory()->create();
     $currency = Currency::factory()->create();
 
     // Create rates for different dates
     CurrencyRate::factory()->create([
+        'company_id' => $company->id,
         'currency_id' => $currency->id,
         'rate' => 1.1000,
         'effective_date' => Carbon::today()->subDays(5),
     ]);
 
     CurrencyRate::factory()->create([
+        'company_id' => $company->id,
         'currency_id' => $currency->id,
         'rate' => 1.2000,
         'effective_date' => Carbon::today()->subDays(2),
     ]);
 
     CurrencyRate::factory()->create([
+        'company_id' => $company->id,
         'currency_id' => $currency->id,
         'rate' => 1.3000,
         'effective_date' => Carbon::today(),
     ]);
 
     // Should return the most recent rate on or before the date
-    $rate = CurrencyRate::getRateForDate($currency->id, Carbon::today()->subDay());
+    $rate = CurrencyRate::getRateForDate($currency->id, Carbon::today()->subDay(), $company->id);
     expect($rate)->toBe(1.2000);
 
-    $rate = CurrencyRate::getRateForDate($currency->id, Carbon::today());
+    $rate = CurrencyRate::getRateForDate($currency->id, Carbon::today(), $company->id);
     expect($rate)->toBe(1.3000);
 });
 
 test('get latest rate returns most recent', function () {
+    $company = Company::factory()->create();
     $currency = Currency::factory()->create();
 
     CurrencyRate::factory()->create([
+        'company_id' => $company->id,
         'currency_id' => $currency->id,
         'rate' => 1.1000,
         'effective_date' => Carbon::today()->subDays(5),
     ]);
 
     CurrencyRate::factory()->create([
+        'company_id' => $company->id,
         'currency_id' => $currency->id,
         'rate' => 1.3000,
         'effective_date' => Carbon::today(),
     ]);
 
-    $rate = CurrencyRate::getLatestRate($currency->id);
+    $rate = CurrencyRate::getLatestRate($currency->id, $company->id);
     expect($rate)->toBe(1.3000);
 });
 
 test('rate casts to decimal', function () {
+    $company = Company::factory()->create();
     $currency = Currency::factory()->create();
     $rate = CurrencyRate::factory()->create([
+        'company_id' => $company->id,
         'currency_id' => $currency->id,
         'rate' => 1.234567,
     ]);

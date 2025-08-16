@@ -3,6 +3,7 @@
 namespace Database\Factories;
 
 use App\Models\Currency;
+use App\Models\Company;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -19,6 +20,7 @@ class CurrencyRateFactory extends Factory
     public function definition(): array
     {
         return [
+            'company_id' => Company::factory(),
             'currency_id' => Currency::factory(),
             'rate' => $this->faker->randomFloat(6, 0.1, 10.0),
             'effective_date' => $this->faker->dateTimeBetween('-30 days', 'now')->format('Y-m-d'),
