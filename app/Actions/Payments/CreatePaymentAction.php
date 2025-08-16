@@ -72,6 +72,7 @@ class CreatePaymentAction
             // Create the links
             foreach ($dto->document_links as $link) {
                 $linkData = [
+                    'company_id' => $dto->company_id,
                     'amount_applied' => $link->amount_applied,
                 ];
                 if ($link->document_type === 'invoice') {
