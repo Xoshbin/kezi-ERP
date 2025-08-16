@@ -25,6 +25,9 @@ class VendorBillLineFactory extends Factory
     {
         return [
             'vendor_bill_id' => VendorBill::factory()->create()->id,
+            'company_id' => function (array $attributes) {
+                return VendorBill::find($attributes['vendor_bill_id'])->company_id;
+            },
             'product_id' => Product::factory()->create()->id,
             'description' => $this->faker->sentence(4),
             'quantity' => $this->faker->randomFloat(2, 1, 100),
