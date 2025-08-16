@@ -101,7 +101,6 @@ class Currency extends Model
      * @var array<string, string>
      */
     protected $casts = [
-        'exchange_rate' => 'float',
         'is_active' => 'boolean',
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
