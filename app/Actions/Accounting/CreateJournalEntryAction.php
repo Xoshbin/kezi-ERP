@@ -168,21 +168,23 @@ class CreateJournalEntryAction
                 }
 
                 // Prepare line data - store amounts as Money objects, let casts handle conversion
-                $lineData = [
-                    'company_id' => $dto->company_id,
-                    'account_id' => $lineDto->account_id,
-                    'partner_id' => $lineDto->partner_id,
-                    'analytic_account_id' => $lineDto->analytic_account_id,
-                    'description' => $lineDto->description,
-                    'debit' => $debitBaseCurrency,
-                    'credit' => $creditBaseCurrency,
-                    'original_currency_amount' => $originalCurrencyAmount,
-                    'original_currency_id' => $dto->currency_id,
-                    'exchange_rate_at_transaction' => $exchangeRateAtTransaction,
-                ];
+                // Set the currency-related fields first to avoid cast issues
+                $line->original_currency_id = $dto->currency_id;
+                $line->currency_id = $dto->currency_id;
+                $line->exchange_rate_at_transaction = $exchangeRateAtTransaction;
 
-                // Fill the attributes and save
-                $line->fill($lineData);
+                // Set non-Money fields
+                $line->company_id = $dto->company_id;
+                $line->account_id = $lineDto->account_id;
+                $line->partner_id = $lineDto->partner_id;
+                $line->analytic_account_id = $lineDto->analytic_account_id;
+                $line->description = $lineDto->description;
+
+                // Now set the Money fields after currency_id is set
+                $line->debit = $debitBaseCurrency;
+                $line->credit = $creditBaseCurrency;
+                $line->original_currency_amount = $originalCurrencyAmount;
+
                 $line->save();
             }
 

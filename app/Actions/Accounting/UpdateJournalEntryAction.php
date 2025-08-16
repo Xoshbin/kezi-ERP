@@ -76,6 +76,11 @@ class UpdateJournalEntryAction
                     // to solving the MoneyCast issue without schema changes.
                     $line->journalEntry()->associate($journalEntry);
 
+                    // Set currency-related fields first to ensure proper context for Money casts
+                    $line->original_currency_id = $dto->currency_id;
+                    $line->currency_id = $dto->currency_id;
+                    $line->exchange_rate_at_transaction = 1.0; // Default for same currency
+
                     // Now, fill the attributes. The MoneyCast on 'debit' and 'credit' will be
                     // triggered here, but it can now successfully call getCurrencyIdAttribute()
                     // because the journalEntry relationship is established.
@@ -87,6 +92,10 @@ class UpdateJournalEntryAction
                         'description' => $lineDto->description,
                         'debit' => Money::of($lineDto->debit, $currency->code),
                         'credit' => Money::of($lineDto->credit, $currency->code),
+                        'original_currency_amount' => Money::of(
+                            max($lineDto->debit, $lineDto->credit),
+                            $currency->code
+                        ),
                     ]);
 
                     // Finally, save the fully prepared line.

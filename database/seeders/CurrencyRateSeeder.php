@@ -19,8 +19,8 @@ class CurrencyRateSeeder extends Seeder
         $currencies = Currency::where('is_active', true)->get();
 
         foreach ($currencies as $currency) {
-            // Skip USD as it's typically the base currency with rate 1.0
-            if ($currency->code === 'USD') {
+            // Skip IQD as it's typically the base currency with rate 1.0
+            if ($currency->code === 'IQD') {
                 continue;
             }
 
@@ -32,9 +32,9 @@ class CurrencyRateSeeder extends Seeder
 
                 // Use the current exchange_rate from the currency table as base
                 // Add some variation to simulate historical rates
-                $baseRate = $currency->exchange_rate;
-                $variation = rand(-5, 5) / 100; // ±5% variation
-                $rate = $baseRate * (1 + $variation);
+                // $baseRate = $currency->exchange_rate;
+                // $variation = rand(-5, 5) / 100; // ±5% variation
+                // $rate = $baseRate * (1 + $variation);
 
                 CurrencyRate::updateOrCreate(
                     [
@@ -42,19 +42,20 @@ class CurrencyRateSeeder extends Seeder
                         'effective_date' => $date->toDateString(),
                     ],
                     [
-                        'rate' => $rate,
+                        // 'rate' => $rate,
+                        'rate' => 1460,
                         'source' => 'seeder',
                     ]
                 );
             }
         }
 
-        // Create a rate for USD (base currency) with rate 1.0
-        $usd = Currency::where('code', 'USD')->first();
-        if ($usd) {
+        // Create a rate for IQD (base currency) with rate 1.0
+        $iqd = Currency::where('code', 'IQD')->first();
+        if ($iqd) {
             CurrencyRate::updateOrCreate(
                 [
-                    'currency_id' => $usd->id,
+                    'currency_id' => $iqd->id,
                     'effective_date' => Carbon::today()->toDateString(),
                 ],
                 [

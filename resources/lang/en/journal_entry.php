@@ -38,8 +38,11 @@ return [
     // Notifications
     'entry_posted_successfully' => 'Journal Entry Posted',
     'error_posting_entry' => 'Error Posting Entry',
+    'duplicate_reference_error' => 'Duplicate Reference',
+    'creation_error' => 'Creation Error',
 
     // Validation
     'period_locked' => 'The accounting period is locked and cannot be modified.',
     'debits_must_equal_credits' => 'The total debits must equal the total credits.',
+    'reference_already_exists' => 'A journal entry with reference ":reference" already exists in this journal.',
 ];
