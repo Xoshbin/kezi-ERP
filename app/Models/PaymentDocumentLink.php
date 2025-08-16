@@ -6,7 +6,7 @@ use InvalidArgumentException;
 use Illuminate\Support\Carbon;
 use Database\Factories\PaymentDocumentLinkFactory;
 use Illuminate\Database\Eloquent\Builder;
-use App\Casts\MoneyCast;
+use App\Casts\DocumentCurrencyMoneyCast;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -69,10 +69,21 @@ class PaymentDocumentLink extends Model
      * @var array<string, string>
      */
     protected $casts = [
-        'amount_applied' => MoneyCast::class, // Ensures the amount is treated as a decimal with 2 places for precision.  [3]
+        'amount_applied' => DocumentCurrencyMoneyCast::class, // Amount in payment currency
         'created_at' => 'datetime', // Automatically casts to Carbon instances for convenient date manipulation.  [4]
         'updated_at' => 'datetime', // Automatically casts to Carbon instances.  [4]
     ];
+
+    /**
+     * The relationships that should always be loaded.
+     * Eager-loading the `payment.currency` relationship is critical because the `DocumentCurrencyMoneyCast`
+     * for monetary fields on this model depends on the currency context provided by the parent payment.
+     * Without this, any retrieval of a `PaymentDocumentLink` would fail when casting monetary values
+     * due to the missing currency information, leading to a "currency_id on null" error.
+     *
+     * @var array
+     */
+    protected $with = ['payment.currency'];
 
     /**
      * Get the company that this rate belongs to.

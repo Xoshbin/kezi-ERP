@@ -4,6 +4,7 @@ namespace App\Casts;
 
 use App\Models\Currency;
 use Illuminate\Database\Eloquent\Model;
+use InvalidArgumentException;
 
 /**
  * BaseCurrencyMoneyCast - Always uses the company's base currency.
@@ -15,23 +16,38 @@ use Illuminate\Database\Eloquent\Model;
 class BaseCurrencyMoneyCast extends MoneyCast
 {
     /**
-     * Resolve the currency for this cast.
-     * Always returns the company's base currency.
+     * Resolve the currency by finding the company's base currency.
+     * This method now expects relationships to be eager-loaded to prevent N+1 issues.
      */
     protected function resolveCurrency(Model $model): Currency
     {
-        // For JournalEntryLine, get company currency through journal entry
-        if (method_exists($model, 'journalEntry')) {
-            if ($model->relationLoaded('journalEntry')) {
-                return $model->journalEntry->company->currency;
-            }
-
-            // Load the relationship if not already loaded
-            $model->load('journalEntry.company.currency');
+        // This is the most efficient path, traversing loaded relationships.
+        if ($model->relationLoaded('company') && $model->company) {
+            return $model->company->currency;
+        }
+        if ($model->relationLoaded('journalEntry') && $model->journalEntry) {
             return $model->journalEntry->company->currency;
         }
+        if ($model->relationLoaded('asset') && $model->asset && $model->asset->relationLoaded('company')) {
+            return $model->asset->company->currency;
+        }
+        // Add other common parent relationships here as needed (e.g., vendorBill)
 
-        // Fallback to parent implementation
-        return parent::resolveCurrency($model);
+
+
+        // Fallback: If relationships are not loaded, perform database queries
+        // This is less efficient but ensures the cast always works
+        if (method_exists($model, 'company') && $model->company_id) {
+            return $model->company()->with('currency')->first()->currency;
+        }
+        if (method_exists($model, 'journalEntry') && $model->journal_entry_id) {
+            return $model->journalEntry()->with('company.currency')->first()->company->currency;
+        }
+        if (method_exists($model, 'asset') && $model->asset_id) {
+            return $model->asset()->with('company.currency')->first()->company->currency;
+        }
+
+        // If we still can't resolve the currency, throw an exception
+        throw new InvalidArgumentException('Could not resolve base currency for model ' . get_class($model) . '. Please ensure the model has a valid company relationship.');
     }
 }

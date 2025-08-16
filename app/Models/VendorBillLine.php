@@ -6,7 +6,8 @@ use Brick\Money\Money;
 use Illuminate\Support\Carbon;
 use Database\Factories\VendorBillLineFactory;
 use Illuminate\Database\Eloquent\Builder;
-use App\Casts\MoneyCast;
+use App\Casts\DocumentCurrencyMoneyCast;
+use App\Casts\BaseCurrencyMoneyCast;
 use App\Observers\VendorBillLineObserver;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -106,12 +107,12 @@ class VendorBillLine extends Model
      */
     protected $casts = [
         'quantity'          => 'decimal:2', // Ensures precision for quantities, allowing for fractional units.
-        'unit_price'        => MoneyCast::class, // **Crucial for financial accuracy**, ensuring amounts are stored with two decimal places [2].
-        'unit_price_company_currency' => MoneyCast::class,
-        'subtotal'          => MoneyCast::class, // **Crucial for financial accuracy** [2].
-        'subtotal_company_currency' => MoneyCast::class,
-        'total_line_tax'    => MoneyCast::class, // **Crucial for financial accuracy** [2].
-        'total_line_tax_company_currency' => MoneyCast::class,
+        'unit_price'        => DocumentCurrencyMoneyCast::class, // Document currency amounts
+        'unit_price_company_currency' => BaseCurrencyMoneyCast::class, // Company base currency amounts
+        'subtotal'          => DocumentCurrencyMoneyCast::class, // Document currency amounts
+        'subtotal_company_currency' => BaseCurrencyMoneyCast::class, // Company base currency amounts
+        'total_line_tax'    => DocumentCurrencyMoneyCast::class, // Document currency amounts
+        'total_line_tax_company_currency' => BaseCurrencyMoneyCast::class, // Company base currency amounts
         'created_at'        => 'datetime',  // Automatically managed by Eloquent for audit trails [2].
         'updated_at'        => 'datetime',  // Automatically managed by Eloquent [2].
     ];
@@ -200,15 +201,5 @@ class VendorBillLine extends Model
         return $this->belongsTo(AnalyticAccount::class, 'analytic_account_id');
     }
 
-    /**
-     * Accessor to provide the currency_id to the MoneyCast.
-     * This makes the model responsible for knowing its own currency context.
-     */
-    public function getCurrencyIdAttribute(): ?int
-    {
-        // If the relationship is loaded, use it. If not, lazy-load it.
-        // This is crucial for the MoneyCast to work correctly, especially during
-        // model creation where the relationship might not be set yet.
-        return $this->vendorBill->currency_id ?? $this->vendorBill()->first()->currency_id;
-    }
+
 }

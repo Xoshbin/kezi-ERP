@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Support\Carbon;
 use Database\Factories\DepreciationEntryFactory;
 use Illuminate\Database\Eloquent\Builder;
-use App\Casts\MoneyCast;
+use App\Casts\BaseCurrencyMoneyCast;
 use Illuminate\Database\Eloquent\Model;
 use App\Observers\DepreciationEntryObserver;
 use App\Enums\Assets\DepreciationEntryStatus;
@@ -83,12 +83,23 @@ class DepreciationEntry extends Model
      */
     protected $casts = [
         'depreciation_date' => 'date', // Casts to Carbon instance, focusing on date part
-        'amount' => MoneyCast::class, // Ensures precision for currency amounts
+        'amount' => BaseCurrencyMoneyCast::class, // Ensures precision for currency amounts
         'journal_entry_id' => 'integer',
         'status' => DepreciationEntryStatus::class,
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
     ];
+
+    /**
+     * The relationships that should always be loaded.
+     * Eager-loading the `asset.company.currency` relationship is critical because the `BaseCurrencyMoneyCast`
+     * for monetary fields on this model depends on the currency context provided by the asset's company.
+     * Without this, any retrieval of a `DepreciationEntry` would fail when casting monetary values
+     * due to the missing currency information, leading to a "currency_id on null" error.
+     *
+     * @var array
+     */
+    protected $with = ['asset.company.currency'];
 
     /*
     |--------------------------------------------------------------------------
@@ -130,14 +141,5 @@ class DepreciationEntry extends Model
         return $this->belongsTo(JournalEntry::class);
     }
 
-    /**
-     * Accessor to provide the currency_id to the MoneyCast.
-     * FIX: Correctly references the parent 'asset' model, not 'invoice'.
-     * This robust implementation prevents N+1 query issues.
-     */
-    public function getCurrencyIdAttribute(): int
-    {
-        // If the relationship is already loaded, use it. Otherwise, use the foreign key.
-        return $this->asset->currency_id ?? $this->asset()->getForeignKeyResults()->first()->currency_id;
-    }
+
 }

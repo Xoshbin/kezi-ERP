@@ -6,8 +6,7 @@ use Illuminate\Support\Carbon;
 use Illuminate\Database\Eloquent\Collection;
 use Database\Factories\JournalEntryFactory;
 use Illuminate\Database\Eloquent\Builder;
-use App\Casts\CompanyCurrencyMoneyCast;
-use App\Casts\MoneyCast;
+use App\Casts\BaseCurrencyMoneyCast;
 use App\Enums\Accounting\JournalEntryState;
 use App\Observers\AuditLogObserver;
 use App\Observers\JournalEntryObserver;
@@ -134,13 +133,24 @@ class JournalEntry extends Model
      */
     protected $casts = [
         'entry_date' => 'date',
-        'total_debit' => CompanyCurrencyMoneyCast::class, // Company base currency amounts
-        'total_credit' => CompanyCurrencyMoneyCast::class, // Company base currency amounts
+        'total_debit' => BaseCurrencyMoneyCast::class, // Company base currency amounts
+        'total_credit' => BaseCurrencyMoneyCast::class, // Company base currency amounts
         // Note: total_debit_company_currency and total_credit_company_currency are handled by custom accessors
         'exchange_rate_at_entry' => 'decimal:10', // Exchange rate captured at entry creation
         'is_posted' => 'boolean', // Crucial flag for immutability [3].
         'state' => JournalEntryState::class, // Journal entry state for reversal tracking
     ];
+
+    /**
+     * The relationships that should always be loaded.
+     * Eager-loading the `company.currency` relationship is critical because the `BaseCurrencyMoneyCast`
+     * for monetary fields on this model depends on the currency context provided by the company.
+     * Without this, any retrieval of a `JournalEntry` would fail when casting monetary values
+     * due to the missing currency information, leading to a "currency_id on null" error.
+     *
+     * @var array
+     */
+    protected $with = ['company.currency'];
 
     /**
      * The "booted" method of the model.

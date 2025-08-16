@@ -7,7 +7,7 @@ use Illuminate\Support\Carbon;
 use Brick\Money\Money;
 use Database\Factories\BankStatementLineFactory;
 use Illuminate\Database\Eloquent\Builder;
-use App\Casts\MoneyCast;
+use App\Casts\DocumentCurrencyMoneyCast;
 use Illuminate\Database\Eloquent\Model;
 use App\Observers\BankStatementLineObserver;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -62,9 +62,20 @@ class BankStatementLine extends Model
 
     protected $casts = [
         'date' => 'date',
-        'amount' => MoneyCast::class,
+        'amount' => DocumentCurrencyMoneyCast::class,
         'is_reconciled' => 'boolean'
     ];
+
+    /**
+     * The relationships that should always be loaded.
+     * Eager-loading the `bankStatement.currency` relationship is critical because the `DocumentCurrencyMoneyCast`
+     * for monetary fields on this model depends on the currency context provided by the parent bank statement.
+     * Without this, any retrieval of a `BankStatementLine` would fail when casting monetary values
+     * due to the missing currency information, leading to a "currency_id on null" error.
+     *
+     * @var array
+     */
+    protected $with = ['bankStatement.currency'];
     public function bankStatement()
     {
         return $this->belongsTo(BankStatement::class);
@@ -97,14 +108,5 @@ class BankStatementLine extends Model
             ->where('source_type', self::class);
     }
 
-    /**
-     * Accessor to provide the currency_id to the MoneyCast.
-     * This makes the model responsible for knowing its own currency context.
-     */
-    public function getCurrencyIdAttribute(): int
-    {
-        // This assumes the 'bankStatement' relationship is always loaded when needed.
-        // You can add loadMissing('bankStatement') for robustness if necessary.
-        return $this->bankStatement->currency_id;
-    }
+
 }
