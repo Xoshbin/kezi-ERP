@@ -85,9 +85,12 @@ class VendorBillLine extends Model
         'description',             // A detailed textual description of the line item [2].
         'quantity',                // The quantity of the product or service on this line [2].
         'unit_price',              // The price per unit of the item [2].
+        'unit_price_company_currency', // Price per unit in company currency
         'tax_id',                  // Nullable foreign key to the Tax model, representing the tax applied to this line [2].
         'subtotal',                // The calculated subtotal for this line, typically quantity * unit_price [2].
+        'subtotal_company_currency',   // Subtotal in company currency
         'total_line_tax',          // The total tax amount specifically for this line item [2].
+        'total_line_tax_company_currency', // Total tax in company currency
         'expense_account_id',      // Foreign key to the Account model, for proper expense classification in the Chart of Accounts [2].
         'analytic_account_id',     // Nullable foreign key to the AnalyticAccount model for management/cost accounting [2, 7].
         // While explicitly listed for `journal_entry_lines` [2], Odoo's design [8]
@@ -104,8 +107,11 @@ class VendorBillLine extends Model
     protected $casts = [
         'quantity'          => 'decimal:2', // Ensures precision for quantities, allowing for fractional units.
         'unit_price'        => MoneyCast::class, // **Crucial for financial accuracy**, ensuring amounts are stored with two decimal places [2].
+        'unit_price_company_currency' => MoneyCast::class,
         'subtotal'          => MoneyCast::class, // **Crucial for financial accuracy** [2].
+        'subtotal_company_currency' => MoneyCast::class,
         'total_line_tax'    => MoneyCast::class, // **Crucial for financial accuracy** [2].
+        'total_line_tax_company_currency' => MoneyCast::class,
         'created_at'        => 'datetime',  // Automatically managed by Eloquent for audit trails [2].
         'updated_at'        => 'datetime',  // Automatically managed by Eloquent [2].
     ];

@@ -101,6 +101,7 @@ class Invoice extends Model
         'company_id',
         'customer_id',
         'currency_id',
+        'exchange_rate_at_creation',
         'journal_entry_id',
         'fiscal_position_id',
         'invoice_number',
@@ -109,6 +110,8 @@ class Invoice extends Model
         'status',
         'total_amount',
         'total_tax',
+        'total_amount_company_currency',
+        'total_tax_company_currency',
         'posted_at',
         'reset_to_draft_log',
     ];
@@ -123,8 +126,11 @@ class Invoice extends Model
         'invoice_date' => 'date',
         'due_date' => 'date',
         'status' => InvoiceStatus::class,
+        'exchange_rate_at_creation' => 'decimal:10',
         'total_amount' => MoneyCast::class,
         'total_tax' => MoneyCast::class,
+        'total_amount_company_currency' => MoneyCast::class,
+        'total_tax_company_currency' => MoneyCast::class,
         'reset_to_draft_log' => 'json', // Store as JSON/Text as per source [1]
         'created_at' => 'datetime',
         'updated_at' => 'datetime',

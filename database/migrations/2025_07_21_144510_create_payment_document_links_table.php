@@ -12,6 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('payment_document_links', function (Blueprint $table) {
+            $table->id();
             $table->foreignId('company_id')->constrained('companies');
             $table->foreignId('payment_id')->constrained('payments')->onDelete('cascade');
             $table->foreignId('invoice_id')->nullable()->constrained('invoices')->onDelete('cascade');

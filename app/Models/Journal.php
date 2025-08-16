@@ -74,6 +74,9 @@ class Journal extends Model
         'currency_id',
         'default_debit_account_id',
         'default_credit_account_id',
+        'exchange_gain_account_id',
+        'exchange_loss_account_id',
+        'exchange_difference_journal_id',
     ];
 
     protected $casts = [
@@ -140,6 +143,30 @@ class Journal extends Model
     public function journalEntries(): HasMany
     {
         return $this->hasMany(JournalEntry::class);
+    }
+
+    /**
+     * Get the exchange gain account for this journal.
+     */
+    public function exchangeGainAccount(): BelongsTo
+    {
+        return $this->belongsTo(Account::class, 'exchange_gain_account_id');
+    }
+
+    /**
+     * Get the exchange loss account for this journal.
+     */
+    public function exchangeLossAccount(): BelongsTo
+    {
+        return $this->belongsTo(Account::class, 'exchange_loss_account_id');
+    }
+
+    /**
+     * Get the journal where exchange differences are posted.
+     */
+    public function exchangeDifferenceJournal(): BelongsTo
+    {
+        return $this->belongsTo(Journal::class, 'exchange_difference_journal_id');
     }
 
     /**

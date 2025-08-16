@@ -109,6 +109,9 @@ class JournalEntry extends Model
         'source_id',
         'total_debit',
         'total_credit',
+        'total_debit_company_currency',
+        'total_credit_company_currency',
+        'exchange_rate_at_entry',
         'is_posted',
         'state',
         'reversed_entry_id',
@@ -132,6 +135,9 @@ class JournalEntry extends Model
         'entry_date' => 'date',
         'total_debit' => MoneyCast::class, // Represents currency, typically 2 decimal places for financial accuracy [3, 17].
         'total_credit' => MoneyCast::class, // Represents currency, typically 2 decimal places [3, 17].
+        'total_debit_company_currency' => MoneyCast::class, // Company base currency amounts
+        'total_credit_company_currency' => MoneyCast::class, // Company base currency amounts
+        'exchange_rate_at_entry' => 'decimal:10', // Exchange rate captured at entry creation
         'is_posted' => 'boolean', // Crucial flag for immutability [3].
         'state' => JournalEntryState::class, // Journal entry state for reversal tracking
     ];

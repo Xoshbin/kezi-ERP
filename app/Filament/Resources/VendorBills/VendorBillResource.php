@@ -122,6 +122,22 @@ class VendorBillResource extends Resource
                         ->required()
                         ->live()
                         ->default(fn() => \Filament\Facades\Filament::getTenant()?->currency_id)
+                        ->afterStateUpdated(function (callable $set, $state, callable $get) {
+                            if ($state) {
+                                $currency = \App\Models\Currency::find($state);
+                                $company = \Filament\Facades\Filament::getTenant();
+
+                                if ($currency && $company && $currency->id !== $company->currency_id) {
+                                    // Get latest exchange rate
+                                    $latestRate = \App\Models\CurrencyRate::getLatestRate($currency->id);
+                                    if ($latestRate) {
+                                        $set('current_exchange_rate', $latestRate);
+                                    }
+                                } else {
+                                    $set('current_exchange_rate', 1.0);
+                                }
+                            }
+                        })
                         ->createOptionForm([
                             TextInput::make('code')
                                 ->label(__('currency.code'))
@@ -150,6 +166,18 @@ class VendorBillResource extends Resource
                             return $action
                                 ->modalWidth('lg');
                         }),
+
+                    TextInput::make('current_exchange_rate')
+                        ->label(__('vendor_bill.current_exchange_rate'))
+                        ->numeric()
+                        ->disabled()
+                        ->dehydrated(false)
+                        ->visible(function (callable $get) {
+                            $currencyId = $get('currency_id');
+                            $company = \Filament\Facades\Filament::getTenant();
+                            return $currencyId && $company && $currencyId != $company->currency_id;
+                        })
+                        ->helperText(__('vendor_bill.exchange_rate_helper')),
                     TextInput::make('bill_reference')
                         ->label(__('vendor_bill.bill_reference'))
                         ->required()
@@ -357,6 +385,29 @@ class VendorBillResource extends Resource
                         ->columnSpanFull(),
                 ]),
 
+            Section::make(__('vendor_bill.company_currency_totals'))
+                ->schema([
+                    TextInput::make('exchange_rate_at_creation')
+                        ->label(__('vendor_bill.exchange_rate_at_creation'))
+                        ->numeric()
+                        ->disabled()
+                        ->visible(fn (?VendorBill $record) => $record && $record->exchange_rate_at_creation),
+
+                    MoneyInput::make('total_amount_company_currency')
+                        ->label(__('vendor_bill.total_amount_company_currency'))
+                        ->currencyField('../../company.currency_id')
+                        ->disabled()
+                        ->visible(fn (?VendorBill $record) => $record && $record->total_amount_company_currency),
+
+                    MoneyInput::make('total_tax_company_currency')
+                        ->label(__('vendor_bill.total_tax_company_currency'))
+                        ->currencyField('../../company.currency_id')
+                        ->disabled()
+                        ->visible(fn (?VendorBill $record) => $record && $record->total_tax_company_currency),
+                ])
+                ->columns(3)
+                ->visible(fn (?VendorBill $record) => $record && ($record->exchange_rate_at_creation || $record->total_amount_company_currency)),
+
             Section::make(__('vendor_bill.attachments'))
                 ->description(__('vendor_bill.attachments_description'))
                 ->schema([
@@ -431,6 +482,19 @@ class VendorBillResource extends Resource
                 MoneyColumn::make('total_tax')
                     ->label(__('vendor_bill.total_tax'))
                     ->sortable(),
+
+                TextColumn::make('exchange_rate_at_creation')
+                    ->label(__('vendor_bill.exchange_rate'))
+                    ->numeric(decimalPlaces: 6)
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true)
+                    ->visible(fn ($record) => $record && $record->exchange_rate_at_creation),
+
+                MoneyColumn::make('total_amount_company_currency')
+                    ->label(__('vendor_bill.total_amount_company_currency'))
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true)
+                    ->visible(fn ($record) => $record && $record->total_amount_company_currency),
                 TextColumn::make('posted_at')
                     ->label(__('vendor_bill.posted_at'))
                     ->dateTime()

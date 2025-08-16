@@ -7,12 +7,14 @@ use Illuminate\Database\Eloquent\Collection;
 use Database\Factories\CurrencyFactory;
 use Illuminate\Database\Eloquent\Builder;
 use App\Models\Company;
+use App\Models\CurrencyRate;
 use App\Models\Invoice;
 use App\Models\Journal;
 use App\Models\VendorBill;
 use App\Observers\CurrencyObserver;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Spatie\Translatable\HasTranslations;
@@ -87,7 +89,6 @@ class Currency extends Model
         'code',
         'name',
         'symbol',
-        'exchange_rate',
         'is_active',
         'last_updated_at',
         'decimal_places'
@@ -183,5 +184,26 @@ class Currency extends Model
     public function journalEntries(): HasMany
     {
         return $this->hasMany(JournalEntry::class);
+    }
+
+    /**
+     * Get the historical exchange rates for this currency.
+     * This relationship provides access to all historical exchange rate data.
+     *
+     * @return HasMany
+     */
+    public function rates(): HasMany
+    {
+        return $this->hasMany(CurrencyRate::class);
+    }
+
+    /**
+     * Get the latest exchange rate for this currency.
+     *
+     * @return HasOne
+     */
+    public function latestRate(): HasOne
+    {
+        return $this->hasOne(CurrencyRate::class)->latestOfMany('effective_date');
     }
 }

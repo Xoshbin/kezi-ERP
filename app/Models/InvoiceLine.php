@@ -76,9 +76,12 @@ class InvoiceLine extends Model
         'description',         // Text description for the line item [3, 4]
         'quantity',            // Quantity of the product/service [3, 4]
         'unit_price',          // Price per unit [3, 4]
+        'unit_price_company_currency', // Price per unit in company currency
         'tax_id',              // Foreign key to the tax applied (nullable) [3, 4]
         'subtotal',            // Calculated subtotal for the line (quantity * unit_price) [3, 4]
+        'subtotal_company_currency',   // Subtotal in company currency
         'total_line_tax',      // Total tax amount for this line [3, 4]
+        'total_line_tax_company_currency', // Total tax in company currency
         'income_account_id',   // Foreign key to the specific income account [3, 4]
     ];
 
@@ -92,8 +95,11 @@ class InvoiceLine extends Model
     protected $casts = [
         'quantity' => 'decimal:2',
         'unit_price' => MoneyCast::class,
+        'unit_price_company_currency' => MoneyCast::class,
         'subtotal' => MoneyCast::class,
+        'subtotal_company_currency' => MoneyCast::class,
         'total_line_tax' => MoneyCast::class,
+        'total_line_tax_company_currency' => MoneyCast::class,
         'created_at' => 'datetime', // Eloquent automatically manages these, but explicit casting is robust [12, 13].
         'updated_at' => 'datetime',
     ];

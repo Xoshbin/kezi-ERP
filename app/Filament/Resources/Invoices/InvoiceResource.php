@@ -28,7 +28,7 @@ use App\Models\Tax;
 use Filament\Forms;
 use Filament\Tables;
 use App\Models\Invoice;
-use App\Models\Currency;
+
 use App\Enums\Sales\InvoiceStatus;
 use App\Enums\Shared\PaymentState;
 use Filament\Tables\Table;
@@ -125,6 +125,22 @@ class InvoiceResource extends Resource
                         ->required()
                         ->live()
                         ->default(fn() => \Filament\Facades\Filament::getTenant()?->currency_id)
+                        ->afterStateUpdated(function (callable $set, $state, callable $get) {
+                            if ($state) {
+                                $currency = \App\Models\Currency::find($state);
+                                $company = \Filament\Facades\Filament::getTenant();
+
+                                if ($currency && $company && $currency->id !== $company->currency_id) {
+                                    // Get latest exchange rate
+                                    $latestRate = \App\Models\CurrencyRate::getLatestRate($currency->id);
+                                    if ($latestRate) {
+                                        $set('current_exchange_rate', $latestRate);
+                                    }
+                                } else {
+                                    $set('current_exchange_rate', 1.0);
+                                }
+                            }
+                        })
                         ->createOptionForm([
                             TextInput::make('code')
                                 ->label(__('currency.code'))
@@ -153,6 +169,18 @@ class InvoiceResource extends Resource
                             return $action
                                 ->modalWidth('lg');
                         }),
+
+                    TextInput::make('current_exchange_rate')
+                        ->label(__('invoice.current_exchange_rate'))
+                        ->numeric()
+                        ->disabled()
+                        ->dehydrated(false)
+                        ->visible(function (callable $get) {
+                            $currencyId = $get('currency_id');
+                            $company = \Filament\Facades\Filament::getTenant();
+                            return $currencyId && $company && $currencyId != $company->currency_id;
+                        })
+                        ->helperText(__('invoice.exchange_rate_helper')),
                     TranslatableSelect::make('fiscal_position_id', \App\Models\FiscalPosition::class, __('invoice.fiscal_position')),
                     DatePicker::make('invoice_date')
                         ->label(__('invoice.invoice_date'))
@@ -246,6 +274,29 @@ class InvoiceResource extends Resource
                         ->columns(5)
                         ->columnSpanFull(),
                 ]),
+
+            Section::make(__('invoice.company_currency_totals'))
+                ->schema([
+                    TextInput::make('exchange_rate_at_creation')
+                        ->label(__('invoice.exchange_rate_at_creation'))
+                        ->numeric()
+                        ->disabled()
+                        ->visible(fn (?Invoice $record) => $record && $record->exchange_rate_at_creation),
+
+                    MoneyInput::make('total_amount_company_currency')
+                        ->label(__('invoice.total_amount_company_currency'))
+                        ->currencyField('../../company.currency_id')
+                        ->disabled()
+                        ->visible(fn (?Invoice $record) => $record && $record->total_amount_company_currency),
+
+                    MoneyInput::make('total_tax_company_currency')
+                        ->label(__('invoice.total_tax_company_currency'))
+                        ->currencyField('../../company.currency_id')
+                        ->disabled()
+                        ->visible(fn (?Invoice $record) => $record && $record->total_tax_company_currency),
+                ])
+                ->columns(3)
+                ->visible(fn (?Invoice $record) => $record && ($record->exchange_rate_at_creation || $record->total_amount_company_currency)),
         ]);
     }
 
@@ -304,6 +355,19 @@ class InvoiceResource extends Resource
                 MoneyColumn::make('total_tax')
                     ->label(__('invoice.total_tax'))
                     ->sortable(),
+
+                TextColumn::make('exchange_rate_at_creation')
+                    ->label(__('invoice.exchange_rate'))
+                    ->numeric(decimalPlaces: 6)
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true)
+                    ->visible(fn ($record) => $record && $record->exchange_rate_at_creation),
+
+                MoneyColumn::make('total_amount_company_currency')
+                    ->label(__('invoice.total_amount_company_currency'))
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true)
+                    ->visible(fn ($record) => $record && $record->total_amount_company_currency),
                 TextColumn::make('posted_at')
                     ->label(__('invoice.posted_at'))
                     ->dateTime()

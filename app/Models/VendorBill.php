@@ -102,8 +102,11 @@ class VendorBill extends Model
         'status',               // Current status: e.g., 'Draft', 'Posted', 'Paid', 'Cancelled' .
         // A 'Draft' bill can be modified/deleted, but 'Posted' cannot .
         'currency_id',          // Foreign key to the Currency model, specifying the bill's currency .
+        'exchange_rate_at_creation', // Exchange rate captured at bill creation/posting
         'total_amount',         // The total amount of the vendor bill, including taxes .
         'total_tax',            // The total tax amount on the vendor bill .
+        'total_amount_company_currency', // Total amount in company currency
+        'total_tax_company_currency',    // Total tax in company currency
         'journal_entry_id',     // Nullable foreign key to journal_entries.id, linking to the immutable
         // financial transaction once the bill is posted .
         'posted_at',            // Nullable timestamp indicating when the vendor bill was confirmed/posted .
@@ -122,8 +125,11 @@ class VendorBill extends Model
         'accounting_date'    => 'date',       // Cast to date for consistency .
         'due_date'           => 'date',       // Cast to date for consistency .
         'status'             => VendorBillStatus::class,
+        'exchange_rate_at_creation' => 'decimal:10',
         'total_amount'       => MoneyCast::class,  // Crucial for financial precision, ensures two decimal places .
         'total_tax'          => MoneyCast::class,  // Crucial for financial precision .
+        'total_amount_company_currency' => MoneyCast::class,
+        'total_tax_company_currency' => MoneyCast::class,
         'posted_at'          => 'datetime',   // Records the exact time of posting for audit .
         'reset_to_draft_log' => 'json',       // Stores audit log as JSON .
         'created_at'         => 'datetime',   // Automatically managed by Eloquent.

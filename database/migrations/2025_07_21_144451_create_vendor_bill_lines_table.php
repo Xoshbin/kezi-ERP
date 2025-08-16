@@ -24,6 +24,10 @@ return new class extends Migration
             $table->unsignedBigInteger('unit_price');
             $table->unsignedBigInteger('subtotal');
             $table->unsignedBigInteger('total_line_tax');
+            // Add company currency amounts (converted amounts)
+            $table->unsignedBigInteger('unit_price_company_currency')->nullable();
+            $table->unsignedBigInteger('subtotal_company_currency')->nullable();
+            $table->unsignedBigInteger('total_line_tax_company_currency')->nullable();
             $table->timestamps();
         });
     }
