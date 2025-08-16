@@ -56,8 +56,8 @@ class EditJournalEntry extends EditRecord
 
     protected function mutateFormDataBeforeFill(array $data): array
     {
-        // Eager-load the necessary relationships
-        $this->record->load('currency', 'lines.journalEntry.currency');
+        // Eager-load the necessary relationships including original currency
+        $this->record->load('currency', 'lines.journalEntry.currency', 'lines.originalCurrency');
 
         // Get the currency code for creating zero-value money objects
         $currencyCode = $this->record->currency->code;
@@ -67,6 +67,14 @@ class EditJournalEntry extends EditRecord
         $totalCredit = Money::zero($currencyCode);
 
         $lines = $this->record->lines->map(function ($line) use (&$totalDebit, &$totalCredit, $currencyCode) {
+            // Ensure the line has proper currency context by setting missing fields if needed
+            if (!$line->original_currency_id) {
+                $line->original_currency_id = $this->record->currency_id;
+                $line->currency_id = $this->record->currency_id;
+                $line->exchange_rate_at_transaction = 1.0;
+                $line->save();
+            }
+
             // Use the MoneyCast to get Money objects for debit and credit.
             $debitMoney = $line->debit;
             $creditMoney = $line->credit;

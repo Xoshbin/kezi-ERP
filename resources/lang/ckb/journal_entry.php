@@ -39,8 +39,11 @@ return [
     // Notifications
     'entry_posted_successfully' => 'تۆماری ژمێریاری پۆستکرا',
     'error_posting_entry' => 'هەڵە لە کاتی پۆستکردنی تۆمار',
+    'duplicate_reference_error' => 'سەرچاوەی دووبارە',
+    'creation_error' => 'هەڵە لە دروستکردن',
 
     // Validation
     'period_locked' => 'ماوەی ژمێریاری قفڵ کراوە و ناتوانرێت دەستکاری بکرێت.',
     'debits_must_equal_credits' => 'کۆی قەرزدارەکان دەبێت یەکسان بێت بە کۆی قەرزدەرەکان.',
+    'reference_already_exists' => 'یادداشتێکی ڕۆژانە بە سەرچاوەی ":reference" پێشتر هەیە لەم ڕۆژنامەیەدا.',
 ];
