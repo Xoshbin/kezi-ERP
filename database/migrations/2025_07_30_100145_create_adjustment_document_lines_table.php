@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('adjustment_document_lines', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('company_id')->constrained('companies');
             $table->foreignId('adjustment_document_id')->constrained('adjustment_documents')->cascadeOnDelete();
             $table->foreignId('product_id')->nullable()->constrained('products')->nullOnDelete();
             $table->foreignId('tax_id')->nullable()->constrained('taxes')->nullOnDelete();

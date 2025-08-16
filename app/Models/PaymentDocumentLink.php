@@ -55,6 +55,7 @@ class PaymentDocumentLink extends Model
      * @var array<int, string>
      */
     protected $fillable = [
+        'company_id', // Foreign key to the parent company, ensuring data integrity [2, 3].
         'payment_id',
         'invoice_id',
         'vendor_bill_id',
@@ -72,6 +73,16 @@ class PaymentDocumentLink extends Model
         'created_at' => 'datetime', // Automatically casts to Carbon instances for convenient date manipulation.  [4]
         'updated_at' => 'datetime', // Automatically casts to Carbon instances.  [4]
     ];
+
+    /**
+     * Get the company that this rate belongs to.
+     *
+     * @return BelongsTo
+     */
+    public function company(): BelongsTo
+    {
+        return $this->belongsTo(Company::class);
+    }
 
     /**
      * Get the payment that owns this document link.

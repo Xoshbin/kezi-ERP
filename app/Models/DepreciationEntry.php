@@ -66,6 +66,7 @@ class DepreciationEntry extends Model
      * @var array<int, string>
      */
     protected $fillable = [
+        'company_id', // Foreign key to the parent company, ensuring data integrity [2, 3].
         'asset_id',
         'depreciation_date',
         'amount',

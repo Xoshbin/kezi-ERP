@@ -77,6 +77,7 @@ class JournalEntryLine extends Model
      * @var array<int, string>
      */
     protected $fillable = [
+        'company_id',
         'journal_entry_id',
         'account_id',
         'partner_id',
@@ -174,6 +175,16 @@ class JournalEntryLine extends Model
     | providing a fluent and intuitive interface for traversing related data.
     |
     */
+
+    /**
+     * Get the company that this rate belongs to.
+     *
+     * @return BelongsTo
+     */
+    public function company(): BelongsTo
+    {
+        return $this->belongsTo(Company::class);
+    }
 
     /**
      * Get the parent `JournalEntry` model that this line belongs to.

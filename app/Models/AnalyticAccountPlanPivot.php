@@ -49,8 +49,9 @@ class AnalyticAccountPlanPivot extends Pivot
      * @var array<int, string>
      */
     protected $fillable = [
-        'analytic_account_id', // Links to the specific analytic account 
-        'analytic_plan_id',    // Links to the analytic plan it belongs to 
+        'company_id',          // Foreign key to the parent company, ensuring data integrity [2, 3].
+        'analytic_account_id', // Links to the specific analytic account
+        'analytic_plan_id',    // Links to the analytic plan it belongs to
     ];
 
     /**
@@ -72,6 +73,17 @@ class AnalyticAccountPlanPivot extends Pivot
     |--------------------------------------------------------------------------
     | Pivot models typically define inverse relationships back to their parent models.
     */
+
+    /**
+     * Get the company that this rate belongs to.
+     *
+     * @return BelongsTo
+     */
+    public function company(): BelongsTo
+    {
+        return $this->belongsTo(Company::class);
+    }
+
     /**
      * Get the analytic account that this pivot record is associated with.
      *

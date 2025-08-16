@@ -20,6 +20,7 @@ class AdjustmentDocumentLine extends Model
     protected $table = 'adjustment_document_lines';
 
     protected $fillable = [
+        'company_id', // Foreign key to the parent company, ensuring data integrity [2, 3].
         'adjustment_document_id',
         'product_id',
         'description',
@@ -67,6 +68,16 @@ class AdjustmentDocumentLine extends Model
             }
         }
         $this->total_line_tax = $totalLineTax;
+    }
+
+    /**
+     * Get the company that this rate belongs to.
+     *
+     * @return BelongsTo
+     */
+    public function company(): BelongsTo
+    {
+        return $this->belongsTo(Company::class);
     }
 
     public function adjustmentDocument(): BelongsTo

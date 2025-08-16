@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('vendor_bill_attachments', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('company_id')->constrained('companies');
             $table->foreignId('vendor_bill_id')->constrained('vendor_bills')->onDelete('cascade');
             $table->string('file_name'); // Original file name
             $table->string('file_path'); // Storage path
