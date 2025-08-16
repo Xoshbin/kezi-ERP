@@ -75,12 +75,15 @@ class EditJournalEntry extends EditRecord
                 $line->save();
             }
 
-            // For multi-currency journal entries, display amounts in the original transaction currency
-            // Use original_currency_amount if available, otherwise fall back to base currency amounts
-            $debitMoney = null;
-            $creditMoney = null;
+            // Determine the correct amounts to display based on currency context
+            $debitMoney = Money::zero($currencyCode);
+            $creditMoney = Money::zero($currencyCode);
 
-            if ($line->original_currency_amount && $line->original_currency_id) {
+            // Check if this is a multi-currency transaction with original amounts
+            $hasOriginalAmounts = $line->original_currency_amount && $line->original_currency_id;
+            $isMultiCurrency = $hasOriginalAmounts && $line->original_currency_id != $this->record->company->currency_id;
+
+            if ($isMultiCurrency) {
                 // Multi-currency entry: use original amounts in transaction currency
                 $originalCurrency = \App\Models\Currency::find($line->original_currency_id);
                 if ($originalCurrency && $originalCurrency->code === $currencyCode) {
@@ -88,26 +91,14 @@ class EditJournalEntry extends EditRecord
                     $isDebit = $line->debit->isPositive();
                     if ($isDebit) {
                         $debitMoney = $line->original_currency_amount;
-                        $creditMoney = Money::zero($currencyCode);
                     } else {
-                        $debitMoney = Money::zero($currencyCode);
                         $creditMoney = $line->original_currency_amount;
                     }
                 }
-            }
-
-            // Fallback to base currency amounts if original amounts not available or currency mismatch
-            if (!$debitMoney && !$creditMoney) {
-                // For entries in the same currency as the company base currency
-                if ($currencyCode === $this->record->company->currency->code) {
-                    $debitMoney = $line->debit;
-                    $creditMoney = $line->credit;
-                } else {
-                    // For foreign currency entries without original amounts, convert back to transaction currency
-                    // This is a fallback scenario that shouldn't normally happen with our new architecture
-                    $debitMoney = Money::zero($currencyCode);
-                    $creditMoney = Money::zero($currencyCode);
-                }
+            } else {
+                // Single currency entry: use the base currency amounts directly
+                $debitMoney = $line->debit;
+                $creditMoney = $line->credit;
             }
 
             // Ensure currency consistency before adding to totals
