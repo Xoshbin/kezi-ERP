@@ -154,6 +154,11 @@ class PaymentDocumentLink extends Model
             if (is_null($link->invoice_id) && is_null($link->vendor_bill_id)) {
                 throw new InvalidArgumentException('A PaymentDocumentLink must be associated with either an invoice or a vendor bill.');
             }
+
+            // Set company_id from parent payment to maintain tenancy
+            if (!$link->company_id && $link->payment) {
+                $link->company_id = $link->payment->company_id;
+            }
         });
 
         static::updating(function (PaymentDocumentLink $link) {

@@ -1,19 +1,19 @@
 <?php
 
-namespace App\Actions\Purchases;
+namespace App\Actions\Adjustments;
 
-use App\DataTransferObjects\Purchases\CreateVendorBillLineDTO;
+use App\DataTransferObjects\Adjustments\CreateAdjustmentDocumentLineDTO;
+use App\Models\AdjustmentDocument;
+use App\Models\AdjustmentDocumentLine;
 use App\Models\Tax;
-use App\Models\VendorBill;
-use App\Models\VendorBillLine;
 use Brick\Math\RoundingMode;
 use Brick\Money\Money;
 
-class CreateVendorBillLineAction
+class CreateAdjustmentDocumentLineAction
 {
-    public function execute(VendorBill $vendorBill, CreateVendorBillLineDTO $dto): VendorBillLine
+    public function execute(AdjustmentDocument $adjustmentDocument, CreateAdjustmentDocumentLineDTO $dto): AdjustmentDocumentLine
     {
-        $currency = $vendorBill->currency;
+        $currency = $adjustmentDocument->currency;
 
         // 1. Explicitly create the Money object from the DTO.
         $unitPrice = $dto->unit_price instanceof Money
@@ -27,24 +27,23 @@ class CreateVendorBillLineAction
         if ($dto->tax_id) {
             $tax = Tax::find($dto->tax_id);
             if ($tax) {
-                $taxRate = $tax->rate / 100;
+                $taxRate = $tax->rate;
                 $taxAmount = $subtotal->multipliedBy((string)$taxRate, RoundingMode::HALF_UP);
             }
         }
 
-        // 3. Create the model with pre-calculated values.
-        return VendorBillLine::create([
-            'company_id' => $vendorBill->company_id,
-            'vendor_bill_id' => $vendorBill->id,
+        // 3. Create the line with all calculated values.
+        return AdjustmentDocumentLine::create([
+            'company_id' => $adjustmentDocument->company_id,
+            'adjustment_document_id' => $adjustmentDocument->id,
             'product_id' => $dto->product_id,
             'description' => $dto->description,
             'quantity' => $dto->quantity,
             'unit_price' => $unitPrice,
+            'tax_id' => $dto->tax_id,
+            'account_id' => $dto->account_id,
             'subtotal' => $subtotal,
             'total_line_tax' => $taxAmount,
-            'expense_account_id' => $dto->expense_account_id,
-            'tax_id' => $dto->tax_id,
-            'analytic_account_id' => $dto->analytic_account_id,
         ]);
     }
 }

@@ -27,6 +27,7 @@ test('can convert to base currency', function () {
 
     // Create exchange rate: 1 EUR = 1.5 USD
     CurrencyRate::factory()->create([
+        'company_id' => $company->id,
         'currency_id' => $foreignCurrency->id,
         'rate' => 1.5,
         'effective_date' => Carbon::today(),
@@ -35,7 +36,7 @@ test('can convert to base currency', function () {
     $amount = Money::of(100, 'EUR');
     $service = app(CurrencyConverterService::class);
 
-    $converted = $service->convertToBaseCurrency($amount, $foreignCurrency, $baseCurrency, Carbon::today());
+    $converted = $service->convertToBaseCurrency($amount, $foreignCurrency, $baseCurrency, Carbon::today(), $company);
 
     expect($converted->getAmount()->toFloat())->toBe(150.0);
     expect($converted->getCurrency()->getCurrencyCode())->toBe('USD');
@@ -48,6 +49,7 @@ test('can convert from base currency', function () {
 
     // Create exchange rate: 1 EUR = 1.5 USD
     CurrencyRate::factory()->create([
+        'company_id' => $company->id,
         'currency_id' => $foreignCurrency->id,
         'rate' => 1.5,
         'effective_date' => Carbon::today(),
@@ -56,7 +58,7 @@ test('can convert from base currency', function () {
     $amount = Money::of(150, 'USD');
     $service = app(CurrencyConverterService::class);
 
-    $converted = $service->convertFromBaseCurrency($amount, $foreignCurrency, Carbon::today());
+    $converted = $service->convertFromBaseCurrency($amount, $foreignCurrency, Carbon::today(), $company);
 
     expect($converted->getAmount()->toFloat())->toBe(100.0);
     expect($converted->getCurrency()->getCurrencyCode())->toBe('EUR');
@@ -71,6 +73,7 @@ test('can convert between foreign currencies via base currency', function () {
     // Create exchange rates
     // 1 EUR = 1.5 USD
     CurrencyRate::factory()->create([
+        'company_id' => $company->id,
         'currency_id' => $currency1->id,
         'rate' => 1.5,
         'effective_date' => Carbon::today(),
@@ -78,6 +81,7 @@ test('can convert between foreign currencies via base currency', function () {
 
     // 1 GBP = 2.0 USD
     CurrencyRate::factory()->create([
+        'company_id' => $company->id,
         'currency_id' => $currency2->id,
         'rate' => 2.0,
         'effective_date' => Carbon::today(),
@@ -101,7 +105,7 @@ test('throws exception when no exchange rate found', function () {
     $amount = Money::of(100, 'EUR');
     $service = app(CurrencyConverterService::class);
 
-    expect(fn() => $service->convertToBaseCurrency($amount, $foreignCurrency, $baseCurrency, Carbon::today()))
+    expect(fn() => $service->convertToBaseCurrency($amount, $foreignCurrency, $baseCurrency, Carbon::today(), $company))
         ->toThrow(InvalidArgumentException::class, 'No exchange rate found');
 });
 

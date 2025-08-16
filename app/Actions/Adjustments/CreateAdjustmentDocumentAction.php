@@ -14,8 +14,10 @@ use Illuminate\Support\Facades\DB;
 
 class CreateAdjustmentDocumentAction
 {
-    public function __construct(private readonly LockDateService $lockDateService)
-    {
+    public function __construct(
+        private readonly LockDateService $lockDateService,
+        private readonly CreateAdjustmentDocumentLineAction $createAdjustmentDocumentLineAction
+    ) {
     }
 
     public function execute(CreateAdjustmentDocumentDTO $dto): AdjustmentDocument
@@ -41,21 +43,9 @@ class CreateAdjustmentDocumentAction
                 'status' => AdjustmentDocumentStatus::Draft,
             ]);
 
-            // Create the lines from the DTO
-            $linesToCreate = [];
+            // Create the lines using the dedicated line action
             foreach ($dto->lines as $lineDto) {
-                $linesToCreate[] = [
-                    'product_id' => $lineDto->product_id,
-                    'description' => $lineDto->description,
-                    'quantity' => $lineDto->quantity,
-                    'unit_price' => $lineDto->unit_price, // Already a Money object from DTO
-                    'tax_id' => $lineDto->tax_id,
-                    'account_id' => $lineDto->account_id,
-                ];
-            }
-
-            if (!empty($linesToCreate)) {
-                $adjustmentDocument->lines()->createMany($linesToCreate);
+                $this->createAdjustmentDocumentLineAction->execute($adjustmentDocument, $lineDto);
             }
 
             // The observer on the Line model will have triggered the parent's total recalculation.

@@ -19,7 +19,6 @@ class CompanyFactory extends Factory
                 [
                     'name' => 'Iraqi Dinar',
                     'symbol' => 'IQD',
-                    'exchange_rate' => 1,
                     'is_active' => true,
                     'decimal_places' => 3
                 ]
