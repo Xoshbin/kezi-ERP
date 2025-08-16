@@ -105,11 +105,22 @@ it('rolls back the entire transaction if updating the statement line fails', fun
 });
 
 it('handles multi-currency scenarios correctly', function (string $currencyCode, int $minorAmount, string $majorAmount) {
-    // Arrange
-    $this->company = Company::factory()->create();
+    // Arrange - Use the existing company (IQD) and create exchange rates for foreign currencies
     $currency = Currency::firstOrCreate(['code' => $currencyCode], ['name' => $currencyCode, 'symbol' => $currencyCode, 'exchange_rate' => 1, 'is_active' => true, 'decimal_places' => $currencyCode === 'IQD' ? 3 : 2]);
     $currency->update(['decimal_places' => $currencyCode === 'IQD' ? 3 : 2]);
-    $this->company->update(['currency_id' => $currency->id]);
+
+    // Create exchange rate if the currency is different from company's base currency
+    if ($currencyCode !== $this->company->currency->code) {
+        // Create the rate for yesterday to ensure it's found (effective_date <= today)
+        $effectiveDate = \Carbon\Carbon::yesterday();
+        \App\Models\CurrencyRate::create([
+            'currency_id' => $currency->id,
+            'company_id' => $this->company->id,
+            'rate' => $currencyCode === 'USD' ? 1500.0 : 1.0, // 1 USD = 1500 IQD
+            'effective_date' => $effectiveDate,
+            'source' => 'manual',
+        ]);
+    }
 
     $user = User::factory()->create();
     $user->companies()->attach($this->company);

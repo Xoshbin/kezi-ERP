@@ -155,6 +155,7 @@ it('can display correct major amount in edit form', function () {
         ->create();
 
     $line = $journalEntry->lines()->create([
+        'company_id' => $this->company->id,
         'account_id' => $this->company->default_bank_account_id,
         'debit' => Money::of(15000, 'IQD'), // 15,000 major units
         'credit' => Money::of(0, 'IQD'),
@@ -260,11 +261,13 @@ it('calculates and fills totals on edit page load', function () {
     // Arrange
     $journalEntry = JournalEntry::factory()->for($this->company)->create();
     $journalEntry->lines()->create([
+        'company_id' => $this->company->id,
         'account_id' => $this->company->default_bank_account_id,
         'debit' => Money::of(500, $this->company->currency->code),
         'credit' => Money::of(0, $this->company->currency->code),
     ]);
     $journalEntry->lines()->create([
+        'company_id' => $this->company->id,
         'account_id' => $this->company->default_accounts_payable_id,
         'debit' => Money::of(0, $this->company->currency->code),
         'credit' => Money::of(200, $this->company->currency->code),

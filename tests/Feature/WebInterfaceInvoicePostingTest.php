@@ -27,6 +27,12 @@ class WebInterfaceInvoicePostingTest extends TestCase
         $company = $user->companies()->first();
         $this->actingAs($user);
         \Filament\Facades\Filament::setTenant($company);
+
+        // Create test data: 3 draft invoices with invoice lines for testing
+        Invoice::factory()->count(3)->withLines()->create([
+            'status' => InvoiceStatus::Draft,
+            'company_id' => $company->id,
+        ]);
     }
 
     public function test_posting_multiple_invoices_via_web_interface_works_correctly()

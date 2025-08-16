@@ -27,12 +27,15 @@ test('journal entry can store multi-currency amounts', function () {
     $account1 = Account::factory()->create(['company_id' => $this->company->id]);
     $account2 = Account::factory()->create(['company_id' => $this->company->id]);
 
-    // Create exchange rate for the foreign currency
-    \App\Models\CurrencyRate::factory()->create([
+    // Create exchange rate for the foreign currency (use yesterday to ensure it's available)
+    $entryDate = Carbon::today()->format('Y-m-d');
+    $rateDate = Carbon::yesterday()->format('Y-m-d');
+    $currencyRate = \App\Models\CurrencyRate::create([
         'currency_id' => $foreignCurrency->id,
         'company_id' => $this->company->id,
         'rate' => 1.5,
-        'effective_date' => Carbon::today(),
+        'effective_date' => $rateDate,
+        'source' => 'manual',
     ]);
 
     // Create line DTOs
@@ -60,7 +63,7 @@ test('journal entry can store multi-currency amounts', function () {
         company_id: $this->company->id,
         journal_id: $journal->id,
         currency_id: $foreignCurrency->id,
-        entry_date: Carbon::today()->format('Y-m-d'),
+        entry_date: $entryDate,
         reference: 'TEST-001',
         description: 'Multi-currency test entry',
         created_by_user_id: $this->user->id,
@@ -90,6 +93,7 @@ test('journal entry line can store multi-currency amounts', function () {
     $account = Account::factory()->create(['company_id' => $company->id]);
 
     $line = JournalEntryLine::create([
+        'company_id' => $company->id,
         'journal_entry_id' => $journalEntry->id,
         'account_id' => $account->id,
         'currency_id' => $foreignCurrency->id,
@@ -144,6 +148,7 @@ test('journal entry line can be created with explicit currency', function () {
 
     // Create line with explicit currency_id to avoid MoneyCast issues
     $line = new JournalEntryLine([
+        'company_id' => $company->id,
         'journal_entry_id' => $journalEntry->id,
         'account_id' => $account->id,
         'currency_id' => $foreignCurrency->id,

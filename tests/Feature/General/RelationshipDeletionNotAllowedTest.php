@@ -44,11 +44,13 @@ test('a journal entry line cannot be deleted from a posted journal entry', funct
         'currency_id' => $this->company->currency_id, // Ensure currency is set
     ]);
     $lineToDelete = $journalEntry->lines()->create([
+        'company_id' => $this->company->id,
         'account_id' => Account::factory()->for($this->company)->create()->id,
         'debit' => Money::of(100, $currencyCode),
         'credit' => Money::of(0, $currencyCode),
     ]);
     $journalEntry->lines()->create([
+        'company_id' => $this->company->id,
         'account_id' => Account::factory()->for($this->company)->create()->id,
         'debit' => Money::of(0, $currencyCode),
         'credit' => Money::of(100, $currencyCode),

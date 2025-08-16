@@ -197,7 +197,7 @@ class PaymentService
         }
 
         // Get exchange rate for the payment date
-        $exchangeRate = $this->currencyConverter->getExchangeRate($payment->currency, $payment->payment_date);
+        $exchangeRate = $this->currencyConverter->getExchangeRate($payment->currency, $payment->payment_date, $payment->company);
 
         // If no exchange rate is found, skip multi-currency processing for backward compatibility
         if (!$exchangeRate) {
@@ -214,7 +214,8 @@ class PaymentService
             $payment->amount,
             $payment->currency,
             $companyCurrency,
-            $payment->payment_date
+            $payment->payment_date,
+            $payment->company
         );
 
         // Update payment with converted amounts
@@ -275,6 +276,7 @@ class PaymentService
     protected function createPaymentDocumentLink(Payment $payment, $document, Money $amountApplied)
     {
         $linkData = [
+            'company_id' => $payment->company_id,
             'payment_id' => $payment->id,
             'amount_applied' => $amountApplied,
         ];
