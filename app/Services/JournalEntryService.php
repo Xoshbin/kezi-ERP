@@ -33,10 +33,11 @@ class JournalEntryService
         }
 
         // 1. Re-validate the balance before posting.
-        $journalEntry->load('lines', 'currency');
-        // MODIFIED: Sum Money objects from the loaded relations.
-        $totalDebit = Money::of(0, $journalEntry->currency->code);
-        $totalCredit = Money::of(0, $journalEntry->currency->code);
+        $journalEntry->load('lines', 'currency', 'company.currency');
+        // CORRECTED: Sum Money objects using the company's base currency (since line amounts are in base currency)
+        $companyCurrencyCode = $journalEntry->company->currency->code;
+        $totalDebit = Money::of(0, $companyCurrencyCode);
+        $totalCredit = Money::of(0, $companyCurrencyCode);
         foreach ($journalEntry->lines as $line) {
             $totalDebit = $totalDebit->plus($line->debit);
             $totalCredit = $totalCredit->plus($line->credit);

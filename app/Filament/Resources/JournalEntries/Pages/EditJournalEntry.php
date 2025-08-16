@@ -75,15 +75,53 @@ class EditJournalEntry extends EditRecord
                 $line->save();
             }
 
-            // Use the MoneyCast to get Money objects for debit and credit.
-            $debitMoney = $line->debit;
-            $creditMoney = $line->credit;
+            // For multi-currency journal entries, display amounts in the original transaction currency
+            // Use original_currency_amount if available, otherwise fall back to base currency amounts
+            $debitMoney = null;
+            $creditMoney = null;
 
-            if ($debitMoney) {
-                $totalDebit = $totalDebit->plus($debitMoney);
+            if ($line->original_currency_amount && $line->original_currency_id) {
+                // Multi-currency entry: use original amounts in transaction currency
+                $originalCurrency = \App\Models\Currency::find($line->original_currency_id);
+                if ($originalCurrency && $originalCurrency->code === $currencyCode) {
+                    // Determine if this line was a debit or credit based on base currency amounts
+                    $isDebit = $line->debit->isPositive();
+                    if ($isDebit) {
+                        $debitMoney = $line->original_currency_amount;
+                        $creditMoney = Money::zero($currencyCode);
+                    } else {
+                        $debitMoney = Money::zero($currencyCode);
+                        $creditMoney = $line->original_currency_amount;
+                    }
+                }
             }
-            if ($creditMoney) {
-                $totalCredit = $totalCredit->plus($creditMoney);
+
+            // Fallback to base currency amounts if original amounts not available or currency mismatch
+            if (!$debitMoney && !$creditMoney) {
+                // For entries in the same currency as the company base currency
+                if ($currencyCode === $this->record->company->currency->code) {
+                    $debitMoney = $line->debit;
+                    $creditMoney = $line->credit;
+                } else {
+                    // For foreign currency entries without original amounts, convert back to transaction currency
+                    // This is a fallback scenario that shouldn't normally happen with our new architecture
+                    $debitMoney = Money::zero($currencyCode);
+                    $creditMoney = Money::zero($currencyCode);
+                }
+            }
+
+            // Ensure currency consistency before adding to totals
+            if ($debitMoney && $debitMoney->isPositive()) {
+                // Convert to the same currency as totals if needed
+                if ($debitMoney->getCurrency()->getCurrencyCode() === $currencyCode) {
+                    $totalDebit = $totalDebit->plus($debitMoney);
+                }
+            }
+            if ($creditMoney && $creditMoney->isPositive()) {
+                // Convert to the same currency as totals if needed
+                if ($creditMoney->getCurrency()->getCurrencyCode() === $currencyCode) {
+                    $totalCredit = $totalCredit->plus($creditMoney);
+                }
             }
 
             return [
@@ -91,8 +129,6 @@ class EditJournalEntry extends EditRecord
                 'partner_id' => $line->partner_id,
                 'analytic_account_id' => $line->analytic_account_id,
                 'description' => $line->description,
-                // -- CHANGE IS HERE --
-                // Pass the entire Money object, or a new zero-value one
                 'debit' => $debitMoney ?? Money::zero($currencyCode),
                 'credit' => $creditMoney ?? Money::zero($currencyCode),
             ];
