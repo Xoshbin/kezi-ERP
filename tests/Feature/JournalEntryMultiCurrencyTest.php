@@ -1,171 +1,167 @@
 <?php
 
+namespace Tests\Feature\Accounting;
+
+use Carbon\Carbon;
+use Tests\TestCase;
+use App\Models\User;
+use Brick\Money\Money;
+use App\Models\Account;
+use App\Models\Company;
+use App\Models\Journal;
+use App\Models\Currency;
+use Tests\Traits\WithConfiguredCompany;
+use App\Services\CurrencyConverterService;
+use App\Services\Accounting\LockDateService;
+use Illuminate\Validation\ValidationException;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use App\Actions\Accounting\CreateJournalEntryAction;
 use App\DataTransferObjects\Accounting\CreateJournalEntryDTO;
 use App\DataTransferObjects\Accounting\CreateJournalEntryLineDTO;
-use App\Models\Company;
-use App\Models\Currency;
-use App\Models\CurrencyRate;
-use App\Models\JournalEntry;
-use App\Models\JournalEntryLine;
-use App\Models\Journal;
-use App\Models\Account;
-use App\Models\User;
-use App\Services\JournalEntryService;
-use Brick\Money\Money;
-use Carbon\Carbon;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Tests\Traits\WithConfiguredCompany;
+use App\Enums\Accounting\AccountType;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);
 
-test('journal entry can store multi-currency amounts', function () {
+beforeEach(function () {
     $this->setupWithConfiguredCompany();
 
-    $foreignCurrency = Currency::factory()->create(['code' => 'EUR']);
-    $journal = Journal::factory()->create(['company_id' => $this->company->id]);
-    $account1 = Account::factory()->create(['company_id' => $this->company->id]);
-    $account2 = Account::factory()->create(['company_id' => $this->company->id]);
+    $this->usdCurrency = Currency::factory()->create(['code' => 'USD']);
+    $this->journal = Journal::factory()->create(['company_id' => $this->company->id]);
+    $this->account1 = Account::factory()->create(['company_id' => $this->company->id]);
+    $this->account2 = Account::factory()->create(['company_id' => $this->company->id]);
 
     // Create exchange rate for the foreign currency (use yesterday to ensure it's available)
-    $entryDate = Carbon::today()->format('Y-m-d');
-    $rateDate = Carbon::yesterday()->format('Y-m-d');
-    $currencyRate = \App\Models\CurrencyRate::create([
-        'currency_id' => $foreignCurrency->id,
+    $this->entryDate = Carbon::today()->format('Y-m-d');
+    $this->rateDate = Carbon::yesterday()->format('Y-m-d');
+    $this->currencyRate = \App\Models\CurrencyRate::create([
+        'currency_id' => $this->usdCurrency->id,
         'company_id' => $this->company->id,
-        'rate' => 1.5,
-        'effective_date' => $rateDate,
+        'rate' => 1460,
+        'effective_date' => $this->rateDate,
         'source' => 'manual',
     ]);
 
-    // Create line DTOs
-    $lineDTOs = [
-        new CreateJournalEntryLineDTO(
-            account_id: $account1->id,
-            debit: Money::of(100, 'EUR'),
-            credit: Money::of(0, 'EUR'),
-            description: 'Test debit line',
-            partner_id: null,
-            analytic_account_id: null
-        ),
-        new CreateJournalEntryLineDTO(
-            account_id: $account2->id,
-            debit: Money::of(0, 'EUR'),
-            credit: Money::of(100, 'EUR'),
-            description: 'Test credit line',
-            partner_id: null,
-            analytic_account_id: null
-        ),
-    ];
+    // Create standard accounts
+    $this->receivableAccount = Account::factory()->for($this->company)->create(['type' => 'receivable']);
+    $this->revenueAccount = Account::factory()->for($this->company)->create(['type' => 'income']);
+});
 
-    // Create journal entry DTO
-    $journalEntryDTO = new CreateJournalEntryDTO(
+test('it creates a journal entry in a foreign currency correctly', function () {
+    // Arrange: Prepare the DTO with USD amounts
+    $dto = new CreateJournalEntryDTO(
         company_id: $this->company->id,
-        journal_id: $journal->id,
-        currency_id: $foreignCurrency->id,
-        entry_date: $entryDate,
-        reference: 'TEST-001',
-        description: 'Multi-currency test entry',
+        journal_id: $this->journal->id,
+        currency_id: $this->usdCurrency->id, // The user is entering this transaction in USD
+        entry_date: now()->toDateString(),
+        reference: 'Test USD Entry',
+        description: 'Capital injection in USD',
         created_by_user_id: $this->user->id,
-        is_posted: true,
-        lines: $lineDTOs
+        is_posted: false,
+        lines: [
+            new CreateJournalEntryLineDTO(
+                account_id: $this->receivableAccount->id,
+                debit: Money::ofMinor(10000, 'USD'), // $100.00
+                credit: Money::zero('USD'),
+                description: 'Debit in USD',
+                partner_id: null,
+                analytic_account_id: null,
+                original_currency_amount: Money::ofMinor(10000, 'USD'),
+                exchange_rate_at_transaction: 1460.0
+            ),
+            new CreateJournalEntryLineDTO(
+                account_id: $this->revenueAccount->id,
+                debit: Money::zero('USD'),
+                credit: Money::ofMinor(10000, 'USD'), // $100.00
+                description: 'Credit in USD',
+                partner_id: null,
+                analytic_account_id: null,
+                original_currency_amount: Money::ofMinor(10000, 'USD'),
+                exchange_rate_at_transaction: 1460.0
+            ),
+        ]
     );
 
-    // Create journal entry using the Action
-    $journalEntry = app(CreateJournalEntryAction::class)->execute($journalEntryDTO);
+    // Act: Execute the action
+    $journalEntry = resolve(CreateJournalEntryAction::class)->execute($dto);
+    $journalEntry->refresh(); // Reload from DB to ensure data is persisted correctly
 
-    expect($journalEntry->currency_id)->toBe($foreignCurrency->id);
-    expect($journalEntry->total_debit->getAmount()->toFloat())->toBe(100.0);
-    expect($journalEntry->total_debit_company_currency->getAmount()->toFloat())->toBe(150.0);
-    expect($journalEntry->exchange_rate_at_entry)->toBe('1.5000000000');
+    $debitLine = $journalEntry->lines->first(function ($line) {
+        return $line->getAttributes()['debit'] > 0;
+    });
+    $creditLine = $journalEntry->lines->first(function ($line) {
+        return $line->getAttributes()['credit'] > 0;
+    });
+
+    // Assert: Verify all parts of the Odoo-style architecture
+
+    // 1. Assert the Journal Entry Header is correct
+    expect($journalEntry->currency_id)->toBe($this->usdCurrency->id)
+        ->and($journalEntry->currency->code)->toBe('USD');
+
+    // 2. Assert the Header TOTALS are in the COMPANY'S BASE CURRENCY (IQD)
+    // USD $100.00 * 1460 rate = 146,000.000 IQD = 146,000,000 fils (IQD has 3 decimal places)
+    $expectedBaseAmount = 100 * 1460 * 1000; // 146,000,000 IQD fils
+    expect($journalEntry->total_debit->getMinorAmount()->toInt())->toBe($expectedBaseAmount);
+    expect($journalEntry->total_credit->getMinorAmount()->toInt())->toBe($expectedBaseAmount);
+    expect($journalEntry->total_debit->getCurrency()->getCurrencyCode())->toBe($this->company->currency->code);
+
+    // 3. Assert the Journal Entry LINE amounts are in the COMPANY'S BASE CURRENCY (IQD)
+    expect($debitLine->debit->getMinorAmount()->toInt())->toBe($expectedBaseAmount);
+    expect($debitLine->debit->getCurrency()->getCurrencyCode())->toBe($this->company->currency->code);
+    expect($creditLine->credit->getMinorAmount()->toInt())->toBe($expectedBaseAmount);
+    expect($creditLine->credit->getCurrency()->getCurrencyCode())->toBe($this->company->currency->code);
+
+    // 4. Assert the LINE'S original amount is stored correctly in the FOREIGN CURRENCY (USD)
+    expect($debitLine->original_currency_amount->getMinorAmount()->toInt())->toBe(10000); // $100.00 in minor units
+    expect($debitLine->original_currency_amount->getCurrency()->getCurrencyCode())->toBe('USD');
+
+    // 5. Assert the exchange rate was stored correctly
+    expect((float) $debitLine->exchange_rate_at_transaction)->toBe(1460.0);
 });
 
-test('journal entry line can store multi-currency amounts', function () {
-    $company = Company::factory()->create();
-    $baseCurrency = $company->currency;
-    $foreignCurrency = Currency::factory()->create(['code' => 'EUR']);
-
-    $journalEntry = JournalEntry::factory()->create([
-        'company_id' => $company->id,
-        'currency_id' => $foreignCurrency->id,
+test('it blocks posting to a currency-locked account with the wrong currency', function () {
+    // Arrange: Create a bank account that is explicitly locked to USD
+    $usdBankAccount = Account::factory()->for($this->company)->create([
+        'type' => AccountType::BankAndCash,
+        'currency_id' => $this->usdCurrency->id,
     ]);
 
-    $account = Account::factory()->create(['company_id' => $company->id]);
+    // Arrange: Attempt to create a journal entry in the BASE CURRENCY (IQD)
+    // and post it to the USD-locked account. This should be forbidden.
+    $dto = new CreateJournalEntryDTO(
+        company_id: $this->company->id,
+        journal_id: $this->journal->id,
+        currency_id: $this->company->currency->id, // Entry is in IQD
+        entry_date: now()->toDateString(),
+        reference: 'Test Invalid Entry',
+        description: 'An attempt to post IQD to a USD account',
+        created_by_user_id: $this->user->id,
+        is_posted: false,
+        lines: [
+            new CreateJournalEntryLineDTO(
+                account_id: $usdBankAccount->id, // The USD-locked account
+                debit: Money::ofMinor(100000, 'IQD'),
+                credit: Money::zero('IQD'),
+                description: 'Debit in IQD',
+                partner_id: null,
+                analytic_account_id: null,
+                original_currency_amount: Money::ofMinor(100000, 'IQD'), // Original amount is also IQD
+                exchange_rate_at_transaction: 1.0
+            ),
+            new CreateJournalEntryLineDTO(
+                account_id: $this->revenueAccount->id, // Balancing line
+                debit: Money::zero('IQD'),
+                credit: Money::ofMinor(100000, 'IQD'),
+                description: 'Credit in IQD',
+                partner_id: null,
+                analytic_account_id: null,
+                original_currency_amount: Money::ofMinor(100000, 'IQD'),
+                exchange_rate_at_transaction: 1.0
+            ),
+        ]
+    );
 
-    $line = JournalEntryLine::create([
-        'company_id' => $company->id,
-        'journal_entry_id' => $journalEntry->id,
-        'account_id' => $account->id,
-        'currency_id' => $foreignCurrency->id,
-        'debit' => Money::of(100, 'EUR'),
-        'credit' => Money::zero('EUR'),
-        'debit_company_currency' => Money::of(150, $baseCurrency->code),
-        'credit_company_currency' => Money::zero($baseCurrency->code),
-        'exchange_rate_at_transaction_decimal' => 1.5,
-        'original_currency_amount' => Money::of(100, 'EUR'),
-        'description' => 'Test line',
-    ]);
-
-    expect($line->currency_id)->toBe($foreignCurrency->id);
-    expect($line->debit->getAmount()->toFloat())->toBe(100.0);
-    expect($line->debit_company_currency->getAmount()->toFloat())->toBe(150.0);
-    expect($line->exchange_rate_at_transaction_decimal)->toBe('1.5000000000');
-});
-
-test('journal entry line currency relationship works', function () {
-    $company = Company::factory()->create();
-    $foreignCurrency = Currency::factory()->create(['code' => 'EUR']);
-
-    $journalEntry = JournalEntry::factory()->create([
-        'company_id' => $company->id,
-        'currency_id' => $foreignCurrency->id,
-    ]);
-
-    $account = Account::factory()->create(['company_id' => $company->id]);
-
-    $line = JournalEntryLine::factory()->create([
-        'journal_entry_id' => $journalEntry->id,
-        'account_id' => $account->id,
-        'currency_id' => $foreignCurrency->id,
-    ]);
-
-    expect($line->currency)->toBeInstanceOf(Currency::class);
-    expect($line->currency->code)->toBe('EUR');
-});
-
-test('journal entry line can be created with explicit currency', function () {
-    $company = Company::factory()->create();
-    $foreignCurrency = Currency::factory()->create(['code' => 'EUR']);
-    $user = User::factory()->create();
-
-    $journalEntry = JournalEntry::factory()->create([
-        'company_id' => $company->id,
-        'currency_id' => $foreignCurrency->id,
-        'created_by_user_id' => $user->id,
-    ]);
-
-    $account = Account::factory()->create(['company_id' => $company->id]);
-
-    // Create line with explicit currency_id to avoid MoneyCast issues
-    $line = new JournalEntryLine([
-        'company_id' => $company->id,
-        'journal_entry_id' => $journalEntry->id,
-        'account_id' => $account->id,
-        'currency_id' => $foreignCurrency->id,
-        'description' => 'Test line',
-    ]);
-
-    // Set amounts as integers (minor amounts)
-    $line->setAttribute('debit', 10000); // 100.00 EUR
-    $line->setAttribute('credit', 0);
-    $line->setAttribute('debit_company_currency', 15000); // 150.00 in company currency
-    $line->setAttribute('credit_company_currency', 0);
-    $line->setAttribute('exchange_rate_at_transaction_decimal', 1.5);
-    $line->setAttribute('original_currency_amount', 10000);
-
-    $line->save();
-
-    expect($line->currency_id)->toBe($foreignCurrency->id);
-    expect($line->debit->getAmount()->toFloat())->toBe(10000.0); // Minor amount stored as-is
-    expect($line->debit_company_currency->getAmount()->toFloat())->toBe(15000.0); // Minor amount stored as-is
+    // Act & Assert: Expect a ValidationException to be thrown by the Action
+    expect(fn() => resolve(CreateJournalEntryAction::class)->execute($dto))
+        ->toThrow(ValidationException::class);
 });

@@ -6,6 +6,7 @@ use Illuminate\Support\Carbon;
 use Illuminate\Database\Eloquent\Collection;
 use Database\Factories\JournalEntryFactory;
 use Illuminate\Database\Eloquent\Builder;
+use App\Casts\CompanyCurrencyMoneyCast;
 use App\Casts\MoneyCast;
 use App\Enums\Accounting\JournalEntryState;
 use App\Observers\AuditLogObserver;
@@ -133,8 +134,8 @@ class JournalEntry extends Model
      */
     protected $casts = [
         'entry_date' => 'date',
-        'total_debit' => MoneyCast::class, // Represents currency, typically 2 decimal places for financial accuracy [3, 17].
-        'total_credit' => MoneyCast::class, // Represents currency, typically 2 decimal places [3, 17].
+        'total_debit' => CompanyCurrencyMoneyCast::class, // Company base currency amounts
+        'total_credit' => CompanyCurrencyMoneyCast::class, // Company base currency amounts
         // Note: total_debit_company_currency and total_credit_company_currency are handled by custom accessors
         'exchange_rate_at_entry' => 'decimal:10', // Exchange rate captured at entry creation
         'is_posted' => 'boolean', // Crucial flag for immutability [3].
@@ -313,13 +314,15 @@ class JournalEntry extends Model
     public function calculateTotalsFromLines(): void
     {
         // Ensure the lines relationship is loaded to avoid extra queries
-        $this->loadMissing('lines', 'currency');
+        $this->loadMissing('lines', 'company.currency');
 
-        $currencyCode = $this->currency->code;
-        $totalDebit = Money::of(0, $currencyCode);
-        $totalCredit = Money::of(0, $currencyCode);
+        // CORRECTED: The currency for totals is ALWAYS the company's base currency
+        $companyCurrencyCode = $this->company->currency->code;
+        $totalDebit = Money::zero($companyCurrencyCode);
+        $totalCredit = Money::zero($companyCurrencyCode);
 
         foreach ($this->lines as $line) {
+            // $line->debit and $line->credit are already in the base currency
             $totalDebit = $totalDebit->plus($line->debit);
             $totalCredit = $totalCredit->plus($line->credit);
         }
@@ -327,6 +330,12 @@ class JournalEntry extends Model
         $this->total_debit = $totalDebit;
         $this->total_credit = $totalCredit;
     }
+
+
+
+
+
+
 
     /**
      * Accessor for total_debit_company_currency that uses the company's currency.

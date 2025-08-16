@@ -6,10 +6,11 @@ use App\Observers\JournalEntryLineObserver;
 use Brick\Money\Money;
 use Illuminate\Support\Carbon;
 use Illuminate\Database\Eloquent\Builder;
+use App\Casts\BaseCurrencyMoneyCast;
 use App\Casts\MoneyCast;
+use App\Casts\OriginalCurrencyMoneyCast;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use RuntimeException; // Utilized for explicit enforcement of immutability and data integrity.
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
@@ -92,6 +93,7 @@ class JournalEntryLine extends Model
         'description',
         'analytic_account_id',
         'original_currency_amount',
+        'original_currency_id',
         'exchange_rate_at_transaction',
         'exchange_rate_at_transaction_decimal',
     ];
@@ -105,11 +107,19 @@ class JournalEntryLine extends Model
      * @var array<string, string>
      */
     protected $casts = [
-        'debit' => MoneyCast::class,  // Enforces two decimal places for currency amounts.
-        'credit' => MoneyCast::class, // Ensures consistency for credit amounts.
-        'debit_company_currency' => MoneyCast::class, // Company base currency amounts
-        'credit_company_currency' => MoneyCast::class, // Company base currency amounts
-        'original_currency_amount' => MoneyCast::class,
+        // These fields are ALWAYS in the company's base currency
+        'debit' => BaseCurrencyMoneyCast::class,
+        'credit' => BaseCurrencyMoneyCast::class,
+
+        // Company base currency amounts (legacy fields)
+        'debit_company_currency' => MoneyCast::class,
+        'credit_company_currency' => MoneyCast::class,
+
+        // This field is in the foreign currency
+        'original_currency_amount' => OriginalCurrencyMoneyCast::class,
+
+        // Cast the rate for correct handling
+        'exchange_rate_at_transaction' => 'float',
         'exchange_rate_at_transaction_decimal' => 'decimal:10', // Proper decimal precision for exchange rates
     ];
 
@@ -258,39 +268,17 @@ class JournalEntryLine extends Model
     }
 
     /**
-     * Accessor to provide the currency_id to the MoneyCast.
-     * This robust implementation prevents N+1 query issues and handles the creation lifecycle.
-     * Now supports both line-specific currency and parent journal entry currency.
+     * Relationship to the original currency for this line.
      */
-    public function getCurrencyIdAttribute(): int
+    public function originalCurrency(): BelongsTo
     {
-        // First priority: if this line has its own currency_id, use it
-        if (isset($this->attributes['currency_id']) && $this->attributes['currency_id']) {
-            return $this->attributes['currency_id'];
-        }
-
-        // Second priority: use the parent journal entry's currency
-        if ($this->relationLoaded('journalEntry') && $this->journalEntry) {
-            return $this->journalEntry->currency_id;
-        }
-
-        // Fallback: query for the parent journal entry's currency
-        if ($this->journal_entry_id) {
-            $currencyId = JournalEntry::find($this->journal_entry_id)?->currency_id;
-            if ($currencyId) {
-                return $currencyId;
-            }
-        }
-
-        // During model creation, we might not have all relationships set yet
-        // Return a default currency ID (company's base currency) to prevent errors
-        $company = \Filament\Facades\Filament::getTenant();
-        if ($company && $company->currency_id) {
-            return $company->currency_id;
-        }
-
-        // Last resort: throw exception
-        throw new RuntimeException('Could not determine currency for JournalEntryLine.');
+        return $this->belongsTo(Currency::class, 'original_currency_id');
     }
+
+
+
+
+
+
 
 }

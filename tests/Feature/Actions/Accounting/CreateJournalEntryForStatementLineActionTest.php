@@ -145,17 +145,27 @@ it('handles multi-currency scenarios correctly', function (string $currencyCode,
     $this->assertModelExists($journalEntry);
     expect($journalEntry->currency_id)->toBe($currency->id);
 
+    // Calculate expected amount in company base currency
+    $expectedAmount = $minorAmount;
+    if ($currencyCode !== $this->company->currency->code) {
+        // Convert to company base currency using the exchange rate
+        $rate = $currencyCode === 'USD' ? 1500.0 : 1.0;
+        $majorAmount = $minorAmount / pow(10, $currency->decimal_places);
+        $convertedMajor = $majorAmount * $rate;
+        $expectedAmount = (int) round($convertedMajor * pow(10, $this->company->currency->decimal_places));
+    }
+
     $this->assertDatabaseHas('journal_entry_lines', [
         'journal_entry_id' => $journalEntry->id,
         'account_id' => $writeOffAccount->id,
         'debit' => 0,
-        'credit' => $minorAmount,
+        'credit' => $expectedAmount,
     ]);
 
     $this->assertDatabaseHas('journal_entry_lines', [
         'journal_entry_id' => $journalEntry->id,
         'account_id' => $bankAccount->id,
-        'debit' => $minorAmount,
+        'debit' => $expectedAmount,
         'credit' => 0,
     ]);
 
