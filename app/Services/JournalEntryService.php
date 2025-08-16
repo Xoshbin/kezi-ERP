@@ -14,10 +14,15 @@ use App\Services\Accounting\LockDateService;
 use Illuminate\Validation\ValidationException;
 use App\Exceptions\DeletionNotAllowedException;
 use App\Actions\Accounting\ReverseJournalEntryAction;
+use App\Services\CurrencyConverterService;
+use App\Models\Currency;
 
 class JournalEntryService
 {
-    public function __construct(protected LockDateService $lockDateService,) {}
+    public function __construct(
+        protected LockDateService $lockDateService,
+        protected CurrencyConverterService $currencyConverter
+    ) {}
 
 
     public function post(JournalEntry $journalEntry): bool
@@ -101,5 +106,68 @@ class JournalEntryService
         }
 
         return app(ReverseJournalEntryAction::class)->execute($originalEntry, $reason, $user);
+    }
+
+    /**
+     * Create a multi-currency journal entry with proper currency conversion.
+     * This method handles journal entries where the transaction currency differs from the company base currency.
+     */
+    public function createMultiCurrencyEntry(array $entryData, array $lines, Currency $transactionCurrency): JournalEntry
+    {
+        $company = Company::find($entryData['company_id']);
+        $exchangeRate = null;
+
+        // Get exchange rate if not in company base currency
+        if ($transactionCurrency->id !== $company->currency_id) {
+            $exchangeRate = $this->currencyConverter->getExchangeRate(
+                $transactionCurrency,
+                $entryData['entry_date']
+            );
+
+            if (!$exchangeRate) {
+                throw new Exception("No exchange rate found for {$transactionCurrency->code} on {$entryData['entry_date']}");
+            }
+        }
+
+        // Calculate company currency totals
+        $totalDebitCompanyCurrency = Money::zero($company->currency->code);
+        $totalCreditCompanyCurrency = Money::zero($company->currency->code);
+
+        foreach ($lines as $lineData) {
+            $debitAmount = $lineData['debit'] ?? Money::zero($transactionCurrency->code);
+            $creditAmount = $lineData['credit'] ?? Money::zero($transactionCurrency->code);
+
+            if ($transactionCurrency->id !== $company->currency_id) {
+                // Convert to company currency
+                $debitCompanyCurrency = $this->currencyConverter->convertToBaseCurrency(
+                    $debitAmount,
+                    $transactionCurrency,
+                    $company->currency,
+                    $entryData['entry_date']
+                );
+
+                $creditCompanyCurrency = $this->currencyConverter->convertToBaseCurrency(
+                    $creditAmount,
+                    $transactionCurrency,
+                    $company->currency,
+                    $entryData['entry_date']
+                );
+
+                $totalDebitCompanyCurrency = $totalDebitCompanyCurrency->plus($debitCompanyCurrency);
+                $totalCreditCompanyCurrency = $totalCreditCompanyCurrency->plus($creditCompanyCurrency);
+            } else {
+                // Same currency, no conversion needed
+                $totalDebitCompanyCurrency = $totalDebitCompanyCurrency->plus($debitAmount);
+                $totalCreditCompanyCurrency = $totalCreditCompanyCurrency->plus($creditAmount);
+            }
+        }
+
+        // Create the journal entry with multi-currency fields
+        return JournalEntry::create(array_merge($entryData, [
+            'currency_id' => $transactionCurrency->id,
+            'exchange_rate_at_entry' => $exchangeRate,
+            'total_debit_company_currency' => $totalDebitCompanyCurrency,
+            'total_credit_company_currency' => $totalCreditCompanyCurrency,
+        ]));
     }
 }

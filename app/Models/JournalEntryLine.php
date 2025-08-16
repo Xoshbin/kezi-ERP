@@ -81,12 +81,16 @@ class JournalEntryLine extends Model
         'journal_entry_id',
         'account_id',
         'partner_id',
+        'currency_id',
         'debit',
         'credit',
+        'debit_company_currency',
+        'credit_company_currency',
         'description',
         'analytic_account_id',
         'original_currency_amount',
         'exchange_rate_at_transaction',
+        'exchange_rate_at_transaction_decimal',
     ];
 
     /**
@@ -100,7 +104,10 @@ class JournalEntryLine extends Model
     protected $casts = [
         'debit' => MoneyCast::class,  // Enforces two decimal places for currency amounts.
         'credit' => MoneyCast::class, // Ensures consistency for credit amounts.
-        'original_currency_amount' => MoneyCast::class
+        'debit_company_currency' => MoneyCast::class, // Company base currency amounts
+        'credit_company_currency' => MoneyCast::class, // Company base currency amounts
+        'original_currency_amount' => MoneyCast::class,
+        'exchange_rate_at_transaction_decimal' => 'decimal:10', // Proper decimal precision for exchange rates
     ];
 
     /**
@@ -235,24 +242,51 @@ class JournalEntryLine extends Model
     }
 
     /**
+     * Get the `Currency` model for this journal entry line.
+     *
+     * This relationship supports multi-currency transactions where individual lines
+     * may have different currencies than the parent journal entry.
+     *
+     * @return BelongsTo An Eloquent relationship instance for the `Currency` model.
+     */
+    public function currency(): BelongsTo
+    {
+        return $this->belongsTo(Currency::class);
+    }
+
+    /**
      * Accessor to provide the currency_id to the MoneyCast.
      * This robust implementation prevents N+1 query issues and handles the creation lifecycle.
+     * Now supports both line-specific currency and parent journal entry currency.
      */
     public function getCurrencyIdAttribute(): int
     {
-        // This is the most efficient path: the relationship is already loaded in memory.
+        // First priority: if this line has its own currency_id, use it
+        if (isset($this->attributes['currency_id']) && $this->attributes['currency_id']) {
+            return $this->attributes['currency_id'];
+        }
+
+        // Second priority: use the parent journal entry's currency
         if ($this->relationLoaded('journalEntry') && $this->journalEntry) {
             return $this->journalEntry->currency_id;
         }
 
-        // This is the fallback for when the model is being created via a relationship.
-        // Eloquent sets the foreign key 'journal_entry_id' before the cast is triggered.
+        // Fallback: query for the parent journal entry's currency
         if ($this->journal_entry_id) {
-            // We find the parent's currency_id directly to avoid fully loading the parent model.
-            return JournalEntry::find($this->journal_entry_id)?->currency_id;
+            $currencyId = JournalEntry::find($this->journal_entry_id)?->currency_id;
+            if ($currencyId) {
+                return $currencyId;
+            }
         }
 
-        // If we have no relationship and no foreign key, we cannot determine the currency.
+        // During model creation, we might not have all relationships set yet
+        // Return a default currency ID (company's base currency) to prevent errors
+        $company = \Filament\Facades\Filament::getTenant();
+        if ($company && $company->currency_id) {
+            return $company->currency_id;
+        }
+
+        // Last resort: throw exception
         throw new RuntimeException('Could not determine currency for JournalEntryLine.');
     }
 

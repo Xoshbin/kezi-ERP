@@ -25,6 +25,8 @@ use App\Exceptions\DeletionNotAllowedException;
 use App\Actions\Sales\CreateStockMovesForInvoiceAction;
 use App\DataTransferObjects\Sales\CreateStockMovesForInvoiceDTO;
 use App\Actions\Accounting\CreateJournalEntryForInvoiceAction;
+use App\Services\CurrencyConverterService;
+use App\Services\ExchangeRateService;
 
 class InvoiceService
 {
@@ -33,7 +35,9 @@ class InvoiceService
         protected JournalEntryService $journalEntryService,
         protected CreateJournalEntryForInvoiceAction $createJournalEntryForInvoiceAction,
         protected CreateStockMovesForInvoiceAction $createStockMovesForInvoiceAction,
-        protected SequenceService $sequenceService
+        protected SequenceService $sequenceService,
+        protected CurrencyConverterService $currencyConverter,
+        protected ExchangeRateService $exchangeRateService
     ) {
     }
 
@@ -59,6 +63,9 @@ class InvoiceService
         $this->lockDateService->enforce(Company::find($invoice->company_id), Carbon::parse($invoice->invoice_date));
 
         DB::transaction(function () use ($invoice, $user) {
+            // Process multi-currency amounts before posting
+            $this->processMultiCurrencyAmounts($invoice);
+
             $invoice->invoice_number = $this->sequenceService->getNextInvoiceNumber($invoice->company);
             $invoice->status = InvoiceStatus::Posted;
             $invoice->posted_at = now();
@@ -178,5 +185,96 @@ class InvoiceService
             $invoice->status = InvoiceStatus::Cancelled;
             $invoice->save();
         });
+    }
+
+    /**
+     * Process multi-currency amounts for an invoice.
+     * Captures exchange rate and converts amounts to company base currency.
+     */
+    protected function processMultiCurrencyAmounts(Invoice $invoice): void
+    {
+        // Load necessary relationships
+        $invoice->load(['company', 'currency', 'invoiceLines']);
+
+        // If invoice is in company base currency, set rate to 1.0
+        if ($invoice->currency_id === $invoice->company->currency_id) {
+            $invoice->exchange_rate_at_creation = 1.0;
+            $invoice->total_amount_company_currency = $invoice->total_amount;
+            $invoice->total_tax_company_currency = $invoice->total_tax;
+            return;
+        }
+
+        // Get exchange rate for the invoice date
+        $exchangeRate = $this->currencyConverter->getExchangeRate($invoice->currency, $invoice->invoice_date);
+
+        // If no exchange rate is found, skip multi-currency processing for backward compatibility
+        if (!$exchangeRate) {
+            $invoice->exchange_rate_at_creation = 1.0;
+            $invoice->total_amount_company_currency = $invoice->total_amount;
+            $invoice->total_tax_company_currency = $invoice->total_tax;
+            return;
+        }
+
+        // Convert amounts to company currency
+        $companyCurrency = $invoice->company->currency;
+
+        $totalAmountCompanyCurrency = $this->currencyConverter->convertToBaseCurrency(
+            $invoice->total_amount,
+            $invoice->currency,
+            $companyCurrency,
+            $invoice->invoice_date
+        );
+
+        $totalTaxCompanyCurrency = $this->currencyConverter->convertToBaseCurrency(
+            $invoice->total_tax,
+            $invoice->currency,
+            $companyCurrency,
+            $invoice->invoice_date
+        );
+
+        // Convert invoice line amounts
+        foreach ($invoice->invoiceLines as $line) {
+            $this->convertInvoiceLineAmounts($line, $companyCurrency);
+        }
+
+        // Update invoice with converted amounts
+        $invoice->update([
+            'exchange_rate_at_creation' => $exchangeRate,
+            'total_amount_company_currency' => $totalAmountCompanyCurrency,
+            'total_tax_company_currency' => $totalTaxCompanyCurrency,
+        ]);
+    }
+
+    /**
+     * Convert invoice line amounts to company currency.
+     */
+    protected function convertInvoiceLineAmounts($line, Currency $companyCurrency): void
+    {
+        $unitPriceCompanyCurrency = $this->currencyConverter->convertToBaseCurrency(
+            $line->unit_price,
+            $line->invoice->currency,
+            $companyCurrency,
+            $line->invoice->invoice_date
+        );
+
+        $subtotalCompanyCurrency = $this->currencyConverter->convertToBaseCurrency(
+            $line->subtotal,
+            $line->invoice->currency,
+            $companyCurrency,
+            $line->invoice->invoice_date
+        );
+
+        $totalLineTaxCompanyCurrency = $this->currencyConverter->convertToBaseCurrency(
+            $line->total_line_tax,
+            $line->invoice->currency,
+            $companyCurrency,
+            $line->invoice->invoice_date
+        );
+
+        $line->update([
+            'unit_price_company_currency' => $unitPriceCompanyCurrency,
+            'subtotal_company_currency' => $subtotalCompanyCurrency,
+            'total_line_tax_company_currency' => $totalLineTaxCompanyCurrency,
+        ]);
     }
 }
