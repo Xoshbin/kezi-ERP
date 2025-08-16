@@ -24,6 +24,7 @@ return new class extends Migration
         // Add foreign keys for other tables that reference companies
         Schema::table('accounts', function (Blueprint $table) {
             $table->foreign('company_id')->references('id')->on('companies')->onDelete('cascade');
+            $table->foreignId('currency_id')->nullable()->constrained('currencies');
         });
 
         Schema::table('audit_logs', function (Blueprint $table) {
@@ -41,6 +42,7 @@ return new class extends Migration
             try {
                 Schema::table('accounts', function (Blueprint $table) {
                     $table->dropForeign(['company_id']);
+                    $table->dropForeign(['currency_id']);
                 });
             } catch (\Exception) {
                 // If the foreign key doesn't exist, continue with the migration rollback
