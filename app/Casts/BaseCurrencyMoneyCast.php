@@ -38,13 +38,32 @@ class BaseCurrencyMoneyCast extends MoneyCast
         // Fallback: If relationships are not loaded, perform database queries
         // This is less efficient but ensures the cast always works
         if (method_exists($model, 'company') && $model->company_id) {
-            return $model->company()->with('currency')->first()->currency;
+            $company = $model->company()->with('currency')->first();
+            if ($company && $company->currency) {
+                return $company->currency;
+            }
         }
         if (method_exists($model, 'journalEntry') && $model->journal_entry_id) {
-            return $model->journalEntry()->with('company.currency')->first()->company->currency;
+            $journalEntry = $model->journalEntry()->with('company.currency')->first();
+            if ($journalEntry && $journalEntry->company && $journalEntry->company->currency) {
+                return $journalEntry->company->currency;
+            }
         }
         if (method_exists($model, 'asset') && $model->asset_id) {
-            return $model->asset()->with('company.currency')->first()->company->currency;
+            $asset = $model->asset()->with('company.currency')->first();
+            if ($asset && $asset->company && $asset->company->currency) {
+                return $asset->company->currency;
+            }
+        }
+
+        // Last resort: Try to get currency from Filament tenant context
+        try {
+            $tenant = \Filament\Facades\Filament::getTenant();
+            if ($tenant && method_exists($tenant, 'currency') && $tenant->currency) {
+                return $tenant->currency;
+            }
+        } catch (\Exception $e) {
+            // Ignore tenant resolution errors
         }
 
         // If we still can't resolve the currency, throw an exception
