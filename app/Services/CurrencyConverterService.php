@@ -81,7 +81,11 @@ class CurrencyConverterService
         // Convert using the rate (rate represents how much base currency = 1 foreign currency)
         $convertedAmount = $amount->getAmount()->toFloat() * $rate;
 
-        return Money::of($convertedAmount, $baseCurrency->code);
+        // Create Money object using the target currency's decimal precision
+        return Money::ofMinor(
+            (int) round($convertedAmount * pow(10, $baseCurrency->decimal_places)),
+            $baseCurrency->code
+        );
     }
 
     /**
@@ -105,7 +109,11 @@ class CurrencyConverterService
         // Convert from base currency (divide by rate)
         $convertedAmount = $amount->getAmount()->toFloat() / $rate;
 
-        return Money::of($convertedAmount, $toCurrency->code);
+        // Create Money object using the target currency's decimal precision
+        return Money::ofMinor(
+            (int) round($convertedAmount * pow(10, $toCurrency->decimal_places)),
+            $toCurrency->code
+        );
     }
 
     /**

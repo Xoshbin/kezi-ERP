@@ -135,8 +135,7 @@ class JournalEntry extends Model
         'entry_date' => 'date',
         'total_debit' => MoneyCast::class, // Represents currency, typically 2 decimal places for financial accuracy [3, 17].
         'total_credit' => MoneyCast::class, // Represents currency, typically 2 decimal places [3, 17].
-        'total_debit_company_currency' => MoneyCast::class, // Company base currency amounts
-        'total_credit_company_currency' => MoneyCast::class, // Company base currency amounts
+        // Note: total_debit_company_currency and total_credit_company_currency are handled by custom accessors
         'exchange_rate_at_entry' => 'decimal:10', // Exchange rate captured at entry creation
         'is_posted' => 'boolean', // Crucial flag for immutability [3].
         'state' => JournalEntryState::class, // Journal entry state for reversal tracking
@@ -327,5 +326,67 @@ class JournalEntry extends Model
 
         $this->total_debit = $totalDebit;
         $this->total_credit = $totalCredit;
+    }
+
+    /**
+     * Accessor for total_debit_company_currency that uses the company's currency.
+     */
+    public function getTotalDebitCompanyCurrencyAttribute()
+    {
+        $value = $this->attributes['total_debit_company_currency'] ?? null;
+
+        if ($value === null) {
+            return null;
+        }
+
+        $companyCurrency = $this->company->currency ?? $this->company()->first()->currency;
+
+        // Handle case where value might already be processed or is numeric
+        if (is_numeric($value)) {
+            return Money::ofMinor((int) $value, $companyCurrency->code);
+        }
+
+        // If it's already a Money object or formatted string, parse it
+        if ($value instanceof Money) {
+            return Money::ofMinor($value->getMinorAmount()->toInt(), $companyCurrency->code);
+        }
+
+        // If it's a formatted string like "IQD 150.000", extract the numeric part
+        if (is_string($value)) {
+            $numericValue = preg_replace('/[^0-9.]/', '', $value);
+            if (is_numeric($numericValue)) {
+                return Money::of($numericValue, $companyCurrency->code);
+            }
+        }
+
+        // Fallback: try to parse as string
+        return Money::of($value, $companyCurrency->code);
+    }
+
+    /**
+     * Accessor for total_credit_company_currency that uses the company's currency.
+     */
+    public function getTotalCreditCompanyCurrencyAttribute()
+    {
+        $value = $this->attributes['total_credit_company_currency'] ?? null;
+
+        if ($value === null) {
+            return null;
+        }
+
+        $companyCurrency = $this->company->currency ?? $this->company()->first()->currency;
+
+        // Handle case where value might already be processed or is numeric
+        if (is_numeric($value)) {
+            return Money::ofMinor((int) $value, $companyCurrency->code);
+        }
+
+        // If it's already a Money object or formatted string, parse it
+        if ($value instanceof Money) {
+            return Money::ofMinor($value->getMinorAmount()->toInt(), $companyCurrency->code);
+        }
+
+        // Fallback: try to parse as string
+        return Money::of($value, $companyCurrency->code);
     }
 }

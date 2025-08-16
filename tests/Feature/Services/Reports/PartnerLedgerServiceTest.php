@@ -39,20 +39,20 @@ test('it generates a partner ledger for a customer with invoices and payments', 
     // Transaction 1: Old invoice to establish an opening balance (1,000,000 IQD)
     $entry1 = JournalEntry::factory()->for($this->company)->for($salesJournal)
         ->create(['entry_date' => '2025-02-15', 'state' => 'posted', 'reference' => 'INV/OLD/001', 'currency_id' => $this->company->currency_id]);
-    \App\Models\JournalEntryLine::create(['journal_entry_id' => $entry1->id, 'account_id' => $receivableAccount->id, 'debit' => '1000000', 'credit' => '0']);
-    \App\Models\JournalEntryLine::create(['journal_entry_id' => $entry1->id, 'account_id' => $otherAccount->id, 'debit' => '0', 'credit' => '1000000']);
+    \App\Models\JournalEntryLine::create(['company_id' => $this->company->id, 'journal_entry_id' => $entry1->id, 'account_id' => $receivableAccount->id, 'debit' => '1000000', 'credit' => '0']);
+    \App\Models\JournalEntryLine::create(['company_id' => $this->company->id, 'journal_entry_id' => $entry1->id, 'account_id' => $otherAccount->id, 'debit' => '0', 'credit' => '1000000']);
 
     // Transaction 2: New invoice within the period (500,000 IQD)
     $entry2 = JournalEntry::factory()->for($this->company)->for($salesJournal)
         ->create(['entry_date' => '2025-03-10', 'state' => 'posted', 'reference' => 'INV/NEW/001', 'currency_id' => $this->company->currency_id]);
-    \App\Models\JournalEntryLine::create(['journal_entry_id' => $entry2->id, 'account_id' => $receivableAccount->id, 'debit' => '500000', 'credit' => '0']);
-    \App\Models\JournalEntryLine::create(['journal_entry_id' => $entry2->id, 'account_id' => $otherAccount->id, 'debit' => '0', 'credit' => '500000']);
+    \App\Models\JournalEntryLine::create(['company_id' => $this->company->id, 'journal_entry_id' => $entry2->id, 'account_id' => $receivableAccount->id, 'debit' => '500000', 'credit' => '0']);
+    \App\Models\JournalEntryLine::create(['company_id' => $this->company->id, 'journal_entry_id' => $entry2->id, 'account_id' => $otherAccount->id, 'debit' => '0', 'credit' => '500000']);
 
     // Transaction 3: Payment received within the period (700,000 IQD)
     $entry3 = JournalEntry::factory()->for($this->company)->for($bankJournal)
         ->create(['entry_date' => '2025-03-20', 'state' => 'posted', 'reference' => 'PMT/001', 'currency_id' => $this->company->currency_id]);
-    \App\Models\JournalEntryLine::create(['journal_entry_id' => $entry3->id, 'account_id' => $receivableAccount->id, 'debit' => '0', 'credit' => '700000']);
-    \App\Models\JournalEntryLine::create(['journal_entry_id' => $entry3->id, 'account_id' => $otherAccount->id, 'debit' => '700000', 'credit' => '0']);
+    \App\Models\JournalEntryLine::create(['company_id' => $this->company->id, 'journal_entry_id' => $entry3->id, 'account_id' => $receivableAccount->id, 'debit' => '0', 'credit' => '700000']);
+    \App\Models\JournalEntryLine::create(['company_id' => $this->company->id, 'journal_entry_id' => $entry3->id, 'account_id' => $otherAccount->id, 'debit' => '700000', 'credit' => '0']);
 
     // Action
     $service = app(PartnerLedgerService::class);
@@ -152,14 +152,14 @@ test('it generates ledger for vendor with bills and payments', function () {
     // Transaction 1: Vendor bill within the period (300,000 IQD)
     $entry1 = JournalEntry::factory()->for($this->company)->for($purchaseJournal)
         ->create(['entry_date' => '2025-03-05', 'state' => 'posted', 'reference' => 'BILL/001', 'currency_id' => $this->company->currency_id]);
-    \App\Models\JournalEntryLine::create(['journal_entry_id' => $entry1->id, 'account_id' => $expenseAccount->id, 'debit' => '300000', 'credit' => '0']);
-    \App\Models\JournalEntryLine::create(['journal_entry_id' => $entry1->id, 'account_id' => $payableAccount->id, 'debit' => '0', 'credit' => '300000']);
+    \App\Models\JournalEntryLine::create(['company_id' => $this->company->id, 'journal_entry_id' => $entry1->id, 'account_id' => $expenseAccount->id, 'debit' => '300000', 'credit' => '0']);
+    \App\Models\JournalEntryLine::create(['company_id' => $this->company->id, 'journal_entry_id' => $entry1->id, 'account_id' => $payableAccount->id, 'debit' => '0', 'credit' => '300000']);
 
     // Transaction 2: Payment made within the period (150,000 IQD)
     $entry2 = JournalEntry::factory()->for($this->company)->for($bankJournal)
         ->create(['entry_date' => '2025-03-15', 'state' => 'posted', 'reference' => 'PAY/001', 'currency_id' => $this->company->currency_id]);
-    \App\Models\JournalEntryLine::create(['journal_entry_id' => $entry2->id, 'account_id' => $payableAccount->id, 'debit' => '150000', 'credit' => '0']);
-    \App\Models\JournalEntryLine::create(['journal_entry_id' => $entry2->id, 'account_id' => $expenseAccount->id, 'debit' => '0', 'credit' => '150000']);
+    \App\Models\JournalEntryLine::create(['company_id' => $this->company->id, 'journal_entry_id' => $entry2->id, 'account_id' => $payableAccount->id, 'debit' => '150000', 'credit' => '0']);
+    \App\Models\JournalEntryLine::create(['company_id' => $this->company->id, 'journal_entry_id' => $entry2->id, 'account_id' => $expenseAccount->id, 'debit' => '0', 'credit' => '150000']);
 
     // Action
     $service = app(PartnerLedgerService::class);
@@ -206,14 +206,14 @@ test('it only includes posted transactions', function () {
     // Posted transaction
     $entry1 = JournalEntry::factory()->for($this->company)->for($salesJournal)
         ->create(['entry_date' => '2025-03-10', 'state' => 'posted', 'reference' => 'INV/POSTED/001', 'currency_id' => $this->company->currency_id]);
-    \App\Models\JournalEntryLine::create(['journal_entry_id' => $entry1->id, 'account_id' => $receivableAccount->id, 'debit' => '500000', 'credit' => '0']);
-    \App\Models\JournalEntryLine::create(['journal_entry_id' => $entry1->id, 'account_id' => $otherAccount->id, 'debit' => '0', 'credit' => '500000']);
+    \App\Models\JournalEntryLine::create(['company_id' => $this->company->id, 'journal_entry_id' => $entry1->id, 'account_id' => $receivableAccount->id, 'debit' => '500000', 'credit' => '0']);
+    \App\Models\JournalEntryLine::create(['company_id' => $this->company->id, 'journal_entry_id' => $entry1->id, 'account_id' => $otherAccount->id, 'debit' => '0', 'credit' => '500000']);
 
     // Draft transaction (should be ignored)
     $entry2 = JournalEntry::factory()->for($this->company)->for($salesJournal)
         ->create(['entry_date' => '2025-03-15', 'state' => 'draft', 'reference' => 'INV/DRAFT/001', 'currency_id' => $this->company->currency_id]);
-    \App\Models\JournalEntryLine::create(['journal_entry_id' => $entry2->id, 'account_id' => $receivableAccount->id, 'debit' => '300000', 'credit' => '0']);
-    \App\Models\JournalEntryLine::create(['journal_entry_id' => $entry2->id, 'account_id' => $otherAccount->id, 'debit' => '0', 'credit' => '300000']);
+    \App\Models\JournalEntryLine::create(['company_id' => $this->company->id, 'journal_entry_id' => $entry2->id, 'account_id' => $receivableAccount->id, 'debit' => '300000', 'credit' => '0']);
+    \App\Models\JournalEntryLine::create(['company_id' => $this->company->id, 'journal_entry_id' => $entry2->id, 'account_id' => $otherAccount->id, 'debit' => '0', 'credit' => '300000']);
 
     // Action
     $service = app(PartnerLedgerService::class);
@@ -251,14 +251,14 @@ test('it correctly identifies vendor vs customer context and shows proper balanc
     // Vendor Bill: Dr. Expense 1,000,000 / Cr. Accounts Payable 1,000,000
     $billEntry = JournalEntry::factory()->for($this->company)->for($purchaseJournal)
         ->create(['entry_date' => '2025-03-05', 'state' => 'posted', 'reference' => 'BILL/001']);
-    \App\Models\JournalEntryLine::create(['journal_entry_id' => $billEntry->id, 'account_id' => $expenseAccount->id, 'debit' => '1000000', 'credit' => '0']);
-    \App\Models\JournalEntryLine::create(['journal_entry_id' => $billEntry->id, 'account_id' => $payableAccount->id, 'debit' => '0', 'credit' => '1000000']);
+    \App\Models\JournalEntryLine::create(['company_id' => $this->company->id, 'journal_entry_id' => $billEntry->id, 'account_id' => $expenseAccount->id, 'debit' => '1000000', 'credit' => '0']);
+    \App\Models\JournalEntryLine::create(['company_id' => $this->company->id, 'journal_entry_id' => $billEntry->id, 'account_id' => $payableAccount->id, 'debit' => '0', 'credit' => '1000000']);
 
     // Payment: Dr. Accounts Payable 600,000 / Cr. Bank 600,000
     $paymentEntry = JournalEntry::factory()->for($this->company)->for($bankJournal)
         ->create(['entry_date' => '2025-03-15', 'state' => 'posted', 'reference' => 'PAY/001']);
-    \App\Models\JournalEntryLine::create(['journal_entry_id' => $paymentEntry->id, 'account_id' => $payableAccount->id, 'debit' => '600000', 'credit' => '0']);
-    \App\Models\JournalEntryLine::create(['journal_entry_id' => $paymentEntry->id, 'account_id' => $bankAccount->id, 'debit' => '0', 'credit' => '600000']);
+    \App\Models\JournalEntryLine::create(['company_id' => $this->company->id, 'journal_entry_id' => $paymentEntry->id, 'account_id' => $payableAccount->id, 'debit' => '600000', 'credit' => '0']);
+    \App\Models\JournalEntryLine::create(['company_id' => $this->company->id, 'journal_entry_id' => $paymentEntry->id, 'account_id' => $bankAccount->id, 'debit' => '0', 'credit' => '600000']);
 
     // Action
     $service = app(PartnerLedgerService::class);
@@ -307,14 +307,14 @@ test('it correctly handles customer ledger with invoices and payments', function
     // Invoice: Dr. Accounts Receivable 800,000 / Cr. Revenue 800,000
     $invoiceEntry = JournalEntry::factory()->for($this->company)->for($salesJournal)
         ->create(['entry_date' => '2025-03-05', 'state' => 'posted', 'reference' => 'INV/001']);
-    \App\Models\JournalEntryLine::create(['journal_entry_id' => $invoiceEntry->id, 'account_id' => $receivableAccount->id, 'debit' => '800000', 'credit' => '0']);
-    \App\Models\JournalEntryLine::create(['journal_entry_id' => $invoiceEntry->id, 'account_id' => $revenueAccount->id, 'debit' => '0', 'credit' => '800000']);
+    \App\Models\JournalEntryLine::create(['company_id' => $this->company->id, 'journal_entry_id' => $invoiceEntry->id, 'account_id' => $receivableAccount->id, 'debit' => '800000', 'credit' => '0']);
+    \App\Models\JournalEntryLine::create(['company_id' => $this->company->id, 'journal_entry_id' => $invoiceEntry->id, 'account_id' => $revenueAccount->id, 'debit' => '0', 'credit' => '800000']);
 
     // Payment: Dr. Bank 500,000 / Cr. Accounts Receivable 500,000
     $paymentEntry = JournalEntry::factory()->for($this->company)->for($bankJournal)
         ->create(['entry_date' => '2025-03-15', 'state' => 'posted', 'reference' => 'PMT/001']);
-    \App\Models\JournalEntryLine::create(['journal_entry_id' => $paymentEntry->id, 'account_id' => $bankAccount->id, 'debit' => '500000', 'credit' => '0']);
-    \App\Models\JournalEntryLine::create(['journal_entry_id' => $paymentEntry->id, 'account_id' => $receivableAccount->id, 'debit' => '0', 'credit' => '500000']);
+    \App\Models\JournalEntryLine::create(['company_id' => $this->company->id, 'journal_entry_id' => $paymentEntry->id, 'account_id' => $bankAccount->id, 'debit' => '500000', 'credit' => '0']);
+    \App\Models\JournalEntryLine::create(['company_id' => $this->company->id, 'journal_entry_id' => $paymentEntry->id, 'account_id' => $receivableAccount->id, 'debit' => '0', 'credit' => '500000']);
 
     // Action
     $service = app(PartnerLedgerService::class);
@@ -363,14 +363,14 @@ test('it handles overpayment scenarios correctly for vendors', function () {
     // Vendor Bill: 500,000 IQD
     $billEntry = JournalEntry::factory()->for($this->company)->for($purchaseJournal)
         ->create(['entry_date' => '2025-03-05', 'state' => 'posted', 'reference' => 'BILL/001']);
-    \App\Models\JournalEntryLine::create(['journal_entry_id' => $billEntry->id, 'account_id' => $expenseAccount->id, 'debit' => '500000', 'credit' => '0']);
-    \App\Models\JournalEntryLine::create(['journal_entry_id' => $billEntry->id, 'account_id' => $payableAccount->id, 'debit' => '0', 'credit' => '500000']);
+    \App\Models\JournalEntryLine::create(['company_id' => $this->company->id, 'journal_entry_id' => $billEntry->id, 'account_id' => $expenseAccount->id, 'debit' => '500000', 'credit' => '0']);
+    \App\Models\JournalEntryLine::create(['company_id' => $this->company->id, 'journal_entry_id' => $billEntry->id, 'account_id' => $payableAccount->id, 'debit' => '0', 'credit' => '500000']);
 
     // Overpayment: 800,000 IQD (300,000 more than bill)
     $paymentEntry = JournalEntry::factory()->for($this->company)->for($bankJournal)
         ->create(['entry_date' => '2025-03-15', 'state' => 'posted', 'reference' => 'PAY/001']);
-    \App\Models\JournalEntryLine::create(['journal_entry_id' => $paymentEntry->id, 'account_id' => $payableAccount->id, 'debit' => '800000', 'credit' => '0']);
-    \App\Models\JournalEntryLine::create(['journal_entry_id' => $paymentEntry->id, 'account_id' => $bankAccount->id, 'debit' => '0', 'credit' => '800000']);
+    \App\Models\JournalEntryLine::create(['company_id' => $this->company->id, 'journal_entry_id' => $paymentEntry->id, 'account_id' => $payableAccount->id, 'debit' => '800000', 'credit' => '0']);
+    \App\Models\JournalEntryLine::create(['company_id' => $this->company->id, 'journal_entry_id' => $paymentEntry->id, 'account_id' => $bankAccount->id, 'debit' => '0', 'credit' => '800000']);
 
     // Action
     $service = app(PartnerLedgerService::class);

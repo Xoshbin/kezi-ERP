@@ -50,6 +50,7 @@ class BankStatementLine extends Model
     use HasFactory;
 
     protected $fillable = [
+        'company_id',
         'bank_statement_id',
         'date',
         'description',
