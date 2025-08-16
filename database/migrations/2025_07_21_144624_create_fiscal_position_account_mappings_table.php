@@ -12,6 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('fiscal_position_account_mappings', function (Blueprint $table) {
+            $table->foreignId('company_id')->constrained('companies');
             $table->foreignId('fiscal_position_id')->constrained('fiscal_positions')->onDelete('cascade');
             $table->foreignId('original_account_id')->constrained('accounts');
             $table->foreignId('mapped_account_id')->constrained('accounts');

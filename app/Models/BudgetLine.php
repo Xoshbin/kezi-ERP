@@ -65,6 +65,7 @@ class BudgetLine extends Model
      * @var array<int, string>
      */
     protected $fillable = [
+        'company_id',             // Foreign key to the parent company, ensuring data integrity [2, 3].
         'budget_id',
         'analytic_account_id',
         'account_id',
@@ -94,6 +95,18 @@ class BudgetLine extends Model
     | Budget lines connect to their parent budget and optionally to specific
     | general ledger or analytic accounts [3].
     */
+
+    /**
+     * Get the company that this rate belongs to.
+     *
+     * @return BelongsTo
+     */
+    public function company(): BelongsTo
+    {
+        return $this->belongsTo(Company::class);
+    }
+
+
     /**
      * Get the budget that owns this budget line.
      *

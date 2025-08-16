@@ -79,6 +79,7 @@ class VendorBillLine extends Model
      * @var array<int, string>
      */
     protected $fillable = [
+        'company_id',             // Foreign key to the parent company, ensuring data integrity [2, 3].
         'vendor_bill_id',          // Foreign key to the parent VendorBill, linking each line to its primary document [2].
         'product_id',              // Nullable foreign key to the Product model, identifying the item purchased [2].
         'description',             // A detailed textual description of the line item [2].
@@ -119,6 +120,16 @@ class VendorBillLine extends Model
      * @var array
      */
     protected $with = ['vendorBill'];
+
+    /**
+     * Get the company that this rate belongs to.
+     *
+     * @return BelongsTo
+     */
+    public function company(): BelongsTo
+    {
+        return $this->belongsTo(Company::class);
+    }
 
     /**
      * Get the Vendor Bill that owns the Vendor Bill Line.

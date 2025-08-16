@@ -70,6 +70,7 @@ class InvoiceLine extends Model
      * @var array<int, string>
      */
     protected $fillable = [
+        'company_id',          // Foreign key to the parent company [3, 4]
         'invoice_id',          // Foreign key to the parent invoice [3, 4]
         'product_id',          // Foreign key to the product (nullable) [3, 4]
         'description',         // Text description for the line item [3, 4]
@@ -96,6 +97,16 @@ class InvoiceLine extends Model
         'created_at' => 'datetime', // Eloquent automatically manages these, but explicit casting is robust [12, 13].
         'updated_at' => 'datetime',
     ];
+
+    /**
+     * Get the company that this rate belongs to.
+     *
+     * @return BelongsTo
+     */
+    public function company(): BelongsTo
+    {
+        return $this->belongsTo(Company::class);
+    }
 
     /**
      * Get the **Invoice** that owns the InvoiceLine.

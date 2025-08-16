@@ -58,6 +58,7 @@ class FiscalPositionTaxMapping extends Model
      * @var array<int, string>
      */
     protected $fillable = [
+        'company_id',             // Foreign key to the parent company, ensuring data integrity [2, 3].
         'fiscal_position_id',
         'original_tax_id',
         'mapped_tax_id',
@@ -82,6 +83,17 @@ class FiscalPositionTaxMapping extends Model
     | These relationships are fundamental for linking tax mapping rules
     | to their respective fiscal positions and the actual tax definitions.
     */
+
+    /**
+     * Get the company that this rate belongs to.
+     *
+     * @return BelongsTo
+     */
+    public function company(): BelongsTo
+    {
+        return $this->belongsTo(Company::class);
+    }
+
     /**
      * Get the fiscal position that this tax mapping belongs to.
      * This defines the overarching context or set of rules under which the

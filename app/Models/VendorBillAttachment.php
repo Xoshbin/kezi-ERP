@@ -38,6 +38,7 @@ class VendorBillAttachment extends Model
      * @var array<int, string>
      */
     protected $fillable = [
+        'company_id', // Foreign key to the parent company, ensuring data integrity [2, 3].
         'vendor_bill_id',
         'file_name',
         'file_path',
@@ -56,6 +57,17 @@ class VendorBillAttachment extends Model
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
     ];
+
+    /**
+     * Get the company that this rate belongs to.
+     *
+     * @return BelongsTo
+     */
+    public function company(): BelongsTo
+    {
+        return $this->belongsTo(Company::class);
+    }
+
 
     /**
      * Get the vendor bill that owns the attachment.

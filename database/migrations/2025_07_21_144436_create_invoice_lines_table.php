@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('invoice_lines', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('company_id')->constrained('companies');
             $table->foreignId('invoice_id')->constrained('invoices')->onDelete('cascade');
             $table->foreignId('product_id')->nullable()->constrained('products');
             $table->foreignId('tax_id')->nullable()->constrained('taxes');

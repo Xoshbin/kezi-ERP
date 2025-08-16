@@ -61,6 +61,7 @@ class FiscalPositionAccountMapping extends Model
      * @var array<int, string>
      */
     protected $fillable = [
+        'company_id',          // Foreign key to the parent company, ensuring data integrity [2, 3].
         'fiscal_position_id',
         'original_account_id',
         'mapped_account_id',
@@ -84,6 +85,17 @@ class FiscalPositionAccountMapping extends Model
     | These relationships are fundamental for linking account mapping rules
     | to their respective fiscal positions and the actual general ledger accounts.
     */
+
+    /**
+     * Get the company that this rate belongs to.
+     *
+     * @return BelongsTo
+     */
+    public function company(): BelongsTo
+    {
+        return $this->belongsTo(Company::class);
+    }
+
     /**
      * Get the fiscal position that this account mapping belongs to.
      * This defines the context under which the account re-mapping takes place [1, 2].
