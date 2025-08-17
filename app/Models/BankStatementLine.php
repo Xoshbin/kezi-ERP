@@ -8,6 +8,7 @@ use Brick\Money\Money;
 use Database\Factories\BankStatementLineFactory;
 use Illuminate\Database\Eloquent\Builder;
 use App\Casts\DocumentCurrencyMoneyCast;
+use App\Casts\OriginalCurrencyMoneyCast;
 use Illuminate\Database\Eloquent\Model;
 use App\Observers\BankStatementLineObserver;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -56,6 +57,8 @@ class BankStatementLine extends Model
         'description',
         'partner_id',
         'amount',
+        'foreign_currency_id',
+        'amount_in_foreign_currency',
         'is_reconciled',
         'payment_id'
     ];
@@ -63,6 +66,7 @@ class BankStatementLine extends Model
     protected $casts = [
         'date' => 'date',
         'amount' => DocumentCurrencyMoneyCast::class,
+        'amount_in_foreign_currency' => OriginalCurrencyMoneyCast::class,
         'is_reconciled' => 'boolean'
     ];
 
@@ -70,12 +74,14 @@ class BankStatementLine extends Model
      * The relationships that should always be loaded.
      * Eager-loading the `bankStatement.currency` relationship is critical because the `DocumentCurrencyMoneyCast`
      * for monetary fields on this model depends on the currency context provided by the parent bank statement.
+     * The `foreignCurrency` relationship is also eager-loaded to support the `OriginalCurrencyMoneyCast`
+     * for the `amount_in_foreign_currency` field when foreign currency transactions are present.
      * Without this, any retrieval of a `BankStatementLine` would fail when casting monetary values
      * due to the missing currency information, leading to a "currency_id on null" error.
      *
      * @var array
      */
-    protected $with = ['bankStatement.currency'];
+    protected $with = ['bankStatement.currency', 'foreignCurrency'];
     public function bankStatement()
     {
         return $this->belongsTo(BankStatement::class);
@@ -96,6 +102,16 @@ class BankStatementLine extends Model
     public function partner(): BelongsTo
     {
         return $this->belongsTo(Partner::class);
+    }
+
+    /**
+     * Get the foreign currency associated with the bank statement line.
+     * This is only populated when the original transaction was in a different currency
+     * than the bank statement's main currency.
+     */
+    public function foreignCurrency(): BelongsTo
+    {
+        return $this->belongsTo(Currency::class, 'foreign_currency_id');
     }
 
     /**

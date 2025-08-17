@@ -81,4 +81,11 @@ return [
     'statement_information' => 'زانیاری ڕاپۆرت',
     'statement_information_description' => 'زانیاری بنەڕەتی دەربارەی ڕاپۆرتی بانک',
     'statement_lines_description' => 'مامەڵە تاکەکەسەکان لە ڕاپۆرتی بانک',
+
+    // Foreign Currency
+    'foreign_currency' => 'دراوی بیانی',
+    'foreign_currency_help' => 'هەڵبژێرە ئەگەر ئەم مامەڵەیە لە سەرەتادا بە دراوێکی جیاواز بووبێت',
+    'amount_in_foreign_currency' => 'بڕ بە دراوی بیانی',
+    'amount_in_statement_currency' => 'بڕەکە کە کاریگەری لەسەر بالانسی حسابی بانک دەبێت',
+    'original_transaction_amount' => 'بڕی مامەڵەی ڕەسەن پێش گۆڕین',
 ];
