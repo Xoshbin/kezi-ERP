@@ -39,6 +39,22 @@ return [
     'attachments_description' => 'رفع المستندات الداعمة لفاتورة المورد هذه',
     'attachments_helper' => 'الصيغ المقبولة: PDF, DOC, DOCX, XLS, XLSX, JPG, PNG, GIF, TXT. حد أقصى 10 ميجابايت لكل ملف، حتى 10 ملفات.',
 
+    // Section Titles and Descriptions
+    'vendor_currency_info' => 'معلومات المورد والعملة',
+    'vendor_currency_info_description' => 'اختر المورد والعملة لهذه الفاتورة',
+    'bill_details' => 'تفاصيل الفاتورة',
+    'bill_details_description' => 'أدخل مرجع الفاتورة والتواريخ ومعلومات الحالة',
+    'line_items' => 'بنود الفاتورة',
+    'line_items_description' => 'أضف المنتجات والخدمات إلى فاتورة المورد هذه',
+    'company_currency_totals' => 'إجماليات عملة الشركة',
+
+    // Exchange Rate Fields
+    'current_exchange_rate' => 'سعر الصرف الحالي',
+    'exchange_rate_helper' => 'هذا هو سعر الصرف الحالي للعملة المحددة',
+    'exchange_rate_at_creation' => 'سعر الصرف عند الإنشاء',
+    'total_amount_company_currency' => 'المبلغ الإجمالي (عملة الشركة)',
+    'total_tax_company_currency' => 'إجمالي الضريبة (عملة الشركة)',
+
     // Actions
     'confirm' => 'تأكيد',
     'reset_to_draft' => 'إعادة إلى المسودة',

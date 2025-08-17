@@ -14,7 +14,8 @@ use Brick\Money\Money;
 beforeEach(function () {
     $this->user = User::factory()->create();
     $this->company = Company::factory()->create();
-    $this->user->update(['company_id' => $this->company->id]);
+    // Use tenancy setup instead of company_id
+    $this->user->companies()->attach($this->company);
 
     $this->currency = Currency::factory()->create(['code' => 'USD']);
     $this->customer = Partner::factory()->create([

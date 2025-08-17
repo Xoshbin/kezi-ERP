@@ -12,7 +12,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('payment_document_links', function (Blueprint $table) {
-            $table->id(); // A simple PK is easier than a complex composite key with nullables
+            $table->id();
+            $table->foreignId('company_id')->constrained('companies');
             $table->foreignId('payment_id')->constrained('payments')->onDelete('cascade');
             $table->foreignId('invoice_id')->nullable()->constrained('invoices')->onDelete('cascade');
             $table->foreignId('vendor_bill_id')->nullable()->constrained('vendor_bills')->onDelete('cascade');

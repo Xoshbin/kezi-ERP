@@ -2,6 +2,9 @@
 
 namespace Database\Factories;
 
+use App\Models\JournalEntry;
+use App\Models\VendorBill;
+use App\Models\VendorBillLine;
 use Brick\Money\Money;
 use App\Models\Company;
 use App\Models\Partner;
@@ -9,7 +12,7 @@ use App\Models\Currency;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\VendorBill>
+ * @extends Factory<VendorBill>
  */
 class VendorBillFactory extends Factory
 {
@@ -54,7 +57,7 @@ class VendorBillFactory extends Factory
             return [
                 'status' => 'posted',
                 'posted_at' => now(),
-                'journal_entry_id' => \App\Models\JournalEntry::factory()->create([
+                'journal_entry_id' => JournalEntry::factory()->create([
                     'company_id' => $attributes['company_id'],
                 ])->id,
             ];
@@ -63,8 +66,8 @@ class VendorBillFactory extends Factory
 
     public function withLines(int $count = 1): self
     {
-        return $this->afterCreating(function (\App\Models\VendorBill $vendorBill) use ($count) {
-            \App\Models\VendorBillLine::factory()->count($count)->create([
+        return $this->afterCreating(function (VendorBill $vendorBill) use ($count) {
+            VendorBillLine::factory()->count($count)->create([
                 'vendor_bill_id' => $vendorBill->id,
             ]);
         });

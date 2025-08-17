@@ -38,8 +38,11 @@ return [
     // Notifications
     'entry_posted_successfully' => 'تم ترحيل قيد اليومية',
     'error_posting_entry' => 'خطأ في ترحيل القيد',
+    'duplicate_reference_error' => 'مرجع مكرر',
+    'creation_error' => 'خطأ في الإنشاء',
 
     // Validation
     'period_locked' => 'الفترة المحاسبية مقفلة ولا يمكن تعديلها.',
     'debits_must_equal_credits' => 'يجب أن يساوي إجمالي المدين إجمالي الدائن.',
+    'reference_already_exists' => 'يوجد بالفعل قيد يومية بالمرجع ":reference" في هذه اليومية.',
 ];

@@ -2,6 +2,8 @@
 
 namespace App\Actions\Purchases;
 
+use Carbon\Carbon;
+use App\Models\VendorBillLine;
 use App\DataTransferObjects\Purchases\UpdateVendorBillDTO;
 use App\Enums\Purchases\VendorBillStatus;
 use App\Exceptions\UpdateNotAllowedException;
@@ -26,7 +28,7 @@ class UpdateVendorBillAction
             throw new UpdateNotAllowedException('Only draft vendor bills can be updated.');
         }
 
-        $this->lockDateService->enforce($vendorBill->company, \Carbon\Carbon::parse($updateVendorBillDTO->bill_date));
+        $this->lockDateService->enforce($vendorBill->company, Carbon::parse($updateVendorBillDTO->bill_date));
 
 
         return DB::transaction(function () use ($updateVendorBillDTO) {
@@ -57,7 +59,8 @@ class UpdateVendorBillAction
                     }
                 }
 
-                $lines[] = new \App\Models\VendorBillLine([
+                $lines[] = new VendorBillLine([
+                    'company_id' => $vendorBill->company_id,
                     'product_id' => $line->product_id,
                     'description' => $line->description,
                     'quantity' => $line->quantity,

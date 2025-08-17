@@ -3,6 +3,7 @@
 namespace Tests\Feature\Casts;
 
 use App\Models\Asset;
+use App\Models\Company;
 use App\Models\Currency;
 use App\Models\DepreciationEntry;
 use App\Models\Invoice;
@@ -43,15 +44,54 @@ it('correctly casts money fields on various related models', function (
         'code' => $currencyCode,
         'decimal_places' => $currencyCode === 'IQD' ? 3 : 2,
     ]);
-    $parent = $parentModelClass::factory()->for($currency, 'currency')->create();
+
+    // For models that use BaseCurrencyMoneyCast, ensure the company has the same base currency as the test expects
+    if ($parentModelClass === JournalEntry::class) {
+        $company = Company::factory()->for($currency, 'currency')->create();
+        $parent = $parentModelClass::factory()->for($company, 'company')->for($currency, 'currency')->create();
+    } elseif ($parentModelClass === Asset::class) {
+        $company = Company::factory()->for($currency, 'currency')->create();
+        $parent = $parentModelClass::factory()->for($company, 'company')->create();
+    } else {
+        $parent = $parentModelClass::factory()->for($currency, 'currency')->create();
+    }
 
     // Act: Create the child model (e.g., InvoiceLine) linked to the parent.
-    // The MoneyCast is triggered when we set the money field.
-    $model = $modelClass::factory()
-        ->for($parent, $relationship)
-        ->create([
-            $moneyField => $inputValue,
-        ]);
+    // Create the model first without the money field to avoid casting during creation
+    $factory = $modelClass::factory()->for($parent, $relationship);
+
+    // Special case: DepreciationEntry should be created as Draft to allow updates
+    if ($modelClass === DepreciationEntry::class) {
+        $factory = $factory->state(['status' => \App\Enums\Assets\DepreciationEntryStatus::Draft]);
+    }
+
+    $model = $factory->create();
+
+    // Eager-load the required relationships for the casting system
+    if ($modelClass === JournalEntryLine::class) {
+        $model->load('journalEntry.company.currency');
+    } elseif ($modelClass === DepreciationEntry::class) {
+        $model->load('asset.company.currency');
+    } elseif ($modelClass === InvoiceLine::class) {
+        $model->load('invoice.currency');
+    } elseif ($modelClass === VendorBillLine::class) {
+        $model->load('vendorBill.currency');
+    }
+
+    // Debug: Check if relationships are loaded
+    if ($modelClass === InvoiceLine::class) {
+        expect($model->relationLoaded('invoice'))->toBeTrue();
+        expect($model->invoice->relationLoaded('currency'))->toBeTrue();
+    }
+    if ($modelClass === JournalEntryLine::class) {
+        expect($model->relationLoaded('journalEntry'))->toBeTrue();
+        expect($model->journalEntry->relationLoaded('company'))->toBeTrue();
+        expect($model->journalEntry->company->relationLoaded('currency'))->toBeTrue();
+    }
+
+    // Now set the money field - the cast will handle currency resolution
+    $model->{$moneyField} = $inputValue;
+    $model->save();
 
     // Assert: Check the raw integer value stored in the database.
     $this->assertDatabaseHas($model->getTable(), [

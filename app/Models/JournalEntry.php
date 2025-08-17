@@ -2,7 +2,11 @@
 
 namespace App\Models;
 
-use App\Casts\MoneyCast;
+use Illuminate\Support\Carbon;
+use Illuminate\Database\Eloquent\Collection;
+use Database\Factories\JournalEntryFactory;
+use Illuminate\Database\Eloquent\Builder;
+use App\Casts\BaseCurrencyMoneyCast;
 use App\Enums\Accounting\JournalEntryState;
 use App\Observers\AuditLogObserver;
 use App\Observers\JournalEntryObserver;
@@ -29,49 +33,48 @@ use Brick\Money\Money;
  * @property int $journal_id
  * @property int $currency_id
  * @property int $created_by_user_id
- * @property \Illuminate\Support\Carbon $entry_date
+ * @property Carbon $entry_date
  * @property string $reference
  * @property string|null $description
- * @property \Brick\Money\Money $total_debit
- * @property \Brick\Money\Money $total_credit
+ * @property Money $total_debit
+ * @property Money $total_credit
  * @property bool $is_posted
  * @property string|null $hash
  * @property string|null $previous_hash
  * @property string|null $source_type
  * @property int|null $source_id
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \App\Models\Company $company
- * @property-read \App\Models\User $createdBy
- * @property-read \App\Models\Currency $currency
- * @property-read \App\Models\Journal $journal
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\JournalEntryLine> $lines
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property-read Company $company
+ * @property-read User $createdBy
+ * @property-read Currency $currency
+ * @property-read Journal $journal
+ * @property-read Collection<int, JournalEntryLine> $lines
  * @property-read int|null $lines_count
  * @property-read Model|\Eloquent|null $source
- * @method static \Database\Factories\JournalEntryFactory factory($count = null, $state = [])
- * @method static \Illuminate\Database\Eloquent\Builder<static>|JournalEntry newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|JournalEntry newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|JournalEntry query()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|JournalEntry whereCompanyId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|JournalEntry whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|JournalEntry whereCreatedByUserId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|JournalEntry whereCurrencyId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|JournalEntry whereDescription($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|JournalEntry whereEntryDate($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|JournalEntry whereHash($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|JournalEntry whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|JournalEntry whereIsPosted($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|JournalEntry whereJournalId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|JournalEntry wherePreviousHash($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|JournalEntry whereReference($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|JournalEntry whereSourceId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|JournalEntry whereSourceType($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|JournalEntry whereTotalCredit($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|JournalEntry whereTotalDebit($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|JournalEntry whereUpdatedAt($value)
+ * @method static JournalEntryFactory factory($count = null, $state = [])
+ * @method static Builder<static>|JournalEntry newModelQuery()
+ * @method static Builder<static>|JournalEntry newQuery()
+ * @method static Builder<static>|JournalEntry query()
+ * @method static Builder<static>|JournalEntry whereCompanyId($value)
+ * @method static Builder<static>|JournalEntry whereCreatedAt($value)
+ * @method static Builder<static>|JournalEntry whereCreatedByUserId($value)
+ * @method static Builder<static>|JournalEntry whereCurrencyId($value)
+ * @method static Builder<static>|JournalEntry whereDescription($value)
+ * @method static Builder<static>|JournalEntry whereEntryDate($value)
+ * @method static Builder<static>|JournalEntry whereHash($value)
+ * @method static Builder<static>|JournalEntry whereId($value)
+ * @method static Builder<static>|JournalEntry whereIsPosted($value)
+ * @method static Builder<static>|JournalEntry whereJournalId($value)
+ * @method static Builder<static>|JournalEntry wherePreviousHash($value)
+ * @method static Builder<static>|JournalEntry whereReference($value)
+ * @method static Builder<static>|JournalEntry whereSourceId($value)
+ * @method static Builder<static>|JournalEntry whereSourceType($value)
+ * @method static Builder<static>|JournalEntry whereTotalCredit($value)
+ * @method static Builder<static>|JournalEntry whereTotalDebit($value)
+ * @method static Builder<static>|JournalEntry whereUpdatedAt($value)
  * @mixin \Eloquent
  */
-
 #[ObservedBy([JournalEntryObserver::class])]
 class JournalEntry extends Model
 {
@@ -127,11 +130,22 @@ class JournalEntry extends Model
      */
     protected $casts = [
         'entry_date' => 'date',
-        'total_debit' => MoneyCast::class, // Represents currency, typically 2 decimal places for financial accuracy [3, 17].
-        'total_credit' => MoneyCast::class, // Represents currency, typically 2 decimal places [3, 17].
+        'total_debit' => BaseCurrencyMoneyCast::class, // Company base currency amounts
+        'total_credit' => BaseCurrencyMoneyCast::class, // Company base currency amounts
         'is_posted' => 'boolean', // Crucial flag for immutability [3].
         'state' => JournalEntryState::class, // Journal entry state for reversal tracking
     ];
+
+    /**
+     * The relationships that should always be loaded.
+     * Eager-loading the `company.currency` relationship is critical because the `BaseCurrencyMoneyCast`
+     * for monetary fields on this model depends on the currency context provided by the company.
+     * Without this, any retrieval of a `JournalEntry` would fail when casting monetary values
+     * due to the missing currency information, leading to a "currency_id on null" error.
+     *
+     * @var array
+     */
+    protected $with = ['company.currency'];
 
     /**
      * The "booted" method of the model.
@@ -305,13 +319,15 @@ class JournalEntry extends Model
     public function calculateTotalsFromLines(): void
     {
         // Ensure the lines relationship is loaded to avoid extra queries
-        $this->loadMissing('lines', 'currency');
+        $this->loadMissing('lines', 'company.currency');
 
-        $currencyCode = $this->currency->code;
-        $totalDebit = Money::of(0, $currencyCode);
-        $totalCredit = Money::of(0, $currencyCode);
+        // CORRECTED: The currency for totals is ALWAYS the company's base currency
+        $companyCurrencyCode = $this->company->currency->code;
+        $totalDebit = Money::zero($companyCurrencyCode);
+        $totalCredit = Money::zero($companyCurrencyCode);
 
         foreach ($this->lines as $line) {
+            // $line->debit and $line->credit are already in the base currency
             $totalDebit = $totalDebit->plus($line->debit);
             $totalCredit = $totalCredit->plus($line->credit);
         }

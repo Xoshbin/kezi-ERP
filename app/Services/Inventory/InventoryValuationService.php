@@ -2,6 +2,9 @@
 
 namespace App\Services\Inventory;
 
+use App\Models\Company;
+use Exception;
+use Brick\Math\RoundingMode;
 use Carbon\Carbon;
 use Brick\Money\Money;
 use App\Models\Product;
@@ -27,7 +30,7 @@ class InventoryValuationService
 
     public function processIncomingStock(Product $product, float $quantity, Money $costPerUnit, Carbon $date, $sourceDocument): void
     {
-        $this->lockDateService->enforce(\App\Models\Company::find($product->company_id), \Carbon\Carbon::parse($date));
+        $this->lockDateService->enforce(Company::find($product->company_id), Carbon::parse($date));
 
         // Calculate total cost for this incoming stock
         $totalCost = $costPerUnit->multipliedBy($quantity);
@@ -50,7 +53,7 @@ class InventoryValuationService
 
     public function processOutgoingStock(Product $product, float $quantity, Carbon $date, $sourceDocument): void
     {
-        $this->lockDateService->enforce(\App\Models\Company::find($product->company_id), \Carbon\Carbon::parse($date));
+        $this->lockDateService->enforce(Company::find($product->company_id), Carbon::parse($date));
 
         // Calculate COGS based on valuation method
         $cogsAmount = $this->calculateCOGS($product, $quantity);
@@ -72,7 +75,7 @@ class InventoryValuationService
     public function adjustInventoryValue(AdjustInventoryDTO $dto): void
     {
         $product = Product::findOrFail($dto->product_id);
-        $this->lockDateService->enforce(\App\Models\Company::find($product->company_id), \Carbon\Carbon::parse($dto->adjustment_date));
+        $this->lockDateService->enforce(Company::find($product->company_id), Carbon::parse($dto->adjustment_date));
 
         // This is a simplified example. A real implementation would need to calculate the value of the adjustment.
         // For now, we will assume the value is the quantity * the product's average cost.
@@ -180,16 +183,16 @@ class InventoryValuationService
 
         // Validate required accounts
         if (!$product->default_cogs_account_id) {
-            throw new \Exception("Product {$product->id} does not have a COGS account configured");
+            throw new Exception("Product {$product->id} does not have a COGS account configured");
         }
         if (!$product->default_inventory_account_id) {
-            throw new \Exception("Product {$product->id} does not have an inventory account configured");
+            throw new Exception("Product {$product->id} does not have an inventory account configured");
         }
 
         // Use the sales journal for COGS entries (or create a dedicated inventory journal if needed)
         $journalId = $company->default_sales_journal_id;
         if (!$journalId) {
-            throw new \Exception("Company {$company->id} does not have a default sales journal configured");
+            throw new Exception("Company {$company->id} does not have a default sales journal configured");
         }
 
         // Generate reference - include product ID to make it unique per product
@@ -258,7 +261,7 @@ class InventoryValuationService
             ->first();
 
         if (!$stockMove) {
-            throw new \Exception("No outgoing stock move found for product {$product->id} and source document");
+            throw new Exception("No outgoing stock move found for product {$product->id} and source document");
         }
 
         return StockMoveValuation::create([
@@ -292,7 +295,7 @@ class InventoryValuationService
         $totalValue = $currentValue->plus($incomingValue);
 
         $newAverageCost = $totalQuantity > 0
-            ? $totalValue->dividedBy($totalQuantity, \Brick\Math\RoundingMode::HALF_UP)
+            ? $totalValue->dividedBy($totalQuantity, RoundingMode::HALF_UP)
             : Money::of(0, $currencyCode);
 
         // Update product's average cost and quantity
@@ -339,16 +342,16 @@ class InventoryValuationService
 
         // Validate required accounts
         if (!$product->default_inventory_account_id) {
-            throw new \Exception("Product {$product->id} does not have an inventory account configured");
+            throw new Exception("Product {$product->id} does not have an inventory account configured");
         }
         if (!$product->default_stock_input_account_id) {
-            throw new \Exception("Product {$product->id} does not have a stock input account configured");
+            throw new Exception("Product {$product->id} does not have a stock input account configured");
         }
 
         // Use the purchase journal for incoming stock entries
         $journalId = $company->default_purchase_journal_id;
         if (!$journalId) {
-            throw new \Exception("Company {$company->id} does not have a default purchase journal configured");
+            throw new Exception("Company {$company->id} does not have a default purchase journal configured");
         }
 
         // Generate reference
@@ -407,7 +410,7 @@ class InventoryValuationService
             ->first();
 
         if (!$stockMove) {
-            throw new \Exception("No incoming stock move found for product {$product->id} and source document");
+            throw new Exception("No incoming stock move found for product {$product->id} and source document");
         }
 
         return StockMoveValuation::create([

@@ -2,9 +2,10 @@
 
 namespace App\Actions\Sales;
 
+use Carbon\Carbon;
+use App\Models\InvoiceLine;
 use App\DataTransferObjects\Sales\UpdateInvoiceDTO;
 use App\Exceptions\UpdateNotAllowedException;
-use App\Models\Currency;
 use App\Models\Invoice;
 use App\Models\Tax;
 use App\Enums\Sales\InvoiceStatus;
@@ -27,7 +28,7 @@ class UpdateInvoiceAction
             throw new UpdateNotAllowedException('Cannot modify a non-draft invoice.');
         }
 
-        $this->lockDateService->enforce($invoice->company, \Carbon\Carbon::parse($dto->invoice_date));
+        $this->lockDateService->enforce($invoice->company, Carbon::parse($dto->invoice_date));
 
         return DB::transaction(function () use ($dto, $invoice) {
             $invoice->update([
@@ -54,7 +55,8 @@ class UpdateInvoiceAction
                     }
                 }
 
-                $lines[] = new \App\Models\InvoiceLine([
+                $lines[] = new InvoiceLine([
+                    'company_id' => $invoice->company_id,
                     'product_id' => $lineDto->product_id,
                     'description' => $lineDto->description,
                     'quantity' => $lineDto->quantity,

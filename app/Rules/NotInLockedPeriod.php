@@ -2,11 +2,14 @@
 
 namespace App\Rules;
 
+use InvalidArgumentException;
+use App\Exceptions\PeriodIsLockedException;
 use App\Models\Company;
 use App\Services\Accounting\LockDateService;
 use Closure;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Support\Facades\Auth;
+use Filament\Facades\Filament;
 use Carbon\Carbon;
 
 class NotInLockedPeriod implements ValidationRule
@@ -18,11 +21,18 @@ class NotInLockedPeriod implements ValidationRule
         if ($company) {
             $this->company = $company;
         } else {
-            $user = Auth::user();
-            if (!$user || !$user->company) {
-                throw new \InvalidArgumentException('Company is required for lock date validation');
+            // Try to get company from Filament tenant context first
+            $tenant = Filament::getTenant();
+            if ($tenant instanceof Company) {
+                $this->company = $tenant;
+            } else {
+                // Fallback to user's company for non-Filament contexts
+                $user = Auth::user();
+                if (!$user || !$user->company) {
+                    throw new InvalidArgumentException('Company is required for lock date validation');
+                }
+                $this->company = $user->company;
             }
-            $this->company = $user->company;
         }
     }
 
@@ -35,7 +45,7 @@ class NotInLockedPeriod implements ValidationRule
         try {
             $date = Carbon::parse($value);
             app(LockDateService::class)->enforce($this->company, $date);
-        } catch (\App\Exceptions\PeriodIsLockedException $e) {
+        } catch (PeriodIsLockedException $e) {
             $fail($e->getMessage());
         }
     }

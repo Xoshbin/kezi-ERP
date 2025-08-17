@@ -2,6 +2,7 @@
 
 namespace App\Actions\Accounting;
 
+use App\Models\User;
 use App\DataTransferObjects\Accounting\CreateJournalEntryDTO;
 use App\DataTransferObjects\Accounting\CreateJournalEntryLineDTO;
 use App\Enums\Accounting\JournalEntryState;
@@ -17,7 +18,7 @@ class ReverseJournalEntryAction
         private readonly CreateJournalEntryAction $createJournalEntryAction
     ) {}
 
-    public function execute(JournalEntry $journalEntry, string $reason, \App\Models\User $user): JournalEntry
+    public function execute(JournalEntry $journalEntry, string $reason, User $user): JournalEntry
     {
         return DB::transaction(function () use ($journalEntry, $reason, $user) {
             // Guard Clause: Check if the journal entry is already reversed (idempotent)

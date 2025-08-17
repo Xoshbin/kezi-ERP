@@ -6,6 +6,7 @@ use App\Models\Company;
 use App\Enums\Sales\InvoiceStatus;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
+use Filament\Facades\Filament;
 
 Route::get('/', function () {
     return view('welcome');
@@ -15,8 +16,9 @@ Route::get('/', function () {
 Route::middleware(['auth'])->group(function () {
     // Invoice PDF routes
     Route::get('/invoices/{invoice}/pdf', function (Invoice $invoice, GenerateInvoicePdfAction $action) {
-        // Check if user can view this invoice
-        if ($invoice->company_id !== Auth::user()->company_id) {
+        // Check if user can view this invoice - user must have access to the company
+        $user = Auth::user();
+        if (!$user->companies()->where('companies.id', $invoice->company_id)->exists()) {
             abort(403, 'Unauthorized access to invoice.');
         }
 
@@ -25,8 +27,9 @@ Route::middleware(['auth'])->group(function () {
     })->name('invoices.pdf');
 
     Route::get('/invoices/{invoice}/pdf/download', function (Invoice $invoice, GenerateInvoicePdfAction $action) {
-        // Check if user can view this invoice
-        if ($invoice->company_id !== Auth::user()->company_id) {
+        // Check if user can view this invoice - user must have access to the company
+        $user = Auth::user();
+        if (!$user->companies()->where('companies.id', $invoice->company_id)->exists()) {
             abort(403, 'Unauthorized access to invoice.');
         }
 
@@ -36,8 +39,9 @@ Route::middleware(['auth'])->group(function () {
 
     // PDF Preview route for settings
     Route::get('/pdf/preview/{company}', function (Company $company) {
-        // Check if user can access this company
-        if ($company->id !== Auth::user()->company_id) {
+        // Check if user can access this company - user must have access to the company
+        $user = Auth::user();
+        if (!$user->companies()->where('companies.id', $company->id)->exists()) {
             abort(403, 'Unauthorized access to company settings.');
         }
 

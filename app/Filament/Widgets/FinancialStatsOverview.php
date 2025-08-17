@@ -2,6 +2,7 @@
 
 namespace App\Filament\Widgets;
 
+use Exception;
 use App\Services\Reports\ProfitAndLossStatementService;
 use App\Services\Reports\BalanceSheetService;
 use App\Services\Reports\AgedReceivableService;
@@ -18,12 +19,7 @@ class FinancialStatsOverview extends BaseWidget
 {
     protected function getStats(): array
     {
-        $user = Filament::auth()->user();
-        if (!$user || !$user->company_id) {
-            return [];
-        }
-
-        $company = Company::find($user->company_id);
+        $company = Filament::getTenant();
         if (!$company) {
             return [];
         }
@@ -65,7 +61,7 @@ class FinancialStatsOverview extends BaseWidget
             $grossProfitMargin = $totalRevenue->isZero() ? 0 :
                 ($totalRevenue->minus($plDto->totalExpenses))->getAmount()->toFloat() / $totalRevenue->getAmount()->toFloat() * 100;
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             // Fallback to zero values if services fail
             $currency = $company->currency->code;
             $zero = Money::zero($currency);
@@ -147,7 +143,7 @@ class FinancialStatsOverview extends BaseWidget
             try {
                 $plDto = $plService->generate($company, $startDate, $endDate);
                 $data[] = $plDto->netIncome->getAmount()->toFloat();
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
                 $data[] = 0;
             }
         }

@@ -2,12 +2,13 @@
 
 namespace Database\Factories;
 
+use App\Models\BankStatementLine;
 use App\Models\BankStatement;
 use Brick\Money\Money;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\BankStatementLine>
+ * @extends Factory<BankStatementLine>
  */
 class BankStatementLineFactory extends Factory
 {
@@ -18,8 +19,13 @@ class BankStatementLineFactory extends Factory
      */
     public function definition(): array
     {
+        $bankStatement = BankStatement::factory();
+
         return [
-            'bank_statement_id' => BankStatement::factory(),
+            'bank_statement_id' => $bankStatement,
+            'company_id' => function (array $attributes) {
+                return BankStatement::find($attributes['bank_statement_id'])->company_id;
+            },
             'date' => $this->faker->date(),
             'description' => $this->faker->sentence(),
             'amount' => Money::of(150, 'USD'), // Default to a USD money object

@@ -2,6 +2,9 @@
 
 namespace Database\Factories;
 
+use App\Models\JournalEntry;
+use App\Models\AdjustmentDocument;
+use App\Models\AdjustmentDocumentLine;
 use Brick\Money\Money;
 use App\Models\Company;
 use App\Models\Currency;
@@ -10,7 +13,7 @@ use App\Enums\Adjustments\AdjustmentDocumentStatus;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\AdjustmentDocument>
+ * @extends Factory<AdjustmentDocument>
  */
 class AdjustmentDocumentFactory extends Factory
 {
@@ -31,13 +34,19 @@ class AdjustmentDocumentFactory extends Factory
             'type' => $this->faker->randomElement(AdjustmentDocumentType::cases())->value,
             'date' => $this->faker->date(),
             'reference_number' => $this->faker->unique()->bothify('ADJ-#####'),
-            'total_amount' => function (array $attributes) {
+            'subtotal' => function (array $attributes) {
                 $currency = Currency::find($attributes['currency_id']);
-                return Money::of($this->faker->randomFloat(2, 100, 10000), $currency->code);
+                return Money::of($this->faker->randomFloat(2, 100, 8000), $currency->code);
             },
             'total_tax' => function (array $attributes) {
                 $currency = Currency::find($attributes['currency_id']);
                 return Money::of($this->faker->randomFloat(2, 0, 2000), $currency->code);
+            },
+            'total_amount' => function (array $attributes) {
+                $currency = Currency::find($attributes['currency_id']);
+                $subtotal = $attributes['subtotal'] ?? Money::of(1000, $currency->code);
+                $totalTax = $attributes['total_tax'] ?? Money::of(100, $currency->code);
+                return $subtotal->plus($totalTax);
             },
             'reason' => $this->faker->sentence(),
             'status' => $this->faker->randomElement([AdjustmentDocumentStatus::Draft, AdjustmentDocumentStatus::Posted]),
@@ -60,7 +69,7 @@ class AdjustmentDocumentFactory extends Factory
             return [
                 'status' => AdjustmentDocumentStatus::Posted,
                 'posted_at' => now(),
-                'journal_entry_id' => \App\Models\JournalEntry::factory()->create([
+                'journal_entry_id' => JournalEntry::factory()->create([
                     'company_id' => $attributes['company_id'],
                 ])->id,
             ];
@@ -69,8 +78,8 @@ class AdjustmentDocumentFactory extends Factory
 
     public function withLines(int $count = 1): self
     {
-        return $this->afterCreating(function (\App\Models\AdjustmentDocument $adjustmentDocument) use ($count) {
-            \App\Models\AdjustmentDocumentLine::factory()->count($count)->create([
+        return $this->afterCreating(function (AdjustmentDocument $adjustmentDocument) use ($count) {
+            AdjustmentDocumentLine::factory()->count($count)->create([
                 'adjustment_document_id' => $adjustmentDocument->id,
             ]);
 

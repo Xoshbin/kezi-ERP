@@ -34,6 +34,7 @@ class CreateVendorBillLineAction
 
         // 3. Create the model with pre-calculated values.
         return VendorBillLine::create([
+            'company_id' => $vendorBill->company_id,
             'vendor_bill_id' => $vendorBill->id,
             'product_id' => $dto->product_id,
             'description' => $dto->description,

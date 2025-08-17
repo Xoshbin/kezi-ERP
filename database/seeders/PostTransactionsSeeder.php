@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use Exception;
 use App\Models\Invoice;
 use App\Models\Payment;
 use App\Models\User;
@@ -44,7 +45,7 @@ class PostTransactionsSeeder extends Seeder
             try {
                 $invoiceService->confirm($invoice, $user);
                 $this->command->info("Posted invoice: {$invoice->invoice_number}");
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
                 $this->command->error("Failed to post invoice {$invoice->invoice_number}: {$e->getMessage()}");
             }
         }
@@ -58,7 +59,7 @@ class PostTransactionsSeeder extends Seeder
             try {
                 $vendorBillService->post($vendorBill, $user);
                 $this->command->info("Posted vendor bill: {$vendorBill->bill_reference}");
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
                 $this->command->error("Failed to post vendor bill {$vendorBill->bill_reference}: {$e->getMessage()}");
             }
         }
@@ -74,7 +75,7 @@ class PostTransactionsSeeder extends Seeder
             try {
                 $paymentService->confirm($payment, $user);
                 $this->command->info("Confirmed payment: {$payment->reference}");
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
                 $this->command->error("Failed to confirm payment {$payment->reference}: {$e->getMessage()}");
             }
         }

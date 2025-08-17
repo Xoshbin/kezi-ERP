@@ -16,6 +16,7 @@ use Tests\Traits\WithUnlockedPeriod;
 use Tests\Traits\WithConfiguredCompany;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use App\Actions\Adjustments\CreateAdjustmentDocumentAction;
+use App\Actions\Adjustments\CreateAdjustmentDocumentLineAction;
 use App\DataTransferObjects\Adjustments\CreateAdjustmentDocumentDTO;
 use App\DataTransferObjects\Adjustments\CreateAdjustmentDocumentLineDTO;
 
@@ -33,21 +34,25 @@ test('adjustment document totals are calculated correctly from lines', function 
     $account = Account::factory()->for($this->company)->income()->create();
 
     // Act
-    $adjustmentDoc->lines()->create([
-        'description' => 'Line 1',
-        'quantity' => 2,
-        'unit_price' => Money::of(100, $currencyCode),
-        'tax_id' => $tax->id,
-        'account_id' => $account->id,
-    ]);
+    $createLineAction = app(CreateAdjustmentDocumentLineAction::class);
 
-    $adjustmentDoc->lines()->create([
-        'description' => 'Line 2',
-        'quantity' => 1,
-        'unit_price' => Money::of(50, $currencyCode),
-        'tax_id' => null,
-        'account_id' => $account->id,
-    ]);
+    $createLineAction->execute($adjustmentDoc, new CreateAdjustmentDocumentLineDTO(
+        description: 'Line 1',
+        quantity: 2,
+        unit_price: Money::of(100, $currencyCode),
+        account_id: $account->id,
+        tax_id: $tax->id,
+        product_id: null
+    ));
+
+    $createLineAction->execute($adjustmentDoc, new CreateAdjustmentDocumentLineDTO(
+        description: 'Line 2',
+        quantity: 1,
+        unit_price: Money::of(50, $currencyCode),
+        account_id: $account->id,
+        tax_id: null,
+        product_id: null
+    ));
 
     // The model's observer should have calculated and saved the totals.
     $adjustmentDoc->refresh();

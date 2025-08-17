@@ -2,6 +2,11 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Collection;
+use Database\Factories\PartnerFactory;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use App\Observers\PartnerObserver;
 use App\Enums\Partners\PartnerType;
 use App\Enums\Sales\InvoiceStatus;
@@ -32,50 +37,50 @@ use Illuminate\Support\Carbon;
  * @property string|null $country
  * @property string|null $tax_id
  * @property bool $is_active
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property \Illuminate\Support\Carbon|null $deleted_at
- * @property-read \App\Models\Company|null $company
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Invoice> $invoices
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property Carbon|null $deleted_at
+ * @property-read Company|null $company
+ * @property-read Collection<int, Invoice> $invoices
  * @property-read int|null $invoices_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\JournalEntryLine> $journalEntryLines
+ * @property-read Collection<int, JournalEntryLine> $journalEntryLines
  * @property-read int|null $journal_entry_lines_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Payment> $payments
+ * @property-read Collection<int, Payment> $payments
  * @property-read int|null $payments_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\VendorBill> $vendorBills
+ * @property-read Collection<int, VendorBill> $vendorBills
  * @property-read int|null $vendor_bills_count
- * @method static \Database\Factories\PartnerFactory factory($count = null, $state = [])
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Partner newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Partner newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Partner onlyTrashed()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Partner query()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Partner whereAddressLine1($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Partner whereAddressLine2($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Partner whereCity($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Partner whereCompanyId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Partner whereContactPerson($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Partner whereCountry($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Partner whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Partner whereDeletedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Partner whereEmail($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Partner whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Partner whereIsActive($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Partner whereName($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Partner wherePhone($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Partner whereState($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Partner whereTaxId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Partner whereType($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Partner whereUpdatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Partner whereZipCode($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Partner withTrashed(bool $withTrashed = true)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Partner withoutTrashed()
+ * @method static PartnerFactory factory($count = null, $state = [])
+ * @method static Builder<static>|Partner newModelQuery()
+ * @method static Builder<static>|Partner newQuery()
+ * @method static Builder<static>|Partner onlyTrashed()
+ * @method static Builder<static>|Partner query()
+ * @method static Builder<static>|Partner whereAddressLine1($value)
+ * @method static Builder<static>|Partner whereAddressLine2($value)
+ * @method static Builder<static>|Partner whereCity($value)
+ * @method static Builder<static>|Partner whereCompanyId($value)
+ * @method static Builder<static>|Partner whereContactPerson($value)
+ * @method static Builder<static>|Partner whereCountry($value)
+ * @method static Builder<static>|Partner whereCreatedAt($value)
+ * @method static Builder<static>|Partner whereDeletedAt($value)
+ * @method static Builder<static>|Partner whereEmail($value)
+ * @method static Builder<static>|Partner whereId($value)
+ * @method static Builder<static>|Partner whereIsActive($value)
+ * @method static Builder<static>|Partner whereName($value)
+ * @method static Builder<static>|Partner wherePhone($value)
+ * @method static Builder<static>|Partner whereState($value)
+ * @method static Builder<static>|Partner whereTaxId($value)
+ * @method static Builder<static>|Partner whereType($value)
+ * @method static Builder<static>|Partner whereUpdatedAt($value)
+ * @method static Builder<static>|Partner whereZipCode($value)
+ * @method static Builder<static>|Partner withTrashed(bool $withTrashed = true)
+ * @method static Builder<static>|Partner withoutTrashed()
  * @mixin \Eloquent
  */
-
 #[ObservedBy([PartnerObserver::class])]
 class Partner extends Model
 {
     use HasFactory, SoftDeletes;
+    use \App\Traits\TranslatableSearch;
 
     /**
      * The attributes that are mass assignable.
@@ -123,12 +128,22 @@ class Partner extends Model
         'is_active' => true,
     ];
 
+    /**
+     * Get the non-translatable fields that should be searched.
+     *
+     * @return array
+     */
+    public function getNonTranslatableSearchFields(): array
+    {
+        return ['name', 'email', 'contact_person'];
+    }
+
 
 
     /**
      * Get the company that owns the Partner.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
     public function company()
     {
@@ -138,7 +153,7 @@ class Partner extends Model
     /**
      * Get the receivable account for this partner.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
     public function receivableAccount()
     {
@@ -148,7 +163,7 @@ class Partner extends Model
     /**
      * Get the payable account for this partner.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
     public function payableAccount()
     {
@@ -158,7 +173,7 @@ class Partner extends Model
     /**
      * Get the invoices for the Partner (as a customer).
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return HasMany
      */
     public function invoices()
     {
@@ -168,7 +183,7 @@ class Partner extends Model
     /**
      * Get the vendor bills for the Partner (as a vendor).
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return HasMany
      */
     public function vendorBills()
     {
@@ -178,7 +193,7 @@ class Partner extends Model
     /**
      * Get the payments associated with the Partner.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return HasMany
      */
     public function payments()
     {
@@ -189,7 +204,7 @@ class Partner extends Model
     /**
      * Get the journal entry lines for the Partner.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return HasMany
      */
     public function journalEntryLines()
     {

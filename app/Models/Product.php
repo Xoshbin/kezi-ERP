@@ -2,7 +2,10 @@
 
 namespace App\Models;
 
-use App\Casts\MoneyCast;
+use Illuminate\Support\Carbon;
+use Illuminate\Database\Eloquent\Builder;
+use Database\Factories\ProductFactory;
+use App\Casts\BaseCurrencyMoneyCast;
 use App\Enums\Inventory\ValuationMethod;
 use App\Enums\Products\ProductType;
 use App\Observers\ProductObserver;
@@ -24,40 +27,41 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property float $unit_price
  * @property string $type
  * @property bool $is_active
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property \Illuminate\Support\Carbon|null $deleted_at
- * @property-read \App\Models\Company $company
- * @property-read \App\Models\Account $expenseAccount
- * @property-read \App\Models\Account $incomeAccount
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Product active()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Product bySku($sku, $companyId)
- * @method static \Database\Factories\ProductFactory factory($count = null, $state = [])
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Product newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Product newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Product onlyTrashed()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Product query()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Product whereCompanyId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Product whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Product whereDeletedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Product whereDescription($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Product whereExpenseAccountId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Product whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Product whereIncomeAccountId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Product whereIsActive($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Product whereName($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Product whereSku($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Product whereType($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Product whereUnitPrice($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Product whereUpdatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Product withTrashed(bool $withTrashed = true)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Product withoutTrashed()
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property Carbon|null $deleted_at
+ * @property-read Company $company
+ * @property-read Account $expenseAccount
+ * @property-read Account $incomeAccount
+ * @method static Builder<static>|Product active()
+ * @method static Builder<static>|Product bySku($sku, $companyId)
+ * @method static ProductFactory factory($count = null, $state = [])
+ * @method static Builder<static>|Product newModelQuery()
+ * @method static Builder<static>|Product newQuery()
+ * @method static Builder<static>|Product onlyTrashed()
+ * @method static Builder<static>|Product query()
+ * @method static Builder<static>|Product whereCompanyId($value)
+ * @method static Builder<static>|Product whereCreatedAt($value)
+ * @method static Builder<static>|Product whereDeletedAt($value)
+ * @method static Builder<static>|Product whereDescription($value)
+ * @method static Builder<static>|Product whereExpenseAccountId($value)
+ * @method static Builder<static>|Product whereId($value)
+ * @method static Builder<static>|Product whereIncomeAccountId($value)
+ * @method static Builder<static>|Product whereIsActive($value)
+ * @method static Builder<static>|Product whereName($value)
+ * @method static Builder<static>|Product whereSku($value)
+ * @method static Builder<static>|Product whereType($value)
+ * @method static Builder<static>|Product whereUnitPrice($value)
+ * @method static Builder<static>|Product whereUpdatedAt($value)
+ * @method static Builder<static>|Product withTrashed(bool $withTrashed = true)
+ * @method static Builder<static>|Product withoutTrashed()
  * @mixin \Eloquent
  */
 #[ObservedBy([ProductObserver::class])]
 class Product extends Model
 {
     use HasFactory, SoftDeletes;
+    use \App\Traits\TranslatableSearch;
 
     protected $table = 'products';
 
@@ -80,8 +84,8 @@ class Product extends Model
     ];
 
     protected $casts = [
-        'unit_price' => MoneyCast::class,
-        'average_cost' => MoneyCast::class,
+        'unit_price' => BaseCurrencyMoneyCast::class,
+        'average_cost' => BaseCurrencyMoneyCast::class,
         'is_active' => 'boolean',
         'inventory_valuation_method' => ValuationMethod::class,
         'created_at' => 'datetime',
@@ -91,10 +95,31 @@ class Product extends Model
     ];
 
     /**
+     * The relationships that should always be loaded.
+     * Eager-loading the `company.currency` relationship is critical because the `BaseCurrencyMoneyCast`
+     * for monetary fields on this model depends on the currency context provided by the company.
+     * Without this, any retrieval of a `Product` would fail when casting monetary values
+     * due to the missing currency information, leading to a "currency_id on null" error.
+     *
+     * @var array
+     */
+    protected $with = ['company.currency'];
+
+    /**
+     * Get the non-translatable fields that should be searched.
+     *
+     * @return array
+     */
+    public function getNonTranslatableSearchFields(): array
+    {
+        return ['name', 'sku', 'description'];
+    }
+
+    /**
      * Get the Company that owns the Product.
      * This relationship is fundamental in a multi-company accounting setup, ensuring products are scoped to specific entities.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
     public function company(): BelongsTo
     {
@@ -105,7 +130,7 @@ class Product extends Model
      * Get the Account (from the Chart of Accounts) that is the default income account for this product.
      * This is crucial for automating revenue recognition when the product is sold, impacting the Income Statement.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
     public function incomeAccount(): BelongsTo
     {
@@ -116,7 +141,7 @@ class Product extends Model
      * Get the Account (from the Chart of Accounts) that is the default expense account for this product.
      * This enables automated cost allocation and impacts the Expense section of the Income Statement, aligning with the double-entry principle.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
     public function expenseAccount(): BelongsTo
     {
@@ -149,8 +174,8 @@ class Product extends Model
      * Scope a query to only include active products.
      * This is a common query scope to filter out inactive items in various application contexts.
      *
-     * @param  \Illuminate\Database\Eloquent\Builder  $query
-     * @return \Illuminate\Database\Eloquent\Builder
+     * @param Builder $query
+     * @return Builder
      */
     public function scopeActive($query)
     {
@@ -161,10 +186,10 @@ class Product extends Model
      * Scope a query to find a product by its SKU within a specific company.
      * SKU should be unique per company to prevent data duplication and maintain accurate inventory records.
      *
-     * @param  \Illuminate\Database\Eloquent\Builder  $query
+     * @param Builder $query
      * @param  string  $sku
      * @param  int  $companyId
-     * @return \Illuminate\Database\Eloquent\Builder
+     * @return Builder
      */
     public function scopeBySku($query, $sku, $companyId)
     {
@@ -183,21 +208,13 @@ class Product extends Model
 
     public function stockMoves(): HasMany
     {
-        return $this->hasMany(\App\Models\StockMove::class);
+        return $this->hasMany(StockMove::class);
     }
 
     public function inventoryCostLayers(): HasMany
     {
-        return $this->hasMany(\App\Models\InventoryCostLayer::class);
+        return $this->hasMany(InventoryCostLayer::class);
     }
 
-    /**
-     * Accessor to provide the currency_id to the MoneyCast.
-     * This robust implementation prevents N+1 query issues.
-     */
-    public function getCurrencyIdAttribute(): int
-    {
-        // If the company relationship is loaded, use it. If not, lazy-load it.
-        return $this->company->currency_id ?? $this->company()->first()->currency_id;
-    }
+
 }

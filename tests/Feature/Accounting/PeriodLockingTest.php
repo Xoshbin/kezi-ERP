@@ -17,7 +17,7 @@ use App\Enums\Accounting\LockDateType;
 use App\Enums\Adjustments\AdjustmentDocumentType;
 use App\Exceptions\PeriodIsLockedException;
 use App\Exceptions\UpdateNotAllowedException;
-use App\Filament\Resources\LockDateResource;
+use App\Filament\Resources\LockDates\LockDateResource;
 use App\Models\Invoice;
 use App\Models\LockDate;
 use App\Rules\NotInLockedPeriod;
@@ -229,7 +229,7 @@ describe('Filament Resource (LockDateResource)', function () {
             'lock_type' => LockDateType::AllUsers,
         ]);
 
-        \Livewire\Livewire::test(LockDateResource\Pages\ListLockDates::class, [
+        \Livewire\Livewire::test(\App\Filament\Resources\LockDates\Pages\ListLockDates::class, [
             'record' => $this->company,
         ])
             ->assertTableActionDisabled('edit', $hardLock)

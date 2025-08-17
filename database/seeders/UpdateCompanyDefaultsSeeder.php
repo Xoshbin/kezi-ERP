@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use Exception;
 use App\Models\Account;
 use App\Models\Company;
 use App\Models\Journal;
@@ -17,7 +18,7 @@ class UpdateCompanyDefaultsSeeder extends Seeder
     {
         $company = Company::where('name', 'Jmeryar Solutions')->first();
         if (!$company) {
-            throw new \Exception('Company "Jmeryar Solutions" not found. Please run the CompanySeeder first.');
+            throw new Exception('Company "Jmeryar Solutions" not found. Please run the CompanySeeder first.');
         }
 
         // Find the default accounts and journals created by other seeders.
@@ -46,7 +47,7 @@ class UpdateCompanyDefaultsSeeder extends Seeder
         if (!$depreciationJournal) $missing[] = 'Depreciation Journal (short_code: DEPR)';
 
         if (!empty($missing)) {
-            throw new \Exception('Failed to find the following required records: ' . implode(', ', $missing) . '. Please ensure all seeders have run successfully before this one.');
+            throw new Exception('Failed to find the following required records: ' . implode(', ', $missing) . '. Please ensure all seeders have run successfully before this one.');
         }
 
         // Update the company with the default IDs.

@@ -3,6 +3,7 @@
 use App\Models\User;
 use App\Models\Company;
 use App\Models\Currency;
+use App\Models\CurrencyRate;
 use App\Models\BankStatement;
 use App\Models\BankStatementLine;
 use App\Models\Payment;
@@ -11,7 +12,9 @@ use App\Models\Journal;
 use App\Services\BankReconciliationService;
 use App\Enums\Accounting\JournalType;
 use App\Enums\Payments\PaymentStatus;
+use App\Enums\Payments\PaymentType;
 use Brick\Money\Money;
+use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\Traits\WithConfiguredCompany;
 
@@ -197,5 +200,201 @@ describe('BankReconciliationService', function () {
 
         expect($result)->toHaveCount(1);
         expect($result->first()->id)->toBe($unreconciledPayment->id);
+    });
+});
+
+describe('Multi-Currency Bank Reconciliation', function () {
+    beforeEach(function () {
+        // Create USD currency for foreign currency tests
+        $this->usdCurrency = Currency::firstOrCreate(
+            ['code' => 'USD'],
+            [
+                'name' => ['en' => 'US Dollar', 'ckb' => 'دۆلاری ئەمریکی', 'ar' => 'دولار أمريكي'],
+                'symbol' => '$',
+                'is_active' => true,
+                'decimal_places' => 2,
+            ]
+        );
+
+        // Set up exchange rate: 1 USD = 1460 IQD
+        $this->exchangeRate = 1460.0;
+        $this->transactionDate = Carbon::parse('2024-01-01');
+
+        CurrencyRate::updateOrCreate(
+            [
+                'currency_id' => $this->usdCurrency->id,
+                'effective_date' => $this->transactionDate->toDateString(),
+                'company_id' => $this->company->id,
+            ],
+            [
+                'rate' => $this->exchangeRate,
+                'source' => 'manual',
+            ]
+        );
+
+        // Create USD bank statement
+        $this->usdBankStatement = BankStatement::factory()
+            ->for($this->company)
+            ->for($this->usdCurrency)
+            ->for($this->bankJournal)
+            ->create([
+                'date' => $this->transactionDate,
+                'starting_balance' => Money::of(0, 'USD'),
+                'ending_balance' => Money::of(100, 'USD'),
+            ]);
+    });
+
+    it('can reconcile same-currency transactions (USD statement + USD payment)', function () {
+        // Create USD bank statement line
+        $bankLine = BankStatementLine::factory()
+            ->for($this->usdBankStatement)
+            ->create([
+                'amount' => Money::of(100, 'USD'), // $100.00
+                'is_reconciled' => false,
+                'date' => $this->transactionDate,
+            ]);
+
+        // Create USD payment
+        $payment = Payment::factory()
+            ->for($this->company)
+            ->for($this->usdCurrency)
+            ->for($this->bankJournal)
+            ->create([
+                'amount' => Money::of(100, 'USD'), // $100.00
+                'payment_type' => PaymentType::Inbound,
+                'status' => PaymentStatus::Confirmed,
+                'payment_date' => $this->transactionDate,
+            ]);
+
+        // Reconcile
+        $this->service->reconcileMultiple(
+            [$bankLine->id],
+            [$payment->id],
+            $this->user
+        );
+
+        // Assert reconciliation was successful
+        expect($bankLine->fresh()->is_reconciled)->toBeTrue();
+        expect($payment->fresh()->status)->toBe(PaymentStatus::Reconciled);
+    });
+
+    it('can reconcile cross-currency transactions (USD statement + IQD payment)', function () {
+        // Create USD bank statement line
+        $bankLine = BankStatementLine::factory()
+            ->for($this->usdBankStatement)
+            ->create([
+                'amount' => Money::of(100, 'USD'), // $100.00
+                'is_reconciled' => false,
+                'date' => $this->transactionDate,
+            ]);
+
+        // Create IQD payment equivalent to $100 at 1460 rate = 146,000 IQD
+        $payment = Payment::factory()
+            ->for($this->company)
+            ->for($this->company->currency) // IQD
+            ->for($this->bankJournal)
+            ->create([
+                'amount' => Money::of(146000, 'IQD'), // 146,000.000 IQD
+                'payment_type' => PaymentType::Inbound,
+                'status' => PaymentStatus::Confirmed,
+                'payment_date' => $this->transactionDate,
+            ]);
+
+        // Reconcile - should convert IQD payment to USD for comparison
+        $this->service->reconcileMultiple(
+            [$bankLine->id],
+            [$payment->id],
+            $this->user
+        );
+
+        // Assert reconciliation was successful
+        expect($bankLine->fresh()->is_reconciled)->toBeTrue();
+        expect($payment->fresh()->status)->toBe(PaymentStatus::Reconciled);
+    });
+
+    it('throws exception when cross-currency totals do not match after conversion', function () {
+        // Create USD bank statement line
+        $bankLine = BankStatementLine::factory()
+            ->for($this->usdBankStatement)
+            ->create([
+                'amount' => Money::of(100, 'USD'), // $100.00
+                'is_reconciled' => false,
+                'date' => $this->transactionDate,
+            ]);
+
+        // Create IQD payment that doesn't match after conversion
+        // $50 equivalent at 1460 rate = 73,000 IQD (not matching $100)
+        $payment = Payment::factory()
+            ->for($this->company)
+            ->for($this->company->currency) // IQD
+            ->for($this->bankJournal)
+            ->create([
+                'amount' => Money::of(73000, 'IQD'), // 73,000.000 IQD = $50
+                'payment_type' => PaymentType::Inbound,
+                'status' => PaymentStatus::Confirmed,
+                'payment_date' => $this->transactionDate,
+            ]);
+
+        // Should throw exception due to mismatch
+        expect(fn() => $this->service->reconcileMultiple(
+            [$bankLine->id],
+            [$payment->id],
+            $this->user
+        ))->toThrow(RuntimeException::class, 'Bank statement lines total does not match payments total');
+    });
+
+    it('handles multiple cross-currency payments correctly', function () {
+        // Create USD bank statement lines totaling $200
+        $bankLine1 = BankStatementLine::factory()
+            ->for($this->usdBankStatement)
+            ->create([
+                'amount' => Money::of(100, 'USD'),
+                'is_reconciled' => false,
+                'date' => $this->transactionDate,
+            ]);
+
+        $bankLine2 = BankStatementLine::factory()
+            ->for($this->usdBankStatement)
+            ->create([
+                'amount' => Money::of(100, 'USD'),
+                'is_reconciled' => false,
+                'date' => $this->transactionDate,
+            ]);
+
+        // Create mixed currency payments: 1 USD + 1 IQD totaling $200
+        $usdPayment = Payment::factory()
+            ->for($this->company)
+            ->for($this->usdCurrency)
+            ->for($this->bankJournal)
+            ->create([
+                'amount' => Money::of(100, 'USD'), // $100
+                'payment_type' => PaymentType::Inbound,
+                'status' => PaymentStatus::Confirmed,
+                'payment_date' => $this->transactionDate,
+            ]);
+
+        $iqdPayment = Payment::factory()
+            ->for($this->company)
+            ->for($this->company->currency) // IQD
+            ->for($this->bankJournal)
+            ->create([
+                'amount' => Money::of(146000, 'IQD'), // 146,000 IQD = $100
+                'payment_type' => PaymentType::Inbound,
+                'status' => PaymentStatus::Confirmed,
+                'payment_date' => $this->transactionDate,
+            ]);
+
+        // Reconcile
+        $this->service->reconcileMultiple(
+            [$bankLine1->id, $bankLine2->id],
+            [$usdPayment->id, $iqdPayment->id],
+            $this->user
+        );
+
+        // Assert all items were reconciled
+        expect($bankLine1->fresh()->is_reconciled)->toBeTrue();
+        expect($bankLine2->fresh()->is_reconciled)->toBeTrue();
+        expect($usdPayment->fresh()->status)->toBe(PaymentStatus::Reconciled);
+        expect($iqdPayment->fresh()->status)->toBe(PaymentStatus::Reconciled);
     });
 });

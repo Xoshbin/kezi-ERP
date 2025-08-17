@@ -27,11 +27,12 @@ class VendorBillAttachmentTest extends TestCase
 
         // Create test data
         $this->company = Company::factory()->create();
-        $this->user = User::factory()->create(['company_id' => $this->company->id]);
-        
+        $this->user = User::factory()->create();
+        $this->user->companies()->attach($this->company);
+
         $currency = Currency::factory()->create();
         $vendor = Partner::factory()->create(['company_id' => $this->company->id]);
-        
+
         $this->vendorBill = VendorBill::factory()->create([
             'company_id' => $this->company->id,
             'vendor_id' => $vendor->id,
@@ -49,6 +50,7 @@ class VendorBillAttachmentTest extends TestCase
         $filePath = $file->store('vendor-bill-attachments', 'local');
 
         $attachment = VendorBillAttachment::create([
+            'company_id' => $this->vendorBill->company_id,
             'vendor_bill_id' => $this->vendorBill->id,
             'file_name' => 'test-document.pdf',
             'file_path' => $filePath,
@@ -77,7 +79,7 @@ class VendorBillAttachmentTest extends TestCase
         ]);
 
         $this->vendorBill->refresh();
-        
+
         $this->assertCount(1, $this->vendorBill->attachments);
         $this->assertEquals($attachment->id, $this->vendorBill->attachments->first()->id);
     }

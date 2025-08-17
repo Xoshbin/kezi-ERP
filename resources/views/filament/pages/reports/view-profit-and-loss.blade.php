@@ -1,13 +1,13 @@
 <x-filament-panels::page>
     <div class="space-y-6">
         <!-- Date Range Form -->
-        <x-filament-panels::form wire:submit="generateReport">
+        <form wire:submit="generateReport">
             {{ $this->form }}
-        </x-filament-panels::form>
+        </form>
 
         <!-- Report Display -->
         @if($reportData)
-            <div class="bg-white dark:bg-gray-800 shadow rounded-lg p-6">
+            <div class="bg-white dark:bg-gray-800 shadow-sm rounded-lg p-6">
                 <div class="mb-6">
                     <h2 class="text-xl font-semibold text-gray-900 dark:text-white">
                         {{ __('reports.profit_and_loss_statement') }}
@@ -26,7 +26,7 @@
                     @if(count($reportData['revenueLines']) > 0)
                         <div class="space-y-2">
                             @foreach($reportData['revenueLines'] as $line)
-                                <div class="flex justify-between items-center py-2 px-4 hover:bg-gray-50 dark:hover:bg-gray-700 rounded">
+                                <div class="flex justify-between items-center py-2 px-4 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-sm">
                                     <div class="flex items-center space-x-3">
                                         <span class="text-sm font-mono text-gray-500 dark:text-gray-400">{{ $line['accountCode'] }}</span>
                                         <span class="text-sm text-gray-900 dark:text-white">{{ $line['accountName'] }}</span>
@@ -60,7 +60,7 @@
                     @if(count($reportData['expenseLines']) > 0)
                         <div class="space-y-2">
                             @foreach($reportData['expenseLines'] as $line)
-                                <div class="flex justify-between items-center py-2 px-4 hover:bg-gray-50 dark:hover:bg-gray-700 rounded">
+                                <div class="flex justify-between items-center py-2 px-4 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-sm">
                                     <div class="flex items-center space-x-3">
                                         <span class="text-sm font-mono text-gray-500 dark:text-gray-400">{{ $line['accountCode'] }}</span>
                                         <span class="text-sm text-gray-900 dark:text-white">{{ $line['accountName'] }}</span>

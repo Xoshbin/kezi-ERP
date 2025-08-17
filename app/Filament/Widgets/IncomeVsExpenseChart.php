@@ -2,6 +2,7 @@
 
 namespace App\Filament\Widgets;
 
+use Exception;
 use App\Services\Reports\ProfitAndLossStatementService;
 use App\Models\Company;
 use Filament\Widgets\ChartWidget;
@@ -10,7 +11,7 @@ use Filament\Facades\Filament;
 
 class IncomeVsExpenseChart extends ChartWidget
 {
-    protected static ?string $heading = null;
+    protected ?string $heading = null;
     protected int | string | array $columnSpan = 'full';
     protected static ?int $sort = 2;
 
@@ -21,18 +22,13 @@ class IncomeVsExpenseChart extends ChartWidget
 
     protected function getData(): array
     {
-        $user = Filament::auth()->user();
-        if (!$user || !$user->company_id) {
-            return $this->getEmptyData();
-        }
-
-        $company = Company::find($user->company_id);
+        $company = Filament::getTenant();
         if (!$company) {
             return $this->getEmptyData();
         }
 
         $plService = app(ProfitAndLossStatementService::class);
-        
+
         $revenueData = [];
         $expenseData = [];
         $netIncomeData = [];
@@ -43,7 +39,7 @@ class IncomeVsExpenseChart extends ChartWidget
                 $date = Carbon::now()->subMonths($i);
                 $startDate = $date->copy()->startOfMonth();
                 $endDate = $date->copy()->endOfMonth();
-                
+
                 $plDto = $plService->generate($company, $startDate, $endDate);
 
                 // Convert to float for chart display
@@ -52,7 +48,7 @@ class IncomeVsExpenseChart extends ChartWidget
                 $netIncomeData[] = $plDto->netIncome->getAmount()->toFloat();
                 $labels[] = $date->format('M Y');
             }
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return $this->getEmptyData();
         }
 

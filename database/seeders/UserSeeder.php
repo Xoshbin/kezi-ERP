@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use Exception;
 use App\Models\Company;
 use App\Models\User;
 use Illuminate\Database\Seeder;
@@ -21,17 +22,21 @@ class UserSeeder extends Seeder
 
         // If the company is not found, throw an exception.
         if (!$company) {
-            throw new \Exception('Company "Jmeryar Solutions" not found. Please run the CompanySeeder first.');
+            throw new Exception('Company "Jmeryar Solutions" not found. Please run the CompanySeeder first.');
         }
 
         // Create the admin user
-        User::updateOrCreate(
+        $user = User::updateOrCreate(
             ['email' => 'admin@jmeryar.com'],
             [
                 'name' => 'Admin',
                 'password' => Hash::make('password'),
-                'company_id' => $company->id,
             ]
         );
+
+        // Attach the user to the company if not already attached
+        if (!$user->companies()->where('company_id', $company->id)->exists()) {
+            $user->companies()->attach($company);
+        }
     }
 }

@@ -2,6 +2,9 @@
 
 namespace App\Actions\Accounting;
 
+use Brick\Math\RoundingMode;
+use Illuminate\Support\Facades\Log;
+use RuntimeException;
 use App\DataTransferObjects\Accounting\CreateJournalEntryDTO;
 use App\DataTransferObjects\Accounting\CreateJournalEntryLineDTO;
 use App\Models\JournalEntry;
@@ -28,7 +31,12 @@ class CreateJournalEntryForPaymentAction
         $payment->load('partner');
 
         // Determine the exchange rate. If it's the same currency, the rate is 1.
-        $exchangeRate = ($baseCurrency->id === $paymentCurrency->id) ? 1.0 : $paymentCurrency->exchange_rate;
+        if ($baseCurrency->id === $paymentCurrency->id) {
+            $exchangeRate = 1.0;
+        } else {
+            // Use the exchange rate stored in the payment (set during payment creation/confirmation)
+            $exchangeRate = $payment->exchange_rate_at_payment ?? 1.0;
+        }
 
         // 1. Determine the correct accounts based on accounting rules.
         $bankAccountId = $payment->journal->default_debit_account_id;
@@ -40,9 +48,9 @@ class CreateJournalEntryForPaymentAction
         $zeroAmount = Money::zero($baseCurrency->code);
         $amountInPaymentCurrency = $payment->amount->getAmount();
         $amountInBaseCurrency = $amountInPaymentCurrency->multipliedBy($exchangeRate);
-        $paymentAmountInBase = Money::of($amountInBaseCurrency, $baseCurrency->code, null, \Brick\Math\RoundingMode::HALF_UP);
+        $paymentAmountInBase = Money::of($amountInBaseCurrency, $baseCurrency->code, null, RoundingMode::HALF_UP);
 
-        \Illuminate\Support\Facades\Log::info('CreateJournalEntryForPaymentAction', [
+        Log::info('CreateJournalEntryForPaymentAction', [
             'payment_amount' => $payment->amount->getAmount()->toFloat(),
             'exchange_rate' => $exchangeRate,
             'amount_in_base_currency' => $amountInBaseCurrency->toFloat(),
@@ -53,7 +61,7 @@ class CreateJournalEntryForPaymentAction
             // Use partner's individual receivable account if available, otherwise fall back to default
             $arAccountId = $payment->partner->receivable_account_id ?? $company->default_accounts_receivable_id;
             if (!$arAccountId) {
-                throw new \RuntimeException('Default Accounts Receivable is not configured for this company.');
+                throw new RuntimeException('Default Accounts Receivable is not configured for this company.');
             }
             // Rule: Inbound payment DEBITS the bank, CREDITS Accounts Receivable.
             $lines[] = new CreateJournalEntryLineDTO(
@@ -76,7 +84,7 @@ class CreateJournalEntryForPaymentAction
             // Use partner's individual payable account if available, otherwise fall back to default
             $apAccountId = $payment->partner->payable_account_id ?? $company->default_accounts_payable_id;
             if (!$apAccountId) {
-                throw new \RuntimeException('Default Accounts Payable is not configured for this company.');
+                throw new RuntimeException('Default Accounts Payable is not configured for this company.');
             }
             // Rule: Outbound payment DEBITS Accounts Payable, CREDITS the bank.
             $lines[] = new CreateJournalEntryLineDTO(

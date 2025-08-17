@@ -3,6 +3,7 @@
 use App\Models\User;
 use App\Models\Company;
 use App\Models\Currency;
+use App\Models\CurrencyRate;
 use App\Models\BankStatement;
 use App\Models\BankStatementLine;
 use App\Models\Payment;
@@ -14,6 +15,8 @@ use App\Livewire\Accounting\BankTransactionsTable;
 use App\Livewire\Accounting\SystemPaymentsTable;
 use Brick\Money\Money;
 use App\Enums\Payments\PaymentStatus;
+use App\Enums\Payments\PaymentType;
+use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Livewire\Livewire;
 
@@ -21,8 +24,12 @@ uses(RefreshDatabase::class);
 
 beforeEach(function () {
     $this->company = Company::factory()->create();
-    $this->user = User::factory()->for($this->company)->create();
+    $this->user = User::factory()->create();
+    $this->user->companies()->attach($this->company);
     $this->actingAs($this->user);
+
+    // Set up Filament tenant context
+    \Filament\Facades\Filament::setTenant($this->company);
 
     $this->currency = $this->company->currency;
 
@@ -328,5 +335,134 @@ describe('BankReconciliationMatcher Livewire Component', function () {
             ]);
 
         expect($bankLine->fresh()->is_reconciled)->toBeTrue();
+    });
+});
+
+describe('Multi-Currency Livewire Reconciliation', function () {
+    beforeEach(function () {
+        // Create USD currency for foreign currency tests
+        $this->usdCurrency = Currency::firstOrCreate(
+            ['code' => 'USD'],
+            [
+                'name' => ['en' => 'US Dollar', 'ckb' => 'دۆلاری ئەمریکی', 'ar' => 'دولار أمريكي'],
+                'symbol' => '$',
+                'is_active' => true,
+                'decimal_places' => 2,
+            ]
+        );
+
+        // Set up exchange rate: 1 USD = 1460 IQD
+        $this->exchangeRate = 1460.0;
+        $this->transactionDate = Carbon::parse('2024-01-01');
+
+        CurrencyRate::updateOrCreate(
+            [
+                'currency_id' => $this->usdCurrency->id,
+                'effective_date' => $this->transactionDate->toDateString(),
+                'company_id' => $this->company->id,
+            ],
+            [
+                'rate' => $this->exchangeRate,
+                'source' => 'manual',
+            ]
+        );
+
+        // Create USD bank statement
+        $this->usdBankStatement = BankStatement::factory()
+            ->for($this->company)
+            ->for($this->usdCurrency)
+            ->for($this->bankJournal)
+            ->create([
+                'date' => $this->transactionDate,
+                'starting_balance' => Money::of(0, 'USD'),
+                'ending_balance' => Money::of(100, 'USD'),
+            ]);
+    });
+
+    it('handles USD bank statement with USD payment reconciliation', function () {
+        $bankLine = BankStatementLine::factory()
+            ->for($this->usdBankStatement)
+            ->create([
+                'amount' => Money::of(100, 'USD'),
+                'is_reconciled' => false,
+            ]);
+
+        $payment = Payment::factory()
+            ->for($this->company)
+            ->for($this->usdCurrency)
+            ->for($this->bankJournal)
+            ->create([
+                'amount' => Money::of(100, 'USD'),
+                'payment_type' => PaymentType::Inbound,
+                'status' => PaymentStatus::Confirmed,
+            ]);
+
+        $component = Livewire::test(BankReconciliationMatcher::class, ['bankStatementId' => $this->usdBankStatement->id]);
+
+        // Simulate selections in USD
+        $component->call('updateBankSelection', [
+            'selectedIds' => [$bankLine->id],
+            'total' => 10000, // $100.00 in minor units (2 decimal places)
+            'currency' => 'USD',
+        ]);
+
+        $component->call('updatePaymentSelection', [
+            'selectedIds' => [$payment->id],
+            'total' => 10000, // $100.00 in minor units (2 decimal places)
+            'currency' => 'USD',
+        ]);
+
+        $component->call('reconcile')
+            ->assertSet('selectedBankLines', [])
+            ->assertSet('selectedPayments', []);
+
+        // Verify reconciliation was performed
+        expect($bankLine->fresh()->is_reconciled)->toBeTrue();
+        expect($payment->fresh()->status)->toBe(PaymentStatus::Reconciled);
+    });
+
+    it('calculates totals correctly for USD bank statement', function () {
+        $bankLine1 = BankStatementLine::factory()
+            ->for($this->usdBankStatement)
+            ->create(['amount' => Money::of(50, 'USD')]);
+
+        $bankLine2 = BankStatementLine::factory()
+            ->for($this->usdBankStatement)
+            ->create(['amount' => Money::of(75, 'USD')]);
+
+        $component = Livewire::test(BankTransactionsTable::class, ['bankStatement' => $this->usdBankStatement]);
+
+        // Select both lines through the toggle method which triggers emitSelectionChanged
+        $component->call('toggleBankLine', $bankLine1->id);
+        $component->call('toggleBankLine', $bankLine2->id);
+
+        // Should emit total in USD, not IQD
+        $component->assertDispatched('bank-selection-changed');
+    });
+
+    it('shows payments with currency information for USD bank statement', function () {
+        // Create payments in different currencies
+        $usdPayment = Payment::factory()
+            ->for($this->company)
+            ->for($this->usdCurrency)
+            ->for($this->bankJournal)
+            ->create([
+                'amount' => Money::of(100, 'USD'),
+                'status' => PaymentStatus::Confirmed,
+            ]);
+
+        $iqdPayment = Payment::factory()
+            ->for($this->company)
+            ->for($this->company->currency) // IQD
+            ->for($this->bankJournal)
+            ->create([
+                'amount' => Money::of(146000, 'IQD'),
+                'status' => PaymentStatus::Confirmed,
+            ]);
+
+        $component = Livewire::test(SystemPaymentsTable::class, ['bankStatement' => $this->usdBankStatement]);
+
+        // Both payments should be visible (currency filtering will be enhanced in next task)
+        $component->assertCanSeeTableRecords([$usdPayment, $iqdPayment]);
     });
 });

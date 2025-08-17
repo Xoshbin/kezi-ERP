@@ -33,6 +33,7 @@ test('it creates a correct journal entry for a posted invoice', function () {
     $taxAmount = $subtotal->multipliedBy($tax->rate);
 
     $invoice->invoiceLines()->create([
+        'company_id' => $invoice->company_id,
         'product_id' => $product->id,
         'income_account_id' => $product->income_account_id,
         'description' => 'Test Product',

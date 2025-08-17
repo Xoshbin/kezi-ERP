@@ -2,6 +2,7 @@
 
 namespace App\Observers;
 
+use UnitEnum;
 use App\Enums\Accounting\LockDateType;
 use App\Exceptions\UpdateNotAllowedException;
 use App\Models\LockDate;
@@ -35,7 +36,7 @@ class LockDateObserver
 
     private function clearCache(LockDate $lockDate): void
     {
-        $typeValue = $lockDate->lock_type instanceof \UnitEnum ? $lockDate->lock_type->value : $lockDate->lock_type;
+        $typeValue = $lockDate->lock_type instanceof UnitEnum ? $lockDate->lock_type->value : $lockDate->lock_type;
         Cache::forget("lock_date_{$lockDate->company_id}_{$typeValue}");
     }
 }

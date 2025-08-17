@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use Illuminate\Support\Carbon;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\Pivot;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
@@ -9,24 +11,24 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * Class AnalyticAccountPlanPivot
  *
  * @package App\Models
- * 
+ *
  * This Eloquent model represents the pivot table for the many-to-many relationship
  * between AnalyticAccount and AnalyticPlan. It is essential for structuring
  * and categorizing analytic accounts within various management accounting plans,
  * enabling flexible cost and revenue analysis across different dimensions.
  * @property int $analytic_account_id
  * @property int $analytic_plan_id
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \App\Models\AnalyticAccount $analyticAccount
- * @property-read \App\Models\AnalyticPlan $analyticPlan
- * @method static \Illuminate\Database\Eloquent\Builder<static>|AnalyticAccountPlanPivot newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|AnalyticAccountPlanPivot newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|AnalyticAccountPlanPivot query()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|AnalyticAccountPlanPivot whereAnalyticAccountId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|AnalyticAccountPlanPivot whereAnalyticPlanId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|AnalyticAccountPlanPivot whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|AnalyticAccountPlanPivot whereUpdatedAt($value)
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property-read AnalyticAccount $analyticAccount
+ * @property-read AnalyticPlan $analyticPlan
+ * @method static Builder<static>|AnalyticAccountPlanPivot newModelQuery()
+ * @method static Builder<static>|AnalyticAccountPlanPivot newQuery()
+ * @method static Builder<static>|AnalyticAccountPlanPivot query()
+ * @method static Builder<static>|AnalyticAccountPlanPivot whereAnalyticAccountId($value)
+ * @method static Builder<static>|AnalyticAccountPlanPivot whereAnalyticPlanId($value)
+ * @method static Builder<static>|AnalyticAccountPlanPivot whereCreatedAt($value)
+ * @method static Builder<static>|AnalyticAccountPlanPivot whereUpdatedAt($value)
  * @mixin \Eloquent
  */
 class AnalyticAccountPlanPivot extends Pivot
@@ -47,8 +49,9 @@ class AnalyticAccountPlanPivot extends Pivot
      * @var array<int, string>
      */
     protected $fillable = [
-        'analytic_account_id', // Links to the specific analytic account 
-        'analytic_plan_id',    // Links to the analytic plan it belongs to 
+        'company_id',          // Foreign key to the parent company, ensuring data integrity [2, 3].
+        'analytic_account_id', // Links to the specific analytic account
+        'analytic_plan_id',    // Links to the analytic plan it belongs to
     ];
 
     /**
@@ -72,9 +75,19 @@ class AnalyticAccountPlanPivot extends Pivot
     */
 
     /**
+     * Get the company that this rate belongs to.
+     *
+     * @return BelongsTo
+     */
+    public function company(): BelongsTo
+    {
+        return $this->belongsTo(Company::class);
+    }
+
+    /**
      * Get the analytic account that this pivot record is associated with.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
     public function analyticAccount(): BelongsTo
     {
@@ -84,7 +97,7 @@ class AnalyticAccountPlanPivot extends Pivot
     /**
      * Get the analytic plan that this pivot record is associated with.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
     public function analyticPlan(): BelongsTo
     {

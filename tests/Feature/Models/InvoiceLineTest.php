@@ -7,18 +7,19 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 
 uses(RefreshDatabase::class);
 
-it('correctly resolves its currency_id from its parent invoice', function () {
+it('correctly resolves currency through its parent invoice relationship', function () {
     // Arrange
     $usd = Currency::factory()->create(['code' => 'USD']);
     $invoice = Invoice::factory()->create(['currency_id' => $usd->id]);
-    $line = InvoiceLine::factory()->make(['invoice_id' => $invoice->id]);
+    $line = InvoiceLine::factory()->create(['invoice_id' => $invoice->id]);
 
     // Eager load the relationship just as the application would
-    $line->load('invoice');
+    $line->load('invoice.currency');
 
-    // Act
-    $currencyId = $line->currency_id; // This calls the getCurrencyIdAttribute() accessor
+    // Act - Access the currency through the relationship
+    $currency = $line->invoice->currency;
 
     // Assert
-    expect($currencyId)->toBe($usd->id);
+    expect($currency->id)->toBe($usd->id);
+    expect($currency->code)->toBe('USD');
 });

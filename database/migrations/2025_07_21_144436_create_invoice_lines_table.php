@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('invoice_lines', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('company_id')->constrained('companies');
             $table->foreignId('invoice_id')->constrained('invoices')->onDelete('cascade');
             $table->foreignId('product_id')->nullable()->constrained('products');
             $table->foreignId('tax_id')->nullable()->constrained('taxes');
@@ -22,6 +23,10 @@ return new class extends Migration
             $table->unsignedBigInteger('unit_price');
             $table->unsignedBigInteger('subtotal');
             $table->unsignedBigInteger('total_line_tax');
+            // Add company currency amounts (converted amounts)
+            $table->unsignedBigInteger('unit_price_company_currency')->nullable();
+            $table->unsignedBigInteger('subtotal_company_currency')->nullable();
+            $table->unsignedBigInteger('total_line_tax_company_currency')->nullable();
             $table->timestamps();
         });
     }

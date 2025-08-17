@@ -2,6 +2,10 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Carbon;
+use Illuminate\Database\Eloquent\Collection;
+use Database\Factories\JournalFactory;
 use App\Models\Account;
 use App\Observers\JournalObserver;
 use App\Enums\Accounting\JournalType;
@@ -20,25 +24,25 @@ use Spatie\Translatable\HasTranslations;
  * @property string $type
  * @property string $short_code
  * @property int|null $currency_id
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \App\Models\Company $company
- * @property-read \App\Models\Currency|null $currency
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\JournalEntry> $journalEntries
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property-read Company $company
+ * @property-read Currency|null $currency
+ * @property-read Collection<int, JournalEntry> $journalEntries
  * @property-read int|null $journal_entries_count
- * @method static \Database\Factories\JournalFactory factory($count = null, $state = [])
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Journal newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Journal newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Journal query()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Journal uniqueShortCode(string $shortCode, int $companyId)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Journal whereCompanyId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Journal whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Journal whereCurrencyId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Journal whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Journal whereName($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Journal whereShortCode($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Journal whereType($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Journal whereUpdatedAt($value)
+ * @method static JournalFactory factory($count = null, $state = [])
+ * @method static Builder<static>|Journal newModelQuery()
+ * @method static Builder<static>|Journal newQuery()
+ * @method static Builder<static>|Journal query()
+ * @method static Builder<static>|Journal uniqueShortCode(string $shortCode, int $companyId)
+ * @method static Builder<static>|Journal whereCompanyId($value)
+ * @method static Builder<static>|Journal whereCreatedAt($value)
+ * @method static Builder<static>|Journal whereCurrencyId($value)
+ * @method static Builder<static>|Journal whereId($value)
+ * @method static Builder<static>|Journal whereName($value)
+ * @method static Builder<static>|Journal whereShortCode($value)
+ * @method static Builder<static>|Journal whereType($value)
+ * @method static Builder<static>|Journal whereUpdatedAt($value)
  * @mixin \Eloquent
  */
 #[ObservedBy([JournalObserver::class])]
@@ -46,6 +50,7 @@ use Spatie\Translatable\HasTranslations;
 class Journal extends Model
 {
     use HasFactory, HasTranslations;
+    use \App\Traits\TranslatableSearch;
 
     public array $translatable = ['name'];
 
@@ -69,6 +74,9 @@ class Journal extends Model
         'currency_id',
         'default_debit_account_id',
         'default_credit_account_id',
+        'exchange_gain_account_id',
+        'exchange_loss_account_id',
+        'exchange_difference_journal_id',
     ];
 
     protected $casts = [
@@ -138,16 +146,40 @@ class Journal extends Model
     }
 
     /**
+     * Get the exchange gain account for this journal.
+     */
+    public function exchangeGainAccount(): BelongsTo
+    {
+        return $this->belongsTo(Account::class, 'exchange_gain_account_id');
+    }
+
+    /**
+     * Get the exchange loss account for this journal.
+     */
+    public function exchangeLossAccount(): BelongsTo
+    {
+        return $this->belongsTo(Account::class, 'exchange_loss_account_id');
+    }
+
+    /**
+     * Get the journal where exchange differences are posted.
+     */
+    public function exchangeDifferenceJournal(): BelongsTo
+    {
+        return $this->belongsTo(Journal::class, 'exchange_difference_journal_id');
+    }
+
+    /**
      * Define a unique scope for short_code within a company.
      * This is crucial to prevent duplicate short codes for journals within the same company [3].
      * Although this is typically enforced at the database migration level,
      * adding a method here can be useful for specific query needs if required later.
      */
     public function scopeUniqueShortCode(
-        \Illuminate\Database\Eloquent\Builder $query,
+        Builder $query,
         string $shortCode,
         int $companyId
-    ): \Illuminate\Database\Eloquent\Builder {
+    ): Builder {
         return $query->where('short_code', $shortCode)->where('company_id', $companyId);
     }
 }

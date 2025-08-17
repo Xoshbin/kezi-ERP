@@ -2,8 +2,12 @@
 
 namespace App\Models;
 
+use Illuminate\Support\Carbon;
+use Database\Factories\AdjustmentDocumentFactory;
+use Illuminate\Database\Eloquent\Builder;
 use Brick\Money\Money;
-use App\Casts\MoneyCast;
+use App\Casts\DocumentCurrencyMoneyCast;
+use App\Casts\BaseCurrencyMoneyCast;
 use App\Enums\Adjustments\AdjustmentDocumentType;
 use App\Enums\Adjustments\AdjustmentDocumentStatus;
 use Illuminate\Database\Eloquent\Model;
@@ -18,38 +22,38 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
  * @property int|null $original_vendor_bill_id
  * @property int|null $journal_entry_id
  * @property string $type
- * @property \Illuminate\Support\Carbon $date
+ * @property Carbon $date
  * @property string $reference_number
  * @property float $total_amount
  * @property float $total_tax
  * @property string $reason
  * @property string $status
  * @property string|null $posted_at
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \App\Models\Company $company
- * @property-read \App\Models\JournalEntry|null $journalEntry
- * @property-read \App\Models\Invoice|null $originalInvoice
- * @property-read \App\Models\VendorBill|null $originalVendorBill
- * @method static \Database\Factories\AdjustmentDocumentFactory factory($count = null, $state = [])
- * @method static \Illuminate\Database\Eloquent\Builder<static>|AdjustmentDocument newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|AdjustmentDocument newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|AdjustmentDocument query()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|AdjustmentDocument whereCompanyId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|AdjustmentDocument whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|AdjustmentDocument whereDate($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|AdjustmentDocument whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|AdjustmentDocument whereJournalEntryId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|AdjustmentDocument whereOriginalInvoiceId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|AdjustmentDocument whereOriginalVendorBillId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|AdjustmentDocument wherePostedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|AdjustmentDocument whereReason($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|AdjustmentDocument whereReferenceNumber($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|AdjustmentDocument whereStatus($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|AdjustmentDocument whereTotalAmount($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|AdjustmentDocument whereTotalTax($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|AdjustmentDocument whereType($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|AdjustmentDocument whereUpdatedAt($value)
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property-read Company $company
+ * @property-read JournalEntry|null $journalEntry
+ * @property-read Invoice|null $originalInvoice
+ * @property-read VendorBill|null $originalVendorBill
+ * @method static AdjustmentDocumentFactory factory($count = null, $state = [])
+ * @method static Builder<static>|AdjustmentDocument newModelQuery()
+ * @method static Builder<static>|AdjustmentDocument newQuery()
+ * @method static Builder<static>|AdjustmentDocument query()
+ * @method static Builder<static>|AdjustmentDocument whereCompanyId($value)
+ * @method static Builder<static>|AdjustmentDocument whereCreatedAt($value)
+ * @method static Builder<static>|AdjustmentDocument whereDate($value)
+ * @method static Builder<static>|AdjustmentDocument whereId($value)
+ * @method static Builder<static>|AdjustmentDocument whereJournalEntryId($value)
+ * @method static Builder<static>|AdjustmentDocument whereOriginalInvoiceId($value)
+ * @method static Builder<static>|AdjustmentDocument whereOriginalVendorBillId($value)
+ * @method static Builder<static>|AdjustmentDocument wherePostedAt($value)
+ * @method static Builder<static>|AdjustmentDocument whereReason($value)
+ * @method static Builder<static>|AdjustmentDocument whereReferenceNumber($value)
+ * @method static Builder<static>|AdjustmentDocument whereStatus($value)
+ * @method static Builder<static>|AdjustmentDocument whereTotalAmount($value)
+ * @method static Builder<static>|AdjustmentDocument whereTotalTax($value)
+ * @method static Builder<static>|AdjustmentDocument whereType($value)
+ * @method static Builder<static>|AdjustmentDocument whereUpdatedAt($value)
  * @mixin \Eloquent
  */
 class AdjustmentDocument extends Model
@@ -78,8 +82,13 @@ class AdjustmentDocument extends Model
         'type',                   // [5] e.g., 'Credit Note', 'Debit Note', 'Miscellaneous Adjustment'
         'date',                   // [5]
         'reference_number',       // [5]
+        'subtotal',               // [5] Subtotal before taxes
         'total_amount',           // [5]
         'total_tax',              // [5]
+        'exchange_rate_at_creation', // Exchange rate captured at creation/posting
+        'subtotal_company_currency',     // Subtotal in company base currency
+        'total_amount_company_currency', // Total amount in company base currency
+        'total_tax_company_currency',    // Total tax in company base currency
         'reason',                 // [5]
         'status',                 // [5] e.g., 'Draft', 'Posted'
         'journal_entry_id',       // [5]
@@ -99,8 +108,13 @@ class AdjustmentDocument extends Model
         'date'         => 'date',       // [5, 6]
         'type'         => AdjustmentDocumentType::class,
         'status'       => AdjustmentDocumentStatus::class,
-        'total_amount' => MoneyCast::class,  // [5] Example precision, adjust as needed.
-        'total_tax'    => MoneyCast::class,  // [5] Example precision, adjust as needed.
+        'exchange_rate_at_creation' => 'decimal:10',
+        'subtotal'     => DocumentCurrencyMoneyCast::class,  // Document currency amounts
+        'total_amount' => DocumentCurrencyMoneyCast::class,  // Document currency amounts
+        'total_tax'    => DocumentCurrencyMoneyCast::class,  // Document currency amounts
+        'subtotal_company_currency' => BaseCurrencyMoneyCast::class,  // Company base currency amounts
+        'total_amount_company_currency' => BaseCurrencyMoneyCast::class,  // Company base currency amounts
+        'total_tax_company_currency' => BaseCurrencyMoneyCast::class,  // Company base currency amounts
         'created_at'   => 'datetime',   // [5, 6]
         'updated_at'   => 'datetime',   // [5, 6]
     ];
@@ -156,7 +170,7 @@ class AdjustmentDocument extends Model
      * Get the company that owns the adjustment document.
      * An adjustment document always belongs to a specific company.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
     public function company(): BelongsTo
     {
@@ -168,7 +182,7 @@ class AdjustmentDocument extends Model
      * This is used for credit notes issued against customer invoices.
      * It's nullable as not all adjustment documents will be for invoices.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
     public function originalInvoice(): BelongsTo
     {
@@ -180,7 +194,7 @@ class AdjustmentDocument extends Model
      * This is used for debit notes issued against vendor bills.
      * It's nullable as not all adjustment documents will be for vendor bills.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
     public function originalVendorBill(): BelongsTo
     {
@@ -192,7 +206,7 @@ class AdjustmentDocument extends Model
      * Once an adjustment document is 'Posted', it generates a corresponding
      * journal entry, which is the immutable record in the general ledger.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
     public function journalEntry(): BelongsTo
     {
@@ -205,7 +219,6 @@ class AdjustmentDocument extends Model
     |--------------------------------------------------------------------------
     | Methods to transform attribute values when they are retrieved or set.
     */
-
     // Example of an accessor if you needed a human-readable status, not strictly required for this model.
     // public function getStatusLabelAttribute(): string
     // {
@@ -216,12 +229,11 @@ class AdjustmentDocument extends Model
     //         default => 'Unknown',
     //     };
     // }
-
     /**
      * Get the currency of this invoice.
      * Every invoice operates in a specific currency. [1]
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
     public function currency(): BelongsTo
     {
@@ -255,6 +267,7 @@ class AdjustmentDocument extends Model
             $zero
         );
 
+        $this->subtotal = $subtotal;
         $this->total_tax = $totalTax;
         $this->total_amount = $subtotal->plus($totalTax);
     }

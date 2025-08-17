@@ -1,12 +1,14 @@
 <?php
 
-use App\Filament\Resources\AdjustmentDocumentResource;
+use App\Filament\Resources\AdjustmentDocuments\AdjustmentDocumentResource;
 use App\Models\Product;
 use App\Models\AdjustmentDocument;
 use App\Models\Account;
 use App\Models\Tax;
 use App\Enums\Adjustments\AdjustmentDocumentType;
 use App\Enums\Adjustments\AdjustmentDocumentStatus;
+use App\Actions\Adjustments\CreateAdjustmentDocumentLineAction;
+use App\DataTransferObjects\Adjustments\CreateAdjustmentDocumentLineDTO;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\Traits\WithConfiguredCompany;
 use function Pest\Livewire\livewire;
@@ -40,7 +42,7 @@ it('can create an adjustment document', function () {
         'unit_price' => \Brick\Money\Money::of(100, $this->company->currency->code), // Set a specific price for predictable total
     ]);
 
-    livewire(AdjustmentDocumentResource\Pages\CreateAdjustmentDocument::class)
+    livewire(\App\Filament\Resources\AdjustmentDocuments\Pages\CreateAdjustmentDocument::class)
         ->fillForm([
             'company_id' => $this->company->id,
             'currency_id' => $this->company->currency_id,
@@ -78,7 +80,7 @@ it('can create an adjustment document', function () {
 });
 
 it('can validate input on create', function () {
-    livewire(AdjustmentDocumentResource\Pages\CreateAdjustmentDocument::class)
+    livewire(\App\Filament\Resources\AdjustmentDocuments\Pages\CreateAdjustmentDocument::class)
         ->fillForm([
             'reference_number' => null,
             'date' => null,
@@ -119,17 +121,19 @@ it('can edit an adjustment document', function () {
     ]);
 
     // Create a line manually to ensure proper setup
-    $adjustmentDocument->lines()->create([
-        'description' => 'Test Line',
-        'quantity' => 1,
-        'unit_price' => \Brick\Money\Money::of(100, $this->company->currency->code),
-        'account_id' => $account->id,
-        'tax_id' => null,
-    ]);
+    $createLineAction = app(CreateAdjustmentDocumentLineAction::class);
+    $createLineAction->execute($adjustmentDocument, new CreateAdjustmentDocumentLineDTO(
+        description: 'Test Line',
+        quantity: 1,
+        unit_price: \Brick\Money\Money::of(100, $this->company->currency->code),
+        account_id: $account->id,
+        tax_id: null,
+        product_id: null
+    ));
 
     // The mutateFormDataBeforeFill method in EditAdjustmentDocument already handles
     // the conversion of line data with Money objects properly, so we don't need to override it
-    livewire(AdjustmentDocumentResource\Pages\EditAdjustmentDocument::class, [
+    livewire(\App\Filament\Resources\AdjustmentDocuments\Pages\EditAdjustmentDocument::class, [
         'record' => $adjustmentDocument->getRouteKey(),
     ])
         ->fillForm([
@@ -159,15 +163,17 @@ it('can post an adjustment document', function () {
     ]);
 
     // Create a line manually to ensure proper setup
-    $adjustmentDocument->lines()->create([
-        'description' => 'Test Line',
-        'quantity' => 1,
-        'unit_price' => \Brick\Money\Money::of(100, $this->company->currency->code),
-        'account_id' => $account->id,
-        'tax_id' => null,
-    ]);
+    $createLineAction = app(CreateAdjustmentDocumentLineAction::class);
+    $createLineAction->execute($adjustmentDocument, new CreateAdjustmentDocumentLineDTO(
+        description: 'Test Line',
+        quantity: 1,
+        unit_price: \Brick\Money\Money::of(100, $this->company->currency->code),
+        account_id: $account->id,
+        tax_id: null,
+        product_id: null
+    ));
 
-    livewire(AdjustmentDocumentResource\Pages\EditAdjustmentDocument::class, [
+    livewire(\App\Filament\Resources\AdjustmentDocuments\Pages\EditAdjustmentDocument::class, [
         'record' => $adjustmentDocument->getRouteKey(),
     ])
         ->callAction('post')

@@ -16,6 +16,9 @@ class JournalEntryLineFactory extends Factory
 
         return [
             'journal_entry_id' => JournalEntry::factory(),
+            'company_id' => function (array $attributes) {
+                return JournalEntry::find($attributes['journal_entry_id'])->company_id;
+            },
             'account_id' => Account::factory(),
             'partner_id' => null,
             'description' => $this->faker->sentence(),

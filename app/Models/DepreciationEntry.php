@@ -2,7 +2,10 @@
 
 namespace App\Models;
 
-use App\Casts\MoneyCast;
+use Illuminate\Support\Carbon;
+use Database\Factories\DepreciationEntryFactory;
+use Illuminate\Database\Eloquent\Builder;
+use App\Casts\BaseCurrencyMoneyCast;
 use Illuminate\Database\Eloquent\Model;
 use App\Observers\DepreciationEntryObserver;
 use App\Enums\Assets\DepreciationEntryStatus;
@@ -23,25 +26,25 @@ use Illuminate\Database\Eloquent\Attributes\ObservedBy;
  * @property int $id
  * @property int $asset_id
  * @property int|null $journal_entry_id
- * @property \Illuminate\Support\Carbon $depreciation_date
+ * @property Carbon $depreciation_date
  * @property float $amount
  * @property string $status
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \App\Models\Asset $asset
- * @property-read \App\Models\JournalEntry|null $journalEntry
- * @method static \Database\Factories\DepreciationEntryFactory factory($count = null, $state = [])
- * @method static \Illuminate\Database\Eloquent\Builder<static>|DepreciationEntry newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|DepreciationEntry newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|DepreciationEntry query()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|DepreciationEntry whereAmount($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|DepreciationEntry whereAssetId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|DepreciationEntry whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|DepreciationEntry whereDepreciationDate($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|DepreciationEntry whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|DepreciationEntry whereJournalEntryId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|DepreciationEntry whereStatus($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|DepreciationEntry whereUpdatedAt($value)
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property-read Asset $asset
+ * @property-read JournalEntry|null $journalEntry
+ * @method static DepreciationEntryFactory factory($count = null, $state = [])
+ * @method static Builder<static>|DepreciationEntry newModelQuery()
+ * @method static Builder<static>|DepreciationEntry newQuery()
+ * @method static Builder<static>|DepreciationEntry query()
+ * @method static Builder<static>|DepreciationEntry whereAmount($value)
+ * @method static Builder<static>|DepreciationEntry whereAssetId($value)
+ * @method static Builder<static>|DepreciationEntry whereCreatedAt($value)
+ * @method static Builder<static>|DepreciationEntry whereDepreciationDate($value)
+ * @method static Builder<static>|DepreciationEntry whereId($value)
+ * @method static Builder<static>|DepreciationEntry whereJournalEntryId($value)
+ * @method static Builder<static>|DepreciationEntry whereStatus($value)
+ * @method static Builder<static>|DepreciationEntry whereUpdatedAt($value)
  * @mixin \Eloquent
  */
 #[ObservedBy([DepreciationEntryObserver::class])]
@@ -63,6 +66,7 @@ class DepreciationEntry extends Model
      * @var array<int, string>
      */
     protected $fillable = [
+        'company_id', // Foreign key to the parent company, ensuring data integrity [2, 3].
         'asset_id',
         'depreciation_date',
         'amount',
@@ -79,12 +83,23 @@ class DepreciationEntry extends Model
      */
     protected $casts = [
         'depreciation_date' => 'date', // Casts to Carbon instance, focusing on date part
-        'amount' => MoneyCast::class, // Ensures precision for currency amounts
+        'amount' => BaseCurrencyMoneyCast::class, // Ensures precision for currency amounts
         'journal_entry_id' => 'integer',
         'status' => DepreciationEntryStatus::class,
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
     ];
+
+    /**
+     * The relationships that should always be loaded.
+     * Eager-loading the `asset.company.currency` relationship is critical because the `BaseCurrencyMoneyCast`
+     * for monetary fields on this model depends on the currency context provided by the asset's company.
+     * Without this, any retrieval of a `DepreciationEntry` would fail when casting monetary values
+     * due to the missing currency information, leading to a "currency_id on null" error.
+     *
+     * @var array
+     */
+    protected $with = ['asset.company.currency'];
 
     /*
     |--------------------------------------------------------------------------
@@ -106,7 +121,7 @@ class DepreciationEntry extends Model
      * Get the asset that this depreciation entry belongs to.
      * Each depreciation entry corresponds to a specific fixed asset.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
     public function asset(): BelongsTo
     {
@@ -119,21 +134,12 @@ class DepreciationEntry extends Model
      * The 'journal_entry_id' is nullable while the depreciation entry is in 'Draft'
      * but becomes mandatory upon 'Posting' when the actual financial impact occurs.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
     public function journalEntry(): BelongsTo
     {
         return $this->belongsTo(JournalEntry::class);
     }
 
-    /**
-     * Accessor to provide the currency_id to the MoneyCast.
-     * FIX: Correctly references the parent 'asset' model, not 'invoice'.
-     * This robust implementation prevents N+1 query issues.
-     */
-    public function getCurrencyIdAttribute(): int
-    {
-        // If the relationship is already loaded, use it. Otherwise, use the foreign key.
-        return $this->asset->currency_id ?? $this->asset()->getForeignKeyResults()->first()->currency_id;
-    }
+
 }

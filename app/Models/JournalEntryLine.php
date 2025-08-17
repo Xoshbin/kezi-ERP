@@ -2,13 +2,18 @@
 
 namespace App\Models;
 
-use App\Casts\MoneyCast;
+use App\Observers\JournalEntryLineObserver;
+use Brick\Money\Money;
+use Illuminate\Support\Carbon;
+use Illuminate\Database\Eloquent\Builder;
+use App\Casts\BaseCurrencyMoneyCast;
+
+use App\Casts\OriginalCurrencyMoneyCast;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use RuntimeException; // Utilized for explicit enforcement of immutability and data integrity.
-
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 /**
  * Class JournalEntryLine
  *
@@ -23,35 +28,36 @@ use RuntimeException; // Utilized for explicit enforcement of immutability and d
  * @property int|null $partner_id
  * @property int|null $currency_id
  * @property int|null $analytic_account_id
- * @property \Brick\Money\Money $debit
- * @property \Brick\Money\Money $credit
+ * @property Money $debit
+ * @property Money $credit
  * @property float $original_currency_amount
  * @property string $exchange_rate_at_transaction
  * @property string|null $description
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \App\Models\Account $account
- * @property-read \App\Models\AnalyticAccount|null $analyticAccount
- * @property-read \App\Models\JournalEntry $journalEntry
- * @property-read \App\Models\Partner|null $partner
- * @method static \Illuminate\Database\Eloquent\Builder<static>|JournalEntryLine newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|JournalEntryLine newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|JournalEntryLine query()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|JournalEntryLine whereAccountId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|JournalEntryLine whereAnalyticAccountId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|JournalEntryLine whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|JournalEntryLine whereCredit($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|JournalEntryLine whereCurrencyId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|JournalEntryLine whereDebit($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|JournalEntryLine whereDescription($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|JournalEntryLine whereExchangeRateAtTransaction($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|JournalEntryLine whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|JournalEntryLine whereJournalEntryId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|JournalEntryLine whereOriginalCurrencyAmount($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|JournalEntryLine wherePartnerId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|JournalEntryLine whereUpdatedAt($value)
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property-read Account $account
+ * @property-read AnalyticAccount|null $analyticAccount
+ * @property-read JournalEntry $journalEntry
+ * @property-read Partner|null $partner
+ * @method static Builder<static>|JournalEntryLine newModelQuery()
+ * @method static Builder<static>|JournalEntryLine newQuery()
+ * @method static Builder<static>|JournalEntryLine query()
+ * @method static Builder<static>|JournalEntryLine whereAccountId($value)
+ * @method static Builder<static>|JournalEntryLine whereAnalyticAccountId($value)
+ * @method static Builder<static>|JournalEntryLine whereCreatedAt($value)
+ * @method static Builder<static>|JournalEntryLine whereCredit($value)
+ * @method static Builder<static>|JournalEntryLine whereCurrencyId($value)
+ * @method static Builder<static>|JournalEntryLine whereDebit($value)
+ * @method static Builder<static>|JournalEntryLine whereDescription($value)
+ * @method static Builder<static>|JournalEntryLine whereExchangeRateAtTransaction($value)
+ * @method static Builder<static>|JournalEntryLine whereId($value)
+ * @method static Builder<static>|JournalEntryLine whereJournalEntryId($value)
+ * @method static Builder<static>|JournalEntryLine whereOriginalCurrencyAmount($value)
+ * @method static Builder<static>|JournalEntryLine wherePartnerId($value)
+ * @method static Builder<static>|JournalEntryLine whereUpdatedAt($value)
  * @mixin \Eloquent
  */
+#[ObservedBy([JournalEntryLineObserver::class])]
 class JournalEntryLine extends Model
 {
     use HasFactory;
@@ -75,15 +81,18 @@ class JournalEntryLine extends Model
      * @var array<int, string>
      */
     protected $fillable = [
+        'company_id',
         'journal_entry_id',
         'account_id',
         'partner_id',
+        'currency_id',
         'debit',
         'credit',
         'description',
         'analytic_account_id',
         'original_currency_amount',
-        'exchange_rate_at_transaction',
+        'original_currency_id',
+        'exchange_rate_at_transaction'
     ];
 
     /**
@@ -95,10 +104,29 @@ class JournalEntryLine extends Model
      * @var array<string, string>
      */
     protected $casts = [
-        'debit' => MoneyCast::class,  // Enforces two decimal places for currency amounts.
-        'credit' => MoneyCast::class, // Ensures consistency for credit amounts.
-        'original_currency_amount' => MoneyCast::class
+        // These fields are ALWAYS in the company's base currency
+        'debit' => BaseCurrencyMoneyCast::class,
+        'credit' => BaseCurrencyMoneyCast::class,
+
+
+
+        // This field is in the foreign currency
+        'original_currency_amount' => OriginalCurrencyMoneyCast::class,
+
+        // Cast the rate for correct handling
+        'exchange_rate_at_transaction' => 'float',
     ];
+
+    /**
+     * The relationships that should always be loaded.
+     * Eager-loading the `journalEntry.company.currency` relationship is critical because the `BaseCurrencyMoneyCast`
+     * for monetary fields on this model depends on the currency context provided by the parent journal entry's company.
+     * Without this, any retrieval of a `JournalEntryLine` would fail when casting monetary values
+     * due to the missing currency information, leading to a "currency_id on null" error.
+     *
+     * @var array
+     */
+    protected $with = ['journalEntry.company.currency'];
 
     /**
      * The "booted" method of the model.
@@ -174,6 +202,16 @@ class JournalEntryLine extends Model
     */
 
     /**
+     * Get the company that this rate belongs to.
+     *
+     * @return BelongsTo
+     */
+    public function company(): BelongsTo
+    {
+        return $this->belongsTo(Company::class);
+    }
+
+    /**
      * Get the parent `JournalEntry` model that this line belongs to.
      *
      * This `belongsTo` relationship is foundational, linking each line to its overarching transaction.
@@ -222,25 +260,30 @@ class JournalEntryLine extends Model
     }
 
     /**
-     * Accessor to provide the currency_id to the MoneyCast.
-     * This robust implementation prevents N+1 query issues and handles the creation lifecycle.
+     * Get the `Currency` model for this journal entry line.
+     *
+     * This relationship supports multi-currency transactions where individual lines
+     * may have different currencies than the parent journal entry.
+     *
+     * @return BelongsTo An Eloquent relationship instance for the `Currency` model.
      */
-    public function getCurrencyIdAttribute(): int
+    public function currency(): BelongsTo
     {
-        // This is the most efficient path: the relationship is already loaded in memory.
-        if ($this->relationLoaded('journalEntry') && $this->journalEntry) {
-            return $this->journalEntry->currency_id;
-        }
-
-        // This is the fallback for when the model is being created via a relationship.
-        // Eloquent sets the foreign key 'journal_entry_id' before the cast is triggered.
-        if ($this->journal_entry_id) {
-            // We find the parent's currency_id directly to avoid fully loading the parent model.
-            return JournalEntry::find($this->journal_entry_id)?->currency_id;
-        }
-
-        // If we have no relationship and no foreign key, we cannot determine the currency.
-        throw new \RuntimeException('Could not determine currency for JournalEntryLine.');
+        return $this->belongsTo(Currency::class);
     }
+
+    /**
+     * Relationship to the original currency for this line.
+     */
+    public function originalCurrency(): BelongsTo
+    {
+        return $this->belongsTo(Currency::class, 'original_currency_id');
+    }
+
+
+
+
+
+
 
 }

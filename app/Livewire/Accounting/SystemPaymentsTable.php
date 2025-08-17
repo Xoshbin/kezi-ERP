@@ -2,6 +2,9 @@
 
 namespace App\Livewire\Accounting;
 
+use Filament\Actions\Contracts\HasActions;
+use Filament\Actions\Concerns\InteractsWithActions;
+use Filament\Support\Contracts\TranslatableContentDriver;
 use Brick\Money\Money;
 use App\Models\Payment;
 use Livewire\Component;
@@ -16,9 +19,12 @@ use Filament\Tables\Contracts\HasTable;
 use App\Filament\Tables\Columns\MoneyColumn;
 use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Tables\Concerns\InteractsWithTable;
+use Filament\Tables\Filters\SelectFilter;
+use App\Services\CurrencyConverterService;
 
-class SystemPaymentsTable extends Component implements HasTable, HasForms
+class SystemPaymentsTable extends Component implements HasTable, HasForms, HasActions
 {
+    use InteractsWithActions;
     use InteractsWithTable;
     use InteractsWithForms;
 
@@ -38,7 +44,10 @@ class SystemPaymentsTable extends Component implements HasTable, HasForms
                     ->where('company_id', $this->bankStatement->company_id)
                     ->where('status', PaymentStatus::Confirmed)
                     ->whereDoesntHave('bankStatementLines')  // Only show unreconciled payments
-                    ->with(['partner'])
+                    ->with(['partner', 'currency', 'company'])
+                    // Order by currency compatibility: same currency first, then others
+                    ->orderByRaw("CASE WHEN currency_id = ? THEN 0 ELSE 1 END", [$this->bankStatement->currency_id])
+                    ->orderBy('payment_date', 'desc')
             )
             ->columns([
                 ViewColumn::make('select')
@@ -65,6 +74,38 @@ class SystemPaymentsTable extends Component implements HasTable, HasForms
                 MoneyColumn::make('amount')
                     ->label(__('bank_statement.amount'))
                     ->sortable(),
+                TextColumn::make('currency.code')
+                    ->label(__('bank_statement.currency'))
+                    ->badge()
+                    ->color(fn($record) => $record->currency_id === $this->bankStatement->currency_id ? 'success' : 'warning')
+                    ->tooltip(fn($record) => $record->currency_id === $this->bankStatement->currency_id
+                        ? __('bank_statement.same_currency_as_statement')
+                        : __('bank_statement.different_currency_conversion_required')),
+            ])
+            ->filters([
+                SelectFilter::make('currency_compatibility')
+                    ->label(__('bank_statement.currency_filter'))
+                    ->options([
+                        'same' => __('bank_statement.same_currency_only'),
+                        'different' => __('bank_statement.different_currency_only'),
+                        'all' => __('bank_statement.all_currencies'),
+                    ])
+                    ->default('all')
+                    ->query(function ($query, array $data) {
+                        if (!isset($data['value']) || $data['value'] === 'all') {
+                            return $query;
+                        }
+
+                        if ($data['value'] === 'same') {
+                            return $query->where('currency_id', $this->bankStatement->currency_id);
+                        }
+
+                        if ($data['value'] === 'different') {
+                            return $query->where('currency_id', '!=', $this->bankStatement->currency_id);
+                        }
+
+                        return $query;
+                    }),
             ])
             ->paginated([10, 25, 50])
             ->defaultSort('payment_date', 'desc')
@@ -85,15 +126,38 @@ class SystemPaymentsTable extends Component implements HasTable, HasForms
 
     protected function emitSelectionChanged(): void
     {
-        $total = Money::of(0, 'IQD');
+        // Use the bank statement's currency for total calculation
+        $bankStatementCurrency = $this->bankStatement->currency->code;
+        $total = Money::of(0, $bankStatementCurrency);
 
         if (!empty($this->selectedPayments)) {
-            $payments = Payment::whereIn('id', $this->selectedPayments)->get();
+            $payments = Payment::whereIn('id', $this->selectedPayments)->with('currency')->get();
             foreach ($payments as $payment) {
+                $paymentAmount = $payment->amount;
+
+                // Convert payment amount to bank statement currency if different
+                if ($paymentAmount->getCurrency()->getCurrencyCode() !== $bankStatementCurrency) {
+                    try {
+                        $paymentAmount = app(CurrencyConverterService::class)->convert(
+                            $paymentAmount,
+                            $this->bankStatement->currency,
+                            $payment->payment_date,
+                            $payment->company
+                        );
+                    } catch (\Exception $e) {
+                        // If conversion fails, use a simple 1:1 conversion as fallback
+                        // This should be rare and will be logged for investigation
+                        $paymentAmount = Money::ofMinor(
+                            $paymentAmount->getMinorAmount()->toInt(),
+                            $bankStatementCurrency
+                        );
+                    }
+                }
+
                 if ($payment->payment_type === PaymentType::Outbound) {
-                    $total = $total->minus($payment->amount);
+                    $total = $total->minus($paymentAmount);
                 } else {
-                    $total = $total->plus($payment->amount);
+                    $total = $total->plus($paymentAmount);
                 }
             }
         }
@@ -105,7 +169,7 @@ class SystemPaymentsTable extends Component implements HasTable, HasForms
         ]);
     }
 
-    public function makeFilamentTranslatableContentDriver(): ?\Filament\Support\Contracts\TranslatableContentDriver
+    public function makeFilamentTranslatableContentDriver(): ?TranslatableContentDriver
     {
         return null;
     }

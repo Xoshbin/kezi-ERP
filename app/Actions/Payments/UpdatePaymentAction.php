@@ -2,6 +2,7 @@
 
 namespace App\Actions\Payments;
 
+use Carbon\Carbon;
 use App\DataTransferObjects\Payments\UpdatePaymentDTO;
 use App\Exceptions\UpdateNotAllowedException;
 use App\Models\Currency;
@@ -33,7 +34,7 @@ class UpdatePaymentAction
             throw new InvalidArgumentException('A payment must be linked to at least one document.');
         }
 
-        $this->lockDateService->enforce($payment->company, \Carbon\Carbon::parse($dto->payment_date));
+        $this->lockDateService->enforce($payment->company, Carbon::parse($dto->payment_date));
 
         return DB::transaction(function () use ($dto, $payment) {
             $currencyCode = Currency::find($dto->currency_id)->code;

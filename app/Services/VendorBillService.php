@@ -2,7 +2,12 @@
 
 namespace App\Services;
 
+use App\Models\Company;
+use Carbon\Carbon;
+use App\Models\VendorBillLine;
+use Exception;
 use App\Models\User;
+use App\Models\Currency;
 use RuntimeException;
 use App\Models\AuditLog;
 use App\Models\VendorBill;
@@ -18,7 +23,9 @@ use App\Exceptions\DeletionNotAllowedException;
 use App\Actions\Inventory\CreateStockMoveAction;
 use App\DataTransferObjects\Inventory\CreateStockMoveDTO;
 use App\Actions\Accounting\CreateJournalEntryForInventoryBillAction;
-use App\Actions\Accounting\CreateJournalEntryForExpenseBillAction; // Add this import
+use App\Actions\Accounting\CreateJournalEntryForExpenseBillAction;
+use App\Services\CurrencyConverterService;
+use App\Services\ExchangeRateService;
 
 class VendorBillService
 {
@@ -27,7 +34,9 @@ class VendorBillService
         protected JournalEntryService $journalEntryService,
         protected CreateStockMoveAction $createStockMoveAction,
         protected CreateJournalEntryForInventoryBillAction $createJournalEntryForInventoryBillAction,
-        protected CreateJournalEntryForExpenseBillAction $createJournalEntryForExpenseBillAction // Add this injection
+        protected CreateJournalEntryForExpenseBillAction $createJournalEntryForExpenseBillAction,
+        protected CurrencyConverterService $currencyConverter,
+        protected ExchangeRateService $exchangeRateService
     ) {}
 
     public function post(VendorBill $vendorBill, User $user): void
@@ -36,12 +45,15 @@ class VendorBillService
             return;
         }
 
-        $this->lockDateService->enforce(\App\Models\Company::find($vendorBill->company_id), \Carbon\Carbon::parse($vendorBill->bill_date));
+        $this->lockDateService->enforce(Company::find($vendorBill->company_id), Carbon::parse($vendorBill->bill_date));
 
 
         Gate::forUser($user)->authorize('post', $vendorBill);
 
         DB::transaction(function () use ($vendorBill, $user) {
+            // Process multi-currency amounts before posting
+            $this->processMultiCurrencyAmounts($vendorBill);
+
             $vendorBill->user_id = $user->id;
             $vendorBill->status = VendorBillStatus::Posted;
             $vendorBill->posted_at = now();
@@ -75,7 +87,7 @@ class VendorBillService
     /**
      * Creates a stock move for a given vendor bill line.
      */
-    private function createStockMoveForLine(VendorBill $vendorBill, \App\Models\VendorBillLine $line, User $user): void
+    private function createStockMoveForLine(VendorBill $vendorBill, VendorBillLine $line, User $user): void
     {
         $company = $vendorBill->company;
 
@@ -106,7 +118,7 @@ class VendorBillService
      */
     public function delete(VendorBill $vendorBill): bool
     {
-        $this->lockDateService->enforce(\App\Models\Company::find($vendorBill->company_id), \Carbon\Carbon::parse($vendorBill->bill_date));
+        $this->lockDateService->enforce(Company::find($vendorBill->company_id), Carbon::parse($vendorBill->bill_date));
 
         if ($vendorBill->status !== VendorBillStatus::Draft) {
             throw new DeletionNotAllowedException(
@@ -127,13 +139,13 @@ class VendorBillService
         Gate::forUser($user)->authorize('cancel', $vendorBill);
 
         if ($vendorBill->status !== VendorBillStatus::Posted) {
-            throw new \Exception('Only posted vendor bills can be cancelled.');
+            throw new Exception('Only posted vendor bills can be cancelled.');
         }
 
         DB::transaction(function () use ($vendorBill, $user, $reason) {
             $originalEntry = $vendorBill->journalEntry;
             if (!$originalEntry) {
-                throw new \Exception('Cannot cancel a bill without a journal entry.');
+                throw new Exception('Cannot cancel a bill without a journal entry.');
             }
 
             // Step 1: Create a detailed audit log *before* making changes.
@@ -168,12 +180,108 @@ class VendorBillService
         $this->post($vendorBill, $user);
     }
 
+    /**
+     * Process multi-currency amounts for a vendor bill.
+     * Captures exchange rate and converts amounts to company base currency.
+     */
+    protected function processMultiCurrencyAmounts(VendorBill $vendorBill): void
+    {
+        // Load necessary relationships
+        $vendorBill->load(['company', 'currency', 'lines']);
+
+        // If vendor bill is in company base currency, set rate to 1.0
+        if ($vendorBill->currency_id === $vendorBill->company->currency_id) {
+            $vendorBill->exchange_rate_at_creation = 1.0;
+            $vendorBill->total_amount_company_currency = $vendorBill->total_amount;
+            $vendorBill->total_tax_company_currency = $vendorBill->total_tax;
+            return;
+        }
+
+        // Get exchange rate for the bill date
+        $exchangeRate = $this->currencyConverter->getExchangeRate($vendorBill->currency, $vendorBill->bill_date, $vendorBill->company);
+
+        // If no exchange rate is found, skip multi-currency processing for backward compatibility
+        if (!$exchangeRate) {
+            $vendorBill->exchange_rate_at_creation = 1.0;
+            $vendorBill->total_amount_company_currency = $vendorBill->total_amount;
+            $vendorBill->total_tax_company_currency = $vendorBill->total_tax;
+            return;
+        }
+
+        // Convert amounts to company currency
+        $companyCurrency = $vendorBill->company->currency;
+
+        $totalAmountCompanyCurrency = $this->currencyConverter->convertToBaseCurrency(
+            $vendorBill->total_amount,
+            $vendorBill->currency,
+            $companyCurrency,
+            $vendorBill->bill_date,
+            $vendorBill->company
+        );
+
+        $totalTaxCompanyCurrency = $this->currencyConverter->convertToBaseCurrency(
+            $vendorBill->total_tax,
+            $vendorBill->currency,
+            $companyCurrency,
+            $vendorBill->bill_date,
+            $vendorBill->company
+        );
+
+        // Convert vendor bill line amounts
+        foreach ($vendorBill->lines as $line) {
+            $this->convertVendorBillLineAmounts($line, $companyCurrency, $vendorBill->company);
+        }
+
+        // Update vendor bill with converted amounts
+        $vendorBill->update([
+            'exchange_rate_at_creation' => $exchangeRate,
+            'total_amount_company_currency' => $totalAmountCompanyCurrency,
+            'total_tax_company_currency' => $totalTaxCompanyCurrency,
+        ]);
+    }
+
+    /**
+     * Convert vendor bill line amounts to company currency.
+     */
+    protected function convertVendorBillLineAmounts($line, Currency $companyCurrency, Company $company): void
+    {
+        $unitPriceCompanyCurrency = $this->currencyConverter->convertToBaseCurrency(
+            $line->unit_price,
+            $line->vendorBill->currency,
+            $companyCurrency,
+            $line->vendorBill->bill_date,
+            $company
+        );
+
+        $subtotalCompanyCurrency = $this->currencyConverter->convertToBaseCurrency(
+            $line->subtotal,
+            $line->vendorBill->currency,
+            $companyCurrency,
+            $line->vendorBill->bill_date,
+            $company
+        );
+
+        $totalLineTaxCompanyCurrency = $this->currencyConverter->convertToBaseCurrency(
+            $line->total_line_tax,
+            $line->vendorBill->currency,
+            $companyCurrency,
+            $line->vendorBill->bill_date,
+            $company
+        );
+
+        $line->update([
+            'unit_price_company_currency' => $unitPriceCompanyCurrency,
+            'subtotal_company_currency' => $subtotalCompanyCurrency,
+            'total_line_tax_company_currency' => $totalLineTaxCompanyCurrency,
+        ]);
+    }
+
     public function resetToDraft(VendorBill $vendorBill, User $user, string $reason): void
     {
         Gate::forUser($user)->authorize('resetToDraft', $vendorBill);
 
-        if ($vendorBill->status !== \App\Enums\Purchases\VendorBillStatus::Posted) {
-            throw new \Exception('Only posted vendor bills can be reset to draft.');
+        if ($vendorBill->status !== VendorBillStatus::Posted) {
+            throw new Exception('Only posted vendor bills can be reset to draft.');
         }
 
         DB::transaction(function () use ($vendorBill, $user, $reason) {
@@ -191,7 +299,7 @@ class VendorBillService
             ];
 
             $vendorBill->update([
-                'status' => \App\Enums\Purchases\VendorBillStatus::Draft,
+                'status' => VendorBillStatus::Draft,
                 'posted_at' => null,
                 'journal_entry_id' => null,
                 'reset_to_draft_log' => array_merge($vendorBill->reset_to_draft_log ?? [], [$logEntry]),

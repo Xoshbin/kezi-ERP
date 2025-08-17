@@ -2,16 +2,23 @@
 
 namespace App\Models;
 
+use Illuminate\Support\Carbon;
+use Illuminate\Database\Eloquent\Collection;
+use Database\Factories\CurrencyFactory;
+use Illuminate\Database\Eloquent\Builder;
 use App\Models\Company;
+use App\Models\CurrencyRate;
 use App\Models\Invoice;
 use App\Models\Journal;
 use App\Models\VendorBill;
 use App\Observers\CurrencyObserver;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Spatie\Translatable\HasTranslations;
+use App\Traits\TranslatableSearch;
 
 /**
  * Class Currency
@@ -27,41 +34,40 @@ use Spatie\Translatable\HasTranslations;
  * @property string $symbol
  * @property float $exchange_rate
  * @property bool $is_active
- * @property \Illuminate\Support\Carbon|null $last_updated_at
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\AnalyticAccount> $analyticAccounts
+ * @property Carbon|null $last_updated_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property-read Collection<int, AnalyticAccount> $analyticAccounts
  * @property-read int|null $analytic_accounts_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Company> $companies
+ * @property-read Collection<int, Company> $companies
  * @property-read int|null $companies_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Invoice> $invoices
+ * @property-read Collection<int, Invoice> $invoices
  * @property-read int|null $invoices_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Journal> $journals
+ * @property-read Collection<int, Journal> $journals
  * @property-read int|null $journals_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Payment> $payments
+ * @property-read Collection<int, Payment> $payments
  * @property-read int|null $payments_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\VendorBill> $vendorBills
+ * @property-read Collection<int, VendorBill> $vendorBills
  * @property-read int|null $vendor_bills_count
- * @method static \Database\Factories\CurrencyFactory factory($count = null, $state = [])
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Currency newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Currency newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Currency query()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Currency whereCode($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Currency whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Currency whereExchangeRate($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Currency whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Currency whereIsActive($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Currency whereLastUpdatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Currency whereName($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Currency whereSymbol($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Currency whereUpdatedAt($value)
+ * @method static CurrencyFactory factory($count = null, $state = [])
+ * @method static Builder<static>|Currency newModelQuery()
+ * @method static Builder<static>|Currency newQuery()
+ * @method static Builder<static>|Currency query()
+ * @method static Builder<static>|Currency whereCode($value)
+ * @method static Builder<static>|Currency whereCreatedAt($value)
+ * @method static Builder<static>|Currency whereExchangeRate($value)
+ * @method static Builder<static>|Currency whereId($value)
+ * @method static Builder<static>|Currency whereIsActive($value)
+ * @method static Builder<static>|Currency whereLastUpdatedAt($value)
+ * @method static Builder<static>|Currency whereName($value)
+ * @method static Builder<static>|Currency whereSymbol($value)
+ * @method static Builder<static>|Currency whereUpdatedAt($value)
  * @mixin \Eloquent
  */
-
 #[ObservedBy([CurrencyObserver::class])]
 class Currency extends Model
 {
-    use HasFactory, HasTranslations;
+    use HasFactory, HasTranslations, TranslatableSearch;
 
     public array $translatable = ['name'];
 
@@ -83,7 +89,6 @@ class Currency extends Model
         'code',
         'name',
         'symbol',
-        'exchange_rate',
         'is_active',
         'last_updated_at',
         'decimal_places'
@@ -96,7 +101,6 @@ class Currency extends Model
      * @var array<string, string>
      */
     protected $casts = [
-        'exchange_rate' => 'float',
         'is_active' => 'boolean',
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
@@ -110,12 +114,11 @@ class Currency extends Model
     |--------------------------------------------------------------------------
     | A currency can be the default for companies, or specified for various financial documents.
     */
-
     /**
      * Get the companies that use this currency as their default operating currency.
      * A single currency can be the base currency for multiple companies.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return HasMany
      */
     public function companies(): HasMany
     {
@@ -126,7 +129,7 @@ class Currency extends Model
      * Get the journals that operate in this specific currency.
      * Some journals may be configured to handle transactions in a single currency only.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return HasMany
      */
     public function journals(): HasMany
     {
@@ -137,7 +140,7 @@ class Currency extends Model
      * Get the invoices issued in this currency.
      * Transactions like invoices can be in a currency different from the company's default.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return HasMany
      */
     public function invoices(): HasMany
     {
@@ -148,7 +151,7 @@ class Currency extends Model
      * Get the vendor bills received in this currency.
      * Vendor bills, similar to invoices, can be in various currencies.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return HasMany
      */
     public function vendorBills(): HasMany
     {
@@ -159,7 +162,7 @@ class Currency extends Model
      * Get the payments made or received in this currency.
      * Payments track the actual cash movement in a specific currency.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return HasMany
      */
     public function payments(): HasMany
     {
@@ -170,7 +173,7 @@ class Currency extends Model
      * Get the analytic accounts that may be specific to this currency.
      * While not all analytic accounts require a specific currency, some might for project-specific budgeting.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return HasMany
      */
     public function analyticAccounts(): HasMany
     {
@@ -180,5 +183,26 @@ class Currency extends Model
     public function journalEntries(): HasMany
     {
         return $this->hasMany(JournalEntry::class);
+    }
+
+    /**
+     * Get the historical exchange rates for this currency.
+     * This relationship provides access to all historical exchange rate data.
+     *
+     * @return HasMany
+     */
+    public function rates(): HasMany
+    {
+        return $this->hasMany(CurrencyRate::class);
+    }
+
+    /**
+     * Get the latest exchange rate for this currency.
+     *
+     * @return HasOne
+     */
+    public function latestRate(): HasOne
+    {
+        return $this->hasOne(CurrencyRate::class)->latestOfMany('effective_date');
     }
 }

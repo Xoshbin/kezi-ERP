@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\InvoiceLine;
 use Brick\Money\Money;
 use App\Models\Company;
 use App\Models\Invoice;
@@ -46,7 +47,7 @@ class InvoiceFactory extends Factory
     public function withLines(int $count = 1): self
     {
         return $this->afterCreating(function (Invoice $invoice) use ($count) {
-            \App\Models\InvoiceLine::factory()->count($count)->create([
+            InvoiceLine::factory()->count($count)->create([
                 'invoice_id' => $invoice->id,
             ]);
         });

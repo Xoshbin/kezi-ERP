@@ -2,6 +2,10 @@
 
 namespace App\Models;
 
+use Illuminate\Support\Carbon;
+use Illuminate\Database\Eloquent\Collection;
+use Database\Factories\AccountFactory;
+use Illuminate\Database\Eloquent\Builder;
 use App\Observers\AccountObserver;
 use App\Observers\AuditLogObserver;
 use App\Enums\Accounting\AccountType;
@@ -27,50 +31,60 @@ use Illuminate\Database\Eloquent\Attributes\ObservedBy;
  * @property string $name
  * @property string $type
  * @property bool $is_deprecated
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Asset> $accumulatedDepreciationAssets
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property-read Collection<int, Asset> $accumulatedDepreciationAssets
  * @property-read int|null $accumulated_depreciation_assets_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Asset> $assets
+ * @property-read Collection<int, Asset> $assets
  * @property-read int|null $assets_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\BudgetLine> $budgetLines
+ * @property-read Collection<int, BudgetLine> $budgetLines
  * @property-read int|null $budget_lines_count
- * @property-read \App\Models\Company $company
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Asset> $depreciationExpenseAssets
+ * @property-read Company $company
+ * @property-read Collection<int, Asset> $depreciationExpenseAssets
  * @property-read int|null $depreciation_expense_assets_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\VendorBillLine> $expenseVendorBillLines
+ * @property-read Collection<int, VendorBillLine> $expenseVendorBillLines
  * @property-read int|null $expense_vendor_bill_lines_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\InvoiceLine> $incomeInvoiceLines
+ * @property-read Collection<int, InvoiceLine> $incomeInvoiceLines
  * @property-read int|null $income_invoice_lines_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\JournalEntryLine> $journalEntryLines
+ * @property-read Collection<int, JournalEntryLine> $journalEntryLines
  * @property-read int|null $journal_entry_lines_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\FiscalPositionAccountMapping> $mappedFiscalPositionMappings
+ * @property-read Collection<int, FiscalPositionAccountMapping> $mappedFiscalPositionMappings
  * @property-read int|null $mapped_fiscal_position_mappings_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\FiscalPositionAccountMapping> $originalFiscalPositionMappings
+ * @property-read Collection<int, FiscalPositionAccountMapping> $originalFiscalPositionMappings
  * @property-read int|null $original_fiscal_position_mappings_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Tax> $taxes
+ * @property-read Collection<int, Tax> $taxes
  * @property-read int|null $taxes_count
- * @method static \Database\Factories\AccountFactory factory($count = null, $state = [])
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Account newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Account newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Account query()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Account whereCode($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Account whereCompanyId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Account whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Account whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Account whereIsDeprecated($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Account whereName($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Account whereType($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Account whereUpdatedAt($value)
+ * @method static AccountFactory factory($count = null, $state = [])
+ * @method static Builder<static>|Account newModelQuery()
+ * @method static Builder<static>|Account newQuery()
+ * @method static Builder<static>|Account query()
+ * @method static Builder<static>|Account whereCode($value)
+ * @method static Builder<static>|Account whereCompanyId($value)
+ * @method static Builder<static>|Account whereCreatedAt($value)
+ * @method static Builder<static>|Account whereId($value)
+ * @method static Builder<static>|Account whereIsDeprecated($value)
+ * @method static Builder<static>|Account whereName($value)
+ * @method static Builder<static>|Account whereType($value)
+ * @method static Builder<static>|Account whereUpdatedAt($value)
  * @mixin \Eloquent
  */
-
 #[ObservedBy([AccountObserver::class, AuditLogObserver::class])] //(to log when accounts are created or deprecated)
 class Account extends Model
 {
     use HasFactory, HasTranslations;
+    use \App\Traits\TranslatableSearch;
 
     public array $translatable = ['name'];
+
+    /**
+     * Get the non-translatable fields that should be searched.
+     *
+     * @return array
+     */
+    public function getNonTranslatableSearchFields(): array
+    {
+        return ['code'];
+    }
 
     /**
      * The database table associated with the model.
@@ -93,6 +107,7 @@ class Account extends Model
      */
     protected $fillable = [
         'company_id',
+        'currency_id',
         'code',
         'name',
         'type',
@@ -127,10 +142,22 @@ class Account extends Model
     */
 
     /**
+     * Get the currency of this invoice.
+     * Every invoice operates in a specific currency. [1]
+     *
+     * @return BelongsTo
+     */
+    public function currency(): BelongsTo
+    {
+        return $this->belongsTo(Currency::class);
+    }
+
+
+    /**
      * Get the company that owns this account.
      * An account logically belongs to a specific company in a multi-company setup [5].
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
     public function company(): BelongsTo
     {
@@ -144,7 +171,7 @@ class Account extends Model
      * one debit and one credit, each linked to a specific account [5].
      * This forms the bedrock of double-entry bookkeeping [15].
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return HasMany
      */
     public function journalEntryLines(): HasMany
     {
@@ -156,7 +183,7 @@ class Account extends Model
      *
      * Revenue recognition is tied to specific income accounts [5].
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return HasMany
      */
     public function incomeInvoiceLines(): HasMany
     {
@@ -168,7 +195,7 @@ class Account extends Model
      *
      * Similarly, expenses are categorized under specific expense accounts [5].
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return HasMany
      */
     public function expenseVendorBillLines(): HasMany
     {
@@ -180,7 +207,7 @@ class Account extends Model
      *
      * Tax management often involves posting to dedicated tax liability/asset accounts [16].
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return HasMany
      */
     public function taxes(): HasMany
     {
@@ -192,7 +219,7 @@ class Account extends Model
      *
      * Fixed assets are recorded on specific balance sheet accounts [16].
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return HasMany
      */
     public function assets(): HasMany
     {
@@ -204,7 +231,7 @@ class Account extends Model
      *
      * Depreciation expense is typically recognized in a profit and loss account [16].
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return HasMany
      */
     public function depreciationExpenseAssets(): HasMany
     {
@@ -216,7 +243,7 @@ class Account extends Model
      *
      * Accumulated depreciation reduces the book value of an asset on the balance sheet [16].
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return HasMany
      */
     public function accumulatedDepreciationAssets(): HasMany
     {
@@ -228,7 +255,7 @@ class Account extends Model
      *
      * Fiscal positions may remap default accounts based on specific criteria [16].
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return HasMany
      */
     public function originalFiscalPositionMappings(): HasMany
     {
@@ -238,7 +265,7 @@ class Account extends Model
     /**
      * Get the fiscal position account mappings where this account is the mapped (new) account.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return HasMany
      */
     public function mappedFiscalPositionMappings(): HasMany
     {
@@ -250,7 +277,7 @@ class Account extends Model
      *
      * Accounts can be linked to financial budget lines for detailed budget vs. actual analysis [16].
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return HasMany
      */
     public function budgetLines(): HasMany
     {

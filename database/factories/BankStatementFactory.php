@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\BankStatement;
 use Brick\Money\Money;
 use App\Models\Company;
 use App\Models\Journal;
@@ -9,7 +10,7 @@ use App\Models\Currency;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\BankStatement>
+ * @extends Factory<BankStatement>
  */
 class BankStatementFactory extends Factory
 {

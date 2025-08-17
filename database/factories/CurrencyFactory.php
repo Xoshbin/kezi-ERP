@@ -2,10 +2,11 @@
 
 namespace Database\Factories;
 
+use App\Models\Currency;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Currency>
+ * @extends Factory<Currency>
  */
 class CurrencyFactory extends Factory
 {
@@ -16,20 +17,26 @@ class CurrencyFactory extends Factory
      */
     public function definition(): array
     {
+        static $currencies = ['USD', 'EUR', 'GBP', 'JPY', 'CAD', 'AUD', 'CHF', 'CNY', 'SEK', 'NZD'];
+        static $counter = 0;
+
+        $currencyCode = $currencies[$counter % count($currencies)];
+        $counter++;
+
         return [
-            'name' => $this->faker->unique()->country . ' Dollar',
-            'code' => $this->faker->unique()->currencyCode,
-            'symbol' => $this->faker->unique()->lexify('?'),
-            'exchange_rate' => $this->faker->randomFloat(4, 0.5, 1.5),
+            'name' => $currencyCode . ' Currency',
+            'code' => $currencyCode,
+            'symbol' => '$',
             'decimal_places' => 2,
+            'is_active' => true,
         ];
     }
 
     public function configure(): self
     {
-        return $this->afterMaking(function (\App\Models\Currency $currency) {
+        return $this->afterMaking(function (Currency $currency) {
             //
-        })->afterCreating(function (\App\Models\Currency $currency) {
+        })->afterCreating(function (Currency $currency) {
             if ($currency->code === 'IQD') {
                 $currency->decimal_places = 3;
                 $currency->save();

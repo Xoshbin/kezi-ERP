@@ -2,6 +2,9 @@
 
 namespace App\Models;
 
+use Illuminate\Support\Carbon;
+use Database\Factories\FiscalPositionAccountMappingFactory;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -10,33 +13,33 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * Class FiscalPositionAccountMapping
  *
  * @package App\Models
- * 
+ *
  * This Eloquent model represents a specific rule within a Fiscal Position that dictates how
  * a general ledger account (Chart of Accounts) is re-mapped or transformed during a financial
  * transaction. It is a critical component for adapting accounting entries to local regulations
  * or business scenarios, ensuring that the correct accounts are impacted based on the
  * applied fiscal position.
- * 
+ *
  * These mappings are essential for compliance and automation in multi-jurisdictional accounting systems,
  * allowing for dynamic adjustment of general ledger accounts (e.g., re-routing a domestic
  * sales account to an export sales account for international transactions).
  * @property int $fiscal_position_id
  * @property int $original_account_id
  * @property int $mapped_account_id
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \App\Models\FiscalPosition $fiscalPosition
- * @property-read \App\Models\Account $mappedAccount
- * @property-read \App\Models\Account $originalAccount
- * @method static \Database\Factories\FiscalPositionAccountMappingFactory factory($count = null, $state = [])
- * @method static \Illuminate\Database\Eloquent\Builder<static>|FiscalPositionAccountMapping newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|FiscalPositionAccountMapping newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|FiscalPositionAccountMapping query()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|FiscalPositionAccountMapping whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|FiscalPositionAccountMapping whereFiscalPositionId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|FiscalPositionAccountMapping whereMappedAccountId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|FiscalPositionAccountMapping whereOriginalAccountId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|FiscalPositionAccountMapping whereUpdatedAt($value)
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property-read FiscalPosition $fiscalPosition
+ * @property-read Account $mappedAccount
+ * @property-read Account $originalAccount
+ * @method static FiscalPositionAccountMappingFactory factory($count = null, $state = [])
+ * @method static Builder<static>|FiscalPositionAccountMapping newModelQuery()
+ * @method static Builder<static>|FiscalPositionAccountMapping newQuery()
+ * @method static Builder<static>|FiscalPositionAccountMapping query()
+ * @method static Builder<static>|FiscalPositionAccountMapping whereCreatedAt($value)
+ * @method static Builder<static>|FiscalPositionAccountMapping whereFiscalPositionId($value)
+ * @method static Builder<static>|FiscalPositionAccountMapping whereMappedAccountId($value)
+ * @method static Builder<static>|FiscalPositionAccountMapping whereOriginalAccountId($value)
+ * @method static Builder<static>|FiscalPositionAccountMapping whereUpdatedAt($value)
  * @mixin \Eloquent
  */
 class FiscalPositionAccountMapping extends Model
@@ -58,6 +61,7 @@ class FiscalPositionAccountMapping extends Model
      * @var array<int, string>
      */
     protected $fillable = [
+        'company_id',          // Foreign key to the parent company, ensuring data integrity [2, 3].
         'fiscal_position_id',
         'original_account_id',
         'mapped_account_id',
@@ -83,10 +87,20 @@ class FiscalPositionAccountMapping extends Model
     */
 
     /**
+     * Get the company that this rate belongs to.
+     *
+     * @return BelongsTo
+     */
+    public function company(): BelongsTo
+    {
+        return $this->belongsTo(Company::class);
+    }
+
+    /**
      * Get the fiscal position that this account mapping belongs to.
      * This defines the context under which the account re-mapping takes place [1, 2].
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
     public function fiscalPosition(): BelongsTo
     {
@@ -99,7 +113,7 @@ class FiscalPositionAccountMapping extends Model
      * This is the source account (e.g., a standard sales income account) that will be
      * replaced when the fiscal position is applied [1, 2].
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
     public function originalAccount(): BelongsTo
     {
@@ -114,7 +128,7 @@ class FiscalPositionAccountMapping extends Model
      * This is the target account (e.g., an export sales income account) that will be
      * used after the fiscal position's rule is applied [1, 2].
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
     public function mappedAccount(): BelongsTo
     {

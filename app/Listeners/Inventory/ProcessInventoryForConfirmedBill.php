@@ -2,6 +2,7 @@
 
 namespace App\Listeners\Inventory;
 
+use RuntimeException;
 use App\Actions\Inventory\UpdateProductInventoryStatsAction;
 use App\Enums\Inventory\StockMoveStatus;
 use App\Enums\Inventory\StockMoveType;
@@ -33,7 +34,7 @@ class ProcessInventoryForConfirmedBill
         $company = $vendorBill->company;
 
         if (!$company->vendorLocation || !$company->defaultStockLocation) {
-            throw new \RuntimeException("Default Vendor or Stock Location is not configured for Company ID: {$company->id}.");
+            throw new RuntimeException("Default Vendor or Stock Location is not configured for Company ID: {$company->id}.");
         }
 
         StockMove::create([
@@ -51,10 +52,13 @@ class ProcessInventoryForConfirmedBill
             'completed_at' => now(),
         ]);
 
+        // Use company currency unit price for inventory calculations
+        $unitPriceInCompanyCurrency = $line->unit_price_company_currency ?? $line->unit_price;
+
         $this->updateProductInventoryStatsAction->execute(
             $product,
             $line->quantity,
-            $line->unit_price
+            $unitPriceInCompanyCurrency
         );
     }
 }

@@ -2,6 +2,7 @@
 
 namespace App\Actions\Accounting;
 
+use RuntimeException;
 use App\DataTransferObjects\Accounting\CreateJournalEntryDTO;
 use App\DataTransferObjects\Accounting\CreateJournalEntryLineDTO;
 use App\Models\AdjustmentDocument;
@@ -29,14 +30,14 @@ class CreateJournalEntryForAdjustmentAction
         $salesJournalId = $company->default_sales_journal_id;
 
         if (!$arAccountId || !$salesDiscountAccountId || !$taxAccountId || !$salesJournalId) {
-            throw new \RuntimeException('Default accounting accounts for adjustments are not configured for this company.');
+            throw new RuntimeException('Default accounting accounts for adjustments are not configured for this company.');
         }
 
         // 3. Build the journal entry lines based on credit note accounting rules (reversing a sale).
         $lineDTOs = [];
-        // Explicitly use the document's currency for all calculations.
-        $totalAmount = Money::ofMinor($adjustment->getAttributes()['total_amount'], $currencyCode);
-        $totalTax = Money::ofMinor($adjustment->getAttributes()['total_tax'], $currencyCode);
+        // Use the properly cast Money objects from the adjustment document
+        $totalAmount = $adjustment->total_amount;
+        $totalTax = $adjustment->total_tax;
         $subtotal = $totalAmount->minus($totalTax);
 
         // Rule: DEBIT the Sales Discount/Contra-Revenue account.
