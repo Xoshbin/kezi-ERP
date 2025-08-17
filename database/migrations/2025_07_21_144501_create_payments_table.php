@@ -19,6 +19,11 @@ return new class extends Migration
             $table->foreignId('currency_id')->constrained('currencies');
             $table->foreignId('paid_to_from_partner_id')->constrained('partners');
             $table->foreignId('journal_entry_id')->nullable()->constrained('journal_entries')->onDelete('set null');
+            // Add exchange rate captured at payment registration
+            $table->decimal('exchange_rate_at_payment', 20, 10)->nullable();
+
+            // Add company currency amount (converted amount)
+            $table->unsignedBigInteger('amount_company_currency')->nullable();
             $table->date('payment_date');
             $table->unsignedBigInteger('amount');
             $table->string('payment_type'); // 'inbound', 'outbound'

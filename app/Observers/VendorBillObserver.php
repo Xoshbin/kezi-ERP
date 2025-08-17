@@ -45,8 +45,6 @@ class VendorBillObserver
             throw new RuntimeException("Default Vendor or Stock Location is not configured for Company ID: {$company->id}.");
         }
 
-        $currency = $vendorBill->currency;
-
         // Create the physical stock move record
         StockMove::create([
             'company_id' => $company->id,
@@ -63,15 +61,36 @@ class VendorBillObserver
             'created_by_user_id' => $vendorBill->user_id,
         ]);
 
-        // Recalculate Average Cost (AVCO)
-        $purchaseValue = $line->unit_price->multipliedBy($line->quantity);
-        $oldValue = ($product->average_cost ?? Money::zero($currency->code))->multipliedBy($product->quantity_on_hand);
+        // Recalculate Average Cost (AVCO) using company currency amounts for consistency
+        // Get the company's base currency for cost calculations
+        $companyCurrency = $company->currency;
+        $costCurrency = $companyCurrency->code;
+
+        // Use company currency amounts if available, otherwise convert on the fly
+        if ($line->unit_price_company_currency) {
+            $unitPriceInCompanyCurrency = $line->unit_price_company_currency;
+        } else {
+            // Convert to company currency if not already converted
+            if ($vendorBill->currency_id === $company->currency_id) {
+                $unitPriceInCompanyCurrency = $line->unit_price;
+            } else {
+                // For foreign currency, use the exchange rate to convert
+                $exchangeRate = $vendorBill->exchange_rate_at_creation ?? 1.0;
+                $unitPriceInCompanyCurrency = Money::of(
+                    $line->unit_price->getAmount()->toFloat() * $exchangeRate,
+                    $costCurrency
+                );
+            }
+        }
+
+        $purchaseValue = $unitPriceInCompanyCurrency->multipliedBy($line->quantity);
+        $oldValue = ($product->average_cost ?? Money::zero($costCurrency))->multipliedBy($product->quantity_on_hand);
         $totalQuantity = $product->quantity_on_hand + $line->quantity;
         $totalValue = $oldValue->plus($purchaseValue);
 
         $newAverageCost = $totalQuantity > 0
             ? $totalValue->dividedBy($totalQuantity, RoundingMode::HALF_UP)
-            : Money::zero($currency->code);
+            : Money::zero($costCurrency);
 
         // Bypass Eloquent and update the database directly.
         DB::table('products')

@@ -39,6 +39,22 @@ return [
     'attachments_description' => 'بەڵگەکانی پشتگیری بۆ ئەم پسوولەی فرۆشیارە بارکردن',
     'attachments_helper' => 'فۆرماتە قبوولکراوەکان: PDF, DOC, DOCX, XLS, XLSX, JPG, PNG, GIF, TXT. زۆرترین ١٠ مێگابایت بۆ هەر فایلێک، تا ١٠ فایل.',
 
+    // Section Titles and Descriptions
+    'vendor_currency_info' => 'زانیاریی فرۆشیار و دراو',
+    'vendor_currency_info_description' => 'فرۆشیار و دراوەکە بۆ ئەم پسووڵەیە هەڵبژێرە',
+    'bill_details' => 'وردەکاریی پسووڵە',
+    'bill_details_description' => 'ژمارەی پسووڵە، ڕێکەوتەکان و زانیاریی دۆخ بنووسە',
+    'line_items' => 'بەندەکانی پسووڵە',
+    'line_items_description' => 'بەرهەم و خزمەتگوزاریەکان بۆ ئەم پسووڵەی فرۆشیارە زیاد بکە',
+    'company_currency_totals' => 'کۆی گشتی دراوی کۆمپانیا',
+
+    // Exchange Rate Fields
+    'current_exchange_rate' => 'نرخی ئاڵوگۆڕی ئێستا',
+    'exchange_rate_helper' => 'ئەمە نرخی ئاڵوگۆڕی ئێستایە بۆ دراوە هەڵبژێردراوەکە',
+    'exchange_rate_at_creation' => 'نرخی ئاڵوگۆڕ لە کاتی دروستکردن',
+    'total_amount_company_currency' => 'کۆی گشتی (دراوی کۆمپانیا)',
+    'total_tax_company_currency' => 'کۆی باج (دراوی کۆمپانیا)',
+
     // Actions
     'confirm' => 'پشتڕاستکردنەوە',
     'reset_to_draft' => 'گەڕاندنەوە بۆ ڕەشنووس',

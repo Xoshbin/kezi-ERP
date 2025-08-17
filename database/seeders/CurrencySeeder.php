@@ -17,7 +17,6 @@ class CurrencySeeder extends Seeder
             [
                 'name' => ['en' => 'US Dollar', 'ckb' => 'دۆلاری ئەمریکی', 'ar' => 'دولار أمريكي'],
                 'symbol' => '$',
-                'exchange_rate' => 1.0,
                 'is_active' => true,
                 'decimal_places' => 2,
             ]
@@ -28,7 +27,6 @@ class CurrencySeeder extends Seeder
             [
                 'name' => ['en' => 'Iraqi Dinar', 'ckb' => 'دیناری عێراقی', 'ar' => 'دينار عراقي'],
                 'symbol' => 'ع.د',
-                'exchange_rate' => 1460.0,
                 'is_active' => true,
                 'decimal_places' => 3,
             ]

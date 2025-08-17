@@ -20,6 +20,10 @@ return new class extends Migration
             $table->foreignId('currency_id')->nullable()->constrained('currencies');
             $table->foreignId('default_debit_account_id')->nullable()->constrained('accounts');
             $table->foreignId('default_credit_account_id')->nullable()->constrained('accounts');
+            // Add exchange gain and loss account configurations
+            $table->foreignId('exchange_gain_account_id')->nullable()->constrained('accounts')->onDelete('set null');
+            $table->foreignId('exchange_loss_account_id')->nullable()->constrained('accounts')->onDelete('set null');
+            $table->foreignId('exchange_difference_journal_id')->nullable()->constrained('journals')->onDelete('set null');
             $table->timestamps();
 
             $table->unique(['company_id', 'short_code']);

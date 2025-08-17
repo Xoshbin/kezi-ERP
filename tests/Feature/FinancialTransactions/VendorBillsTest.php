@@ -6,6 +6,7 @@ use Brick\Money\Money;
 use App\Models\Account;
 use App\Models\Partner;
 use App\Models\Payment;
+use App\Models\PaymentDocumentLink;
 use App\Models\Product;
 use App\Models\LockDate;
 use App\Models\VendorBill;
@@ -168,10 +169,11 @@ test('it correctly computes its payment state via a many-to-many relationship', 
             'status' => PaymentStatus::Confirmed // Only confirmed/reconciled payments count toward payment state
         ]);
 
-        // Action: Attach the payment and explicitly provide the pivot data
-        // in the integer format the database expects.
-        $vendorBill->payments()->attach($payment->id, [
-            'amount_applied' => $paidAmount->getMinorAmount()->toInt() // <-- THE FIX
+        // Action: Create payment document link using proper method
+        PaymentDocumentLink::factory()->create([
+            'payment_id' => $payment->id,
+            'vendor_bill_id' => $vendorBill->id,
+            'amount_applied' => $paidAmount,
         ]);
     }
 

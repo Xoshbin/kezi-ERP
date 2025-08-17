@@ -29,7 +29,6 @@ class CompanyBuilder
             [
                 'name'           => $code === 'IQD' ? 'Iraqi Dinar' : 'US Dollar',
                 'symbol'         => $code,
-                'exchange_rate'  => 1,
                 'is_active'      => true,
                 'decimal_places' => $code === 'IQD' ? 3 : 2,
             ]

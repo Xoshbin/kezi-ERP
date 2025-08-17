@@ -54,6 +54,7 @@ class JournalEntryLinesRelationManager extends RelationManager
     {
         return $table
             ->recordTitleAttribute('description')
+            ->modifyQueryUsing(fn (Builder $query) => $query->with(['journalEntry.company.currency']))
             ->columns([
                 TextColumn::make('journalEntry.reference')
                     ->label(__('analytic_account.journal_entry')),

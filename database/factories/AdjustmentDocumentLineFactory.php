@@ -18,6 +18,9 @@ class AdjustmentDocumentLineFactory extends Factory
     {
         return [
             'adjustment_document_id' => AdjustmentDocument::factory(),
+            'company_id' => function (array $attributes) {
+                return AdjustmentDocument::find($attributes['adjustment_document_id'])->company_id;
+            },
             'product_id' => Product::factory(),
             'description' => $this->faker->sentence,
             'quantity' => $this->faker->numberBetween(1, 10),

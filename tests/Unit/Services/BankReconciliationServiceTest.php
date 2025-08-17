@@ -36,7 +36,7 @@ it('throws an exception if the company is missing default accounts', function ()
         'status' => PaymentStatus::Confirmed,
     ]);
 
-    $service = new BankReconciliationService();
+    $service = app(BankReconciliationService::class);
 
     // Act & Assert
     expect(fn() => $service->reconcile([], [$payment->id], $this->user))
@@ -74,7 +74,7 @@ it('successfully reconciles a payment and a bank statement line', function () {
         'payment_type' => 'inbound',
     ]);
 
-    $service = new BankReconciliationService();
+    $service = app(BankReconciliationService::class);
 
     // Act
     $service->reconcile([$statementLine->id], [$payment->id], $this->user);
@@ -138,7 +138,7 @@ it('creates a write-off for a single bank statement line', function () {
     $valueInDb = $bankFeeLine->fresh()->amount->getMinorAmount()->toInt();
     Log::info('1. Value immediately after creation: ' . $valueInDb);
 
-    $service = new BankReconciliationService();
+    $service = app(BankReconciliationService::class);
     $description = 'Monthly Bank Service Fee';
 
     // Act

@@ -52,10 +52,13 @@ class ProcessInventoryForConfirmedBill
             'completed_at' => now(),
         ]);
 
+        // Use company currency unit price for inventory calculations
+        $unitPriceInCompanyCurrency = $line->unit_price_company_currency ?? $line->unit_price;
+
         $this->updateProductInventoryStatsAction->execute(
             $product,
             $line->quantity,
-            $line->unit_price
+            $unitPriceInCompanyCurrency
         );
     }
 }

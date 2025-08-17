@@ -32,7 +32,35 @@ class VendorBillLineObserver
         $vendorBill = $vendorBillLine->vendorBill;
         if ($vendorBill) {
             $vendorBill->calculateTotalsFromLines();
+
+            // Also update company currency totals if exchange rate is available
+            if ($vendorBill->exchange_rate_at_creation) {
+                $this->updateCompanyCurrencyTotals($vendorBill);
+            }
+
             $vendorBill->saveQuietly();
         }
+    }
+
+    /**
+     * Update company currency totals based on current line totals and exchange rate.
+     */
+    protected function updateCompanyCurrencyTotals($vendorBill): void
+    {
+        if (!$vendorBill->exchange_rate_at_creation || $vendorBill->currency_id === $vendorBill->company->currency_id) {
+            return; // No conversion needed
+        }
+
+        $companyCurrency = $vendorBill->company->currency;
+        $exchangeRate = $vendorBill->exchange_rate_at_creation;
+
+        // Convert total amounts using the stored exchange rate
+        $totalAmountCompanyCurrency = $vendorBill->total_amount->getAmount()->toFloat() * $exchangeRate;
+        $totalTaxCompanyCurrency = $vendorBill->total_tax->getAmount()->toFloat() * $exchangeRate;
+
+        $vendorBill->update([
+            'total_amount_company_currency' => \Brick\Money\Money::of($totalAmountCompanyCurrency, $companyCurrency->code),
+            'total_tax_company_currency' => \Brick\Money\Money::of($totalTaxCompanyCurrency, $companyCurrency->code),
+        ]);
     }
 }

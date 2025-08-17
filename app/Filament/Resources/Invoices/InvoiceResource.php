@@ -28,7 +28,7 @@ use App\Models\Tax;
 use Filament\Forms;
 use Filament\Tables;
 use App\Models\Invoice;
-use App\Models\Currency;
+
 use App\Enums\Sales\InvoiceStatus;
 use App\Enums\Shared\PaymentState;
 use Filament\Tables\Table;
@@ -81,7 +81,8 @@ class InvoiceResource extends Resource
     public static function form(Schema $schema): Schema
     {
         return $schema->components([
-            Section::make()
+            Section::make(__('invoice.customer_currency_info'))
+                ->description(__('invoice.customer_currency_info_description'))
                 ->schema([
                     TranslatableSelect::standard(
                         'customer_id',
@@ -90,6 +91,7 @@ class InvoiceResource extends Resource
                         __('invoice.customer')
                     )
                         ->required()
+                        ->columnSpan(2)
                         ->createOptionForm([
                             TextInput::make('name')
                                 ->label(__('partner.name'))
@@ -125,6 +127,22 @@ class InvoiceResource extends Resource
                         ->required()
                         ->live()
                         ->default(fn() => \Filament\Facades\Filament::getTenant()?->currency_id)
+                        ->afterStateUpdated(function (callable $set, $state, callable $get) {
+                            if ($state) {
+                                $currency = \App\Models\Currency::find($state);
+                                $company = \Filament\Facades\Filament::getTenant();
+
+                                if ($currency && $company && $currency->id !== $company->currency_id) {
+                                    // Get latest exchange rate for this company
+                                    $latestRate = \App\Models\CurrencyRate::getLatestRate($currency->id, $company->id);
+                                    if ($latestRate) {
+                                        $set('current_exchange_rate', $latestRate);
+                                    }
+                                } else {
+                                    $set('current_exchange_rate', 1.0);
+                                }
+                            }
+                        })
                         ->createOptionForm([
                             TextInput::make('code')
                                 ->label(__('currency.code'))
@@ -153,7 +171,27 @@ class InvoiceResource extends Resource
                             return $action
                                 ->modalWidth('lg');
                         }),
-                    TranslatableSelect::make('fiscal_position_id', \App\Models\FiscalPosition::class, __('invoice.fiscal_position')),
+
+                    TextInput::make('current_exchange_rate')
+                        ->label(__('invoice.current_exchange_rate'))
+                        ->numeric()
+                        ->disabled()
+                        ->dehydrated(false)
+                        ->visible(function (callable $get) {
+                            $currencyId = $get('currency_id');
+                            $company = \Filament\Facades\Filament::getTenant();
+                            return $currencyId && $company && $currencyId != $company->currency_id;
+                        })
+                        ->helperText(__('invoice.exchange_rate_helper')),
+                ])
+                ->columns(4)
+                ->columnSpanFull(),
+
+            Section::make(__('invoice.invoice_details'))
+                ->description(__('invoice.invoice_details_description'))
+                ->schema([
+                    TranslatableSelect::make('fiscal_position_id', \App\Models\FiscalPosition::class, __('invoice.fiscal_position'))
+                        ->columnSpan(2),
                     DatePicker::make('invoice_date')
                         ->label(__('invoice.invoice_date'))
                         ->default(now())
@@ -171,9 +209,11 @@ class InvoiceResource extends Resource
                         ->disabled()
                         ->dehydrated(false),
                 ])
-                ->columns(2),
+                ->columns(4)
+                ->columnSpanFull(),
 
-            Section::make(__('invoice.invoice_lines'))
+            Section::make(__('invoice.line_items'))
+                ->description(__('invoice.line_items_description'))
                 ->schema([
                     Repeater::make('invoiceLines')
                         ->label(__('invoice.invoice_lines'))
@@ -183,11 +223,12 @@ class InvoiceResource extends Resource
                         ->disabled(fn (?Invoice $record) => $record && $record->status !== InvoiceStatus::Draft)
                         ->minItems(1)
                         ->schema([
-                            Select::make('product_id')
-                                ->label(__('invoice.product'))
-                                ->searchable()
-                                ->getSearchResultsUsing(fn(string $search): array => Product::where('name', 'like', "%{$search}%")->limit(50)->pluck('name', 'id')->toArray())
-                                ->getOptionLabelUsing(fn($value): ?string => Product::find($value)?->name)
+                            TranslatableSelect::standard(
+                                'product_id',
+                                \App\Models\Product::class,
+                                ['name', 'sku', 'description'],
+                                __('invoice.product')
+                            )
                                 ->reactive()
                                 ->afterStateUpdated(function (callable $set, $state) {
                                     if ($state) {
@@ -199,12 +240,36 @@ class InvoiceResource extends Resource
                                         }
                                     }
                                 })
+                                ->createOptionForm([
+                                    TextInput::make('name')
+                                        ->label(__('product.name'))
+                                        ->required()
+                                        ->maxLength(255),
+                                    TextInput::make('sku')
+                                        ->label(__('product.sku'))
+                                        ->maxLength(255),
+                                    Textarea::make('description')
+                                        ->label(__('product.description'))
+                                        ->columnSpanFull(),
+                                    MoneyInput::make('unit_price')
+                                        ->label(__('product.unit_price'))
+                                        ->currencyField('../../currency_id'),
+                                    Select::make('income_account_id')
+                                        ->relationship('incomeAccount', 'name')
+                                        ->label(__('product.income_account'))
+                                        ->required(),
+                                ])
+                                ->createOptionModalHeading(__('common.modal_title_create_product'))
+                                ->createOptionAction(function (Action $action) {
+                                    return $action
+                                        ->modalWidth('lg');
+                                })
                                 ->columnSpan(2),
                             TextInput::make('description')
                                 ->label(__('invoice.description'))
                                 ->maxLength(255)
                                 ->required()
-                                ->columnSpan(2),
+                                ->columnSpan(3),
                             TextInput::make('quantity')
                                 ->label(__('invoice.quantity'))
                                 ->required()
@@ -216,37 +281,78 @@ class InvoiceResource extends Resource
                                 ->currencyField('../../currency_id')
                                 ->required()
                                 ->columnSpan(1),
-                            Select::make('tax_id')
-                                ->label(__('invoice.tax'))
-                                ->searchable()
-                                ->getSearchResultsUsing(fn(string $search): array =>
-                                    Tax::whereRaw('LOWER(JSON_UNQUOTE(JSON_EXTRACT(name, "$.' . app()->getLocale() . '"))) LIKE ?', ['%' . strtolower($search) . '%'])
-                                        ->limit(50)
-                                        ->get()
-                                        ->mapWithKeys(fn($tax) => [$tax->id => $tax->getTranslation('name', app()->getLocale())])
-                                        ->toArray()
-                                )
-                                ->getOptionLabelUsing(fn($value): ?string => Tax::find($value)?->getTranslation('name', app()->getLocale()))
+                            TranslatableSelect::make('tax_id', \App\Models\Tax::class, __('invoice.tax'))
+                                ->createOptionForm([
+                                    Select::make('company_id')
+                                        ->relationship('company', 'name')
+                                        ->label(__('tax.company'))
+                                        ->required(),
+                                    Select::make('tax_account_id')
+                                        ->relationship('taxAccount', 'name')
+                                        ->label(__('tax.tax_account'))
+                                        ->required(),
+                                    TextInput::make('name')
+                                        ->label(__('tax.name'))
+                                        ->required()
+                                        ->maxLength(255),
+                                    TextInput::make('rate')
+                                        ->label(__('tax.rate'))
+                                        ->required()
+                                        ->numeric()
+                                        ->suffix('%'),
+                                ])
+                                ->createOptionModalHeading(__('common.modal_title_create_tax'))
+                                ->createOptionAction(function (Action $action) {
+                                    return $action
+                                        ->modalWidth('lg');
+                                })
                                 ->columnSpan(1),
-                            Select::make('income_account_id')
-                                ->label(__('invoice.income_account'))
-                                ->searchable()
+                            TranslatableSelect::make('income_account_id', \App\Models\Account::class, __('invoice.income_account'))
                                 ->getSearchResultsUsing(fn(string $search): array =>
-                                    Account::where('type', 'Income')
+                                    \App\Models\Account::where('type', 'income')
                                         ->whereRaw('LOWER(JSON_UNQUOTE(JSON_EXTRACT(name, "$.' . app()->getLocale() . '"))) LIKE ?', ['%' . strtolower($search) . '%'])
                                         ->limit(50)
                                         ->get()
                                         ->mapWithKeys(fn($account) => [$account->id => $account->getTranslation('name', app()->getLocale())])
                                         ->toArray()
                                 )
-                                ->getOptionLabelUsing(fn($value): ?string => Account::find($value)?->getTranslation('name', app()->getLocale()))
+                                ->getOptionLabelUsing(fn($value): ?string => \App\Models\Account::find($value)?->getTranslation('name', app()->getLocale()))
+                                ->searchable()
                                 ->required()
                                 ->columnSpan(2),
                         ])
-                        ->columns(5)
-                        ->columnSpanFull(),
-                ]),
+                        ->columns(6)
+                ])->columnSpanFull(),
+
+            Section::make(__('invoice.company_currency_totals'))
+                ->schema([
+                    TextInput::make('exchange_rate_at_creation')
+                        ->label(__('invoice.exchange_rate_at_creation'))
+                        ->numeric()
+                        ->disabled()
+                        ->visible(fn (?Invoice $record) => $record && $record->exchange_rate_at_creation),
+
+                    MoneyInput::make('total_amount_company_currency')
+                        ->label(__('invoice.total_amount_company_currency'))
+                        ->currencyField('../../company.currency_id')
+                        ->disabled()
+                        ->visible(fn (?Invoice $record) => $record && $record->total_amount_company_currency),
+
+                    MoneyInput::make('total_tax_company_currency')
+                        ->label(__('invoice.total_tax_company_currency'))
+                        ->currencyField('../../company.currency_id')
+                        ->disabled()
+                        ->visible(fn (?Invoice $record) => $record && $record->total_tax_company_currency),
+                ])
+                ->columns(3)
+                ->visible(fn (?Invoice $record) => $record && ($record->exchange_rate_at_creation || $record->total_amount_company_currency)),
         ]);
+    }
+
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()
+            ->with(['company.currency', 'customer', 'currency', 'journalEntry', 'fiscalPosition']);
     }
 
     public static function table(Table $table): Table
@@ -304,6 +410,19 @@ class InvoiceResource extends Resource
                 MoneyColumn::make('total_tax')
                     ->label(__('invoice.total_tax'))
                     ->sortable(),
+
+                TextColumn::make('exchange_rate_at_creation')
+                    ->label(__('invoice.exchange_rate'))
+                    ->numeric(decimalPlaces: 6)
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true)
+                    ->visible(fn ($record) => $record && $record->exchange_rate_at_creation),
+
+                MoneyColumn::make('total_amount_company_currency')
+                    ->label(__('invoice.total_amount_company_currency'))
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true)
+                    ->visible(fn ($record) => $record && $record->total_amount_company_currency),
                 TextColumn::make('posted_at')
                     ->label(__('invoice.posted_at'))
                     ->dateTime()

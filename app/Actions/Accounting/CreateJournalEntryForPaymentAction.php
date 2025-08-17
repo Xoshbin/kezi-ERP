@@ -31,7 +31,12 @@ class CreateJournalEntryForPaymentAction
         $payment->load('partner');
 
         // Determine the exchange rate. If it's the same currency, the rate is 1.
-        $exchangeRate = ($baseCurrency->id === $paymentCurrency->id) ? 1.0 : $paymentCurrency->exchange_rate;
+        if ($baseCurrency->id === $paymentCurrency->id) {
+            $exchangeRate = 1.0;
+        } else {
+            // Use the exchange rate stored in the payment (set during payment creation/confirmation)
+            $exchangeRate = $payment->exchange_rate_at_payment ?? 1.0;
+        }
 
         // 1. Determine the correct accounts based on accounting rules.
         $bankAccountId = $payment->journal->default_debit_account_id;

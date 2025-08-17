@@ -9,7 +9,8 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use App\Casts\MoneyCast;
+use App\Casts\DocumentCurrencyMoneyCast;
+use App\Casts\BaseCurrencyMoneyCast;
 use App\Observers\PaymentObserver;
 use App\Observers\AuditLogObserver;
 use App\Enums\Payments\PaymentType;
@@ -84,7 +85,9 @@ class Payment extends Model
         'journal_id',
         'payment_date',
         'amount',
+        'amount_company_currency',
         'currency_id',
+        'exchange_rate_at_payment',
         'payment_type',
         'reference',
         'status',
@@ -100,7 +103,9 @@ class Payment extends Model
      */
     protected $casts = [
         'payment_date' => 'date', // Casts to a Carbon date object [3, 11].
-        'amount' => MoneyCast::class, // Ensures the amount is treated as a decimal with 2 places for precision [3].
+        'amount' => DocumentCurrencyMoneyCast::class, // Payment amount in payment currency
+        'amount_company_currency' => BaseCurrencyMoneyCast::class, // Payment amount in company base currency
+        'exchange_rate_at_payment' => 'decimal:10',
         'payment_type' => PaymentType::class,
         'status' => PaymentStatus::class,
         'created_at' => 'datetime',

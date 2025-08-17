@@ -50,6 +50,7 @@ class VendorBillAttachmentTest extends TestCase
         $filePath = $file->store('vendor-bill-attachments', 'local');
 
         $attachment = VendorBillAttachment::create([
+            'company_id' => $this->vendorBill->company_id,
             'vendor_bill_id' => $this->vendorBill->id,
             'file_name' => 'test-document.pdf',
             'file_path' => $filePath,

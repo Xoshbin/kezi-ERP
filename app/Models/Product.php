@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Support\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Database\Factories\ProductFactory;
-use App\Casts\MoneyCast;
+use App\Casts\BaseCurrencyMoneyCast;
 use App\Enums\Inventory\ValuationMethod;
 use App\Enums\Products\ProductType;
 use App\Observers\ProductObserver;
@@ -84,8 +84,8 @@ class Product extends Model
     ];
 
     protected $casts = [
-        'unit_price' => MoneyCast::class,
-        'average_cost' => MoneyCast::class,
+        'unit_price' => BaseCurrencyMoneyCast::class,
+        'average_cost' => BaseCurrencyMoneyCast::class,
         'is_active' => 'boolean',
         'inventory_valuation_method' => ValuationMethod::class,
         'created_at' => 'datetime',
@@ -93,6 +93,17 @@ class Product extends Model
         'deleted_at' => 'datetime',
         'type' => ProductType::class,
     ];
+
+    /**
+     * The relationships that should always be loaded.
+     * Eager-loading the `company.currency` relationship is critical because the `BaseCurrencyMoneyCast`
+     * for monetary fields on this model depends on the currency context provided by the company.
+     * Without this, any retrieval of a `Product` would fail when casting monetary values
+     * due to the missing currency information, leading to a "currency_id on null" error.
+     *
+     * @var array
+     */
+    protected $with = ['company.currency'];
 
     /**
      * Get the non-translatable fields that should be searched.
@@ -205,29 +216,5 @@ class Product extends Model
         return $this->hasMany(InventoryCostLayer::class);
     }
 
-    /**
-     * Accessor to provide the currency_id to the MoneyCast.
-     * This robust implementation prevents N+1 query issues.
-     */
-    public function getCurrencyIdAttribute(): int
-    {
-        // If the company relationship is loaded, use it. If not, lazy-load it.
-        $company = $this->company ?? $this->company()->first();
 
-        if (!$company && $this->company_id) {
-            // Try to find the company directly by ID
-            $company = \App\Models\Company::find($this->company_id);
-        }
-
-        if (!$company) {
-            // As a last resort, try to get from current tenant
-            $tenant = \Filament\Facades\Filament::getTenant();
-            if ($tenant) {
-                return $tenant->currency_id;
-            }
-            throw new \Exception("Product {$this->id} has no company relationship. Company ID: {$this->company_id}");
-        }
-
-        return $company->currency_id;
-    }
 }

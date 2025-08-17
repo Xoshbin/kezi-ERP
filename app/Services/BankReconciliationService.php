@@ -16,11 +16,13 @@ use App\Models\BankStatementLine;
 use Illuminate\Support\Facades\DB;
 use App\Actions\Accounting\CreateJournalEntryForStatementLineAction;
 use App\Actions\Accounting\CreateJournalEntryForReconciliationAction; // 1. Import the new action
+use App\Services\CurrencyConverterService;
 
 class BankReconciliationService
 {
-    // 2. The JournalEntryService dependency is no longer needed.
-    public function __construct() {}
+    public function __construct(
+        private CurrencyConverterService $currencyConverter
+    ) {}
 
     public function reconcilePayment(Payment $payment, BankStatementLine $statementLine, User $user): void
     {
@@ -97,8 +99,8 @@ class BankReconciliationService
     public function reconcileMultiple(array $bankLineIds, array $paymentIds, User $user): void
     {
         DB::transaction(function () use ($bankLineIds, $paymentIds, $user) {
-            $bankLines = BankStatementLine::whereIn('id', $bankLineIds)->get();
-            $payments = Payment::whereIn('id', $paymentIds)->get();
+            $bankLines = BankStatementLine::whereIn('id', $bankLineIds)->with('bankStatement.currency')->get();
+            $payments = Payment::whereIn('id', $paymentIds)->with(['currency', 'company'])->get();
 
             // Validate that totals match using proper Money arithmetic
             $currency = $bankLines->first()->bankStatement->currency;
@@ -112,7 +114,12 @@ class BankReconciliationService
                 $amount = $payment->amount;
                 // Convert to bank statement currency if needed
                 if ($payment->currency->code !== $currency->code) {
-                    $amount = Money::of($payment->amount->getAmount()->toFloat(), $currency->code);
+                    $amount = $this->currencyConverter->convert(
+                        $payment->amount,
+                        $currency,
+                        $payment->payment_date,
+                        $payment->company
+                    );
                 }
 
                 $amount = $payment->payment_type === PaymentType::Inbound ? $amount : $amount->negated();

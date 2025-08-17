@@ -6,7 +6,8 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Builder;
 use Database\Factories\InvoiceFactory;
 use Brick\Money\Money;
-use App\Casts\MoneyCast;
+use App\Casts\DocumentCurrencyMoneyCast;
+use App\Casts\BaseCurrencyMoneyCast;
 use App\Traits\HasPaymentState;
 use App\Enums\Sales\InvoiceStatus;
 use Illuminate\Support\Carbon;
@@ -101,6 +102,7 @@ class Invoice extends Model
         'company_id',
         'customer_id',
         'currency_id',
+        'exchange_rate_at_creation',
         'journal_entry_id',
         'fiscal_position_id',
         'invoice_number',
@@ -109,6 +111,8 @@ class Invoice extends Model
         'status',
         'total_amount',
         'total_tax',
+        'total_amount_company_currency',
+        'total_tax_company_currency',
         'posted_at',
         'reset_to_draft_log',
     ];
@@ -123,8 +127,11 @@ class Invoice extends Model
         'invoice_date' => 'date',
         'due_date' => 'date',
         'status' => InvoiceStatus::class,
-        'total_amount' => MoneyCast::class,
-        'total_tax' => MoneyCast::class,
+        'exchange_rate_at_creation' => 'decimal:10',
+        'total_amount' => DocumentCurrencyMoneyCast::class,
+        'total_tax' => DocumentCurrencyMoneyCast::class,
+        'total_amount_company_currency' => BaseCurrencyMoneyCast::class,
+        'total_tax_company_currency' => BaseCurrencyMoneyCast::class,
         'reset_to_draft_log' => 'json', // Store as JSON/Text as per source [1]
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
@@ -217,6 +224,17 @@ class Invoice extends Model
     {
         return $this->belongsToMany(Payment::class, 'payment_document_links', 'invoice_id', 'payment_id')
             ->withPivot('amount_applied');
+    }
+
+    /**
+     * Get the direct PaymentDocumentLink records for this invoice.
+     * This provides access to the raw pivot data for multi-currency payment calculations.
+     *
+     * @return HasMany
+     */
+    public function paymentDocumentLinks(): HasMany
+    {
+        return $this->hasMany(PaymentDocumentLink::class, 'invoice_id');
     }
 
     /**

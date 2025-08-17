@@ -4,7 +4,6 @@ namespace Database\Factories;
 
 use App\Models\Asset;
 use Brick\Money\Money;
-use App\Models\Currency;
 use App\Models\DepreciationEntry;
 use App\Enums\Assets\DepreciationEntryStatus;
 use Illuminate\Database\Eloquent\Factories\Factory;
@@ -21,8 +20,13 @@ class DepreciationEntryFactory extends Factory
      */
     public function definition(): array
     {
+        $asset = Asset::factory();
+
         return [
-            'asset_id' => Asset::factory(), // Better default than a random number
+            'asset_id' => $asset,
+            'company_id' => function (array $attributes) {
+                return Asset::find($attributes['asset_id'])->company_id;
+            },
             'depreciation_date' => $this->faker->date(),
             'amount' => Money::of($this->faker->randomFloat(2, 100, 10000), 'USD'),
             'journal_entry_id' => null, // FIX: Default to null, as it's created later.

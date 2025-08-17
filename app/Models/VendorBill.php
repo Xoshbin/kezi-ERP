@@ -7,7 +7,8 @@ use Illuminate\Database\Eloquent\Collection;
 use Database\Factories\VendorBillFactory;
 use Illuminate\Database\Eloquent\Builder;
 use Brick\Money\Money;
-use App\Casts\MoneyCast;
+use App\Casts\DocumentCurrencyMoneyCast;
+use App\Casts\BaseCurrencyMoneyCast;
 use App\Traits\HasPaymentState;
 use App\Observers\AuditLogObserver;
 use App\Observers\VendorBillObserver;
@@ -102,8 +103,11 @@ class VendorBill extends Model
         'status',               // Current status: e.g., 'Draft', 'Posted', 'Paid', 'Cancelled' .
         // A 'Draft' bill can be modified/deleted, but 'Posted' cannot .
         'currency_id',          // Foreign key to the Currency model, specifying the bill's currency .
+        'exchange_rate_at_creation', // Exchange rate captured at bill creation/posting
         'total_amount',         // The total amount of the vendor bill, including taxes .
         'total_tax',            // The total tax amount on the vendor bill .
+        'total_amount_company_currency', // Total amount in company currency
+        'total_tax_company_currency',    // Total tax in company currency
         'journal_entry_id',     // Nullable foreign key to journal_entries.id, linking to the immutable
         // financial transaction once the bill is posted .
         'posted_at',            // Nullable timestamp indicating when the vendor bill was confirmed/posted .
@@ -122,8 +126,11 @@ class VendorBill extends Model
         'accounting_date'    => 'date',       // Cast to date for consistency .
         'due_date'           => 'date',       // Cast to date for consistency .
         'status'             => VendorBillStatus::class,
-        'total_amount'       => MoneyCast::class,  // Crucial for financial precision, ensures two decimal places .
-        'total_tax'          => MoneyCast::class,  // Crucial for financial precision .
+        'exchange_rate_at_creation' => 'decimal:10',
+        'total_amount'       => DocumentCurrencyMoneyCast::class,  // Document currency amounts
+        'total_tax'          => DocumentCurrencyMoneyCast::class,  // Document currency amounts
+        'total_amount_company_currency' => BaseCurrencyMoneyCast::class,  // Company base currency amounts
+        'total_tax_company_currency' => BaseCurrencyMoneyCast::class,  // Company base currency amounts
         'posted_at'          => 'datetime',   // Records the exact time of posting for audit .
         'reset_to_draft_log' => 'json',       // Stores audit log as JSON .
         'created_at'         => 'datetime',   // Automatically managed by Eloquent.
@@ -218,6 +225,17 @@ class VendorBill extends Model
     {
         return $this->belongsToMany(Payment::class, 'payment_document_links', 'vendor_bill_id', 'payment_id')
             ->withPivot('amount_applied');
+    }
+
+    /**
+     * Get the direct PaymentDocumentLink records for this vendor bill.
+     * This provides access to the raw pivot data for multi-currency payment calculations.
+     *
+     * @return HasMany
+     */
+    public function paymentDocumentLinks(): HasMany
+    {
+        return $this->hasMany(PaymentDocumentLink::class, 'vendor_bill_id');
     }
 
     /**

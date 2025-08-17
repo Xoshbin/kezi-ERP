@@ -56,8 +56,8 @@ class EditJournalEntry extends EditRecord
 
     protected function mutateFormDataBeforeFill(array $data): array
     {
-        // Eager-load the necessary relationships
-        $this->record->load('currency', 'lines.journalEntry.currency');
+        // Eager-load the necessary relationships including original currency
+        $this->record->load('currency', 'lines.journalEntry.currency', 'lines.originalCurrency');
 
         // Get the currency code for creating zero-value money objects
         $currencyCode = $this->record->currency->code;
@@ -67,15 +67,52 @@ class EditJournalEntry extends EditRecord
         $totalCredit = Money::zero($currencyCode);
 
         $lines = $this->record->lines->map(function ($line) use (&$totalDebit, &$totalCredit, $currencyCode) {
-            // Use the MoneyCast to get Money objects for debit and credit.
-            $debitMoney = $line->debit;
-            $creditMoney = $line->credit;
-
-            if ($debitMoney) {
-                $totalDebit = $totalDebit->plus($debitMoney);
+            // Ensure the line has proper currency context by setting missing fields if needed
+            if (!$line->original_currency_id) {
+                $line->original_currency_id = $this->record->currency_id;
+                $line->currency_id = $this->record->currency_id;
+                $line->exchange_rate_at_transaction = 1.0;
+                $line->save();
             }
-            if ($creditMoney) {
-                $totalCredit = $totalCredit->plus($creditMoney);
+
+            // Determine the correct amounts to display based on currency context
+            $debitMoney = Money::zero($currencyCode);
+            $creditMoney = Money::zero($currencyCode);
+
+            // Check if this is a multi-currency transaction with original amounts
+            $hasOriginalAmounts = $line->original_currency_amount && $line->original_currency_id;
+            $isMultiCurrency = $hasOriginalAmounts && $line->original_currency_id != $this->record->company->currency_id;
+
+            if ($isMultiCurrency) {
+                // Multi-currency entry: use original amounts in transaction currency
+                $originalCurrency = \App\Models\Currency::find($line->original_currency_id);
+                if ($originalCurrency && $originalCurrency->code === $currencyCode) {
+                    // Determine if this line was a debit or credit based on base currency amounts
+                    $isDebit = $line->debit->isPositive();
+                    if ($isDebit) {
+                        $debitMoney = $line->original_currency_amount;
+                    } else {
+                        $creditMoney = $line->original_currency_amount;
+                    }
+                }
+            } else {
+                // Single currency entry: use the base currency amounts directly
+                $debitMoney = $line->debit;
+                $creditMoney = $line->credit;
+            }
+
+            // Ensure currency consistency before adding to totals
+            if ($debitMoney && $debitMoney->isPositive()) {
+                // Convert to the same currency as totals if needed
+                if ($debitMoney->getCurrency()->getCurrencyCode() === $currencyCode) {
+                    $totalDebit = $totalDebit->plus($debitMoney);
+                }
+            }
+            if ($creditMoney && $creditMoney->isPositive()) {
+                // Convert to the same currency as totals if needed
+                if ($creditMoney->getCurrency()->getCurrencyCode() === $currencyCode) {
+                    $totalCredit = $totalCredit->plus($creditMoney);
+                }
             }
 
             return [
@@ -83,8 +120,6 @@ class EditJournalEntry extends EditRecord
                 'partner_id' => $line->partner_id,
                 'analytic_account_id' => $line->analytic_account_id,
                 'description' => $line->description,
-                // -- CHANGE IS HERE --
-                // Pass the entire Money object, or a new zero-value one
                 'debit' => $debitMoney ?? Money::zero($currencyCode),
                 'credit' => $creditMoney ?? Money::zero($currencyCode),
             ];

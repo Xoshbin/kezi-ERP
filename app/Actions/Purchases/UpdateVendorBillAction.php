@@ -60,6 +60,7 @@ class UpdateVendorBillAction
                 }
 
                 $lines[] = new VendorBillLine([
+                    'company_id' => $vendorBill->company_id,
                     'product_id' => $line->product_id,
                     'description' => $line->description,
                     'quantity' => $line->quantity,

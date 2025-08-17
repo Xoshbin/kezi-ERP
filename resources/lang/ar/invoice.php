@@ -28,6 +28,22 @@ return [
     'total_tax' => 'إجمالي الضريبة',
     'reason' => 'سبب',
 
+    // Section Titles and Descriptions
+    'customer_currency_info' => 'معلومات العميل والعملة',
+    'customer_currency_info_description' => 'اختر العميل والعملة لهذه الفاتورة',
+    'invoice_details' => 'تفاصيل الفاتورة',
+    'invoice_details_description' => 'أدخل تواريخ الفاتورة والموقف الضريبي ومعلومات الحالة',
+    'line_items' => 'بنود الفاتورة',
+    'line_items_description' => 'أضف المنتجات والخدمات إلى هذه الفاتورة',
+    'company_currency_totals' => 'إجماليات عملة الشركة',
+
+    // Exchange Rate Fields
+    'current_exchange_rate' => 'سعر الصرف الحالي',
+    'exchange_rate_helper' => 'هذا هو سعر الصرف الحالي للعملة المحددة',
+    'exchange_rate_at_creation' => 'سعر الصرف عند الإنشاء',
+    'total_amount_company_currency' => 'المبلغ الإجمالي (عملة الشركة)',
+    'total_tax_company_currency' => 'إجمالي الضريبة (عملة الشركة)',
+
     // Table Columns
     'company_name' => 'شركة',
     'customer_name' => 'عميل',

@@ -26,6 +26,12 @@ return new class extends Migration
             $table->string('status')->default(VendorBillStatus::Draft)->index(); // 'draft', 'posted', 'paid', 'canceled
             $table->unsignedBigInteger('total_amount');
             $table->unsignedBigInteger('total_tax');
+            // Add exchange rate captured at vendor bill creation/posting
+            $table->decimal('exchange_rate_at_creation', 20, 10)->nullable();
+
+            // Add company currency amounts (converted amounts)
+            $table->unsignedBigInteger('total_amount_company_currency')->nullable();
+            $table->unsignedBigInteger('total_tax_company_currency')->nullable();
             $table->timestamp('posted_at')->nullable();
             $table->json('reset_to_draft_log')->nullable();
             $table->foreignId('user_id')->nullable()->constrained('users');

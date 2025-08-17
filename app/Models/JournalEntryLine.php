@@ -2,15 +2,18 @@
 
 namespace App\Models;
 
+use App\Observers\JournalEntryLineObserver;
 use Brick\Money\Money;
 use Illuminate\Support\Carbon;
 use Illuminate\Database\Eloquent\Builder;
-use App\Casts\MoneyCast;
+use App\Casts\BaseCurrencyMoneyCast;
+
+use App\Casts\OriginalCurrencyMoneyCast;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use RuntimeException; // Utilized for explicit enforcement of immutability and data integrity.
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 /**
  * Class JournalEntryLine
  *
@@ -54,6 +57,7 @@ use RuntimeException; // Utilized for explicit enforcement of immutability and d
  * @method static Builder<static>|JournalEntryLine whereUpdatedAt($value)
  * @mixin \Eloquent
  */
+#[ObservedBy([JournalEntryLineObserver::class])]
 class JournalEntryLine extends Model
 {
     use HasFactory;
@@ -81,12 +85,14 @@ class JournalEntryLine extends Model
         'journal_entry_id',
         'account_id',
         'partner_id',
+        'currency_id',
         'debit',
         'credit',
         'description',
         'analytic_account_id',
         'original_currency_amount',
-        'exchange_rate_at_transaction',
+        'original_currency_id',
+        'exchange_rate_at_transaction'
     ];
 
     /**
@@ -98,10 +104,29 @@ class JournalEntryLine extends Model
      * @var array<string, string>
      */
     protected $casts = [
-        'debit' => MoneyCast::class,  // Enforces two decimal places for currency amounts.
-        'credit' => MoneyCast::class, // Ensures consistency for credit amounts.
-        'original_currency_amount' => MoneyCast::class
+        // These fields are ALWAYS in the company's base currency
+        'debit' => BaseCurrencyMoneyCast::class,
+        'credit' => BaseCurrencyMoneyCast::class,
+
+
+
+        // This field is in the foreign currency
+        'original_currency_amount' => OriginalCurrencyMoneyCast::class,
+
+        // Cast the rate for correct handling
+        'exchange_rate_at_transaction' => 'float',
     ];
+
+    /**
+     * The relationships that should always be loaded.
+     * Eager-loading the `journalEntry.company.currency` relationship is critical because the `BaseCurrencyMoneyCast`
+     * for monetary fields on this model depends on the currency context provided by the parent journal entry's company.
+     * Without this, any retrieval of a `JournalEntryLine` would fail when casting monetary values
+     * due to the missing currency information, leading to a "currency_id on null" error.
+     *
+     * @var array
+     */
+    protected $with = ['journalEntry.company.currency'];
 
     /**
      * The "booted" method of the model.
@@ -235,25 +260,30 @@ class JournalEntryLine extends Model
     }
 
     /**
-     * Accessor to provide the currency_id to the MoneyCast.
-     * This robust implementation prevents N+1 query issues and handles the creation lifecycle.
+     * Get the `Currency` model for this journal entry line.
+     *
+     * This relationship supports multi-currency transactions where individual lines
+     * may have different currencies than the parent journal entry.
+     *
+     * @return BelongsTo An Eloquent relationship instance for the `Currency` model.
      */
-    public function getCurrencyIdAttribute(): int
+    public function currency(): BelongsTo
     {
-        // This is the most efficient path: the relationship is already loaded in memory.
-        if ($this->relationLoaded('journalEntry') && $this->journalEntry) {
-            return $this->journalEntry->currency_id;
-        }
-
-        // This is the fallback for when the model is being created via a relationship.
-        // Eloquent sets the foreign key 'journal_entry_id' before the cast is triggered.
-        if ($this->journal_entry_id) {
-            // We find the parent's currency_id directly to avoid fully loading the parent model.
-            return JournalEntry::find($this->journal_entry_id)?->currency_id;
-        }
-
-        // If we have no relationship and no foreign key, we cannot determine the currency.
-        throw new RuntimeException('Could not determine currency for JournalEntryLine.');
+        return $this->belongsTo(Currency::class);
     }
+
+    /**
+     * Relationship to the original currency for this line.
+     */
+    public function originalCurrency(): BelongsTo
+    {
+        return $this->belongsTo(Currency::class, 'original_currency_id');
+    }
+
+
+
+
+
+
 
 }

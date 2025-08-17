@@ -38,6 +38,8 @@ class UpdateBankStatementAction
                         'description' => $lineDto->description,
                         'partner_id' => $lineDto->partner_id,
                         'amount' => $lineDto->amount,
+                        'foreign_currency_id' => $lineDto->foreign_currency_id,
+                        'amount_in_foreign_currency' => $lineDto->amount_in_foreign_currency,
                     ];
                 }
 

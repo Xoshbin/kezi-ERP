@@ -21,6 +21,11 @@ return new class extends Migration
             $table->boolean('is_reconciled')->default(false);
             $table->foreignId('payment_id')->nullable()->constrained()->nullOnDelete();
             $table->foreignId('company_id')->constrained('companies');
+            // Optional fields for foreign currency transactions.
+            $table->foreignId('foreign_currency_id')->nullable()->constrained('currencies')
+                ->comment('The original currency of the transaction if different from statement currency');
+            $table->bigInteger('amount_in_foreign_currency')->nullable()
+                ->comment('The original transaction amount in the foreign currency (minor units)');
             $table->timestamps();
         });
     }
