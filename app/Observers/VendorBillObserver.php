@@ -62,14 +62,28 @@ class VendorBillObserver
         ]);
 
         // Recalculate Average Cost (AVCO) using company currency amounts for consistency
-        // Use company currency amounts if available, otherwise fall back to original amounts
-        $unitPrice = $line->unit_price_company_currency ?? $line->unit_price;
-        $purchaseValue = $unitPrice->multipliedBy($line->quantity);
-
         // Get the company's base currency for cost calculations
         $companyCurrency = $company->currency;
         $costCurrency = $companyCurrency->code;
 
+        // Use company currency amounts if available, otherwise convert on the fly
+        if ($line->unit_price_company_currency) {
+            $unitPriceInCompanyCurrency = $line->unit_price_company_currency;
+        } else {
+            // Convert to company currency if not already converted
+            if ($vendorBill->currency_id === $company->currency_id) {
+                $unitPriceInCompanyCurrency = $line->unit_price;
+            } else {
+                // For foreign currency, use the exchange rate to convert
+                $exchangeRate = $vendorBill->exchange_rate_at_creation ?? 1.0;
+                $unitPriceInCompanyCurrency = Money::of(
+                    $line->unit_price->getAmount()->toFloat() * $exchangeRate,
+                    $costCurrency
+                );
+            }
+        }
+
+        $purchaseValue = $unitPriceInCompanyCurrency->multipliedBy($line->quantity);
         $oldValue = ($product->average_cost ?? Money::zero($costCurrency))->multipliedBy($product->quantity_on_hand);
         $totalQuantity = $product->quantity_on_hand + $line->quantity;
         $totalValue = $oldValue->plus($purchaseValue);

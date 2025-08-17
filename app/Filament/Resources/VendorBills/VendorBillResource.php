@@ -78,7 +78,8 @@ class VendorBillResource extends Resource
     public static function form(Schema $schema): Schema
     {
         return $schema->components([
-            Section::make()
+            Section::make(__('vendor_bill.vendor_currency_info'))
+                ->description(__('vendor_bill.vendor_currency_info_description'))
                 ->schema([
                     TranslatableSelect::standard(
                         'vendor_id',
@@ -87,6 +88,7 @@ class VendorBillResource extends Resource
                         __('vendor_bill.vendor')
                     )
                         ->required()
+                        ->columnSpan(2)
                         ->createOptionForm([
                             TextInput::make('name')
                                 ->label(__('partner.name'))
@@ -121,6 +123,7 @@ class VendorBillResource extends Resource
                     TranslatableSelect::make('currency_id', \App\Models\Currency::class, __('vendor_bill.currency'))
                         ->required()
                         ->live()
+                        ->columnSpan(1)
                         ->default(fn() => \Filament\Facades\Filament::getTenant()?->currency_id)
                         ->afterStateUpdated(function (callable $set, $state, callable $get) {
                             if ($state) {
@@ -166,34 +169,30 @@ class VendorBillResource extends Resource
                             return $action
                                 ->modalWidth('lg');
                         }),
-
                     TextInput::make('current_exchange_rate')
                         ->label(__('vendor_bill.current_exchange_rate'))
                         ->numeric()
                         ->disabled()
                         ->dehydrated(false)
+                        ->columnSpan(1)
                         ->visible(function (callable $get) {
                             $currencyId = $get('currency_id');
                             $company = \Filament\Facades\Filament::getTenant();
                             return $currencyId && $company && $currencyId != $company->currency_id;
                         })
                         ->helperText(__('vendor_bill.exchange_rate_helper')),
+                ])
+                ->columns(4)
+                ->columnSpanFull(),
+
+            Section::make(__('vendor_bill.bill_details'))
+                ->description(__('vendor_bill.bill_details_description'))
+                ->schema([
                     TextInput::make('bill_reference')
                         ->label(__('vendor_bill.bill_reference'))
                         ->required()
-                        ->maxLength(255),
-                    DatePicker::make('bill_date')
-                        ->label(__('vendor_bill.bill_date'))
-                        ->default(now())
-                        ->required()
-                        ->rules([new NotInLockedPeriod()]),
-                    DatePicker::make('accounting_date')
-                        ->default(now())
-                        ->label(__('vendor_bill.accounting_date'))
-                        ->required()
-                        ->rules([new NotInLockedPeriod()]),
-                    DatePicker::make('due_date')
-                        ->label(__('vendor_bill.due_date')),
+                        ->maxLength(255)
+                        ->columnSpan(2),
                     Select::make('status')
                         ->label(__('vendor_bill.status'))
                         ->options(
@@ -201,11 +200,28 @@ class VendorBillResource extends Resource
                                 ->mapWithKeys(fn(VendorBillStatus $status) => [$status->value => $status->label()])
                         )
                         ->disabled()
-                        ->dehydrated(false),
+                        ->dehydrated(false)
+                        ->columnSpan(2),
+                    DatePicker::make('bill_date')
+                        ->label(__('vendor_bill.bill_date'))
+                        ->default(now())
+                        ->required()
+                        ->rules([new NotInLockedPeriod()])
+                        ->columnSpan(1),
+                    DatePicker::make('accounting_date')
+                        ->default(now())
+                        ->label(__('vendor_bill.accounting_date'))
+                        ->required()
+                        ->rules([new NotInLockedPeriod()])
+                        ->columnSpan(1),
+                    DatePicker::make('due_date')
+                        ->label(__('vendor_bill.due_date'))
+                        ->columnSpan(2),
                 ])
-                ->columns(2),
-
-            Section::make(__('vendor_bill.lines'))
+                ->columns(4)
+                ->columnSpanFull(),
+            Section::make(__('vendor_bill.line_items'))
+                ->description(__('vendor_bill.line_items_description'))
                 ->schema([
                     Repeater::make('lines')
                         ->label(__('vendor_bill.lines'))
@@ -269,7 +285,7 @@ class VendorBillResource extends Resource
                                 ->label(__('vendor_bill.description'))
                                 ->maxLength(255)
                                 ->required()
-                                ->columnSpan(2),
+                                ->columnSpan(3),
                             TextInput::make('quantity')
                                 ->label(__('vendor_bill.quantity'))
                                 ->required()
@@ -382,33 +398,8 @@ class VendorBillResource extends Resource
                                 ->columnSpan(2),
                         ])
                         ->columns(5)
-                        ->columnSpanFull(),
-                ]),
-
-            Section::make(__('vendor_bill.company_currency_totals'))
-                ->schema([
-                    TextInput::make('exchange_rate_at_creation')
-                        ->label(__('vendor_bill.exchange_rate_at_creation'))
-                        ->numeric()
-                        ->disabled()
-                        ->visible(fn (?VendorBill $record) => $record && $record->exchange_rate_at_creation),
-
-                    MoneyInput::make('total_amount_company_currency')
-                        ->label(__('vendor_bill.total_amount_company_currency'))
-                        ->currencyField('../../company.currency_id')
-                        ->disabled()
-                        ->visible(fn (?VendorBill $record) => $record && $record->total_amount_company_currency),
-
-                    MoneyInput::make('total_tax_company_currency')
-                        ->label(__('vendor_bill.total_tax_company_currency'))
-                        ->currencyField('../../company.currency_id')
-                        ->disabled()
-                        ->visible(fn (?VendorBill $record) => $record && $record->total_tax_company_currency),
-                ])
-                ->columns(3)
-                ->visible(fn (?VendorBill $record) => $record && ($record->exchange_rate_at_creation || $record->total_amount_company_currency)),
-
-            Section::make(__('vendor_bill.attachments'))
+                ])->columnSpanFull(),
+                Section::make(__('vendor_bill.attachments'))
                 ->description(__('vendor_bill.attachments_description'))
                 ->schema([
                     FileUpload::make('attachments')
@@ -438,7 +429,31 @@ class VendorBillResource extends Resource
                         ->reorderable(),
                 ])
                 ->collapsible()
+                ->columnSpanFull()
                 ->collapsed(fn(?VendorBill $record) => $record && $record->attachments()->count() === 0),
+
+            Section::make(__('vendor_bill.company_currency_totals'))
+                ->schema([
+                    TextInput::make('exchange_rate_at_creation')
+                        ->label(__('vendor_bill.exchange_rate_at_creation'))
+                        ->numeric()
+                        ->disabled()
+                        ->visible(fn (?VendorBill $record) => $record && $record->exchange_rate_at_creation),
+
+                    MoneyInput::make('total_amount_company_currency')
+                        ->label(__('vendor_bill.total_amount_company_currency'))
+                        ->currencyField('../../company.currency_id')
+                        ->disabled()
+                        ->visible(fn (?VendorBill $record) => $record && $record->total_amount_company_currency),
+
+                    MoneyInput::make('total_tax_company_currency')
+                        ->label(__('vendor_bill.total_tax_company_currency'))
+                        ->currencyField('../../company.currency_id')
+                        ->disabled()
+                        ->visible(fn (?VendorBill $record) => $record && $record->total_tax_company_currency),
+                ])
+                ->columnSpanFull()
+                ->visible(fn (?VendorBill $record) => $record && ($record->exchange_rate_at_creation || $record->total_amount_company_currency)),
         ]);
     }
 

@@ -28,6 +28,22 @@ return [
     'total_tax' => 'کۆی باج',
     'reason' => 'هۆکار',
 
+    // Section Titles and Descriptions
+    'customer_currency_info' => 'زانیاریی کڕیار و دراو',
+    'customer_currency_info_description' => 'کڕیار و دراوەکە بۆ ئەم پسووڵەیە هەڵبژێرە',
+    'invoice_details' => 'وردەکاریی پسووڵە',
+    'invoice_details_description' => 'ڕێکەوتەکانی پسووڵە، پێگەی دارایی و زانیاریی دۆخ بنووسە',
+    'line_items' => 'بەندەکانی پسووڵە',
+    'line_items_description' => 'بەرهەم و خزمەتگوزاریەکان بۆ ئەم پسووڵەیە زیاد بکە',
+    'company_currency_totals' => 'کۆی گشتی دراوی کۆمپانیا',
+
+    // Exchange Rate Fields
+    'current_exchange_rate' => 'نرخی ئاڵوگۆڕی ئێستا',
+    'exchange_rate_helper' => 'ئەمە نرخی ئاڵوگۆڕی ئێستایە بۆ دراوە هەڵبژێردراوەکە',
+    'exchange_rate_at_creation' => 'نرخی ئاڵوگۆڕ لە کاتی دروستکردن',
+    'total_amount_company_currency' => 'کۆی گشتی (دراوی کۆمپانیا)',
+    'total_tax_company_currency' => 'کۆی باج (دراوی کۆمپانیا)',
+
     // Table Columns
     'company_name' => 'کۆمپانیا',
     'customer_name' => 'کڕیار',
