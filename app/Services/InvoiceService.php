@@ -205,7 +205,7 @@ class InvoiceService
         }
 
         // Get exchange rate for the invoice date
-        $exchangeRate = $this->currencyConverter->getExchangeRate($invoice->currency, $invoice->invoice_date);
+        $exchangeRate = $this->currencyConverter->getExchangeRate($invoice->currency, $invoice->invoice_date, $invoice->company);
 
         // If no exchange rate is found, skip multi-currency processing for backward compatibility
         if (!$exchangeRate) {
@@ -222,19 +222,21 @@ class InvoiceService
             $invoice->total_amount,
             $invoice->currency,
             $companyCurrency,
-            $invoice->invoice_date
+            $invoice->invoice_date,
+            $invoice->company
         );
 
         $totalTaxCompanyCurrency = $this->currencyConverter->convertToBaseCurrency(
             $invoice->total_tax,
             $invoice->currency,
             $companyCurrency,
-            $invoice->invoice_date
+            $invoice->invoice_date,
+            $invoice->company
         );
 
         // Convert invoice line amounts
         foreach ($invoice->invoiceLines as $line) {
-            $this->convertInvoiceLineAmounts($line, $companyCurrency);
+            $this->convertInvoiceLineAmounts($line, $companyCurrency, $invoice->company);
         }
 
         // Update invoice with converted amounts
@@ -248,27 +250,30 @@ class InvoiceService
     /**
      * Convert invoice line amounts to company currency.
      */
-    protected function convertInvoiceLineAmounts($line, Currency $companyCurrency): void
+    protected function convertInvoiceLineAmounts($line, Currency $companyCurrency, Company $company): void
     {
         $unitPriceCompanyCurrency = $this->currencyConverter->convertToBaseCurrency(
             $line->unit_price,
             $line->invoice->currency,
             $companyCurrency,
-            $line->invoice->invoice_date
+            $line->invoice->invoice_date,
+            $company
         );
 
         $subtotalCompanyCurrency = $this->currencyConverter->convertToBaseCurrency(
             $line->subtotal,
             $line->invoice->currency,
             $companyCurrency,
-            $line->invoice->invoice_date
+            $line->invoice->invoice_date,
+            $company
         );
 
         $totalLineTaxCompanyCurrency = $this->currencyConverter->convertToBaseCurrency(
             $line->total_line_tax,
             $line->invoice->currency,
             $companyCurrency,
-            $line->invoice->invoice_date
+            $line->invoice->invoice_date,
+            $company
         );
 
         $line->update([
