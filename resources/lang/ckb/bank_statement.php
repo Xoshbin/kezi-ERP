@@ -66,4 +66,19 @@ return [
     'select' => 'هەڵبژاردن',
     'payment_date' => 'رێکەوتی پارەدان',
     'type' => 'جۆر',
+
+    // Multi-Currency
+    'all_amounts_in_currency' => 'هەموو بڕەکان بە :currency پیشان دراون',
+    'includes_currency_conversions' => 'گۆڕینی دراو لەخۆدەگرێت',
+    'same_currency_as_statement' => 'هەمان دراوی وەک ڕاپۆرتی بانک',
+    'different_currency_conversion_required' => 'دراوی جیاواز - گۆڕین جێبەجێکراوە',
+    'currency_filter' => 'فلتەری دراو',
+    'same_currency_only' => 'تەنها هەمان دراو',
+    'different_currency_only' => 'تەنها دراوی جیاواز',
+    'all_currencies' => 'هەموو دراوەکان',
+
+    // Form Sections
+    'statement_information' => 'زانیاری ڕاپۆرت',
+    'statement_information_description' => 'زانیاری بنەڕەتی دەربارەی ڕاپۆرتی بانک',
+    'statement_lines_description' => 'مامەڵە تاکەکەسەکان لە ڕاپۆرتی بانک',
 ];

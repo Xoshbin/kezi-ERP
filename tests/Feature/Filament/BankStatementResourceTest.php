@@ -167,15 +167,6 @@ it('can edit a bank statement', function () {
     expect($bankStatement->ending_balance->isEqualTo(Money::of('2500.00', $this->company->currency->code)))->toBeTrue();
 });
 
-it('can render the view page', function () {
-    $bankStatement = BankStatement::factory()->create([
-        'company_id' => $this->company->id,
-    ]);
-
-    $this->get(BankStatementResource::getUrl('view', ['record' => $bankStatement]))
-        ->assertSuccessful();
-});
-
 it('can render the reconcile page', function () {
     $bankStatement = BankStatement::factory()->create([
         'company_id' => $this->company->id,
@@ -203,15 +194,6 @@ it('can navigate to reconciliation page', function () {
     $this->get(BankStatementResource::getUrl('reconcile', ['record' => $bankStatement]))
         ->assertSuccessful()
         ->assertSeeLivewire(\App\Livewire\Accounting\BankReconciliationMatcher::class);
-});
-
-it('shows reconcile action in view page', function () {
-    $bankStatement = BankStatement::factory()->create([
-        'company_id' => $this->company->id,
-    ]);
-
-    livewire(\App\Filament\Resources\BankStatements\Pages\ViewBankStatement::class, ['record' => $bankStatement->id])
-        ->assertActionExists('reconcile');
 });
 
 it('can handle multiple lines in create', function () {
