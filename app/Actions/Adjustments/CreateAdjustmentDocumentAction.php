@@ -8,6 +8,7 @@ use App\Enums\Adjustments\AdjustmentDocumentStatus;
 use App\Models\Company;
 use App\Models\Currency;
 use App\Services\Accounting\LockDateService;
+use App\Services\CurrencyConverterService;
 use Brick\Money\Money;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -16,7 +17,8 @@ class CreateAdjustmentDocumentAction
 {
     public function __construct(
         private readonly LockDateService $lockDateService,
-        private readonly CreateAdjustmentDocumentLineAction $createAdjustmentDocumentLineAction
+        private readonly CreateAdjustmentDocumentLineAction $createAdjustmentDocumentLineAction,
+        private readonly CurrencyConverterService $currencyConverter
     ) {
     }
 
@@ -38,6 +40,7 @@ class CreateAdjustmentDocumentAction
                 'currency_id' => $dto->currency_id,
                 'original_invoice_id' => $dto->original_invoice_id,
                 'original_vendor_bill_id' => $dto->original_vendor_bill_id,
+                'subtotal' => Money::of(0, $currencyCode),     // Initialize with 0
                 'total_amount' => Money::of(0, $currencyCode), // Initialize with 0
                 'total_tax' => Money::of(0, $currencyCode),    // Initialize with 0
                 'status' => AdjustmentDocumentStatus::Draft,
@@ -48,9 +51,133 @@ class CreateAdjustmentDocumentAction
                 $this->createAdjustmentDocumentLineAction->execute($adjustmentDocument, $lineDto);
             }
 
-            // The observer on the Line model will have triggered the parent's total recalculation.
-            // We just need to refresh the model to get the latest calculated totals.
+            // Refresh the model to get the latest calculated totals from the observer
+            $adjustmentDocument->refresh();
+
+            // Process multi-currency amounts after lines are created and totals calculated
+            $this->processMultiCurrencyAmounts($adjustmentDocument);
+
+            // Return the fresh model with all updates
             return $adjustmentDocument->fresh();
         });
+    }
+
+    /**
+     * Process multi-currency amounts for an adjustment document.
+     * Captures exchange rate and converts amounts to company base currency.
+     */
+    protected function processMultiCurrencyAmounts(AdjustmentDocument $adjustmentDocument): void
+    {
+        // Load necessary relationships
+        $adjustmentDocument->load(['company', 'currency', 'lines']);
+
+        // If adjustment document is in company base currency, set rate to 1.0
+        if ($adjustmentDocument->currency_id === $adjustmentDocument->company->currency_id) {
+            $adjustmentDocument->exchange_rate_at_creation = 1.0;
+            $adjustmentDocument->subtotal_company_currency = $adjustmentDocument->subtotal;
+            $adjustmentDocument->total_amount_company_currency = $adjustmentDocument->total_amount;
+            $adjustmentDocument->total_tax_company_currency = $adjustmentDocument->total_tax;
+
+            // Also set line-level company currency amounts (same as document currency)
+            foreach ($adjustmentDocument->lines as $line) {
+                $line->update([
+                    'unit_price_company_currency' => $line->unit_price,
+                    'subtotal_company_currency' => $line->subtotal,
+                    'total_line_tax_company_currency' => $line->total_line_tax,
+                ]);
+            }
+
+            $adjustmentDocument->save();
+            return;
+        }
+
+        // Get exchange rate for the adjustment document date
+        $exchangeRate = $this->currencyConverter->getExchangeRate($adjustmentDocument->currency, $adjustmentDocument->date, $adjustmentDocument->company);
+
+        // If no exchange rate is found, skip multi-currency processing for backward compatibility
+        if (!$exchangeRate) {
+            $adjustmentDocument->exchange_rate_at_creation = 1.0;
+            $adjustmentDocument->subtotal_company_currency = $adjustmentDocument->subtotal;
+            $adjustmentDocument->total_amount_company_currency = $adjustmentDocument->total_amount;
+            $adjustmentDocument->total_tax_company_currency = $adjustmentDocument->total_tax;
+            $adjustmentDocument->save();
+            return;
+        }
+
+        // Convert amounts to company currency
+        $companyCurrency = $adjustmentDocument->company->currency;
+
+        $subtotalCompanyCurrency = $this->currencyConverter->convertToBaseCurrency(
+            $adjustmentDocument->subtotal,
+            $adjustmentDocument->currency,
+            $companyCurrency,
+            $adjustmentDocument->date,
+            $adjustmentDocument->company
+        );
+
+        $totalAmountCompanyCurrency = $this->currencyConverter->convertToBaseCurrency(
+            $adjustmentDocument->total_amount,
+            $adjustmentDocument->currency,
+            $companyCurrency,
+            $adjustmentDocument->date,
+            $adjustmentDocument->company
+        );
+
+        $totalTaxCompanyCurrency = $this->currencyConverter->convertToBaseCurrency(
+            $adjustmentDocument->total_tax,
+            $adjustmentDocument->currency,
+            $companyCurrency,
+            $adjustmentDocument->date,
+            $adjustmentDocument->company
+        );
+
+        // Convert adjustment document line amounts
+        foreach ($adjustmentDocument->lines as $line) {
+            $this->convertAdjustmentDocumentLineAmounts($line, $companyCurrency, $adjustmentDocument->company);
+        }
+
+        // Update adjustment document with converted amounts
+        $adjustmentDocument->update([
+            'exchange_rate_at_creation' => $exchangeRate,
+            'subtotal_company_currency' => $subtotalCompanyCurrency,
+            'total_amount_company_currency' => $totalAmountCompanyCurrency,
+            'total_tax_company_currency' => $totalTaxCompanyCurrency,
+        ]);
+    }
+
+    /**
+     * Convert adjustment document line amounts to company currency.
+     */
+    protected function convertAdjustmentDocumentLineAmounts($line, Currency $companyCurrency, Company $company): void
+    {
+        $unitPriceCompanyCurrency = $this->currencyConverter->convertToBaseCurrency(
+            $line->unit_price,
+            $line->adjustmentDocument->currency,
+            $companyCurrency,
+            $line->adjustmentDocument->date,
+            $company
+        );
+
+        $subtotalCompanyCurrency = $this->currencyConverter->convertToBaseCurrency(
+            $line->subtotal,
+            $line->adjustmentDocument->currency,
+            $companyCurrency,
+            $line->adjustmentDocument->date,
+            $company
+        );
+
+        $totalLineTaxCompanyCurrency = $this->currencyConverter->convertToBaseCurrency(
+            $line->total_line_tax,
+            $line->adjustmentDocument->currency,
+            $companyCurrency,
+            $line->adjustmentDocument->date,
+            $company
+        );
+
+        $line->update([
+            'unit_price_company_currency' => $unitPriceCompanyCurrency,
+            'subtotal_company_currency' => $subtotalCompanyCurrency,
+            'total_line_tax_company_currency' => $totalLineTaxCompanyCurrency,
+        ]);
     }
 }
