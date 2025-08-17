@@ -114,7 +114,8 @@ class BankTransactionsTable extends Component implements HasTable, HasForms, Has
 
     protected function emitSelectionChanged(): void
     {
-        $total = Money::of(0, 'IQD');
+        // Use the bank statement's currency instead of hardcoded 'IQD'
+        $total = Money::of(0, $this->bankStatement->currency->code);
 
         if (!empty($this->selectedBankLines)) {
             $lines = BankStatementLine::whereIn('id', $this->selectedBankLines)->get();
