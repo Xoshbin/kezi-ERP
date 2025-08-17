@@ -10,6 +10,7 @@ use App\Models\Currency;
 use App\Models\JournalEntry;
 use App\Models\Account;
 use App\Services\Accounting\LockDateService;
+use App\Services\CurrencyConverterService;
 use Brick\Money\Money;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -17,8 +18,10 @@ use Illuminate\Validation\ValidationException;
 
 class CreateJournalEntryAction
 {
-    public function __construct(private readonly LockDateService $lockDateService)
-    {
+    public function __construct(
+        private readonly LockDateService $lockDateService,
+        private readonly CurrencyConverterService $currencyConverter
+    ) {
     }
 
     public function execute(CreateJournalEntryDTO $dto): JournalEntry
@@ -30,10 +33,10 @@ class CreateJournalEntryAction
         if (!$currency) {
             throw new Exception("Currency with ID {$dto->currency_id} not found.");
         }
-        $currencyCode = $currency->code;
 
-        $totalDebit = Money::zero($currencyCode);
-        $totalCredit = Money::zero($currencyCode);
+        // Validate account currency locks and calculate totals in company base currency
+        $totalDebitBaseCurrency = Money::zero($company->currency->code);
+        $totalCreditBaseCurrency = Money::zero($company->currency->code);
 
         foreach ($dto->lines as $index => $line) {
             $account = Account::find($line->account_id);
@@ -42,19 +45,59 @@ class CreateJournalEntryAction
                     "lines.{$index}.account_id" => "Account '{$account->name}' is deprecated and cannot be used.",
                 ]);
             }
-            $totalDebit = $totalDebit->plus($line->debit);
-            $totalCredit = $totalCredit->plus($line->credit);
+
+            // Enforce account currency lock
+            if ($account && $account->currency_id && $account->currency_id !== $dto->currency_id) {
+                $accountCurrency = Currency::find($account->currency_id);
+                throw ValidationException::withMessages([
+                    "lines.{$index}.account_id" => "Account '{$account->name}' is locked to {$accountCurrency->code} currency but transaction is in {$currency->code}.",
+                ]);
+            }
+
+            // Convert line amounts to company base currency for totals calculation
+            if ($currency->id !== $company->currency_id) {
+                $debitBaseCurrency = $this->currencyConverter->convertToBaseCurrency(
+                    $line->debit,
+                    $currency,
+                    $company->currency,
+                    $dto->entry_date,
+                    $company
+                );
+                $creditBaseCurrency = $this->currencyConverter->convertToBaseCurrency(
+                    $line->credit,
+                    $currency,
+                    $company->currency,
+                    $dto->entry_date,
+                    $company
+                );
+            } else {
+                // Same currency, no conversion needed
+                $debitBaseCurrency = $line->debit;
+                $creditBaseCurrency = $line->credit;
+            }
+
+            $totalDebitBaseCurrency = $totalDebitBaseCurrency->plus($debitBaseCurrency);
+            $totalCreditBaseCurrency = $totalCreditBaseCurrency->plus($creditBaseCurrency);
         }
 
-        if (!$totalDebit->isEqualTo($totalCredit)) {
+        // Validate that debits equal credits (in original currency for consistency)
+        $totalDebitOriginal = Money::zero($currency->code);
+        $totalCreditOriginal = Money::zero($currency->code);
+        foreach ($dto->lines as $line) {
+            $totalDebitOriginal = $totalDebitOriginal->plus($line->debit);
+            $totalCreditOriginal = $totalCreditOriginal->plus($line->credit);
+        }
+
+        if (!$totalDebitOriginal->isEqualTo($totalCreditOriginal)) {
             throw ValidationException::withMessages([
                 'lines' => 'The total debits must equal the total credits.',
             ]);
         }
 
-        // --- FIX IS HERE: Add $totalDebit and $totalCredit to the 'use' statement ---
-        return DB::transaction(function () use ($dto, $totalDebit, $totalCredit, $currencyCode, $currency) {
-            $journalEntry = JournalEntry::create([
+        return DB::transaction(function () use ($dto, $totalDebitBaseCurrency, $totalCreditBaseCurrency, $currency, $company) {
+
+
+            $journalEntryData = [
                 'company_id' => $dto->company_id,
                 'journal_id' => $dto->journal_id,
                 'currency_id' => $dto->currency_id,
@@ -63,11 +106,13 @@ class CreateJournalEntryAction
                 'description' => $dto->description,
                 'created_by_user_id' => $dto->created_by_user_id,
                 'is_posted' => $dto->is_posted,
-                'total_debit' => $totalDebit,
-                'total_credit' => $totalCredit,
+                'total_debit' => $totalDebitBaseCurrency,
+                'total_credit' => $totalCreditBaseCurrency,
                 'source_type' => $dto->source_type,
                 'source_id' => $dto->source_id,
-            ]);
+            ];
+
+            $journalEntry = JournalEntry::create($journalEntryData);
 
             // This ensures the $journalEntry object is fully hydrated before we use it.
             $journalEntry = $journalEntry->fresh()->load('currency');
@@ -80,19 +125,66 @@ class CreateJournalEntryAction
                 // to solving the MoneyCast issue without schema changes.
                 $line->journalEntry()->associate($journalEntry);
 
-                // Now, fill the attributes. The MoneyCast on 'debit' and 'credit' will be
-                // triggered here, but it can now successfully call getCurrencyIdAttribute()
-                // because the journalEntry relationship is established.
-                $line->fill([
-                    'account_id' => $lineDto->account_id,
-                    'partner_id' => $lineDto->partner_id,
-                    'analytic_account_id' => $lineDto->analytic_account_id,
-                    'description' => $lineDto->description,
-                    'debit' => $lineDto->debit,
-                    'credit' => $lineDto->credit,
-                ]);
+                // Convert line amounts to company base currency
+                if ($currency->id !== $company->currency_id) {
+                    $debitBaseCurrency = $this->currencyConverter->convertToBaseCurrency(
+                        $lineDto->debit,
+                        $currency,
+                        $company->currency,
+                        $dto->entry_date,
+                        $company
+                    );
 
-                // Finally, save the fully prepared line.
+                    $creditBaseCurrency = $this->currencyConverter->convertToBaseCurrency(
+                        $lineDto->credit,
+                        $currency,
+                        $company->currency,
+                        $dto->entry_date,
+                        $company
+                    );
+                } else {
+                    // Same currency, no conversion needed
+                    $debitBaseCurrency = $lineDto->debit;
+                    $creditBaseCurrency = $lineDto->credit;
+                }
+
+                // Determine original currency amount and exchange rate
+                $originalCurrencyAmount = $lineDto->original_currency_amount;
+                $exchangeRateAtTransaction = $lineDto->exchange_rate_at_transaction;
+
+                // If not provided in DTO, calculate defaults
+                if ($originalCurrencyAmount === null) {
+                    // Use the larger of debit or credit as the original amount
+                    $originalCurrencyAmount = $lineDto->debit->isGreaterThan($lineDto->credit) ? $lineDto->debit : $lineDto->credit;
+                }
+
+                if ($exchangeRateAtTransaction === null) {
+                    // Get exchange rate if converting between currencies
+                    if ($currency->id !== $company->currency_id) {
+                        $exchangeRateAtTransaction = $this->currencyConverter->getExchangeRate($currency, $dto->entry_date, $company);
+                    } else {
+                        $exchangeRateAtTransaction = 1.0;
+                    }
+                }
+
+                // Prepare line data - store amounts as Money objects, let casts handle conversion
+                // Set the currency-related fields first to avoid cast issues
+                $line->original_currency_id = $dto->currency_id;
+                $line->currency_id = $dto->currency_id;
+                $line->exchange_rate_at_transaction = $exchangeRateAtTransaction;
+
+                // Set non-Money fields
+                $line->company_id = $dto->company_id;
+                $line->account_id = $lineDto->account_id;
+                $line->partner_id = $lineDto->partner_id;
+                $line->analytic_account_id = $lineDto->analytic_account_id;
+                $line->description = $lineDto->description;
+
+                // Now set the Money fields after currency_id is set
+                $line->debit = $debitBaseCurrency;
+                $line->credit = $creditBaseCurrency;
+                $line->original_currency_amount = $originalCurrencyAmount;
+
                 $line->save();
             }
 

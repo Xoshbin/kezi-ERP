@@ -7,7 +7,7 @@ use Brick\Money\Money;
 use Illuminate\Database\Eloquent\Collection;
 use Database\Factories\AssetFactory;
 use Illuminate\Database\Eloquent\Builder;
-use App\Casts\MoneyCast;
+use App\Casts\BaseCurrencyMoneyCast;
 use App\Observers\AssetObserver;
 use App\Enums\Assets\AssetStatus;
 use Illuminate\Database\Eloquent\Model;
@@ -111,14 +111,25 @@ class Asset extends Model
      */
     protected $casts = [
         'purchase_date' => 'date',
-        'purchase_value' => MoneyCast::class,
-        'salvage_value' => MoneyCast::class,
+        'purchase_value' => BaseCurrencyMoneyCast::class,
+        'salvage_value' => BaseCurrencyMoneyCast::class,
         'useful_life_years' => 'integer',
         'status' => AssetStatus::class,
         'depreciation_method' => DepreciationMethod::class,
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
     ];
+
+    /**
+     * The relationships that should always be loaded.
+     * Eager-loading the `company.currency` relationship is critical because the `BaseCurrencyMoneyCast`
+     * for monetary fields on this model depends on the currency context provided by the company.
+     * Without this, any retrieval of an `Asset` would fail when casting monetary values
+     * due to the missing currency information, leading to a "currency_id on null" error.
+     *
+     * @var array
+     */
+    protected $with = ['company.currency'];
 
     /*
     |--------------------------------------------------------------------------

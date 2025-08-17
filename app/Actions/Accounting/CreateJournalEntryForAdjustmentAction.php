@@ -35,9 +35,9 @@ class CreateJournalEntryForAdjustmentAction
 
         // 3. Build the journal entry lines based on credit note accounting rules (reversing a sale).
         $lineDTOs = [];
-        // Explicitly use the document's currency for all calculations.
-        $totalAmount = Money::ofMinor($adjustment->getAttributes()['total_amount'], $currencyCode);
-        $totalTax = Money::ofMinor($adjustment->getAttributes()['total_tax'], $currencyCode);
+        // Use the properly cast Money objects from the adjustment document
+        $totalAmount = $adjustment->total_amount;
+        $totalTax = $adjustment->total_tax;
         $subtotal = $totalAmount->minus($totalTax);
 
         // Rule: DEBIT the Sales Discount/Contra-Revenue account.

@@ -23,6 +23,9 @@ return new class extends Migration
             $table->text('description')->nullable();
             $table->unsignedBigInteger('total_debit');
             $table->unsignedBigInteger('total_credit');
+
+            // Add index for performance on currency queries
+            $table->index(['currency_id', 'entry_date']);
             /*
             ## 1. Performance 🚀
             A query on a boolean/tinyint column like WHERE is_posted = true is extremely fast, especially with a database index.

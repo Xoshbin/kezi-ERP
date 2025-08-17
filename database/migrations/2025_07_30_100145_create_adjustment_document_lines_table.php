@@ -19,6 +19,9 @@ return new class extends Migration
             $table->foreignId('tax_id')->nullable()->constrained('taxes')->nullOnDelete();
             $table->foreignId('account_id')->constrained('accounts');
             $table->foreignId('currency_id')->nullable()->constrained('currencies');
+            $table->unsignedBigInteger('unit_price_company_currency')->nullable();
+            $table->unsignedBigInteger('subtotal_company_currency')->nullable();
+            $table->unsignedBigInteger('total_line_tax_company_currency')->nullable();
             $table->string('description');
             $table->decimal('quantity', 15, 2);
             $table->bigInteger('unit_price'); // For MoneyCast

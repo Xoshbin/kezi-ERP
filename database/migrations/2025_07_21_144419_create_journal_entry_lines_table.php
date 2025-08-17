@@ -22,6 +22,12 @@ return new class extends Migration
             $table->unsignedBigInteger('credit')->default(0);
             $table->unsignedBigInteger('original_currency_amount')->default(0);
             $table->unsignedBigInteger('exchange_rate_at_transaction')->default(0);
+            // Add currency_id field for the original transaction currency
+            $table->foreignId('currency_id')->nullable()->constrained('currencies');
+
+            // Add index for performance
+            $table->index(['journal_entry_id', 'account_id']);
+            $table->index(['currency_id']);
             $table->text('description')->nullable();
             $table->timestamps();
         });

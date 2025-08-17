@@ -79,6 +79,7 @@ class CreateVendorBill extends CreateRecord
                 $fileSize = Storage::disk('local')->size($filePath);
 
                 VendorBillAttachment::create([
+                    'company_id' => $this->record->company_id,
                     'vendor_bill_id' => $this->record->id,
                     'file_name' => $fileInfo['basename'],
                     'file_path' => $filePath,

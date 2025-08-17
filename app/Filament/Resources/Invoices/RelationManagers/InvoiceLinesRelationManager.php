@@ -39,6 +39,7 @@ class InvoiceLinesRelationManager extends RelationManager
     {
         return $table
             ->recordTitleAttribute('description')
+            ->modifyQueryUsing(fn (Builder $query) => $query->with(['invoice.currency', 'product', 'tax', 'incomeAccount']))
             ->columns([
                 TextColumn::make('product.name')->label(__('invoice.product')),
                 TextColumn::make('description')->label(__('invoice.description')),

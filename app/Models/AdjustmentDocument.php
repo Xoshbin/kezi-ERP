@@ -6,7 +6,8 @@ use Illuminate\Support\Carbon;
 use Database\Factories\AdjustmentDocumentFactory;
 use Illuminate\Database\Eloquent\Builder;
 use Brick\Money\Money;
-use App\Casts\MoneyCast;
+use App\Casts\DocumentCurrencyMoneyCast;
+use App\Casts\BaseCurrencyMoneyCast;
 use App\Enums\Adjustments\AdjustmentDocumentType;
 use App\Enums\Adjustments\AdjustmentDocumentStatus;
 use Illuminate\Database\Eloquent\Model;
@@ -81,8 +82,13 @@ class AdjustmentDocument extends Model
         'type',                   // [5] e.g., 'Credit Note', 'Debit Note', 'Miscellaneous Adjustment'
         'date',                   // [5]
         'reference_number',       // [5]
+        'subtotal',               // [5] Subtotal before taxes
         'total_amount',           // [5]
         'total_tax',              // [5]
+        'exchange_rate_at_creation', // Exchange rate captured at creation/posting
+        'subtotal_company_currency',     // Subtotal in company base currency
+        'total_amount_company_currency', // Total amount in company base currency
+        'total_tax_company_currency',    // Total tax in company base currency
         'reason',                 // [5]
         'status',                 // [5] e.g., 'Draft', 'Posted'
         'journal_entry_id',       // [5]
@@ -102,8 +108,13 @@ class AdjustmentDocument extends Model
         'date'         => 'date',       // [5, 6]
         'type'         => AdjustmentDocumentType::class,
         'status'       => AdjustmentDocumentStatus::class,
-        'total_amount' => MoneyCast::class,  // [5] Example precision, adjust as needed.
-        'total_tax'    => MoneyCast::class,  // [5] Example precision, adjust as needed.
+        'exchange_rate_at_creation' => 'decimal:10',
+        'subtotal'     => DocumentCurrencyMoneyCast::class,  // Document currency amounts
+        'total_amount' => DocumentCurrencyMoneyCast::class,  // Document currency amounts
+        'total_tax'    => DocumentCurrencyMoneyCast::class,  // Document currency amounts
+        'subtotal_company_currency' => BaseCurrencyMoneyCast::class,  // Company base currency amounts
+        'total_amount_company_currency' => BaseCurrencyMoneyCast::class,  // Company base currency amounts
+        'total_tax_company_currency' => BaseCurrencyMoneyCast::class,  // Company base currency amounts
         'created_at'   => 'datetime',   // [5, 6]
         'updated_at'   => 'datetime',   // [5, 6]
     ];
@@ -256,6 +267,7 @@ class AdjustmentDocument extends Model
             $zero
         );
 
+        $this->subtotal = $subtotal;
         $this->total_tax = $totalTax;
         $this->total_amount = $subtotal->plus($totalTax);
     }

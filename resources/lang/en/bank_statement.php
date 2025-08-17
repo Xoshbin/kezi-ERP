@@ -67,4 +67,26 @@ return [
     'payment_date' => 'Payment Date',
     'type' => 'Type',
     'write_off_reason' => 'Write-off Reason',
+
+    // Multi-Currency
+    'all_amounts_in_currency' => 'All amounts shown in :currency',
+    'includes_currency_conversions' => 'Includes currency conversions',
+    'same_currency_as_statement' => 'Same currency as bank statement',
+    'different_currency_conversion_required' => 'Different currency - conversion applied',
+    'currency_filter' => 'Currency Filter',
+    'same_currency_only' => 'Same Currency Only',
+    'different_currency_only' => 'Different Currency Only',
+    'all_currencies' => 'All Currencies',
+
+    // Form Sections
+    'statement_information' => 'Statement Information',
+    'statement_information_description' => 'Basic information about the bank statement',
+    'statement_lines_description' => 'Individual transactions on the bank statement',
+
+    // Foreign Currency
+    'foreign_currency' => 'Foreign Currency',
+    'foreign_currency_help' => 'Select if this transaction was originally in a different currency',
+    'amount_in_foreign_currency' => 'Amount in Foreign Currency',
+    'amount_in_statement_currency' => 'Amount that affects the bank account balance',
+    'original_transaction_amount' => 'The original transaction amount before conversion',
 ];

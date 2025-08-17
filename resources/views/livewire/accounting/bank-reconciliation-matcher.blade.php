@@ -1,7 +1,15 @@
 <div>
     {{-- Bank Statement Information --}}
     <div class="mb-6 bg-white shadow-sm rounded-lg p-6">
-        <h2 class="text-lg font-medium text-gray-900 mb-4">{{ __('bank_statement.statement_details') }}</h2>
+        <div class="flex items-center justify-between mb-4">
+            <h2 class="text-lg font-medium text-gray-900">{{ __('bank_statement.statement_details') }}</h2>
+            <div class="flex items-center space-x-2">
+                <span class="text-sm text-gray-500">{{ __('bank_statement.currency') }}:</span>
+                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                    {{ $bankStatement->currency->code }}
+                </span>
+            </div>
+        </div>
         <dl class="flex flex-row justify-between w-full space-x-8">
             <div class="flex flex-col flex-1 items-start">
             <dt class="text-sm font-medium text-gray-500">{{ __('bank_statement.reference') }}</dt>
@@ -33,7 +41,12 @@
 
     {{-- Summary Section --}}
     <div class="mt-6 bg-white shadow-sm rounded-lg p-6">
-        <h3 class="text-lg font-medium leading-6 text-gray-900 mb-4">{{ __('bank_statement.reconciliation_summary') }}</h3>
+        <div class="flex items-center justify-between mb-4">
+            <h3 class="text-lg font-medium leading-6 text-gray-900">{{ __('bank_statement.reconciliation_summary') }}</h3>
+            <div class="text-xs text-gray-500">
+                {{ __('bank_statement.all_amounts_in_currency', ['currency' => $bankStatement->currency->code]) }}
+            </div>
+        </div>
         <dl class="flex flex-row justify-between w-full space-x-8">
             <div class="flex flex-col flex-1 items-start">
                 <dt class="text-sm font-medium text-gray-500">{{ __('bank_statement.bank_total') }}</dt>
@@ -42,6 +55,11 @@
             <div class="flex flex-col flex-1 items-start">
                 <dt class="text-sm font-medium text-gray-500">{{ __('bank_statement.system_total') }}</dt>
                 <dd class="mt-1 text-sm text-gray-900">{{ $this->summary['systemTotalFormatted'] }}</dd>
+                @if(!empty($selectedPayments))
+                    <div class="mt-1 text-xs text-gray-400">
+                        {{ __('bank_statement.includes_currency_conversions') }}
+                    </div>
+                @endif
             </div>
             <div class="flex flex-col flex-1 items-start">
                 <dt class="text-sm font-medium text-gray-500">{{ __('bank_statement.difference') }}</dt>

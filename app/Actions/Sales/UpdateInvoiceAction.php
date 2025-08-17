@@ -6,7 +6,6 @@ use Carbon\Carbon;
 use App\Models\InvoiceLine;
 use App\DataTransferObjects\Sales\UpdateInvoiceDTO;
 use App\Exceptions\UpdateNotAllowedException;
-use App\Models\Currency;
 use App\Models\Invoice;
 use App\Models\Tax;
 use App\Enums\Sales\InvoiceStatus;
@@ -57,6 +56,7 @@ class UpdateInvoiceAction
                 }
 
                 $lines[] = new InvoiceLine([
+                    'company_id' => $invoice->company_id,
                     'product_id' => $lineDto->product_id,
                     'description' => $lineDto->description,
                     'quantity' => $lineDto->quantity,

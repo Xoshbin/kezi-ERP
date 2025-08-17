@@ -8,10 +8,9 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Repeater;
-use Filament\Infolists\Components\TextEntry;
-use Filament\Infolists\Components\RepeatableEntry;
+use Filament\Forms\Components\Toggle;
 use Filament\Tables\Columns\TextColumn;
-use Filament\Actions\ViewAction;
+use App\Filament\Tables\Columns\MoneyColumn;
 use Filament\Actions\EditAction;
 use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
@@ -19,23 +18,14 @@ use Filament\Actions\DeleteBulkAction;
 use App\Filament\Resources\BankStatements\RelationManagers\BankStatementLinesRelationManager;
 use App\Filament\Resources\BankStatements\Pages\ListBankStatements;
 use App\Filament\Resources\BankStatements\Pages\CreateBankStatement;
-use App\Filament\Resources\BankStatements\Pages\ViewBankStatement;
 use App\Filament\Resources\BankStatements\Pages\BankReconciliation;
 use App\Filament\Resources\BankStatements\Pages\EditBankStatement;
-use Filament\Forms;
-use Filament\Tables;
 use App\Models\Journal;
 use Filament\Tables\Table;
 use App\Models\BankStatement;
 use Filament\Resources\Resource;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
-use App\Filament\Resources\BankStatementResource\Pages;
-use App\Filament\Resources\BankStatementResource\RelationManagers;
-use App\Models\Partner;
-use App\Models\Company;
 use App\Filament\Forms\Components\MoneyInput;
-use Filament\Infolists;
 use App\Filament\Support\TranslatableSelect;
 
 class BankStatementResource extends Resource
@@ -69,12 +59,38 @@ class BankStatementResource extends Resource
     public static function form(Schema $schema): Schema
     {
         return $schema->components([
-            Section::make()
+            Section::make(__('bank_statement.statement_information'))
+                ->description(__('bank_statement.statement_information_description'))
                 ->schema([
                     TranslatableSelect::make('currency_id', \App\Models\Currency::class, __('bank_statement.currency'))
                         ->required()
                         ->live()
-                        ->default(fn() => \Filament\Facades\Filament::getTenant()?->currency_id),
+                        ->columnSpan(2)
+                        ->default(fn() => \Filament\Facades\Filament::getTenant()?->currency_id)
+                        ->createOptionForm([
+                            TextInput::make('code')
+                                ->label(__('currency.code'))
+                                ->required()
+                                ->maxLength(255),
+                            TextInput::make('name')
+                                ->label(__('currency.name'))
+                                ->required()
+                                ->maxLength(255),
+                            TextInput::make('symbol')
+                                ->label(__('currency.symbol'))
+                                ->required()
+                                ->maxLength(5),
+                            TextInput::make('exchange_rate')
+                                ->label(__('currency.exchange_rate'))
+                                ->required()
+                                ->numeric()
+                                ->default(1),
+                            Toggle::make('is_active')
+                                ->label(__('currency.is_active'))
+                                ->required()
+                                ->default(true),
+                        ])
+                        ->createOptionModalHeading(__('common.modal_title_create_currency')),
                     Select::make('journal_id')
                         ->label(__('bank_statement.bank_journal'))
                         ->options(function () {
@@ -88,6 +104,7 @@ class BankStatementResource extends Resource
                         })
                         ->searchable()
                         ->required()
+                        ->columnSpan(2)
                         ->rule(function () {
                             return function (string $attribute, $value, \Closure $fail) {
                                 $company = \Filament\Facades\Filament::getTenant();
@@ -105,21 +122,28 @@ class BankStatementResource extends Resource
                     TextInput::make('reference')
                         ->label(__('bank_statement.reference'))
                         ->required()
-                        ->maxLength(255),
+                        ->maxLength(255)
+                        ->columnSpan(2),
                     DatePicker::make('date')
                         ->label(__('bank_statement.date'))
-                        ->required(),
+                        ->required()
+                        ->columnSpan(2),
                     MoneyInput::make('starting_balance')
                         ->label(__('bank_statement.starting_balance'))
                         ->currencyField('currency_id')
-                        ->required(),
+                        ->required()
+                        ->columnSpan(2),
                     MoneyInput::make('ending_balance')
                         ->label(__('bank_statement.ending_balance'))
                         ->currencyField('currency_id')
-                        ->required(),
-                ])->columns(2),
+                        ->required()
+                        ->columnSpan(2),
+                ])
+                ->columns(4)
+                ->columnSpanFull(),
 
-            Section::make(__('bank_statement.transactions'))
+            Section::make(__('bank_statement.statement_lines'))
+                ->description(__('bank_statement.statement_lines_description'))
                 ->schema([
                     Repeater::make('bankStatementLines')
                         ->label(__('bank_statement.statement_lines'))
@@ -130,12 +154,12 @@ class BankStatementResource extends Resource
                             DatePicker::make('date')
                                 ->label(__('bank_statement.line_date'))
                                 ->required()
-                                ->columnSpan(2),
+                                ->columnSpan(3),
                             TextInput::make('description')
                                 ->label(__('bank_statement.description'))
                                 ->required()
                                 ->maxLength(255)
-                                ->columnSpan(4),
+                                ->columnSpan(6),
                             TranslatableSelect::standard(
                                 'partner_id',
                                 \App\Models\Partner::class,
@@ -145,77 +169,67 @@ class BankStatementResource extends Resource
                                 ->columnSpan(3),
                             MoneyInput::make('amount')
                                 ->label(__('bank_statement.amount'))
-                                ->currencyField('../../../currency_id')
+                                ->prefix(function ($get) {
+                                    // Try multiple path strategies to get the currency
+                                    $currencyId = $get('../../../currency_id')
+                                        ?? $get('../../currency_id')
+                                        ?? $get('../currency_id')
+                                        ?? $get('currency_id');
+
+                                    if ($currencyId) {
+                                        $currency = \App\Models\Currency::find($currencyId);
+                                        return $currency?->code ?? 'IQD';
+                                    }
+
+                                    // Fallback to tenant currency
+                                    $tenant = \Filament\Facades\Filament::getTenant();
+                                    return $tenant?->currency?->code ?? 'IQD';
+                                })
+                                ->live()
+                                ->reactive()
                                 ->required()
-                                ->columnSpan(3),
+                                ->columnSpan(3)
+                                ->helperText(__('bank_statement.amount_in_statement_currency')),
+                            TranslatableSelect::make('foreign_currency_id', \App\Models\Currency::class, __('bank_statement.foreign_currency'))
+                                ->columnSpan(3)
+                                ->live()
+                                ->options(function ($get) {
+                                    $statementCurrencyId = $get('../../../currency_id');
+                                    return \App\Models\Currency::where('is_active', true)
+                                        ->when($statementCurrencyId, function ($query, $statementCurrencyId) {
+                                            return $query->where('id', '!=', $statementCurrencyId);
+                                        })
+                                        ->get()
+                                        ->mapWithKeys(function ($currency) {
+                                            $locale = app()->getLocale();
+                                            $name = $currency->getTranslation('name', $locale);
+                                            return [$currency->id => "{$name} ({$currency->code})"];
+                                        });
+                                })
+                                ->helperText(__('bank_statement.foreign_currency_help')),
+                            MoneyInput::make('amount_in_foreign_currency')
+                                ->label(__('bank_statement.amount_in_foreign_currency'))
+                                ->currencyField('foreign_currency_id')
+                                ->columnSpan(3)
+                                ->visible(fn($get) => $get('foreign_currency_id'))
+                                ->helperText(__('bank_statement.original_transaction_amount')),
                         ])
                         ->columns(12)
                         ->addActionLabel(__('bank_statement.add_transaction_line'))
                         ->defaultItems(1),
-                ]),
+                ])
+                ->columnSpanFull(),
         ]);
     }
 
-    public static function infolist(Schema $schema): Schema
-    {
-        return $schema
-            ->components([
-                Section::make(__('bank_statement.statement_information'))
-                    ->schema([
-                        TextEntry::make('reference')
-                            ->label(__('bank_statement.reference')),
-                        TextEntry::make('date')
-                            ->label(__('bank_statement.date'))
-                            ->date(),
-                        TextEntry::make('company.name')
-                            ->label(__('bank_statement.company')),
-                        TextEntry::make('currency.name')
-                            ->label(__('bank_statement.currency')),
-                        TextEntry::make('journal.name')
-                            ->label(__('bank_statement.bank_journal')),
-                        TextEntry::make('starting_balance')
-                            ->label(__('bank_statement.starting_balance'))
-                            ->money(fn($record) => $record->currency->code),
-                        TextEntry::make('ending_balance')
-                            ->label(__('bank_statement.ending_balance'))
-                            ->money(fn($record) => $record->currency->code),
-                    ])->columns(2),
 
-                Section::make(__('bank_statement.statement_lines'))
-                    ->schema([
-                        RepeatableEntry::make('bankStatementLines')
-                            ->label('')
-                            ->schema([
-                                TextEntry::make('date')
-                                    ->label(__('bank_statement.date'))
-                                    ->date(),
-                                TextEntry::make('description')
-                                    ->label(__('bank_statement.description')),
-                                TextEntry::make('partner.name')
-                                    ->label(__('bank_statement.partner'))
-                                    ->placeholder('—'),
-                                TextEntry::make('amount')
-                                    ->label(__('bank_statement.amount'))
-                                    ->money(fn($record) => $record->bankStatement->currency->code)
-                                    ->color(fn($state) => $state->isPositive() ? 'success' : 'danger'),
-                                TextEntry::make('is_reconciled')
-                                    ->label(__('bank_statement.status'))
-                                    ->badge()
-                                    ->color(fn($state) => $state ? 'success' : 'warning')
-                                    ->formatStateUsing(fn($state) => $state ? 'Reconciled' : 'Pending'),
-                            ])
-                            ->columns(5),
-                    ]),
-            ]);
-    }
 
     public static function table(Table $table): Table
     {
         return $table
             ->columns([
-                TextColumn::make('journal_id')
-                    ->label(__('bank_statement.journal_id'))
-                    ->numeric()
+                TextColumn::make('journal.name')
+                    ->label(__('bank_statement.bank_journal'))
                     ->sortable(),
                 TextColumn::make('reference')
                     ->label(__('bank_statement.reference'))
@@ -224,13 +238,15 @@ class BankStatementResource extends Resource
                     ->label(__('bank_statement.date'))
                     ->date()
                     ->sortable(),
-                TextColumn::make('starting_balance')
-                    ->label(__('bank_statement.starting_balance'))
-                    ->numeric()
+                TextColumn::make('currency.code')
+                    ->label(__('bank_statement.currency'))
+                    ->badge()
                     ->sortable(),
-                TextColumn::make('ending_balance')
+                MoneyColumn::make('starting_balance')
+                    ->label(__('bank_statement.starting_balance'))
+                    ->sortable(),
+                MoneyColumn::make('ending_balance')
                     ->label(__('bank_statement.ending_balance'))
-                    ->numeric()
                     ->sortable(),
                 TextColumn::make('created_at')
                     ->label(__('bank_statement.created_at'))
@@ -247,7 +263,6 @@ class BankStatementResource extends Resource
                 //
             ])
             ->recordActions([
-                ViewAction::make(),
                 EditAction::make(),
                 Action::make('reconcile')
                     ->label(__('bank_statement.reconcile'))
@@ -280,9 +295,8 @@ class BankStatementResource extends Resource
         return [
             'index' => ListBankStatements::route('/'),
             'create' => CreateBankStatement::route('/create'),
-            'view' => ViewBankStatement::route('/{record}'),
-            'reconcile' => BankReconciliation::route('/{record}/reconcile'),
             'edit' => EditBankStatement::route('/{record}/edit'),
+            'reconcile' => BankReconciliation::route('/{record}/reconcile'),
         ];
     }
 }

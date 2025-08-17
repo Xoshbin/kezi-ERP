@@ -7,6 +7,8 @@ use App\Models\Account;
 use App\Models\Tax;
 use App\Enums\Adjustments\AdjustmentDocumentType;
 use App\Enums\Adjustments\AdjustmentDocumentStatus;
+use App\Actions\Adjustments\CreateAdjustmentDocumentLineAction;
+use App\DataTransferObjects\Adjustments\CreateAdjustmentDocumentLineDTO;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\Traits\WithConfiguredCompany;
 use function Pest\Livewire\livewire;
@@ -119,13 +121,15 @@ it('can edit an adjustment document', function () {
     ]);
 
     // Create a line manually to ensure proper setup
-    $adjustmentDocument->lines()->create([
-        'description' => 'Test Line',
-        'quantity' => 1,
-        'unit_price' => \Brick\Money\Money::of(100, $this->company->currency->code),
-        'account_id' => $account->id,
-        'tax_id' => null,
-    ]);
+    $createLineAction = app(CreateAdjustmentDocumentLineAction::class);
+    $createLineAction->execute($adjustmentDocument, new CreateAdjustmentDocumentLineDTO(
+        description: 'Test Line',
+        quantity: 1,
+        unit_price: \Brick\Money\Money::of(100, $this->company->currency->code),
+        account_id: $account->id,
+        tax_id: null,
+        product_id: null
+    ));
 
     // The mutateFormDataBeforeFill method in EditAdjustmentDocument already handles
     // the conversion of line data with Money objects properly, so we don't need to override it
@@ -159,13 +163,15 @@ it('can post an adjustment document', function () {
     ]);
 
     // Create a line manually to ensure proper setup
-    $adjustmentDocument->lines()->create([
-        'description' => 'Test Line',
-        'quantity' => 1,
-        'unit_price' => \Brick\Money\Money::of(100, $this->company->currency->code),
-        'account_id' => $account->id,
-        'tax_id' => null,
-    ]);
+    $createLineAction = app(CreateAdjustmentDocumentLineAction::class);
+    $createLineAction->execute($adjustmentDocument, new CreateAdjustmentDocumentLineDTO(
+        description: 'Test Line',
+        quantity: 1,
+        unit_price: \Brick\Money\Money::of(100, $this->company->currency->code),
+        account_id: $account->id,
+        tax_id: null,
+        product_id: null
+    ));
 
     livewire(\App\Filament\Resources\AdjustmentDocuments\Pages\EditAdjustmentDocument::class, [
         'record' => $adjustmentDocument->getRouteKey(),

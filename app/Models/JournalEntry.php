@@ -6,7 +6,7 @@ use Illuminate\Support\Carbon;
 use Illuminate\Database\Eloquent\Collection;
 use Database\Factories\JournalEntryFactory;
 use Illuminate\Database\Eloquent\Builder;
-use App\Casts\MoneyCast;
+use App\Casts\BaseCurrencyMoneyCast;
 use App\Enums\Accounting\JournalEntryState;
 use App\Observers\AuditLogObserver;
 use App\Observers\JournalEntryObserver;
@@ -130,11 +130,22 @@ class JournalEntry extends Model
      */
     protected $casts = [
         'entry_date' => 'date',
-        'total_debit' => MoneyCast::class, // Represents currency, typically 2 decimal places for financial accuracy [3, 17].
-        'total_credit' => MoneyCast::class, // Represents currency, typically 2 decimal places [3, 17].
+        'total_debit' => BaseCurrencyMoneyCast::class, // Company base currency amounts
+        'total_credit' => BaseCurrencyMoneyCast::class, // Company base currency amounts
         'is_posted' => 'boolean', // Crucial flag for immutability [3].
         'state' => JournalEntryState::class, // Journal entry state for reversal tracking
     ];
+
+    /**
+     * The relationships that should always be loaded.
+     * Eager-loading the `company.currency` relationship is critical because the `BaseCurrencyMoneyCast`
+     * for monetary fields on this model depends on the currency context provided by the company.
+     * Without this, any retrieval of a `JournalEntry` would fail when casting monetary values
+     * due to the missing currency information, leading to a "currency_id on null" error.
+     *
+     * @var array
+     */
+    protected $with = ['company.currency'];
 
     /**
      * The "booted" method of the model.
@@ -308,13 +319,15 @@ class JournalEntry extends Model
     public function calculateTotalsFromLines(): void
     {
         // Ensure the lines relationship is loaded to avoid extra queries
-        $this->loadMissing('lines', 'currency');
+        $this->loadMissing('lines', 'company.currency');
 
-        $currencyCode = $this->currency->code;
-        $totalDebit = Money::of(0, $currencyCode);
-        $totalCredit = Money::of(0, $currencyCode);
+        // CORRECTED: The currency for totals is ALWAYS the company's base currency
+        $companyCurrencyCode = $this->company->currency->code;
+        $totalDebit = Money::zero($companyCurrencyCode);
+        $totalCredit = Money::zero($companyCurrencyCode);
 
         foreach ($this->lines as $line) {
+            // $line->debit and $line->credit are already in the base currency
             $totalDebit = $totalDebit->plus($line->debit);
             $totalCredit = $totalCredit->plus($line->credit);
         }

@@ -31,7 +31,35 @@ class InvoiceLineObserver
         $invoice = $invoiceLine->invoice;
         if ($invoice) {
             $invoice->calculateTotalsFromLines();
+
+            // Also update company currency totals if exchange rate is available
+            if ($invoice->exchange_rate_at_creation) {
+                $this->updateCompanyCurrencyTotals($invoice);
+            }
+
             $invoice->saveQuietly();
         }
+    }
+
+    /**
+     * Update company currency totals based on current line totals and exchange rate.
+     */
+    protected function updateCompanyCurrencyTotals($invoice): void
+    {
+        if (!$invoice->exchange_rate_at_creation || $invoice->currency_id === $invoice->company->currency_id) {
+            return; // No conversion needed
+        }
+
+        $companyCurrency = $invoice->company->currency;
+        $exchangeRate = $invoice->exchange_rate_at_creation;
+
+        // Convert total amounts using the stored exchange rate
+        $totalAmountCompanyCurrency = $invoice->total_amount->getAmount()->toFloat() * $exchangeRate;
+        $totalTaxCompanyCurrency = $invoice->total_tax->getAmount()->toFloat() * $exchangeRate;
+
+        $invoice->update([
+            'total_amount_company_currency' => \Brick\Money\Money::of($totalAmountCompanyCurrency, $companyCurrency->code),
+            'total_tax_company_currency' => \Brick\Money\Money::of($totalTaxCompanyCurrency, $companyCurrency->code),
+        ]);
     }
 }

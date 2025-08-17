@@ -60,6 +60,12 @@ class MoneyInput extends TextInput
                     return $mainRecord->currency->code;
                 }
 
+                // Try to get the tenant's default currency as final fallback
+                $tenant = \Filament\Facades\Filament::getTenant();
+                if ($tenant && $tenant->currency) {
+                    return $tenant->currency->code;
+                }
+
                 return '$'; // Default fallback
             })
 

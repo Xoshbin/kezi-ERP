@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Currency;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 
@@ -18,6 +19,7 @@ class DatabaseSeeder extends Seeder
                 // These are the fundamental records required for the system to operate.
                 CurrencySeeder::class,
                 CompanySeeder::class,
+                CurrencyRateSeeder::class,
                 AccountSeeder::class,
                 JournalSeeder::class,
                 UpdateCompanyDefaultsSeeder::class,

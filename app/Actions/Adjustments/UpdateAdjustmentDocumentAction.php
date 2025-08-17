@@ -10,6 +10,11 @@ use Illuminate\Support\Facades\DB;
 
 class UpdateAdjustmentDocumentAction
 {
+    public function __construct(
+        private readonly CreateAdjustmentDocumentLineAction $createAdjustmentDocumentLineAction
+    ) {
+    }
+
     public function execute(UpdateAdjustmentDocumentDTO $dto): AdjustmentDocument
     {
         $adjustmentDocument = $dto->adjustmentDocument;
@@ -32,20 +37,18 @@ class UpdateAdjustmentDocumentAction
             // Sync the lines: delete old ones, create new ones.
             $adjustmentDocument->lines()->delete();
 
-            $linesToCreate = [];
+            // Create new lines using the dedicated line action
             foreach ($dto->lines as $lineDto) {
-                $linesToCreate[] = [
-                    'product_id' => $lineDto->product_id,
-                    'description' => $lineDto->description,
-                    'quantity' => $lineDto->quantity,
-                    'unit_price' => $lineDto->unit_price, // Already a Money object from DTO
-                    'tax_id' => $lineDto->tax_id,
-                    'account_id' => $lineDto->account_id,
-                ];
-            }
-
-            if (!empty($linesToCreate)) {
-                $adjustmentDocument->lines()->createMany($linesToCreate);
+                // Convert UpdateAdjustmentDocumentLineDTO to CreateAdjustmentDocumentLineDTO
+                $createLineDto = new \App\DataTransferObjects\Adjustments\CreateAdjustmentDocumentLineDTO(
+                    description: $lineDto->description,
+                    quantity: $lineDto->quantity,
+                    unit_price: $lineDto->unit_price,
+                    account_id: $lineDto->account_id,
+                    product_id: $lineDto->product_id,
+                    tax_id: $lineDto->tax_id
+                );
+                $this->createAdjustmentDocumentLineAction->execute($adjustmentDocument, $createLineDto);
             }
 
             // The model's saving observer will recalculate totals automatically.

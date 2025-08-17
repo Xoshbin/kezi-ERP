@@ -107,6 +107,7 @@ class Account extends Model
      */
     protected $fillable = [
         'company_id',
+        'currency_id',
         'code',
         'name',
         'type',
@@ -139,6 +140,19 @@ class Account extends Model
     | elegant syntax [13, 14].
     |
     */
+
+    /**
+     * Get the currency of this invoice.
+     * Every invoice operates in a specific currency. [1]
+     *
+     * @return BelongsTo
+     */
+    public function currency(): BelongsTo
+    {
+        return $this->belongsTo(Currency::class);
+    }
+
+
     /**
      * Get the company that owns this account.
      * An account logically belongs to a specific company in a multi-company setup [5].

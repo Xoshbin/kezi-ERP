@@ -8,9 +8,6 @@ use App\Actions\Accounting\CreateJournalEntryAction;
 use App\DataTransferObjects\Accounting\CreateJournalEntryDTO;
 use App\DataTransferObjects\Accounting\CreateJournalEntryLineDTO;
 use App\Filament\Resources\JournalEntries\JournalEntryResource;
-use App\Models\Company;
-use App\Models\Journal;
-use App\Models\LockDate;
 use Brick\Money\Money;
 use Filament\Resources\Pages\CreateRecord;
 use Illuminate\Database\Eloquent\Model;
@@ -58,6 +55,33 @@ class CreateJournalEntry extends CreateRecord
             lines: $data['lines']
         );
 
-        return app(CreateJournalEntryAction::class)->execute($journalEntryDTO);
+        try {
+            return app(CreateJournalEntryAction::class)->execute($journalEntryDTO);
+        } catch (\Illuminate\Database\QueryException $e) {
+            // Check if it's a database constraint violation for duplicate reference
+            // MySQL error code 1062 for duplicate entry
+            // SQLite error code 19 for UNIQUE constraint failed
+            $isDuplicateEntry = ($e->errorInfo[1] === 1062 && str_contains($e->getMessage(), 'reference_unique')) ||
+                               ($e->errorInfo[1] === 19 && str_contains($e->getMessage(), 'UNIQUE constraint failed') && str_contains($e->getMessage(), 'reference'));
+
+            if ($isDuplicateEntry) {
+                throw ValidationException::withMessages([
+                    'reference' => __('journal_entry.reference_already_exists', ['reference' => $data['reference']])
+                ]);
+            }
+
+            // Re-throw other database exceptions
+            throw $e;
+        } catch (\PDOException $e) {
+            // Handle PDO exceptions that might not be wrapped in QueryException
+            if ($e->getCode() === '23000' && str_contains($e->getMessage(), 'Duplicate entry') && str_contains($e->getMessage(), 'reference_unique')) {
+                throw ValidationException::withMessages([
+                    'reference' => __('journal_entry.reference_already_exists', ['reference' => $data['reference']])
+                ]);
+            }
+
+            // Re-throw other PDO exceptions
+            throw $e;
+        }
     }
 }
