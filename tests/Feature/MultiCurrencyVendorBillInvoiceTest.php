@@ -156,7 +156,7 @@ describe('VendorBill Multi-Currency Tests', function () {
         expect($vendorBill->total_amount->getAmount()->toFloat())->toBe(100.0);
 
         // Base currency amounts should be calculated
-        expect($vendorBill->exchange_rate_at_creation)->toBe($this->exchangeRate);
+        expect((float)$vendorBill->exchange_rate_at_creation)->toBe($this->exchangeRate);
         expect($vendorBill->total_amount_company_currency->getCurrency()->getCurrencyCode())->toBe('IQD');
         expect($vendorBill->total_amount_company_currency->getAmount()->toFloat())->toBe(146000.0); // $100 * 1460
 
@@ -294,7 +294,7 @@ describe('Invoice Multi-Currency Tests', function () {
         expect($invoice->total_amount->getAmount()->toFloat())->toBe(200.0);
 
         // Base currency amounts should be calculated
-        expect($invoice->exchange_rate_at_creation)->toBe($this->exchangeRate);
+        expect((float)$invoice->exchange_rate_at_creation)->toBe($this->exchangeRate);
         expect($invoice->total_amount_company_currency->getCurrency()->getCurrencyCode())->toBe('IQD');
         expect($invoice->total_amount_company_currency->getAmount()->toFloat())->toBe(292000.0); // $200 * 1460
 
