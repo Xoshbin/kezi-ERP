@@ -2,6 +2,9 @@
 
 namespace App\Services;
 
+use App\DataTransferObjects\Accounting\CreateJournalEntryForStatementLineDTO;
+use Brick\Money\Money;
+use Illuminate\Database\Eloquent\Collection;
 use App\Models\User;
 use RuntimeException;
 use App\Models\Account;
@@ -13,11 +16,13 @@ use App\Models\BankStatementLine;
 use Illuminate\Support\Facades\DB;
 use App\Actions\Accounting\CreateJournalEntryForStatementLineAction;
 use App\Actions\Accounting\CreateJournalEntryForReconciliationAction; // 1. Import the new action
+use App\Services\CurrencyConverterService;
 
 class BankReconciliationService
 {
-    // 2. The JournalEntryService dependency is no longer needed.
-    public function __construct() {}
+    public function __construct(
+        private CurrencyConverterService $currencyConverter
+    ) {}
 
     public function reconcilePayment(Payment $payment, BankStatementLine $statementLine, User $user): void
     {
@@ -73,7 +78,7 @@ class BankReconciliationService
     public function createWriteOff(BankStatementLine $line, Account $writeOffAccount, User $user, string $description): void
     {
         // Create DTO and execute action - the action handles its own transaction
-        $dto = new \App\DataTransferObjects\Accounting\CreateJournalEntryForStatementLineDTO(
+        $dto = new CreateJournalEntryForStatementLineDTO(
             bankStatementLine: $line,
             writeOffAccount: $writeOffAccount,
             user: $user,
@@ -94,22 +99,27 @@ class BankReconciliationService
     public function reconcileMultiple(array $bankLineIds, array $paymentIds, User $user): void
     {
         DB::transaction(function () use ($bankLineIds, $paymentIds, $user) {
-            $bankLines = BankStatementLine::whereIn('id', $bankLineIds)->get();
-            $payments = Payment::whereIn('id', $paymentIds)->get();
+            $bankLines = BankStatementLine::whereIn('id', $bankLineIds)->with('bankStatement.currency')->get();
+            $payments = Payment::whereIn('id', $paymentIds)->with(['currency', 'company'])->get();
 
             // Validate that totals match using proper Money arithmetic
             $currency = $bankLines->first()->bankStatement->currency;
-            $bankTotal = \Brick\Money\Money::of(0, $currency->code);
+            $bankTotal = Money::of(0, $currency->code);
             foreach ($bankLines as $line) {
                 $bankTotal = $bankTotal->plus($line->amount);
             }
 
-            $paymentTotal = \Brick\Money\Money::of(0, $currency->code);
+            $paymentTotal = Money::of(0, $currency->code);
             foreach ($payments as $payment) {
                 $amount = $payment->amount;
                 // Convert to bank statement currency if needed
                 if ($payment->currency->code !== $currency->code) {
-                    $amount = \Brick\Money\Money::of($payment->amount->getAmount()->toFloat(), $currency->code);
+                    $amount = $this->currencyConverter->convert(
+                        $payment->amount,
+                        $currency,
+                        $payment->payment_date,
+                        $payment->company
+                    );
                 }
 
                 $amount = $payment->payment_type === PaymentType::Inbound ? $amount : $amount->negated();
@@ -145,7 +155,7 @@ class BankReconciliationService
      * Get unreconciled bank statement lines for a given bank statement
      *
      * @param int $bankStatementId
-     * @return \Illuminate\Database\Eloquent\Collection
+     * @return Collection
      */
     public function getUnreconciledBankLines(int $bankStatementId)
     {
@@ -158,7 +168,7 @@ class BankReconciliationService
      * Get unreconciled payments for a given company
      *
      * @param int $companyId
-     * @return \Illuminate\Database\Eloquent\Collection
+     * @return Collection
      */
     public function getUnreconciledPayments(int $companyId)
     {

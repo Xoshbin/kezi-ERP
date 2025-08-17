@@ -19,6 +19,9 @@ class InvoiceLineFactory extends Factory
         return [
             // A line should NOT create its own parent invoice. The test should provide it.
             'invoice_id' => Invoice::factory(),
+            'company_id' => function (array $attributes) {
+                return Invoice::find($attributes['invoice_id'])->company_id;
+            },
             'product_id' => null, // Default to a descriptive line without a product
             'description' => $this->faker->sentence(),
             'quantity' => $quantity,

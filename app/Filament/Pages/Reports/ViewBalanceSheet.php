@@ -2,22 +2,22 @@
 
 namespace App\Filament\Pages\Reports;
 
+use Filament\Schemas\Schema;
+use Filament\Schemas\Components\Section;
 use App\Services\Reports\BalanceSheetService;
 use App\Support\NumberFormatter;
 use Carbon\Carbon;
 use Filament\Forms\Components\DatePicker;
-use Filament\Forms\Components\Section;
-use Filament\Forms\Form;
 use Filament\Pages\Page;
 use Filament\Actions\Action;
+use Filament\Facades\Filament;
 use Illuminate\Contracts\Support\Htmlable;
-use App\Models\Company;
 
 class ViewBalanceSheet extends Page
 {
-    protected static ?string $navigationIcon = 'heroicon-o-scale';
-    protected static string $view = 'filament.pages.reports.view-balance-sheet';
-    protected static ?string $navigationGroup = null;
+    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-scale';
+    protected string $view = 'filament.pages.reports.view-balance-sheet';
+    protected static string | \UnitEnum | null $navigationGroup = null;
 
     public static function getNavigationGroup(): ?string
     {
@@ -49,10 +49,10 @@ class ViewBalanceSheet extends Page
         $this->asOfDate = Carbon::now()->endOfMonth()->format('Y-m-d');
     }
 
-    public function form(Form $form): Form
+    public function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
+        return $schema
+            ->components([
                 Section::make(__('reports.as_of_date'))
                     ->schema([
                         DatePicker::make('asOfDate')
@@ -80,7 +80,7 @@ class ViewBalanceSheet extends Page
             'asOfDate' => 'required|date',
         ]);
 
-        $company = Company::find(auth()->user()->company_id);
+        $company = Filament::getTenant();
         $service = app(BalanceSheetService::class);
 
         $report = $service->generate(

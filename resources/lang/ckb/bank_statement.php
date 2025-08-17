@@ -66,4 +66,26 @@ return [
     'select' => 'هەڵبژاردن',
     'payment_date' => 'رێکەوتی پارەدان',
     'type' => 'جۆر',
+
+    // Multi-Currency
+    'all_amounts_in_currency' => 'هەموو بڕەکان بە :currency پیشان دراون',
+    'includes_currency_conversions' => 'گۆڕینی دراو لەخۆدەگرێت',
+    'same_currency_as_statement' => 'هەمان دراوی وەک ڕاپۆرتی بانک',
+    'different_currency_conversion_required' => 'دراوی جیاواز - گۆڕین جێبەجێکراوە',
+    'currency_filter' => 'فلتەری دراو',
+    'same_currency_only' => 'تەنها هەمان دراو',
+    'different_currency_only' => 'تەنها دراوی جیاواز',
+    'all_currencies' => 'هەموو دراوەکان',
+
+    // Form Sections
+    'statement_information' => 'زانیاری ڕاپۆرت',
+    'statement_information_description' => 'زانیاری بنەڕەتی دەربارەی ڕاپۆرتی بانک',
+    'statement_lines_description' => 'مامەڵە تاکەکەسەکان لە ڕاپۆرتی بانک',
+
+    // Foreign Currency
+    'foreign_currency' => 'دراوی بیانی',
+    'foreign_currency_help' => 'هەڵبژێرە ئەگەر ئەم مامەڵەیە لە سەرەتادا بە دراوێکی جیاواز بووبێت',
+    'amount_in_foreign_currency' => 'بڕ بە دراوی بیانی',
+    'amount_in_statement_currency' => 'بڕەکە کە کاریگەری لەسەر بالانسی حسابی بانک دەبێت',
+    'original_transaction_amount' => 'بڕی مامەڵەی ڕەسەن پێش گۆڕین',
 ];

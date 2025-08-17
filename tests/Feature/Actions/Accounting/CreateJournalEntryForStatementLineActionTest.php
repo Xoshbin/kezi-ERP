@@ -44,7 +44,8 @@ it('correctly creates a journal entry and links it to the statement line via a p
 it('updates the statement line status to reconciled within the same atomic transaction', function () {
     // Arrange
     $this->company = Company::factory()->create();
-    $user = User::factory()->for($this->company)->create();
+    $user = User::factory()->create();
+    $user->companies()->attach($this->company);
     $line = BankStatementLine::factory()->for(BankStatement::factory()->for($this->company)->for(Journal::factory()->for($this->company)->create())->create())->create(['is_reconciled' => false]);
     $writeOffAccount = Account::factory()->for($this->company)->create();
 
@@ -71,7 +72,8 @@ it('updates the statement line status to reconciled within the same atomic trans
 it('rolls back the entire transaction if updating the statement line fails', function () {
     // Arrange
     $this->company = Company::factory()->create();
-    $user = User::factory()->for($this->company)->create();
+    $user = User::factory()->create();
+    $user->companies()->attach($this->company);
     $line = BankStatementLine::factory()->for(BankStatement::factory()->for($this->company)->for(Journal::factory()->for($this->company)->create())->create())->create();
     $writeOffAccount = Account::factory()->for($this->company)->create();
 
@@ -103,13 +105,25 @@ it('rolls back the entire transaction if updating the statement line fails', fun
 });
 
 it('handles multi-currency scenarios correctly', function (string $currencyCode, int $minorAmount, string $majorAmount) {
-    // Arrange
-    $this->company = Company::factory()->create();
+    // Arrange - Use the existing company (IQD) and create exchange rates for foreign currencies
     $currency = Currency::firstOrCreate(['code' => $currencyCode], ['name' => $currencyCode, 'symbol' => $currencyCode, 'exchange_rate' => 1, 'is_active' => true, 'decimal_places' => $currencyCode === 'IQD' ? 3 : 2]);
     $currency->update(['decimal_places' => $currencyCode === 'IQD' ? 3 : 2]);
-    $this->company->update(['currency_id' => $currency->id]);
 
-    $user = User::factory()->for($this->company)->create();
+    // Create exchange rate if the currency is different from company's base currency
+    if ($currencyCode !== $this->company->currency->code) {
+        // Create the rate for yesterday to ensure it's found (effective_date <= today)
+        $effectiveDate = \Carbon\Carbon::yesterday();
+        \App\Models\CurrencyRate::create([
+            'currency_id' => $currency->id,
+            'company_id' => $this->company->id,
+            'rate' => $currencyCode === 'USD' ? 1500.0 : 1.0, // 1 USD = 1500 IQD
+            'effective_date' => $effectiveDate,
+            'source' => 'manual',
+        ]);
+    }
+
+    $user = User::factory()->create();
+    $user->companies()->attach($this->company);
     $journal = Journal::factory()->for($this->company)->create();
     $bankStatement = BankStatement::factory()->for($this->company)->for($journal)->create(['currency_id' => $currency->id]);
     $line = BankStatementLine::factory()->for($bankStatement)->create(['amount' => Money::ofMinor($minorAmount, $currencyCode)]);
@@ -131,17 +145,27 @@ it('handles multi-currency scenarios correctly', function (string $currencyCode,
     $this->assertModelExists($journalEntry);
     expect($journalEntry->currency_id)->toBe($currency->id);
 
+    // Calculate expected amount in company base currency
+    $expectedAmount = $minorAmount;
+    if ($currencyCode !== $this->company->currency->code) {
+        // Convert to company base currency using the exchange rate
+        $rate = $currencyCode === 'USD' ? 1500.0 : 1.0;
+        $majorAmount = $minorAmount / pow(10, $currency->decimal_places);
+        $convertedMajor = $majorAmount * $rate;
+        $expectedAmount = (int) round($convertedMajor * pow(10, $this->company->currency->decimal_places));
+    }
+
     $this->assertDatabaseHas('journal_entry_lines', [
         'journal_entry_id' => $journalEntry->id,
         'account_id' => $writeOffAccount->id,
         'debit' => 0,
-        'credit' => $minorAmount,
+        'credit' => $expectedAmount,
     ]);
 
     $this->assertDatabaseHas('journal_entry_lines', [
         'journal_entry_id' => $journalEntry->id,
         'account_id' => $bankAccount->id,
-        'debit' => $minorAmount,
+        'debit' => $expectedAmount,
         'credit' => 0,
     ]);
 

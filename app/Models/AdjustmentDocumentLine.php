@@ -2,7 +2,8 @@
 
 namespace App\Models;
 
-use App\Casts\MoneyCast;
+use App\Casts\DocumentCurrencyMoneyCast;
+use App\Casts\BaseCurrencyMoneyCast;
 use App\Observers\AdjustmentDocumentLineObserver;
 use Brick\Money\Money;
 use Brick\Math\RoundingMode;
@@ -20,23 +21,41 @@ class AdjustmentDocumentLine extends Model
     protected $table = 'adjustment_document_lines';
 
     protected $fillable = [
+        'company_id', // Foreign key to the parent company, ensuring data integrity [2, 3].
         'adjustment_document_id',
         'product_id',
         'description',
         'quantity',
         'unit_price',
+        'unit_price_company_currency',
         'tax_id',
         'subtotal',
+        'subtotal_company_currency',
         'total_line_tax',
+        'total_line_tax_company_currency',
         'account_id'
     ];
 
     protected $casts = [
         'quantity' => 'decimal:2',
-        'unit_price' => MoneyCast::class,
-        'subtotal' => MoneyCast::class,
-        'total_line_tax' => MoneyCast::class,
+        'unit_price' => DocumentCurrencyMoneyCast::class,
+        'unit_price_company_currency' => BaseCurrencyMoneyCast::class,
+        'subtotal' => DocumentCurrencyMoneyCast::class,
+        'subtotal_company_currency' => BaseCurrencyMoneyCast::class,
+        'total_line_tax' => DocumentCurrencyMoneyCast::class,
+        'total_line_tax_company_currency' => BaseCurrencyMoneyCast::class,
     ];
+
+    /**
+     * The relationships that should always be loaded.
+     * Eager-loading the `adjustmentDocument.currency` relationship is critical because the `DocumentCurrencyMoneyCast`
+     * for monetary fields on this model depends on the currency context provided by the parent adjustment document.
+     * Without this, any retrieval of an `AdjustmentDocumentLine` would fail when casting monetary values
+     * due to the missing currency information, leading to a "currency_id on null" error.
+     *
+     * @var array
+     */
+    protected $with = ['adjustmentDocument.currency'];
 
     protected static function booted(): void
     {
@@ -69,6 +88,16 @@ class AdjustmentDocumentLine extends Model
         $this->total_line_tax = $totalLineTax;
     }
 
+    /**
+     * Get the company that this rate belongs to.
+     *
+     * @return BelongsTo
+     */
+    public function company(): BelongsTo
+    {
+        return $this->belongsTo(Company::class);
+    }
+
     public function adjustmentDocument(): BelongsTo
     {
         return $this->belongsTo(AdjustmentDocument::class);
@@ -98,7 +127,7 @@ class AdjustmentDocumentLine extends Model
      * Get the line items for this adjustment document.
      * An adjustment document consists of multiple detail lines.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return HasMany
      */
     public function lines(): HasMany
     {

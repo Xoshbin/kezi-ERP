@@ -28,6 +28,22 @@ return [
     'total_tax' => 'Total Tax',
     'reason' => 'Reason',
 
+    // Section Titles and Descriptions
+    'customer_currency_info' => 'Customer & Currency Information',
+    'customer_currency_info_description' => 'Select the customer and currency for this invoice',
+    'invoice_details' => 'Invoice Details',
+    'invoice_details_description' => 'Enter invoice dates, fiscal position and status information',
+    'line_items' => 'Line Items',
+    'line_items_description' => 'Add products and services to this invoice',
+    'company_currency_totals' => 'Company Currency Totals',
+
+    // Exchange Rate Fields
+    'current_exchange_rate' => 'Current Exchange Rate',
+    'exchange_rate_helper' => 'This is the current exchange rate for the selected currency',
+    'exchange_rate_at_creation' => 'Exchange Rate at Creation',
+    'total_amount_company_currency' => 'Total Amount (Company Currency)',
+    'total_tax_company_currency' => 'Total Tax (Company Currency)',
+
     // Table Columns
     'company_name' => 'Company',
     'customer_name' => 'Customer',

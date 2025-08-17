@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use Exception;
 use App\Models\Company;
 use App\Models\Currency;
 use App\Models\StockLocation;
@@ -18,7 +19,7 @@ class CompanySeeder extends Seeder
         // Find the Iraqi Dinar (IQD) currency.
         $iqdCurrency = Currency::where('code', 'IQD')->first();
         if (!$iqdCurrency) {
-            throw new \Exception('IQD currency not found. Please run the CurrencySeeder first.');
+            throw new Exception('IQD currency not found. Please run the CurrencySeeder first.');
         }
 
         // Create the main company record.

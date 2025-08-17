@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\VendorBillLine;
 use App\Models\Tax;
 use Brick\Money\Money;
 use App\Models\Account;
@@ -11,7 +12,7 @@ use App\Models\AnalyticAccount;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\VendorBillLine>
+ * @extends Factory<VendorBillLine>
  */
 class VendorBillLineFactory extends Factory
 {
@@ -24,6 +25,9 @@ class VendorBillLineFactory extends Factory
     {
         return [
             'vendor_bill_id' => VendorBill::factory()->create()->id,
+            'company_id' => function (array $attributes) {
+                return VendorBill::find($attributes['vendor_bill_id'])->company_id;
+            },
             'product_id' => Product::factory()->create()->id,
             'description' => $this->faker->sentence(4),
             'quantity' => $this->faker->randomFloat(2, 1, 100),

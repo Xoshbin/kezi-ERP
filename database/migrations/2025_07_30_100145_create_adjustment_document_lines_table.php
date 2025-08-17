@@ -13,11 +13,15 @@ return new class extends Migration
     {
         Schema::create('adjustment_document_lines', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('company_id')->constrained('companies');
             $table->foreignId('adjustment_document_id')->constrained('adjustment_documents')->cascadeOnDelete();
             $table->foreignId('product_id')->nullable()->constrained('products')->nullOnDelete();
             $table->foreignId('tax_id')->nullable()->constrained('taxes')->nullOnDelete();
             $table->foreignId('account_id')->constrained('accounts');
             $table->foreignId('currency_id')->nullable()->constrained('currencies');
+            $table->unsignedBigInteger('unit_price_company_currency')->nullable();
+            $table->unsignedBigInteger('subtotal_company_currency')->nullable();
+            $table->unsignedBigInteger('total_line_tax_company_currency')->nullable();
             $table->string('description');
             $table->decimal('quantity', 15, 2);
             $table->bigInteger('unit_price'); // For MoneyCast

@@ -2,10 +2,11 @@
 
 namespace Database\Factories;
 
+use App\Models\FiscalPositionAccountMapping;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\FiscalPositionAccountMapping>
+ * @extends Factory<FiscalPositionAccountMapping>
  */
 class FiscalPositionAccountMappingFactory extends Factory
 {

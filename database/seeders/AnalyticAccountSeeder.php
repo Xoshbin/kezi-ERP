@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use Exception;
 use App\Models\AnalyticAccount;
 use App\Models\AnalyticPlan;
 use App\Models\Company;
@@ -20,13 +21,13 @@ class AnalyticAccountSeeder extends Seeder
         try {
             $company = Company::where('name', 'Jmeryar Solutions')->firstOrFail();
         } catch (ModelNotFoundException $e) {
-            throw new \Exception("Company 'Jmeryar Solutions' not found. Please run the CompanySeeder first.");
+            throw new Exception("Company 'Jmeryar Solutions' not found. Please run the CompanySeeder first.");
         }
 
         try {
             $plan = AnalyticPlan::where('name->en', 'Projects')->firstOrFail();
         } catch (ModelNotFoundException $e) {
-            throw new \Exception("Analytic Plan 'Projects' not found. Please run the AnalyticPlanSeeder first.");
+            throw new Exception("Analytic Plan 'Projects' not found. Please run the AnalyticPlanSeeder first.");
         }
 
         AnalyticAccount::updateOrCreate(

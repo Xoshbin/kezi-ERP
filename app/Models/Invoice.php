@@ -2,8 +2,12 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Builder;
+use Database\Factories\InvoiceFactory;
 use Brick\Money\Money;
-use App\Casts\MoneyCast;
+use App\Casts\DocumentCurrencyMoneyCast;
+use App\Casts\BaseCurrencyMoneyCast;
 use App\Traits\HasPaymentState;
 use App\Enums\Sales\InvoiceStatus;
 use Illuminate\Support\Carbon;
@@ -40,36 +44,36 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
  * @property array<array-key, mixed>|null $reset_to_draft_log
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
- * @property-read \App\Models\Company $company
- * @property-read \App\Models\Currency $currency
- * @property-read \App\Models\Partner $customer
- * @property-read \App\Models\FiscalPosition|null $fiscalPosition
+ * @property-read Company $company
+ * @property-read Currency $currency
+ * @property-read Partner $customer
+ * @property-read FiscalPosition|null $fiscalPosition
  * @property-read string $full_reference
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\InvoiceLine> $invoiceLines
+ * @property-read Collection<int, InvoiceLine> $invoiceLines
  * @property-read int|null $invoice_lines_count
- * @property-read \App\Models\JournalEntry|null $journalEntry
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Invoice draft()
- * @method static \Database\Factories\InvoiceFactory factory($count = null, $state = [])
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Invoice newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Invoice newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Invoice posted()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Invoice query()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Invoice whereCompanyId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Invoice whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Invoice whereCurrencyId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Invoice whereCustomerId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Invoice whereDueDate($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Invoice whereFiscalPositionId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Invoice whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Invoice whereInvoiceDate($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Invoice whereInvoiceNumber($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Invoice whereJournalEntryId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Invoice wherePostedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Invoice whereResetToDraftLog($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Invoice whereStatus($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Invoice whereTotalAmount($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Invoice whereTotalTax($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Invoice whereUpdatedAt($value)
+ * @property-read JournalEntry|null $journalEntry
+ * @method static Builder<static>|Invoice draft()
+ * @method static InvoiceFactory factory($count = null, $state = [])
+ * @method static Builder<static>|Invoice newModelQuery()
+ * @method static Builder<static>|Invoice newQuery()
+ * @method static Builder<static>|Invoice posted()
+ * @method static Builder<static>|Invoice query()
+ * @method static Builder<static>|Invoice whereCompanyId($value)
+ * @method static Builder<static>|Invoice whereCreatedAt($value)
+ * @method static Builder<static>|Invoice whereCurrencyId($value)
+ * @method static Builder<static>|Invoice whereCustomerId($value)
+ * @method static Builder<static>|Invoice whereDueDate($value)
+ * @method static Builder<static>|Invoice whereFiscalPositionId($value)
+ * @method static Builder<static>|Invoice whereId($value)
+ * @method static Builder<static>|Invoice whereInvoiceDate($value)
+ * @method static Builder<static>|Invoice whereInvoiceNumber($value)
+ * @method static Builder<static>|Invoice whereJournalEntryId($value)
+ * @method static Builder<static>|Invoice wherePostedAt($value)
+ * @method static Builder<static>|Invoice whereResetToDraftLog($value)
+ * @method static Builder<static>|Invoice whereStatus($value)
+ * @method static Builder<static>|Invoice whereTotalAmount($value)
+ * @method static Builder<static>|Invoice whereTotalTax($value)
+ * @method static Builder<static>|Invoice whereUpdatedAt($value)
  * @mixin \Eloquent
  */
 #[ObservedBy([AuditLogObserver::class])]
@@ -98,6 +102,7 @@ class Invoice extends Model
         'company_id',
         'customer_id',
         'currency_id',
+        'exchange_rate_at_creation',
         'journal_entry_id',
         'fiscal_position_id',
         'invoice_number',
@@ -106,6 +111,8 @@ class Invoice extends Model
         'status',
         'total_amount',
         'total_tax',
+        'total_amount_company_currency',
+        'total_tax_company_currency',
         'posted_at',
         'reset_to_draft_log',
     ];
@@ -120,8 +127,11 @@ class Invoice extends Model
         'invoice_date' => 'date',
         'due_date' => 'date',
         'status' => InvoiceStatus::class,
-        'total_amount' => MoneyCast::class,
-        'total_tax' => MoneyCast::class,
+        'exchange_rate_at_creation' => 'decimal:10',
+        'total_amount' => DocumentCurrencyMoneyCast::class,
+        'total_tax' => DocumentCurrencyMoneyCast::class,
+        'total_amount_company_currency' => BaseCurrencyMoneyCast::class,
+        'total_tax_company_currency' => BaseCurrencyMoneyCast::class,
         'reset_to_draft_log' => 'json', // Store as JSON/Text as per source [1]
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
@@ -137,12 +147,11 @@ class Invoice extends Model
     | These methods define the relationships this Invoice model has with other
     | entities in the accounting system, crucial for data integrity and navigation.
     */
-
     /**
      * Get the company that owns this invoice.
      * An invoice is always issued by a specific company. [1]
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
     public function company(): BelongsTo
     {
@@ -153,7 +162,7 @@ class Invoice extends Model
      * Get the customer (partner) associated with this invoice.
      * The customer is the entity to whom the invoice is issued. [1]
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
     public function customer(): BelongsTo
     {
@@ -164,7 +173,7 @@ class Invoice extends Model
      * Get the currency of this invoice.
      * Every invoice operates in a specific currency. [1]
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
     public function currency(): BelongsTo
     {
@@ -175,7 +184,7 @@ class Invoice extends Model
      * Get the journal entry associated with this invoice once it is posted.
      * This link is vital for the immutability of financial records. [1]
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
     public function journalEntry(): BelongsTo
     {
@@ -186,7 +195,7 @@ class Invoice extends Model
      * Get the line items for this invoice.
      * An invoice typically consists of multiple product or service lines. [1]
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return HasMany
      */
     public function invoiceLines(): HasMany
     {
@@ -197,7 +206,7 @@ class Invoice extends Model
      * Get the fiscal position applied to this invoice.
      * Fiscal positions can automatically adapt taxes and accounts based on specific rules. [4, 7]
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
     public function fiscalPosition(): BelongsTo
     {
@@ -218,14 +227,25 @@ class Invoice extends Model
     }
 
     /**
+     * Get the direct PaymentDocumentLink records for this invoice.
+     * This provides access to the raw pivot data for multi-currency payment calculations.
+     *
+     * @return HasMany
+     */
+    public function paymentDocumentLinks(): HasMany
+    {
+        return $this->hasMany(PaymentDocumentLink::class, 'invoice_id');
+    }
+
+    /**
      * Get the Adjustment Documents (credit notes, etc.) that relate to this Invoice.
      * These are used for corrections, reversals, and adjustments to posted invoices.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return HasMany
      */
     public function adjustmentDocuments(): HasMany
     {
-        return $this->hasMany(\App\Models\AdjustmentDocument::class, 'original_invoice_id');
+        return $this->hasMany(AdjustmentDocument::class, 'original_invoice_id');
     }
 
     /*
@@ -233,12 +253,11 @@ class Invoice extends Model
     | Scopes (Example)
     |--------------------------------------------------------------------------
     */
-
     /**
      * Scope a query to only include posted invoices.
      *
-     * @param \Illuminate\Database\Eloquent\Builder $query
-     * @return \Illuminate\Database\Eloquent\Builder
+     * @param Builder $query
+     * @return Builder
      */
     public function scopePosted($query)
     {
@@ -248,8 +267,8 @@ class Invoice extends Model
     /**
      * Scope a query to only include draft invoices.
      *
-     * @param \Illuminate\Database\Eloquent\Builder $query
-     * @return \Illuminate\Database\Eloquent\Builder
+     * @param Builder $query
+     * @return Builder
      */
     public function scopeDraft($query)
     {

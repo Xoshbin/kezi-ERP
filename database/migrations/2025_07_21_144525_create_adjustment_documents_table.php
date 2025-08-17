@@ -22,6 +22,16 @@ return new class extends Migration
             $table->foreignId('original_vendor_bill_id')->nullable()->constrained('vendor_bills');
             $table->foreignId('journal_entry_id')->nullable()->constrained('journal_entries')->onDelete('set null');
             $table->foreignId('currency_id')->constrained('currencies');
+             // Add subtotal field (missing from original schema but present in VendorBill)
+            $table->unsignedBigInteger('subtotal');
+
+            // Add exchange rate captured at adjustment document creation/posting
+            $table->decimal('exchange_rate_at_creation', 20, 10)->nullable();
+
+            // Add company currency amounts (converted amounts)
+            $table->unsignedBigInteger('subtotal_company_currency')->nullable();
+            $table->unsignedBigInteger('total_amount_company_currency')->nullable();
+            $table->unsignedBigInteger('total_tax_company_currency')->nullable();
             $table->string('type'); // 'credit note', 'debit note', 'miscellaneous adjustment'
             $table->date('date');
             $table->string('reference_number');

@@ -41,8 +41,8 @@ describe('Journal Entry Reversals', function () {
         $revenueAccount = Account::factory()->for($this->company)->create(['type' => 'income']);
 
         $originalEntry->lines()->createMany([
-            ['account_id' => $arAccount->id, 'debit' => Money::of(150, $currencyCode), 'credit' => Money::of(0, $currencyCode)],
-            ['account_id' => $revenueAccount->id, 'credit' => Money::of(150, $currencyCode), 'debit' => Money::of(0, $currencyCode)],
+            ['company_id' => $this->company->id, 'account_id' => $arAccount->id, 'debit' => Money::of(150, $currencyCode), 'credit' => Money::of(0, $currencyCode)],
+            ['company_id' => $this->company->id, 'account_id' => $revenueAccount->id, 'credit' => Money::of(150, $currencyCode), 'debit' => Money::of(0, $currencyCode)],
         ]);
 
         // Act: Create the reversal.

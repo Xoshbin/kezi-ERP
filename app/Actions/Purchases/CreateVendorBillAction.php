@@ -22,7 +22,7 @@ class CreateVendorBillAction
 
     public function execute(CreateVendorBillDTO $createVendorBillDTO): VendorBill
     {
-        $this->lockDateService->enforce(\App\Models\Company::find($createVendorBillDTO->company_id), \Carbon\Carbon::parse($createVendorBillDTO->bill_date));
+        $this->lockDateService->enforce(Company::find($createVendorBillDTO->company_id), Carbon::parse($createVendorBillDTO->bill_date));
 
         return DB::transaction(function () use ($createVendorBillDTO) {
             $vendorBill = VendorBill::create([

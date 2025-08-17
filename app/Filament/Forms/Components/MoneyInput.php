@@ -2,9 +2,11 @@
 
 namespace App\Filament\Forms\Components;
 
+use Filament\Schemas\Components\Utilities\Get;
+use Brick\Math\Exception\RoundingNecessaryException;
+use Brick\Math\RoundingMode;
 use Brick\Money\Money;
-use Filament\Forms\Components\TextInput;
-use Filament\Forms\Get; // Import the Get helper
+use Filament\Forms\Components\TextInput; // Import the Get helper
 use App\Models\Currency; // Make sure to import your Currency model
 
 class MoneyInput extends TextInput
@@ -19,8 +21,9 @@ class MoneyInput extends TextInput
         parent::setUp();
 
         $this
-            ->numeric()
             ->inputMode('decimal')
+            // Don't use ->numeric() as it conflicts with Money objects
+            ->rule('numeric')
             ->afterStateHydrated(function (MoneyInput $component, $state) {
                 if ($state instanceof Money) {
                     // This still works perfectly for the initial load on the edit page.
@@ -55,6 +58,12 @@ class MoneyInput extends TextInput
                 $mainRecord = $component->getLivewire()->getRecord();
                 if ($mainRecord && $mainRecord->currency) {
                     return $mainRecord->currency->code;
+                }
+
+                // Try to get the tenant's default currency as final fallback
+                $tenant = \Filament\Facades\Filament::getTenant();
+                if ($tenant && $tenant->currency) {
+                    return $tenant->currency->code;
                 }
 
                 return '$'; // Default fallback
@@ -128,9 +137,9 @@ class MoneyInput extends TextInput
             // Use Money::of with rounding mode to handle precision issues
             try {
                 return Money::of($state, $currencyCode);
-            } catch (\Brick\Math\Exception\RoundingNecessaryException) {
+            } catch (RoundingNecessaryException) {
                 // If rounding is necessary, use the default rounding mode (HALF_UP)
-                return Money::of($state, $currencyCode, null, \Brick\Math\RoundingMode::HALF_UP);
+                return Money::of($state, $currencyCode, null, RoundingMode::HALF_UP);
             }
         }
 

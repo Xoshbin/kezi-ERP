@@ -45,27 +45,38 @@ test('an account with existing transactions is marked as deprecated instead of b
     $journal = Journal::factory()->for($this->company)->create();
     $currencyCode = $this->company->currency->code;
 
-    // MODIFIED: Create the journal entry with correct Money objects for its totals.
-    $journalEntry = JournalEntry::factory()
-        ->for($this->company)
-        ->for($journal)
-        ->create([
-            'total_debit' => Money::of(100, $currencyCode),
-            'total_credit' => Money::of(100, $currencyCode), // Ensure the entry is balanced from the start.
-        ]);
-
-    // MODIFIED: Create the lines associated with the entry, ensuring it's balanced.
+    // Create the journal entry using the proper Action
     $balancingAccount = Account::factory()->for($this->company)->create();
-    $journalEntry->lines()->create([
-        'account_id' => $account->id,
-        'debit' => Money::of(100, $currencyCode),
-        'credit' => Money::of(0, $currencyCode),
-    ]);
-    $journalEntry->lines()->create([
-        'account_id' => $balancingAccount->id,
-        'credit' => Money::of(100, $currencyCode),
-        'debit' => Money::of(0, $currencyCode),
-    ]);
+
+    $createJournalEntryAction = app(CreateJournalEntryAction::class);
+    $journalEntry = $createJournalEntryAction->execute(new CreateJournalEntryDTO(
+        company_id: $this->company->id,
+        journal_id: $journal->id,
+        currency_id: $this->company->currency_id,
+        entry_date: now()->toDateString(),
+        reference: 'TEST-REF',
+        description: 'Test entry for account deletion',
+        created_by_user_id: $this->user->id,
+        is_posted: true,
+        lines: [
+            new CreateJournalEntryLineDTO(
+                account_id: $account->id,
+                debit: Money::of(100, $currencyCode),
+                credit: Money::of(0, $currencyCode),
+                description: 'Test debit line',
+                partner_id: null,
+                analytic_account_id: null
+            ),
+            new CreateJournalEntryLineDTO(
+                account_id: $balancingAccount->id,
+                debit: Money::of(0, $currencyCode),
+                credit: Money::of(100, $currencyCode),
+                description: 'Test credit line',
+                partner_id: null,
+                analytic_account_id: null
+            ),
+        ]
+    ));
 
 
     // Act: Attempt to delete the account. We expect our Observer to intercept this.

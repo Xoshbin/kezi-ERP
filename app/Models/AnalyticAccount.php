@@ -2,6 +2,10 @@
 
 namespace App\Models;
 
+use Illuminate\Support\Carbon;
+use Illuminate\Database\Eloquent\Collection;
+use Database\Factories\AnalyticAccountFactory;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -15,26 +19,26 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property string $name
  * @property string|null $reference
  * @property bool $is_active
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\AnalyticPlan> $analyticPlans
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property-read Collection<int, AnalyticPlan> $analyticPlans
  * @property-read int|null $analytic_plans_count
- * @property-read \App\Models\Company $company
- * @property-read \App\Models\Currency|null $currency
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\JournalEntryLine> $journalEntryLines
+ * @property-read Company $company
+ * @property-read Currency|null $currency
+ * @property-read Collection<int, JournalEntryLine> $journalEntryLines
  * @property-read int|null $journal_entry_lines_count
- * @method static \Database\Factories\AnalyticAccountFactory factory($count = null, $state = [])
- * @method static \Illuminate\Database\Eloquent\Builder<static>|AnalyticAccount newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|AnalyticAccount newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|AnalyticAccount query()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|AnalyticAccount whereCompanyId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|AnalyticAccount whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|AnalyticAccount whereCurrencyId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|AnalyticAccount whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|AnalyticAccount whereIsActive($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|AnalyticAccount whereName($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|AnalyticAccount whereReference($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|AnalyticAccount whereUpdatedAt($value)
+ * @method static AnalyticAccountFactory factory($count = null, $state = [])
+ * @method static Builder<static>|AnalyticAccount newModelQuery()
+ * @method static Builder<static>|AnalyticAccount newQuery()
+ * @method static Builder<static>|AnalyticAccount query()
+ * @method static Builder<static>|AnalyticAccount whereCompanyId($value)
+ * @method static Builder<static>|AnalyticAccount whereCreatedAt($value)
+ * @method static Builder<static>|AnalyticAccount whereCurrencyId($value)
+ * @method static Builder<static>|AnalyticAccount whereId($value)
+ * @method static Builder<static>|AnalyticAccount whereIsActive($value)
+ * @method static Builder<static>|AnalyticAccount whereName($value)
+ * @method static Builder<static>|AnalyticAccount whereReference($value)
+ * @method static Builder<static>|AnalyticAccount whereUpdatedAt($value)
  * @mixin \Eloquent
  */
 class AnalyticAccount extends Model
@@ -83,13 +87,12 @@ class AnalyticAccount extends Model
     | Analytic accounts are deeply integrated into the financial system,
     | linking to companies, currencies, journal entries, and analytic plans.
     */
-
     /**
      * Get the company that owns the analytic account.
      * In a multi-company setup, analytic accounts are typically tied to a specific company,
      * though they can be accessible to all if company_id is null, similar to Odoo's approach [5].
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
     public function company(): BelongsTo
     {
@@ -100,7 +103,7 @@ class AnalyticAccount extends Model
      * Get the currency associated with the analytic account.
      * This is a nullable relationship, allowing for flexibility in multi-currency tracking [3].
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
     public function currency(): BelongsTo
     {
@@ -112,7 +115,7 @@ class AnalyticAccount extends Model
      * This demonstrates how analytic accounts provide a distinct layer for tagging
      * financial movements recorded in the general ledger for management analysis [2, 3].
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return HasMany
      */
     public function journalEntryLines(): HasMany
     {
@@ -124,7 +127,7 @@ class AnalyticAccount extends Model
      * Analytic accounts can be grouped by analytic plans, enabling higher-level
      * reporting or budget structures [1, 3, 8-10].
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     * @return BelongsToMany
      */
     public function analyticPlans(): BelongsToMany
     {

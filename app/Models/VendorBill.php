@@ -2,8 +2,13 @@
 
 namespace App\Models;
 
+use Illuminate\Support\Carbon;
+use Illuminate\Database\Eloquent\Collection;
+use Database\Factories\VendorBillFactory;
+use Illuminate\Database\Eloquent\Builder;
 use Brick\Money\Money;
-use App\Casts\MoneyCast;
+use App\Casts\DocumentCurrencyMoneyCast;
+use App\Casts\BaseCurrencyMoneyCast;
 use App\Traits\HasPaymentState;
 use App\Observers\AuditLogObserver;
 use App\Observers\VendorBillObserver;
@@ -29,46 +34,45 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
  * @property int $currency_id
  * @property int|null $journal_entry_id
  * @property string $bill_reference
- * @property \Illuminate\Support\Carbon $bill_date
- * @property \Illuminate\Support\Carbon $accounting_date
- * @property \Illuminate\Support\Carbon|null $due_date
+ * @property Carbon $bill_date
+ * @property Carbon $accounting_date
+ * @property Carbon|null $due_date
  * @property string $status
- * @property \Brick\Money\Money $total_amount
- * @property \Brick\Money\Money $total_tax
- * @property \Illuminate\Support\Carbon|null $posted_at
+ * @property Money $total_amount
+ * @property Money $total_tax
+ * @property Carbon|null $posted_at
  * @property array<array-key, mixed>|null $reset_to_draft_log
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \App\Models\Company $company
- * @property-read \App\Models\Currency $currency
- * @property-read \App\Models\JournalEntry|null $journalEntry
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\VendorBillLine> $lines
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property-read Company $company
+ * @property-read Currency $currency
+ * @property-read JournalEntry|null $journalEntry
+ * @property-read Collection<int, VendorBillLine> $lines
  * @property-read int|null $lines_count
- * @property-read \App\Models\Partner $vendor
- * @method static \Database\Factories\VendorBillFactory factory($count = null, $state = [])
- * @method static \Illuminate\Database\Eloquent\Builder<static>|VendorBill newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|VendorBill newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|VendorBill posted()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|VendorBill query()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|VendorBill whereAccountingDate($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|VendorBill whereBillDate($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|VendorBill whereBillReference($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|VendorBill whereCompanyId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|VendorBill whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|VendorBill whereCurrencyId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|VendorBill whereDueDate($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|VendorBill whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|VendorBill whereJournalEntryId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|VendorBill wherePostedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|VendorBill whereResetToDraftLog($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|VendorBill whereStatus($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|VendorBill whereTotalAmount($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|VendorBill whereTotalTax($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|VendorBill whereUpdatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|VendorBill whereVendorId($value)
+ * @property-read Partner $vendor
+ * @method static VendorBillFactory factory($count = null, $state = [])
+ * @method static Builder<static>|VendorBill newModelQuery()
+ * @method static Builder<static>|VendorBill newQuery()
+ * @method static Builder<static>|VendorBill posted()
+ * @method static Builder<static>|VendorBill query()
+ * @method static Builder<static>|VendorBill whereAccountingDate($value)
+ * @method static Builder<static>|VendorBill whereBillDate($value)
+ * @method static Builder<static>|VendorBill whereBillReference($value)
+ * @method static Builder<static>|VendorBill whereCompanyId($value)
+ * @method static Builder<static>|VendorBill whereCreatedAt($value)
+ * @method static Builder<static>|VendorBill whereCurrencyId($value)
+ * @method static Builder<static>|VendorBill whereDueDate($value)
+ * @method static Builder<static>|VendorBill whereId($value)
+ * @method static Builder<static>|VendorBill whereJournalEntryId($value)
+ * @method static Builder<static>|VendorBill wherePostedAt($value)
+ * @method static Builder<static>|VendorBill whereResetToDraftLog($value)
+ * @method static Builder<static>|VendorBill whereStatus($value)
+ * @method static Builder<static>|VendorBill whereTotalAmount($value)
+ * @method static Builder<static>|VendorBill whereTotalTax($value)
+ * @method static Builder<static>|VendorBill whereUpdatedAt($value)
+ * @method static Builder<static>|VendorBill whereVendorId($value)
  * @mixin \Eloquent
  */
-
 #[ObservedBy([AuditLogObserver::class, VendorBillObserver::class])]
 class VendorBill extends Model
 {
@@ -99,8 +103,11 @@ class VendorBill extends Model
         'status',               // Current status: e.g., 'Draft', 'Posted', 'Paid', 'Cancelled' .
         // A 'Draft' bill can be modified/deleted, but 'Posted' cannot .
         'currency_id',          // Foreign key to the Currency model, specifying the bill's currency .
+        'exchange_rate_at_creation', // Exchange rate captured at bill creation/posting
         'total_amount',         // The total amount of the vendor bill, including taxes .
         'total_tax',            // The total tax amount on the vendor bill .
+        'total_amount_company_currency', // Total amount in company currency
+        'total_tax_company_currency',    // Total tax in company currency
         'journal_entry_id',     // Nullable foreign key to journal_entries.id, linking to the immutable
         // financial transaction once the bill is posted .
         'posted_at',            // Nullable timestamp indicating when the vendor bill was confirmed/posted .
@@ -119,8 +126,11 @@ class VendorBill extends Model
         'accounting_date'    => 'date',       // Cast to date for consistency .
         'due_date'           => 'date',       // Cast to date for consistency .
         'status'             => VendorBillStatus::class,
-        'total_amount'       => MoneyCast::class,  // Crucial for financial precision, ensures two decimal places .
-        'total_tax'          => MoneyCast::class,  // Crucial for financial precision .
+        'exchange_rate_at_creation' => 'decimal:10',
+        'total_amount'       => DocumentCurrencyMoneyCast::class,  // Document currency amounts
+        'total_tax'          => DocumentCurrencyMoneyCast::class,  // Document currency amounts
+        'total_amount_company_currency' => BaseCurrencyMoneyCast::class,  // Company base currency amounts
+        'total_tax_company_currency' => BaseCurrencyMoneyCast::class,  // Company base currency amounts
         'posted_at'          => 'datetime',   // Records the exact time of posting for audit .
         'reset_to_draft_log' => 'json',       // Stores audit log as JSON .
         'created_at'         => 'datetime',   // Automatically managed by Eloquent.
@@ -141,15 +151,15 @@ class VendorBill extends Model
         $this->loadMissing('lines', 'currency');
 
         $currencyCode = $this->currency->code;
-        $zero = \Brick\Money\Money::of(0, $currencyCode);
+        $zero = Money::of(0, $currencyCode);
 
         $totalTax = $this->lines->reduce(
-            fn (\Brick\Money\Money $carry, VendorBillLine $line) => $carry->plus($line->total_line_tax ?? $zero),
+            fn (Money $carry, VendorBillLine $line) => $carry->plus($line->total_line_tax ?? $zero),
             $zero
         );
 
         $subtotal = $this->lines->reduce(
-            fn (\Brick\Money\Money $carry, VendorBillLine $line) => $carry->plus($line->subtotal ?? $zero),
+            fn (Money $carry, VendorBillLine $line) => $carry->plus($line->subtotal ?? $zero),
             $zero
         );
 
@@ -218,6 +228,17 @@ class VendorBill extends Model
     }
 
     /**
+     * Get the direct PaymentDocumentLink records for this vendor bill.
+     * This provides access to the raw pivot data for multi-currency payment calculations.
+     *
+     * @return HasMany
+     */
+    public function paymentDocumentLinks(): HasMany
+    {
+        return $this->hasMany(PaymentDocumentLink::class, 'vendor_bill_id');
+    }
+
+    /**
      * Get the Vendor Bill Lines for the Vendor Bill.
      * Defines a **HasMany** relationship, indicating that a vendor bill can have
      * multiple line items detailing the products or services purchased .
@@ -248,15 +269,15 @@ class VendorBill extends Model
      */
     public function adjustmentDocuments(): HasMany
     {
-        return $this->hasMany(\App\Models\AdjustmentDocument::class, 'original_vendor_bill_id');
+        return $this->hasMany(AdjustmentDocument::class, 'original_vendor_bill_id');
     }
 
     /**
      * Scope a query to only include vendor bills that have been 'Posted'.
      * This facilitates querying for financial records that have had an accounting impact .
      *
-     * @param  \Illuminate\Database\Eloquent\Builder  $query
-     * @return \Illuminate\Database\Eloquent\Builder
+     * @param Builder $query
+     * @return Builder
      */
     public function scopePosted($query)
     {

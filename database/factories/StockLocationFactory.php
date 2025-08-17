@@ -8,7 +8,7 @@ use App\Models\StockLocation;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\StockLocation>
+ * @extends Factory<StockLocation>
  */
 class StockLocationFactory extends Factory
 {

@@ -2,7 +2,12 @@
 
 namespace App\Models;
 
-use App\Casts\MoneyCast;
+use Brick\Money\Money;
+use Illuminate\Support\Carbon;
+use Database\Factories\VendorBillLineFactory;
+use Illuminate\Database\Eloquent\Builder;
+use App\Casts\DocumentCurrencyMoneyCast;
+use App\Casts\BaseCurrencyMoneyCast;
 use App\Observers\VendorBillLineObserver;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -16,7 +21,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 // the integrity and auditability of historical accounting data [3].
 // Any corrections to posted lines must be handled via new, offsetting entries
 // (e.g., adjustment documents like credit notes or new journal entries) [3].
-
 /**
  * @property int $id
  * @property int $vendor_bill_id
@@ -26,33 +30,33 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property int|null $analytic_account_id
  * @property string $description
  * @property numeric $quantity
- * @property \Brick\Money\Money $unit_price
- * @property \Brick\Money\Money $subtotal
- * @property \Brick\Money\Money $total_line_tax
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \App\Models\AnalyticAccount|null $analyticAccount
- * @property-read \App\Models\Account $expenseAccount
- * @property-read \App\Models\Product|null $product
- * @property-read \App\Models\Tax|null $tax
- * @property-read \App\Models\VendorBill $vendorBill
- * @method static \Database\Factories\VendorBillLineFactory factory($count = null, $state = [])
- * @method static \Illuminate\Database\Eloquent\Builder<static>|VendorBillLine newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|VendorBillLine newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|VendorBillLine query()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|VendorBillLine whereAnalyticAccountId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|VendorBillLine whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|VendorBillLine whereDescription($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|VendorBillLine whereExpenseAccountId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|VendorBillLine whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|VendorBillLine whereProductId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|VendorBillLine whereQuantity($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|VendorBillLine whereSubtotal($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|VendorBillLine whereTaxId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|VendorBillLine whereTotalLineTax($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|VendorBillLine whereUnitPrice($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|VendorBillLine whereUpdatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|VendorBillLine whereVendorBillId($value)
+ * @property Money $unit_price
+ * @property Money $subtotal
+ * @property Money $total_line_tax
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property-read AnalyticAccount|null $analyticAccount
+ * @property-read Account $expenseAccount
+ * @property-read Product|null $product
+ * @property-read Tax|null $tax
+ * @property-read VendorBill $vendorBill
+ * @method static VendorBillLineFactory factory($count = null, $state = [])
+ * @method static Builder<static>|VendorBillLine newModelQuery()
+ * @method static Builder<static>|VendorBillLine newQuery()
+ * @method static Builder<static>|VendorBillLine query()
+ * @method static Builder<static>|VendorBillLine whereAnalyticAccountId($value)
+ * @method static Builder<static>|VendorBillLine whereCreatedAt($value)
+ * @method static Builder<static>|VendorBillLine whereDescription($value)
+ * @method static Builder<static>|VendorBillLine whereExpenseAccountId($value)
+ * @method static Builder<static>|VendorBillLine whereId($value)
+ * @method static Builder<static>|VendorBillLine whereProductId($value)
+ * @method static Builder<static>|VendorBillLine whereQuantity($value)
+ * @method static Builder<static>|VendorBillLine whereSubtotal($value)
+ * @method static Builder<static>|VendorBillLine whereTaxId($value)
+ * @method static Builder<static>|VendorBillLine whereTotalLineTax($value)
+ * @method static Builder<static>|VendorBillLine whereUnitPrice($value)
+ * @method static Builder<static>|VendorBillLine whereUpdatedAt($value)
+ * @method static Builder<static>|VendorBillLine whereVendorBillId($value)
  * @mixin \Eloquent
  */
 #[ObservedBy([VendorBillLineObserver::class])]
@@ -76,14 +80,18 @@ class VendorBillLine extends Model
      * @var array<int, string>
      */
     protected $fillable = [
+        'company_id',             // Foreign key to the parent company, ensuring data integrity [2, 3].
         'vendor_bill_id',          // Foreign key to the parent VendorBill, linking each line to its primary document [2].
         'product_id',              // Nullable foreign key to the Product model, identifying the item purchased [2].
         'description',             // A detailed textual description of the line item [2].
         'quantity',                // The quantity of the product or service on this line [2].
         'unit_price',              // The price per unit of the item [2].
+        'unit_price_company_currency', // Price per unit in company currency
         'tax_id',                  // Nullable foreign key to the Tax model, representing the tax applied to this line [2].
         'subtotal',                // The calculated subtotal for this line, typically quantity * unit_price [2].
+        'subtotal_company_currency',   // Subtotal in company currency
         'total_line_tax',          // The total tax amount specifically for this line item [2].
+        'total_line_tax_company_currency', // Total tax in company currency
         'expense_account_id',      // Foreign key to the Account model, for proper expense classification in the Chart of Accounts [2].
         'analytic_account_id',     // Nullable foreign key to the AnalyticAccount model for management/cost accounting [2, 7].
         // While explicitly listed for `journal_entry_lines` [2], Odoo's design [8]
@@ -99,9 +107,12 @@ class VendorBillLine extends Model
      */
     protected $casts = [
         'quantity'          => 'decimal:2', // Ensures precision for quantities, allowing for fractional units.
-        'unit_price'        => MoneyCast::class, // **Crucial for financial accuracy**, ensuring amounts are stored with two decimal places [2].
-        'subtotal'          => MoneyCast::class, // **Crucial for financial accuracy** [2].
-        'total_line_tax'    => MoneyCast::class, // **Crucial for financial accuracy** [2].
+        'unit_price'        => DocumentCurrencyMoneyCast::class, // Document currency amounts
+        'unit_price_company_currency' => BaseCurrencyMoneyCast::class, // Company base currency amounts
+        'subtotal'          => DocumentCurrencyMoneyCast::class, // Document currency amounts
+        'subtotal_company_currency' => BaseCurrencyMoneyCast::class, // Company base currency amounts
+        'total_line_tax'    => DocumentCurrencyMoneyCast::class, // Document currency amounts
+        'total_line_tax_company_currency' => BaseCurrencyMoneyCast::class, // Company base currency amounts
         'created_at'        => 'datetime',  // Automatically managed by Eloquent for audit trails [2].
         'updated_at'        => 'datetime',  // Automatically managed by Eloquent [2].
     ];
@@ -116,6 +127,16 @@ class VendorBillLine extends Model
      * @var array
      */
     protected $with = ['vendorBill'];
+
+    /**
+     * Get the company that this rate belongs to.
+     *
+     * @return BelongsTo
+     */
+    public function company(): BelongsTo
+    {
+        return $this->belongsTo(Company::class);
+    }
 
     /**
      * Get the Vendor Bill that owns the Vendor Bill Line.
@@ -180,15 +201,5 @@ class VendorBillLine extends Model
         return $this->belongsTo(AnalyticAccount::class, 'analytic_account_id');
     }
 
-    /**
-     * Accessor to provide the currency_id to the MoneyCast.
-     * This makes the model responsible for knowing its own currency context.
-     */
-    public function getCurrencyIdAttribute(): ?int
-    {
-        // If the relationship is loaded, use it. If not, lazy-load it.
-        // This is crucial for the MoneyCast to work correctly, especially during
-        // model creation where the relationship might not be set yet.
-        return $this->vendorBill->currency_id ?? $this->vendorBill()->first()->currency_id;
-    }
+
 }

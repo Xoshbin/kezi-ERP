@@ -2,6 +2,7 @@
 
 namespace App\Observers;
 
+use App\Models\BankStatement;
 use App\Models\BankStatementLine;
 
 class BankStatementLineObserver
@@ -9,14 +10,20 @@ class BankStatementLineObserver
     /**
      * Handle the BankStatementLine "creating" event.
      *
-     * This ensures that every line automatically inherits the company_id
-     * from its parent BankStatement, maintaining data integrity and tenancy.
+     * @param BankStatementLine $bankStatementLine
+     * @return void
      */
-    public function creating(BankStatementLine $line): void
+    public function creating(BankStatementLine $bankStatementLine): void
     {
-        if ($line->bankStatement) {
-            // This line is correct and necessary.
-            $line->company_id = $line->bankStatement->company_id;
+        // If the 'bankStatement' relationship is not already loaded, but the
+        // foreign key 'bank_statement_id' exists on the model instance,
+        // we manually set the relationship. This is the crucial step that
+        // provides the context needed by the MoneyCast just before the model is saved.
+        if (!$bankStatementLine->relationLoaded('bankStatement') && $bankStatementLine->bank_statement_id) {
+            $bankStatement = BankStatement::find($bankStatementLine->bank_statement_id);
+            if ($bankStatement) {
+                $bankStatementLine->setRelation('bankStatement', $bankStatement);
+            }
         }
     }
 }

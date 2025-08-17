@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('budget_lines', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('company_id')->constrained('companies');
             $table->foreignId('budget_id')->constrained('budgets')->onDelete('cascade');
             $table->foreignId('analytic_account_id')->nullable()->constrained('analytic_accounts');
             $table->foreignId('account_id')->nullable()->constrained('accounts');

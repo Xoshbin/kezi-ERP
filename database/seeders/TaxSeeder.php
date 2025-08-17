@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use Exception;
 use App\Models\Account;
 use App\Models\Company;
 use App\Models\Tax;
@@ -15,19 +16,19 @@ class TaxSeeder extends Seeder
      * Run the database seeds.
      *
      * @return void
-     * @throws \Exception
+     * @throws Exception
      */
     public function run(): void
     {
         DB::transaction(function () {
             $company = Company::where('name', 'Jmeryar Solutions')->first();
             if (!$company) {
-                throw new \Exception("Company 'Jmeryar Solutions' not found. Please run CompanySeeder.");
+                throw new Exception("Company 'Jmeryar Solutions' not found. Please run CompanySeeder.");
             }
 
             $vatPayableAccount = Account::where('code', '220101')->where('company_id', $company->id)->first();
             if (!$vatPayableAccount) {
-                throw new \Exception("Account 'VAT Payable' (220101) not found. Please run AccountSeeder.");
+                throw new Exception("Account 'VAT Payable' (220101) not found. Please run AccountSeeder.");
             }
 
             $taxes = [

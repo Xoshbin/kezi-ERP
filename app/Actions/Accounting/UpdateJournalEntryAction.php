@@ -2,6 +2,11 @@
 
 namespace App\Actions\Accounting;
 
+use App\Models\Company;
+use Carbon\Carbon;
+use App\Models\JournalEntryLine;
+use Brick\Math\Exception\RoundingNecessaryException;
+use Brick\Math\RoundingMode;
 use Brick\Money\Money;
 use App\Models\Currency;
 use App\Models\JournalEntry;
@@ -22,7 +27,7 @@ class UpdateJournalEntryAction
         $journalEntry = $dto->journalEntry;
 
         // 1. Perform all necessary validation before touching the database.
-        $this->lockDateService->enforce(\App\Models\Company::find($journalEntry->company_id), \Carbon\Carbon::parse($journalEntry->entry_date));
+        $this->lockDateService->enforce(Company::find($journalEntry->company_id), Carbon::parse($journalEntry->entry_date));
 
         if ($journalEntry->is_posted) {
             throw new UpdateNotAllowedException('Cannot modify a posted journal entry.');
@@ -64,23 +69,33 @@ class UpdateJournalEntryAction
             // Create the new lines from the DTO
             if (!empty($dto->lines)) {
                 foreach ($dto->lines as $lineDto) {
-                    $line = new \App\Models\JournalEntryLine();
+                    $line = new JournalEntryLine();
 
                     // First, establish the relationship. This makes the parent's context (like currency)
                     // available to the line model *before* any attributes are set. This is the key
                     // to solving the MoneyCast issue without schema changes.
                     $line->journalEntry()->associate($journalEntry);
 
+                    // Set currency-related fields first to ensure proper context for Money casts
+                    $line->original_currency_id = $dto->currency_id;
+                    $line->currency_id = $dto->currency_id;
+                    $line->exchange_rate_at_transaction = 1.0; // Default for same currency
+
                     // Now, fill the attributes. The MoneyCast on 'debit' and 'credit' will be
                     // triggered here, but it can now successfully call getCurrencyIdAttribute()
                     // because the journalEntry relationship is established.
                     $line->fill([
+                        'company_id' => $journalEntry->company_id,
                         'account_id' => $lineDto->account_id,
                         'partner_id' => $lineDto->partner_id,
                         'analytic_account_id' => $lineDto->analytic_account_id,
                         'description' => $lineDto->description,
                         'debit' => Money::of($lineDto->debit, $currency->code),
                         'credit' => Money::of($lineDto->credit, $currency->code),
+                        'original_currency_amount' => Money::of(
+                            max($lineDto->debit, $lineDto->credit),
+                            $currency->code
+                        ),
                     ]);
 
                     // Finally, save the fully prepared line.
@@ -124,8 +139,8 @@ class UpdateJournalEntryAction
         // Convert to Money with rounding if necessary
         try {
             return Money::of($value, $currencyCode);
-        } catch (\Brick\Math\Exception\RoundingNecessaryException) {
-            return Money::of($value, $currencyCode, null, \Brick\Math\RoundingMode::HALF_UP);
+        } catch (RoundingNecessaryException) {
+            return Money::of($value, $currencyCode, null, RoundingMode::HALF_UP);
         }
     }
 }

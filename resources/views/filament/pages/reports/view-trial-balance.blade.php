@@ -1,13 +1,13 @@
 <x-filament-panels::page>
     <div class="space-y-6">
         <!-- Filter Form -->
-        <x-filament-panels::form wire:submit="generateReport">
+        <form wire:submit="generateReport">
             {{ $this->form }}
-        </x-filament-panels::form>
+        </form>
 
         <!-- Report Display -->
         @if($reportData)
-            <div class="bg-white dark:bg-gray-800 shadow rounded-lg p-6">
+            <div class="bg-white dark:bg-gray-800 shadow-sm rounded-lg p-6">
                 <!-- Balance Status Banner -->
                 <div class="mb-6">
                     @if($reportData['isBalanced'])
@@ -37,7 +37,7 @@
                         {{ __('reports.trial_balance_report') }}
                     </h2>
                     <p class="text-sm text-gray-600 dark:text-gray-400">
-                        {{ $reportData['companyName'] }} - 
+                        {{ $reportData['companyName'] }} -
                         {{ __('reports.as_of') }}: {{ Carbon\Carbon::parse($reportData['asOfDate'])->format('M j, Y') }}
                     </p>
                 </div>
@@ -89,7 +89,7 @@
                                 </tr>
                             @endforelse
                         </tbody>
-                        
+
                         <!-- Totals Row -->
                         @if(count($reportData['reportLines']) > 0)
                             <tfoot class="bg-gray-50 dark:bg-gray-800">
@@ -116,7 +116,7 @@
                             <strong>{{ __('reports.balance_verification') }}:</strong>
                             {{ __('reports.total_debits') }}: {{ $reportData['totalDebit'] }} |
                             {{ __('reports.total_credits') }}: {{ $reportData['totalCredit'] }} |
-                            {{ __('reports.difference') }}: 
+                            {{ __('reports.difference') }}:
                             @if($reportData['isBalanced'])
                                 <span class="text-green-600 dark:text-green-400 font-medium">{{ __('reports.balanced') }}</span>
                             @else

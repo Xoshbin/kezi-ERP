@@ -2,6 +2,7 @@
 
 namespace App\Actions\Inventory;
 
+use Illuminate\Support\Facades\Log;
 use App\Models\Product;
 use Brick\Math\RoundingMode;
 use Brick\Money\Money;
@@ -24,7 +25,7 @@ class UpdateProductInventoryStatsAction
                 ? $totalValue->dividedBy($totalQuantity, RoundingMode::HALF_UP)
                 : Money::zero($product->company->currency->code);
 
-            \Illuminate\Support\Facades\Log::info('Before product update', [
+            Log::info('Before product update', [
                 'product_id' => $product->id,
                 'quantity_on_hand' => $product->quantity_on_hand,
                 'average_cost' => $product->average_cost->getAmount()->toFloat(),
@@ -36,7 +37,7 @@ class UpdateProductInventoryStatsAction
             ])->save();
 
             $product->refresh();
-            \Illuminate\Support\Facades\Log::info('After product update', [
+            Log::info('After product update', [
                 'product_id' => $product->id,
                 'quantity_on_hand' => $product->quantity_on_hand,
                 'average_cost' => $product->average_cost->getAmount()->toFloat(),

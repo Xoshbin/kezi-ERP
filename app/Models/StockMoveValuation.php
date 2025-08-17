@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use App\Casts\MoneyCast;
+use App\Casts\BaseCurrencyMoneyCast;
 use App\Enums\Inventory\ValuationMethod;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -27,9 +27,20 @@ class StockMoveValuation extends Model
     ];
 
     protected $casts = [
-        'cost_impact' => MoneyCast::class,
+        'cost_impact' => BaseCurrencyMoneyCast::class,
         'valuation_method' => ValuationMethod::class,
     ];
+
+    /**
+     * The relationships that should always be loaded.
+     * Eager-loading the `company.currency` relationship is critical because the `BaseCurrencyMoneyCast`
+     * for monetary fields on this model depends on the currency context provided by the company.
+     * Without this, any retrieval of a `StockMoveValuation` would fail when casting monetary values
+     * due to the missing currency information, leading to a "currency_id on null" error.
+     *
+     * @var array
+     */
+    protected $with = ['company.currency'];
 
     public function company(): BelongsTo
     {
@@ -56,13 +67,5 @@ class StockMoveValuation extends Model
         return $this->morphTo();
     }
 
-    /**
-     * Accessor to provide the currency_id to the MoneyCast.
-     * This robust implementation prevents N+1 query issues.
-     */
-    public function getCurrencyIdAttribute(): int
-    {
-        // If the company relationship is loaded, use it. If not, lazy-load it.
-        return $this->company->currency_id ?? $this->company()->first()->currency_id;
-    }
+
 }

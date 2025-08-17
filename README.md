@@ -73,7 +73,7 @@ The application includes a wide range of accounting and ERP features:
 ## Technology Stack
 
 -   **Backend**: Laravel 11
--   **Admin Panel**: Filament 3
+-   **Admin Panel**: Filament 4
 -   **Testing**: Pest
 
 ## Architectural Highlights

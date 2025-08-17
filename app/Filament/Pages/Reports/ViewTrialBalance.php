@@ -2,13 +2,12 @@
 
 namespace App\Filament\Pages\Reports;
 
-use App\Models\Company;
+use Filament\Schemas\Schema;
+use Filament\Schemas\Components\Section;
 use App\Services\Reports\TrialBalanceService;
 use App\Support\NumberFormatter;
 use Carbon\Carbon;
 use Filament\Forms\Components\DatePicker;
-use Filament\Forms\Components\Section;
-use Filament\Forms\Form;
 use Filament\Pages\Page;
 use Filament\Actions\Action;
 use Filament\Facades\Filament;
@@ -16,9 +15,9 @@ use Illuminate\Contracts\Support\Htmlable;
 
 class ViewTrialBalance extends Page
 {
-    protected static ?string $navigationIcon = 'heroicon-o-scale';
-    protected static string $view = 'filament.pages.reports.view-trial-balance';
-    protected static ?string $navigationGroup = null;
+    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-scale';
+    protected string $view = 'filament.pages.reports.view-trial-balance';
+    protected static string | \UnitEnum | null $navigationGroup = null;
 
     public static function getNavigationGroup(): ?string
     {
@@ -51,10 +50,10 @@ class ViewTrialBalance extends Page
         ]);
     }
 
-    public function form(Form $form): Form
+    public function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
+        return $schema
+            ->components([
                 Section::make(__('reports.report_parameters'))
                     ->schema([
                         DatePicker::make('asOfDate')
@@ -82,7 +81,7 @@ class ViewTrialBalance extends Page
             'asOfDate' => 'required|date',
         ]);
 
-        $company = Company::find(Filament::auth()->user()->company_id);
+        $company = Filament::getTenant();
         $service = app(TrialBalanceService::class);
 
         $report = $service->generate(

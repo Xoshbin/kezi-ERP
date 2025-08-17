@@ -2,6 +2,9 @@
 
 namespace App\Models;
 
+use Illuminate\Support\Carbon;
+use Database\Factories\AuditLogFactory;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -17,24 +20,24 @@ use Illuminate\Database\Eloquent\Relations\MorphTo;
  * @property string|null $description
  * @property string|null $ip_address
  * @property string|null $user_agent
- * @property \Illuminate\Support\Carbon $created_at
+ * @property Carbon $created_at
  * @property-read Model|\Eloquent $auditable
- * @property-read \App\Models\User $user
- * @method static \Database\Factories\AuditLogFactory factory($count = null, $state = [])
- * @method static \Illuminate\Database\Eloquent\Builder<static>|AuditLog newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|AuditLog newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|AuditLog query()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|AuditLog whereAuditableId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|AuditLog whereAuditableType($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|AuditLog whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|AuditLog whereDescription($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|AuditLog whereEventType($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|AuditLog whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|AuditLog whereIpAddress($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|AuditLog whereNewValues($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|AuditLog whereOldValues($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|AuditLog whereUserAgent($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|AuditLog whereUserId($value)
+ * @property-read User $user
+ * @method static AuditLogFactory factory($count = null, $state = [])
+ * @method static Builder<static>|AuditLog newModelQuery()
+ * @method static Builder<static>|AuditLog newQuery()
+ * @method static Builder<static>|AuditLog query()
+ * @method static Builder<static>|AuditLog whereAuditableId($value)
+ * @method static Builder<static>|AuditLog whereAuditableType($value)
+ * @method static Builder<static>|AuditLog whereCreatedAt($value)
+ * @method static Builder<static>|AuditLog whereDescription($value)
+ * @method static Builder<static>|AuditLog whereEventType($value)
+ * @method static Builder<static>|AuditLog whereId($value)
+ * @method static Builder<static>|AuditLog whereIpAddress($value)
+ * @method static Builder<static>|AuditLog whereNewValues($value)
+ * @method static Builder<static>|AuditLog whereOldValues($value)
+ * @method static Builder<static>|AuditLog whereUserAgent($value)
+ * @method static Builder<static>|AuditLog whereUserId($value)
  * @mixin \Eloquent
  */
 class AuditLog extends Model
@@ -71,6 +74,7 @@ class AuditLog extends Model
      */
     protected $fillable = [
         'user_id',
+        'company_id',
         'event_type',
         'auditable_type',
         'auditable_id',
@@ -102,11 +106,22 @@ class AuditLog extends Model
      * to the `users` table, identifying the individual responsible for the action [1].
      * This establishes a `belongsTo` relationship to the `User` model [10].
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    /**
+     * Get the company that this audit log belongs to.
+     * Audit logs should be company-specific for proper accounting audit trails.
+     *
+     * @return BelongsTo
+     */
+    public function company(): BelongsTo
+    {
+        return $this->belongsTo(Company::class);
     }
 
     /**
@@ -116,7 +131,7 @@ class AuditLog extends Model
      * reference different types of models (e.g., `Invoice`, `Account`) [1, 11].
      * This is critical for flexible and comprehensive logging across various entities.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\MorphTo
+     * @return MorphTo
      */
     public function auditable(): MorphTo
     {

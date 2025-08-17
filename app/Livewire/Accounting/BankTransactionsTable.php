@@ -2,13 +2,16 @@
 
 namespace App\Livewire\Accounting;
 
+use Filament\Actions\Contracts\HasActions;
+use Filament\Actions\Concerns\InteractsWithActions;
+use Filament\Actions\Action;
+use Filament\Support\Contracts\TranslatableContentDriver;
 use Brick\Money\Money;
 use App\Models\Account;
 use Livewire\Component;
 use Filament\Tables\Table;
 use App\Models\BankStatement;
 use App\Models\BankStatementLine;
-use Filament\Tables\Actions\Action;
 use Illuminate\Support\Facades\Auth;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Contracts\HasForms;
@@ -21,8 +24,9 @@ use App\Filament\Tables\Columns\MoneyColumn;
 use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Tables\Concerns\InteractsWithTable;
 
-class BankTransactionsTable extends Component implements HasTable, HasForms
+class BankTransactionsTable extends Component implements HasTable, HasForms, HasActions
 {
+    use InteractsWithActions;
     use InteractsWithTable;
     use InteractsWithForms;
 
@@ -59,16 +63,16 @@ class BankTransactionsTable extends Component implements HasTable, HasForms
                     ->label(__('bank_statement.amount'))
                     ->sortable(),
             ])
-            ->actions([
+            ->recordActions([
                 Action::make('writeOff')
                     ->label(__('bank_statement.write_off'))
                     ->icon('heroicon-o-x-mark')
                     ->color('danger')
-                    ->form([
+                    ->schema([
                         Select::make('account_id')
                             ->label(__('bank_statement.write_off_account'))
                             ->options(function () {
-                                return \App\Models\Account::where('company_id', $this->bankStatement->company_id)
+                                return Account::where('company_id', $this->bankStatement->company_id)
                                     ->where('type', 'expense')
                                     ->pluck('name', 'id');
                             })
@@ -110,7 +114,8 @@ class BankTransactionsTable extends Component implements HasTable, HasForms
 
     protected function emitSelectionChanged(): void
     {
-        $total = Money::of(0, 'IQD');
+        // Use the bank statement's currency instead of hardcoded 'IQD'
+        $total = Money::of(0, $this->bankStatement->currency->code);
 
         if (!empty($this->selectedBankLines)) {
             $lines = BankStatementLine::whereIn('id', $this->selectedBankLines)->get();
@@ -126,7 +131,7 @@ class BankTransactionsTable extends Component implements HasTable, HasForms
         ]);
     }
 
-    public function makeFilamentTranslatableContentDriver(): ?\Filament\Support\Contracts\TranslatableContentDriver
+    public function makeFilamentTranslatableContentDriver(): ?TranslatableContentDriver
     {
         return null;
     }

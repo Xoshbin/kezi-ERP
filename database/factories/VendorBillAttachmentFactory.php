@@ -8,7 +8,7 @@ use App\Models\VendorBillAttachment;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\VendorBillAttachment>
+ * @extends Factory<VendorBillAttachment>
  */
 class VendorBillAttachmentFactory extends Factory
 {
@@ -31,8 +31,13 @@ class VendorBillAttachmentFactory extends Factory
 
         $fileType = $this->faker->randomElement($fileTypes);
 
+        $vendorBill = VendorBill::factory();
+
         return [
-            'vendor_bill_id' => VendorBill::factory(),
+            'vendor_bill_id' => $vendorBill,
+            'company_id' => function (array $attributes) {
+                return VendorBill::find($attributes['vendor_bill_id'])->company_id;
+            },
             'file_name' => $fileType['name'],
             'file_path' => 'vendor-bill-attachments/' . $this->faker->uuid() . '/' . $fileType['name'],
             'file_size' => $this->faker->numberBetween(1024, 10 * 1024 * 1024), // 1KB to 10MB

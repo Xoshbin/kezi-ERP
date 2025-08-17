@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use Exception;
 use Carbon\Carbon;
 use App\Models\User;
 use Brick\Money\Money;
@@ -13,10 +14,15 @@ use App\Services\Accounting\LockDateService;
 use Illuminate\Validation\ValidationException;
 use App\Exceptions\DeletionNotAllowedException;
 use App\Actions\Accounting\ReverseJournalEntryAction;
+use App\Services\CurrencyConverterService;
+use App\Models\Currency;
 
 class JournalEntryService
 {
-    public function __construct(protected LockDateService $lockDateService,) {}
+    public function __construct(
+        protected LockDateService $lockDateService,
+        protected CurrencyConverterService $currencyConverter
+    ) {}
 
 
     public function post(JournalEntry $journalEntry): bool
@@ -27,10 +33,11 @@ class JournalEntryService
         }
 
         // 1. Re-validate the balance before posting.
-        $journalEntry->load('lines', 'currency');
-        // MODIFIED: Sum Money objects from the loaded relations.
-        $totalDebit = Money::of(0, $journalEntry->currency->code);
-        $totalCredit = Money::of(0, $journalEntry->currency->code);
+        $journalEntry->load('lines', 'currency', 'company.currency');
+        // CORRECTED: Sum Money objects using the company's base currency (since line amounts are in base currency)
+        $companyCurrencyCode = $journalEntry->company->currency->code;
+        $totalDebit = Money::of(0, $companyCurrencyCode);
+        $totalCredit = Money::of(0, $companyCurrencyCode);
         foreach ($journalEntry->lines as $line) {
             $totalDebit = $totalDebit->plus($line->debit);
             $totalCredit = $totalCredit->plus($line->credit);
@@ -91,14 +98,53 @@ class JournalEntryService
      * @param string $reason The reason for the reversal.
      * @param User $user The user performing the action.
      * @return JournalEntry The newly created reversing entry.
-     * @throws \Exception
+     * @throws Exception
      */
     public function createReversal(JournalEntry $originalEntry, string $reason, User $user): JournalEntry
     {
         if (!$originalEntry->is_posted) {
-            throw new \Exception('Only posted journal entries can be reversed.');
+            throw new Exception('Only posted journal entries can be reversed.');
         }
 
         return app(ReverseJournalEntryAction::class)->execute($originalEntry, $reason, $user);
+    }
+
+    /**
+     * Create a multi-currency journal entry with proper currency conversion.
+     * This method handles journal entries where the transaction currency differs from the company base currency.
+     * Now uses the CreateJournalEntryAction for consistency.
+     */
+    public function createMultiCurrencyEntry(array $entryData, array $lines, Currency $transactionCurrency, User $user): JournalEntry
+    {
+        // Convert the array-based line data to DTOs
+        $lineDTOs = [];
+        foreach ($lines as $lineData) {
+            $lineDTOs[] = new \App\DataTransferObjects\Accounting\CreateJournalEntryLineDTO(
+                account_id: $lineData['account_id'],
+                debit: $lineData['debit'] ?? Money::zero($transactionCurrency->code),
+                credit: $lineData['credit'] ?? Money::zero($transactionCurrency->code),
+                description: $lineData['description'] ?? null,
+                partner_id: $lineData['partner_id'] ?? null,
+                analytic_account_id: $lineData['analytic_account_id'] ?? null
+            );
+        }
+
+        // Create the DTO for the journal entry
+        $journalEntryDTO = new \App\DataTransferObjects\Accounting\CreateJournalEntryDTO(
+            company_id: $entryData['company_id'],
+            journal_id: $entryData['journal_id'],
+            currency_id: $transactionCurrency->id,
+            entry_date: $entryData['entry_date'],
+            reference: $entryData['reference'],
+            description: $entryData['description'] ?? null,
+            created_by_user_id: $user->id,
+            is_posted: $entryData['is_posted'] ?? false,
+            lines: $lineDTOs,
+            source_type: $entryData['source_type'] ?? null,
+            source_id: $entryData['source_id'] ?? null
+        );
+
+        // Use the CreateJournalEntryAction which now handles multi-currency
+        return app(\App\Actions\Accounting\CreateJournalEntryAction::class)->execute($journalEntryDTO);
     }
 }

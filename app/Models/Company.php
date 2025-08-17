@@ -2,12 +2,17 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasMany;
+use Carbon\Carbon;
 use App\Observers\CompanyObserver;
+use Database\Factories\CompanyFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 /**
  * Class Company
@@ -27,62 +32,61 @@ use Illuminate\Database\Eloquent\Attributes\ObservedBy;
  * @property int|null $parent_company_id
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Account> $accounts
+ * @property-read Collection<int, Account> $accounts
  * @property-read int|null $accounts_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\AdjustmentDocument> $adjustmentDocuments
+ * @property-read Collection<int, AdjustmentDocument> $adjustmentDocuments
  * @property-read int|null $adjustment_documents_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\AnalyticAccount> $analyticAccounts
+ * @property-read Collection<int, AnalyticAccount> $analyticAccounts
  * @property-read int|null $analytic_accounts_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\AnalyticPlan> $analyticPlans
+ * @property-read Collection<int, AnalyticPlan> $analyticPlans
  * @property-read int|null $analytic_plans_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Asset> $assets
+ * @property-read Collection<int, Asset> $assets
  * @property-read int|null $assets_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\AuditLog> $auditLogs
+ * @property-read Collection<int, AuditLog> $auditLogs
  * @property-read int|null $audit_logs_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Budget> $budgets
+ * @property-read Collection<int, Budget> $budgets
  * @property-read int|null $budgets_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, Company> $childrenCompanies
+ * @property-read Collection<int, Company> $childrenCompanies
  * @property-read int|null $children_companies_count
- * @property-read \App\Models\Currency $currency
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\FiscalPosition> $fiscalPositions
+ * @property-read Currency $currency
+ * @property-read Collection<int, FiscalPosition> $fiscalPositions
  * @property-read int|null $fiscal_positions_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Invoice> $invoices
+ * @property-read Collection<int, Invoice> $invoices
  * @property-read int|null $invoices_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\JournalEntry> $journalEntries
+ * @property-read Collection<int, JournalEntry> $journalEntries
  * @property-read int|null $journal_entries_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Journal> $journals
+ * @property-read Collection<int, Journal> $journals
  * @property-read int|null $journals_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\LockDate> $lockDates
+ * @property-read Collection<int, LockDate> $lockDates
  * @property-read int|null $lock_dates_count
  * @property-read Company|null $parentCompany
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Partner> $partners
+ * @property-read Collection<int, Partner> $partners
  * @property-read int|null $partners_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Payment> $payments
+ * @property-read Collection<int, Payment> $payments
  * @property-read int|null $payments_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Product> $products
+ * @property-read Collection<int, Product> $products
  * @property-read int|null $products_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Tax> $taxes
+ * @property-read Collection<int, Tax> $taxes
  * @property-read int|null $taxes_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\User> $users
+ * @property-read Collection<int, User> $users
  * @property-read int|null $users_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\VendorBill> $vendorBills
+ * @property-read Collection<int, VendorBill> $vendorBills
  * @property-read int|null $vendor_bills_count
- * @method static \Database\Factories\CompanyFactory factory($count = null, $state = [])
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Company newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Company newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Company query()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Company whereAddress($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Company whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Company whereCurrencyId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Company whereFiscalCountry($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Company whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Company whereName($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Company whereParentCompanyId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Company whereTaxId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Company whereUpdatedAt($value)
+ * @method static CompanyFactory factory($count = null, $state = [])
+ * @method static Builder<static>|Company newModelQuery()
+ * @method static Builder<static>|Company newQuery()
+ * @method static Builder<static>|Company query()
+ * @method static Builder<static>|Company whereAddress($value)
+ * @method static Builder<static>|Company whereCreatedAt($value)
+ * @method static Builder<static>|Company whereCurrencyId($value)
+ * @method static Builder<static>|Company whereFiscalCountry($value)
+ * @method static Builder<static>|Company whereId($value)
+ * @method static Builder<static>|Company whereName($value)
+ * @method static Builder<static>|Company whereParentCompanyId($value)
+ * @method static Builder<static>|Company whereTaxId($value)
+ * @method static Builder<static>|Company whereUpdatedAt($value)
  * @mixin \Eloquent
  */
-
 #[ObservedBy([CompanyObserver::class])]
 class Company extends Model
 {
@@ -145,12 +149,11 @@ class Company extends Model
     | ensuring that all records are properly attributed to their owning company.
     |
     */
-
     /**
      * Get the default operating currency for the company.
      * A company operates within a specific default currency for its financial records [1, 4].
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
     public function currency(): BelongsTo
     {
@@ -161,7 +164,7 @@ class Company extends Model
      * Get the parent company if this company is a branch or subsidiary.
      * Supports multi-branch/multi-company structures [1, 3].
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
     public function parentCompany(): BelongsTo
     {
@@ -172,7 +175,7 @@ class Company extends Model
      * Get the child companies if this company is a parent.
      * This defines the hierarchical structure within the business group [1, 3].
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return HasMany
      */
     public function childrenCompanies(): HasMany
     {
@@ -183,18 +186,18 @@ class Company extends Model
      * Get the users associated with this company.
      * In a multi-company setup, users typically belong to a specific company [1].
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return BelongToMany
      */
-    public function users(): HasMany
+    public function users(): BelongsToMany
     {
-        return $this->hasMany(User::class);
+        return $this->belongsToMany(User::class, 'company_user')->withTimestamps();
     }
 
     /**
      * Get the audit logs associated with actions performed within this company.
      * Comprehensive auditability is a non-negotiable principle for accounting software [1].
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return HasMany
      */
     public function auditLogs(): HasMany
     {
@@ -205,7 +208,7 @@ class Company extends Model
      * Get the lock dates configured for this company.
      * Lock dates are crucial for preventing modifications to historical financial periods [1].
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return HasMany
      */
     public function lockDates(): HasMany
     {
@@ -216,7 +219,7 @@ class Company extends Model
      * Get the chart of accounts (accounts) belonging to this company.
      * Each company maintains its own unique chart of accounts [1, 5].
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return HasMany
      */
     public function accounts(): HasMany
     {
@@ -227,7 +230,7 @@ class Company extends Model
      * Get the journals belonging to this company.
      * Journals categorize and sequence financial transactions [1, 6-8].
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return HasMany
      */
     public function journals(): HasMany
     {
@@ -238,7 +241,7 @@ class Company extends Model
      * Get the journal entries posted by this company.
      * Journal entries are the immutable records of all financial transactions [1].
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return HasMany
      */
     public function journalEntries(): HasMany
     {
@@ -248,7 +251,7 @@ class Company extends Model
     /**
      * Get the customer invoices issued by this company.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return HasMany
      */
     public function invoices(): HasMany
     {
@@ -258,7 +261,7 @@ class Company extends Model
     /**
      * Get the vendor bills received by this company.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return HasMany
      */
     public function vendorBills(): HasMany
     {
@@ -268,7 +271,7 @@ class Company extends Model
     /**
      * Get the payments (inbound/outbound) processed by this company.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return HasMany
      */
     public function payments(): HasMany
     {
@@ -278,7 +281,7 @@ class Company extends Model
     /**
      * Get the adjustment documents (e.g., credit/debit notes) created by this company.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return HasMany
      */
     public function adjustmentDocuments(): HasMany
     {
@@ -289,7 +292,7 @@ class Company extends Model
      * Get the partners (customers/vendors) associated with this company.
      * Partners can be defined per internal company [2].
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return HasMany
      */
     public function partners(): HasMany
     {
@@ -300,7 +303,7 @@ class Company extends Model
      * Get the products managed by this company.
      * Products can be company-specific [2].
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return HasMany
      */
     public function products(): HasMany
     {
@@ -311,7 +314,7 @@ class Company extends Model
      * Get the tax definitions for this company.
      * Taxes are configured per company [2].
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return HasMany
      */
     public function taxes(): HasMany
     {
@@ -322,7 +325,7 @@ class Company extends Model
      * Get the fiscal positions defined for this company.
      * Fiscal positions handle tax and account mapping based on partner location/type [2].
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return HasMany
      */
     public function fiscalPositions(): HasMany
     {
@@ -332,7 +335,7 @@ class Company extends Model
     /**
      * Get the fixed assets owned by this company.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return HasMany
      */
     public function assets(): HasMany
     {
@@ -343,7 +346,7 @@ class Company extends Model
      * Get the analytic accounts defined for this company.
      * Used for management/cost accounting, separate from general ledger accounts [2, 9].
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return HasMany
      */
     public function analyticAccounts(): HasMany
     {
@@ -354,7 +357,7 @@ class Company extends Model
      * Get the analytic plans defined for this company.
      * Used to group analytic accounts or define budget structures [2].
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return HasMany
      */
     public function analyticPlans(): HasMany
     {
@@ -364,7 +367,7 @@ class Company extends Model
     /**
      * Get the budgets created for this company.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return HasMany
      */
     public function budgets(): HasMany
     {
@@ -446,12 +449,12 @@ class Company extends Model
      * a core principle of the accounting system [1, 8]. It queries the `lock_dates`
      * table to determine if any lock date prevents transactions on the given date.
      *
-     * @param string| \Carbon\Carbon $date The date to check.
+     * @param string|Carbon $date The date to check.
      * @return bool True if the date is locked, false otherwise.
      */
     public function isDateLocked($date): bool
     {
-        $dateToCheck = \Carbon\Carbon::parse($date)->startOfDay();
+        $dateToCheck = Carbon::parse($date)->startOfDay();
 
         return $this->lockDates()
             ->where('locked_until', '>=', $dateToCheck)

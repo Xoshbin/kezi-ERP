@@ -2,6 +2,10 @@
 
 namespace App\Models;
 
+use Illuminate\Support\Carbon;
+use Illuminate\Database\Eloquent\Collection;
+use Database\Factories\AnalyticPlanFactory;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -21,31 +25,32 @@ use Spatie\Translatable\HasTranslations;
  * @property int $id
  * @property int $company_id
  * @property string $name
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \App\Models\AnalyticAccountPlanPivot|null $pivot
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\AnalyticAccount> $analyticAccounts
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property-read AnalyticAccountPlanPivot|null $pivot
+ * @property-read Collection<int, AnalyticAccount> $analyticAccounts
  * @property-read int|null $analytic_accounts_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Budget> $budgets
+ * @property-read Collection<int, Budget> $budgets
  * @property-read int|null $budgets_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, AnalyticPlan> $children
+ * @property-read Collection<int, AnalyticPlan> $children
  * @property-read int|null $children_count
- * @property-read \App\Models\Company $company
+ * @property-read Company $company
  * @property-read AnalyticPlan|null $parent
- * @method static \Database\Factories\AnalyticPlanFactory factory($count = null, $state = [])
- * @method static \Illuminate\Database\Eloquent\Builder<static>|AnalyticPlan newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|AnalyticPlan newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|AnalyticPlan query()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|AnalyticPlan whereCompanyId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|AnalyticPlan whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|AnalyticPlan whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|AnalyticPlan whereName($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|AnalyticPlan whereUpdatedAt($value)
+ * @method static AnalyticPlanFactory factory($count = null, $state = [])
+ * @method static Builder<static>|AnalyticPlan newModelQuery()
+ * @method static Builder<static>|AnalyticPlan newQuery()
+ * @method static Builder<static>|AnalyticPlan query()
+ * @method static Builder<static>|AnalyticPlan whereCompanyId($value)
+ * @method static Builder<static>|AnalyticPlan whereCreatedAt($value)
+ * @method static Builder<static>|AnalyticPlan whereId($value)
+ * @method static Builder<static>|AnalyticPlan whereName($value)
+ * @method static Builder<static>|AnalyticPlan whereUpdatedAt($value)
  * @mixin \Eloquent
  */
 class AnalyticPlan extends Model
 {
     use HasFactory, HasTranslations;
+    use \App\Traits\TranslatableSearch;
 
     public array $translatable = ['name'];
 
@@ -90,12 +95,11 @@ class AnalyticPlan extends Model
     | necessitating clear relationships with companies, analytic accounts,
     | and potentially other plans in a hierarchical structure, as well as budgets.
     */
-
     /**
      * Get the company that owns this analytic plan.
      * An analytic plan can optionally belong to a specific company, or be shared across all [4-6].
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
     public function company(): BelongsTo
     {
@@ -107,7 +111,7 @@ class AnalyticPlan extends Model
      * This establishes the many-to-many relationship via the pivot table,
      * allowing for flexible grouping of analytic accounts [1, 4, 8].
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     * @return BelongsToMany
      */
     public function analyticAccounts(): BelongsToMany
     {
@@ -126,7 +130,7 @@ class AnalyticPlan extends Model
      * Get the parent analytic plan in a hierarchical structure.
      * Allows for building complex, nested analytic plan organizations [3, 8].
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
     public function parent(): BelongsTo
     {
@@ -137,7 +141,7 @@ class AnalyticPlan extends Model
      * Get the child analytic plans within this hierarchical structure.
      * Defines the "subplans" mentioned in the sources, allowing for recursive plan definitions [8].
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return HasMany
      */
     public function children(): HasMany
     {
@@ -148,7 +152,7 @@ class AnalyticPlan extends Model
      * Get the budgets associated with this analytic plan.
      * Analytic plans are crucial for defining and tracking budgets related to projects or departments [1, 4, 11].
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return HasMany
      */
     public function budgets(): HasMany
     {

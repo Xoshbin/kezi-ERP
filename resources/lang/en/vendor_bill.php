@@ -39,6 +39,22 @@ return [
     'attachments_description' => 'Upload supporting documents for this vendor bill',
     'attachments_helper' => 'Accepted formats: PDF, DOC, DOCX, XLS, XLSX, JPG, PNG, GIF, TXT. Maximum 10MB per file, up to 10 files.',
 
+    // Section Titles and Descriptions
+    'vendor_currency_info' => 'Vendor & Currency Information',
+    'vendor_currency_info_description' => 'Select the vendor and currency for this bill',
+    'bill_details' => 'Bill Details',
+    'bill_details_description' => 'Enter bill reference, dates and status information',
+    'line_items' => 'Line Items',
+    'line_items_description' => 'Add products and services to this vendor bill',
+    'company_currency_totals' => 'Company Currency Totals',
+
+    // Exchange Rate Fields
+    'current_exchange_rate' => 'Current Exchange Rate',
+    'exchange_rate_helper' => 'This is the current exchange rate for the selected currency',
+    'exchange_rate_at_creation' => 'Exchange Rate at Creation',
+    'total_amount_company_currency' => 'Total Amount (Company Currency)',
+    'total_tax_company_currency' => 'Total Tax (Company Currency)',
+
     // Actions
     'confirm' => 'Confirm',
     'reset_to_draft' => 'Reset to Draft',

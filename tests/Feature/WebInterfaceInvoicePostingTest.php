@@ -7,7 +7,7 @@ use App\Models\User;
 use App\Models\Invoice;
 use App\Models\JournalEntry;
 use App\Enums\Sales\InvoiceStatus;
-use App\Filament\Resources\InvoiceResource;
+use App\Filament\Resources\Invoices\InvoiceResource;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Livewire\Livewire;
 
@@ -21,13 +21,22 @@ class WebInterfaceInvoicePostingTest extends TestCase
 
         // Run seeders to set up the test environment
         $this->seed();
+
+        // Set up tenant context for Filament
+        $user = User::first();
+        $company = $user->companies()->first();
+        $this->actingAs($user);
+        \Filament\Facades\Filament::setTenant($company);
+
+        // Create test data: 3 draft invoices with invoice lines for testing
+        Invoice::factory()->count(3)->withLines()->create([
+            'status' => InvoiceStatus::Draft,
+            'company_id' => $company->id,
+        ]);
     }
 
     public function test_posting_multiple_invoices_via_web_interface_works_correctly()
     {
-        // Get a user to authenticate as
-        $user = User::first();
-        $this->actingAs($user);
 
         // Get some draft invoices from the seeded data
         $draftInvoices = Invoice::where('status', InvoiceStatus::Draft)->take(3)->get();
@@ -40,7 +49,7 @@ class WebInterfaceInvoicePostingTest extends TestCase
         // Post each invoice one by one (simulating the web interface scenario)
         foreach ($draftInvoices as $invoice) {
             // Simulate the web interface posting action using Livewire
-            Livewire::test(InvoiceResource\Pages\EditInvoice::class, [
+            Livewire::test(\App\Filament\Resources\Invoices\Pages\EditInvoice::class, [
                 'record' => $invoice->getRouteKey(),
             ])
                 ->callAction('confirm')
@@ -98,8 +107,6 @@ class WebInterfaceInvoicePostingTest extends TestCase
 
     public function test_no_duplicate_journal_entry_constraint_violations_occur()
     {
-        $user = User::first();
-        $this->actingAs($user);
 
         // Get multiple draft invoices
         $draftInvoices = Invoice::where('status', InvoiceStatus::Draft)->take(3)->get();
@@ -109,7 +116,7 @@ class WebInterfaceInvoicePostingTest extends TestCase
         // Post all invoices rapidly (simulating the original error scenario)
         foreach ($draftInvoices as $invoice) {
             // Use Livewire to simulate the web interface action
-            Livewire::test(InvoiceResource\Pages\EditInvoice::class, [
+            Livewire::test(\App\Filament\Resources\Invoices\Pages\EditInvoice::class, [
                 'record' => $invoice->getRouteKey(),
             ])
                 ->callAction('confirm')
