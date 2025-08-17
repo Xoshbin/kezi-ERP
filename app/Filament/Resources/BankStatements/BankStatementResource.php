@@ -154,12 +154,12 @@ class BankStatementResource extends Resource
                             DatePicker::make('date')
                                 ->label(__('bank_statement.line_date'))
                                 ->required()
-                                ->columnSpan(2),
+                                ->columnSpan(3),
                             TextInput::make('description')
                                 ->label(__('bank_statement.description'))
                                 ->required()
                                 ->maxLength(255)
-                                ->columnSpan(4),
+                                ->columnSpan(6),
                             TranslatableSelect::standard(
                                 'partner_id',
                                 \App\Models\Partner::class,
@@ -169,9 +169,50 @@ class BankStatementResource extends Resource
                                 ->columnSpan(3),
                             MoneyInput::make('amount')
                                 ->label(__('bank_statement.amount'))
-                                ->currencyField('../../../currency_id')
+                                ->prefix(function ($get) {
+                                    // Try multiple path strategies to get the currency
+                                    $currencyId = $get('../../../currency_id')
+                                        ?? $get('../../currency_id')
+                                        ?? $get('../currency_id')
+                                        ?? $get('currency_id');
+
+                                    if ($currencyId) {
+                                        $currency = \App\Models\Currency::find($currencyId);
+                                        return $currency?->code ?? 'IQD';
+                                    }
+
+                                    // Fallback to tenant currency
+                                    $tenant = \Filament\Facades\Filament::getTenant();
+                                    return $tenant?->currency?->code ?? 'IQD';
+                                })
+                                ->live()
+                                ->reactive()
                                 ->required()
-                                ->columnSpan(3),
+                                ->columnSpan(3)
+                                ->helperText(__('bank_statement.amount_in_statement_currency')),
+                            TranslatableSelect::make('foreign_currency_id', \App\Models\Currency::class, __('bank_statement.foreign_currency'))
+                                ->columnSpan(3)
+                                ->live()
+                                ->options(function ($get) {
+                                    $statementCurrencyId = $get('../../../currency_id');
+                                    return \App\Models\Currency::where('is_active', true)
+                                        ->when($statementCurrencyId, function ($query, $statementCurrencyId) {
+                                            return $query->where('id', '!=', $statementCurrencyId);
+                                        })
+                                        ->get()
+                                        ->mapWithKeys(function ($currency) {
+                                            $locale = app()->getLocale();
+                                            $name = $currency->getTranslation('name', $locale);
+                                            return [$currency->id => "{$name} ({$currency->code})"];
+                                        });
+                                })
+                                ->helperText(__('bank_statement.foreign_currency_help')),
+                            MoneyInput::make('amount_in_foreign_currency')
+                                ->label(__('bank_statement.amount_in_foreign_currency'))
+                                ->currencyField('foreign_currency_id')
+                                ->columnSpan(3)
+                                ->visible(fn($get) => $get('foreign_currency_id'))
+                                ->helperText(__('bank_statement.original_transaction_amount')),
                         ])
                         ->columns(12)
                         ->addActionLabel(__('bank_statement.add_transaction_line'))

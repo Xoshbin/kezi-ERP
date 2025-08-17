@@ -104,4 +104,11 @@ return [
     'statement_information' => 'معلومات الكشف',
     'statement_information_description' => 'المعلومات الأساسية حول كشف البنك',
     'statement_lines_description' => 'المعاملات الفردية في كشف البنك',
+
+    // Foreign Currency
+    'foreign_currency' => 'العملة الأجنبية',
+    'foreign_currency_help' => 'اختر إذا كانت هذه المعاملة في الأصل بعملة مختلفة',
+    'amount_in_foreign_currency' => 'المبلغ بالعملة الأجنبية',
+    'amount_in_statement_currency' => 'المبلغ الذي يؤثر على رصيد الحساب المصرفي',
+    'original_transaction_amount' => 'مبلغ المعاملة الأصلي قبل التحويل',
 ];

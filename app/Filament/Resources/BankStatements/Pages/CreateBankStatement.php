@@ -27,11 +27,21 @@ class CreateBankStatement extends CreateRecord
         $currency = Currency::find($data['currency_id']);
         $lineDTOs = [];
         foreach ($data['bankStatementLines'] as $line) {
+            $foreignCurrency = null;
+            $amountInForeignCurrency = null;
+
+            if (!empty($line['foreign_currency_id']) && !empty($line['amount_in_foreign_currency'])) {
+                $foreignCurrency = Currency::find($line['foreign_currency_id']);
+                $amountInForeignCurrency = Money::of($line['amount_in_foreign_currency'], $foreignCurrency->code);
+            }
+
             $lineDTOs[] = new CreateBankStatementLineDTO(
                 date: $line['date'],
                 description: $line['description'],
                 amount: Money::of($line['amount'], $currency->code),
-                partner_id: $line['partner_id']
+                partner_id: $line['partner_id'],
+                foreign_currency_id: $line['foreign_currency_id'] ?? null,
+                amount_in_foreign_currency: $amountInForeignCurrency
             );
         }
         $data['bankStatementLines'] = $lineDTOs;

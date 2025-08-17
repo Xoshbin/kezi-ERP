@@ -16,16 +16,22 @@ use InvalidArgumentException;
 class OriginalCurrencyMoneyCast extends MoneyCast
 {
     /**
-     * Resolve the currency from the 'original_currency_id' field on the line itself.
+     * Resolve the currency from the 'original_currency_id' or 'foreign_currency_id' field on the line itself.
      * This cast is now strict and will not fall back to ambiguous logic.
      */
     protected function resolveCurrency(Model $model): Currency
     {
+        // Check for original_currency_id (used in journal entry lines)
         if (isset($model->original_currency_id)) {
             return Currency::findOrFail($model->original_currency_id);
         }
 
+        // Check for foreign_currency_id (used in bank statement lines)
+        if (isset($model->foreign_currency_id)) {
+            return Currency::findOrFail($model->foreign_currency_id);
+        }
+
         // Return the currency by ID
-        throw new InvalidArgumentException('Model does not have an original_currency_id for OriginalCurrencyMoneyCast.');
+        throw new InvalidArgumentException('Model does not have an original_currency_id or foreign_currency_id for OriginalCurrencyMoneyCast.');
     }
 }
