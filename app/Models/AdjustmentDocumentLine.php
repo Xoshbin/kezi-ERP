@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Casts\DocumentCurrencyMoneyCast;
+use App\Casts\BaseCurrencyMoneyCast;
 use App\Observers\AdjustmentDocumentLineObserver;
 use Brick\Money\Money;
 use Brick\Math\RoundingMode;
@@ -26,17 +27,23 @@ class AdjustmentDocumentLine extends Model
         'description',
         'quantity',
         'unit_price',
+        'unit_price_company_currency',
         'tax_id',
         'subtotal',
+        'subtotal_company_currency',
         'total_line_tax',
+        'total_line_tax_company_currency',
         'account_id'
     ];
 
     protected $casts = [
         'quantity' => 'decimal:2',
         'unit_price' => DocumentCurrencyMoneyCast::class,
+        'unit_price_company_currency' => BaseCurrencyMoneyCast::class,
         'subtotal' => DocumentCurrencyMoneyCast::class,
+        'subtotal_company_currency' => BaseCurrencyMoneyCast::class,
         'total_line_tax' => DocumentCurrencyMoneyCast::class,
+        'total_line_tax_company_currency' => BaseCurrencyMoneyCast::class,
     ];
 
     /**
