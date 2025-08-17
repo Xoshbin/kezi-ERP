@@ -67,6 +67,7 @@ class PaymentService
     /**
      * Checks linked documents and updates their status to 'Paid' if fully paid.
      * Ensures documents are properly posted before marking as paid.
+     * Uses the HasPaymentState trait for accurate multi-currency payment state calculation.
      */
     protected function updateLinkedDocumentStatus(Payment $payment, User $user): void
     {
@@ -76,14 +77,8 @@ class PaymentService
             if ($link->invoice) {
                 $invoice = $link->invoice;
 
-                // Calculate total paid amount for this invoice
-                $totalPaidMinor = $invoice->payments()
-                    ->where('payments.status', '!=', PaymentStatus::Canceled)
-                    ->sum('payment_document_links.amount_applied');
-
-                $totalPaid = Money::ofMinor($totalPaidMinor, $invoice->currency->code);
-
-                if ($totalPaid->isGreaterThanOrEqualTo($invoice->total_amount)) {
+                // Use the HasPaymentState trait for accurate multi-currency calculation
+                if ($invoice->isFullyPaid()) {
                     // If invoice is still draft, post it first to ensure all business logic is executed
                     if ($invoice->status === InvoiceStatus::Draft) {
                         $this->invoiceService->confirm($invoice, $user);
@@ -100,12 +95,9 @@ class PaymentService
 
             if ($link->vendorBill) {
                 $vendorBill = $link->vendorBill;
-                $totalPaidMinor = $vendorBill->payments()
-                    ->where('payments.status', '!=', PaymentStatus::Canceled)
-                    ->sum('payment_document_links.amount_applied');
-                $totalPaid = Money::ofMinor($totalPaidMinor, $vendorBill->currency->code);
 
-                if ($totalPaid->isGreaterThanOrEqualTo($vendorBill->total_amount)) {
+                // Use the HasPaymentState trait for accurate multi-currency calculation
+                if ($vendorBill->isFullyPaid()) {
                     // If vendor bill is still draft, post it first to ensure all business logic is executed
                     if ($vendorBill->status === VendorBillStatus::Draft) {
                         $this->vendorBillService->post($vendorBill, $user);

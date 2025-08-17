@@ -227,6 +227,17 @@ class Invoice extends Model
     }
 
     /**
+     * Get the direct PaymentDocumentLink records for this invoice.
+     * This provides access to the raw pivot data for multi-currency payment calculations.
+     *
+     * @return HasMany
+     */
+    public function paymentDocumentLinks(): HasMany
+    {
+        return $this->hasMany(PaymentDocumentLink::class, 'invoice_id');
+    }
+
+    /**
      * Get the Adjustment Documents (credit notes, etc.) that relate to this Invoice.
      * These are used for corrections, reversals, and adjustments to posted invoices.
      *

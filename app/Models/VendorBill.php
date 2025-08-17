@@ -228,6 +228,17 @@ class VendorBill extends Model
     }
 
     /**
+     * Get the direct PaymentDocumentLink records for this vendor bill.
+     * This provides access to the raw pivot data for multi-currency payment calculations.
+     *
+     * @return HasMany
+     */
+    public function paymentDocumentLinks(): HasMany
+    {
+        return $this->hasMany(PaymentDocumentLink::class, 'vendor_bill_id');
+    }
+
+    /**
      * Get the Vendor Bill Lines for the Vendor Bill.
      * Defines a **HasMany** relationship, indicating that a vendor bill can have
      * multiple line items detailing the products or services purchased .
