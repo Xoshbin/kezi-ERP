@@ -5,7 +5,9 @@ namespace App\Traits;
 use App\Enums\Payments\PaymentStatus;
 use Brick\Money\Money;
 use App\Enums\Shared\PaymentState;
+use App\Services\CurrencyConverterService;
 use Illuminate\Database\Eloquent\Casts\Attribute;
+use Illuminate\Support\Facades\Log;
 
 /**
  * Trait HasPaymentState
@@ -35,14 +37,7 @@ trait HasPaymentState
     {
         return Attribute::make(
             get: function (): PaymentState {
-                // Only consider payments that have actual financial impact (Confirmed or Reconciled)
-                // Draft and Canceled payments are accounting non-events and should be ignored
-                $paidAmountMinor = $this->payments()
-                    ->whereIn('status', [PaymentStatus::Confirmed, PaymentStatus::Reconciled])
-                    ->sum('payment_document_links.amount_applied');
-
-                // The sum is returned as an integer (minor units). We convert it to a Money object.
-                $paidAmount = Money::ofMinor($paidAmountMinor, $this->currency->code);
+                $paidAmount = $this->getPaidAmount();
 
                 if ($paidAmount->isZero()) {
                     return PaymentState::NotPaid;
@@ -62,16 +57,53 @@ trait HasPaymentState
      * Get the total amount paid for this document.
      * This is a helper method that returns the actual Money amount paid.
      * Only considers payments with confirmed or reconciled status.
+     * Handles multi-currency payments by converting all payment amounts to document currency.
      *
      * @return Money
      */
     public function getPaidAmount(): Money
     {
-        $paidAmountMinor = $this->payments()
-            ->whereIn('status', [PaymentStatus::Confirmed, PaymentStatus::Reconciled])
-            ->sum('payment_document_links.amount_applied');
+        // Load the company and currency converter service
+        $this->load(['company', 'currency']);
+        $currencyConverter = app(CurrencyConverterService::class);
 
-        return Money::ofMinor($paidAmountMinor, $this->currency->code);
+        // Get all confirmed/reconciled payment document links for this document
+        $paymentLinks = $this->paymentDocumentLinks()
+            ->whereHas('payment', function ($query) {
+                $query->whereIn('status', [PaymentStatus::Confirmed, PaymentStatus::Reconciled]);
+            })
+            ->with(['payment.currency'])
+            ->get();
+
+        $totalPaidInDocumentCurrency = Money::of(0, $this->currency->code);
+
+        foreach ($paymentLinks as $link) {
+            $payment = $link->payment;
+            $amountApplied = $link->amount_applied; // This is in payment currency
+
+            // If payment currency is different from document currency, convert it
+            if ($payment->currency_id !== $this->currency_id) {
+                try {
+                    // Convert from payment currency to document currency
+                    $convertedAmount = $currencyConverter->convert(
+                        $amountApplied,
+                        $this->currency,
+                        $payment->payment_date,
+                        $this->company
+                    );
+                    $totalPaidInDocumentCurrency = $totalPaidInDocumentCurrency->plus($convertedAmount);
+                } catch (\Exception $e) {
+                    // If conversion fails, log and skip this payment
+                    Log::warning("Failed to convert payment amount for payment {$payment->id}: " . $e->getMessage());
+                    continue;
+                }
+            } else {
+                // Same currency, add directly
+                $totalPaidInDocumentCurrency = $totalPaidInDocumentCurrency->plus($amountApplied);
+            }
+        }
+
+        return $totalPaidInDocumentCurrency;
     }
 
     /**
