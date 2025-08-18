@@ -7,6 +7,8 @@ return [
     'model_label' => 'Payment',
     'model_plural_label' => 'Payments',
 
+    'form.payment_information' => 'Payment Information',
+    'form.payment_information_description' => 'Basic payment details including journal, currency, date and reference',
     'form.company_id' => 'Company',
     'form.journal_id' => 'Journal',
     'form.currency_id' => 'Currency',
@@ -16,6 +18,7 @@ return [
     'form.payment_type' => 'Payment Type',
     'form.status' => 'Status',
     'form.document_links' => 'Document Links',
+    'form.document_links_description' => 'Link this payment to invoices or vendor bills',
     'form.document_type' => 'Document Type',
     'form.document_type.invoice' => 'Invoice',
     'form.document_type.vendor_bill' => 'Vendor Bill',

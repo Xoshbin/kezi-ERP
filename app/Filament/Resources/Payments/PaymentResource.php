@@ -4,15 +4,29 @@ namespace App\Filament\Resources\Payments;
 
 use Filament\Schemas\Schema;
 use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Utilities\Get;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\TextInput;
-use Filament\Schemas\Components\Utilities\Get;
+use Filament\Forms\Components\Repeater;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Actions\EditAction;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
+use Filament\Tables\Table;
+use Filament\Resources\Resource;
+use App\Enums\Sales\InvoiceStatus;
+use App\Enums\Payments\PaymentType;
+use App\Enums\Payments\PaymentStatus;
+use App\Enums\Purchases\VendorBillStatus;
+use App\Models\Invoice;
+use App\Models\Payment;
+use App\Models\VendorBill;
+use App\Services\PaymentService;
+use App\Filament\Tables\Columns\MoneyColumn;
+use App\Filament\Forms\Components\MoneyInput;
+use App\Filament\Support\TranslatableSelect;
 use App\Filament\Resources\Payments\RelationManagers\InvoicesRelationManager;
 use App\Filament\Resources\Payments\RelationManagers\VendorBillsRelationManager;
 use App\Filament\Resources\Payments\RelationManagers\JournalEntriesRelationManager;
@@ -20,25 +34,6 @@ use App\Filament\Resources\Payments\RelationManagers\BankStatementLinesRelationM
 use App\Filament\Resources\Payments\Pages\ListPayments;
 use App\Filament\Resources\Payments\Pages\CreatePayment;
 use App\Filament\Resources\Payments\Pages\EditPayment;
-use Filament\Forms;
-use Filament\Tables;
-use App\Models\Company;
-use App\Models\Invoice;
-use App\Models\Payment;
-use App\Models\VendorBill;
-use Filament\Tables\Table;
-use App\Services\PaymentService;
-use Filament\Resources\Resource;
-use App\Enums\Sales\InvoiceStatus;
-use App\Enums\Payments\PaymentType;
-use App\Enums\Payments\PaymentStatus;
-use Filament\Forms\Components\Repeater;
-use App\Enums\Purchases\VendorBillStatus;
-use App\Filament\Tables\Columns\MoneyColumn;
-use App\Filament\Forms\Components\MoneyInput;
-use App\Filament\Resources\PaymentResource\Pages;
-use App\Filament\Resources\PaymentResource\RelationManagers;
-use App\Filament\Support\TranslatableSelect;
 
 class PaymentResource extends Resource
 {
@@ -53,11 +48,6 @@ class PaymentResource extends Resource
         return __('navigation.groups.banking_cash');
     }
 
-    public static function getNavigationLabel(): string
-    {
-        return __('payment.navigation_label');
-    }
-
     public static function getModelLabel(): string
     {
         return __('payment.model_label');
@@ -68,44 +58,57 @@ class PaymentResource extends Resource
         return __('payment.model_plural_label');
     }
 
+    public static function getNavigationLabel(): string
+    {
+        return __('payment.navigation_label');
+    }
+
     public static function form(Schema $schema): Schema
     {
         return $schema->components([
-            Section::make()
+            Section::make(__('payment.form.payment_information'))
+                ->description(__('payment.form.payment_information_description'))
                 ->schema([
                     TranslatableSelect::make('journal_id', \App\Models\Journal::class, __('payment.form.journal_id'))
-                        ->required(),
+                        ->required()
+                        ->columnSpan(2),
                     TranslatableSelect::make('currency_id', \App\Models\Currency::class, __('payment.form.currency_id'))
                         ->required()
                         ->live()
+                        ->columnSpan(2)
                         ->default(fn() => \Filament\Facades\Filament::getTenant()?->currency_id),
                     DatePicker::make('payment_date')
                         ->default(now())
                         ->label(__('payment.form.payment_date'))
-                        ->required(),
+                        ->required()
+                        ->columnSpan(2),
                     TextInput::make('reference')
                         ->label(__('payment.form.reference'))
-                        ->maxLength(255),
-
-                    // Read-only fields derived by the Action
+                        ->maxLength(255)
+                        ->columnSpan(2),
                     MoneyInput::make('amount')
                         ->label(__('payment.form.amount'))
                         ->currencyField('currency_id')
-                        ->readOnly(),
+                        ->readOnly()
+                        ->columnSpan(1),
                     Select::make('payment_type')
                         ->label(__('payment.form.payment_type'))
                         ->options(collect(PaymentType::cases())->mapWithKeys(fn($case) => [$case->value => $case->label()]))
                         ->disabled()
-                        ->dehydrated(false),
+                        ->dehydrated(false)
+                        ->columnSpan(1),
                     Select::make('status')
                         ->label(__('payment.form.status'))
                         ->options(collect(PaymentStatus::cases())->mapWithKeys(fn($case) => [$case->value => $case->label()]))
                         ->disabled()
-                        ->dehydrated(false),
+                        ->dehydrated(false)
+                        ->columnSpan(2),
                 ])
-                ->columns(2),
+                ->columns(4)
+                ->columnSpanFull(),
 
             Section::make(__('payment.form.document_links'))
+                ->description(__('payment.form.document_links_description'))
                 ->schema([
                     Repeater::make('document_links')
                         ->label(__('payment.form.document_links'))
@@ -153,7 +156,8 @@ class PaymentResource extends Resource
                             }
                             $set('amount', $total);
                         }),
-                ]),
+                ])
+                ->columnSpanFull(),
         ]);
     }
 
@@ -189,7 +193,6 @@ class PaymentResource extends Resource
                         PaymentType::Outbound => 'danger',
                     })
                     ->searchable(),
-
                 TextColumn::make('status')
                     ->label(__('payment.table.status'))
                     ->formatStateUsing(fn(PaymentStatus $state): string => $state->label())
@@ -217,52 +220,10 @@ class PaymentResource extends Resource
             ])
             ->recordActions([
                 EditAction::make(),
-                // Tables\Actions\Action::make('cancel')
-                //     ->label('Cancel Payment')
-                //     ->color('danger')
-                //     ->requiresConfirmation()
-                //     // This action is only visible for confirmed, but not yet reconciled, payments
-                //     ->visible(fn(\App\Models\Payment $record): bool => $record->status === 'Confirmed')
-                //     ->action(function (\App\Models\Payment $record, \App\Services\PaymentService $paymentService) {
-                //         try {
-                //             $paymentService->cancel($record, auth()->user(), 'Payment cancelled via table action');
-                //             \Filament\Notifications\Notification::make()
-                //                 ->title('Payment Cancelled Successfully')
-                //                 ->success()
-                //                 ->send();
-                //         } catch (\Exception $e) {
-                //             \Filament\Notifications\Notification::make()
-                //                 ->title('Error Cancelling Payment')
-                //                 ->body($e->getMessage())
-                //                 ->danger()
-                //                 ->send();
-                //         }
-                //     }),
-                // Action::make('confirm')
-                //     ->label(__('payment.action.confirm.label'))
-                //     ->action(function (Payment $record) {
-                //         $paymentService = app(PaymentService::class);
-                //         try {
-                //             $paymentService->confirm($record, Auth::user());
-                //             Notification::make()
-                //                 ->title(__('payment.action.confirm.notification.success'))
-                //                 ->success()
-                //                 ->send();
-                //         } catch (\Exception $e) {
-                //             Notification::make()
-                //                 ->title(__('payment.action.confirm.notification.error'))
-                //                 ->body($e->getMessage())
-                //                 ->danger()
-                //                 ->send();
-                //         }
-                //     })
-                //     ->requiresConfirmation()
-                //     ->visible(fn(Payment $record) => $record->status === 'Draft'),
                 DeleteAction::make()
                     ->action(function (Payment $record) {
                         app(PaymentService::class)->delete($record);
                     })
-                    // Make the button disappear if deletion is not allowed
                     ->visible(fn(Payment $record): bool => $record->status === PaymentStatus::Draft),
             ])
             ->toolbarActions([

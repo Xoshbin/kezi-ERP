@@ -7,6 +7,8 @@ return [
     'model_label' => 'پارەدان',
     'model_plural_label' => 'پارەدانەکان',
 
+    'form.payment_information' => 'زانیاریەکانی پارەدان',
+    'form.payment_information_description' => 'وردەکاریەکانی بنەڕەتی پارەدان لەگەڵ ڕۆژنامچە، دراو، بەروار و سەرچاوە',
     'form.company_id' => 'کۆمپانیا',
     'form.journal_id' => 'ڕۆژنامچە',
     'form.currency_id' => 'دراو',
@@ -16,6 +18,7 @@ return [
     'form.payment_type' => 'جۆری پارەدان',
     'form.status' => 'دۆخ',
     'form.document_links' => 'بەڵگەنامە بەستەرکراوەکان',
+    'form.document_links_description' => 'ئەم پارەدانە بە پسوڵە یان پسوڵەی فرۆشیار بەستەرە بکە',
     'form.document_type' => 'جۆری بەڵگەنامە',
     'form.document_type.invoice' => 'پسوڵە',
     'form.document_type.vendor_bill' => 'پسوڵەی فرۆشیار',
