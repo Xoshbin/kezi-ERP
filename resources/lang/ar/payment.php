@@ -7,6 +7,8 @@ return [
     'model_label' => 'دفعة',
     'model_plural_label' => 'مدفوعات',
 
+    'form.payment_information' => 'معلومات الدفعة',
+    'form.payment_information_description' => 'تفاصيل الدفعة الأساسية بما في ذلك دفتر اليومية والعملة والتاريخ والمرجع',
     'form.company_id' => 'شركة',
     'form.journal_id' => 'دفتر يومية',
     'form.currency_id' => 'عملة',
@@ -16,6 +18,7 @@ return [
     'form.payment_type' => 'نوع الدفع',
     'form.status' => 'حالة',
     'form.document_links' => 'روابط المستندات',
+    'form.document_links_description' => 'ربط هذه الدفعة بالفواتير أو فواتير الموردين',
     'form.document_type' => 'نوع المستند',
     'form.document_type.invoice' => 'فاتورة',
     'form.document_type.vendor_bill' => 'فاتورة مورد',
