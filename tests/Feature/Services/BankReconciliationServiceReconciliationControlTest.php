@@ -1,0 +1,207 @@
+<?php
+
+use App\Exceptions\Reconciliation\ReconciliationDisabledException;
+use App\Models\BankStatement;
+use App\Models\BankStatementLine;
+use App\Models\Company;
+use App\Models\Payment;
+use App\Models\User;
+use App\Services\BankReconciliationService;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\Traits\WithConfiguredCompany;
+
+uses(RefreshDatabase::class, WithConfiguredCompany::class);
+
+beforeEach(function () {
+    $this->service = app(BankReconciliationService::class);
+    $this->user = User::factory()->create();
+});
+
+test('reconcilePayment throws exception when reconciliation is disabled', function () {
+    // Create company with reconciliation disabled
+    $company = Company::factory()->create(['enable_reconciliation' => false]);
+
+    // Create payment and bank statement line
+    $payment = Payment::factory()->for($company)->create();
+    $bankStatement = BankStatement::factory()->for($company)->create();
+    $statementLine = BankStatementLine::factory()->for($bankStatement)->create();
+
+    expect(fn() => $this->service->reconcilePayment($payment, $statementLine, $this->user))
+        ->toThrow(ReconciliationDisabledException::class);
+});
+
+test('reconcilePayment succeeds when reconciliation is enabled', function () {
+    // Create company with reconciliation enabled
+    $company = Company::factory()->withReconciliationEnabled()->create();
+
+    // Create payment and bank statement line
+    $payment = Payment::factory()->for($company)->create([
+        'status' => \App\Enums\Payments\PaymentStatus::Confirmed
+    ]);
+    $bankStatement = BankStatement::factory()->for($company)->create();
+    $statementLine = BankStatementLine::factory()->for($bankStatement)->create([
+        'is_reconciled' => false
+    ]);
+
+    $this->service->reconcilePayment($payment, $statementLine, $this->user);
+
+    expect($payment->fresh()->status)->toBe(\App\Enums\Payments\PaymentStatus::Reconciled)
+        ->and($statementLine->fresh()->is_reconciled)->toBeTrue()
+        ->and($statementLine->fresh()->payment_id)->toBe($payment->id);
+});
+
+test('reconcile throws exception when reconciliation is disabled for payments', function () {
+    // Create company with reconciliation disabled
+    $company = Company::factory()->create(['enable_reconciliation' => false]);
+
+    // Create payments
+    $payments = Payment::factory()->for($company)->count(2)->create();
+
+    expect(fn() => $this->service->reconcile([], $payments->pluck('id')->toArray(), $this->user))
+        ->toThrow(ReconciliationDisabledException::class);
+});
+
+test('reconcile throws exception when reconciliation is disabled for bank statement lines', function () {
+    // Create company with reconciliation disabled
+    $company = Company::factory()->create(['enable_reconciliation' => false]);
+
+    // Create bank statement lines
+    $bankStatement = BankStatement::factory()->for($company)->create();
+    $lines = BankStatementLine::factory()->for($bankStatement)->count(2)->create();
+
+    expect(fn() => $this->service->reconcile($lines->pluck('id')->toArray(), [], $this->user))
+        ->toThrow(ReconciliationDisabledException::class);
+});
+
+test('reconcile succeeds when reconciliation is enabled', function () {
+    // Create company with reconciliation enabled
+    $company = Company::factory()->withReconciliationEnabled()->create();
+
+    // Create payment and bank statement line with matching amounts
+    $amount = \Brick\Money\Money::of(100, $company->currency->code);
+
+    $payment = Payment::factory()->for($company)->create([
+        'amount' => $amount->getMinorAmount()->toInt(),
+        'status' => \App\Enums\Payments\PaymentStatus::Confirmed
+    ]);
+
+    $bankStatement = BankStatement::factory()->for($company)->create();
+    $statementLine = BankStatementLine::factory()->for($bankStatement)->create([
+        'amount' => $amount->getMinorAmount()->toInt(),
+        'is_reconciled' => false
+    ]);
+
+    $this->service->reconcile(
+        [$statementLine->id],
+        [$payment->id],
+        $this->user
+    );
+
+    expect($payment->fresh()->status)->toBe(\App\Enums\Payments\PaymentStatus::Reconciled)
+        ->and($statementLine->fresh()->is_reconciled)->toBeTrue();
+});
+
+test('reconcileMultiple throws exception when reconciliation is disabled for payments', function () {
+    // Create company with reconciliation disabled
+    $company = Company::factory()->create(['enable_reconciliation' => false]);
+
+    // Create payments
+    $payments = Payment::factory()->for($company)->count(2)->create();
+
+    expect(fn() => $this->service->reconcileMultiple([], $payments->pluck('id')->toArray(), $this->user))
+        ->toThrow(ReconciliationDisabledException::class);
+});
+
+test('reconcileMultiple throws exception when reconciliation is disabled for bank lines', function () {
+    // Create company with reconciliation disabled
+    $company = Company::factory()->create(['enable_reconciliation' => false]);
+
+    // Create bank statement lines
+    $bankStatement = BankStatement::factory()->for($company)->create();
+    $lines = BankStatementLine::factory()->for($bankStatement)->count(2)->create();
+
+    expect(fn() => $this->service->reconcileMultiple($lines->pluck('id')->toArray(), [], $this->user))
+        ->toThrow(ReconciliationDisabledException::class);
+});
+
+test('reconcileMultiple succeeds when reconciliation is enabled', function () {
+    // Create company with reconciliation enabled
+    $company = Company::factory()->withReconciliationEnabled()->create();
+
+    // Create payments and bank statement lines with matching total amounts
+    $amount1 = \Brick\Money\Money::of(100, $company->currency->code);
+    $amount2 = \Brick\Money\Money::of(50, $company->currency->code);
+
+    $payments = collect([
+        Payment::factory()->for($company)->create([
+            'amount' => $amount1->getMinorAmount()->toInt(),
+            'status' => \App\Enums\Payments\PaymentStatus::Confirmed
+        ]),
+        Payment::factory()->for($company)->create([
+            'amount' => $amount2->getMinorAmount()->toInt(),
+            'status' => \App\Enums\Payments\PaymentStatus::Confirmed
+        ])
+    ]);
+
+    $bankStatement = BankStatement::factory()->for($company)->create();
+    $lines = collect([
+        BankStatementLine::factory()->for($bankStatement)->create([
+            'amount' => $amount1->getMinorAmount()->toInt(),
+            'is_reconciled' => false
+        ]),
+        BankStatementLine::factory()->for($bankStatement)->create([
+            'amount' => $amount2->getMinorAmount()->toInt(),
+            'is_reconciled' => false
+        ])
+    ]);
+
+    $this->service->reconcileMultiple(
+        $lines->pluck('id')->toArray(),
+        $payments->pluck('id')->toArray(),
+        $this->user
+    );
+
+    // Check that all payments are reconciled
+    $payments->each(function ($payment) {
+        expect($payment->fresh()->status)->toBe(\App\Enums\Payments\PaymentStatus::Reconciled);
+    });
+
+    // Check that all lines are reconciled
+    $lines->each(function ($line) {
+        expect($line->fresh()->is_reconciled)->toBeTrue();
+    });
+});
+
+test('getUnreconciledBankLines returns only unreconciled lines', function () {
+    // Create company (reconciliation setting doesn't affect this query method)
+    $company = Company::factory()->withReconciliationEnabled()->create();
+
+    $bankStatement = BankStatement::factory()->for($company)->create();
+
+    // Create reconciled and unreconciled lines
+    BankStatementLine::factory()->for($bankStatement)->create(['is_reconciled' => true]);
+    $unreconciledLine = BankStatementLine::factory()->for($bankStatement)->create(['is_reconciled' => false]);
+
+    $result = $this->service->getUnreconciledBankLines($bankStatement->id);
+
+    expect($result)->toHaveCount(1)
+        ->and($result->first()->id)->toBe($unreconciledLine->id);
+});
+
+test('getUnreconciledPayments returns only unreconciled payments', function () {
+    // Create company (reconciliation setting doesn't affect this query method)
+    $company = Company::factory()->withReconciliationEnabled()->create();
+
+    // Create confirmed and reconciled payments
+    $confirmedPayment = Payment::factory()->for($company)->create([
+        'status' => \App\Enums\Payments\PaymentStatus::Confirmed
+    ]);
+    Payment::factory()->for($company)->create([
+        'status' => \App\Enums\Payments\PaymentStatus::Reconciled
+    ]);
+
+    $result = $this->service->getUnreconciledPayments($company->id);
+
+    expect($result)->toHaveCount(1)
+        ->and($result->first()->id)->toBe($confirmedPayment->id);
+});

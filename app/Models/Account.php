@@ -112,6 +112,7 @@ class Account extends Model
         'name',
         'type',
         'is_deprecated',
+        'allow_reconciliation',
         'can_create_assets',
     ];
 
@@ -126,6 +127,7 @@ class Account extends Model
      */
     protected $casts = [
         'is_deprecated' => 'boolean',
+        'allow_reconciliation' => 'boolean',
         'type' => AccountType::class, // Enums provide type safety and clarity [12]
     ];
 
