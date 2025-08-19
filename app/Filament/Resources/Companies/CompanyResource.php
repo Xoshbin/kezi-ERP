@@ -102,6 +102,10 @@ class CompanyResource extends Resource
                     ->label(__('company.fiscal_country'))
                     ->required()
                     ->maxLength(255),
+                Toggle::make('enable_reconciliation')
+                    ->label(__('company.enable_reconciliation'))
+                    ->helperText(__('company.enable_reconciliation_help'))
+                    ->default(false),
                 Select::make('parent_company_id')
                     ->label(__('company.parent_company_id'))
                     ->relationship('parentCompany', 'name')

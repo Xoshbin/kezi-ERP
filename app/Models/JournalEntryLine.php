@@ -12,6 +12,7 @@ use App\Casts\OriginalCurrencyMoneyCast;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use RuntimeException; // Utilized for explicit enforcement of immutability and data integrity.
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 /**
@@ -280,10 +281,34 @@ class JournalEntryLine extends Model
         return $this->belongsTo(Currency::class, 'original_currency_id');
     }
 
+    /**
+     * Get the reconciliations that this journal entry line is part of.
+     *
+     * A journal entry line can be part of multiple reconciliations over time
+     * (e.g., if a reconciliation is reversed and a new one is created).
+     *
+     * @return BelongsToMany
+     */
+    public function reconciliations(): BelongsToMany
+    {
+        return $this->belongsToMany(Reconciliation::class, 'journal_entry_line_reconciliation')
+            ->withTimestamps();
+    }
 
+    /**
+     * Check if this journal entry line is currently reconciled.
+     */
+    public function isReconciled(): bool
+    {
+        return $this->reconciliations()->exists();
+    }
 
-
-
-
-
+    /**
+     * Get the current active reconciliation for this line.
+     * Returns the most recent reconciliation if multiple exist.
+     */
+    public function currentReconciliation(): ?Reconciliation
+    {
+        return $this->reconciliations()->latest('reconciled_at')->first();
+    }
 }

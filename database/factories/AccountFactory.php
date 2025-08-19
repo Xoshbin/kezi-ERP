@@ -54,6 +54,7 @@ class AccountFactory extends Factory
             'name' => $this->faker->words(2, true) . ' Account',
             'type' => $type,
             'is_deprecated' => false,
+            'allow_reconciliation' => false, // Default to not allowing reconciliation for security
             // The 'code' will be generated in the configure() method.
         ];
     }
@@ -126,5 +127,13 @@ class AccountFactory extends Factory
     public function accountsPayable(): Factory
     {
         return $this->state(fn (array $attributes) => ['type' => 'payable', 'name' => 'Accounts Payable']);
+    }
+
+    /**
+     * Indicate that the account allows reconciliation.
+     */
+    public function allowReconciliation(): Factory
+    {
+        return $this->state(fn (array $attributes) => ['allow_reconciliation' => true]);
     }
 }

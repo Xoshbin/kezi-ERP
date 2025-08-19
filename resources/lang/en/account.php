@@ -11,6 +11,8 @@ return [
     'name' => 'Name',
     'type' => 'Type',
     'is_deprecated' => 'Is Deprecated',
+    'allow_reconciliation' => 'Allow Reconciliation',
+    'allow_reconciliation_help' => 'Allow this account to be used in reconciliation processes (A/R, A/P, Bank).',
     'created_at' => 'Created At',
     'updated_at' => 'Updated At',
 

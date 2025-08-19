@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\DataTransferObjects\Accounting\CreateJournalEntryForStatementLineDTO;
+use App\Exceptions\Reconciliation\ReconciliationDisabledException;
 use Brick\Money\Money;
 use Illuminate\Database\Eloquent\Collection;
 use App\Models\User;
@@ -26,6 +27,9 @@ class BankReconciliationService
 
     public function reconcilePayment(Payment $payment, BankStatementLine $statementLine, User $user): void
     {
+        // Check if reconciliation is enabled for the company
+        $this->validateReconciliationEnabled($payment->company);
+
         DB::transaction(function () use ($payment, $statementLine, $user) {
             // Update the status of the payment and the statement line.
             $payment->status = PaymentStatus::Reconciled;
@@ -45,6 +49,13 @@ class BankReconciliationService
         // Fetch all necessary models upfront
         $lines = BankStatementLine::whereIn('id', $bankStatementLineIds)->get();
         $payments = Payment::whereIn('id', $paymentIds)->with('company')->get();
+
+        // Check if reconciliation is enabled for the company
+        if ($payments->isNotEmpty()) {
+            $this->validateReconciliationEnabled($payments->first()->company);
+        } elseif ($lines->isNotEmpty()) {
+            $this->validateReconciliationEnabled($lines->first()->bankStatement->company);
+        }
 
         if ($lines->isEmpty() && $payments->isEmpty()) {
             throw new InvalidArgumentException('No items selected for reconciliation.');
@@ -98,6 +109,17 @@ class BankReconciliationService
      */
     public function reconcileMultiple(array $bankLineIds, array $paymentIds, User $user): void
     {
+        // Pre-fetch to check reconciliation setting
+        $bankLines = BankStatementLine::whereIn('id', $bankLineIds)->with('bankStatement.company')->get();
+        $payments = Payment::whereIn('id', $paymentIds)->with(['currency', 'company'])->get();
+
+        // Check if reconciliation is enabled for the company
+        if ($payments->isNotEmpty()) {
+            $this->validateReconciliationEnabled($payments->first()->company);
+        } elseif ($bankLines->isNotEmpty()) {
+            $this->validateReconciliationEnabled($bankLines->first()->bankStatement->company);
+        }
+
         DB::transaction(function () use ($bankLineIds, $paymentIds, $user) {
             $bankLines = BankStatementLine::whereIn('id', $bankLineIds)->with('bankStatement.currency')->get();
             $payments = Payment::whereIn('id', $paymentIds)->with(['currency', 'company'])->get();
@@ -177,5 +199,18 @@ class BankReconciliationService
             ->whereDoesntHave('bankStatementLines')
             ->with(['partner', 'currency'])
             ->get();
+    }
+
+    /**
+     * Validate that reconciliation is enabled for the given company.
+     *
+     * @param \App\Models\Company $company
+     * @throws ReconciliationDisabledException
+     */
+    private function validateReconciliationEnabled(\App\Models\Company $company): void
+    {
+        if (!$company->enable_reconciliation) {
+            throw new ReconciliationDisabledException();
+        }
     }
 }
