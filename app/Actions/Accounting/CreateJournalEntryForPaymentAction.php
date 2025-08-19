@@ -11,6 +11,7 @@ use App\Models\JournalEntry;
 use App\Models\Payment;
 use App\Models\User;
 use App\Enums\Payments\PaymentType;
+use App\Enums\Payments\PaymentPurpose;
 use Brick\Money\Money;
 use InvalidArgumentException;
 
@@ -57,52 +58,99 @@ class CreateJournalEntryForPaymentAction
             'payment_amount_in_base_minor' => $paymentAmountInBase->getMinorAmount()->toInt(),
         ]);
 
-        if ($payment->payment_type === PaymentType::Inbound) {
-            // Use partner's individual receivable account if available, otherwise fall back to default
-            $arAccountId = $payment->partner->receivable_account_id ?? $company->default_accounts_receivable_id;
-            if (!$arAccountId) {
-                throw new RuntimeException('Default Accounts Receivable is not configured for this company.');
+        // Determine the counterpart account based on payment purpose
+        if ($payment->payment_purpose === PaymentPurpose::Settlement) {
+            // For settlement payments, use AR/AP accounts
+            if ($payment->payment_type === PaymentType::Inbound) {
+                // Use partner's individual receivable account if available, otherwise fall back to default
+                $counterpartAccountId = $payment->partner->receivable_account_id ?? $company->default_accounts_receivable_id;
+                if (!$counterpartAccountId) {
+                    throw new RuntimeException('Default Accounts Receivable is not configured for this company.');
+                }
+                // Rule: Inbound payment DEBITS the bank, CREDITS Accounts Receivable.
+                $lines[] = new CreateJournalEntryLineDTO(
+                    account_id: $bankAccountId,
+                    debit: $paymentAmountInBase,
+                    credit: $zeroAmount,
+                    description: null,
+                    partner_id: null,
+                    analytic_account_id: null,
+                );
+                $lines[] = new CreateJournalEntryLineDTO(
+                    account_id: $counterpartAccountId,
+                    debit: $zeroAmount,
+                    credit: $paymentAmountInBase,
+                    description: null,
+                    partner_id: null,
+                    analytic_account_id: null,
+                );
+            } else { // Outbound
+                // Use partner's individual payable account if available, otherwise fall back to default
+                $counterpartAccountId = $payment->partner->payable_account_id ?? $company->default_accounts_payable_id;
+                if (!$counterpartAccountId) {
+                    throw new RuntimeException('Default Accounts Payable is not configured for this company.');
+                }
+                // Rule: Outbound payment DEBITS Accounts Payable, CREDITS the bank.
+                $lines[] = new CreateJournalEntryLineDTO(
+                    account_id: $counterpartAccountId,
+                    debit: $paymentAmountInBase,
+                    credit: $zeroAmount,
+                    description: null,
+                    partner_id: null,
+                    analytic_account_id: null,
+                );
+                $lines[] = new CreateJournalEntryLineDTO(
+                    account_id: $bankAccountId,
+                    debit: $zeroAmount,
+                    credit: $paymentAmountInBase,
+                    description: null,
+                    partner_id: null,
+                    analytic_account_id: null,
+                );
             }
-            // Rule: Inbound payment DEBITS the bank, CREDITS Accounts Receivable.
-            $lines[] = new CreateJournalEntryLineDTO(
-                account_id: $bankAccountId,
-                debit: $paymentAmountInBase,
-                credit: $zeroAmount,
-                description: null,
-                partner_id: null,
-                analytic_account_id: null,
-            );
-            $lines[] = new CreateJournalEntryLineDTO(
-                account_id: $arAccountId,
-                debit: $zeroAmount,
-                credit: $paymentAmountInBase,
-                description: null,
-                partner_id: null,
-                analytic_account_id: null,
-            );
-        } elseif ($payment->payment_type === PaymentType::Outbound) {
-            // Use partner's individual payable account if available, otherwise fall back to default
-            $apAccountId = $payment->partner->payable_account_id ?? $company->default_accounts_payable_id;
-            if (!$apAccountId) {
-                throw new RuntimeException('Default Accounts Payable is not configured for this company.');
+        } else {
+            // For direct payments (loan, capital injection, etc.), use the specified counterpart account
+            if (!$payment->counterpart_account_id) {
+                throw new InvalidArgumentException('Non-settlement payments must have a counterpart account.');
             }
-            // Rule: Outbound payment DEBITS Accounts Payable, CREDITS the bank.
-            $lines[] = new CreateJournalEntryLineDTO(
-                account_id: $apAccountId,
-                debit: $paymentAmountInBase,
-                credit: $zeroAmount,
-                description: null,
-                partner_id: null,
-                analytic_account_id: null,
-            );
-            $lines[] = new CreateJournalEntryLineDTO(
-                account_id: $bankAccountId,
-                debit: $zeroAmount,
-                credit: $paymentAmountInBase,
-                description: null,
-                partner_id: null,
-                analytic_account_id: null,
-            );
+
+            if ($payment->payment_type === PaymentType::Inbound) {
+                // Rule: Inbound direct payment DEBITS the bank, CREDITS the counterpart account.
+                $lines[] = new CreateJournalEntryLineDTO(
+                    account_id: $bankAccountId,
+                    debit: $paymentAmountInBase,
+                    credit: $zeroAmount,
+                    description: null,
+                    partner_id: null,
+                    analytic_account_id: null,
+                );
+                $lines[] = new CreateJournalEntryLineDTO(
+                    account_id: $payment->counterpart_account_id,
+                    debit: $zeroAmount,
+                    credit: $paymentAmountInBase,
+                    description: null,
+                    partner_id: null,
+                    analytic_account_id: null,
+                );
+            } else { // Outbound
+                // Rule: Outbound direct payment DEBITS the counterpart account, CREDITS the bank.
+                $lines[] = new CreateJournalEntryLineDTO(
+                    account_id: $payment->counterpart_account_id,
+                    debit: $paymentAmountInBase,
+                    credit: $zeroAmount,
+                    description: null,
+                    partner_id: null,
+                    analytic_account_id: null,
+                );
+                $lines[] = new CreateJournalEntryLineDTO(
+                    account_id: $bankAccountId,
+                    debit: $zeroAmount,
+                    credit: $paymentAmountInBase,
+                    description: null,
+                    partner_id: null,
+                    analytic_account_id: null,
+                );
+            }
         }
 
         // 2. Create the parent JournalEntry record.

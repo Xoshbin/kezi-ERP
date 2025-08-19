@@ -29,6 +29,13 @@ return new class extends Migration
             $table->string('payment_type'); // 'inbound', 'outbound'
             $table->string('reference')->nullable();
             $table->string('status')->default(PaymentStatus::Draft->value)->index(); // 'draft', 'confirmed', 'reconciled'
+            $table->string('payment_purpose')
+                  ->default('settlement')
+                  ->comment('The business purpose of the payment (e.g., settlement, loan).');
+            $table->foreignId('counterpart_account_id')
+                  ->nullable()
+                  ->constrained('accounts')
+                  ->comment('Account used for non-settlement payments (loans, capital injection, etc.)');
             $table->timestamps();
         });
     }
