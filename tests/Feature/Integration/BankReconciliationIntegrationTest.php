@@ -19,7 +19,7 @@ beforeEach(function () {
     // Set locale to English for consistent test assertions
     app()->setLocale('en');
 
-    $this->company = Company::factory()->create();
+    $this->company = Company::factory()->create(['enable_reconciliation' => true]);
     $this->user = User::factory()->create();
     $this->user->companies()->attach($this->company);
     $this->actingAs($this->user);

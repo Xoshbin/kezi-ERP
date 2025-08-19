@@ -25,17 +25,103 @@ beforeEach(function () {
 });
 
 test('it throws exception when reconciliation is globally disabled', function () {
-    // Create company with reconciliation disabled
-    $company = Company::factory()->create(['enable_reconciliation' => false]);
+    // Work with the existing company setup but disable reconciliation
+    // First, ensure we have a company (the trait might have created one)
+    $company = Company::first();
+    if (!$company) {
+        // If no company exists, create one
+        $currency = \App\Models\Currency::firstOrCreate(['code' => 'IQD'], [
+            'name' => 'Iraqi Dinar',
+            'symbol' => 'IQD',
+            'is_active' => true,
+            'decimal_places' => 3
+        ]);
 
-    // Create journal entry lines
-    $journalEntry = JournalEntry::factory()->for($company)->create(['is_posted' => true]);
-    $lines = JournalEntryLine::factory()
-        ->for($journalEntry)
-        ->count(2)
-        ->create();
+        $company = Company::create([
+            'name' => 'Test Company',
+            'address' => 'Test Address',
+            'tax_id' => 'TEST123',
+            'currency_id' => $currency->id,
+            'fiscal_country' => 'IQ',
+            'enable_reconciliation' => false,
+        ]);
+    } else {
+        // Disable reconciliation on the existing company
+        $company->update(['enable_reconciliation' => false]);
+    }
 
-    expect(fn() => $this->action->execute($lines->pluck('id')->toArray()))
+    // Create accounts that belong to this company and allow reconciliation
+    // (we want to test global reconciliation, not account-level reconciliation)
+    $account1 = Account::create([
+        'company_id' => $company->id,
+        'currency_id' => $company->currency_id,
+        'code' => 'TEST1',
+        'name' => 'Test Account 1',
+        'type' => 'current_assets',
+        'is_deprecated' => false,
+        'allow_reconciliation' => true, // Account allows reconciliation
+    ]);
+
+    $account2 = Account::create([
+        'company_id' => $company->id,
+        'currency_id' => $company->currency_id,
+        'code' => 'TEST2',
+        'name' => 'Test Account 2',
+        'type' => 'current_liabilities',
+        'is_deprecated' => false,
+        'allow_reconciliation' => true, // Account allows reconciliation
+    ]);
+
+    // Create journal and journal entry
+    $journal = Journal::create([
+        'company_id' => $company->id,
+        'name' => 'Test Journal',
+        'type' => 'miscellaneous',
+        'short_code' => 'TST',
+        'currency_id' => $company->currency_id,
+        'default_debit_account_id' => $account1->id,
+        'default_credit_account_id' => $account2->id,
+    ]);
+
+    // Create a user for the journal entry
+    $testUser = \App\Models\User::factory()->create();
+
+    $journalEntry = JournalEntry::create([
+        'company_id' => $company->id,
+        'journal_id' => $journal->id,
+        'currency_id' => $company->currency_id,
+        'entry_date' => now(),
+        'reference' => 'TEST-001',
+        'description' => 'Test entry',
+        'created_by_user_id' => $testUser->id,
+        'is_posted' => true,
+        'total_debit' => \Brick\Money\Money::of(100, $company->currency->code),
+        'total_credit' => \Brick\Money\Money::of(100, $company->currency->code),
+    ]);
+
+    // Create journal entry lines manually to ensure they belong to the correct company
+    // First, let's verify the journal entry is correctly associated
+    expect($journalEntry->company_id)->toBe($company->id);
+
+    $line1 = new JournalEntryLine();
+    $line1->journal_entry_id = $journalEntry->id;
+    $line1->company_id = $company->id;
+    $line1->account_id = $account1->id;
+    $line1->debit = \Brick\Money\Money::of(100, $company->currency->code);
+    $line1->credit = \Brick\Money\Money::of(0, $company->currency->code);
+    $line1->description = 'Test debit line';
+    $line1->save();
+
+    $line2 = new JournalEntryLine();
+    $line2->journal_entry_id = $journalEntry->id;
+    $line2->company_id = $company->id;
+    $line2->account_id = $account2->id;
+    $line2->debit = \Brick\Money\Money::of(0, $company->currency->code);
+    $line2->credit = \Brick\Money\Money::of(100, $company->currency->code);
+    $line2->description = 'Test credit line';
+    $line2->save();
+
+    expect(fn() => $this->action->execute([$line1->id, $line2->id]))
         ->toThrow(ReconciliationDisabledException::class);
 });
 
