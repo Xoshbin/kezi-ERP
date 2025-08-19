@@ -26,6 +26,8 @@ use App\DataTransferObjects\Purchases\CreateVendorBillLineDTO;
 use App\DataTransferObjects\Payments\CreatePaymentDocumentLinkDTO;
 use App\Enums\Adjustments\AdjustmentDocumentType;
 use App\Enums\Adjustments\AdjustmentDocumentStatus;
+use App\Enums\Payments\PaymentPurpose;
+use App\Enums\Payments\PaymentType;
 
 uses(Illuminate\Foundation\Testing\RefreshDatabase::class, WithConfiguredCompany::class);
 
@@ -179,6 +181,11 @@ test('the entire accounting workflow from setup to credit note', function () {
         journal_id: $bankJournal->id,
         currency_id: $currency->id,
         payment_date: now()->toDateString(),
+        payment_purpose: PaymentPurpose::Settlement,
+        payment_type: PaymentType::Inbound,
+        partner_id: null,
+        amount: null,
+        counterpart_account_id: null,
         document_links: [$documentLinkDto],
         reference: null
     );
@@ -211,6 +218,11 @@ test('the entire accounting workflow from setup to credit note', function () {
         journal_id: $bankJournal->id,
         currency_id: $currency->id,
         payment_date: now()->toDateString(),
+        payment_purpose: PaymentPurpose::Settlement,
+        payment_type: PaymentType::Outbound,
+        partner_id: null,
+        amount: null,
+        counterpart_account_id: null,
         document_links: [$vendorDocumentLinkDto],
         reference: 'Payment for Laptop'
     );

@@ -15,6 +15,8 @@ use App\DataTransferObjects\Purchases\CreateVendorBillDTO;
 use App\DataTransferObjects\Sales\CreateInvoiceDTO;
 use App\Enums\Accounting\LockDateType;
 use App\Enums\Adjustments\AdjustmentDocumentType;
+use App\Enums\Payments\PaymentPurpose;
+use App\Enums\Payments\PaymentType;
 use App\Exceptions\PeriodIsLockedException;
 use App\Exceptions\UpdateNotAllowedException;
 use App\Filament\Resources\LockDates\LockDateResource;
@@ -160,6 +162,11 @@ describe('Action Integration with Locked Periods', function () {
             journal_id: $this->company->default_bank_journal_id,
             currency_id: $this->company->currency->id,
             payment_date: '2025-12-15', // Date is inside locked period
+            payment_purpose: PaymentPurpose::Settlement,
+            payment_type: PaymentType::Inbound,
+            partner_id: null,
+            amount: null,
+            counterpart_account_id: null,
             document_links: [$linkDto],
             reference: null
         ), $this->user);

@@ -12,6 +12,8 @@ use App\Filament\Resources\Payments\PaymentResource;
 use App\Models\Currency;
 use App\Models\Payment;
 use App\Enums\Payments\PaymentStatus;
+use App\Enums\Payments\PaymentPurpose;
+use App\Enums\Payments\PaymentType;
 use App\Services\PaymentService;
 use Brick\Money\Money;
 use Filament\Actions;
@@ -137,12 +139,23 @@ class EditPayment extends EditRecord
             );
         }
 
+        // Prepare amount for direct payments
+        $amount = null;
+        if (isset($data['amount'])) {
+            $amount = Money::of($data['amount'], $currency->code);
+        }
+
         $paymentDTO = new UpdatePaymentDTO(
             payment: $record,
             company_id: \Filament\Facades\Filament::getTenant()->id,
             journal_id: $data['journal_id'],
             currency_id: $data['currency_id'],
             payment_date: $data['payment_date'],
+            payment_purpose: PaymentPurpose::from($data['payment_purpose']),
+            payment_type: PaymentType::from($data['payment_type']),
+            partner_id: $data['partner_id'] ?? null,
+            amount: $amount,
+            counterpart_account_id: $data['counterpart_account_id'] ?? null,
             document_links: $linkDTOs,
             reference: $data['reference'],
             updated_by_user_id: Auth::id()
