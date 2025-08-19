@@ -135,6 +135,15 @@ return [
         'Paid' => 'پارەدراو',
     ],
 
+    'payment_purpose' => [
+        'settlement' => 'تەسویەکردن',
+        'loan' => 'قەرز',
+        'capital_injection' => 'دەرخستنی سەرمایە',
+        'expense_claim' => 'داواکاری خەرجی',
+        'tax_payment' => 'پارەدانی باج',
+        'asset_purchase' => 'کڕینی سامان',
+    ],
+
     'tax_type' => [
         'sales' => 'فرۆشتن',
         'purchase' => 'کڕین',
