@@ -38,6 +38,14 @@ return new class extends Migration
             $table->string('pdf_template', 50)->default('classic');
             $table->string('pdf_logo_path')->nullable();
             $table->json('pdf_settings')->nullable();
+
+            $table->boolean('enable_reconciliation')
+                ->default(false)
+                ->comment('Global switch to enable/disable all reconciliation functionality for this company');
+
+            // Add index for performance when checking this setting
+            $table->index('enable_reconciliation');
+
             $table->timestamps();
         });
 

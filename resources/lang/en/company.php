@@ -8,6 +8,8 @@ return [
     'tax_id' => 'Tax ID',
     'currency_id' => 'Currency',
     'fiscal_country' => 'Fiscal Country',
+    'enable_reconciliation' => 'Enable Reconciliation',
+    'enable_reconciliation_help' => 'Enable reconciliation functionality for this company. When disabled, all reconciliation features will be hidden.',
     'parent_company_id' => 'Parent Company',
     'default_accounts_payable' => 'Default Accounts Payable',
     'default_tax_receivable' => 'Default Tax Receivable',

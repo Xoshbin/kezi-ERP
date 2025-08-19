@@ -23,8 +23,10 @@ class JournalEntryFactory extends Factory
     public function definition(): array
     {
         return [
-            'company_id' => Company::factory()->create()->id,
-            'journal_id' => Journal::factory()->create()->id,
+            'company_id' => Company::factory(),
+            'journal_id' => function (array $attributes) {
+                return Journal::factory()->for(Company::find($attributes['company_id']))->create()->id;
+            },
             'currency_id' => function (array $attributes) {
                 return Company::find($attributes['company_id'])->currency_id;
             },
@@ -33,7 +35,7 @@ class JournalEntryFactory extends Factory
             'description' => $this->faker->sentence(),
             'source_type' => $this->faker->randomElement(['invoice', 'payment', 'expense']),
             'source_id' => $this->faker->numberBetween(1, 100),
-            'created_by_user_id' => User::factory()->create()->id,
+            'created_by_user_id' => User::factory(),
             'total_debit' => Money::of($this->faker->randomFloat(2, 100, 10000), 'USD'),
             'total_credit' => Money::of($this->faker->randomFloat(2, 100, 10000), 'USD'),
         ];
