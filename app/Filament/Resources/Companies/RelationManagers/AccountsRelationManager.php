@@ -50,6 +50,9 @@ class AccountsRelationManager extends RelationManager
                 Toggle::make('is_deprecated')
                     ->label(__('company.accounts.is_deprecated'))
                     ->required(),
+                Toggle::make('allow_reconciliation')
+                    ->label(__('company.accounts.allow_reconciliation'))
+                    ->default(false),
             ]);
     }
 

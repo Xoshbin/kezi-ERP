@@ -25,6 +25,17 @@ class CompanyFactory extends Factory
             )->id,
             'fiscal_country' => 'IQ', // Default to Iraq as per project spec
             'parent_company_id' => null,
+            'enable_reconciliation' => false, // Default to disabled for security
         ];
+    }
+
+    /**
+     * Indicate that the company has reconciliation enabled.
+     */
+    public function withReconciliationEnabled(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'enable_reconciliation' => true,
+        ]);
     }
 }

@@ -107,6 +107,7 @@ class Company extends Model
         'currency_id',
         'fiscal_country',
         'parent_company_id',
+        'enable_reconciliation',
         'default_accounts_payable_id',
         'default_tax_receivable_id',
         'default_purchase_journal_id',
@@ -136,6 +137,7 @@ class Company extends Model
     protected $casts = [
         // No special casts explicitly mentioned in the schema beyond default timestamps.
         // 'created_at' and 'updated_at' are Carbon instances by default.
+        'enable_reconciliation' => 'boolean',
         'pdf_settings' => 'json',
     ];
 

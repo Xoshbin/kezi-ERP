@@ -25,6 +25,7 @@ use Filament\Actions\DeleteBulkAction;
 use App\Filament\Resources\Partners\RelationManagers\InvoicesRelationManager;
 use App\Filament\Resources\Partners\RelationManagers\VendorBillsRelationManager;
 use App\Filament\Resources\Partners\RelationManagers\PaymentsRelationManager;
+use App\Filament\Resources\Partners\RelationManagers\UnreconciledEntriesRelationManager;
 use App\Filament\Resources\Partners\Pages\ListPartners;
 use App\Filament\Resources\Partners\Pages\CreatePartner;
 use App\Filament\Resources\Partners\Pages\ViewPartner;
@@ -459,6 +460,7 @@ class PartnerResource extends Resource
             InvoicesRelationManager::class,
             VendorBillsRelationManager::class,
             PaymentsRelationManager::class,
+            UnreconciledEntriesRelationManager::class,
         ];
     }
 

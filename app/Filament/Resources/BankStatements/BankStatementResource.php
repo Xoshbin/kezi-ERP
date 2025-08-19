@@ -269,6 +269,7 @@ class BankStatementResource extends Resource
                     ->icon('heroicon-o-scale')
                     ->color('success')
                     ->url(fn(BankStatement $record): string => static::getUrl('reconcile', ['record' => $record]))
+                    ->visible(fn(): bool => \Filament\Facades\Filament::getTenant()?->enable_reconciliation ?? false)
             ])
             ->toolbarActions([
                 BulkActionGroup::make([

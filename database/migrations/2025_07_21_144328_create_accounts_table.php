@@ -23,6 +23,13 @@ return new class extends Migration
             $table->boolean('can_create_assets')->default(false);
             $table->timestamps();
 
+            $table->boolean('allow_reconciliation')
+                ->default(false)
+                ->comment('Whether this account can be used in reconciliation processes (A/R, A/P, Bank)');
+
+            // Add index for performance when filtering reconcilable accounts
+            $table->index(['company_id', 'allow_reconciliation']);
+
             $table->unique(['company_id', 'code']);
         });
     }
