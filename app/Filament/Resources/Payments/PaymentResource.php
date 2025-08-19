@@ -19,6 +19,7 @@ use Filament\Resources\Resource;
 use App\Enums\Sales\InvoiceStatus;
 use App\Enums\Payments\PaymentType;
 use App\Enums\Payments\PaymentStatus;
+use App\Enums\Payments\PaymentPurpose;
 use App\Enums\Purchases\VendorBillStatus;
 use App\Models\Invoice;
 use App\Models\Payment;
@@ -86,16 +87,35 @@ class PaymentResource extends Resource
                         ->label(__('payment.form.reference'))
                         ->maxLength(255)
                         ->columnSpan(2),
-                    MoneyInput::make('amount')
-                        ->label(__('payment.form.amount'))
-                        ->currencyField('currency_id')
-                        ->readOnly()
-                        ->columnSpan(1),
+                ])
+                ->columns(4)
+                ->columnSpanFull(),
+
+            Section::make(__('payment.form.payment_type_and_purpose'))
+                ->description(__('payment.form.payment_type_and_purpose_description'))
+                ->schema([
                     Select::make('payment_type')
                         ->label(__('payment.form.payment_type'))
                         ->options(collect(PaymentType::cases())->mapWithKeys(fn($case) => [$case->value => $case->label()]))
-                        ->disabled()
-                        ->dehydrated(false)
+                        ->required()
+                        ->live()
+                        ->columnSpan(1),
+                    Select::make('payment_purpose')
+                        ->label(__('payment.form.payment_purpose'))
+                        ->options(function (Get $get) {
+                            $paymentType = $get('payment_type');
+                            if (!$paymentType) {
+                                return [];
+                            }
+
+                            $purposes = $paymentType === PaymentType::Inbound->value
+                                ? PaymentPurpose::inboundPurposes()
+                                : PaymentPurpose::outboundPurposes();
+
+                            return collect($purposes)->mapWithKeys(fn($purpose) => [$purpose->value => $purpose->label()]);
+                        })
+                        ->required()
+                        ->live()
                         ->columnSpan(1),
                     Select::make('status')
                         ->label(__('payment.form.status'))
@@ -107,6 +127,7 @@ class PaymentResource extends Resource
                 ->columns(4)
                 ->columnSpanFull(),
 
+            // Settlement Payment Section
             Section::make(__('payment.form.document_links'))
                 ->description(__('payment.form.document_links_description'))
                 ->schema([
@@ -119,10 +140,18 @@ class PaymentResource extends Resource
                         ->schema([
                             Select::make('document_type')
                                 ->label(__('payment.form.document_type'))
-                                ->options([
-                                    'invoice' => __('payment.form.document_type.invoice'),
-                                    'vendor_bill' => __('payment.form.document_type.vendor_bill'),
-                                ])
+                                ->options(function (Get $get) {
+                                    $paymentType = $get('../../payment_type');
+                                    if ($paymentType === PaymentType::Inbound->value) {
+                                        return ['invoice' => __('payment.form.document_type.invoice')];
+                                    } elseif ($paymentType === PaymentType::Outbound->value) {
+                                        return ['vendor_bill' => __('payment.form.document_type.vendor_bill')];
+                                    }
+                                    return [
+                                        'invoice' => __('payment.form.document_type.invoice'),
+                                        'vendor_bill' => __('payment.form.document_type.vendor_bill'),
+                                    ];
+                                })
                                 ->required()
                                 ->live()
                                 ->columnSpan(1),
@@ -156,7 +185,33 @@ class PaymentResource extends Resource
                             }
                             $set('amount', $total);
                         }),
+                    MoneyInput::make('amount')
+                        ->label(__('payment.form.amount'))
+                        ->currencyField('currency_id')
+                        ->readOnly()
+                        ->columnSpan(2),
                 ])
+                ->visible(fn (Get $get) => $get('payment_purpose') === PaymentPurpose::Settlement->value)
+                ->columnSpanFull(),
+
+            // Direct Payment Section
+            Section::make(__('payment.form.direct_payment'))
+                ->description(__('payment.form.direct_payment_description'))
+                ->schema([
+                    TranslatableSelect::make('partner_id', \App\Models\Partner::class, __('payment.form.partner'))
+                        ->required()
+                        ->columnSpan(2),
+                    MoneyInput::make('amount')
+                        ->label(__('payment.form.amount'))
+                        ->currencyField('currency_id')
+                        ->required()
+                        ->columnSpan(2),
+                    TranslatableSelect::make('counterpart_account_id', \App\Models\Account::class, __('payment.form.counterpart_account'))
+                        ->required()
+                        ->columnSpan(4),
+                ])
+                ->visible(fn (Get $get) => $get('payment_purpose') !== PaymentPurpose::Settlement->value)
+                ->columns(4)
                 ->columnSpanFull(),
         ]);
     }
