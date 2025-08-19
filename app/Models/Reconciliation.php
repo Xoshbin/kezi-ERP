@@ -1,0 +1,158 @@
+<?php
+
+namespace App\Models;
+
+use App\Enums\Reconciliation\ReconciliationType;
+use Brick\Money\Money;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Support\Facades\Auth;
+
+/**
+ * Class Reconciliation
+ *
+ * @package App\Models
+ *
+ * This model represents a reconciliation record that groups related journal entry lines
+ * that have been matched together for accounting reconciliation purposes.
+ * It maintains a complete audit trail of who performed the reconciliation and when.
+ *
+ * @property int $id
+ * @property int $company_id
+ * @property ReconciliationType $reconciliation_type
+ * @property int $reconciled_by_user_id
+ * @property \Carbon\Carbon $reconciled_at
+ * @property string|null $reference
+ * @property string|null $description
+ * @property \Carbon\Carbon|null $created_at
+ * @property \Carbon\Carbon|null $updated_at
+ * @property-read Company $company
+ * @property-read User $reconciledBy
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, JournalEntryLine> $journalEntryLines
+ */
+class Reconciliation extends Model
+{
+    use HasFactory;
+
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array<int, string>
+     */
+    protected $fillable = [
+        'company_id',
+        'reconciliation_type',
+        'reconciled_by_user_id',
+        'reconciled_at',
+        'reference',
+        'description',
+    ];
+
+    /**
+     * The attributes that should be cast.
+     *
+     * @var array<string, string>
+     */
+    protected $casts = [
+        'reconciliation_type' => ReconciliationType::class,
+        'reconciled_at' => 'datetime',
+    ];
+
+    /**
+     * The "booted" method of the model.
+     */
+    protected static function booted(): void
+    {
+        // Automatically set the reconciled_by_user_id and reconciled_at when creating
+        static::creating(function (Reconciliation $reconciliation) {
+            if (Auth::check()) {
+                $reconciliation->reconciled_by_user_id = Auth::id();
+            }
+            $reconciliation->reconciled_at = now();
+        });
+
+        // Prevent modification of reconciliation records to maintain audit trail integrity
+        static::updating(function (Reconciliation $reconciliation) {
+            // Allow only description updates for additional notes
+            $allowedFields = ['description'];
+            $changedFields = array_keys($reconciliation->getDirty());
+            $unauthorizedChanges = array_diff($changedFields, $allowedFields);
+
+            if (!empty($unauthorizedChanges)) {
+                throw new \RuntimeException(
+                    'Reconciliation records are immutable. Only description can be updated. ' .
+                    'Attempted to change: ' . implode(', ', $unauthorizedChanges)
+                );
+            }
+        });
+
+        // Prevent deletion of reconciliation records
+        static::deleting(function (Reconciliation $reconciliation) {
+            throw new \RuntimeException(
+                'Reconciliation records cannot be deleted to maintain audit trail integrity. ' .
+                'Create a reversal reconciliation instead.'
+            );
+        });
+    }
+
+    /**
+     * Get the company that owns this reconciliation.
+     */
+    public function company(): BelongsTo
+    {
+        return $this->belongsTo(Company::class);
+    }
+
+    /**
+     * Get the user who performed this reconciliation.
+     */
+    public function reconciledBy(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'reconciled_by_user_id');
+    }
+
+    /**
+     * Get the journal entry lines that are part of this reconciliation.
+     */
+    public function journalEntryLines(): BelongsToMany
+    {
+        return $this->belongsToMany(JournalEntryLine::class, 'journal_entry_line_reconciliation')
+            ->withTimestamps();
+    }
+
+    /**
+     * Check if this reconciliation is balanced (total debits = total credits).
+     */
+    public function isBalanced(): bool
+    {
+        $lines = $this->journalEntryLines;
+
+        if ($lines->isEmpty()) {
+            return true;
+        }
+
+        // Get currency from the first line
+        $currency = $lines->first()->journalEntry->company->currency->code;
+
+        // Sum the Money objects properly
+        $totalDebits = $lines->reduce(function ($carry, $line) {
+            return $carry->plus($line->debit);
+        }, Money::of(0, $currency));
+
+        $totalCredits = $lines->reduce(function ($carry, $line) {
+            return $carry->plus($line->credit);
+        }, Money::of(0, $currency));
+
+        return $totalDebits->isEqualTo($totalCredits);
+    }
+
+    /**
+     * Get the total number of lines in this reconciliation.
+     */
+    public function getLineCountAttribute(): int
+    {
+        return $this->journalEntryLines()->count();
+    }
+}

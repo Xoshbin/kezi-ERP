@@ -19,6 +19,7 @@ trait WithConfiguredCompany
             ->withDefaultAccounts()
             ->withDefaultJournals()
             ->withDefaultStockLocations()
+            ->withReconciliationEnabled()
             ->create();
 
         $this->user = User::factory()->create();
