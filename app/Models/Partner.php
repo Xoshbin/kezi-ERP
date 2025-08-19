@@ -7,6 +7,7 @@ use Database\Factories\PartnerFactory;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use App\Observers\PartnerObserver;
 use App\Enums\Partners\PartnerType;
 use App\Enums\Sales\InvoiceStatus;

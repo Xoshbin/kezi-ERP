@@ -16,6 +16,7 @@ class CompanyBuilder
     protected array $accounts = [];
     protected array $journals = [];
     protected array $stockLocations = [];
+    protected bool $enableReconciliation = false;
 
     public static function new(): self
     {
@@ -77,13 +78,22 @@ class CompanyBuilder
         return $this;
     }
 
+    public function withReconciliationEnabled(): self
+    {
+        $this->enableReconciliation = true;
+        return $this;
+    }
+
     public function create(): Company
     {
         if (!$this->currency) {
             $this->withCurrency('IQD');
         }
 
-        $company = Company::factory()->create(['currency_id' => $this->currency->id]);
+        $company = Company::factory()->create([
+            'currency_id' => $this->currency->id,
+            'enable_reconciliation' => $this->enableReconciliation,
+        ]);
 
         $accountInstances = [];
         foreach ($this->accounts as $key => $details) {

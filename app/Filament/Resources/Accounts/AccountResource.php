@@ -107,6 +107,10 @@ class AccountResource extends Resource
                 Toggle::make('is_deprecated')
                     ->label(__('account.is_deprecated'))
                     ->required(),
+                Toggle::make('allow_reconciliation')
+                    ->label(__('account.allow_reconciliation'))
+                    ->helperText(__('account.allow_reconciliation_help'))
+                    ->default(false),
             ]);
     }
 
@@ -129,6 +133,9 @@ class AccountResource extends Resource
                     ->searchable(),
                 IconColumn::make('is_deprecated')
                     ->label(__('account.is_deprecated'))
+                    ->boolean(),
+                IconColumn::make('allow_reconciliation')
+                    ->label(__('account.allow_reconciliation'))
                     ->boolean(),
                 TextColumn::make('created_at')
                     ->label(__('account.created_at'))

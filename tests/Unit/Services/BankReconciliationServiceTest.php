@@ -29,7 +29,9 @@ beforeEach(function () {
 });
 
 it('throws an exception if the company is missing default accounts', function () {
-    // Arrange
+    // Arrange - Enable reconciliation so we can test the account configuration logic
+    $this->company->update(['enable_reconciliation' => true]);
+
     $payment = Payment::factory()->create([
         'company_id' => $this->company->id,
         'journal_id' => $this->bankJournal->id,
@@ -44,8 +46,9 @@ it('throws an exception if the company is missing default accounts', function ()
 });
 
 it('successfully reconciles a payment and a bank statement line', function () {
-    // Arrange
+    // Arrange - Enable reconciliation and configure default accounts
     $this->company->update([
+        'enable_reconciliation' => true,
         'default_bank_account_id' => Account::factory()->create(['company_id' => $this->company->id])->id,
         'default_outstanding_receipts_account_id' => Account::factory()->create(['company_id' => $this->company->id])->id,
     ]);
