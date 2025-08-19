@@ -1,16 +1,18 @@
 <?php
 
 use App\Exceptions\Reconciliation\ReconciliationDisabledException;
+use App\Models\Account;
 use App\Models\BankStatement;
 use App\Models\BankStatementLine;
 use App\Models\Company;
+use App\Models\Journal;
+use App\Models\Partner;
 use App\Models\Payment;
 use App\Models\User;
 use App\Services\BankReconciliationService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Tests\Traits\WithConfiguredCompany;
 
-uses(RefreshDatabase::class, WithConfiguredCompany::class);
+uses(RefreshDatabase::class);
 
 beforeEach(function () {
     $this->service = app(BankReconciliationService::class);
@@ -21,25 +23,92 @@ test('reconcilePayment throws exception when reconciliation is disabled', functi
     // Create company with reconciliation disabled
     $company = Company::factory()->create(['enable_reconciliation' => false]);
 
-    // Create payment and bank statement line
-    $payment = Payment::factory()->for($company)->create();
-    $bankStatement = BankStatement::factory()->for($company)->create();
-    $statementLine = BankStatementLine::factory()->for($bankStatement)->create();
+    // Create an account for the journal
+    $account = Account::create([
+        'company_id' => $company->id,
+        'currency_id' => $company->currency_id,
+        'code' => '1000',
+        'name' => 'Test Account',
+        'type' => 'bank_and_cash',
+        'is_deprecated' => false,
+        'allow_reconciliation' => false,
+    ]);
+
+    // Create a journal for the company
+    $journal = Journal::create([
+        'company_id' => $company->id,
+        'name' => 'Test Journal',
+        'type' => 'bank',
+        'short_code' => 'TST',
+        'currency_id' => $company->currency_id,
+        'default_debit_account_id' => $account->id,
+        'default_credit_account_id' => $account->id,
+    ]);
+
+    // Create a partner for the payment
+    $partner = Partner::create([
+        'company_id' => $company->id,
+        'name' => 'Test Partner',
+        'type' => 'customer',
+        'is_customer' => true,
+        'is_vendor' => false,
+    ]);
+
+    // Create payment manually to ensure correct company relationship
+    $payment = Payment::create([
+        'company_id' => $company->id,
+        'journal_id' => $journal->id,
+        'currency_id' => $company->currency_id,
+        'paid_to_from_partner_id' => $partner->id,
+        'payment_date' => now(),
+        'amount' => 100000, // Money in minor units
+        'payment_type' => 'inbound',
+        'status' => 'confirmed',
+        'reference' => 'TEST-001',
+        'description' => 'Test payment',
+    ]);
+
+    // Create bank statement and line manually
+    $bankStatement = BankStatement::create([
+        'company_id' => $company->id,
+        'journal_id' => $journal->id,
+        'currency_id' => $company->currency_id,
+        'reference' => 'STMT-001',
+        'starting_balance' => 0,
+        'ending_balance' => 100000,
+        'date' => now(),
+    ]);
+
+    $statementLine = BankStatementLine::create([
+        'company_id' => $company->id,
+        'bank_statement_id' => $bankStatement->id,
+        'amount' => 100000,
+        'description' => 'Test transaction',
+        'date' => now(),
+        'is_reconciled' => false,
+    ]);
 
     expect(fn() => $this->service->reconcilePayment($payment, $statementLine, $this->user))
         ->toThrow(ReconciliationDisabledException::class);
 });
 
 test('reconcilePayment succeeds when reconciliation is enabled', function () {
-    // Create company with reconciliation enabled
-    $company = Company::factory()->withReconciliationEnabled()->create();
+    // Create company with reconciliation enabled and required accounts
+    $company = \Tests\Builders\CompanyBuilder::new()
+        ->withDefaultAccounts()
+        ->withReconciliationEnabled()
+        ->create();
 
     // Create payment and bank statement line
     $payment = Payment::factory()->for($company)->create([
+        'currency_id' => $company->currency_id,
         'status' => \App\Enums\Payments\PaymentStatus::Confirmed
     ]);
-    $bankStatement = BankStatement::factory()->for($company)->create();
+    $bankStatement = BankStatement::factory()->for($company)->create([
+        'currency_id' => $company->currency_id
+    ]);
     $statementLine = BankStatementLine::factory()->for($bankStatement)->create([
+        'company_id' => $company->id,
         'is_reconciled' => false
     ]);
 
@@ -74,19 +143,26 @@ test('reconcile throws exception when reconciliation is disabled for bank statem
 });
 
 test('reconcile succeeds when reconciliation is enabled', function () {
-    // Create company with reconciliation enabled
-    $company = Company::factory()->withReconciliationEnabled()->create();
+    // Create company with reconciliation enabled and required accounts
+    $company = \Tests\Builders\CompanyBuilder::new()
+        ->withDefaultAccounts()
+        ->withReconciliationEnabled()
+        ->create();
 
     // Create payment and bank statement line with matching amounts
     $amount = \Brick\Money\Money::of(100, $company->currency->code);
 
     $payment = Payment::factory()->for($company)->create([
+        'currency_id' => $company->currency_id,
         'amount' => $amount->getMinorAmount()->toInt(),
         'status' => \App\Enums\Payments\PaymentStatus::Confirmed
     ]);
 
-    $bankStatement = BankStatement::factory()->for($company)->create();
+    $bankStatement = BankStatement::factory()->for($company)->create([
+        'currency_id' => $company->currency_id
+    ]);
     $statementLine = BankStatementLine::factory()->for($bankStatement)->create([
+        'company_id' => $company->id,
         'amount' => $amount->getMinorAmount()->toInt(),
         'is_reconciled' => false
     ]);
@@ -125,8 +201,11 @@ test('reconcileMultiple throws exception when reconciliation is disabled for ban
 });
 
 test('reconcileMultiple succeeds when reconciliation is enabled', function () {
-    // Create company with reconciliation enabled
-    $company = Company::factory()->withReconciliationEnabled()->create();
+    // Create company with reconciliation enabled and required accounts
+    $company = \Tests\Builders\CompanyBuilder::new()
+        ->withDefaultAccounts()
+        ->withReconciliationEnabled()
+        ->create();
 
     // Create payments and bank statement lines with matching total amounts
     $amount1 = \Brick\Money\Money::of(100, $company->currency->code);
@@ -134,22 +213,28 @@ test('reconcileMultiple succeeds when reconciliation is enabled', function () {
 
     $payments = collect([
         Payment::factory()->for($company)->create([
+            'currency_id' => $company->currency_id,
             'amount' => $amount1->getMinorAmount()->toInt(),
             'status' => \App\Enums\Payments\PaymentStatus::Confirmed
         ]),
         Payment::factory()->for($company)->create([
+            'currency_id' => $company->currency_id,
             'amount' => $amount2->getMinorAmount()->toInt(),
             'status' => \App\Enums\Payments\PaymentStatus::Confirmed
         ])
     ]);
 
-    $bankStatement = BankStatement::factory()->for($company)->create();
+    $bankStatement = BankStatement::factory()->for($company)->create([
+        'currency_id' => $company->currency_id
+    ]);
     $lines = collect([
         BankStatementLine::factory()->for($bankStatement)->create([
+            'company_id' => $company->id,
             'amount' => $amount1->getMinorAmount()->toInt(),
             'is_reconciled' => false
         ]),
         BankStatementLine::factory()->for($bankStatement)->create([
+            'company_id' => $company->id,
             'amount' => $amount2->getMinorAmount()->toInt(),
             'is_reconciled' => false
         ])
@@ -174,7 +259,10 @@ test('reconcileMultiple succeeds when reconciliation is enabled', function () {
 
 test('getUnreconciledBankLines returns only unreconciled lines', function () {
     // Create company (reconciliation setting doesn't affect this query method)
-    $company = Company::factory()->withReconciliationEnabled()->create();
+    $company = \Tests\Builders\CompanyBuilder::new()
+        ->withDefaultAccounts()
+        ->withReconciliationEnabled()
+        ->create();
 
     $bankStatement = BankStatement::factory()->for($company)->create();
 
@@ -190,7 +278,10 @@ test('getUnreconciledBankLines returns only unreconciled lines', function () {
 
 test('getUnreconciledPayments returns only unreconciled payments', function () {
     // Create company (reconciliation setting doesn't affect this query method)
-    $company = Company::factory()->withReconciliationEnabled()->create();
+    $company = \Tests\Builders\CompanyBuilder::new()
+        ->withDefaultAccounts()
+        ->withReconciliationEnabled()
+        ->create();
 
     // Create confirmed and reconciled payments
     $confirmedPayment = Payment::factory()->for($company)->create([

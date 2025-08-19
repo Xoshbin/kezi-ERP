@@ -23,7 +23,12 @@ use Livewire\Livewire;
 uses(RefreshDatabase::class);
 
 beforeEach(function () {
-    $this->company = Company::factory()->create();
+    // Create company with reconciliation enabled and required accounts
+    $this->company = \Tests\Builders\CompanyBuilder::new()
+        ->withDefaultAccounts()
+        ->withReconciliationEnabled()
+        ->create();
+
     $this->user = User::factory()->create();
     $this->user->companies()->attach($this->company);
     $this->actingAs($this->user);
@@ -33,14 +38,14 @@ beforeEach(function () {
 
     $this->currency = $this->company->currency;
 
-    // Create required accounts for reconciliation
-    $this->bankAccount = Account::factory()
-        ->for($this->company)
-        ->create(['type' => 'bank_and_cash', 'name' => 'Bank Account']);
+    // Get the default accounts created by CompanyBuilder
+    $this->bankAccount = Account::where('company_id', $this->company->id)
+        ->where('type', 'bank_and_cash')
+        ->first();
 
-    $this->outstandingAccount = Account::factory()
-        ->for($this->company)
-        ->create(['type' => 'current_assets', 'name' => 'Outstanding Receipts']);
+    $this->outstandingAccount = Account::where('company_id', $this->company->id)
+        ->where('type', 'current_assets')
+        ->first();
 
     // Update company with default accounts
     $this->company->update([
