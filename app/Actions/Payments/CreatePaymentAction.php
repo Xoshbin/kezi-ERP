@@ -11,7 +11,9 @@ use App\Models\User;
 use App\Models\VendorBill;
 use App\Enums\Payments\PaymentType;
 use App\Enums\Payments\PaymentStatus;
+use App\Enums\Payments\PaymentPurpose;
 use App\Services\Accounting\LockDateService;
+use App\Services\Payments\PaymentStrategyFactory;
 use Brick\Money\Money;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -25,36 +27,51 @@ class CreatePaymentAction
 
     public function execute(CreatePaymentDTO $dto, User $user): Payment
     {
-        if (empty($dto->document_links)) {
-            throw new InvalidArgumentException('A payment must be linked to at least one document.');
+        // Validate based on payment purpose
+        if ($dto->payment_purpose === PaymentPurpose::Settlement && empty($dto->document_links)) {
+            throw new InvalidArgumentException('Settlement payments must be linked to at least one document.');
         }
+
+        if ($dto->payment_purpose !== PaymentPurpose::Settlement && !$dto->counterpart_account_id) {
+            throw new InvalidArgumentException('Non-settlement payments must have a counterpart account.');
+        }
+
         $company = Company::findOrFail($dto->company_id);
         $this->lockDateService->enforce($company, Carbon::parse($dto->payment_date));
 
-        return DB::transaction(function () use ($dto, $user) {
+        return DB::transaction(function () use ($dto) {
             $currencyCode = Currency::find($dto->currency_id)->code;
-            $totalAmount = Money::of(0, $currencyCode);
-            $documentTypes = [];
-            $partnerId = null;
 
-            // Determine totals, partner, and payment type from linked documents
-            foreach ($dto->document_links as $link) {
-                $totalAmount = $totalAmount->plus($link->amount_applied);
-                $documentTypes[$link->document_type] = true;
+            // Determine payment details based on purpose
+            if ($dto->payment_purpose === PaymentPurpose::Settlement) {
+                // For settlement payments, calculate from document links
+                $totalAmount = Money::of(0, $currencyCode);
+                $documentTypes = [];
+                $partnerId = null;
 
-                if (!$partnerId) {
-                    if ($link->document_type === 'invoice') {
-                        $partnerId = Invoice::findOrFail($link->document_id)->customer_id;
-                    } elseif ($link->document_type === 'vendor_bill') {
-                        $partnerId = VendorBill::findOrFail($link->document_id)->vendor_id;
+                foreach ($dto->document_links as $link) {
+                    $totalAmount = $totalAmount->plus($link->amount_applied);
+                    $documentTypes[$link->document_type] = true;
+
+                    if (!$partnerId) {
+                        if ($link->document_type === 'invoice') {
+                            $partnerId = Invoice::findOrFail($link->document_id)->customer_id;
+                        } elseif ($link->document_type === 'vendor_bill') {
+                            $partnerId = VendorBill::findOrFail($link->document_id)->vendor_id;
+                        }
                     }
                 }
-            }
 
-            if (count($documentTypes) > 1) {
-                throw new InvalidArgumentException('A payment cannot be linked to both invoices and vendor bills simultaneously.');
+                if (count($documentTypes) > 1) {
+                    throw new InvalidArgumentException('A payment cannot be linked to both invoices and vendor bills simultaneously.');
+                }
+                $paymentType = key($documentTypes) === 'invoice' ? PaymentType::Inbound : PaymentType::Outbound;
+            } else {
+                // For direct payments, use provided values
+                $totalAmount = $dto->amount;
+                $partnerId = $dto->partner_id;
+                $paymentType = $dto->payment_type;
             }
-            $paymentType = key($documentTypes) === 'invoice' ? PaymentType::Inbound : PaymentType::Outbound;
 
             // Create the parent Payment record
             $payment = Payment::create([
@@ -62,6 +79,8 @@ class CreatePaymentAction
                 'journal_id' => $dto->journal_id,
                 'currency_id' => $dto->currency_id,
                 'payment_date' => $dto->payment_date,
+                'payment_purpose' => $dto->payment_purpose,
+                'counterpart_account_id' => $dto->counterpart_account_id,
                 'reference' => $dto->reference,
                 'amount' => $totalAmount,
                 'payment_type' => $paymentType,
@@ -69,19 +88,9 @@ class CreatePaymentAction
                 'status' => PaymentStatus::Draft,
             ]);
 
-            // Create the links
-            foreach ($dto->document_links as $link) {
-                $linkData = [
-                    'company_id' => $dto->company_id,
-                    'amount_applied' => $link->amount_applied,
-                ];
-                if ($link->document_type === 'invoice') {
-                    $linkData['invoice_id'] = $link->document_id;
-                } else { // vendor_bill
-                    $linkData['vendor_bill_id'] = $link->document_id;
-                }
-                $payment->paymentDocumentLinks()->create($linkData);
-            }
+            // Delegate to the strategy
+            $strategy = PaymentStrategyFactory::make($dto->payment_purpose);
+            $strategy->executeCreate($payment, $dto);
 
             return $payment;
         });

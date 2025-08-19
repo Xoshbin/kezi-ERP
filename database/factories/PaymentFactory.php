@@ -10,6 +10,7 @@ use App\Models\Payment;
 use App\Models\Currency;
 use App\Enums\Payments\PaymentType;
 use App\Enums\Payments\PaymentStatus;
+use App\Enums\Payments\PaymentPurpose;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class PaymentFactory extends Factory
@@ -25,6 +26,7 @@ class PaymentFactory extends Factory
             'amount' => Money::of($this->faker->randomFloat(2, 100, 10000), 'USD'),
             // Use enum values for clarity and maintainability.
             'payment_type' => $this->faker->randomElement([PaymentType::Inbound, PaymentType::Outbound]),
+            'payment_purpose' => PaymentPurpose::Settlement, // Default to settlement for existing tests
             'reference' => $this->faker->sentence(3),
             'status' => PaymentStatus::Draft,
             'journal_entry_id' => null,

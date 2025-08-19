@@ -135,6 +135,15 @@ return [
         'paid' => 'Paid',
     ],
 
+    'payment_purpose' => [
+        'settlement' => 'Settlement',
+        'loan' => 'Loan',
+        'capital_injection' => 'Capital Injection',
+        'expense_claim' => 'Expense Claim',
+        'tax_payment' => 'Tax Payment',
+        'asset_purchase' => 'Asset Purchase',
+    ],
+
     'tax_type' => [
         'sales' => 'Sales',
         'purchase' => 'Purchase',

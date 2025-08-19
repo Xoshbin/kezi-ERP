@@ -76,7 +76,6 @@ class AccountSeeder extends Seeder
             ['code' => '610301', 'name' => ['en' => 'Cash Difference Gain', 'ckb' => 'قازانجی جیاوازی پارە', 'ar' => 'ربح فرق النقد'], 'type' => AccountType::OtherIncome],
             ['code' => '620101', 'name' => ['en' => 'Interest Income', 'ckb' => 'داهاتی سوو', 'ar' => 'إيراد الفوائد'], 'type' => AccountType::OtherIncome],
 
-
             // === EXPENSES ===
             ['code' => '510101', 'name' => ['en' => 'Cost of Goods Sold (COGS)', 'ckb' => 'تێچووی کاڵای فرۆشراو', 'ar' => 'تكلفة البضاعة المباعة'], 'type' => AccountType::CostOfRevenue],
             ['code' => '510201', 'name' => ['en' => 'Inventory Adjustment Expense', 'ckb' => 'خەرجی گۆڕینی کەڵەکەبوو', 'ar' => 'مصروف تسوية المخزون'], 'type' => AccountType::Expense],
@@ -88,6 +87,13 @@ class AccountSeeder extends Seeder
             ['code' => '530401', 'name' => ['en' => 'Bank Charges Expense', 'ckb' => 'خەرجی بانک', 'ar' => 'مصروف رسوم البنك'], 'type' => AccountType::Expense],
             ['code' => '530501', 'name' => ['en' => 'Utilities Expense', 'ckb' => 'خەرجی خزمەتگوزارییە گشتییەکان', 'ar' => 'مصروف المرافق العامة'], 'type' => AccountType::Expense],
             ['code' => '550101', 'name' => ['en' => 'Interest Expense', 'ckb' => 'خەرجی سوو', 'ar' => 'مصروف الفوائد'], 'type' => AccountType::Expense],
+
+            // === NEW ACCOUNTS FOR VOUCHERS (APPENDED) ===
+            // These accounts are used as counterpart accounts for non-settlement payments.
+            ['code' => '120401', 'name' => ['en' => 'Loans Receivable', 'ckb' => 'قەرزی پێدراو', 'ar' => 'قروض مستحقة القبض'], 'type' => AccountType::CurrentAssets],
+            ['code' => '250201', 'name' => ['en' => 'Loans Payable', 'ckb' => 'قەرزی وەرگیراو', 'ar' => 'قروض مستحقة الدفع'], 'type' => AccountType::NonCurrentLiabilities],
+            ['code' => '320201', 'name' => ['en' => 'Capital Contributions', 'ckb' => 'بەشداری سەرمایە', 'ar' => 'مساهمات رأس المال'], 'type' => AccountType::Equity],
+
         ];
 
         foreach ($accounts as $accountData) {

@@ -11,6 +11,8 @@ use Tests\Traits\MocksTime;
 use App\Models\JournalEntry;
 use App\Services\PaymentService;
 use App\Enums\Payments\PaymentStatus;
+use App\Enums\Payments\PaymentPurpose;
+use App\Enums\Payments\PaymentType;
 use Tests\Traits\CreatesApplication;
 use Tests\Traits\WithUnlockedPeriod;
 use App\Services\JournalEntryService;
@@ -102,6 +104,11 @@ describe('Payment Cancellations', function () {
             journal_id: $this->company->default_bank_journal_id,
             currency_id: $this->company->currency_id,
             payment_date: now()->toDateString(),
+            payment_purpose: PaymentPurpose::Settlement,
+            payment_type: PaymentType::Outbound,
+            partner_id: null,
+            amount: null,
+            counterpart_account_id: null,
             document_links: [$linkDto],
             reference: 'Test Payment'
         );

@@ -12,6 +12,7 @@ use App\Models\VendorBill;
 use App\Enums\Accounting\JournalType;
 use App\Enums\Payments\PaymentStatus;
 use App\Enums\Payments\PaymentType;
+use App\Enums\Payments\PaymentPurpose;
 use App\Services\PaymentService;
 use Brick\Money\Money;
 use Carbon\Carbon;
@@ -92,6 +93,11 @@ describe('Multi-Currency Payment Tests', function () {
             journal_id: $this->bankJournal->id,
             currency_id: $this->usdCurrency->id,
             payment_date: $this->invoiceDate->toDateString(), // Same date = same rate
+            payment_purpose: PaymentPurpose::Settlement,
+            payment_type: PaymentType::Inbound,
+            partner_id: null,
+            amount: null,
+            counterpart_account_id: null,
             document_links: [$documentLinkDTO],
             reference: 'USD Payment for USD Invoice'
         );
@@ -143,6 +149,11 @@ describe('Multi-Currency Payment Tests', function () {
             journal_id: $this->bankJournal->id,
             currency_id: $this->usdCurrency->id,
             payment_date: $this->paymentDate->toDateString(), // Later date = different rate
+            payment_purpose: PaymentPurpose::Settlement,
+            payment_type: PaymentType::Inbound,
+            partner_id: null,
+            amount: null,
+            counterpart_account_id: null,
             document_links: [$documentLinkDTO],
             reference: 'USD Payment with Exchange Gain'
         );
@@ -191,6 +202,11 @@ describe('Cross-Currency Payment Tests', function () {
             journal_id: $this->bankJournal->id,
             currency_id: $this->company->currency_id, // IQD payment
             payment_date: $this->paymentDate->toDateString(),
+            payment_purpose: PaymentPurpose::Settlement,
+            payment_type: PaymentType::Inbound,
+            partner_id: null,
+            amount: null,
+            counterpart_account_id: null,
             document_links: [$documentLinkDTO],
             reference: 'IQD Payment for USD Invoice'
         );
@@ -235,6 +251,11 @@ describe('Cross-Currency Payment Tests', function () {
             journal_id: $this->bankJournal->id,
             currency_id: $this->usdCurrency->id, // USD payment
             payment_date: $this->paymentDate->toDateString(),
+            payment_purpose: PaymentPurpose::Settlement,
+            payment_type: PaymentType::Inbound,
+            partner_id: null,
+            amount: null,
+            counterpart_account_id: null,
             document_links: [$documentLinkDTO],
             reference: 'USD Payment for IQD Invoice'
         );
@@ -277,8 +298,14 @@ describe('VendorBill Payment Tests', function () {
             journal_id: $this->bankJournal->id,
             currency_id: $this->usdCurrency->id,
             payment_date: $this->paymentDate->toDateString(),
+            payment_purpose: PaymentPurpose::Settlement,
+            payment_type: PaymentType::Outbound,
+            partner_id: null,
+            amount: null,
+            counterpart_account_id: null,
             document_links: [$documentLinkDTO],
             reference: 'USD Payment for USD Vendor Bill'
+
         );
 
         // Act: Create and confirm payment
@@ -314,8 +341,14 @@ describe('Payment Document Link Tests', function () {
             journal_id: $this->bankJournal->id,
             currency_id: $this->usdCurrency->id,
             payment_date: $this->paymentDate->toDateString(),
+            payment_purpose: PaymentPurpose::Settlement,
+            payment_type: PaymentType::Inbound,
+            partner_id: null,
+            amount: null,
+            counterpart_account_id: null,
             document_links: [$documentLinkDTO],
             reference: 'Test Payment Document Link'
+
         );
 
         // Act: Create payment
@@ -353,8 +386,14 @@ describe('Payment Document Link Tests', function () {
             journal_id: $this->bankJournal->id,
             currency_id: $this->usdCurrency->id,
             payment_date: $this->paymentDate->toDateString(),
+            payment_purpose: PaymentPurpose::Settlement,
+            payment_type: PaymentType::Inbound,
+            partner_id: null,
+            amount: null,
+            counterpart_account_id: null,
             document_links: [$documentLinkDTO],
             reference: 'Partial USD Payment'
+
         );
 
         // Act: Create and confirm payment
@@ -396,6 +435,11 @@ describe('Payment State Bug Tests', function () {
             journal_id: $this->bankJournal->id,
             currency_id: $this->company->currency_id, // IQD payment
             payment_date: $this->paymentDate->toDateString(),
+            payment_purpose: PaymentPurpose::Settlement,
+            payment_type: PaymentType::Inbound,
+            partner_id: null,
+            amount: null,
+            counterpart_account_id: null,
             document_links: [$documentLinkDTO],
             reference: 'Partial IQD Payment for USD Invoice'
         );
@@ -438,6 +482,11 @@ describe('Payment State Bug Tests', function () {
             journal_id: $this->bankJournal->id,
             currency_id: $this->usdCurrency->id, // USD payment
             payment_date: $this->paymentDate->toDateString(),
+            payment_purpose: PaymentPurpose::Settlement,
+            payment_type: PaymentType::Inbound,
+            partner_id: null,
+            amount: null,
+            counterpart_account_id: null,
             document_links: [$documentLinkDTO],
             reference: 'Full USD Payment for USD Invoice'
         );
@@ -480,6 +529,11 @@ describe('Payment State Bug Tests', function () {
             journal_id: $this->bankJournal->id,
             currency_id: $this->company->currency_id, // IQD payment
             payment_date: $this->paymentDate->toDateString(),
+            payment_purpose: PaymentPurpose::Settlement,
+            payment_type: PaymentType::Inbound,
+            partner_id: null,
+            amount: null,
+            counterpart_account_id: null,
             document_links: [$documentLinkDTO],
             reference: 'Real World Scenario: 250,000 IQD for $1500 USD Invoice'
         );
