@@ -10,6 +10,7 @@ use App\Enums\Accounting\JournalType;
 use App\Enums\Purchases\VendorBillStatus;
 use App\Enums\Payments\PaymentType;
 use App\Enums\Payments\PaymentStatus;
+use App\Enums\Payments\PaymentPurpose;
 use Brick\Money\Money;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\Traits\WithConfiguredCompany;
@@ -56,6 +57,8 @@ it('can create an inbound payment linked to an invoice', function () {
             'journal_id' => $bankJournal->id,
             'currency_id' => $this->company->currency_id,
             'payment_date' => now()->format('Y-m-d'),
+            'payment_type' => PaymentType::Inbound->value,
+            'payment_purpose' => PaymentPurpose::Settlement->value,
             'reference' => 'Test Payment',
         ])
         ->set('data.document_links', [
@@ -111,6 +114,8 @@ it('can create an outbound payment linked to a vendor bill', function () {
             'journal_id' => $bankJournal->id,
             'currency_id' => $this->company->currency_id,
             'payment_date' => now()->format('Y-m-d'),
+            'payment_type' => PaymentType::Outbound->value,
+            'payment_purpose' => PaymentPurpose::Settlement->value,
             'reference' => 'Vendor Payment',
         ])
         ->set('data.document_links', [
@@ -148,6 +153,8 @@ it('can validate input on create', function () {
             'journal_id' => null,
             'currency_id' => null,
             'payment_date' => null,
+            'payment_type' => null,
+            'payment_purpose' => null,
             'document_links' => [],
         ])
         ->call('create')
@@ -155,7 +162,8 @@ it('can validate input on create', function () {
             'journal_id' => 'required',
             'currency_id' => 'required',
             'payment_date' => 'required',
-            'document_links' => 'min',
+            'payment_type' => 'required',
+            'payment_purpose' => 'required',
         ]);
 });
 
@@ -187,6 +195,8 @@ it('can edit a draft payment', function () {
     $payment = Payment::factory()->create([
         'company_id' => $this->company->id,
         'status' => PaymentStatus::Draft,
+        'payment_type' => PaymentType::Inbound,
+        'payment_purpose' => PaymentPurpose::Settlement,
         'reference' => 'Old Reference',
         'amount' => Money::of(100, $this->company->currency->code),
         'currency_id' => $this->company->currency_id,
@@ -238,6 +248,8 @@ it('cannot edit a confirmed payment', function () {
     $payment = Payment::factory()->create([
         'company_id' => $this->company->id,
         'status' => PaymentStatus::Confirmed,
+        'payment_type' => PaymentType::Inbound,
+        'payment_purpose' => PaymentPurpose::Settlement,
         'reference' => 'Confirmed Payment',
         'amount' => Money::of(100, $this->company->currency->code),
         'currency_id' => $this->company->currency_id,
@@ -397,6 +409,8 @@ it('calculates total amount from multiple document links', function () {
             'journal_id' => $bankJournal->id,
             'currency_id' => $this->company->currency_id,
             'payment_date' => now()->format('Y-m-d'),
+            'payment_type' => PaymentType::Inbound->value,
+            'payment_purpose' => PaymentPurpose::Settlement->value,
             'reference' => 'Multi Invoice Payment',
         ])
         ->set('data.document_links', [

@@ -11,6 +11,7 @@ use App\Models\Partner;
 use App\Models\Payment;
 use App\Models\VendorBill;
 use App\Enums\Payments\PaymentType;
+use App\Enums\Payments\PaymentPurpose;
 use Tests\Traits\MocksTime;
 use App\Services\PaymentService;
 use Tests\Traits\CreatesApplication;
@@ -44,6 +45,11 @@ test('an inbound payment can be created and linked to an invoice', function () {
         journal_id: Journal::factory()->for($this->company)->create(['type' => JournalType::Bank])->id,
         currency_id: $this->company->currency_id,
         payment_date: now()->toDateString(),
+        payment_purpose: PaymentPurpose::Settlement,
+        payment_type: PaymentType::Inbound,
+        partner_id: null,
+        amount: null,
+        counterpart_account_id: null,
         document_links: [$documentLinkDTO],
         reference: null
     );
@@ -85,6 +91,11 @@ test('an outbound payment can be created and linked to a vendor bill', function 
         journal_id: Journal::factory()->for($this->company)->create(['type' => JournalType::Bank])->id,
         currency_id: $this->company->currency_id,
         payment_date: now()->toDateString(),
+        payment_purpose: PaymentPurpose::Settlement,
+        payment_type: PaymentType::Outbound,
+        partner_id: null,
+        amount: null,
+        counterpart_account_id: null,
         document_links: [$documentLinkDTO],
         reference: null
     );
@@ -134,6 +145,11 @@ test('creating a payment generates the correct journal entry', function () {
         journal_id: $bankJournal->id,
         currency_id: $this->company->currency_id,
         payment_date: now()->toDateString(),
+        payment_purpose: PaymentPurpose::Settlement,
+        payment_type: PaymentType::Outbound,
+        partner_id: null,
+        amount: null,
+        counterpart_account_id: null,
         document_links: [$documentLinkDTO],
         reference: 'Test Payment'
     );

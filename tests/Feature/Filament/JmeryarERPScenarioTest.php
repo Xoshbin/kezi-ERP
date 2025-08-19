@@ -392,6 +392,8 @@ test('Jmeryar ERP complete accounting scenario - Full Workflow', function () {
             'journal_id' => $journals['Bank']->id,
             'currency_id' => $currency->id,
             'payment_date' => now()->format('Y-m-d'),
+            'payment_type' => \App\Enums\Payments\PaymentType::Inbound->value,
+            'payment_purpose' => \App\Enums\Payments\PaymentPurpose::Settlement->value,
             'reference' => 'Payment from Hawre Trading Group',
         ])
         ->set('data.document_links', [
@@ -428,6 +430,8 @@ test('Jmeryar ERP complete accounting scenario - Full Workflow', function () {
             'journal_id' => $journals['Bank']->id,
             'currency_id' => $currency->id,
             'payment_date' => now()->format('Y-m-d'),
+            'payment_type' => \App\Enums\Payments\PaymentType::Outbound->value,
+            'payment_purpose' => \App\Enums\Payments\PaymentPurpose::Settlement->value,
             'reference' => 'Payment to Paykar Tech Supplies',
         ])
         ->set('data.document_links', [
