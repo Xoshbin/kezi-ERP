@@ -16,7 +16,7 @@ class CurrencyRateForm
         return $schema
             ->components([
                 Select::make('currency_id')
-                    ->label('Currency')
+                    ->label(__('currency.exchange_rates.currency'))
                     ->relationship('currency', 'name')
                     ->getOptionLabelFromRecordUsing(fn (Currency $record): string => "{$record->name} ({$record->code})")
                     ->searchable()
@@ -24,26 +24,26 @@ class CurrencyRateForm
                     ->required(),
 
                 TextInput::make('rate')
-                    ->label('Exchange Rate')
+                    ->label(__('currency.exchange_rates.rate'))
                     ->required()
                     ->numeric()
                     ->step(0.0001)
                     ->minValue(0)
-                    ->helperText('Rate relative to company base currency (1 foreign currency = X base currency)'),
+                    ->helperText(__('currency.exchange_rates.rate_helper')),
 
                 DatePicker::make('effective_date')
-                    ->label('Effective Date')
+                    ->label(__('currency.exchange_rates.effective_date'))
                     ->required()
                     ->default(Carbon::today())
                     ->maxDate(Carbon::today()),
 
                 Select::make('source')
-                    ->label('Source')
+                    ->label(__('currency.exchange_rates.source'))
                     ->options([
-                        'manual' => 'Manual Entry',
-                        'api' => 'API Import',
-                        'bank' => 'Bank Rate',
-                        'central_bank' => 'Central Bank',
+                        'manual' => __('currency.exchange_rates.sources.manual'),
+                        'api' => __('currency.exchange_rates.sources.api'),
+                        'bank' => __('currency.exchange_rates.sources.bank'),
+                        'central_bank' => __('currency.exchange_rates.sources.central_bank'),
                     ])
                     ->default('manual')
                     ->required(),

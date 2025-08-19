@@ -3,14 +3,10 @@
 namespace App\Filament\Resources\CurrencyRates\Tables;
 
 use App\Models\Currency;
-use App\Services\ExchangeRateService;
 use Carbon\Carbon;
-use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
-use Filament\Notifications\Notification;
-
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\SelectFilter;
@@ -24,24 +20,25 @@ class CurrencyRatesTable
         return $table
             ->columns([
                 TextColumn::make('currency.name')
-                    ->label('Currency')
+                    ->label(__('currency.exchange_rates.currency'))
                     ->formatStateUsing(fn ($record) => "{$record->currency->name} ({$record->currency->code})")
                     ->sortable(['currency.name'])
                     ->searchable(['currency.name', 'currency.code']),
 
                 TextColumn::make('rate')
-                    ->label('Exchange Rate')
+                    ->label(__('currency.exchange_rates.rate'))
                     ->numeric(decimalPlaces: 6)
                     ->sortable(),
 
                 TextColumn::make('effective_date')
-                    ->label('Effective Date')
+                    ->label(__('currency.exchange_rates.effective_date'))
                     ->date()
                     ->sortable(),
 
                 TextColumn::make('source')
-                    ->label('Source')
+                    ->label(__('currency.exchange_rates.source'))
                     ->badge()
+                    ->formatStateUsing(fn (string $state): string => __("currency.exchange_rates.sources.{$state}"))
                     ->color(fn (string $state): string => match ($state) {
                         'api' => 'success',
                         'manual' => 'warning',
@@ -58,21 +55,21 @@ class CurrencyRatesTable
             ])
             ->filters([
                 SelectFilter::make('currency_id')
-                    ->label('Currency')
+                    ->label(__('currency.exchange_rates.currency'))
                     ->relationship('currency', 'name')
                     ->getOptionLabelFromRecordUsing(fn (Currency $record): string => "{$record->name} ({$record->code})"),
 
                 SelectFilter::make('source')
-                    ->label('Source')
+                    ->label(__('currency.exchange_rates.source'))
                     ->options([
-                        'manual' => 'Manual Entry',
-                        'api' => 'API Import',
-                        'bank' => 'Bank Rate',
-                        'central_bank' => 'Central Bank',
+                        'manual' => __('currency.exchange_rates.sources.manual'),
+                        'api' => __('currency.exchange_rates.sources.api'),
+                        'bank' => __('currency.exchange_rates.sources.bank'),
+                        'central_bank' => __('currency.exchange_rates.sources.central_bank'),
                     ]),
 
                 Filter::make('recent')
-                    ->label('Recent (Last 30 days)')
+                    ->label(__('currency.exchange_rates.recent_filter'))
                     ->query(fn (Builder $query): Builder => $query->where('effective_date', '>=', Carbon::now()->subDays(30))),
             ])
             ->recordActions([
