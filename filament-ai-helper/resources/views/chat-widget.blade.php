@@ -1,11 +1,18 @@
-{{-- Simple AI Chat Widget - Bottom Right Popup --}}
+{{-- Simple AI Chat Widget - Bottom Right/Left Popup (RTL Aware) --}}
+@php
+    $isRtl = in_array(app()->getLocale(), ['ar', 'ckb', 'fa', 'he', 'ur']);
+    $positionClass = $isRtl ? 'left-24' : 'right-24';
+    $popupPositionClass = $isRtl ? 'left-0' : 'right-0';
+@endphp
+
 <style>
 .ai-chat-widget-container {
     position: fixed;
     bottom: 24px;
-    right: 24px;
+    {{ $isRtl ? 'left: 24px;' : 'right: 24px;' }}
     z-index: 9999;
     font-family: system-ui, -apple-system, sans-serif;
+    direction: {{ $isRtl ? 'rtl' : 'ltr' }};
 }
 
 .ai-chat-widget-button {
@@ -66,7 +73,7 @@
 .ai-chat-widget-popup {
     position: absolute;
     bottom: 80px;
-    right: 0;
+    {{ $isRtl ? 'left: 0;' : 'right: 0;' }}
     width: 380px;
     height: 500px;
     background: white;
@@ -145,7 +152,7 @@
         width: 320px;
         height: 450px;
         bottom: 70px;
-        right: -10px;
+        {{ $isRtl ? 'left: -10px;' : 'right: -10px;' }}
     }
 }
 </style>
@@ -187,8 +194,8 @@
                     </svg>
                 </div>
                 <div>
-                    <h3 class="text-xl font-bold text-white">AccounTech Pro</h3>
-                    <p class="text-sm text-blue-100">AI Accounting Assistant</p>
+                    <h3 class="text-xl font-bold text-white">{{ __('filament-ai-helper::messages.button_label') }}</h3>
+                    <p class="text-sm text-blue-100">{{ __('filament-ai-helper::messages.modal_title') }}</p>
                 </div>
             </div>
 
@@ -222,8 +229,8 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
                             </svg>
                         </div>
-                        <h4 class="text-base font-semibold text-gray-900 mb-2">Welcome!</h4>
-                        <p class="text-gray-600 text-sm leading-relaxed">Hello! I'm AccounTech Pro, your AI accounting assistant. I can help you analyze records, check for potential issues, and provide insights based on accounting best practices. How can I assist you today?</p>
+                        <h4 class="text-base font-semibold text-gray-900 mb-2">{{ __('filament-ai-helper::messages.welcome_messages.default') }}</h4>
+                        <p class="text-gray-600 text-sm leading-relaxed">{{ __('filament-ai-helper::messages.modal_description') }}</p>
                     </div>
                 </div>
             </template>
@@ -240,7 +247,7 @@
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
                                     </svg>
                                 </div>
-                                <span class="text-xs font-semibold text-blue-600">AccounTech Pro</span>
+                                <span class="text-xs font-semibold text-blue-600">{{ __('filament-ai-helper::messages.button_label') }}</span>
                             </div>
                         </template>
 
@@ -262,7 +269,7 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
                             </svg>
                         </div>
-                        <span class="text-xs font-semibold text-blue-600">Thinking...</span>
+                        <span class="text-xs font-semibold text-blue-600">{{ __('filament-ai-helper::messages.chat.sending_button') }}</span>
                         <div class="ai-loading-dots">
                             <div class="ai-loading-dot"></div>
                             <div class="ai-loading-dot"></div>
@@ -280,7 +287,7 @@
                     <textarea x-model="currentMessage"
                               @keydown.ctrl.enter="sendMessage()"
                               :disabled="isLoading"
-                              placeholder="Ask me anything about this record..."
+                              placeholder="{{ __('filament-ai-helper::messages.chat.placeholder') }}"
                               rows="2"
                               style="width: 100%;"
                               class="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none text-sm"></textarea>
@@ -295,13 +302,13 @@
                         <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
                         </svg>
-                        <span>Ctrl+Enter</span>
+                        <span>{{ __('filament-ai-helper::messages.chat.keyboard_shortcut') }}</span>
                     </p>
 
                     <button type="submit"
                             :disabled="isLoading || !currentMessage.trim()"
                             class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200 text-sm font-medium shadow-sm">
-                        <span x-text="isLoading ? 'Sending...' : 'Send'"></span>
+                        <span x-text="isLoading ? '{{ __('filament-ai-helper::messages.chat.sending_button') }}' : '{{ __('filament-ai-helper::messages.chat.send_button') }}'"></span>
                     </button>
                 </div>
             </form>
@@ -395,7 +402,7 @@ function aiChatWidget() {
                 }
             } catch (error) {
                 console.error('AI Chat error:', error);
-                this.errorMessage = error.message || 'Sorry, I encountered an error. Please try again.';
+                this.errorMessage = error.message || '{{ __('filament-ai-helper::messages.errors.api_error') }}';
             } finally {
                 this.isLoading = false;
                 this.$nextTick(() => {
