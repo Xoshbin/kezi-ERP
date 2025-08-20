@@ -25,9 +25,9 @@ it('can be instantiated with required parameters', function () {
     expect($service)->toBeInstanceOf(GeminiService::class);
 });
 
-it('throws exception when api key is empty', function () {
-    expect(fn () => new GeminiService('', 'https://api.test.com'))
-        ->toThrow(GeminiApiException::class, 'Gemini API key is not configured');
+it('allows empty api key for demo mode', function () {
+    $service = new GeminiService('', 'https://api.test.com');
+    expect($service)->toBeInstanceOf(GeminiService::class);
 });
 
 it('can generate response successfully', function () {
@@ -51,7 +51,7 @@ it('can generate response successfully', function () {
     $client = new Client(['handler' => $handlerStack]);
 
     $service = new GeminiService('test-key', 'https://api.test.com');
-    
+
     // Use reflection to replace the HTTP client
     $reflection = new ReflectionClass($service);
     $property = $reflection->getProperty('httpClient');
@@ -72,7 +72,7 @@ it('handles api errors gracefully', function () {
     $client = new Client(['handler' => $handlerStack]);
 
     $service = new GeminiService('test-key', 'https://api.test.com', maxRetries: 1);
-    
+
     $reflection = new ReflectionClass($service);
     $property = $reflection->getProperty('httpClient');
     $property->setAccessible(true);
@@ -97,7 +97,7 @@ it('retries failed requests', function () {
     $client = new Client(['handler' => $handlerStack]);
 
     $service = new GeminiService('test-key', 'https://api.test.com', maxRetries: 3);
-    
+
     $reflection = new ReflectionClass($service);
     $property = $reflection->getProperty('httpClient');
     $property->setAccessible(true);
@@ -117,7 +117,7 @@ it('handles invalid json response', function () {
     $client = new Client(['handler' => $handlerStack]);
 
     $service = new GeminiService('test-key', 'https://api.test.com');
-    
+
     $reflection = new ReflectionClass($service);
     $property = $reflection->getProperty('httpClient');
     $property->setAccessible(true);
@@ -136,7 +136,7 @@ it('handles unexpected response format', function () {
     $client = new Client(['handler' => $handlerStack]);
 
     $service = new GeminiService('test-key', 'https://api.test.com');
-    
+
     $reflection = new ReflectionClass($service);
     $property = $reflection->getProperty('httpClient');
     $property->setAccessible(true);
@@ -148,7 +148,7 @@ it('handles unexpected response format', function () {
 
 it('caches responses when enabled', function () {
     config(['filament-ai-helper.cache.enabled' => true]);
-    
+
     $mockResponse = [
         'candidates' => [
             ['content' => ['parts' => [['text' => 'Cached response']]]]
@@ -163,7 +163,7 @@ it('caches responses when enabled', function () {
     $client = new Client(['handler' => $handlerStack]);
 
     $service = new GeminiService('test-key', 'https://api.test.com');
-    
+
     $reflection = new ReflectionClass($service);
     $property = $reflection->getProperty('httpClient');
     $property->setAccessible(true);
@@ -171,13 +171,13 @@ it('caches responses when enabled', function () {
 
     // First call should hit the API
     $response1 = $service->generateResponse('Test prompt');
-    
+
     // Second call should use cache (no additional HTTP request)
     $response2 = $service->generateResponse('Test prompt');
 
     expect($response1)->toBe('Cached response');
     expect($response2)->toBe('Cached response');
-    
+
     // Verify cache was used
     expect(Cache::has('filament_ai_helper:' . md5(serialize(['prompt' => 'Test prompt', 'context' => []]))))->toBeTrue();
 });
@@ -197,7 +197,7 @@ it('can test connection', function () {
     $client = new Client(['handler' => $handlerStack]);
 
     $service = new GeminiService('test-key', 'https://api.test.com');
-    
+
     $reflection = new ReflectionClass($service);
     $property = $reflection->getProperty('httpClient');
     $property->setAccessible(true);
@@ -215,7 +215,7 @@ it('returns false for failed connection test', function () {
     $client = new Client(['handler' => $handlerStack]);
 
     $service = new GeminiService('test-key', 'https://api.test.com', maxRetries: 1);
-    
+
     $reflection = new ReflectionClass($service);
     $property = $reflection->getProperty('httpClient');
     $property->setAccessible(true);

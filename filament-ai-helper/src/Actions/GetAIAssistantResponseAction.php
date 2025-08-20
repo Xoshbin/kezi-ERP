@@ -23,17 +23,13 @@ class GetAIAssistantResponseAction
     /**
      * Execute the action and get AI response
      */
-    public function execute(AIHelperContextDTO|AIAssistantRequestDTO $context): object|string
+    public function execute(AIHelperContextDTO|AIAssistantRequestDTO $context): string
     {
         // Handle both DTO types for backward compatibility
         if ($context instanceof AIAssistantRequestDTO) {
             $result = $this->executeFromRequest($context);
-            // Convert AIAssistantResponseDTO to object for consistency
-            return (object) [
-                'success' => $result->success,
-                'response' => $result->response,
-                'error' => $result->error,
-            ];
+            // Return just the response string for consistency
+            return $result->response ?? 'No response available';
         }
 
         return $this->executeFromContext($context);
@@ -72,7 +68,7 @@ class GetAIAssistantResponseAction
         }
     }
 
-    protected function executeFromContext(AIHelperContextDTO $context): object
+    protected function executeFromContext(AIHelperContextDTO $context): string
     {
         try {
             $prompt = $this->buildPrompt($context);
@@ -88,11 +84,7 @@ class GetAIAssistantResponseAction
 
             $response = $this->geminiService->generateResponse($prompt, $context->toArray());
 
-            return (object) [
-                'success' => true,
-                'response' => $response,
-                'answer' => $response, // For backward compatibility
-            ];
+            return $response;
 
         } catch (GeminiApiException $e) {
             Log::error('AI Assistant API error', [
@@ -193,7 +185,7 @@ class GetAIAssistantResponseAction
                 if (method_exists($model, Str::before($relationship, '.'))) {
                     $model->load($relationship);
                 }
-            } catch (\Exception $e) {
+            } catch (\Exception) {
                 // Silently continue if relationship doesn't exist
                 continue;
             }
@@ -318,18 +310,13 @@ class GetAIAssistantResponseAction
     /**
      * Get a fallback response when AI service fails
      */
-    protected function getFallbackResponse(AIHelperContextDTO $context): object
+    protected function getFallbackResponse(AIHelperContextDTO $context): string
     {
         $modelName = $context->getModelName();
         $fallbackMessage = "I apologize, but I'm currently unable to analyze this {$modelName} record due to a technical issue. " .
                           "Please try again later or contact support if the problem persists.";
 
-        return (object) [
-            'success' => false,
-            'response' => $fallbackMessage,
-            'answer' => $fallbackMessage, // For backward compatibility
-            'error' => 'Service temporarily unavailable'
-        ];
+        return $fallbackMessage;
     }
 
     /**

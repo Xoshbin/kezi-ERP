@@ -3,8 +3,11 @@
 namespace AccounTech\FilamentAiHelper;
 
 use AccounTech\FilamentAiHelper\Actions\GetAIAssistantResponseAction;
+use AccounTech\FilamentAiHelper\Actions\FillFormAction;
+use AccounTech\FilamentAiHelper\Actions\UpdateFormAction;
 use AccounTech\FilamentAiHelper\Services\GeminiService;
 use AccounTech\FilamentAiHelper\Services\DeepContextService;
+use AccounTech\FilamentAiHelper\Services\FormSchemaExtractor;
 use Filament\Support\Assets\Css;
 use Filament\Support\Assets\Js;
 use Filament\Support\Facades\FilamentAsset;
@@ -34,7 +37,10 @@ class FilamentAiHelperServiceProvider extends ServiceProvider
         });
 
         $this->app->bind(GetAIAssistantResponseAction::class);
+        $this->app->bind(FillFormAction::class);
+        $this->app->bind(UpdateFormAction::class);
         $this->app->singleton(DeepContextService::class);
+        $this->app->singleton(FormSchemaExtractor::class);
     }
 
     public function boot(): void
