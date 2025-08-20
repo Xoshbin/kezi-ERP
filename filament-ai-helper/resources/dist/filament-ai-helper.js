@@ -3,6 +3,7 @@
 document.addEventListener('DOMContentLoaded', function() {
     // Initialize AI Helper functionality
     initializeAiHelper();
+    initializeChatWidget();
 });
 
 function initializeAiHelper() {
@@ -12,12 +13,51 @@ function initializeAiHelper() {
         const observer = new MutationObserver(() => {
             container.scrollTop = container.scrollHeight;
         });
-        
+
         observer.observe(container, {
             childList: true,
             subtree: true
         });
     });
+}
+
+function initializeChatWidget() {
+    // Global function to toggle chat widget
+    window.toggleAiChatWidget = function() {
+        if (window.Livewire) {
+            const chatWidget = window.Livewire.find('ai-chat-widget');
+            if (chatWidget) {
+                chatWidget.call('toggleChat');
+            } else {
+                // Dispatch event to toggle chat
+                window.dispatchEvent(new CustomEvent('ai-chat-toggle'));
+            }
+        }
+    };
+
+    // Global function to open chat widget
+    window.openAiChatWidget = function() {
+        if (window.Livewire) {
+            const chatWidget = window.Livewire.find('ai-chat-widget');
+            if (chatWidget) {
+                chatWidget.call('openChat');
+            } else {
+                window.dispatchEvent(new CustomEvent('ai-chat-open'));
+            }
+        }
+    };
+
+    // Global function to close chat widget
+    window.closeAiChatWidget = function() {
+        if (window.Livewire) {
+            const chatWidget = window.Livewire.find('ai-chat-widget');
+            if (chatWidget) {
+                chatWidget.call('closeChat');
+            } else {
+                window.dispatchEvent(new CustomEvent('ai-chat-close'));
+            }
+        }
+    };
 
     // Handle keyboard shortcuts
     document.addEventListener('keydown', function(e) {
@@ -34,7 +74,7 @@ function initializeAiHelper() {
                 }
             }
         }
-        
+
         // Escape to close modal
         if (e.key === 'Escape') {
             const openModals = document.querySelectorAll('.ai-helper-modal[x-show="isOpen"]');
@@ -68,7 +108,7 @@ window.AiHelper = {
         // Convert line breaks to HTML
         return content.replace(/\n/g, '<br>');
     },
-    
+
     // Get current page context for AI
     getCurrentContext: function() {
         const context = {
@@ -78,7 +118,7 @@ window.AiHelper = {
             url: window.location.href,
             title: document.title
         };
-        
+
         // Try to extract context from Livewire components
         if (window.Livewire) {
             const components = window.Livewire.all();
@@ -96,7 +136,7 @@ window.AiHelper = {
                 }
             });
         }
-        
+
         // Try to extract from URL patterns
         const urlParts = window.location.pathname.split('/');
         if (urlParts.length >= 3) {
@@ -110,24 +150,24 @@ window.AiHelper = {
                 }
             }
         }
-        
+
         return context;
     },
-    
+
     // Scroll chat to bottom
     scrollToBottom: function(container) {
         if (container) {
             container.scrollTop = container.scrollHeight;
         }
     },
-    
+
     // Handle message sending
     sendMessage: function(wireComponent, message) {
         if (wireComponent && message.trim()) {
             wireComponent.call('sendMessage');
         }
     },
-    
+
     // Clear chat history
     clearChat: function(wireComponent) {
         if (wireComponent) {
@@ -140,11 +180,11 @@ window.AiHelper = {
 document.addEventListener('alpine:init', () => {
     Alpine.data('aiHelperModal', () => ({
         isOpen: false,
-        
+
         openModal() {
             this.isOpen = true;
             document.body.style.overflow = 'hidden';
-            
+
             // Focus textarea after modal opens
             this.$nextTick(() => {
                 const textarea = this.$el.querySelector('.ai-chat-input');
@@ -153,16 +193,16 @@ document.addEventListener('alpine:init', () => {
                 }
             });
         },
-        
+
         closeModal() {
             this.isOpen = false;
             document.body.style.overflow = '';
         }
     }));
-    
+
     Alpine.data('aiChatBox', () => ({
         autoScroll: true,
-        
+
         init() {
             // Watch for new messages and scroll to bottom
             this.$watch('messages', () => {
@@ -176,7 +216,7 @@ document.addEventListener('alpine:init', () => {
                 }
             });
         },
-        
+
         handleKeydown(e) {
             if (e.ctrlKey && e.key === 'Enter') {
                 e.preventDefault();
