@@ -3,7 +3,10 @@
 namespace AccounTech\FilamentAiHelper\Http\Controllers;
 
 use AccounTech\FilamentAiHelper\Actions\GetAIAssistantResponseAction;
+use AccounTech\FilamentAiHelper\Actions\FillFormAction;
+use AccounTech\FilamentAiHelper\Actions\UpdateFormAction;
 use AccounTech\FilamentAiHelper\DTOs\AIHelperContextDTO;
+use AccounTech\FilamentAiHelper\Services\FormSchemaExtractor;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
@@ -13,7 +16,10 @@ use Illuminate\Support\Facades\Validator;
 class AiChatController extends Controller
 {
     public function __construct(
-        private readonly GetAIAssistantResponseAction $aiAction
+        private readonly GetAIAssistantResponseAction $aiAction,
+        private readonly FillFormAction $fillFormAction,
+        private readonly UpdateFormAction $updateFormAction,
+        private readonly FormSchemaExtractor $formSchemaExtractor
     ) {
     }
 
@@ -40,6 +46,11 @@ class AiChatController extends Controller
 
             $validated = $validator->validated();
 
+            // Extract form information if available
+            $pageType = $this->formSchemaExtractor->detectPageType($request);
+            $formSchema = $this->extractFormSchema($request);
+            $currentFormData = $this->extractCurrentFormData($request);
+
             // Create context DTO
             $context = new AIHelperContextDTO(
                 modelClass: $validated['model_class'] ?? 'Unknown',
@@ -48,10 +59,18 @@ class AiChatController extends Controller
                 userQuestion: $validated['message'],
                 locale: app()->getLocale(),
                 record: $this->getRecordFromRequest($validated),
-                additionalContext: $this->buildAdditionalContext($request)
+                additionalContext: $this->buildAdditionalContext($request),
+                formSchema: $formSchema,
+                currentFormData: $currentFormData,
+                pageType: $pageType
             );
 
-            // Get AI response
+            // Check if this is a form manipulation request
+            if ($context->isFormPage() && $this->isFormManipulationRequest($validated['message'])) {
+                return $this->handleFormManipulation($context);
+            }
+
+            // Get AI response for regular chat
             $result = $this->aiAction->execute($context);
 
             // Handle both string and object responses for backward compatibility
@@ -126,5 +145,104 @@ class AiChatController extends Controller
             'referer' => $request->header('referer'),
             'timestamp' => now()->toISOString(),
         ];
+    }
+
+    /**
+     * Extract form schema from request
+     */
+    private function extractFormSchema(Request $request): ?array
+    {
+        try {
+            // Try to get form schema from request data
+            if ($request->has('form_schema')) {
+                return $request->get('form_schema');
+            }
+
+            // For now, return null - this would be enhanced to extract from Livewire component
+            return null;
+        } catch (\Exception $e) {
+            Log::warning('Failed to extract form schema', ['error' => $e->getMessage()]);
+            return null;
+        }
+    }
+
+    /**
+     * Extract current form data from request
+     */
+    private function extractCurrentFormData(Request $request): ?array
+    {
+        try {
+            // Try to get current form data from request
+            if ($request->has('form_data')) {
+                return $request->get('form_data');
+            }
+
+            // For now, return null - this would be enhanced to extract from Livewire component
+            return null;
+        } catch (\Exception $e) {
+            Log::warning('Failed to extract current form data', ['error' => $e->getMessage()]);
+            return null;
+        }
+    }
+
+    /**
+     * Check if the message is a form manipulation request
+     */
+    private function isFormManipulationRequest(string $message): bool
+    {
+        $formKeywords = [
+            'fill', 'create', 'add', 'set', 'update', 'change', 'edit', 'modify',
+            'invoice', 'bill', 'form', 'field', 'value', 'amount', 'date', 'customer'
+        ];
+
+        $message = strtolower($message);
+
+        foreach ($formKeywords as $keyword) {
+            if (str_contains($message, $keyword)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Handle form manipulation requests
+     */
+    private function handleFormManipulation(AIHelperContextDTO $context): JsonResponse
+    {
+        try {
+            if ($context->isCreatePage()) {
+                $result = $this->fillFormAction->execute($context);
+            } elseif ($context->isEditPage()) {
+                $result = $this->updateFormAction->execute($context);
+            } else {
+                return response()->json([
+                    'success' => false,
+                    'error' => 'Form manipulation not supported on this page type',
+                ], 400);
+            }
+
+            return response()->json([
+                'success' => $result->success,
+                'action' => $result->action,
+                'fields' => $result->fields,
+                'response' => $result->explanation,
+                'warnings' => $result->warnings,
+                'error' => $result->error,
+                'timestamp' => now()->toISOString(),
+            ]);
+
+        } catch (\Exception $e) {
+            Log::error('Form manipulation failed', [
+                'error' => $e->getMessage(),
+                'context' => $context->toArray()
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'error' => 'Form manipulation failed: ' . $e->getMessage(),
+            ], 500);
+        }
     }
 }

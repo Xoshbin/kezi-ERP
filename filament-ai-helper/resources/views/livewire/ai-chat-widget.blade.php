@@ -1,7 +1,7 @@
 {{-- AI Chat Widget - Bottom Right Popup --}}
 <div class="ai-chat-widget-container">
     {{-- Chat Widget Button --}}
-    <div class="ai-chat-widget-button" 
+    <div class="ai-chat-widget-button"
          x-show="!@this.isOpen"
          x-transition:enter="transition ease-out duration-300"
          x-transition:enter-start="opacity-0 transform scale-95"
@@ -9,7 +9,7 @@
          x-transition:leave="transition ease-in duration-200"
          x-transition:leave-start="opacity-100 transform scale-100"
          x-transition:leave-end="opacity-0 transform scale-95">
-        <button 
+        <button
             wire:click="toggleChat"
             class="w-16 h-16 bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center group">
             <x-filament::icon
@@ -20,7 +20,7 @@
     </div>
 
     {{-- Chat Widget Popup --}}
-    <div class="ai-chat-widget-popup" 
+    <div class="ai-chat-widget-popup"
          x-show="@this.isOpen"
          x-transition:enter="transition ease-out duration-300"
          x-transition:enter-start="opacity-0 transform translate-y-4 scale-95"
@@ -28,7 +28,7 @@
          x-transition:leave="transition ease-in duration-200"
          x-transition:leave-start="opacity-100 transform translate-y-0 scale-100"
          x-transition:leave-end="opacity-0 transform translate-y-4 scale-95">
-        
+
         {{-- Chat Header --}}
         <div class="ai-chat-header">
             <div class="flex items-center space-x-3">
@@ -43,18 +43,18 @@
                     <p class="text-sm text-blue-100">AI Accounting Assistant</p>
                 </div>
             </div>
-            
+
             <div class="flex items-center space-x-2">
                 @if($this->hasMessages)
-                    <button 
+                    <button
                         wire:click="clearChat"
                         class="p-2 text-white/70 hover:text-white hover:bg-white/10 rounded-lg transition-colors duration-200"
                         title="Clear chat">
                         <x-filament::icon icon="heroicon-o-trash" class="w-4 h-4" />
                     </button>
                 @endif
-                
-                <button 
+
+                <button
                     wire:click="closeChat"
                     class="p-2 text-white/70 hover:text-white hover:bg-white/10 rounded-lg transition-colors duration-200"
                     title="Close chat">
@@ -208,3 +208,132 @@
         </div>
     </div>
 @endif
+
+{{-- Form Manipulation JavaScript --}}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Form manipulation utilities
+    window.AiFormHelper = {
+        // Update form field value
+        updateField: function(fieldName, value) {
+            try {
+                // Try different field selectors
+                const selectors = [
+                    `[wire\\:model="${fieldName}"]`,
+                    `[wire\\:model.defer="${fieldName}"]`,
+                    `[wire\\:model.lazy="${fieldName}"]`,
+                    `[name="${fieldName}"]`,
+                    `#${fieldName}`,
+                    `[data-field="${fieldName}"]`
+                ];
+
+                let field = null;
+                for (const selector of selectors) {
+                    field = document.querySelector(selector);
+                    if (field) break;
+                }
+
+                if (!field) {
+                    console.warn(`Field not found: ${fieldName}`);
+                    return false;
+                }
+
+                // Update field based on type
+                if (field.type === 'checkbox' || field.type === 'radio') {
+                    field.checked = Boolean(value);
+                } else if (field.tagName === 'SELECT') {
+                    field.value = value;
+                } else {
+                    field.value = value;
+                }
+
+                // Trigger change event for Livewire
+                field.dispatchEvent(new Event('input', { bubbles: true }));
+                field.dispatchEvent(new Event('change', { bubbles: true }));
+
+                // For Livewire components, trigger wire update
+                if (field.hasAttribute('wire:model') || field.hasAttribute('wire:model.defer') || field.hasAttribute('wire:model.lazy')) {
+                    // Let Livewire handle the update
+                    setTimeout(() => {
+                        if (window.Livewire) {
+                            window.Livewire.emit('refreshComponent');
+                        }
+                    }, 100);
+                }
+
+                return true;
+            } catch (error) {
+                console.error(`Error updating field ${fieldName}:`, error);
+                return false;
+            }
+        },
+
+        // Update multiple fields
+        updateFields: function(fields) {
+            const results = {};
+            for (const [fieldName, value] of Object.entries(fields)) {
+                results[fieldName] = this.updateField(fieldName, value);
+            }
+            return results;
+        },
+
+        // Show form update notification
+        showNotification: function(message, type = 'success') {
+            // Create notification element
+            const notification = document.createElement('div');
+            notification.className = `fixed top-4 right-4 z-50 p-4 rounded-lg shadow-lg transition-all duration-300 ${
+                type === 'success' ? 'bg-green-500 text-white' :
+                type === 'warning' ? 'bg-yellow-500 text-white' :
+                'bg-red-500 text-white'
+            }`;
+            notification.innerHTML = `
+                <div class="flex items-center space-x-2">
+                    <span>${message}</span>
+                    <button onclick="this.parentElement.parentElement.remove()" class="ml-2 text-white hover:text-gray-200">
+                        ×
+                    </button>
+                </div>
+            `;
+
+            document.body.appendChild(notification);
+
+            // Auto remove after 5 seconds
+            setTimeout(() => {
+                if (notification.parentElement) {
+                    notification.remove();
+                }
+            }, 5000);
+        }
+    };
+
+    // Listen for form manipulation events from AI responses
+    document.addEventListener('ai-form-update', function(event) {
+        const { fields, explanation, warnings } = event.detail;
+
+        if (fields && Object.keys(fields).length > 0) {
+            const results = window.AiFormHelper.updateFields(fields);
+            const successCount = Object.values(results).filter(Boolean).length;
+            const totalCount = Object.keys(results).length;
+
+            if (successCount === totalCount) {
+                window.AiFormHelper.showNotification(
+                    `✅ ${explanation || 'Form updated successfully'}`,
+                    'success'
+                );
+            } else {
+                window.AiFormHelper.showNotification(
+                    `⚠️ Updated ${successCount}/${totalCount} fields. ${explanation || ''}`,
+                    'warning'
+                );
+            }
+
+            // Show warnings if any
+            if (warnings && warnings.length > 0) {
+                warnings.forEach(warning => {
+                    window.AiFormHelper.showNotification(`⚠️ ${warning}`, 'warning');
+                });
+            }
+        }
+    });
+});
+</script>

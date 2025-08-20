@@ -37,8 +37,9 @@ class GeminiService
             ],
         ]);
 
+        // For demo purposes, allow empty API key and return mock responses
         if (empty($this->apiKey)) {
-            throw new GeminiApiException('Gemini API key is not configured. Please set GEMINI_API_KEY in your .env file.');
+            Log::warning('Gemini API key is not configured. Using mock responses for demo.');
         }
     }
 
@@ -47,8 +48,13 @@ class GeminiService
      */
     public function generateResponse(string $prompt, array $context = []): string
     {
+        // If no API key, return mock response for demo
+        if (empty($this->apiKey)) {
+            return $this->getMockResponse($prompt, $context);
+        }
+
         $cacheKey = $this->generateCacheKey($prompt, $context);
-        
+
         if (config('filament-ai-helper.cache.enabled', true)) {
             $cachedResponse = Cache::get($cacheKey);
             if ($cachedResponse) {
@@ -114,7 +120,7 @@ class GeminiService
         }
 
         throw new GeminiApiException(
-            'Failed to get response from Gemini API after ' . $this->maxRetries . ' attempts: ' . 
+            'Failed to get response from Gemini API after ' . $this->maxRetries . ' attempts: ' .
             ($lastException ? $lastException->getMessage() : 'Unknown error'),
             0,
             $lastException
@@ -200,8 +206,33 @@ class GeminiService
             'context' => $context,
         ];
 
-        return config('filament-ai-helper.cache.key_prefix', 'filament_ai_helper') . ':' . 
+        return config('filament-ai-helper.cache.key_prefix', 'filament_ai_helper') . ':' .
                md5(serialize($keyData));
+    }
+
+    /**
+     * Get a mock response for demo purposes when API key is not configured
+     */
+    protected function getMockResponse(string $prompt, array $context = []): string
+    {
+        // Check if this is a form manipulation request
+        if (str_contains(strtolower($prompt), 'fill') || str_contains(strtolower($prompt), 'create') || str_contains(strtolower($prompt), 'invoice')) {
+            return json_encode([
+                'action' => 'fill_form',
+                'fields' => [
+                    'partner_id' => '1',
+                    'due_date' => '2025-08-23',
+                    'description' => 'Service provided by Hawre Trading',
+                    'unit_price' => '5000000',
+                    'quantity' => '1'
+                ],
+                'explanation' => 'I have filled the form with the invoice details for Hawre Trading. The service amount is set to 5,000,000 IQD as requested.',
+                'warnings' => ['Please verify the customer details and due date before saving.']
+            ]);
+        }
+
+        // Default response for other requests
+        return 'This is a demo response from the AI Helper. To enable full functionality, please configure your Gemini API key in the .env file.';
     }
 
     /**

@@ -13,7 +13,10 @@ class AIHelperContextDTO
         public readonly string $userQuestion,
         public readonly string $locale,
         public readonly ?Model $record = null,
-        public readonly array $additionalContext = []
+        public readonly array $additionalContext = [],
+        public readonly ?array $formSchema = null,
+        public readonly ?array $currentFormData = null,
+        public readonly ?string $pageType = null
     ) {
     }
 
@@ -29,7 +32,10 @@ class AIHelperContextDTO
             userQuestion: $data['user_question'],
             locale: $data['locale'],
             record: $data['record'] ?? null,
-            additionalContext: $data['additional_context'] ?? []
+            additionalContext: $data['additional_context'] ?? [],
+            formSchema: $data['form_schema'] ?? null,
+            currentFormData: $data['current_form_data'] ?? null,
+            pageType: $data['page_type'] ?? null
         );
     }
 
@@ -46,6 +52,9 @@ class AIHelperContextDTO
             'locale' => $this->locale,
             'record' => $this->record,
             'additional_context' => $this->additionalContext,
+            'form_schema' => $this->formSchema,
+            'current_form_data' => $this->currentFormData,
+            'page_type' => $this->pageType,
         ];
     }
 
@@ -106,5 +115,76 @@ class AIHelperContextDTO
 
         // Basic sanitization - remove HTML tags and trim
         return trim(strip_tags($this->userQuestion));
+    }
+
+    /**
+     * Check if this context is for a form page (create/edit)
+     */
+    public function isFormPage(): bool
+    {
+        return in_array($this->pageType, ['create', 'edit']);
+    }
+
+    /**
+     * Check if this is a create page
+     */
+    public function isCreatePage(): bool
+    {
+        return $this->pageType === 'create';
+    }
+
+    /**
+     * Check if this is an edit page
+     */
+    public function isEditPage(): bool
+    {
+        return $this->pageType === 'edit';
+    }
+
+    /**
+     * Check if form schema is available
+     */
+    public function hasFormSchema(): bool
+    {
+        return !empty($this->formSchema);
+    }
+
+    /**
+     * Check if current form data is available
+     */
+    public function hasCurrentFormData(): bool
+    {
+        return !empty($this->currentFormData);
+    }
+
+    /**
+     * Get required form fields
+     */
+    public function getRequiredFields(): array
+    {
+        if (!$this->hasFormSchema()) {
+            return [];
+        }
+
+        return array_keys(array_filter($this->formSchema, function ($field) {
+            return $field['required'] ?? false;
+        }));
+    }
+
+    /**
+     * Get form field types
+     */
+    public function getFieldTypes(): array
+    {
+        if (!$this->hasFormSchema()) {
+            return [];
+        }
+
+        $types = [];
+        foreach ($this->formSchema as $field => $config) {
+            $types[$field] = $config['type'] ?? 'text';
+        }
+
+        return $types;
     }
 }
