@@ -52,10 +52,22 @@ class AiChatController extends Controller
             );
 
             // Get AI response
-            $response = $this->aiAction->execute($context);
+            $result = $this->aiAction->execute($context);
+
+            // Handle both string and object responses for backward compatibility
+            if (is_string($result)) {
+                $response = $result;
+                $success = true;
+            } elseif (is_object($result)) {
+                $response = $result->response ?? $result->answer ?? 'No response available';
+                $success = $result->success ?? true;
+            } else {
+                $response = 'Invalid response format';
+                $success = false;
+            }
 
             return response()->json([
-                'success' => true,
+                'success' => $success,
                 'response' => $response,
                 'timestamp' => now()->toISOString(),
             ]);
@@ -85,7 +97,7 @@ class AiChatController extends Controller
 
         try {
             $modelClass = $validated['model_class'];
-            
+
             if (!class_exists($modelClass)) {
                 return null;
             }
@@ -97,7 +109,7 @@ class AiChatController extends Controller
                 'model_id' => $validated['model_id'] ?? 'unknown',
                 'error' => $e->getMessage(),
             ]);
-            
+
             return null;
         }
     }
