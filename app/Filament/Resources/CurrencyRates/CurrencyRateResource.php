@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\CurrencyRates;
 
+use App\Filament\Clusters\Settings\SettingsCluster;
 use App\Filament\Resources\CurrencyRates\Pages\CreateCurrencyRate;
 use App\Filament\Resources\CurrencyRates\Pages\EditCurrencyRate;
 use App\Filament\Resources\CurrencyRates\Pages\ListCurrencyRates;
@@ -13,23 +14,31 @@ use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
+use LaraZeus\SpatieTranslatable\Resources\Concerns\Translatable;
 
 class CurrencyRateResource extends Resource
 {
+    use Translatable;
 
     protected static ?string $model = CurrencyRate::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedCurrencyDollar;
 
-    protected static ?string $navigationLabel = 'Exchange Rates';
+    protected static ?string $cluster = SettingsCluster::class;
 
-    protected static ?string $modelLabel = 'Exchange Rate';
-
-    protected static ?string $pluralModelLabel = 'Exchange Rates';
-
-    protected static ?int $navigationSort = 15;
+    protected static ?int $navigationSort = 3;
 
     protected static ?string $recordTitleAttribute = 'rate';
+
+    public static function getLabel(): ?string
+    {
+        return __('currency.exchange_rates.label');
+    }
+
+    public static function getPluralLabel(): ?string
+    {
+        return __('currency.exchange_rates.plural_label');
+    }
 
     public static function form(Schema $schema): Schema
     {
