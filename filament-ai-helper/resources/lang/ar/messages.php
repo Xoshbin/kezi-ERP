@@ -1,10 +1,10 @@
 <?php
 
 return [
-    'button_label' => 'AccounTech Pro',
-    'modal_title' => 'مساعد AccounTech Pro الذكي',
+    'button_label' => config('filament-ai-helper.ui.brand_name', 'المساعد الذكي'),
+    'modal_title' => config('filament-ai-helper.ui.brand_name', 'المساعد الذكي'),
     'modal_description' => 'احصل على رؤى وتحليلات ذكية لسجلاتك المحاسبية',
-    
+
     'chat' => [
         'placeholder' => 'اسألني أي شيء عن هذا السجل...',
         'send_button' => 'إرسال',
@@ -14,31 +14,31 @@ return [
         'keyboard_shortcut' => 'اضغط Ctrl+Enter للإرسال',
         'empty_state' => 'ابدأ محادثة مع مساعدك الذكي',
     ],
-    
+
     'record_info' => [
         'analyzing' => 'تحليل: :type :identifier',
         'unknown_type' => 'غير معروف',
         'not_available' => 'غير متوفر',
     ],
-    
+
     'errors' => [
         'api_error' => 'عذراً، واجهت خطأ أثناء معالجة طلبك. يرجى المحاولة مرة أخرى.',
         'rate_limit' => 'طلبات كثيرة جداً. يرجى الانتظار قليلاً قبل إرسال رسالة أخرى.',
         'no_api_key' => 'المساعد الذكي غير مُكوَّن. يرجى الاتصال بالمدير.',
         'invalid_record' => 'تعذر تحميل معلومات السجل.',
     ],
-    
+
     'validation' => [
         'question_required' => 'يرجى إدخال سؤال.',
         'question_min' => 'يجب أن يكون سؤالك على الأقل :min حرف.',
         'question_max' => 'لا يمكن أن يتجاوز سؤالك :max حرف.',
     ],
-    
+
     'welcome_messages' => [
         'default' => 'مرحباً! أنا AccounTech Pro، مساعدك المحاسبي الذكي. كيف يمكنني مساعدتك اليوم؟',
         'with_record' => 'مرحباً! أرى أنك تنظر إلى :model :identifier. أنا AccounTech Pro، مساعدك المحاسبي الذكي. يمكنني مساعدتك في تحليل هذا السجل، والتحقق من المشاكل المحتملة، وتقديم رؤى بناءً على أفضل الممارسات المحاسبية. ماذا تريد أن تعرف؟',
         'no_record' => 'مرحباً! أنا AccounTech Pro، مساعدك المحاسبي الذكي. يمكنني مساعدتك في الأسئلة والتحليلات المحاسبية. كيف يمكنني مساعدتك اليوم؟',
     ],
-    
+
     'fallback_response' => 'أعتذر، لكنني غير قادر حالياً على تحليل سجل :model هذا بسبب مشكلة تقنية. يرجى المحاولة لاحقاً أو الاتصال بالدعم إذا استمرت المشكلة.',
 ];

@@ -18,7 +18,7 @@ class AiChatWidget extends Component
     public string $errorMessage = '';
     public string $currentQuestion = '';
     public array $messages = [];
-    
+
     // Record context
     public ?string $modelClass = null;
     public ?string $modelId = null;
@@ -43,7 +43,7 @@ class AiChatWidget extends Component
     public function toggleChat(): void
     {
         $this->isOpen = !$this->isOpen;
-        
+
         if ($this->isOpen) {
             $this->loadRecordContext();
         }
@@ -65,7 +65,7 @@ class AiChatWidget extends Component
     public function sendMessage(): void
     {
         $this->validate();
-        
+
         $this->isLoading = true;
         $this->hasError = false;
         $this->errorMessage = '';
@@ -82,7 +82,7 @@ class AiChatWidget extends Component
 
         try {
             $record = $this->getCurrentRecord();
-            
+
             $request = new AIAssistantRequestDTO(
                 question: $question,
                 modelClass: $this->modelClass,
@@ -106,7 +106,7 @@ class AiChatWidget extends Component
         } catch (\Exception $e) {
             $this->hasError = true;
             $this->errorMessage = 'Sorry, I encountered an error. Please try again.';
-            
+
             // Remove the user message if AI failed
             array_pop($this->messages);
         } finally {
@@ -126,31 +126,27 @@ class AiChatWidget extends Component
         // Try to get context from current page
         $request = request();
         $route = $request->route();
-        
+
         if ($route) {
             $parameters = $route->parameters();
-            
+
             // Look for tenant and record ID in route parameters
             if (isset($parameters['tenant']) && isset($parameters['record'])) {
                 $this->modelId = $parameters['record'];
             } elseif (isset($parameters['record'])) {
                 $this->modelId = $parameters['record'];
             }
-            
-            // Try to determine model class from URL
+
+            // Use configurable context mapping for model detection
             $path = $request->path();
-            if (str_contains($path, '/invoices/')) {
-                $this->modelClass = 'App\\Models\\Invoice';
-                $this->resourceClass = 'App\\Filament\\Resources\\InvoiceResource';
-            } elseif (str_contains($path, '/vendor-bills/')) {
-                $this->modelClass = 'App\\Models\\VendorBill';
-                $this->resourceClass = 'App\\Filament\\Resources\\VendorBillResource';
-            } elseif (str_contains($path, '/partners/')) {
-                $this->modelClass = 'App\\Models\\Partner';
-                $this->resourceClass = 'App\\Filament\\Resources\\PartnerResource';
-            } elseif (str_contains($path, '/journal-entries/')) {
-                $this->modelClass = 'App\\Models\\JournalEntry';
-                $this->resourceClass = 'App\\Filament\\Resources\\JournalEntryResource';
+            $contextMapping = config('filament-ai-helper.assistant.context_mapping', []);
+
+            foreach ($contextMapping as $urlSegment => $mapping) {
+                if (str_contains($path, "/{$urlSegment}/")) {
+                    $this->modelClass = $mapping['model'];
+                    $this->resourceClass = $mapping['resource'];
+                    break;
+                }
             }
         }
     }
@@ -175,7 +171,7 @@ class AiChatWidget extends Component
     public function getRecordInfoProperty(): array
     {
         $record = $this->getCurrentRecord();
-        
+
         if (!$record) {
             return [
                 'exists' => false,
@@ -197,7 +193,7 @@ class AiChatWidget extends Component
     public function getWelcomeMessage(): string
     {
         $recordInfo = $this->getRecordInfoProperty();
-        
+
         if ($recordInfo['exists']) {
             return "Hello! I can see you're looking at {$recordInfo['type']} {$recordInfo['identifier']}. I'm AccounTech Pro, your AI accounting assistant. I can help you analyze this record, check for potential issues, and provide insights based on accounting best practices. What would you like to know?";
         }

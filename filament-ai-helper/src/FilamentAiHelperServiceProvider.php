@@ -4,6 +4,7 @@ namespace AccounTech\FilamentAiHelper;
 
 use AccounTech\FilamentAiHelper\Actions\GetAIAssistantResponseAction;
 use AccounTech\FilamentAiHelper\Services\GeminiService;
+use AccounTech\FilamentAiHelper\Services\DeepContextService;
 use Filament\Support\Assets\Css;
 use Filament\Support\Assets\Js;
 use Filament\Support\Facades\FilamentAsset;
@@ -33,6 +34,7 @@ class FilamentAiHelperServiceProvider extends ServiceProvider
         });
 
         $this->app->bind(GetAIAssistantResponseAction::class);
+        $this->app->singleton(DeepContextService::class);
     }
 
     public function boot(): void
@@ -82,8 +84,10 @@ class FilamentAiHelperServiceProvider extends ServiceProvider
             ], 'filament-ai-helper-assets');
         }
 
-        // Register the plugin with Filament panels
-        $this->registerFilamentPlugin();
+        // Register the plugin with Filament panels (if auto-registration is enabled)
+        if (config('filament-ai-helper.auto_register', true)) {
+            $this->registerFilamentPlugin();
+        }
     }
 
     protected function registerFilamentPlugin(): void
