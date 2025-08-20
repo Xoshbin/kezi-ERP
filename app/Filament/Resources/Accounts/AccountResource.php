@@ -19,6 +19,7 @@ use App\Filament\Resources\Accounts\Pages\CreateAccount;
 use App\Filament\Resources\Accounts\Pages\EditAccount;
 use Filament\Forms;
 use Filament\Tables;
+use App\Filament\Clusters\Settings\SettingsCluster;
 use App\Models\Account;
 use App\Models\Company;
 use Filament\Tables\Table;
@@ -41,10 +42,7 @@ class AccountResource extends Resource
 
     protected static ?int $navigationSort = 3;
 
-    public static function getNavigationGroup(): ?string
-    {
-        return __('navigation.groups.core_accounting');
-    }
+    protected static ?string $cluster = SettingsCluster::class;
 
     public static function getPluralModelLabel(): string
     {

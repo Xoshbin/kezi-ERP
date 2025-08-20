@@ -66,6 +66,12 @@ class JmeryarPanelProvider extends PanelProvider
             ->plugins([
                 SpatieTranslatablePlugin::make()
                     ->defaultLocales(['en', 'ckb', 'ar']),
+                // Note: AI Helper is integrated via HasAiHelper trait in individual resource pages
+                // FilamentAiHelperPlugin::make()
+                //     ->buttonLabel('AccounTech Pro')
+                //     ->buttonIcon('heroicon-o-sparkles')
+                //     ->modalWidth('2xl')
+                //     ->enabled(fn () => !empty(config('filament-ai-helper.gemini.api_key'))),
             ]);
     }
 }
