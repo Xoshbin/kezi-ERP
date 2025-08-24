@@ -58,6 +58,7 @@ return new class extends Migration
 
             $table->boolean('is_active')->default(true);
             $table->timestamps();
+            $table->softDeletes('deleted_at', precision: 0);
 
             // Indexes for performance
             $table->index(['company_id', 'is_active']);
