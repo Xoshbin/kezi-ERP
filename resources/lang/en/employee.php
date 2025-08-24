@@ -1,0 +1,82 @@
+<?php
+
+return [
+    // Basic Information
+    'basic_information' => 'Basic Information',
+    'basic_information_description' => 'Core employee identification and contact details',
+    'employee_number' => 'Employee Number',
+    'first_name' => 'First Name',
+    'last_name' => 'Last Name',
+    'email' => 'Email Address',
+    'phone' => 'Phone Number',
+
+    // Organizational Details
+    'organizational_details' => 'Organizational Details',
+    'organizational_details_description' => 'Department, position, and reporting structure',
+    'department' => 'Department',
+    'position' => 'Position',
+    'manager' => 'Manager',
+    'user_account' => 'User Account',
+
+    // Personal Information
+    'personal_information' => 'Personal Information',
+    'personal_information_description' => 'Personal details and identification documents',
+    'date_of_birth' => 'Date of Birth',
+    'gender' => 'Gender',
+    'gender_male' => 'Male',
+    'gender_female' => 'Female',
+    'gender_other' => 'Other',
+    'marital_status' => 'Marital Status',
+    'marital_status_single' => 'Single',
+    'marital_status_married' => 'Married',
+    'marital_status_divorced' => 'Divorced',
+    'marital_status_widowed' => 'Widowed',
+    'nationality' => 'Nationality',
+    'national_id' => 'National ID',
+    'passport_number' => 'Passport Number',
+
+    // Address Information
+    'address_information' => 'Address Information',
+    'address_information_description' => 'Residential address and location details',
+    'address_line_1' => 'Address Line 1',
+    'address_line_2' => 'Address Line 2',
+    'city' => 'City',
+    'state' => 'State/Province',
+    'zip_code' => 'ZIP/Postal Code',
+    'country' => 'Country',
+
+    // Emergency Contact
+    'emergency_contact' => 'Emergency Contact',
+    'emergency_contact_description' => 'Emergency contact person details',
+    'emergency_contact_name' => 'Contact Name',
+    'emergency_contact_phone' => 'Contact Phone',
+    'emergency_contact_relationship' => 'Relationship',
+
+    // Employment Details
+    'employment_details' => 'Employment Details',
+    'employment_details_description' => 'Employment dates, status, and type',
+    'hire_date' => 'Hire Date',
+    'termination_date' => 'Termination Date',
+    'employment_status' => 'Employment Status',
+    'employment_status_active' => 'Active',
+    'employment_status_inactive' => 'Inactive',
+    'employment_status_terminated' => 'Terminated',
+    'employment_status_on_leave' => 'On Leave',
+    'employee_type' => 'Employee Type',
+    'employee_type_full_time' => 'Full Time',
+    'employee_type_part_time' => 'Part Time',
+    'employee_type_contract' => 'Contract',
+    'employee_type_intern' => 'Intern',
+    'is_active' => 'Active',
+
+    // Banking Information
+    'banking_information' => 'Banking Information',
+    'banking_information_description' => 'Bank account details for payroll',
+    'bank_name' => 'Bank Name',
+    'bank_account_number' => 'Account Number',
+    'bank_routing_number' => 'Routing Number',
+
+    // Navigation
+    'navigation_label' => 'Employees',
+    'navigation_group' => 'Human Resources',
+];
