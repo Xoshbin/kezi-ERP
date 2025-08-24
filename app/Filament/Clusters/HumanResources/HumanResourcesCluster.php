@@ -9,4 +9,9 @@ use Filament\Support\Icons\Heroicon;
 class HumanResourcesCluster extends Cluster
 {
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedSquares2x2;
+
+    public static function getNavigationLabel(): string
+    {
+        return __('navigation.clusters.human_resources');
+    }
 }

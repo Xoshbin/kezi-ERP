@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Spatie\Translatable\HasTranslations;
-use App\Casts\BaseCurrencyMoneyCast;
+use App\Casts\SalaryCurrencyMoneyCast;
 use Brick\Money\Money;
 
 /**
@@ -72,8 +72,8 @@ class Position extends Model
         'title' => 'array',
         'requirements' => 'array',
         'responsibilities' => 'array',
-        'min_salary' => BaseCurrencyMoneyCast::class,
-        'max_salary' => BaseCurrencyMoneyCast::class,
+        'min_salary' => SalaryCurrencyMoneyCast::class,
+        'max_salary' => SalaryCurrencyMoneyCast::class,
         'is_active' => 'boolean',
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
