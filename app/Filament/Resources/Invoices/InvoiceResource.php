@@ -307,17 +307,15 @@ class InvoiceResource extends Resource
                                         ->modalWidth('lg');
                                 })
                                 ->columnSpan(1),
-                            TranslatableSelect::make('income_account_id', \App\Models\Account::class, __('invoice.income_account'))
-                                ->getSearchResultsUsing(fn(string $search): array =>
-                                    \App\Models\Account::where('type', 'income')
-                                        ->whereRaw('LOWER(JSON_UNQUOTE(JSON_EXTRACT(name, "$.' . app()->getLocale() . '"))) LIKE ?', ['%' . strtolower($search) . '%'])
-                                        ->limit(50)
-                                        ->get()
-                                        ->mapWithKeys(fn($account) => [$account->id => $account->getTranslation('name', app()->getLocale())])
-                                        ->toArray()
-                                )
-                                ->getOptionLabelUsing(fn($value): ?string => \App\Models\Account::find($value)?->getTranslation('name', app()->getLocale()))
-                                ->searchable()
+                            TranslatableSelect::relationship(
+                                'income_account_id',
+                                'incomeAccount',
+                                \App\Models\Account::class,
+                                __('invoice.income_account'),
+                                'name',
+                                null,
+                                fn($query) => $query->where('type', 'income')
+                            )
                                 ->required()
                                 ->columnSpan(2),
                         ])
