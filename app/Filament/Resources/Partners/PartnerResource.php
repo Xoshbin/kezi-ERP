@@ -189,6 +189,8 @@ class PartnerResource extends Resource
                                 )
                                     ->preload()
                                     ->createOptionForm([
+                                        \Filament\Forms\Components\Hidden::make('company_id')
+                                            ->default(fn () => \Filament\Facades\Filament::getTenant()?->id),
                                         TextInput::make('name')
                                             ->label(__('account.name'))
                                             ->required()
@@ -218,6 +220,8 @@ class PartnerResource extends Resource
                                 )
                                     ->preload()
                                     ->createOptionForm([
+                                        \Filament\Forms\Components\Hidden::make('company_id')
+                                            ->default(fn () => \Filament\Facades\Filament::getTenant()?->id),
                                         TextInput::make('name')
                                             ->label(__('account.name'))
                                             ->required()
