@@ -15,6 +15,7 @@ return [
     'clusters' => [
         'settings' => 'ڕێکخستنەکان',
         'inventory' => 'بەڕێوەبردنی کۆگا',
+        'human_resources' => 'سەرچاوە مرۆییەکان',
     ],
 
     // Global Navigation Elements
