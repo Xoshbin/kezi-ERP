@@ -33,6 +33,9 @@ class TranslatableSearchTest extends TestCase
     /** @test */
     public function it_can_search_translatable_models_across_all_locales()
     {
+        // Set locale to English for this test
+        app()->setLocale('en');
+
         // Create a currency with translations
         $currency = Currency::factory()->create([
             'name' => [
@@ -210,6 +213,9 @@ class TranslatableSearchTest extends TestCase
     /** @test */
     public function it_can_use_formatted_search_results()
     {
+        // Set locale to English for this test
+        app()->setLocale('en');
+
         $account = Account::factory()->create([
             'company_id' => $this->company->id,
             'name' => [
