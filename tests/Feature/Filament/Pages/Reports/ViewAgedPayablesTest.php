@@ -3,7 +3,7 @@
 namespace Tests\Feature\Filament\Pages\Reports;
 
 use App\Enums\Purchases\VendorBillStatus;
-use App\Filament\Pages\Reports\ViewAgedPayables;
+use App\Filament\Clusters\Accounting\Pages\Reports\ViewAgedPayables;
 use App\Models\Partner;
 use App\Models\VendorBill;
 use App\Support\NumberFormatter;

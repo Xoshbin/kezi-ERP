@@ -1,12 +1,12 @@
 <?php
 
-use App\Filament\Resources\BankStatements\BankStatementResource;
-use App\Models\BankStatement;
-use App\Models\Currency;
-use App\Models\Partner;
-use App\Models\Journal;
 use App\Enums\Accounting\JournalType;
 use App\Enums\Payments\PaymentStatus;
+use App\Filament\Clusters\Accounting\Resources\BankStatements\BankStatementResource;
+use App\Models\BankStatement;
+use App\Models\Currency;
+use App\Models\Journal;
+use App\Models\Partner;
 use Brick\Money\Money;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\Traits\WithConfiguredCompany;
@@ -41,7 +41,7 @@ it('can create a bank statement', function () {
     expect($bankJournal->company_id)->toBe($this->company->id);
     expect($bankJournal->type)->toBe(JournalType::Bank);
 
-    livewire(\App\Filament\Resources\BankStatements\Pages\CreateBankStatement::class)
+    livewire(\App\Filament\Clusters\Accounting\Resources\BankStatements\Pages\CreateBankStatement::class)
         ->fillForm([
             'company_id' => $this->company->id,
             'currency_id' => $this->company->currency_id,
@@ -80,7 +80,7 @@ it('can create a bank statement', function () {
 });
 
 it('can validate input on create', function () {
-    livewire(\App\Filament\Resources\BankStatements\Pages\CreateBankStatement::class)
+    livewire(\App\Filament\Clusters\Accounting\Resources\BankStatements\Pages\CreateBankStatement::class)
         ->fillForm([
             'company_id' => null,
             'currency_id' => null,
@@ -138,7 +138,7 @@ it('can edit a bank statement', function () {
         'company_id' => $this->company->id,
     ]);
 
-    livewire(\App\Filament\Resources\BankStatements\Pages\EditBankStatement::class, [
+    livewire(\App\Filament\Clusters\Accounting\Resources\BankStatements\Pages\EditBankStatement::class, [
         'record' => $bankStatement->getRouteKey(),
     ])
         ->fillForm([
@@ -182,7 +182,7 @@ it('preserves the reconcile button in the table', function () {
         'company_id' => $this->company->id,
     ]);
 
-    livewire(\App\Filament\Resources\BankStatements\Pages\ListBankStatements::class)
+    livewire(\App\Filament\Clusters\Accounting\Resources\BankStatements\Pages\ListBankStatements::class)
         ->assertCanSeeTableRecords([$bankStatement])
         ->assertTableActionExists('reconcile');
 });
@@ -236,7 +236,7 @@ it('can handle multiple lines in create', function () {
     /** @var \App\Models\Journal $bankJournal */
     $bankJournal = Journal::factory()->for($this->company)->create(['type' => JournalType::Bank]);
 
-    livewire(\App\Filament\Resources\BankStatements\Pages\CreateBankStatement::class)
+    livewire(\App\Filament\Clusters\Accounting\Resources\BankStatements\Pages\CreateBankStatement::class)
         ->fillForm([
             'company_id' => $this->company->id,
             'currency_id' => $this->company->currency_id,
@@ -290,7 +290,7 @@ it('handles money objects correctly in forms', function () {
     ]);
 
     // Test that the edit page loads correctly with Money objects
-    livewire(\App\Filament\Resources\BankStatements\Pages\EditBankStatement::class, [
+    livewire(\App\Filament\Clusters\Accounting\Resources\BankStatements\Pages\EditBankStatement::class, [
         'record' => $bankStatement->getRouteKey(),
     ])
         ->assertFormSet([

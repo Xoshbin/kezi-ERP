@@ -2,14 +2,13 @@
 
 namespace Tests\Feature;
 
-use Tests\TestCase;
-use App\Models\User;
+use App\Enums\Sales\InvoiceStatus;
 use App\Models\Invoice;
 use App\Models\JournalEntry;
-use App\Enums\Sales\InvoiceStatus;
-use App\Filament\Resources\Invoices\InvoiceResource;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Livewire\Livewire;
+use Tests\TestCase;
 
 class WebInterfaceInvoicePostingTest extends TestCase
 {
@@ -49,7 +48,7 @@ class WebInterfaceInvoicePostingTest extends TestCase
         // Post each invoice one by one (simulating the web interface scenario)
         foreach ($draftInvoices as $invoice) {
             // Simulate the web interface posting action using Livewire
-            Livewire::test(\App\Filament\Resources\Invoices\Pages\EditInvoice::class, [
+            Livewire::test(\App\Filament\Clusters\Accounting\Resources\Invoices\Pages\EditInvoice::class, [
                 'record' => $invoice->getRouteKey(),
             ])
                 ->callAction('confirm')
@@ -116,7 +115,7 @@ class WebInterfaceInvoicePostingTest extends TestCase
         // Post all invoices rapidly (simulating the original error scenario)
         foreach ($draftInvoices as $invoice) {
             // Use Livewire to simulate the web interface action
-            Livewire::test(\App\Filament\Resources\Invoices\Pages\EditInvoice::class, [
+            Livewire::test(\App\Filament\Clusters\Accounting\Resources\Invoices\Pages\EditInvoice::class, [
                 'record' => $invoice->getRouteKey(),
             ])
                 ->callAction('confirm')

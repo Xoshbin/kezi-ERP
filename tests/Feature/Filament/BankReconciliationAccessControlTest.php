@@ -1,6 +1,6 @@
 <?php
 
-use App\Filament\Resources\BankStatements\Pages\BankReconciliation;
+use App\Filament\Clusters\Accounting\Resources\BankStatements\Pages\BankReconciliation;
 use App\Models\Company;
 use App\Models\User;
 use Filament\Facades\Filament;

@@ -2,27 +2,16 @@
 
 namespace Tests\Feature\Filament\Widgets;
 
-use App\Filament\Widgets\FinancialStatsOverview;
-use App\Filament\Widgets\IncomeVsExpenseChart;
-use App\Filament\Widgets\CashFlowWidget;
+use App\Enums\Partners\PartnerType;
+use App\Enums\Sales\InvoiceStatus;
+use App\Filament\Clusters\Accounting\Widgets\CashFlowWidget;
+use App\Filament\Clusters\Accounting\Widgets\FinancialStatsOverview;
+use App\Filament\Clusters\Accounting\Widgets\IncomeVsExpenseChart;
 use App\Filament\Widgets\AccountWidget;
-use App\Models\User;
-use App\Models\Company;
-use App\Models\Account;
-use App\Models\Journal;
-use App\Models\JournalEntry;
-use App\Models\JournalEntryLine;
 use App\Models\Invoice;
 use App\Models\InvoiceLine;
-use App\Models\VendorBill;
-use App\Models\VendorBillLine;
 use App\Models\Partner;
 use App\Models\Product;
-use App\Enums\Accounting\AccountType;
-use App\Enums\Accounting\JournalEntryState;
-use App\Enums\Sales\InvoiceStatus;
-use App\Enums\Purchases\VendorBillStatus;
-use App\Enums\Partners\PartnerType;
 use Brick\Money\Money;
 use Carbon\Carbon;
 use Filament\Facades\Filament;
