@@ -15,5 +15,6 @@ return [
     'clusters' => [
         'settings' => 'Settings',
         'inventory' => 'Inventory Management',
+        'human_resources' => 'Human Resources',
     ],
 ];
