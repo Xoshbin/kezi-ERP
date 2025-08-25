@@ -142,6 +142,20 @@ return [
         'expense_claim' => 'مطالبة مصروفات',
         'tax_payment' => 'دفع ضريبة',
         'asset_purchase' => 'شراء أصول',
+        'payroll' => 'كشف الراتب',
+    ],
+
+    'payroll_status' => [
+        'draft' => 'مسودة',
+        'processed' => 'معالج',
+        'paid' => 'مدفوع',
+        'cancelled' => 'ملغي',
+    ],
+
+    'pay_frequency' => [
+        'monthly' => 'شهري',
+        'bi_weekly' => 'كل أسبوعين',
+        'weekly' => 'أسبوعي',
     ],
 
     'tax_type' => [
