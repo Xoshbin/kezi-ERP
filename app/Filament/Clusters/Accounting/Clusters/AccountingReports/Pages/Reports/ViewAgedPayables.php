@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Filament\Clusters\Accounting\Pages\Reports;
+namespace App\Filament\Clusters\Accounting\Clusters\AccountingReports\Pages\Reports;
 
-use App\Filament\Clusters\Accounting\AccountingCluster;
-use App\Services\Reports\AgedReceivableService;
+use App\Filament\Clusters\Accounting\Clusters\AccountingReports\AccountingReportsCluster;
+use App\Services\Reports\AgedPayableService;
 use App\Support\NumberFormatter;
 use Carbon\Carbon;
 use Filament\Actions\Action;
@@ -14,36 +14,36 @@ use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Illuminate\Contracts\Support\Htmlable;
 
-class ViewAgedReceivables extends Page
+class ViewAgedPayables extends Page
 {
     protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-clock';
-    protected string $view = 'filament.pages.reports.view-aged-receivables';
+    protected string $view = 'filament.pages.reports.view-aged-payables';
     protected static string | \UnitEnum | null $navigationGroup = null;
 
-    protected static ?string $cluster = AccountingCluster::class;
+    protected static ?string $cluster = AccountingReportsCluster::class;
 
     public static function getNavigationGroup(): ?string
     {
         return __('navigation.groups.reports');
     }
-    protected static ?int $navigationSort = 4;
+    protected static ?int $navigationSort = 5;
 
     public ?string $asOfDate = null;
     public ?array $reportData = null;
 
     public static function getNavigationLabel(): string
     {
-        return __('reports.aged_receivables');
+        return __('reports.aged_payables');
     }
 
     public function getTitle(): string|Htmlable
     {
-        return __('reports.aged_receivables_report');
+        return __('reports.aged_payables_report');
     }
 
     public function getHeading(): string|Htmlable
     {
-        return __('reports.aged_receivables_report');
+        return __('reports.aged_payables_report');
     }
 
     public function mount(): void
@@ -85,7 +85,7 @@ class ViewAgedReceivables extends Page
         ]);
 
         $company = Filament::getTenant();
-        $service = app(AgedReceivableService::class);
+        $service = app(AgedPayableService::class);
 
         $report = $service->generate(
             $company,

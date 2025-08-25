@@ -2,7 +2,7 @@
 
 namespace Tests\Feature\Filament\Pages;
 
-use App\Filament\Clusters\Accounting\Pages\Dashboard;
+use App\Filament\Clusters\Accounting\Clusters\AccountingReports\Pages\Dashboard;
 use App\Models\User;
 use Filament\Facades\Filament;
 use Illuminate\Foundation\Testing\RefreshDatabase;

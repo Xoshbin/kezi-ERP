@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Filament\Clusters\Accounting\Pages\Reports;
+namespace App\Filament\Clusters\Accounting\Clusters\AccountingReports\Pages\Reports;
 
-use App\Filament\Clusters\Accounting\AccountingCluster;
+use App\Filament\Clusters\Accounting\Clusters\AccountingReports\AccountingReportsCluster;
 use App\Services\Reports\BalanceSheetService;
 use App\Support\NumberFormatter;
 use Carbon\Carbon;
@@ -20,7 +20,7 @@ class ViewBalanceSheet extends Page
     protected string $view = 'filament.pages.reports.view-balance-sheet';
     protected static string | \UnitEnum | null $navigationGroup = null;
 
-    protected static ?string $cluster = AccountingCluster::class;
+    protected static ?string $cluster = AccountingReportsCluster::class;
 
     public static function getNavigationGroup(): ?string
     {
