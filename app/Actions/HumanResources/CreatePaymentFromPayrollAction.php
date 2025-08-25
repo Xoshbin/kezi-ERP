@@ -1,0 +1,77 @@
+<?php
+
+namespace App\Actions\HumanResources;
+
+use App\Actions\Payments\CreatePaymentAction;
+use App\DataTransferObjects\Payments\CreatePaymentDTO;
+use App\Enums\Payments\PaymentPurpose;
+use App\Enums\Payments\PaymentType;
+use App\Models\Payroll;
+use App\Models\Payment;
+use App\Models\User;
+use App\Models\Journal;
+use InvalidArgumentException;
+
+class CreatePaymentFromPayrollAction
+{
+    public function __construct(
+        private readonly CreatePaymentAction $createPaymentAction
+    ) {
+    }
+
+    /**
+     * Create a payment from an approved payroll.
+     *
+     * @param Payroll $payroll
+     * @param User $user
+     * @return Payment
+     * @throws InvalidArgumentException
+     */
+    public function execute(Payroll $payroll, User $user): Payment
+    {
+        // Validate payroll status
+        if ($payroll->status !== 'processed') {
+            throw new InvalidArgumentException('Only processed payrolls can be paid.');
+        }
+
+        if ($payroll->payment_id) {
+            throw new InvalidArgumentException('Payroll has already been paid.');
+        }
+
+        // Get company's default bank journal for payments
+        $company = $payroll->company;
+        $bankJournal = $company->defaultBankJournal;
+
+        if (!$bankJournal) {
+            throw new InvalidArgumentException('No default bank journal found for company.');
+        }
+
+        // Get salary payable account from company defaults
+        $salaryPayableAccountId = $company->default_salary_payable_account_id;
+        if (!$salaryPayableAccountId) {
+            throw new InvalidArgumentException('No default salary payable account configured for company.');
+        }
+
+        // For now, we'll use the employee's name as the partner reference
+        // In a future enhancement, we could create actual partner records for employees
+        $reference = "Salary payment for {$payroll->employee->first_name} {$payroll->employee->last_name} - {$payroll->payroll_number}";
+
+        // Create payment DTO
+        $createPaymentDTO = new CreatePaymentDTO(
+            company_id: $payroll->company_id,
+            journal_id: $bankJournal->id,
+            currency_id: $payroll->currency_id,
+            payment_date: $payroll->pay_date->format('Y-m-d'),
+            payment_purpose: PaymentPurpose::Payroll,
+            payment_type: PaymentType::Outbound,
+            partner_id: null, // For now, no partner relationship
+            amount: $payroll->net_salary,
+            counterpart_account_id: $salaryPayableAccountId,
+            document_links: [], // No document links for payroll payments
+            reference: $reference
+        );
+
+        // Create the payment
+        return $this->createPaymentAction->execute($createPaymentDTO, $user);
+    }
+}

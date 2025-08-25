@@ -18,21 +18,15 @@ class EmployeesTable
     {
         return $table
             ->columns([
-                TextColumn::make('company.name')
-                    ->searchable(),
-                TextColumn::make('user.name')
-                    ->searchable(),
-                TextColumn::make('department.name')
-                    ->searchable(),
-                TextColumn::make('position.title')
-                    ->searchable(),
-                TextColumn::make('manager.id')
-                    ->searchable(),
                 TextColumn::make('employee_number')
                     ->searchable(),
                 TextColumn::make('first_name')
                     ->searchable(),
                 TextColumn::make('last_name')
+                    ->searchable(),
+                TextColumn::make('department.name')
+                    ->searchable(),
+                TextColumn::make('position.title')
                     ->searchable(),
                 TextColumn::make('email')
                     ->label('Email address')

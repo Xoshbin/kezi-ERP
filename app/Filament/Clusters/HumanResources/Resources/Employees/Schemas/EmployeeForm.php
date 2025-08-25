@@ -57,17 +57,35 @@ class EmployeeForm
             Section::make(__('employee.organizational_details'))
                 ->description(__('employee.organizational_details_description'))
                 ->schema([
-                    TranslatableSelect::make('department_id', \App\Models\Department::class, __('employee.department'))
+                    TranslatableSelect::relationship(
+                        'department_id',
+                        'department',
+                        \App\Models\Department::class,
+                        __('employee.department'),
+                        'name',
+                        null,
+                        fn($query) => $query->where('company_id', \Filament\Facades\Filament::getTenant()->id)
+                    )
                         ->columnSpan(1),
 
-                    TranslatableSelect::make('position_id', \App\Models\Position::class, __('employee.position'))
+                    TranslatableSelect::relationship(
+                        'position_id',
+                        'position',
+                        \App\Models\Position::class,
+                        __('employee.position'),
+                        'title',
+                        null,
+                        fn($query) => $query->where('company_id', \Filament\Facades\Filament::getTenant()->id)
+                    )
                         ->columnSpan(1),
 
                     TranslatableSelect::standard(
                         'manager_id',
                         \App\Models\Employee::class,
                         ['first_name', 'last_name', 'employee_number'],
-                        __('employee.manager')
+                        __('employee.manager'),
+                        'first_name',
+                        fn($query) => $query->where('company_id', \Filament\Facades\Filament::getTenant()->id)
                     )
                         ->columnSpan(1),
 
@@ -75,7 +93,9 @@ class EmployeeForm
                         'user_id',
                         \App\Models\User::class,
                         ['name', 'email'],
-                        __('employee.user_account')
+                        __('employee.user_account'),
+                        'name',
+                        fn($query) => $query->whereHas('companies', fn($q) => $q->where('companies.id', \Filament\Facades\Filament::getTenant()->id))
                     )
                         ->columnSpan(1),
                 ])

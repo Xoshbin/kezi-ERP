@@ -10,6 +10,7 @@ enum PaymentPurpose: string
     case ExpenseClaim = 'expense_claim';
     case TaxPayment = 'tax_payment';
     case AssetPurchase = 'asset_purchase';
+    case Payroll = 'payroll';
 
     /**
      * Get the translated label for the payment purpose.
@@ -51,6 +52,7 @@ enum PaymentPurpose: string
             self::ExpenseClaim,
             self::TaxPayment,
             self::AssetPurchase,
+            self::Payroll,
         ];
     }
 }
