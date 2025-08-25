@@ -3,7 +3,7 @@
 namespace Tests\Feature\Filament\Pages\Reports;
 
 use App\Enums\Accounting\AccountType;
-use App\Filament\Pages\Reports\ViewTrialBalance;
+use App\Filament\Clusters\Accounting\Clusters\AccountingReports\Pages\Reports\ViewTrialBalance;
 use App\Models\Account;
 use App\Models\Journal;
 use App\Models\JournalEntry;

@@ -1,0 +1,134 @@
+<?php
+
+namespace App\Filament\Clusters\Accounting\Clusters\AccountingReports\Pages\Reports;
+
+use App\Filament\Clusters\Accounting\Clusters\AccountingReports\AccountingReportsCluster;
+use App\Models\Company;
+use App\Services\Reports\TaxReportService;
+use App\Support\NumberFormatter;
+use Carbon\Carbon;
+use Filament\Actions\Action;
+use Filament\Facades\Filament;
+use Filament\Forms\Components\DatePicker;
+use Filament\Pages\Page;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Schema;
+
+class ViewTaxReport extends Page
+{
+    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-document-text';
+
+    protected string $view = 'filament.pages.reports.view-tax-report';
+
+    protected static string | \UnitEnum | null $navigationGroup = null;
+
+    protected static ?string $cluster = AccountingReportsCluster::class;
+
+    public static function getNavigationGroup(): ?string
+    {
+        return __('navigation.groups.reports');
+    }
+
+    protected static ?int $navigationSort = 6;
+
+    public ?string $startDate = null;
+    public ?string $endDate = null;
+    public ?array $reportData = null;
+
+    public static function getNavigationLabel(): string
+    {
+        return __('reports.tax_report');
+    }
+
+    public function getTitle(): string
+    {
+        return __('reports.tax_report');
+    }
+
+    public function mount(): void
+    {
+        // Set default date range to current month
+        $this->startDate = Carbon::now()->startOfMonth()->toDateString();
+        $this->endDate = Carbon::now()->endOfMonth()->toDateString();
+    }
+
+    public function form(Schema $schema): Schema
+    {
+        return $schema
+            ->components([
+                Section::make(__('reports.report_parameters'))
+                    ->schema([
+                        DatePicker::make('startDate')
+                            ->label(__('reports.start_date'))
+                            ->required()
+                            ->default(Carbon::now()->startOfMonth()->toDateString()),
+                        DatePicker::make('endDate')
+                            ->label(__('reports.end_date'))
+                            ->required()
+                            ->default(Carbon::now()->endOfMonth()->toDateString()),
+                    ])
+                    ->columns(2),
+            ]);
+    }
+
+    protected function getHeaderActions(): array
+    {
+        return [
+            Action::make('generate')
+                ->label(__('reports.generate_report'))
+                ->icon('heroicon-o-play')
+                ->color('primary')
+                ->action('generateReport'),
+        ];
+    }
+
+    public function generateReport(): void
+    {
+        $this->validate([
+            'startDate' => 'required|date',
+            'endDate' => 'required|date|after_or_equal:startDate',
+        ]);
+
+        $company = Company::find(Filament::auth()->user()->company_id);
+        $service = app(TaxReportService::class);
+
+        $report = $service->generate(
+            $company,
+            Carbon::parse($this->startDate),
+            Carbon::parse($this->endDate)
+        );
+
+        // Convert DTO to array for Livewire compatibility
+        $this->reportData = [
+            'outputTaxLines' => $report->outputTaxLines->map(function ($line) {
+                return [
+                    'taxId' => $line->taxId,
+                    'taxName' => $line->taxName,
+                    'taxRate' => $line->taxRate,
+                    'netAmount' => NumberFormatter::formatMoneyTo($line->netAmount),
+                    'taxAmount' => NumberFormatter::formatMoneyTo($line->taxAmount),
+                    'netAmountRaw' => $line->netAmount->getAmount()->toFloat(),
+                    'taxAmountRaw' => $line->taxAmount->getAmount()->toFloat(),
+                ];
+            })->toArray(),
+            'inputTaxLines' => $report->inputTaxLines->map(function ($line) {
+                return [
+                    'taxId' => $line->taxId,
+                    'taxName' => $line->taxName,
+                    'taxRate' => $line->taxRate,
+                    'netAmount' => NumberFormatter::formatMoneyTo($line->netAmount),
+                    'taxAmount' => NumberFormatter::formatMoneyTo($line->taxAmount),
+                    'netAmountRaw' => $line->netAmount->getAmount()->toFloat(),
+                    'taxAmountRaw' => $line->taxAmount->getAmount()->toFloat(),
+                ];
+            })->toArray(),
+            'totalOutputTax' => NumberFormatter::formatMoneyTo($report->totalOutputTax),
+            'totalInputTax' => NumberFormatter::formatMoneyTo($report->totalInputTax),
+            'netTaxPayable' => NumberFormatter::formatMoneyTo($report->netTaxPayable),
+            'netTaxPayableRaw' => $report->netTaxPayable->getAmount()->toFloat(),
+            'companyName' => $company->name,
+        ];
+
+        $this->dispatch('report-generated');
+    }
+}

@@ -1,0 +1,129 @@
+<?php
+
+namespace App\Filament\Clusters\Accounting\Clusters\AccountingReports\Pages\Reports;
+
+use App\Filament\Clusters\Accounting\Clusters\AccountingReports\AccountingReportsCluster;
+use App\Services\Reports\BalanceSheetService;
+use App\Support\NumberFormatter;
+use Carbon\Carbon;
+use Filament\Actions\Action;
+use Filament\Facades\Filament;
+use Filament\Forms\Components\DatePicker;
+use Filament\Pages\Page;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Schema;
+use Illuminate\Contracts\Support\Htmlable;
+
+class ViewBalanceSheet extends Page
+{
+    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-scale';
+    protected string $view = 'filament.pages.reports.view-balance-sheet';
+    protected static string | \UnitEnum | null $navigationGroup = null;
+
+    protected static ?string $cluster = AccountingReportsCluster::class;
+
+    public static function getNavigationGroup(): ?string
+    {
+        return __('navigation.groups.reports');
+    }
+    protected static ?int $navigationSort = 2;
+
+    public ?string $asOfDate = null;
+    public ?array $reportData = null;
+
+    public static function getNavigationLabel(): string
+    {
+        return __('reports.balance_sheet');
+    }
+
+    public function getTitle(): string|Htmlable
+    {
+        return __('reports.balance_sheet');
+    }
+
+    public function getHeading(): string|Htmlable
+    {
+        return __('reports.balance_sheet');
+    }
+
+    public function mount(): void
+    {
+        // Set default date to end of current month
+        $this->asOfDate = Carbon::now()->endOfMonth()->format('Y-m-d');
+    }
+
+    public function form(Schema $schema): Schema
+    {
+        return $schema
+            ->components([
+                Section::make(__('reports.as_of_date'))
+                    ->schema([
+                        DatePicker::make('asOfDate')
+                            ->label(__('reports.as_of_date'))
+                            ->required()
+                            ->default(Carbon::now()->endOfMonth()),
+                    ]),
+            ]);
+    }
+
+    protected function getHeaderActions(): array
+    {
+        return [
+            Action::make('generate')
+                ->label(__('reports.generate_report'))
+                ->icon('heroicon-o-play')
+                ->color('primary')
+                ->action('generateReport'),
+        ];
+    }
+
+    public function generateReport(): void
+    {
+        $this->validate([
+            'asOfDate' => 'required|date',
+        ]);
+
+        $company = Filament::getTenant();
+        $service = app(BalanceSheetService::class);
+
+        $report = $service->generate(
+            $company,
+            Carbon::parse($this->asOfDate)
+        );
+
+        // Convert to array format that Livewire can handle
+        $this->reportData = [
+            'assetLines' => $report->assetLines->map(fn($line) => [
+                'accountId' => $line->accountId,
+                'accountCode' => $line->accountCode,
+                'accountName' => $line->accountName,
+                'balance' => NumberFormatter::formatMoneyTo($line->balance),
+                'balanceAmount' => $line->balance->getAmount()->toFloat(),
+            ])->toArray(),
+            'liabilityLines' => $report->liabilityLines->map(fn($line) => [
+                'accountId' => $line->accountId,
+                'accountCode' => $line->accountCode,
+                'accountName' => $line->accountName,
+                'balance' => NumberFormatter::formatMoneyTo($line->balance),
+                'balanceAmount' => $line->balance->getAmount()->toFloat(),
+            ])->toArray(),
+            'equityLines' => $report->equityLines->map(fn($line) => [
+                'accountId' => $line->accountId,
+                'accountCode' => $line->accountCode,
+                'accountName' => $line->accountName,
+                'balance' => NumberFormatter::formatMoneyTo($line->balance),
+                'balanceAmount' => $line->balance->getAmount()->toFloat(),
+            ])->toArray(),
+            'totalAssets' => NumberFormatter::formatMoneyTo($report->totalAssets),
+            'totalLiabilities' => NumberFormatter::formatMoneyTo($report->totalLiabilities),
+            'retainedEarnings' => NumberFormatter::formatMoneyTo($report->retainedEarnings),
+            'currentYearEarnings' => NumberFormatter::formatMoneyTo($report->currentYearEarnings),
+            'currentYearEarningsAmount' => $report->currentYearEarnings->getAmount()->toFloat(),
+            'isCurrentYearLoss' => $report->currentYearEarnings->isNegative(),
+            'totalEquity' => NumberFormatter::formatMoneyTo($report->totalEquity),
+            'totalLiabilitiesAndEquity' => NumberFormatter::formatMoneyTo($report->totalLiabilitiesAndEquity),
+        ];
+
+        $this->dispatch('report-generated');
+    }
+}

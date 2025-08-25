@@ -2,13 +2,13 @@
 
 namespace Tests\Feature\Filament\Reports;
 
-use App\Filament\Pages\Reports\ViewBalanceSheet;
+use App\Enums\Accounting\AccountType;
+use App\Enums\Accounting\JournalEntryState;
+use App\Filament\Clusters\Accounting\Clusters\AccountingReports\Pages\Reports\ViewBalanceSheet;
 use App\Models\Account;
 use App\Models\Journal;
 use App\Models\JournalEntry;
 use App\Models\JournalEntryLine;
-use App\Enums\Accounting\AccountType;
-use App\Enums\Accounting\JournalEntryState;
 use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\Traits\WithConfiguredCompany;

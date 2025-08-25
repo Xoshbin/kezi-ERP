@@ -1,18 +1,13 @@
 <?php
 
-use Brick\Money\Money;
-use App\Models\Account;
+use App\Enums\Sales\InvoiceStatus;
+use App\Filament\Clusters\Accounting\Resources\Invoices\InvoiceResource;
 use App\Models\Invoice;
 use App\Models\Partner;
 use App\Models\Product;
-use App\Models\JournalEntry;
-use App\Enums\Sales\InvoiceStatus;
-use function Pest\Livewire\livewire;
-use Tests\Traits\WithConfiguredCompany;
-use App\Filament\Resources\Invoices\InvoiceResource;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use App\Filament\Resources\Invoices\Pages\EditInvoice;
-use App\Filament\Resources\Invoices\Pages\CreateInvoice;
+use Tests\Traits\WithConfiguredCompany;
+use function Pest\Livewire\livewire;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);
 
@@ -43,7 +38,7 @@ it('can create an invoice', function () {
         'unit_price' => \Brick\Money\Money::of(100, $this->company->currency->code), // Set a specific price for predictable total
     ]);
 
-    livewire(\App\Filament\Resources\Invoices\Pages\CreateInvoice::class)
+    livewire(\App\Filament\Clusters\Accounting\Resources\Invoices\Pages\CreateInvoice::class)
         ->fillForm([
             'company_id' => $this->company->id,
             'customer_id' => $customer->id,
@@ -80,7 +75,7 @@ it('can create an invoice', function () {
 });
 
 it('can validate input on create', function () {
-    livewire(\App\Filament\Resources\Invoices\Pages\CreateInvoice::class)
+    livewire(\App\Filament\Clusters\Accounting\Resources\Invoices\Pages\CreateInvoice::class)
         ->fillForm([
             'customer_id' => null,
             'invoice_date' => null,
@@ -117,7 +112,7 @@ it('can edit an invoice', function () {
 
     // The mutateFormDataBeforeFill method in EditInvoice already handles
     // the conversion of line data with Money objects properly, so we don't need to override it
-    livewire(\App\Filament\Resources\Invoices\Pages\EditInvoice::class, [
+    livewire(\App\Filament\Clusters\Accounting\Resources\Invoices\Pages\EditInvoice::class, [
         'record' => $invoice->getRouteKey(),
     ])
         ->fillForm([
@@ -138,7 +133,7 @@ it('can confirm an invoice', function () {
         'status' => InvoiceStatus::Draft,
     ]);
 
-    livewire(\App\Filament\Resources\Invoices\Pages\EditInvoice::class, [
+    livewire(\App\Filament\Clusters\Accounting\Resources\Invoices\Pages\EditInvoice::class, [
         'record' => $invoice->getRouteKey(),
     ])
         ->callAction('confirm')
