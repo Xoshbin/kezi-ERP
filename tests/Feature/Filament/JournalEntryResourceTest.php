@@ -1,6 +1,6 @@
 <?php
 
-use App\Filament\Resources\JournalEntries\JournalEntryResource;
+use App\Filament\Clusters\Accounting\Resources\JournalEntries\JournalEntryResource;
 use App\Models\Account;
 use App\Models\Currency;
 use App\Models\Journal;
@@ -26,7 +26,7 @@ it('can render the create page', function () {
 });
 
 it('can create a journal entry', function () {
-    livewire(\App\Filament\Resources\JournalEntries\Pages\CreateJournalEntry::class)
+    livewire(\App\Filament\Clusters\Accounting\Resources\JournalEntries\Pages\CreateJournalEntry::class)
         ->fillForm([
             'company_id' => $this->company->id,
             'journal_id' => $this->company->default_bank_journal_id,
@@ -79,7 +79,7 @@ it('can create a journal entry', function () {
 });
 
 it('can validate input', function () {
-    livewire(\App\Filament\Resources\JournalEntries\Pages\CreateJournalEntry::class)
+    livewire(\App\Filament\Clusters\Accounting\Resources\JournalEntries\Pages\CreateJournalEntry::class)
         ->fillForm([
             'company_id' => $this->company->id,
             'journal_id' => $this->company->default_bank_journal_id,
@@ -99,7 +99,7 @@ it('can render the edit page', function () {
 it('can edit a journal entry', function () {
     $journalEntry = JournalEntry::factory()->for($this->company)->create();
 
-    livewire(\App\Filament\Resources\JournalEntries\Pages\EditJournalEntry::class, [
+    livewire(\App\Filament\Clusters\Accounting\Resources\JournalEntries\Pages\EditJournalEntry::class, [
         'record' => $journalEntry->getRouteKey(),
     ])
         ->fillForm([
@@ -135,7 +135,7 @@ it('can edit a journal entry', function () {
 it('can delete a journal entry', function () {
     $journalEntry = JournalEntry::factory()->for($this->company)->create(['is_posted' => false]);
 
-    livewire(\App\Filament\Resources\JournalEntries\Pages\EditJournalEntry::class, [
+    livewire(\App\Filament\Clusters\Accounting\Resources\JournalEntries\Pages\EditJournalEntry::class, [
         'record' => $journalEntry->getRouteKey(),
     ])
         ->callAction(DeleteAction::class);
@@ -167,7 +167,7 @@ it('can display correct major amount in edit form', function () {
     ]);
 
     // Act & Assert
-    $livewire = livewire(\App\Filament\Resources\JournalEntries\Pages\EditJournalEntry::class, [
+    $livewire = livewire(\App\Filament\Clusters\Accounting\Resources\JournalEntries\Pages\EditJournalEntry::class, [
         'record' => $journalEntry->getRouteKey(),
     ]);
 
@@ -202,7 +202,7 @@ it('can create capital injection journal entry following Step 4 scenario', funct
     ]);
 
     // Act: Create the capital injection journal entry
-    $wire = livewire(\App\Filament\Resources\JournalEntries\Pages\CreateJournalEntry::class)
+    $wire = livewire(\App\Filament\Clusters\Accounting\Resources\JournalEntries\Pages\CreateJournalEntry::class)
         ->fillForm([
             'journal_id' => $bankJournal->id,
             'currency_id' => $this->company->currency_id,
@@ -313,7 +313,7 @@ it('can create and post capital injection journal entry using Filament interface
     $uniqueReference = 'Capital Investment Test ' . now()->timestamp;
 
     // Act: Create the capital injection journal entry using Filament form
-    livewire(\App\Filament\Resources\JournalEntries\Pages\CreateJournalEntry::class)
+    livewire(\App\Filament\Clusters\Accounting\Resources\JournalEntries\Pages\CreateJournalEntry::class)
         ->fillForm([
             'journal_id' => $bankJournal->id,
             'currency_id' => $this->company->currency_id,
@@ -356,7 +356,7 @@ it('can create and post capital injection journal entry using Filament interface
     expect($journalEntry->hash)->toBeNull(); // Hash should be null for draft entries
 
     // Act: Now post the journal entry using the Filament post action
-    $editWire = livewire(\App\Filament\Resources\JournalEntries\Pages\EditJournalEntry::class, [
+    $editWire = livewire(\App\Filament\Clusters\Accounting\Resources\JournalEntries\Pages\EditJournalEntry::class, [
         'record' => $journalEntry->getRouteKey(),
     ]);
 
@@ -383,7 +383,7 @@ it('can create and post capital injection journal entry using Filament interface
     $this->assertTrue($journalEntry->total_debit->isEqualTo($journalEntry->total_credit));
 
     // Verify the post action is no longer visible for posted entries
-    $editWire = livewire(\App\Filament\Resources\JournalEntries\Pages\EditJournalEntry::class, [
+    $editWire = livewire(\App\Filament\Clusters\Accounting\Resources\JournalEntries\Pages\EditJournalEntry::class, [
         'record' => $journalEntry->getRouteKey(),
     ]);
     $editWire->assertActionHidden('post');
@@ -436,7 +436,7 @@ it('shows proper error when trying to create duplicate reference', function () {
     ]);
 
     // First, create a journal entry successfully
-    $wire = livewire(\App\Filament\Resources\JournalEntries\Pages\CreateJournalEntry::class)
+    $wire = livewire(\App\Filament\Clusters\Accounting\Resources\JournalEntries\Pages\CreateJournalEntry::class)
         ->fillForm([
             'journal_id' => $bankJournal->id,
             'currency_id' => $this->company->currency_id,
@@ -476,7 +476,7 @@ it('shows proper error when trying to create duplicate reference', function () {
     expect($count)->toBe(1, 'First entry should be created');
 
     // Act: Try to create another journal entry with the same reference
-    $wire = livewire(\App\Filament\Resources\JournalEntries\Pages\CreateJournalEntry::class)
+    $wire = livewire(\App\Filament\Clusters\Accounting\Resources\JournalEntries\Pages\CreateJournalEntry::class)
         ->fillForm([
             'journal_id' => $bankJournal->id,
             'currency_id' => $this->company->currency_id,
@@ -522,7 +522,7 @@ it('shows proper error when trying to create duplicate reference', function () {
 });
 
 it('reactively updates totals when lines change', function () {
-    $wire = livewire(\App\Filament\Resources\JournalEntries\Pages\CreateJournalEntry::class)
+    $wire = livewire(\App\Filament\Clusters\Accounting\Resources\JournalEntries\Pages\CreateJournalEntry::class)
         ->fillForm([
             'company_id' => $this->company->id,
             'journal_id' => $this->company->default_bank_journal_id,
@@ -612,7 +612,7 @@ it('calculates and fills totals on edit page load', function () {
     ]);
 
     // Act & Assert
-    livewire(\App\Filament\Resources\JournalEntries\Pages\EditJournalEntry::class, [
+    livewire(\App\Filament\Clusters\Accounting\Resources\JournalEntries\Pages\EditJournalEntry::class, [
         'record' => $journalEntry->getRouteKey(),
     ])
     ->assertFormSet([
@@ -683,7 +683,7 @@ it('can create multi-currency capital injection journal entry in USD with proper
 
     // Act: Create the capital injection journal entry using Filament form
     // User enters amounts in USD as described in the scenario
-    livewire(\App\Filament\Resources\JournalEntries\Pages\CreateJournalEntry::class)
+    livewire(\App\Filament\Clusters\Accounting\Resources\JournalEntries\Pages\CreateJournalEntry::class)
         ->fillForm([
             'journal_id' => $miscJournal->id,
             'currency_id' => $usdCurrency->id, // User selects USD in the currency dropdown
@@ -785,7 +785,7 @@ it('can create multi-currency capital injection journal entry in USD with proper
     ]);
 
     // Act: Post the journal entry
-    $editWire = livewire(\App\Filament\Resources\JournalEntries\Pages\EditJournalEntry::class, [
+    $editWire = livewire(\App\Filament\Clusters\Accounting\Resources\JournalEntries\Pages\EditJournalEntry::class, [
         'record' => $journalEntry->getRouteKey(),
     ]);
 

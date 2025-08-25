@@ -1,16 +1,16 @@
 <?php
 
-use App\Filament\Resources\Payments\PaymentResource;
-use App\Models\Payment;
-use App\Models\Invoice;
-use App\Models\VendorBill;
-use App\Models\Partner;
-use App\Models\Journal;
 use App\Enums\Accounting\JournalType;
-use App\Enums\Purchases\VendorBillStatus;
-use App\Enums\Payments\PaymentType;
-use App\Enums\Payments\PaymentStatus;
 use App\Enums\Payments\PaymentPurpose;
+use App\Enums\Payments\PaymentStatus;
+use App\Enums\Payments\PaymentType;
+use App\Enums\Purchases\VendorBillStatus;
+use App\Filament\Clusters\Accounting\Resources\Payments\PaymentResource;
+use App\Models\Invoice;
+use App\Models\Journal;
+use App\Models\Partner;
+use App\Models\Payment;
+use App\Models\VendorBill;
 use Brick\Money\Money;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\Traits\WithConfiguredCompany;
@@ -51,7 +51,7 @@ it('can create an inbound payment linked to an invoice', function () {
     /** @var \App\Models\Journal $bankJournal */
     $bankJournal = Journal::factory()->for($this->company)->create(['type' => JournalType::Bank]);
 
-    livewire(\App\Filament\Resources\Payments\Pages\CreatePayment::class)
+    livewire(\App\Filament\Clusters\Accounting\Resources\Payments\Pages\CreatePayment::class)
         ->fillForm([
             'company_id' => $this->company->id,
             'journal_id' => $bankJournal->id,
@@ -108,7 +108,7 @@ it('can create an outbound payment linked to a vendor bill', function () {
     /** @var \App\Models\Journal $bankJournal */
     $bankJournal = Journal::factory()->for($this->company)->create(['type' => JournalType::Bank]);
 
-    livewire(\App\Filament\Resources\Payments\Pages\CreatePayment::class)
+    livewire(\App\Filament\Clusters\Accounting\Resources\Payments\Pages\CreatePayment::class)
         ->fillForm([
             'company_id' => $this->company->id,
             'journal_id' => $bankJournal->id,
@@ -147,7 +147,7 @@ it('can create an outbound payment linked to a vendor bill', function () {
 });
 
 it('can validate input on create', function () {
-    livewire(\App\Filament\Resources\Payments\Pages\CreatePayment::class)
+    livewire(\App\Filament\Clusters\Accounting\Resources\Payments\Pages\CreatePayment::class)
         ->fillForm([
             'company_id' => null,
             'journal_id' => null,
@@ -208,7 +208,7 @@ it('can edit a draft payment', function () {
         'amount_applied' => Money::of(100, $this->company->currency->code),
     ]);
 
-    livewire(\App\Filament\Resources\Payments\Pages\EditPayment::class, [
+    livewire(\App\Filament\Clusters\Accounting\Resources\Payments\Pages\EditPayment::class, [
         'record' => $payment->getRouteKey(),
     ])
         ->fillForm([
@@ -263,7 +263,7 @@ it('cannot edit a confirmed payment', function () {
 
     // Attempting to edit a confirmed payment should throw an exception
     expect(function () use ($payment) {
-        livewire(\App\Filament\Resources\Payments\Pages\EditPayment::class, [
+        livewire(\App\Filament\Clusters\Accounting\Resources\Payments\Pages\EditPayment::class, [
             'record' => $payment->getRouteKey(),
         ])
             ->fillForm([
@@ -309,7 +309,7 @@ it('can confirm a draft payment', function () {
         'amount_applied' => Money::of(100, $this->company->currency->code),
     ]);
 
-    livewire(\App\Filament\Resources\Payments\Pages\EditPayment::class, [
+    livewire(\App\Filament\Clusters\Accounting\Resources\Payments\Pages\EditPayment::class, [
         'record' => $payment->getRouteKey(),
     ])
         ->callAction('confirm');
@@ -354,7 +354,7 @@ it('can delete a draft payment', function () {
         'currency_id' => $this->company->currency_id,
     ]);
 
-    livewire(\App\Filament\Resources\Payments\Pages\EditPayment::class, [
+    livewire(\App\Filament\Clusters\Accounting\Resources\Payments\Pages\EditPayment::class, [
         'record' => $payment->getRouteKey(),
     ])
         ->callAction('delete');
@@ -368,7 +368,7 @@ it('cannot delete a confirmed payment', function () {
         'status' => PaymentStatus::Confirmed,
     ]);
 
-    livewire(\App\Filament\Resources\Payments\Pages\EditPayment::class, [
+    livewire(\App\Filament\Clusters\Accounting\Resources\Payments\Pages\EditPayment::class, [
         'record' => $payment->getRouteKey(),
     ])
         ->assertActionHidden('delete');
@@ -403,7 +403,7 @@ it('calculates total amount from multiple document links', function () {
     /** @var \App\Models\Journal $bankJournal */
     $bankJournal = Journal::factory()->for($this->company)->create(['type' => JournalType::Bank]);
 
-    livewire(\App\Filament\Resources\Payments\Pages\CreatePayment::class)
+    livewire(\App\Filament\Clusters\Accounting\Resources\Payments\Pages\CreatePayment::class)
         ->fillForm([
             'company_id' => $this->company->id,
             'journal_id' => $bankJournal->id,
@@ -468,9 +468,9 @@ it('can display journal entries relation manager', function () {
     ]);
 
     // Test that the journal entries relation manager can be rendered
-    livewire(\App\Filament\Resources\Payments\RelationManagers\JournalEntriesRelationManager::class, [
+    livewire(\App\Filament\Clusters\Accounting\Resources\Payments\RelationManagers\JournalEntriesRelationManager::class, [
         'ownerRecord' => $payment,
-        'pageClass' => \App\Filament\Resources\Payments\Pages\EditPayment::class,
+        'pageClass' => \App\Filament\Clusters\Accounting\Resources\Payments\Pages\EditPayment::class,
     ])
         ->assertCanSeeTableRecords([$journalEntry])
         ->assertCanRenderTableColumn('reference')
@@ -516,9 +516,9 @@ it('can display bank statement lines relation manager for reconciled payment', f
     ]);
 
     // Test that the bank statement lines relation manager can be rendered
-    livewire(\App\Filament\Resources\Payments\RelationManagers\BankStatementLinesRelationManager::class, [
+    livewire(\App\Filament\Clusters\Accounting\Resources\Payments\RelationManagers\BankStatementLinesRelationManager::class, [
         'ownerRecord' => $payment,
-        'pageClass' => \App\Filament\Resources\Payments\Pages\EditPayment::class,
+        'pageClass' => \App\Filament\Clusters\Accounting\Resources\Payments\Pages\EditPayment::class,
     ])
         ->assertCanSeeTableRecords([$bankStatementLine])
         ->assertCanRenderTableColumn('date')

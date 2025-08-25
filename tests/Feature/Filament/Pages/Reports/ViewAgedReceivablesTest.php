@@ -3,7 +3,7 @@
 namespace Tests\Feature\Filament\Pages\Reports;
 
 use App\Enums\Sales\InvoiceStatus;
-use App\Filament\Pages\Reports\ViewAgedReceivables;
+use App\Filament\Clusters\Accounting\Clusters\AccountingReports\Pages\Reports\ViewAgedReceivables;
 use App\Models\Invoice;
 use App\Models\Partner;
 use Brick\Money\Money;

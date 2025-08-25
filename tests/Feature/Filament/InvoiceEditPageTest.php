@@ -1,15 +1,13 @@
 <?php
 
-use App\Filament\Resources\Invoices\InvoiceResource;
-use App\Models\Invoice;
-use App\Models\User;
+use App\Enums\Sales\InvoiceStatus;
+use App\Models\Account;
 use App\Models\Company;
 use App\Models\Currency;
-use App\Models\Partner;
+use App\Models\Invoice;
 use App\Models\InvoiceLine;
-use App\Models\Account;
-use App\Enums\Sales\InvoiceStatus;
-use Brick\Money\Money;
+use App\Models\Partner;
+use App\Models\User;
 use Livewire\Livewire;
 
 beforeEach(function () {
@@ -47,7 +45,7 @@ test('edit page shows pdf actions for draft invoice', function () {
 
     // Action
     $component = Livewire::actingAs($this->user)
-        ->test(\App\Filament\Resources\Invoices\Pages\EditInvoice::class, [
+        ->test(\App\Filament\Clusters\Accounting\Resources\Invoices\Pages\EditInvoice::class, [
             'record' => $invoice->getRouteKey(),
         ]);
 
@@ -73,7 +71,7 @@ test('edit page shows pdf actions for posted invoice', function () {
 
     // Action
     $component = Livewire::actingAs($this->user)
-        ->test(\App\Filament\Resources\Invoices\Pages\EditInvoice::class, [
+        ->test(\App\Filament\Clusters\Accounting\Resources\Invoices\Pages\EditInvoice::class, [
             'record' => $invoice->getRouteKey(),
         ]);
 
@@ -121,7 +119,7 @@ test('edit page shows all expected actions', function () {
 
     // Action
     $component = Livewire::actingAs($this->user)
-        ->test(\App\Filament\Resources\Invoices\Pages\EditInvoice::class, [
+        ->test(\App\Filament\Clusters\Accounting\Resources\Invoices\Pages\EditInvoice::class, [
             'record' => $invoice->getRouteKey(),
         ]);
 

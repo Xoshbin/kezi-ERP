@@ -2,15 +2,15 @@
 
 namespace Tests\Feature\Accounting;
 
-use App\Actions\Adjustments\CreateAdjustmentDocumentAction;
 use App\Actions\Accounting\CreateJournalEntryAction;
+use App\Actions\Adjustments\CreateAdjustmentDocumentAction;
 use App\Actions\Payments\CreatePaymentAction;
 use App\Actions\Purchases\CreateVendorBillAction;
 use App\Actions\Sales\CreateInvoiceAction;
 use App\DataTransferObjects\Accounting\CreateJournalEntryDTO;
 use App\DataTransferObjects\Adjustments\CreateAdjustmentDocumentDTO;
-use App\DataTransferObjects\Payments\CreatePaymentDTO;
 use App\DataTransferObjects\Payments\CreatePaymentDocumentLinkDTO;
+use App\DataTransferObjects\Payments\CreatePaymentDTO;
 use App\DataTransferObjects\Purchases\CreateVendorBillDTO;
 use App\DataTransferObjects\Sales\CreateInvoiceDTO;
 use App\Enums\Accounting\LockDateType;
@@ -19,7 +19,6 @@ use App\Enums\Payments\PaymentPurpose;
 use App\Enums\Payments\PaymentType;
 use App\Exceptions\PeriodIsLockedException;
 use App\Exceptions\UpdateNotAllowedException;
-use App\Filament\Resources\LockDates\LockDateResource;
 use App\Models\Invoice;
 use App\Models\LockDate;
 use App\Rules\NotInLockedPeriod;
@@ -236,7 +235,7 @@ describe('Filament Resource (LockDateResource)', function () {
             'lock_type' => LockDateType::AllUsers,
         ]);
 
-        \Livewire\Livewire::test(\App\Filament\Resources\LockDates\Pages\ListLockDates::class, [
+        \Livewire\Livewire::test(\App\Filament\Clusters\Settings\Resources\LockDates\Pages\ListLockDates::class, [
             'record' => $this->company,
         ])
             ->assertTableActionDisabled('edit', $hardLock)
