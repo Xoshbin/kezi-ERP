@@ -3,6 +3,7 @@
 namespace App\Services\HumanResources;
 
 use App\Actions\HumanResources\ProcessPayrollAction;
+use App\Actions\HumanResources\CreatePaymentFromPayrollAction;
 use App\DataTransferObjects\HumanResources\ProcessPayrollDTO;
 use App\DataTransferObjects\HumanResources\PayrollLineDTO;
 use App\Models\Payroll;
@@ -10,6 +11,7 @@ use App\Models\Employee;
 use App\Models\User;
 use App\Models\Company;
 use App\Models\Account;
+use App\Models\Payment;
 use App\Services\Accounting\LockDateService;
 use App\Actions\Accounting\CreateJournalEntryForPayrollAction;
 use Brick\Money\Money;
@@ -23,6 +25,7 @@ class PayrollService
         protected ProcessPayrollAction $processPayrollAction,
         protected LockDateService $lockDateService,
         protected CreateJournalEntryForPayrollAction $createJournalEntryForPayrollAction,
+        protected CreatePaymentFromPayrollAction $createPaymentFromPayrollAction,
     ) {
     }
 
@@ -262,5 +265,36 @@ class PayrollService
         }
 
         return $lines;
+    }
+
+    /**
+     * Create payment for an approved payroll.
+     */
+    public function payEmployee(Payroll $payroll, User $user): Payment
+    {
+        Gate::forUser($user)->authorize('pay', $payroll);
+
+        if ($payroll->status !== 'processed') {
+            throw new \Exception('Only processed payrolls can be paid.');
+        }
+
+        if ($payroll->payment_id) {
+            throw new \Exception('Payroll has already been paid.');
+        }
+
+        $this->lockDateService->enforce($payroll->company, $payroll->pay_date);
+
+        return DB::transaction(function () use ($payroll, $user) {
+            // Create payment for net salary
+            $payment = $this->createPaymentFromPayrollAction->execute($payroll, $user);
+
+            // Update payroll status to 'paid' and link payment
+            $payroll->update([
+                'status' => 'paid',
+                'payment_id' => $payment->id,
+            ]);
+
+            return $payment;
+        });
     }
 }
