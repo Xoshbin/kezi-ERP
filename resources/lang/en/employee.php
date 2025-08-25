@@ -4,6 +4,11 @@ return [
     // Basic Information
     'basic_information' => 'Basic Information',
     'basic_information_description' => 'Core employee identification and contact details',
+
+    'fields' => [
+        'employee_number' => 'Employee Number',
+    ],
+
     'employee_number' => 'Employee Number',
     'first_name' => 'First Name',
     'last_name' => 'Last Name',
