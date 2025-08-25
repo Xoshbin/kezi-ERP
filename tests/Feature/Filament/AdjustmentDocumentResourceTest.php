@@ -1,14 +1,13 @@
 <?php
 
-use App\Filament\Resources\AdjustmentDocuments\AdjustmentDocumentResource;
-use App\Models\Product;
-use App\Models\AdjustmentDocument;
-use App\Models\Account;
-use App\Models\Tax;
-use App\Enums\Adjustments\AdjustmentDocumentType;
-use App\Enums\Adjustments\AdjustmentDocumentStatus;
 use App\Actions\Adjustments\CreateAdjustmentDocumentLineAction;
 use App\DataTransferObjects\Adjustments\CreateAdjustmentDocumentLineDTO;
+use App\Enums\Adjustments\AdjustmentDocumentStatus;
+use App\Enums\Adjustments\AdjustmentDocumentType;
+use App\Filament\Clusters\Accounting\Resources\AdjustmentDocuments\AdjustmentDocumentResource;
+use App\Models\Account;
+use App\Models\AdjustmentDocument;
+use App\Models\Product;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\Traits\WithConfiguredCompany;
 use function Pest\Livewire\livewire;
@@ -42,7 +41,7 @@ it('can create an adjustment document', function () {
         'unit_price' => \Brick\Money\Money::of(100, $this->company->currency->code), // Set a specific price for predictable total
     ]);
 
-    livewire(\App\Filament\Resources\AdjustmentDocuments\Pages\CreateAdjustmentDocument::class)
+    livewire(\App\Filament\Clusters\Accounting\Resources\AdjustmentDocuments\Pages\CreateAdjustmentDocument::class)
         ->fillForm([
             'company_id' => $this->company->id,
             'currency_id' => $this->company->currency_id,
@@ -80,7 +79,7 @@ it('can create an adjustment document', function () {
 });
 
 it('can validate input on create', function () {
-    livewire(\App\Filament\Resources\AdjustmentDocuments\Pages\CreateAdjustmentDocument::class)
+    livewire(\App\Filament\Clusters\Accounting\Resources\AdjustmentDocuments\Pages\CreateAdjustmentDocument::class)
         ->fillForm([
             'reference_number' => null,
             'date' => null,
@@ -133,7 +132,7 @@ it('can edit an adjustment document', function () {
 
     // The mutateFormDataBeforeFill method in EditAdjustmentDocument already handles
     // the conversion of line data with Money objects properly, so we don't need to override it
-    livewire(\App\Filament\Resources\AdjustmentDocuments\Pages\EditAdjustmentDocument::class, [
+    livewire(\App\Filament\Clusters\Accounting\Resources\AdjustmentDocuments\Pages\EditAdjustmentDocument::class, [
         'record' => $adjustmentDocument->getRouteKey(),
     ])
         ->fillForm([
@@ -173,7 +172,7 @@ it('can post an adjustment document', function () {
         product_id: null
     ));
 
-    livewire(\App\Filament\Resources\AdjustmentDocuments\Pages\EditAdjustmentDocument::class, [
+    livewire(\App\Filament\Clusters\Accounting\Resources\AdjustmentDocuments\Pages\EditAdjustmentDocument::class, [
         'record' => $adjustmentDocument->getRouteKey(),
     ])
         ->callAction('post')
