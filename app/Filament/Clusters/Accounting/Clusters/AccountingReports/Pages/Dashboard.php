@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Clusters\Accounting\Pages;
+namespace App\Filament\Clusters\Accounting\Clusters\AccountingReports\Pages;
 
 use App\Filament\Clusters\Accounting\Widgets\CashFlowWidget;
 use App\Filament\Clusters\Accounting\Widgets\FinancialStatsOverview;
