@@ -6,6 +6,7 @@ use App\Enums\Payments\PaymentPurpose;
 use App\Services\Payments\Strategies\PaymentStrategy;
 use App\Services\Payments\Strategies\SettlementStrategy;
 use App\Services\Payments\Strategies\DirectPaymentStrategy;
+use App\Services\Payments\Strategies\PayrollPaymentStrategy;
 use InvalidArgumentException;
 
 class PaymentStrategyFactory
@@ -16,9 +17,10 @@ class PaymentStrategyFactory
     public static function make(string|PaymentPurpose $purpose): PaymentStrategy
     {
         $purposeValue = $purpose instanceof PaymentPurpose ? $purpose->value : $purpose;
-        
+
         return match ($purposeValue) {
             PaymentPurpose::Settlement->value => app(SettlementStrategy::class),
+            PaymentPurpose::Payroll->value => app(PayrollPaymentStrategy::class),
             PaymentPurpose::Loan->value,
             PaymentPurpose::CapitalInjection->value,
             PaymentPurpose::ExpenseClaim->value,

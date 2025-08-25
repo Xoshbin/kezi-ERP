@@ -15,7 +15,7 @@ class LeaveTypesTable
     {
         return $table
             ->columns([
-                TextColumn::make('company.name')
+                TextColumn::make('name')
                     ->searchable(),
                 TextColumn::make('code')
                     ->searchable(),

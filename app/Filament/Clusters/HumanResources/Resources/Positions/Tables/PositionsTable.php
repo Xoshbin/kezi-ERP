@@ -15,7 +15,7 @@ class PositionsTable
     {
         return $table
             ->columns([
-                TextColumn::make('company.name')
+                TextColumn::make('title')
                     ->searchable(),
                 TextColumn::make('department.name')
                     ->searchable(),

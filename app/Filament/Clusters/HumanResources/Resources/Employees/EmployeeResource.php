@@ -16,11 +16,9 @@ use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
-use LaraZeus\SpatieTranslatable\Resources\Concerns\Translatable;
 
 class EmployeeResource extends Resource
 {
-    use Translatable;
 
     protected static ?string $model = Employee::class;
 
