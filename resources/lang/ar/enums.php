@@ -142,6 +142,7 @@ return [
         'expense_claim' => 'مطالبة مصروفات',
         'tax_payment' => 'دفع ضريبة',
         'asset_purchase' => 'شراء أصول',
+        'payroll' => 'كشف الراتب',
     ],
 
     'tax_type' => [

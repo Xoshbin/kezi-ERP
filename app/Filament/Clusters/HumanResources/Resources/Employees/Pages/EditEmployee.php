@@ -12,14 +12,11 @@ use LaraZeus\SpatieTranslatable\Actions\LocaleSwitcher;
 
 class EditEmployee extends EditRecord
 {
-    use Translatable;
-
     protected static string $resource = EmployeeResource::class;
 
     protected function getHeaderActions(): array
     {
         return [
-            LocaleSwitcher::make(),
             DeleteAction::make(),
             ForceDeleteAction::make(),
             RestoreAction::make(),

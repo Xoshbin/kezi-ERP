@@ -15,9 +15,7 @@ class DepartmentsTable
     {
         return $table
             ->columns([
-                TextColumn::make('company.name')
-                    ->searchable(),
-                TextColumn::make('parentDepartment.name')
+                TextColumn::make('name')
                     ->searchable(),
                 TextColumn::make('manager.name')
                     ->searchable(),

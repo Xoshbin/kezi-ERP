@@ -142,6 +142,7 @@ return [
         'expense_claim' => 'Expense Claim',
         'tax_payment' => 'Tax Payment',
         'asset_purchase' => 'Asset Purchase',
+        'payroll' => 'Payroll',
     ],
 
     'tax_type' => [
