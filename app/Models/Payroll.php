@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use App\Casts\DocumentCurrencyMoneyCast;
 use App\Observers\AuditLogObserver;
+use App\Observers\PayrollObserver;
 use Carbon\Carbon;
 
 /**
@@ -60,7 +61,7 @@ use Carbon\Carbon;
  * @property-read User|null $approvedByUser
  * @property-read \Illuminate\Database\Eloquent\Collection<int, PayrollLine> $payrollLines
  */
-#[ObservedBy([AuditLogObserver::class])]
+#[ObservedBy([AuditLogObserver::class, PayrollObserver::class])]
 class Payroll extends Model
 {
     use HasFactory;

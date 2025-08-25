@@ -1,0 +1,75 @@
+<?php
+
+return [
+    'navigation_label' => 'كشوف الرواتب',
+    'model_label' => 'كشف راتب',
+    'model_plural_label' => 'كشوف الرواتب',
+
+    'sections' => [
+        'basic_information' => 'المعلومات الأساسية',
+        'basic_information_description' => 'تفاصيل الموظف ومعلومات فترة كشف الراتب',
+        'salary_components' => 'مكونات الراتب',
+        'salary_components_description' => 'الراتب الأساسي والبدلات والمكافآت والعمولات',
+        'deductions' => 'الاستقطاعات',
+        'deductions_description' => 'الضرائب والتأمين والاستقطاعات الأخرى',
+        'notes' => 'الملاحظات',
+        'notes_description' => 'ملاحظات وتعليقات إضافية لكشف الراتب هذا',
+    ],
+
+    'fields' => [
+        'payroll_number' => 'رقم كشف الراتب',
+        'employee' => 'الموظف',
+        'currency' => 'العملة',
+        'period_start_date' => 'تاريخ بداية الفترة',
+        'period_end_date' => 'تاريخ نهاية الفترة',
+        'pay_date' => 'تاريخ الدفع',
+        'pay_frequency' => 'تكرار الدفع',
+        'base_salary' => 'الراتب الأساسي',
+        'overtime_amount' => 'مبلغ العمل الإضافي',
+        'housing_allowance' => 'بدل السكن',
+        'transport_allowance' => 'بدل النقل',
+        'meal_allowance' => 'بدل الوجبات',
+        'other_allowances' => 'بدلات أخرى',
+        'bonus' => 'مكافأة',
+        'commission' => 'عمولة',
+        'gross_salary' => 'إجمالي الراتب',
+        'income_tax' => 'ضريبة الدخل',
+        'social_security' => 'الضمان الاجتماعي',
+        'health_insurance' => 'التأمين الصحي',
+        'pension_contribution' => 'مساهمة التقاعد',
+        'other_deductions' => 'استقطاعات أخرى',
+        'total_deductions' => 'إجمالي الاستقطاعات',
+        'net_salary' => 'صافي الراتب',
+        'status' => 'الحالة',
+        'notes' => 'الملاحظات',
+        'created_at' => 'تاريخ الإنشاء',
+    ],
+
+    'status' => [
+        'draft' => 'مسودة',
+        'processed' => 'معالج',
+        'paid' => 'مدفوع',
+        'cancelled' => 'ملغي',
+    ],
+
+    'pay_frequency' => [
+        'monthly' => 'شهري',
+        'bi_weekly' => 'كل أسبوعين',
+        'weekly' => 'أسبوعي',
+    ],
+
+    'actions' => [
+        'approve' => 'موافقة',
+        'pay' => 'دفع للموظف',
+        'view_payment' => 'عرض الدفعة',
+        'approve_payroll' => 'الموافقة على كشف الراتب',
+        'approve_payroll_description' => 'سيؤدي هذا إلى إنشاء قيود محاسبية وتحديد كشف الراتب كمعالج. لا يمكن التراجع عن هذا الإجراء.',
+        'pay_employee' => 'دفع للموظف',
+        'pay_employee_description' => 'سيؤدي هذا إلى إنشاء دفعة لـ :employee بمبلغ :amount. لا يمكن التراجع عن هذا الإجراء.',
+    ],
+
+    'notifications' => [
+        'approved' => 'تمت الموافقة على كشف الراتب بنجاح.',
+        'paid' => 'تم دفع راتب الموظف بنجاح.',
+    ],
+];
