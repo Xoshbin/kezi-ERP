@@ -1,0 +1,129 @@
+<?php
+
+namespace App\Filament\Clusters\Accounting\Resources\FiscalPositions;
+
+use App\Filament\Clusters\Accounting\AccountingCluster;
+use App\Filament\Clusters\Accounting\Resources\FiscalPositions\Pages\CreateFiscalPosition;
+use App\Filament\Clusters\Accounting\Resources\FiscalPositions\Pages\EditFiscalPosition;
+use App\Filament\Clusters\Accounting\Resources\FiscalPositions\Pages\ListFiscalPositions;
+use App\Filament\Clusters\Accounting\Resources\FiscalPositions\RelationManagers\AccountMappingsRelationManager;
+use App\Filament\Clusters\Accounting\Resources\FiscalPositions\RelationManagers\TaxMappingsRelationManager;
+use App\Filament\Resources\FiscalPositionResource\Pages;
+use App\Filament\Resources\FiscalPositionResource\RelationManagers;
+use App\Models\FiscalPosition;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteBulkAction;
+use Filament\Actions\EditAction;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
+use Filament\Resources\Resource;
+use Filament\Schemas\Schema;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Table;
+use LaraZeus\SpatieTranslatable\Resources\Concerns\Translatable;
+
+class FiscalPositionResource extends Resource
+{
+    use Translatable;
+
+    protected static ?string $model = FiscalPosition::class;
+
+    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-map-pin';
+
+    protected static ?int $navigationSort = 4;
+
+    protected static ?string $cluster = AccountingCluster::class;
+
+    public static function getNavigationGroup(): ?string
+    {
+        return __('navigation.groups.configuration');
+    }
+
+    public static function getModelLabel(): string
+    {
+        return __('fiscal_position.label');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __('fiscal_position.plural_label');
+    }
+
+    public static function getNavigationLabel(): string
+    {
+        return __('fiscal_position.plural_label');
+    }
+
+    public static function form(Schema $schema): Schema
+    {
+        return $schema
+            ->components([
+                Select::make('company_id')
+                    ->relationship('company', 'name')
+                    ->label(__('fiscal_position.company'))
+                    ->required(),
+                TextInput::make('name')
+                    ->label(__('fiscal_position.name'))
+                    ->required()
+                    ->maxLength(255),
+                TextInput::make('country')
+                    ->label(__('fiscal_position.country'))
+                    ->maxLength(255),
+            ]);
+    }
+
+    public static function table(Table $table): Table
+    {
+        return $table
+            ->columns([
+                TextColumn::make('company.name')
+                    ->label(__('fiscal_position.company'))
+                    ->numeric()
+                    ->sortable(),
+                TextColumn::make('name')
+                    ->label(__('fiscal_position.name'))
+                    ->searchable(),
+                TextColumn::make('country')
+                    ->label(__('fiscal_position.country'))
+                    ->searchable(),
+                TextColumn::make('created_at')
+                    ->label(__('fiscal_position.created_at'))
+                    ->dateTime()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('updated_at')
+                    ->label(__('fiscal_position.updated_at'))
+                    ->dateTime()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+            ])
+            ->filters([
+                //
+            ])
+            ->recordActions([
+                EditAction::make(),
+            ])
+            ->toolbarActions([
+                BulkActionGroup::make([
+                    DeleteBulkAction::make(),
+                ]),
+            ]);
+    }
+
+    public static function getRelations(): array
+    {
+        return [
+            TaxMappingsRelationManager::class,
+            AccountMappingsRelationManager::class,
+        ];
+    }
+
+    public static function getPages(): array
+    {
+        return [
+            'index' => ListFiscalPositions::route('/'),
+            'create' => CreateFiscalPosition::route('/create'),
+            'edit' => EditFiscalPosition::route('/{record}/edit'),
+        ];
+    }
+}

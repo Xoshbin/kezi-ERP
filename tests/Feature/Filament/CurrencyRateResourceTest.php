@@ -1,6 +1,6 @@
 <?php
 
-use App\Filament\Resources\CurrencyRates\CurrencyRateResource;
+use App\Filament\Clusters\Settings\Resources\CurrencyRates\CurrencyRateResource;
 use App\Models\Currency;
 use App\Models\CurrencyRate;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -33,7 +33,7 @@ it('can create a currency rate', function () {
         'source' => 'manual',
     ];
 
-    livewire(\App\Filament\Resources\CurrencyRates\Pages\CreateCurrencyRate::class)
+    livewire(\App\Filament\Clusters\Settings\Resources\CurrencyRates\Pages\CreateCurrencyRate::class)
         ->fillForm($newData)
         ->call('create')
         ->assertHasNoFormErrors();
@@ -66,7 +66,7 @@ it('can retrieve data', function () {
         'company_id' => $this->company->id,
     ]);
 
-    livewire(\App\Filament\Resources\CurrencyRates\Pages\ListCurrencyRates::class)
+    livewire(\App\Filament\Clusters\Settings\Resources\CurrencyRates\Pages\ListCurrencyRates::class)
         ->assertCanSeeTableRecords($currencyRates);
 });
 
@@ -80,7 +80,7 @@ it('can edit a currency rate', function () {
         'source' => 'api',
     ];
 
-    livewire(\App\Filament\Resources\CurrencyRates\Pages\EditCurrencyRate::class, [
+    livewire(\App\Filament\Clusters\Settings\Resources\CurrencyRates\Pages\EditCurrencyRate::class, [
         'record' => $currencyRate->getRouteKey(),
     ])
         ->fillForm($newData)
@@ -97,7 +97,7 @@ it('can delete a currency rate', function () {
         'company_id' => $this->company->id,
     ]);
 
-    livewire(\App\Filament\Resources\CurrencyRates\Pages\EditCurrencyRate::class, [
+    livewire(\App\Filament\Clusters\Settings\Resources\CurrencyRates\Pages\EditCurrencyRate::class, [
         'record' => $currencyRate->getRouteKey(),
     ])
         ->callAction(\Filament\Actions\DeleteAction::class);
@@ -106,7 +106,7 @@ it('can delete a currency rate', function () {
 });
 
 it('validates required fields', function () {
-    livewire(\App\Filament\Resources\CurrencyRates\Pages\CreateCurrencyRate::class)
+    livewire(\App\Filament\Clusters\Settings\Resources\CurrencyRates\Pages\CreateCurrencyRate::class)
         ->fillForm([
             'currency_id' => null,
             'rate' => null,
@@ -125,7 +125,7 @@ it('validates required fields', function () {
 it('validates rate is numeric and positive', function () {
     $currency = Currency::factory()->create();
 
-    livewire(\App\Filament\Resources\CurrencyRates\Pages\CreateCurrencyRate::class)
+    livewire(\App\Filament\Clusters\Settings\Resources\CurrencyRates\Pages\CreateCurrencyRate::class)
         ->fillForm([
             'currency_id' => $currency->id,
             'rate' => -1.5,

@@ -2,7 +2,7 @@
 
 namespace Tests\Feature\Filament\Pages;
 
-use App\Filament\Pages\Dashboard;
+use App\Filament\Clusters\Accounting\Clusters\AccountingReports\Pages\Dashboard;
 use App\Models\User;
 use Filament\Facades\Filament;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -42,9 +42,9 @@ it('includes all financial widgets', function () {
     $dashboard = new Dashboard();
     $widgets = $dashboard->getWidgets();
 
-    expect($widgets)->toContain(\App\Filament\Widgets\FinancialStatsOverview::class);
-    expect($widgets)->toContain(\App\Filament\Widgets\IncomeVsExpenseChart::class);
-    expect($widgets)->toContain(\App\Filament\Widgets\CashFlowWidget::class);
+    expect($widgets)->toContain(\App\Filament\Clusters\Accounting\Widgets\FinancialStatsOverview::class);
+    expect($widgets)->toContain(\App\Filament\Clusters\Accounting\Widgets\IncomeVsExpenseChart::class);
+    expect($widgets)->toContain(\App\Filament\Clusters\Accounting\Widgets\CashFlowWidget::class);
 });
 
 it('handles user without company', function () {

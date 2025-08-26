@@ -2,8 +2,7 @@
 
 namespace Tests\Feature\Filament;
 
-use App\Filament\Resources\VendorBills\VendorBillResource;
-use App\Filament\Resources\VendorBills\Pages\CreateVendorBill;
+use App\Filament\Clusters\Accounting\Resources\VendorBills\Pages\CreateVendorBill;
 use App\Models\Account;
 use App\Models\Company;
 use App\Models\Currency;
