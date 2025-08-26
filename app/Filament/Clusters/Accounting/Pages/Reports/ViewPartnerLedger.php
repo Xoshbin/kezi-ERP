@@ -21,13 +21,11 @@ class ViewPartnerLedger extends Page
 {
     protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-document-text';
     protected string $view = 'filament.pages.reports.view-partner-ledger';
-    protected static string | \UnitEnum | null $navigationGroup = null;
 
-    public static function getNavigationGroup(): ?string
+    public static function shouldRegisterNavigation(): bool
     {
-        return __('navigation.groups.reports');
+        return false;
     }
-    protected static ?int $navigationSort = 4;
 
     protected static ?string $cluster = AccountingCluster::class;
 

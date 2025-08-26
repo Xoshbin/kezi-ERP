@@ -18,13 +18,11 @@ class ViewProfitAndLoss extends Page
 {
     protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-chart-bar';
     protected string $view = 'filament.pages.reports.view-profit-and-loss';
-    protected static string | \UnitEnum | null $navigationGroup = null;
 
-    public static function getNavigationGroup(): ?string
+    public static function shouldRegisterNavigation(): bool
     {
-        return __('navigation.groups.reports');
+        return false;
     }
-    protected static ?int $navigationSort = 1;
 
     protected static ?string $cluster = AccountingCluster::class;
 

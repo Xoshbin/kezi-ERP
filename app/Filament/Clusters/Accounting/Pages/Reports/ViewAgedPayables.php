@@ -18,13 +18,11 @@ class ViewAgedPayables extends Page
 {
     protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-clock';
     protected string $view = 'filament.pages.reports.view-aged-payables';
-    protected static string | \UnitEnum | null $navigationGroup = null;
 
-    public static function getNavigationGroup(): ?string
+    public static function shouldRegisterNavigation(): bool
     {
-        return __('navigation.groups.reports');
+        return false;
     }
-    protected static ?int $navigationSort = 5;
 
     protected static ?string $cluster = AccountingCluster::class;
 
