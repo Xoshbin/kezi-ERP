@@ -13,6 +13,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use App\Enums\Settings\NumberingType;
 
 /**
  * Class Company
@@ -135,6 +136,8 @@ class Company extends Model
         'pdf_template',
         'pdf_logo_path',
         'pdf_settings',
+        // Numbering Settings
+        'numbering_settings',
     ];
 
     /**
@@ -147,6 +150,7 @@ class Company extends Model
         // 'created_at' and 'updated_at' are Carbon instances by default.
         'enable_reconciliation' => 'boolean',
         'pdf_settings' => 'json',
+        'numbering_settings' => 'json',
     ];
 
     /*
@@ -530,5 +534,98 @@ class Company extends Model
         // CORRECTED: The foreign key in the database is 'default_vendor_location_id',
         // not 'vendor_location_id'. We align the model with the schema.
         return $this->belongsTo(StockLocation::class, 'default_vendor_location_id');
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Numbering Settings Methods
+    |--------------------------------------------------------------------------
+    |
+    | Methods for managing document numbering configurations.
+    | These settings control how invoice and bill numbers are generated.
+    |
+    */
+
+    /**
+     * Get the default numbering settings structure.
+     */
+    public function getDefaultNumberingSettings(): array
+    {
+        return [
+            'invoice' => [
+                'type' => NumberingType::SLASH_YEAR_MONTH->value,
+                'prefix' => 'INV',
+                'padding' => 7,
+            ],
+            'vendor_bill' => [
+                'type' => NumberingType::SLASH_YEAR_MONTH->value,
+                'prefix' => 'BILL',
+                'padding' => 7,
+            ],
+        ];
+    }
+
+    /**
+     * Get the numbering settings with defaults if not set.
+     */
+    public function getNumberingSettings(): array
+    {
+        return $this->numbering_settings ?? $this->getDefaultNumberingSettings();
+    }
+
+    /**
+     * Get invoice numbering configuration.
+     */
+    public function getInvoiceNumberingConfig(): array
+    {
+        $settings = $this->getNumberingSettings();
+        return $settings['invoice'] ?? $this->getDefaultNumberingSettings()['invoice'];
+    }
+
+    /**
+     * Get vendor bill numbering configuration.
+     */
+    public function getVendorBillNumberingConfig(): array
+    {
+        $settings = $this->getNumberingSettings();
+        return $settings['vendor_bill'] ?? $this->getDefaultNumberingSettings()['vendor_bill'];
+    }
+
+    /**
+     * Check if numbering settings can be changed.
+     * Returns false if there are posted documents using current numbering.
+     */
+    public function canChangeNumberingSettings(): bool
+    {
+        // Check for posted invoices (only posted invoices have invoice_number)
+        $hasPostedInvoices = $this->invoices()
+            ->whereNotNull('invoice_number')
+            ->exists();
+
+        // Check for posted vendor bills (only posted bills should prevent changes)
+        $hasPostedBills = $this->vendorBills()
+            ->where('status', \App\Enums\Purchases\VendorBillStatus::Posted)
+            ->whereNotNull('bill_reference')
+            ->exists();
+
+        return !$hasPostedInvoices && !$hasPostedBills;
+    }
+
+    /**
+     * Get validation errors for numbering settings changes.
+     */
+    public function getNumberingChangeValidationErrors(): array
+    {
+        $errors = [];
+
+        if ($this->invoices()->whereNotNull('invoice_number')->exists()) {
+            $errors[] = __('numbering.validation.posted_invoices_exist');
+        }
+
+        if ($this->vendorBills()->where('status', \App\Enums\Purchases\VendorBillStatus::Posted)->whereNotNull('bill_reference')->exists()) {
+            $errors[] = __('numbering.validation.posted_bills_exist');
+        }
+
+        return $errors;
     }
 }
