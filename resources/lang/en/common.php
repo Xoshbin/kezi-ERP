@@ -9,7 +9,7 @@ return [
     'create' => 'Create',
     'created_successfully' => ':item created successfully',
     'select_or_create' => 'Select existing or create new',
-    
+
     // Model-specific create new labels
     'create_new_account' => 'Create New Account',
     'create_new_company' => 'Create New Company',
@@ -20,7 +20,7 @@ return [
     'create_new_journal' => 'Create New Journal',
     'create_new_analytic_account' => 'Create New Analytic Account',
     'create_new_user' => 'Create New User',
-    
+
     // Modal titles
     'modal_title_create_account' => 'Create New Account',
     'modal_title_create_company' => 'Create New Company',
@@ -31,4 +31,8 @@ return [
     'modal_title_create_journal' => 'Create New Journal',
     'modal_title_create_analytic_account' => 'Create New Analytic Account',
     'modal_title_create_user' => 'Create New User',
+
+    // Common timestamps
+    'created_at' => 'Created At',
+    'updated_at' => 'Updated At',
 ];

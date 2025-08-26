@@ -27,6 +27,21 @@ class LeaveTypeResource extends Resource
 
     protected static ?string $recordTitleAttribute = 'name';
 
+    public static function getNavigationLabel(): string
+    {
+        return __('leave_type.navigation_label');
+    }
+
+    public static function getModelLabel(): string
+    {
+        return __('leave_type.navigation_label');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __('leave_type.navigation_label');
+    }
+
     public static function form(Schema $schema): Schema
     {
         return LeaveTypeForm::configure($schema);

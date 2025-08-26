@@ -135,9 +135,9 @@ test('user can only access their own company pdf settings', function () {
 
 test('pdf settings resource shows correct navigation label', function () {
     // Assert
-    expect(PdfSettingsResource::getNavigationLabel())->toBe(__('PDF Settings'));
-    expect(PdfSettingsResource::getModelLabel())->toBe(__('PDF Settings'));
-    expect(PdfSettingsResource::getPluralModelLabel())->toBe(__('PDF Settings'));
+    expect(PdfSettingsResource::getNavigationLabel())->toBe(__('pdf_settings.navigation_label'));
+    expect(PdfSettingsResource::getModelLabel())->toBe(__('pdf_settings.model_label'));
+    expect(PdfSettingsResource::getPluralModelLabel())->toBe(__('pdf_settings.model_plural_label'));
 });
 
 test('pdf settings resource cannot create new records', function () {

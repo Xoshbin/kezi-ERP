@@ -27,6 +27,21 @@ class PositionResource extends Resource
 
     protected static ?string $recordTitleAttribute = 'title';
 
+    public static function getNavigationLabel(): string
+    {
+        return __('position.navigation_label');
+    }
+
+    public static function getModelLabel(): string
+    {
+        return __('position.navigation_label');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __('position.navigation_label');
+    }
+
     public static function form(Schema $schema): Schema
     {
         return PositionForm::configure($schema);
