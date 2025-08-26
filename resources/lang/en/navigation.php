@@ -13,6 +13,7 @@ return [
 
     // Navigation Clusters
     'clusters' => [
+        'accounting' => 'Accounting',
         'settings' => 'Settings',
         'inventory' => 'Inventory Management',
         'human_resources' => 'Human Resources',

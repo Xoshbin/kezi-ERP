@@ -13,6 +13,7 @@ return [
 
     // Navigation Clusters
     'clusters' => [
+        'accounting' => 'ژمێریاری',
         'settings' => 'ڕێکخستنەکان',
         'inventory' => 'بەڕێوەبردنی کۆگا',
         'human_resources' => 'سەرچاوە مرۆییەکان',
