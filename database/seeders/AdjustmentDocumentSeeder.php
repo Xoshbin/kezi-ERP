@@ -8,7 +8,7 @@ use App\Models\Account;
 use App\Models\AdjustmentDocument;
 use App\Models\Company;
 use App\Models\Invoice;
-use App\Models\Journal;
+
 use Brick\Money\Money;
 use Illuminate\Database\Seeder;
 
@@ -34,12 +34,7 @@ class AdjustmentDocumentSeeder extends Seeder
             return;
         }
 
-        // 2. Find the "Sales" journal for creating the credit note
-        $salesJournal = Journal::where('name->en', 'Sales')->where('company_id', $company->id)->first();
-        if (!$salesJournal) {
-            $this->command->error('The "Sales" journal was not found. Please run the JournalSeeder.');
-            return;
-        }
+        // Note: Journal entry will be created when the document is posted
 
         // 3. Find the "Sales Discounts & Returns" account
         $salesDiscountAccount = Account::where('name->en', 'Sales Discounts & Returns')->where('company_id', $company->id)->first();
@@ -50,28 +45,32 @@ class AdjustmentDocumentSeeder extends Seeder
 
         // 4. Create the Credit Note (Adjustment Document)
         $creditNoteAmount = Money::of('500000', $currencyCode);
+        $zeroAmount = Money::of('0', $currencyCode);
 
         $creditNote = AdjustmentDocument::create([
             'company_id' => $company->id,
             'original_invoice_id' => $originalInvoice->id,
-            'journal_id' => $salesJournal->id,
             'type' => AdjustmentDocumentType::CreditNote,
             'date' => now(),
+            'reference_number' => 'CN-' . now()->format('Ymd') . '-001',
             'reason' => 'Goodwill discount for new client.',
+            'subtotal' => $creditNoteAmount,
             'total_amount' => $creditNoteAmount,
+            'total_tax' => $zeroAmount,
             'status' => AdjustmentDocumentStatus::Draft,
             'currency_id' => $company->currency_id,
         ]);
 
         // 5. Create the line for the Credit Note
         $creditNote->lines()->create([
+            'company_id' => $company->id,
             'account_id' => $salesDiscountAccount->id,
             'description' => 'Refund for IT Setup Services',
             'quantity' => 1,
             'unit_price' => $creditNoteAmount,
         ]);
 
-        // 6. Post the Credit Note (The observer will handle Journal Entry creation)
+        // 6. Post the Credit Note (The AdjustmentDocumentService will handle Journal Entry creation)
         // In a real app, this would be an action `PostAdjustmentDocumentAction->execute($creditNote)`
         $creditNote->update(['status' => AdjustmentDocumentStatus::Posted, 'posted_at' => now()]);
 

@@ -52,18 +52,18 @@ class DatabaseSeeder extends Seeder
 
                 // 7. Financial documents
                 // The primary transactional records.
-                // JournalEntrySeeder::class,
-                // VendorBillSeeder::class,
-                // InvoiceSeeder::class,
+                JournalEntrySeeder::class,
+                VendorBillSeeder::class,
+                InvoiceSeeder::class,
                 // InvoiceLineSeeder::class, // Removed as logic is now in InvoiceSeeder
-                // PaymentSeeder::class,
-                // PaymentDocumentLinkSeeder::class,
+                PaymentSeeder::class,
+                PaymentDocumentLinkSeeder::class,
 
                 // 8. Adjustments and statements
                 // For reconciliations and manual adjustments.
-                // AdjustmentDocumentSeeder::class,
-                // BankStatementSeeder::class,
-                // BankStatementLineSeeder::class,
+                AdjustmentDocumentSeeder::class,
+                BankStatementSeeder::class,
+                BankStatementLineSeeder::class,
 
                 // 9. Finally
                 // Lock dates to prevent changes to closed periods.

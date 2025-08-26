@@ -26,8 +26,21 @@ class BankStatementSeeder extends Seeder
 
         // 2. Calculate starting balance
         $initialCapital = Money::of(15000000, $currencyCode);
-        $hawrePayment = Payment::where('paid_to_from_partner_id', $hawrePartner->id)->first()->amount;
-        $paykarPayment = Payment::where('paid_to_from_partner_id', $paykarPartner->id)->first()->amount;
+
+        $hawrePaymentRecord = Payment::where('paid_to_from_partner_id', $hawrePartner->id)->first();
+        if (!$hawrePaymentRecord) {
+            $this->command->error('Payment for Hawre Trading Group not found. Please run the PaymentSeeder first.');
+            return;
+        }
+        $hawrePayment = $hawrePaymentRecord->amount;
+
+        $paykarPaymentRecord = Payment::where('paid_to_from_partner_id', $paykarPartner->id)->first();
+        if (!$paykarPaymentRecord) {
+            $this->command->error('Payment for Paykar Tech Supplies not found. Please run the PaymentSeeder first.');
+            return;
+        }
+        $paykarPayment = $paykarPaymentRecord->amount;
+
         $startingBalance = $initialCapital->plus($hawrePayment)->minus($paykarPayment);
 
         // 3. Calculate ending balance
@@ -51,18 +64,21 @@ class BankStatementSeeder extends Seeder
         // 6. Create Bank Statement Lines
         $bankStatement->bankStatementLines()->createMany([
             [
+                'company_id' => $company->id,
                 'date' => now(),
                 'description' => 'Hawre Trading Group Payment for Invoice INV-001',
                 'amount' => $hawrePayment,
                 'partner_id' => $hawrePartner->id,
             ],
             [
+                'company_id' => $company->id,
                 'date' => now(),
                 'description' => 'Payment to Paykar Tech Supplies for Laptop Bill BILL-001',
                 'amount' => $paykarPayment->negated(),
                 'partner_id' => $paykarPartner->id,
             ],
             [
+                'company_id' => $company->id,
                 'date' => now(),
                 'description' => 'Monthly Bank Service Fee',
                 'amount' => $bankFee->negated(),
