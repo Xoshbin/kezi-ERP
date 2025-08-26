@@ -248,21 +248,40 @@ class PartnerResource extends Resource
     {
         return $table
             ->columns([
-                TextColumn::make('company.name')
-                    ->label(__('partner.company'))
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                // Name (most important for identification)
                 TextColumn::make('name')
                     ->label(__('partner.name'))
                     ->searchable()
-                    ->sortable(),
-                SelectColumn::make('type')
+                    ->sortable()
+                    ->weight('bold')
+                    ->size('lg'),
+
+                // Type (critical for categorization)
+                TextColumn::make('type')
                     ->label(__('partner.type'))
+                    ->formatStateUsing(fn(PartnerType $state): string => $state->label())
+                    ->badge()
+                    ->color(fn(PartnerType $state): string => match($state) {
+                        PartnerType::Customer => 'success',
+                        PartnerType::Vendor => 'info',
+                        PartnerType::Both => 'warning',
+                    })
+                    ->icons([
+                        'heroicon-m-user' => PartnerType::Customer,
+                        'heroicon-m-building-office' => PartnerType::Vendor,
+                        'heroicon-m-user-group' => PartnerType::Both,
+                    ])
                     ->searchable()
-                    ->options(
-                        collect(PartnerType::cases())
-                            ->mapWithKeys(fn (PartnerType $type) => [$type->value => $type->label()])
-                    ),
+                    ->sortable(),
+
+                // Status (important for active/inactive)
+                TextColumn::make('is_active')
+                    ->label(__('partner.status'))
+                    ->formatStateUsing(fn(bool $state): string => $state ? __('partner.active') : __('partner.inactive'))
+                    ->badge()
+                    ->color(fn(bool $state): string => $state ? 'success' : 'danger')
+                    ->icon(fn(bool $state): string => $state ? 'heroicon-m-check-circle' : 'heroicon-m-x-circle')
+                    ->sortable(),
 
                 // Financial Information - Customer Balances
                 TextColumn::make('customer_balance')

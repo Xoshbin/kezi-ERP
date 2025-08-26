@@ -112,17 +112,50 @@ class AssetResource extends Resource
     {
         return $table
             ->columns([
+                // Asset Name (most important for identification)
                 TextColumn::make('name')
                     ->label(__('asset.name'))
-                    ->searchable(),
+                    ->searchable()
+                    ->sortable()
+                    ->weight('bold')
+                    ->size('lg'),
+
+                // Status (critical for asset management)
                 TextColumn::make('status')
-                    ->label(__('asset.status')),
+                    ->label(__('asset.status'))
+                    ->badge()
+                    ->color(fn(string $state): string => match($state) {
+                        'active' => 'success',
+                        'disposed' => 'danger',
+                        'depreciated' => 'warning',
+                        default => 'gray',
+                    })
+                    ->sortable(),
+
+                // Purchase Date (important for depreciation calculations)
                 TextColumn::make('purchase_date')
                     ->label(__('asset.purchase_date'))
-                    ->date(),
+                    ->date()
+                    ->sortable(),
+
+                // Purchase Value (critical financial information)
                 MoneyColumn::make('purchase_value')
                     ->label(__('asset.purchase_value'))
-                    ->sortable(),
+                    ->sortable()
+                    ->weight('bold'),
+
+                // Depreciation Method (important for accounting)
+                TextColumn::make('depreciation_method')
+                    ->label(__('asset.depreciation_method'))
+                    ->formatStateUsing(fn(DepreciationMethod $state): string => $state->label())
+                    ->badge()
+                    ->toggleable(),
+
+                // Useful Life (important for planning)
+                TextColumn::make('useful_life_years')
+                    ->label(__('asset.useful_life'))
+                    ->suffix(' years')
+                    ->toggleable(),
             ])
             ->filters([
                 //

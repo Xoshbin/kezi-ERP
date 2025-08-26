@@ -230,26 +230,45 @@ class BankStatementResource extends Resource
     {
         return $table
             ->columns([
-                TextColumn::make('journal.name')
-                    ->label(__('bank_statement.bank_journal'))
-                    ->sortable(),
+                // Reference (most important for identification)
                 TextColumn::make('reference')
                     ->label(__('bank_statement.reference'))
-                    ->searchable(),
+                    ->searchable()
+                    ->sortable()
+                    ->weight('bold')
+                    ->size('lg'),
+
+                // Bank Journal (critical for identification)
+                TextColumn::make('journal.name')
+                    ->label(__('bank_statement.bank_journal'))
+                    ->searchable()
+                    ->sortable()
+                    ->weight('medium'),
+
+                // Date (important for chronological sorting)
                 TextColumn::make('date')
                     ->label(__('bank_statement.date'))
                     ->date()
                     ->sortable(),
+
+                // Currency (important for multi-currency)
                 TextColumn::make('currency.code')
                     ->label(__('bank_statement.currency'))
                     ->badge()
                     ->sortable(),
+
+                // Starting Balance (critical financial information)
                 MoneyColumn::make('starting_balance')
                     ->label(__('bank_statement.starting_balance'))
-                    ->sortable(),
+                    ->sortable()
+                    ->weight('medium'),
+
+                // Ending Balance (critical financial information)
                 MoneyColumn::make('ending_balance')
                     ->label(__('bank_statement.ending_balance'))
-                    ->sortable(),
+                    ->sortable()
+                    ->weight('bold')
+                    ->size('lg'),
                 TextColumn::make('created_at')
                     ->label(__('bank_statement.created_at'))
                     ->dateTime()
