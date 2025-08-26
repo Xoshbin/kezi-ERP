@@ -2,12 +2,12 @@
 
 namespace Tests\Feature\Filament\Pages;
 
-use App\Filament\Clusters\Accounting\Clusters\AccountingReports\Pages\Dashboard;
 use App\Models\User;
-use Filament\Facades\Filament;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Livewire\Livewire;
+use Filament\Facades\Filament;
 use Tests\Traits\WithConfiguredCompany;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use App\Filament\Clusters\Accounting\Pages\Reports\Dashboard;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);
 

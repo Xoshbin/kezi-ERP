@@ -2,15 +2,15 @@
 
 namespace Tests\Feature\Filament\Pages\Reports;
 
-use App\Enums\Sales\InvoiceStatus;
-use App\Filament\Clusters\Accounting\Clusters\AccountingReports\Pages\Reports\ViewAgedReceivables;
+use Carbon\Carbon;
+use Brick\Money\Money;
+use Livewire\Livewire;
 use App\Models\Invoice;
 use App\Models\Partner;
-use Brick\Money\Money;
-use Carbon\Carbon;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Livewire\Livewire;
+use App\Enums\Sales\InvoiceStatus;
 use Tests\Traits\WithConfiguredCompany;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use App\Filament\Clusters\Accounting\Pages\Reports\ViewAgedReceivables;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);
 

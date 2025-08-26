@@ -1,32 +1,30 @@
 <?php
 
-namespace App\Filament\Clusters\Accounting\Clusters\AccountingReports\Pages\Reports;
+namespace App\Filament\Clusters\Accounting\Pages\Reports;
 
-use App\Filament\Clusters\Accounting\Clusters\AccountingReports\AccountingReportsCluster;
-use App\Services\Reports\TrialBalanceService;
-use App\Support\NumberFormatter;
 use Carbon\Carbon;
-use Filament\Actions\Action;
-use Filament\Facades\Filament;
-use Filament\Forms\Components\DatePicker;
 use Filament\Pages\Page;
-use Filament\Schemas\Components\Section;
+use Filament\Actions\Action;
 use Filament\Schemas\Schema;
+use Filament\Facades\Filament;
+use App\Support\NumberFormatter;
+use Filament\Schemas\Components\Section;
+use Filament\Forms\Components\DatePicker;
 use Illuminate\Contracts\Support\Htmlable;
+use App\Services\Reports\TrialBalanceService;
+use App\Filament\Clusters\Accounting\AccountingCluster;
 
 class ViewTrialBalance extends Page
 {
     protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-scale';
     protected string $view = 'filament.pages.reports.view-trial-balance';
-    protected static string | \UnitEnum | null $navigationGroup = null;
 
-    protected static ?string $cluster = AccountingReportsCluster::class;
-
-    public static function getNavigationGroup(): ?string
+    public static function shouldRegisterNavigation(): bool
     {
-        return __('navigation.groups.reports');
+        return false;
     }
-    protected static ?int $navigationSort = 3;
+
+    protected static ?string $cluster = AccountingCluster::class;
 
     public ?string $asOfDate = null;
     public ?array $reportData = null;

@@ -1,12 +1,57 @@
 <?php
 
 return [
+    // General
+    'reports' => 'Reports',
+    'financial_reports' => 'Financial Reports',
+    'select_report_description' => 'Choose from our comprehensive suite of financial reports to analyze your business performance.',
+
+    // Report Categories
+    'financial_statements' => 'Financial Statements',
+    'financial_statements_description' => 'Core financial reports including P&L, Balance Sheet, and Trial Balance.',
+    'detailed_reports' => 'Detailed Reports',
+    'detailed_reports_description' => 'In-depth analysis with General Ledger and Partner Ledger reports.',
+    'aging_reports' => 'Aging Reports',
+    'aging_reports_description' => 'Track outstanding receivables and payables by aging periods.',
+    'tax_reports' => 'Tax Reports',
+    'tax_reports_description' => 'Comprehensive tax reporting for compliance and analysis.',
+
+    // Report Descriptions
+    'profit_and_loss_description' => 'View revenue, expenses, and net income for a specific period.',
+    'balance_sheet_description' => 'Snapshot of assets, liabilities, and equity at a specific date.',
+    'trial_balance_description' => 'Verify that debits equal credits across all accounts.',
+    'general_ledger_description' => 'Detailed transaction history for selected accounts.',
+    'partner_ledger_description' => 'Complete transaction history with specific customers or vendors.',
+    'aged_receivables_description' => 'Outstanding customer invoices grouped by aging periods.',
+    'aged_payables_description' => 'Outstanding vendor bills grouped by aging periods.',
+    'tax_report_description' => 'Summary of tax collected and paid for compliance reporting.',
+
+    // Quick Actions
+    'quick_actions' => 'Quick Actions',
+    'quick_insights' => 'Quick Insights',
+    'quick_insights_description' => 'Overview of key reporting areas to help you understand your business performance.',
+    'financial_overview' => 'Financial Overview',
+    'financial_overview_description' => 'Get a quick snapshot of your financial position.',
+    'aging_analysis' => 'Aging Analysis',
+    'aging_analysis_description' => 'Monitor outstanding receivables and payables.',
+    'detailed_analysis' => 'Detailed Analysis',
+    'detailed_analysis_description' => 'Dive deep into account-level transactions.',
     'profit_and_loss' => 'Profit & Loss',
     'profit_and_loss_statement' => 'Profit & Loss Statement',
     'date_range' => 'Date Range',
     'start_date' => 'Start Date',
     'end_date' => 'End Date',
     'generate_report' => 'Generate Report',
+
+    // Button texts
+    'view_profit_loss' => 'View P&L',
+    'view_balance_sheet' => 'View Balance Sheet',
+    'view_trial_balance' => 'View Trial Balance',
+    'view_general_ledger' => 'View General Ledger',
+    'view_partner_ledger' => 'View Partner Ledger',
+    'view_aged_receivables' => 'View Aged Receivables',
+    'view_aged_payables' => 'View Aged Payables',
+    'view_tax_report' => 'View Tax Report',
     'period' => 'Period',
     'revenue' => 'Revenue',
     'expenses' => 'Expenses',

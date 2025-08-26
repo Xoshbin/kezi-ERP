@@ -2,16 +2,16 @@
 
 namespace Tests\Feature\Filament\Pages\Reports;
 
-use App\Enums\Purchases\VendorBillStatus;
-use App\Filament\Clusters\Accounting\Clusters\AccountingReports\Pages\Reports\ViewAgedPayables;
+use Carbon\Carbon;
+use Brick\Money\Money;
+use Livewire\Livewire;
 use App\Models\Partner;
 use App\Models\VendorBill;
 use App\Support\NumberFormatter;
-use Brick\Money\Money;
-use Carbon\Carbon;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Livewire\Livewire;
 use Tests\Traits\WithConfiguredCompany;
+use App\Enums\Purchases\VendorBillStatus;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use App\Filament\Clusters\Accounting\Pages\Reports\ViewAgedPayables;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);
 
