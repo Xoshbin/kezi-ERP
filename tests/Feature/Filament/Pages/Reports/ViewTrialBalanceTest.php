@@ -2,16 +2,16 @@
 
 namespace Tests\Feature\Filament\Pages\Reports;
 
-use App\Enums\Accounting\AccountType;
-use App\Filament\Clusters\Accounting\Clusters\AccountingReports\Pages\Reports\ViewTrialBalance;
+use Carbon\Carbon;
+use Livewire\Livewire;
 use App\Models\Account;
 use App\Models\Journal;
 use App\Models\JournalEntry;
 use App\Models\JournalEntryLine;
-use Carbon\Carbon;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Livewire\Livewire;
+use App\Enums\Accounting\AccountType;
 use Tests\Traits\WithConfiguredCompany;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use App\Filament\Clusters\Accounting\Pages\Reports\ViewTrialBalance;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);
 

@@ -1,12 +1,57 @@
 <?php
 
 return [
+    // General
+    'reports' => 'ڕاپۆرتەکان',
+    'financial_reports' => 'ڕاپۆرتە داراییەکان',
+    'select_report_description' => 'لە کۆمەڵە تەواوی ڕاپۆرتە داراییەکانمان هەڵبژێرە بۆ شیکردنەوەی کارکردنی بازرگانییەکەت.',
+
+    // Report Categories
+    'financial_statements' => 'کیشە داراییەکان',
+    'financial_statements_description' => 'ڕاپۆرتە دارایی بنەڕەتییەکان لەوانە قازانج و زیان، تەرازوونامە، و تەرازووی تاقیکردنەوە.',
+    'detailed_reports' => 'ڕاپۆرتە ورد',
+    'detailed_reports_description' => 'شیکردنەوەی قووڵ لەگەڵ ڕاپۆرتەکانی دەفتەری گشتی و دەفتەری هاوبەش.',
+    'aging_reports' => 'ڕاپۆرتەکانی کۆنبوون',
+    'aging_reports_description' => 'بەدواداچوونی وەرگرتن و پارەدانی ماوە بەپێی ماوەکانی کۆنبوون.',
+    'tax_reports' => 'ڕاپۆرتەکانی باج',
+    'tax_reports_description' => 'ڕاپۆرتی باجی تەواو بۆ پەیڕەوکردن و شیکردنەوە.',
+
+    // Report Descriptions
+    'profit_and_loss_description' => 'بینینی داهات، خەرجی، و داهاتی پاک بۆ ماوەیەکی دیاریکراو.',
+    'balance_sheet_description' => 'وێنەیەک لە سامان، قەرز، و سەرمایە لە بەرواری دیاریکراو.',
+    'trial_balance_description' => 'پشتڕاستکردنەوە کە قەرزدار یەکسانە لەگەڵ قەرزدەر لە هەموو هەژمارەکان.',
+    'general_ledger_description' => 'مێژووی ورد مامەڵەکان بۆ هەژمارە هەڵبژێردراوەکان.',
+    'partner_ledger_description' => 'مێژووی تەواوی مامەڵەکان لەگەڵ کڕیار یان فرۆشیاری دیاریکراو.',
+    'aged_receivables_description' => 'پسوولەکانی کڕیارانی ماوە کۆکراوەتەوە بەپێی ماوەکانی کۆنبوون.',
+    'aged_payables_description' => 'پسوولەکانی فرۆشیارانی ماوە کۆکراوەتەوە بەپێی ماوەکانی کۆنبوون.',
+    'tax_report_description' => 'کورتەی باجی کۆکراوە و پێدراو بۆ ڕاپۆرتی پەیڕەوکردن.',
+
+    // Quick Actions
+    'quick_actions' => 'کردارە خێراکان',
+    'quick_insights' => 'تێگەیشتنی خێرا',
+    'quick_insights_description' => 'تێڕوانینێک بۆ بوارە سەرەکییەکانی ڕاپۆرت بۆ یارمەتیدانت لە تێگەیشتنی کارکردنی بازرگانییەکەت.',
+    'financial_overview' => 'تێڕوانینی دارایی',
+    'financial_overview_description' => 'وێنەیەکی خێرا لە دۆخی داراییەکەت بگرە.',
+    'aging_analysis' => 'شیکردنەوەی کۆنبوون',
+    'aging_analysis_description' => 'چاودێری وەرگرتن و پارەدانی ماوە.',
+    'detailed_analysis' => 'شیکردنەوەی ورد',
+    'detailed_analysis_description' => 'قووڵ ببەرەوە ناو مامەڵەکانی ئاستی هەژمار.',
     'profit_and_loss' => 'قازانج و زیان',
     'profit_and_loss_statement' => 'ڕاپۆرتی قازانج و زیان',
     'date_range' => 'ماوەی بەروار',
     'start_date' => 'بەرواری دەستپێک',
     'end_date' => 'بەرواری کۆتایی',
     'generate_report' => 'دروستکردنی ڕاپۆرت',
+
+    // Button texts
+    'view_profit_loss' => 'بینینی قازانج و زیان',
+    'view_balance_sheet' => 'بینینی تەرازووی گشتی',
+    'view_trial_balance' => 'بینینی تەرازووی تاقیکردنەوە',
+    'view_general_ledger' => 'بینینی دەفتەری گشتی',
+    'view_partner_ledger' => 'بینینی دەفتەری هاوبەش',
+    'view_aged_receivables' => 'بینینی وەرگرتنەکان بە تەمەن',
+    'view_aged_payables' => 'بینینی پارەدانەکان بە تەمەن',
+    'view_tax_report' => 'بینینی ڕاپۆرتی باج',
     'period' => 'ماوە',
     'revenue' => 'داهات',
     'expenses' => 'خەرجی',
