@@ -349,37 +349,29 @@ class InvoiceResource extends Resource
     {
         return $table
             ->columns([
-                TextColumn::make('company.name')
-                    ->label(__('invoice.company_name'))
-                    ->numeric()
+                // Most important: Reference number (always visible)
+                TextColumn::make('reference')
+                    ->label(__('invoice.reference'))
+                    ->searchable(['invoice_number'])
+                    ->getStateUsing(function (Invoice $record): string {
+                        if ($record->invoice_number) {
+                            return $record->invoice_number;
+                        }
+                        return 'DRAFT-' . str_pad($record->id, 5, '0', STR_PAD_LEFT);
+                    })
+                    ->badge()
+                    ->color(fn (Invoice $record): string => $record->invoice_number ? 'success' : 'warning')
+                    ->icon(fn (Invoice $record): string => $record->invoice_number ? 'heroicon-m-check-circle' : 'heroicon-m-pencil-square')
                     ->sortable(),
+
+                // Customer (critical for identification)
                 TextColumn::make('customer.name')
-                    ->label(__('invoice.customer_name'))
-                    ->numeric()
-                    ->sortable(),
-                TextColumn::make('currency.name')
-                    ->label(__('invoice.currency_name'))
-                    ->numeric()
-                    ->sortable(),
-                TextColumn::make('journalEntry.id')
-                    ->label(__('invoice.journal_entry'))
-                    ->numeric()
-                    ->sortable(),
-                TextColumn::make('fiscalPosition.name')
-                    ->label(__('invoice.fiscal_position_name'))
-                    ->numeric()
-                    ->sortable(),
-                TextColumn::make('invoice_number')
-                    ->label(__('invoice.invoice_number'))
-                    ->searchable(),
-                TextColumn::make('invoice_date')
-                    ->label(__('invoice.invoice_date'))
-                    ->date()
-                    ->sortable(),
-                TextColumn::make('due_date')
-                    ->label(__('invoice.due_date'))
-                    ->date()
-                    ->sortable(),
+                    ->label(__('invoice.customer'))
+                    ->searchable()
+                    ->sortable()
+                    ->weight('medium'),
+
+                // Status (critical for workflow)
                 TextColumn::make('status')
                     ->label(__('invoice.status'))
                     ->badge()
@@ -388,17 +380,50 @@ class InvoiceResource extends Resource
                         'danger' => InvoiceStatus::Cancelled,
                         'warning' => InvoiceStatus::Draft,
                     ])
-                    ->searchable(),
+                    ->icons([
+                        'heroicon-m-check-circle' => InvoiceStatus::Posted,
+                        'heroicon-m-x-circle' => InvoiceStatus::Cancelled,
+                        'heroicon-m-pencil-square' => InvoiceStatus::Draft,
+                    ])
+                    ->searchable()
+                    ->sortable(),
+
+                // Invoice Date (important for chronological sorting)
+                TextColumn::make('invoice_date')
+                    ->label(__('invoice.date'))
+                    ->date()
+                    ->sortable()
+                    ->toggleable(),
+
+                // Due Date (critical for cash flow management)
+                TextColumn::make('due_date')
+                    ->label(__('invoice.due_date'))
+                    ->date()
+                    ->sortable(),
+
+                // Payment State (critical for collections)
                 TextColumn::make('paymentState')
                     ->label(__('invoice.payment_state'))
                     ->formatStateUsing(fn(PaymentState $state): string => $state->label())
                     ->badge()
                     ->color(fn(PaymentState $state): string => $state->color()),
+                // Total Amount (critical financial information)
                 MoneyColumn::make('total_amount')
-                    ->label(__('invoice.total_amount'))
-                    ->sortable(),
-                MoneyColumn::make('total_tax')
-                    ->label(__('invoice.total_tax'))
+                    ->label(__('invoice.total'))
+                    ->sortable()
+                    ->weight('bold')
+                    ->size('lg'),
+
+                // Currency (important for multi-currency)
+                TextColumn::make('currency.code')
+                    ->label(__('invoice.currency'))
+                    ->badge()
+                    ->toggleable(),
+
+                // Company (for multi-company setups)
+                TextColumn::make('company.name')
+                    ->label(__('invoice.company'))
+                    ->toggleable(isToggledHiddenByDefault: true)
                     ->sortable(),
 
                 TextColumn::make('exchange_rate_at_creation')
@@ -413,15 +438,20 @@ class InvoiceResource extends Resource
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->visible(fn ($record) => $record && $record->total_amount_company_currency),
+                // Posted Date (important for audit trail)
                 TextColumn::make('posted_at')
                     ->label(__('invoice.posted_at'))
                     ->dateTime()
-                    ->sortable(),
+                    ->sortable()
+                    ->toggleable(),
+
+                // Additional columns (hidden by default for cleaner view)
                 TextColumn::make('created_at')
                     ->label(__('invoice.created_at'))
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
+
                 TextColumn::make('updated_at')
                     ->label(__('invoice.updated_at'))
                     ->dateTime()

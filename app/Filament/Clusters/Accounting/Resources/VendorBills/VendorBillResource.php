@@ -453,19 +453,29 @@ class VendorBillResource extends Resource
     {
         return $table
             ->columns([
-                TextColumn::make('company.name')
-                    ->label(__('vendor_bill.company'))
+                // Most important: Reference number (always visible)
+                TextColumn::make('reference')
+                    ->label(__('vendor_bill.reference'))
+                    ->searchable(['bill_reference'])
+                    ->getStateUsing(function (VendorBill $record): string {
+                        if ($record->bill_reference) {
+                            return $record->bill_reference;
+                        }
+                        return 'DRAFT-' . str_pad($record->id, 5, '0', STR_PAD_LEFT);
+                    })
+                    ->badge()
+                    ->color(fn (VendorBill $record): string => $record->bill_reference ? 'success' : 'warning')
+                    ->icon(fn (VendorBill $record): string => $record->bill_reference ? 'heroicon-m-check-circle' : 'heroicon-m-pencil-square')
                     ->sortable(),
+
+                // Vendor (critical for identification)
                 TextColumn::make('vendor.name')
                     ->label(__('vendor_bill.vendor'))
-                    ->sortable(),
-                TextColumn::make('bill_reference')
-                    ->label(__('vendor_bill.bill_reference'))
-                    ->searchable(),
-                TextColumn::make('bill_date')
-                    ->label(__('vendor_bill.bill_date'))
-                    ->date()
-                    ->sortable(),
+                    ->searchable()
+                    ->sortable()
+                    ->weight('medium'),
+
+                // Status (critical for workflow)
                 TextColumn::make('status')
                     ->badge()
                     ->label(__('vendor_bill.status'))
@@ -474,20 +484,45 @@ class VendorBillResource extends Resource
                         'danger' => VendorBillStatus::Cancelled,
                         'warning' => VendorBillStatus::Draft,
                     ])
-                    ->searchable(),
+                    ->icons([
+                        'heroicon-m-check-circle' => VendorBillStatus::Posted,
+                        'heroicon-m-x-circle' => VendorBillStatus::Cancelled,
+                        'heroicon-m-pencil-square' => VendorBillStatus::Draft,
+                    ])
+                    ->searchable()
+                    ->sortable(),
+
+                // Bill Date (important for chronological sorting)
+                TextColumn::make('bill_date')
+                    ->label(__('vendor_bill.date'))
+                    ->date()
+                    ->sortable()
+                    ->toggleable(),
+
+                // Payment State (critical for cash flow)
                 TextColumn::make('paymentState')
-                    ->label('Payment State')
-                    // `formatStateUsing` receives the Enum object from the accessor.
-                    // We then call the `label()` method on it.
+                    ->label(__('vendor_bill.payment_state'))
                     ->formatStateUsing(fn(PaymentState $state): string => $state->label())
                     ->badge()
-                    // The `color` closure also receives the Enum object directly.
                     ->color(fn(PaymentState $state): string => $state->color()),
+
+                // Total Amount (critical financial information)
                 MoneyColumn::make('total_amount')
-                    ->label(__('vendor_bill.total_amount'))
-                    ->sortable(),
-                MoneyColumn::make('total_tax')
-                    ->label(__('vendor_bill.total_tax'))
+                    ->label(__('vendor_bill.total'))
+                    ->sortable()
+                    ->weight('bold')
+                    ->size('lg'),
+
+                // Currency (important for multi-currency)
+                TextColumn::make('currency.code')
+                    ->label(__('vendor_bill.currency'))
+                    ->badge()
+                    ->toggleable(),
+
+                // Company (for multi-company setups)
+                TextColumn::make('company.name')
+                    ->label(__('vendor_bill.company'))
+                    ->toggleable(isToggledHiddenByDefault: true)
                     ->sortable(),
 
                 TextColumn::make('exchange_rate_at_creation')
@@ -502,15 +537,26 @@ class VendorBillResource extends Resource
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->visible(fn ($record) => $record && $record->total_amount_company_currency),
+
+                // Posted Date (important for audit trail)
                 TextColumn::make('posted_at')
                     ->label(__('vendor_bill.posted_at'))
                     ->dateTime()
-                    ->sortable(),
+                    ->sortable()
+                    ->toggleable(),
+
+                // Additional columns (hidden by default for cleaner view)
+                MoneyColumn::make('total_tax')
+                    ->label(__('vendor_bill.tax'))
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+
                 TextColumn::make('created_at')
                     ->label(__('vendor_bill.created_at'))
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
+
                 TextColumn::make('updated_at')
                     ->label(__('vendor_bill.updated_at'))
                     ->dateTime()
