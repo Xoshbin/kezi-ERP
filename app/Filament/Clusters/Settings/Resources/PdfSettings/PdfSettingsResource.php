@@ -15,12 +15,9 @@ use App\Filament\Clusters\Settings\Resources\PdfSettings\Pages\ListPdfSettings;
 use App\Filament\Clusters\Settings\Resources\PdfSettings\Pages\EditPdfSettings;
 use App\Filament\Clusters\Settings\SettingsCluster;
 use App\Models\Company;
-use Filament\Forms;
 use Filament\Resources\Resource;
-use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Support\Facades\Auth;
 
 class PdfSettingsResource extends Resource
 {
@@ -28,7 +25,7 @@ class PdfSettingsResource extends Resource
 
     protected static ?string $model = Company::class;
 
-    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-document-text';
+    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-printer';
 
     protected static ?string $cluster = SettingsCluster::class;
 
@@ -36,40 +33,40 @@ class PdfSettingsResource extends Resource
 
     public static function getNavigationLabel(): string
     {
-        return __('PDF Settings');
+        return __('pdf_settings.navigation_label');
     }
 
     public static function getModelLabel(): string
     {
-        return __('PDF Settings');
+        return __('pdf_settings.model_label');
     }
 
     public static function getPluralModelLabel(): string
     {
-        return __('PDF Settings');
+        return __('pdf_settings.model_plural_label');
     }
 
     public static function form(Schema $schema): Schema
     {
         return $schema
             ->components([
-                Section::make(__('PDF Template Settings'))
-                    ->description(__('Configure how your invoices and documents will appear in PDF format'))
+                Section::make(__('pdf_settings.template_settings'))
+                    ->description(__('pdf_settings.template_settings_description'))
                     ->schema([
                         Select::make('pdf_template')
-                            ->label(__('Default PDF Template'))
+                            ->label(__('pdf_settings.default_pdf_template'))
                             ->options([
-                                'classic' => __('Classic Template'),
-                                'modern' => __('Modern Template'),
-                                'minimal' => __('Minimal Template'),
+                                'classic' => __('pdf_settings.classic_template'),
+                                'modern' => __('pdf_settings.modern_template'),
+                                'minimal' => __('pdf_settings.minimal_template'),
                             ])
                             ->default('classic')
                             ->required()
                             ->rules(['required', 'in:classic,modern,minimal'])
-                            ->helperText(__('Choose the default template style for your PDF documents')),
+                            ->helperText(__('pdf_settings.template_help')),
 
                         FileUpload::make('pdf_logo_path')
-                            ->label(__('Company Logo'))
+                            ->label(__('pdf_settings.company_logo'))
                             ->image()
                             ->disk('public')
                             ->directory('company-logos')
@@ -81,18 +78,18 @@ class PdfSettingsResource extends Resource
                                 '1:1',
                             ])
                             ->maxSize(2048)
-                            ->helperText(__('Upload your company logo to appear on PDF documents (max 2MB)')),
+                            ->helperText(__('pdf_settings.logo_help')),
                     ]),
 
-                Section::make(__('Advanced PDF Settings'))
-                    ->description(__('Customize advanced PDF generation options'))
+                Section::make(__('pdf_settings.advanced_settings'))
+                    ->description(__('pdf_settings.advanced_settings_description'))
                     ->schema([
                         KeyValue::make('pdf_settings')
-                            ->label(__('Custom PDF Settings'))
-                            ->keyLabel(__('Setting Name'))
-                            ->valueLabel(__('Setting Value'))
-                            ->addActionLabel(__('Add Setting'))
-                            ->helperText(__('Add custom settings for PDF generation (e.g., font_size: 12, margin_top: 20)'))
+                            ->label(__('pdf_settings.custom_pdf_settings'))
+                            ->keyLabel(__('pdf_settings.setting_name'))
+                            ->valueLabel(__('pdf_settings.setting_value'))
+                            ->addActionLabel(__('pdf_settings.add_setting'))
+                            ->helperText(__('pdf_settings.settings_help'))
                             ->default([
                                 'font_size' => '12',
                                 'margin_top' => '20',
@@ -113,12 +110,12 @@ class PdfSettingsResource extends Resource
         return $table
             ->columns([
                 TextColumn::make('name')
-                    ->label(__('Company Name'))
+                    ->label(__('pdf_settings.company_name'))
                     ->searchable()
                     ->sortable(),
 
                 TextColumn::make('pdf_template')
-                    ->label(__('PDF Template'))
+                    ->label(__('pdf_settings.pdf_template'))
                     ->badge()
                     ->color(fn (string $state): string => match ($state) {
                         'classic' => 'primary',
@@ -128,23 +125,23 @@ class PdfSettingsResource extends Resource
                     }),
 
                 ImageColumn::make('pdf_logo_path')
-                    ->label(__('Logo'))
+                    ->label(__('pdf_settings.logo'))
                     ->disk('public')
-                    ->height(40)
+                    ->square()
                     ->defaultImageUrl(url('/images/placeholder-logo.png')),
 
                 TextColumn::make('updated_at')
-                    ->label(__('Last Updated'))
+                    ->label(__('pdf_settings.last_updated'))
                     ->dateTime()
                     ->sortable(),
             ])
             ->filters([
                 SelectFilter::make('pdf_template')
-                    ->label(__('Template'))
+                    ->label(__('pdf_settings.template'))
                     ->options([
-                        'classic' => __('Classic'),
-                        'modern' => __('Modern'),
-                        'minimal' => __('Minimal'),
+                        'classic' => __('pdf_settings.classic'),
+                        'modern' => __('pdf_settings.modern'),
+                        'minimal' => __('pdf_settings.minimal'),
                     ]),
             ])
             ->recordActions([

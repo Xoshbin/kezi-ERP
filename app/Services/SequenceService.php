@@ -4,55 +4,97 @@ namespace App\Services;
 
 use App\Models\Company;
 use App\Models\Sequence;
+use App\Enums\Settings\NumberingType;
+use Carbon\Carbon;
 
 /**
  * SequenceService
- * 
+ *
  * Provides atomic sequential number generation for different document types.
- * This service ensures race-condition-free number assignment following 
+ * This service ensures race-condition-free number assignment following
  * accounting best practices and immutability principles.
  */
 class SequenceService
 {
     /**
      * Generate the next invoice number for a company.
-     * 
+     *
      * @param Company $company
+     * @param Carbon|null $date The invoice date for date-based numbering
      * @return string
      */
-    public function getNextInvoiceNumber(Company $company): string
+    public function getNextInvoiceNumber(Company $company, ?Carbon $date = null): string
     {
+        $config = $company->getInvoiceNumberingConfig();
+        $numberingType = NumberingType::from($config['type']);
+
         $sequence = Sequence::getOrCreateSequence(
             companyId: $company->id,
             documentType: 'invoice',
-            prefix: 'INV',
-            padding: 5
+            prefix: $config['prefix'],
+            padding: $config['padding']
         );
 
-        return $sequence->getNextNumber();
+        $nextNumber = $sequence->getNextNumber();
+
+        // For simple format, return as-is (already formatted by Sequence model)
+        if ($numberingType === NumberingType::SIMPLE) {
+            return $nextNumber;
+        }
+
+        // For other formats, extract the number and reformat
+        $parts = explode('-', $nextNumber);
+        $sequentialNumber = (int) end($parts);
+
+        return $numberingType->formatNumber(
+            $config['prefix'],
+            $sequentialNumber,
+            $config['padding'],
+            $date ?? now()
+        );
     }
 
     /**
      * Generate the next vendor bill number for a company.
-     * 
+     *
      * @param Company $company
+     * @param Carbon|null $date The bill date for date-based numbering
      * @return string
      */
-    public function getNextVendorBillNumber(Company $company): string
+    public function getNextVendorBillNumber(Company $company, ?Carbon $date = null): string
     {
+        $config = $company->getVendorBillNumberingConfig();
+        $numberingType = NumberingType::from($config['type']);
+
         $sequence = Sequence::getOrCreateSequence(
             companyId: $company->id,
             documentType: 'vendor_bill',
-            prefix: 'BILL',
-            padding: 5
+            prefix: $config['prefix'],
+            padding: $config['padding']
         );
 
-        return $sequence->getNextNumber();
+        $nextNumber = $sequence->getNextNumber();
+
+        // For simple format, return as-is (already formatted by Sequence model)
+        if ($numberingType === NumberingType::SIMPLE) {
+            return $nextNumber;
+        }
+
+        // For other formats, extract the number and reformat
+        $parts = explode('-', $nextNumber);
+        $sequentialNumber = (int) end($parts);
+
+        return $numberingType->formatNumber(
+            $config['prefix'],
+            $sequentialNumber,
+            $config['padding'],
+            $date ?? now()
+        );
     }
 
     /**
      * Generate the next payment number for a company.
-     * 
+     *
      * @param Company $company
      * @return string
      */
@@ -70,7 +112,7 @@ class SequenceService
 
     /**
      * Generate the next credit note number for a company.
-     * 
+     *
      * @param Company $company
      * @return string
      */
@@ -88,7 +130,7 @@ class SequenceService
 
     /**
      * Generate the next journal entry number for a company.
-     * 
+     *
      * @param Company $company
      * @return string
      */
@@ -106,7 +148,7 @@ class SequenceService
 
     /**
      * Generate the next number for any document type.
-     * 
+     *
      * @param Company $company
      * @param string $documentType
      * @param string $prefix
@@ -114,9 +156,9 @@ class SequenceService
      * @return string
      */
     public function getNextNumber(
-        Company $company, 
-        string $documentType, 
-        string $prefix, 
+        Company $company,
+        string $documentType,
+        string $prefix,
         int $padding = 5
     ): string {
         $sequence = Sequence::getOrCreateSequence(
@@ -131,7 +173,7 @@ class SequenceService
 
     /**
      * Get the current number for a document type without incrementing.
-     * 
+     *
      * @param Company $company
      * @param string $documentType
      * @return int
@@ -148,7 +190,7 @@ class SequenceService
     /**
      * Reset a sequence to a specific number (use with caution).
      * This should only be used during data migration or setup.
-     * 
+     *
      * @param Company $company
      * @param string $documentType
      * @param int $number

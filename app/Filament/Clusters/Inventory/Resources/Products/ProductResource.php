@@ -54,7 +54,7 @@ class ProductResource extends Resource
 
     protected static ?string $cluster = InventoryCluster::class;
 
-    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-cube';
+    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-squares-2x2';
 
     protected static ?int $navigationSort = 1;
 

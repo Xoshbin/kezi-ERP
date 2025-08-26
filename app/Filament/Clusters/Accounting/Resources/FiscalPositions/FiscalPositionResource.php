@@ -28,7 +28,7 @@ class FiscalPositionResource extends Resource
 
     protected static ?string $model = FiscalPosition::class;
 
-    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-map-pin';
+    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-globe-alt';
 
     protected static ?int $navigationSort = 4;
 
