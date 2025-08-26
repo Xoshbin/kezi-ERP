@@ -66,7 +66,7 @@ class InvoiceService
             // Process multi-currency amounts before posting
             $this->processMultiCurrencyAmounts($invoice);
 
-            $invoice->invoice_number = $this->sequenceService->getNextInvoiceNumber($invoice->company);
+            $invoice->invoice_number = $this->sequenceService->getNextInvoiceNumber($invoice->company, Carbon::parse($invoice->invoice_date));
             $invoice->status = InvoiceStatus::Posted;
             $invoice->posted_at = now();
 
