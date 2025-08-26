@@ -28,7 +28,7 @@ class PdfSettingsResource extends Resource
 
     protected static ?string $model = Company::class;
 
-    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-document-text';
+    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-printer';
 
     protected static ?string $cluster = SettingsCluster::class;
 
