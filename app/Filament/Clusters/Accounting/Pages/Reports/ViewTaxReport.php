@@ -17,17 +17,12 @@ use App\Filament\Clusters\Accounting\AccountingCluster;
 class ViewTaxReport extends Page
 {
     protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-document-text';
-
     protected string $view = 'filament.pages.reports.view-tax-report';
 
-    protected static string | \UnitEnum | null $navigationGroup = null;
-
-    public static function getNavigationGroup(): ?string
+    public static function shouldRegisterNavigation(): bool
     {
-        return __('navigation.groups.reports');
+        return false;
     }
-
-    protected static ?int $navigationSort = 6;
 
     protected static ?string $cluster = AccountingCluster::class;
 
