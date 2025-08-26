@@ -27,6 +27,21 @@ class DepartmentResource extends Resource
 
     protected static ?string $recordTitleAttribute = 'name';
 
+    public static function getNavigationLabel(): string
+    {
+        return __('department.navigation_label');
+    }
+
+    public static function getModelLabel(): string
+    {
+        return __('department.navigation_label');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __('department.navigation_label');
+    }
+
     public static function form(Schema $schema): Schema
     {
         return DepartmentForm::configure($schema);
