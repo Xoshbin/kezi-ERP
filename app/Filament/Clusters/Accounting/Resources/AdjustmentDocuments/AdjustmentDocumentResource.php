@@ -378,12 +378,19 @@ class AdjustmentDocumentResource extends Resource
                     ->sortable(),
                 TextColumn::make('status')
                     ->label('Status')
+                    ->formatStateUsing(fn(AdjustmentDocumentStatus $state): string => $state->label())
                     ->badge()
-                    ->color(fn(string $state): string => match ($state) {
-                        'Draft' => 'gray',
-                        'Posted' => 'success',
-                        'Cancelled' => 'danger',
+                    ->color(fn(AdjustmentDocumentStatus $state): string => match ($state) {
+                        AdjustmentDocumentStatus::Draft => 'warning',
+                        AdjustmentDocumentStatus::Posted => 'success',
+                        AdjustmentDocumentStatus::Cancelled => 'danger',
                         default => 'gray',
+                    })
+                    ->icon(fn(AdjustmentDocumentStatus $state): string => match ($state) {
+                        AdjustmentDocumentStatus::Draft => 'heroicon-m-pencil-square',
+                        AdjustmentDocumentStatus::Posted => 'heroicon-m-check-circle',
+                        AdjustmentDocumentStatus::Cancelled => 'heroicon-m-x-circle',
+                        default => 'heroicon-m-question-mark-circle',
                     })
                     ->searchable(),
             ])
