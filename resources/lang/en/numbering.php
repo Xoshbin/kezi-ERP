@@ -1,0 +1,60 @@
+<?php
+
+return [
+    'types' => [
+        'simple' => 'Simple',
+        'year_prefix' => 'Year Prefix',
+        'year_suffix' => 'Year Suffix',
+        'year_month' => 'Year-Month',
+        'slash_separated' => 'Slash Separated',
+        'slash_year_month' => 'Slash Year-Month',
+        'dot_separated' => 'Dot Separated',
+    ],
+
+    'descriptions' => [
+        'simple' => 'Simple format with prefix and number (e.g., INV-00001)',
+        'year_prefix' => 'Year at the beginning (e.g., 2025-INV-00001)',
+        'year_suffix' => 'Year at the end (e.g., INV-00001-2025)',
+        'year_month' => 'Year and month prefix (e.g., 202501-INV-00001)',
+        'slash_separated' => 'Slash separated format (e.g., INV/2025/00001)',
+        'slash_year_month' => 'Slash separated with year and month (e.g., INV/2025/08/0000001)',
+        'dot_separated' => 'Dot separated format (e.g., INV.2025.00001)',
+    ],
+
+    'settings' => [
+        'title' => 'Document Numbering Settings',
+        'description' => 'Configure how invoice and bill numbers are generated',
+        'invoice_numbering' => 'Invoice Numbering',
+        'invoice_numbering_description' => 'Configure how invoice numbers are generated when invoices are posted.',
+        'bill_numbering' => 'Vendor Bill Numbering',
+        'bill_numbering_description' => 'Configure how vendor bill numbers are generated when bills are posted.',
+        'numbering_type' => 'Numbering Type',
+        'prefix' => 'Prefix',
+        'prefix_help' => 'Short text that appears before the number (e.g., INV, BILL, PURCHASE)',
+        'padding' => 'Number Padding',
+        'padding_help' => 'Number of digits for the sequential number (e.g., 5 = 00001)',
+        'current_format' => 'Current Format',
+        'example' => 'Example',
+        'preview' => 'Preview',
+        'preview_help' => 'This is how your next document number will look',
+        'next_number' => 'Next number format',
+        'cannot_change_title' => 'Cannot Change Numbering',
+        'cannot_change_message' => 'Numbering settings cannot be changed because there are already posted documents using the current format.',
+        'posted_invoices_exist' => 'Posted invoices exist',
+        'posted_bills_exist' => 'Posted bills exist',
+        'can_change' => 'Can Change',
+    ],
+
+    'validation' => [
+        'prefix_required' => 'Prefix is required',
+        'prefix_max' => 'Prefix cannot be longer than :max characters',
+        'padding_required' => 'Padding is required',
+        'padding_min' => 'Padding must be at least :min digits',
+        'padding_max' => 'Padding cannot be more than :max digits',
+        'type_required' => 'Numbering type is required',
+        'type_invalid' => 'Invalid numbering type selected',
+        'cannot_change_posted_exist' => 'Cannot change numbering settings when posted documents exist',
+        'posted_invoices_exist' => 'Posted invoices exist',
+        'posted_bills_exist' => 'Posted bills exist',
+    ],
+];

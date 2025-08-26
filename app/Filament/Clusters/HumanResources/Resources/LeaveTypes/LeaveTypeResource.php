@@ -12,7 +12,6 @@ use App\Models\LeaveType;
 use BackedEnum;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
-use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
 use LaraZeus\SpatieTranslatable\Resources\Concerns\Translatable;
 
@@ -22,11 +21,26 @@ class LeaveTypeResource extends Resource
 
     protected static ?string $model = LeaveType::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-calendar-days';
 
     protected static ?string $cluster = HumanResourcesCluster::class;
 
     protected static ?string $recordTitleAttribute = 'name';
+
+    public static function getNavigationLabel(): string
+    {
+        return __('leave_type.navigation_label');
+    }
+
+    public static function getModelLabel(): string
+    {
+        return __('leave_type.navigation_label');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __('leave_type.navigation_label');
+    }
 
     public static function form(Schema $schema): Schema
     {

@@ -9,7 +9,7 @@ return [
     'create' => 'دروستکردن',
     'created_successfully' => ':item بە سەرکەوتوویی دروستکرا',
     'select_or_create' => 'هەڵبژاردنی بوونی یان دروستکردنی نوێ',
-    
+
     // Model-specific create new labels
     'create_new_account' => 'دروستکردنی هەژماری نوێ',
     'create_new_company' => 'دروستکردنی کۆمپانیای نوێ',
@@ -20,7 +20,7 @@ return [
     'create_new_journal' => 'دروستکردنی گۆڤاری نوێ',
     'create_new_analytic_account' => 'دروستکردنی هەژماری شیکاری نوێ',
     'create_new_user' => 'دروستکردنی بەکارهێنەری نوێ',
-    
+
     // Modal titles
     'modal_title_create_account' => 'دروستکردنی هەژماری نوێ',
     'modal_title_create_company' => 'دروستکردنی کۆمپانیای نوێ',
@@ -31,4 +31,8 @@ return [
     'modal_title_create_journal' => 'دروستکردنی گۆڤاری نوێ',
     'modal_title_create_analytic_account' => 'دروستکردنی هەژماری شیکاری نوێ',
     'modal_title_create_user' => 'دروستکردنی بەکارهێنەری نوێ',
+
+    // Common timestamps
+    'created_at' => 'دروستکراو لە',
+    'updated_at' => 'نوێکراوەتەوە لە',
 ];

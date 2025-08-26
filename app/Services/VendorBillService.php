@@ -26,6 +26,7 @@ use App\Actions\Accounting\CreateJournalEntryForInventoryBillAction;
 use App\Actions\Accounting\CreateJournalEntryForExpenseBillAction;
 use App\Services\CurrencyConverterService;
 use App\Services\ExchangeRateService;
+use App\Services\SequenceService;
 
 class VendorBillService
 {
@@ -36,7 +37,8 @@ class VendorBillService
         protected CreateJournalEntryForInventoryBillAction $createJournalEntryForInventoryBillAction,
         protected CreateJournalEntryForExpenseBillAction $createJournalEntryForExpenseBillAction,
         protected CurrencyConverterService $currencyConverter,
-        protected ExchangeRateService $exchangeRateService
+        protected ExchangeRateService $exchangeRateService,
+        protected SequenceService $sequenceService
     ) {}
 
     public function post(VendorBill $vendorBill, User $user): void
@@ -53,6 +55,11 @@ class VendorBillService
         DB::transaction(function () use ($vendorBill, $user) {
             // Process multi-currency amounts before posting
             $this->processMultiCurrencyAmounts($vendorBill);
+
+            // Generate bill number if not already set
+            if (empty($vendorBill->bill_reference)) {
+                $vendorBill->bill_reference = $this->sequenceService->getNextVendorBillNumber($vendorBill->company, Carbon::parse($vendorBill->bill_date));
+            }
 
             $vendorBill->user_id = $user->id;
             $vendorBill->status = VendorBillStatus::Posted;
