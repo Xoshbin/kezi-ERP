@@ -1,0 +1,60 @@
+<?php
+
+return [
+    'types' => [
+        'simple' => 'بسيط',
+        'year_prefix' => 'السنة في البداية',
+        'year_suffix' => 'السنة في النهاية',
+        'year_month' => 'السنة-الشهر',
+        'slash_separated' => 'مفصول بالشرطة المائلة',
+        'slash_year_month' => 'شرطة مائلة مع السنة والشهر',
+        'dot_separated' => 'مفصول بالنقطة',
+    ],
+
+    'descriptions' => [
+        'simple' => 'تنسيق بسيط مع البادئة والرقم (مثل: INV-00001)',
+        'year_prefix' => 'السنة في البداية (مثل: 2025-INV-00001)',
+        'year_suffix' => 'السنة في النهاية (مثل: INV-00001-2025)',
+        'year_month' => 'بادئة السنة والشهر (مثل: 202501-INV-00001)',
+        'slash_separated' => 'تنسيق مفصول بالشرطة المائلة (مثل: INV/2025/00001)',
+        'slash_year_month' => 'شرطة مائلة مع السنة والشهر (مثل: INV/2025/08/0000001)',
+        'dot_separated' => 'تنسيق مفصول بالنقطة (مثل: INV.2025.00001)',
+    ],
+
+    'settings' => [
+        'title' => 'إعدادات ترقيم المستندات',
+        'description' => 'تكوين كيفية إنشاء أرقام الفواتير والفواتير',
+        'invoice_numbering' => 'ترقيم الفواتير',
+        'invoice_numbering_description' => 'تكوين كيفية إنشاء أرقام الفواتير عند ترحيل الفواتير.',
+        'bill_numbering' => 'ترقيم فواتير المورد',
+        'bill_numbering_description' => 'تكوين كيفية إنشاء أرقام فواتير المورد عند ترحيل الفواتير.',
+        'numbering_type' => 'نوع الترقيم',
+        'prefix' => 'البادئة',
+        'prefix_help' => 'نص قصير يظهر قبل الرقم (مثل: INV، BILL، PURCHASE)',
+        'padding' => 'حشو الرقم',
+        'padding_help' => 'عدد الأرقام للرقم التسلسلي (مثل: 5 = 00001)',
+        'current_format' => 'التنسيق الحالي',
+        'example' => 'مثال',
+        'preview' => 'معاينة',
+        'preview_help' => 'هذا هو شكل رقم المستند التالي',
+        'next_number' => 'تنسيق الرقم التالي',
+        'cannot_change_title' => 'لا يمكن تغيير الترقيم',
+        'cannot_change_message' => 'لا يمكن تغيير إعدادات الترقيم لأن هناك مستندات مرحلة بالتنسيق الحالي.',
+        'posted_invoices_exist' => 'توجد فواتير مرحلة',
+        'posted_bills_exist' => 'توجد فواتير شراء مرحلة',
+        'can_change' => 'يمكن التغيير',
+    ],
+
+    'validation' => [
+        'prefix_required' => 'البادئة مطلوبة',
+        'prefix_max' => 'لا يمكن أن تكون البادئة أطول من :max حرف',
+        'padding_required' => 'الحشو مطلوب',
+        'padding_min' => 'يجب أن يكون الحشو على الأقل :min أرقام',
+        'padding_max' => 'لا يمكن أن يكون الحشو أكثر من :max أرقام',
+        'type_required' => 'نوع الترقيم مطلوب',
+        'type_invalid' => 'نوع ترقيم غير صالح محدد',
+        'cannot_change_posted_exist' => 'لا يمكن تغيير إعدادات الترقيم عند وجود مستندات مرحلة',
+        'posted_invoices_exist' => 'توجد فواتير مرحلة',
+        'posted_bills_exist' => 'توجد فواتير شراء مرحلة',
+    ],
+];
