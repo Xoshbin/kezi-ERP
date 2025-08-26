@@ -1,0 +1,107 @@
+<?php
+
+namespace Tests\Feature\HumanResources;
+
+use App\Filament\Clusters\HumanResources\Resources\Positions\PositionResource;
+use App\Models\Position;
+use App\Models\User;
+use Brick\Money\Money;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\TestCase;
+use Tests\Traits\WithConfiguredCompany;
+use function Pest\Livewire\livewire;
+
+class PositionResourceTest extends TestCase
+{
+    use RefreshDatabase, WithConfiguredCompany;
+
+    protected $company;
+    protected $user;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+        $this->setupWithConfiguredCompany();
+        $this->actingAs($this->user);
+    }
+
+    /** @test */
+    public function it_can_render_the_list_page()
+    {
+        $this->get(PositionResource::getUrl('index'))->assertSuccessful();
+    }
+
+    /** @test */
+    public function it_can_render_the_create_page()
+    {
+        $this->get(PositionResource::getUrl('create'))->assertSuccessful();
+    }
+
+    /** @test */
+    public function it_can_create_position_with_money_fields()
+    {
+        $positionData = [
+            'title' => ['en' => 'Software Developer', 'ku' => 'گەشەپێدەری نەرمەکاڵا'],
+            'description' => 'A software developer position',
+            'employment_type' => 'full_time',
+            'level' => 'mid',
+            'salary_currency_id' => $this->company->currency->id,
+            'min_salary' => '800000', // Will be converted to Money object
+            'max_salary' => '1200000', // Will be converted to Money object
+            'is_active' => true,
+        ];
+
+        livewire(\App\Filament\Clusters\HumanResources\Resources\Positions\Pages\CreatePosition::class)
+            ->fillForm($positionData)
+            ->call('create')
+            ->assertHasNoFormErrors();
+
+        $this->assertDatabaseHas('positions', [
+            'title->en' => 'Software Developer',
+            'title->ku' => 'گەشەپێدەری نەرمەکاڵا',
+            'description' => 'A software developer position',
+            'employment_type' => 'full_time',
+            'level' => 'mid',
+            'salary_currency_id' => $this->company->currency->id,
+            'min_salary' => 800000000, // Stored as minor units (IQD has 3 decimal places)
+            'max_salary' => 1200000000,
+            'is_active' => true,
+        ]);
+
+        // Verify Money objects are properly cast
+        $position = Position::where('title->en', 'Software Developer')->first();
+        $this->assertInstanceOf(Money::class, $position->min_salary);
+        $this->assertInstanceOf(Money::class, $position->max_salary);
+        $this->assertTrue($position->min_salary->isEqualTo(Money::of(800000, $this->company->currency->code)));
+        $this->assertTrue($position->max_salary->isEqualTo(Money::of(1200000, $this->company->currency->code)));
+    }
+
+    /** @test */
+    public function it_can_render_the_edit_page()
+    {
+        $position = Position::factory()->create([
+            'company_id' => $this->company->id,
+            'salary_currency_id' => $this->company->currency->id,
+        ]);
+
+        $this->get(PositionResource::getUrl('edit', ['record' => $position]))
+            ->assertSuccessful();
+    }
+
+    /** @test */
+    public function it_validates_required_fields()
+    {
+        livewire(\App\Filament\Clusters\HumanResources\Resources\Positions\Pages\CreatePosition::class)
+            ->fillForm([
+                'title' => null,
+                'employment_type' => null,
+                'level' => null,
+            ])
+            ->call('create')
+            ->assertHasFormErrors([
+                'title' => 'required',
+                'employment_type' => 'required',
+                'level' => 'required',
+            ]);
+    }
+}

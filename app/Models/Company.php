@@ -123,6 +123,14 @@ class Company extends Model
         'inventory_adjustment_account_id',
         'default_stock_location_id',
         'default_vendor_location_id',
+        // HR-related default accounts
+        'default_salary_payable_account_id',
+        'default_salary_expense_account_id',
+        'default_payroll_journal_id',
+        'default_income_tax_payable_account_id',
+        'default_social_security_payable_account_id',
+        'default_health_insurance_payable_account_id',
+        'default_pension_payable_account_id',
         // PDF Settings
         'pdf_template',
         'pdf_logo_path',
@@ -442,6 +450,47 @@ class Company extends Model
     public function inventoryAdjustmentAccount(): BelongsTo
     {
         return $this->belongsTo(Account::class, 'inventory_adjustment_account_id');
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | HR-related Default Account Relationships
+    |--------------------------------------------------------------------------
+    */
+
+    public function defaultSalaryPayableAccount(): BelongsTo
+    {
+        return $this->belongsTo(Account::class, 'default_salary_payable_account_id');
+    }
+
+    public function defaultSalaryExpenseAccount(): BelongsTo
+    {
+        return $this->belongsTo(Account::class, 'default_salary_expense_account_id');
+    }
+
+    public function defaultPayrollJournal(): BelongsTo
+    {
+        return $this->belongsTo(Journal::class, 'default_payroll_journal_id');
+    }
+
+    public function defaultIncomeTaxPayableAccount(): BelongsTo
+    {
+        return $this->belongsTo(Account::class, 'default_income_tax_payable_account_id');
+    }
+
+    public function defaultSocialSecurityPayableAccount(): BelongsTo
+    {
+        return $this->belongsTo(Account::class, 'default_social_security_payable_account_id');
+    }
+
+    public function defaultHealthInsurancePayableAccount(): BelongsTo
+    {
+        return $this->belongsTo(Account::class, 'default_health_insurance_payable_account_id');
+    }
+
+    public function defaultPensionPayableAccount(): BelongsTo
+    {
+        return $this->belongsTo(Account::class, 'default_pension_payable_account_id');
     }
 
     /**

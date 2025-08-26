@@ -1,0 +1,172 @@
+<?php
+
+namespace App\Filament\Clusters\Settings\Resources\Accounts;
+
+use App\Enums\Accounting\AccountType;
+use App\Filament\Clusters\Settings\Resources\Accounts\Pages\CreateAccount;
+use App\Filament\Clusters\Settings\Resources\Accounts\Pages\EditAccount;
+use App\Filament\Clusters\Settings\Resources\Accounts\Pages\ListAccounts;
+use App\Filament\Clusters\Settings\Resources\Accounts\RelationManagers\JournalEntryLinesRelationManager;
+use App\Filament\Clusters\Settings\SettingsCluster;
+use App\Filament\Resources\AccountResource\Pages;
+use App\Filament\Resources\AccountResource\RelationManagers;
+use App\Filament\Support\TranslatableSelect;
+use App\Models\Account;
+use Filament\Actions\Action;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteBulkAction;
+use Filament\Actions\EditAction;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Toggle;
+use Filament\Resources\Resource;
+use Filament\Schemas\Schema;
+use Filament\Tables\Columns\IconColumn;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Table;
+use LaraZeus\SpatieTranslatable\Resources\Concerns\Translatable;
+
+class AccountResource extends Resource
+{
+    use Translatable;
+
+    protected static ?string $model = Account::class;
+
+    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-calculator';
+
+    protected static ?int $navigationSort = 3;
+
+    protected static ?string $cluster = SettingsCluster::class;
+
+    public static function getPluralModelLabel(): string
+    {
+        return __('account.plural_label');
+    }
+
+    public static function getNavigationLabel(): string
+    {
+        return __('account.plural_label');
+    }
+
+    public static function form(Schema $schema): Schema
+    {
+        return $schema
+            ->components([
+                Select::make('company_id')
+                    ->label(__('account.company'))
+                    ->relationship('company', 'name')
+                    ->required()
+                    ->searchable()
+                    ->createOptionForm([
+                        TextInput::make('name')
+                            ->label(__('company.name'))
+                            ->required()
+                            ->maxLength(255),
+                        Textarea::make('address')
+                            ->label(__('company.address'))
+                            ->columnSpanFull(),
+                        TextInput::make('tax_id')
+                            ->label(__('company.tax_id'))
+                            ->maxLength(255),
+                        TranslatableSelect::make('currency_id', \App\Models\Currency::class, __('company.currency_id'))
+                            ->required(),
+                        TextInput::make('fiscal_country')
+                            ->label(__('company.fiscal_country'))
+                            ->required()
+                            ->maxLength(255),
+                    ])
+                    ->createOptionModalHeading(__('common.modal_title_create_company'))
+                    ->createOptionAction(function (Action $action) {
+                        return $action
+                            ->modalWidth('lg');
+                    }),
+                TextInput::make('code')
+                    ->label(__('account.code'))
+                    ->required()
+                    ->maxLength(255),
+                TextInput::make('name')
+                    ->label(__('account.name'))
+                    ->required()
+                    ->maxLength(255),
+                Select::make('type')
+                    ->label(__('account.type'))
+                    ->required()
+                    ->options(
+                        collect(AccountType::cases())
+                            ->mapWithKeys(fn (AccountType $type) => [$type->value => $type->label()])
+                    )
+                    ->searchable(),
+                Toggle::make('is_deprecated')
+                    ->label(__('account.is_deprecated'))
+                    ->required(),
+                Toggle::make('allow_reconciliation')
+                    ->label(__('account.allow_reconciliation'))
+                    ->helperText(__('account.allow_reconciliation_help'))
+                    ->default(false),
+            ]);
+    }
+
+    public static function table(Table $table): Table
+    {
+        return $table
+            ->columns([
+                TextColumn::make('company.name')
+                    ->label(__('account.company'))
+                    ->numeric()
+                    ->sortable(),
+                TextColumn::make('code')
+                    ->label(__('account.code'))
+                    ->searchable(),
+                TextColumn::make('name')
+                    ->label(__('account.name'))
+                    ->searchable(),
+                TextColumn::make('type')
+                    ->label(__('account.type'))
+                    ->searchable(),
+                IconColumn::make('is_deprecated')
+                    ->label(__('account.is_deprecated'))
+                    ->boolean(),
+                IconColumn::make('allow_reconciliation')
+                    ->label(__('account.allow_reconciliation'))
+                    ->boolean(),
+                TextColumn::make('created_at')
+                    ->label(__('account.created_at'))
+                    ->dateTime()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('updated_at')
+                    ->label(__('account.updated_at'))
+                    ->dateTime()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+            ])
+            ->filters([
+                //
+            ])
+            ->recordActions([
+                EditAction::make(),
+            ])
+            ->toolbarActions([
+                BulkActionGroup::make([
+                    DeleteBulkAction::make(),
+                ]),
+            ]);
+    }
+
+    public static function getRelations(): array
+    {
+        return [
+            JournalEntryLinesRelationManager::class,
+        ];
+    }
+
+    public static function getPages(): array
+    {
+        return [
+            'index' => ListAccounts::route('/'),
+            'create' => CreateAccount::route('/create'),
+            'edit' => EditAccount::route('/{record}/edit'),
+        ];
+    }
+}

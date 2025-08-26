@@ -15,5 +15,6 @@ return [
     'clusters' => [
         'settings' => 'الإعدادات',
         'inventory' => 'إدارة المخزون',
+        'human_resources' => 'الموارد البشرية',
     ],
 ];

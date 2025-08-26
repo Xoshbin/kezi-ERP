@@ -142,6 +142,20 @@ return [
         'expense_claim' => 'Expense Claim',
         'tax_payment' => 'Tax Payment',
         'asset_purchase' => 'Asset Purchase',
+        'payroll' => 'Payroll',
+    ],
+
+    'payroll_status' => [
+        'draft' => 'Draft',
+        'processed' => 'Processed',
+        'paid' => 'Paid',
+        'cancelled' => 'Cancelled',
+    ],
+
+    'pay_frequency' => [
+        'monthly' => 'Monthly',
+        'bi_weekly' => 'Bi-weekly',
+        'weekly' => 'Weekly',
     ],
 
     'tax_type' => [
