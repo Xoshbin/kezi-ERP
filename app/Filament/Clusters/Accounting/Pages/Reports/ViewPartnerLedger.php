@@ -1,21 +1,21 @@
 <?php
 
-namespace App\Filament\Clusters\Accounting\Clusters\AccountingReports\Pages\Reports;
+namespace App\Filament\Clusters\Accounting\Pages\Reports;
 
-use App\Filament\Clusters\Accounting\Clusters\AccountingReports\AccountingReportsCluster;
+use Carbon\Carbon;
 use App\Models\Company;
 use App\Models\Partner;
-use App\Services\Reports\PartnerLedgerService;
-use App\Support\NumberFormatter;
-use Carbon\Carbon;
-use Filament\Actions\Action;
-use Filament\Facades\Filament;
-use Filament\Forms\Components\DatePicker;
-use Filament\Forms\Components\Select;
 use Filament\Pages\Page;
-use Filament\Schemas\Components\Section;
+use Filament\Actions\Action;
 use Filament\Schemas\Schema;
+use Filament\Facades\Filament;
+use App\Support\NumberFormatter;
+use Filament\Forms\Components\Select;
+use Filament\Schemas\Components\Section;
+use Filament\Forms\Components\DatePicker;
 use Illuminate\Contracts\Support\Htmlable;
+use App\Services\Reports\PartnerLedgerService;
+use App\Filament\Clusters\Accounting\AccountingCluster;
 
 class ViewPartnerLedger extends Page
 {
@@ -23,13 +23,13 @@ class ViewPartnerLedger extends Page
     protected string $view = 'filament.pages.reports.view-partner-ledger';
     protected static string | \UnitEnum | null $navigationGroup = null;
 
-    protected static ?string $cluster = AccountingReportsCluster::class;
-
     public static function getNavigationGroup(): ?string
     {
         return __('navigation.groups.reports');
     }
     protected static ?int $navigationSort = 4;
+
+    protected static ?string $cluster = AccountingCluster::class;
 
     public ?string $startDate = null;
     public ?string $endDate = null;
