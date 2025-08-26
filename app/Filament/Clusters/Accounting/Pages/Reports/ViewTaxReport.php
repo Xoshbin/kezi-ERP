@@ -1,18 +1,18 @@
 <?php
 
-namespace App\Filament\Clusters\Accounting\Clusters\AccountingReports\Pages\Reports;
+namespace App\Filament\Clusters\Accounting\Pages\Reports;
 
-use App\Filament\Clusters\Accounting\Clusters\AccountingReports\AccountingReportsCluster;
-use App\Models\Company;
-use App\Services\Reports\TaxReportService;
-use App\Support\NumberFormatter;
 use Carbon\Carbon;
-use Filament\Actions\Action;
-use Filament\Facades\Filament;
-use Filament\Forms\Components\DatePicker;
+use App\Models\Company;
 use Filament\Pages\Page;
-use Filament\Schemas\Components\Section;
+use Filament\Actions\Action;
 use Filament\Schemas\Schema;
+use Filament\Facades\Filament;
+use App\Support\NumberFormatter;
+use Filament\Schemas\Components\Section;
+use Filament\Forms\Components\DatePicker;
+use App\Services\Reports\TaxReportService;
+use App\Filament\Clusters\Accounting\AccountingCluster;
 
 class ViewTaxReport extends Page
 {
@@ -22,14 +22,14 @@ class ViewTaxReport extends Page
 
     protected static string | \UnitEnum | null $navigationGroup = null;
 
-    protected static ?string $cluster = AccountingReportsCluster::class;
-
     public static function getNavigationGroup(): ?string
     {
         return __('navigation.groups.reports');
     }
 
     protected static ?int $navigationSort = 6;
+
+    protected static ?string $cluster = AccountingCluster::class;
 
     public ?string $startDate = null;
     public ?string $endDate = null;
