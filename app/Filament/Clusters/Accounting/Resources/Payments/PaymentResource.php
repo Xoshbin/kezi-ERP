@@ -222,36 +222,47 @@ class PaymentResource extends Resource
     {
         return $table
             ->columns([
-                TextColumn::make('company.name')
-                    ->label(__('payment.table.company.name'))
-                    ->sortable(),
-                TextColumn::make('journal.name')
-                    ->label(__('payment.table.journal.name'))
-                    ->sortable(),
-                TextColumn::make('currency.name')
-                    ->label(__('payment.table.currency.name'))
-                    ->sortable(),
+                // Reference (most important for identification)
+                TextColumn::make('reference')
+                    ->label(__('payment.reference'))
+                    ->searchable()
+                    ->sortable()
+                    ->weight('medium')
+                    ->getStateUsing(function (Payment $record): string {
+                        if ($record->reference) {
+                            return $record->reference;
+                        }
+                        return 'DRAFT-' . str_pad($record->id, 5, '0', STR_PAD_LEFT);
+                    })
+                    ->badge()
+                    ->color(fn (Payment $record): string => $record->reference ? 'success' : 'warning')
+                    ->icon(fn (Payment $record): string => $record->reference ? 'heroicon-m-check-circle' : 'heroicon-m-pencil-square'),
+
+                // Partner (critical for identification)
                 TextColumn::make('partner.name')
-                    ->label(__('payment.table.partner.name'))
-                    ->sortable(),
-                TextColumn::make('payment_date')
-                    ->label(__('payment.table.payment_date'))
-                    ->date()
-                    ->sortable(),
-                MoneyColumn::make('amount')
-                    ->label(__('payment.table.amount'))
-                    ->sortable(),
+                    ->label(__('payment.partner'))
+                    ->searchable()
+                    ->sortable()
+                    ->weight('medium'),
+
+                // Payment Type (critical for understanding direction)
                 TextColumn::make('payment_type')
-                    ->label(__('payment.table.payment_type'))
+                    ->label(__('payment.type'))
                     ->formatStateUsing(fn(PaymentType $state): string => $state->label())
                     ->badge()
                     ->color(fn(PaymentType $state): string => match($state) {
                         PaymentType::Inbound => 'success',
                         PaymentType::Outbound => 'danger',
                     })
+                    ->icons([
+                        'heroicon-m-arrow-down-circle' => PaymentType::Inbound,
+                        'heroicon-m-arrow-up-circle' => PaymentType::Outbound,
+                    ])
                     ->searchable(),
+
+                // Status (critical for workflow)
                 TextColumn::make('status')
-                    ->label(__('payment.table.status'))
+                    ->label(__('payment.status'))
                     ->formatStateUsing(fn(PaymentStatus $state): string => $state->label())
                     ->badge()
                     ->color(fn(PaymentStatus $state): string => match($state) {
@@ -260,7 +271,44 @@ class PaymentResource extends Resource
                         PaymentStatus::Reconciled => 'success',
                         PaymentStatus::Canceled => 'danger',
                     })
+                    ->icons([
+                        'heroicon-m-pencil-square' => PaymentStatus::Draft,
+                        'heroicon-m-clock' => PaymentStatus::Confirmed,
+                        'heroicon-m-check-circle' => PaymentStatus::Reconciled,
+                        'heroicon-m-x-circle' => PaymentStatus::Canceled,
+                    ])
                     ->searchable(),
+
+                // Payment Date (important for chronological sorting)
+                TextColumn::make('payment_date')
+                    ->label(__('payment.date'))
+                    ->date()
+                    ->sortable(),
+
+                // Amount (critical financial information)
+                MoneyColumn::make('amount')
+                    ->label(__('payment.amount'))
+                    ->sortable()
+                    ->weight('bold')
+                    ->size('lg'),
+
+                // Currency (important for multi-currency)
+                TextColumn::make('currency.code')
+                    ->label(__('payment.currency'))
+                    ->badge()
+                    ->toggleable(),
+
+                // Journal (important for categorization)
+                TextColumn::make('journal.name')
+                    ->label(__('payment.journal'))
+                    ->sortable()
+                    ->toggleable(),
+
+                // Company (for multi-company setups)
+                TextColumn::make('company.name')
+                    ->label(__('payment.company'))
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('created_at')
                     ->label(__('payment.table.created_at'))
                     ->dateTime()

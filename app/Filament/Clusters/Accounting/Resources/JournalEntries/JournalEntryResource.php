@@ -160,31 +160,57 @@ class JournalEntryResource extends Resource
     {
         return $table
             ->columns([
-                TextColumn::make('company.name')
-                    ->label(__('journal_entry.company'))
-                    ->sortable(),
-                TextColumn::make('journal.name')
-                    ->label(__('journal_entry.journal'))
-                    ->sortable(),
-                IconColumn::make('is_posted')
-                    ->label(__('journal_entry.is_posted'))
-                    ->boolean(),
-                TextColumn::make('currency.name')
-                    ->label(__('journal_entry.currency'))
-                    ->sortable(),
-                TextColumn::make('entry_date')
-                    ->label(__('journal_entry.entry_date'))
-                    ->date()
-                    ->sortable(),
+                // Reference (most important for identification)
                 TextColumn::make('reference')
                     ->label(__('journal_entry.reference'))
-                    ->searchable(),
+                    ->searchable()
+                    ->sortable()
+                    ->weight('medium'),
+
+                // Status (critical for workflow)
+                TextColumn::make('is_posted')
+                    ->label(__('journal_entry.status'))
+                    ->formatStateUsing(fn(bool $state): string => $state ? __('journal_entry.posted') : __('journal_entry.draft'))
+                    ->badge()
+                    ->color(fn(bool $state): string => $state ? 'success' : 'warning')
+                    ->icon(fn(bool $state): string => $state ? 'heroicon-m-check-circle' : 'heroicon-m-pencil-square')
+                    ->sortable(),
+
+                // Entry Date (important for chronological sorting)
+                TextColumn::make('entry_date')
+                    ->label(__('journal_entry.date'))
+                    ->date()
+                    ->sortable(),
+
+                // Journal (important for categorization)
+                TextColumn::make('journal.name')
+                    ->label(__('journal_entry.journal'))
+                    ->sortable()
+                    ->toggleable(),
+
+                // Total Debit (critical financial information)
                 MoneyColumn::make('total_debit')
-                    ->label(__('journal_entry.total_debit'))
-                    ->sortable(),
+                    ->label(__('journal_entry.debit'))
+                    ->sortable()
+                    ->weight('bold'),
+
+                // Total Credit (critical financial information)
                 MoneyColumn::make('total_credit')
-                    ->label(__('journal_entry.total_credit'))
-                    ->sortable(),
+                    ->label(__('journal_entry.credit'))
+                    ->sortable()
+                    ->weight('bold'),
+
+                // Currency (important for multi-currency)
+                TextColumn::make('currency.code')
+                    ->label(__('journal_entry.currency'))
+                    ->badge()
+                    ->toggleable(),
+
+                // Company (for multi-company setups)
+                TextColumn::make('company.name')
+                    ->label(__('journal_entry.company'))
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('created_at')
                     ->label(__('journal_entry.created_at'))
                     ->dateTime()
