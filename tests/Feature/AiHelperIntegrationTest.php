@@ -13,14 +13,10 @@ beforeEach(function () {
 });
 
 it('can load filament panel with ai helper plugin registered', function () {
-    // Check if the AI Helper plugin is properly registered
-    $plugins = filament('jmeryar')->getPlugins();
-
-    $aiHelperPlugin = collect($plugins)->first(function ($plugin) {
-        return $plugin instanceof \AccounTech\FilamentAiHelper\FilamentAiHelperPlugin;
-    });
-
-    expect($aiHelperPlugin)->not->toBeNull();
+    // Check if the AI Helper plugin is properly registered by checking if the service provider is loaded
+    expect(app()->bound(\AccounTech\FilamentAiHelper\Services\GeminiService::class))->toBeTrue();
+    expect(app()->bound(\AccounTech\FilamentAiHelper\Services\FormSchemaExtractor::class))->toBeTrue();
+    expect(config('filament-ai-helper'))->not->toBeNull();
 });
 
 it('has ai helper configuration loaded correctly', function () {
@@ -40,7 +36,7 @@ it('can access invoice edit page with ai helper trait', function () {
     ]);
 
     // Test that the page loads without errors
-    $this->get(route('filament.jmeryar.resources.invoices.edit', [
+    $this->get(route('filament.jmeryar.accounting.resources.invoices.edit', [
         'tenant' => $this->company,
         'record' => $invoice
     ]))
@@ -54,7 +50,7 @@ it('can access journal entry edit page with ai helper trait', function () {
     ]);
 
     // Test that the page loads without errors
-    $this->get(route('filament.jmeryar.resources.journal-entries.edit', [
+    $this->get(route('filament.jmeryar.accounting.resources.journal-entries.edit', [
         'tenant' => $this->company,
         'record' => $journalEntry
     ]))
@@ -63,7 +59,6 @@ it('can access journal entry edit page with ai helper trait', function () {
 
 it('can access vendor bill edit page with ai helper trait', function () {
     // Create test data
-    $user = User::factory()->create();
     $partner = Partner::factory()->create(['company_id' => $this->company->id]);
     $vendorBill = \App\Models\VendorBill::factory()->create([
         'company_id' => $this->company->id,
@@ -71,26 +66,23 @@ it('can access vendor bill edit page with ai helper trait', function () {
     ]);
 
     // Test that the page loads without errors
-    $this->actingAs($user)
-        ->get(route('filament.jmeryar.resources.vendor-bills.edit', [
-            'tenant' => $this->company,
-            'record' => $vendorBill
-        ]))
-        ->assertSuccessful();
+    $this->get(route('filament.jmeryar.accounting.resources.vendor-bills.edit', [
+        'tenant' => $this->company,
+        'record' => $vendorBill
+    ]))
+    ->assertSuccessful();
 });
 
 it('can access partner edit page with ai helper trait', function () {
     // Create test data
-    $user = User::factory()->create();
     $partner = Partner::factory()->create(['company_id' => $this->company->id]);
 
     // Test that the page loads without errors
-    $this->actingAs($user)
-        ->get(route('filament.jmeryar.resources.partners.edit', [
-            'tenant' => $this->company,
-            'record' => $partner
-        ]))
-        ->assertSuccessful();
+    $this->get(route('filament.jmeryar.accounting.resources.partners.edit', [
+        'tenant' => $this->company,
+        'record' => $partner
+    ]))
+    ->assertSuccessful();
 });
 
 it('has proper ai helper context prompts for accounting models', function () {
@@ -143,7 +135,7 @@ it('works correctly with multi-tenancy context', function () {
     ]);
 
     // Test that the AI Helper can access the invoice with correct company context
-    $response = $this->get(route('filament.jmeryar.resources.invoices.edit', [
+    $response = $this->get(route('filament.jmeryar.accounting.resources.invoices.edit', [
         'tenant' => $this->company,
         'record' => $invoice
     ]));

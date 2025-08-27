@@ -19,4 +19,32 @@ class CreatePosition extends CreateRecord
             LocaleSwitcher::make(),
         ];
     }
+
+    protected function mutateFormDataBeforeCreate(array $data): array
+    {
+        // Ensure company_id is set from the current tenant
+        $data['company_id'] = \Filament\Facades\Filament::getTenant()->id;
+
+        // Debug: Log the data being created
+        \Log::info('Creating position with data:', $data);
+
+        return $data;
+    }
+
+    protected function handleRecordCreation(array $data): \Illuminate\Database\Eloquent\Model
+    {
+        try {
+            \Log::info('Attempting to create position with data:', $data);
+            $record = parent::handleRecordCreation($data);
+            \Log::info('Successfully created position:', $record->toArray());
+            return $record;
+        } catch (\Exception $e) {
+            \Log::error('Failed to create position:', [
+                'error' => $e->getMessage(),
+                'data' => $data,
+                'trace' => $e->getTraceAsString()
+            ]);
+            throw $e;
+        }
+    }
 }

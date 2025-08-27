@@ -161,7 +161,7 @@ class PayrollService
             if ($daysInPeriod < $daysInMonth) {
                 // Prorate the salary
                 $prorationFactor = $daysInPeriod / $daysInMonth;
-                $baseSalary = $baseSalary->multipliedBy($prorationFactor);
+                $baseSalary = $baseSalary->multipliedBy($prorationFactor, \Brick\Math\RoundingMode::HALF_UP);
             }
         }
 
@@ -195,10 +195,10 @@ class PayrollService
 
         // TODO: Implement proper tax calculation based on company's tax rules
         // For now, using simple percentages
-        $incomeTax = $grossSalary->multipliedBy(0.10); // 10% income tax
-        $socialSecurity = $grossSalary->multipliedBy(0.05); // 5% social security
+        $incomeTax = $grossSalary->multipliedBy(0.10, \Brick\Math\RoundingMode::HALF_UP); // 10% income tax
+        $socialSecurity = $grossSalary->multipliedBy(0.05, \Brick\Math\RoundingMode::HALF_UP); // 5% social security
         $healthInsurance = Money::of(50, $currency); // Fixed amount
-        $pensionContribution = $grossSalary->multipliedBy(0.03); // 3% pension
+        $pensionContribution = $grossSalary->multipliedBy(0.03, \Brick\Math\RoundingMode::HALF_UP); // 3% pension
 
         return [
             'income_tax' => $incomeTax,
@@ -242,8 +242,13 @@ class PayrollService
             reference: null,
         );
 
+        // Calculate total deductions
+        $totalDeductions = Money::of(0, $baseSalary->getCurrency());
+
         // Tax deduction lines (credit)
         foreach ($deductions as $type => $amount) {
+            $totalDeductions = $totalDeductions->plus($amount);
+
             $lines[] = new PayrollLineDTO(
                 company_id: $company->id,
                 account_id: $taxPayableAccountId,
@@ -264,6 +269,27 @@ class PayrollService
             );
         }
 
+        // Net salary payable line (credit)
+        $netSalary = $baseSalary->minus($totalDeductions);
+        $lines[] = new PayrollLineDTO(
+            company_id: $company->id,
+            account_id: $payableAccountId,
+            line_type: 'earning',
+            code: 'net_salary',
+            description: ['en' => 'Net Salary Payable'],
+            quantity: 1,
+            unit: 'fixed',
+            rate: $netSalary,
+            amount: $netSalary,
+            tax_rate: null,
+            is_taxable: false,
+            is_statutory: false,
+            debit_credit: 'credit',
+            analytic_account_id: null,
+            notes: null,
+            reference: null,
+        );
+
         return $lines;
     }
 
@@ -275,7 +301,7 @@ class PayrollService
         Gate::forUser($user)->authorize('pay', $payroll);
 
         if ($payroll->status !== 'processed') {
-            throw new \Exception('Only processed payrolls can be paid.');
+            throw new \InvalidArgumentException('Only processed payrolls can be paid.');
         }
 
         if ($payroll->payment_id) {
