@@ -190,14 +190,46 @@ class AiChatController extends Controller
      */
     private function isFormManipulationRequest(string $message): bool
     {
-        $formKeywords = [
-            'fill', 'create', 'add', 'set', 'update', 'change', 'edit', 'modify',
-            'invoice', 'bill', 'form', 'field', 'value', 'amount', 'date', 'customer'
-        ];
-
         $message = strtolower($message);
 
-        foreach ($formKeywords as $keyword) {
+        // Question patterns that should NOT be treated as form manipulation
+        $questionPatterns = [
+            'what is',
+            'what are',
+            'how is',
+            'how are',
+            'why is',
+            'why are',
+            'when is',
+            'when are',
+            'where is',
+            'where are',
+            'who is',
+            'who are',
+            'which is',
+            'which are',
+            'can you explain',
+            'tell me about',
+            'show me',
+            'analyze',
+            'calculate',
+            'help me understand'
+        ];
+
+        // If it's a question, don't treat as form manipulation
+        foreach ($questionPatterns as $pattern) {
+            if (str_contains($message, $pattern)) {
+                return false;
+            }
+        }
+
+        // Action keywords that indicate form manipulation
+        $actionKeywords = [
+            'fill', 'create', 'add', 'set', 'update', 'change', 'edit', 'modify',
+            'enter', 'input', 'save', 'submit'
+        ];
+
+        foreach ($actionKeywords as $keyword) {
             if (str_contains($message, $keyword)) {
                 return true;
             }

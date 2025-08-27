@@ -22,11 +22,11 @@ class FormSchemaExtractor
     {
         $schema = [];
         $components = $form->getComponents();
-        
+
         foreach ($components as $component) {
             $this->extractComponentSchema($component, $schema);
         }
-        
+
         return $schema;
     }
 
@@ -36,7 +36,7 @@ class FormSchemaExtractor
     private function extractComponentSchema(Component $component, array &$schema, string $prefix = ''): void
     {
         $name = $component->getName();
-        
+
         if (!$name) {
             // Handle container components (like sections, fieldsets)
             if (method_exists($component, 'getChildComponents')) {
@@ -46,9 +46,9 @@ class FormSchemaExtractor
             }
             return;
         }
-        
+
         $fullName = $prefix ? "{$prefix}.{$name}" : $name;
-        
+
         $schema[$fullName] = [
             'type' => $this->getComponentType($component),
             'label' => $component->getLabel(),
@@ -58,7 +58,7 @@ class FormSchemaExtractor
             'placeholder' => $this->getPlaceholder($component),
             'help' => $component->getHelperText(),
         ];
-        
+
         // Handle nested components (like repeaters, fieldsets)
         if (method_exists($component, 'getChildComponents')) {
             foreach ($component->getChildComponents() as $child) {
@@ -90,11 +90,11 @@ class FormSchemaExtractor
     private function extractValidationRules(Component $component): array
     {
         $rules = [];
-        
+
         if ($component->isRequired()) {
             $rules[] = 'required';
         }
-        
+
         // Extract specific validation rules based on component type
         if ($component instanceof TextInput) {
             if ($component->getMaxLength()) {
@@ -104,7 +104,7 @@ class FormSchemaExtractor
                 $rules[] = "min:{$component->getMinLength()}";
             }
         }
-        
+
         return $rules;
     }
 
@@ -113,12 +113,12 @@ class FormSchemaExtractor
      */
     private function extractOptions(Component $component): array
     {
-        if (!($component instanceof Select) && 
-            !($component instanceof CheckboxList) && 
+        if (!($component instanceof Select) &&
+            !($component instanceof CheckboxList) &&
             !($component instanceof Radio)) {
             return [];
         }
-        
+
         try {
             $options = $component->getOptions();
             return is_array($options) ? $options : [];
@@ -135,7 +135,7 @@ class FormSchemaExtractor
         if (method_exists($component, 'getPlaceholder')) {
             return $component->getPlaceholder();
         }
-        
+
         return null;
     }
 
@@ -147,18 +147,18 @@ class FormSchemaExtractor
         if (!$livewireComponent) {
             return [];
         }
-        
+
         try {
             // Try to get form data from Livewire component
             if (method_exists($livewireComponent, 'getFormData')) {
                 return $livewireComponent->getFormData();
             }
-            
+
             // Try to get data property
             if (property_exists($livewireComponent, 'data')) {
                 return $livewireComponent->data ?? [];
             }
-            
+
             // Try to get form state
             if (method_exists($livewireComponent, 'getForm')) {
                 $form = $livewireComponent->getForm();
@@ -166,7 +166,7 @@ class FormSchemaExtractor
                     return $form->getState();
                 }
             }
-            
+
             return [];
         } catch (\Exception $e) {
             return [];
@@ -181,17 +181,27 @@ class FormSchemaExtractor
         if (!$request) {
             $request = request();
         }
-        
+
         $url = $request->url();
-        
+
         if (Str::contains($url, '/create')) {
             return 'create';
         }
-        
+
         if (Str::contains($url, '/edit')) {
             return 'edit';
         }
-        
+
+        // Check if model_id indicates a create page
+        if ($request->has('model_id') && $request->get('model_id') === 'new') {
+            return 'create';
+        }
+
+        // Check if model_id indicates an edit page (numeric ID)
+        if ($request->has('model_id') && is_numeric($request->get('model_id'))) {
+            return 'edit';
+        }
+
         return null;
     }
 
@@ -203,7 +213,7 @@ class FormSchemaExtractor
         if (!$page) {
             return [];
         }
-        
+
         try {
             // Try to get form from the page
             if (method_exists($page, 'getForm')) {
@@ -212,7 +222,7 @@ class FormSchemaExtractor
                     return $this->extractFromForm($form);
                 }
             }
-            
+
             // Try to get form schema directly
             if (method_exists($page, 'getFormSchema')) {
                 $schema = $page->getFormSchema();
@@ -224,7 +234,7 @@ class FormSchemaExtractor
                     return $extractedSchema;
                 }
             }
-            
+
             return [];
         } catch (\Exception $e) {
             return [];
@@ -237,22 +247,22 @@ class FormSchemaExtractor
     public function validateFormData(array $data, array $schema): array
     {
         $errors = [];
-        
+
         foreach ($schema as $field => $config) {
             $value = $data[$field] ?? null;
-            
+
             // Check required fields
             if ($config['required'] && (is_null($value) || $value === '')) {
                 $errors[$field] = "Field {$field} is required";
                 continue;
             }
-            
+
             // Type validation
             if (!is_null($value)) {
                 $errors = array_merge($errors, $this->validateFieldType($field, $value, $config));
             }
         }
-        
+
         return $errors;
     }
 
@@ -263,27 +273,27 @@ class FormSchemaExtractor
     {
         $errors = [];
         $type = $config['type'];
-        
+
         switch ($type) {
             case 'date':
                 if (!$this->isValidDate($value)) {
                     $errors[$field] = "Field {$field} must be a valid date";
                 }
                 break;
-                
+
             case 'boolean':
                 if (!is_bool($value) && !in_array($value, [0, 1, '0', '1', 'true', 'false'])) {
                     $errors[$field] = "Field {$field} must be a boolean value";
                 }
                 break;
-                
+
             case 'select':
                 if (!empty($config['options']) && !array_key_exists($value, $config['options'])) {
                     $errors[$field] = "Field {$field} must be one of the available options";
                 }
                 break;
         }
-        
+
         return $errors;
     }
 
@@ -295,7 +305,7 @@ class FormSchemaExtractor
         if (!is_string($value)) {
             return false;
         }
-        
+
         $date = \DateTime::createFromFormat('Y-m-d', $value);
         return $date && $date->format('Y-m-d') === $value;
     }
