@@ -370,36 +370,25 @@ test('Jmeryar ERP complete accounting scenario - Full Workflow', function () {
     expect($revenueLine->account_id)->toBe($accounts['4000']->id); // Consulting Revenue
     expect($revenueLine->credit->getAmount()->toInt())->toBe(5000000);
 
-    // Step 7: Receiving Payment from Customer
-    livewire(\App\Filament\Clusters\Accounting\Resources\Payments\Pages\CreatePayment::class)
-        ->fillForm([
+    // Step 7: Receiving Payment from Customer (using Register Payment action)
+    expect($invoice->status)->toBe(\App\Enums\Sales\InvoiceStatus::Posted);
+    expect($invoice->getRemainingAmount()->isZero())->toBeFalse();
+
+    livewire(\App\Filament\Clusters\Accounting\Resources\Invoices\Pages\EditInvoice::class, [
+        'record' => $invoice->getRouteKey(),
+    ])
+        ->callAction('register_payment', [
             'journal_id' => $journals['Bank']->id,
-            'currency_id' => $currency->id,
             'payment_date' => now()->format('Y-m-d'),
-            'payment_type' => \App\Enums\Payments\PaymentType::Inbound->value,
-            'payment_purpose' => \App\Enums\Payments\PaymentPurpose::Settlement->value,
+            'amount' => 5000000,
             'reference' => 'Payment from Hawre Trading Group',
-        ])
-        ->set('data.document_links', [
-            [
-                'document_type' => 'invoice',
-                'document_id' => $invoice->id,
-                'amount_applied' => 5000000,
-            ],
-        ])
-        ->call('create')
-        ->assertHasNoFormErrors();
+            'currency_id' => $currency->id,
+        ]);
 
     $payment = Payment::where('reference', 'Payment from Hawre Trading Group')->first();
     expect($payment)->not->toBeNull();
 
-    // Confirm the payment using Filament action
-    livewire(\App\Filament\Clusters\Accounting\Resources\Payments\Pages\EditPayment::class, [
-        'record' => $payment->getRouteKey(),
-    ])
-        ->callAction('confirm')
-        ->assertHasNoErrors();
-
+    // Payment should already be confirmed automatically by the register_payment action
     $payment->refresh();
     expect($payment->status)->toBe(PaymentStatus::Confirmed);
     expect($payment->journalEntry)->not->toBeNull();
@@ -408,36 +397,22 @@ test('Jmeryar ERP complete accounting scenario - Full Workflow', function () {
     $invoice->refresh();
     expect($invoice->status)->toBe(\App\Enums\Sales\InvoiceStatus::Paid);
 
-    // Step 8: Paying a Vendor
-    livewire(\App\Filament\Clusters\Accounting\Resources\Payments\Pages\CreatePayment::class)
-        ->fillForm([
+    // Step 8: Paying a Vendor (using Register Payment action)
+    livewire(\App\Filament\Clusters\Accounting\Resources\VendorBills\Pages\EditVendorBill::class, [
+        'record' => $vendorBill->getRouteKey(),
+    ])
+        ->callAction('register_payment', [
             'journal_id' => $journals['Bank']->id,
-            'currency_id' => $currency->id,
             'payment_date' => now()->format('Y-m-d'),
-            'payment_type' => \App\Enums\Payments\PaymentType::Outbound->value,
-            'payment_purpose' => \App\Enums\Payments\PaymentPurpose::Settlement->value,
+            'amount' => 3000000,
             'reference' => 'Payment to Paykar Tech Supplies',
-        ])
-        ->set('data.document_links', [
-            [
-                'document_type' => 'vendor_bill',
-                'document_id' => $vendorBill->id,
-                'amount_applied' => 3000000,
-            ],
-        ])
-        ->call('create')
-        ->assertHasNoFormErrors();
+            'currency_id' => $currency->id,
+        ]);
 
     $vendorPayment = Payment::where('reference', 'Payment to Paykar Tech Supplies')->first();
     expect($vendorPayment)->not->toBeNull();
 
-    // Confirm the vendor payment using Filament action
-    livewire(\App\Filament\Clusters\Accounting\Resources\Payments\Pages\EditPayment::class, [
-        'record' => $vendorPayment->getRouteKey(),
-    ])
-        ->callAction('confirm')
-        ->assertHasNoErrors();
-
+    // Payment should already be confirmed automatically by the register_payment action
     $vendorPayment->refresh();
     expect($vendorPayment->journalEntry)->not->toBeNull();
 

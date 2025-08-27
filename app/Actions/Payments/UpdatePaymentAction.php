@@ -13,7 +13,7 @@ use App\Enums\Payments\PaymentType;
 use App\Enums\Payments\PaymentStatus;
 use App\Enums\Payments\PaymentPurpose;
 use App\Services\Accounting\LockDateService;
-use App\Services\Payments\PaymentStrategyFactory;
+use App\Services\Payments\Strategies\SettlementStrategy;
 use Brick\Money\Money;
 use Illuminate\Support\Facades\DB;
 use InvalidArgumentException;
@@ -91,9 +91,13 @@ class UpdatePaymentAction
                 'paid_to_from_partner_id' => $partnerId,
             ]);
 
-            // Delegate to the strategy
-            $strategy = PaymentStrategyFactory::make($dto->payment_purpose);
-            $strategy->executeUpdate($payment, $dto);
+            // Handle settlement payments (document links)
+            if ($dto->payment_purpose === PaymentPurpose::Settlement) {
+                $settlementStrategy = app(SettlementStrategy::class);
+                $settlementStrategy->executeUpdate($payment, $dto);
+            }
+            // For other payment types (loan, capital injection, etc.), no additional logic needed
+            // The counterpart_account_id is already updated on the payment record
 
             return $payment->fresh();
         });
