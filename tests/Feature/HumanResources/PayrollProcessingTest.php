@@ -148,8 +148,8 @@ class PayrollProcessingTest extends TestCase
 
         $this->assertInstanceOf(Payroll::class, $payroll);
         $this->assertEquals($this->employee->id, $payroll->employee_id);
-        $this->assertEquals('2024-01-01', $payroll->period_start_date);
-        $this->assertEquals('2024-01-31', $payroll->period_end_date);
+        $this->assertEquals('2024-01-01', $payroll->period_start_date->format('Y-m-d'));
+        $this->assertEquals('2024-01-31', $payroll->period_end_date->format('Y-m-d'));
         $this->assertEquals('draft', $payroll->status);
 
         // Verify payroll calculations
@@ -157,6 +157,8 @@ class PayrollProcessingTest extends TestCase
         $expectedHousingAllowance = Money::of(200000, $this->currency->code);
         $expectedTransportAllowance = Money::of(100000, $this->currency->code);
         $expectedMealAllowance = Money::of(50000, $this->currency->code);
+
+
 
         $this->assertTrue($payroll->base_salary->isEqualTo($expectedBaseSalary));
         $this->assertTrue($payroll->housing_allowance->isEqualTo($expectedHousingAllowance));
@@ -221,8 +223,8 @@ class PayrollProcessingTest extends TestCase
         $this->assertGreaterThan(0, $journalEntry->lines->count());
 
         // Verify debits equal credits
-        $totalDebits = $journalEntry->lines->sum(fn($line) => $line->debit->getMinorAmount());
-        $totalCredits = $journalEntry->lines->sum(fn($line) => $line->credit->getMinorAmount());
+        $totalDebits = $journalEntry->lines->sum(fn($line) => (int) $line->debit->getMinorAmount()->toInt());
+        $totalCredits = $journalEntry->lines->sum(fn($line) => (int) $line->credit->getMinorAmount()->toInt());
         $this->assertEquals($totalDebits, $totalCredits);
     }
 
