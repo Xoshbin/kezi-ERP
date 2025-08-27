@@ -13,7 +13,7 @@ use App\Enums\Payments\PaymentType;
 use App\Enums\Payments\PaymentStatus;
 use App\Enums\Payments\PaymentPurpose;
 use App\Services\Accounting\LockDateService;
-use App\Services\Payments\PaymentStrategyFactory;
+use App\Services\Payments\Strategies\SettlementStrategy;
 use Brick\Money\Money;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -88,9 +88,13 @@ class CreatePaymentAction
                 'status' => PaymentStatus::Draft,
             ]);
 
-            // Delegate to the strategy
-            $strategy = PaymentStrategyFactory::make($dto->payment_purpose);
-            $strategy->executeCreate($payment, $dto);
+            // Handle settlement payments (document links)
+            if ($dto->payment_purpose === PaymentPurpose::Settlement) {
+                $settlementStrategy = app(SettlementStrategy::class);
+                $settlementStrategy->executeCreate($payment, $dto);
+            }
+            // For other payment types (loan, capital injection, etc.), no additional logic needed
+            // The counterpart_account_id is already set on the payment record
 
             return $payment;
         });
