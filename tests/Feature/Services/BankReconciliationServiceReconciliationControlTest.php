@@ -214,12 +214,14 @@ test('reconcileMultiple succeeds when reconciliation is enabled', function () {
     $payments = collect([
         Payment::factory()->for($company)->create([
             'currency_id' => $company->currency_id,
-            'amount' => $amount1->getMinorAmount()->toInt(),
+            'amount' => $amount1,
+            'payment_type' => \App\Enums\Payments\PaymentType::Inbound,
             'status' => \App\Enums\Payments\PaymentStatus::Confirmed
         ]),
         Payment::factory()->for($company)->create([
             'currency_id' => $company->currency_id,
-            'amount' => $amount2->getMinorAmount()->toInt(),
+            'amount' => $amount2,
+            'payment_type' => \App\Enums\Payments\PaymentType::Inbound,
             'status' => \App\Enums\Payments\PaymentStatus::Confirmed
         ])
     ]);
@@ -230,12 +232,12 @@ test('reconcileMultiple succeeds when reconciliation is enabled', function () {
     $lines = collect([
         BankStatementLine::factory()->for($bankStatement)->create([
             'company_id' => $company->id,
-            'amount' => $amount1->getMinorAmount()->toInt(),
+            'amount' => $amount1,
             'is_reconciled' => false
         ]),
         BankStatementLine::factory()->for($bankStatement)->create([
             'company_id' => $company->id,
-            'amount' => $amount2->getMinorAmount()->toInt(),
+            'amount' => $amount2,
             'is_reconciled' => false
         ])
     ]);

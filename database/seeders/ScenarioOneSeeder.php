@@ -21,6 +21,8 @@ class ScenarioOneSeeder extends Seeder
             'name' => 'Iraqi Dinar',
             'symbol' => 'ع.د',
             'exchange_rate' => 1.0,
+            'decimal_places' => 3,
+            'is_active' => true,
             'created_at' => now(),
             'updated_at' => now(),
         ]);
