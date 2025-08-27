@@ -3,7 +3,9 @@
 namespace App\Providers;
 
 use App\Models\JournalEntry;
+use App\Models\Payroll;
 use App\Policies\JournalEntryPolicy;
+use App\Policies\PayrollPolicy;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 
 class AuthServiceProvider extends ServiceProvider
@@ -14,7 +16,7 @@ class AuthServiceProvider extends ServiceProvider
      * @var array<class-string, class-string>
      */
     protected $policies = [
-        //
+        Payroll::class => PayrollPolicy::class,
     ];
 
     /**
