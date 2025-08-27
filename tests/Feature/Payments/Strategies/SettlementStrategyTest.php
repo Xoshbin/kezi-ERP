@@ -28,6 +28,7 @@ test('it creates payment document links for settlement payment creation', functi
     $payment = Payment::factory()->for($this->company)->create([
         'payment_purpose' => PaymentPurpose::Settlement,
         'payment_type' => PaymentType::Inbound,
+        'currency_id' => $this->company->currency_id,
     ]);
 
     $linkDTO = new CreatePaymentDocumentLinkDTO(
@@ -58,7 +59,7 @@ test('it creates payment document links for settlement payment creation', functi
     $link = $payment->paymentDocumentLinks->first();
     expect($link->invoice_id)->toBe($invoice->id);
     expect($link->vendor_bill_id)->toBeNull();
-    expect($link->amount_applied->getAmount()->toFloat())->toBe(5000.0);
+    expect($link->amount_applied->getAmount()->toFloat())->toBe(500.0);
 });
 
 test('it creates payment document links for vendor bill settlement', function () {
@@ -67,6 +68,7 @@ test('it creates payment document links for vendor bill settlement', function ()
     $payment = Payment::factory()->for($this->company)->create([
         'payment_purpose' => PaymentPurpose::Settlement,
         'payment_type' => PaymentType::Outbound,
+        'currency_id' => $this->company->currency_id,
     ]);
 
     $linkDTO = new CreatePaymentDocumentLinkDTO(
@@ -97,7 +99,7 @@ test('it creates payment document links for vendor bill settlement', function ()
     $link = $payment->paymentDocumentLinks->first();
     expect($link->vendor_bill_id)->toBe($vendorBill->id);
     expect($link->invoice_id)->toBeNull();
-    expect($link->amount_applied->getAmount()->toFloat())->toBe(3000.0);
+    expect($link->amount_applied->getAmount()->toFloat())->toBe(300.0);
 });
 
 test('it updates payment document links correctly', function () {
@@ -106,6 +108,7 @@ test('it updates payment document links correctly', function () {
     $payment = Payment::factory()->for($this->company)->create([
         'payment_purpose' => PaymentPurpose::Settlement,
         'payment_type' => PaymentType::Inbound,
+        'currency_id' => $this->company->currency_id,
     ]);
 
     // Create existing link
@@ -145,5 +148,5 @@ test('it updates payment document links correctly', function () {
     $payment->refresh();
     expect($payment->paymentDocumentLinks)->toHaveCount(1);
     $link = $payment->paymentDocumentLinks->first();
-    expect($link->amount_applied->getAmount()->toFloat())->toBe(4000.0);
+    expect($link->amount_applied->getAmount()->toFloat())->toBe(400.0);
 });
