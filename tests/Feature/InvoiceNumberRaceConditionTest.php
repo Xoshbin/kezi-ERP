@@ -104,7 +104,10 @@ class InvoiceNumberRaceConditionTest extends TestCase
 
         // With the new sequence system, all numbers should be unique
         $this->assertCount(3, array_unique($generatedNumbers), 'Expected 3 unique invoice numbers');
-        $this->assertEquals(['INV-00001', 'INV-00002', 'INV-00003'], $generatedNumbers);
+        // Check that all numbers follow the new Odoo-style format
+        foreach ($generatedNumbers as $number) {
+            $this->assertMatchesRegularExpression('/^INV\/\d{4}\/\d{2}\/\d{7}$/', $number);
+        }
     }
 
     /** @test */
@@ -129,8 +132,8 @@ class InvoiceNumberRaceConditionTest extends TestCase
 
         $this->assertEquals(\App\Enums\Sales\InvoiceStatus::Posted, $invoice1->status);
         $this->assertEquals(\App\Enums\Sales\InvoiceStatus::Posted, $invoice2->status);
-        $this->assertEquals('INV-00001', $invoice1->invoice_number);
-        $this->assertEquals('INV-00002', $invoice2->invoice_number);
+        $this->assertMatchesRegularExpression('/^INV\/\d{4}\/\d{2}\/\d{7}$/', $invoice1->invoice_number);
+        $this->assertMatchesRegularExpression('/^INV\/\d{4}\/\d{2}\/\d{7}$/', $invoice2->invoice_number);
         $this->assertNotNull($invoice1->journal_entry_id);
         $this->assertNotNull($invoice2->journal_entry_id);
         $this->assertNotEquals($invoice1->journal_entry_id, $invoice2->journal_entry_id);
