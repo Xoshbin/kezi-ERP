@@ -4,13 +4,10 @@ use App\Enums\Accounting\JournalType;
 use App\Enums\Payments\PaymentPurpose;
 use App\Enums\Payments\PaymentStatus;
 use App\Enums\Payments\PaymentType;
-use App\Enums\Purchases\VendorBillStatus;
 use App\Filament\Clusters\Accounting\Resources\Payments\PaymentResource;
-use App\Models\Invoice;
 use App\Models\Journal;
 use App\Models\Partner;
 use App\Models\Payment;
-use App\Models\VendorBill;
 use Brick\Money\Money;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\Traits\WithConfiguredCompany;
@@ -32,41 +29,32 @@ it('can render the create page', function () {
     $this->get(PaymentResource::getUrl('create'))->assertSuccessful();
 });
 
-it('can create an inbound payment linked to an invoice', function () {
+it('can create a standalone inbound payment', function () {
     /** @var \App\Models\Partner $customer */
     $customer = Partner::factory()->customer()->create([
         'company_id' => $this->company->id,
     ]);
 
-    /** @var \App\Models\Invoice $invoice */
-    $invoice = Invoice::factory()->create([
-        'company_id' => $this->company->id,
-        'customer_id' => $customer->id,
-        'currency_id' => $this->company->currency_id,
-        'status' => 'posted',
-        'invoice_number' => 'INV-001',
-        'total_amount' => Money::of(500, $this->company->currency->code),
-    ]);
-
     /** @var \App\Models\Journal $bankJournal */
     $bankJournal = Journal::factory()->for($this->company)->create(['type' => JournalType::Bank]);
 
+    /** @var \App\Models\Account $incomeAccount */
+    $incomeAccount = \App\Models\Account::factory()->create([
+        'company_id' => $this->company->id,
+        'type' => \App\Enums\Accounting\AccountType::Income->value,
+    ]);
+
     livewire(\App\Filament\Clusters\Accounting\Resources\Payments\Pages\CreatePayment::class)
         ->fillForm([
-            'company_id' => $this->company->id,
             'journal_id' => $bankJournal->id,
             'currency_id' => $this->company->currency_id,
             'payment_date' => now()->format('Y-m-d'),
             'payment_type' => PaymentType::Inbound->value,
-            'payment_purpose' => PaymentPurpose::Settlement->value,
-            'reference' => 'Test Payment',
-        ])
-        ->set('data.document_links', [
-            [
-                'document_type' => 'invoice',
-                'document_id' => $invoice->id,
-                'amount_applied' => 500,
-            ],
+            'payment_purpose' => PaymentPurpose::Loan->value,
+            'partner_id' => $customer->id,
+            'amount' => 500,
+            'counterpart_account_id' => $incomeAccount->id,
+            'reference' => 'Standalone Payment',
         ])
         ->call('create')
         ->assertHasNoFormErrors();
@@ -75,55 +63,44 @@ it('can create an inbound payment linked to an invoice', function () {
         'company_id' => $this->company->id,
         'journal_id' => $bankJournal->id,
         'currency_id' => $this->company->currency_id,
-        'reference' => 'Test Payment',
+        'reference' => 'Standalone Payment',
         'payment_type' => PaymentType::Inbound,
+        'payment_purpose' => PaymentPurpose::Loan,
         'status' => PaymentStatus::Draft,
     ]);
 
-    $payment = Payment::where('reference', 'Test Payment')->first();
+    $payment = Payment::where('reference', 'Standalone Payment')->first();
     expect($payment->amount->isEqualTo(Money::of(500, $this->company->currency->code)))->toBeTrue();
-
-    $this->assertDatabaseHas('payment_document_links', [
-        'payment_id' => $payment->id,
-        'invoice_id' => $invoice->id,
-    ]);
+    expect($payment->paid_to_from_partner_id)->toBe($customer->id);
+    expect($payment->counterpart_account_id)->toBe($incomeAccount->id);
 });
 
-it('can create an outbound payment linked to a vendor bill', function () {
+it('can create a standalone outbound payment', function () {
     /** @var \App\Models\Partner $vendor */
     $vendor = Partner::factory()->vendor()->create([
         'company_id' => $this->company->id,
     ]);
 
-    /** @var \App\Models\VendorBill $vendorBill */
-    $vendorBill = VendorBill::factory()->create([
-        'company_id' => $this->company->id,
-        'vendor_id' => $vendor->id,
-        'currency_id' => $this->company->currency_id,
-        'status' => VendorBillStatus::Posted,
-        'bill_reference' => 'BILL-001',
-        'total_amount' => Money::of(300, $this->company->currency->code),
-    ]);
-
     /** @var \App\Models\Journal $bankJournal */
     $bankJournal = Journal::factory()->for($this->company)->create(['type' => JournalType::Bank]);
 
+    /** @var \App\Models\Account $expenseAccount */
+    $expenseAccount = \App\Models\Account::factory()->create([
+        'company_id' => $this->company->id,
+        'type' => \App\Enums\Accounting\AccountType::Expense->value,
+    ]);
+
     livewire(\App\Filament\Clusters\Accounting\Resources\Payments\Pages\CreatePayment::class)
         ->fillForm([
-            'company_id' => $this->company->id,
             'journal_id' => $bankJournal->id,
             'currency_id' => $this->company->currency_id,
             'payment_date' => now()->format('Y-m-d'),
             'payment_type' => PaymentType::Outbound->value,
-            'payment_purpose' => PaymentPurpose::Settlement->value,
-            'reference' => 'Vendor Payment',
-        ])
-        ->set('data.document_links', [
-            [
-                'document_type' => 'vendor_bill',
-                'document_id' => $vendorBill->id,
-                'amount_applied' => 300,
-            ],
+            'payment_purpose' => PaymentPurpose::Loan->value,
+            'partner_id' => $vendor->id,
+            'amount' => 300,
+            'counterpart_account_id' => $expenseAccount->id,
+            'reference' => 'Standalone Vendor Payment',
         ])
         ->call('create')
         ->assertHasNoFormErrors();
@@ -132,30 +109,29 @@ it('can create an outbound payment linked to a vendor bill', function () {
         'company_id' => $this->company->id,
         'journal_id' => $bankJournal->id,
         'currency_id' => $this->company->currency_id,
-        'reference' => 'Vendor Payment',
+        'reference' => 'Standalone Vendor Payment',
         'payment_type' => PaymentType::Outbound,
+        'payment_purpose' => PaymentPurpose::Loan,
         'status' => PaymentStatus::Draft,
     ]);
 
-    $payment = Payment::where('reference', 'Vendor Payment')->first();
+    $payment = Payment::where('reference', 'Standalone Vendor Payment')->first();
     expect($payment->amount->isEqualTo(Money::of(300, $this->company->currency->code)))->toBeTrue();
-
-    $this->assertDatabaseHas('payment_document_links', [
-        'payment_id' => $payment->id,
-        'vendor_bill_id' => $vendorBill->id,
-    ]);
+    expect($payment->paid_to_from_partner_id)->toBe($vendor->id);
+    expect($payment->counterpart_account_id)->toBe($expenseAccount->id);
 });
 
 it('can validate input on create', function () {
     livewire(\App\Filament\Clusters\Accounting\Resources\Payments\Pages\CreatePayment::class)
         ->fillForm([
-            'company_id' => null,
             'journal_id' => null,
             'currency_id' => null,
             'payment_date' => null,
             'payment_type' => null,
             'payment_purpose' => null,
-            'document_links' => [],
+            'partner_id' => null,
+            'amount' => null,
+            'counterpart_account_id' => null,
         ])
         ->call('create')
         ->assertHasFormErrors([
@@ -164,6 +140,9 @@ it('can validate input on create', function () {
             'payment_date' => 'required',
             'payment_type' => 'required',
             'payment_purpose' => 'required',
+            'partner_id' => 'required',
+            'amount' => 'required',
+            'counterpart_account_id' => 'required',
         ]);
 });
 
@@ -176,50 +155,43 @@ it('can render the edit page', function () {
         ->assertSuccessful();
 });
 
-it('can edit a draft payment', function () {
+it('can edit a draft standalone payment', function () {
     /** @var \App\Models\Partner $customer */
     $customer = Partner::factory()->customer()->create([
         'company_id' => $this->company->id,
     ]);
 
-    /** @var \App\Models\Invoice $invoice */
-    $invoice = Invoice::factory()->create([
+    /** @var \App\Models\Account $incomeAccount */
+    $incomeAccount = \App\Models\Account::factory()->create([
         'company_id' => $this->company->id,
-        'customer_id' => $customer->id,
-        'currency_id' => $this->company->currency_id,
-        'status' => 'posted',
-        'invoice_number' => 'INV-002',
-        'total_amount' => Money::of(100, $this->company->currency->code),
+        'type' => \App\Enums\Accounting\AccountType::Income->value,
     ]);
 
     $payment = Payment::factory()->create([
         'company_id' => $this->company->id,
         'status' => PaymentStatus::Draft,
         'payment_type' => PaymentType::Inbound,
-        'payment_purpose' => PaymentPurpose::Settlement,
+        'payment_purpose' => PaymentPurpose::Loan,
+        'paid_to_from_partner_id' => $customer->id,
+        'counterpart_account_id' => $incomeAccount->id,
         'reference' => 'Old Reference',
         'amount' => Money::of(100, $this->company->currency->code),
         'currency_id' => $this->company->currency_id,
-    ]);
-
-    // Create a payment document link
-    $payment->paymentDocumentLinks()->create([
-        'invoice_id' => $invoice->id,
-        'amount_applied' => Money::of(100, $this->company->currency->code),
     ]);
 
     livewire(\App\Filament\Clusters\Accounting\Resources\Payments\Pages\EditPayment::class, [
         'record' => $payment->getRouteKey(),
     ])
         ->fillForm([
+            'journal_id' => $payment->journal_id,
+            'currency_id' => $payment->currency_id,
+            'payment_date' => $payment->payment_date->format('Y-m-d'),
+            'payment_type' => $payment->payment_type->value,
+            'payment_purpose' => $payment->payment_purpose->value,
+            'partner_id' => $payment->paid_to_from_partner_id,
+            'amount' => 150,
+            'counterpart_account_id' => $payment->counterpart_account_id,
             'reference' => 'New Reference',
-        ])
-        ->set('data.document_links', [
-            [
-                'document_type' => 'invoice',
-                'document_id' => $invoice->id,
-                'amount_applied' => 150,
-            ],
         ])
         ->call('save')
         ->assertHasNoFormErrors();
@@ -229,36 +201,28 @@ it('can edit a draft payment', function () {
     expect($payment->amount->isEqualTo(Money::of(150, $this->company->currency->code)))->toBeTrue();
 });
 
-it('cannot edit a confirmed payment', function () {
+it('cannot edit a confirmed standalone payment', function () {
     /** @var \App\Models\Partner $customer */
     $customer = Partner::factory()->customer()->create([
         'company_id' => $this->company->id,
     ]);
 
-    /** @var \App\Models\Invoice $invoice */
-    $invoice = Invoice::factory()->create([
+    /** @var \App\Models\Account $incomeAccount */
+    $incomeAccount = \App\Models\Account::factory()->create([
         'company_id' => $this->company->id,
-        'customer_id' => $customer->id,
-        'currency_id' => $this->company->currency_id,
-        'status' => 'posted',
-        'invoice_number' => 'INV-007',
-        'total_amount' => Money::of(100, $this->company->currency->code),
+        'type' => \App\Enums\Accounting\AccountType::Income->value,
     ]);
 
     $payment = Payment::factory()->create([
         'company_id' => $this->company->id,
         'status' => PaymentStatus::Confirmed,
         'payment_type' => PaymentType::Inbound,
-        'payment_purpose' => PaymentPurpose::Settlement,
+        'payment_purpose' => PaymentPurpose::Loan,
+        'paid_to_from_partner_id' => $customer->id,
+        'counterpart_account_id' => $incomeAccount->id,
         'reference' => 'Confirmed Payment',
         'amount' => Money::of(100, $this->company->currency->code),
         'currency_id' => $this->company->currency_id,
-    ]);
-
-    // Create a payment document link
-    $payment->paymentDocumentLinks()->create([
-        'invoice_id' => $invoice->id,
-        'amount_applied' => Money::of(100, $this->company->currency->code),
     ]);
 
     // Attempting to edit a confirmed payment should throw an exception
@@ -267,6 +231,14 @@ it('cannot edit a confirmed payment', function () {
             'record' => $payment->getRouteKey(),
         ])
             ->fillForm([
+                'journal_id' => $payment->journal_id,
+                'currency_id' => $payment->currency_id,
+                'payment_date' => $payment->payment_date->format('Y-m-d'),
+                'payment_type' => $payment->payment_type->value,
+                'payment_purpose' => $payment->payment_purpose->value,
+                'partner_id' => $payment->paid_to_from_partner_id,
+                'amount' => $payment->amount->getAmount()->toFloat(),
+                'counterpart_account_id' => $payment->counterpart_account_id,
                 'reference' => 'Should Not Change',
             ])
             ->call('save');
@@ -278,41 +250,64 @@ it('cannot edit a confirmed payment', function () {
     expect($payment->amount->isEqualTo(Money::of(100, $this->company->currency->code)))->toBeTrue();
 });
 
-it('can confirm a draft payment', function () {
+it('can confirm a draft standalone payment', function () {
     /** @var \App\Models\Partner $customer */
     $customer = Partner::factory()->customer()->create([
         'company_id' => $this->company->id,
     ]);
 
-    /** @var \App\Models\Invoice $invoice */
-    $invoice = Invoice::factory()->create([
+    /** @var \App\Models\Account $incomeAccount */
+    $incomeAccount = \App\Models\Account::factory()->create([
         'company_id' => $this->company->id,
-        'customer_id' => $customer->id,
+        'type' => \App\Enums\Accounting\AccountType::Income->value,
+    ]);
+
+    /** @var \App\Models\Account $bankAccount */
+    $bankAccount = \App\Models\Account::factory()->create([
+        'company_id' => $this->company->id,
+        'type' => \App\Enums\Accounting\AccountType::BankAndCash->value,
+    ]);
+
+    /** @var \App\Models\Journal $bankJournal */
+    $bankJournal = Journal::factory()->create([
+        'company_id' => $this->company->id,
+        'type' => JournalType::Bank,
+        'default_debit_account_id' => $bankAccount->id,
+        'default_credit_account_id' => $bankAccount->id,
         'currency_id' => $this->company->currency_id,
-        'status' => 'posted',
-        'invoice_number' => 'INV-003',
-        'total_amount' => Money::of(100, $this->company->currency->code),
     ]);
 
     $payment = Payment::factory()->create([
         'company_id' => $this->company->id,
+        'journal_id' => $bankJournal->id,
         'status' => PaymentStatus::Draft,
+        'payment_purpose' => PaymentPurpose::Loan,
+        'counterpart_account_id' => $incomeAccount->id,
         'amount' => Money::of(100, $this->company->currency->code),
         'currency_id' => $this->company->currency_id,
         'paid_to_from_partner_id' => $customer->id,
         'payment_type' => PaymentType::Inbound,
     ]);
 
-    // Create a payment document link
-    $payment->paymentDocumentLinks()->create([
-        'invoice_id' => $invoice->id,
-        'amount_applied' => Money::of(100, $this->company->currency->code),
+    $component = livewire(\App\Filament\Clusters\Accounting\Resources\Payments\Pages\EditPayment::class, [
+        'record' => $payment->getRouteKey(),
     ]);
 
-    livewire(\App\Filament\Clusters\Accounting\Resources\Payments\Pages\EditPayment::class, [
-        'record' => $payment->getRouteKey(),
-    ])
-        ->callAction('confirm');
+    // First ensure the form is properly filled
+    $component->fillForm([
+        'journal_id' => $payment->journal_id,
+        'currency_id' => $payment->currency_id,
+        'payment_date' => $payment->payment_date->format('Y-m-d'),
+        'payment_type' => $payment->payment_type->value,
+        'payment_purpose' => $payment->payment_purpose->value,
+        'partner_id' => $payment->paid_to_from_partner_id,
+        'amount' => $payment->amount->getAmount()->toFloat(),
+        'counterpart_account_id' => $payment->counterpart_account_id,
+        'reference' => $payment->reference,
+    ]);
+
+    // Then call the confirm action
+    $component->callAction('confirm');
 
     expect($payment->fresh()->status)->toBe(PaymentStatus::Confirmed);
 });
@@ -374,63 +369,6 @@ it('cannot delete a confirmed payment', function () {
         ->assertActionHidden('delete');
 });
 
-it('calculates total amount from multiple document links', function () {
-    /** @var \App\Models\Partner $customer */
-    $customer = Partner::factory()->customer()->create([
-        'company_id' => $this->company->id,
-    ]);
-
-    /** @var \App\Models\Invoice $invoice1 */
-    $invoice1 = Invoice::factory()->create([
-        'company_id' => $this->company->id,
-        'customer_id' => $customer->id,
-        'currency_id' => $this->company->currency_id,
-        'status' => 'posted',
-        'invoice_number' => 'INV-005',
-        'total_amount' => Money::of(300, $this->company->currency->code),
-    ]);
-
-    /** @var \App\Models\Invoice $invoice2 */
-    $invoice2 = Invoice::factory()->create([
-        'company_id' => $this->company->id,
-        'customer_id' => $customer->id,
-        'currency_id' => $this->company->currency_id,
-        'status' => 'posted',
-        'invoice_number' => 'INV-006',
-        'total_amount' => Money::of(200, $this->company->currency->code),
-    ]);
-
-    /** @var \App\Models\Journal $bankJournal */
-    $bankJournal = Journal::factory()->for($this->company)->create(['type' => JournalType::Bank]);
-
-    livewire(\App\Filament\Clusters\Accounting\Resources\Payments\Pages\CreatePayment::class)
-        ->fillForm([
-            'company_id' => $this->company->id,
-            'journal_id' => $bankJournal->id,
-            'currency_id' => $this->company->currency_id,
-            'payment_date' => now()->format('Y-m-d'),
-            'payment_type' => PaymentType::Inbound->value,
-            'payment_purpose' => PaymentPurpose::Settlement->value,
-            'reference' => 'Multi Invoice Payment',
-        ])
-        ->set('data.document_links', [
-            [
-                'document_type' => 'invoice',
-                'document_id' => $invoice1->id,
-                'amount_applied' => 300,
-            ],
-            [
-                'document_type' => 'invoice',
-                'document_id' => $invoice2->id,
-                'amount_applied' => 150,
-            ],
-        ])
-        ->call('create')
-        ->assertHasNoFormErrors();
-
-    $payment = Payment::where('reference', 'Multi Invoice Payment')->first();
-    expect($payment->amount->isEqualTo(Money::of(450, $this->company->currency->code)))->toBeTrue();
-});
 
 it('can display journal entries relation manager', function () {
     /** @var \App\Models\Partner $customer */

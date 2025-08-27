@@ -3,7 +3,6 @@
 namespace App\Filament\Clusters\Accounting\Resources\Payments\Pages;
 
 use App\Actions\Payments\UpdatePaymentAction;
-use App\DataTransferObjects\Payments\UpdatePaymentDocumentLinkDTO;
 use App\DataTransferObjects\Payments\UpdatePaymentDTO;
 use App\Enums\Payments\PaymentPurpose;
 use App\Enums\Payments\PaymentStatus;
@@ -72,41 +71,9 @@ class EditPayment extends EditRecord
         ];
     }
 
-    /**
-     * This method loads the existing linked documents from the relationship
-     * and formats them into an array that the 'document_links' Repeater can understand.
-     */
-    // In app/Filament/Resources/PaymentResource/Pages/EditPayment.php
-
     protected function mutateFormDataBeforeFill(array $data): array
     {
-        // ... (The existing logic for loading 'document_links' is correct)
-        $this->record->loadMissing('paymentDocumentLinks');
-
-        $linksData = [];
-        foreach ($this->record->paymentDocumentLinks as $link) {
-            $documentType = null;
-            $documentId = null;
-
-            if ($link->invoice_id) {
-                $documentType = 'invoice';
-                $documentId = $link->invoice_id;
-            } elseif ($link->vendor_bill_id) {
-                $documentType = 'vendor_bill';
-                $documentId = $link->vendor_bill_id;
-            }
-
-            if ($documentType) {
-                $linksData[] = [
-                    'document_type' => $documentType,
-                    'document_id' => $documentId,
-                    'amount_applied' => $link->amount_applied?->getAmount()->toFloat(),
-                ];
-            }
-        }
-        $data['document_links'] = $linksData;
-
-        // THE FIX: Manually set the 'amount' field from the record's Money object.
+        // Set the 'amount' field from the record's Money object for standalone payments
         $data['amount'] = $this->record->amount?->getAmount()->toFloat();
 
         return $data;
@@ -115,34 +82,9 @@ class EditPayment extends EditRecord
     protected function handleRecordUpdate(Model $record, array $data): Model
     {
         $currency = Currency::find($data['currency_id']);
-        $linkDTOs = [];
 
-        // If document_links is not in the data (e.g., for confirmed payments where it's disabled),
-        // use the existing links from the record
-        $documentLinks = $data['document_links'] ?? [];
-        if (empty($documentLinks) && $record->paymentDocumentLinks->isNotEmpty()) {
-            foreach ($record->paymentDocumentLinks as $link) {
-                $documentLinks[] = [
-                    'document_type' => $link->invoice_id ? 'invoice' : 'vendor_bill',
-                    'document_id' => $link->invoice_id ?: $link->vendor_bill_id,
-                    'amount_applied' => $link->amount_applied->getAmount()->toFloat(),
-                ];
-            }
-        }
-
-        foreach ($documentLinks as $link) {
-            $linkDTOs[] = new UpdatePaymentDocumentLinkDTO(
-                document_type: $link['document_type'],
-                document_id: $link['document_id'],
-                amount_applied: Money::of($link['amount_applied'], $currency->code)
-            );
-        }
-
-        // Prepare amount for direct payments
-        $amount = null;
-        if (isset($data['amount'])) {
-            $amount = Money::of($data['amount'], $currency->code);
-        }
+        // Prepare amount for standalone payments
+        $amount = Money::of($data['amount'], $currency->code);
 
         $paymentDTO = new UpdatePaymentDTO(
             payment: $record,
@@ -152,10 +94,10 @@ class EditPayment extends EditRecord
             payment_date: $data['payment_date'],
             payment_purpose: PaymentPurpose::from($data['payment_purpose']),
             payment_type: PaymentType::from($data['payment_type']),
-            partner_id: $data['partner_id'] ?? null,
+            partner_id: $data['partner_id'],
             amount: $amount,
-            counterpart_account_id: $data['counterpart_account_id'] ?? null,
-            document_links: $linkDTOs,
+            counterpart_account_id: $data['counterpart_account_id'],
+            document_links: [], // No document links for standalone payments
             reference: $data['reference'],
             updated_by_user_id: Auth::id()
         );

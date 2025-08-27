@@ -2,20 +2,30 @@
 
 namespace App\Filament\Clusters\Accounting\Resources\Invoices\Pages;
 
+use App\Actions\Payments\CreatePaymentAction;
 use App\Actions\Sales\UpdateInvoiceAction;
+use App\DataTransferObjects\Payments\CreatePaymentDTO;
+use App\DataTransferObjects\Payments\CreatePaymentDocumentLinkDTO;
 use App\DataTransferObjects\Sales\UpdateInvoiceDTO;
 use App\DataTransferObjects\Sales\UpdateInvoiceLineDTO;
+use App\Enums\Payments\PaymentPurpose;
+use App\Enums\Payments\PaymentType;
 use App\Enums\Sales\InvoiceStatus;
 use App\Filament\Clusters\Accounting\Resources\Invoices\InvoiceResource;
 use App\Filament\Clusters\Accounting\Resources\Invoices\Widgets\SettlementSummaryWidget;
-use App\Filament\Clusters\Accounting\Resources\Payments\PaymentResource;
 use App\Models\Invoice;
+use App\Models\Journal;
 use App\Services\InvoiceService;
 use Brick\Money\Money;
 use Exception;
 use Filament\Actions\Action;
 use Filament\Actions\ActionGroup;
 use Filament\Actions\DeleteAction;
+use App\Filament\Forms\Components\MoneyInput;
+use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\Hidden;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
 use Illuminate\Database\Eloquent\Model;
@@ -64,16 +74,86 @@ class EditInvoice extends EditRecord
                     }
                 }),
 
-            Action::make('registerPayment')
-                ->label(__('invoice.register_payment'))
-                ->color('info')
-                ->visible(fn (Invoice $record): bool => $record->status === InvoiceStatus::Posted)
-                ->action(fn (Invoice $record) => redirect()->to(PaymentResource::getUrl('create', [
-                    'invoice_id' => $record->id,
-                    'amount' => $record->total_amount->getAmount()->toFloat(),
-                    'partner_id' => $record->customer_id,
-                    'currency_id' => $record->currency_id,
-                ]))),
+            Action::make('register_payment')
+                ->label(__('Register Payment'))
+                ->icon('heroicon-o-banknotes')
+                ->color('warning')
+                ->modalHeading(__('Register Payment'))
+                ->modalDescription(__('Register a payment for this invoice'))
+                ->form([
+                    Select::make('journal_id')
+                        ->label(__('payment.form.journal_id'))
+                        ->options(function () {
+                            return Journal::where('company_id', \Filament\Facades\Filament::getTenant()->id)
+                                ->pluck('name', 'id');
+                        })
+                        ->required()
+                        ->default(function () {
+                            return Journal::where('company_id', \Filament\Facades\Filament::getTenant()->id)
+                                ->where('type', 'bank')
+                                ->first()?->id;
+                        }),
+                    DatePicker::make('payment_date')
+                        ->label(__('payment.form.payment_date'))
+                        ->default(now())
+                        ->required(),
+                    MoneyInput::make('amount')
+                        ->label(__('payment.form.amount'))
+                        ->currencyField('currency_id')
+                        ->default(fn(Invoice $record) => $record->getRemainingAmount())
+                        ->required(),
+                    TextInput::make('reference')
+                        ->label(__('payment.form.reference'))
+                        ->placeholder(__('Optional reference')),
+                    Hidden::make('currency_id')
+                        ->default(fn(Invoice $record) => $record->currency_id),
+                ])
+                ->action(function (Invoice $record, array $data) {
+                    try {
+                        $currency = $record->currency;
+
+                        // Create payment document link DTO
+                        $documentLink = new CreatePaymentDocumentLinkDTO(
+                            document_type: 'invoice',
+                            document_id: $record->id,
+                            amount_applied: Money::of($data['amount'], $currency->code)
+                        );
+
+                        // Create payment DTO
+                        $paymentDTO = new CreatePaymentDTO(
+                            company_id: \Filament\Facades\Filament::getTenant()->id,
+                            journal_id: $data['journal_id'],
+                            currency_id: $record->currency_id,
+                            payment_date: $data['payment_date'],
+                            payment_purpose: PaymentPurpose::Settlement,
+                            payment_type: PaymentType::Inbound,
+                            partner_id: $record->customer_id,
+                            amount: Money::of($data['amount'], $currency->code),
+                            counterpart_account_id: null,
+                            document_links: [$documentLink],
+                            reference: $data['reference']
+                        );
+
+                        // Create and confirm payment
+                        $payment = app(CreatePaymentAction::class)->execute($paymentDTO, Auth::user());
+                        app(\App\Services\PaymentService::class)->confirm($payment, Auth::user());
+
+                        Notification::make()
+                            ->title(__('Payment registered successfully'))
+                            ->success()
+                            ->send();
+                    } catch (\Exception $e) {
+                        Notification::make()
+                            ->title(__('Error registering payment'))
+                            ->body($e->getMessage())
+                            ->danger()
+                            ->send();
+                    }
+                })
+                ->visible(fn(Invoice $record) =>
+                    $record->status === InvoiceStatus::Posted &&
+                    !$record->getRemainingAmount()->isZero()
+                ),
 
             // Actions\Action::make('resetToDraft')
             //     ->label(__('invoice.reset_to_draft'))
