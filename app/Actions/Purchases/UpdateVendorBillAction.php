@@ -70,6 +70,7 @@ class UpdateVendorBillAction
                     'expense_account_id' => $line->expense_account_id,
                     'tax_id' => $line->tax_id,
                     'analytic_account_id' => $line->analytic_account_id,
+                    'asset_category_id' => $line->asset_category_id ?? null,
                 ]);
             }
 

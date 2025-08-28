@@ -2,16 +2,17 @@
 
 namespace App\Actions\Accounting;
 
+use App\DataTransferObjects\Accounting\CreateJournalEntryDTO;
+use App\DataTransferObjects\Accounting\CreateJournalEntryLineDTO;
+use App\Enums\Products\ProductType;
 use App\Models\JournalEntry;
 use App\Models\User;
 use App\Models\VendorBill;
-use App\DataTransferObjects\Accounting\CreateJournalEntryDTO;
-use App\DataTransferObjects\Accounting\CreateJournalEntryLineDTO;
 use Brick\Money\Money;
 use Illuminate\Support\Facades\DB;
 use RuntimeException;
 
-class CreateJournalEntryForExpenseBillAction
+class CreateJournalEntryForVendorBillAction
 {
     public function __construct(private readonly CreateJournalEntryAction $createJournalEntryAction)
     {
@@ -20,31 +21,43 @@ class CreateJournalEntryForExpenseBillAction
     public function execute(VendorBill $vendorBill, User $user): JournalEntry
     {
         return DB::transaction(function () use ($vendorBill, $user) {
-            $vendorBill->load('company', 'currency', 'lines.tax', 'vendor');
+            $vendorBill->load('company', 'currency', 'vendor', 'lines.product.inventoryAccount');
 
             $company = $vendorBill->company;
             $currency = $vendorBill->currency;
-
-            // Use vendor's individual payable account if available, otherwise fall back to default
             $apAccountId = $vendorBill->vendor->payable_account_id ?? $company->default_accounts_payable_id;
-
             if (!$apAccountId) {
                 throw new RuntimeException('Default Accounts Payable account is not configured for this company.');
             }
 
-            $expenseLines = $vendorBill->lines->where('product.type', '!=', 'storable');
-
             $lineDTOs = [];
-            $totalDebit = Money::of(0, $currency->code);
+            $totalAP = Money::of(0, $currency->code);
 
-            foreach ($expenseLines as $line) {
-                // If an asset category is provided, treat as asset acquisition
-                if ($line->asset_category_id) {
+            foreach ($vendorBill->lines as $line) {
+                $isStorable = $line->product?->type === ProductType::Storable;
+                $isAsset = (bool) $line->asset_category_id;
+
+                if ($isStorable) {
+                    $inventoryAccount = $line->product->inventoryAccount;
+                    if (!$inventoryAccount) {
+                        throw new RuntimeException("Product ID {$line->product_id} missing inventory account");
+                    }
+                    // Dr Inventory (subtotal)
+                    $lineDTOs[] = new CreateJournalEntryLineDTO(
+                        account_id: $inventoryAccount->id,
+                        debit: $line->subtotal,
+                        credit: Money::of(0, $currency->code),
+                        description: "Inventory: {$line->description}",
+                        partner_id: null,
+                        analytic_account_id: null,
+                    );
+                    $totalAP = $totalAP->plus($line->subtotal);
+                } elseif ($isAsset) {
                     $category = \App\Models\AssetCategory::find($line->asset_category_id);
                     if (!$category) {
-                        throw new RuntimeException('Invalid asset category selected on bill line.');
+                        throw new RuntimeException('Invalid asset category on bill line.');
                     }
-                    // Dr Asset (subtotal), Dr Input Tax, Cr AP
+                    // Dr Asset (subtotal)
                     $lineDTOs[] = new CreateJournalEntryLineDTO(
                         account_id: $category->asset_account_id,
                         debit: $line->subtotal,
@@ -53,22 +66,9 @@ class CreateJournalEntryForExpenseBillAction
                         partner_id: null,
                         analytic_account_id: null,
                     );
-                    $totalDebit = $totalDebit->plus($line->subtotal);
-
-                    if ($line->tax_id && $line->total_line_tax->isPositive()) {
-                        $taxAccountId = $company->default_tax_receivable_id ?? $company->default_tax_account_id;
-                        $lineDTOs[] = new CreateJournalEntryLineDTO(
-                            account_id: $taxAccountId,
-                            debit: $line->total_line_tax,
-                            credit: Money::of(0, $currency->code),
-                            description: 'Input tax for asset: ' . $line->description,
-                            partner_id: null,
-                            analytic_account_id: null,
-                        );
-                        $totalDebit = $totalDebit->plus($line->total_line_tax);
-                    }
+                    $totalAP = $totalAP->plus($line->subtotal);
                 } else {
-                    // Standard expense
+                    // Expense line: Dr expense
                     $lineDTOs[] = new CreateJournalEntryLineDTO(
                         account_id: $line->expense_account_id,
                         debit: $line->subtotal,
@@ -77,31 +77,34 @@ class CreateJournalEntryForExpenseBillAction
                         partner_id: null,
                         analytic_account_id: null,
                     );
-                    $totalDebit = $totalDebit->plus($line->subtotal);
+                    $totalAP = $totalAP->plus($line->subtotal);
+                }
 
-                    // Handle tax if applicable
-                    if ($line->tax_id && $line->total_line_tax->isPositive()) {
-                        $taxAccountId = $company->default_tax_receivable_id ?? $company->default_tax_account_id; // Or a more specific tax account if needed
-                        $lineDTOs[] = new CreateJournalEntryLineDTO(
-                            account_id: $taxAccountId,
-                            debit: $line->total_line_tax,
-                            credit: Money::of(0, $currency->code),
-                            description: "Tax for: {$line->description}",
-                            partner_id: null,
-                            analytic_account_id: null,
-                        );
-                        $totalDebit = $totalDebit->plus($line->total_line_tax);
+                // Taxes (deductible): debit input tax, include in AP
+                if ($line->tax_id && $line->total_line_tax->isPositive()) {
+                    $taxAccountId = $company->default_tax_receivable_id ?? $company->default_tax_account_id;
+                    if (!$taxAccountId) {
+                        throw new RuntimeException('Default input tax account not configured for company.');
                     }
+                    $lineDTOs[] = new CreateJournalEntryLineDTO(
+                        account_id: $taxAccountId,
+                        debit: $line->total_line_tax,
+                        credit: Money::of(0, $currency->code),
+                        description: 'Input tax: ' . $line->description,
+                        partner_id: null,
+                        analytic_account_id: null,
+                    );
+                    $totalAP = $totalAP->plus($line->total_line_tax);
                 }
             }
 
-            // Credit Accounts Payable for the total amount
+            // Credit AP once
             $lineDTOs[] = new CreateJournalEntryLineDTO(
                 account_id: $apAccountId,
                 debit: Money::of(0, $currency->code),
-                credit: $totalDebit,
+                credit: $totalAP,
                 description: 'Accounts Payable',
-                partner_id: $vendorBill->partner_id,
+                partner_id: $vendorBill->vendor_id,
                 analytic_account_id: null,
             );
 
@@ -123,3 +126,4 @@ class CreateJournalEntryForExpenseBillAction
         });
     }
 }
+

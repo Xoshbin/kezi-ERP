@@ -58,6 +58,69 @@ class EditInvoice extends EditRecord
                 ->color('gray')
                 ->button(),
 
+            Action::make('preview_posting')
+                ->label(__('Preview Posting'))
+                ->icon('heroicon-o-eye')
+                ->color('info')
+                ->visible(fn (Invoice $record): bool => $record->status === InvoiceStatus::Draft)
+                ->requiresConfirmation()
+                ->modalHeading(__('Posting Preview'))
+                ->modalSubmitAction(false)
+                ->modalCancelActionLabel(__('Close'))
+                ->modalWidth('7xl')
+                ->modalContent(function (Invoice $record) {
+                    $preview = app(\App\Actions\Accounting\BuildInvoicePostingPreviewAction::class)->execute($record);
+                    return view('filament/accounting/invoices/preview-posting', [
+                        'preview' => $preview,
+                        'invoice' => $record,
+                    ]);
+                }),
+
+            Action::make('export_preview_csv')
+                ->label(__('Export Preview (CSV)'))
+                ->icon('heroicon-o-arrow-down-tray')
+                ->color('gray')
+                ->visible(fn (Invoice $record): bool => $record->status === InvoiceStatus::Draft && config('app.debug') && ! app()->environment('production'))
+                ->action(function (Invoice $record) {
+                    $preview = app(\App\Actions\Accounting\BuildInvoicePostingPreviewAction::class)->execute($record);
+                    $rows = [];
+                    $rows[] = ['Account Code', 'Account Name', 'Description', 'Debit', 'Credit'];
+                    foreach ($preview['lines'] as $l) {
+                        $rows[] = [
+                            is_array($l['account_code'] ?? null) ? (string) (reset($l['account_code']) ?: '') : (string) ($l['account_code'] ?? ''),
+                            is_array($l['account_name'] ?? null) ? (string) (reset($l['account_name']) ?: '') : (string) ($l['account_name'] ?? ''),
+                            is_array($l['description'] ?? null) ? (string) (reset($l['description']) ?: '') : (string) ($l['description'] ?? ''),
+                            number_format(($l['debit_minor'] ?? 0) / 100, 2, '.', ''),
+                            number_format(($l['credit_minor'] ?? 0) / 100, 2, '.', ''),
+                        ];
+                    }
+                    $csv = '';
+                    foreach ($rows as $row) {
+                        $csv .= implode(',', array_map(fn($v) => '"' . str_replace('"', '""', (string) $v) . '"', $row)) . "\n";
+                    }
+                    $filename = 'invoice-' . ($record->invoice_number ?: ('DRAFT-' . str_pad($record->id, 5, '0', STR_PAD_LEFT))) . '-preview.csv';
+                    return response()->streamDownload(function () use ($csv) { echo $csv; }, $filename, [
+                        'Content-Type' => 'text/csv',
+                    ]);
+                }),
+
+            Action::make('export_preview_pdf')
+                ->label(__('Export Preview (PDF)'))
+                ->icon('heroicon-o-document-arrow-down')
+                ->color('gray')
+                ->visible(fn (Invoice $record): bool => $record->status === InvoiceStatus::Draft && config('app.debug') && ! app()->environment('production'))
+                ->action(function (Invoice $record) {
+                    $preview = app(\App\Actions\Accounting\BuildInvoicePostingPreviewAction::class)->execute($record);
+                    $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('filament/accounting/invoices/preview-posting-pdf', [
+                        'preview' => $preview,
+                        'invoice' => $record,
+                    ]);
+                    $filename = 'invoice-' . ($record->invoice_number ?: ('DRAFT-' . str_pad($record->id, 5, '0', STR_PAD_LEFT))) . '-preview.pdf';
+                    return response()->streamDownload(function () use ($pdf) { echo $pdf->output(); }, $filename, [
+                        'Content-Type' => 'application/pdf',
+                    ]);
+                }),
+
             Action::make('confirm')
                 ->label(__('invoice.confirm_invoice'))
                 ->color('success')

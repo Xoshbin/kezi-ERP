@@ -102,7 +102,7 @@ it('correctly processes an incoming storable product using AVCO, creating a stoc
 
     $this->assertDatabaseHas('journal_entry_lines', [
         'journal_entry_id' => $journalEntry->id,
-        'account_id' => $this->stockInputAccount->id,
+        'account_id' => $this->company->default_accounts_payable_id,
         'debit' => 0,
         'credit' => $totalValue->getMinorAmount()->toInt(),
     ]);
