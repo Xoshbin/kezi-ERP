@@ -1,0 +1,99 @@
+<?php
+
+namespace App\Actions\Accounting;
+
+use App\Models\AdjustmentDocument;
+use Brick\Money\Money;
+
+class BuildAdjustmentPostingPreviewAction
+{
+    private function accountLabelName($account): string
+    {
+        if (!$account) return '';
+        $name = is_array($account->name ?? null) ? ($account->name['en'] ?? reset($account->name)) : ($account->name ?? '');
+        return $name;
+    }
+
+    public function execute(AdjustmentDocument $adjustment): array
+    {
+        $adjustment->load('company', 'currency');
+
+        $issues = [];
+        $errors = [];
+        $company = $adjustment->company;
+        $currencyCode = $adjustment->currency->code;
+
+        $arAccountId = $company->default_accounts_receivable_id;
+        $salesDiscountId = $company->default_sales_discount_account_id;
+        $taxAccountId = $company->default_tax_account_id;
+        $salesJournalId = $company->default_sales_journal_id;
+
+        foreach ([
+            ['cond' => !$arAccountId, 'type' => 'ar_account_missing', 'msg' => 'Company default Accounts Receivable account is not configured.'],
+            ['cond' => !$salesDiscountId, 'type' => 'sales_discount_missing', 'msg' => 'Company default Sales Discount account is not configured.'],
+            ['cond' => !$taxAccountId, 'type' => 'tax_payable_missing', 'msg' => 'Company default Tax Payable account is not configured.'],
+            ['cond' => !$salesJournalId, 'type' => 'sales_journal_missing', 'msg' => 'Company default sales journal is not configured.'],
+        ] as $check) {
+            if ($check['cond']) { $errors[] = $check['msg']; $issues[] = ['type' => $check['type'], 'message' => $check['msg']]; }
+        }
+
+        $linesPreview = [];
+        $debit = Money::of(0, $currencyCode);
+        $credit = Money::of(0, $currencyCode);
+
+        $totalAmount = $adjustment->total_amount ?? Money::of(0, $currencyCode);
+        $totalTax = $adjustment->total_tax ?? Money::of(0, $currencyCode);
+        $subtotal = $totalAmount->minus($totalTax);
+
+        if ($salesDiscountId) {
+            $salesDiscount = $company->defaultSalesDiscountAccount;
+            $linesPreview[] = [
+                'account_id' => $salesDiscountId,
+                'account_name' => $this->accountLabelName($salesDiscount),
+                'account_code' => $salesDiscount?->code,
+                'debit_minor' => $subtotal->getMinorAmount()->toInt(),
+                'credit_minor' => 0,
+                'description' => 'Sales Discount/Contra-Revenue',
+            ];
+            $debit = $debit->plus($subtotal);
+        }
+
+        if ($totalTax->isPositive() && $taxAccountId) {
+            $taxAccount = $company->taxAccount;
+            $linesPreview[] = [
+                'account_id' => $taxAccountId,
+                'account_name' => $this->accountLabelName($taxAccount),
+                'account_code' => $taxAccount?->code,
+                'debit_minor' => $totalTax->getMinorAmount()->toInt(),
+                'credit_minor' => 0,
+                'description' => 'Tax Payable',
+            ];
+            $debit = $debit->plus($totalTax);
+        }
+
+        if ($arAccountId) {
+            $ar = $company->accountsReceivableAccount;
+            $linesPreview[] = [
+                'account_id' => $arAccountId,
+                'account_name' => $this->accountLabelName($ar),
+                'account_code' => $ar?->code,
+                'debit_minor' => 0,
+                'credit_minor' => $totalAmount->getMinorAmount()->toInt(),
+                'description' => 'Accounts Receivable',
+            ];
+            $credit = $totalAmount;
+        }
+
+        return [
+            'errors' => $errors,
+            'issues' => $issues,
+            'lines' => $linesPreview,
+            'totals' => [
+                'debit_minor' => $debit->getMinorAmount()->toInt(),
+                'credit_minor' => $credit->getMinorAmount()->toInt(),
+                'balanced' => $debit->isEqualTo($credit),
+            ],
+        ];
+    }
+}
+

@@ -367,7 +367,50 @@ class VendorBillResource extends Resource
                                 ->createOptionAction(function (\Filament\Actions\Action $action) {
                                     return $action
                                         ->modalWidth('lg');
-                                })
+                                }),
+                            TranslatableSelect::standard(
+                                'asset_category_id',
+                                \App\Models\AssetCategory::class,
+                                ['name'],
+                                __('asset.category')
+                            )
+                                ->visible(fn($get) => $get('product_id') === null) // for service/asset purchases without product
+                                ->helperText(__('asset.category_helper'))
+                                ->createOptionForm([
+                                    Select::make('company_id')
+                                        ->relationship('company', 'name')
+                                        ->label(__('asset.company'))
+                                        ->required(),
+                                    TextInput::make('name')
+                                        ->label(__('asset.category_name'))
+                                        ->required(),
+                                    Select::make('asset_account_id')
+                                        ->relationship('assetAccount', 'name')
+                                        ->label(__('asset.asset_account'))
+                                        ->required(),
+                                    Select::make('accumulated_depreciation_account_id')
+                                        ->relationship('accumulatedDepreciationAccount', 'name')
+                                        ->label(__('asset.accumulated_depreciation_account'))
+                                        ->required(),
+                                    Select::make('depreciation_expense_account_id')
+                                        ->relationship('depreciationExpenseAccount', 'name')
+                                        ->label(__('asset.depreciation_expense_account'))
+                                        ->required(),
+                                    Select::make('depreciation_method')
+                                        ->options(collect(\App\Enums\Assets\DepreciationMethod::cases())->mapWithKeys(fn($m) => [$m->value => $m->label()]))
+                                        ->label(__('asset.depreciation_method'))
+                                        ->required(),
+                                    TextInput::make('useful_life_years')
+                                        ->numeric()
+                                        ->label(__('asset.useful_life_years'))
+                                        ->required(),
+                                    TextInput::make('salvage_value_default')
+                                        ->numeric()
+                                        ->label(__('asset.salvage_value_default'))
+                                        ->default(0),
+                                ])
+                                ->createOptionModalHeading(__('asset.create_category'))
+                                ->createOptionAction(fn(\Filament\Actions\Action $action) => $action->modalWidth('lg'))
                                 ->columnSpan(2),
                             TranslatableSelect::standard(
                                 'analytic_account_id',

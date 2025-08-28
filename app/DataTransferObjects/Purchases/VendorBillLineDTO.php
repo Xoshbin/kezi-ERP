@@ -14,6 +14,7 @@ readonly class VendorBillLineDTO
         public ?int $tax_id,
         public int $expense_account_id,
         public ?int $analytic_account_id,
+        public ?int $asset_category_id = null,
     ) {
     }
 }
