@@ -34,6 +34,7 @@ return new class extends Migration
             $table->foreignId('default_stock_location_id')->nullable();
             $table->foreignId('default_vendor_location_id')->nullable();
             $table->foreignId('inventory_adjustment_account_id')->nullable()->constrained('accounts');
+            $table->json('numbering_settings')->nullable();
             // PDF Template Settings
             $table->string('pdf_template', 50)->default('classic');
             $table->string('pdf_logo_path')->nullable();
