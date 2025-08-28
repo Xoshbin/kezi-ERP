@@ -19,6 +19,15 @@ return new class extends Migration
             $table->foreign('default_depreciation_journal_id')->references('id')->on('journals')->nullOnDelete();
             $table->foreign('default_stock_location_id')->references('id')->on('stock_locations');
             $table->foreign('default_vendor_location_id')->references('id')->on('stock_locations');
+
+            // HR-related default accounts
+            $table->foreignId('default_salary_payable_account_id')->nullable()->constrained('accounts')->nullOnDelete();
+            $table->foreignId('default_salary_expense_account_id')->nullable()->constrained('accounts')->nullOnDelete();
+            $table->foreignId('default_payroll_journal_id')->nullable()->constrained('journals')->nullOnDelete();
+            $table->foreignId('default_income_tax_payable_account_id')->nullable()->constrained('accounts')->nullOnDelete();
+            $table->foreignId('default_social_security_payable_account_id')->nullable()->constrained('accounts')->nullOnDelete();
+            $table->foreignId('default_health_insurance_payable_account_id')->nullable()->constrained('accounts')->nullOnDelete();
+            $table->foreignId('default_pension_payable_account_id')->nullable()->constrained('accounts')->nullOnDelete();
         });
 
         // Add foreign keys for other tables that reference companies
@@ -37,6 +46,10 @@ return new class extends Migration
                   ->after('original_currency_amount')
                   ->constrained('currencies')
                   ->comment('Currency of the original transaction amount');
+        });
+
+        Schema::table('vendor_bill_lines', function (Blueprint $table) {
+            $table->foreignId('asset_category_id')->nullable()->after('expense_account_id')->constrained('asset_categories')->nullOnDelete();
         });
     }
 
@@ -81,6 +94,29 @@ return new class extends Migration
             $table->dropForeign(['default_depreciation_journal_id']);
             $table->dropForeign(['default_stock_location_id']);
             $table->dropForeign(['default_vendor_location_id']);
+
+            $table->dropForeign(['default_salary_payable_account_id']);
+            $table->dropForeign(['default_salary_expense_account_id']);
+            $table->dropForeign(['default_payroll_journal_id']);
+            $table->dropForeign(['default_income_tax_payable_account_id']);
+            $table->dropForeign(['default_social_security_payable_account_id']);
+            $table->dropForeign(['default_health_insurance_payable_account_id']);
+            $table->dropForeign(['default_pension_payable_account_id']);
+
+            $table->dropColumn([
+                'default_salary_payable_account_id',
+                'default_salary_expense_account_id',
+                'default_payroll_journal_id',
+                'default_income_tax_payable_account_id',
+                'default_social_security_payable_account_id',
+                'default_health_insurance_payable_account_id',
+                'default_pension_payable_account_id',
+            ]);
+        });
+
+        Schema::table('vendor_bill_lines', function (Blueprint $table) {
+            $table->dropForeign(['asset_category_id']);
+            $table->dropColumn('asset_category_id');
         });
     }
 };
