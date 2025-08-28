@@ -17,5 +17,8 @@
         "postcss-nesting": "^13.0.2",
         "tailwindcss": "^4.1.12",
         "vite": "^6.2.4"
+    },
+    "dependencies": {
+        "playwright": "^1.55.0"
     }
 }
