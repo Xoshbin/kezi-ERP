@@ -63,7 +63,7 @@ class EditVendorBill extends EditRecord
                 ->label(__('Export Preview (CSV)'))
                 ->icon('heroicon-o-arrow-down-tray')
                 ->color('gray')
-                ->visible(fn (VendorBill $record): bool => $record->status === VendorBillStatus::Draft)
+                ->visible(fn (VendorBill $record): bool => $record->status === VendorBillStatus::Draft && config('app.debug') && ! app()->environment('production'))
                 ->action(function (VendorBill $record) {
                     $preview = app(\App\Actions\Accounting\BuildVendorBillPostingPreviewAction::class)->execute($record);
                     $rows = [];
@@ -90,7 +90,7 @@ class EditVendorBill extends EditRecord
                 ->label(__('Export Preview (PDF)'))
                 ->icon('heroicon-o-document-arrow-down')
                 ->color('gray')
-                ->visible(fn (VendorBill $record): bool => $record->status === VendorBillStatus::Draft)
+                ->visible(fn (VendorBill $record): bool => $record->status === VendorBillStatus::Draft && config('app.debug') && ! app()->environment('production'))
                 ->action(function (VendorBill $record) {
                     $preview = app(\App\Actions\Accounting\BuildVendorBillPostingPreviewAction::class)->execute($record);
                     $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('filament/accounting/vendor-bills/preview-posting-pdf', [
