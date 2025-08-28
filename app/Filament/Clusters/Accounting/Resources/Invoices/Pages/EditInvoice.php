@@ -80,7 +80,7 @@ class EditInvoice extends EditRecord
                 ->label(__('Export Preview (CSV)'))
                 ->icon('heroicon-o-arrow-down-tray')
                 ->color('gray')
-                ->visible(fn (Invoice $record): bool => $record->status === InvoiceStatus::Draft)
+                ->visible(fn (Invoice $record): bool => $record->status === InvoiceStatus::Draft && config('app.debug') && ! app()->environment('production'))
                 ->action(function (Invoice $record) {
                     $preview = app(\App\Actions\Accounting\BuildInvoicePostingPreviewAction::class)->execute($record);
                     $rows = [];
@@ -108,7 +108,7 @@ class EditInvoice extends EditRecord
                 ->label(__('Export Preview (PDF)'))
                 ->icon('heroicon-o-document-arrow-down')
                 ->color('gray')
-                ->visible(fn (Invoice $record): bool => $record->status === InvoiceStatus::Draft)
+                ->visible(fn (Invoice $record): bool => $record->status === InvoiceStatus::Draft && config('app.debug') && ! app()->environment('production'))
                 ->action(function (Invoice $record) {
                     $preview = app(\App\Actions\Accounting\BuildInvoicePostingPreviewAction::class)->execute($record);
                     $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('filament/accounting/invoices/preview-posting-pdf', [

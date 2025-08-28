@@ -55,7 +55,7 @@ class EditAdjustmentDocument extends EditRecord
                 ->label(__('Export Preview (CSV)'))
                 ->icon('heroicon-o-arrow-down-tray')
                 ->color('gray')
-                ->visible(fn (AdjustmentDocument $record): bool => $record->status === AdjustmentDocumentStatus::Draft)
+                ->visible(fn (AdjustmentDocument $record): bool => $record->status === AdjustmentDocumentStatus::Draft && config('app.debug') && ! app()->environment('production'))
                 ->action(function (AdjustmentDocument $record) {
                     $preview = app(\App\Actions\Accounting\BuildAdjustmentPostingPreviewAction::class)->execute($record);
                     $rows = [];
@@ -82,7 +82,7 @@ class EditAdjustmentDocument extends EditRecord
                 ->label(__('Export Preview (PDF)'))
                 ->icon('heroicon-o-document-arrow-down')
                 ->color('gray')
-                ->visible(fn (AdjustmentDocument $record): bool => $record->status === AdjustmentDocumentStatus::Draft)
+                ->visible(fn (AdjustmentDocument $record): bool => $record->status === AdjustmentDocumentStatus::Draft && config('app.debug') && ! app()->environment('production'))
                 ->action(function (AdjustmentDocument $record) {
                     $preview = app(\App\Actions\Accounting\BuildAdjustmentPostingPreviewAction::class)->execute($record);
                     $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('filament/accounting/adjustments/preview-posting-pdf', [
