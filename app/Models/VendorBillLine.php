@@ -93,6 +93,7 @@ class VendorBillLine extends Model
         'total_line_tax',          // The total tax amount specifically for this line item [2].
         'total_line_tax_company_currency', // Total tax in company currency
         'expense_account_id',      // Foreign key to the Account model, for proper expense classification in the Chart of Accounts [2].
+        'asset_category_id',       // Optional link to asset category to create an asset from this line.
         'analytic_account_id',     // Nullable foreign key to the AnalyticAccount model for management/cost accounting [2, 7].
         // While explicitly listed for `journal_entry_lines` [2], Odoo's design [8]
         // implies its applicability at the document line level for richer analytic tracking.

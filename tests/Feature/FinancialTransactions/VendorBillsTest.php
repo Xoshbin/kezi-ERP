@@ -95,7 +95,7 @@ test('confirming a vendor bill generates the correct journal entry', function ()
         ->and($journalEntry->total_credit)->toEqual($expectedTotal);
 
     expect($journalEntry->lines()->where('account_id', $this->inventoryAccount->id)->first()->debit)->toEqual($expectedTotal);
-    expect($journalEntry->lines()->where('account_id', $this->stockInputAccount->id)->first()->credit)->toEqual($expectedTotal);
+    expect($journalEntry->lines()->where('account_id', $this->company->default_accounts_payable_id)->first()->credit)->toEqual($expectedTotal);
 });
 
 test('a posted vendor bill cannot be updated', function () {
