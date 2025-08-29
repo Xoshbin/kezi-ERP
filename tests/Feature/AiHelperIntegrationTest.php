@@ -14,8 +14,8 @@ beforeEach(function () {
 
 it('can load filament panel with ai helper plugin registered', function () {
     // Check if the AI Helper plugin is properly registered by checking if the service provider is loaded
-    expect(app()->bound(\AccounTech\FilamentAiHelper\Services\GeminiService::class))->toBeTrue();
-    expect(app()->bound(\AccounTech\FilamentAiHelper\Services\FormSchemaExtractor::class))->toBeTrue();
+    expect(app()->bound(\Xoshbin\FilamentAiHelper\Services\GeminiService::class))->toBeTrue();
+    expect(app()->bound(\Xoshbin\FilamentAiHelper\Services\FormSchemaExtractor::class))->toBeTrue();
     expect(config('filament-ai-helper'))->not->toBeNull();
 });
 
@@ -152,7 +152,7 @@ it('works correctly with multi-tenancy context', function () {
 
 it('can handle form fill requests on create pages', function () {
     // Mock the AI service to return form manipulation response
-    $this->mock(\AccounTech\FilamentAiHelper\Services\GeminiService::class, function ($mock) {
+    $this->mock(\Xoshbin\FilamentAiHelper\Services\GeminiService::class, function ($mock) {
         $mock->shouldReceive('generateResponse')
             ->andReturn('{"action": "fill_form", "fields": {"partner_id": "1", "amount": "1000", "date": "2024-01-15"}, "explanation": "Created invoice for customer with amount 1000", "warnings": []}');
     });
@@ -192,7 +192,7 @@ it('can handle form fill requests on create pages', function () {
 
 it('can handle form update requests on edit pages', function () {
     // Mock the AI service to return form manipulation response
-    $this->mock(\AccounTech\FilamentAiHelper\Services\GeminiService::class, function ($mock) {
+    $this->mock(\Xoshbin\FilamentAiHelper\Services\GeminiService::class, function ($mock) {
         $mock->shouldReceive('generateResponse')
             ->andReturn('{"action": "update_form", "fields": {"amount": "1500", "due_date": "2024-02-15"}, "explanation": "Updated invoice amount and due date", "warnings": ["This will affect the payment schedule"]}');
     });
@@ -233,11 +233,11 @@ it('can handle form update requests on edit pages', function () {
 });
 
 it('can detect form manipulation keywords in messages', function () {
-    $controller = new \AccounTech\FilamentAiHelper\Http\Controllers\AiChatController(
-        app(\AccounTech\FilamentAiHelper\Actions\GetAIAssistantResponseAction::class),
-        app(\AccounTech\FilamentAiHelper\Actions\FillFormAction::class),
-        app(\AccounTech\FilamentAiHelper\Actions\UpdateFormAction::class),
-        app(\AccounTech\FilamentAiHelper\Services\FormSchemaExtractor::class)
+    $controller = new \Xoshbin\FilamentAiHelper\Http\Controllers\AiChatController(
+        app(\Xoshbin\FilamentAiHelper\Actions\GetAIAssistantResponseAction::class),
+        app(\Xoshbin\FilamentAiHelper\Actions\FillFormAction::class),
+        app(\Xoshbin\FilamentAiHelper\Actions\UpdateFormAction::class),
+        app(\Xoshbin\FilamentAiHelper\Services\FormSchemaExtractor::class)
     );
 
     $reflection = new \ReflectionClass($controller);
@@ -258,7 +258,7 @@ it('can detect form manipulation keywords in messages', function () {
 });
 
 it('validates form data against schema correctly', function () {
-    $extractor = app(\AccounTech\FilamentAiHelper\Services\FormSchemaExtractor::class);
+    $extractor = app(\Xoshbin\FilamentAiHelper\Services\FormSchemaExtractor::class);
 
     $schema = [
         'partner_id' => ['type' => 'select', 'required' => true],

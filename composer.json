@@ -8,7 +8,7 @@
     "repositories": {
         "filament-ai-helper": {
             "type": "path",
-            "url": "./packages/filament-ai-helper",
+            "url": "./packages/xoshbin/filament-ai-helper",
             "options": {
                 "symlink": true
             }
@@ -23,7 +23,7 @@
     },
     "require": {
         "php": "^8.2",
-        "accountech/filament-ai-helper": "dev-develop",
+        "xoshbin/filament-ai-helper": "dev-develop",
         "barryvdh/laravel-dompdf": "^3.1",
         "brick/money": "^0.10.1",
         "filament/filament": "^4.0",
@@ -45,7 +45,7 @@
         "pestphp/pest-plugin-browser": "^4.0",
         "pestphp/pest-plugin-laravel": "^4.0",
         "pestphp/pest-plugin-livewire": "^4.0",
-        "xoshbin/jmeryar-theme": "dev-feature/jmeryar-theme-new"
+        "xoshbin/jmeryar-theme": "dev-develop"
     },
     "autoload": {
         "psr-4": {
