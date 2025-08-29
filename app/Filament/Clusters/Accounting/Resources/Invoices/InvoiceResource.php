@@ -102,7 +102,7 @@ class InvoiceResource extends Resource
                                 ->required()
                                 ->options(
                                     collect(PartnerType::cases())
-                                        ->mapWithKeys(fn (PartnerType $type) => [$type->value => $type->label()])
+                                        ->mapWithKeys(fn(PartnerType $type) => [$type->value => $type->label()])
                                 ),
                             TextInput::make('contact_person')
                                 ->label(__('partner.contact_person'))
@@ -200,14 +200,6 @@ class InvoiceResource extends Resource
                     DatePicker::make('due_date')
                         ->label(__('invoice.due_date'))
                         ->required(),
-                    Select::make('status')
-                        ->label(__('invoice.status'))
-                        ->options(
-                            collect(InvoiceStatus::cases())
-                                ->mapWithKeys(fn (InvoiceStatus $status) => [$status->value => $status->label()])
-                        )
-                        ->disabled()
-                        ->dehydrated(false),
                 ])
                 ->columns(4)
                 ->columnSpanFull(),
@@ -219,8 +211,8 @@ class InvoiceResource extends Resource
                         ->label(__('invoice.invoice_lines'))
                         ->live()
                         ->reorderable(true)
-                        ->deletable(fn (?Invoice $record) => !$record || $record->status === InvoiceStatus::Draft)
-                        ->disabled(fn (?Invoice $record) => $record && $record->status !== InvoiceStatus::Draft)
+                        ->deletable(fn(?Invoice $record) => !$record || $record->status === InvoiceStatus::Draft)
+                        ->disabled(fn(?Invoice $record) => $record && $record->status !== InvoiceStatus::Draft)
                         ->minItems(1)
                         ->schema([
                             TranslatableSelect::standard(
@@ -328,22 +320,22 @@ class InvoiceResource extends Resource
                         ->label(__('invoice.exchange_rate_at_creation'))
                         ->numeric()
                         ->disabled()
-                        ->visible(fn (?Invoice $record) => $record && $record->exchange_rate_at_creation),
+                        ->visible(fn(?Invoice $record) => $record && $record->exchange_rate_at_creation),
 
                     MoneyInput::make('total_amount_company_currency')
                         ->label(__('invoice.total_amount_company_currency'))
                         ->currencyField('../../company.currency_id')
                         ->disabled()
-                        ->visible(fn (?Invoice $record) => $record && $record->total_amount_company_currency),
+                        ->visible(fn(?Invoice $record) => $record && $record->total_amount_company_currency),
 
                     MoneyInput::make('total_tax_company_currency')
                         ->label(__('invoice.total_tax_company_currency'))
                         ->currencyField('../../company.currency_id')
                         ->disabled()
-                        ->visible(fn (?Invoice $record) => $record && $record->total_tax_company_currency),
+                        ->visible(fn(?Invoice $record) => $record && $record->total_tax_company_currency),
                 ])
                 ->columns(3)
-                ->visible(fn (?Invoice $record) => $record && ($record->exchange_rate_at_creation || $record->total_amount_company_currency)),
+                ->visible(fn(?Invoice $record) => $record && ($record->exchange_rate_at_creation || $record->total_amount_company_currency)),
         ]);
     }
 
@@ -368,8 +360,8 @@ class InvoiceResource extends Resource
                         return 'DRAFT-' . str_pad($record->id, 5, '0', STR_PAD_LEFT);
                     })
                     ->badge()
-                    ->color(fn (Invoice $record): string => $record->invoice_number ? 'success' : 'warning')
-                    ->icon(fn (Invoice $record): string => $record->invoice_number ? 'heroicon-m-check-circle' : 'heroicon-m-pencil-square')
+                    ->color(fn(Invoice $record): string => $record->invoice_number ? 'success' : 'warning')
+                    ->icon(fn(Invoice $record): string => $record->invoice_number ? 'heroicon-m-check-circle' : 'heroicon-m-pencil-square')
                     ->sortable(),
 
                 // Customer (critical for identification)
@@ -439,13 +431,13 @@ class InvoiceResource extends Resource
                     ->numeric(decimalPlaces: 6)
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true)
-                    ->visible(fn ($record) => $record && $record->exchange_rate_at_creation),
+                    ->visible(fn($record) => $record && $record->exchange_rate_at_creation),
 
                 MoneyColumn::make('total_amount_company_currency')
                     ->label(__('invoice.total_amount_company_currency'))
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true)
-                    ->visible(fn ($record) => $record && $record->total_amount_company_currency),
+                    ->visible(fn($record) => $record && $record->total_amount_company_currency),
                 // Posted Date (important for audit trail)
                 TextColumn::make('posted_at')
                     ->label(__('invoice.posted_at'))
@@ -476,14 +468,14 @@ class InvoiceResource extends Resource
                         ->label(__('View PDF'))
                         ->icon('heroicon-o-document-text')
                         ->color('info')
-                        ->url(fn (Invoice $record) => route('invoices.pdf', $record))
+                        ->url(fn(Invoice $record) => route('invoices.pdf', $record))
                         ->openUrlInNewTab(),
 
                     Action::make('downloadPdf')
                         ->label(__('Download PDF'))
                         ->icon('heroicon-o-arrow-down-tray')
                         ->color('success')
-                        ->url(fn (Invoice $record) => route('invoices.pdf.download', $record)),
+                        ->url(fn(Invoice $record) => route('invoices.pdf.download', $record)),
                 ])
                     ->label(__('PDF'))
                     ->icon('heroicon-o-document-text')
@@ -585,9 +577,10 @@ class InvoiceResource extends Resource
                                 ->send();
                         }
                     })
-                    ->visible(fn(Invoice $record) =>
+                    ->visible(
+                        fn(Invoice $record) =>
                         $record->status === InvoiceStatus::Posted &&
-                        !$record->getRemainingAmount()->isZero()
+                            !$record->getRemainingAmount()->isZero()
                     ),
                 // Action::make('resetToDraft')
                 //     ->label(__('invoice.reset_to_draft'))
