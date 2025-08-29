@@ -4,14 +4,14 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "a3d97e5f5800d2bb7f8861a2a427abf9",
+    "content-hash": "fa18df60829cc6c7f3a6f4ae38a5f319",
     "packages": [
         {
             "name": "accountech/filament-ai-helper",
             "version": "dev-develop",
             "dist": {
                 "type": "path",
-                "url": "./filament-ai-helper",
+                "url": "./packages/filament-ai-helper",
                 "reference": "3ca932145f552bf3c17cf131b5db41c2a97c9b97"
             },
             "require": {
