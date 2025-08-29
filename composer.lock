@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "fa18df60829cc6c7f3a6f4ae38a5f319",
+    "content-hash": "da723a449d06abcb29c86dae15e2bae1",
     "packages": [
         {
             "name": "accountech/filament-ai-helper",
@@ -12,7 +12,7 @@
             "dist": {
                 "type": "path",
                 "url": "./packages/filament-ai-helper",
-                "reference": "3ca932145f552bf3c17cf131b5db41c2a97c9b97"
+                "reference": "b58de75461f3fc4e646e422aff12d08e627c28ec"
             },
             "require": {
                 "filament/filament": "^4.0",
@@ -75,6 +75,7 @@
                 "plugin"
             ],
             "transport-options": {
+                "symlink": true,
                 "relative": true
             }
         },
@@ -14186,12 +14187,77 @@
                 }
             ],
             "time": "2024-03-03T12:36:25+00:00"
+        },
+        {
+            "name": "xoshbin/jmeryar-theme",
+            "version": "dev-feature/jmeryar-theme-new",
+            "dist": {
+                "type": "path",
+                "url": "./packages/xoshbin/jmeryar-theme",
+                "reference": "9f361a2fb74c4463e4c917c9264812e78f731058"
+            },
+            "require": {
+                "filament/filament": "^4.0",
+                "php": "^8.2",
+                "spatie/laravel-package-tools": "^1.15.0"
+            },
+            "require-dev": {
+                "laravel/pint": "^1.0"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [],
+                    "aliases": {
+                        "FilamentAwinTheme": "Resma\\FilamentAwinTheme\\Facades\\FilamentAwinTheme"
+                    }
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Xoshbin\\JmeryarTheme\\": "src/"
+                }
+            },
+            "autoload-dev": {
+                "psr-4": {
+                    "Resma\\FilamentAwinTheme\\Tests\\": "tests/"
+                }
+            },
+            "scripts": {
+                "post-autoload-dump": [
+                    "@php ./vendor/bin/testbench package:discover --ansi"
+                ],
+                "lint": [
+                    "pint"
+                ],
+                "test": [
+                    "pest"
+                ],
+                "test:lint": [
+                    "pint --test"
+                ]
+            },
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Khoshbin",
+                    "email": "xoshbin@gmail.com"
+                }
+            ],
+            "description": "Jmeryar filament theme",
+            "transport-options": {
+                "symlink": true,
+                "relative": true
+            }
         }
     ],
     "aliases": [],
-    "minimum-stability": "stable",
+    "minimum-stability": "dev",
     "stability-flags": {
-        "accountech/filament-ai-helper": 20
+        "accountech/filament-ai-helper": 20,
+        "xoshbin/jmeryar-theme": 20
     },
     "prefer-stable": true,
     "prefer-lowest": false,
