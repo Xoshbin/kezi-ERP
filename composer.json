@@ -8,7 +8,7 @@
     "repositories": [
         {
             "type": "path",
-            "url": "./filament-ai-helper"
+            "url": "./packages/filament-ai-helper"
         }
     ],
     "require": {
