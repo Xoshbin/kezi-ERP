@@ -101,7 +101,7 @@ class VendorBillResource extends Resource
                                 ->required()
                                 ->options(
                                     collect(PartnerType::cases())
-                                        ->mapWithKeys(fn (PartnerType $type) => [$type->value => $type->label()])
+                                        ->mapWithKeys(fn(PartnerType $type) => [$type->value => $type->label()])
                                 ),
                             TextInput::make('contact_person')
                                 ->label(__('partner.contact_person'))
@@ -268,7 +268,7 @@ class VendorBillResource extends Resource
                                         ->required()
                                         ->options(
                                             collect(ProductType::cases())
-                                                ->mapWithKeys(fn (ProductType $type) => [$type->value => $type->label()])
+                                                ->mapWithKeys(fn(ProductType $type) => [$type->value => $type->label()])
                                         ),
                                     Textarea::make('description')
                                         ->label(__('product.description'))
@@ -331,43 +331,6 @@ class VendorBillResource extends Resource
                                         ->modalWidth('lg');
                                 })
                                 ->columnSpan(1),
-                            TranslatableSelect::withFormatter(
-                                'expense_account_id',
-                                \App\Models\Account::class,
-                                fn($account) => [$account->id => $account->getTranslatedLabel('name') . ' (' . $account->code . ')'],
-                                __('vendor_bill.expense_account')
-                            )
-                                ->required()
-                                ->createOptionForm([
-                                    Select::make('company_id')
-                                        ->label(__('account.company'))
-                                        ->relationship('company', 'name')
-                                        ->required(),
-                                    TextInput::make('code')
-                                        ->label(__('account.code'))
-                                        ->required()
-                                        ->maxLength(255),
-                                    TextInput::make('name')
-                                        ->label(__('account.name'))
-                                        ->required()
-                                        ->maxLength(255),
-                                    Select::make('type')
-                                        ->label(__('account.type'))
-                                        ->required()
-                                        ->options(
-                                            collect(AccountType::cases())
-                                                ->mapWithKeys(fn (AccountType $type) => [$type->value => $type->label()])
-                                        )
-                                        ->searchable(),
-                                    Toggle::make('is_deprecated')
-                                        ->label(__('account.is_deprecated'))
-                                        ->default(false),
-                                ])
-                                ->createOptionModalHeading(__('common.modal_title_create_account'))
-                                ->createOptionAction(function (\Filament\Actions\Action $action) {
-                                    return $action
-                                        ->modalWidth('lg');
-                                }),
                             TranslatableSelect::standard(
                                 'asset_category_id',
                                 \App\Models\AssetCategory::class,
@@ -444,7 +407,7 @@ class VendorBillResource extends Resource
                         ])
                         ->columns(5)
                 ])->columnSpanFull(),
-                Section::make(__('vendor_bill.attachments'))
+            Section::make(__('vendor_bill.attachments'))
                 ->description(__('vendor_bill.attachments_description'))
                 ->schema([
                     FileUpload::make('attachments')
@@ -483,22 +446,22 @@ class VendorBillResource extends Resource
                         ->label(__('vendor_bill.exchange_rate_at_creation'))
                         ->numeric()
                         ->disabled()
-                        ->visible(fn (?VendorBill $record) => $record && $record->exchange_rate_at_creation),
+                        ->visible(fn(?VendorBill $record) => $record && $record->exchange_rate_at_creation),
 
                     MoneyInput::make('total_amount_company_currency')
                         ->label(__('vendor_bill.total_amount_company_currency'))
                         ->currencyField('../../company.currency_id')
                         ->disabled()
-                        ->visible(fn (?VendorBill $record) => $record && $record->total_amount_company_currency),
+                        ->visible(fn(?VendorBill $record) => $record && $record->total_amount_company_currency),
 
                     MoneyInput::make('total_tax_company_currency')
                         ->label(__('vendor_bill.total_tax_company_currency'))
                         ->currencyField('../../company.currency_id')
                         ->disabled()
-                        ->visible(fn (?VendorBill $record) => $record && $record->total_tax_company_currency),
+                        ->visible(fn(?VendorBill $record) => $record && $record->total_tax_company_currency),
                 ])
                 ->columnSpanFull()
-                ->visible(fn (?VendorBill $record) => $record && ($record->exchange_rate_at_creation || $record->total_amount_company_currency)),
+                ->visible(fn(?VendorBill $record) => $record && ($record->exchange_rate_at_creation || $record->total_amount_company_currency)),
         ]);
     }
 
@@ -517,8 +480,8 @@ class VendorBillResource extends Resource
                         return 'DRAFT-' . str_pad($record->id, 5, '0', STR_PAD_LEFT);
                     })
                     ->badge()
-                    ->color(fn (VendorBill $record): string => $record->bill_reference ? 'success' : 'warning')
-                    ->icon(fn (VendorBill $record): string => $record->bill_reference ? 'heroicon-m-check-circle' : 'heroicon-m-pencil-square')
+                    ->color(fn(VendorBill $record): string => $record->bill_reference ? 'success' : 'warning')
+                    ->icon(fn(VendorBill $record): string => $record->bill_reference ? 'heroicon-m-check-circle' : 'heroicon-m-pencil-square')
                     ->sortable(),
 
                 // Vendor (critical for identification)
@@ -583,13 +546,13 @@ class VendorBillResource extends Resource
                     ->numeric(decimalPlaces: 6)
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true)
-                    ->visible(fn ($record) => $record && $record->exchange_rate_at_creation),
+                    ->visible(fn($record) => $record && $record->exchange_rate_at_creation),
 
                 MoneyColumn::make('total_amount_company_currency')
                     ->label(__('vendor_bill.total_amount_company_currency'))
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true)
-                    ->visible(fn ($record) => $record && $record->total_amount_company_currency),
+                    ->visible(fn($record) => $record && $record->total_amount_company_currency),
 
                 // Posted Date (important for audit trail)
                 TextColumn::make('posted_at')
@@ -697,9 +660,10 @@ class VendorBillResource extends Resource
                                 ->send();
                         }
                     })
-                    ->visible(fn(VendorBill $record) =>
+                    ->visible(
+                        fn(VendorBill $record) =>
                         $record->status === VendorBillStatus::Posted &&
-                        !$record->getRemainingAmount()->isZero()
+                            !$record->getRemainingAmount()->isZero()
                     ),
             ])
             ->toolbarActions([
