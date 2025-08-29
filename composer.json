@@ -5,12 +5,22 @@
     "description": "The skeleton application for the Laravel framework.",
     "keywords": ["laravel", "framework"],
     "license": "MIT",
-    "repositories": [
-        {
+    "repositories": {
+        "filament-ai-helper": {
             "type": "path",
-            "url": "./packages/filament-ai-helper"
+            "url": "./packages/filament-ai-helper",
+            "options": {
+                "symlink": true
+            }
+        },
+        "jmeryar-theme": {
+            "type": "path",
+            "url": "./packages/xoshbin/jmeryar-theme",
+            "options": {
+                "symlink": true
+            }
         }
-    ],
+    },
     "require": {
         "php": "^8.2",
         "accountech/filament-ai-helper": "dev-develop",
@@ -34,7 +44,8 @@
         "pestphp/pest": "^4.0",
         "pestphp/pest-plugin-browser": "^4.0",
         "pestphp/pest-plugin-laravel": "^4.0",
-        "pestphp/pest-plugin-livewire": "^4.0"
+        "pestphp/pest-plugin-livewire": "^4.0",
+        "xoshbin/jmeryar-theme": "dev-feature/jmeryar-theme-new"
     },
     "autoload": {
         "psr-4": {
@@ -90,6 +101,6 @@
             "php-http/discovery": true
         }
     },
-    "minimum-stability": "stable",
+    "minimum-stability": "dev",
     "prefer-stable": true
 }
