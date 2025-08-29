@@ -23,6 +23,7 @@ use Filament\Http\Middleware\DispatchServingFilamentEvent;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use AccounTech\FilamentAiHelper\FilamentAiHelperPlugin;
+use Xoshbin\JmeryarTheme\JmeryarTheme;
 
 class JmeryarPanelProvider extends PanelProvider
 {
@@ -66,6 +67,7 @@ class JmeryarPanelProvider extends PanelProvider
             ->tenantRegistration(RegisterCompany::class)
             ->tenantProfile(EditCompanyProfile::class)
             ->plugins([
+                JmeryarTheme::make(),
                 SpatieTranslatablePlugin::make()
                     ->defaultLocales(['en', 'ckb', 'ar']),
                 FilamentAiHelperPlugin::make()
