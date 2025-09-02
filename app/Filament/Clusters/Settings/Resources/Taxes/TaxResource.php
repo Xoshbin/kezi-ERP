@@ -67,7 +67,7 @@ class TaxResource extends Resource
                                 TranslatableSelect::make('currency_id', \App\Models\Currency::class, __('company.currency_id'))->required(),
                             ])
                             ->createOptionModalHeading(__('common.modal_title_create_company'))
-                            ->createOptionAction(fn(\Filament\Actions\Action $a) => $a->modalWidth('lg'))
+                            ->createOptionAction(fn(\Filament\Actions\Action $a) => $a->name('create-company-option')->modalWidth('lg'))
                             ->required(),
 
                         TranslatableSelect::relationship('tax_account_id','taxAccount', \App\Models\Account::class, __('tax.tax_account'))
@@ -82,7 +82,7 @@ class TaxResource extends Resource
                                 Toggle::make('allow_reconciliation')->label(__('account.allow_reconciliation'))->default(false),
                             ])
                             ->createOptionModalHeading(__('common.modal_title_create_account'))
-                            ->createOptionAction(fn(\Filament\Actions\Action $a) => $a->modalWidth('lg'))
+                            ->createOptionAction(fn(\Filament\Actions\Action $a) => $a->name('create-account-option')->modalWidth('lg'))
                             ->required(),
 
                         TextInput::make('name')
