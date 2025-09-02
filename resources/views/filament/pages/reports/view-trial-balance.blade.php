@@ -11,21 +11,21 @@
                 <!-- Balance Status Banner -->
                 <div class="mb-6">
                     @if($reportData['isBalanced'])
-                        <div class="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-4 mb-4">
+                        <div class="bg-[var(--color-success-50)] dark:bg-[var(--color-success-900)]/20 border border-[var(--color-success-200)] dark:border-[var(--color-success-800)] rounded-lg p-4 mb-4">
                             <div class="flex items-center">
-                                <svg class="h-5 w-5 text-green-400 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                <svg class="h-5 w-5 text-[var(--color-success-400)] mr-2" fill="currentColor" viewBox="0 0 20 20">
                                     <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
                                 </svg>
-                                <span class="text-green-800 dark:text-green-200 font-medium">{{ __('reports.trial_balance_balanced') }}</span>
+                                <span class="text-[var(--color-success-800)] dark:text-[var(--color-success-200)] font-medium">{{ __('reports.trial_balance_balanced') }}</span>
                             </div>
                         </div>
                     @else
-                        <div class="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4 mb-4">
+                        <div class="bg-[var(--color-danger-50)] dark:bg-[var(--color-danger-900)]/20 border border-[var(--color-danger-200)] dark:border-[var(--color-danger-800)] rounded-lg p-4 mb-4">
                             <div class="flex items-center">
-                                <svg class="h-5 w-5 text-red-400 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                <svg class="h-5 w-5 text-[var(--color-danger-400)] mr-2" fill="currentColor" viewBox="0 0 20 20">
                                     <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path>
                                 </svg>
-                                <span class="text-red-800 dark:text-red-200 font-medium">{{ __('reports.trial_balance_not_balanced') }}</span>
+                                <span class="text-[var(--color-danger-800)] dark:text-[var(--color-danger-200)] font-medium">{{ __('reports.trial_balance_not_balanced') }}</span>
                             </div>
                         </div>
                     @endif
@@ -118,9 +118,9 @@
                             {{ __('reports.total_credits') }}: {{ $reportData['totalCredit'] }} |
                             {{ __('reports.difference') }}:
                             @if($reportData['isBalanced'])
-                                <span class="text-green-600 dark:text-green-400 font-medium">{{ __('reports.balanced') }}</span>
+                                <span class="text-[var(--color-success-600)] dark:text-[var(--color-success-400)] font-medium">{{ __('reports.balanced') }}</span>
                             @else
-                                <span class="text-red-600 dark:text-red-400 font-medium">
+                                <span class="text-[var(--color-danger-600)] dark:text-[var(--color-danger-400)] font-medium">
                                     {{ number_format(abs($reportData['totalDebitAmount'] - $reportData['totalCreditAmount']), 2) }}
                                 </span>
                             @endif
