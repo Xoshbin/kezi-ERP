@@ -323,7 +323,7 @@ class BankStatementResource extends Resource
             'index' => ListBankStatements::route('/'),
             'create' => CreateBankStatement::route('/create'),
             'edit' => EditBankStatement::route('/{record}/edit'),
-            'reconcile' => BankReconciliation::route('/{record}/reconcile'),
+            'reconcile' => BankReconciliation::route('/{record?}/reconcile'),
         ];
     }
 }

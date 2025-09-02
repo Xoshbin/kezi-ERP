@@ -11,10 +11,12 @@
         $danger = \Filament\Support\Facades\FilamentColor::getColor('danger');
         // Convert to rgb() for PDF compatibility
         $p600 = FsColor::convertToRgb($primary[600]);
+        $g800 = FsColor::convertToRgb($gray[800] ?? $gray[700]);
         $g700 = FsColor::convertToRgb($gray[700]);
         $g500 = FsColor::convertToRgb($gray[500]);
         $g200 = FsColor::convertToRgb($gray[200]);
         $g100 = FsColor::convertToRgb($gray[100]);
+        $g50 = FsColor::convertToRgb($gray[50] ?? $gray[100]);
     @endphp
     <style>
         @page {
