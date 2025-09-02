@@ -112,7 +112,7 @@
                                     <span class="text-sm font-mono text-gray-500 dark:text-gray-400">CYE</span>
                                     <span class="text-sm text-gray-900 dark:text-white">{{ __('reports.current_year_earnings') }}</span>
                                 </div>
-                                <span class="text-sm font-medium {{ $reportData['isCurrentYearLoss'] ? 'text-[var(--color-danger-600)] dark:text-[var(--color-danger-400)]' : 'text-gray-900 dark:text-white' }}">
+                                <span class="text-sm font-medium {{ $reportData['isCurrentYearLoss'] ? 'text-red-600 dark:text-red-400' : 'text-gray-900 dark:text-white' }}">
                                     {{ $reportData['currentYearEarnings'] }}
                                 </span>
                             </div>
@@ -140,16 +140,16 @@
                 </div>
 
                 <!-- Balance Verification -->
-                <div class="mt-8 p-4 bg-success-50 dark:bg-success-900/20 border border-success-200 dark:border-success-800 rounded-lg">
+                <div class="mt-8 p-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg">
                     <div class="flex items-center">
-                        <svg class="h-5 w-5 text-success-400 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                        <svg class="h-5 w-5 text-green-400 mr-2" fill="currentColor" viewBox="0 0 20 20">
                             <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
                         </svg>
-                        <span class="text-sm font-medium text-success-800 dark:text-success-200">
+                        <span class="text-sm font-medium text-green-800 dark:text-green-200">
                             {{ __('reports.balance_sheet_balanced') }}
                         </span>
                     </div>
-                    <p class="text-sm text-success-700 dark:text-success-300 mt-1">
+                    <p class="text-sm text-green-700 dark:text-green-300 mt-1">
                         {{ __('reports.assets_equal_liabilities_equity') }}: {{ $reportData['totalAssets'] }}
                     </p>
                 </div>

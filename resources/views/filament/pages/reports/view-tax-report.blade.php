@@ -173,15 +173,15 @@
                                 <div class="text-sm text-gray-600 dark:text-gray-400 mb-1">
                                     {{ __('reports.net_tax_payable') }}
                                 </div>
-                                <div class="text-xl font-bold {{ $reportData['netTaxPayableRaw'] < 0 ? 'text-[var(--color-success-600)] dark:text-[var(--color-success-400)]' : 'text-[var(--color-danger-600)] dark:text-[var(--color-danger-400)]' }}">
+                                <div class="text-xl font-bold {{ $reportData['netTaxPayableRaw'] < 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400' }}">
                                     {{ $reportData['netTaxPayable'] }}
                                 </div>
                                 @if($reportData['netTaxPayableRaw'] < 0)
-                                    <div class="text-xs text-[var(--color-success-600)] dark:text-[var(--color-success-400)] mt-1">
+                                    <div class="text-xs text-green-600 dark:text-green-400 mt-1">
                                         {{ __('reports.refundable') }}
                                     </div>
                                 @else
-                                    <div class="text-xs text-[var(--color-danger-600)] dark:text-[var(--color-danger-400)] mt-1">
+                                    <div class="text-xs text-red-600 dark:text-red-400 mt-1">
                                         {{ __('reports.payable') }}
                                     </div>
                                 @endif
