@@ -74,7 +74,7 @@ class JmeryarPanelProvider extends PanelProvider
                     ->buttonLabel('AccounTech Pro')
                     ->buttonIcon('heroicon-o-sparkles')
                     ->modalWidth('2xl')
-                    ->enabled(fn () => !empty(config('filament-ai-helper.gemini.api_key'))),
+                    ->enabled(fn () => (bool) config('filament-ai-helper.enabled', true) && !empty(config('filament-ai-helper.gemini.api_key'))),
             ]);
     }
 }

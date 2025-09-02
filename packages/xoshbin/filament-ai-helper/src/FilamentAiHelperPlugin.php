@@ -28,11 +28,17 @@ class FilamentAiHelperPlugin implements Plugin
 
     public function register(Panel $panel): void
     {
+        // Respect both plugin state and global config
+        $globallyEnabled = (bool) config('filament-ai-helper.enabled', true);
+        if (!$globallyEnabled || !$this->enabled) {
+            return;
+        }
+
         // Register the chat widget at the end of the body
         $panel->renderHook(
             'panels::body.end',
             fn (): string => view('filament-ai-helper::chat-widget', [
-                'enabled' => $this->enabled,
+                'enabled' => true,
                 'buttonLabel' => $this->getButtonLabel(),
                 'buttonIcon' => $this->getButtonIcon(),
                 'brandName' => $this->getBrandName(),
