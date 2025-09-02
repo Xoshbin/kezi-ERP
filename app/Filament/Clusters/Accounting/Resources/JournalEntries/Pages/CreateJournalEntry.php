@@ -2,6 +2,9 @@
 
 namespace App\Filament\Clusters\Accounting\Resources\JournalEntries\Pages;
 
+use Filament\Facades\Filament;
+use Illuminate\Database\QueryException;
+use PDOException;
 use App\Actions\Accounting\CreateJournalEntryAction;
 use App\DataTransferObjects\Accounting\CreateJournalEntryDTO;
 use App\DataTransferObjects\Accounting\CreateJournalEntryLineDTO;
@@ -44,7 +47,7 @@ class CreateJournalEntry extends CreateRecord
     protected function handleRecordCreation(array $data): Model
     {
         $journalEntryDTO = new CreateJournalEntryDTO(
-            company_id: \Filament\Facades\Filament::getTenant()->id,
+            company_id: Filament::getTenant()->id,
             journal_id: $data['journal_id'],
             currency_id: $data['currency_id'],
             entry_date: $data['entry_date'],
@@ -57,7 +60,7 @@ class CreateJournalEntry extends CreateRecord
 
         try {
             return app(CreateJournalEntryAction::class)->execute($journalEntryDTO);
-        } catch (\Illuminate\Database\QueryException $e) {
+        } catch (QueryException $e) {
             // Check if it's a database constraint violation for duplicate reference
             // MySQL error code 1062 for duplicate entry
             // SQLite error code 19 for UNIQUE constraint failed
@@ -72,7 +75,7 @@ class CreateJournalEntry extends CreateRecord
 
             // Re-throw other database exceptions
             throw $e;
-        } catch (\PDOException $e) {
+        } catch (PDOException $e) {
             // Handle PDO exceptions that might not be wrapped in QueryException
             if ($e->getCode() === '23000' && str_contains($e->getMessage(), 'Duplicate entry') && str_contains($e->getMessage(), 'reference_unique')) {
                 throw ValidationException::withMessages([

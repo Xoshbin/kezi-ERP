@@ -2,6 +2,9 @@
 
 namespace App\Services\HumanResources;
 
+use Exception;
+use Brick\Math\RoundingMode;
+use InvalidArgumentException;
 use App\Actions\HumanResources\ProcessPayrollAction;
 use App\Actions\HumanResources\CreatePaymentFromPayrollAction;
 use App\DataTransferObjects\HumanResources\ProcessPayrollDTO;
@@ -41,7 +44,7 @@ class PayrollService
         return DB::transaction(function () use ($employee, $periodStartDate, $periodEndDate, $payDate, $user) {
             $contract = $employee->currentContract;
             if (!$contract) {
-                throw new \Exception('Employee does not have an active contract.');
+                throw new Exception('Employee does not have an active contract.');
             }
 
             // Calculate attendance-based amounts
@@ -110,7 +113,7 @@ class PayrollService
         Gate::forUser($user)->authorize('approve', $payroll);
 
         if ($payroll->status !== 'draft') {
-            throw new \Exception('Only draft payrolls can be approved.');
+            throw new Exception('Only draft payrolls can be approved.');
         }
 
         DB::transaction(function () use ($payroll, $user) {
@@ -163,7 +166,7 @@ class PayrollService
             if ($daysInPeriod < $daysInMonth) {
                 // Prorate the salary
                 $prorationFactor = $daysInPeriod / $daysInMonth;
-                $baseSalary = $baseSalary->multipliedBy($prorationFactor, \Brick\Math\RoundingMode::HALF_UP);
+                $baseSalary = $baseSalary->multipliedBy($prorationFactor, RoundingMode::HALF_UP);
             }
         }
 
@@ -185,14 +188,14 @@ class PayrollService
         } else {
             // Calculate hourly rate from monthly salary
             $monthlyHours = $contract->working_hours_per_week * 4.33; // Approximate monthly hours
-            $regularHourlyRate = $contract->base_salary->dividedBy($monthlyHours, \Brick\Math\RoundingMode::HALF_UP);
+            $regularHourlyRate = $contract->base_salary->dividedBy($monthlyHours, RoundingMode::HALF_UP);
         }
 
 
 
-        $overtimeRate = $regularHourlyRate->multipliedBy(1.5, \Brick\Math\RoundingMode::HALF_UP);
+        $overtimeRate = $regularHourlyRate->multipliedBy(1.5, RoundingMode::HALF_UP);
 
-        return $overtimeRate->multipliedBy($overtimeHours, \Brick\Math\RoundingMode::HALF_UP);
+        return $overtimeRate->multipliedBy($overtimeHours, RoundingMode::HALF_UP);
     }
 
     /**
@@ -204,10 +207,10 @@ class PayrollService
 
         // TODO: Implement proper tax calculation based on company's tax rules
         // For now, using simple percentages
-        $incomeTax = $grossSalary->multipliedBy(0.10, \Brick\Math\RoundingMode::HALF_UP); // 10% income tax
-        $socialSecurity = $grossSalary->multipliedBy(0.05, \Brick\Math\RoundingMode::HALF_UP); // 5% social security
+        $incomeTax = $grossSalary->multipliedBy(0.10, RoundingMode::HALF_UP); // 10% income tax
+        $socialSecurity = $grossSalary->multipliedBy(0.05, RoundingMode::HALF_UP); // 5% social security
         $healthInsurance = Money::of(50, $currency); // Fixed amount
-        $pensionContribution = $grossSalary->multipliedBy(0.03, \Brick\Math\RoundingMode::HALF_UP); // 3% pension
+        $pensionContribution = $grossSalary->multipliedBy(0.03, RoundingMode::HALF_UP); // 3% pension
 
         return [
             'income_tax' => $incomeTax,
@@ -331,11 +334,11 @@ class PayrollService
         Gate::forUser($user)->authorize('pay', $payroll);
 
         if ($payroll->payment_id) {
-            throw new \Exception('Payroll has already been paid.');
+            throw new Exception('Payroll has already been paid.');
         }
 
         if ($payroll->status !== 'processed') {
-            throw new \InvalidArgumentException('Only processed payrolls can be paid.');
+            throw new InvalidArgumentException('Only processed payrolls can be paid.');
         }
 
         $this->lockDateService->enforce($payroll->company, $payroll->pay_date);

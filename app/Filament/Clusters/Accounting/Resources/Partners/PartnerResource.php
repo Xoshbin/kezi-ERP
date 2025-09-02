@@ -2,6 +2,9 @@
 
 namespace App\Filament\Clusters\Accounting\Resources\Partners;
 
+use App\Models\Account;
+use Filament\Forms\Components\Hidden;
+use Filament\Facades\Filament;
 use App\Enums\Accounting\AccountType;
 use App\Enums\Partners\PartnerType;
 use App\Filament\Clusters\Accounting\AccountingCluster;
@@ -184,7 +187,7 @@ class PartnerResource extends Resource
                                 TranslatableSelect::relationship(
                                     'receivable_account_id',
                                     'receivableAccount',
-                                    \App\Models\Account::class,
+                                    Account::class,
                                     __('partner.receivable_account'),
                                     'name',
                                     null,
@@ -192,8 +195,8 @@ class PartnerResource extends Resource
                                 )
                                     ->preload()
                                     ->createOptionForm([
-                                        \Filament\Forms\Components\Hidden::make('company_id')
-                                            ->default(fn () => \Filament\Facades\Filament::getTenant()?->id),
+                                        Hidden::make('company_id')
+                                            ->default(fn () => Filament::getTenant()?->id),
                                         TextInput::make('name')
                                             ->label(__('account.name'))
                                             ->required()
@@ -215,7 +218,7 @@ class PartnerResource extends Resource
                                 TranslatableSelect::relationship(
                                     'payable_account_id',
                                     'payableAccount',
-                                    \App\Models\Account::class,
+                                    Account::class,
                                     __('partner.payable_account'),
                                     'name',
                                     null,
@@ -223,8 +226,8 @@ class PartnerResource extends Resource
                                 )
                                     ->preload()
                                     ->createOptionForm([
-                                        \Filament\Forms\Components\Hidden::make('company_id')
-                                            ->default(fn () => \Filament\Facades\Filament::getTenant()?->id),
+                                        Hidden::make('company_id')
+                                            ->default(fn () => Filament::getTenant()?->id),
                                         TextInput::make('name')
                                             ->label(__('account.name'))
                                             ->required()

@@ -2,6 +2,7 @@
 
 namespace App\Filament\Clusters\Accounting\Pages\Reports;
 
+use Filament\Facades\Filament;
 use Carbon\Carbon;
 use App\Models\Account;
 use Filament\Pages\Page;
@@ -77,7 +78,7 @@ class ViewGeneralLedger extends Page
                             ->multiple()
                             ->searchable()
                             ->getSearchResultsUsing(function (string $search): array {
-                                $company = \Filament\Facades\Filament::getTenant();
+                                $company = Filament::getTenant();
                                 return Account::searchTranslatable($search)
                                     ->where('company_id', $company->id)
                                     ->limit(50)
@@ -115,7 +116,7 @@ class ViewGeneralLedger extends Page
             'endDate' => 'required|date|after_or_equal:startDate',
         ]);
 
-        $company = \Filament\Facades\Filament::getTenant();
+        $company = Filament::getTenant();
         $service = app(GeneralLedgerService::class);
 
         $report = $service->generate(

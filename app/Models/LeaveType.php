@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Traits\TranslatableSearch;
+use Illuminate\Support\Carbon;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -28,8 +30,8 @@ use Spatie\Translatable\HasTranslations;
  * @property bool $requires_documentation
  * @property string $color
  * @property bool $is_active
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  * @property-read Company $company
  * @property-read Collection<int, LeaveRequest> $leaveRequests
  * @property-read int|null $leave_requests_count
@@ -37,7 +39,7 @@ use Spatie\Translatable\HasTranslations;
 class LeaveType extends Model
 {
     use HasFactory, HasTranslations;
-    use \App\Traits\TranslatableSearch;
+    use TranslatableSearch;
 
     /**
      * The attributes that are mass assignable.

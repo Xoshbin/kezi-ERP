@@ -2,6 +2,7 @@
 
 namespace App\Services\HumanResources;
 
+use Exception;
 use App\Actions\HumanResources\CreateAttendanceAction;
 use App\DataTransferObjects\HumanResources\CreateAttendanceDTO;
 use App\Models\Attendance;
@@ -29,7 +30,7 @@ class AttendanceService
         // Check if already clocked in today
         $existingAttendance = $employee->getAttendanceForDate(now());
         if ($existingAttendance && $existingAttendance->clock_in_time) {
-            throw new \Exception('Employee has already clocked in today.');
+            throw new Exception('Employee has already clocked in today.');
         }
 
         $createAttendanceDTO = new CreateAttendanceDTO(
@@ -67,11 +68,11 @@ class AttendanceService
 
         $attendance = $employee->getAttendanceForDate(now());
         if (!$attendance || !$attendance->clock_in_time) {
-            throw new \Exception('Employee has not clocked in today.');
+            throw new Exception('Employee has not clocked in today.');
         }
 
         if ($attendance->clock_out_time) {
-            throw new \Exception('Employee has already clocked out today.');
+            throw new Exception('Employee has already clocked out today.');
         }
 
         // Calculate total hours
@@ -112,11 +113,11 @@ class AttendanceService
     {
         $attendance = $employee->getAttendanceForDate(now());
         if (!$attendance || !$attendance->clock_in_time) {
-            throw new \Exception('Employee has not clocked in today.');
+            throw new Exception('Employee has not clocked in today.');
         }
 
         if ($attendance->break_start_time) {
-            throw new \Exception('Break has already been started.');
+            throw new Exception('Break has already been started.');
         }
 
         $attendance->update([
@@ -133,11 +134,11 @@ class AttendanceService
     {
         $attendance = $employee->getAttendanceForDate(now());
         if (!$attendance || !$attendance->break_start_time) {
-            throw new \Exception('Break has not been started.');
+            throw new Exception('Break has not been started.');
         }
 
         if ($attendance->break_end_time) {
-            throw new \Exception('Break has already been ended.');
+            throw new Exception('Break has already been ended.');
         }
 
         $currentTime = now()->format('H:i:s');

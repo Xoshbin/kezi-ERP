@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use Brick\Money\Money;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -27,22 +29,22 @@ use Carbon\Carbon;
  * @property Carbon $period_end_date
  * @property Carbon $pay_date
  * @property string $pay_frequency
- * @property \Brick\Money\Money $base_salary
- * @property \Brick\Money\Money $overtime_amount
- * @property \Brick\Money\Money $housing_allowance
- * @property \Brick\Money\Money $transport_allowance
- * @property \Brick\Money\Money $meal_allowance
- * @property \Brick\Money\Money $other_allowances
- * @property \Brick\Money\Money $bonus
- * @property \Brick\Money\Money $commission
- * @property \Brick\Money\Money $gross_salary
- * @property \Brick\Money\Money $income_tax
- * @property \Brick\Money\Money $social_security
- * @property \Brick\Money\Money $health_insurance
- * @property \Brick\Money\Money $pension_contribution
- * @property \Brick\Money\Money $other_deductions
- * @property \Brick\Money\Money $total_deductions
- * @property \Brick\Money\Money $net_salary
+ * @property Money $base_salary
+ * @property Money $overtime_amount
+ * @property Money $housing_allowance
+ * @property Money $transport_allowance
+ * @property Money $meal_allowance
+ * @property Money $other_allowances
+ * @property Money $bonus
+ * @property Money $commission
+ * @property Money $gross_salary
+ * @property Money $income_tax
+ * @property Money $social_security
+ * @property Money $health_insurance
+ * @property Money $pension_contribution
+ * @property Money $other_deductions
+ * @property Money $total_deductions
+ * @property Money $net_salary
  * @property string $status
  * @property int|null $processed_by_user_id
  * @property Carbon|null $processed_at
@@ -59,7 +61,7 @@ use Carbon\Carbon;
  * @property-read Payment|null $payment
  * @property-read User|null $processedByUser
  * @property-read User|null $approvedByUser
- * @property-read \Illuminate\Database\Eloquent\Collection<int, PayrollLine> $payrollLines
+ * @property-read Collection<int, PayrollLine> $payrollLines
  */
 #[ObservedBy([AuditLogObserver::class, PayrollObserver::class])]
 class Payroll extends Model

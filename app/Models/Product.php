@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Traits\TranslatableSearch;
 use Illuminate\Support\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Database\Factories\ProductFactory;
@@ -61,7 +62,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class Product extends Model
 {
     use HasFactory, SoftDeletes;
-    use \App\Traits\TranslatableSearch;
+    use TranslatableSearch;
 
     protected $table = 'products';
 

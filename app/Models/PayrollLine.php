@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Casts\PayrollCurrencyMoneyCast;
+use App\Casts\BaseCurrencyMoneyCast;
 use Illuminate\Database\Eloquent\Model;
 
 class PayrollLine extends Model
@@ -30,9 +32,9 @@ class PayrollLine extends Model
     protected $casts = [
         'description' => 'array',
         'quantity' => 'decimal:4',
-        'rate' => \App\Casts\PayrollCurrencyMoneyCast::class,
-        'amount' => \App\Casts\PayrollCurrencyMoneyCast::class,
-        'amount_company_currency' => \App\Casts\BaseCurrencyMoneyCast::class,
+        'rate' => PayrollCurrencyMoneyCast::class,
+        'amount' => PayrollCurrencyMoneyCast::class,
+        'amount_company_currency' => BaseCurrencyMoneyCast::class,
         'tax_rate' => 'decimal:2',
         'is_taxable' => 'boolean',
         'is_statutory' => 'boolean',

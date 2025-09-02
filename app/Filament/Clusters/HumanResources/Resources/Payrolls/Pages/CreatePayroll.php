@@ -2,6 +2,7 @@
 
 namespace App\Filament\Clusters\HumanResources\Resources\Payrolls\Pages;
 
+use Filament\Facades\Filament;
 use App\Filament\Clusters\HumanResources\Resources\Payrolls\PayrollResource;
 use Filament\Resources\Pages\CreateRecord;
 
@@ -12,7 +13,7 @@ class CreatePayroll extends CreateRecord
     protected function mutateFormDataBeforeCreate(array $data): array
     {
         // Set company_id from tenant context
-        $data['company_id'] = \Filament\Facades\Filament::getTenant()?->id;
+        $data['company_id'] = Filament::getTenant()?->id;
 
         return $data;
     }

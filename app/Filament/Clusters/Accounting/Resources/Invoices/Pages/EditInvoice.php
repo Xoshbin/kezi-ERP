@@ -2,6 +2,10 @@
 
 namespace App\Filament\Clusters\Accounting\Resources\Invoices\Pages;
 
+use App\Actions\Accounting\BuildInvoicePostingPreviewAction;
+use Barryvdh\DomPDF\Facade\Pdf;
+use Filament\Facades\Filament;
+use App\Services\PaymentService;
 use App\Actions\Payments\CreatePaymentAction;
 use App\Actions\Sales\UpdateInvoiceAction;
 use App\DataTransferObjects\Payments\CreatePaymentDTO;
@@ -69,7 +73,7 @@ class EditInvoice extends EditRecord
                 ->modalCancelActionLabel(__('Close'))
                 ->modalWidth('7xl')
                 ->modalContent(function (Invoice $record) {
-                    $preview = app(\App\Actions\Accounting\BuildInvoicePostingPreviewAction::class)->execute($record);
+                    $preview = app(BuildInvoicePostingPreviewAction::class)->execute($record);
                     return view('filament/accounting/invoices/preview-posting', [
                         'preview' => $preview,
                         'invoice' => $record,
@@ -82,7 +86,7 @@ class EditInvoice extends EditRecord
                 ->color('gray')
                 ->visible(fn (Invoice $record): bool => $record->status === InvoiceStatus::Draft && config('app.debug') && ! app()->environment('production'))
                 ->action(function (Invoice $record) {
-                    $preview = app(\App\Actions\Accounting\BuildInvoicePostingPreviewAction::class)->execute($record);
+                    $preview = app(BuildInvoicePostingPreviewAction::class)->execute($record);
                     $rows = [];
                     $rows[] = ['Account Code', 'Account Name', 'Description', 'Debit', 'Credit'];
                     foreach ($preview['lines'] as $l) {
@@ -110,8 +114,8 @@ class EditInvoice extends EditRecord
                 ->color('gray')
                 ->visible(fn (Invoice $record): bool => $record->status === InvoiceStatus::Draft && config('app.debug') && ! app()->environment('production'))
                 ->action(function (Invoice $record) {
-                    $preview = app(\App\Actions\Accounting\BuildInvoicePostingPreviewAction::class)->execute($record);
-                    $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('filament/accounting/invoices/preview-posting-pdf', [
+                    $preview = app(BuildInvoicePostingPreviewAction::class)->execute($record);
+                    $pdf = Pdf::loadView('filament/accounting/invoices/preview-posting-pdf', [
                         'preview' => $preview,
                         'invoice' => $record,
                     ]);
@@ -143,16 +147,16 @@ class EditInvoice extends EditRecord
                 ->color('warning')
                 ->modalHeading(__('Register Payment'))
                 ->modalDescription(__('Register a payment for this invoice'))
-                ->form([
+                ->schema([
                     Select::make('journal_id')
                         ->label(__('payment.form.journal_id'))
                         ->options(function () {
-                            return Journal::where('company_id', \Filament\Facades\Filament::getTenant()->id)
+                            return Journal::where('company_id', Filament::getTenant()->id)
                                 ->pluck('name', 'id');
                         })
                         ->required()
                         ->default(function () {
-                            return Journal::where('company_id', \Filament\Facades\Filament::getTenant()->id)
+                            return Journal::where('company_id', Filament::getTenant()->id)
                                 ->where('type', 'bank')
                                 ->first()?->id;
                         }),
@@ -184,7 +188,7 @@ class EditInvoice extends EditRecord
 
                         // Create payment DTO
                         $paymentDTO = new CreatePaymentDTO(
-                            company_id: \Filament\Facades\Filament::getTenant()->id,
+                            company_id: Filament::getTenant()->id,
                             journal_id: $data['journal_id'],
                             currency_id: $record->currency_id,
                             payment_date: $data['payment_date'],
@@ -199,13 +203,13 @@ class EditInvoice extends EditRecord
 
                         // Create and confirm payment
                         $payment = app(CreatePaymentAction::class)->execute($paymentDTO, Auth::user());
-                        app(\App\Services\PaymentService::class)->confirm($payment, Auth::user());
+                        app(PaymentService::class)->confirm($payment, Auth::user());
 
                         Notification::make()
                             ->title(__('Payment registered successfully'))
                             ->success()
                             ->send();
-                    } catch (\Exception $e) {
+                    } catch (Exception $e) {
                         Notification::make()
                             ->title(__('Error registering payment'))
                             ->body($e->getMessage())

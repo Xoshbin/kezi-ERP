@@ -2,6 +2,7 @@
 
 namespace App\Listeners\Asset;
 
+use App\Models\AssetCategory;
 use Exception;
 use App\Actions\Assets\CreateAssetAction;
 use App\DataTransferObjects\Assets\CreateAssetDTO;
@@ -29,7 +30,7 @@ class CreateAssetFromVendorBillListener implements ShouldQueue
             // Check explicit asset-category selection first, fallback to can_create_assets on account
             $category = null;
             if ($line->asset_category_id) {
-                $category = \App\Models\AssetCategory::find($line->asset_category_id);
+                $category = AssetCategory::find($line->asset_category_id);
             } elseif ($line->expenseAccount?->can_create_assets) {
                 // Implicit asset via account; map into a temporary category-like structure using company defaults
                 $category = new class($company, $line) {

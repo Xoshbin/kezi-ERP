@@ -2,6 +2,7 @@
 
 namespace App\Filament\Clusters\Accounting\Resources\Invoices\Pages;
 
+use Filament\Facades\Filament;
 use App\Actions\Sales\CreateInvoiceAction;
 use App\DataTransferObjects\Sales\CreateInvoiceDTO;
 use App\DataTransferObjects\Sales\CreateInvoiceLineDTO;
@@ -39,7 +40,7 @@ class CreateInvoice extends CreateRecord
     protected function handleRecordCreation(array $data): Model
     {
         $invoiceDTO = new CreateInvoiceDTO(
-            company_id: \Filament\Facades\Filament::getTenant()->id,
+            company_id: Filament::getTenant()->id,
             customer_id: $data['customer_id'],
             currency_id: $data['currency_id'],
             invoice_date: $data['invoice_date'],

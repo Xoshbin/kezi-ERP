@@ -2,6 +2,14 @@
 
 namespace App\Filament\Clusters\Accounting\Resources\Invoices;
 
+use App\Models\Partner;
+use App\Models\Currency;
+use Filament\Facades\Filament;
+use App\Models\CurrencyRate;
+use App\Models\FiscalPosition;
+use App\Models\Tax;
+use App\Models\Account;
+use App\Services\PaymentService;
 use App\Enums\Partners\PartnerType;
 use App\Enums\Sales\InvoiceStatus;
 use App\Enums\Shared\PaymentState;
@@ -86,7 +94,7 @@ class InvoiceResource extends Resource
                 ->schema([
                     TranslatableSelect::standard(
                         'customer_id',
-                        \App\Models\Partner::class,
+                        Partner::class,
                         ['name', 'email', 'contact_person'],
                         __('invoice.customer')
                     )
@@ -123,18 +131,18 @@ class InvoiceResource extends Resource
                             return $action
                                 ->modalWidth('lg');
                         }),
-                    TranslatableSelect::make('currency_id', \App\Models\Currency::class, __('invoice.currency'))
+                    TranslatableSelect::make('currency_id', Currency::class, __('invoice.currency'))
                         ->required()
                         ->live()
-                        ->default(fn() => \Filament\Facades\Filament::getTenant()?->currency_id)
+                        ->default(fn() => Filament::getTenant()?->currency_id)
                         ->afterStateUpdated(function (callable $set, $state, callable $get) {
                             if ($state) {
-                                $currency = \App\Models\Currency::find($state);
-                                $company = \Filament\Facades\Filament::getTenant();
+                                $currency = Currency::find($state);
+                                $company = Filament::getTenant();
 
                                 if ($currency && $company && $currency->id !== $company->currency_id) {
                                     // Get latest exchange rate for this company
-                                    $latestRate = \App\Models\CurrencyRate::getLatestRate($currency->id, $company->id);
+                                    $latestRate = CurrencyRate::getLatestRate($currency->id, $company->id);
                                     if ($latestRate) {
                                         $set('current_exchange_rate', $latestRate);
                                     }
@@ -179,7 +187,7 @@ class InvoiceResource extends Resource
                         ->dehydrated(false)
                         ->visible(function (callable $get) {
                             $currencyId = $get('currency_id');
-                            $company = \Filament\Facades\Filament::getTenant();
+                            $company = Filament::getTenant();
                             return $currencyId && $company && $currencyId != $company->currency_id;
                         })
                         ->helperText(__('invoice.exchange_rate_helper')),
@@ -190,7 +198,7 @@ class InvoiceResource extends Resource
             Section::make(__('invoice.invoice_details'))
                 ->description(__('invoice.invoice_details_description'))
                 ->schema([
-                    TranslatableSelect::make('fiscal_position_id', \App\Models\FiscalPosition::class, __('invoice.fiscal_position'))
+                    TranslatableSelect::make('fiscal_position_id', FiscalPosition::class, __('invoice.fiscal_position'))
                         ->columnSpan(2),
                     DatePicker::make('invoice_date')
                         ->label(__('invoice.invoice_date'))
@@ -217,7 +225,7 @@ class InvoiceResource extends Resource
                         ->schema([
                             TranslatableSelect::standard(
                                 'product_id',
-                                \App\Models\Product::class,
+                                Product::class,
                                 ['name', 'sku', 'description'],
                                 __('invoice.product')
                             )
@@ -273,7 +281,7 @@ class InvoiceResource extends Resource
                                 ->currencyField('../../currency_id')
                                 ->required()
                                 ->columnSpan(3),
-                            TranslatableSelect::make('tax_id', \App\Models\Tax::class, __('invoice.tax'))
+                            TranslatableSelect::make('tax_id', Tax::class, __('invoice.tax'))
                                 ->createOptionForm([
                                     Select::make('company_id')
                                         ->relationship('company', 'name')
@@ -302,7 +310,7 @@ class InvoiceResource extends Resource
                             TranslatableSelect::relationship(
                                 'income_account_id',
                                 'incomeAccount',
-                                \App\Models\Account::class,
+                                Account::class,
                                 __('invoice.income_account'),
                                 'name',
                                 null,
@@ -507,16 +515,16 @@ class InvoiceResource extends Resource
                     ->color('success')
                     ->modalHeading(__('Register Payment'))
                     ->modalDescription(__('Register a payment for this invoice'))
-                    ->form([
+                    ->schema([
                         Select::make('journal_id')
                             ->label(__('payment.form.journal_id'))
                             ->options(function () {
-                                return Journal::where('company_id', \Filament\Facades\Filament::getTenant()->id)
+                                return Journal::where('company_id', Filament::getTenant()->id)
                                     ->pluck('name', 'id');
                             })
                             ->required()
                             ->default(function () {
-                                return Journal::where('company_id', \Filament\Facades\Filament::getTenant()->id)
+                                return Journal::where('company_id', Filament::getTenant()->id)
                                     ->where('type', 'bank')
                                     ->first()?->id;
                             }),
@@ -548,7 +556,7 @@ class InvoiceResource extends Resource
 
                             // Create payment DTO
                             $paymentDTO = new CreatePaymentDTO(
-                                company_id: \Filament\Facades\Filament::getTenant()->id,
+                                company_id: Filament::getTenant()->id,
                                 journal_id: $data['journal_id'],
                                 currency_id: $record->currency_id,
                                 payment_date: $data['payment_date'],
@@ -563,7 +571,7 @@ class InvoiceResource extends Resource
 
                             // Create and confirm payment
                             $payment = app(CreatePaymentAction::class)->execute($paymentDTO, Auth::user());
-                            app(\App\Services\PaymentService::class)->confirm($payment, Auth::user());
+                            app(PaymentService::class)->confirm($payment, Auth::user());
 
                             Notification::make()
                                 ->title(__('Payment registered successfully'))
