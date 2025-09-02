@@ -82,7 +82,8 @@
             "include": [
                 "composer.local.json"
             ],
-            "replace": true
+            "replace": true,
+            "ignore-missing": true
         }
     },
     "config": {
