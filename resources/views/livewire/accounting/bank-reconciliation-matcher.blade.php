@@ -5,7 +5,7 @@
             <h2 class="text-lg font-medium text-gray-900">{{ __('bank_statement.statement_details') }}</h2>
             <div class="flex items-center space-x-2">
                 <span class="text-sm text-gray-500">{{ __('bank_statement.currency') }}:</span>
-                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-[var(--color-info-100)] text-[var(--color-info-800)]">
                     {{ $bankStatement->currency->code }}
                 </span>
             </div>
@@ -63,7 +63,7 @@
             </div>
             <div class="flex flex-col flex-1 items-start">
                 <dt class="text-sm font-medium text-gray-500">{{ __('bank_statement.difference') }}</dt>
-                <dd class="mt-1 text-sm font-bold {{ $this->summary['isBalanced'] ? 'text-green-600' : 'text-red-600' }}">
+                <dd class="mt-1 text-sm font-bold {{ $this->summary['isBalanced'] ? 'text-[var(--color-success-600)]' : 'text-[var(--color-danger-600)]' }}">
                     {{ $this->summary['differenceFormatted'] }}
                 </dd>
             </div>
@@ -71,11 +71,11 @@
                 <dt class="text-sm font-medium text-gray-500">{{ __('bank_statement.status') }}</dt>
                 <dd class="mt-1">
                     @if($this->summary['isBalanced'])
-                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-[var(--color-success-100)] text-[var(--color-success-800)]">
                             {{ __('bank_statement.balanced') }}
                         </span>
                     @else
-                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-[var(--color-danger-100)] text-[var(--color-danger-800)]">
                             {{ __('bank_statement.not_balanced') }}
                         </span>
                     @endif

@@ -52,27 +52,27 @@
                                         {{ $line['partnerName'] }}
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-right text-gray-900 dark:text-white">
-                                        <span class="{{ $line['currentAmount'] > 0 ? 'text-green-600 dark:text-green-400' : 'text-gray-500' }}">
+                                        <span class="{{ $line['currentAmount'] > 0 ? 'text-[var(--color-success-600)] dark:text-[var(--color-success-400)]' : 'text-gray-500' }}">
                                             {{ $line['current'] }}
                                         </span>
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-right text-gray-900 dark:text-white">
-                                        <span class="{{ $line['bucket1_30Amount'] > 0 ? 'text-yellow-600 dark:text-yellow-400' : 'text-gray-500' }}">
+                                        <span class="{{ $line['bucket1_30Amount'] > 0 ? 'text-[var(--color-warning-600)] dark:text-[var(--color-warning-400)]' : 'text-gray-500' }}">
                                             {{ $line['bucket1_30'] }}
                                         </span>
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-right text-gray-900 dark:text-white">
-                                        <span class="{{ $line['bucket31_60Amount'] > 0 ? 'text-orange-600 dark:text-orange-400' : 'text-gray-500' }}">
+                                        <span class="{{ $line['bucket31_60Amount'] > 0 ? 'text-[var(--color-warning-600)] dark:text-[var(--color-warning-400)]' : 'text-gray-500' }}">
                                             {{ $line['bucket31_60'] }}
                                         </span>
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-right text-gray-900 dark:text-white">
-                                        <span class="{{ $line['bucket61_90Amount'] > 0 ? 'text-red-600 dark:text-red-400' : 'text-gray-500' }}">
+                                        <span class="{{ $line['bucket61_90Amount'] > 0 ? 'text-[var(--color-danger-600)] dark:text-[var(--color-danger-400)]' : 'text-gray-500' }}">
                                             {{ $line['bucket61_90'] }}
                                         </span>
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-right text-gray-900 dark:text-white">
-                                        <span class="{{ $line['bucket90_plusAmount'] > 0 ? 'text-red-800 dark:text-red-300' : 'text-gray-500' }}">
+                                        <span class="{{ $line['bucket90_plusAmount'] > 0 ? 'text-[var(--color-danger-800)] dark:text-[var(--color-danger-300)]' : 'text-gray-500' }}">
                                             {{ $line['bucket90_plus'] }}
                                         </span>
                                     </td>

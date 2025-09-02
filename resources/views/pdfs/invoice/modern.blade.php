@@ -4,6 +4,37 @@
     <meta charset="UTF-8">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <title>{{ __('invoice.invoice') }} {{ $invoice->invoice_number }}</title>
+    @php
+        use Filament\Support\Facades\FilamentColor;
+        use Filament\Support\Colors\Color as FsColor;
+        $primary = FilamentColor::getColor('primary');
+        $info = FilamentColor::getColor('info');
+        $gray = FilamentColor::getColor('gray');
+        $danger = FilamentColor::getColor('danger');
+        // Convert to rgb() for PDF compatibility
+        $p500 = FsColor::convertToRgb($primary[500]);
+        $p600 = FsColor::convertToRgb($primary[600]);
+        $p700 = FsColor::convertToRgb($primary[700]);
+        $i500 = FsColor::convertToRgb($info[500]);
+        $i600 = FsColor::convertToRgb($info[600]);
+        $g50 = FsColor::convertToRgb($gray[50]);
+        $g100 = FsColor::convertToRgb($gray[100]);
+        $g200 = FsColor::convertToRgb($gray[200]);
+        $g600 = FsColor::convertToRgb($gray[600]);
+        $g700 = FsColor::convertToRgb($gray[700]);
+        $g800 = FsColor::convertToRgb($gray[800]);
+        $d500 = FsColor::convertToRgb($danger[500]);
+        if (preg_match('/rgb\((\d+),\s*(\d+),\s*(\d+)\)/', $d500, $m)) {
+            $d500a40 = "rgba({$m[1]}, {$m[2]}, {$m[3]}, 0.4)";
+        } else {
+            $d500a40 = 'rgba(239, 68, 68, 0.4)';
+        }
+        if (preg_match('/rgb\((\d+),\s*(\d+),\s*(\d+)\)/', $g800, $m2)) {
+            $g800a10 = "rgba({$m2[1]}, {$m2[2]}, {$m2[3]}, 0.1)";
+        } else {
+            $g800a10 = 'rgba(0, 0, 0, 0.1)';
+        }
+    @endphp
     <style>
         @page {
             margin: 15mm;
@@ -14,10 +45,10 @@
             font-family: 'DejaVu Sans', sans-serif;
             font-size: 11px;
             line-height: 1.5;
-            color: #2d3748;
+            color: {{ $g700 }};
             margin: 0;
             padding: 0;
-            background-color: #ffffff;
+            background-color: {{ $g50 }};
         }
 
         .container {
@@ -26,7 +57,7 @@
         }
 
         .header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, {{ $p600 }} 0%, {{ $p700 }} 100%);
             color: white;
             padding: 25px;
             margin-bottom: 30px;
@@ -53,7 +84,7 @@
             left: 50%;
             transform: translate(-50%, -50%) rotate(-45deg);
             font-size: 48px;
-            color: rgba(239, 68, 68, 0.4);
+            color: {{ $d500a40 }};
             font-weight: bold;
             z-index: 10;
             pointer-events: none;
@@ -73,13 +104,13 @@
         }
 
         .company-details {
-            background-color: #f7fafc;
+            background-color: {{ $g50 }};
             border-radius: 8px;
             margin-{{ app()->getLocale() === 'ar' ? 'left' : 'right' }}: 10px;
         }
 
         .customer-details {
-            background-color: #edf2f7;
+            background-color: {{ $g100 }};
             border-radius: 8px;
             margin-{{ app()->getLocale() === 'ar' ? 'right' : 'left' }}: 10px;
         }
@@ -87,7 +118,7 @@
         .section-title {
             font-weight: 600;
             font-size: 13px;
-            color: #4a5568;
+            color: {{ $g700 }};
             margin-bottom: 15px;
             text-transform: uppercase;
             letter-spacing: 1px;
@@ -96,20 +127,20 @@
         .company-name {
             font-size: 16px;
             font-weight: 600;
-            color: #2d3748;
+            color: {{ $g800 }};
             margin-bottom: 8px;
         }
 
         .detail-line {
             margin-bottom: 4px;
-            color: #4a5568;
+            color: {{ $g700 }};
         }
 
         .invoice-meta {
             display: table;
             width: 100%;
             margin: 30px 0;
-            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            background: linear-gradient(135deg, {{ $p500 }} 0%, {{ $p600 }} 100%);
             color: white;
             border-radius: 8px;
             padding: 20px;
@@ -144,11 +175,11 @@
             border-collapse: collapse;
             border-radius: 8px;
             overflow: hidden;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 6px {{ $g800a10 }};
         }
 
         .line-items th {
-            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            background: linear-gradient(135deg, {{ $i500 }} 0%, {{ $i600 }} 100%);
             color: white;
             padding: 15px 12px;
             text-align: {{ app()->getLocale() === 'ar' ? 'right' : 'left' }};
@@ -160,32 +191,32 @@
 
         .line-items td {
             padding: 12px;
-            border-bottom: 1px solid #e2e8f0;
+            border-bottom: 1px solid {{ $g200 }};
             text-align: {{ app()->getLocale() === 'ar' ? 'right' : 'left' }};
         }
 
         .line-items tr:nth-child(even) {
-            background-color: #f8fafc;
+            background-color: {{ $g50 }};
         }
 
         .line-items tr:hover {
-            background-color: #edf2f7;
+            background-color: {{ $g100 }};
         }
 
         .amount-column {
             text-align: right !important;
             font-weight: 600;
-            color: #2d3748;
+            color: {{ $g800 }};
         }
 
         .product-name {
             font-weight: 600;
-            color: #2d3748;
+            color: {{ $g800 }};
             margin-bottom: 3px;
         }
 
         .product-description {
-            color: #718096;
+            color: {{ $g600 }};
             font-size: 10px;
         }
 
@@ -200,29 +231,29 @@
             border-collapse: collapse;
             border-radius: 8px;
             overflow: hidden;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 6px {{ $g800a10 }};
         }
 
         .totals td {
             padding: 12px 15px;
-            border-bottom: 1px solid #e2e8f0;
+            border-bottom: 1px solid {{ $g200 }};
         }
 
         .totals .label {
-            background-color: #f7fafc;
+            background-color: {{ $g50 }};
             font-weight: 600;
-            color: #4a5568;
+            color: {{ $g700 }};
             text-align: {{ app()->getLocale() === 'ar' ? 'right' : 'left' }};
         }
 
         .totals .amount {
             text-align: right;
             font-weight: 600;
-            color: #2d3748;
+            color: {{ $g800 }};
         }
 
         .totals .total-row {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, {{ $p600 }} 0%, {{ $p700 }} 100%);
             color: white;
             font-weight: 700;
             font-size: 16px;
@@ -232,17 +263,17 @@
             clear: both;
             margin-top: 60px;
             text-align: center;
-            color: #718096;
+            color: {{ $g600 }};
             font-size: 10px;
             padding: 20px;
-            background-color: #f7fafc;
+            background-color: {{ $g50 }};
             border-radius: 8px;
         }
 
         .footer .thank-you {
             font-size: 14px;
             font-weight: 600;
-            color: #4a5568;
+            color: {{ $g700 }};
             margin-bottom: 10px;
         }
 
