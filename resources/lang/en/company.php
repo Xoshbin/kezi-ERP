@@ -39,4 +39,10 @@ return [
         'email_verified_at' => 'Email Verified At',
         'password' => 'Password',
     ],
+
+    // Sections
+    'section' => [
+        'details' => 'Company Details',
+        'defaults' => 'Company Defaults',
+    ],
 ];

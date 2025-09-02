@@ -5,6 +5,26 @@ return [
     'label' => 'مستخدم',
     'plural_label' => 'مستخدمون',
 
+    // Forms
+    'form' => [
+        'basic_information' => 'المعلومات الأساسية',
+        'company' => [
+            'label' => 'شركة',
+        ],
+        'name' => [
+            'label' => 'اسم',
+        ],
+        'email' => [
+            'label' => 'بريد إلكتروني',
+        ],
+        'email_verified_at' => [
+            'label' => 'تاريخ تأكيد البريد الإلكتروني',
+        ],
+        'password' => [
+            'label' => 'كلمة مرور',
+        ],
+    ],
+
     // Fields
     'name' => 'اسم',
     'email' => 'بريد إلكتروني',

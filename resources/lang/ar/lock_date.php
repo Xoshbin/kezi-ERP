@@ -29,4 +29,7 @@ return [
     // Actions
     'lock_period' => 'قفل الفترة',
     'unlock_period' => 'إلغاء قفل الفترة',
+
+    // Section
+    'basic_information' => 'المعلومات الأساسية',
 ];

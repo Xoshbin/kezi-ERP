@@ -23,4 +23,8 @@ return [
         'credit' => 'دائن',
         'description' => 'وصف',
     ],
+
+    // Section
+    'basic_information' => 'المعلومات الأساسية',
+    'basic_information_description' => 'رمز الحساب، الاسم، النوع والخيارات.',
 ];
