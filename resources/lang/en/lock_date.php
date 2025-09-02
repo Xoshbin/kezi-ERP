@@ -16,4 +16,7 @@ return [
 
     // Placeholders
     'select_company' => 'Select a company',
+
+    // Section
+    'basic_information' => 'Basic Information',
 ];
