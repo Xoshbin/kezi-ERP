@@ -68,6 +68,7 @@ class JmeryarPanelProvider extends PanelProvider
             ->tenantRegistration(RegisterCompany::class)
             ->tenantProfile(EditCompanyProfile::class)
             ->plugins([
+                // JmeryarTheme::make(),
                 SpatieTranslatablePlugin::make()
                     ->defaultLocales(['en', 'ckb', 'ar']),
                 // FilamentAiHelperPlugin::make()
