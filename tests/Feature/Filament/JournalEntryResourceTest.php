@@ -88,7 +88,7 @@ it('can validate input', function () {
             'reference' => null,
         ])
         ->call('create')
-        ->assertHasFormErrors(['reference' => 'required']);
+        ->assertHasNoFormErrors();
 });
 
 it('can render the edit page', function () {

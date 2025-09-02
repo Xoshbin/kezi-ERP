@@ -6,26 +6,26 @@
             <div class="flex items-center space-x-2">
                 <span class="text-sm text-gray-500">{{ __('bank_statement.currency') }}:</span>
                 <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-[var(--color-info-100)] text-[var(--color-info-800)]">
-                    {{ $bankStatement->currency->code }}
+                    {{ $bankStatement->currency->code ?? \Filament\Facades\Filament::getTenant()?->currency?->code }}
                 </span>
             </div>
         </div>
         <dl class="flex flex-row justify-between w-full space-x-8">
             <div class="flex flex-col flex-1 items-start">
             <dt class="text-sm font-medium text-gray-500">{{ __('bank_statement.reference') }}</dt>
-            <dd class="mt-1 text-sm text-gray-900">{{ $bankStatement->reference }}</dd>
+            <dd class="mt-1 text-sm text-gray-900">{{ $bankStatement->reference ?? '-' }}</dd>
             </div>
             <div class="flex flex-col flex-1 items-start">
             <dt class="text-sm font-medium text-gray-500">{{ __('bank_statement.date') }}</dt>
-            <dd class="mt-1 text-sm text-gray-900">{{ $bankStatement->date->format('Y-m-d') }}</dd>
+            <dd class="mt-1 text-sm text-gray-900">{{ optional($bankStatement->date)->format('Y-m-d') ?? '-' }}</dd>
             </div>
             <div class="flex flex-col flex-1 items-start">
             <dt class="text-sm font-medium text-gray-500">{{ __('bank_statement.starting_balance') }}</dt>
-            <dd class="mt-1 text-sm text-gray-900">{{ \App\Support\NumberFormatter::formatMoneyTo($bankStatement->starting_balance) }}</dd>
+            <dd class="mt-1 text-sm text-gray-900">{{ $bankStatement->starting_balance ? \App\Support\NumberFormatter::formatMoneyTo($bankStatement->starting_balance) : '0.000' }}</dd>
             </div>
             <div class="flex flex-col flex-1 items-start">
             <dt class="text-sm font-medium text-gray-500">{{ __('bank_statement.ending_balance') }}</dt>
-            <dd class="mt-1 text-sm text-gray-900">{{ \App\Support\NumberFormatter::formatMoneyTo($bankStatement->ending_balance) }}</dd>
+            <dd class="mt-1 text-sm text-gray-900">{{ $bankStatement->ending_balance ? \App\Support\NumberFormatter::formatMoneyTo($bankStatement->ending_balance) : '0.000' }}</dd>
             </div>
         </dl>
     </div>
@@ -33,10 +33,18 @@
     {{-- Main Reconciliation Interface --}}
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
         {{-- Bank Transactions Table --}}
-        <livewire:accounting.bank-transactions-table :bank-statement="$bankStatement" />
+        @if($bankStatement->exists)
+            <livewire:accounting.bank-transactions-table :bank-statement="$bankStatement" />
+        @else
+            <div class="p-6 border rounded-lg text-sm text-gray-500">{{ __('bank_statement.no_bank_lines') }}</div>
+        @endif
 
         {{-- System Payments Table --}}
-        <livewire:accounting.system-payments-table :bank-statement="$bankStatement" />
+        @if($bankStatement->exists)
+            <livewire:accounting.system-payments-table :bank-statement="$bankStatement" />
+        @else
+            <div class="p-6 border rounded-lg text-sm text-gray-500">{{ __('bank_statement.no_unreconciled_payments') }}</div>
+        @endif
     </div>
 
     {{-- Summary Section --}}
