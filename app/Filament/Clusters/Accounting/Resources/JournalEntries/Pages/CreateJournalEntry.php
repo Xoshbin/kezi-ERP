@@ -31,9 +31,9 @@ class CreateJournalEntry extends CreateRecord
                         account_id: $line['account_id'],
                         debit: Money::of($line['debit'] ?? 0, $currency->code),
                         credit: Money::of($line['credit'] ?? 0, $currency->code),
-                        description: $line['description'],
-                        partner_id: $line['partner_id'],
-                        analytic_account_id: $line['analytic_account_id']
+                        description: $line['description'] ?? null,
+                        partner_id: $line['partner_id'] ?? null,
+                        analytic_account_id: $line['analytic_account_id'] ?? null
                     );
                 }
             }
@@ -51,8 +51,8 @@ class CreateJournalEntry extends CreateRecord
             journal_id: $data['journal_id'],
             currency_id: $data['currency_id'],
             entry_date: $data['entry_date'],
-            reference: $data['reference'],
-            description: $data['description'],
+            reference: $data['reference'] ?? null,
+            description: $data['description'] ?? null,
             created_by_user_id: $data['created_by_user_id'],
             is_posted: false,
             lines: $data['lines']

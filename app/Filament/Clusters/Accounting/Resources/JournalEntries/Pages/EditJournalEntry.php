@@ -145,9 +145,9 @@ class EditJournalEntry extends EditRecord
                     account_id: $line['account_id'],
                     debit: $this->convertMoneyToString($line['debit']),
                     credit: $this->convertMoneyToString($line['credit']),
-                    description: $line['description'],
-                    partner_id: $line['partner_id'],
-                    analytic_account_id: $line['analytic_account_id']
+                    description: $line['description'] ?? null,
+                    partner_id: $line['partner_id'] ?? null,
+                    analytic_account_id: $line['analytic_account_id'] ?? null
                 );
             }
         } else {
@@ -170,8 +170,8 @@ class EditJournalEntry extends EditRecord
             journal_id: $data['journal_id'],
             currency_id: $data['currency_id'],
             entry_date: $data['entry_date'],
-            reference: $data['reference'],
-            description: $data['description'],
+            reference: $data['reference'] ?? null,
+            description: $data['description'] ?? null,
             is_posted: $record->is_posted,
             lines: $lineDTOs
         );
