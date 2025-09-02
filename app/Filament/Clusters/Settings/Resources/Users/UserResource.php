@@ -6,8 +6,6 @@ use App\Filament\Clusters\Settings\Resources\Users\Pages\CreateUser;
 use App\Filament\Clusters\Settings\Resources\Users\Pages\EditUser;
 use App\Filament\Clusters\Settings\Resources\Users\Pages\ListUsers;
 use App\Filament\Clusters\Settings\SettingsCluster;
-use App\Filament\Resources\UserResource\Pages;
-use App\Filament\Resources\UserResource\RelationManagers;
 use App\Models\User;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
@@ -16,6 +14,7 @@ use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Resources\Resource;
+use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
@@ -51,25 +50,30 @@ class UserResource extends Resource
     {
         return $schema
             ->components([
-                Select::make('company_id')
-                    ->relationship('companies', 'name')
-                    ->label(__('user.form.company.label')),
-                TextInput::make('name')
-                    ->label(__('user.form.name.label'))
-                    ->required()
-                    ->maxLength(255),
-                TextInput::make('email')
-                    ->label(__('user.form.email.label'))
-                    ->email()
-                    ->required()
-                    ->maxLength(255),
-                DateTimePicker::make('email_verified_at')
-                    ->label(__('user.form.email_verified_at.label')),
-                TextInput::make('password')
-                    ->label(__('user.form.password.label'))
-                    ->password()
-                    ->required()
-                    ->maxLength(255),
+                Section::make(__('user.form.basic_information'))
+                    ->schema([
+                        Select::make('company_id')
+                            ->relationship('companies', 'name')
+                            ->label(__('user.form.company.label')),
+                        TextInput::make('name')
+                            ->label(__('user.form.name.label'))
+                            ->required()
+                            ->maxLength(255),
+                        TextInput::make('email')
+                            ->label(__('user.form.email.label'))
+                            ->email()
+                            ->required()
+                            ->maxLength(255),
+                        DateTimePicker::make('email_verified_at')
+                            ->label(__('user.form.email_verified_at.label')),
+                        TextInput::make('password')
+                            ->label(__('user.form.password.label'))
+                            ->password()
+                            ->required()
+                            ->maxLength(255),
+                    ])
+                    ->columns(2)
+                    ->columnSpanFull(),
             ]);
     }
 

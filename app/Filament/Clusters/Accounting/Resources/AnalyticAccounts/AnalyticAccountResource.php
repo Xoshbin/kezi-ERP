@@ -2,6 +2,7 @@
 
 namespace App\Filament\Clusters\Accounting\Resources\AnalyticAccounts;
 
+use App\Models\Currency;
 use App\Filament\Clusters\Accounting\AccountingCluster;
 use App\Filament\Clusters\Accounting\Resources\AnalyticAccounts\Pages\CreateAnalyticAccount;
 use App\Filament\Clusters\Accounting\Resources\AnalyticAccounts\Pages\EditAnalyticAccount;
@@ -63,7 +64,7 @@ class AnalyticAccountResource extends Resource
                     ->label(__('analytic_account.company'))
                     ->placeholder(__('analytic_account.select_company'))
                     ->required(),
-                TranslatableSelect::make('currency_id', \App\Models\Currency::class, __('analytic_account.currency')),
+                TranslatableSelect::make('currency_id', Currency::class, __('analytic_account.currency')),
                 TextInput::make('name')
                     ->label(__('analytic_account.name'))
                     ->required()

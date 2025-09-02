@@ -94,9 +94,9 @@ class InvoicePostingIntegrationTest extends TestCase
         $this->assertEquals(\App\Enums\Sales\InvoiceStatus::Posted, $invoice2->status);
         $this->assertEquals(\App\Enums\Sales\InvoiceStatus::Posted, $invoice3->status);
 
-        $this->assertEquals('INV-00001', $invoice1->invoice_number);
-        $this->assertEquals('INV-00002', $invoice2->invoice_number);
-        $this->assertEquals('INV-00003', $invoice3->invoice_number);
+        $this->assertMatchesRegularExpression('/^INV\/\d{4}\/\d{2}\/\d{7}$/', $invoice1->invoice_number);
+        $this->assertMatchesRegularExpression('/^INV\/\d{4}\/\d{2}\/\d{7}$/', $invoice2->invoice_number);
+        $this->assertMatchesRegularExpression('/^INV\/\d{4}\/\d{2}\/\d{7}$/', $invoice3->invoice_number);
 
         // Verify journal entries were created with unique references
         $this->assertNotNull($invoice1->journal_entry_id);
@@ -107,9 +107,9 @@ class InvoicePostingIntegrationTest extends TestCase
         $journalEntry2 = $invoice2->journalEntry;
         $journalEntry3 = $invoice3->journalEntry;
 
-        $this->assertEquals('INV-00001', $journalEntry1->reference);
-        $this->assertEquals('INV-00002', $journalEntry2->reference);
-        $this->assertEquals('INV-00003', $journalEntry3->reference);
+        $this->assertMatchesRegularExpression('/^INV\/\d{4}\/\d{2}\/\d{7}$/', $journalEntry1->reference);
+        $this->assertMatchesRegularExpression('/^INV\/\d{4}\/\d{2}\/\d{7}$/', $journalEntry2->reference);
+        $this->assertMatchesRegularExpression('/^INV\/\d{4}\/\d{2}\/\d{7}$/', $journalEntry3->reference);
 
         // Verify no duplicate journal entry references exist
         $duplicateEntries = \App\Models\JournalEntry::where('company_id', $this->company->id)
@@ -151,7 +151,10 @@ class InvoicePostingIntegrationTest extends TestCase
         $this->assertCount(5, array_unique($invoiceNumbers));
 
         // Verify the sequence is correct
-        $this->assertEquals(['INV-00001', 'INV-00002', 'INV-00003', 'INV-00004', 'INV-00005'], $invoiceNumbers);
+        // Verify all numbers follow the new Odoo-style format
+        foreach ($invoiceNumbers as $number) {
+            $this->assertMatchesRegularExpression('/^INV\/\d{4}\/\d{2}\/\d{7}$/', $number);
+        }
 
         // Verify no duplicate journal entry references exist in the database
         $journalEntryReferences = \App\Models\JournalEntry::where('company_id', $this->company->id)

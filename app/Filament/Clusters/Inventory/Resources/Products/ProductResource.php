@@ -2,6 +2,7 @@
 
 namespace App\Filament\Clusters\Inventory\Resources\Products;
 
+use Filament\Facades\Filament;
 use Filament\Schemas\Schema;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Grid;
@@ -130,8 +131,8 @@ class ProductResource extends Resource
                             ->searchable()
                             ->preload()
                             ->createOptionForm([
-                                \Filament\Forms\Components\Hidden::make('company_id')
-                                    ->default(fn () => \Filament\Facades\Filament::getTenant()?->id),
+                                Hidden::make('company_id')
+                                    ->default(fn () => Filament::getTenant()?->id),
                                 TextInput::make('code')
                                     ->label(__('account.code'))
                                     ->required()
@@ -164,8 +165,8 @@ class ProductResource extends Resource
                             ->searchable()
                             ->preload()
                             ->createOptionForm([
-                                \Filament\Forms\Components\Hidden::make('company_id')
-                                    ->default(fn () => \Filament\Facades\Filament::getTenant()?->id),
+                                Hidden::make('company_id')
+                                    ->default(fn () => Filament::getTenant()?->id),
                                 TextInput::make('code')
                                     ->label(__('account.code'))
                                     ->required()
@@ -224,8 +225,8 @@ class ProductResource extends Resource
                             ->preload()
                             ->visible(fn (Get $get) => $get('type') === ProductType::Storable->value)
                             ->createOptionForm([
-                                \Filament\Forms\Components\Hidden::make('company_id')
-                                    ->default(fn () => \Filament\Facades\Filament::getTenant()?->id),
+                                Hidden::make('company_id')
+                                    ->default(fn () => Filament::getTenant()?->id),
                                 TextInput::make('code')
                                     ->label(__('account.code'))
                                     ->required()
@@ -257,8 +258,8 @@ class ProductResource extends Resource
                             ->preload()
                             ->visible(fn (Get $get) => $get('type') === ProductType::Storable->value)
                             ->createOptionForm([
-                                \Filament\Forms\Components\Hidden::make('company_id')
-                                    ->default(fn () => \Filament\Facades\Filament::getTenant()?->id),
+                                Hidden::make('company_id')
+                                    ->default(fn () => Filament::getTenant()?->id),
                                 TextInput::make('code')
                                     ->label(__('account.code'))
                                     ->required()
@@ -292,8 +293,8 @@ class ProductResource extends Resource
                             ->preload()
                             ->visible(fn (Get $get) => $get('type') === ProductType::Storable->value)
                             ->createOptionForm([
-                                \Filament\Forms\Components\Hidden::make('company_id')
-                                    ->default(fn () => \Filament\Facades\Filament::getTenant()?->id),
+                                Hidden::make('company_id')
+                                    ->default(fn () => Filament::getTenant()?->id),
                                 TextInput::make('code')
                                     ->label(__('account.code'))
                                     ->required()
@@ -325,8 +326,8 @@ class ProductResource extends Resource
                             ->preload()
                             ->visible(fn (Get $get) => $get('type') === ProductType::Storable->value)
                             ->createOptionForm([
-                                \Filament\Forms\Components\Hidden::make('company_id')
-                                    ->default(fn () => \Filament\Facades\Filament::getTenant()?->id),
+                                Hidden::make('company_id')
+                                    ->default(fn () => Filament::getTenant()?->id),
                                 TextInput::make('code')
                                     ->label(__('account.code'))
                                     ->required()

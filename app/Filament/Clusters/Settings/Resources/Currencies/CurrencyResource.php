@@ -17,6 +17,7 @@ use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Resources\Resource;
+use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
@@ -51,27 +52,32 @@ class CurrencyResource extends Resource
     {
         return $schema
             ->components([
-                TextInput::make('code')
-                    ->label(__('currency.code'))
-                    ->required()
-                    ->maxLength(255),
-                TextInput::make('name')
-                    ->label(__('currency.name'))
-                    ->required()
-                    ->maxLength(255),
-                TextInput::make('symbol')
-                    ->label(__('currency.symbol'))
-                    ->required()
-                    ->maxLength(5),
-                TextInput::make('exchange_rate')
-                    ->label(__('currency.exchange_rate'))
-                    ->required()
-                    ->numeric(),
-                Toggle::make('is_active')
-                    ->label(__('currency.is_active'))
-                    ->required(),
-                DateTimePicker::make('last_updated_at')
-                    ->label(__('currency.last_updated_at')),
+                Section::make(__('currency.basic_information'))
+                    ->schema([
+                        TextInput::make('code')
+                            ->label(__('currency.code'))
+                            ->required()
+                            ->maxLength(255),
+                        TextInput::make('name')
+                            ->label(__('currency.name'))
+                            ->required()
+                            ->maxLength(255),
+                        TextInput::make('symbol')
+                            ->label(__('currency.symbol'))
+                            ->required()
+                            ->maxLength(5),
+                        TextInput::make('exchange_rate')
+                            ->label(__('currency.exchange_rate'))
+                            ->required()
+                            ->numeric(),
+                        Toggle::make('is_active')
+                            ->label(__('currency.is_active'))
+                            ->required(),
+                        DateTimePicker::make('last_updated_at')
+                            ->label(__('currency.last_updated_at')),
+                    ])
+                    ->columns(2)
+                    ->columnSpanFull(),
             ]);
     }
 

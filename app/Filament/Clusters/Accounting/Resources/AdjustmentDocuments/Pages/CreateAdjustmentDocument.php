@@ -4,6 +4,7 @@
 namespace App\Filament\Clusters\Accounting\Resources\AdjustmentDocuments\Pages;
 
 // Add imports for Invoice and VendorBill
+use Filament\Facades\Filament;
 use App\Actions\Adjustments\CreateAdjustmentDocumentAction;
 use App\DataTransferObjects\Adjustments\CreateAdjustmentDocumentDTO;
 use App\DataTransferObjects\Adjustments\CreateAdjustmentDocumentLineDTO;
@@ -74,7 +75,7 @@ class CreateAdjustmentDocument extends CreateRecord
         }
 
         $dto = new CreateAdjustmentDocumentDTO(
-            company_id: \Filament\Facades\Filament::getTenant()->id,
+            company_id: Filament::getTenant()->id,
             type: AdjustmentDocumentType::from($data['type']),
             date: $data['date'],
             reference_number: $data['reference_number'],

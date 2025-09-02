@@ -174,7 +174,7 @@ class ExchangeGainLossService
         Carbon $revaluationDate
     ): Money {
         $currentRate = $this->currencyConverter->getExchangeRate($currency, $revaluationDate);
-        
+
         if ($currentRate === null) {
             return Money::of(0, $company->currency->code);
         }
@@ -190,7 +190,7 @@ class ExchangeGainLossService
         // Get the historical book value (this would need to be tracked separately)
         // For now, we'll use the current balance converted at current rate
         // In a full implementation, you'd track the original conversion values
-        
+
         return Money::of(0, $company->currency->code); // Placeholder
     }
 

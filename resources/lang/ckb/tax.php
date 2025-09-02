@@ -32,4 +32,7 @@ return [
         'purchases' => 'کڕینەکان',
         'none' => 'هیچ',
     ],
+
+    // Section
+    'basic_information' => 'زانیاری بنەڕەتی',
 ];

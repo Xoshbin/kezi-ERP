@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\Company;
 use App\DataTransferObjects\Accounting\CreateJournalEntryForStatementLineDTO;
 use App\Exceptions\Reconciliation\ReconciliationDisabledException;
 use Brick\Money\Money;
@@ -204,10 +205,10 @@ class BankReconciliationService
     /**
      * Validate that reconciliation is enabled for the given company.
      *
-     * @param \App\Models\Company $company
+     * @param Company $company
      * @throws ReconciliationDisabledException
      */
-    private function validateReconciliationEnabled(\App\Models\Company $company): void
+    private function validateReconciliationEnabled(Company $company): void
     {
         if (!$company->enable_reconciliation) {
             throw new ReconciliationDisabledException();

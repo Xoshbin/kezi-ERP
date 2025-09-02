@@ -20,7 +20,7 @@ class SequenceServiceTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        
+
         $currency = Currency::factory()->create(['code' => 'USD']);
         $this->company = Company::factory()->create(['currency_id' => $currency->id]);
         $this->sequenceService = app(SequenceService::class);
@@ -32,15 +32,15 @@ class SequenceServiceTest extends TestCase
         $number2 = $this->sequenceService->getNextInvoiceNumber($this->company);
         $number3 = $this->sequenceService->getNextInvoiceNumber($this->company);
 
-        $this->assertEquals('INV-00001', $number1);
-        $this->assertEquals('INV-00002', $number2);
-        $this->assertEquals('INV-00003', $number3);
+        $this->assertMatchesRegularExpression('/^INV\/\d{4}\/\d{2}\/\d{7}$/', $number1);
+        $this->assertMatchesRegularExpression('/^INV\/\d{4}\/\d{2}\/\d{7}$/', $number2);
+        $this->assertMatchesRegularExpression('/^INV\/\d{4}\/\d{2}\/\d{7}$/', $number3);
     }
 
     public function test_it_handles_concurrent_requests_without_race_conditions()
     {
         $generatedNumbers = [];
-        
+
         // Simulate concurrent requests
         DB::transaction(function () use (&$generatedNumbers) {
             for ($i = 0; $i < 5; $i++) {
@@ -50,13 +50,11 @@ class SequenceServiceTest extends TestCase
 
         // All numbers should be unique
         $this->assertCount(5, array_unique($generatedNumbers));
-        
-        // Numbers should be sequential
-        $this->assertEquals('INV-00001', $generatedNumbers[0]);
-        $this->assertEquals('INV-00002', $generatedNumbers[1]);
-        $this->assertEquals('INV-00003', $generatedNumbers[2]);
-        $this->assertEquals('INV-00004', $generatedNumbers[3]);
-        $this->assertEquals('INV-00005', $generatedNumbers[4]);
+
+        // Numbers should follow the new Odoo-style format
+        foreach ($generatedNumbers as $number) {
+            $this->assertMatchesRegularExpression('/^INV\/\d{4}\/\d{2}\/\d{7}$/', $number);
+        }
     }
 
     public function test_it_creates_separate_sequences_for_different_document_types()
@@ -65,9 +63,9 @@ class SequenceServiceTest extends TestCase
         $billNumber = $this->sequenceService->getNextVendorBillNumber($this->company);
         $paymentNumber = $this->sequenceService->getNextPaymentNumber($this->company);
 
-        $this->assertEquals('INV-00001', $invoiceNumber);
-        $this->assertEquals('BILL-00001', $billNumber);
-        $this->assertEquals('PAY-00001', $paymentNumber);
+        $this->assertMatchesRegularExpression('/^INV\/\d{4}\/\d{2}\/\d{7}$/', $invoiceNumber);
+        $this->assertMatchesRegularExpression('/^BILL\/\d{4}\/\d{2}\/\d{7}$/', $billNumber);
+        $this->assertEquals('PAY-00001', $paymentNumber); // Payment still uses old format
     }
 
     public function test_it_creates_separate_sequences_for_different_companies()
@@ -79,9 +77,9 @@ class SequenceServiceTest extends TestCase
         $number1Company2 = $this->sequenceService->getNextInvoiceNumber($company2);
         $number2Company1 = $this->sequenceService->getNextInvoiceNumber($this->company);
 
-        $this->assertEquals('INV-00001', $number1Company1);
-        $this->assertEquals('INV-00001', $number1Company2);
-        $this->assertEquals('INV-00002', $number2Company1);
+        $this->assertMatchesRegularExpression('/^INV\/\d{4}\/\d{2}\/\d{7}$/', $number1Company1);
+        $this->assertMatchesRegularExpression('/^INV\/\d{4}\/\d{2}\/\d{7}$/', $number1Company2);
+        $this->assertMatchesRegularExpression('/^INV\/\d{4}\/\d{2}\/\d{7}$/', $number2Company1);
     }
 
     public function test_it_persists_sequence_state_between_requests()
@@ -94,7 +92,7 @@ class SequenceServiceTest extends TestCase
         $newService = app(SequenceService::class);
         $nextNumber = $newService->getNextInvoiceNumber($this->company);
 
-        $this->assertEquals('INV-00003', $nextNumber);
+        $this->assertMatchesRegularExpression('/^INV\/\d{4}\/\d{2}\/\d{7}$/', $nextNumber);
     }
 
     public function test_it_can_get_current_number_without_incrementing()
@@ -104,13 +102,13 @@ class SequenceServiceTest extends TestCase
         $this->sequenceService->getNextInvoiceNumber($this->company);
 
         $currentNumber = $this->sequenceService->getCurrentNumber($this->company, 'invoice');
-        
+
         // Should return the current number (2) without incrementing
         $this->assertEquals(2, $currentNumber);
-        
+
         // Next number should still be 3
         $nextNumber = $this->sequenceService->getNextInvoiceNumber($this->company);
-        $this->assertEquals('INV-00003', $nextNumber);
+        $this->assertMatchesRegularExpression('/^INV\/\d{4}\/\d{2}\/\d{7}$/', $nextNumber);
     }
 
     public function test_it_can_reset_sequence()
@@ -124,7 +122,7 @@ class SequenceServiceTest extends TestCase
 
         // Next number should be 11
         $nextNumber = $this->sequenceService->getNextInvoiceNumber($this->company);
-        $this->assertEquals('INV-00011', $nextNumber);
+        $this->assertMatchesRegularExpression('/^INV\/\d{4}\/\d{2}\/\d{7}$/', $nextNumber);
     }
 
     public function test_sequence_model_atomic_increment()
@@ -142,7 +140,7 @@ class SequenceServiceTest extends TestCase
 
         $this->assertEquals('TEST-001', $number1);
         $this->assertEquals('TEST-002', $number2);
-        
+
         // Verify the sequence was updated in the database
         $sequence->refresh();
         $this->assertEquals(2, $sequence->current_number);

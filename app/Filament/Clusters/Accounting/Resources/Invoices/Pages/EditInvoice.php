@@ -2,20 +2,34 @@
 
 namespace App\Filament\Clusters\Accounting\Resources\Invoices\Pages;
 
+use App\Actions\Accounting\BuildInvoicePostingPreviewAction;
+use Barryvdh\DomPDF\Facade\Pdf;
+use Filament\Facades\Filament;
+use App\Services\PaymentService;
+use App\Actions\Payments\CreatePaymentAction;
 use App\Actions\Sales\UpdateInvoiceAction;
+use App\DataTransferObjects\Payments\CreatePaymentDTO;
+use App\DataTransferObjects\Payments\CreatePaymentDocumentLinkDTO;
 use App\DataTransferObjects\Sales\UpdateInvoiceDTO;
 use App\DataTransferObjects\Sales\UpdateInvoiceLineDTO;
+use App\Enums\Payments\PaymentPurpose;
+use App\Enums\Payments\PaymentType;
 use App\Enums\Sales\InvoiceStatus;
 use App\Filament\Clusters\Accounting\Resources\Invoices\InvoiceResource;
 use App\Filament\Clusters\Accounting\Resources\Invoices\Widgets\SettlementSummaryWidget;
-use App\Filament\Clusters\Accounting\Resources\Payments\PaymentResource;
 use App\Models\Invoice;
+use App\Models\Journal;
 use App\Services\InvoiceService;
 use Brick\Money\Money;
 use Exception;
 use Filament\Actions\Action;
 use Filament\Actions\ActionGroup;
 use Filament\Actions\DeleteAction;
+use App\Filament\Forms\Components\MoneyInput;
+use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\Hidden;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
 use Illuminate\Database\Eloquent\Model;
@@ -48,6 +62,69 @@ class EditInvoice extends EditRecord
                 ->color('gray')
                 ->button(),
 
+            Action::make('preview_posting')
+                ->label(__('Preview Posting'))
+                ->icon('heroicon-o-eye')
+                ->color('info')
+                ->visible(fn (Invoice $record): bool => $record->status === InvoiceStatus::Draft)
+                ->requiresConfirmation()
+                ->modalHeading(__('Posting Preview'))
+                ->modalSubmitAction(false)
+                ->modalCancelActionLabel(__('Close'))
+                ->modalWidth('7xl')
+                ->modalContent(function (Invoice $record) {
+                    $preview = app(BuildInvoicePostingPreviewAction::class)->execute($record);
+                    return view('filament/accounting/invoices/preview-posting', [
+                        'preview' => $preview,
+                        'invoice' => $record,
+                    ]);
+                }),
+
+            Action::make('export_preview_csv')
+                ->label(__('Export Preview (CSV)'))
+                ->icon('heroicon-o-arrow-down-tray')
+                ->color('gray')
+                ->visible(fn (Invoice $record): bool => $record->status === InvoiceStatus::Draft && config('app.debug') && ! app()->environment('production'))
+                ->action(function (Invoice $record) {
+                    $preview = app(BuildInvoicePostingPreviewAction::class)->execute($record);
+                    $rows = [];
+                    $rows[] = ['Account Code', 'Account Name', 'Description', 'Debit', 'Credit'];
+                    foreach ($preview['lines'] as $l) {
+                        $rows[] = [
+                            is_array($l['account_code'] ?? null) ? (string) (reset($l['account_code']) ?: '') : (string) ($l['account_code'] ?? ''),
+                            is_array($l['account_name'] ?? null) ? (string) (reset($l['account_name']) ?: '') : (string) ($l['account_name'] ?? ''),
+                            is_array($l['description'] ?? null) ? (string) (reset($l['description']) ?: '') : (string) ($l['description'] ?? ''),
+                            number_format(($l['debit_minor'] ?? 0) / 100, 2, '.', ''),
+                            number_format(($l['credit_minor'] ?? 0) / 100, 2, '.', ''),
+                        ];
+                    }
+                    $csv = '';
+                    foreach ($rows as $row) {
+                        $csv .= implode(',', array_map(fn($v) => '"' . str_replace('"', '""', (string) $v) . '"', $row)) . "\n";
+                    }
+                    $filename = 'invoice-' . ($record->invoice_number ?: ('DRAFT-' . str_pad($record->id, 5, '0', STR_PAD_LEFT))) . '-preview.csv';
+                    return response()->streamDownload(function () use ($csv) { echo $csv; }, $filename, [
+                        'Content-Type' => 'text/csv',
+                    ]);
+                }),
+
+            Action::make('export_preview_pdf')
+                ->label(__('Export Preview (PDF)'))
+                ->icon('heroicon-o-document-arrow-down')
+                ->color('gray')
+                ->visible(fn (Invoice $record): bool => $record->status === InvoiceStatus::Draft && config('app.debug') && ! app()->environment('production'))
+                ->action(function (Invoice $record) {
+                    $preview = app(BuildInvoicePostingPreviewAction::class)->execute($record);
+                    $pdf = Pdf::loadView('filament/accounting/invoices/preview-posting-pdf', [
+                        'preview' => $preview,
+                        'invoice' => $record,
+                    ]);
+                    $filename = 'invoice-' . ($record->invoice_number ?: ('DRAFT-' . str_pad($record->id, 5, '0', STR_PAD_LEFT))) . '-preview.pdf';
+                    return response()->streamDownload(function () use ($pdf) { echo $pdf->output(); }, $filename, [
+                        'Content-Type' => 'application/pdf',
+                    ]);
+                }),
+
             Action::make('confirm')
                 ->label(__('invoice.confirm_invoice'))
                 ->color('success')
@@ -64,16 +141,86 @@ class EditInvoice extends EditRecord
                     }
                 }),
 
-            Action::make('registerPayment')
-                ->label(__('invoice.register_payment'))
-                ->color('info')
-                ->visible(fn (Invoice $record): bool => $record->status === InvoiceStatus::Posted)
-                ->action(fn (Invoice $record) => redirect()->to(PaymentResource::getUrl('create', [
-                    'invoice_id' => $record->id,
-                    'amount' => $record->total_amount->getAmount()->toFloat(),
-                    'partner_id' => $record->customer_id,
-                    'currency_id' => $record->currency_id,
-                ]))),
+            Action::make('register_payment')
+                ->label(__('Register Payment'))
+                ->icon('heroicon-o-banknotes')
+                ->color('warning')
+                ->modalHeading(__('Register Payment'))
+                ->modalDescription(__('Register a payment for this invoice'))
+                ->schema([
+                    Select::make('journal_id')
+                        ->label(__('payment.form.journal_id'))
+                        ->options(function () {
+                            return Journal::where('company_id', Filament::getTenant()->id)
+                                ->pluck('name', 'id');
+                        })
+                        ->required()
+                        ->default(function () {
+                            return Journal::where('company_id', Filament::getTenant()->id)
+                                ->where('type', 'bank')
+                                ->first()?->id;
+                        }),
+                    DatePicker::make('payment_date')
+                        ->label(__('payment.form.payment_date'))
+                        ->default(now())
+                        ->required(),
+                    MoneyInput::make('amount')
+                        ->label(__('payment.form.amount'))
+                        ->currencyField('currency_id')
+                        ->default(fn(Invoice $record) => $record->getRemainingAmount())
+                        ->required(),
+                    TextInput::make('reference')
+                        ->label(__('payment.form.reference'))
+                        ->placeholder(__('Optional reference')),
+                    Hidden::make('currency_id')
+                        ->default(fn(Invoice $record) => $record->currency_id),
+                ])
+                ->action(function (Invoice $record, array $data) {
+                    try {
+                        $currency = $record->currency;
+
+                        // Create payment document link DTO
+                        $documentLink = new CreatePaymentDocumentLinkDTO(
+                            document_type: 'invoice',
+                            document_id: $record->id,
+                            amount_applied: Money::of($data['amount'], $currency->code)
+                        );
+
+                        // Create payment DTO
+                        $paymentDTO = new CreatePaymentDTO(
+                            company_id: Filament::getTenant()->id,
+                            journal_id: $data['journal_id'],
+                            currency_id: $record->currency_id,
+                            payment_date: $data['payment_date'],
+                            payment_purpose: PaymentPurpose::Settlement,
+                            payment_type: PaymentType::Inbound,
+                            partner_id: $record->customer_id,
+                            amount: Money::of($data['amount'], $currency->code),
+                            counterpart_account_id: null,
+                            document_links: [$documentLink],
+                            reference: $data['reference']
+                        );
+
+                        // Create and confirm payment
+                        $payment = app(CreatePaymentAction::class)->execute($paymentDTO, Auth::user());
+                        app(PaymentService::class)->confirm($payment, Auth::user());
+
+                        Notification::make()
+                            ->title(__('Payment registered successfully'))
+                            ->success()
+                            ->send();
+                    } catch (Exception $e) {
+                        Notification::make()
+                            ->title(__('Error registering payment'))
+                            ->body($e->getMessage())
+                            ->danger()
+                            ->send();
+                    }
+                })
+                ->visible(fn(Invoice $record) =>
+                    $record->status === InvoiceStatus::Posted &&
+                    !$record->getRemainingAmount()->isZero()
+                ),
 
             // Actions\Action::make('resetToDraft')
             //     ->label(__('invoice.reset_to_draft'))

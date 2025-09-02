@@ -33,4 +33,7 @@ return [
             'seeder' => 'تۆخمکاری بنکەدراو',
         ],
     ],
+
+    // Section
+    'basic_information' => 'زانیاری بنەڕەتی',
 ];

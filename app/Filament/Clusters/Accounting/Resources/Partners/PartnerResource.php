@@ -2,6 +2,9 @@
 
 namespace App\Filament\Clusters\Accounting\Resources\Partners;
 
+use App\Models\Account;
+use Filament\Forms\Components\Hidden;
+use Filament\Facades\Filament;
 use App\Enums\Accounting\AccountType;
 use App\Enums\Partners\PartnerType;
 use App\Filament\Clusters\Accounting\AccountingCluster;
@@ -13,8 +16,8 @@ use App\Filament\Clusters\Accounting\Resources\Partners\RelationManagers\Invoice
 use App\Filament\Clusters\Accounting\Resources\Partners\RelationManagers\PaymentsRelationManager;
 use App\Filament\Clusters\Accounting\Resources\Partners\RelationManagers\UnreconciledEntriesRelationManager;
 use App\Filament\Clusters\Accounting\Resources\Partners\RelationManagers\VendorBillsRelationManager;
-use App\Filament\Resources\PartnerResource\Pages;
-use App\Filament\Resources\PartnerResource\RelationManagers;
+
+
 use App\Filament\Support\TranslatableSelect;
 use App\Models\Partner;
 use Filament\Actions\BulkActionGroup;
@@ -29,8 +32,9 @@ use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\IconColumn;
-use Filament\Tables\Columns\SelectColumn;
+
 use Filament\Tables\Columns\TextColumn;
+use App\Filament\Tables\Columns\MoneyColumn;
 use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TernaryFilter;
@@ -52,12 +56,12 @@ class PartnerResource extends Resource
         return __('navigation.groups.sales_purchases');
     }
 
-    public static function getLabel(): ?string
+    public static function getModelLabel(): string
     {
         return __('partner.label');
     }
 
-    public static function getPluralLabel(): ?string
+    public static function getPluralModelLabel(): string
     {
         return __('partner.plural_label');
     }
@@ -104,6 +108,7 @@ class PartnerResource extends Resource
                                     ->inline(false),
                             ]),
                     ])
+                    ->columnSpanFull()
                     ->collapsible(),
 
                 Section::make(__('partner.contact_information'))
@@ -130,6 +135,7 @@ class PartnerResource extends Resource
                             ->columnSpan(1),
                     ])
                     ->columns(2)
+                    ->columnSpanFull()
                     ->collapsible(),
 
                 Section::make(__('partner.address_information'))
@@ -169,6 +175,7 @@ class PartnerResource extends Resource
                             ->columnSpan(1),
                     ])
                     ->columns(2)
+                    ->columnSpanFull()
                     ->collapsible(),
 
                 Section::make(__('partner.accounting_configuration'))
@@ -180,7 +187,7 @@ class PartnerResource extends Resource
                                 TranslatableSelect::relationship(
                                     'receivable_account_id',
                                     'receivableAccount',
-                                    \App\Models\Account::class,
+                                    Account::class,
                                     __('partner.receivable_account'),
                                     'name',
                                     null,
@@ -188,8 +195,8 @@ class PartnerResource extends Resource
                                 )
                                     ->preload()
                                     ->createOptionForm([
-                                        \Filament\Forms\Components\Hidden::make('company_id')
-                                            ->default(fn () => \Filament\Facades\Filament::getTenant()?->id),
+                                        Hidden::make('company_id')
+                                            ->default(fn () => Filament::getTenant()?->id),
                                         TextInput::make('name')
                                             ->label(__('account.name'))
                                             ->required()
@@ -200,7 +207,7 @@ class PartnerResource extends Resource
                                             ->maxLength(255),
                                         Select::make('type')
                                             ->label(__('account.type'))
-                                            ->options([AccountType::Receivable->value => 'Receivable'])
+                                            ->options([AccountType::Receivable->value => AccountType::Receivable->label()])
                                             ->default(AccountType::Receivable->value)
                                             ->required(),
                                     ])
@@ -211,7 +218,7 @@ class PartnerResource extends Resource
                                 TranslatableSelect::relationship(
                                     'payable_account_id',
                                     'payableAccount',
-                                    \App\Models\Account::class,
+                                    Account::class,
                                     __('partner.payable_account'),
                                     'name',
                                     null,
@@ -219,8 +226,8 @@ class PartnerResource extends Resource
                                 )
                                     ->preload()
                                     ->createOptionForm([
-                                        \Filament\Forms\Components\Hidden::make('company_id')
-                                            ->default(fn () => \Filament\Facades\Filament::getTenant()?->id),
+                                        Hidden::make('company_id')
+                                            ->default(fn () => Filament::getTenant()?->id),
                                         TextInput::make('name')
                                             ->label(__('account.name'))
                                             ->required()
@@ -231,7 +238,7 @@ class PartnerResource extends Resource
                                             ->maxLength(255),
                                         Select::make('type')
                                             ->label(__('account.type'))
-                                            ->options([AccountType::Payable->value => 'Payable'])
+                                            ->options([AccountType::Payable->value => AccountType::Payable->label()])
                                             ->default(AccountType::Payable->value)
                                             ->required(),
                                     ])
@@ -240,6 +247,7 @@ class PartnerResource extends Resource
                                     ->prefixIcon('heroicon-m-arrow-trending-down'),
                             ]),
                     ])
+                    ->columnSpanFull()
                     ->collapsible(),
             ]);
     }
@@ -284,13 +292,13 @@ class PartnerResource extends Resource
                     ->sortable(),
 
                 // Financial Information - Customer Balances
-                TextColumn::make('customer_balance')
+                MoneyColumn::make('customer_balance')
                     ->label(__('partner.customer_outstanding'))
-                    ->getStateUsing(function (Partner $record): string {
+                    ->getStateUsing(function (Partner $record) {
                         if (!in_array($record->type, [PartnerType::Customer, PartnerType::Both])) {
-                            return '-';
+                            return null;
                         }
-                        return $record->getCustomerOutstandingBalance()->formatTo('en_US');
+                        return $record->getCustomerOutstandingBalance();
                     })
                     ->badge()
                     ->color(function (Partner $record) {
@@ -301,13 +309,13 @@ class PartnerResource extends Resource
                     })
                     ->sortable(false),
 
-                TextColumn::make('customer_overdue')
+                MoneyColumn::make('customer_overdue')
                     ->label(__('partner.customer_overdue'))
-                    ->getStateUsing(function (Partner $record): string {
+                    ->getStateUsing(function (Partner $record) {
                         if (!in_array($record->type, [PartnerType::Customer, PartnerType::Both])) {
-                            return '-';
+                            return null;
                         }
-                        return $record->getCustomerOverdueBalance()->formatTo('en_US');
+                        return $record->getCustomerOverdueBalance();
                     })
                     ->badge()
                     ->color(function (Partner $record) {
@@ -319,13 +327,13 @@ class PartnerResource extends Resource
                     ->sortable(false),
 
                 // Financial Information - Vendor Balances
-                TextColumn::make('vendor_balance')
+                MoneyColumn::make('vendor_balance')
                     ->label(__('partner.vendor_outstanding'))
-                    ->getStateUsing(function (Partner $record): string {
+                    ->getStateUsing(function (Partner $record) {
                         if (!in_array($record->type, [PartnerType::Vendor, PartnerType::Both])) {
-                            return '-';
+                            return null;
                         }
-                        return $record->getVendorOutstandingBalance()->formatTo('en_US');
+                        return $record->getVendorOutstandingBalance();
                     })
                     ->badge()
                     ->color(function (Partner $record) {
@@ -336,13 +344,13 @@ class PartnerResource extends Resource
                     })
                     ->sortable(false),
 
-                TextColumn::make('vendor_overdue')
+                MoneyColumn::make('vendor_overdue')
                     ->label(__('partner.vendor_overdue'))
-                    ->getStateUsing(function (Partner $record): string {
+                    ->getStateUsing(function (Partner $record) {
                         if (!in_array($record->type, [PartnerType::Vendor, PartnerType::Both])) {
-                            return '-';
+                            return null;
                         }
-                        return $record->getVendorOverdueBalance()->formatTo('en_US');
+                        return $record->getVendorOverdueBalance();
                     })
                     ->badge()
                     ->color(function (Partner $record) {

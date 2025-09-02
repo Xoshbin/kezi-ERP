@@ -2,6 +2,7 @@
 
 namespace App\Services\HumanResources;
 
+use Exception;
 use App\Actions\HumanResources\CreateEmployeeAction;
 use App\Actions\HumanResources\CreateEmploymentContractAction;
 use App\DataTransferObjects\HumanResources\CreateEmployeeDTO;
@@ -108,7 +109,7 @@ class EmployeeService
         Gate::forUser($user)->authorize('update', $employee);
 
         if ($employee->employment_status !== 'terminated') {
-            throw new \Exception('Only terminated employees can be reactivated.');
+            throw new Exception('Only terminated employees can be reactivated.');
         }
 
         DB::transaction(function () use ($employee, $reactivationDate) {

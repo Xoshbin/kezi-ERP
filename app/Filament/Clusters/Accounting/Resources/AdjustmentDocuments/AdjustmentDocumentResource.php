@@ -2,6 +2,12 @@
 
 namespace App\Filament\Clusters\Accounting\Resources\AdjustmentDocuments;
 
+use App\Models\Currency;
+use Filament\Facades\Filament;
+use Filament\Actions\Action;
+use App\Models\Tax;
+use App\Models\Account;
+use App\Enums\Accounting\AccountType;
 use App\Enums\Adjustments\AdjustmentDocumentStatus;
 use App\Enums\Adjustments\AdjustmentDocumentType;
 use App\Filament\Clusters\Accounting\AccountingCluster;
@@ -71,11 +77,11 @@ class AdjustmentDocumentResource extends Resource
             Section::make(__('adjustment_document.document_information'))
                 ->description(__('adjustment_document.document_information_description'))
                 ->schema([
-                    TranslatableSelect::make('currency_id', \App\Models\Currency::class, __('adjustment_document.currency'))
+                    TranslatableSelect::make('currency_id', Currency::class, __('adjustment_document.currency'))
                         ->required()
                         ->live()
                         ->columnSpan(2)
-                        ->default(fn() => \Filament\Facades\Filament::getTenant()?->currency_id)
+                        ->default(fn() => Filament::getTenant()?->currency_id)
                         ->disabled(fn (Get $get): bool => !empty($get('original_invoice_id')) || !empty($get('original_vendor_bill_id')))
                         ->createOptionForm([
                             TextInput::make('code')
@@ -101,7 +107,7 @@ class AdjustmentDocumentResource extends Resource
                                 ->default(true),
                         ])
                         ->createOptionModalHeading(__('common.modal_title_create_currency'))
-                        ->createOptionAction(function (\Filament\Actions\Action $action) {
+                        ->createOptionAction(function (Action $action) {
                             return $action
                                 ->modalWidth('lg');
                         }),
@@ -212,7 +218,7 @@ class AdjustmentDocumentResource extends Resource
                         ->schema([
                             TranslatableSelect::standard(
                                 'product_id',
-                                \App\Models\Product::class,
+                                Product::class,
                                 ['name', 'sku', 'description'],
                                 __('adjustment_document.product')
                             )
@@ -247,28 +253,28 @@ class AdjustmentDocumentResource extends Resource
                                         ->required(),
                                 ])
                                 ->createOptionModalHeading(__('common.modal_title_create_product'))
-                                ->createOptionAction(function (\Filament\Actions\Action $action) {
+                                ->createOptionAction(function (Action $action) {
                                     return $action
                                         ->modalWidth('lg');
                                 })
-                                ->columnSpan(2),
+                                ->columnSpan(3),
                             TextInput::make('description')
                                 ->label(__('adjustment_document.description'))
                                 ->maxLength(255)
                                 ->required()
-                                ->columnSpan(3),
+                                ->columnSpan(4),
                             TextInput::make('quantity')
                                 ->label(__('adjustment_document.qty'))
                                 ->required()
                                 ->numeric()
                                 ->default(1)
-                                ->columnSpan(1),
+                                ->columnSpan(2),
                             MoneyInput::make('unit_price')
                                 ->label('Price')
                                 ->currencyField('../../currency_id')
                                 ->required()
-                                ->columnSpan(1),
-                            TranslatableSelect::make('tax_id', \App\Models\Tax::class, 'Tax')
+                                ->columnSpan(3),
+                            TranslatableSelect::make('tax_id', Tax::class, 'Tax')
                                 ->createOptionForm([
                                     Select::make('company_id')
                                         ->relationship('company', 'name')
@@ -289,14 +295,14 @@ class AdjustmentDocumentResource extends Resource
                                         ->suffix('%'),
                                 ])
                                 ->createOptionModalHeading(__('common.modal_title_create_tax'))
-                                ->createOptionAction(function (\Filament\Actions\Action $action) {
+                                ->createOptionAction(function (Action $action) {
                                     return $action
                                         ->modalWidth('lg');
                                 })
-                                ->columnSpan(1),
+                                ->columnSpan(3),
                             TranslatableSelect::withFormatter(
                                 'account_id',
-                                \App\Models\Account::class,
+                                Account::class,
                                 fn($account) => [$account->id => $account->getTranslatedLabel('name') . ' (' . $account->code . ')'],
                                 'Account'
                             )
@@ -318,8 +324,8 @@ class AdjustmentDocumentResource extends Resource
                                         ->label(__('account.type'))
                                         ->required()
                                         ->options(
-                                            collect(\App\Enums\Accounting\AccountType::cases())
-                                                ->mapWithKeys(fn (\App\Enums\Accounting\AccountType $type) => [$type->value => $type->label()])
+                                            collect(AccountType::cases())
+                                                ->mapWithKeys(fn (AccountType $type) => [$type->value => $type->label()])
                                         )
                                         ->searchable(),
                                     Toggle::make('is_deprecated')
@@ -327,13 +333,13 @@ class AdjustmentDocumentResource extends Resource
                                         ->default(false),
                                 ])
                                 ->createOptionModalHeading(__('common.modal_title_create_account'))
-                                ->createOptionAction(function (\Filament\Actions\Action $action) {
+                                ->createOptionAction(function (Action $action) {
                                     return $action
                                         ->modalWidth('lg');
                                 })
-                                ->columnSpan(2),
+                                ->columnSpan(3),
                         ])
-                        ->columns(6)
+                        ->columns(18)
                 ])
                 ->columnSpanFull(),
         ]);

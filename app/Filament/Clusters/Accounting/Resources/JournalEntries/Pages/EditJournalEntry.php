@@ -2,6 +2,7 @@
 
 namespace App\Filament\Clusters\Accounting\Resources\JournalEntries\Pages;
 
+use App\Models\Currency;
 use App\Actions\Accounting\UpdateJournalEntryAction;
 use App\DataTransferObjects\Accounting\UpdateJournalEntryDTO;
 use App\DataTransferObjects\Accounting\UpdateJournalEntryLineDTO;
@@ -84,7 +85,7 @@ class EditJournalEntry extends EditRecord
 
             if ($isMultiCurrency) {
                 // Multi-currency entry: use original amounts in transaction currency
-                $originalCurrency = \App\Models\Currency::find($line->original_currency_id);
+                $originalCurrency = Currency::find($line->original_currency_id);
                 if ($originalCurrency && $originalCurrency->code === $currencyCode) {
                     // Determine if this line was a debit or credit based on base currency amounts
                     $isDebit = $line->debit->isPositive();

@@ -2,6 +2,11 @@
 
 namespace App\Filament\Clusters\Accounting\Resources\BankStatements;
 
+use App\Models\Currency;
+use Filament\Facades\Filament;
+use App\Enums\Accounting\JournalType;
+use Closure;
+use App\Models\Partner;
 use App\Filament\Clusters\Accounting\AccountingCluster;
 use App\Filament\Clusters\Accounting\Resources\BankStatements\Pages\BankReconciliation;
 use App\Filament\Clusters\Accounting\Resources\BankStatements\Pages\CreateBankStatement;
@@ -64,11 +69,11 @@ class BankStatementResource extends Resource
             Section::make(__('bank_statement.statement_information'))
                 ->description(__('bank_statement.statement_information_description'))
                 ->schema([
-                    TranslatableSelect::make('currency_id', \App\Models\Currency::class, __('bank_statement.currency'))
+                    TranslatableSelect::make('currency_id', Currency::class, __('bank_statement.currency'))
                         ->required()
                         ->live()
                         ->columnSpan(2)
-                        ->default(fn() => \Filament\Facades\Filament::getTenant()?->currency_id)
+                        ->default(fn() => Filament::getTenant()?->currency_id)
                         ->createOptionForm([
                             TextInput::make('code')
                                 ->label(__('currency.code'))
@@ -96,11 +101,11 @@ class BankStatementResource extends Resource
                     Select::make('journal_id')
                         ->label(__('bank_statement.bank_journal'))
                         ->options(function () {
-                            $company = \Filament\Facades\Filament::getTenant();
+                            $company = Filament::getTenant();
                             if (!$company) {
                                 return [];
                             }
-                            return Journal::where('type', \App\Enums\Accounting\JournalType::Bank)
+                            return Journal::where('type', JournalType::Bank)
                                 ->where('company_id', $company->id)
                                 ->pluck('name', 'id');
                         })
@@ -108,15 +113,15 @@ class BankStatementResource extends Resource
                         ->required()
                         ->columnSpan(2)
                         ->rule(function () {
-                            return function (string $attribute, $value, \Closure $fail) {
-                                $company = \Filament\Facades\Filament::getTenant();
+                            return function (string $attribute, $value, Closure $fail) {
+                                $company = Filament::getTenant();
                                 if (!$company) {
                                     $fail('Company context is required.');
                                     return;
                                 }
 
                                 $journal = Journal::find($value);
-                                if (!$journal || $journal->company_id !== $company->id || $journal->type !== \App\Enums\Accounting\JournalType::Bank) {
+                                if (!$journal || $journal->company_id !== $company->id || $journal->type !== JournalType::Bank) {
                                     $fail('The selected bank journal is invalid.');
                                 }
                             };
@@ -156,15 +161,15 @@ class BankStatementResource extends Resource
                             DatePicker::make('date')
                                 ->label(__('bank_statement.line_date'))
                                 ->required()
-                                ->columnSpan(3),
+                                ->columnSpan(2),
                             TextInput::make('description')
                                 ->label(__('bank_statement.description'))
                                 ->required()
                                 ->maxLength(255)
-                                ->columnSpan(6),
+                                ->columnSpan(4),
                             TranslatableSelect::standard(
                                 'partner_id',
-                                \App\Models\Partner::class,
+                                Partner::class,
                                 ['name', 'email', 'contact_person'],
                                 __('bank_statement.partner')
                             )
@@ -179,25 +184,24 @@ class BankStatementResource extends Resource
                                         ?? $get('currency_id');
 
                                     if ($currencyId) {
-                                        $currency = \App\Models\Currency::find($currencyId);
+                                        $currency = Currency::find($currencyId);
                                         return $currency?->code ?? 'IQD';
                                     }
 
                                     // Fallback to tenant currency
-                                    $tenant = \Filament\Facades\Filament::getTenant();
+                                    $tenant = Filament::getTenant();
                                     return $tenant?->currency?->code ?? 'IQD';
                                 })
                                 ->live()
                                 ->reactive()
                                 ->required()
-                                ->columnSpan(3)
-                                ->helperText(__('bank_statement.amount_in_statement_currency')),
-                            TranslatableSelect::make('foreign_currency_id', \App\Models\Currency::class, __('bank_statement.foreign_currency'))
-                                ->columnSpan(3)
+                                ->helperText(__('bank_statement.amount_in_statement_currency'))
+                                ->columnSpan(3),
+                            TranslatableSelect::make('foreign_currency_id', Currency::class, __('bank_statement.foreign_currency'))
                                 ->live()
                                 ->options(function ($get) {
                                     $statementCurrencyId = $get('../../../currency_id');
-                                    return \App\Models\Currency::where('is_active', true)
+                                    return Currency::where('is_active', true)
                                         ->when($statementCurrencyId, function ($query, $statementCurrencyId) {
                                             return $query->where('id', '!=', $statementCurrencyId);
                                         })
@@ -208,15 +212,16 @@ class BankStatementResource extends Resource
                                             return [$currency->id => "{$name} ({$currency->code})"];
                                         });
                                 })
-                                ->helperText(__('bank_statement.foreign_currency_help')),
+                                ->helperText(__('bank_statement.foreign_currency_help'))
+                                ->columnSpan(3),
                             MoneyInput::make('amount_in_foreign_currency')
                                 ->label(__('bank_statement.amount_in_foreign_currency'))
                                 ->currencyField('foreign_currency_id')
-                                ->columnSpan(3)
                                 ->visible(fn($get) => $get('foreign_currency_id'))
-                                ->helperText(__('bank_statement.original_transaction_amount')),
+                                ->helperText(__('bank_statement.original_transaction_amount'))
+                                ->columnSpan(3),
                         ])
-                        ->columns(12)
+                        ->columns(18)
                         ->addActionLabel(__('bank_statement.add_transaction_line'))
                         ->defaultItems(1),
                 ])
@@ -290,7 +295,7 @@ class BankStatementResource extends Resource
                     ->icon('heroicon-o-scale')
                     ->color('success')
                     ->url(fn(BankStatement $record): string => static::getUrl('reconcile', ['record' => $record]))
-                    ->visible(fn(): bool => \Filament\Facades\Filament::getTenant()?->enable_reconciliation ?? false)
+                    ->visible(fn(): bool => Filament::getTenant()?->enable_reconciliation ?? false)
             ])
             ->toolbarActions([
                 BulkActionGroup::make([

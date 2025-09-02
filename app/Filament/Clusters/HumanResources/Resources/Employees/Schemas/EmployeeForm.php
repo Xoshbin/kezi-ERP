@@ -2,6 +2,11 @@
 
 namespace App\Filament\Clusters\HumanResources\Resources\Employees\Schemas;
 
+use App\Models\Department;
+use Filament\Facades\Filament;
+use App\Models\Position;
+use App\Models\Employee;
+use App\Models\User;
 use App\Filament\Support\TranslatableSelect;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
@@ -60,42 +65,42 @@ class EmployeeForm
                     TranslatableSelect::relationship(
                         'department_id',
                         'department',
-                        \App\Models\Department::class,
+                        Department::class,
                         __('employee.department'),
                         'name',
                         null,
-                        fn($query) => $query->where('company_id', \Filament\Facades\Filament::getTenant()->id)
+                        fn($query) => $query->where('company_id', Filament::getTenant()->id)
                     )
                         ->columnSpan(1),
 
                     TranslatableSelect::relationship(
                         'position_id',
                         'position',
-                        \App\Models\Position::class,
+                        Position::class,
                         __('employee.position'),
                         'title',
                         null,
-                        fn($query) => $query->where('company_id', \Filament\Facades\Filament::getTenant()->id)
+                        fn($query) => $query->where('company_id', Filament::getTenant()->id)
                     )
                         ->columnSpan(1),
 
                     TranslatableSelect::standard(
                         'manager_id',
-                        \App\Models\Employee::class,
+                        Employee::class,
                         ['first_name', 'last_name', 'employee_number'],
                         __('employee.manager'),
                         'first_name',
-                        fn($query) => $query->where('company_id', \Filament\Facades\Filament::getTenant()->id)
+                        fn($query) => $query->where('company_id', Filament::getTenant()->id)
                     )
                         ->columnSpan(1),
 
                     TranslatableSelect::standard(
                         'user_id',
-                        \App\Models\User::class,
+                        User::class,
                         ['name', 'email'],
                         __('employee.user_account'),
                         'name',
-                        fn($query) => $query->whereHas('companies', fn($q) => $q->where('companies.id', \Filament\Facades\Filament::getTenant()->id))
+                        fn($query) => $query->whereHas('companies', fn($q) => $q->where('companies.id', Filament::getTenant()->id))
                     )
                         ->columnSpan(1),
                 ])

@@ -2,6 +2,7 @@
 
 namespace App\Observers;
 
+use Filament\Facades\Filament;
 use App\Models\AuditLog;
 use Illuminate\Database\Eloquent\Model;
 
@@ -56,8 +57,8 @@ class AuditLogObserver
 
         // Determine company_id from Filament tenant or model
         $companyId = null;
-        if (class_exists(\Filament\Facades\Filament::class)) {
-            $tenant = \Filament\Facades\Filament::getTenant();
+        if (class_exists(Filament::class)) {
+            $tenant = Filament::getTenant();
             if ($tenant) {
                 $companyId = $tenant->id;
             }
