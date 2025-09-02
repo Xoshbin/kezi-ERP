@@ -117,12 +117,6 @@ class PaymentResource extends Resource
                     TranslatableSelect::make('counterpart_account_id', \App\Models\Account::class, __('payment.form.counterpart_account'))
                         ->required()
                         ->columnSpan(4),
-                    Select::make('status')
-                        ->label(__('payment.form.status'))
-                        ->options(collect(PaymentStatus::cases())->mapWithKeys(fn($case) => [$case->value => $case->label()]))
-                        ->disabled()
-                        ->dehydrated(false)
-                        ->columnSpan(4),
                 ])
                 ->columns(4)
                 ->columnSpanFull(),
