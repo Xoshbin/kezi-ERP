@@ -51,8 +51,8 @@ class CreateJournalEntry extends CreateRecord
             journal_id: $data['journal_id'],
             currency_id: $data['currency_id'],
             entry_date: $data['entry_date'],
-            reference: $data['reference'],
-            description: $data['description'],
+            reference: $data['reference'] ?? null,
+            description: $data['description'] ?? null,
             created_by_user_id: $data['created_by_user_id'],
             is_posted: false,
             lines: $data['lines']
