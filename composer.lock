@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "c4fcf2ef2dd749a8b52c654d9969bae7",
+    "content-hash": "aeca39f6a2f9119ba1e4ab9ba6be1d95",
     "packages": [
         {
             "name": "anourvalar/eloquent-serialize",
@@ -8654,17 +8654,11 @@
         },
         {
             "name": "xoshbin/jmeryar-theme",
-            "version": "0.0.1",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/Xoshbin/jmeryar-theme.git",
-                "reference": "16816214e48486b82c9f0664e6ec86a8680abb1a"
-            },
+            "version": "dev-main",
             "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/Xoshbin/jmeryar-theme/zipball/16816214e48486b82c9f0664e6ec86a8680abb1a",
-                "reference": "16816214e48486b82c9f0664e6ec86a8680abb1a",
-                "shasum": ""
+                "type": "path",
+                "url": "./packages/xoshbin/jmeryar-theme",
+                "reference": "5eed8ae17e3c8a798f90e68ebaa939d10e1a91f8"
             },
             "require": {
                 "filament/filament": "^4.0",
@@ -8691,7 +8685,28 @@
                     "Xoshbin\\JmeryarTheme\\": "src/"
                 }
             },
-            "notification-url": "https://packagist.org/downloads/",
+            "autoload-dev": {
+                "psr-4": {
+                    "Xoshbin\\JmeryarTheme\\Tests\\": "tests/"
+                }
+            },
+            "scripts": {
+                "post-autoload-dump": [
+                    "@php ./vendor/bin/testbench package:discover --ansi"
+                ],
+                "analyse": [
+                    "vendor/bin/phpstan analyse"
+                ],
+                "test": [
+                    "vendor/bin/pest"
+                ],
+                "test-coverage": [
+                    "vendor/bin/pest --coverage"
+                ],
+                "format": [
+                    "vendor/bin/pint"
+                ]
+            },
             "license": [
                 "MIT"
             ],
@@ -8713,13 +8728,10 @@
                 "issues": "https://github.com/xoshbin/jmeryar-theme/issues",
                 "source": "https://github.com/xoshbin/jmeryar-theme"
             },
-            "funding": [
-                {
-                    "url": "https://github.com/Xoshbin",
-                    "type": "github"
-                }
-            ],
-            "time": "2025-09-02T08:38:38+00:00"
+            "transport-options": {
+                "symlink": true,
+                "relative": true
+            }
         }
     ],
     "packages-dev": [
@@ -14191,11 +14203,69 @@
                 }
             ],
             "time": "2024-03-03T12:36:25+00:00"
+        },
+        {
+            "name": "wikimedia/composer-merge-plugin",
+            "version": "v2.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/wikimedia/composer-merge-plugin.git",
+                "reference": "a03d426c8e9fb2c9c569d9deeb31a083292788bc"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/wikimedia/composer-merge-plugin/zipball/a03d426c8e9fb2c9c569d9deeb31a083292788bc",
+                "reference": "a03d426c8e9fb2c9c569d9deeb31a083292788bc",
+                "shasum": ""
+            },
+            "require": {
+                "composer-plugin-api": "^1.1||^2.0",
+                "php": ">=7.2.0"
+            },
+            "require-dev": {
+                "composer/composer": "^1.1||^2.0",
+                "ext-json": "*",
+                "mediawiki/mediawiki-phan-config": "0.11.1",
+                "php-parallel-lint/php-parallel-lint": "~1.3.1",
+                "phpspec/prophecy": "~1.15.0",
+                "phpunit/phpunit": "^8.5||^9.0",
+                "squizlabs/php_codesniffer": "~3.7.1"
+            },
+            "type": "composer-plugin",
+            "extra": {
+                "class": "Wikimedia\\Composer\\Merge\\V2\\MergePlugin",
+                "branch-alias": {
+                    "dev-master": "2.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Wikimedia\\Composer\\Merge\\V2\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Bryan Davis",
+                    "email": "bd808@wikimedia.org"
+                }
+            ],
+            "description": "Composer plugin to merge multiple composer.json files",
+            "support": {
+                "issues": "https://github.com/wikimedia/composer-merge-plugin/issues",
+                "source": "https://github.com/wikimedia/composer-merge-plugin/tree/v2.1.0"
+            },
+            "time": "2023-04-15T19:07:00+00:00"
         }
     ],
     "aliases": [],
     "minimum-stability": "dev",
-    "stability-flags": {},
+    "stability-flags": {
+        "xoshbin/jmeryar-theme": 20
+    },
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {
