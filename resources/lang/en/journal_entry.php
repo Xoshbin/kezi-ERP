@@ -29,6 +29,8 @@ return [
     'source_id' => 'Source ID',
     'total_debit' => 'Total Debit',
     'total_credit' => 'Total Credit',
+    'balance' => 'Balance',
+    'company_currency_totals' => 'Company Currency Totals',
     'created_at' => 'Created At',
     'updated_at' => 'Updated At',
 
