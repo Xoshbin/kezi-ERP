@@ -23,6 +23,7 @@ use Filament\Http\Middleware\DispatchServingFilamentEvent;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Xoshbin\FilamentAiHelper\FilamentAiHelperPlugin;
+use Xoshbin\JmeryarTheme\JmeryarTheme;
 
 class JmeryarPanelProvider extends PanelProvider
 {
@@ -66,13 +67,14 @@ class JmeryarPanelProvider extends PanelProvider
             ->tenantRegistration(RegisterCompany::class)
             ->tenantProfile(EditCompanyProfile::class)
             ->plugins([
+                JmeryarTheme::make(),
                 SpatieTranslatablePlugin::make()
                     ->defaultLocales(['en', 'ckb', 'ar']),
-                FilamentAiHelperPlugin::make()
-                    ->buttonLabel('AccounTech Pro')
-                    ->buttonIcon('heroicon-o-sparkles')
-                    ->modalWidth('2xl')
-                    ->enabled(fn () => (bool) config('filament-ai-helper.enabled', true) && !empty(config('filament-ai-helper.gemini.api_key'))),
+                // FilamentAiHelperPlugin::make()
+                //     ->buttonLabel('AccounTech Pro')
+                //     ->buttonIcon('heroicon-o-sparkles')
+                //     ->modalWidth('2xl')
+                //     ->enabled(fn () => (bool) config('filament-ai-helper.enabled', true) && !empty(config('filament-ai-helper.gemini.api_key'))),
             ]);
     }
 }
