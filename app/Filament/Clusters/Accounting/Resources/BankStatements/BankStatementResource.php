@@ -156,12 +156,12 @@ class BankStatementResource extends Resource
                             DatePicker::make('date')
                                 ->label(__('bank_statement.line_date'))
                                 ->required()
-                                ->columnSpan(3),
+                                ->columnSpan(2),
                             TextInput::make('description')
                                 ->label(__('bank_statement.description'))
                                 ->required()
                                 ->maxLength(255)
-                                ->columnSpan(6),
+                                ->columnSpan(4),
                             TranslatableSelect::standard(
                                 'partner_id',
                                 \App\Models\Partner::class,
@@ -190,10 +190,9 @@ class BankStatementResource extends Resource
                                 ->live()
                                 ->reactive()
                                 ->required()
-                                ->columnSpan(3)
-                                ->helperText(__('bank_statement.amount_in_statement_currency')),
+                                ->helperText(__('bank_statement.amount_in_statement_currency'))
+                                ->columnSpan(3),
                             TranslatableSelect::make('foreign_currency_id', \App\Models\Currency::class, __('bank_statement.foreign_currency'))
-                                ->columnSpan(3)
                                 ->live()
                                 ->options(function ($get) {
                                     $statementCurrencyId = $get('../../../currency_id');
@@ -208,15 +207,16 @@ class BankStatementResource extends Resource
                                             return [$currency->id => "{$name} ({$currency->code})"];
                                         });
                                 })
-                                ->helperText(__('bank_statement.foreign_currency_help')),
+                                ->helperText(__('bank_statement.foreign_currency_help'))
+                                ->columnSpan(3),
                             MoneyInput::make('amount_in_foreign_currency')
                                 ->label(__('bank_statement.amount_in_foreign_currency'))
                                 ->currencyField('foreign_currency_id')
-                                ->columnSpan(3)
                                 ->visible(fn($get) => $get('foreign_currency_id'))
-                                ->helperText(__('bank_statement.original_transaction_amount')),
+                                ->helperText(__('bank_statement.original_transaction_amount'))
+                                ->columnSpan(3),
                         ])
-                        ->columns(12)
+                        ->columns(18)
                         ->addActionLabel(__('bank_statement.add_transaction_line'))
                         ->defaultItems(1),
                 ])

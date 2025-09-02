@@ -96,42 +96,35 @@ class JournalEntryResource extends Resource
                         )
                             ->rules([new ActiveAccount])
                             ->required()
-                            ->columnSpan(2),
+                            ->columnSpan(3),
                         MoneyInput::make('debit')
                             ->label(__('journal_entry.debit'))
                             ->required()
                             ->currencyField('../../currency_id')
-                            ->columnSpan(1)
-                            ->live(onBlur: true),
+                            ->live(onBlur: true)
+                            ->columnSpan(3),
                         MoneyInput::make('credit')
                             ->label(__('journal_entry.credit'))
                             ->required()
                             ->currencyField('../../currency_id')
-                            ->columnSpan(1)
-                            ->live(onBlur: true),
+                            ->live(onBlur: true)
+                            ->columnSpan(3),
                         TranslatableSelect::standard(
                             'partner_id',
                             \App\Models\Partner::class,
                             ['name', 'email', 'contact_person'],
                             __('journal_entry.partner')
                         )
-                            ->columnSpan(2),
-                        TranslatableSelect::standard(
-                            'analytic_account_id',
-                            \App\Models\AnalyticAccount::class,
-                            ['name'],
-                            __('journal_entry.analytic_account')
-                        )
-                            ->columnSpan(2),
+                            ->columnSpan(3),
                         TextInput::make('description')
                             ->label(__('journal_entry.description'))
                             ->maxLength(255)
-                            ->columnSpanFull(),
+                            ->columnSpan(3),
                     ])
-                    ->columns(4)
+                    ->columns(15)
                     ->columnSpanFull()
                     ->live()
-                    ->defaultItems(0)
+                    ->defaultItems(2)
                     ->afterStateUpdated(function (callable $set, $state) {
                         self::updateTotals($set, $state);
                     }),
