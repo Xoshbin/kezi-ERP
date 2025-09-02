@@ -2,13 +2,22 @@
 <html>
 <head>
     <meta charset="utf-8"/>
+    @php
+        use Filament\Support\Facades\FilamentColor;
+        use Filament\Support\Colors\Color as FsColor;
+        $gray = FilamentColor::getColor('gray');
+        $danger = FilamentColor::getColor('danger');
+        $g100 = FsColor::convertToRgb($gray[100]);
+        $g200 = FsColor::convertToRgb($gray[200]);
+        $d700 = FsColor::convertToRgb($danger[700]);
+    @endphp
     <style>
         body { font-family: DejaVu Sans, sans-serif; font-size: 12px; }
         table { width: 100%; border-collapse: collapse; }
-        th, td { border: 1px solid #ddd; padding: 4px 6px; }
-        th { background: #f3f4f6; text-align: left; }
+        th, td { border: 1px solid {{ $g200 }}; padding: 4px 6px; }
+        th { background: {{ $g100 }}; text-align: left; }
         tfoot td { font-weight: bold; }
-        .errors { color: #b91c1c; }
+        .errors { color: {{ $d700 }}; }
     </style>
 </head>
 <body>

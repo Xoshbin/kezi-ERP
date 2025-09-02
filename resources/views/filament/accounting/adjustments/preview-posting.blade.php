@@ -1,6 +1,6 @@
 <div>
     @if(!empty($preview['issues']))
-        <div class="p-3 mb-3 rounded bg-red-50 text-red-800">
+        <div class="p-3 mb-3 rounded bg-[var(--color-danger-50)] text-[var(--color-danger-800)]">
             <div class="font-semibold mb-1">{{ __('posting_preview.errors_title') }}</div>
             <ul class="list-disc pl-5 space-y-1">
                 @foreach($preview['issues'] as $issue)
@@ -68,9 +68,9 @@
                 Debits: {{ number_format(($totals['debit_minor'] ?? 0) / 100, 2) }} |
                 Credits: {{ number_format(($totals['credit_minor'] ?? 0) / 100, 2) }}
                 @if(!empty($totals['balanced']))
-                    <span class="text-green-700">(Balanced)</span>
+                    <span class="text-[var(--color-success-700)]">(Balanced)</span>
                 @else
-                    <span class="text-red-700">(Unbalanced)</span>
+                    <span class="text-[var(--color-danger-700)]">(Unbalanced)</span>
                 @endif
             </div>
         </div>
