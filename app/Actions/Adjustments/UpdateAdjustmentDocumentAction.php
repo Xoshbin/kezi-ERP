@@ -2,6 +2,7 @@
 
 namespace App\Actions\Adjustments;
 
+use App\DataTransferObjects\Adjustments\CreateAdjustmentDocumentLineDTO;
 use App\DataTransferObjects\Adjustments\UpdateAdjustmentDocumentDTO;
 use App\Exceptions\UpdateNotAllowedException;
 use App\Models\AdjustmentDocument;
@@ -40,7 +41,7 @@ class UpdateAdjustmentDocumentAction
             // Create new lines using the dedicated line action
             foreach ($dto->lines as $lineDto) {
                 // Convert UpdateAdjustmentDocumentLineDTO to CreateAdjustmentDocumentLineDTO
-                $createLineDto = new \App\DataTransferObjects\Adjustments\CreateAdjustmentDocumentLineDTO(
+                $createLineDto = new CreateAdjustmentDocumentLineDTO(
                     description: $lineDto->description,
                     quantity: $lineDto->quantity,
                     unit_price: $lineDto->unit_price,

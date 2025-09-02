@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Traits\TranslatableSearch;
 use Illuminate\Support\Carbon;
 use Illuminate\Database\Eloquent\Collection;
 use Database\Factories\AccountFactory;
@@ -72,7 +73,7 @@ use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 class Account extends Model
 {
     use HasFactory, HasTranslations;
-    use \App\Traits\TranslatableSearch;
+    use TranslatableSearch;
 
     public array $translatable = ['name'];
 

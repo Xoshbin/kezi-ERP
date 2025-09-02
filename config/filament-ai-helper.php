@@ -3,6 +3,18 @@
 return [
     /*
     |--------------------------------------------------------------------------
+    | AI Helper Plugin Status
+    |--------------------------------------------------------------------------
+    |
+    | This option allows you to enable or disable the AI helper plugin
+    | entirely. When disabled, the AI helper will not be available in
+    | any Filament resources or pages.
+    |
+    */
+    'enabled' => env('FILAMENT_AI_HELPER_ENABLED', true),
+
+    /*
+    |--------------------------------------------------------------------------
     | Google Gemini API Configuration
     |--------------------------------------------------------------------------
     |

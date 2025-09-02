@@ -2,6 +2,7 @@
 
 namespace App\Filament\Clusters\Settings\Resources\PdfSettings;
 
+use Filament\Facades\Filament;
 use Filament\Schemas\Schema;
 use Filament\Schemas\Components\Section;
 use Filament\Forms\Components\Select;
@@ -155,7 +156,7 @@ class PdfSettingsResource extends Resource
     public static function getEloquentQuery(): Builder
     {
         // Only show the current tenant company
-        $tenant = \Filament\Facades\Filament::getTenant();
+        $tenant = Filament::getTenant();
         return parent::getEloquentQuery()->where('id', $tenant?->id);
     }
 

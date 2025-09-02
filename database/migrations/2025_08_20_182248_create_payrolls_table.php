@@ -17,6 +17,7 @@ return new class extends Migration
             $table->foreignId('employee_id')->constrained('employees')->onDelete('cascade');
             $table->foreignId('currency_id')->constrained('currencies');
             $table->foreignId('journal_entry_id')->nullable()->constrained('journal_entries')->onDelete('set null');
+            $table->foreignId('payment_id')->nullable()->constrained('payments')->onDelete('set null');
 
             // Payroll Period
             $table->string('payroll_number')->unique();

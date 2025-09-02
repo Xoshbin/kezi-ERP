@@ -7,6 +7,7 @@ return [
 
     // Forms
     'form' => [
+        'basic_information' => 'زانیاری بنەڕەتی',
         'company' => [
             'label' => 'کۆمپانیا',
         ],

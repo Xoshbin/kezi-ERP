@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Accounting;
 
+use Exception;
 use Filament\Actions\Contracts\HasActions;
 use Filament\Actions\Concerns\InteractsWithActions;
 use Filament\Support\Contracts\TranslatableContentDriver;
@@ -144,7 +145,7 @@ class SystemPaymentsTable extends Component implements HasTable, HasForms, HasAc
                             $payment->payment_date,
                             $payment->company
                         );
-                    } catch (\Exception $e) {
+                    } catch (Exception $e) {
                         // If conversion fails, use a simple 1:1 conversion as fallback
                         // This should be rare and will be logged for investigation
                         $paymentAmount = Money::ofMinor(

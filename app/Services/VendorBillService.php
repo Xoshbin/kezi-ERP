@@ -22,8 +22,7 @@ use App\Services\Accounting\LockDateService;
 use App\Exceptions\DeletionNotAllowedException;
 use App\Actions\Inventory\CreateStockMoveAction;
 use App\DataTransferObjects\Inventory\CreateStockMoveDTO;
-use App\Actions\Accounting\CreateJournalEntryForInventoryBillAction;
-use App\Actions\Accounting\CreateJournalEntryForExpenseBillAction;
+use App\Actions\Accounting\CreateJournalEntryForVendorBillAction;
 use App\Services\CurrencyConverterService;
 use App\Services\ExchangeRateService;
 use App\Services\SequenceService;
@@ -34,8 +33,6 @@ class VendorBillService
         protected LockDateService $lockDateService,
         protected JournalEntryService $journalEntryService,
         protected CreateStockMoveAction $createStockMoveAction,
-        protected CreateJournalEntryForInventoryBillAction $createJournalEntryForInventoryBillAction,
-        protected CreateJournalEntryForExpenseBillAction $createJournalEntryForExpenseBillAction,
         protected CurrencyConverterService $currencyConverter,
         protected ExchangeRateService $exchangeRateService,
         protected SequenceService $sequenceService
@@ -66,21 +63,15 @@ class VendorBillService
             $vendorBill->posted_at = now();
             $vendorBill->save();
 
-            // Determine if the bill contains storable or only expense items
-            $hasStorableItems = $vendorBill->lines()->whereHas('product', fn($q) => $q->where('type', ProductType::Storable))->exists();
-
-            if ($hasStorableItems) {
-                // Handle storable items: create stock moves and inventory journal entry
-                foreach ($vendorBill->lines()->with('product')->get() as $line) {
-                    if ($line->product?->type === ProductType::Storable) {
-                        $this->createStockMoveForLine($vendorBill, $line, $user);
-                    }
+            // Always create stock moves for storable product lines
+            foreach ($vendorBill->lines()->with('product')->get() as $line) {
+                if ($line->product?->type === ProductType::Storable) {
+                    $this->createStockMoveForLine($vendorBill, $line, $user);
                 }
-                $journalEntry = $this->createJournalEntryForInventoryBillAction->execute($vendorBill, $user);
-            } else {
-                // Handle expense-only items: create standard AP journal entry
-                $journalEntry = $this->createJournalEntryForExpenseBillAction->execute($vendorBill, $user);
             }
+
+            // Create a single combined JE for all lines (storable, asset, expense)
+            $journalEntry = app(CreateJournalEntryForVendorBillAction::class)->execute($vendorBill, $user);
 
             // Associate the created journal entry with the bill
             if (isset($journalEntry)) {

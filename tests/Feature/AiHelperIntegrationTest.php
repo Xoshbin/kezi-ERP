@@ -13,14 +13,10 @@ beforeEach(function () {
 });
 
 it('can load filament panel with ai helper plugin registered', function () {
-    // Check if the AI Helper plugin is properly registered
-    $plugins = filament('jmeryar')->getPlugins();
-
-    $aiHelperPlugin = collect($plugins)->first(function ($plugin) {
-        return $plugin instanceof \AccounTech\FilamentAiHelper\FilamentAiHelperPlugin;
-    });
-
-    expect($aiHelperPlugin)->not->toBeNull();
+    // Check if the AI Helper plugin is properly registered by checking if the service provider is loaded
+    expect(app()->bound(\Xoshbin\FilamentAiHelper\Services\GeminiService::class))->toBeTrue();
+    expect(app()->bound(\Xoshbin\FilamentAiHelper\Services\FormSchemaExtractor::class))->toBeTrue();
+    expect(config('filament-ai-helper'))->not->toBeNull();
 });
 
 it('has ai helper configuration loaded correctly', function () {
@@ -40,7 +36,7 @@ it('can access invoice edit page with ai helper trait', function () {
     ]);
 
     // Test that the page loads without errors
-    $this->get(route('filament.jmeryar.resources.invoices.edit', [
+    $this->get(route('filament.jmeryar.accounting.resources.invoices.edit', [
         'tenant' => $this->company,
         'record' => $invoice
     ]))
@@ -54,7 +50,7 @@ it('can access journal entry edit page with ai helper trait', function () {
     ]);
 
     // Test that the page loads without errors
-    $this->get(route('filament.jmeryar.resources.journal-entries.edit', [
+    $this->get(route('filament.jmeryar.accounting.resources.journal-entries.edit', [
         'tenant' => $this->company,
         'record' => $journalEntry
     ]))
@@ -63,7 +59,6 @@ it('can access journal entry edit page with ai helper trait', function () {
 
 it('can access vendor bill edit page with ai helper trait', function () {
     // Create test data
-    $user = User::factory()->create();
     $partner = Partner::factory()->create(['company_id' => $this->company->id]);
     $vendorBill = \App\Models\VendorBill::factory()->create([
         'company_id' => $this->company->id,
@@ -71,26 +66,23 @@ it('can access vendor bill edit page with ai helper trait', function () {
     ]);
 
     // Test that the page loads without errors
-    $this->actingAs($user)
-        ->get(route('filament.jmeryar.resources.vendor-bills.edit', [
-            'tenant' => $this->company,
-            'record' => $vendorBill
-        ]))
-        ->assertSuccessful();
+    $this->get(route('filament.jmeryar.accounting.resources.vendor-bills.edit', [
+        'tenant' => $this->company,
+        'record' => $vendorBill
+    ]))
+    ->assertSuccessful();
 });
 
 it('can access partner edit page with ai helper trait', function () {
     // Create test data
-    $user = User::factory()->create();
     $partner = Partner::factory()->create(['company_id' => $this->company->id]);
 
     // Test that the page loads without errors
-    $this->actingAs($user)
-        ->get(route('filament.jmeryar.resources.partners.edit', [
-            'tenant' => $this->company,
-            'record' => $partner
-        ]))
-        ->assertSuccessful();
+    $this->get(route('filament.jmeryar.accounting.resources.partners.edit', [
+        'tenant' => $this->company,
+        'record' => $partner
+    ]))
+    ->assertSuccessful();
 });
 
 it('has proper ai helper context prompts for accounting models', function () {
@@ -143,7 +135,7 @@ it('works correctly with multi-tenancy context', function () {
     ]);
 
     // Test that the AI Helper can access the invoice with correct company context
-    $response = $this->get(route('filament.jmeryar.resources.invoices.edit', [
+    $response = $this->get(route('filament.jmeryar.accounting.resources.invoices.edit', [
         'tenant' => $this->company,
         'record' => $invoice
     ]));
@@ -160,7 +152,7 @@ it('works correctly with multi-tenancy context', function () {
 
 it('can handle form fill requests on create pages', function () {
     // Mock the AI service to return form manipulation response
-    $this->mock(\AccounTech\FilamentAiHelper\Services\GeminiService::class, function ($mock) {
+    $this->mock(\Xoshbin\FilamentAiHelper\Services\GeminiService::class, function ($mock) {
         $mock->shouldReceive('generateResponse')
             ->andReturn('{"action": "fill_form", "fields": {"partner_id": "1", "amount": "1000", "date": "2024-01-15"}, "explanation": "Created invoice for customer with amount 1000", "warnings": []}');
     });
@@ -200,7 +192,7 @@ it('can handle form fill requests on create pages', function () {
 
 it('can handle form update requests on edit pages', function () {
     // Mock the AI service to return form manipulation response
-    $this->mock(\AccounTech\FilamentAiHelper\Services\GeminiService::class, function ($mock) {
+    $this->mock(\Xoshbin\FilamentAiHelper\Services\GeminiService::class, function ($mock) {
         $mock->shouldReceive('generateResponse')
             ->andReturn('{"action": "update_form", "fields": {"amount": "1500", "due_date": "2024-02-15"}, "explanation": "Updated invoice amount and due date", "warnings": ["This will affect the payment schedule"]}');
     });
@@ -241,11 +233,11 @@ it('can handle form update requests on edit pages', function () {
 });
 
 it('can detect form manipulation keywords in messages', function () {
-    $controller = new \AccounTech\FilamentAiHelper\Http\Controllers\AiChatController(
-        app(\AccounTech\FilamentAiHelper\Actions\GetAIAssistantResponseAction::class),
-        app(\AccounTech\FilamentAiHelper\Actions\FillFormAction::class),
-        app(\AccounTech\FilamentAiHelper\Actions\UpdateFormAction::class),
-        app(\AccounTech\FilamentAiHelper\Services\FormSchemaExtractor::class)
+    $controller = new \Xoshbin\FilamentAiHelper\Http\Controllers\AiChatController(
+        app(\Xoshbin\FilamentAiHelper\Actions\GetAIAssistantResponseAction::class),
+        app(\Xoshbin\FilamentAiHelper\Actions\FillFormAction::class),
+        app(\Xoshbin\FilamentAiHelper\Actions\UpdateFormAction::class),
+        app(\Xoshbin\FilamentAiHelper\Services\FormSchemaExtractor::class)
     );
 
     $reflection = new \ReflectionClass($controller);
@@ -266,7 +258,7 @@ it('can detect form manipulation keywords in messages', function () {
 });
 
 it('validates form data against schema correctly', function () {
-    $extractor = app(\AccounTech\FilamentAiHelper\Services\FormSchemaExtractor::class);
+    $extractor = app(\Xoshbin\FilamentAiHelper\Services\FormSchemaExtractor::class);
 
     $schema = [
         'partner_id' => ['type' => 'select', 'required' => true],

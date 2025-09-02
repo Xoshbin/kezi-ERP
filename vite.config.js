@@ -7,7 +7,7 @@ export default defineConfig({
             input: [
                 "resources/css/app.css",
                 "resources/js/app.js",
-                "resources/js/filament/jmeryar/theme.js",
+                "vendor/xoshbin/jmeryar-theme/resources/css/theme.css",
             ],
             refresh: true,
         }),

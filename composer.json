@@ -5,20 +5,32 @@
     "description": "The skeleton application for the Laravel framework.",
     "keywords": ["laravel", "framework"],
     "license": "AGPL-3.0-or-later",
-    "repositories": [
-        {
+    "repositories": {
+        "filament-ai-helper": {
             "type": "path",
-            "url": "./filament-ai-helper"
+            "url": "./packages/xoshbin/filament-ai-helper",
+            "options": {
+                "symlink": true
+            }
+        },
+        "jmeryar-theme": {
+            "type": "path",
+            "url": "./packages/xoshbin/jmeryar-theme",
+            "options": {
+                "symlink": true
+            }
         }
-    ],
+    },
     "require": {
         "php": "^8.2",
+        "xoshbin/filament-ai-helper": "dev-develop",
         "barryvdh/laravel-dompdf": "^3.1",
         "brick/money": "^0.10.1",
         "filament/filament": "^4.0",
         "lara-zeus/spatie-translatable": "^1.0",
         "laravel/framework": "^12.0",
-        "laravel/tinker": "^2.10.1"
+        "laravel/tinker": "^2.10.1",
+        "xoshbin/jmeryar-theme": "dev-main"
     },
     "require-dev": {
         "barryvdh/laravel-ide-helper": "^3.6",
@@ -30,9 +42,10 @@
         "laravel/sail": "^1.41",
         "mockery/mockery": "^1.6",
         "nunomaduro/collision": "^8.6",
-        "pestphp/pest": "^3.8",
-        "pestphp/pest-plugin-laravel": "^3.2",
-        "pestphp/pest-plugin-livewire": "^3.0"
+        "pestphp/pest": "^4.0",
+        "pestphp/pest-plugin-browser": "^4.0",
+        "pestphp/pest-plugin-laravel": "^4.0",
+        "pestphp/pest-plugin-livewire": "^4.0"
     },
     "autoload": {
         "psr-4": {
@@ -88,6 +101,6 @@
             "php-http/discovery": true
         }
     },
-    "minimum-stability": "stable",
+    "minimum-stability": "dev",
     "prefer-stable": true
 }

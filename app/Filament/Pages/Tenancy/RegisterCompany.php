@@ -2,6 +2,8 @@
 
 namespace App\Filament\Pages\Tenancy;
 
+use App\Models\Currency;
+use Filament\Forms\Components\Toggle;
 use App\Filament\Support\TranslatableSelect;
 use App\Models\Company;
 use Filament\Forms\Components\TextInput;
@@ -25,7 +27,7 @@ class RegisterCompany extends RegisterTenant
                     ->required()
                     ->maxLength(255),
 
-                TranslatableSelect::make('currency_id', \App\Models\Currency::class, __('company.currency_id'))
+                TranslatableSelect::make('currency_id', Currency::class, __('company.currency_id'))
                     ->required()
                     ->createOptionForm([
                         TextInput::make('code')
@@ -46,7 +48,7 @@ class RegisterCompany extends RegisterTenant
                             ->numeric()
                             ->default(1.0000)
                             ->step(0.0001),
-                        \Filament\Forms\Components\Toggle::make('is_active')
+                        Toggle::make('is_active')
                             ->label(__('currency.is_active'))
                             ->default(true),
                         TextInput::make('decimal_places')

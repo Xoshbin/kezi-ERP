@@ -2,6 +2,8 @@
 
 namespace App\Filament\Clusters\Accounting\Resources\Partners\RelationManagers;
 
+use Filament\Facades\Filament;
+use Exception;
 use App\Actions\Reconciliation\MatchJournalItemsAction;
 use App\Enums\Reconciliation\ReconciliationType;
 use App\Exceptions\Reconciliation\ReconciliationException;
@@ -56,7 +58,7 @@ class UnreconciledEntriesRelationManager extends RelationManager
      */
     protected function isReconciliationEnabled(): bool
     {
-        $company = \Filament\Facades\Filament::getTenant();
+        $company = Filament::getTenant();
         return $company && $company->enable_reconciliation;
     }
 
@@ -111,7 +113,7 @@ class UnreconciledEntriesRelationManager extends RelationManager
                     ->requiresConfirmation()
                     ->modalHeading(__('partner.unreconciled_entries_relation_manager.reconcile_modal_heading'))
                     ->modalDescription(__('partner.unreconciled_entries_relation_manager.reconcile_modal_description'))
-                    ->form([
+                    ->schema([
                         TextInput::make('reference')
                             ->label(__('partner.unreconciled_entries_relation_manager.reconcile_reference'))
                             ->maxLength(255),
@@ -124,7 +126,7 @@ class UnreconciledEntriesRelationManager extends RelationManager
                     })
                     ->disabled(fn () => !$this->hasSelectedRecords()),
             ])
-            ->bulkActions([
+            ->toolbarActions([
                 BulkAction::make('reconcile')
                     ->label(__('partner.unreconciled_entries_relation_manager.reconcile'))
                     ->icon('heroicon-o-check-circle')
@@ -133,7 +135,7 @@ class UnreconciledEntriesRelationManager extends RelationManager
                     ->requiresConfirmation()
                     ->modalHeading(__('partner.unreconciled_entries_relation_manager.reconcile_modal_heading'))
                     ->modalDescription(__('partner.unreconciled_entries_relation_manager.reconcile_modal_description'))
-                    ->form([
+                    ->schema([
                         TextInput::make('reference')
                             ->label(__('partner.unreconciled_entries_relation_manager.reconcile_reference'))
                             ->maxLength(255),
@@ -229,7 +231,7 @@ class UnreconciledEntriesRelationManager extends RelationManager
                 ->body($e->getMessage())
                 ->danger()
                 ->send();
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             Notification::make()
                 ->title(__('partner.unreconciled_entries_relation_manager.reconciliation_error'))
                 ->body(__('partner.unreconciled_entries_relation_manager.reconciliation_error_generic'))

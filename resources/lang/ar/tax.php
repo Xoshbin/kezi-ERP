@@ -32,4 +32,7 @@ return [
         'purchases' => 'مشتريات',
         'none' => 'لا شيء',
     ],
+
+    // Section
+    'basic_information' => 'المعلومات الأساسية',
 ];

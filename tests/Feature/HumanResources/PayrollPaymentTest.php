@@ -163,7 +163,10 @@ class PayrollPaymentTest extends TestCase
         );
 
         $this->payrollService->approvePayroll($payroll, $this->user);
+        $payroll->refresh(); // Refresh to get updated status
+
         $this->payrollService->payEmployee($payroll, $this->user);
+        $payroll->refresh(); // Refresh to get updated status and payment_id
 
         // Attempt to pay again should fail
         $this->expectException(\Exception::class);

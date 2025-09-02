@@ -15,7 +15,7 @@ beforeEach(function () {
         [
             'name' => 'Iraqi Dinar',
             'symbol' => 'IQD',
-            'decimal_places' => 0,
+            'decimal_places' => 3,
             'is_active' => true,
         ]
     );

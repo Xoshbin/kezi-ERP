@@ -2,14 +2,13 @@
 
 namespace App\Filament\Clusters\Settings\Resources\Accounts;
 
+use App\Models\Currency;
 use App\Enums\Accounting\AccountType;
 use App\Filament\Clusters\Settings\Resources\Accounts\Pages\CreateAccount;
 use App\Filament\Clusters\Settings\Resources\Accounts\Pages\EditAccount;
 use App\Filament\Clusters\Settings\Resources\Accounts\Pages\ListAccounts;
 use App\Filament\Clusters\Settings\Resources\Accounts\RelationManagers\JournalEntryLinesRelationManager;
 use App\Filament\Clusters\Settings\SettingsCluster;
-use App\Filament\Resources\AccountResource\Pages;
-use App\Filament\Resources\AccountResource\RelationManagers;
 use App\Filament\Support\TranslatableSelect;
 use App\Models\Account;
 use Filament\Actions\Action;
@@ -21,6 +20,7 @@ use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Resources\Resource;
+use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
@@ -53,57 +53,60 @@ class AccountResource extends Resource
     {
         return $schema
             ->components([
-                Select::make('company_id')
-                    ->label(__('account.company'))
-                    ->relationship('company', 'name')
-                    ->required()
-                    ->searchable()
-                    ->createOptionForm([
+                Section::make(__('account.basic_information'))
+                    ->description(__('account.basic_information_description'))
+                    ->schema([
+                        Select::make('company_id')
+                            ->label(__('account.company'))
+                            ->relationship('company', 'name')
+                            ->required()
+                            ->searchable()
+                            ->createOptionForm([
+                                TextInput::make('name')
+                                    ->label(__('company.name'))
+                                    ->required()
+                                    ->maxLength(255),
+                                Textarea::make('address')
+                                    ->label(__('company.address'))
+                                    ->columnSpanFull(),
+                                TextInput::make('tax_id')
+                                    ->label(__('company.tax_id'))
+                                    ->maxLength(255),
+                                TranslatableSelect::make('currency_id', Currency::class, __('company.currency_id'))
+                                    ->required(),
+                                TextInput::make('fiscal_country')
+                                    ->label(__('company.fiscal_country'))
+                                    ->required()
+                                    ->maxLength(255),
+                            ])
+                            ->createOptionModalHeading(__('common.modal_title_create_company'))
+                            ->createOptionAction(fn(Action $action) => $action->name('create-company-option')->modalWidth('lg')),
+                        TextInput::make('code')
+                            ->label(__('account.code'))
+                            ->required()
+                            ->maxLength(255),
                         TextInput::make('name')
-                            ->label(__('company.name'))
+                            ->label(__('account.name'))
                             ->required()
                             ->maxLength(255),
-                        Textarea::make('address')
-                            ->label(__('company.address'))
-                            ->columnSpanFull(),
-                        TextInput::make('tax_id')
-                            ->label(__('company.tax_id'))
-                            ->maxLength(255),
-                        TranslatableSelect::make('currency_id', \App\Models\Currency::class, __('company.currency_id'))
+                        Select::make('type')
+                            ->label(__('account.type'))
+                            ->required()
+                            ->options(
+                                collect(AccountType::cases())
+                                    ->mapWithKeys(fn (AccountType $type) => [$type->value => $type->label()])
+                            )
+                            ->searchable(),
+                        Toggle::make('is_deprecated')
+                            ->label(__('account.is_deprecated'))
                             ->required(),
-                        TextInput::make('fiscal_country')
-                            ->label(__('company.fiscal_country'))
-                            ->required()
-                            ->maxLength(255),
+                        Toggle::make('allow_reconciliation')
+                            ->label(__('account.allow_reconciliation'))
+                            ->helperText(__('account.allow_reconciliation_help'))
+                            ->default(false),
                     ])
-                    ->createOptionModalHeading(__('common.modal_title_create_company'))
-                    ->createOptionAction(function (Action $action) {
-                        return $action
-                            ->modalWidth('lg');
-                    }),
-                TextInput::make('code')
-                    ->label(__('account.code'))
-                    ->required()
-                    ->maxLength(255),
-                TextInput::make('name')
-                    ->label(__('account.name'))
-                    ->required()
-                    ->maxLength(255),
-                Select::make('type')
-                    ->label(__('account.type'))
-                    ->required()
-                    ->options(
-                        collect(AccountType::cases())
-                            ->mapWithKeys(fn (AccountType $type) => [$type->value => $type->label()])
-                    )
-                    ->searchable(),
-                Toggle::make('is_deprecated')
-                    ->label(__('account.is_deprecated'))
-                    ->required(),
-                Toggle::make('allow_reconciliation')
-                    ->label(__('account.allow_reconciliation'))
-                    ->helperText(__('account.allow_reconciliation_help'))
-                    ->default(false),
+                    ->columns(2)
+                    ->columnSpanFull(),
             ]);
     }
 

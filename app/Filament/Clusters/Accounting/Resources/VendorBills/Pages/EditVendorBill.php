@@ -2,12 +2,23 @@
 
 namespace App\Filament\Clusters\Accounting\Resources\VendorBills\Pages;
 
+use App\Actions\Accounting\BuildVendorBillPostingPreviewAction;
+use Barryvdh\DomPDF\Facade\Pdf;
+use Filament\Facades\Filament;
+use App\Services\PaymentService;
+use App\Actions\Payments\CreatePaymentAction;
 use App\Actions\Purchases\UpdateVendorBillAction;
+use App\DataTransferObjects\Payments\CreatePaymentDTO;
+use App\DataTransferObjects\Payments\CreatePaymentDocumentLinkDTO;
 use App\DataTransferObjects\Purchases\UpdateVendorBillDTO;
 use App\DataTransferObjects\Purchases\VendorBillLineDTO;
+use App\Enums\Payments\PaymentPurpose;
+use App\Enums\Payments\PaymentType;
 use App\Enums\Purchases\VendorBillStatus;
 use App\Filament\Clusters\Accounting\Resources\VendorBills\VendorBillResource;
 use App\Filament\Clusters\Accounting\Resources\VendorBills\Widgets\SettlementSummaryWidget;
+use App\Filament\Forms\Components\MoneyInput;
+use App\Models\Journal;
 use App\Models\VendorBill;
 use App\Models\VendorBillAttachment;
 use App\Services\VendorBillService;
@@ -15,6 +26,10 @@ use Brick\Money\Money;
 use Exception;
 use Filament\Actions\Action;
 use Filament\Actions\DeleteAction;
+use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\Hidden;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
 use Illuminate\Database\Eloquent\Model;
@@ -30,6 +45,68 @@ class EditVendorBill extends EditRecord
     protected function getHeaderActions(): array
     {
         return [
+            Action::make('preview_posting')
+                ->label(__('Preview Posting'))
+                ->icon('heroicon-o-eye')
+                ->color('info')
+                ->visible(fn (VendorBill $record): bool => $record->status === VendorBillStatus::Draft)
+                ->requiresConfirmation()
+                ->modalHeading(__('Posting Preview'))
+                ->modalSubmitAction(false)
+                ->modalCancelActionLabel(__('Close'))
+                ->modalWidth('7xl')
+                ->modalContent(function (VendorBill $record) {
+                    $preview = app(BuildVendorBillPostingPreviewAction::class)->execute($record);
+                    return view('filament/accounting/vendor-bills/preview-posting', [
+                        'preview' => $preview,
+                        'bill' => $record,
+                    ]);
+                }),
+
+            Action::make('export_preview_csv')
+                ->label(__('Export Preview (CSV)'))
+                ->icon('heroicon-o-arrow-down-tray')
+                ->color('gray')
+                ->visible(fn (VendorBill $record): bool => $record->status === VendorBillStatus::Draft && config('app.debug') && ! app()->environment('production'))
+                ->action(function (VendorBill $record) {
+                    $preview = app(BuildVendorBillPostingPreviewAction::class)->execute($record);
+                    $rows = [];
+                    $rows[] = ['Account Code', 'Account Name', 'Description', 'Debit', 'Credit'];
+                    foreach ($preview['lines'] as $l) {
+                        $rows[] = [
+                            is_array($l['account_code'] ?? null) ? (string) (reset($l['account_code']) ?: '') : (string) ($l['account_code'] ?? ''),
+                            is_array($l['account_name'] ?? null) ? (string) (reset($l['account_name']) ?: '') : (string) ($l['account_name'] ?? ''),
+                            is_array($l['description'] ?? null) ? (string) (reset($l['description']) ?: '') : (string) ($l['description'] ?? ''),
+                            number_format(($l['debit_minor'] ?? 0) / 100, 2, '.', ''),
+                            number_format(($l['credit_minor'] ?? 0) / 100, 2, '.', ''),
+                        ];
+                    }
+                    $csv = '';
+                    foreach ($rows as $row) {
+                        $csv .= implode(',', array_map(fn($v) => '"' . str_replace('"', '""', (string) $v) . '"', $row)) . "\n";
+                    }
+                    $filename = 'vendor-bill-' . ($record->bill_reference ?: $record->id) . '-preview.csv';
+                    return response()->streamDownload(function () use ($csv) { echo $csv; }, $filename, [
+                        'Content-Type' => 'text/csv',
+                    ]);
+                }),
+            Action::make('export_preview_pdf')
+                ->label(__('Export Preview (PDF)'))
+                ->icon('heroicon-o-document-arrow-down')
+                ->color('gray')
+                ->visible(fn (VendorBill $record): bool => $record->status === VendorBillStatus::Draft && config('app.debug') && ! app()->environment('production'))
+                ->action(function (VendorBill $record) {
+                    $preview = app(BuildVendorBillPostingPreviewAction::class)->execute($record);
+                    $pdf = Pdf::loadView('filament/accounting/vendor-bills/preview-posting-pdf', [
+                        'preview' => $preview,
+                        'bill' => $record,
+                    ]);
+                    $filename = 'vendor-bill-' . ($record->bill_reference ?: $record->id) . '-preview.pdf';
+                    return response()->streamDownload(function () use ($pdf) { echo $pdf->output(); }, $filename, [
+                        'Content-Type' => 'application/pdf',
+                    ]);
+                }),
+
             Action::make('confirm')
                 ->label(__('vendor_bill.confirm'))
                 ->color('success')
@@ -63,6 +140,87 @@ class EditVendorBill extends EditRecord
             //         }
             //     }),
 
+            Action::make('register_payment')
+                ->label(__('Register Payment'))
+                ->icon('heroicon-o-banknotes')
+                ->color('warning')
+                ->modalHeading(__('Register Payment'))
+                ->modalDescription(__('Register a payment for this vendor bill'))
+                ->schema([
+                    Select::make('journal_id')
+                        ->label('Journal')
+                        ->options(function () {
+                            return Journal::where('company_id', Filament::getTenant()->id)
+                                ->pluck('name', 'id');
+                        })
+                        ->required()
+                        ->default(function () {
+                            return Journal::where('company_id', Filament::getTenant()->id)
+                                ->where('type', 'bank')
+                                ->first()?->id;
+                        }),
+                    DatePicker::make('payment_date')
+                        ->label('Payment Date')
+                        ->default(now())
+                        ->required(),
+                    MoneyInput::make('amount')
+                        ->label('Amount')
+                        ->currencyField('currency_id')
+                        ->default(fn(VendorBill $record) => $record->getRemainingAmount())
+                        ->required(),
+                    TextInput::make('reference')
+                        ->label('Reference')
+                        ->placeholder('Optional reference'),
+                    Hidden::make('currency_id')
+                        ->default(fn(VendorBill $record) => $record->currency_id),
+                ])
+                ->action(function (VendorBill $record, array $data) {
+                    try {
+                        $currency = $record->currency;
+
+                        // Create payment document link DTO
+                        $documentLink = new CreatePaymentDocumentLinkDTO(
+                            document_type: 'vendor_bill',
+                            document_id: $record->id,
+                            amount_applied: Money::of($data['amount'], $currency->code)
+                        );
+
+                        // Create payment DTO
+                        $paymentDTO = new CreatePaymentDTO(
+                            company_id: Filament::getTenant()->id,
+                            journal_id: $data['journal_id'],
+                            currency_id: $record->currency_id,
+                            payment_date: $data['payment_date'],
+                            payment_purpose: PaymentPurpose::Settlement,
+                            payment_type: PaymentType::Outbound,
+                            partner_id: $record->vendor_id,
+                            amount: Money::of($data['amount'], $currency->code),
+                            counterpart_account_id: null,
+                            document_links: [$documentLink],
+                            reference: $data['reference']
+                        );
+
+                        // Create and confirm payment
+                        $payment = app(CreatePaymentAction::class)->execute($paymentDTO, Auth::user());
+                        app(PaymentService::class)->confirm($payment, Auth::user());
+
+                        Notification::make()
+                            ->title(__('Payment registered successfully'))
+                            ->success()
+                            ->send();
+                    } catch (Exception $e) {
+                        Notification::make()
+                            ->title(__('Error registering payment'))
+                            ->body($e->getMessage())
+                            ->danger()
+                            ->send();
+                    }
+                })
+                ->visible(fn(VendorBill $record) =>
+                    $record->status === VendorBillStatus::Posted &&
+                    !$record->getRemainingAmount()->isZero()
+                ),
+
             DeleteAction::make()
                 ->action(function (Model $record) {
                     app(VendorBillService::class)->delete($record);
@@ -92,7 +250,7 @@ class EditVendorBill extends EditRecord
 
         $vendorBillDTO = new UpdateVendorBillDTO(
             vendorBill: $record,
-            company_id: \Filament\Facades\Filament::getTenant()->id,
+            company_id: Filament::getTenant()->id,
             vendor_id: $data['vendor_id'],
             currency_id: $data['currency_id'],
             bill_reference: $data['bill_reference'],

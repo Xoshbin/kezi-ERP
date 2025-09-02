@@ -2,6 +2,7 @@
 
 namespace App\Actions\HumanResources;
 
+use Carbon\Carbon;
 use App\DataTransferObjects\HumanResources\CreateEmploymentContractDTO;
 use App\Models\EmploymentContract;
 use App\Models\Company;
@@ -54,7 +55,7 @@ class CreateEmploymentContractAction
             // Calculate probation end date if probation period is specified
             $probationEndDate = null;
             if ($createContractDTO->probation_period_months) {
-                $probationEndDate = \Carbon\Carbon::parse($createContractDTO->start_date)
+                $probationEndDate = Carbon::parse($createContractDTO->start_date)
                     ->addMonths($createContractDTO->probation_period_months);
             }
 
