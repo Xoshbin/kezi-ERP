@@ -2,6 +2,11 @@
 
 namespace App\Filament\Clusters\Accounting\Resources\Payments;
 
+use App\Models\Journal;
+use App\Models\Currency;
+use Filament\Facades\Filament;
+use App\Models\Partner;
+use App\Models\Account;
 use App\Enums\Payments\PaymentPurpose;
 use App\Enums\Payments\PaymentStatus;
 use App\Enums\Payments\PaymentType;
@@ -67,13 +72,13 @@ class PaymentResource extends Resource
             Section::make(__('payment.form.payment_information'))
                 ->description(__('payment.form.standalone_payment_description'))
                 ->schema([
-                    TranslatableSelect::make('journal_id', \App\Models\Journal::class, __('payment.form.journal_id'))
+                    TranslatableSelect::make('journal_id', Journal::class, __('payment.form.journal_id'))
                         ->required()
                         ->columnSpan(2),
-                    TranslatableSelect::make('currency_id', \App\Models\Currency::class, __('payment.form.currency_id'))
+                    TranslatableSelect::make('currency_id', Currency::class, __('payment.form.currency_id'))
                         ->required()
                         ->columnSpan(2)
-                        ->default(fn() => \Filament\Facades\Filament::getTenant()?->currency_id),
+                        ->default(fn() => Filament::getTenant()?->currency_id),
                     DatePicker::make('payment_date')
                         ->default(now())
                         ->label(__('payment.form.payment_date'))
@@ -106,7 +111,7 @@ class PaymentResource extends Resource
                         })
                         ->required()
                         ->columnSpan(2),
-                    TranslatableSelect::make('partner_id', \App\Models\Partner::class, __('payment.form.partner'))
+                    TranslatableSelect::make('partner_id', Partner::class, __('payment.form.partner'))
                         ->required()
                         ->columnSpan(2),
                     MoneyInput::make('amount')
@@ -114,7 +119,7 @@ class PaymentResource extends Resource
                         ->currencyField('currency_id')
                         ->required()
                         ->columnSpan(2),
-                    TranslatableSelect::make('counterpart_account_id', \App\Models\Account::class, __('payment.form.counterpart_account'))
+                    TranslatableSelect::make('counterpart_account_id', Account::class, __('payment.form.counterpart_account'))
                         ->required()
                         ->columnSpan(4),
                 ])

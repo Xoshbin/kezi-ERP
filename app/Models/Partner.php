@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Traits\TranslatableSearch;
 use Illuminate\Database\Eloquent\Collection;
 use Database\Factories\PartnerFactory;
 use Illuminate\Database\Eloquent\Builder;
@@ -81,7 +82,7 @@ use Illuminate\Support\Carbon;
 class Partner extends Model
 {
     use HasFactory, SoftDeletes;
-    use \App\Traits\TranslatableSearch;
+    use TranslatableSearch;
 
     /**
      * The attributes that are mass assignable.

@@ -2,6 +2,9 @@
 
 namespace App\Filament\Clusters\Accounting\Resources\Journals;
 
+use App\Models\Currency;
+use Filament\Forms\Components\Toggle;
+use App\Models\Account;
 use App\Enums\Accounting\JournalType;
 use App\Filament\Clusters\Accounting\AccountingCluster;
 use App\Filament\Clusters\Accounting\Resources\Journals\Pages\CreateJournal;
@@ -77,7 +80,7 @@ class JournalResource extends Resource
                         ->label(__('journal.short_code'))
                         ->required()
                         ->maxLength(255),
-                    TranslatableSelect::make('currency_id', \App\Models\Currency::class, __('journal.currency'))
+                    TranslatableSelect::make('currency_id', Currency::class, __('journal.currency'))
                         ->createOptionForm([
                             TextInput::make('code')
                                 ->label(__('currency.code'))
@@ -96,7 +99,7 @@ class JournalResource extends Resource
                                 ->required()
                                 ->numeric()
                                 ->default(1),
-                            \Filament\Forms\Components\Toggle::make('is_active')
+                            Toggle::make('is_active')
                                 ->label(__('currency.is_active'))
                                 ->required()
                                 ->default(true),
@@ -115,7 +118,7 @@ class JournalResource extends Resource
                     TranslatableSelect::relationship(
                         'default_debit_account_id',
                         'defaultDebitAccount',
-                        \App\Models\Account::class,
+                        Account::class,
                         __('journal.default_debit_account'),
                         'name'
                     )
@@ -124,7 +127,7 @@ class JournalResource extends Resource
                     TranslatableSelect::relationship(
                         'default_credit_account_id',
                         'defaultCreditAccount',
-                        \App\Models\Account::class,
+                        Account::class,
                         __('journal.default_credit_account'),
                         'name'
                     )
@@ -148,7 +151,7 @@ class JournalResource extends Resource
                     ->searchable(),
                 TextColumn::make('type')
                     ->label(__('journal.type'))
-                    ->formatStateUsing(fn ($state) => $state instanceof \App\Enums\Accounting\JournalType ? $state->label() : ($state ? JournalType::from($state)->label() : null))
+                    ->formatStateUsing(fn ($state) => $state instanceof JournalType ? $state->label() : ($state ? JournalType::from($state)->label() : null))
                     ->badge()
                     ->searchable(),
                 TextColumn::make('short_code')

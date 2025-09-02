@@ -2,6 +2,7 @@
 
 namespace App\Filament\Clusters\Accounting\Resources\Payments\Pages;
 
+use Filament\Facades\Filament;
 use App\Actions\Payments\UpdatePaymentAction;
 use App\DataTransferObjects\Payments\UpdatePaymentDTO;
 use App\Enums\Payments\PaymentPurpose;
@@ -88,7 +89,7 @@ class EditPayment extends EditRecord
 
         $paymentDTO = new UpdatePaymentDTO(
             payment: $record,
-            company_id: \Filament\Facades\Filament::getTenant()->id,
+            company_id: Filament::getTenant()->id,
             journal_id: $data['journal_id'],
             currency_id: $data['currency_id'],
             payment_date: $data['payment_date'],

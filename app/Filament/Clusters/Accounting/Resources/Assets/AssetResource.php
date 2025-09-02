@@ -2,6 +2,7 @@
 
 namespace App\Filament\Clusters\Accounting\Resources\Assets;
 
+use Filament\Facades\Filament;
 use App\Enums\Accounting\AccountType;
 use App\Enums\Assets\AssetStatus;
 use App\Enums\Assets\DepreciationMethod;
@@ -77,11 +78,11 @@ class AssetResource extends Resource
                     TranslatableSelect::make('currency_id', Currency::class, __('asset.currency'))
                         ->required()
                         ->live()
-                        ->default(fn() => \Filament\Facades\Filament::getTenant()?->currency_id)
+                        ->default(fn() => Filament::getTenant()?->currency_id)
                         ->afterStateUpdated(function (callable $set, $state, callable $get) {
                             if ($state) {
                                 $currency = Currency::find($state);
-                                $company = \Filament\Facades\Filament::getTenant();
+                                $company = Filament::getTenant();
 
                                 if ($currency && $company && $currency->id !== $company->currency_id) {
                                     $latestRate = CurrencyRate::getLatestRate($currency->id, $company->id);
@@ -122,7 +123,7 @@ class AssetResource extends Resource
                         ->dehydrated(false)
                         ->visible(function (callable $get) {
                             $currencyId = $get('currency_id');
-                            $company = \Filament\Facades\Filament::getTenant();
+                            $company = Filament::getTenant();
                             return $currencyId && $company && $currencyId != $company->currency_id;
                         })
                         ->helperText(__('asset.exchange_rate_helper')),

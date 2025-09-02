@@ -2,6 +2,7 @@
 
 namespace App\Filament\Clusters\Settings\Resources;
 
+use Filament\Facades\Filament;
 use App\Models\Company;
 use App\Enums\Settings\NumberingType;
 use App\Rules\NumberingSettingsChangeRule;
@@ -58,7 +59,7 @@ class NumberingSettingsResource extends Resource
                         ->rules([
                             'required',
                             function () {
-                                return new NumberingSettingsChangeRule(\Filament\Facades\Filament::getTenant());
+                                return new NumberingSettingsChangeRule(Filament::getTenant());
                             }
                         ])
                         ->live()
@@ -81,7 +82,7 @@ class NumberingSettingsResource extends Resource
                             'required',
                             'max:10',
                             function () {
-                                return new NumberingSettingsChangeRule(\Filament\Facades\Filament::getTenant());
+                                return new NumberingSettingsChangeRule(Filament::getTenant());
                             }
                         ])
                         ->live()
@@ -108,7 +109,7 @@ class NumberingSettingsResource extends Resource
                             'min:3',
                             'max:10',
                             function () {
-                                return new NumberingSettingsChangeRule(\Filament\Facades\Filament::getTenant());
+                                return new NumberingSettingsChangeRule(Filament::getTenant());
                             }
                         ])
                         ->columnSpan(1),
@@ -137,7 +138,7 @@ class NumberingSettingsResource extends Resource
                         ->rules([
                             'required',
                             function () {
-                                return new NumberingSettingsChangeRule(\Filament\Facades\Filament::getTenant());
+                                return new NumberingSettingsChangeRule(Filament::getTenant());
                             }
                         ])
                         ->live()
@@ -160,7 +161,7 @@ class NumberingSettingsResource extends Resource
                             'required',
                             'max:10',
                             function () {
-                                return new NumberingSettingsChangeRule(\Filament\Facades\Filament::getTenant());
+                                return new NumberingSettingsChangeRule(Filament::getTenant());
                             }
                         ])
                         ->live()
@@ -187,7 +188,7 @@ class NumberingSettingsResource extends Resource
                             'min:3',
                             'max:10',
                             function () {
-                                return new NumberingSettingsChangeRule(\Filament\Facades\Filament::getTenant());
+                                return new NumberingSettingsChangeRule(Filament::getTenant());
                             }
                         ])
                         ->columnSpan(1),
@@ -280,7 +281,7 @@ class NumberingSettingsResource extends Resource
     public static function getEloquentQuery(): Builder
     {
         // Only show the current tenant company
-        $tenant = \Filament\Facades\Filament::getTenant();
+        $tenant = Filament::getTenant();
         return parent::getEloquentQuery()->where('id', $tenant?->id);
     }
 

@@ -2,6 +2,9 @@
 
 namespace App\Filament\Clusters\Settings\Resources\Companies;
 
+use App\Models\Currency;
+use App\Models\Account;
+use App\Models\Journal;
 use App\Filament\Clusters\Settings\Resources\Companies\Pages\CreateCompany;
 use App\Filament\Clusters\Settings\Resources\Companies\Pages\EditCompany;
 use App\Filament\Clusters\Settings\Resources\Companies\Pages\ListCompanies;
@@ -65,7 +68,7 @@ class CompanyResource extends Resource
                         Textarea::make('address')
                             ->label(__('company.address'))
                             ->columnSpanFull(),
-                        TranslatableSelect::make('currency_id', \App\Models\Currency::class, __('company.currency_id'))
+                        TranslatableSelect::make('currency_id', Currency::class, __('company.currency_id'))
                             ->required()
                             ->createOptionForm([
                                 TextInput::make('code')
@@ -98,7 +101,7 @@ class CompanyResource extends Resource
                             ->default(false),
                         TranslatableSelect::standard(
                             'parent_company_id',
-                            \App\Models\Company::class,
+                            Company::class,
                             ['name'],
                             __('company.parent_company_id')
                         )
@@ -113,7 +116,7 @@ class CompanyResource extends Resource
                                 TextInput::make('tax_id')
                                     ->label(__('company.tax_id'))
                                     ->maxLength(255),
-                                TranslatableSelect::make('currency_id', \App\Models\Currency::class, __('company.currency_id'))
+                                TranslatableSelect::make('currency_id', Currency::class, __('company.currency_id'))
                                     ->required(),
                                 TextInput::make('fiscal_country')
                                     ->label(__('company.fiscal_country'))
@@ -131,7 +134,7 @@ class CompanyResource extends Resource
                         TranslatableSelect::relationship(
                             'default_accounts_payable_id',
                             'defaultAccountsPayable',
-                            \App\Models\Account::class,
+                            Account::class,
                             __('company.default_accounts_payable'),
                             'name'
                         )
@@ -139,7 +142,7 @@ class CompanyResource extends Resource
                         TranslatableSelect::relationship(
                             'default_tax_receivable_id',
                             'defaultTaxReceivable',
-                            \App\Models\Account::class,
+                            Account::class,
                             __('company.default_tax_receivable'),
                             'name'
                         )
@@ -147,7 +150,7 @@ class CompanyResource extends Resource
                         TranslatableSelect::relationship(
                             'default_purchase_journal_id',
                             'defaultPurchaseJournal',
-                            \App\Models\Journal::class,
+                            Journal::class,
                             __('company.default_purchase_journal'),
                             'name'
                         )
@@ -155,7 +158,7 @@ class CompanyResource extends Resource
                         TranslatableSelect::relationship(
                             'default_accounts_receivable_id',
                             'defaultAccountsReceivable',
-                            \App\Models\Account::class,
+                            Account::class,
                             __('company.default_accounts_receivable'),
                             'name'
                         )
@@ -163,7 +166,7 @@ class CompanyResource extends Resource
                         TranslatableSelect::relationship(
                             'default_sales_discount_account_id',
                             'defaultSalesDiscountAccount',
-                            \App\Models\Account::class,
+                            Account::class,
                             __('company.default_sales_discount_account'),
                             'name'
                         )
@@ -171,7 +174,7 @@ class CompanyResource extends Resource
                         TranslatableSelect::relationship(
                             'default_tax_account_id',
                             'defaultTaxAccount',
-                            \App\Models\Account::class,
+                            Account::class,
                             __('company.default_tax_account'),
                             'name'
                         )
@@ -179,7 +182,7 @@ class CompanyResource extends Resource
                         TranslatableSelect::relationship(
                             'default_sales_journal_id',
                             'defaultSalesJournal',
-                            \App\Models\Journal::class,
+                            Journal::class,
                             __('company.default_sales_journal'),
                             'name'
                         )
@@ -187,7 +190,7 @@ class CompanyResource extends Resource
                         TranslatableSelect::relationship(
                             'default_depreciation_journal_id',
                             'defaultDepreciationJournal',
-                            \App\Models\Journal::class,
+                            Journal::class,
                             __('company.default_depreciation_journal'),
                             'name'
                         )
@@ -195,7 +198,7 @@ class CompanyResource extends Resource
                         TranslatableSelect::relationship(
                             'default_bank_account_id',
                             'defaultBankAccount',
-                            \App\Models\Account::class,
+                            Account::class,
                             __('company.default_bank_account'),
                             'name'
                         )
@@ -203,7 +206,7 @@ class CompanyResource extends Resource
                         TranslatableSelect::relationship(
                             'default_outstanding_receipts_account_id',
                             'defaultOutstandingReceiptsAccount',
-                            \App\Models\Account::class,
+                            Account::class,
                             __('company.default_outstanding_receipts_account'),
                             'name'
                         )

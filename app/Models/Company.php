@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\Purchases\VendorBillStatus;
 use Carbon\Carbon;
 use App\Observers\CompanyObserver;
 use Database\Factories\CompanyFactory;
@@ -604,7 +605,7 @@ class Company extends Model
 
         // Check for posted vendor bills (only posted bills should prevent changes)
         $hasPostedBills = $this->vendorBills()
-            ->where('status', \App\Enums\Purchases\VendorBillStatus::Posted)
+            ->where('status', VendorBillStatus::Posted)
             ->whereNotNull('bill_reference')
             ->exists();
 
@@ -622,7 +623,7 @@ class Company extends Model
             $errors[] = __('numbering.validation.posted_invoices_exist');
         }
 
-        if ($this->vendorBills()->where('status', \App\Enums\Purchases\VendorBillStatus::Posted)->whereNotNull('bill_reference')->exists()) {
+        if ($this->vendorBills()->where('status', VendorBillStatus::Posted)->whereNotNull('bill_reference')->exists()) {
             $errors[] = __('numbering.validation.posted_bills_exist');
         }
 

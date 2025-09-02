@@ -2,6 +2,11 @@
 
 namespace App\Filament\Clusters\Accounting\Resources\JournalEntries;
 
+use App\Models\Currency;
+use Filament\Facades\Filament;
+use Filament\Forms\Components\Toggle;
+use App\Models\Account;
+use App\Models\Partner;
 use App\Enums\Accounting\JournalType;
 use App\Filament\Clusters\Accounting\AccountingCluster;
 use App\Filament\Clusters\Accounting\Resources\JournalEntries\Pages\CreateJournalEntry;
@@ -68,23 +73,23 @@ class JournalEntryResource extends Resource
         return $schema->components([
             Section::make(__('journal_entry.journal_entry'))
                 ->schema([
-                    TranslatableSelect::make('journal_id', \App\Models\Journal::class, __('journal_entry.journal'))
+                    TranslatableSelect::make('journal_id', Journal::class, __('journal_entry.journal'))
                         ->required()
                         ->default(Journal::where('type', JournalType::Miscellaneous)->first()?->id)
                         ->columnSpan(2),
-                    TranslatableSelect::make('currency_id', \App\Models\Currency::class, __('journal_entry.currency'))
+                    TranslatableSelect::make('currency_id', Currency::class, __('journal_entry.currency'))
                         ->required()
                         ->live()
-                        ->default(fn() => \Filament\Facades\Filament::getTenant()?->currency_id)
+                        ->default(fn() => Filament::getTenant()?->currency_id)
                         ->createOptionForm([
                             TextInput::make('code')->label(__('currency.code'))->required()->maxLength(255),
                             TextInput::make('name')->label(__('currency.name'))->required()->maxLength(255),
                             TextInput::make('symbol')->label(__('currency.symbol'))->required()->maxLength(5),
                             TextInput::make('exchange_rate')->label(__('currency.exchange_rate'))->required()->numeric()->default(1),
-                            \Filament\Forms\Components\Toggle::make('is_active')->label(__('currency.is_active'))->required()->default(true),
+                            Toggle::make('is_active')->label(__('currency.is_active'))->required()->default(true),
                         ])
                         ->createOptionModalHeading(__('common.modal_title_create_currency'))
-                        ->createOptionAction(fn(\Filament\Actions\Action $action) => $action->modalWidth('lg'))
+                        ->createOptionAction(fn(Action $action) => $action->modalWidth('lg'))
                         ->columnSpan(2),
                     DatePicker::make('entry_date')
                         ->label(__('journal_entry.entry_date'))
@@ -112,7 +117,7 @@ class JournalEntryResource extends Resource
                         ->schema([
                             TranslatableSelect::withFormatter(
                                 'account_id',
-                                \App\Models\Account::class,
+                                Account::class,
                                 fn($account) => [$account->id => $account->getTranslatedLabel('name') . ' (' . $account->code . ')'],
                                 __('journal_entry.account')
                             )
@@ -133,7 +138,7 @@ class JournalEntryResource extends Resource
                                 ->columnSpan(3),
                             TranslatableSelect::standard(
                                 'partner_id',
-                                \App\Models\Partner::class,
+                                Partner::class,
                                 ['name', 'email', 'contact_person'],
                                 __('journal_entry.partner')
                             )

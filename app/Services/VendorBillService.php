@@ -71,7 +71,7 @@ class VendorBillService
             }
 
             // Create a single combined JE for all lines (storable, asset, expense)
-            $journalEntry = app(\App\Actions\Accounting\CreateJournalEntryForVendorBillAction::class)->execute($vendorBill, $user);
+            $journalEntry = app(CreateJournalEntryForVendorBillAction::class)->execute($vendorBill, $user);
 
             // Associate the created journal entry with the bill
             if (isset($journalEntry)) {

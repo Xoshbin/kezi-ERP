@@ -2,6 +2,9 @@
 
 namespace App\Filament\Clusters\HumanResources\Resources\Positions\Schemas;
 
+use App\Models\Department;
+use App\Models\Currency;
+use Filament\Facades\Filament;
 use App\Filament\Forms\Components\MoneyInput;
 use App\Filament\Support\TranslatableSelect;
 use Filament\Forms\Components\Select;
@@ -25,7 +28,7 @@ class PositionForm
                         ->maxLength(255)
                         ->columnSpan(2),
 
-                    TranslatableSelect::make('department_id', \App\Models\Department::class, __('position.department'))
+                    TranslatableSelect::make('department_id', Department::class, __('position.department'))
                         ->columnSpan(1),
 
                     Textarea::make('description')
@@ -90,9 +93,9 @@ class PositionForm
             Section::make(__('position.salary_range'))
                 ->description(__('position.salary_range_description'))
                 ->schema([
-                    TranslatableSelect::make('salary_currency_id', \App\Models\Currency::class, __('position.salary_currency'))
+                    TranslatableSelect::make('salary_currency_id', Currency::class, __('position.salary_currency'))
                         ->live()
-                        ->default(fn() => \Filament\Facades\Filament::getTenant()?->currency_id)
+                        ->default(fn() => Filament::getTenant()?->currency_id)
                         ->columnSpan(3),
 
                     MoneyInput::make('min_salary')

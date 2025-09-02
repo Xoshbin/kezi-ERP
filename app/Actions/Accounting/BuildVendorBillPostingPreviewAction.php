@@ -2,6 +2,7 @@
 
 namespace App\Actions\Accounting;
 
+use App\Models\AssetCategory;
 use App\Enums\Products\ProductType;
 use App\Models\VendorBill;
 use Brick\Money\Money;
@@ -64,7 +65,7 @@ class BuildVendorBillPostingPreviewAction
                     $debitTotal = $debitTotal->plus($line->subtotal);
                 }
             } elseif ($isAsset) {
-                $category = \App\Models\AssetCategory::find($line->asset_category_id);
+                $category = AssetCategory::find($line->asset_category_id);
                 if (!$category) {
                     $msg = 'Invalid asset category selected on a bill line.';
                     $errors[] = $msg;

@@ -2,6 +2,7 @@
 
 namespace App\Filament\Clusters\Accounting\Resources\BankStatements\Pages;
 
+use Filament\Facades\Filament;
 use App\Actions\Accounting\CreateBankStatementAction;
 use App\DataTransferObjects\Accounting\CreateBankStatementDTO;
 use App\DataTransferObjects\Accounting\CreateBankStatementLineDTO;
@@ -52,7 +53,7 @@ class CreateBankStatement extends CreateRecord
     protected function handleRecordCreation(array $data): Model
     {
         $bankStatementDTO = new CreateBankStatementDTO(
-            company_id: \Filament\Facades\Filament::getTenant()->id,
+            company_id: Filament::getTenant()->id,
             currency_id: $data['currency_id'],
             journal_id: $data['journal_id'],
             reference: $data['reference'],
