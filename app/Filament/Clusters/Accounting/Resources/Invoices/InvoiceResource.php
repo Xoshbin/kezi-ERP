@@ -43,6 +43,7 @@ use Filament\Actions\EditAction;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Repeater;
+use Filament\Forms\Components\Repeater\TableColumn;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
@@ -217,6 +218,14 @@ class InvoiceResource extends Resource
                 ->schema([
                     Repeater::make('invoiceLines')
                         ->label(__('invoice.invoice_lines'))
+                        ->table([
+                            TableColumn::make(__('invoice.product'))->width('25%'),
+                            TableColumn::make(__('invoice.description'))->width('15%'),
+                            TableColumn::make(__('invoice.quantity'))->width('10%'),
+                            TableColumn::make(__('invoice.unit_price'))->width('15%'),
+                            TableColumn::make(__('invoice.tax'))->width('20%'),
+                            TableColumn::make(__('invoice.income_account'))->width('15%'),
+                        ])
                         ->live()
                         ->reorderable(true)
                         ->deletable(fn(?Invoice $record) => !$record || $record->status === InvoiceStatus::Draft)

@@ -24,6 +24,7 @@ use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Repeater;
+use Filament\Forms\Components\Repeater\TableColumn;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
@@ -154,6 +155,14 @@ class BankStatementResource extends Resource
                 ->schema([
                     Repeater::make('bankStatementLines')
                         ->label(__('bank_statement.statement_lines'))
+                        ->table([
+                            TableColumn::make(__('bank_statement.line_date'))->width('15%'),
+                            TableColumn::make(__('bank_statement.description'))->width('20%'),
+                            TableColumn::make(__('bank_statement.partner'))->width('20%'),
+                            TableColumn::make(__('bank_statement.amount'))->width('15%'),
+                            TableColumn::make(__('bank_statement.foreign_currency'))->width('20%'),
+                            TableColumn::make(__('bank_statement.amount_in_foreign_currency'))->width('10%'),
+                        ])
                         ->live()
                         ->reorderable(true)
                         ->minItems(1)
@@ -323,7 +332,7 @@ class BankStatementResource extends Resource
             'index' => ListBankStatements::route('/'),
             'create' => CreateBankStatement::route('/create'),
             'edit' => EditBankStatement::route('/{record}/edit'),
-            'reconcile' => BankReconciliation::route('/{record}/reconcile'),
+            'reconcile' => BankReconciliation::route('/{record?}/reconcile'),
         ];
     }
 }
