@@ -6,6 +6,7 @@ use App\Models\BankStatement;
 use App\Services\BankReconciliationService;
 use App\Support\NumberFormatter;
 use Brick\Money\Money;
+use Filament\Facades\Filament;
 use Filament\Notifications\Notification;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\Computed;
@@ -26,11 +27,30 @@ class BankReconciliationMatcher extends Component
     public function mount(int $bankStatementId): void
     {
         $this->bankStatementId = $bankStatementId;
-        $this->bankStatement = BankStatement::with(['currency', 'journal'])->findOrFail($bankStatementId);
+        $tenant = Filament::getTenant();
+
+        $bankStatement = BankStatement::with(['currency', 'journal'])->find($bankStatementId);
+
+        if (! $bankStatement || ($tenant && $bankStatement->company_id !== $tenant->id)) {
+            // Unauthorized or non-existent: render a safe, empty state without leaking data
+            $this->bankStatement = new BankStatement([
+                'id' => 0,
+                'company_id' => $tenant?->id,
+                'currency_id' => $tenant?->currency_id,
+            ]);
+
+            if ($tenant && $tenant->currency) {
+                $this->bankStatement->setRelation('currency', $tenant->currency);
+            }
+        } else {
+            $this->bankStatement = $bankStatement;
+        }
+
+        $currencyCode = $this->bankStatement->currency?->code ?? $tenant?->currency?->code ?? 'IQD';
 
         // Initialize totals
-        $this->bankTotal = Money::of(0, $this->bankStatement->currency->code);
-        $this->systemTotal = Money::of(0, $this->bankStatement->currency->code);
+        $this->bankTotal = Money::of(0, $currencyCode);
+        $this->systemTotal = Money::of(0, $currencyCode);
     }
 
     #[On('bank-selection-changed')]
