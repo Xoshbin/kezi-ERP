@@ -194,16 +194,7 @@ class VendorBillResource extends Resource
                         ->label(__('vendor_bill.bill_reference'))
                         ->required()
                         ->maxLength(255)
-                        ->columnSpan(2),
-                    Select::make('status')
-                        ->label(__('vendor_bill.status'))
-                        ->options(
-                            collect(VendorBillStatus::cases())
-                                ->mapWithKeys(fn(VendorBillStatus $status) => [$status->value => $status->label()])
-                        )
-                        ->disabled()
-                        ->dehydrated(false)
-                        ->columnSpan(2),
+                        ->columnSpan(1),
                     DatePicker::make('bill_date')
                         ->label(__('vendor_bill.bill_date'))
                         ->default(now())
@@ -218,7 +209,7 @@ class VendorBillResource extends Resource
                         ->columnSpan(1),
                     DatePicker::make('due_date')
                         ->label(__('vendor_bill.due_date'))
-                        ->columnSpan(2),
+                        ->columnSpan(1),
                 ])
                 ->columns(4)
                 ->columnSpanFull(),
@@ -282,23 +273,23 @@ class VendorBillResource extends Resource
                                     return $action
                                         ->modalWidth('lg');
                                 })
-                                ->columnSpan(2),
+                                ->columnSpan(3),
                             TextInput::make('description')
                                 ->label(__('vendor_bill.description'))
                                 ->maxLength(255)
                                 ->required()
-                                ->columnSpan(3),
+                                ->columnSpan(4),
                             TextInput::make('quantity')
                                 ->label(__('vendor_bill.quantity'))
                                 ->required()
                                 ->numeric()
                                 ->default(1)
-                                ->columnSpan(1),
+                                ->columnSpan(2),
                             MoneyInput::make('unit_price')
                                 ->label(__('vendor_bill.unit_price'))
                                 ->currencyField('../../currency_id')
                                 ->required()
-                                ->columnSpan(1),
+                                ->columnSpan(3),
                             TranslatableSelect::make('tax_id', \App\Models\Tax::class, __('vendor_bill.tax'))
                                 ->createOptionForm([
                                     Select::make('company_id')
@@ -330,7 +321,7 @@ class VendorBillResource extends Resource
                                     return $action
                                         ->modalWidth('lg');
                                 })
-                                ->columnSpan(1),
+                                ->columnSpan(3),
                             TranslatableSelect::standard(
                                 'asset_category_id',
                                 \App\Models\AssetCategory::class,
@@ -374,38 +365,9 @@ class VendorBillResource extends Resource
                                 ])
                                 ->createOptionModalHeading(__('asset.create_category'))
                                 ->createOptionAction(fn(\Filament\Actions\Action $action) => $action->modalWidth('lg'))
-                                ->columnSpan(2),
-                            TranslatableSelect::standard(
-                                'analytic_account_id',
-                                \App\Models\AnalyticAccount::class,
-                                ['name'],
-                                __('vendor_bill.analytic_account')
-                            )
-                                ->createOptionForm([
-                                    Select::make('company_id')
-                                        ->relationship('company', 'name')
-                                        ->label(__('analytic_account.company'))
-                                        ->required(),
-                                    TranslatableSelect::make('currency_id', \App\Models\Currency::class, __('analytic_account.currency')),
-                                    TextInput::make('name')
-                                        ->label(__('analytic_account.name'))
-                                        ->required()
-                                        ->maxLength(255),
-                                    TextInput::make('reference')
-                                        ->label(__('analytic_account.reference'))
-                                        ->maxLength(255),
-                                    Toggle::make('is_active')
-                                        ->label(__('analytic_account.is_active'))
-                                        ->default(true),
-                                ])
-                                ->createOptionModalHeading(__('common.modal_title_create_analytic_account'))
-                                ->createOptionAction(function (\Filament\Actions\Action $action) {
-                                    return $action
-                                        ->modalWidth('lg');
-                                })
-                                ->columnSpan(2),
+                                ->columnSpan(3),
                         ])
-                        ->columns(5)
+                        ->columns(18)
                 ])->columnSpanFull(),
             Section::make(__('vendor_bill.attachments'))
                 ->description(__('vendor_bill.attachments_description'))

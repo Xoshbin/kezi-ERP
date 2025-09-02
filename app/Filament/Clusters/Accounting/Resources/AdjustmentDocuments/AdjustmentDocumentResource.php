@@ -251,23 +251,23 @@ class AdjustmentDocumentResource extends Resource
                                     return $action
                                         ->modalWidth('lg');
                                 })
-                                ->columnSpan(2),
+                                ->columnSpan(3),
                             TextInput::make('description')
                                 ->label(__('adjustment_document.description'))
                                 ->maxLength(255)
                                 ->required()
-                                ->columnSpan(3),
+                                ->columnSpan(4),
                             TextInput::make('quantity')
                                 ->label(__('adjustment_document.qty'))
                                 ->required()
                                 ->numeric()
                                 ->default(1)
-                                ->columnSpan(1),
+                                ->columnSpan(2),
                             MoneyInput::make('unit_price')
                                 ->label('Price')
                                 ->currencyField('../../currency_id')
                                 ->required()
-                                ->columnSpan(1),
+                                ->columnSpan(3),
                             TranslatableSelect::make('tax_id', \App\Models\Tax::class, 'Tax')
                                 ->createOptionForm([
                                     Select::make('company_id')
@@ -293,7 +293,7 @@ class AdjustmentDocumentResource extends Resource
                                     return $action
                                         ->modalWidth('lg');
                                 })
-                                ->columnSpan(1),
+                                ->columnSpan(3),
                             TranslatableSelect::withFormatter(
                                 'account_id',
                                 \App\Models\Account::class,
@@ -331,9 +331,9 @@ class AdjustmentDocumentResource extends Resource
                                     return $action
                                         ->modalWidth('lg');
                                 })
-                                ->columnSpan(2),
+                                ->columnSpan(3),
                         ])
-                        ->columns(6)
+                        ->columns(18)
                 ])
                 ->columnSpanFull(),
         ]);

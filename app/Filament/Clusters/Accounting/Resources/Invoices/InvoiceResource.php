@@ -256,23 +256,23 @@ class InvoiceResource extends Resource
                                     return $action
                                         ->modalWidth('lg');
                                 })
-                                ->columnSpan(2),
+                                ->columnSpan(3),
                             TextInput::make('description')
                                 ->label(__('invoice.description'))
                                 ->maxLength(255)
                                 ->required()
-                                ->columnSpan(3),
+                                ->columnSpan(4),
                             TextInput::make('quantity')
                                 ->label(__('invoice.quantity'))
                                 ->required()
                                 ->numeric()
                                 ->default(1)
-                                ->columnSpan(1),
+                                ->columnSpan(2),
                             MoneyInput::make('unit_price')
                                 ->label(__('invoice.unit_price'))
                                 ->currencyField('../../currency_id')
                                 ->required()
-                                ->columnSpan(1),
+                                ->columnSpan(3),
                             TranslatableSelect::make('tax_id', \App\Models\Tax::class, __('invoice.tax'))
                                 ->createOptionForm([
                                     Select::make('company_id')
@@ -298,7 +298,7 @@ class InvoiceResource extends Resource
                                     return $action
                                         ->modalWidth('lg');
                                 })
-                                ->columnSpan(1),
+                                ->columnSpan(3),
                             TranslatableSelect::relationship(
                                 'income_account_id',
                                 'incomeAccount',
@@ -309,9 +309,9 @@ class InvoiceResource extends Resource
                                 fn($query) => $query->where('type', 'income')
                             )
                                 ->required()
-                                ->columnSpan(2),
+                                ->columnSpan(3),
                         ])
-                        ->columns(6)
+                        ->columns(18)
                 ])->columnSpanFull(),
 
             Section::make(__('invoice.company_currency_totals'))
