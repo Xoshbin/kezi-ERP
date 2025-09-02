@@ -26,6 +26,7 @@ use Filament\Actions\EditAction;
 use Filament\Actions\Action;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Repeater;
+use Filament\Forms\Components\Repeater\TableColumn;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Resources\Resource;
@@ -114,6 +115,13 @@ class JournalEntryResource extends Resource
                         ->label(__('journal_entry.lines'))
                         ->disabled(fn (?JournalEntry $record) => $record && $record->is_posted)
                         ->deletable(fn (?JournalEntry $record) => $record === null || !$record->is_posted)
+                        ->table([
+                            TableColumn::make(__('journal_entry.account'))->width('20%'),
+                            TableColumn::make(__('journal_entry.debit'))->width('15%'),
+                            TableColumn::make(__('journal_entry.credit'))->width('15%'),
+                            TableColumn::make(__('journal_entry.partner'))->width('20%'),
+                            TableColumn::make(__('journal_entry.description'))->width('30%'),
+                        ])
                         ->schema([
                             TranslatableSelect::withFormatter(
                                 'account_id',

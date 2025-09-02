@@ -27,6 +27,7 @@ use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Repeater;
+use Filament\Forms\Components\Repeater\TableColumn;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
@@ -212,6 +213,14 @@ class AdjustmentDocumentResource extends Resource
                 ->schema([
                     Repeater::make('lines')
                         ->label('')
+                        ->table([
+                            TableColumn::make(__('adjustment_document.product'))->width('20%'),
+                            TableColumn::make(__('adjustment_document.description'))->width('20%'),
+                            TableColumn::make(__('adjustment_document.qty'))->width('10%'),
+                            TableColumn::make('Price')->width('15%'),
+                            TableColumn::make('Tax')->width('20%'),
+                            TableColumn::make('Account')->width('15%'),
+                        ])
                         ->live()
                         ->reorderable(false)
                         ->minItems(1)
