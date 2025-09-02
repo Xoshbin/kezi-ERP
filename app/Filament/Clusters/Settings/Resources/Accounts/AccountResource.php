@@ -79,7 +79,7 @@ class AccountResource extends Resource
                                     ->maxLength(255),
                             ])
                             ->createOptionModalHeading(__('common.modal_title_create_company'))
-                            ->createOptionAction(fn(Action $action) => $action->modalWidth('lg')),
+                            ->createOptionAction(fn(Action $action) => $action->name('create-company-option')->modalWidth('lg')),
                         TextInput::make('code')
                             ->label(__('account.code'))
                             ->required()
