@@ -14,6 +14,12 @@ return [
     'created_at' => 'تاريخ الإنشاء',
     'updated_at' => 'تاريخ التحديث',
 
+    // Sections
+    'details' => 'تفاصيل دفتر اليومية',
+    'details_description' => 'إعداد الاسم والنوع والرمز المختصر والعملة لهذا الدفتر',
+    'default_accounts' => 'الحسابات الافتراضية',
+    'default_accounts_description' => 'حسابا المدين والدائن الافتراضيان المستخدمان بواسطة هذا الدفتر',
+
     // JournalResource.php
     'default_debit_account' => 'حساب المدين الافتراضي',
     'default_debit_account_helper' => 'لدفاتر البنك/النقد، هذا هو الحساب البنكي المستخدم للمدفوعات.',
