@@ -15,8 +15,7 @@
         "filament/filament": "^4.0",
         "lara-zeus/spatie-translatable": "^1.0",
         "laravel/framework": "^12.0",
-        "laravel/tinker": "^2.10.1",
-        "xoshbin/jmeryar-theme": "^0.0.2"
+        "laravel/tinker": "^2.10.1"
     },
     "require-dev": {
         "barryvdh/laravel-ide-helper": "^3.6",
