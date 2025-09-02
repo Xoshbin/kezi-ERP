@@ -44,6 +44,7 @@ use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Repeater;
+use Filament\Forms\Components\Repeater\TableColumn;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
@@ -228,6 +229,15 @@ class VendorBillResource extends Resource
                 ->schema([
                     Repeater::make('lines')
                         ->label(__('vendor_bill.lines'))
+                        ->table([
+                            TableColumn::make(__('vendor_bill.product'))->width('18%'),
+                            TableColumn::make(__('vendor_bill.description'))->width('12%'),
+                            TableColumn::make(__('vendor_bill.quantity'))->width('8%'),
+                            TableColumn::make(__('vendor_bill.unit_price'))->width('12%'),
+                            TableColumn::make(__('vendor_bill.expense_account'))->width('18%'),
+                            TableColumn::make(__('vendor_bill.tax'))->width('18%'),
+                            TableColumn::make(__('asset.category'))->width('18%'),
+                        ])
                         ->live()
                         ->reorderable(true)
                         ->minItems(1)
@@ -349,7 +359,6 @@ class VendorBillResource extends Resource
                                 __('asset.category')
                             )
                                 ->visible(fn($get) => $get('product_id') === null) // for service/asset purchases without product
-                                ->helperText(__('asset.category_helper'))
                                 ->createOptionForm([
                                     Select::make('company_id')
                                         ->relationship('company', 'name')
