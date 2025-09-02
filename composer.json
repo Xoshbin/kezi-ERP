@@ -5,24 +5,15 @@
     "description": "The skeleton application for the Laravel framework.",
     "keywords": ["laravel", "framework"],
     "license": "MIT",
-    "repositories": {
-        "filament-ai-helper": {
-            "type": "path",
-            "url": "./packages/xoshbin/filament-ai-helper",
-            "options": {
-                "symlink": true
-            }
-        }
-    },
     "require": {
         "php": "^8.2",
-        "xoshbin/filament-ai-helper": "dev-develop",
         "barryvdh/laravel-dompdf": "^3.1",
         "brick/money": "^0.10.1",
         "filament/filament": "^4.0",
         "lara-zeus/spatie-translatable": "^1.0",
         "laravel/framework": "^12.0",
-        "laravel/tinker": "^2.10.1"
+        "laravel/tinker": "^2.10.1",
+        "xoshbin/jmeryar-theme": "^0.0"
     },
     "require-dev": {
         "barryvdh/laravel-ide-helper": "^3.6",
