@@ -14,6 +14,12 @@ return [
     'created_at' => 'Created At',
     'updated_at' => 'Updated At',
 
+    // Sections
+    'details' => 'Journal Details',
+    'details_description' => 'Configure the journal name, type, short code and currency',
+    'default_accounts' => 'Default Accounts',
+    'default_accounts_description' => 'Optional default debit and credit accounts used by this journal',
+
     // JournalResource.php
     'default_debit_account' => 'Default Debit Account',
     'default_debit_account_helper' => 'For Bank/Cash journals, this is the bank account to use for payments.',
