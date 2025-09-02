@@ -96,9 +96,9 @@ class JournalEntryResource extends Resource
                         ->required()
                         ->default(now())
                         ->columnSpan(2),
+
                     TextInput::make('reference')
                         ->label(__('journal_entry.reference'))
-                        ->required()
                         ->maxLength(255)
                         ->columnSpan(2),
                     Textarea::make('description')

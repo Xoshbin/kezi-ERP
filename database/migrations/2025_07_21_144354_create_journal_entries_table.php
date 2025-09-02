@@ -19,7 +19,7 @@ return new class extends Migration
             $table->foreignId('currency_id')->constrained('currencies');
             $table->foreignId('created_by_user_id')->constrained('users');
             $table->date('entry_date');
-            $table->string('reference');
+            $table->string('reference')->nullable();
             $table->text('description')->nullable();
             $table->unsignedBigInteger('total_debit');
             $table->unsignedBigInteger('total_credit');
