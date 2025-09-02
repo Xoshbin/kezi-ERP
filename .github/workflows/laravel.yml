@@ -29,6 +29,23 @@ jobs:
         with:
           composer-options: --prefer-dist --no-interaction
 
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install Node dependencies
+        run: |
+          if [ -f package-lock.json ]; then
+            npm ci
+          else
+            npm install
+          fi
+
+      - name: Build assets
+        run: npm run build
+
       - name: Generate key
         run: php artisan key:generate
 
