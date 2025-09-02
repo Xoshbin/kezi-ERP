@@ -2,6 +2,15 @@
 
 namespace App\Filament\Clusters\Accounting\Resources\VendorBills;
 
+use App\Models\Partner;
+use App\Models\Currency;
+use Filament\Facades\Filament;
+use App\Models\CurrencyRate;
+use App\Models\Tax;
+use App\Models\AssetCategory;
+use App\Enums\Assets\DepreciationMethod;
+use App\Services\PaymentService;
+use Exception;
 use App\Enums\Accounting\AccountType;
 use App\Enums\Accounting\TaxType;
 use App\Enums\Partners\PartnerType;
@@ -85,7 +94,7 @@ class VendorBillResource extends Resource
                 ->schema([
                     TranslatableSelect::standard(
                         'vendor_id',
-                        \App\Models\Partner::class,
+                        Partner::class,
                         ['name', 'email', 'contact_person'],
                         __('vendor_bill.vendor')
                     )
@@ -118,23 +127,23 @@ class VendorBillResource extends Resource
                                 ->columnSpanFull(),
                         ])
                         ->createOptionModalHeading(__('common.modal_title_create_partner'))
-                        ->createOptionAction(function (\Filament\Actions\Action $action) {
+                        ->createOptionAction(function (Action $action) {
                             return $action
                                 ->modalWidth('lg');
                         }),
-                    TranslatableSelect::make('currency_id', \App\Models\Currency::class, __('vendor_bill.currency'))
+                    TranslatableSelect::make('currency_id', Currency::class, __('vendor_bill.currency'))
                         ->required()
                         ->live()
                         ->columnSpan(1)
-                        ->default(fn() => \Filament\Facades\Filament::getTenant()?->currency_id)
+                        ->default(fn() => Filament::getTenant()?->currency_id)
                         ->afterStateUpdated(function (callable $set, $state, callable $get) {
                             if ($state) {
-                                $currency = \App\Models\Currency::find($state);
-                                $company = \Filament\Facades\Filament::getTenant();
+                                $currency = Currency::find($state);
+                                $company = Filament::getTenant();
 
                                 if ($currency && $company && $currency->id !== $company->currency_id) {
                                     // Get latest exchange rate for this company
-                                    $latestRate = \App\Models\CurrencyRate::getLatestRate($currency->id, $company->id);
+                                    $latestRate = CurrencyRate::getLatestRate($currency->id, $company->id);
                                     if ($latestRate) {
                                         $set('current_exchange_rate', $latestRate);
                                     }
@@ -167,7 +176,7 @@ class VendorBillResource extends Resource
                                 ->default(true),
                         ])
                         ->createOptionModalHeading(__('common.modal_title_create_currency'))
-                        ->createOptionAction(function (\Filament\Actions\Action $action) {
+                        ->createOptionAction(function (Action $action) {
                             return $action
                                 ->modalWidth('lg');
                         }),
@@ -179,7 +188,7 @@ class VendorBillResource extends Resource
                         ->columnSpan(1)
                         ->visible(function (callable $get) {
                             $currencyId = $get('currency_id');
-                            $company = \Filament\Facades\Filament::getTenant();
+                            $company = Filament::getTenant();
                             return $currencyId && $company && $currencyId != $company->currency_id;
                         })
                         ->helperText(__('vendor_bill.exchange_rate_helper')),
@@ -226,7 +235,7 @@ class VendorBillResource extends Resource
                         ->schema([
                             TranslatableSelect::standard(
                                 'product_id',
-                                \App\Models\Product::class,
+                                Product::class,
                                 ['name', 'sku', 'description'],
                                 __('vendor_bill.product')
                             )
@@ -269,7 +278,7 @@ class VendorBillResource extends Resource
                                         ->default(true),
                                 ])
                                 ->createOptionModalHeading(__('common.modal_title_create_product'))
-                                ->createOptionAction(function (\Filament\Actions\Action $action) {
+                                ->createOptionAction(function (Action $action) {
                                     return $action
                                         ->modalWidth('lg');
                                 })
@@ -290,7 +299,7 @@ class VendorBillResource extends Resource
                                 ->currencyField('../../currency_id')
                                 ->required()
                                 ->columnSpan(3),
-                            TranslatableSelect::make('tax_id', \App\Models\Tax::class, __('vendor_bill.tax'))
+                            TranslatableSelect::make('tax_id', Tax::class, __('vendor_bill.tax'))
                                 ->createOptionForm([
                                     Select::make('company_id')
                                         ->relationship('company', 'name')
@@ -317,14 +326,14 @@ class VendorBillResource extends Resource
                                         ->default(true),
                                 ])
                                 ->createOptionModalHeading(__('common.modal_title_create_tax'))
-                                ->createOptionAction(function (\Filament\Actions\Action $action) {
+                                ->createOptionAction(function (Action $action) {
                                     return $action
                                         ->modalWidth('lg');
                                 })
                                 ->columnSpan(3),
                             TranslatableSelect::standard(
                                 'asset_category_id',
-                                \App\Models\AssetCategory::class,
+                                AssetCategory::class,
                                 ['name'],
                                 __('asset.category')
                             )
@@ -351,7 +360,7 @@ class VendorBillResource extends Resource
                                         ->label(__('asset.depreciation_expense_account'))
                                         ->required(),
                                     Select::make('depreciation_method')
-                                        ->options(collect(\App\Enums\Assets\DepreciationMethod::cases())->mapWithKeys(fn($m) => [$m->value => $m->label()]))
+                                        ->options(collect(DepreciationMethod::cases())->mapWithKeys(fn($m) => [$m->value => $m->label()]))
                                         ->label(__('asset.depreciation_method'))
                                         ->required(),
                                     TextInput::make('useful_life_years')
@@ -364,7 +373,7 @@ class VendorBillResource extends Resource
                                         ->default(0),
                                 ])
                                 ->createOptionModalHeading(__('asset.create_category'))
-                                ->createOptionAction(fn(\Filament\Actions\Action $action) => $action->modalWidth('lg'))
+                                ->createOptionAction(fn(Action $action) => $action->modalWidth('lg'))
                                 ->columnSpan(3),
                         ])
                         ->columns(18)
@@ -552,16 +561,16 @@ class VendorBillResource extends Resource
                     ->color('warning')
                     ->modalHeading(__('Register Payment'))
                     ->modalDescription(__('Register a payment for this vendor bill'))
-                    ->form([
+                    ->schema([
                         Select::make('journal_id')
                             ->label(__('payment.form.journal_id'))
                             ->options(function () {
-                                return Journal::where('company_id', \Filament\Facades\Filament::getTenant()->id)
+                                return Journal::where('company_id', Filament::getTenant()->id)
                                     ->pluck('name', 'id');
                             })
                             ->required()
                             ->default(function () {
-                                return Journal::where('company_id', \Filament\Facades\Filament::getTenant()->id)
+                                return Journal::where('company_id', Filament::getTenant()->id)
                                     ->where('type', 'bank')
                                     ->first()?->id;
                             }),
@@ -593,7 +602,7 @@ class VendorBillResource extends Resource
 
                             // Create payment DTO
                             $paymentDTO = new CreatePaymentDTO(
-                                company_id: \Filament\Facades\Filament::getTenant()->id,
+                                company_id: Filament::getTenant()->id,
                                 journal_id: $data['journal_id'],
                                 currency_id: $record->currency_id,
                                 payment_date: $data['payment_date'],
@@ -608,13 +617,13 @@ class VendorBillResource extends Resource
 
                             // Create and confirm payment
                             $payment = app(CreatePaymentAction::class)->execute($paymentDTO, Auth::user());
-                            app(\App\Services\PaymentService::class)->confirm($payment, Auth::user());
+                            app(PaymentService::class)->confirm($payment, Auth::user());
 
                             Notification::make()
                                 ->title(__('Payment registered successfully'))
                                 ->success()
                                 ->send();
-                        } catch (\Exception $e) {
+                        } catch (Exception $e) {
                             Notification::make()
                                 ->title(__('Error registering payment'))
                                 ->body($e->getMessage())

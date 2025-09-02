@@ -22,7 +22,7 @@ class CurrencyRateResource extends Resource
 
     protected static ?string $model = CurrencyRate::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedCurrencyDollar;
+    protected static string | \BackedEnum | null $navigationIcon = Heroicon::OutlinedCurrencyDollar;
 
     protected static ?string $cluster = SettingsCluster::class;
 

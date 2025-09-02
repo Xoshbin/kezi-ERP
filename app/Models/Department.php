@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Traits\TranslatableSearch;
+use Illuminate\Support\Carbon;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -20,8 +22,8 @@ use Spatie\Translatable\HasTranslations;
  * @property int|null $parent_department_id
  * @property int|null $manager_id
  * @property bool $is_active
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  * @property-read Company $company
  * @property-read Department|null $parentDepartment
  * @property-read Collection<int, Department> $childDepartments
@@ -30,12 +32,12 @@ use Spatie\Translatable\HasTranslations;
  * @property-read int|null $employees_count
  * @property-read Collection<int, Position> $positions
  * @property-read int|null $positions_count
- * @property-read \App\Models\User|null $manager
+ * @property-read User|null $manager
  */
 class Department extends Model
 {
     use HasFactory, HasTranslations;
-    use \App\Traits\TranslatableSearch;
+    use TranslatableSearch;
 
     /**
      * The attributes that are mass assignable.

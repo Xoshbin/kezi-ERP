@@ -2,6 +2,9 @@
 
 namespace App\Filament\Clusters\Settings\Resources\Taxes;
 
+use App\Models\Company;
+use App\Models\Currency;
+use App\Models\Account;
 use App\Enums\Accounting\AccountType;
 use App\Enums\Accounting\TaxType;
 use App\Filament\Clusters\Settings\Resources\Taxes\Pages\CreateTax;
@@ -59,18 +62,18 @@ class TaxResource extends Resource
             ->components([
                 Section::make(__('tax.basic_information'))
                     ->schema([
-                        TranslatableSelect::relationship('company_id','company', \App\Models\Company::class, __('tax.company'))
+                        TranslatableSelect::relationship('company_id','company', Company::class, __('tax.company'))
                             ->createOptionForm([
                                 TextInput::make('name')->label(__('company.name'))->required(),
                                 TextInput::make('tax_id')->label(__('company.tax_id')),
                                 TextInput::make('fiscal_country')->label(__('company.fiscal_country'))->required(),
-                                TranslatableSelect::make('currency_id', \App\Models\Currency::class, __('company.currency_id'))->required(),
+                                TranslatableSelect::make('currency_id', Currency::class, __('company.currency_id'))->required(),
                             ])
                             ->createOptionModalHeading(__('common.modal_title_create_company'))
-                            ->createOptionAction(fn(\Filament\Actions\Action $a) => $a->name('create-company-option')->modalWidth('lg'))
+                            ->createOptionAction(fn(Action $a) => $a->name('create-company-option')->modalWidth('lg'))
                             ->required(),
 
-                        TranslatableSelect::relationship('tax_account_id','taxAccount', \App\Models\Account::class, __('tax.tax_account'))
+                        TranslatableSelect::relationship('tax_account_id','taxAccount', Account::class, __('tax.tax_account'))
                             ->createOptionForm([
                                 Select::make('company_id')->relationship('company', 'name')->label(__('company.name'))->required(),
                                 TextInput::make('code')->label(__('account.code'))->required(),
@@ -82,7 +85,7 @@ class TaxResource extends Resource
                                 Toggle::make('allow_reconciliation')->label(__('account.allow_reconciliation'))->default(false),
                             ])
                             ->createOptionModalHeading(__('common.modal_title_create_account'))
-                            ->createOptionAction(fn(\Filament\Actions\Action $a) => $a->name('create-account-option')->modalWidth('lg'))
+                            ->createOptionAction(fn(Action $a) => $a->name('create-account-option')->modalWidth('lg'))
                             ->required(),
 
                         TextInput::make('name')

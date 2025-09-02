@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Traits\TranslatableSearch;
 use Illuminate\Support\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Database\Factories\TaxFactory;
@@ -52,7 +53,7 @@ use Spatie\Translatable\HasTranslations;
 class Tax extends Model
 {
     use HasFactory, HasTranslations;
-    use \App\Traits\TranslatableSearch;
+    use TranslatableSearch;
 
     public array $translatable = ['name', 'label_on_invoices'];
 

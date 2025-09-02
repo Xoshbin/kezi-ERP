@@ -2,6 +2,8 @@
 
 namespace App\Filament\Clusters\HumanResources\Resources\Departments\Schemas;
 
+use App\Models\Department;
+use App\Models\Employee;
 use App\Filament\Support\TranslatableSelect;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
@@ -26,7 +28,7 @@ class DepartmentForm
 
                     TranslatableSelect::standard(
                         'parent_department_id',
-                        \App\Models\Department::class,
+                        Department::class,
                         ['name'],
                         __('department.parent_department')
                     )
@@ -46,7 +48,7 @@ class DepartmentForm
                 ->schema([
                     TranslatableSelect::standard(
                         'manager_id',
-                        \App\Models\Employee::class,
+                        Employee::class,
                         ['first_name', 'last_name', 'employee_number'],
                         __('department.manager')
                     )

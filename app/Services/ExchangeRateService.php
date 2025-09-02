@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use Illuminate\Database\Eloquent\Collection;
 use App\Models\Currency;
 use App\Models\CurrencyRate;
 use Carbon\Carbon;
@@ -154,7 +155,7 @@ class ExchangeRateService
      * @param Currency $currency
      * @param Carbon $startDate
      * @param Carbon $endDate
-     * @return \Illuminate\Database\Eloquent\Collection
+     * @return Collection
      */
     public function getHistoricalRates(Currency $currency, Carbon $startDate, Carbon $endDate)
     {

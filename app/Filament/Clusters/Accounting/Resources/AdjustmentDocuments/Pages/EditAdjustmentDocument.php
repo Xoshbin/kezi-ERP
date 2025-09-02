@@ -4,6 +4,8 @@
 namespace App\Filament\Clusters\Accounting\Resources\AdjustmentDocuments\Pages;
 
 // Add these imports
+use App\Actions\Accounting\BuildAdjustmentPostingPreviewAction;
+use Barryvdh\DomPDF\Facade\Pdf;
 use App\Actions\Adjustments\UpdateAdjustmentDocumentAction;
 use App\DataTransferObjects\Adjustments\UpdateAdjustmentDocumentDTO;
 use App\DataTransferObjects\Adjustments\UpdateAdjustmentDocumentLineDTO;
@@ -45,7 +47,7 @@ class EditAdjustmentDocument extends EditRecord
                 ->modalCancelActionLabel(__('Close'))
                 ->modalWidth('7xl')
                 ->modalContent(function (AdjustmentDocument $record) {
-                    $preview = app(\App\Actions\Accounting\BuildAdjustmentPostingPreviewAction::class)->execute($record);
+                    $preview = app(BuildAdjustmentPostingPreviewAction::class)->execute($record);
                     return view('filament/accounting/adjustments/preview-posting', [
                         'preview' => $preview,
                         'adjustment' => $record,
@@ -57,7 +59,7 @@ class EditAdjustmentDocument extends EditRecord
                 ->color('gray')
                 ->visible(fn (AdjustmentDocument $record): bool => $record->status === AdjustmentDocumentStatus::Draft && config('app.debug') && ! app()->environment('production'))
                 ->action(function (AdjustmentDocument $record) {
-                    $preview = app(\App\Actions\Accounting\BuildAdjustmentPostingPreviewAction::class)->execute($record);
+                    $preview = app(BuildAdjustmentPostingPreviewAction::class)->execute($record);
                     $rows = [];
                     $rows[] = ['Account Code', 'Account Name', 'Description', 'Debit', 'Credit'];
                     foreach ($preview['lines'] as $l) {
@@ -84,8 +86,8 @@ class EditAdjustmentDocument extends EditRecord
                 ->color('gray')
                 ->visible(fn (AdjustmentDocument $record): bool => $record->status === AdjustmentDocumentStatus::Draft && config('app.debug') && ! app()->environment('production'))
                 ->action(function (AdjustmentDocument $record) {
-                    $preview = app(\App\Actions\Accounting\BuildAdjustmentPostingPreviewAction::class)->execute($record);
-                    $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('filament/accounting/adjustments/preview-posting-pdf', [
+                    $preview = app(BuildAdjustmentPostingPreviewAction::class)->execute($record);
+                    $pdf = Pdf::loadView('filament/accounting/adjustments/preview-posting-pdf', [
                         'preview' => $preview,
                         'adjustment' => $record,
                     ]);

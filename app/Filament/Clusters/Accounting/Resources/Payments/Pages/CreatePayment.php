@@ -2,6 +2,7 @@
 
 namespace App\Filament\Clusters\Accounting\Resources\Payments\Pages;
 
+use Filament\Facades\Filament;
 use App\Actions\Payments\CreatePaymentAction;
 use App\DataTransferObjects\Payments\CreatePaymentDTO;
 use App\Enums\Payments\PaymentPurpose;
@@ -25,7 +26,7 @@ class CreatePayment extends CreateRecord
         $amount = Money::of($data['amount'], $currency->code);
 
         $paymentDTO = new CreatePaymentDTO(
-            company_id: \Filament\Facades\Filament::getTenant()->id,
+            company_id: Filament::getTenant()->id,
             journal_id: $data['journal_id'],
             currency_id: $data['currency_id'],
             payment_date: $data['payment_date'],

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Traits\TranslatableSearch;
 use Illuminate\Support\Carbon;
 use Illuminate\Database\Eloquent\Collection;
 use Database\Factories\AnalyticPlanFactory;
@@ -50,7 +51,7 @@ use Spatie\Translatable\HasTranslations;
 class AnalyticPlan extends Model
 {
     use HasFactory, HasTranslations;
-    use \App\Traits\TranslatableSearch;
+    use TranslatableSearch;
 
     public array $translatable = ['name'];
 

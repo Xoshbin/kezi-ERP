@@ -2,6 +2,7 @@
 
 namespace App\Filament\Clusters\Settings\Resources\Accounts;
 
+use App\Models\Currency;
 use App\Enums\Accounting\AccountType;
 use App\Filament\Clusters\Settings\Resources\Accounts\Pages\CreateAccount;
 use App\Filament\Clusters\Settings\Resources\Accounts\Pages\EditAccount;
@@ -71,7 +72,7 @@ class AccountResource extends Resource
                                 TextInput::make('tax_id')
                                     ->label(__('company.tax_id'))
                                     ->maxLength(255),
-                                TranslatableSelect::make('currency_id', \App\Models\Currency::class, __('company.currency_id'))
+                                TranslatableSelect::make('currency_id', Currency::class, __('company.currency_id'))
                                     ->required(),
                                 TextInput::make('fiscal_country')
                                     ->label(__('company.fiscal_country'))

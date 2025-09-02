@@ -2,6 +2,7 @@
 
 namespace App\Filament\Clusters\Accounting\Pages\Reports;
 
+use Filament\Facades\Filament;
 use App\Filament\Clusters\Accounting\AccountingCluster;
 use Filament\Pages\Page;
 use Illuminate\Contracts\Support\Htmlable;
@@ -35,7 +36,7 @@ class ViewReports extends Page
 
     public function getReportCategories(): array
     {
-        $tenant = \Filament\Facades\Filament::getTenant();
+        $tenant = Filament::getTenant();
         $tenantKey = $tenant ? $tenant->getRouteKey() : request()->route('tenant');
         $baseUrl = url("/jmeryar/{$tenantKey}/accounting");
 

@@ -2,6 +2,8 @@
 
 namespace App\Casts;
 
+use Filament\Facades\Filament;
+use Exception;
 use App\Models\Currency;
 use Illuminate\Database\Eloquent\Model;
 use InvalidArgumentException;
@@ -58,11 +60,11 @@ class BaseCurrencyMoneyCast extends MoneyCast
 
         // Last resort: Try to get currency from Filament tenant context
         try {
-            $tenant = \Filament\Facades\Filament::getTenant();
+            $tenant = Filament::getTenant();
             if ($tenant && method_exists($tenant, 'currency') && $tenant->currency) {
                 return $tenant->currency;
             }
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             // Ignore tenant resolution errors
         }
 

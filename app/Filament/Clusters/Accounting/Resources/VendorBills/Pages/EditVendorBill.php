@@ -2,6 +2,10 @@
 
 namespace App\Filament\Clusters\Accounting\Resources\VendorBills\Pages;
 
+use App\Actions\Accounting\BuildVendorBillPostingPreviewAction;
+use Barryvdh\DomPDF\Facade\Pdf;
+use Filament\Facades\Filament;
+use App\Services\PaymentService;
 use App\Actions\Payments\CreatePaymentAction;
 use App\Actions\Purchases\UpdateVendorBillAction;
 use App\DataTransferObjects\Payments\CreatePaymentDTO;
@@ -52,7 +56,7 @@ class EditVendorBill extends EditRecord
                 ->modalCancelActionLabel(__('Close'))
                 ->modalWidth('7xl')
                 ->modalContent(function (VendorBill $record) {
-                    $preview = app(\App\Actions\Accounting\BuildVendorBillPostingPreviewAction::class)->execute($record);
+                    $preview = app(BuildVendorBillPostingPreviewAction::class)->execute($record);
                     return view('filament/accounting/vendor-bills/preview-posting', [
                         'preview' => $preview,
                         'bill' => $record,
@@ -65,7 +69,7 @@ class EditVendorBill extends EditRecord
                 ->color('gray')
                 ->visible(fn (VendorBill $record): bool => $record->status === VendorBillStatus::Draft && config('app.debug') && ! app()->environment('production'))
                 ->action(function (VendorBill $record) {
-                    $preview = app(\App\Actions\Accounting\BuildVendorBillPostingPreviewAction::class)->execute($record);
+                    $preview = app(BuildVendorBillPostingPreviewAction::class)->execute($record);
                     $rows = [];
                     $rows[] = ['Account Code', 'Account Name', 'Description', 'Debit', 'Credit'];
                     foreach ($preview['lines'] as $l) {
@@ -92,8 +96,8 @@ class EditVendorBill extends EditRecord
                 ->color('gray')
                 ->visible(fn (VendorBill $record): bool => $record->status === VendorBillStatus::Draft && config('app.debug') && ! app()->environment('production'))
                 ->action(function (VendorBill $record) {
-                    $preview = app(\App\Actions\Accounting\BuildVendorBillPostingPreviewAction::class)->execute($record);
-                    $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('filament/accounting/vendor-bills/preview-posting-pdf', [
+                    $preview = app(BuildVendorBillPostingPreviewAction::class)->execute($record);
+                    $pdf = Pdf::loadView('filament/accounting/vendor-bills/preview-posting-pdf', [
                         'preview' => $preview,
                         'bill' => $record,
                     ]);
@@ -142,16 +146,16 @@ class EditVendorBill extends EditRecord
                 ->color('warning')
                 ->modalHeading(__('Register Payment'))
                 ->modalDescription(__('Register a payment for this vendor bill'))
-                ->form([
+                ->schema([
                     Select::make('journal_id')
                         ->label('Journal')
                         ->options(function () {
-                            return Journal::where('company_id', \Filament\Facades\Filament::getTenant()->id)
+                            return Journal::where('company_id', Filament::getTenant()->id)
                                 ->pluck('name', 'id');
                         })
                         ->required()
                         ->default(function () {
-                            return Journal::where('company_id', \Filament\Facades\Filament::getTenant()->id)
+                            return Journal::where('company_id', Filament::getTenant()->id)
                                 ->where('type', 'bank')
                                 ->first()?->id;
                         }),
@@ -183,7 +187,7 @@ class EditVendorBill extends EditRecord
 
                         // Create payment DTO
                         $paymentDTO = new CreatePaymentDTO(
-                            company_id: \Filament\Facades\Filament::getTenant()->id,
+                            company_id: Filament::getTenant()->id,
                             journal_id: $data['journal_id'],
                             currency_id: $record->currency_id,
                             payment_date: $data['payment_date'],
@@ -198,13 +202,13 @@ class EditVendorBill extends EditRecord
 
                         // Create and confirm payment
                         $payment = app(CreatePaymentAction::class)->execute($paymentDTO, Auth::user());
-                        app(\App\Services\PaymentService::class)->confirm($payment, Auth::user());
+                        app(PaymentService::class)->confirm($payment, Auth::user());
 
                         Notification::make()
                             ->title(__('Payment registered successfully'))
                             ->success()
                             ->send();
-                    } catch (\Exception $e) {
+                    } catch (Exception $e) {
                         Notification::make()
                             ->title(__('Error registering payment'))
                             ->body($e->getMessage())
@@ -246,7 +250,7 @@ class EditVendorBill extends EditRecord
 
         $vendorBillDTO = new UpdateVendorBillDTO(
             vendorBill: $record,
-            company_id: \Filament\Facades\Filament::getTenant()->id,
+            company_id: Filament::getTenant()->id,
             vendor_id: $data['vendor_id'],
             currency_id: $data['currency_id'],
             bill_reference: $data['bill_reference'],

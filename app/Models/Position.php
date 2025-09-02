@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Traits\TranslatableSearch;
+use Illuminate\Support\Carbon;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -28,8 +30,8 @@ use Brick\Money\Money;
  * @property Money|null $max_salary
  * @property int|null $salary_currency_id
  * @property bool $is_active
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  * @property-read Company $company
  * @property-read Department|null $department
  * @property-read Currency|null $salaryCurrency
@@ -41,7 +43,7 @@ use Brick\Money\Money;
 class Position extends Model
 {
     use HasFactory, HasTranslations;
-    use \App\Traits\TranslatableSearch;
+    use TranslatableSearch;
 
     /**
      * The attributes that are mass assignable.

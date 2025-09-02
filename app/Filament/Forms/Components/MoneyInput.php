@@ -2,6 +2,7 @@
 
 namespace App\Filament\Forms\Components;
 
+use Filament\Facades\Filament;
 use Filament\Schemas\Components\Utilities\Get;
 use Brick\Math\Exception\RoundingNecessaryException;
 use Brick\Math\RoundingMode;
@@ -61,7 +62,7 @@ class MoneyInput extends TextInput
                 }
 
                 // Try to get the tenant's default currency as final fallback
-                $tenant = \Filament\Facades\Filament::getTenant();
+                $tenant = Filament::getTenant();
                 if ($tenant && $tenant->currency) {
                     return $tenant->currency->code;
                 }

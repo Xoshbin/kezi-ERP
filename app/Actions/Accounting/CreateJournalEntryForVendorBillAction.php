@@ -2,6 +2,7 @@
 
 namespace App\Actions\Accounting;
 
+use App\Models\AssetCategory;
 use App\DataTransferObjects\Accounting\CreateJournalEntryDTO;
 use App\DataTransferObjects\Accounting\CreateJournalEntryLineDTO;
 use App\Enums\Products\ProductType;
@@ -53,7 +54,7 @@ class CreateJournalEntryForVendorBillAction
                     );
                     $totalAP = $totalAP->plus($line->subtotal);
                 } elseif ($isAsset) {
-                    $category = \App\Models\AssetCategory::find($line->asset_category_id);
+                    $category = AssetCategory::find($line->asset_category_id);
                     if (!$category) {
                         throw new RuntimeException('Invalid asset category on bill line.');
                     }

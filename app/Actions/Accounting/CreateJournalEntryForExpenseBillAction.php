@@ -2,6 +2,7 @@
 
 namespace App\Actions\Accounting;
 
+use App\Models\AssetCategory;
 use App\Models\JournalEntry;
 use App\Models\User;
 use App\Models\VendorBill;
@@ -40,7 +41,7 @@ class CreateJournalEntryForExpenseBillAction
             foreach ($expenseLines as $line) {
                 // If an asset category is provided, treat as asset acquisition
                 if ($line->asset_category_id) {
-                    $category = \App\Models\AssetCategory::find($line->asset_category_id);
+                    $category = AssetCategory::find($line->asset_category_id);
                     if (!$category) {
                         throw new RuntimeException('Invalid asset category selected on bill line.');
                     }
