@@ -7,6 +7,10 @@
         "laravel",
         "framework"
     ],
+    "keywords": [
+        "laravel",
+        "framework"
+    ],
     "license": "MIT",
     "require": {
         "php": "^8.2",
@@ -15,6 +19,8 @@
         "filament/filament": "^4.0",
         "lara-zeus/spatie-translatable": "^1.0",
         "laravel/framework": "^12.0",
+        "laravel/tinker": "^2.10.1",
+        "xoshbin/jmeryar-theme": "^0.0.2"
         "laravel/tinker": "^2.10.1",
         "xoshbin/jmeryar-theme": "^0.0.2"
     },
@@ -31,6 +37,8 @@
         "pestphp/pest": "^4.0",
         "pestphp/pest-plugin-browser": "^4.0",
         "pestphp/pest-plugin-laravel": "^4.0",
+        "pestphp/pest-plugin-livewire": "^4.0",
+        "wikimedia/composer-merge-plugin": "^2.1"
         "pestphp/pest-plugin-livewire": "^4.0",
         "wikimedia/composer-merge-plugin": "^2.1"
     },
@@ -92,6 +100,8 @@
         "sort-packages": true,
         "allow-plugins": {
             "pestphp/pest-plugin": true,
+            "php-http/discovery": true,
+            "wikimedia/composer-merge-plugin": true
             "php-http/discovery": true,
             "wikimedia/composer-merge-plugin": true
         }
