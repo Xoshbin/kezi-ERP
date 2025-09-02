@@ -151,7 +151,7 @@ class JournalEntryResource extends Resource
                         ->columns(18)
                         ->columnSpanFull()
                         ->live()
-                        ->defaultItems(2)
+                        ->defaultItems(0)
                         ->afterStateUpdated(function (callable $set, $state) {
                             self::updateTotals($set, $state);
                         }),

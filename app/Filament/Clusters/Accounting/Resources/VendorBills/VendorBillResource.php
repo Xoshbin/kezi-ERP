@@ -36,6 +36,7 @@ use App\Filament\Support\TranslatableSelect;
 use App\Filament\Tables\Columns\MoneyColumn;
 use App\Models\Product;
 use App\Models\VendorBill;
+use App\Models\Account;
 use App\Rules\NotInLockedPeriod;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\EditAction;
@@ -297,6 +298,16 @@ class VendorBillResource extends Resource
                             MoneyInput::make('unit_price')
                                 ->label(__('vendor_bill.unit_price'))
                                 ->currencyField('../../currency_id')
+                                ->required()
+                                ->columnSpan(3),
+                            TranslatableSelect::standard(
+                                'expense_account_id',
+                                Account::class,
+                                ['name', 'code'],
+                                __('vendor_bill.expense_account'),
+                                'name',
+                                fn($query) => $query->where('company_id', Filament::getTenant()->id)
+                            )
                                 ->required()
                                 ->columnSpan(3),
                             TranslatableSelect::make('tax_id', Tax::class, __('vendor_bill.tax'))

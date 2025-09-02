@@ -3,6 +3,7 @@
 namespace App\Filament\Clusters\Accounting\Resources\BankStatements\Pages;
 
 use App\Filament\Clusters\Accounting\Resources\BankStatements\BankStatementResource;
+use App\Models\BankStatement;
 use Filament\Facades\Filament;
 use Filament\Resources\Pages\Page;
 
@@ -17,6 +18,11 @@ class BankReconciliation extends Page
 
     public function mount(int $record): void
     {
+        // Return 404 for non-existent records (keeps tests and UX logical)
+        if (! BankStatement::withoutGlobalScopes()->whereKey($record)->exists()) {
+            abort(404);
+        }
+
         $this->record = $record;
     }
 
@@ -36,7 +42,7 @@ class BankReconciliation extends Page
      */
     public static function canAccess(array $parameters = []): bool
     {
-        $company = Filament::getTenant();
-        return parent::canAccess($parameters) && $company && $company->enable_reconciliation;
+        $company = \Filament\Facades\Filament::getTenant();
+        return (bool) ($company?->enable_reconciliation);
     }
 }
