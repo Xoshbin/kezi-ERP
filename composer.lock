@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "aeca39f6a2f9119ba1e4ab9ba6be1d95",
+    "content-hash": "1f14158752bcbf9125a87a06d91e4534",
     "packages": [
         {
             "name": "anourvalar/eloquent-serialize",
@@ -2385,16 +2385,16 @@
         },
         {
             "name": "laravel/framework",
-            "version": "v12.26.4",
+            "version": "v12.27.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laravel/framework.git",
-                "reference": "085a367a32ba86fcfa647bfc796098ae6f795b09"
+                "reference": "3fdcf8f3788fcb154df12ebf1fe0dd4a199e92a8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laravel/framework/zipball/085a367a32ba86fcfa647bfc796098ae6f795b09",
-                "reference": "085a367a32ba86fcfa647bfc796098ae6f795b09",
+                "url": "https://api.github.com/repos/laravel/framework/zipball/3fdcf8f3788fcb154df12ebf1fe0dd4a199e92a8",
+                "reference": "3fdcf8f3788fcb154df12ebf1fe0dd4a199e92a8",
                 "shasum": ""
             },
             "require": {
@@ -2598,7 +2598,7 @@
                 "issues": "https://github.com/laravel/framework/issues",
                 "source": "https://github.com/laravel/framework"
             },
-            "time": "2025-08-29T14:15:53+00:00"
+            "time": "2025-09-02T15:32:28+00:00"
         },
         {
             "name": "laravel/prompts",
@@ -8654,17 +8654,11 @@
         },
         {
             "name": "xoshbin/jmeryar-theme",
-            "version": "0.0.2",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/Xoshbin/jmeryar-theme.git",
-                "reference": "5eed8ae17e3c8a798f90e68ebaa939d10e1a91f8"
-            },
+            "version": "dev-main",
             "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/Xoshbin/jmeryar-theme/zipball/5eed8ae17e3c8a798f90e68ebaa939d10e1a91f8",
-                "reference": "5eed8ae17e3c8a798f90e68ebaa939d10e1a91f8",
-                "shasum": ""
+                "type": "path",
+                "url": "./packages/xoshbin/jmeryar-theme",
+                "reference": "5eed8ae17e3c8a798f90e68ebaa939d10e1a91f8"
             },
             "require": {
                 "filament/filament": "^4.0",
@@ -8691,7 +8685,28 @@
                     "Xoshbin\\JmeryarTheme\\": "src/"
                 }
             },
-            "notification-url": "https://packagist.org/downloads/",
+            "autoload-dev": {
+                "psr-4": {
+                    "Xoshbin\\JmeryarTheme\\Tests\\": "tests/"
+                }
+            },
+            "scripts": {
+                "post-autoload-dump": [
+                    "@php ./vendor/bin/testbench package:discover --ansi"
+                ],
+                "analyse": [
+                    "vendor/bin/phpstan analyse"
+                ],
+                "test": [
+                    "vendor/bin/pest"
+                ],
+                "test-coverage": [
+                    "vendor/bin/pest --coverage"
+                ],
+                "format": [
+                    "vendor/bin/pint"
+                ]
+            },
             "license": [
                 "MIT"
             ],
@@ -8713,13 +8728,10 @@
                 "issues": "https://github.com/xoshbin/jmeryar-theme/issues",
                 "source": "https://github.com/xoshbin/jmeryar-theme"
             },
-            "funding": [
-                {
-                    "url": "https://github.com/Xoshbin",
-                    "type": "github"
-                }
-            ],
-            "time": "2025-09-02T13:04:18+00:00"
+            "transport-options": {
+                "symlink": true,
+                "relative": true
+            }
         }
     ],
     "packages-dev": [
@@ -14251,7 +14263,9 @@
     ],
     "aliases": [],
     "minimum-stability": "dev",
-    "stability-flags": {},
+    "stability-flags": {
+        "xoshbin/jmeryar-theme": 20
+    },
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {
