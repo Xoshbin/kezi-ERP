@@ -29,6 +29,14 @@ class AiChatController extends Controller
     public function chat(Request $request): JsonResponse
     {
         try {
+            // Respect global enable/disable config
+            if (!config('filament-ai-helper.enabled', true)) {
+                return response()->json([
+                    'success' => false,
+                    'error' => 'AI helper is disabled',
+                ], 403);
+            }
+
             // Validate the request
             $validator = Validator::make($request->all(), [
                 'message' => 'required|string|min:1|max:1000',

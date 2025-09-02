@@ -33,6 +33,11 @@ trait HasAiHelper
      */
     protected function shouldShowAiHelper(): bool
     {
+        // Respect global enable/disable config
+        if (!config('filament-ai-helper.enabled', true)) {
+            return false;
+        }
+
         // Check if API key is configured
         if (empty(config('filament-ai-helper.gemini.api_key'))) {
             return false;

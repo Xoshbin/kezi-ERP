@@ -45,6 +45,11 @@ class FilamentAiHelperServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
+        // Respect global enable/disable config
+        if (!config('filament-ai-helper.enabled', true)) {
+            return;
+        }
+
         // Register Livewire components
         Livewire::component('ai-chat-box', \Xoshbin\FilamentAiHelper\Livewire\AiChatBox::class);
         Livewire::component('ai-chat-widget', \Xoshbin\FilamentAiHelper\Livewire\AiChatWidget::class);
