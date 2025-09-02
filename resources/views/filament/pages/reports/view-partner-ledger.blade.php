@@ -20,12 +20,12 @@
                 </div>
 
                 <!-- Opening Balance -->
-                <div class="mb-6 p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
+                <div class="mb-6 p-4 bg-[var(--color-info-50)] dark:bg-[var(--color-info-900)]/20 border border-[var(--color-info-200)] dark:border-[var(--color-info-800)] rounded-lg">
                     <div class="flex justify-between items-center">
-                        <span class="text-sm font-medium text-blue-800 dark:text-blue-200">
+                        <span class="text-sm font-medium text-[var(--color-info-800)] dark:text-[var(--color-info-200)]">
                             {{ __('reports.opening_balance') }}
                         </span>
-                        <span class="text-sm font-bold text-blue-900 dark:text-blue-100 {{ $reportData['openingBalanceAmount'] < 0 ? 'text-red-600 dark:text-red-400' : '' }}">
+                        <span class="text-sm font-bold text-[var(--color-info-900)] dark:text-[var(--color-info-100)] {{ $reportData['openingBalanceAmount'] < 0 ? 'text-[var(--color-danger-600)] dark:text-[var(--color-danger-400)]' : '' }}">
                             {{ $reportData['openingBalance'] }}
                         </span>
                     </div>
@@ -68,9 +68,9 @@
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
                                             <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
-                                                @if($line['transactionType'] === 'Invoice') bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400
-                                                @elseif($line['transactionType'] === 'Vendor Bill') bg-orange-100 text-orange-800 dark:bg-orange-900/20 dark:text-orange-400
-                                                @elseif($line['transactionType'] === 'Payment') bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-400
+                                                @if($line['transactionType'] === 'Invoice') bg-[var(--color-success-100)] text-[var(--color-success-800)] dark:bg-[var(--color-success-900)]/20 dark:text-[var(--color-success-400)]
+                                                @elseif($line['transactionType'] === 'Vendor Bill') bg-[var(--color-warning-100)] text-[var(--color-warning-800)] dark:bg-[var(--color-warning-900)]/20 dark:text-[var(--color-warning-400)]
+                                                @elseif($line['transactionType'] === 'Payment') bg-[var(--color-info-100)] text-[var(--color-info-800)] dark:bg-[var(--color-info-900)]/20 dark:text-[var(--color-info-400)]
                                                 @else bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-400
                                                 @endif">
                                                 {{ $line['transactionType'] }}
@@ -90,7 +90,7 @@
                                                 <span class="text-gray-400">-</span>
                                             @endif
                                         </td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-right font-mono font-medium {{ $line['balanceAmount'] < 0 ? 'text-red-600 dark:text-red-400' : 'text-gray-900 dark:text-white' }}">
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-right font-mono font-medium {{ $line['balanceAmount'] < 0 ? 'text-[var(--color-danger-600)] dark:text-[var(--color-danger-400)]' : 'text-gray-900 dark:text-white' }}">
                                             {{ $line['balance'] }}
                                         </td>
                                     </tr>
@@ -100,25 +100,25 @@
                     </div>
 
                     <!-- Closing Balance -->
-                    <div class="mt-6 p-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg">
+                    <div class="mt-6 p-4 bg-[var(--color-success-50)] dark:bg-[var(--color-success-900)]/20 border border-[var(--color-success-200)] dark:border-[var(--color-success-800)] rounded-lg">
                         <div class="flex justify-between items-center">
-                            <span class="text-sm font-medium text-green-800 dark:text-green-200">
+                            <span class="text-sm font-medium text-[var(--color-success-800)] dark:text-[var(--color-success-200)]">
                                 {{ __('reports.closing_balance') }}
                             </span>
-                            <span class="text-lg font-bold {{ $reportData['closingBalanceAmount'] < 0 ? 'text-red-600 dark:text-red-400' : 'text-green-900 dark:text-green-100' }}">
+                            <span class="text-lg font-bold {{ $reportData['closingBalanceAmount'] < 0 ? 'text-[var(--color-danger-600)] dark:text-[var(--color-danger-400)]' : 'text-[var(--color-success-900)] dark:text-[var(--color-success-100)]' }}">
                                 {{ $reportData['closingBalance'] }}
                             </span>
                         </div>
                         @if($reportData['closingBalanceAmount'] > 0)
-                            <p class="text-xs text-green-700 dark:text-green-300 mt-1">
+                            <p class="text-xs text-[var(--color-success-700)] dark:text-[var(--color-success-300)] mt-1">
                                 {{ __('reports.customer_owes_us') }}
                             </p>
                         @elseif($reportData['closingBalanceAmount'] < 0)
-                            <p class="text-xs text-red-700 dark:text-red-300 mt-1">
+                            <p class="text-xs text-[var(--color-danger-700)] dark:text-[var(--color-danger-300)] mt-1">
                                 {{ __('reports.we_owe_vendor') }}
                             </p>
                         @else
-                            <p class="text-xs text-green-700 dark:text-green-300 mt-1">
+                            <p class="text-xs text-[var(--color-success-700)] dark:text-[var(--color-success-300)] mt-1">
                                 {{ __('reports.account_balanced') }}
                             </p>
                         @endif

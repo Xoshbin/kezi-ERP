@@ -4,6 +4,18 @@
     <meta charset="UTF-8">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <title>{{ __('invoice.invoice') }} {{ $invoice->invoice_number }}</title>
+    @php
+        use Filament\Support\Colors\Color as FsColor;
+        $primary = \Filament\Support\Facades\FilamentColor::getColor('primary');
+        $gray = \Filament\Support\Facades\FilamentColor::getColor('gray');
+        $danger = \Filament\Support\Facades\FilamentColor::getColor('danger');
+        // Convert to rgb() for PDF compatibility
+        $p600 = FsColor::convertToRgb($primary[600]);
+        $g700 = FsColor::convertToRgb($gray[700]);
+        $g500 = FsColor::convertToRgb($gray[500]);
+        $g200 = FsColor::convertToRgb($gray[200]);
+        $g100 = FsColor::convertToRgb($gray[100]);
+    @endphp
     <style>
         @page {
             margin: 20mm;
@@ -14,7 +26,7 @@
             font-family: 'DejaVu Sans', sans-serif;
             font-size: 12px;
             line-height: 1.4;
-            color: #333;
+            color: {{ $g700 }};
             margin: 0;
             padding: 0;
         }
@@ -27,13 +39,13 @@
         .header {
             text-align: center;
             margin-bottom: 30px;
-            border-bottom: 2px solid #2563eb;
+            border-bottom: 2px solid {{ $p600 }};
             padding-bottom: 20px;
             position: relative;
         }
 
         .header h1 {
-            color: #2563eb;
+            color: {{ $p600 }};
             font-size: 28px;
             margin: 0;
             font-weight: bold;
@@ -75,22 +87,22 @@
         .section-title {
             font-weight: bold;
             font-size: 14px;
-            color: #2563eb;
+            color: {{ $p600 }};
             margin-bottom: 10px;
-            border-bottom: 1px solid #e5e7eb;
+            border-bottom: 1px solid {{ $g200 }};
             padding-bottom: 5px;
         }
 
         .company-name {
             font-size: 18px;
             font-weight: bold;
-            color: #1f2937;
+            color: {{ $g800 }};
             margin-bottom: 5px;
         }
 
         .invoice-meta {
             margin: 30px 0;
-            background-color: #f8fafc;
+            background-color: {{ $g50 }};
             padding: 15px;
             border-radius: 5px;
         }
@@ -107,7 +119,7 @@
 
         .invoice-meta .label {
             font-weight: bold;
-            color: #374151;
+            color: {{ $g700 }};
             width: 40%;
         }
 
@@ -122,22 +134,22 @@
         }
 
         .line-items th {
-            background-color: #2563eb;
+            background-color: {{ $p600 }};
             color: white;
             padding: 12px 8px;
             text-align: {{ app()->getLocale() === 'ar' ? 'right' : 'left' }};
             font-weight: bold;
-            border: 1px solid #2563eb;
+            border: 1px solid {{ $p600 }};
         }
 
         .line-items td {
             padding: 10px 8px;
-            border: 1px solid #d1d5db;
+            border: 1px solid {{ $g200 }};
             text-align: {{ app()->getLocale() === 'ar' ? 'right' : 'left' }};
         }
 
         .line-items tr:nth-child(even) {
-            background-color: #f9fafb;
+            background-color: {{ $g50 }};
         }
 
         .amount-column {
@@ -158,11 +170,11 @@
 
         .totals td {
             padding: 8px 12px;
-            border: 1px solid #d1d5db;
+            border: 1px solid {{ $g200 }};
         }
 
         .totals .label {
-            background-color: #f3f4f6;
+            background-color: {{ $g100 }};
             font-weight: bold;
             text-align: {{ app()->getLocale() === 'ar' ? 'right' : 'left' }};
         }
@@ -173,7 +185,7 @@
         }
 
         .totals .total-row {
-            background-color: #2563eb;
+            background-color: {{ $p600 }};
             color: white;
             font-weight: bold;
             font-size: 14px;
@@ -183,9 +195,9 @@
             clear: both;
             margin-top: 50px;
             text-align: center;
-            color: #6b7280;
+            color: {{ $g500 }};
             font-size: 11px;
-            border-top: 1px solid #e5e7eb;
+            border-top: 1px solid {{ $g200 }};
             padding-top: 20px;
         }
 
