@@ -170,8 +170,8 @@ class EditJournalEntry extends EditRecord
             journal_id: $data['journal_id'],
             currency_id: $data['currency_id'],
             entry_date: $data['entry_date'],
-            reference: $data['reference'],
-            description: $data['description'],
+            reference: $data['reference'] ?? null,
+            description: $data['description'] ?? null,
             is_posted: $record->is_posted,
             lines: $lineDTOs
         );
