@@ -8654,11 +8654,17 @@
         },
         {
             "name": "xoshbin/jmeryar-theme",
-            "version": "dev-main",
-            "dist": {
-                "type": "path",
-                "url": "./packages/xoshbin/jmeryar-theme",
+            "version": "0.0.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/Xoshbin/jmeryar-theme.git",
                 "reference": "5eed8ae17e3c8a798f90e68ebaa939d10e1a91f8"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/Xoshbin/jmeryar-theme/zipball/5eed8ae17e3c8a798f90e68ebaa939d10e1a91f8",
+                "reference": "5eed8ae17e3c8a798f90e68ebaa939d10e1a91f8",
+                "shasum": ""
             },
             "require": {
                 "filament/filament": "^4.0",
@@ -8685,28 +8691,7 @@
                     "Xoshbin\\JmeryarTheme\\": "src/"
                 }
             },
-            "autoload-dev": {
-                "psr-4": {
-                    "Xoshbin\\JmeryarTheme\\Tests\\": "tests/"
-                }
-            },
-            "scripts": {
-                "post-autoload-dump": [
-                    "@php ./vendor/bin/testbench package:discover --ansi"
-                ],
-                "analyse": [
-                    "vendor/bin/phpstan analyse"
-                ],
-                "test": [
-                    "vendor/bin/pest"
-                ],
-                "test-coverage": [
-                    "vendor/bin/pest --coverage"
-                ],
-                "format": [
-                    "vendor/bin/pint"
-                ]
-            },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
@@ -8728,10 +8713,13 @@
                 "issues": "https://github.com/xoshbin/jmeryar-theme/issues",
                 "source": "https://github.com/xoshbin/jmeryar-theme"
             },
-            "transport-options": {
-                "symlink": true,
-                "relative": true
-            }
+            "funding": [
+                {
+                    "url": "https://github.com/Xoshbin",
+                    "type": "github"
+                }
+            ],
+            "time": "2025-09-02T13:04:18+00:00"
         }
     ],
     "packages-dev": [
@@ -14263,9 +14251,7 @@
     ],
     "aliases": [],
     "minimum-stability": "dev",
-    "stability-flags": {
-        "xoshbin/jmeryar-theme": 20
-    },
+    "stability-flags": {},
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {
