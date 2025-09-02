@@ -32,4 +32,7 @@ return [
         'purchases' => 'Purchases',
         'none' => 'None',
     ],
+
+    // Section
+    'basic_information' => 'Basic Information',
 ];

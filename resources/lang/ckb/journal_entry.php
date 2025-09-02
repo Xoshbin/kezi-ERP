@@ -30,6 +30,7 @@ return [
     'total_debit' => 'کۆی قەرزدار (مدين)',
     'total_credit' => 'کۆی قەرزدەر (دائن)',
     'balance' => 'بالانس',
+    'company_currency_totals' => 'کۆی گشتی بە دراوی کۆمپانیا',
     'created_at' => 'کاتی دروستکردن',
     'updated_at' => 'کاتی نوێکردنەوە',
 

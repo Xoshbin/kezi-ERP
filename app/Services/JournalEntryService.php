@@ -2,6 +2,9 @@
 
 namespace App\Services;
 
+use App\DataTransferObjects\Accounting\CreateJournalEntryLineDTO;
+use App\DataTransferObjects\Accounting\CreateJournalEntryDTO;
+use App\Actions\Accounting\CreateJournalEntryAction;
 use Exception;
 use Carbon\Carbon;
 use App\Models\User;
@@ -119,7 +122,7 @@ class JournalEntryService
         // Convert the array-based line data to DTOs
         $lineDTOs = [];
         foreach ($lines as $lineData) {
-            $lineDTOs[] = new \App\DataTransferObjects\Accounting\CreateJournalEntryLineDTO(
+            $lineDTOs[] = new CreateJournalEntryLineDTO(
                 account_id: $lineData['account_id'],
                 debit: $lineData['debit'] ?? Money::zero($transactionCurrency->code),
                 credit: $lineData['credit'] ?? Money::zero($transactionCurrency->code),
@@ -130,7 +133,7 @@ class JournalEntryService
         }
 
         // Create the DTO for the journal entry
-        $journalEntryDTO = new \App\DataTransferObjects\Accounting\CreateJournalEntryDTO(
+        $journalEntryDTO = new CreateJournalEntryDTO(
             company_id: $entryData['company_id'],
             journal_id: $entryData['journal_id'],
             currency_id: $transactionCurrency->id,
@@ -145,6 +148,6 @@ class JournalEntryService
         );
 
         // Use the CreateJournalEntryAction which now handles multi-currency
-        return app(\App\Actions\Accounting\CreateJournalEntryAction::class)->execute($journalEntryDTO);
+        return app(CreateJournalEntryAction::class)->execute($journalEntryDTO);
     }
 }

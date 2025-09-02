@@ -2,6 +2,7 @@
 
 namespace App\Filament\Clusters\Accounting\Resources\VendorBills\Pages;
 
+use Filament\Facades\Filament;
 use App\Actions\Purchases\CreateVendorBillAction;
 use App\DataTransferObjects\Purchases\CreateVendorBillDTO;
 use App\DataTransferObjects\Purchases\CreateVendorBillLineDTO;
@@ -49,7 +50,7 @@ class CreateVendorBill extends CreateRecord
         unset($data['attachments']);
 
         // Add company_id from tenant context
-        $data['company_id'] = \Filament\Facades\Filament::getTenant()->id;
+        $data['company_id'] = Filament::getTenant()->id;
 
         $vendorBillDTO = new CreateVendorBillDTO(...$data);
         $vendorBill = app(CreateVendorBillAction::class)->execute($vendorBillDTO);

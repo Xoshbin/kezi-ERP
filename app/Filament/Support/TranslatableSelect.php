@@ -2,6 +2,7 @@
 
 namespace App\Filament\Support;
 
+use InvalidArgumentException;
 use Filament\Forms\Components\Select;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
@@ -48,7 +49,7 @@ class TranslatableSelect
             ->getSearchResultsUsing(function (string $search) use ($modelClass, $labelField, $searchFields, $formatter): array {
                 // Ensure the model uses the TranslatableSearch trait
                 if (!method_exists($modelClass, 'getFilamentSearchResults')) {
-                    throw new \InvalidArgumentException(
+                    throw new InvalidArgumentException(
                         "Model {$modelClass} must use the TranslatableSearch trait to use TranslatableSelect."
                     );
                 }
@@ -106,7 +107,7 @@ class TranslatableSelect
             ->searchable()
             ->getSearchResultsUsing(function (string $search) use ($modelClass, $labelField, $searchFields, $queryModifier): array {
                 if (!method_exists($modelClass, 'getFilamentSearchResults')) {
-                    throw new \InvalidArgumentException(
+                    throw new InvalidArgumentException(
                         "Model {$modelClass} must use the TranslatableSearch trait to use TranslatableSelect."
                     );
                 }
@@ -169,7 +170,7 @@ class TranslatableSelect
             ->searchable()
             ->getSearchResultsUsing(function (string $search) use ($modelClass, $formatter, $searchFields): array {
                 if (!method_exists($modelClass, 'getFormattedSearchResults')) {
-                    throw new \InvalidArgumentException(
+                    throw new InvalidArgumentException(
                         "Model {$modelClass} must use the TranslatableSearch trait to use TranslatableSelect."
                     );
                 }

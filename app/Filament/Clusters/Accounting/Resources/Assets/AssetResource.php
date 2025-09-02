@@ -2,17 +2,24 @@
 
 namespace App\Filament\Clusters\Accounting\Resources\Assets;
 
+use Filament\Facades\Filament;
+use App\Enums\Accounting\AccountType;
+use App\Enums\Assets\AssetStatus;
 use App\Enums\Assets\DepreciationMethod;
 use App\Filament\Clusters\Accounting\AccountingCluster;
 use App\Filament\Clusters\Accounting\Resources\Assets\Pages\CreateAsset;
 use App\Filament\Clusters\Accounting\Resources\Assets\Pages\EditAsset;
 use App\Filament\Clusters\Accounting\Resources\Assets\Pages\ListAssets;
 use App\Filament\Clusters\Accounting\Resources\Assets\RelationManagers\DepreciationEntryRelationManager;
-use App\Filament\Resources\AssetResource\Pages;
-use App\Filament\Resources\AssetResource\RelationManagers;
+use App\Filament\Forms\Components\MoneyInput;
 use App\Filament\Support\TranslatableSelect;
 use App\Filament\Tables\Columns\MoneyColumn;
+use App\Models\Account;
 use App\Models\Asset;
+use App\Models\Currency;
+use App\Models\CurrencyRate;
+use App\Rules\NotInLockedPeriod;
+use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
@@ -20,9 +27,11 @@ use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Resources\Resource;
+use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 
 class AssetResource extends Resource
 {
@@ -56,63 +65,218 @@ class AssetResource extends Resource
 
     public static function form(Schema $schema): Schema
     {
-        return $schema
-            ->components([
-                TextInput::make('name')
-                    ->label(__('asset.name'))
-                    ->required()
-                    ->maxLength(255),
-                DatePicker::make('purchase_date')
-                    ->label(__('asset.purchase_date'))
-                    ->required(),
-                TextInput::make('purchase_value')
-                    ->label(__('asset.purchase_value'))
-                    ->required()
-                    ->numeric(),
-                TextInput::make('salvage_value')
-                    ->label(__('asset.salvage_value'))
-                    ->required()
-                    ->numeric(),
-                TextInput::make('useful_life_years')
-                    ->label(__('asset.useful_life_years'))
-                    ->required()
-                    ->integer(),
-                Select::make('depreciation_method')
-                    ->label(__('asset.depreciation_method'))
-                    ->options(
-                        collect(DepreciationMethod::cases())
-                            ->mapWithKeys(fn (DepreciationMethod $method) => [$method->value => $method->label()])
+        return $schema->components([
+            Section::make(__('asset.asset_currency_info'))
+                ->description(__('asset.asset_currency_info_description'))
+                ->schema([
+                    TextInput::make('name')
+                        ->label(__('asset.name'))
+                        ->required()
+                        ->maxLength(255)
+                        ->columnSpan(2),
+
+                    TranslatableSelect::make('currency_id', Currency::class, __('asset.currency'))
+                        ->required()
+                        ->live()
+                        ->default(fn() => Filament::getTenant()?->currency_id)
+                        ->afterStateUpdated(function (callable $set, $state, callable $get) {
+                            if ($state) {
+                                $currency = Currency::find($state);
+                                $company = Filament::getTenant();
+
+                                if ($currency && $company && $currency->id !== $company->currency_id) {
+                                    $latestRate = CurrencyRate::getLatestRate($currency->id, $company->id);
+                                    if ($latestRate) {
+                                        $set('current_exchange_rate', $latestRate);
+                                    }
+                                } else {
+                                    $set('current_exchange_rate', 1.0);
+                                }
+                            }
+                        })
+                        ->createOptionForm([
+                            TextInput::make('code')
+                                ->label(__('currency.code'))
+                                ->required()
+                                ->maxLength(255),
+                            TextInput::make('name')
+                                ->label(__('currency.name'))
+                                ->required()
+                                ->maxLength(255),
+                            TextInput::make('symbol')
+                                ->label(__('currency.symbol'))
+                                ->required()
+                                ->maxLength(5),
+                            TextInput::make('exchange_rate')
+                                ->label(__('currency.exchange_rate'))
+                                ->required()
+                                ->numeric()
+                                ->default(1),
+                        ])
+                        ->createOptionModalHeading(__('common.modal_title_create_currency'))
+                        ->createOptionAction(fn(Action $action) => $action->modalWidth('lg')),
+
+                    TextInput::make('current_exchange_rate')
+                        ->label(__('asset.current_exchange_rate'))
+                        ->numeric()
+                        ->disabled()
+                        ->dehydrated(false)
+                        ->visible(function (callable $get) {
+                            $currencyId = $get('currency_id');
+                            $company = Filament::getTenant();
+                            return $currencyId && $company && $currencyId != $company->currency_id;
+                        })
+                        ->helperText(__('asset.exchange_rate_helper')),
+                ])
+                ->columns(4)
+                ->columnSpanFull(),
+
+            Section::make(__('asset.asset_details'))
+                ->description(__('asset.asset_details_description'))
+                ->schema([
+                    DatePicker::make('purchase_date')
+                        ->label(__('asset.purchase_date'))
+                        ->default(now())
+                        ->required()
+                        ->rules([new NotInLockedPeriod()])
+                        ->columnSpan(1),
+
+                    MoneyInput::make('purchase_value')
+                        ->label(__('asset.purchase_value'))
+                        ->currencyField('../../company.currency_id')
+                        ->required()
+                        ->columnSpan(1),
+
+                    MoneyInput::make('salvage_value')
+                        ->label(__('asset.salvage_value'))
+                        ->currencyField('../../company.currency_id')
+                        ->default(0)
+                        ->required()
+                        ->columnSpan(1),
+
+                    TextInput::make('useful_life_years')
+                        ->label(__('asset.useful_life_years'))
+                        ->required()
+                        ->numeric()
+                        ->columnSpan(1),
+
+                    Select::make('depreciation_method')
+                        ->label(__('asset.depreciation_method'))
+                        ->options(
+                            collect(DepreciationMethod::cases())
+                                ->mapWithKeys(fn (DepreciationMethod $method) => [$method->value => $method->label()])
+                        )
+                        ->required()
+                        ->columnSpan(1),
+
+                    TranslatableSelect::relationship(
+                        'asset_account_id',
+                        'assetAccount',
+                        Account::class,
+                        __('asset.asset_account'),
+                        'name',
+                        null,
+                        fn($query) => $query->where('type', AccountType::FixedAssets->value)
                     )
-                    ->required(),
-                TranslatableSelect::withFormatter(
-                    'asset_account_id',
-                    \App\Models\Account::class,
-                    fn($account) => [$account->id => $account->getTranslatedLabel('name') . ' (' . $account->code . ')'],
-                    __('asset.asset_account')
-                )
-                    ->required(),
-                TranslatableSelect::withFormatter(
-                    'depreciation_expense_account_id',
-                    \App\Models\Account::class,
-                    fn($account) => [$account->id => $account->getTranslatedLabel('name') . ' (' . $account->code . ')'],
-                    __('asset.depreciation_expense_account')
-                )
-                    ->required(),
-                TranslatableSelect::withFormatter(
-                    'accumulated_depreciation_account_id',
-                    \App\Models\Account::class,
-                    fn($account) => [$account->id => $account->getTranslatedLabel('name') . ' (' . $account->code . ')'],
-                    __('asset.accumulated_depreciation_account')
-                )
-                    ->required(),
-            ]);
+                        ->createOptionForm([
+                            Select::make('company_id')
+                                ->relationship('company', 'name')
+                                ->label(__('account.company'))
+                                ->required(),
+                            TextInput::make('code')
+                                ->label(__('account.code'))
+                                ->required(),
+                            TextInput::make('name')
+                                ->label(__('account.name'))
+                                ->required(),
+                            Select::make('type')
+                                ->label(__('account.type'))
+                                ->options(collect(AccountType::cases())->mapWithKeys(fn($t) => [$t->value => $t->label()]))
+                                ->default(AccountType::FixedAssets->value)
+                                ->required(),
+                        ])
+                        ->createOptionModalHeading(__('common.modal_title_create_account'))
+                        ->createOptionAction(fn(Action $action) => $action->modalWidth('lg'))
+                        ->required()
+                        ->columnSpan(1),
+
+                    TranslatableSelect::relationship(
+                        'depreciation_expense_account_id',
+                        'depreciationExpenseAccount',
+                        Account::class,
+                        __('asset.depreciation_expense_account'),
+                        'name',
+                        null,
+                        fn($query) => $query->where('type', AccountType::Depreciation->value)
+                    )
+                        ->createOptionForm([
+                            Select::make('company_id')
+                                ->relationship('company', 'name')
+                                ->label(__('account.company'))
+                                ->required(),
+                            TextInput::make('code')
+                                ->label(__('account.code'))
+                                ->required(),
+                            TextInput::make('name')
+                                ->label(__('account.name'))
+                                ->required(),
+                            Select::make('type')
+                                ->label(__('account.type'))
+                                ->options(collect(AccountType::cases())->mapWithKeys(fn($t) => [$t->value => $t->label()]))
+                                ->default(AccountType::Depreciation->value)
+                                ->required(),
+                        ])
+                        ->createOptionModalHeading(__('common.modal_title_create_account'))
+                        ->createOptionAction(fn(Action $action) => $action->modalWidth('lg'))
+                        ->required()
+                        ->columnSpan(1),
+
+                    TranslatableSelect::relationship(
+                        'accumulated_depreciation_account_id',
+                        'accumulatedDepreciationAccount',
+                        Account::class,
+                        __('asset.accumulated_depreciation_account'),
+                        'name',
+                        null,
+                        fn($query) => $query->where('type', AccountType::FixedAssets->value)
+                    )
+                        ->createOptionForm([
+                            Select::make('company_id')
+                                ->relationship('company', 'name')
+                                ->label(__('account.company'))
+                                ->required(),
+                            TextInput::make('code')
+                                ->label(__('account.code'))
+                                ->required(),
+                            TextInput::make('name')
+                                ->label(__('account.name'))
+                                ->required(),
+                            Select::make('type')
+                                ->label(__('account.type'))
+                                ->options(collect(AccountType::cases())->mapWithKeys(fn($t) => [$t->value => $t->label()]))
+                                ->default(AccountType::FixedAssets->value)
+                                ->required(),
+                        ])
+                        ->createOptionModalHeading(__('common.modal_title_create_account'))
+                        ->createOptionAction(fn(Action $action) => $action->modalWidth('lg'))
+                        ->required()
+                        ->columnSpan(1),
+                ])
+                ->columns(2)
+                ->columnSpanFull(),
+        ]);
+    }
+
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()
+            ->with(['company.currency', 'currency', 'assetAccount', 'depreciationExpenseAccount', 'accumulatedDepreciationAccount']);
     }
 
     public static function table(Table $table): Table
     {
         return $table
             ->columns([
-                // Asset Name (most important for identification)
                 TextColumn::make('name')
                     ->label(__('asset.name'))
                     ->searchable()
@@ -120,42 +284,62 @@ class AssetResource extends Resource
                     ->weight('bold')
                     ->size('lg'),
 
-                // Status (critical for asset management)
                 TextColumn::make('status')
                     ->label(__('asset.status'))
                     ->badge()
-                    ->color(fn(string $state): string => match($state) {
-                        'active' => 'success',
-                        'disposed' => 'danger',
-                        'depreciated' => 'warning',
-                        default => 'gray',
-                    })
+                    ->formatStateUsing(fn(AssetStatus $state): string => $state->label())
+                    ->colors([
+                        'gray' => AssetStatus::Draft,
+                        'info' => AssetStatus::Confirmed,
+                        'warning' => AssetStatus::Depreciating,
+                        'success' => AssetStatus::FullyDepreciated,
+                        'danger' => AssetStatus::Sold,
+                    ])
                     ->sortable(),
 
-                // Purchase Date (important for depreciation calculations)
                 TextColumn::make('purchase_date')
                     ->label(__('asset.purchase_date'))
                     ->date()
                     ->sortable(),
 
-                // Purchase Value (critical financial information)
                 MoneyColumn::make('purchase_value')
                     ->label(__('asset.purchase_value'))
                     ->sortable()
-                    ->weight('bold'),
+                    ->weight('bold')
+                    ->size('lg'),
 
-                // Depreciation Method (important for accounting)
                 TextColumn::make('depreciation_method')
                     ->label(__('asset.depreciation_method'))
                     ->formatStateUsing(fn(DepreciationMethod $state): string => $state->label())
                     ->badge()
                     ->toggleable(),
 
-                // Useful Life (important for planning)
                 TextColumn::make('useful_life_years')
                     ->label(__('asset.useful_life'))
-                    ->suffix(' years')
+                    ->suffix(' ' . __('asset.years'))
                     ->toggleable(),
+
+                TextColumn::make('currency.code')
+                    ->label(__('asset.currency'))
+                    ->badge()
+                    ->toggleable(),
+
+                TextColumn::make('company.name')
+                    ->label(__('asset.company'))
+                    ->toggleable(isToggledHiddenByDefault: true)
+                    ->sortable(),
+
+                TextColumn::make('created_at')
+                    ->label(__('asset.created_at'))
+                    ->dateTime()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+
+                TextColumn::make('updated_at')
+                    ->label(__('asset.updated_at'))
+                    ->dateTime()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
                 //

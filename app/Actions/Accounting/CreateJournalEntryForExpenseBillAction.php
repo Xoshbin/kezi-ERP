@@ -2,6 +2,7 @@
 
 namespace App\Actions\Accounting;
 
+use App\Models\AssetCategory;
 use App\Models\JournalEntry;
 use App\Models\User;
 use App\Models\VendorBill;
@@ -38,29 +39,60 @@ class CreateJournalEntryForExpenseBillAction
             $totalDebit = Money::of(0, $currency->code);
 
             foreach ($expenseLines as $line) {
-                // Debit the expense account
-                $lineDTOs[] = new CreateJournalEntryLineDTO(
-                    account_id: $line->expense_account_id,
-                    debit: $line->subtotal,
-                    credit: Money::of(0, $currency->code),
-                    description: $line->description,
-                    partner_id: null,
-                    analytic_account_id: null,
-                );
-                $totalDebit = $totalDebit->plus($line->subtotal);
-
-                // Handle tax if applicable
-                if ($line->tax_id && $line->total_line_tax->isPositive()) {
-                    $taxAccountId = $company->default_tax_receivable_id; // Or a more specific tax account if needed
+                // If an asset category is provided, treat as asset acquisition
+                if ($line->asset_category_id) {
+                    $category = AssetCategory::find($line->asset_category_id);
+                    if (!$category) {
+                        throw new RuntimeException('Invalid asset category selected on bill line.');
+                    }
+                    // Dr Asset (subtotal), Dr Input Tax, Cr AP
                     $lineDTOs[] = new CreateJournalEntryLineDTO(
-                        account_id: $taxAccountId,
-                        debit: $line->total_line_tax,
+                        account_id: $category->asset_account_id,
+                        debit: $line->subtotal,
                         credit: Money::of(0, $currency->code),
-                        description: "Tax for: {$line->description}",
+                        description: 'Asset: ' . $line->description,
                         partner_id: null,
                         analytic_account_id: null,
                     );
-                    $totalDebit = $totalDebit->plus($line->total_line_tax);
+                    $totalDebit = $totalDebit->plus($line->subtotal);
+
+                    if ($line->tax_id && $line->total_line_tax->isPositive()) {
+                        $taxAccountId = $company->default_tax_receivable_id ?? $company->default_tax_account_id;
+                        $lineDTOs[] = new CreateJournalEntryLineDTO(
+                            account_id: $taxAccountId,
+                            debit: $line->total_line_tax,
+                            credit: Money::of(0, $currency->code),
+                            description: 'Input tax for asset: ' . $line->description,
+                            partner_id: null,
+                            analytic_account_id: null,
+                        );
+                        $totalDebit = $totalDebit->plus($line->total_line_tax);
+                    }
+                } else {
+                    // Standard expense
+                    $lineDTOs[] = new CreateJournalEntryLineDTO(
+                        account_id: $line->expense_account_id,
+                        debit: $line->subtotal,
+                        credit: Money::of(0, $currency->code),
+                        description: $line->description,
+                        partner_id: null,
+                        analytic_account_id: null,
+                    );
+                    $totalDebit = $totalDebit->plus($line->subtotal);
+
+                    // Handle tax if applicable
+                    if ($line->tax_id && $line->total_line_tax->isPositive()) {
+                        $taxAccountId = $company->default_tax_receivable_id ?? $company->default_tax_account_id; // Or a more specific tax account if needed
+                        $lineDTOs[] = new CreateJournalEntryLineDTO(
+                            account_id: $taxAccountId,
+                            debit: $line->total_line_tax,
+                            credit: Money::of(0, $currency->code),
+                            description: "Tax for: {$line->description}",
+                            partner_id: null,
+                            analytic_account_id: null,
+                        );
+                        $totalDebit = $totalDebit->plus($line->total_line_tax);
+                    }
                 }
             }
 

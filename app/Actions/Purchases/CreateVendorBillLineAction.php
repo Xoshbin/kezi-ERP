@@ -45,6 +45,7 @@ class CreateVendorBillLineAction
             'expense_account_id' => $dto->expense_account_id,
             'tax_id' => $dto->tax_id,
             'analytic_account_id' => $dto->analytic_account_id,
+            'asset_category_id' => $dto->asset_category_id,
         ]);
     }
 }

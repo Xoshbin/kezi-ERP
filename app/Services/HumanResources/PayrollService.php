@@ -2,6 +2,9 @@
 
 namespace App\Services\HumanResources;
 
+use Exception;
+use Brick\Math\RoundingMode;
+use InvalidArgumentException;
 use App\Actions\HumanResources\ProcessPayrollAction;
 use App\Actions\HumanResources\CreatePaymentFromPayrollAction;
 use App\DataTransferObjects\HumanResources\ProcessPayrollDTO;
@@ -41,7 +44,7 @@ class PayrollService
         return DB::transaction(function () use ($employee, $periodStartDate, $periodEndDate, $payDate, $user) {
             $contract = $employee->currentContract;
             if (!$contract) {
-                throw new \Exception('Employee does not have an active contract.');
+                throw new Exception('Employee does not have an active contract.');
             }
 
             // Calculate attendance-based amounts
@@ -49,6 +52,8 @@ class PayrollService
 
             // Calculate base salary (prorated if needed)
             $baseSalary = $this->calculateBaseSalary($contract, $periodStartDate, $periodEndDate);
+
+
 
             // Calculate overtime
             $overtimeAmount = $this->calculateOvertimeAmount($contract, $attendanceData['overtime_hours']);
@@ -108,7 +113,7 @@ class PayrollService
         Gate::forUser($user)->authorize('approve', $payroll);
 
         if ($payroll->status !== 'draft') {
-            throw new \Exception('Only draft payrolls can be approved.');
+            throw new Exception('Only draft payrolls can be approved.');
         }
 
         DB::transaction(function () use ($payroll, $user) {
@@ -155,13 +160,13 @@ class PayrollService
         if ($contract->pay_frequency === 'monthly') {
             $periodStart = Carbon::parse($periodStartDate);
             $periodEnd = Carbon::parse($periodEndDate);
-            $daysInPeriod = $periodEnd->diffInDays($periodStart) + 1;
+            $daysInPeriod = $periodStart->diffInDays($periodEnd) + 1;
             $daysInMonth = $periodStart->daysInMonth;
 
             if ($daysInPeriod < $daysInMonth) {
                 // Prorate the salary
                 $prorationFactor = $daysInPeriod / $daysInMonth;
-                $baseSalary = $baseSalary->multipliedBy($prorationFactor);
+                $baseSalary = $baseSalary->multipliedBy($prorationFactor, RoundingMode::HALF_UP);
             }
         }
 
@@ -178,12 +183,19 @@ class PayrollService
         }
 
         // Calculate overtime rate (typically 1.5x regular rate)
-        $regularHourlyRate = $contract->hourly_rate ??
-            $contract->base_salary->dividedBy($contract->working_hours_per_week * 4.33); // Approximate monthly hours
+        if ($contract->hourly_rate) {
+            $regularHourlyRate = $contract->hourly_rate;
+        } else {
+            // Calculate hourly rate from monthly salary
+            $monthlyHours = $contract->working_hours_per_week * 4.33; // Approximate monthly hours
+            $regularHourlyRate = $contract->base_salary->dividedBy($monthlyHours, RoundingMode::HALF_UP);
+        }
 
-        $overtimeRate = $regularHourlyRate->multipliedBy(1.5);
 
-        return $overtimeRate->multipliedBy($overtimeHours);
+
+        $overtimeRate = $regularHourlyRate->multipliedBy(1.5, RoundingMode::HALF_UP);
+
+        return $overtimeRate->multipliedBy($overtimeHours, RoundingMode::HALF_UP);
     }
 
     /**
@@ -195,10 +207,10 @@ class PayrollService
 
         // TODO: Implement proper tax calculation based on company's tax rules
         // For now, using simple percentages
-        $incomeTax = $grossSalary->multipliedBy(0.10); // 10% income tax
-        $socialSecurity = $grossSalary->multipliedBy(0.05); // 5% social security
+        $incomeTax = $grossSalary->multipliedBy(0.10, RoundingMode::HALF_UP); // 10% income tax
+        $socialSecurity = $grossSalary->multipliedBy(0.05, RoundingMode::HALF_UP); // 5% social security
         $healthInsurance = Money::of(50, $currency); // Fixed amount
-        $pensionContribution = $grossSalary->multipliedBy(0.03); // 3% pension
+        $pensionContribution = $grossSalary->multipliedBy(0.03, RoundingMode::HALF_UP); // 3% pension
 
         return [
             'income_tax' => $incomeTax,
@@ -216,23 +228,40 @@ class PayrollService
         $lines = [];
         $company = $employee->company;
 
-        // TODO: Get proper account IDs from company's chart of accounts
-        // For now, using placeholder account IDs
-        $salaryExpenseAccountId = 1; // Should be salary expense account
-        $payableAccountId = 2; // Should be salary payable account
-        $taxPayableAccountId = 3; // Should be tax payable account
+        // Get proper account IDs from company's chart of accounts
+        $salaryExpenseAccountId = $company->default_salary_expense_account_id;
+        $incomeTaxPayableAccountId = $company->default_income_tax_payable_account_id;
+        $socialSecurityPayableAccountId = $company->default_social_security_payable_account_id;
+        $healthInsurancePayableAccountId = $company->default_health_insurance_payable_account_id;
+        $pensionPayableAccountId = $company->default_pension_payable_account_id;
 
-        // Salary expense line (debit)
+        // Use fallback accounts if not configured (for testing/development)
+        if (!$salaryExpenseAccountId) {
+            $salaryExpenseAccountId = 1; // fallback account ID
+        }
+
+        $salaryPayableAccountId = $company->default_salary_payable_account_id ?? 1; // fallback account ID
+
+        // Calculate total deductions first
+        $totalDeductions = Money::of(0, $baseSalary->getCurrency());
+        foreach ($deductions as $amount) {
+            $totalDeductions = $totalDeductions->plus($amount);
+        }
+
+        // Calculate gross salary (base salary for now - could include allowances)
+        $grossSalary = $baseSalary;
+
+        // Gross salary expense line (debit) - this should equal all credits
         $lines[] = new PayrollLineDTO(
             company_id: $company->id,
             account_id: $salaryExpenseAccountId,
             line_type: 'earning',
-            code: 'salary',
-            description: ['en' => 'Base Salary'],
+            code: 'gross_salary',
+            description: ['en' => 'Gross Salary Expense'],
             quantity: 1,
             unit: 'fixed',
-            rate: $baseSalary,
-            amount: $baseSalary,
+            rate: $grossSalary,
+            amount: $grossSalary,
             tax_rate: null,
             is_taxable: true,
             is_statutory: false,
@@ -242,11 +271,20 @@ class PayrollService
             reference: null,
         );
 
-        // Tax deduction lines (credit)
+        // Individual deduction lines (credits to respective payable accounts)
+        $accountMapping = [
+            'income_tax' => $incomeTaxPayableAccountId,
+            'social_security' => $socialSecurityPayableAccountId,
+            'health_insurance' => $healthInsurancePayableAccountId,
+            'pension_contribution' => $pensionPayableAccountId,
+        ];
+
         foreach ($deductions as $type => $amount) {
+            $accountId = $accountMapping[$type] ?? $salaryPayableAccountId; // fallback to salary payable
+
             $lines[] = new PayrollLineDTO(
                 company_id: $company->id,
-                account_id: $taxPayableAccountId,
+                account_id: $accountId,
                 line_type: 'deduction',
                 code: $type,
                 description: ['en' => ucfirst(str_replace('_', ' ', $type))],
@@ -264,6 +302,27 @@ class PayrollService
             );
         }
 
+        // Net salary payable line (credit) - this is what we owe the employee
+        $netSalary = $grossSalary->minus($totalDeductions);
+        $lines[] = new PayrollLineDTO(
+            company_id: $company->id,
+            account_id: $salaryPayableAccountId,
+            line_type: 'liability',
+            code: 'net_salary_payable',
+            description: ['en' => 'Net Salary Payable'],
+            quantity: 1,
+            unit: 'fixed',
+            rate: $netSalary,
+            amount: $netSalary,
+            tax_rate: null,
+            is_taxable: false,
+            is_statutory: false,
+            debit_credit: 'credit',
+            analytic_account_id: null,
+            notes: null,
+            reference: null,
+        );
+
         return $lines;
     }
 
@@ -274,12 +333,12 @@ class PayrollService
     {
         Gate::forUser($user)->authorize('pay', $payroll);
 
-        if ($payroll->status !== 'processed') {
-            throw new \Exception('Only processed payrolls can be paid.');
+        if ($payroll->payment_id) {
+            throw new Exception('Payroll has already been paid.');
         }
 
-        if ($payroll->payment_id) {
-            throw new \Exception('Payroll has already been paid.');
+        if ($payroll->status !== 'processed') {
+            throw new InvalidArgumentException('Only processed payrolls can be paid.');
         }
 
         $this->lockDateService->enforce($payroll->company, $payroll->pay_date);

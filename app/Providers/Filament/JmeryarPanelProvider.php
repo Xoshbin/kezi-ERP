@@ -22,6 +22,8 @@ use LaraZeus\SpatieTranslatable\SpatieTranslatablePlugin;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
+use Xoshbin\FilamentAiHelper\FilamentAiHelperPlugin;
+use Xoshbin\JmeryarTheme\JmeryarTheme;
 
 class JmeryarPanelProvider extends PanelProvider
 {
@@ -61,19 +63,18 @@ class JmeryarPanelProvider extends PanelProvider
             ->authMiddleware([
                 Authenticate::class,
             ])
-            ->viteTheme('resources/js/filament/jmeryar/theme.js')
             ->tenant(Company::class)
             ->tenantRegistration(RegisterCompany::class)
             ->tenantProfile(EditCompanyProfile::class)
             ->plugins([
+                JmeryarTheme::make(),
                 SpatieTranslatablePlugin::make()
                     ->defaultLocales(['en', 'ckb', 'ar']),
-                // Note: AI Helper is integrated via HasAiHelper trait in individual resource pages
-                // FilamentAiHelperPlugin::make()
-                //     ->buttonLabel('AccounTech Pro')
-                //     ->buttonIcon('heroicon-o-sparkles')
-                //     ->modalWidth('2xl')
-                //     ->enabled(fn () => !empty(config('filament-ai-helper.gemini.api_key'))),
+                FilamentAiHelperPlugin::make()
+                    ->buttonLabel('AccounTech Pro')
+                    ->buttonIcon('heroicon-o-sparkles')
+                    ->modalWidth('2xl')
+                    ->enabled(fn () => (bool) config('filament-ai-helper.enabled', true) && !empty(config('filament-ai-helper.gemini.api_key'))),
             ]);
     }
 }

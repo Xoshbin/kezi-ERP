@@ -2,6 +2,7 @@
 
 namespace App\Traits;
 
+use Exception;
 use App\Enums\Payments\PaymentStatus;
 use Brick\Money\Money;
 use App\Enums\Shared\PaymentState;
@@ -92,7 +93,7 @@ trait HasPaymentState
                         $this->company
                     );
                     $totalPaidInDocumentCurrency = $totalPaidInDocumentCurrency->plus($convertedAmount);
-                } catch (\Exception $e) {
+                } catch (Exception $e) {
                     // If conversion fails, log and skip this payment
                     Log::warning("Failed to convert payment amount for payment {$payment->id}: " . $e->getMessage());
                     continue;

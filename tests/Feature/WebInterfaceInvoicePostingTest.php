@@ -87,15 +87,15 @@ class WebInterfaceInvoicePostingTest extends TestCase
             'All journal entry references should be unique'
         );
 
-        // Verify the invoice numbers follow the expected sequence
-        // (They should start from INV-00001 since we're using a fresh database)
-        $this->assertStringStartsWith('INV-', $postedInvoiceNumbers[0]);
-        $this->assertStringStartsWith('INV-', $postedInvoiceNumbers[1]);
-        $this->assertStringStartsWith('INV-', $postedInvoiceNumbers[2]);
+        // Verify the invoice numbers follow the new Odoo-style format
+        $this->assertMatchesRegularExpression('/^INV\/\d{4}\/\d{2}\/\d{7}$/', $postedInvoiceNumbers[0]);
+        $this->assertMatchesRegularExpression('/^INV\/\d{4}\/\d{2}\/\d{7}$/', $postedInvoiceNumbers[1]);
+        $this->assertMatchesRegularExpression('/^INV\/\d{4}\/\d{2}\/\d{7}$/', $postedInvoiceNumbers[2]);
 
-        // Extract the numeric parts and verify they're sequential
+        // Extract the numeric parts from the new format and verify they're sequential
         $numbers = array_map(function($invoiceNumber) {
-            return (int) substr($invoiceNumber, 4); // Remove 'INV-' prefix
+            // Extract the last part after the last slash (e.g., "0000001" from "INV/2025/08/0000001")
+            return (int) substr($invoiceNumber, strrpos($invoiceNumber, '/') + 1);
         }, $postedInvoiceNumbers);
 
         sort($numbers);

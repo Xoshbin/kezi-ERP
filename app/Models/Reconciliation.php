@@ -2,6 +2,9 @@
 
 namespace App\Models;
 
+use RuntimeException;
+use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Collection;
 use App\Enums\Reconciliation\ReconciliationType;
 use Brick\Money\Money;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -23,14 +26,14 @@ use Illuminate\Support\Facades\Auth;
  * @property int $company_id
  * @property ReconciliationType $reconciliation_type
  * @property int $reconciled_by_user_id
- * @property \Carbon\Carbon $reconciled_at
+ * @property Carbon $reconciled_at
  * @property string|null $reference
  * @property string|null $description
- * @property \Carbon\Carbon|null $created_at
- * @property \Carbon\Carbon|null $updated_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  * @property-read Company $company
  * @property-read User $reconciledBy
- * @property-read \Illuminate\Database\Eloquent\Collection<int, JournalEntryLine> $journalEntryLines
+ * @property-read Collection<int, JournalEntryLine> $journalEntryLines
  */
 class Reconciliation extends Model
 {
@@ -81,7 +84,7 @@ class Reconciliation extends Model
             $unauthorizedChanges = array_diff($changedFields, $allowedFields);
 
             if (!empty($unauthorizedChanges)) {
-                throw new \RuntimeException(
+                throw new RuntimeException(
                     'Reconciliation records are immutable. Only description can be updated. ' .
                     'Attempted to change: ' . implode(', ', $unauthorizedChanges)
                 );
@@ -90,7 +93,7 @@ class Reconciliation extends Model
 
         // Prevent deletion of reconciliation records
         static::deleting(function (Reconciliation $reconciliation) {
-            throw new \RuntimeException(
+            throw new RuntimeException(
                 'Reconciliation records cannot be deleted to maintain audit trail integrity. ' .
                 'Create a reversal reconciliation instead.'
             );

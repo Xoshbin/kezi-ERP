@@ -1,0 +1,144 @@
+<?php
+
+namespace App\Actions\Accounting;
+
+use App\Models\AssetCategory;
+use App\Enums\Products\ProductType;
+use App\Models\VendorBill;
+use Brick\Money\Money;
+
+class BuildVendorBillPostingPreviewAction
+{
+    private function accountLabelName($account): string
+    {
+        if (!$account) return '';
+        // Some models may cast name as array (translatable); normalize to string
+        $name = is_array($account->name ?? null) ? ($account->name['en'] ?? reset($account->name)) : ($account->name ?? '');
+        return $name;
+    }
+
+    public function execute(VendorBill $vendorBill): array
+    {
+        $vendorBill->load('company', 'currency', 'vendor', 'lines.product.inventoryAccount');
+
+        $errors = [];
+        $issues = [];
+        $company = $vendorBill->company;
+        $currencyCode = $vendorBill->currency->code;
+
+        $apAccountId = $vendorBill->vendor->payable_account_id ?? $company->default_accounts_payable_id;
+        if (!$apAccountId) {
+            $msg = 'Company default Accounts Payable account is not configured.';
+            $errors[] = $msg;
+            $issues[] = ['type' => 'ap_account_missing', 'message' => $msg];
+        }
+        if (!$company->default_purchase_journal_id) {
+            $msg = 'Company default purchase journal is not configured.';
+            $errors[] = $msg;
+            $issues[] = ['type' => 'purchase_journal_missing', 'message' => $msg];
+        }
+
+        $linesPreview = [];
+        $debitTotal = Money::of(0, $currencyCode);
+        $creditTotal = Money::of(0, $currencyCode);
+
+        foreach ($vendorBill->lines as $line) {
+            $isStorable = $line->product?->type === ProductType::Storable;
+            $isAsset = (bool) $line->asset_category_id;
+
+            if ($isStorable) {
+                $inventoryAccount = $line->product->inventoryAccount;
+                if (!$inventoryAccount) {
+                    $msg = "Product ID {$line->product_id} is missing its inventory account.";
+                    $errors[] = $msg;
+                    $issues[] = ['type' => 'inventory_account_missing', 'message' => $msg, 'product_id' => $line->product_id];
+                } else {
+                    $linesPreview[] = [
+                        'account_id' => $inventoryAccount->id,
+                        'account_name' => $this->accountLabelName($inventoryAccount),
+                        'account_code' => $inventoryAccount->code,
+                        'debit_minor' => $line->subtotal->getMinorAmount()->toInt(),
+                        'credit_minor' => 0,
+                        'description' => 'Inventory: ' . $line->description,
+                        'product_id' => $line->product_id,
+                    ];
+                    $debitTotal = $debitTotal->plus($line->subtotal);
+                }
+            } elseif ($isAsset) {
+                $category = AssetCategory::find($line->asset_category_id);
+                if (!$category) {
+                    $msg = 'Invalid asset category selected on a bill line.';
+                    $errors[] = $msg;
+                    $issues[] = ['type' => 'asset_category_invalid', 'message' => $msg];
+                } else {
+                    $assetAccount = $category->assetAccount;
+                    $linesPreview[] = [
+                        'account_id' => $category->asset_account_id,
+                        'account_name' => $this->accountLabelName($assetAccount),
+                        'account_code' => $assetAccount?->code,
+                        'debit_minor' => $line->subtotal->getMinorAmount()->toInt(),
+                        'credit_minor' => 0,
+                        'description' => 'Asset: ' . $line->description,
+                    ];
+                    $debitTotal = $debitTotal->plus($line->subtotal);
+                }
+            } else {
+                $expenseAccount = $line->expenseAccount;
+                $linesPreview[] = [
+                    'account_id' => $line->expense_account_id,
+                    'account_name' => $this->accountLabelName($expenseAccount),
+                    'account_code' => $expenseAccount?->code,
+                    'debit_minor' => $line->subtotal->getMinorAmount()->toInt(),
+                    'credit_minor' => 0,
+                    'description' => $line->description, // may be array via translations; view normalizes
+                ];
+                $debitTotal = $debitTotal->plus($line->subtotal);
+            }
+
+            if ($line->tax_id && $line->total_line_tax->isPositive()) {
+                $taxAccountId = $company->default_tax_receivable_id ?? $company->default_tax_account_id;
+                if (!$taxAccountId) {
+                    $msg = 'Company input tax account is not configured but taxable lines exist.';
+                    $errors[] = $msg;
+                    $issues[] = ['type' => 'input_tax_missing', 'message' => $msg];
+                } else {
+                    $taxAccount = $company->taxReceivableAccount ?? $company->taxAccount;
+                    $linesPreview[] = [
+                        'account_id' => $taxAccountId,
+                        'account_name' => $this->accountLabelName($taxAccount),
+                        'account_code' => $taxAccount?->code,
+                        'debit_minor' => $line->total_line_tax->getMinorAmount()->toInt(),
+                        'credit_minor' => 0,
+                        'description' => 'Input tax: ' . $line->description, // may be array via translations; view normalizes
+                    ];
+                    $debitTotal = $debitTotal->plus($line->total_line_tax);
+                }
+            }
+        }
+
+        if ($apAccountId) {
+            $apAccount = $vendorBill->vendor->payableAccount ?? $company->accountsPayableAccount;
+            $linesPreview[] = [
+                'account_id' => $apAccountId,
+                'account_name' => $this->accountLabelName($apAccount),
+                'account_code' => $apAccount?->code,
+                'debit_minor' => 0,
+                'credit_minor' => $debitTotal->getMinorAmount()->toInt(),
+                'description' => 'Accounts Payable',
+            ];
+            $creditTotal = $debitTotal;
+        }
+
+        return [
+            'errors' => $errors,
+            'issues' => $issues,
+            'lines' => $linesPreview,
+            'totals' => [
+                'debit_minor' => $debitTotal->getMinorAmount()->toInt(),
+                'credit_minor' => $creditTotal->getMinorAmount()->toInt(),
+                'balanced' => $debitTotal->isEqualTo($creditTotal),
+            ],
+        ];
+    }
+}
+

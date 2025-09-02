@@ -37,4 +37,10 @@ return [
         'email_verified_at' => 'تاريخ تأكيد البريد الإلكتروني',
         'password' => 'كلمة مرور',
     ],
+
+    // Sections
+    'section' => [
+        'details' => 'تفاصيل الشركة',
+        'defaults' => 'إعدادات الشركة الافتراضية',
+    ],
 ];

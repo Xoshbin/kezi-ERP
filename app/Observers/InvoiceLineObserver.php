@@ -2,6 +2,7 @@
 
 namespace App\Observers;
 
+use Brick\Money\Money;
 use App\Models\InvoiceLine;
 
 class InvoiceLineObserver
@@ -58,8 +59,8 @@ class InvoiceLineObserver
         $totalTaxCompanyCurrency = $invoice->total_tax->getAmount()->toFloat() * $exchangeRate;
 
         $invoice->update([
-            'total_amount_company_currency' => \Brick\Money\Money::of($totalAmountCompanyCurrency, $companyCurrency->code),
-            'total_tax_company_currency' => \Brick\Money\Money::of($totalTaxCompanyCurrency, $companyCurrency->code),
+            'total_amount_company_currency' => Money::of($totalAmountCompanyCurrency, $companyCurrency->code),
+            'total_tax_company_currency' => Money::of($totalTaxCompanyCurrency, $companyCurrency->code),
         ]);
     }
 }

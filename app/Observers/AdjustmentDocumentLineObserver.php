@@ -2,6 +2,7 @@
 
 namespace App\Observers;
 
+use Brick\Money\Money;
 use App\Models\AdjustmentDocumentLine;
 
 class AdjustmentDocumentLineObserver
@@ -60,9 +61,9 @@ class AdjustmentDocumentLineObserver
         $totalTaxCompanyCurrency = $adjustmentDocument->total_tax->getAmount()->toFloat() * $exchangeRate;
 
         $adjustmentDocument->update([
-            'subtotal_company_currency' => \Brick\Money\Money::of($subtotalCompanyCurrency, $companyCurrency->code),
-            'total_amount_company_currency' => \Brick\Money\Money::of($totalAmountCompanyCurrency, $companyCurrency->code),
-            'total_tax_company_currency' => \Brick\Money\Money::of($totalTaxCompanyCurrency, $companyCurrency->code),
+            'subtotal_company_currency' => Money::of($subtotalCompanyCurrency, $companyCurrency->code),
+            'total_amount_company_currency' => Money::of($totalAmountCompanyCurrency, $companyCurrency->code),
+            'total_tax_company_currency' => Money::of($totalTaxCompanyCurrency, $companyCurrency->code),
         ]);
     }
 }

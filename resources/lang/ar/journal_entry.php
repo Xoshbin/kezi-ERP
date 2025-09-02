@@ -29,6 +29,8 @@ return [
     'source_id' => 'معرف المصدر',
     'total_debit' => 'إجمالي المدين',
     'total_credit' => 'إجمالي الدائن',
+    'balance' => 'الرصيد',
+    'company_currency_totals' => 'إجماليات عملة الشركة',
     'created_at' => 'تاريخ الإنشاء',
     'updated_at' => 'تاريخ التحديث',
 
