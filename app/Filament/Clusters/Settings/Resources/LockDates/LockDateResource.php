@@ -7,13 +7,13 @@ use App\Filament\Clusters\Settings\Resources\LockDates\Pages\CreateLockDate;
 use App\Filament\Clusters\Settings\Resources\LockDates\Pages\EditLockDate;
 use App\Filament\Clusters\Settings\Resources\LockDates\Pages\ListLockDates;
 use App\Filament\Clusters\Settings\SettingsCluster;
-use App\Filament\Resources\LockDateResource\Pages;
 use App\Models\LockDate;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\EditAction;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
 use Filament\Resources\Resource;
+use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
@@ -48,21 +48,28 @@ class LockDateResource extends Resource
     {
         return $schema
             ->components([
-                Select::make('lock_type')
-                    ->options(
-                        collect(LockDateType::cases())
-                            ->mapWithKeys(fn (LockDateType $type) => [$type->value => $type->label()])
-                    )
-                    ->required()
-                    ->disabled(fn (?LockDate $record) => $record !== null && $record->lock_type === LockDateType::HardLock)
-                    ->dehydrated(fn (?LockDate $record) => $record === null), // Only save on create
-                DatePicker::make('locked_until')
-                    ->required(),
-                Select::make('company_id')
-                    ->relationship('company', 'name')
-                    ->required()
-                    ->default(fn () => auth()->user()->company_id)
-                    ->disabled(),
+                Section::make(__('lock_date.basic_information',))
+                    ->schema([
+                        Select::make('lock_type')
+                            ->label(__('lock_date.lock_type'))
+                            ->options(
+                                collect(LockDateType::cases())
+                                    ->mapWithKeys(fn (LockDateType $type) => [$type->value => $type->label()])
+                            )
+                            ->required()
+                            ->disabled(fn (?LockDate $record) => $record !== null && $record->lock_type === LockDateType::HardLock)
+                            ->dehydrated(fn (?LockDate $record) => $record === null),
+                        DatePicker::make('locked_until')
+                            ->label(__('lock_date.locked_until'))
+                            ->required(),
+                        Select::make('company_id')
+                            ->label(__('lock_date.company'))
+                            ->relationship('company', 'name')
+                            ->required()
+                            ->disabled(),
+                    ])
+                    ->columns(2)
+                    ->columnSpanFull(),
             ]);
     }
 

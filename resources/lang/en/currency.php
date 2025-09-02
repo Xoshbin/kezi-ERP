@@ -33,4 +33,7 @@ return [
             'seeder' => 'Database Seeder',
         ],
     ],
+
+    // Section
+    'basic_information' => 'Basic Information',
 ];

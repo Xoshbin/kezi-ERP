@@ -16,4 +16,7 @@ return [
 
     // Placeholders
     'select_company' => 'کۆمپانیایەک هەڵبژێرە',
+
+    // Section
+    'basic_information' => 'زانیاری بنەڕەتی',
 ];

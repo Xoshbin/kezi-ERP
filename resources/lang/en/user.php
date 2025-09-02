@@ -7,6 +7,7 @@ return [
 
     // Forms
     'form' => [
+        'basic_information' => 'Basic Information',
         'company' => [
             'label' => 'Company',
         ],

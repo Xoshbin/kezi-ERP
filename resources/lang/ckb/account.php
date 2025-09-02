@@ -23,4 +23,8 @@ return [
         'credit' => 'قەرزدەر (دائن)',
         'description' => 'پێناسە',
     ],
+
+    // Section
+    'basic_information' => 'زانیاری بنەڕەتی',
+    'basic_information_description' => 'کۆد، ناو، جۆر و هەڵبژاردەکان.',
 ];

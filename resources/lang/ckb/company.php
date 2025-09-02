@@ -30,11 +30,17 @@ return [
         'is_deprecated' => 'بەسەرچوو',
     ],
 
-    'users' => [
+'users' => [
         'title' => 'بەکارهێنەران',
         'name' => 'ناو',
         'email' => 'ئیمەیڵ',
         'email_verified_at' => 'کاتی سەلماندنی ئیمەیڵ',
         'password' => 'وشەی نهێنی',
+    ],
+
+    // Sections
+    'section' => [
+        'details' => 'وردەکاری کۆمپانیا',
+        'defaults' => 'ڕێکخستنە بنەڕەتییەکانی کۆمپانیا',
     ],
 ];

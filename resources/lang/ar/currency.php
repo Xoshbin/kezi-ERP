@@ -33,4 +33,7 @@ return [
             'seeder' => 'بذرة قاعدة البيانات',
         ],
     ],
+
+    // Section
+    'basic_information' => 'المعلومات الأساسية',
 ];

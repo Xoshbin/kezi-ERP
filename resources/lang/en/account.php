@@ -25,4 +25,8 @@ return [
         'credit' => 'Credit',
         'description' => 'Description',
     ],
+
+    // Section
+    'basic_information' => 'Basic Information',
+    'basic_information_description' => 'Account code, name, type, and options.',
 ];

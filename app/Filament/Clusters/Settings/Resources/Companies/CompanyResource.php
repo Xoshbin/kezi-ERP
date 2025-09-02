@@ -8,18 +8,17 @@ use App\Filament\Clusters\Settings\Resources\Companies\Pages\ListCompanies;
 use App\Filament\Clusters\Settings\Resources\Companies\RelationManagers\AccountsRelationManager;
 use App\Filament\Clusters\Settings\Resources\Companies\RelationManagers\UsersRelationManager;
 use App\Filament\Clusters\Settings\SettingsCluster;
-use App\Filament\Resources\CompanyResource\Pages;
-use App\Filament\Resources\CompanyResource\RelationManagers;
+use App\Filament\Support\TranslatableSelect;
 use App\Models\Company;
 use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
-use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Resources\Resource;
+use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
@@ -50,126 +49,168 @@ class CompanyResource extends Resource
     {
         return $schema
             ->components([
-                TextInput::make('name')
-                    ->label(__('company.name'))
-                    ->required()
-                    ->maxLength(255),
-                Textarea::make('address')
-                    ->label(__('company.address'))
-                    ->columnSpanFull(),
-                TextInput::make('tax_id')
-                    ->label(__('company.tax_id'))
-                    ->maxLength(255),
-                Select::make('currency_id')
-                    ->label(__('company.currency_id'))
-                    ->relationship('currency', 'name')
-                    ->required()
-                    ->searchable()
-                    ->createOptionForm([
-                        TextInput::make('code')
-                            ->label(__('currency.code'))
-                            ->required()
-                            ->maxLength(255),
-                        TextInput::make('name')
-                            ->label(__('currency.name'))
-                            ->required()
-                            ->maxLength(255),
-                        TextInput::make('symbol')
-                            ->label(__('currency.symbol'))
-                            ->required()
-                            ->maxLength(5),
-                        TextInput::make('exchange_rate')
-                            ->label(__('currency.exchange_rate'))
-                            ->required()
-                            ->numeric()
-                            ->default(1),
-                        Toggle::make('is_active')
-                            ->label(__('currency.is_active'))
-                            ->required()
-                            ->default(true),
-                    ])
-                    ->createOptionModalHeading(__('common.modal_title_create_currency'))
-                    ->createOptionAction(function (Action $action) {
-                        return $action
-                            ->modalWidth('lg');
-                    }),
-                TextInput::make('fiscal_country')
-                    ->label(__('company.fiscal_country'))
-                    ->required()
-                    ->maxLength(255),
-                Toggle::make('enable_reconciliation')
-                    ->label(__('company.enable_reconciliation'))
-                    ->helperText(__('company.enable_reconciliation_help'))
-                    ->default(false),
-                Select::make('parent_company_id')
-                    ->label(__('company.parent_company_id'))
-                    ->relationship('parentCompany', 'name')
-                    ->searchable()
-                    ->createOptionForm([
+                Section::make(__('company.section.details'))
+                    ->schema([
                         TextInput::make('name')
                             ->label(__('company.name'))
                             ->required()
                             ->maxLength(255),
-                        Textarea::make('address')
-                            ->label(__('company.address'))
-                            ->columnSpanFull(),
-                        TextInput::make('tax_id')
-                            ->label(__('company.tax_id'))
-                            ->maxLength(255),
-                        Select::make('currency_id')
-                            ->label(__('company.currency_id'))
-                            ->relationship('currency', 'name')
-                            ->required(),
                         TextInput::make('fiscal_country')
                             ->label(__('company.fiscal_country'))
                             ->required()
                             ->maxLength(255),
+                        TextInput::make('tax_id')
+                            ->label(__('company.tax_id'))
+                            ->maxLength(255),
+                        Textarea::make('address')
+                            ->label(__('company.address'))
+                            ->columnSpanFull(),
+                        TranslatableSelect::make('currency_id', \App\Models\Currency::class, __('company.currency_id'))
+                            ->required()
+                            ->createOptionForm([
+                                TextInput::make('code')
+                                    ->label(__('currency.code'))
+                                    ->required()
+                                    ->maxLength(255),
+                                TextInput::make('name')
+                                    ->label(__('currency.name'))
+                                    ->required()
+                                    ->maxLength(255),
+                                TextInput::make('symbol')
+                                    ->label(__('currency.symbol'))
+                                    ->required()
+                                    ->maxLength(5),
+                                TextInput::make('exchange_rate')
+                                    ->label(__('currency.exchange_rate'))
+                                    ->required()
+                                    ->numeric()
+                                    ->default(1),
+                                Toggle::make('is_active')
+                                    ->label(__('currency.is_active'))
+                                    ->required()
+                                    ->default(true),
+                            ])
+                            ->createOptionModalHeading(__('common.modal_title_create_currency'))
+                            ->createOptionAction(fn(Action $action) => $action->modalWidth('lg')),
+                        Toggle::make('enable_reconciliation')
+                            ->label(__('company.enable_reconciliation'))
+                            ->helperText(__('company.enable_reconciliation_help'))
+                            ->default(false),
+                        TranslatableSelect::standard(
+                            'parent_company_id',
+                            \App\Models\Company::class,
+                            ['name'],
+                            __('company.parent_company_id')
+                        )
+                            ->createOptionForm([
+                                TextInput::make('name')
+                                    ->label(__('company.name'))
+                                    ->required()
+                                    ->maxLength(255),
+                                Textarea::make('address')
+                                    ->label(__('company.address'))
+                                    ->columnSpanFull(),
+                                TextInput::make('tax_id')
+                                    ->label(__('company.tax_id'))
+                                    ->maxLength(255),
+                                TranslatableSelect::make('currency_id', \App\Models\Currency::class, __('company.currency_id'))
+                                    ->required(),
+                                TextInput::make('fiscal_country')
+                                    ->label(__('company.fiscal_country'))
+                                    ->required()
+                                    ->maxLength(255),
+                            ])
+                            ->createOptionModalHeading(__('common.modal_title_create_company'))
+                            ->createOptionAction(fn(Action $action) => $action->modalWidth('lg')),
                     ])
-                    ->createOptionModalHeading(__('common.modal_title_create_company'))
-                    ->createOptionAction(function (Action $action) {
-                        return $action
-                            ->modalWidth('lg');
-                    }),
-                Select::make('default_accounts_payable_id')
-                    ->relationship('defaultAccountsPayable', 'name')
-                    ->searchable()
-                    ->label(__('company.default_accounts_payable')),
-                Select::make('default_tax_receivable_id')
-                    ->relationship('defaultTaxReceivable', 'name')
-                    ->searchable()
-                    ->label(__('company.default_tax_receivable')),
-                Select::make('default_purchase_journal_id')
-                    ->relationship('defaultPurchaseJournal', 'name')
-                    ->searchable()
-                    ->label(__('company.default_purchase_journal')),
-                Select::make('default_accounts_receivable_id')
-                    ->relationship('defaultAccountsReceivable', 'name')
-                    ->searchable()
-                    ->label(__('company.default_accounts_receivable')),
-                Select::make('default_sales_discount_account_id')
-                    ->relationship('defaultSalesDiscountAccount', 'name')
-                    ->searchable()
-                    ->label(__('company.default_sales_discount_account')),
-                Select::make('default_tax_account_id')
-                    ->relationship('defaultTaxAccount', 'name')
-                    ->searchable()
-                    ->label(__('company.default_tax_account')),
-                Select::make('default_sales_journal_id')
-                    ->relationship('defaultSalesJournal', 'name')
-                    ->searchable()
-                    ->label(__('company.default_sales_journal')),
-                Select::make('default_depreciation_journal_id')
-                    ->relationship('defaultDepreciationJournal', 'name')
-                    ->searchable()
-                    ->label(__('company.default_depreciation_journal')),
-                Select::make('default_bank_account_id')
-                    ->relationship('defaultBankAccount', 'name')
-                    ->searchable()
-                    ->label(__('company.default_bank_account')),
-                Select::make('default_outstanding_receipts_account_id')
-                    ->relationship('defaultOutstandingReceiptsAccount', 'name')
-                    ->searchable()
-                    ->label(__('company.default_outstanding_receipts_account')),
+                    ->columns(2)
+                    ->columnSpanFull(),
+
+                Section::make(__('company.section.defaults'))
+                    ->schema([
+                        TranslatableSelect::relationship(
+                            'default_accounts_payable_id',
+                            'defaultAccountsPayable',
+                            \App\Models\Account::class,
+                            __('company.default_accounts_payable'),
+                            'name'
+                        )
+                            ->searchable(),
+                        TranslatableSelect::relationship(
+                            'default_tax_receivable_id',
+                            'defaultTaxReceivable',
+                            \App\Models\Account::class,
+                            __('company.default_tax_receivable'),
+                            'name'
+                        )
+                            ->searchable(),
+                        TranslatableSelect::relationship(
+                            'default_purchase_journal_id',
+                            'defaultPurchaseJournal',
+                            \App\Models\Journal::class,
+                            __('company.default_purchase_journal'),
+                            'name'
+                        )
+                            ->searchable(),
+                        TranslatableSelect::relationship(
+                            'default_accounts_receivable_id',
+                            'defaultAccountsReceivable',
+                            \App\Models\Account::class,
+                            __('company.default_accounts_receivable'),
+                            'name'
+                        )
+                            ->searchable(),
+                        TranslatableSelect::relationship(
+                            'default_sales_discount_account_id',
+                            'defaultSalesDiscountAccount',
+                            \App\Models\Account::class,
+                            __('company.default_sales_discount_account'),
+                            'name'
+                        )
+                            ->searchable(),
+                        TranslatableSelect::relationship(
+                            'default_tax_account_id',
+                            'defaultTaxAccount',
+                            \App\Models\Account::class,
+                            __('company.default_tax_account'),
+                            'name'
+                        )
+                            ->searchable(),
+                        TranslatableSelect::relationship(
+                            'default_sales_journal_id',
+                            'defaultSalesJournal',
+                            \App\Models\Journal::class,
+                            __('company.default_sales_journal'),
+                            'name'
+                        )
+                            ->searchable(),
+                        TranslatableSelect::relationship(
+                            'default_depreciation_journal_id',
+                            'defaultDepreciationJournal',
+                            \App\Models\Journal::class,
+                            __('company.default_depreciation_journal'),
+                            'name'
+                        )
+                            ->searchable(),
+                        TranslatableSelect::relationship(
+                            'default_bank_account_id',
+                            'defaultBankAccount',
+                            \App\Models\Account::class,
+                            __('company.default_bank_account'),
+                            'name'
+                        )
+                            ->searchable(),
+                        TranslatableSelect::relationship(
+                            'default_outstanding_receipts_account_id',
+                            'defaultOutstandingReceiptsAccount',
+                            \App\Models\Account::class,
+                            __('company.default_outstanding_receipts_account'),
+                            'name'
+                        )
+                            ->searchable(),
+                    ])
+                    ->columns(2)
+                    ->columnSpanFull(),
             ]);
     }
 
@@ -185,14 +226,12 @@ class CompanyResource extends Resource
                     ->searchable(),
                 TextColumn::make('currency.name')
                     ->label(__('company.currency_id'))
-                    ->numeric()
                     ->sortable(),
                 TextColumn::make('fiscal_country')
                     ->label(__('company.fiscal_country'))
                     ->searchable(),
                 TextColumn::make('parentCompany.name')
                     ->label(__('company.parent_company_id'))
-                    ->numeric()
                     ->sortable(),
                 TextColumn::make('created_at')
                     ->label(__('company.created_at'))
