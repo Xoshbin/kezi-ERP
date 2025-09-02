@@ -31,9 +31,9 @@ class CreateJournalEntry extends CreateRecord
                         account_id: $line['account_id'],
                         debit: Money::of($line['debit'] ?? 0, $currency->code),
                         credit: Money::of($line['credit'] ?? 0, $currency->code),
-                        description: $line['description'],
-                        partner_id: $line['partner_id'],
-                        analytic_account_id: $line['analytic_account_id']
+                        description: $line['description'] ?? null,
+                        partner_id: $line['partner_id'] ?? null,
+                        analytic_account_id: $line['analytic_account_id'] ?? null
                     );
                 }
             }
