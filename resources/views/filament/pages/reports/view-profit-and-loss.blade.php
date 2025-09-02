@@ -65,7 +65,7 @@
                                         <span class="text-sm font-mono text-gray-500 dark:text-gray-400">{{ $line['accountCode'] }}</span>
                                         <span class="text-sm text-gray-900 dark:text-white">{{ $line['accountName'] }}</span>
                                     </div>
-                                    <span class="text-sm font-medium text-red-600 dark:text-red-400">
+                                    <span class="text-sm font-medium text-[var(--color-danger-600)] dark:text-[var(--color-danger-400)]">
                                         {{ $line['balance'] }}
                                     </span>
                                 </div>
@@ -91,12 +91,12 @@
                         <h3 class="text-xl font-bold text-gray-900 dark:text-white">
                             {{ __('reports.net_income') }}
                         </h3>
-                        <span class="text-xl font-bold {{ $reportData['isNetLoss'] ? 'text-red-600 dark:text-red-400' : 'text-gray-900 dark:text-white' }}">
+                        <span class="text-xl font-bold {{ $reportData['isNetLoss'] ? 'text-[var(--color-danger-600)] dark:text-[var(--color-danger-400)]' : 'text-gray-900 dark:text-white' }}">
                             {{ $reportData['netIncome'] }}
                         </span>
                     </div>
                     @if($reportData['isNetLoss'])
-                        <p class="text-sm text-red-600 dark:text-red-400 mt-2">
+                        <p class="text-sm text-[var(--color-danger-600)] dark:text-[var(--color-danger-400)] mt-2">
                             {{ __('reports.net_loss_note') }}
                         </p>
                     @endif

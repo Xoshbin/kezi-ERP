@@ -4,6 +4,19 @@
     <meta charset="UTF-8">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <title>{{ __('invoice.invoice') }} {{ $invoice->invoice_number }}</title>
+    @php
+        use Filament\Support\Facades\FilamentColor;
+        use Filament\Support\Colors\Color as FsColor;
+        $gray = FilamentColor::getColor('gray');
+        $g50 = FsColor::convertToRgb($gray[50]);
+        $g100 = FsColor::convertToRgb($gray[100]);
+        $g900 = FsColor::convertToRgb($gray[900]);
+        if (preg_match('/rgb\((\d+),\s*(\d+),\s*(\d+)\)/', $g900, $m)) {
+            $g900a20 = "rgba({$m[1]}, {$m[2]}, {$m[3]}, 0.2)";
+        } else {
+            $g900a20 = 'rgba(0, 0, 0, 0.2)';
+        }
+    @endphp
     <style>
         @page {
             margin: 20mm;
@@ -14,7 +27,7 @@
             font-family: 'DejaVu Sans', sans-serif;
             font-size: 11px;
             line-height: 1.6;
-            color: #000;
+            color: {{ $g900 }};
             margin: 0;
             padding: 0;
         }
@@ -28,7 +41,7 @@
             text-align: center;
             margin-bottom: 40px;
             padding-bottom: 20px;
-            border-bottom: 1px solid #000;
+            border-bottom: 1px solid {{ $g900 }};
             position: relative;
         }
 
@@ -51,7 +64,7 @@
             left: 50%;
             transform: translate(-50%, -50%) rotate(-45deg);
             font-size: 48px;
-            color: rgba(0, 0, 0, 0.2);
+            color: {{ $g900a20 }};
             font-weight: bold;
             z-index: 10;
             pointer-events: none;
@@ -102,13 +115,13 @@
 
         .invoice-meta td {
             padding: 8px 15px;
-            border: 1px solid #000;
+            border: 1px solid {{ $g900 }};
             font-size: 10px;
         }
 
         .invoice-meta .label {
             font-weight: bold;
-            background-color: #f5f5f5;
+            background-color: {{ $g100 }};
         }
 
         .line-items {
@@ -121,7 +134,7 @@
         }
 
         .line-items th {
-            background-color: #000;
+            background-color: {{ $g900 }};
             color: white;
             padding: 10px 8px;
             text-align: {{ app()->getLocale() === 'ar' ? 'right' : 'left' }};
@@ -133,7 +146,7 @@
 
         .line-items td {
             padding: 8px;
-            border: 1px solid #000;
+            border: 1px solid {{ $g900 }};
             text-align: {{ app()->getLocale() === 'ar' ? 'right' : 'left' }};
             font-size: 10px;
         }
@@ -161,12 +174,12 @@
 
         .totals td {
             padding: 8px 10px;
-            border: 1px solid #000;
+            border: 1px solid {{ $g900 }};
             font-size: 10px;
         }
 
         .totals .label {
-            background-color: #f5f5f5;
+            background-color: {{ $g100 }};
             font-weight: bold;
             text-align: {{ app()->getLocale() === 'ar' ? 'right' : 'left' }};
         }
@@ -177,7 +190,7 @@
         }
 
         .totals .total-row {
-            background-color: #000;
+            background-color: {{ $g900 }};
             color: white;
             font-weight: bold;
             font-size: 12px;
@@ -188,7 +201,7 @@
             margin-top: 50px;
             text-align: center;
             font-size: 9px;
-            border-top: 1px solid #000;
+            border-top: 1px solid {{ $g900 }};
             padding-top: 20px;
         }
 
