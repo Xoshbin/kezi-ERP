@@ -20,8 +20,8 @@ return new class extends Migration
             $table->string('source')->nullable(); // Source of the rate (manual, API, etc.)
             $table->timestamps();
 
-            // Ensure unique rate per currency per date
-            $table->unique(['currency_id', 'effective_date']);
+            // Ensure unique rate per company per currency per date
+            $table->unique(['company_id', 'currency_id', 'effective_date'], 'currency_rates_company_currency_date_unique');
 
             // Index for efficient rate lookups
             $table->index(['currency_id', 'effective_date']);
