@@ -114,8 +114,8 @@ class ProductResource extends Resource
                 ->schema([
                     Hidden::make('currency_id'),
                     MoneyInput::make('unit_price')
+                        ->nullable()
                         ->label(__('product.unit_price'))
-                        ->required()
                         ->currencyField('currency_id'),
                 ]),
 
@@ -127,7 +127,7 @@ class ProductResource extends Resource
                         Select::make('income_account_id')
                             ->relationship('incomeAccount', 'name')
                             ->label(__('product.income_account'))
-                            ->required()
+                            ->nullable()
                             ->searchable()
                             ->preload()
                             ->createOptionForm([
@@ -161,7 +161,7 @@ class ProductResource extends Resource
                         Select::make('expense_account_id')
                             ->relationship('expenseAccount', 'name')
                             ->label(__('product.expense_account'))
-                            ->required()
+                            ->nullable()
                             ->searchable()
                             ->preload()
                             ->createOptionForm([

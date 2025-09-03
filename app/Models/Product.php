@@ -16,24 +16,25 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Brick\Money\Money;
 
 /**
  * @property int $id
  * @property int $company_id
- * @property int $income_account_id
- * @property int $expense_account_id
+ * @property int|null $income_account_id
+ * @property int|null $expense_account_id
  * @property string $name
  * @property string $sku
  * @property string|null $description
- * @property float $unit_price
+ * @property Money|null $unit_price
  * @property string $type
  * @property bool $is_active
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property Carbon|null $deleted_at
  * @property-read Company $company
- * @property-read Account $expenseAccount
- * @property-read Account $incomeAccount
+ * @property-read Account|null $expenseAccount
+ * @property-read Account|null $incomeAccount
  * @method static Builder<static>|Product active()
  * @method static Builder<static>|Product bySku($sku, $companyId)
  * @method static ProductFactory factory($count = null, $state = [])
