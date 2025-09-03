@@ -2,17 +2,19 @@
 
 namespace App\Actions\Accounting;
 
+use App\Models\Account;
 use App\Models\Invoice;
 use Brick\Money\Money;
 
 class BuildInvoicePostingPreviewAction
 {
-    private function accountLabelName($account): string
+    private function accountLabelName(?Account $account): string
     {
         if (! $account) {
             return '';
         }
-        $name = is_array($account->name ?? null) ? ($account->name['en'] ?? reset($account->name)) : ($account->name ?? '');
+        $raw = $account->name ?? '';
+        $name = is_array($raw) ? ($raw['en'] ?? reset($raw)) : (string) $raw;
 
         return $name;
     }
@@ -54,16 +56,17 @@ class BuildInvoicePostingPreviewAction
                 $linesPreview[] = [
                     'account_id' => $incomeAccountId,
                     'account_name' => $this->accountLabelName($incomeAccount),
-                    'account_code' => $incomeAccount?->code,
+                    /** @var \App\Models\Account|null $incomeAccount */
+                'account_code' => $incomeAccount?->code,
                     'debit_minor' => 0,
-                    'credit_minor' => $line->subtotal->getMinorAmount()->toInt(),
+                    'credit_minor' => ($line->subtotal instanceof \Brick\Money\Money ? $line->subtotal : \Brick\Money\Money::of($line->subtotal, $currencyCode))->getMinorAmount()->toInt(),
                     'description' => 'Revenue: '.$line->description,
                 ];
                 $totalCredit = $totalCredit->plus($line->subtotal);
             }
 
             // Credit: tax account per line when applicable
-            if ($line->total_line_tax->isPositive()) {
+            if (($line->total_line_tax instanceof \Brick\Money\Money ? $line->total_line_tax : \Brick\Money\Money::of($line->total_line_tax, $currencyCode))->isPositive()) {
                 $tax = $line->tax;
                 $taxAccountId = $tax?->tax_account_id;
                 if (! $taxAccountId) {
@@ -77,7 +80,7 @@ class BuildInvoicePostingPreviewAction
                         'account_name' => $this->accountLabelName($taxAccount),
                         'account_code' => $taxAccount?->code,
                         'debit_minor' => 0,
-                        'credit_minor' => $line->total_line_tax->getMinorAmount()->toInt(),
+                        'credit_minor' => ($line->total_line_tax instanceof \Brick\Money\Money ? $line->total_line_tax : \Brick\Money\Money::of($line->total_line_tax, $currencyCode))->getMinorAmount()->toInt(),
                         'description' => 'Output tax: '.$line->description,
                     ];
                     $totalCredit = $totalCredit->plus($line->total_line_tax);
@@ -87,7 +90,7 @@ class BuildInvoicePostingPreviewAction
 
         // Debit: Accounts Receivable total
         if ($arAccountId) {
-            $arAccount = $invoice->customer->receivableAccount ?? $company->accountsReceivableAccount;
+            $arAccount = $invoice->customer->receivableAccount ?? $company->defaultAccountsReceivable;
             $linesPreview[] = [
                 'account_id' => $arAccountId,
                 'account_name' => $this->accountLabelName($arAccount),

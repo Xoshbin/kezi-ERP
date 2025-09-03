@@ -116,10 +116,6 @@ class AdjustmentDocumentLine extends Model
         return $this->belongsTo(Account::class);
     }
 
-    public function currency(): BelongsTo
-    {
-        return $this->adjustmentDocument->currency();
-    }
 
     /**
      * Get the line items for this adjustment document.

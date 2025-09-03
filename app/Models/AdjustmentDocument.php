@@ -24,8 +24,9 @@ use Illuminate\Support\Carbon;
  * @property string $type
  * @property Carbon $date
  * @property string $reference_number
- * @property float $total_amount
- * @property float $total_tax
+ * @property \Brick\Money\Money $subtotal
+ * @property \Brick\Money\Money $total_amount
+ * @property \Brick\Money\Money $total_tax
  * @property string $reason
  * @property string $status
  * @property string|null $posted_at

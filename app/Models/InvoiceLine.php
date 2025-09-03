@@ -21,9 +21,9 @@ use Illuminate\Support\Carbon;
  * @property int $income_account_id
  * @property string $description
  * @property numeric $quantity
- * @property float $unit_price
- * @property float $subtotal
- * @property float $total_line_tax
+ * @property \Brick\Money\Money $unit_price
+ * @property \Brick\Money\Money $subtotal
+ * @property \Brick\Money\Money $total_line_tax
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property-read AnalyticAccount|null $analyticAccount
