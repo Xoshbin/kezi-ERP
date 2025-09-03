@@ -1,0 +1,139 @@
+# This is the name of the workflow, which will be displayed on GitHub.
+name: CI
+
+# This section defines when the workflow will be triggered.
+on:
+  # The 'push' event triggers the workflow on every push to the specified branches.
+  push:
+    branches: [ "main", "develop" ]
+  # 'workflow_dispatch' allows you to manually trigger the workflow from the GitHub UI.
+  workflow_dispatch:
+
+# This section defines the jobs that will be executed as part of the workflow.
+jobs:
+  # The 'test' job is responsible for running all checks and tests.
+  test:
+    # The name of the job as it will appear in the GitHub UI.
+    name: "Test"
+    # Specifies the type of machine to run the job on. 'ubuntu-latest' is a standard choice.
+    runs-on: ubuntu-latest
+    # 'steps' are the individual tasks that make up the job. They are executed in sequence.
+    steps:
+      # This step checks out your repository's code so the job can access it.
+      - name: "Checkout"
+        uses: actions/checkout@v4
+
+      # This step sets up the specified PHP version and any required extensions.
+      - name: "Setup PHP"
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          extensions: mbstring, intl, dom, fileinfo, curl, gd, bcmath, zip, pdo_sqlite
+          coverage: none
+
+      # This step installs the project's PHP dependencies using Composer.
+      - name: "Install Composer dependencies"
+        uses: ramsey/composer-install@v3
+
+      # This step runs Pint in 'dry run' mode. It checks for style issues without fixing them.
+      # If any style issues are found, this step will fail, stopping the workflow.
+      - name: "Run Pint (dry run)"
+        run: vendor/bin/pint --test
+
+      # This step creates a copy of the example environment file.
+      - name: "Copy .env"
+        run: cp .env.example .env
+
+      # This step sets up the specified Node.js version for frontend asset building.
+      - name: "Setup Node.js"
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      # This step installs the project's JavaScript dependencies using npm.
+      - name: "Install Node dependencies"
+        run: npm install
+
+      # This step compiles the frontend assets (e.g., CSS, JS).
+      - name: "Build assets"
+        run: npm run build
+
+      # This step generates the Laravel application key.
+      - name: "Generate key"
+        run: php artisan key:generate
+
+      - name: "Prepare SQLite database"
+        run: |
+          mkdir -p database
+          touch database/database.sqlite
+
+      - name: "Run tests"
+        env:
+          DB_CONNECTION: sqlite
+          DB_DATABASE: database/database.sqlite
+        run: vendor/bin/pest --ci
+
+  # The 'autofix' job automatically fixes code style and commits the changes.
+  autofix:
+    name: "Fix Style"
+    # 'needs: test' means this job will only run if the 'test' job completes successfully.
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      # Checks out the code again for this job.
+      - name: "Checkout"
+        uses: actions/checkout@v4
+        with:
+          # A GitHub token with write permissions is required to push the new commit.
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      # Sets up PHP again for this job's context.
+      - name: "Setup PHP"
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          coverage: none
+
+      # Installs Composer dependencies again for this job.
+      - name: "Install Composer dependencies"
+        uses: ramsey/composer-install@v3
+
+      # This step runs Pint to automatically fix any code style issues.
+      - name: "Run Pint"
+        run: vendor/bin/pint
+
+      # This step commits the changes made by Pint back to the repository.
+      - name: "Commit changes"
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "style: apply automatic code style fixes"
+          # Prevent re-triggering CI by including [skip ci] in the commit message when desired.
+
+  # The 'deploy' job is responsible for deploying the application.
+  deploy:
+    name: "Deploy"
+    # 'needs: autofix' ensures this job only runs after the 'autofix' job is successful.
+    needs: autofix
+    # 'if: github.ref == 'refs/heads/main'' ensures this job only runs for pushes to the 'main' branch.
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      # Checks out the code, which now includes the automatic style fixes.
+      - name: "Checkout"
+        uses: actions/checkout@v4
+
+      # This step triggers the deployment webhook provided by Ploi.
+      - name: "Trigger Ploi deploy"
+        env:
+          # The webhook URL is stored as a secret to keep it secure.
+          PLOI_WEBHOOK: ${{ secrets.PLOI_DEPLOY_WEBHOOK_URL }}
+        run: |
+          set -euo pipefail
+          if [ -z "$PLOI_WEBHOOK" ]; then
+            echo "PLOI_DEPLOY_WEBHOOK_URL secret is missing" >&2
+            exit 1
+          fi
+          echo "Triggering Ploi deployment..."
+          # Makes the actual request to the webhook URL to start the deployment.
+          curl -fsS -X POST "$PLOI_WEBHOOK"
