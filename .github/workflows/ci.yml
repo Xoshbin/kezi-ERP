@@ -63,12 +63,15 @@ jobs:
       - name: "Generate key"
         run: php artisan key:generate
 
-      # Run tests with in-memory SQLite database (same as local environment)
-      # The RefreshDatabase trait will handle database setup and cleanup
+      - name: "Prepare SQLite database"
+        run: |
+          mkdir -p database
+          touch database/database.sqlite
+
       - name: "Run tests"
         env:
           DB_CONNECTION: sqlite
-          DB_DATABASE: ":memory:"
+          DB_DATABASE: database/database.sqlite
         run: vendor/bin/pest --ci
 
   # The 'autofix' job automatically fixes code style and commits the changes.
