@@ -13,6 +13,6 @@ enum AdjustmentDocumentType: string
      */
     public function label(): string
     {
-        return __('enums.adjustment_document_type.' . $this->value);
+        return __('enums.adjustment_document_type.'.$this->value);
     }
 }

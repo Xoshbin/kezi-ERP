@@ -2,15 +2,15 @@
 
 namespace App\Providers;
 
-use App\Events\VendorBillConfirmed;
-use Illuminate\Support\Facades\Event;
-use Illuminate\Auth\Events\Registered;
 use App\Events\Inventory\StockMoveConfirmed;
+use App\Events\VendorBillConfirmed;
 use App\Listeners\Asset\CreateAssetFromVendorBillListener;
 use App\Listeners\Inventory\HandleStockMoveConfirmation;
 use App\Listeners\Inventory\ProcessInventoryForConfirmedBill;
+use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
+use Illuminate\Support\Facades\Event;
 
 class EventServiceProvider extends ServiceProvider
 {

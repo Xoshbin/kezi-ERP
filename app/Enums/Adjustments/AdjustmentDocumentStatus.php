@@ -13,6 +13,6 @@ enum AdjustmentDocumentStatus: string
      */
     public function label(): string
     {
-        return __('enums.adjustment_document_status.' . $this->value);
+        return __('enums.adjustment_document_status.'.$this->value);
     }
 }

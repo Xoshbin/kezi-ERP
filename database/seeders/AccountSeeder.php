@@ -2,11 +2,11 @@
 
 namespace Database\Seeders;
 
-use Exception;
+use App\Enums\Accounting\AccountType;
 use App\Models\Account;
 use App\Models\Company;
+use Exception;
 use Illuminate\Database\Seeder;
-use App\Enums\Accounting\AccountType;
 
 class AccountSeeder extends Seeder
 {
@@ -17,7 +17,7 @@ class AccountSeeder extends Seeder
     {
         $company = Company::where('name', 'Jmeryar Solutions')->first();
 
-        if (!$company) {
+        if (! $company) {
             throw new Exception('Company "Jmeryar Solutions" not found. Please run the CompanySeeder first.');
         }
 

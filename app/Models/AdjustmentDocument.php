@@ -2,18 +2,18 @@
 
 namespace App\Models;
 
-use Illuminate\Support\Carbon;
+use App\Casts\BaseCurrencyMoneyCast;
+use App\Casts\DocumentCurrencyMoneyCast;
+use App\Enums\Adjustments\AdjustmentDocumentStatus;
+use App\Enums\Adjustments\AdjustmentDocumentType;
+use Brick\Money\Money;
 use Database\Factories\AdjustmentDocumentFactory;
 use Illuminate\Database\Eloquent\Builder;
-use Brick\Money\Money;
-use App\Casts\DocumentCurrencyMoneyCast;
-use App\Casts\BaseCurrencyMoneyCast;
-use App\Enums\Adjustments\AdjustmentDocumentType;
-use App\Enums\Adjustments\AdjustmentDocumentStatus;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Carbon;
 
 /**
  * @property int $id
@@ -35,6 +35,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
  * @property-read JournalEntry|null $journalEntry
  * @property-read Invoice|null $originalInvoice
  * @property-read VendorBill|null $originalVendorBill
+ *
  * @method static AdjustmentDocumentFactory factory($count = null, $state = [])
  * @method static Builder<static>|AdjustmentDocument newModelQuery()
  * @method static Builder<static>|AdjustmentDocument newQuery()
@@ -54,11 +55,13 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
  * @method static Builder<static>|AdjustmentDocument whereTotalTax($value)
  * @method static Builder<static>|AdjustmentDocument whereType($value)
  * @method static Builder<static>|AdjustmentDocument whereUpdatedAt($value)
+ *
  * @mixin \Eloquent
  */
 class AdjustmentDocument extends Model
 {
     use HasFactory;
+
     /**
      * The table associated with the model.
      * Explicitly defining the table name is good practice, particularly for
@@ -93,7 +96,7 @@ class AdjustmentDocument extends Model
         'status',                 // [5] e.g., 'Draft', 'Posted'
         'journal_entry_id',       // [5]
         'posted_at',
-        'currency_id'
+        'currency_id',
     ];
 
     /**
@@ -105,23 +108,19 @@ class AdjustmentDocument extends Model
      * @var array<string, string>
      */
     protected $casts = [
-        'date'         => 'date',       // [5, 6]
-        'type'         => AdjustmentDocumentType::class,
-        'status'       => AdjustmentDocumentStatus::class,
+        'date' => 'date',       // [5, 6]
+        'type' => AdjustmentDocumentType::class,
+        'status' => AdjustmentDocumentStatus::class,
         'exchange_rate_at_creation' => 'decimal:10',
-        'subtotal'     => DocumentCurrencyMoneyCast::class,  // Document currency amounts
+        'subtotal' => DocumentCurrencyMoneyCast::class,  // Document currency amounts
         'total_amount' => DocumentCurrencyMoneyCast::class,  // Document currency amounts
-        'total_tax'    => DocumentCurrencyMoneyCast::class,  // Document currency amounts
+        'total_tax' => DocumentCurrencyMoneyCast::class,  // Document currency amounts
         'subtotal_company_currency' => BaseCurrencyMoneyCast::class,  // Company base currency amounts
         'total_amount_company_currency' => BaseCurrencyMoneyCast::class,  // Company base currency amounts
         'total_tax_company_currency' => BaseCurrencyMoneyCast::class,  // Company base currency amounts
-        'created_at'   => 'datetime',   // [5, 6]
-        'updated_at'   => 'datetime',   // [5, 6]
+        'created_at' => 'datetime',   // [5, 6]
+        'updated_at' => 'datetime',   // [5, 6]
     ];
-
-
-
-
 
     /**
      * The "booted" method of the model.
@@ -129,8 +128,6 @@ class AdjustmentDocument extends Model
      * In accounting, immutability of 'Posted' documents is paramount.
      * While not directly altering the model's properties, this serves as a reminder
      * that application logic MUST prevent modification of 'Posted' documents.
-     *
-     * @return void
      */
     protected static function booted(): void
     {
@@ -145,7 +142,7 @@ class AdjustmentDocument extends Model
                 // Here, we provide a basic example; comprehensive validation should be elsewhere.
                 // For instance, a dedicated Policy or FormRequest for update operations.
             }
-            if ($adjustmentDocument->getOriginal('status') === 'Posted' && $adjustmentDocument->isDirty() && !$adjustmentDocument->isDirty('status')) {
+            if ($adjustmentDocument->getOriginal('status') === 'Posted' && $adjustmentDocument->isDirty() && ! $adjustmentDocument->isDirty('status')) {
                 // If a posted document is being modified without a legitimate "reset to draft" flow, prevent it.
                 // This is a crucial accounting principle for immutable records. [1-3]
                 // throw new \LogicException('Posted adjustment documents cannot be modified directly.');
@@ -169,8 +166,6 @@ class AdjustmentDocument extends Model
     /**
      * Get the company that owns the adjustment document.
      * An adjustment document always belongs to a specific company.
-     *
-     * @return BelongsTo
      */
     public function company(): BelongsTo
     {
@@ -181,8 +176,6 @@ class AdjustmentDocument extends Model
      * Get the original invoice that this adjustment document relates to (if any).
      * This is used for credit notes issued against customer invoices.
      * It's nullable as not all adjustment documents will be for invoices.
-     *
-     * @return BelongsTo
      */
     public function originalInvoice(): BelongsTo
     {
@@ -193,8 +186,6 @@ class AdjustmentDocument extends Model
      * Get the original vendor bill that this adjustment document relates to (if any).
      * This is used for debit notes issued against vendor bills.
      * It's nullable as not all adjustment documents will be for vendor bills.
-     *
-     * @return BelongsTo
      */
     public function originalVendorBill(): BelongsTo
     {
@@ -205,8 +196,6 @@ class AdjustmentDocument extends Model
      * Get the journal entry associated with this adjustment document.
      * Once an adjustment document is 'Posted', it generates a corresponding
      * journal entry, which is the immutable record in the general ledger.
-     *
-     * @return BelongsTo
      */
     public function journalEntry(): BelongsTo
     {
@@ -232,8 +221,6 @@ class AdjustmentDocument extends Model
     /**
      * Get the currency of this invoice.
      * Every invoice operates in a specific currency. [1]
-     *
-     * @return BelongsTo
      */
     public function currency(): BelongsTo
     {

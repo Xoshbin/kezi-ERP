@@ -2,17 +2,17 @@
 
 namespace App\Services;
 
-use Illuminate\Database\Eloquent\Collection;
 use App\Models\Currency;
 use App\Models\CurrencyRate;
 use Carbon\Carbon;
+use Exception;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
-use Exception;
 
 /**
  * ExchangeRateService
- * 
+ *
  * Manages exchange rates including fetching from external APIs,
  * storing historical rates, and providing rate management functionality.
  */
@@ -21,7 +21,7 @@ class ExchangeRateService
     /**
      * Update exchange rates for all active currencies from external API.
      *
-     * @param string $source The source identifier (e.g., 'api', 'manual')
+     * @param  string  $source  The source identifier (e.g., 'api', 'manual')
      * @return array Results of the update operation
      */
     public function updateAllRates(string $source = 'api'): array
@@ -32,7 +32,7 @@ class ExchangeRateService
         foreach ($activeCurrencies as $currency) {
             try {
                 $rate = $this->fetchRateFromAPI($currency->code);
-                
+
                 if ($rate !== null) {
                     $this->storeRate($currency, $rate, Carbon::today(), $source);
                     $results[$currency->code] = ['success' => true, 'rate' => $rate];
@@ -40,7 +40,7 @@ class ExchangeRateService
                     $results[$currency->code] = ['success' => false, 'error' => 'No rate returned from API'];
                 }
             } catch (Exception $e) {
-                Log::error("Failed to update rate for {$currency->code}: " . $e->getMessage());
+                Log::error("Failed to update rate for {$currency->code}: ".$e->getMessage());
                 $results[$currency->code] = ['success' => false, 'error' => $e->getMessage()];
             }
         }
@@ -50,12 +50,6 @@ class ExchangeRateService
 
     /**
      * Store a new exchange rate for a currency.
-     *
-     * @param Currency $currency
-     * @param float $rate
-     * @param Carbon $effectiveDate
-     * @param string $source
-     * @return CurrencyRate
      */
     public function storeRate(Currency $currency, float $rate, Carbon $effectiveDate, string $source = 'manual'): CurrencyRate
     {
@@ -70,6 +64,7 @@ class ExchangeRateService
                 'rate' => $rate,
                 'source' => $source,
             ]);
+
             return $existingRate;
         }
 
@@ -85,9 +80,6 @@ class ExchangeRateService
     /**
      * Fetch exchange rate from external API.
      * This is a basic implementation - you can extend it to support multiple providers.
-     *
-     * @param string $currencyCode
-     * @return float|null
      */
     protected function fetchRateFromAPI(string $currencyCode): ?float
     {
@@ -97,8 +89,9 @@ class ExchangeRateService
             $baseCurrency = config('app.base_currency', 'USD');
             $apiKey = config('services.exchange_rate_api.key');
 
-            if (!$apiKey) {
+            if (! $apiKey) {
                 Log::warning('Exchange rate API key not configured');
+
                 return null;
             }
 
@@ -106,26 +99,25 @@ class ExchangeRateService
 
             if ($response->successful()) {
                 $data = $response->json();
-                
+
                 if (isset($data['conversion_rate'])) {
                     return (float) $data['conversion_rate'];
                 }
             }
 
-            Log::warning("Failed to fetch rate for {$currencyCode}: " . $response->body());
+            Log::warning("Failed to fetch rate for {$currencyCode}: ".$response->body());
+
             return null;
 
         } catch (Exception $e) {
-            Log::error("API request failed for {$currencyCode}: " . $e->getMessage());
+            Log::error("API request failed for {$currencyCode}: ".$e->getMessage());
+
             return null;
         }
     }
 
     /**
      * Get the latest rate for a currency.
-     *
-     * @param Currency $currency
-     * @return CurrencyRate|null
      */
     public function getLatestRate(Currency $currency): ?CurrencyRate
     {
@@ -136,10 +128,6 @@ class ExchangeRateService
 
     /**
      * Get the rate for a currency on a specific date.
-     *
-     * @param Currency $currency
-     * @param Carbon $date
-     * @return CurrencyRate|null
      */
     public function getRateForDate(Currency $currency, Carbon $date): ?CurrencyRate
     {
@@ -152,9 +140,6 @@ class ExchangeRateService
     /**
      * Get historical rates for a currency within a date range.
      *
-     * @param Currency $currency
-     * @param Carbon $startDate
-     * @param Carbon $endDate
      * @return Collection
      */
     public function getHistoricalRates(Currency $currency, Carbon $startDate, Carbon $endDate)
@@ -167,10 +152,6 @@ class ExchangeRateService
 
     /**
      * Check if a rate exists for a currency on a specific date.
-     *
-     * @param Currency $currency
-     * @param Carbon $date
-     * @return bool
      */
     public function hasRateForDate(Currency $currency, Carbon $date): bool
     {
@@ -183,13 +164,13 @@ class ExchangeRateService
      * Delete old rates beyond a certain retention period.
      * This helps manage database size while keeping essential historical data.
      *
-     * @param int $retentionDays Number of days to retain
+     * @param  int  $retentionDays  Number of days to retain
      * @return int Number of deleted records
      */
     public function cleanupOldRates(int $retentionDays = 2555): int // ~7 years default
     {
         $cutoffDate = Carbon::now()->subDays($retentionDays);
-        
+
         return CurrencyRate::where('effective_date', '<', $cutoffDate->toDateString())
             ->delete();
     }
@@ -197,7 +178,7 @@ class ExchangeRateService
     /**
      * Validate that all active currencies have recent rates.
      *
-     * @param int $maxDaysOld Maximum age of rates in days
+     * @param  int  $maxDaysOld  Maximum age of rates in days
      * @return array Currencies missing recent rates
      */
     public function validateRecentRates(int $maxDaysOld = 7): array
@@ -209,8 +190,8 @@ class ExchangeRateService
 
         foreach ($activeCurrencies as $currency) {
             $latestRate = $this->getLatestRate($currency);
-            
-            if (!$latestRate || $latestRate->effective_date->lt($cutoffDate)) {
+
+            if (! $latestRate || $latestRate->effective_date->lt($cutoffDate)) {
                 $missingRates[] = [
                     'currency' => $currency,
                     'latest_rate_date' => $latestRate?->effective_date,

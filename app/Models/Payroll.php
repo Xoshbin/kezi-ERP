@@ -2,22 +2,21 @@
 
 namespace App\Models;
 
-use Brick\Money\Money;
-use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use App\Casts\DocumentCurrencyMoneyCast;
 use App\Observers\AuditLogObserver;
 use App\Observers\PayrollObserver;
+use Brick\Money\Money;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
  * Class Payroll
  *
- * @package App\Models
  * @property int $id
  * @property int $company_id
  * @property int $employee_id
@@ -152,8 +151,6 @@ class Payroll extends Model
 
     /**
      * Get the company that owns the Payroll.
-     *
-     * @return BelongsTo
      */
     public function company(): BelongsTo
     {
@@ -162,8 +159,6 @@ class Payroll extends Model
 
     /**
      * Get the employee this payroll belongs to.
-     *
-     * @return BelongsTo
      */
     public function employee(): BelongsTo
     {
@@ -172,8 +167,6 @@ class Payroll extends Model
 
     /**
      * Get the currency for this payroll.
-     *
-     * @return BelongsTo
      */
     public function currency(): BelongsTo
     {
@@ -182,8 +175,6 @@ class Payroll extends Model
 
     /**
      * Get the journal entry created for this payroll.
-     *
-     * @return BelongsTo
      */
     public function journalEntry(): BelongsTo
     {
@@ -192,8 +183,6 @@ class Payroll extends Model
 
     /**
      * Get the payment created for this payroll.
-     *
-     * @return BelongsTo
      */
     public function payment(): BelongsTo
     {
@@ -202,8 +191,6 @@ class Payroll extends Model
 
     /**
      * Get the user who processed this payroll.
-     *
-     * @return BelongsTo
      */
     public function processedByUser(): BelongsTo
     {
@@ -212,8 +199,6 @@ class Payroll extends Model
 
     /**
      * Get the user who approved this payroll.
-     *
-     * @return BelongsTo
      */
     public function approvedByUser(): BelongsTo
     {
@@ -222,8 +207,6 @@ class Payroll extends Model
 
     /**
      * Get the payroll lines for this payroll.
-     *
-     * @return HasMany
      */
     public function payrollLines(): HasMany
     {
@@ -232,18 +215,14 @@ class Payroll extends Model
 
     /**
      * Check if the payroll can be paid.
-     *
-     * @return bool
      */
     public function canBePaid(): bool
     {
-        return $this->status === 'processed' && !$this->payment_id;
+        return $this->status === 'processed' && ! $this->payment_id;
     }
 
     /**
      * Check if the payroll is paid.
-     *
-     * @return bool
      */
     public function isPaid(): bool
     {
@@ -252,11 +231,9 @@ class Payroll extends Model
 
     /**
      * Get the full name of the employee for this payroll.
-     *
-     * @return string
      */
     public function getEmployeeFullNameAttribute(): string
     {
-        return $this->employee->first_name . ' ' . $this->employee->last_name;
+        return $this->employee->first_name.' '.$this->employee->last_name;
     }
 }

@@ -14,6 +14,6 @@ enum StockLocationType: string
      */
     public function label(): string
     {
-        return __('enums.stock_location_type.' . $this->value);
+        return __('enums.stock_location_type.'.$this->value);
     }
 }

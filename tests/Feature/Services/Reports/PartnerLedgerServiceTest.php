@@ -103,7 +103,7 @@ test('it throws exception when partner does not have assigned accounts', functio
     // Action & Assert
     $service = app(PartnerLedgerService::class);
 
-    expect(fn() => $service->generate($this->company, $partner, $startDate, $endDate))
+    expect(fn () => $service->generate($this->company, $partner, $startDate, $endDate))
         ->toThrow(InvalidArgumentException::class, "Partner {$partner->name} does not have assigned receivable/payable accounts.");
 });
 

@@ -1,11 +1,11 @@
 <?php
+
 // in app/Filament/Resources/AdjustmentDocumentResource/Pages/EditAdjustmentDocument.php
 
 namespace App\Filament\Clusters\Accounting\Resources\AdjustmentDocuments\Pages;
 
 // Add these imports
 use App\Actions\Accounting\BuildAdjustmentPostingPreviewAction;
-use Barryvdh\DomPDF\Facade\Pdf;
 use App\Actions\Adjustments\UpdateAdjustmentDocumentAction;
 use App\DataTransferObjects\Adjustments\UpdateAdjustmentDocumentDTO;
 use App\DataTransferObjects\Adjustments\UpdateAdjustmentDocumentLineDTO;
@@ -17,6 +17,7 @@ use App\Models\Currency;
 use App\Models\Invoice;
 use App\Models\VendorBill;
 use App\Services\AdjustmentDocumentService;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Brick\Money\Money;
 use Exception;
 use Filament\Actions\Action;
@@ -48,6 +49,7 @@ class EditAdjustmentDocument extends EditRecord
                 ->modalWidth('7xl')
                 ->modalContent(function (AdjustmentDocument $record) {
                     $preview = app(BuildAdjustmentPostingPreviewAction::class)->execute($record);
+
                     return view('filament/accounting/adjustments/preview-posting', [
                         'preview' => $preview,
                         'adjustment' => $record,
@@ -73,10 +75,13 @@ class EditAdjustmentDocument extends EditRecord
                     }
                     $csv = '';
                     foreach ($rows as $row) {
-                        $csv .= implode(',', array_map(fn($v) => '"' . str_replace('"', '""', (string) $v) . '"', $row)) . "\n";
+                        $csv .= implode(',', array_map(fn ($v) => '"'.str_replace('"', '""', (string) $v).'"', $row))."\n";
                     }
-                    $filename = 'adjustment-' . ($record->reference_number ?: ('ADJ-' . str_pad($record->id, 5, '0', STR_PAD_LEFT))) . '-preview.csv';
-                    return response()->streamDownload(function () use ($csv) { echo $csv; }, $filename, [
+                    $filename = 'adjustment-'.($record->reference_number ?: ('ADJ-'.str_pad($record->id, 5, '0', STR_PAD_LEFT))).'-preview.csv';
+
+                    return response()->streamDownload(function () use ($csv) {
+                        echo $csv;
+                    }, $filename, [
                         'Content-Type' => 'text/csv',
                     ]);
                 }),
@@ -91,8 +96,11 @@ class EditAdjustmentDocument extends EditRecord
                         'preview' => $preview,
                         'adjustment' => $record,
                     ]);
-                    $filename = 'adjustment-' . ($record->reference_number ?: ('ADJ-' . str_pad($record->id, 5, '0', STR_PAD_LEFT))) . '-preview.pdf';
-                    return response()->streamDownload(function () use ($pdf) { echo $pdf->output(); }, $filename, [
+                    $filename = 'adjustment-'.($record->reference_number ?: ('ADJ-'.str_pad($record->id, 5, '0', STR_PAD_LEFT))).'-preview.pdf';
+
+                    return response()->streamDownload(function () use ($pdf) {
+                        echo $pdf->output();
+                    }, $filename, [
                         'Content-Type' => 'application/pdf',
                     ]);
                 }),
@@ -120,9 +128,9 @@ class EditAdjustmentDocument extends EditRecord
     {
         // 1. Forcefully derive currency_id if it's missing from the form submission.
         if (empty($data['currency_id'])) {
-            if (!empty($data['original_invoice_id'])) {
+            if (! empty($data['original_invoice_id'])) {
                 $data['currency_id'] = Invoice::find($data['original_invoice_id'])?->currency_id;
-            } elseif (!empty($data['original_vendor_bill_id'])) {
+            } elseif (! empty($data['original_vendor_bill_id'])) {
                 $data['currency_id'] = VendorBill::find($data['original_vendor_bill_id'])?->currency_id;
             }
         }
@@ -171,6 +179,7 @@ class EditAdjustmentDocument extends EditRecord
         })->toArray();
 
         $data['lines'] = $linesData;
+
         return $data;
     }
 

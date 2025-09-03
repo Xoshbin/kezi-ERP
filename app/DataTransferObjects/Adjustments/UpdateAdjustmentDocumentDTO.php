@@ -2,13 +2,13 @@
 
 namespace App\DataTransferObjects\Adjustments;
 
-use App\Models\AdjustmentDocument;
 use App\Enums\Adjustments\AdjustmentDocumentType;
+use App\Models\AdjustmentDocument;
 
 class UpdateAdjustmentDocumentDTO
 {
     /**
-     * @param UpdateAdjustmentDocumentLineDTO[] $lines
+     * @param  UpdateAdjustmentDocumentLineDTO[]  $lines
      */
     public function __construct(
         public readonly AdjustmentDocument $adjustmentDocument,

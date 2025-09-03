@@ -2,19 +2,19 @@
 
 namespace App\Filament\Clusters\Accounting\Resources\JournalEntries\Pages;
 
-use Filament\Facades\Filament;
-use Illuminate\Database\QueryException;
-use PDOException;
 use App\Actions\Accounting\CreateJournalEntryAction;
 use App\DataTransferObjects\Accounting\CreateJournalEntryDTO;
 use App\DataTransferObjects\Accounting\CreateJournalEntryLineDTO;
 use App\Filament\Clusters\Accounting\Resources\JournalEntries\JournalEntryResource;
 use App\Models\Currency;
 use Brick\Money\Money;
+use Filament\Facades\Filament;
 use Filament\Resources\Pages\CreateRecord;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\ValidationException;
+use PDOException;
 
 class CreateJournalEntry extends CreateRecord
 {
@@ -69,7 +69,7 @@ class CreateJournalEntry extends CreateRecord
 
             if ($isDuplicateEntry) {
                 throw ValidationException::withMessages([
-                    'reference' => __('journal_entry.reference_already_exists', ['reference' => $data['reference']])
+                    'reference' => __('journal_entry.reference_already_exists', ['reference' => $data['reference']]),
                 ]);
             }
 
@@ -79,7 +79,7 @@ class CreateJournalEntry extends CreateRecord
             // Handle PDO exceptions that might not be wrapped in QueryException
             if ($e->getCode() === '23000' && str_contains($e->getMessage(), 'Duplicate entry') && str_contains($e->getMessage(), 'reference_unique')) {
                 throw ValidationException::withMessages([
-                    'reference' => __('journal_entry.reference_already_exists', ['reference' => $data['reference']])
+                    'reference' => __('journal_entry.reference_already_exists', ['reference' => $data['reference']]),
                 ]);
             }
 

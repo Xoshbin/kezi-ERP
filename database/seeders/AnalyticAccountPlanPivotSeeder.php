@@ -2,19 +2,18 @@
 
 namespace Database\Seeders;
 
-use Exception;
 use App\Models\AnalyticAccount;
 use App\Models\AnalyticPlan;
 use App\Models\Company;
-use Illuminate\Database\Seeder;
+use Exception;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Database\Seeder;
 
 class AnalyticAccountPlanPivotSeeder extends Seeder
 {
     /**
      * Run the database seeds.
      *
-     * @return void
      * @throws Exception
      */
     public function run(): void
@@ -35,15 +34,15 @@ class AnalyticAccountPlanPivotSeeder extends Seeder
             $accountAlpha = AnalyticAccount::where('name', 'Project Alpha')->where('company_id', $company->id)->firstOrFail();
             $accountBeta = AnalyticAccount::where('name', 'Project Beta')->where('company_id', $company->id)->firstOrFail();
         } catch (ModelNotFoundException $e) {
-            throw new Exception("Analytic Accounts not found. Please run the AnalyticAccountSeeder first.");
+            throw new Exception('Analytic Accounts not found. Please run the AnalyticAccountSeeder first.');
         }
 
         // Attach accounts to the plan if not already attached
-        if (!$plan->analyticAccounts()->where('analytic_account_id', $accountAlpha->id)->exists()) {
+        if (! $plan->analyticAccounts()->where('analytic_account_id', $accountAlpha->id)->exists()) {
             $plan->analyticAccounts()->attach($accountAlpha->id);
         }
 
-        if (!$plan->analyticAccounts()->where('analytic_account_id', $accountBeta->id)->exists()) {
+        if (! $plan->analyticAccounts()->where('analytic_account_id', $accountBeta->id)->exists()) {
             $plan->analyticAccounts()->attach($accountBeta->id);
         }
     }

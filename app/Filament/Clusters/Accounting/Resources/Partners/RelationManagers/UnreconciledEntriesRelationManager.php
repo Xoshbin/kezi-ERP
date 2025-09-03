@@ -2,14 +2,14 @@
 
 namespace App\Filament\Clusters\Accounting\Resources\Partners\RelationManagers;
 
-use Filament\Facades\Filament;
-use Exception;
 use App\Actions\Reconciliation\MatchJournalItemsAction;
 use App\Enums\Reconciliation\ReconciliationType;
 use App\Exceptions\Reconciliation\ReconciliationException;
 use App\Models\JournalEntryLine;
+use Exception;
 use Filament\Actions\Action;
 use Filament\Actions\BulkAction;
+use Filament\Facades\Filament;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
@@ -59,6 +59,7 @@ class UnreconciledEntriesRelationManager extends RelationManager
     protected function isReconciliationEnabled(): bool
     {
         $company = Filament::getTenant();
+
         return $company && $company->enable_reconciliation;
     }
 
@@ -124,7 +125,7 @@ class UnreconciledEntriesRelationManager extends RelationManager
                     ->action(function (array $data) {
                         $this->reconcileSelectedEntries($data);
                     })
-                    ->disabled(fn () => !$this->hasSelectedRecords()),
+                    ->disabled(fn () => ! $this->hasSelectedRecords()),
             ])
             ->toolbarActions([
                 BulkAction::make('reconcile')
@@ -168,7 +169,7 @@ class UnreconciledEntriesRelationManager extends RelationManager
             ->with([
                 'journalEntry.company.currency',
                 'account',
-                'reconciliations'
+                'reconciliations',
             ])
             ->orderBy('created_at', 'desc');
     }

@@ -2,10 +2,10 @@
 
 namespace Database\Factories;
 
-use App\Models\Tax;
+use App\Enums\Accounting\TaxType;
 use App\Models\Account;
 use App\Models\Company;
-use App\Enums\Accounting\TaxType;
+use App\Models\Tax;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**

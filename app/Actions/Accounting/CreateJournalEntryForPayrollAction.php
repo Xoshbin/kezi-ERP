@@ -2,20 +2,18 @@
 
 namespace App\Actions\Accounting;
 
-use App\Models\JournalEntry;
-use App\Models\User;
-use App\Models\Payroll;
 use App\DataTransferObjects\Accounting\CreateJournalEntryDTO;
 use App\DataTransferObjects\Accounting\CreateJournalEntryLineDTO;
+use App\Models\JournalEntry;
+use App\Models\Payroll;
+use App\Models\User;
 use Brick\Money\Money;
 use Illuminate\Support\Facades\DB;
 use RuntimeException;
 
 class CreateJournalEntryForPayrollAction
 {
-    public function __construct(private readonly CreateJournalEntryAction $createJournalEntryAction)
-    {
-    }
+    public function __construct(private readonly CreateJournalEntryAction $createJournalEntryAction) {}
 
     public function execute(Payroll $payroll, User $user): JournalEntry
     {
@@ -29,12 +27,12 @@ class CreateJournalEntryForPayrollAction
             $salaryPayableAccountId = $company->default_salary_payable_account_id ?? null;
             $payrollJournalId = $company->default_payroll_journal_id ?? $company->default_purchase_journal_id;
 
-            if (!$salaryPayableAccountId) {
+            if (! $salaryPayableAccountId) {
                 // Use a fallback account for journal entry creation (validation will happen at payment time)
                 $salaryPayableAccountId = 1; // fallback account ID
             }
 
-            if (!$payrollJournalId) {
+            if (! $payrollJournalId) {
                 throw new RuntimeException('Default Payroll Journal is not configured for this company.');
             }
 
@@ -74,7 +72,7 @@ class CreateJournalEntryForPayrollAction
                 currency_id: $currency->id,
                 entry_date: $payroll->pay_date,
                 reference: $payroll->payroll_number,
-                description: 'Payroll for ' . $payroll->employee->full_name . ' - ' . $payroll->period_start_date . ' to ' . $payroll->period_end_date,
+                description: 'Payroll for '.$payroll->employee->full_name.' - '.$payroll->period_start_date.' to '.$payroll->period_end_date,
                 source_type: Payroll::class,
                 source_id: $payroll->id,
                 created_by_user_id: $user->id,

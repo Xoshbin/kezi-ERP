@@ -2,23 +2,22 @@
 
 namespace App\Services;
 
-use App\Models\Company;
+use App\Actions\Accounting\CreateJournalEntryForReconciliationAction;
+use App\Actions\Accounting\CreateJournalEntryForStatementLineAction;
 use App\DataTransferObjects\Accounting\CreateJournalEntryForStatementLineDTO;
-use App\Exceptions\Reconciliation\ReconciliationDisabledException;
-use Brick\Money\Money;
-use Illuminate\Database\Eloquent\Collection;
-use App\Models\User;
-use RuntimeException;
-use App\Models\Account;
-use App\Models\Payment;
 use App\Enums\Payments\PaymentStatus;
 use App\Enums\Payments\PaymentType;
-use InvalidArgumentException;
+use App\Exceptions\Reconciliation\ReconciliationDisabledException;
+use App\Models\Account;
 use App\Models\BankStatementLine;
+use App\Models\Company;
+use App\Models\Payment;
+use App\Models\User;
+use Brick\Money\Money;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\DB;
-use App\Actions\Accounting\CreateJournalEntryForStatementLineAction;
-use App\Actions\Accounting\CreateJournalEntryForReconciliationAction; // 1. Import the new action
-use App\Services\CurrencyConverterService;
+use InvalidArgumentException;
+use RuntimeException; // 1. Import the new action
 
 class BankReconciliationService
 {
@@ -66,7 +65,7 @@ class BankReconciliationService
         // Before starting the transaction, check if all payments can be reconciled.
         foreach ($payments as $payment) {
             $company = $payment->company;
-            if (!$company->default_bank_account_id || !$company->default_outstanding_receipts_account_id) {
+            if (! $company->default_bank_account_id || ! $company->default_outstanding_receipts_account_id) {
                 throw new RuntimeException("Company '{$company->name}' is missing default bank or outstanding accounts configuration.");
             }
         }
@@ -103,9 +102,10 @@ class BankReconciliationService
     /**
      * Reconcile multiple bank statement lines with multiple payments
      *
-     * @param array $bankLineIds Array of BankStatementLine IDs
-     * @param array $paymentIds Array of Payment IDs
-     * @param User $user The user performing the reconciliation
+     * @param  array  $bankLineIds  Array of BankStatementLine IDs
+     * @param  array  $paymentIds  Array of Payment IDs
+     * @param  User  $user  The user performing the reconciliation
+     *
      * @throws RuntimeException If totals don't match
      */
     public function reconcileMultiple(array $bankLineIds, array $paymentIds, User $user): void
@@ -149,7 +149,7 @@ class BankReconciliationService
                 $paymentTotal = $paymentTotal->plus($amount);
             }
 
-            if (!$bankTotal->isEqualTo($paymentTotal)) {
+            if (! $bankTotal->isEqualTo($paymentTotal)) {
                 throw new RuntimeException('Bank statement lines total does not match payments total');
             }
 
@@ -177,7 +177,6 @@ class BankReconciliationService
     /**
      * Get unreconciled bank statement lines for a given bank statement
      *
-     * @param int $bankStatementId
      * @return Collection
      */
     public function getUnreconciledBankLines(int $bankStatementId)
@@ -190,7 +189,6 @@ class BankReconciliationService
     /**
      * Get unreconciled payments for a given company
      *
-     * @param int $companyId
      * @return Collection
      */
     public function getUnreconciledPayments(int $companyId)
@@ -205,13 +203,12 @@ class BankReconciliationService
     /**
      * Validate that reconciliation is enabled for the given company.
      *
-     * @param Company $company
      * @throws ReconciliationDisabledException
      */
     private function validateReconciliationEnabled(Company $company): void
     {
-        if (!$company->enable_reconciliation) {
-            throw new ReconciliationDisabledException();
+        if (! $company->enable_reconciliation) {
+            throw new ReconciliationDisabledException;
         }
     }
 }

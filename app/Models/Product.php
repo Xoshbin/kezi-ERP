@@ -2,38 +2,40 @@
 
 namespace App\Models;
 
-use App\Traits\TranslatableSearch;
-use Illuminate\Support\Carbon;
-use Illuminate\Database\Eloquent\Builder;
-use Database\Factories\ProductFactory;
 use App\Casts\BaseCurrencyMoneyCast;
 use App\Enums\Inventory\ValuationMethod;
 use App\Enums\Products\ProductType;
 use App\Observers\ProductObserver;
+use App\Traits\TranslatableSearch;
+use Brick\Money\Money;
+use Database\Factories\ProductFactory;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Carbon;
 
 /**
  * @property int $id
  * @property int $company_id
- * @property int $income_account_id
- * @property int $expense_account_id
+ * @property int|null $income_account_id
+ * @property int|null $expense_account_id
  * @property string $name
  * @property string $sku
  * @property string|null $description
- * @property float $unit_price
+ * @property Money|null $unit_price
  * @property string $type
  * @property bool $is_active
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property Carbon|null $deleted_at
  * @property-read Company $company
- * @property-read Account $expenseAccount
- * @property-read Account $incomeAccount
+ * @property-read Account|null $expenseAccount
+ * @property-read Account|null $incomeAccount
+ *
  * @method static Builder<static>|Product active()
  * @method static Builder<static>|Product bySku($sku, $companyId)
  * @method static ProductFactory factory($count = null, $state = [])
@@ -56,6 +58,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @method static Builder<static>|Product whereUpdatedAt($value)
  * @method static Builder<static>|Product withTrashed(bool $withTrashed = true)
  * @method static Builder<static>|Product withoutTrashed()
+ *
  * @mixin \Eloquent
  */
 #[ObservedBy([ProductObserver::class])]
@@ -108,8 +111,6 @@ class Product extends Model
 
     /**
      * Get the non-translatable fields that should be searched.
-     *
-     * @return array
      */
     public function getNonTranslatableSearchFields(): array
     {
@@ -119,8 +120,6 @@ class Product extends Model
     /**
      * Get the Company that owns the Product.
      * This relationship is fundamental in a multi-company accounting setup, ensuring products are scoped to specific entities.
-     *
-     * @return BelongsTo
      */
     public function company(): BelongsTo
     {
@@ -130,8 +129,6 @@ class Product extends Model
     /**
      * Get the Account (from the Chart of Accounts) that is the default income account for this product.
      * This is crucial for automating revenue recognition when the product is sold, impacting the Income Statement.
-     *
-     * @return BelongsTo
      */
     public function incomeAccount(): BelongsTo
     {
@@ -141,8 +138,6 @@ class Product extends Model
     /**
      * Get the Account (from the Chart of Accounts) that is the default expense account for this product.
      * This enables automated cost allocation and impacts the Expense section of the Income Statement, aligning with the double-entry principle.
-     *
-     * @return BelongsTo
      */
     public function expenseAccount(): BelongsTo
     {
@@ -175,7 +170,7 @@ class Product extends Model
      * Scope a query to only include active products.
      * This is a common query scope to filter out inactive items in various application contexts.
      *
-     * @param Builder $query
+     * @param  Builder  $query
      * @return Builder
      */
     public function scopeActive($query)
@@ -187,7 +182,7 @@ class Product extends Model
      * Scope a query to find a product by its SKU within a specific company.
      * SKU should be unique per company to prevent data duplication and maintain accurate inventory records.
      *
-     * @param Builder $query
+     * @param  Builder  $query
      * @param  string  $sku
      * @param  int  $companyId
      * @return Builder
@@ -216,6 +211,4 @@ class Product extends Model
     {
         return $this->hasMany(InventoryCostLayer::class);
     }
-
-
 }

@@ -2,7 +2,6 @@
 
 namespace App\Filament\Clusters\Inventory\Resources\StockMoves\Pages;
 
-use Illuminate\Database\Eloquent\Model;
 use App\Actions\Inventory\CreateStockMoveAction;
 use App\DataTransferObjects\Inventory\CreateStockMoveDTO;
 use App\Enums\Inventory\StockMoveStatus;
@@ -11,6 +10,7 @@ use App\Filament\Clusters\Inventory\Resources\StockMoves\StockMoveResource;
 use Carbon\Carbon;
 use Filament\Facades\Filament;
 use Filament\Resources\Pages\CreateRecord;
+use Illuminate\Database\Eloquent\Model;
 
 class CreateStockMove extends CreateRecord
 {

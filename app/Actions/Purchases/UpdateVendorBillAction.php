@@ -2,23 +2,21 @@
 
 namespace App\Actions\Purchases;
 
-use Carbon\Carbon;
-use App\Models\VendorBillLine;
 use App\DataTransferObjects\Purchases\UpdateVendorBillDTO;
 use App\Enums\Purchases\VendorBillStatus;
 use App\Exceptions\UpdateNotAllowedException;
-use App\Models\VendorBill;
 use App\Models\Tax;
+use App\Models\VendorBill;
+use App\Models\VendorBillLine;
 use App\Services\Accounting\LockDateService;
 use Brick\Math\RoundingMode;
 use Brick\Money\Money;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 
 class UpdateVendorBillAction
 {
-    public function __construct(protected LockDateService $lockDateService)
-    {
-    }
+    public function __construct(protected LockDateService $lockDateService) {}
 
     public function execute(UpdateVendorBillDTO $updateVendorBillDTO): VendorBill
     {
@@ -29,7 +27,6 @@ class UpdateVendorBillAction
         }
 
         $this->lockDateService->enforce($vendorBill->company, Carbon::parse($updateVendorBillDTO->bill_date));
-
 
         return DB::transaction(function () use ($updateVendorBillDTO) {
             $vendorBill = $updateVendorBillDTO->vendorBill;
@@ -55,7 +52,7 @@ class UpdateVendorBillAction
                     $tax = Tax::find($line->tax_id);
                     if ($tax) {
                         $taxRate = $tax->rate / 100;
-                        $taxAmount = $subtotal->multipliedBy((string)$taxRate, RoundingMode::HALF_UP);
+                        $taxAmount = $subtotal->multipliedBy((string) $taxRate, RoundingMode::HALF_UP);
                     }
                 }
 
@@ -82,7 +79,6 @@ class UpdateVendorBillAction
                 $line->vendor_bill_id = $vendorBill->id;
                 $line->save();
             }
-
 
             return $vendorBill;
         });

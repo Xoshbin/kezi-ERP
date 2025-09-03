@@ -3,27 +3,19 @@
 namespace App\Models;
 
 use App\Traits\TranslatableSearch;
-use Illuminate\Support\Carbon;
-use Illuminate\Database\Eloquent\Collection;
 use Database\Factories\FiscalPositionFactory;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Carbon;
 use Spatie\Translatable\HasTranslations;
 
 /**
  * Class FiscalPosition
  *
- * @package App\Models
- *
- * This Eloquent model represents a fiscal position, a crucial component in an accounting system
- * designed to automatically adjust taxes and accounts based on specific criteria, such as
- * the geographic location or business type of a customer or vendor. Fiscal positions are
- * fundamental for ensuring compliance with diverse local tax regulations and automating
- * complex tax calculations in a multi-jurisdictional environment. They provide the rules
- * for adapting the standard taxes and accounts set on products or partners for a given transaction.
  * @property int $id
  * @property int $company_id
  * @property string $name
@@ -35,6 +27,7 @@ use Spatie\Translatable\HasTranslations;
  * @property-read Company $company
  * @property-read Collection<int, FiscalPositionTaxMapping> $taxMappings
  * @property-read int|null $tax_mappings_count
+ *
  * @method static FiscalPositionFactory factory($count = null, $state = [])
  * @method static Builder<static>|FiscalPosition newModelQuery()
  * @method static Builder<static>|FiscalPosition newQuery()
@@ -45,6 +38,7 @@ use Spatie\Translatable\HasTranslations;
  * @method static Builder<static>|FiscalPosition whereId($value)
  * @method static Builder<static>|FiscalPosition whereName($value)
  * @method static Builder<static>|FiscalPosition whereUpdatedAt($value)
+ *
  * @mixin \Eloquent
  */
 class FiscalPosition extends Model
@@ -93,8 +87,6 @@ class FiscalPosition extends Model
     /**
      * Get the company that this fiscal position belongs to.
      * A fiscal position is typically defined within the context of a specific company.
-     *
-     * @return BelongsTo
      */
     public function company(): BelongsTo
     {
@@ -104,8 +96,6 @@ class FiscalPosition extends Model
     /**
      * Get the tax mappings for the fiscal position.
      * These mappings define how original taxes are replaced or adjusted based on this fiscal position.
-     *
-     * @return HasMany
      */
     public function taxMappings(): HasMany
     {
@@ -118,8 +108,6 @@ class FiscalPosition extends Model
     /**
      * Get the account mappings for the fiscal position.
      * These mappings define how original accounts are replaced or adjusted based on this fiscal position.
-     *
-     * @return HasMany
      */
     public function accountMappings(): HasMany
     {

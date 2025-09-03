@@ -62,6 +62,6 @@ class DocumentCurrencyMoneyCast extends MoneyCast
             return $model->bankStatement()->with('currency')->first()->currency;
         }
 
-        throw new InvalidArgumentException('Could not resolve document currency for model ' . get_class($model) . '. Please ensure the model has a valid parent document relationship.');
+        throw new InvalidArgumentException('Could not resolve document currency for model '.get_class($model).'. Please ensure the model has a valid parent document relationship.');
     }
 }

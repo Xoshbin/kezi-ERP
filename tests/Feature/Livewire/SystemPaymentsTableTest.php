@@ -1,16 +1,15 @@
 <?php
 
-use App\Models\User;
-use App\Models\Company;
-use App\Models\BankStatement;
-use App\Models\Payment;
+use App\Enums\Payments\PaymentStatus;
+use App\Livewire\Accounting\SystemPaymentsTable;
 use App\Models\Account;
+use App\Models\BankStatement;
+use App\Models\Company;
 use App\Models\Journal;
 use App\Models\Partner;
-use App\Livewire\Accounting\SystemPaymentsTable;
+use App\Models\Payment;
+use App\Models\User;
 use Brick\Money\Money;
-use App\Enums\Payments\PaymentStatus;
-use App\Enums\Payments\PaymentType;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Livewire\Livewire;
 

@@ -18,6 +18,5 @@ readonly class CreateLeaveRequestDTO
         public ?string $delegation_notes,
         public ?array $attachments,
         public int $requested_by_user_id,
-    ) {
-    }
+    ) {}
 }

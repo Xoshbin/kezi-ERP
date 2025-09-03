@@ -2,15 +2,14 @@
 
 namespace Database\Factories;
 
-use Brick\Money\Money;
+use App\Enums\Payments\PaymentPurpose;
+use App\Enums\Payments\PaymentStatus;
+use App\Enums\Payments\PaymentType;
 use App\Models\Company;
+use App\Models\Currency;
 use App\Models\Journal;
 use App\Models\Partner;
-use App\Models\Payment;
-use App\Models\Currency;
-use App\Enums\Payments\PaymentType;
-use App\Enums\Payments\PaymentStatus;
-use App\Enums\Payments\PaymentPurpose;
+use Brick\Money\Money;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class PaymentFactory extends Factory

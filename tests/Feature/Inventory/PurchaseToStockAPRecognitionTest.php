@@ -71,4 +71,3 @@ it('posts AP for storable product bills and posts inventory + input tax correctl
         'credit' => $total->getMinorAmount()->toInt(),
     ]);
 });
-

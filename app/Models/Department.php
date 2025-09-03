@@ -3,18 +3,17 @@
 namespace App\Models;
 
 use App\Traits\TranslatableSearch;
-use Illuminate\Support\Carbon;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Support\Carbon;
 use Spatie\Translatable\HasTranslations;
 
 /**
  * Class Department
  *
- * @package App\Models
  * @property int $id
  * @property int $company_id
  * @property array $name
@@ -83,8 +82,6 @@ class Department extends Model
 
     /**
      * Get the translatable fields that should be searched.
-     *
-     * @return array
      */
     public function getTranslatableSearchFields(): array
     {
@@ -93,8 +90,6 @@ class Department extends Model
 
     /**
      * Get the non-translatable fields that should be searched.
-     *
-     * @return array
      */
     public function getNonTranslatableSearchFields(): array
     {
@@ -103,8 +98,6 @@ class Department extends Model
 
     /**
      * Get the company that owns the Department.
-     *
-     * @return BelongsTo
      */
     public function company(): BelongsTo
     {
@@ -113,8 +106,6 @@ class Department extends Model
 
     /**
      * Get the parent department.
-     *
-     * @return BelongsTo
      */
     public function parentDepartment(): BelongsTo
     {
@@ -123,8 +114,6 @@ class Department extends Model
 
     /**
      * Get the child departments.
-     *
-     * @return HasMany
      */
     public function childDepartments(): HasMany
     {
@@ -133,8 +122,6 @@ class Department extends Model
 
     /**
      * Get the manager of this department.
-     *
-     * @return BelongsTo
      */
     public function manager(): BelongsTo
     {
@@ -143,8 +130,6 @@ class Department extends Model
 
     /**
      * Get the employees in this department.
-     *
-     * @return HasMany
      */
     public function employees(): HasMany
     {
@@ -153,8 +138,6 @@ class Department extends Model
 
     /**
      * Get the positions in this department.
-     *
-     * @return HasMany
      */
     public function positions(): HasMany
     {
@@ -198,8 +181,6 @@ class Department extends Model
 
     /**
      * Check if this department is a root department (has no parent).
-     *
-     * @return bool
      */
     public function isRoot(): bool
     {
@@ -208,8 +189,6 @@ class Department extends Model
 
     /**
      * Check if this department is a leaf department (has no children).
-     *
-     * @return bool
      */
     public function isLeaf(): bool
     {
@@ -218,8 +197,6 @@ class Department extends Model
 
     /**
      * Get the total number of employees in this department and all its descendants.
-     *
-     * @return int
      */
     public function getTotalEmployeeCount(): int
     {

@@ -2,31 +2,31 @@
 
 namespace App\Services\Inventory;
 
-use App\Models\Company;
-use Exception;
-use Brick\Math\RoundingMode;
-use Carbon\Carbon;
-use Brick\Money\Money;
-use App\Models\Product;
-use App\Models\JournalEntry;
-use App\Models\JournalEntryLine;
-use App\Models\StockMoveValuation;
-use App\Models\InventoryCostLayer;
-use App\Models\StockMove;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Auth;
-use App\Enums\Inventory\ValuationMethod;
-use App\Enums\Inventory\StockMoveType;
-use App\Enums\Accounting\JournalEntryState;
-use App\Services\Accounting\LockDateService;
-use App\DataTransferObjects\Inventory\AdjustInventoryDTO;
 use App\Actions\Accounting\CreateJournalEntryAction;
 use App\DataTransferObjects\Accounting\CreateJournalEntryDTO;
 use App\DataTransferObjects\Accounting\CreateJournalEntryLineDTO;
+use App\DataTransferObjects\Inventory\AdjustInventoryDTO;
+use App\Enums\Accounting\JournalEntryState;
+use App\Enums\Inventory\StockMoveType;
+use App\Enums\Inventory\ValuationMethod;
+use App\Models\Company;
+use App\Models\InventoryCostLayer;
+use App\Models\JournalEntry;
+use App\Models\JournalEntryLine;
+use App\Models\Product;
+use App\Models\StockMove;
+use App\Models\StockMoveValuation;
+use App\Services\Accounting\LockDateService;
+use Brick\Math\RoundingMode;
+use Brick\Money\Money;
+use Carbon\Carbon;
+use Exception;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class InventoryValuationService
 {
-    public function __construct(protected LockDateService $lockDateService,) {}
+    public function __construct(protected LockDateService $lockDateService) {}
 
     public function processIncomingStock(Product $product, float $quantity, Money $costPerUnit, Carbon $date, $sourceDocument): void
     {
@@ -60,6 +60,7 @@ class InventoryValuationService
 
         if ($cogsAmount->isZero()) {
             Log::warning("COGS amount is zero for product {$product->id}, skipping journal entry creation");
+
             return;
         }
 
@@ -120,10 +121,12 @@ class InventoryValuationService
 
         if ($product->inventory_valuation_method === ValuationMethod::AVCO) {
             // For AVCO, use the product's average cost
-            if (!$product->average_cost) {
+            if (! $product->average_cost) {
                 Log::warning("Product {$product->id} has no average cost set, returning zero COGS");
+
                 return Money::of(0, $currencyCode);
             }
+
             return $product->average_cost->multipliedBy($quantity);
         } else {
             // For FIFO/LIFO, consume inventory cost layers
@@ -182,16 +185,16 @@ class InventoryValuationService
         $zero = Money::of(0, $currencyCode);
 
         // Validate required accounts
-        if (!$product->default_cogs_account_id) {
+        if (! $product->default_cogs_account_id) {
             throw new Exception("Product {$product->id} does not have a COGS account configured");
         }
-        if (!$product->default_inventory_account_id) {
+        if (! $product->default_inventory_account_id) {
             throw new Exception("Product {$product->id} does not have an inventory account configured");
         }
 
         // Use the sales journal for COGS entries (or create a dedicated inventory journal if needed)
         $journalId = $company->default_sales_journal_id;
-        if (!$journalId) {
+        if (! $journalId) {
             throw new Exception("Company {$company->id} does not have a default sales journal configured");
         }
 
@@ -207,6 +210,7 @@ class InventoryValuationService
 
         if ($existingEntry) {
             Log::info("COGS journal entry already exists for {$sourceType} {$sourceId} Product {$product->id}, skipping creation");
+
             return $existingEntry;
         }
 
@@ -260,7 +264,7 @@ class InventoryValuationService
             ->where('move_type', StockMoveType::Outgoing)
             ->first();
 
-        if (!$stockMove) {
+        if (! $stockMove) {
             throw new Exception("No outgoing stock move found for product {$product->id} and source document");
         }
 
@@ -341,16 +345,16 @@ class InventoryValuationService
         $zero = Money::of(0, $currencyCode);
 
         // Validate required accounts
-        if (!$product->default_inventory_account_id) {
+        if (! $product->default_inventory_account_id) {
             throw new Exception("Product {$product->id} does not have an inventory account configured");
         }
-        if (!$product->default_stock_input_account_id) {
+        if (! $product->default_stock_input_account_id) {
             throw new Exception("Product {$product->id} does not have a stock input account configured");
         }
 
         // Use the purchase journal for incoming stock entries
         $journalId = $company->default_purchase_journal_id;
-        if (!$journalId) {
+        if (! $journalId) {
             throw new Exception("Company {$company->id} does not have a default purchase journal configured");
         }
 
@@ -409,7 +413,7 @@ class InventoryValuationService
             ->where('move_type', StockMoveType::Incoming)
             ->first();
 
-        if (!$stockMove) {
+        if (! $stockMove) {
             throw new Exception("No incoming stock move found for product {$product->id} and source document");
         }
 

@@ -2,38 +2,33 @@
 
 namespace App\Filament\Clusters\Inventory\Resources\StockLocations;
 
-use Filament\Schemas\Schema;
-use Filament\Schemas\Components\Section;
-use Filament\Schemas\Components\Grid;
-use Filament\Forms\Components\Select;
-use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\Textarea;
-use Filament\Actions\Action;
-use Filament\Forms\Components\Toggle;
-use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Columns\IconColumn;
-use Filament\Tables\Filters\SelectFilter;
-use Filament\Tables\Filters\TernaryFilter;
-use Filament\Actions\ViewAction;
-use Filament\Actions\EditAction;
-use Filament\Actions\DeleteAction;
-use Filament\Actions\BulkActionGroup;
-use Filament\Actions\DeleteBulkAction;
-use App\Filament\Clusters\Inventory\Resources\StockLocations\Pages\ListStockLocations;
-use App\Filament\Clusters\Inventory\Resources\StockLocations\Pages\CreateStockLocation;
-use App\Filament\Clusters\Inventory\Resources\StockLocations\Pages\ViewStockLocation;
-use App\Filament\Clusters\Inventory\Resources\StockLocations\Pages\EditStockLocation;
 use App\Enums\Inventory\StockLocationType;
-use App\Filament\Clusters\Inventory\Resources\StockLocationResource\Pages;
+use App\Filament\Clusters\Inventory\InventoryCluster;
+use App\Filament\Clusters\Inventory\Resources\StockLocations\Pages\CreateStockLocation;
+use App\Filament\Clusters\Inventory\Resources\StockLocations\Pages\EditStockLocation;
+use App\Filament\Clusters\Inventory\Resources\StockLocations\Pages\ListStockLocations;
+use App\Filament\Clusters\Inventory\Resources\StockLocations\Pages\ViewStockLocation;
 use App\Models\Company;
 use App\Models\StockLocation;
-use App\Filament\Clusters\Inventory\InventoryCluster;
-use Filament\Forms;
+use Filament\Actions\Action;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\DeleteBulkAction;
+use Filament\Actions\EditAction;
+use Filament\Actions\ViewAction;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Toggle;
 use Filament\Resources\Resource;
-use Filament\Tables;
+use Filament\Schemas\Components\Grid;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Schema;
+use Filament\Tables\Columns\IconColumn;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\SelectFilter;
+use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class StockLocationResource extends Resource
 {
@@ -41,7 +36,7 @@ class StockLocationResource extends Resource
 
     protected static ?string $cluster = InventoryCluster::class;
 
-    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-building-storefront';
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-building-storefront';
 
     protected static ?int $navigationSort = 2;
 

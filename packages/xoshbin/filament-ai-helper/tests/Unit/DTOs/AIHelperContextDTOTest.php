@@ -1,23 +1,26 @@
 <?php
 
-use Xoshbin\FilamentAiHelper\DTOs\AIHelperContextDTO;
 use Illuminate\Database\Eloquent\Model;
+use Xoshbin\FilamentAiHelper\DTOs\AIHelperContextDTO;
 
 // Mock model for testing
 class TestModel extends Model
 {
     protected $table = 'test_models';
+
     protected $fillable = ['name', 'email'];
 
     public static function find($id)
     {
         if ($id === 1) {
-            $model = new static();
+            $model = new static;
             $model->id = 1;
             $model->name = 'Test Model';
             $model->email = 'test@example.com';
+
             return $model;
         }
+
         return null;
     }
 }
@@ -45,7 +48,7 @@ it('can be created from array', function () {
         'resource_class' => 'App\\Filament\\Resources\\InvoiceResource',
         'user_question' => 'What is the total amount?',
         'locale' => 'en',
-        'additional_context' => ['key' => 'value']
+        'additional_context' => ['key' => 'value'],
     ];
 
     $dto = AIHelperContextDTO::fromArray($data);
@@ -73,7 +76,7 @@ it('can be converted to array', function () {
 });
 
 it('can get model instance when record is provided', function () {
-    $model = new TestModel();
+    $model = new TestModel;
     $model->id = 1;
     $model->name = 'Test';
 

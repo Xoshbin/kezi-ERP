@@ -2,22 +2,21 @@
 
 namespace Tests\Feature\HumanResources;
 
-use Tests\TestCase;
-use App\Models\User;
+use App\Enums\Payments\PaymentPurpose;
+use App\Enums\Payments\PaymentStatus;
+use App\Enums\Payments\PaymentType;
+use App\Models\Account;
 use App\Models\Company;
 use App\Models\Employee;
 use App\Models\EmploymentContract;
-use App\Models\Payroll;
-use App\Models\Payment;
 use App\Models\Journal;
-use App\Models\Account;
-use App\Models\Currency;
+use App\Models\Payment;
+use App\Models\Payroll;
+use App\Models\User;
 use App\Services\HumanResources\PayrollService;
-use App\Enums\Payments\PaymentPurpose;
-use App\Enums\Payments\PaymentType;
-use App\Enums\Payments\PaymentStatus;
 use Brick\Money\Money;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\TestCase;
 use Tests\Traits\WithConfiguredCompany;
 
 class PayrollPaymentTest extends TestCase
@@ -25,9 +24,13 @@ class PayrollPaymentTest extends TestCase
     use RefreshDatabase, WithConfiguredCompany;
 
     private User $user;
+
     private Company $company;
+
     private Employee $employee;
+
     private EmploymentContract $contract;
+
     private PayrollService $payrollService;
 
     protected function setUp(): void
@@ -228,7 +231,7 @@ class PayrollPaymentTest extends TestCase
         $this->assertTrue($payroll->isPaid());
 
         // Test employee full name attribute
-        $expectedName = $this->employee->first_name . ' ' . $this->employee->last_name;
+        $expectedName = $this->employee->first_name.' '.$this->employee->last_name;
         $this->assertEquals($expectedName, $payroll->employee_full_name);
     }
 }

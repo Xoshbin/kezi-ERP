@@ -3,16 +3,13 @@
 namespace App\Filament\Clusters\HumanResources\Resources\Payrolls\Schemas;
 
 use App\Filament\Forms\Components\MoneyInput;
-use App\Models\Employee;
 use App\Models\Currency;
+use App\Models\Employee;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
 use Filament\Schemas\Components\Section;
-use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Schema;
-use Filament\Forms\Get;
 
 class PayrollForm
 {
@@ -26,21 +23,20 @@ class PayrollForm
                     Select::make('employee_id')
                         ->label(__('payroll.fields.employee'))
                         ->relationship('employee', 'first_name')
-                        ->getOptionLabelFromRecordUsing(fn (Employee $record): string => $record->full_name . ' (' . $record->employee_number . ')')
-                        ->getSearchResultsUsing(fn (string $search): array =>
-                            Employee::where('is_active', true)
-                                ->where('employment_status', 'active')
-                                ->where(function ($query) use ($search) {
-                                    $query->where('first_name', 'like', "%{$search}%")
-                                        ->orWhere('last_name', 'like', "%{$search}%")
-                                        ->orWhere('employee_number', 'like', "%{$search}%");
-                                })
-                                ->limit(50)
-                                ->get()
-                                ->mapWithKeys(fn (Employee $employee): array => [
-                                    $employee->id => $employee->full_name . ' (' . $employee->employee_number . ')'
-                                ])
-                                ->toArray()
+                        ->getOptionLabelFromRecordUsing(fn (Employee $record): string => $record->full_name.' ('.$record->employee_number.')')
+                        ->getSearchResultsUsing(fn (string $search): array => Employee::where('is_active', true)
+                            ->where('employment_status', 'active')
+                            ->where(function ($query) use ($search) {
+                                $query->where('first_name', 'like', "%{$search}%")
+                                    ->orWhere('last_name', 'like', "%{$search}%")
+                                    ->orWhere('employee_number', 'like', "%{$search}%");
+                            })
+                            ->limit(50)
+                            ->get()
+                            ->mapWithKeys(fn (Employee $employee): array => [
+                                $employee->id => $employee->full_name.' ('.$employee->employee_number.')',
+                            ])
+                            ->toArray()
                         )
                         ->required()
                         ->searchable()
@@ -54,7 +50,7 @@ class PayrollForm
                         ->required()
                         ->searchable()
                         ->preload()
-                        ->default(fn() => Currency::where('code', 'IQD')->first()?->id)
+                        ->default(fn () => Currency::where('code', 'IQD')->first()?->id)
                         ->columnSpan(1),
 
                     DatePicker::make('period_start_date')

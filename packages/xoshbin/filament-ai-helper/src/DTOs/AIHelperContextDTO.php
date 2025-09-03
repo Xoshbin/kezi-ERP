@@ -17,8 +17,7 @@ class AIHelperContextDTO
         public readonly ?array $formSchema = null,
         public readonly ?array $currentFormData = null,
         public readonly ?string $pageType = null
-    ) {
-    }
+    ) {}
 
     /**
      * Create a new instance from array data
@@ -67,7 +66,7 @@ class AIHelperContextDTO
             return $this->record;
         }
 
-        if (!class_exists($this->modelClass)) {
+        if (! class_exists($this->modelClass)) {
             return null;
         }
 
@@ -84,6 +83,7 @@ class AIHelperContextDTO
     public function getResourceName(): string
     {
         $parts = explode('\\', $this->resourceClass);
+
         return end($parts);
     }
 
@@ -93,6 +93,7 @@ class AIHelperContextDTO
     public function getModelName(): string
     {
         $parts = explode('\\', $this->modelClass);
+
         return end($parts);
     }
 
@@ -109,7 +110,7 @@ class AIHelperContextDTO
      */
     public function getSanitizedQuestion(): string
     {
-        if (!config('filament-ai-helper.security.sanitize_input', true)) {
+        if (! config('filament-ai-helper.security.sanitize_input', true)) {
             return $this->userQuestion;
         }
 
@@ -146,7 +147,7 @@ class AIHelperContextDTO
      */
     public function hasFormSchema(): bool
     {
-        return !empty($this->formSchema);
+        return ! empty($this->formSchema);
     }
 
     /**
@@ -154,7 +155,7 @@ class AIHelperContextDTO
      */
     public function hasCurrentFormData(): bool
     {
-        return !empty($this->currentFormData);
+        return ! empty($this->currentFormData);
     }
 
     /**
@@ -162,7 +163,7 @@ class AIHelperContextDTO
      */
     public function getRequiredFields(): array
     {
-        if (!$this->hasFormSchema()) {
+        if (! $this->hasFormSchema()) {
             return [];
         }
 
@@ -176,7 +177,7 @@ class AIHelperContextDTO
      */
     public function getFieldTypes(): array
     {
-        if (!$this->hasFormSchema()) {
+        if (! $this->hasFormSchema()) {
             return [];
         }
 

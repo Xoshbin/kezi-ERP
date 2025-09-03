@@ -8,7 +8,7 @@ use Illuminate\Support\Collection;
 readonly class AgedReceivableDTO
 {
     /**
-     * @param Collection<int, AgedReceivableLineDTO> $reportLines
+     * @param  Collection<int, AgedReceivableLineDTO>  $reportLines
      */
     public function __construct(
         public Collection $reportLines,

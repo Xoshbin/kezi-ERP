@@ -2,35 +2,36 @@
 
 namespace App\Livewire\Accounting;
 
-use Filament\Actions\Contracts\HasActions;
-use Filament\Actions\Concerns\InteractsWithActions;
-use Filament\Actions\Action;
-use Filament\Support\Contracts\TranslatableContentDriver;
-use Brick\Money\Money;
+use App\Filament\Tables\Columns\MoneyColumn;
 use App\Models\Account;
-use Livewire\Component;
-use Filament\Tables\Table;
 use App\Models\BankStatement;
 use App\Models\BankStatementLine;
-use Illuminate\Support\Facades\Auth;
+use App\Services\BankReconciliationService;
+use Brick\Money\Money;
+use Filament\Actions\Action;
+use Filament\Actions\Concerns\InteractsWithActions;
+use Filament\Actions\Contracts\HasActions;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Contracts\HasForms;
 use Filament\Forms\Components\Textarea;
+use Filament\Forms\Concerns\InteractsWithForms;
+use Filament\Forms\Contracts\HasForms;
+use Filament\Support\Contracts\TranslatableContentDriver;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Columns\ViewColumn;
-use Filament\Tables\Contracts\HasTable;
-use App\Services\BankReconciliationService;
-use App\Filament\Tables\Columns\MoneyColumn;
-use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Tables\Concerns\InteractsWithTable;
+use Filament\Tables\Contracts\HasTable;
+use Filament\Tables\Table;
+use Illuminate\Support\Facades\Auth;
+use Livewire\Component;
 
-class BankTransactionsTable extends Component implements HasTable, HasForms, HasActions
+class BankTransactionsTable extends Component implements HasActions, HasForms, HasTable
 {
     use InteractsWithActions;
-    use InteractsWithTable;
     use InteractsWithForms;
+    use InteractsWithTable;
 
     public BankStatement $bankStatement;
+
     public array $selectedBankLines = [];
 
     public function mount(BankStatement $bankStatement): void
@@ -104,7 +105,7 @@ class BankTransactionsTable extends Component implements HasTable, HasForms, Has
     public function toggleBankLine(int $lineId): void
     {
         if (in_array($lineId, $this->selectedBankLines)) {
-            $this->selectedBankLines = array_filter($this->selectedBankLines, fn($id) => $id !== $lineId);
+            $this->selectedBankLines = array_filter($this->selectedBankLines, fn ($id) => $id !== $lineId);
         } else {
             $this->selectedBankLines[] = $lineId;
         }
@@ -117,7 +118,7 @@ class BankTransactionsTable extends Component implements HasTable, HasForms, Has
         // Use the bank statement's currency instead of hardcoded 'IQD'
         $total = Money::of(0, $this->bankStatement->currency->code);
 
-        if (!empty($this->selectedBankLines)) {
+        if (! empty($this->selectedBankLines)) {
             $lines = BankStatementLine::whereIn('id', $this->selectedBankLines)->get();
             foreach ($lines as $line) {
                 $total = $total->plus($line->amount);

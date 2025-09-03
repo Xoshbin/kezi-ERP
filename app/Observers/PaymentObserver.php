@@ -2,9 +2,9 @@
 
 namespace App\Observers;
 
-use App\Models\Payment;
-use App\Exceptions\DeletionNotAllowedException;
 use App\Enums\Payments\PaymentStatus;
+use App\Exceptions\DeletionNotAllowedException;
+use App\Models\Payment;
 
 class PaymentObserver
 {

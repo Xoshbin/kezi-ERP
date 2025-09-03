@@ -4,11 +4,11 @@ namespace Tests\Feature\HumanResources;
 
 use App\Filament\Clusters\HumanResources\Resources\Positions\PositionResource;
 use App\Models\Position;
-use App\Models\User;
 use Brick\Money\Money;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 use Tests\Traits\WithConfiguredCompany;
+
 use function Pest\Livewire\livewire;
 
 class PositionResourceTest extends TestCase
@@ -16,6 +16,7 @@ class PositionResourceTest extends TestCase
     use RefreshDatabase, WithConfiguredCompany;
 
     protected $company;
+
     protected $user;
 
     protected function setUp(): void

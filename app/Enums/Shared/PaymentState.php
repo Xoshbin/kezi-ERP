@@ -10,7 +10,7 @@ enum PaymentState: string
 
     public function label(): string
     {
-        return __('enums.payment_state.' . $this->value);
+        return __('enums.payment_state.'.$this->value);
     }
 
     public function color(): string

@@ -2,11 +2,11 @@
 
 namespace App\Actions\Inventory;
 
-use Illuminate\Support\Facades\Log;
 use App\Models\Product;
 use Brick\Math\RoundingMode;
 use Brick\Money\Money;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class UpdateProductInventoryStatsAction
 {

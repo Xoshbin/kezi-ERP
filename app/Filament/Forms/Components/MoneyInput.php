@@ -2,13 +2,13 @@
 
 namespace App\Filament\Forms\Components;
 
-use Filament\Facades\Filament;
-use Filament\Schemas\Components\Utilities\Get;
+use App\Models\Currency;
 use Brick\Math\Exception\RoundingNecessaryException;
 use Brick\Math\RoundingMode;
 use Brick\Money\Money;
+use Filament\Facades\Filament;
 use Filament\Forms\Components\TextInput; // Import the Get helper
-use App\Models\Currency; // Make sure to import your Currency model
+use Filament\Schemas\Components\Utilities\Get; // Make sure to import your Currency model
 
 class MoneyInput extends TextInput
 {
@@ -35,6 +35,7 @@ class MoneyInput extends TextInput
                 if ($state instanceof Money) {
                     return $state->getAmount()->__toString();
                 }
+
                 return $state;
             })
             ->dehydrateStateUsing(fn ($state) => $state)
@@ -77,6 +78,7 @@ class MoneyInput extends TextInput
                 if ($money instanceof Money) {
                     return $money->formatTo('EN_us');
                 }
+
                 return null;
             });
     }
@@ -87,6 +89,7 @@ class MoneyInput extends TextInput
         $this->currencyFieldName = $name;
         // Make the component reactive to changes in the specified currency field.
         $this->live();
+
         return $this;
     }
 
@@ -112,8 +115,8 @@ class MoneyInput extends TextInput
             if ($currencyId) {
                 // To avoid too many database queries, we can cache the result.
                 static $currencyCache = [];
-                if (!isset($currencyCache[$currencyId])) {
-                     $currencyCache[$currencyId] = Currency::find($currencyId);
+                if (! isset($currencyCache[$currencyId])) {
+                    $currencyCache[$currencyId] = Currency::find($currencyId);
                 }
                 $currency = $currencyCache[$currencyId];
                 if ($currency) {
@@ -123,7 +126,7 @@ class MoneyInput extends TextInput
         }
 
         // Strategy 2: Fallback for the Edit page if the first strategy fails.
-        if (!$currencyCode) {
+        if (! $currencyCode) {
             $livewire = $component->getLivewire();
             if (method_exists($livewire, 'getRecord')) {
                 $mainRecord = $livewire->getRecord();
@@ -150,6 +153,7 @@ class MoneyInput extends TextInput
     public function setOriginalMoneyObject(Money $money): static
     {
         $this->originalMoneyObject = $money;
+
         return $this;
     }
 

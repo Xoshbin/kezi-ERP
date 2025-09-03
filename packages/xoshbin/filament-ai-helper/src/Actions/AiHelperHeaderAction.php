@@ -19,7 +19,7 @@ class AiHelperHeaderAction
             ->extraAttributes([
                 'class' => 'ai-helper-button bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white shadow-lg',
                 'title' => 'Get AI insights for this record',
-                'onclick' => 'window.toggleAiChatWidget(); return false;'
+                'onclick' => 'window.toggleAiChatWidget(); return false;',
             ])
             ->action(function () {
                 // Action handled by JavaScript

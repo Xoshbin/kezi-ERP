@@ -2,8 +2,8 @@
 
 namespace App\Observers;
 
-use App\Models\Company;
 use App\Exceptions\DeletionNotAllowedException;
+use App\Models\Company;
 
 class CompanyObserver
 {

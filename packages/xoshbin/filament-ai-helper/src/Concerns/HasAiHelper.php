@@ -2,8 +2,8 @@
 
 namespace Xoshbin\FilamentAiHelper\Concerns;
 
-use Xoshbin\FilamentAiHelper\Actions\AiHelperHeaderAction;
 use Filament\Actions\Action;
+use Xoshbin\FilamentAiHelper\Actions\AiHelperHeaderAction;
 
 trait HasAiHelper
 {
@@ -20,7 +20,7 @@ trait HasAiHelper
      */
     protected function addAiHelperToHeaderActions(array $actions = []): array
     {
-        if (!$this->shouldShowAiHelper()) {
+        if (! $this->shouldShowAiHelper()) {
             return $actions;
         }
 
@@ -34,7 +34,7 @@ trait HasAiHelper
     protected function shouldShowAiHelper(): bool
     {
         // Respect global enable/disable config
-        if (!config('filament-ai-helper.enabled', true)) {
+        if (! config('filament-ai-helper.enabled', true)) {
             return false;
         }
 

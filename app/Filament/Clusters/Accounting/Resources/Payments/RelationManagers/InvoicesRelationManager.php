@@ -73,9 +73,9 @@ class InvoicesRelationManager extends RelationManager
 
                 TextColumn::make('status')
                     ->label(__('payment.relation_manager.invoices.column.status'))
-                    ->formatStateUsing(fn(InvoiceStatus $state): string => $state->label())
+                    ->formatStateUsing(fn (InvoiceStatus $state): string => $state->label())
                     ->badge()
-                    ->color(fn(InvoiceStatus $state): string => match($state) {
+                    ->color(fn (InvoiceStatus $state): string => match ($state) {
                         InvoiceStatus::Draft => 'warning',
                         InvoiceStatus::Posted => 'success',
                         InvoiceStatus::Paid => 'info',

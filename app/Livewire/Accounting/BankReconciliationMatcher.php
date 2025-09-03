@@ -16,12 +16,16 @@ use Livewire\Component;
 class BankReconciliationMatcher extends Component
 {
     public int $bankStatementId;
+
     public BankStatement $bankStatement;
 
     // Totals from child components
     public Money $bankTotal;
+
     public Money $systemTotal;
+
     public array $selectedBankLines = [];
+
     public array $selectedPayments = [];
 
     public function mount(int $bankStatementId): void
@@ -85,11 +89,12 @@ class BankReconciliationMatcher extends Component
 
     public function reconcile()
     {
-        if (!$this->summary()['isBalanced']) {
+        if (! $this->summary()['isBalanced']) {
             Notification::make()
                 ->title(__('bank_statement.reconciliation_not_balanced'))
                 ->danger()
                 ->send();
+
             return;
         }
 
@@ -98,6 +103,7 @@ class BankReconciliationMatcher extends Component
                 ->title(__('bank_statement.select_transactions_to_reconcile'))
                 ->warning()
                 ->send();
+
             return;
         }
 
@@ -122,8 +128,6 @@ class BankReconciliationMatcher extends Component
         // Refresh child components
         $this->dispatch('refresh-tables');
     }
-
-
 
     public function render()
     {

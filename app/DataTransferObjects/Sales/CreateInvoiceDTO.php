@@ -5,7 +5,7 @@ namespace App\DataTransferObjects\Sales;
 class CreateInvoiceDTO
 {
     /**
-     * @param CreateInvoiceLineDTO[] $lines
+     * @param  CreateInvoiceLineDTO[]  $lines
      */
     public function __construct(
         public readonly int $company_id,

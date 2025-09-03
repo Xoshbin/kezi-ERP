@@ -28,7 +28,7 @@ class CreateAdjustmentDocumentLineAction
             $tax = Tax::find($dto->tax_id);
             if ($tax) {
                 $taxRate = $tax->rate;
-                $taxAmount = $subtotal->multipliedBy((string)$taxRate, RoundingMode::HALF_UP);
+                $taxAmount = $subtotal->multipliedBy((string) $taxRate, RoundingMode::HALF_UP);
             }
         }
 

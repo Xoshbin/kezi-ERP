@@ -1,18 +1,16 @@
 <?php
 
-use App\Models\User;
-use App\Models\Company;
-use App\Models\Currency;
-use App\Models\CurrencyRate;
-use App\Models\BankStatement;
-use App\Models\BankStatementLine;
-use App\Models\Payment;
-use App\Models\Account;
-use App\Models\Journal;
-use App\Services\BankReconciliationService;
 use App\Enums\Accounting\JournalType;
 use App\Enums\Payments\PaymentStatus;
 use App\Enums\Payments\PaymentType;
+use App\Models\Account;
+use App\Models\BankStatement;
+use App\Models\BankStatementLine;
+use App\Models\Currency;
+use App\Models\CurrencyRate;
+use App\Models\Journal;
+use App\Models\Payment;
+use App\Services\BankReconciliationService;
 use Brick\Money\Money;
 use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -111,7 +109,7 @@ describe('BankReconciliationService', function () {
                 'status' => 'confirmed',
             ]);
 
-        expect(fn() => $this->service->reconcileMultiple(
+        expect(fn () => $this->service->reconcileMultiple(
             [$bankLine->id],
             [$payment->id],
             $this->user
@@ -336,7 +334,7 @@ describe('Multi-Currency Bank Reconciliation', function () {
             ]);
 
         // Should throw exception due to mismatch
-        expect(fn() => $this->service->reconcileMultiple(
+        expect(fn () => $this->service->reconcileMultiple(
             [$bankLine->id],
             [$payment->id],
             $this->user

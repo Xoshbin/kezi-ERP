@@ -2,13 +2,12 @@
 
 namespace Database\Seeders;
 
-use App\Enums\Adjustments\AdjustmentDocumentType;
 use App\Enums\Adjustments\AdjustmentDocumentStatus;
+use App\Enums\Adjustments\AdjustmentDocumentType;
 use App\Models\Account;
 use App\Models\AdjustmentDocument;
 use App\Models\Company;
 use App\Models\Invoice;
-
 use Brick\Money\Money;
 use Illuminate\Database\Seeder;
 
@@ -29,8 +28,9 @@ class AdjustmentDocumentSeeder extends Seeder
             $query->where('name', 'Hawre Trading Group');
         })->latest()->first();
 
-        if (!$originalInvoice) {
+        if (! $originalInvoice) {
             $this->command->error('The original invoice for "Hawre Trading Group" was not found. Please run the InvoiceSeeder.');
+
             return;
         }
 
@@ -38,8 +38,9 @@ class AdjustmentDocumentSeeder extends Seeder
 
         // 3. Find the "Sales Discounts & Returns" account
         $salesDiscountAccount = Account::where('name->en', 'Sales Discounts & Returns')->where('company_id', $company->id)->first();
-        if (!$salesDiscountAccount) {
+        if (! $salesDiscountAccount) {
             $this->command->error('The "Sales Discounts & Returns" account was not found. Please run the AccountSeeder.');
+
             return;
         }
 
@@ -52,7 +53,7 @@ class AdjustmentDocumentSeeder extends Seeder
             'original_invoice_id' => $originalInvoice->id,
             'type' => AdjustmentDocumentType::CreditNote,
             'date' => now(),
-            'reference_number' => 'CN-' . now()->format('Ymd') . '-001',
+            'reference_number' => 'CN-'.now()->format('Ymd').'-001',
             'reason' => 'Goodwill discount for new client.',
             'subtotal' => $creditNoteAmount,
             'total_amount' => $creditNoteAmount,

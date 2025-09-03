@@ -2,25 +2,29 @@
 
 namespace Tests\Builders;
 
-use App\Models\Account;
-use App\Models\Company;
-use App\Models\Journal;
-use App\Models\Currency;
-use App\Models\StockLocation;
 use App\Enums\Accounting\JournalType;
 use App\Enums\Inventory\StockLocationType;
+use App\Models\Account;
+use App\Models\Company;
+use App\Models\Currency;
+use App\Models\Journal;
+use App\Models\StockLocation;
 
 class CompanyBuilder
 {
     protected ?Currency $currency = null;
+
     protected array $accounts = [];
+
     protected array $journals = [];
+
     protected array $stockLocations = [];
+
     protected bool $enableReconciliation = false;
 
     public static function new(): self
     {
-        return new self();
+        return new self;
     }
 
     public function withCurrency(string $code = 'IQD'): self
@@ -28,12 +32,13 @@ class CompanyBuilder
         $this->currency = Currency::firstOrCreate(
             ['code' => $code],
             [
-                'name'           => $code === 'IQD' ? 'Iraqi Dinar' : 'US Dollar',
-                'symbol'         => $code,
-                'is_active'      => true,
+                'name' => $code === 'IQD' ? 'Iraqi Dinar' : 'US Dollar',
+                'symbol' => $code,
+                'is_active' => true,
                 'decimal_places' => $code === 'IQD' ? 3 : 2,
             ]
         );
+
         return $this;
     }
 
@@ -50,6 +55,7 @@ class CompanyBuilder
             'default_gain_loss_account_id' => ['type' => 'income', 'name' => 'Gain/Loss on Asset Disposal'],
 
         ];
+
         return $this;
     }
 
@@ -65,6 +71,7 @@ class CompanyBuilder
             'default_bank_journal_id' => ['type' => JournalType::Bank, 'name' => 'Bank Journal'],
             'default_depreciation_journal_id' => ['type' => JournalType::Miscellaneous, 'name' => 'Depreciation Journal'],
         ];
+
         return $this;
     }
 
@@ -75,18 +82,20 @@ class CompanyBuilder
             'default_stock_output_location_id' => ['name' => 'Stock Output', 'type' => StockLocationType::Customer->value],
             'default_stock_location_id' => ['name' => 'Default Stock', 'type' => StockLocationType::Internal->value],
         ];
+
         return $this;
     }
 
     public function withReconciliationEnabled(): self
     {
         $this->enableReconciliation = true;
+
         return $this;
     }
 
     public function create(): Company
     {
-        if (!$this->currency) {
+        if (! $this->currency) {
             $this->withCurrency('IQD');
         }
 
@@ -116,9 +125,9 @@ class CompanyBuilder
         }
 
         $company->update(array_merge(
-            collect($accountInstances)->mapWithKeys(fn($acc, $k) => [$k => $acc->id])->all(),
-            collect($journalInstances)->mapWithKeys(fn($jour, $k) => [$k => $jour->id])->all(),
-            collect($locationInstances)->mapWithKeys(fn($loc, $k) => [$k => $loc->id])->all()
+            collect($accountInstances)->mapWithKeys(fn ($acc, $k) => [$k => $acc->id])->all(),
+            collect($journalInstances)->mapWithKeys(fn ($jour, $k) => [$k => $jour->id])->all(),
+            collect($locationInstances)->mapWithKeys(fn ($loc, $k) => [$k => $loc->id])->all()
         ));
 
         // Associate the locations with the company
@@ -143,7 +152,7 @@ class CompanyBuilder
 
         // THIS IS THE FIX:
         // Check if the journal type has a mapping. If not (like for Depreciation), return null.
-        if (!isset($mapping[$journalKey])) {
+        if (! isset($mapping[$journalKey])) {
             return null;
         }
 

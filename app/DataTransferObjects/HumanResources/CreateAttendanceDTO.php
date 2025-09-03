@@ -24,6 +24,5 @@ readonly class CreateAttendanceDTO
         public bool $is_manual_entry,
         public ?int $leave_request_id,
         public int $created_by_user_id,
-    ) {
-    }
+    ) {}
 }

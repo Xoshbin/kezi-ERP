@@ -2,17 +2,17 @@
 
 namespace App\Actions\Accounting;
 
-use Exception;
-use App\Models\JournalEntryLine;
 use App\DataTransferObjects\Accounting\CreateJournalEntryDTO;
+use App\Models\Account;
 use App\Models\Company;
 use App\Models\Currency;
 use App\Models\JournalEntry;
-use App\Models\Account;
+use App\Models\JournalEntryLine;
 use App\Services\Accounting\LockDateService;
 use App\Services\CurrencyConverterService;
 use Brick\Money\Money;
 use Carbon\Carbon;
+use Exception;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 
@@ -21,8 +21,7 @@ class CreateJournalEntryAction
     public function __construct(
         private readonly LockDateService $lockDateService,
         private readonly CurrencyConverterService $currencyConverter
-    ) {
-    }
+    ) {}
 
     public function execute(CreateJournalEntryDTO $dto): JournalEntry
     {
@@ -30,7 +29,7 @@ class CreateJournalEntryAction
         $this->lockDateService->enforce($company, Carbon::parse($dto->entry_date));
 
         $currency = Currency::find($dto->currency_id);
-        if (!$currency) {
+        if (! $currency) {
             throw new Exception("Currency with ID {$dto->currency_id} not found.");
         }
 
@@ -88,14 +87,13 @@ class CreateJournalEntryAction
             $totalCreditOriginal = $totalCreditOriginal->plus($line->credit);
         }
 
-        if (!$totalDebitOriginal->isEqualTo($totalCreditOriginal)) {
+        if (! $totalDebitOriginal->isEqualTo($totalCreditOriginal)) {
             throw ValidationException::withMessages([
                 'lines' => 'The total debits must equal the total credits.',
             ]);
         }
 
         return DB::transaction(function () use ($dto, $totalDebitBaseCurrency, $totalCreditBaseCurrency, $currency, $company) {
-
 
             $journalEntryData = [
                 'company_id' => $dto->company_id,
@@ -118,7 +116,7 @@ class CreateJournalEntryAction
             $journalEntry = $journalEntry->fresh()->load('currency');
 
             foreach ($dto->lines as $lineDto) {
-                $line = new JournalEntryLine();
+                $line = new JournalEntryLine;
 
                 // First, establish the relationship. This makes the parent's context (like currency)
                 // available to the line model *before* any attributes are set. This is the key

@@ -36,6 +36,4 @@ class InventoryCostLayer extends Model
     {
         return $this->morphTo();
     }
-
-
 }

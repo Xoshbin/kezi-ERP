@@ -2,31 +2,31 @@
 
 namespace App\Filament\Clusters\Settings\Resources\PdfSettings;
 
-use Filament\Facades\Filament;
-use Filament\Schemas\Schema;
-use Filament\Schemas\Components\Section;
-use Filament\Forms\Components\Select;
-use Filament\Forms\Components\FileUpload;
-use Filament\Forms\Components\KeyValue;
-use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Columns\ImageColumn;
-use Filament\Tables\Filters\SelectFilter;
-use Filament\Actions\EditAction;
-use App\Filament\Clusters\Settings\Resources\PdfSettings\Pages\ListPdfSettings;
 use App\Filament\Clusters\Settings\Resources\PdfSettings\Pages\EditPdfSettings;
+use App\Filament\Clusters\Settings\Resources\PdfSettings\Pages\ListPdfSettings;
 use App\Filament\Clusters\Settings\SettingsCluster;
 use App\Models\Company;
+use Filament\Actions\EditAction;
+use Filament\Facades\Filament;
+use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\KeyValue;
+use Filament\Forms\Components\Select;
 use Filament\Resources\Resource;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Schema;
+use Filament\Tables\Columns\ImageColumn;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 
 class PdfSettingsResource extends Resource
 {
-    public static null|string $tenantOwnershipRelationshipName = 'users';
+    public static ?string $tenantOwnershipRelationshipName = 'users';
 
     protected static ?string $model = Company::class;
 
-    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-printer';
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-printer';
 
     protected static ?string $cluster = SettingsCluster::class;
 
@@ -157,6 +157,7 @@ class PdfSettingsResource extends Resource
     {
         // Only show the current tenant company
         $tenant = Filament::getTenant();
+
         return parent::getEloquentQuery()->where('id', $tenant?->id);
     }
 

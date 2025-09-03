@@ -2,23 +2,17 @@
 
 namespace App\Models;
 
-use Illuminate\Support\Carbon;
+use App\Casts\BaseCurrencyMoneyCast;
 use Database\Factories\BudgetLineFactory;
 use Illuminate\Database\Eloquent\Builder;
-use App\Casts\BaseCurrencyMoneyCast;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Carbon;
 
 /**
  * Class BudgetLine
  *
- * @package App\Models
- *
- * This Eloquent model represents a single line item within a Budget.
- * It tracks specific budgeted amounts against actual achieved and committed amounts,
- * linking to either general ledger accounts (for financial budgets) or analytic accounts
- * (for analytic budgets) [3].
  * @property int $id
  * @property int $budget_id
  * @property int|null $analytic_account_id
@@ -31,6 +25,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property-read Account|null $account
  * @property-read AnalyticAccount|null $analyticAccount
  * @property-read Budget $budget
+ *
  * @method static BudgetLineFactory factory($count = null, $state = [])
  * @method static Builder<static>|BudgetLine newModelQuery()
  * @method static Builder<static>|BudgetLine newQuery()
@@ -44,6 +39,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @method static Builder<static>|BudgetLine whereCreatedAt($value)
  * @method static Builder<static>|BudgetLine whereId($value)
  * @method static Builder<static>|BudgetLine whereUpdatedAt($value)
+ *
  * @mixin \Eloquent
  */
 class BudgetLine extends Model
@@ -71,7 +67,7 @@ class BudgetLine extends Model
         'account_id',
         'budgeted_amount',
         'achieved_amount',
-        'committed_amount'
+        'committed_amount',
     ];
 
     /**
@@ -98,19 +94,14 @@ class BudgetLine extends Model
 
     /**
      * Get the company that this rate belongs to.
-     *
-     * @return BelongsTo
      */
     public function company(): BelongsTo
     {
         return $this->belongsTo(Company::class);
     }
 
-
     /**
      * Get the budget that owns this budget line.
-     *
-     * @return BelongsTo
      */
     public function budget(): BelongsTo
     {
@@ -120,8 +111,6 @@ class BudgetLine extends Model
     /**
      * Get the analytic account associated with this budget line (if applicable).
      * This is crucial for granular cost and revenue tracking against projects or departments [3, 5].
-     *
-     * @return BelongsTo
      */
     public function analyticAccount(): BelongsTo
     {
@@ -132,14 +121,10 @@ class BudgetLine extends Model
     /**
      * Get the general ledger account associated with this budget line (if applicable).
      * This links the budget line to the Chart of Accounts [3, 4].
-     *
-     * @return BelongsTo
      */
     public function account(): BelongsTo
     {
         // Account model is typically in App\Models [4, 8]
         return $this->belongsTo(Account::class);
     }
-
-
 }

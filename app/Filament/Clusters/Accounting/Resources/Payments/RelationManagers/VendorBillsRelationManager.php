@@ -75,9 +75,9 @@ class VendorBillsRelationManager extends RelationManager
 
                 TextColumn::make('status')
                     ->label(__('payment.relation_manager.vendor_bills.column.status'))
-                    ->formatStateUsing(fn(VendorBillStatus $state): string => $state->label())
+                    ->formatStateUsing(fn (VendorBillStatus $state): string => $state->label())
                     ->badge()
-                    ->color(fn(VendorBillStatus $state): string => match($state) {
+                    ->color(fn (VendorBillStatus $state): string => match ($state) {
                         VendorBillStatus::Draft => 'warning',
                         VendorBillStatus::Posted => 'success',
                         VendorBillStatus::Paid => 'info',

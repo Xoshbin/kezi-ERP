@@ -26,7 +26,7 @@ class PositionFactory extends Factory
                 'name' => 'Iraqi Dinar',
                 'symbol' => 'IQD',
                 'is_active' => true,
-                'decimal_places' => 3
+                'decimal_places' => 3,
             ]
         );
 

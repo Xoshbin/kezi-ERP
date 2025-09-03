@@ -8,7 +8,6 @@ use App\DataTransferObjects\Inventory\UpdateStockMoveDTO;
 use App\Enums\Inventory\StockMoveStatus;
 use App\Events\Inventory\StockMoveConfirmed;
 use App\Models\StockMove;
-use Illuminate\Support\Facades\Log;
 
 class StockMoveService
 {

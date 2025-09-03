@@ -2,11 +2,6 @@
 
 namespace App\Filament\Clusters\Accounting\Resources\Payments;
 
-use App\Models\Journal;
-use App\Models\Currency;
-use Filament\Facades\Filament;
-use App\Models\Partner;
-use App\Models\Account;
 use App\Enums\Payments\PaymentPurpose;
 use App\Enums\Payments\PaymentStatus;
 use App\Enums\Payments\PaymentType;
@@ -21,18 +16,22 @@ use App\Filament\Clusters\Accounting\Resources\Payments\RelationManagers\VendorB
 use App\Filament\Forms\Components\MoneyInput;
 use App\Filament\Support\TranslatableSelect;
 use App\Filament\Tables\Columns\MoneyColumn;
+use App\Models\Account;
+use App\Models\Currency;
+use App\Models\Journal;
+use App\Models\Partner;
 use App\Models\Payment;
 use App\Services\PaymentService;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
+use Filament\Facades\Filament;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Resources\Resource;
 use Filament\Schemas\Components\Section;
-
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
@@ -41,11 +40,12 @@ class PaymentResource extends Resource
 {
     protected static ?string $model = Payment::class;
 
-    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-credit-card';
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-credit-card';
 
     protected static ?int $navigationSort = 1;
 
     protected static ?string $cluster = AccountingCluster::class;
+
     public static function getNavigationGroup(): ?string
     {
         return __('navigation.groups.banking_cash');
@@ -78,7 +78,7 @@ class PaymentResource extends Resource
                     TranslatableSelect::make('currency_id', Currency::class, __('payment.form.currency_id'))
                         ->required()
                         ->columnSpan(2)
-                        ->default(fn() => Filament::getTenant()?->currency_id),
+                        ->default(fn () => Filament::getTenant()?->currency_id),
                     DatePicker::make('payment_date')
                         ->default(now())
                         ->label(__('payment.form.payment_date'))
@@ -97,7 +97,7 @@ class PaymentResource extends Resource
                 ->schema([
                     Select::make('payment_type')
                         ->label(__('payment.form.payment_type'))
-                        ->options(collect(PaymentType::cases())->mapWithKeys(fn($case) => [$case->value => $case->label()]))
+                        ->options(collect(PaymentType::cases())->mapWithKeys(fn ($case) => [$case->value => $case->label()]))
                         ->required()
                         ->columnSpan(2),
                     Select::make('payment_purpose')
@@ -105,9 +105,9 @@ class PaymentResource extends Resource
                         ->options(function () {
                             // Exclude Settlement since it's handled by context-specific actions
                             $purposes = collect(PaymentPurpose::cases())
-                                ->filter(fn($purpose) => $purpose !== PaymentPurpose::Settlement);
+                                ->filter(fn ($purpose) => $purpose !== PaymentPurpose::Settlement);
 
-                            return $purposes->mapWithKeys(fn($purpose) => [$purpose->value => $purpose->label()]);
+                            return $purposes->mapWithKeys(fn ($purpose) => [$purpose->value => $purpose->label()]);
                         })
                         ->required()
                         ->columnSpan(2),
@@ -142,7 +142,8 @@ class PaymentResource extends Resource
                         if ($record->reference) {
                             return $record->reference;
                         }
-                        return 'DRAFT-' . str_pad($record->id, 5, '0', STR_PAD_LEFT);
+
+                        return 'DRAFT-'.str_pad($record->id, 5, '0', STR_PAD_LEFT);
                     })
                     ->badge()
                     ->color(fn (Payment $record): string => $record->reference ? 'success' : 'warning')
@@ -158,9 +159,9 @@ class PaymentResource extends Resource
                 // Payment Type (critical for understanding direction)
                 TextColumn::make('payment_type')
                     ->label(__('payment.type'))
-                    ->formatStateUsing(fn(PaymentType $state): string => $state->label())
+                    ->formatStateUsing(fn (PaymentType $state): string => $state->label())
                     ->badge()
-                    ->color(fn(PaymentType $state): string => match($state) {
+                    ->color(fn (PaymentType $state): string => match ($state) {
                         PaymentType::Inbound => 'success',
                         PaymentType::Outbound => 'danger',
                     })
@@ -173,9 +174,9 @@ class PaymentResource extends Resource
                 // Status (critical for workflow)
                 TextColumn::make('status')
                     ->label(__('payment.status'))
-                    ->formatStateUsing(fn(PaymentStatus $state): string => $state->label())
+                    ->formatStateUsing(fn (PaymentStatus $state): string => $state->label())
                     ->badge()
-                    ->color(fn(PaymentStatus $state): string => match($state) {
+                    ->color(fn (PaymentStatus $state): string => match ($state) {
                         PaymentStatus::Draft => 'gray',
                         PaymentStatus::Confirmed => 'warning',
                         PaymentStatus::Reconciled => 'success',
@@ -239,13 +240,13 @@ class PaymentResource extends Resource
                     ->action(function (Payment $record) {
                         app(PaymentService::class)->delete($record);
                     })
-                    ->visible(fn(Payment $record): bool => $record->status === PaymentStatus::Draft),
+                    ->visible(fn (Payment $record): bool => $record->status === PaymentStatus::Draft),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
                     DeleteBulkAction::make()
                         ->action(function ($records) {
-                            $records->each(fn(Payment $record) => app(PaymentService::class)->delete($record));
+                            $records->each(fn (Payment $record) => app(PaymentService::class)->delete($record));
                         }),
                 ]),
             ]);

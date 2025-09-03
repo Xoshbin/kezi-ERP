@@ -76,6 +76,7 @@ class UpdateExchangeRates extends Command
 
         if (empty($missingRates)) {
             $this->info('✓ All currencies have recent exchange rates');
+
             return 0;
         }
 

@@ -2,8 +2,8 @@
 
 namespace App\Observers;
 
-use App\Models\Currency;
 use App\Exceptions\DeletionNotAllowedException;
+use App\Models\Currency;
 
 class CurrencyObserver
 {

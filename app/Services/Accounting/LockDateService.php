@@ -15,7 +15,7 @@ class LockDateService
     {
         $lockedUntil = $this->getLockDateForType($company, $lockType);
 
-        if (!$lockedUntil) {
+        if (! $lockedUntil) {
             return false;
         }
 

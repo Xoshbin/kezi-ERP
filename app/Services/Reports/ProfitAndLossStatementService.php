@@ -25,7 +25,7 @@ class ProfitAndLossStatementService
                 'accounts.code as account_code',
                 'accounts.name as account_name',
                 'accounts.type as account_type',
-                DB::raw('SUM(journal_entry_lines.debit) - SUM(journal_entry_lines.credit) as balance')
+                DB::raw('SUM(journal_entry_lines.debit) - SUM(journal_entry_lines.credit) as balance'),
             ])
             ->join('accounts', 'journal_entry_lines.account_id', '=', 'accounts.id')
             ->join('journal_entries', 'journal_entry_lines.journal_entry_id', '=', 'journal_entries.id')
@@ -48,14 +48,15 @@ class ProfitAndLossStatementService
         $accounts = $company->accounts()->whereIn('id', $accountIds)->get()->keyBy('id');
 
         $revenueLines = $results->whereIn('account_type', [
-                AccountType::Income->value,
-                AccountType::OtherIncome->value,
-            ])
+            AccountType::Income->value,
+            AccountType::OtherIncome->value,
+        ])
             ->map(function ($row) use ($currency, $accounts) {
                 // Invert the sign for presentation, as income accounts have a natural credit balance.
                 // The balance from the query is already in minor units, so use it directly
                 $balance = Money::ofMinor(-$row->balance, $currency);
                 $account = $accounts->get($row->account_id);
+
                 return new ReportLineDTO(
                     accountId: $row->account_id,
                     accountCode: $row->account_code,
@@ -65,15 +66,16 @@ class ProfitAndLossStatementService
             });
 
         $expenseLines = $results->whereIn('account_type', [
-                AccountType::Expense->value,
-                AccountType::Depreciation->value,
-                AccountType::CostOfRevenue->value,
-            ])
+            AccountType::Expense->value,
+            AccountType::Depreciation->value,
+            AccountType::CostOfRevenue->value,
+        ])
             ->map(function ($row) use ($currency, $accounts) {
                 // Expense accounts have a natural debit balance, which is correct for presentation.
                 // The balance from the query is already in minor units, so use it directly
                 $balance = Money::ofMinor($row->balance, $currency);
                 $account = $accounts->get($row->account_id);
+
                 return new ReportLineDTO(
                     accountId: $row->account_id,
                     accountCode: $row->account_code,

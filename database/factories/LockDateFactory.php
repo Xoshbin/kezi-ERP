@@ -2,8 +2,8 @@
 
 namespace Database\Factories;
 
-use App\Models\LockDate;
 use App\Models\Company;
+use App\Models\LockDate;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**

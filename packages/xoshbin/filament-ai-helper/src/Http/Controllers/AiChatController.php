@@ -2,16 +2,16 @@
 
 namespace Xoshbin\FilamentAiHelper\Http\Controllers;
 
-use Xoshbin\FilamentAiHelper\Actions\GetAIAssistantResponseAction;
-use Xoshbin\FilamentAiHelper\Actions\FillFormAction;
-use Xoshbin\FilamentAiHelper\Actions\UpdateFormAction;
-use Xoshbin\FilamentAiHelper\DTOs\AIHelperContextDTO;
-use Xoshbin\FilamentAiHelper\Services\FormSchemaExtractor;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
+use Xoshbin\FilamentAiHelper\Actions\FillFormAction;
+use Xoshbin\FilamentAiHelper\Actions\GetAIAssistantResponseAction;
+use Xoshbin\FilamentAiHelper\Actions\UpdateFormAction;
+use Xoshbin\FilamentAiHelper\DTOs\AIHelperContextDTO;
+use Xoshbin\FilamentAiHelper\Services\FormSchemaExtractor;
 
 class AiChatController extends Controller
 {
@@ -20,8 +20,7 @@ class AiChatController extends Controller
         private readonly FillFormAction $fillFormAction,
         private readonly UpdateFormAction $updateFormAction,
         private readonly FormSchemaExtractor $formSchemaExtractor
-    ) {
-    }
+    ) {}
 
     /**
      * Handle chat message and return AI response
@@ -30,7 +29,7 @@ class AiChatController extends Controller
     {
         try {
             // Respect global enable/disable config
-            if (!config('filament-ai-helper.enabled', true)) {
+            if (! config('filament-ai-helper.enabled', true)) {
                 return response()->json([
                     'success' => false,
                     'error' => 'AI helper is disabled',
@@ -48,7 +47,7 @@ class AiChatController extends Controller
             if ($validator->fails()) {
                 return response()->json([
                     'success' => false,
-                    'error' => 'Invalid input: ' . $validator->errors()->first(),
+                    'error' => 'Invalid input: '.$validator->errors()->first(),
                 ], 422);
             }
 
@@ -125,7 +124,7 @@ class AiChatController extends Controller
         try {
             $modelClass = $validated['model_class'];
 
-            if (!class_exists($modelClass)) {
+            if (! class_exists($modelClass)) {
                 return null;
             }
 
@@ -170,6 +169,7 @@ class AiChatController extends Controller
             return null;
         } catch (\Exception $e) {
             Log::warning('Failed to extract form schema', ['error' => $e->getMessage()]);
+
             return null;
         }
     }
@@ -189,6 +189,7 @@ class AiChatController extends Controller
             return null;
         } catch (\Exception $e) {
             Log::warning('Failed to extract current form data', ['error' => $e->getMessage()]);
+
             return null;
         }
     }
@@ -221,7 +222,7 @@ class AiChatController extends Controller
             'show me',
             'analyze',
             'calculate',
-            'help me understand'
+            'help me understand',
         ];
 
         // If it's a question, don't treat as form manipulation
@@ -234,7 +235,7 @@ class AiChatController extends Controller
         // Action keywords that indicate form manipulation
         $actionKeywords = [
             'fill', 'create', 'add', 'set', 'update', 'change', 'edit', 'modify',
-            'enter', 'input', 'save', 'submit'
+            'enter', 'input', 'save', 'submit',
         ];
 
         foreach ($actionKeywords as $keyword) {
@@ -276,12 +277,12 @@ class AiChatController extends Controller
         } catch (\Exception $e) {
             Log::error('Form manipulation failed', [
                 'error' => $e->getMessage(),
-                'context' => $context->toArray()
+                'context' => $context->toArray(),
             ]);
 
             return response()->json([
                 'success' => false,
-                'error' => 'Form manipulation failed: ' . $e->getMessage(),
+                'error' => 'Form manipulation failed: '.$e->getMessage(),
             ], 500);
         }
     }

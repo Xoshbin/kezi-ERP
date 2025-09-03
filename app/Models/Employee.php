@@ -2,22 +2,20 @@
 
 namespace App\Models;
 
+use App\Observers\AuditLogObserver;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
-use App\Observers\AuditLogObserver;
-use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 
 /**
  * Class Employee
  *
- * @package App\Models
  * @property int $id
  * @property int $company_id
  * @property int|null $user_id
@@ -146,8 +144,6 @@ class Employee extends Model
 
     /**
      * Get the company that owns the Employee.
-     *
-     * @return BelongsTo
      */
     public function company(): BelongsTo
     {
@@ -156,8 +152,6 @@ class Employee extends Model
 
     /**
      * Get the user account associated with this employee.
-     *
-     * @return BelongsTo
      */
     public function user(): BelongsTo
     {
@@ -166,8 +160,6 @@ class Employee extends Model
 
     /**
      * Get the department this employee belongs to.
-     *
-     * @return BelongsTo
      */
     public function department(): BelongsTo
     {
@@ -176,8 +168,6 @@ class Employee extends Model
 
     /**
      * Get the position this employee holds.
-     *
-     * @return BelongsTo
      */
     public function position(): BelongsTo
     {
@@ -186,8 +176,6 @@ class Employee extends Model
 
     /**
      * Get the manager of this employee.
-     *
-     * @return BelongsTo
      */
     public function manager(): BelongsTo
     {
@@ -196,8 +184,6 @@ class Employee extends Model
 
     /**
      * Get the direct reports of this employee.
-     *
-     * @return HasMany
      */
     public function directReports(): HasMany
     {
@@ -206,8 +192,6 @@ class Employee extends Model
 
     /**
      * Get the employment contracts for this employee.
-     *
-     * @return HasMany
      */
     public function employmentContracts(): HasMany
     {
@@ -216,25 +200,21 @@ class Employee extends Model
 
     /**
      * Get the current active employment contract.
-     *
-     * @return HasOne
      */
     public function currentContract(): HasOne
     {
         return $this->hasOne(EmploymentContract::class)
-                    ->where('is_active', true)
-                    ->where('start_date', '<=', now())
-                    ->where(function ($query) {
-                        $query->whereNull('end_date')
-                              ->orWhere('end_date', '>=', now());
-                    })
-                    ->latest('start_date');
+            ->where('is_active', true)
+            ->where('start_date', '<=', now())
+            ->where(function ($query) {
+                $query->whereNull('end_date')
+                    ->orWhere('end_date', '>=', now());
+            })
+            ->latest('start_date');
     }
 
     /**
      * Get the leave requests for this employee.
-     *
-     * @return HasMany
      */
     public function leaveRequests(): HasMany
     {
@@ -243,8 +223,6 @@ class Employee extends Model
 
     /**
      * Get the attendance records for this employee.
-     *
-     * @return HasMany
      */
     public function attendances(): HasMany
     {
@@ -253,8 +231,6 @@ class Employee extends Model
 
     /**
      * Get the payroll records for this employee.
-     *
-     * @return HasMany
      */
     public function payrolls(): HasMany
     {
@@ -269,28 +245,22 @@ class Employee extends Model
 
     /**
      * Get the employee's full name.
-     *
-     * @return string
      */
     public function getFullNameAttribute(): string
     {
-        return trim($this->first_name . ' ' . $this->last_name);
+        return trim($this->first_name.' '.$this->last_name);
     }
 
     /**
      * Get the employee's display name (full name with employee number).
-     *
-     * @return string
      */
     public function getDisplayNameAttribute(): string
     {
-        return $this->full_name . ' (' . $this->employee_number . ')';
+        return $this->full_name.' ('.$this->employee_number.')';
     }
 
     /**
      * Get the employee's age.
-     *
-     * @return int|null
      */
     public function getAgeAttribute(): ?int
     {
@@ -299,8 +269,6 @@ class Employee extends Model
 
     /**
      * Get the employee's years of service.
-     *
-     * @return int
      */
     public function getYearsOfServiceAttribute(): int
     {
@@ -309,8 +277,6 @@ class Employee extends Model
 
     /**
      * Check if the employee is currently active.
-     *
-     * @return bool
      */
     public function isActive(): bool
     {
@@ -319,18 +285,14 @@ class Employee extends Model
                is_null($this->termination_date);
     }
 
-
-
     /**
      * Check if the employee is on probation.
-     *
-     * @return bool
      */
     public function isOnProbation(): bool
     {
         $contract = $this->currentContract;
 
-        if (!$contract || !$contract->probation_end_date) {
+        if (! $contract || ! $contract->probation_end_date) {
             return false;
         }
 
@@ -356,8 +318,6 @@ class Employee extends Model
 
     /**
      * Check if this employee is a manager.
-     *
-     * @return bool
      */
     public function isManager(): bool
     {
@@ -366,20 +326,17 @@ class Employee extends Model
 
     /**
      * Get the employee's current leave balance for a specific leave type.
-     *
-     * @param LeaveType $leaveType
-     * @return float
      */
     public function getLeaveBalance(LeaveType $leaveType): float
     {
         $contract = $this->currentContract;
 
-        if (!$contract) {
+        if (! $contract) {
             return 0;
         }
 
         // Get entitled days based on leave type and contract
-        $entitledDays = match($leaveType->code) {
+        $entitledDays = match ($leaveType->code) {
             'annual' => $contract->annual_leave_days,
             'sick' => $contract->sick_leave_days,
             'maternity' => $contract->maternity_leave_days,
@@ -399,21 +356,16 @@ class Employee extends Model
 
     /**
      * Get the employee's attendance for a specific date.
-     *
-     * @param Carbon $date
-     * @return Attendance|null
      */
     public function getAttendanceForDate(Carbon $date): ?Attendance
     {
         return $this->attendances()
-                    ->where('attendance_date', $date->format('Y-m-d'))
-                    ->first();
+            ->where('attendance_date', $date->format('Y-m-d'))
+            ->first();
     }
 
     /**
      * Check if the employee has clocked in today.
-     *
-     * @return bool
      */
     public function hasClockedInToday(): bool
     {
@@ -424,8 +376,6 @@ class Employee extends Model
 
     /**
      * Check if the employee has clocked out today.
-     *
-     * @return bool
      */
     public function hasClockedOutToday(): bool
     {
@@ -436,22 +386,17 @@ class Employee extends Model
 
     /**
      * Get the employee's latest payroll.
-     *
-     * @return Payroll|null
      */
     public function getLatestPayroll(): ?Payroll
     {
         return $this->payrolls()
-                    ->where('status', '!=', 'cancelled')
-                    ->latest('period_end_date')
-                    ->first();
+            ->where('status', '!=', 'cancelled')
+            ->latest('period_end_date')
+            ->first();
     }
 
     /**
      * Generate a unique employee number.
-     *
-     * @param Company $company
-     * @return string
      */
     public static function generateEmployeeNumber(Company $company): string
     {
@@ -460,7 +405,7 @@ class Employee extends Model
 
         // Get the next sequential number for this year
         $lastEmployee = static::where('company_id', $company->id)
-            ->where('employee_number', 'like', $prefix . $year . '%')
+            ->where('employee_number', 'like', $prefix.$year.'%')
             ->orderBy('employee_number', 'desc')
             ->first();
 
@@ -471,6 +416,6 @@ class Employee extends Model
             $nextNumber = 1;
         }
 
-        return $prefix . $year . str_pad($nextNumber, 4, '0', STR_PAD_LEFT);
+        return $prefix.$year.str_pad($nextNumber, 4, '0', STR_PAD_LEFT);
     }
 }

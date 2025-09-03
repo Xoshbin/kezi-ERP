@@ -3,10 +3,10 @@
 namespace App\Actions\Sales;
 
 use App\DataTransferObjects\Sales\CreateInvoiceDTO;
+use App\Enums\Sales\InvoiceStatus;
 use App\Models\Company;
 use App\Models\Currency;
 use App\Models\Invoice;
-use App\Enums\Sales\InvoiceStatus;
 use App\Services\Accounting\LockDateService;
 use Brick\Money\Money;
 use Carbon\Carbon;
@@ -17,8 +17,7 @@ class CreateInvoiceAction
     public function __construct(
         private readonly LockDateService $lockDateService,
         private readonly CreateInvoiceLineAction $createInvoiceLineAction
-    ) {
-    }
+    ) {}
 
     public function execute(CreateInvoiceDTO $dto): Invoice
     {

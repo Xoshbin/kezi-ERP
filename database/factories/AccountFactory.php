@@ -51,7 +51,7 @@ class AccountFactory extends Factory
 
         return [
             'company_id' => Company::factory(),
-            'name' => $this->faker->words(2, true) . ' Account',
+            'name' => $this->faker->words(2, true).' Account',
             'type' => $type,
             'is_deprecated' => false,
             'allow_reconciliation' => false, // Default to not allowing reconciliation for security
@@ -73,7 +73,7 @@ class AccountFactory extends Factory
             default => $this->faker->numberBetween(6000, 9999),
         };
 
-        return $prefix . $this->faker->unique()->randomNumber(3, true);
+        return $prefix.$this->faker->unique()->randomNumber(3, true);
     }
 
     // --- STATE METHODS ---

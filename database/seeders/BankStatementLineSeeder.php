@@ -20,6 +20,7 @@ class BankStatementLineSeeder extends Seeder
 
         if ($statements->isEmpty()) {
             $this->command->warn('No bank statements found. Skipping BankStatementLineSeeder.');
+
             return;
         }
 
@@ -34,7 +35,7 @@ class BankStatementLineSeeder extends Seeder
                 BankStatementLine::create([
                     'bank_statement_id' => $statement->id,
                     'date' => $statement->date->subDays(rand(1, 28)),
-                    'description' => 'Transaction ' . ($i + 1),
+                    'description' => 'Transaction '.($i + 1),
                     'partner_id' => $partners->isEmpty() ? null : $partners->random()->id,
                     'amount' => $amount,
                     'company_id' => $statement->company_id,

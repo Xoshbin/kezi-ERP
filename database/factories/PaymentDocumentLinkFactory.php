@@ -2,10 +2,10 @@
 
 namespace Database\Factories;
 
-use App\Models\Payment;
 use App\Models\Invoice;
-use App\Models\VendorBill;
+use App\Models\Payment;
 use App\Models\PaymentDocumentLink;
+use App\Models\VendorBill;
 use Brick\Money\Money;
 use Illuminate\Database\Eloquent\Factories\Factory;
 

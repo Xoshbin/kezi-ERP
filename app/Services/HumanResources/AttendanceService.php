@@ -2,27 +2,25 @@
 
 namespace App\Services\HumanResources;
 
-use Exception;
 use App\Actions\HumanResources\CreateAttendanceAction;
 use App\DataTransferObjects\HumanResources\CreateAttendanceDTO;
 use App\Models\Attendance;
 use App\Models\Employee;
 use App\Models\User;
 use Carbon\Carbon;
-use Illuminate\Support\Facades\DB;
+use Exception;
 use Illuminate\Support\Facades\Gate;
 
 class AttendanceService
 {
     public function __construct(
         protected CreateAttendanceAction $createAttendanceAction,
-    ) {
-    }
+    ) {}
 
     /**
      * Clock in an employee.
      */
-    public function clockIn(Employee $employee, ?string $location = null, ?string $device = null, ?string $ip = null, User $user = null): Attendance
+    public function clockIn(Employee $employee, ?string $location = null, ?string $device = null, ?string $ip = null, ?User $user = null): Attendance
     {
         $today = now()->format('Y-m-d');
         $currentTime = now()->format('H:i:s');
@@ -67,7 +65,7 @@ class AttendanceService
         $currentTime = now()->format('H:i:s');
 
         $attendance = $employee->getAttendanceForDate(now());
-        if (!$attendance || !$attendance->clock_in_time) {
+        if (! $attendance || ! $attendance->clock_in_time) {
             throw new Exception('Employee has not clocked in today.');
         }
 
@@ -76,19 +74,19 @@ class AttendanceService
         }
 
         // Calculate total hours
-        $clockIn = Carbon::parse($attendance->attendance_date . ' ' . $attendance->clock_in_time);
-        $clockOut = Carbon::parse($attendance->attendance_date . ' ' . $currentTime);
-        
+        $clockIn = Carbon::parse($attendance->attendance_date.' '.$attendance->clock_in_time);
+        $clockOut = Carbon::parse($attendance->attendance_date.' '.$currentTime);
+
         $totalMinutes = $clockOut->diffInMinutes($clockIn);
-        
+
         // Subtract break time if recorded
         if ($attendance->break_start_time && $attendance->break_end_time) {
-            $breakStart = Carbon::parse($attendance->attendance_date . ' ' . $attendance->break_start_time);
-            $breakEnd = Carbon::parse($attendance->attendance_date . ' ' . $attendance->break_end_time);
+            $breakStart = Carbon::parse($attendance->attendance_date.' '.$attendance->break_start_time);
+            $breakEnd = Carbon::parse($attendance->attendance_date.' '.$attendance->break_end_time);
             $breakMinutes = $breakEnd->diffInMinutes($breakStart);
             $totalMinutes -= $breakMinutes;
         }
-        
+
         $totalHours = round($totalMinutes / 60, 2);
         $regularHours = min($totalHours, 8); // Assuming 8 hours is regular
         $overtimeHours = max(0, $totalHours - 8);
@@ -112,7 +110,7 @@ class AttendanceService
     public function startBreak(Employee $employee): Attendance
     {
         $attendance = $employee->getAttendanceForDate(now());
-        if (!$attendance || !$attendance->clock_in_time) {
+        if (! $attendance || ! $attendance->clock_in_time) {
             throw new Exception('Employee has not clocked in today.');
         }
 
@@ -133,7 +131,7 @@ class AttendanceService
     public function endBreak(Employee $employee): Attendance
     {
         $attendance = $employee->getAttendanceForDate(now());
-        if (!$attendance || !$attendance->break_start_time) {
+        if (! $attendance || ! $attendance->break_start_time) {
             throw new Exception('Break has not been started.');
         }
 
@@ -142,10 +140,10 @@ class AttendanceService
         }
 
         $currentTime = now()->format('H:i:s');
-        
+
         // Calculate break hours
-        $breakStart = Carbon::parse($attendance->attendance_date . ' ' . $attendance->break_start_time);
-        $breakEnd = Carbon::parse($attendance->attendance_date . ' ' . $currentTime);
+        $breakStart = Carbon::parse($attendance->attendance_date.' '.$attendance->break_start_time);
+        $breakEnd = Carbon::parse($attendance->attendance_date.' '.$currentTime);
         $breakHours = round($breakEnd->diffInMinutes($breakStart) / 60, 2);
 
         $attendance->update([
@@ -236,16 +234,16 @@ class AttendanceService
     private function determineAttendanceType(string $date): string
     {
         $carbonDate = Carbon::parse($date);
-        
+
         if ($carbonDate->isWeekend()) {
             return 'weekend';
         }
-        
+
         // TODO: Check for holidays
         // if ($this->isHoliday($carbonDate)) {
         //     return 'holiday';
         // }
-        
+
         return 'regular';
     }
 }

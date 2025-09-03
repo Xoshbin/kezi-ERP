@@ -1,15 +1,12 @@
 <?php
 
-use App\Models\User;
-use App\Models\Payment;
-use Tests\Traits\MocksTime;
-use App\Services\PaymentService;
-use App\Enums\Payments\PaymentStatus;
-use Tests\Traits\CreatesApplication;
-use Tests\Traits\WithUnlockedPeriod;
-use Tests\Traits\WithConfiguredCompany;
 use App\Enums\Accounting\JournalEntryState;
+use App\Enums\Payments\PaymentStatus;
+use App\Models\Payment;
+use App\Services\PaymentService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\Traits\MocksTime;
+use Tests\Traits\WithConfiguredCompany;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class, MocksTime::class);
 
@@ -40,6 +37,6 @@ test('cancelling a confirmed payment creates a reversing journal entry and an au
         'auditable_id' => $payment->id,
         'user_id' => $this->user->id,
         'event_type' => 'cancellation',
-        'description' => 'Payment Cancelled: ' . $cancellationReason,
+        'description' => 'Payment Cancelled: '.$cancellationReason,
     ]);
 });

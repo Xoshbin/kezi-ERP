@@ -78,7 +78,7 @@ describe('LockDate Service', function () {
         ]);
         $service = app(LockDateService::class);
         $date = Carbon::parse('2025-12-15');
-        $cacheKey = "lock_date_{$this->company->id}_" . LockDateType::AllUsers->value;
+        $cacheKey = "lock_date_{$this->company->id}_".LockDateType::AllUsers->value;
 
         Cache::forget($cacheKey);
         expect(Cache::has($cacheKey))->toBeFalse();

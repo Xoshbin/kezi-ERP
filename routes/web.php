@@ -1,12 +1,11 @@
 <?php
 
 use App\Actions\Sales\GenerateInvoicePdfAction;
-use App\Models\Invoice;
-use App\Models\Company;
 use App\Enums\Sales\InvoiceStatus;
-use Illuminate\Support\Facades\Route;
+use App\Models\Company;
+use App\Models\Invoice;
 use Illuminate\Support\Facades\Auth;
-use Filament\Facades\Filament;
+use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     return view('welcome');
@@ -18,22 +17,24 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/invoices/{invoice}/pdf', function (Invoice $invoice, GenerateInvoicePdfAction $action) {
         // Check if user can view this invoice - user must have access to the company
         $user = Auth::user();
-        if (!$user->companies()->where('companies.id', $invoice->company_id)->exists()) {
+        if (! $user->companies()->where('companies.id', $invoice->company_id)->exists()) {
             abort(403, 'Unauthorized access to invoice.');
         }
 
         $template = request('template', $invoice->company->pdf_template ?? 'classic');
+
         return $action->execute($invoice, $template);
     })->name('invoices.pdf');
 
     Route::get('/invoices/{invoice}/pdf/download', function (Invoice $invoice, GenerateInvoicePdfAction $action) {
         // Check if user can view this invoice - user must have access to the company
         $user = Auth::user();
-        if (!$user->companies()->where('companies.id', $invoice->company_id)->exists()) {
+        if (! $user->companies()->where('companies.id', $invoice->company_id)->exists()) {
             abort(403, 'Unauthorized access to invoice.');
         }
 
         $template = request('template', $invoice->company->pdf_template ?? 'classic');
+
         return $action->download($invoice, $template);
     })->name('invoices.pdf.download');
 
@@ -41,18 +42,19 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/pdf/preview/{company}', function (Company $company) {
         // Check if user can access this company - user must have access to the company
         $user = Auth::user();
-        if (!$user->companies()->where('companies.id', $company->id)->exists()) {
+        if (! $user->companies()->where('companies.id', $company->id)->exists()) {
             abort(403, 'Unauthorized access to company settings.');
         }
 
         // Find a sample invoice for preview
         $invoice = $company->invoices()->where('status', '!=', InvoiceStatus::Draft)->first();
 
-        if (!$invoice) {
+        if (! $invoice) {
             return response()->json(['error' => 'No posted invoices found for preview'], 404);
         }
 
         $template = request('template', $company->pdf_template ?? 'classic');
+
         return app(GenerateInvoicePdfAction::class)->execute($invoice, $template);
     })->name('pdf.preview');
 });
