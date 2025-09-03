@@ -1,20 +1,16 @@
 <?php
 
-use App\Models\User;
-use App\Models\Account;
-use App\Models\Company;
-use App\Models\Journal;
 use App\Enums\Accounting\JournalType;
-use App\Models\JournalEntry;
-use App\Models\AdjustmentDocument;
 use App\Enums\Adjustments\AdjustmentDocumentStatus;
-use Tests\Traits\CreatesApplication;
-use Illuminate\Support\Facades\Event;
-use Tests\Traits\WithConfiguredCompany;
 use App\Events\AdjustmentDocumentPosted;
+use App\Models\AdjustmentDocument;
+use App\Models\Journal;
+use App\Models\JournalEntry;
 use App\Services\AdjustmentDocumentService;
-use Brick\Money\Money; // Import the Money class
+use Brick\Money\Money;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Event; // Import the Money class
+use Tests\Traits\WithConfiguredCompany;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);
 
@@ -55,7 +51,6 @@ test('an adjustment document can be posted, which creates a journal entry and di
     $expectedAmount = Money::of(200, $currencyCode);
     expect($journalEntry->total_debit->isEqualTo($expectedAmount))->toBeTrue();
     expect($journalEntry->total_credit->isEqualTo($expectedAmount))->toBeTrue();
-
 
     // Assert: An event was dispatched.
     Event::assertDispatched(AdjustmentDocumentPosted::class, function ($event) use ($document) {

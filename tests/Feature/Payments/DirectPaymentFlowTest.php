@@ -2,14 +2,14 @@
 
 use App\Actions\Payments\CreatePaymentAction;
 use App\DataTransferObjects\Payments\CreatePaymentDTO;
-use App\Models\Account;
-use App\Models\Partner;
-use App\Models\Journal;
-use App\Models\JournalEntry;
 use App\Enums\Accounting\JournalType;
 use App\Enums\Payments\PaymentPurpose;
-use App\Enums\Payments\PaymentType;
 use App\Enums\Payments\PaymentStatus;
+use App\Enums\Payments\PaymentType;
+use App\Models\Account;
+use App\Models\Journal;
+use App\Models\JournalEntry;
+use App\Models\Partner;
 use App\Services\PaymentService;
 use Brick\Money\Money;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -171,7 +171,7 @@ test('settlement payments still work as before', function () {
     );
 
     // Act
-    expect(fn() => app(CreatePaymentAction::class)->execute($paymentDTO, $this->user))
+    expect(fn () => app(CreatePaymentAction::class)->execute($paymentDTO, $this->user))
         ->toThrow(\InvalidArgumentException::class, 'Settlement payments must be linked to at least one document.');
 
     // Assert: The validation works correctly for settlement payments

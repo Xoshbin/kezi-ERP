@@ -7,7 +7,7 @@ use App\Models\Invoice;
 class UpdateInvoiceDTO
 {
     /**
-     * @param UpdateInvoiceLineDTO[] $lines
+     * @param  UpdateInvoiceLineDTO[]  $lines
      */
     public function __construct(
         public readonly Invoice $invoice,

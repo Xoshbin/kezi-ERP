@@ -14,6 +14,6 @@ enum StockMoveType: string
      */
     public function label(): string
     {
-        return __('enums.stock_move_type.' . $this->value);
+        return __('enums.stock_move_type.'.$this->value);
     }
 }

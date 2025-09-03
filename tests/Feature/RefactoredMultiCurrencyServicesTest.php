@@ -5,6 +5,7 @@ use App\Models\Currency;
 use App\Services\InvoiceService;
 use Brick\Money\Money;
 use Carbon\Carbon;
+
 test('refactored services have multi-currency dependencies', function () {
     // Test that services have the new multi-currency dependencies injected
     $invoiceService = app(InvoiceService::class);
@@ -15,7 +16,7 @@ test('refactored services have multi-currency dependencies', function () {
     // Verify InvoiceService has the new dependencies
     $reflection = new ReflectionClass($invoiceService);
     $properties = $reflection->getProperties();
-    $propertyNames = array_map(fn($prop) => $prop->getName(), $properties);
+    $propertyNames = array_map(fn ($prop) => $prop->getName(), $properties);
 
     expect($propertyNames)->toContain('currencyConverter');
     expect($propertyNames)->toContain('exchangeRateService');
@@ -23,7 +24,7 @@ test('refactored services have multi-currency dependencies', function () {
     // Verify VendorBillService has the new dependencies
     $reflection = new ReflectionClass($vendorBillService);
     $properties = $reflection->getProperties();
-    $propertyNames = array_map(fn($prop) => $prop->getName(), $properties);
+    $propertyNames = array_map(fn ($prop) => $prop->getName(), $properties);
 
     expect($propertyNames)->toContain('currencyConverter');
     expect($propertyNames)->toContain('exchangeRateService');
@@ -31,7 +32,7 @@ test('refactored services have multi-currency dependencies', function () {
     // Verify PaymentService has the new dependencies
     $reflection = new ReflectionClass($paymentService);
     $properties = $reflection->getProperties();
-    $propertyNames = array_map(fn($prop) => $prop->getName(), $properties);
+    $propertyNames = array_map(fn ($prop) => $prop->getName(), $properties);
 
     expect($propertyNames)->toContain('currencyConverter');
     expect($propertyNames)->toContain('exchangeGainLossService');
@@ -39,7 +40,7 @@ test('refactored services have multi-currency dependencies', function () {
     // Verify JournalEntryService has the new dependencies
     $reflection = new ReflectionClass($journalEntryService);
     $properties = $reflection->getProperties();
-    $propertyNames = array_map(fn($prop) => $prop->getName(), $properties);
+    $propertyNames = array_map(fn ($prop) => $prop->getName(), $properties);
 
     expect($propertyNames)->toContain('currencyConverter');
 });
@@ -57,7 +58,7 @@ test('multi-currency services integration works correctly', function () {
     // Verify the service has the new dependencies
     $reflection = new ReflectionClass($invoiceService);
     $properties = $reflection->getProperties();
-    $propertyNames = array_map(fn($prop) => $prop->getName(), $properties);
+    $propertyNames = array_map(fn ($prop) => $prop->getName(), $properties);
 
     expect($propertyNames)->toContain('currencyConverter');
     expect($propertyNames)->toContain('exchangeRateService');

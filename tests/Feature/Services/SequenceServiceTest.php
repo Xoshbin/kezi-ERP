@@ -1,9 +1,9 @@
 <?php
 
-use App\Services\SequenceService;
+use App\Enums\Settings\NumberingType;
 use App\Models\Company;
 use App\Models\Sequence;
-use App\Enums\Settings\NumberingType;
+use App\Services\SequenceService;
 use Carbon\Carbon;
 use Tests\Traits\WithConfiguredCompany;
 

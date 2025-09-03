@@ -3,18 +3,15 @@
 namespace App\Services;
 
 use App\Actions\Accounting\CreateJournalEntryForAdjustmentAction; // 1. Import the new action
+use App\Enums\Adjustments\AdjustmentDocumentStatus;
 use App\Events\AdjustmentDocumentPosted;
-use App\Exceptions\UpdateNotAllowedException;
 use App\Models\AdjustmentDocument;
 use App\Models\User;
-use App\Enums\Adjustments\AdjustmentDocumentStatus;
 use Illuminate\Support\Facades\DB;
 
 class AdjustmentDocumentService
 {
-    public function __construct(private readonly CreateJournalEntryForAdjustmentAction $createJournalEntryForAdjustmentAction)
-    {
-    }
+    public function __construct(private readonly CreateJournalEntryForAdjustmentAction $createJournalEntryForAdjustmentAction) {}
 
     /**
      * Post a draft credit note and create its reversing journal entry.

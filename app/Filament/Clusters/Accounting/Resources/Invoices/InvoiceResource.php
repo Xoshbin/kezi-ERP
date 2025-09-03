@@ -2,15 +2,12 @@
 
 namespace App\Filament\Clusters\Accounting\Resources\Invoices;
 
-use App\Models\Partner;
-use App\Models\Currency;
-use Filament\Facades\Filament;
-use App\Models\CurrencyRate;
-use App\Models\FiscalPosition;
-use App\Models\Tax;
-use App\Models\Account;
-use App\Services\PaymentService;
+use App\Actions\Payments\CreatePaymentAction;
+use App\DataTransferObjects\Payments\CreatePaymentDocumentLinkDTO;
+use App\DataTransferObjects\Payments\CreatePaymentDTO;
 use App\Enums\Partners\PartnerType;
+use App\Enums\Payments\PaymentPurpose;
+use App\Enums\Payments\PaymentType;
 use App\Enums\Sales\InvoiceStatus;
 use App\Enums\Shared\PaymentState;
 use App\Filament\Clusters\Accounting\AccountingCluster;
@@ -21,25 +18,27 @@ use App\Filament\Clusters\Accounting\Resources\Invoices\RelationManagers\Adjustm
 use App\Filament\Clusters\Accounting\Resources\Invoices\RelationManagers\InvoiceLinesRelationManager;
 use App\Filament\Clusters\Accounting\Resources\Invoices\RelationManagers\PaymentsRelationManager;
 use App\Filament\Forms\Components\MoneyInput;
-use App\Actions\Payments\CreatePaymentAction;
-use App\DataTransferObjects\Payments\CreatePaymentDTO;
-use App\DataTransferObjects\Payments\CreatePaymentDocumentLinkDTO;
-use App\Enums\Payments\PaymentPurpose;
-use App\Enums\Payments\PaymentType;
-use App\Models\Journal;
-use Brick\Money\Money;
-use App\Filament\Resources\InvoiceResource\RelationManagers;
 use App\Filament\Support\TranslatableSelect;
 use App\Filament\Tables\Columns\MoneyColumn;
+use App\Models\Account;
+use App\Models\Currency;
+use App\Models\CurrencyRate;
+use App\Models\FiscalPosition;
 use App\Models\Invoice;
+use App\Models\Journal;
+use App\Models\Partner;
 use App\Models\Product;
+use App\Models\Tax;
 use App\Rules\NotInLockedPeriod;
 use App\Services\InvoiceService;
+use App\Services\PaymentService;
+use Brick\Money\Money;
 use Exception;
 use Filament\Actions\Action;
 use Filament\Actions\ActionGroup;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\EditAction;
+use Filament\Facades\Filament;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Repeater;
@@ -61,7 +60,7 @@ class InvoiceResource extends Resource
 {
     protected static ?string $model = Invoice::class;
 
-    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-document-currency-dollar';
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-document-currency-dollar';
 
     protected static ?int $navigationSort = 1;
 
@@ -111,7 +110,7 @@ class InvoiceResource extends Resource
                                 ->required()
                                 ->options(
                                     collect(PartnerType::cases())
-                                        ->mapWithKeys(fn(PartnerType $type) => [$type->value => $type->label()])
+                                        ->mapWithKeys(fn (PartnerType $type) => [$type->value => $type->label()])
                                 ),
                             TextInput::make('contact_person')
                                 ->label(__('partner.contact_person'))
@@ -135,7 +134,7 @@ class InvoiceResource extends Resource
                     TranslatableSelect::make('currency_id', Currency::class, __('invoice.currency'))
                         ->required()
                         ->live()
-                        ->default(fn() => Filament::getTenant()?->currency_id)
+                        ->default(fn () => Filament::getTenant()?->currency_id)
                         ->afterStateUpdated(function (callable $set, $state, callable $get) {
                             if ($state) {
                                 $currency = Currency::find($state);
@@ -189,6 +188,7 @@ class InvoiceResource extends Resource
                         ->visible(function (callable $get) {
                             $currencyId = $get('currency_id');
                             $company = Filament::getTenant();
+
                             return $currencyId && $company && $currencyId != $company->currency_id;
                         })
                         ->helperText(__('invoice.exchange_rate_helper')),
@@ -205,7 +205,7 @@ class InvoiceResource extends Resource
                         ->label(__('invoice.invoice_date'))
                         ->default(now())
                         ->required()
-                        ->rules([new NotInLockedPeriod()]),
+                        ->rules([new NotInLockedPeriod]),
                     DatePicker::make('due_date')
                         ->label(__('invoice.due_date'))
                         ->required(),
@@ -228,8 +228,8 @@ class InvoiceResource extends Resource
                         ])
                         ->live()
                         ->reorderable(true)
-                        ->deletable(fn(?Invoice $record) => !$record || $record->status === InvoiceStatus::Draft)
-                        ->disabled(fn(?Invoice $record) => $record && $record->status !== InvoiceStatus::Draft)
+                        ->deletable(fn (?Invoice $record) => ! $record || $record->status === InvoiceStatus::Draft)
+                        ->disabled(fn (?Invoice $record) => $record && $record->status !== InvoiceStatus::Draft)
                         ->minItems(1)
                         ->schema([
                             TranslatableSelect::standard(
@@ -323,12 +323,12 @@ class InvoiceResource extends Resource
                                 __('invoice.income_account'),
                                 'name',
                                 null,
-                                fn($query) => $query->where('type', 'income')
+                                fn ($query) => $query->where('type', 'income')
                             )
                                 ->required()
                                 ->columnSpan(3),
                         ])
-                        ->columns(18)
+                        ->columns(18),
                 ])->columnSpanFull(),
 
             Section::make(__('invoice.company_currency_totals'))
@@ -337,22 +337,22 @@ class InvoiceResource extends Resource
                         ->label(__('invoice.exchange_rate_at_creation'))
                         ->numeric()
                         ->disabled()
-                        ->visible(fn(?Invoice $record) => $record && $record->exchange_rate_at_creation),
+                        ->visible(fn (?Invoice $record) => $record && $record->exchange_rate_at_creation),
 
                     MoneyInput::make('total_amount_company_currency')
                         ->label(__('invoice.total_amount_company_currency'))
                         ->currencyField('../../company.currency_id')
                         ->disabled()
-                        ->visible(fn(?Invoice $record) => $record && $record->total_amount_company_currency),
+                        ->visible(fn (?Invoice $record) => $record && $record->total_amount_company_currency),
 
                     MoneyInput::make('total_tax_company_currency')
                         ->label(__('invoice.total_tax_company_currency'))
                         ->currencyField('../../company.currency_id')
                         ->disabled()
-                        ->visible(fn(?Invoice $record) => $record && $record->total_tax_company_currency),
+                        ->visible(fn (?Invoice $record) => $record && $record->total_tax_company_currency),
                 ])
                 ->columns(3)
-                ->visible(fn(?Invoice $record) => $record && ($record->exchange_rate_at_creation || $record->total_amount_company_currency)),
+                ->visible(fn (?Invoice $record) => $record && ($record->exchange_rate_at_creation || $record->total_amount_company_currency)),
         ]);
     }
 
@@ -374,11 +374,12 @@ class InvoiceResource extends Resource
                         if ($record->invoice_number) {
                             return $record->invoice_number;
                         }
-                        return 'DRAFT-' . str_pad($record->id, 5, '0', STR_PAD_LEFT);
+
+                        return 'DRAFT-'.str_pad($record->id, 5, '0', STR_PAD_LEFT);
                     })
                     ->badge()
-                    ->color(fn(Invoice $record): string => $record->invoice_number ? 'success' : 'warning')
-                    ->icon(fn(Invoice $record): string => $record->invoice_number ? 'heroicon-m-check-circle' : 'heroicon-m-pencil-square')
+                    ->color(fn (Invoice $record): string => $record->invoice_number ? 'success' : 'warning')
+                    ->icon(fn (Invoice $record): string => $record->invoice_number ? 'heroicon-m-check-circle' : 'heroicon-m-pencil-square')
                     ->sortable(),
 
                 // Customer (critical for identification)
@@ -421,9 +422,9 @@ class InvoiceResource extends Resource
                 // Payment State (critical for collections)
                 TextColumn::make('paymentState')
                     ->label(__('invoice.payment_state'))
-                    ->formatStateUsing(fn(PaymentState $state): string => $state->label())
+                    ->formatStateUsing(fn (PaymentState $state): string => $state->label())
                     ->badge()
-                    ->color(fn(PaymentState $state): string => $state->color()),
+                    ->color(fn (PaymentState $state): string => $state->color()),
                 // Total Amount (critical financial information)
                 MoneyColumn::make('total_amount')
                     ->label(__('invoice.total'))
@@ -448,13 +449,13 @@ class InvoiceResource extends Resource
                     ->numeric(decimalPlaces: 6)
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true)
-                    ->visible(fn($record) => $record && $record->exchange_rate_at_creation),
+                    ->visible(fn ($record) => $record && $record->exchange_rate_at_creation),
 
                 MoneyColumn::make('total_amount_company_currency')
                     ->label(__('invoice.total_amount_company_currency'))
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true)
-                    ->visible(fn($record) => $record && $record->total_amount_company_currency),
+                    ->visible(fn ($record) => $record && $record->total_amount_company_currency),
                 // Posted Date (important for audit trail)
                 TextColumn::make('posted_at')
                     ->label(__('invoice.posted_at'))
@@ -485,14 +486,14 @@ class InvoiceResource extends Resource
                         ->label(__('View PDF'))
                         ->icon('heroicon-o-document-text')
                         ->color('info')
-                        ->url(fn(Invoice $record) => route('invoices.pdf', $record))
+                        ->url(fn (Invoice $record) => route('invoices.pdf', $record))
                         ->openUrlInNewTab(),
 
                     Action::make('downloadPdf')
                         ->label(__('Download PDF'))
                         ->icon('heroicon-o-arrow-down-tray')
                         ->color('success')
-                        ->url(fn(Invoice $record) => route('invoices.pdf.download', $record)),
+                        ->url(fn (Invoice $record) => route('invoices.pdf.download', $record)),
                 ])
                     ->label(__('PDF'))
                     ->icon('heroicon-o-document-text')
@@ -517,7 +518,7 @@ class InvoiceResource extends Resource
                         }
                     })
                     ->requiresConfirmation()
-                    ->visible(fn(Invoice $record) => $record->status === InvoiceStatus::Draft),
+                    ->visible(fn (Invoice $record) => $record->status === InvoiceStatus::Draft),
                 Action::make('register_payment')
                     ->label(__('Register Payment'))
                     ->icon('heroicon-o-banknotes')
@@ -544,13 +545,13 @@ class InvoiceResource extends Resource
                         MoneyInput::make('amount')
                             ->label(__('payment.form.amount'))
                             ->currencyField('currency_id')
-                            ->default(fn(Invoice $record) => $record->getRemainingAmount())
+                            ->default(fn (Invoice $record) => $record->getRemainingAmount())
                             ->required(),
                         TextInput::make('reference')
                             ->label(__('payment.form.reference'))
                             ->placeholder(__('Optional reference')),
                         Hidden::make('currency_id')
-                            ->default(fn(Invoice $record) => $record->currency_id),
+                            ->default(fn (Invoice $record) => $record->currency_id),
                     ])
                     ->action(function (Invoice $record, array $data) {
                         try {
@@ -595,9 +596,8 @@ class InvoiceResource extends Resource
                         }
                     })
                     ->visible(
-                        fn(Invoice $record) =>
-                        $record->status === InvoiceStatus::Posted &&
-                            !$record->getRemainingAmount()->isZero()
+                        fn (Invoice $record) => $record->status === InvoiceStatus::Posted &&
+                            ! $record->getRemainingAmount()->isZero()
                     ),
                 // Action::make('resetToDraft')
                 //     ->label(__('invoice.reset_to_draft'))

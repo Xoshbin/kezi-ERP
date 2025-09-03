@@ -2,7 +2,6 @@
 
 namespace App\Filament\Clusters\Settings\Resources\Accounts;
 
-use App\Models\Currency;
 use App\Enums\Accounting\AccountType;
 use App\Filament\Clusters\Settings\Resources\Accounts\Pages\CreateAccount;
 use App\Filament\Clusters\Settings\Resources\Accounts\Pages\EditAccount;
@@ -11,6 +10,7 @@ use App\Filament\Clusters\Settings\Resources\Accounts\RelationManagers\JournalEn
 use App\Filament\Clusters\Settings\SettingsCluster;
 use App\Filament\Support\TranslatableSelect;
 use App\Models\Account;
+use App\Models\Currency;
 use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
@@ -33,7 +33,7 @@ class AccountResource extends Resource
 
     protected static ?string $model = Account::class;
 
-    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-list-bullet';
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-list-bullet';
 
     protected static ?int $navigationSort = 3;
 
@@ -80,7 +80,7 @@ class AccountResource extends Resource
                                     ->maxLength(255),
                             ])
                             ->createOptionModalHeading(__('common.modal_title_create_company'))
-                            ->createOptionAction(fn(Action $action) => $action->name('create-company-option')->modalWidth('lg')),
+                            ->createOptionAction(fn (Action $action) => $action->name('create-company-option')->modalWidth('lg')),
                         TextInput::make('code')
                             ->label(__('account.code'))
                             ->required()

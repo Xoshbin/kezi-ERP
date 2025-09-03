@@ -22,6 +22,7 @@ use App\Models\Product;
 use App\Models\User;
 use App\Models\VendorBill;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+
 use function Pest\Livewire\livewire;
 
 uses(RefreshDatabase::class);
@@ -32,7 +33,8 @@ beforeEach(function () {
 });
 
 // Helper method to setup foundation data for subsequent tests
-function setupFoundation() {
+function setupFoundation()
+{
     // Create currency (use firstOrCreate to avoid duplicates)
     $currency = Currency::firstOrCreate(
         ['code' => 'IQD'],
@@ -203,10 +205,10 @@ test('Jmeryar ERP complete accounting scenario - Full Workflow', function () {
     $capitalLines = $capitalJournalEntry->lines;
     expect($capitalLines)->toHaveCount(2);
 
-    $debitLine = $capitalLines->filter(function($line) {
+    $debitLine = $capitalLines->filter(function ($line) {
         return $line->debit && $line->debit->getAmount()->toInt() > 0;
     })->first();
-    $creditLine = $capitalLines->filter(function($line) {
+    $creditLine = $capitalLines->filter(function ($line) {
         return $line->credit && $line->credit->getAmount()->toInt() > 0;
     })->first();
 
@@ -275,10 +277,10 @@ test('Jmeryar ERP complete accounting scenario - Full Workflow', function () {
     $vendorBillLines = $vendorBillJE->lines;
     expect($vendorBillLines)->toHaveCount(2);
 
-    $assetLine = $vendorBillLines->filter(function($line) {
+    $assetLine = $vendorBillLines->filter(function ($line) {
         return $line->debit && $line->debit->getAmount()->toInt() > 0;
     })->first();
-    $liabilityLine = $vendorBillLines->filter(function($line) {
+    $liabilityLine = $vendorBillLines->filter(function ($line) {
         return $line->credit && $line->credit->getAmount()->toInt() > 0;
     })->first();
 
@@ -358,10 +360,10 @@ test('Jmeryar ERP complete accounting scenario - Full Workflow', function () {
     $invoiceLines = $invoiceJE->lines;
     expect($invoiceLines)->toHaveCount(2);
 
-    $receivableLine = $invoiceLines->filter(function($line) {
+    $receivableLine = $invoiceLines->filter(function ($line) {
         return $line->debit && $line->debit->getAmount()->toInt() > 0;
     })->first();
-    $revenueLine = $invoiceLines->filter(function($line) {
+    $revenueLine = $invoiceLines->filter(function ($line) {
         return $line->credit && $line->credit->getAmount()->toInt() > 0;
     })->first();
 
@@ -469,7 +471,7 @@ test('Jmeryar ERP complete accounting scenario - Full Workflow', function () {
             'company_id' => $company->id,
             'currency_id' => $currency->id,
             'journal_id' => $journals['Bank']->id,
-            'reference' => 'Monthly Statement - ' . now()->format('Y-m'),
+            'reference' => 'Monthly Statement - '.now()->format('Y-m'),
             'date' => now()->format('Y-m-d'),
             'starting_balance' => 17000000,
             'ending_balance' => 18999500,
@@ -497,7 +499,7 @@ test('Jmeryar ERP complete accounting scenario - Full Workflow', function () {
         ->call('create')
         ->assertHasNoFormErrors();
 
-    $bankStatement = BankStatement::where('reference', 'Monthly Statement - ' . now()->format('Y-m'))->first();
+    $bankStatement = BankStatement::where('reference', 'Monthly Statement - '.now()->format('Y-m'))->first();
     expect($bankStatement)->not->toBeNull();
 
     // Verify bank statement lines

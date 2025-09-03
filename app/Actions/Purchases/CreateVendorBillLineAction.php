@@ -28,7 +28,7 @@ class CreateVendorBillLineAction
             $tax = Tax::find($dto->tax_id);
             if ($tax) {
                 $taxRate = $tax->rate / 100;
-                $taxAmount = $subtotal->multipliedBy((string)$taxRate, RoundingMode::HALF_UP);
+                $taxAmount = $subtotal->multipliedBy((string) $taxRate, RoundingMode::HALF_UP);
             }
         }
 

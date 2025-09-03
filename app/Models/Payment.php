@@ -2,23 +2,23 @@
 
 namespace App\Models;
 
-use Illuminate\Support\Carbon;
-use Illuminate\Database\Eloquent\Collection;
+use App\Casts\BaseCurrencyMoneyCast;
+use App\Casts\DocumentCurrencyMoneyCast;
+use App\Enums\Payments\PaymentPurpose;
+use App\Enums\Payments\PaymentStatus;
+use App\Enums\Payments\PaymentType;
+use App\Observers\AuditLogObserver;
+use App\Observers\PaymentObserver;
 use Database\Factories\PaymentFactory;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use App\Casts\DocumentCurrencyMoneyCast;
-use App\Casts\BaseCurrencyMoneyCast;
-use App\Observers\PaymentObserver;
-use App\Observers\AuditLogObserver;
-use App\Enums\Payments\PaymentType;
-use App\Enums\Payments\PaymentStatus;
-use App\Enums\Payments\PaymentPurpose;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Attributes\ObservedBy;
+use Illuminate\Support\Carbon;
 
 // Note: SoftDeletes trait is intentionally excluded.
 // Financial transaction records like Payments, once confirmed, are immutable
@@ -26,7 +26,6 @@ use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 /**
  * Class Payment
  *
- * @package App\Models
  * @property int $id
  * @property int $company_id
  * @property int $journal_id
@@ -51,6 +50,7 @@ use Illuminate\Database\Eloquent\Attributes\ObservedBy;
  * @property-read int|null $payment_document_links_count
  * @property-read Collection<int, VendorBill> $vendorBills
  * @property-read int|null $vendor_bills_count
+ *
  * @method static PaymentFactory factory($count = null, $state = [])
  * @method static Builder<static>|Payment newModelQuery()
  * @method static Builder<static>|Payment newQuery()
@@ -68,6 +68,7 @@ use Illuminate\Database\Eloquent\Attributes\ObservedBy;
  * @method static Builder<static>|Payment whereReference($value)
  * @method static Builder<static>|Payment whereStatus($value)
  * @method static Builder<static>|Payment whereUpdatedAt($value)
+ *
  * @mixin \Eloquent
  */
 #[ObservedBy([AuditLogObserver::class, PaymentObserver::class])]
@@ -126,8 +127,6 @@ class Payment extends Model
         'status' => 'draft',
         'payment_purpose' => 'settlement',
     ];
-
-
 
     /**
      * Get the Company that owns the Payment.

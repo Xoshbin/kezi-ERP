@@ -47,7 +47,7 @@ class PaymentsRelationManager extends RelationManager
                             ->relationship('company', 'name')
                             ->label(__('vendor_bill.payments_relation_manager.company'))
                             ->required()
-                            ->default(fn() => $this->getOwnerRecord()->company_id),
+                            ->default(fn () => $this->getOwnerRecord()->company_id),
 
                         Select::make('journal_id')
                             ->relationship('journal', 'name')
@@ -58,7 +58,7 @@ class PaymentsRelationManager extends RelationManager
                             ->relationship('currency', 'name')
                             ->label(__('vendor_bill.payments_relation_manager.currency'))
                             ->required()
-                            ->default(fn() => $this->getOwnerRecord()->currency_id),
+                            ->default(fn () => $this->getOwnerRecord()->currency_id),
 
                         DatePicker::make('payment_date')
                             ->label(__('vendor_bill.payments_relation_manager.payment_date'))
@@ -134,18 +134,18 @@ class PaymentsRelationManager extends RelationManager
 
                 TextColumn::make('payment_type')
                     ->label(__('vendor_bill.payments_relation_manager.payment_type'))
-                    ->formatStateUsing(fn(PaymentType $state): string => $state->label())
+                    ->formatStateUsing(fn (PaymentType $state): string => $state->label())
                     ->badge()
-                    ->color(fn(PaymentType $state): string => match($state) {
+                    ->color(fn (PaymentType $state): string => match ($state) {
                         PaymentType::Inbound => 'success',
                         PaymentType::Outbound => 'danger',
                     }),
 
                 TextColumn::make('status')
                     ->label(__('vendor_bill.payments_relation_manager.status'))
-                    ->formatStateUsing(fn(PaymentStatus $state): string => $state->label())
+                    ->formatStateUsing(fn (PaymentStatus $state): string => $state->label())
                     ->badge()
-                    ->color(fn(PaymentStatus $state): string => match($state) {
+                    ->color(fn (PaymentStatus $state): string => match ($state) {
                         PaymentStatus::Draft => 'gray',
                         PaymentStatus::Confirmed => 'warning',
                         PaymentStatus::Reconciled => 'success',
@@ -167,9 +167,10 @@ class PaymentsRelationManager extends RelationManager
                     ->limit(30)
                     ->tooltip(function (TextColumn $column): ?string {
                         $state = $column->getState();
-                        if (!$state || strlen($state) <= 30) {
+                        if (! $state || strlen($state) <= 30) {
                             return null;
                         }
+
                         return $state;
                     })
                     ->toggleable(),
@@ -182,7 +183,7 @@ class PaymentsRelationManager extends RelationManager
 
                 IconColumn::make('is_reconciled')
                     ->label(__('vendor_bill.payments_relation_manager.reconciliation_status'))
-                    ->getStateUsing(fn(Payment $record): bool => $record->status === PaymentStatus::Reconciled)
+                    ->getStateUsing(fn (Payment $record): bool => $record->status === PaymentStatus::Reconciled)
                     ->boolean()
                     ->trueIcon('heroicon-o-check-circle')
                     ->falseIcon('heroicon-o-x-circle')
@@ -228,6 +229,7 @@ class PaymentsRelationManager extends RelationManager
                     ->label(__('vendor_bill.payments_relation_manager.create_payment'))
                     ->mutateDataUsing(function (array $data): array {
                         $data['paid_to_from_partner_id'] = $this->getOwnerRecord()->vendor_id;
+
                         return $data;
                     }),
             ])
@@ -236,7 +238,7 @@ class PaymentsRelationManager extends RelationManager
                 EditAction::make(),
                 DetachAction::make()
                     ->label(__('vendor_bill.payments_relation_manager.detach'))
-                    ->visible(fn(Payment $record): bool => $record->status === PaymentStatus::Draft),
+                    ->visible(fn (Payment $record): bool => $record->status === PaymentStatus::Draft),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([

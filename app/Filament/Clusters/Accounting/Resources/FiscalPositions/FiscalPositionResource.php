@@ -8,8 +8,6 @@ use App\Filament\Clusters\Accounting\Resources\FiscalPositions\Pages\EditFiscalP
 use App\Filament\Clusters\Accounting\Resources\FiscalPositions\Pages\ListFiscalPositions;
 use App\Filament\Clusters\Accounting\Resources\FiscalPositions\RelationManagers\AccountMappingsRelationManager;
 use App\Filament\Clusters\Accounting\Resources\FiscalPositions\RelationManagers\TaxMappingsRelationManager;
-use App\Filament\Resources\FiscalPositionResource\Pages;
-use App\Filament\Resources\FiscalPositionResource\RelationManagers;
 use App\Models\FiscalPosition;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
@@ -28,7 +26,7 @@ class FiscalPositionResource extends Resource
 
     protected static ?string $model = FiscalPosition::class;
 
-    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-globe-alt';
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-globe-alt';
 
     protected static ?int $navigationSort = 4;
 

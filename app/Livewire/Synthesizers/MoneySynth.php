@@ -11,7 +11,7 @@ use Livewire\Mechanisms\HandleComponents\Synthesizers\Synth;
  * This class acts as a "translator" 🗣️ between the backend (PHP) and the frontend (JavaScript).
  * Livewire doesn't know how to handle complex PHP objects like `Money` by default. This synthesizer
  * teaches Livewire how to convert `Money` objects into a simple array that can be sent to the
- * browser (a process called "dehydration"), and how to convert that simple array back into a 
+ * browser (a process called "dehydration"), and how to convert that simple array back into a
  * `Money` object on the server (a process called "hydration").
  *
  * --- REGISTRATION ---
@@ -38,7 +38,7 @@ class MoneySynth extends Synth
      * "Dehydrates" the Money object into a simple payload and metadata.
      * This is called when PHP data is being sent TO the browser.
      *
-     * @param Money $value The Money object instance.
+     * @param  Money  $value  The Money object instance.
      * @return array A tuple array: [$payload, $meta] that the browser can understand.
      */
     public function dehydrate($value)
@@ -50,7 +50,7 @@ class MoneySynth extends Synth
                 'currency' => $value->getCurrency()->getCurrencyCode(),
             ],
             // The metadata: an empty array as we don't need to send extra info.
-            []
+            [],
         ];
     }
 
@@ -58,12 +58,12 @@ class MoneySynth extends Synth
      * "Hydrates" the simple payload from the frontend back into a Money object.
      * This is called when data is coming FROM the browser back to the server.
      *
-     * @param array $payload The simple array from the frontend.
+     * @param  array  $payload  The simple array from the frontend.
      * @return Money|null
      */
     public function hydrate($payload)
     {
-        if (!isset($payload['amount'], $payload['currency'])) {
+        if (! isset($payload['amount'], $payload['currency'])) {
             return null;
         }
 

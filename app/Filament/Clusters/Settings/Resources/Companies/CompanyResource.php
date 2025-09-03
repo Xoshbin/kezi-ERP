@@ -2,9 +2,6 @@
 
 namespace App\Filament\Clusters\Settings\Resources\Companies;
 
-use App\Models\Currency;
-use App\Models\Account;
-use App\Models\Journal;
 use App\Filament\Clusters\Settings\Resources\Companies\Pages\CreateCompany;
 use App\Filament\Clusters\Settings\Resources\Companies\Pages\EditCompany;
 use App\Filament\Clusters\Settings\Resources\Companies\Pages\ListCompanies;
@@ -12,7 +9,10 @@ use App\Filament\Clusters\Settings\Resources\Companies\RelationManagers\Accounts
 use App\Filament\Clusters\Settings\Resources\Companies\RelationManagers\UsersRelationManager;
 use App\Filament\Clusters\Settings\SettingsCluster;
 use App\Filament\Support\TranslatableSelect;
+use App\Models\Account;
 use App\Models\Company;
+use App\Models\Currency;
+use App\Models\Journal;
 use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
@@ -28,11 +28,11 @@ use Filament\Tables\Table;
 
 class CompanyResource extends Resource
 {
-    public static null|string $tenantOwnershipRelationshipName = 'users';
+    public static ?string $tenantOwnershipRelationshipName = 'users';
 
     protected static ?string $model = Company::class;
 
-    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-building-office';
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-building-office';
 
     protected static ?int $navigationSort = 1;
 
@@ -94,7 +94,7 @@ class CompanyResource extends Resource
                                     ->default(true),
                             ])
                             ->createOptionModalHeading(__('common.modal_title_create_currency'))
-                            ->createOptionAction(fn(Action $action) => $action->name('create-currency-option')->modalWidth('lg')),
+                            ->createOptionAction(fn (Action $action) => $action->name('create-currency-option')->modalWidth('lg')),
                         Toggle::make('enable_reconciliation')
                             ->label(__('company.enable_reconciliation'))
                             ->helperText(__('company.enable_reconciliation_help'))
@@ -124,7 +124,7 @@ class CompanyResource extends Resource
                                     ->maxLength(255),
                             ])
                             ->createOptionModalHeading(__('common.modal_title_create_company'))
-                            ->createOptionAction(fn(Action $action) => $action->name('create-company-option')->modalWidth('lg')),
+                            ->createOptionAction(fn (Action $action) => $action->name('create-company-option')->modalWidth('lg')),
                     ])
                     ->columns(2)
                     ->columnSpanFull(),

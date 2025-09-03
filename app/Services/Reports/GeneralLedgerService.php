@@ -16,7 +16,7 @@ use Illuminate\Support\Facades\DB;
 class GeneralLedgerService
 {
     /**
-     * @param int[]|null $accountIds
+     * @param  int[]|null  $accountIds
      */
     public function generate(Company $company, Carbon $startDate, Carbon $endDate, ?array $accountIds = null): GeneralLedgerDTO
     {
@@ -28,7 +28,7 @@ class GeneralLedgerService
         }
 
         $accounts = $accountsQuery->orderBy('code')->get();
-        $reportAccounts = new Collection();
+        $reportAccounts = new Collection;
 
         foreach ($accounts as $account) {
             $openingBalance = $this->getOpeningBalance($account, $startDate, $currency);
@@ -39,7 +39,7 @@ class GeneralLedgerService
             }
 
             $runningBalance = $openingBalance;
-            $transactionLines = new Collection();
+            $transactionLines = new Collection;
 
             foreach ($transactions as $line) {
                 $debit = $line->debit; // Already a Money object due to MoneyCast

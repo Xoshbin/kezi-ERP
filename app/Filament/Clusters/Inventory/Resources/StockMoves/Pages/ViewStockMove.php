@@ -2,11 +2,10 @@
 
 namespace App\Filament\Clusters\Inventory\Resources\StockMoves\Pages;
 
-use Filament\Actions\EditAction;
-use Filament\Actions\DeleteAction;
 use App\Enums\Inventory\StockMoveStatus;
 use App\Filament\Clusters\Inventory\Resources\StockMoves\StockMoveResource;
-use Filament\Actions;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\EditAction;
 use Filament\Resources\Pages\ViewRecord;
 
 class ViewStockMove extends ViewRecord

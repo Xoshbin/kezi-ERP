@@ -2,8 +2,8 @@
 
 namespace Database\Factories;
 
-use App\Models\Currency;
 use App\Models\Company;
+use App\Models\Currency;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\Factory;
 

@@ -2,32 +2,22 @@
 
 namespace App\Models;
 
-use Illuminate\Support\Carbon;
-use Illuminate\Database\Eloquent\Collection;
-use Database\Factories\CurrencyFactory;
-use Illuminate\Database\Eloquent\Builder;
-use App\Models\Company;
-use App\Models\CurrencyRate;
-use App\Models\Invoice;
-use App\Models\Journal;
-use App\Models\VendorBill;
 use App\Observers\CurrencyObserver;
+use App\Traits\TranslatableSearch;
+use Database\Factories\CurrencyFactory;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Attributes\ObservedBy;
+use Illuminate\Support\Carbon;
 use Spatie\Translatable\HasTranslations;
-use App\Traits\TranslatableSearch;
 
 /**
  * Class Currency
  *
- * @package App\Models
- *
- * This Eloquent model represents a financial currency within the accounting system.
- * It is essential for supporting multi-currency transactions, tracking exchange rates,
- * and ensuring accurate financial reporting across different monetary denominations.
  * @property int $id
  * @property string $code
  * @property string $name
@@ -49,6 +39,7 @@ use App\Traits\TranslatableSearch;
  * @property-read int|null $payments_count
  * @property-read Collection<int, VendorBill> $vendorBills
  * @property-read int|null $vendor_bills_count
+ *
  * @method static CurrencyFactory factory($count = null, $state = [])
  * @method static Builder<static>|Currency newModelQuery()
  * @method static Builder<static>|Currency newQuery()
@@ -62,6 +53,7 @@ use App\Traits\TranslatableSearch;
  * @method static Builder<static>|Currency whereName($value)
  * @method static Builder<static>|Currency whereSymbol($value)
  * @method static Builder<static>|Currency whereUpdatedAt($value)
+ *
  * @mixin \Eloquent
  */
 #[ObservedBy([CurrencyObserver::class])]
@@ -91,7 +83,7 @@ class Currency extends Model
         'symbol',
         'is_active',
         'last_updated_at',
-        'decimal_places'
+        'decimal_places',
     ];
 
     /**
@@ -117,8 +109,6 @@ class Currency extends Model
     /**
      * Get the companies that use this currency as their default operating currency.
      * A single currency can be the base currency for multiple companies.
-     *
-     * @return HasMany
      */
     public function companies(): HasMany
     {
@@ -128,8 +118,6 @@ class Currency extends Model
     /**
      * Get the journals that operate in this specific currency.
      * Some journals may be configured to handle transactions in a single currency only.
-     *
-     * @return HasMany
      */
     public function journals(): HasMany
     {
@@ -139,8 +127,6 @@ class Currency extends Model
     /**
      * Get the invoices issued in this currency.
      * Transactions like invoices can be in a currency different from the company's default.
-     *
-     * @return HasMany
      */
     public function invoices(): HasMany
     {
@@ -150,8 +136,6 @@ class Currency extends Model
     /**
      * Get the vendor bills received in this currency.
      * Vendor bills, similar to invoices, can be in various currencies.
-     *
-     * @return HasMany
      */
     public function vendorBills(): HasMany
     {
@@ -161,8 +145,6 @@ class Currency extends Model
     /**
      * Get the payments made or received in this currency.
      * Payments track the actual cash movement in a specific currency.
-     *
-     * @return HasMany
      */
     public function payments(): HasMany
     {
@@ -172,8 +154,6 @@ class Currency extends Model
     /**
      * Get the analytic accounts that may be specific to this currency.
      * While not all analytic accounts require a specific currency, some might for project-specific budgeting.
-     *
-     * @return HasMany
      */
     public function analyticAccounts(): HasMany
     {
@@ -188,8 +168,6 @@ class Currency extends Model
     /**
      * Get the historical exchange rates for this currency.
      * This relationship provides access to all historical exchange rate data.
-     *
-     * @return HasMany
      */
     public function rates(): HasMany
     {
@@ -198,8 +176,6 @@ class Currency extends Model
 
     /**
      * Get the latest exchange rate for this currency.
-     *
-     * @return HasOne
      */
     public function latestRate(): HasOne
     {

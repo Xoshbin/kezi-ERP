@@ -2,17 +2,17 @@
 
 namespace App\Rules;
 
-use Illuminate\Translation\PotentiallyTranslatedString;
 use App\Models\Account;
 use Closure;
 use Illuminate\Contracts\Validation\ValidationRule;
+use Illuminate\Translation\PotentiallyTranslatedString;
 
 class ActiveAccount implements ValidationRule
 {
     /**
      * Run the validation rule.
      *
-     * @param Closure(string, ?string=):PotentiallyTranslatedString $fail
+     * @param  Closure(string, ?string=):PotentiallyTranslatedString  $fail
      */
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {

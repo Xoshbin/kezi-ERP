@@ -31,7 +31,7 @@ class AgedReceivableService
                     WHEN payments.status IN ('confirmed', 'reconciled')
                     THEN payment_document_links.amount_applied
                     ELSE 0
-                END), 0) as total_paid")
+                END), 0) as total_paid"),
             ])
             ->join('partners', 'invoices.customer_id', '=', 'partners.id')
             ->leftJoin('payment_document_links', 'invoices.id', '=', 'payment_document_links.invoice_id')
@@ -62,7 +62,7 @@ class AgedReceivableService
             }
 
             // Initialize partner data if not exists
-            if (!isset($partnerData[$partnerId])) {
+            if (! isset($partnerData[$partnerId])) {
                 $partnerData[$partnerId] = [
                     'partnerId' => $partnerId,
                     'partnerName' => $partnerName,
@@ -124,12 +124,12 @@ class AgedReceivableService
     {
         $zero = Money::zero($currency);
 
-        $totalCurrent = $reportLines->reduce(fn(Money $carry, $line) => $carry->plus($line->current), $zero);
-        $totalBucket1_30 = $reportLines->reduce(fn(Money $carry, $line) => $carry->plus($line->bucket1_30), $zero);
-        $totalBucket31_60 = $reportLines->reduce(fn(Money $carry, $line) => $carry->plus($line->bucket31_60), $zero);
-        $totalBucket61_90 = $reportLines->reduce(fn(Money $carry, $line) => $carry->plus($line->bucket61_90), $zero);
-        $totalBucket90_plus = $reportLines->reduce(fn(Money $carry, $line) => $carry->plus($line->bucket90_plus), $zero);
-        $grandTotalDue = $reportLines->reduce(fn(Money $carry, $line) => $carry->plus($line->totalDue), $zero);
+        $totalCurrent = $reportLines->reduce(fn (Money $carry, $line) => $carry->plus($line->current), $zero);
+        $totalBucket1_30 = $reportLines->reduce(fn (Money $carry, $line) => $carry->plus($line->bucket1_30), $zero);
+        $totalBucket31_60 = $reportLines->reduce(fn (Money $carry, $line) => $carry->plus($line->bucket31_60), $zero);
+        $totalBucket61_90 = $reportLines->reduce(fn (Money $carry, $line) => $carry->plus($line->bucket61_90), $zero);
+        $totalBucket90_plus = $reportLines->reduce(fn (Money $carry, $line) => $carry->plus($line->bucket90_plus), $zero);
+        $grandTotalDue = $reportLines->reduce(fn (Money $carry, $line) => $carry->plus($line->totalDue), $zero);
 
         return new AgedReceivableDTO(
             $reportLines,

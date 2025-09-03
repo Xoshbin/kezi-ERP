@@ -2,21 +2,20 @@
 
 namespace App\Models;
 
+use App\Casts\SalaryCurrencyMoneyCast;
 use App\Traits\TranslatableSearch;
-use Illuminate\Support\Carbon;
+use Brick\Money\Money;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Support\Carbon;
 use Spatie\Translatable\HasTranslations;
-use App\Casts\SalaryCurrencyMoneyCast;
-use Brick\Money\Money;
 
 /**
  * Class Position
  *
- * @package App\Models
  * @property int $id
  * @property int $company_id
  * @property int|null $department_id
@@ -101,8 +100,6 @@ class Position extends Model
 
     /**
      * Get the translatable fields that should be searched.
-     *
-     * @return array
      */
     public function getTranslatableSearchFields(): array
     {
@@ -111,8 +108,6 @@ class Position extends Model
 
     /**
      * Get the non-translatable fields that should be searched.
-     *
-     * @return array
      */
     public function getNonTranslatableSearchFields(): array
     {
@@ -121,8 +116,6 @@ class Position extends Model
 
     /**
      * Get the company that owns the Position.
-     *
-     * @return BelongsTo
      */
     public function company(): BelongsTo
     {
@@ -131,8 +124,6 @@ class Position extends Model
 
     /**
      * Get the department this position belongs to.
-     *
-     * @return BelongsTo
      */
     public function department(): BelongsTo
     {
@@ -141,8 +132,6 @@ class Position extends Model
 
     /**
      * Get the salary currency for this position.
-     *
-     * @return BelongsTo
      */
     public function salaryCurrency(): BelongsTo
     {
@@ -151,8 +140,6 @@ class Position extends Model
 
     /**
      * Get the employees in this position.
-     *
-     * @return HasMany
      */
     public function employees(): HasMany
     {
@@ -161,8 +148,6 @@ class Position extends Model
 
     /**
      * Get the employment contracts for this position.
-     *
-     * @return HasMany
      */
     public function employmentContracts(): HasMany
     {
@@ -171,32 +156,27 @@ class Position extends Model
 
     /**
      * Get the salary range as a formatted string.
-     *
-     * @return string|null
      */
     public function getSalaryRangeAttribute(): ?string
     {
-        if (!$this->min_salary && !$this->max_salary) {
+        if (! $this->min_salary && ! $this->max_salary) {
             return null;
         }
 
         if ($this->min_salary && $this->max_salary) {
-            return $this->min_salary->formatTo($this->salaryCurrency->code) . ' - ' .
+            return $this->min_salary->formatTo($this->salaryCurrency->code).' - '.
                    $this->max_salary->formatTo($this->salaryCurrency->code);
         }
 
         if ($this->min_salary) {
-            return 'From ' . $this->min_salary->formatTo($this->salaryCurrency->code);
+            return 'From '.$this->min_salary->formatTo($this->salaryCurrency->code);
         }
 
-        return 'Up to ' . $this->max_salary->formatTo($this->salaryCurrency->code);
+        return 'Up to '.$this->max_salary->formatTo($this->salaryCurrency->code);
     }
 
     /**
      * Check if a salary amount is within the position's range.
-     *
-     * @param Money $salary
-     * @return bool
      */
     public function isSalaryInRange(Money $salary): bool
     {
@@ -213,8 +193,6 @@ class Position extends Model
 
     /**
      * Get the number of active employees in this position.
-     *
-     * @return int
      */
     public function getActiveEmployeeCount(): int
     {
@@ -223,9 +201,6 @@ class Position extends Model
 
     /**
      * Get the number of open positions (max employees - current employees).
-     *
-     * @param int $maxEmployees
-     * @return int
      */
     public function getOpenPositions(int $maxEmployees = 1): int
     {
@@ -234,8 +209,6 @@ class Position extends Model
 
     /**
      * Check if this position has any active employees.
-     *
-     * @return bool
      */
     public function hasActiveEmployees(): bool
     {

@@ -8,7 +8,7 @@ use Illuminate\Support\Collection;
 readonly class TrialBalanceDTO
 {
     /**
-     * @param Collection<int, TrialBalanceLineDTO> $reportLines
+     * @param  Collection<int, TrialBalanceLineDTO>  $reportLines
      */
     public function __construct(
         public Collection $reportLines,

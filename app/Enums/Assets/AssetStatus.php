@@ -15,6 +15,6 @@ enum AssetStatus: string
      */
     public function label(): string
     {
-        return __('enums.asset_status.' . $this->value);
+        return __('enums.asset_status.'.$this->value);
     }
 }

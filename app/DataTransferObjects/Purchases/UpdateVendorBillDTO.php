@@ -7,7 +7,7 @@ use App\Models\VendorBill;
 readonly class UpdateVendorBillDTO
 {
     /**
-     * @param VendorBillLineDTO[] $lines
+     * @param  VendorBillLineDTO[]  $lines
      */
     public function __construct(
         public VendorBill $vendorBill,
@@ -20,6 +20,5 @@ readonly class UpdateVendorBillDTO
         public ?string $due_date,
         public array $lines,
         public int $updated_by_user_id
-    ) {
-    }
+    ) {}
 }

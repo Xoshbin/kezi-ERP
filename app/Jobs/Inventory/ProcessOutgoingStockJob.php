@@ -11,7 +11,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 
-class ProcessOutgoingStockJob implements ShouldQueue, ShouldBeUnique
+class ProcessOutgoingStockJob implements ShouldBeUnique, ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
@@ -20,8 +20,7 @@ class ProcessOutgoingStockJob implements ShouldQueue, ShouldBeUnique
      */
     public function __construct(
         public readonly StockMove $stockMove
-    ) {
-    }
+    ) {}
 
     /**
      * Execute the job.

@@ -2,15 +2,15 @@
 
 namespace App\Models;
 
-use Illuminate\Support\Carbon;
-use Illuminate\Database\Eloquent\Collection;
 use Database\Factories\AnalyticAccountFactory;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Carbon;
 
 /**
  * @property int $id
@@ -27,6 +27,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property-read Currency|null $currency
  * @property-read Collection<int, JournalEntryLine> $journalEntryLines
  * @property-read int|null $journal_entry_lines_count
+ *
  * @method static AnalyticAccountFactory factory($count = null, $state = [])
  * @method static Builder<static>|AnalyticAccount newModelQuery()
  * @method static Builder<static>|AnalyticAccount newQuery()
@@ -39,11 +40,13 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @method static Builder<static>|AnalyticAccount whereName($value)
  * @method static Builder<static>|AnalyticAccount whereReference($value)
  * @method static Builder<static>|AnalyticAccount whereUpdatedAt($value)
+ *
  * @mixin \Eloquent
  */
 class AnalyticAccount extends Model
 {
     use HasFactory;
+
     /**
      * The table associated with the model.
      * Analytic accounts are a cornerstone of management accounting, providing
@@ -75,7 +78,7 @@ class AnalyticAccount extends Model
      * @var array<string, string>
      */
     protected $casts = [
-        'is_active'  => 'boolean',  //
+        'is_active' => 'boolean',  //
         'created_at' => 'datetime', // Automatically handled by Eloquent [6, 7]
         'updated_at' => 'datetime', // Automatically handled by Eloquent [6, 7]
     ];
@@ -91,8 +94,6 @@ class AnalyticAccount extends Model
      * Get the company that owns the analytic account.
      * In a multi-company setup, analytic accounts are typically tied to a specific company,
      * though they can be accessible to all if company_id is null, similar to Odoo's approach [5].
-     *
-     * @return BelongsTo
      */
     public function company(): BelongsTo
     {
@@ -102,8 +103,6 @@ class AnalyticAccount extends Model
     /**
      * Get the currency associated with the analytic account.
      * This is a nullable relationship, allowing for flexibility in multi-currency tracking [3].
-     *
-     * @return BelongsTo
      */
     public function currency(): BelongsTo
     {
@@ -114,8 +113,6 @@ class AnalyticAccount extends Model
      * Get the journal entry lines associated with this analytic account.
      * This demonstrates how analytic accounts provide a distinct layer for tagging
      * financial movements recorded in the general ledger for management analysis [2, 3].
-     *
-     * @return HasMany
      */
     public function journalEntryLines(): HasMany
     {
@@ -126,8 +123,6 @@ class AnalyticAccount extends Model
      * The analytic plans that belong to this analytic account.
      * Analytic accounts can be grouped by analytic plans, enabling higher-level
      * reporting or budget structures [1, 3, 8-10].
-     *
-     * @return BelongsToMany
      */
     public function analyticPlans(): BelongsToMany
     {
@@ -146,8 +141,6 @@ class AnalyticAccount extends Model
     /**
      * Determine if the analytic account is active.
      * This helps in filtering lists and preventing new allocations to deprecated accounts.
-     *
-     * @return bool
      */
     public function isActive(): bool
     {
@@ -157,8 +150,6 @@ class AnalyticAccount extends Model
     /**
      * Get the total budgeted amount for this analytic account across all associated budgets.
      * This would typically involve a deeper relationship to a 'budget_lines' table [11].
-     *
-     * @return float
      */
     public function getTotalBudgetedAmount(): float
     {
@@ -170,8 +161,6 @@ class AnalyticAccount extends Model
 
     /**
      * Get the total actual amount posted to this analytic account from journal entry lines.
-     *
-     * @return float
      */
     public function getTotalActualAmount(): float
     {

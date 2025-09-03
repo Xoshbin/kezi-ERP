@@ -21,7 +21,7 @@ class AnalyticAccountFactory extends Factory
     {
         return [
             'company_id' => Company::factory()->create()->id,
-            'name' => $this->faker->company . ' ' . $this->faker->word,
+            'name' => $this->faker->company.' '.$this->faker->word,
             'reference' => $this->faker->optional()->bothify('AA-####'),
             'currency_id' => Currency::factory()->create()->id,
             'is_active' => $this->faker->boolean(90),

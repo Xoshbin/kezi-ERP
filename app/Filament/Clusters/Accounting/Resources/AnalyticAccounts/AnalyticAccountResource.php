@@ -2,17 +2,15 @@
 
 namespace App\Filament\Clusters\Accounting\Resources\AnalyticAccounts;
 
-use App\Models\Currency;
 use App\Filament\Clusters\Accounting\AccountingCluster;
 use App\Filament\Clusters\Accounting\Resources\AnalyticAccounts\Pages\CreateAnalyticAccount;
 use App\Filament\Clusters\Accounting\Resources\AnalyticAccounts\Pages\EditAnalyticAccount;
 use App\Filament\Clusters\Accounting\Resources\AnalyticAccounts\Pages\ListAnalyticAccounts;
 use App\Filament\Clusters\Accounting\Resources\AnalyticAccounts\RelationManagers\AnalyticPlansRelationManager;
 use App\Filament\Clusters\Accounting\Resources\AnalyticAccounts\RelationManagers\JournalEntryLinesRelationManager;
-use App\Filament\Resources\AnalyticAccountResource\Pages;
-use App\Filament\Resources\AnalyticAccountResource\RelationManagers;
 use App\Filament\Support\TranslatableSelect;
 use App\Models\AnalyticAccount;
+use App\Models\Currency;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
@@ -29,7 +27,7 @@ class AnalyticAccountResource extends Resource
 {
     protected static ?string $model = AnalyticAccount::class;
 
-    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-chart-pie';
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-chart-pie';
 
     protected static ?int $navigationSort = 4;
 

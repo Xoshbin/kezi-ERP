@@ -2,15 +2,14 @@
 
 namespace App\Services\HumanResources;
 
-use Exception;
 use App\Actions\HumanResources\CreateEmployeeAction;
 use App\Actions\HumanResources\CreateEmploymentContractAction;
 use App\DataTransferObjects\HumanResources\CreateEmployeeDTO;
 use App\DataTransferObjects\HumanResources\CreateEmploymentContractDTO;
-use App\Models\Employee;
-use App\Models\EmploymentContract;
-use App\Models\User;
 use App\Models\Company;
+use App\Models\Employee;
+use App\Models\User;
+use Exception;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 
@@ -19,8 +18,7 @@ class EmployeeService
     public function __construct(
         protected CreateEmployeeAction $createEmployeeAction,
         protected CreateEmploymentContractAction $createEmploymentContractAction,
-    ) {
-    }
+    ) {}
 
     /**
      * Create a new employee with optional employment contract.
@@ -78,7 +76,7 @@ class EmployeeService
     {
         Gate::forUser($user)->authorize('update', $employee);
 
-        DB::transaction(function () use ($employee, $terminationDate, $reason) {
+        DB::transaction(function () use ($employee, $terminationDate) {
             // Update employee status
             $employee->update([
                 'employment_status' => 'terminated',
@@ -112,7 +110,7 @@ class EmployeeService
             throw new Exception('Only terminated employees can be reactivated.');
         }
 
-        DB::transaction(function () use ($employee, $reactivationDate) {
+        DB::transaction(function () use ($employee) {
             $employee->update([
                 'employment_status' => 'active',
                 'termination_date' => null,
@@ -131,7 +129,7 @@ class EmployeeService
     {
         Gate::forUser($user)->authorize('update', $employee);
 
-        DB::transaction(function () use ($employee, $newDepartmentId, $newPositionId, $newManagerId, $effectiveDate) {
+        DB::transaction(function () use ($employee, $newDepartmentId, $newPositionId, $newManagerId) {
             $employee->update([
                 'department_id' => $newDepartmentId ?? $employee->department_id,
                 'position_id' => $newPositionId ?? $employee->position_id,
@@ -160,11 +158,11 @@ class EmployeeService
             'by_department' => $employees->with('department')
                 ->get()
                 ->groupBy('department.name')
-                ->map(fn($group) => $group->count())
+                ->map(fn ($group) => $group->count())
                 ->toArray(),
             'by_employee_type' => $employees->get()
                 ->groupBy('employee_type')
-                ->map(fn($group) => $group->count())
+                ->map(fn ($group) => $group->count())
                 ->toArray(),
         ];
     }

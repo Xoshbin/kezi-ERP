@@ -20,13 +20,13 @@ class SettlementStrategy implements PaymentStrategy
                 'company_id' => $dto->company_id,
                 'amount_applied' => $link->amount_applied,
             ];
-            
+
             if ($link->document_type === 'invoice') {
                 $linkData['invoice_id'] = $link->document_id;
             } else { // vendor_bill
                 $linkData['vendor_bill_id'] = $link->document_id;
             }
-            
+
             $payment->paymentDocumentLinks()->create($linkData);
         }
     }
@@ -44,13 +44,13 @@ class SettlementStrategy implements PaymentStrategy
             $linkData = [
                 'amount_applied' => $link->amount_applied,
             ];
-            
+
             if ($link->document_type === 'invoice') {
                 $linkData['invoice_id'] = $link->document_id;
             } else { // vendor_bill
                 $linkData['vendor_bill_id'] = $link->document_id;
             }
-            
+
             $payment->paymentDocumentLinks()->create($linkData);
         }
     }

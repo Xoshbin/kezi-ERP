@@ -17,7 +17,7 @@ enum PaymentPurpose: string
      */
     public function label(): string
     {
-        return __('enums.payment_purpose.' . $this->value);
+        return __('enums.payment_purpose.'.$this->value);
     }
 
     /**

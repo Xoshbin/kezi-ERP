@@ -9,7 +9,6 @@ use App\Enums\Products\ProductType;
 use App\Models\Account;
 use App\Models\AssetCategory;
 use App\Models\Product;
-use App\Models\VendorBill;
 use App\Services\VendorBillService;
 use Brick\Money\Money;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -146,4 +145,3 @@ it('posts a single JE for mixed vendor bills (storable + asset + expense)', func
         'credit' => $apTotal,
     ]);
 });
-

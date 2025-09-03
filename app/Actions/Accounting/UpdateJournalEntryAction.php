@@ -2,19 +2,19 @@
 
 namespace App\Actions\Accounting;
 
+use App\DataTransferObjects\Accounting\UpdateJournalEntryDTO;
+use App\Exceptions\UpdateNotAllowedException;
 use App\Models\Company;
-use Carbon\Carbon;
+use App\Models\Currency;
+use App\Models\JournalEntry;
 use App\Models\JournalEntryLine;
+use App\Services\Accounting\LockDateService;
 use Brick\Math\Exception\RoundingNecessaryException;
 use Brick\Math\RoundingMode;
 use Brick\Money\Money;
-use App\Models\Currency;
-use App\Models\JournalEntry;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
-use App\Services\Accounting\LockDateService;
-use App\Exceptions\UpdateNotAllowedException;
 use Illuminate\Validation\ValidationException;
-use App\DataTransferObjects\Accounting\UpdateJournalEntryDTO;
 
 class UpdateJournalEntryAction
 {
@@ -46,7 +46,7 @@ class UpdateJournalEntryAction
             $totalCredit = $totalCredit->plus($creditMoney);
         }
 
-        if (!$totalDebit->isEqualTo($totalCredit)) {
+        if (! $totalDebit->isEqualTo($totalCredit)) {
             throw ValidationException::withMessages([
                 'lines' => 'The total debits must equal the total credits.',
             ]);
@@ -67,9 +67,9 @@ class UpdateJournalEntryAction
             $journalEntry->lines()->delete();
 
             // Create the new lines from the DTO
-            if (!empty($dto->lines)) {
+            if (! empty($dto->lines)) {
                 foreach ($dto->lines as $lineDto) {
-                    $line = new JournalEntryLine();
+                    $line = new JournalEntryLine;
 
                     // First, establish the relationship. This makes the parent's context (like currency)
                     // available to the line model *before* any attributes are set. This is the key

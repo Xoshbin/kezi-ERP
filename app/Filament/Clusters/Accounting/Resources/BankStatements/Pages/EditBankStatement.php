@@ -42,6 +42,7 @@ class EditBankStatement extends EditRecord
             ];
         })->toArray();
         $data['bankStatementLines'] = $linesData;
+
         return $data;
     }
 
@@ -52,7 +53,7 @@ class EditBankStatement extends EditRecord
             $foreignCurrency = null;
             $amountInForeignCurrency = null;
 
-            if (!empty($line['foreign_currency_id']) && !empty($line['amount_in_foreign_currency'])) {
+            if (! empty($line['foreign_currency_id']) && ! empty($line['amount_in_foreign_currency'])) {
                 $foreignCurrency = Currency::find($line['foreign_currency_id']);
                 $amountInForeignCurrency = Money::of($line['amount_in_foreign_currency'], $foreignCurrency->code);
             }

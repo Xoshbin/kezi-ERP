@@ -9,7 +9,6 @@ use App\Filament\Clusters\HumanResources\Resources\Employees\Pages\ListEmployees
 use App\Filament\Clusters\HumanResources\Resources\Employees\Schemas\EmployeeForm;
 use App\Filament\Clusters\HumanResources\Resources\Employees\Tables\EmployeesTable;
 use App\Models\Employee;
-use BackedEnum;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Tables\Table;
@@ -23,7 +22,7 @@ class EmployeeResource extends Resource
 
     protected static ?string $model = Employee::class;
 
-    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-user';
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-user';
 
     protected static ?string $cluster = HumanResourcesCluster::class;
 

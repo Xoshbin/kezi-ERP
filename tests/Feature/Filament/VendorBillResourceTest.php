@@ -7,6 +7,7 @@ use App\Models\Product;
 use App\Models\VendorBill;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\Traits\WithConfiguredCompany;
+
 use function Pest\Livewire\livewire;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);
@@ -37,8 +38,6 @@ it('can create a vendor bill', function () {
         'name' => 'Test Product Line', // Set a specific name to match the database assertion
         'unit_price' => \Brick\Money\Money::of(100, $this->company->currency->code), // Set a specific price for predictable total
     ]);
-
-
 
     livewire(\App\Filament\Clusters\Accounting\Resources\VendorBills\Pages\CreateVendorBill::class)
         ->fillForm([

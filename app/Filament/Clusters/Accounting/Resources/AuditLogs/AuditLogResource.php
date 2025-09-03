@@ -6,8 +6,6 @@ use App\Filament\Clusters\Accounting\AccountingCluster;
 use App\Filament\Clusters\Accounting\Resources\AuditLogs\Pages\CreateAuditLog;
 use App\Filament\Clusters\Accounting\Resources\AuditLogs\Pages\EditAuditLog;
 use App\Filament\Clusters\Accounting\Resources\AuditLogs\Pages\ListAuditLogs;
-use App\Filament\Resources\AuditLogResource\Pages;
-use App\Filament\Resources\AuditLogResource\RelationManagers;
 use App\Models\AuditLog;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
@@ -24,7 +22,7 @@ class AuditLogResource extends Resource
 {
     protected static ?string $model = AuditLog::class;
 
-    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-eye';
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-eye';
 
     protected static ?int $navigationSort = 2;
 

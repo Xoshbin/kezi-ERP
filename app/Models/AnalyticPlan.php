@@ -3,26 +3,20 @@
 namespace App\Models;
 
 use App\Traits\TranslatableSearch;
-use Illuminate\Support\Carbon;
-use Illuminate\Database\Eloquent\Collection;
 use Database\Factories\AnalyticPlanFactory;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Carbon;
 use Spatie\Translatable\HasTranslations;
 
 /**
  * Class AnalyticPlan
  *
- * @package App\Models
- *
- * This Eloquent model represents an Analytic Plan, a core concept in management
- * accounting systems like Odoo. Analytic plans are used to group and categorize
- * analytic accounts, enabling multi-dimensional analysis of costs and revenues
- * by project, department, or other business segments [1, 3].
  * @property int $id
  * @property int $company_id
  * @property string $name
@@ -37,6 +31,7 @@ use Spatie\Translatable\HasTranslations;
  * @property-read int|null $children_count
  * @property-read Company $company
  * @property-read AnalyticPlan|null $parent
+ *
  * @method static AnalyticPlanFactory factory($count = null, $state = [])
  * @method static Builder<static>|AnalyticPlan newModelQuery()
  * @method static Builder<static>|AnalyticPlan newQuery()
@@ -46,6 +41,7 @@ use Spatie\Translatable\HasTranslations;
  * @method static Builder<static>|AnalyticPlan whereId($value)
  * @method static Builder<static>|AnalyticPlan whereName($value)
  * @method static Builder<static>|AnalyticPlan whereUpdatedAt($value)
+ *
  * @mixin \Eloquent
  */
 class AnalyticPlan extends Model
@@ -99,8 +95,6 @@ class AnalyticPlan extends Model
     /**
      * Get the company that owns this analytic plan.
      * An analytic plan can optionally belong to a specific company, or be shared across all [4-6].
-     *
-     * @return BelongsTo
      */
     public function company(): BelongsTo
     {
@@ -111,8 +105,6 @@ class AnalyticPlan extends Model
      * Get the analytic accounts that are part of this plan.
      * This establishes the many-to-many relationship via the pivot table,
      * allowing for flexible grouping of analytic accounts [1, 4, 8].
-     *
-     * @return BelongsToMany
      */
     public function analyticAccounts(): BelongsToMany
     {
@@ -130,8 +122,6 @@ class AnalyticPlan extends Model
     /**
      * Get the parent analytic plan in a hierarchical structure.
      * Allows for building complex, nested analytic plan organizations [3, 8].
-     *
-     * @return BelongsTo
      */
     public function parent(): BelongsTo
     {
@@ -141,8 +131,6 @@ class AnalyticPlan extends Model
     /**
      * Get the child analytic plans within this hierarchical structure.
      * Defines the "subplans" mentioned in the sources, allowing for recursive plan definitions [8].
-     *
-     * @return HasMany
      */
     public function children(): HasMany
     {
@@ -152,8 +140,6 @@ class AnalyticPlan extends Model
     /**
      * Get the budgets associated with this analytic plan.
      * Analytic plans are crucial for defining and tracking budgets related to projects or departments [1, 4, 11].
-     *
-     * @return HasMany
      */
     public function budgets(): HasMany
     {

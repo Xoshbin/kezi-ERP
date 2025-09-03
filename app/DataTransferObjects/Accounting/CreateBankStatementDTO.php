@@ -7,7 +7,7 @@ use Brick\Money\Money;
 class CreateBankStatementDTO
 {
     /**
-     * @param CreateBankStatementLineDTO[] $lines
+     * @param  CreateBankStatementLineDTO[]  $lines
      */
     public function __construct(
         public readonly int $company_id,

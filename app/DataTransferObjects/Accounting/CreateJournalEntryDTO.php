@@ -5,7 +5,7 @@ namespace App\DataTransferObjects\Accounting;
 class CreateJournalEntryDTO
 {
     /**
-     * @param CreateJournalEntryLineDTO[] $lines
+     * @param  CreateJournalEntryLineDTO[]  $lines
      */
     public function __construct(
         public readonly int $company_id,

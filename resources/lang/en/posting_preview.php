@@ -64,4 +64,3 @@ return [
         'tax_payable_missing' => 'Company default Tax Payable account is not configured.',
     ],
 ];
-

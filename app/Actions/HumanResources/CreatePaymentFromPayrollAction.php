@@ -6,25 +6,21 @@ use App\Actions\Payments\CreatePaymentAction;
 use App\DataTransferObjects\Payments\CreatePaymentDTO;
 use App\Enums\Payments\PaymentPurpose;
 use App\Enums\Payments\PaymentType;
-use App\Models\Payroll;
-use App\Models\Payment;
-use App\Models\User;
 use App\Models\Journal;
+use App\Models\Payment;
+use App\Models\Payroll;
+use App\Models\User;
 use InvalidArgumentException;
 
 class CreatePaymentFromPayrollAction
 {
     public function __construct(
         private readonly CreatePaymentAction $createPaymentAction
-    ) {
-    }
+    ) {}
 
     /**
      * Create a payment from an approved payroll.
      *
-     * @param Payroll $payroll
-     * @param User $user
-     * @return Payment
      * @throws InvalidArgumentException
      */
     public function execute(Payroll $payroll, User $user): Payment
@@ -42,13 +38,13 @@ class CreatePaymentFromPayrollAction
         $company = $payroll->company;
         $bankJournal = $company->defaultBankJournal;
 
-        if (!$bankJournal) {
+        if (! $bankJournal) {
             throw new InvalidArgumentException('No default bank journal found for company.');
         }
 
         // Get salary payable account from company defaults
         $salaryPayableAccountId = $company->default_salary_payable_account_id;
-        if (!$salaryPayableAccountId) {
+        if (! $salaryPayableAccountId) {
             throw new InvalidArgumentException('No default salary payable account configured for company.');
         }
 

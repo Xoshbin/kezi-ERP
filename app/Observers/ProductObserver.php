@@ -2,8 +2,8 @@
 
 namespace App\Observers;
 
-use App\Models\Product;
 use App\Exceptions\DeletionNotAllowedException;
+use App\Models\Product;
 
 class ProductObserver
 {

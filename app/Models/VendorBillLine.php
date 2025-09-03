@@ -2,17 +2,17 @@
 
 namespace App\Models;
 
-use Brick\Money\Money;
-use Illuminate\Support\Carbon;
-use Database\Factories\VendorBillLineFactory;
-use Illuminate\Database\Eloquent\Builder;
-use App\Casts\DocumentCurrencyMoneyCast;
 use App\Casts\BaseCurrencyMoneyCast;
+use App\Casts\DocumentCurrencyMoneyCast;
 use App\Observers\VendorBillLineObserver;
+use Brick\Money\Money;
+use Database\Factories\VendorBillLineFactory;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Carbon;
 
 // As a fundamental principle of accounting, financial line items,
 // much like their parent documents (Vendor Bills), are part of the immutable
@@ -40,6 +40,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property-read Product|null $product
  * @property-read Tax|null $tax
  * @property-read VendorBill $vendorBill
+ *
  * @method static VendorBillLineFactory factory($count = null, $state = [])
  * @method static Builder<static>|VendorBillLine newModelQuery()
  * @method static Builder<static>|VendorBillLine newQuery()
@@ -57,6 +58,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @method static Builder<static>|VendorBillLine whereUnitPrice($value)
  * @method static Builder<static>|VendorBillLine whereUpdatedAt($value)
  * @method static Builder<static>|VendorBillLine whereVendorBillId($value)
+ *
  * @mixin \Eloquent
  */
 #[ObservedBy([VendorBillLineObserver::class])]
@@ -107,15 +109,15 @@ class VendorBillLine extends Model
      * @var array<string, string>
      */
     protected $casts = [
-        'quantity'          => 'decimal:2', // Ensures precision for quantities, allowing for fractional units.
-        'unit_price'        => DocumentCurrencyMoneyCast::class, // Document currency amounts
+        'quantity' => 'decimal:2', // Ensures precision for quantities, allowing for fractional units.
+        'unit_price' => DocumentCurrencyMoneyCast::class, // Document currency amounts
         'unit_price_company_currency' => BaseCurrencyMoneyCast::class, // Company base currency amounts
-        'subtotal'          => DocumentCurrencyMoneyCast::class, // Document currency amounts
+        'subtotal' => DocumentCurrencyMoneyCast::class, // Document currency amounts
         'subtotal_company_currency' => BaseCurrencyMoneyCast::class, // Company base currency amounts
-        'total_line_tax'    => DocumentCurrencyMoneyCast::class, // Document currency amounts
+        'total_line_tax' => DocumentCurrencyMoneyCast::class, // Document currency amounts
         'total_line_tax_company_currency' => BaseCurrencyMoneyCast::class, // Company base currency amounts
-        'created_at'        => 'datetime',  // Automatically managed by Eloquent for audit trails [2].
-        'updated_at'        => 'datetime',  // Automatically managed by Eloquent [2].
+        'created_at' => 'datetime',  // Automatically managed by Eloquent for audit trails [2].
+        'updated_at' => 'datetime',  // Automatically managed by Eloquent [2].
     ];
 
     /**
@@ -131,8 +133,6 @@ class VendorBillLine extends Model
 
     /**
      * Get the company that this rate belongs to.
-     *
-     * @return BelongsTo
      */
     public function company(): BelongsTo
     {
@@ -143,8 +143,6 @@ class VendorBillLine extends Model
      * Get the Vendor Bill that owns the Vendor Bill Line.
      * Establishes a **BelongsTo** relationship with the `VendorBill` model,
      * linking each line item directly to its originating vendor bill document [2, 10-12].
-     *
-     * @return BelongsTo
      */
     public function vendorBill(): BelongsTo
     {
@@ -156,8 +154,6 @@ class VendorBillLine extends Model
      * Defines a **BelongsTo** relationship to the `Product` model [10-12].
      * This relationship is nullable, acknowledging that some bill lines may simply be descriptive
      * without linking to a specific product from the catalog [2].
-     *
-     * @return BelongsTo
      */
     public function product(): BelongsTo
     {
@@ -168,8 +164,6 @@ class VendorBillLine extends Model
      * Get the Tax applied to the Vendor Bill Line.
      * Establishes a **BelongsTo** relationship with the `Tax` model [10-12].
      * This is crucial for correct tax calculation and reporting, and is nullable for tax-exempt items [2].
-     *
-     * @return BelongsTo
      */
     public function tax(): BelongsTo
     {
@@ -180,8 +174,6 @@ class VendorBillLine extends Model
      * Get the Expense Account associated with the Vendor Bill Line.
      * This **BelongsTo** relationship is fundamental for the double-entry accounting system,
      * directing the cost of each line item to the appropriate expense account in the Chart of Accounts [2, 10-12].
-     *
-     * @return BelongsTo
      */
     public function expenseAccount(): BelongsTo
     {
@@ -194,13 +186,9 @@ class VendorBillLine extends Model
      * This provides a granular layer for internal management accounting, allowing costs
      * to be tracked against specific projects, departments, or other analytic dimensions [2, 7, 8].
      * It is nullable as not all expense lines may require analytic tracking.
-     *
-     * @return BelongsTo
      */
     public function analyticAccount(): BelongsTo
     {
         return $this->belongsTo(AnalyticAccount::class, 'analytic_account_id');
     }
-
-
 }

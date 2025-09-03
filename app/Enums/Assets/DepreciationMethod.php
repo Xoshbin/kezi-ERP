@@ -12,6 +12,6 @@ enum DepreciationMethod: string
      */
     public function label(): string
     {
-        return __('enums.depreciation_method.' . $this->value);
+        return __('enums.depreciation_method.'.$this->value);
     }
 }

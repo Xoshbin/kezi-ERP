@@ -4,7 +4,6 @@ namespace App\Services\Reports;
 
 use App\DataTransferObjects\Reports\PartnerLedgerDTO;
 use App\DataTransferObjects\Reports\PartnerLedgerTransactionLineDTO;
-use App\Enums\Accounting\AccountType;
 use App\Models\Company;
 use App\Models\JournalEntryLine;
 use App\Models\Partner;
@@ -45,7 +44,7 @@ class PartnerLedgerService
         $openingBalance = $this->calculatePartnerBalance($receivableOpeningBalance, $payableOpeningBalance, $partner);
 
         $runningBalance = $openingBalance;
-        $transactionLines = new Collection();
+        $transactionLines = new Collection;
 
         foreach ($allTransactions as $line) {
             $debit = $line->debit;
@@ -92,7 +91,7 @@ class PartnerLedgerService
     private function getTransactionsForAccount(int $accountId, Carbon $startDate, Carbon $endDate): Collection
     {
         return JournalEntryLine::query()
-            ->with(['journalEntry' => fn($q) => $q->with('journal')]) // Eager load for type lookup
+            ->with(['journalEntry' => fn ($q) => $q->with('journal')]) // Eager load for type lookup
             ->join('journal_entries', 'journal_entry_lines.journal_entry_id', '=', 'journal_entries.id')
             ->where('journal_entry_lines.account_id', $accountId)
             ->where('journal_entries.state', 'posted')

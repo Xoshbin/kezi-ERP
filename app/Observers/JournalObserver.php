@@ -2,8 +2,8 @@
 
 namespace App\Observers;
 
-use App\Models\Journal;
 use App\Exceptions\DeletionNotAllowedException;
+use App\Models\Journal;
 
 class JournalObserver
 {

@@ -24,10 +24,9 @@ class LockDateResource extends Resource
 
     protected static ?int $navigationSort = 7;
 
-    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-lock-closed';
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-lock-closed';
 
     protected static ?string $cluster = SettingsCluster::class;
-
 
     public static function getModelLabel(): string
     {
@@ -48,7 +47,7 @@ class LockDateResource extends Resource
     {
         return $schema
             ->components([
-                Section::make(__('lock_date.basic_information',))
+                Section::make(__('lock_date.basic_information'))
                     ->schema([
                         Select::make('lock_type')
                             ->label(__('lock_date.lock_type'))

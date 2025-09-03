@@ -2,21 +2,22 @@
 
 namespace App\Filament\Clusters\Accounting\Pages\Reports;
 
-use Carbon\Carbon;
-use Filament\Pages\Page;
-use Filament\Actions\Action;
-use Filament\Schemas\Schema;
-use Filament\Facades\Filament;
-use App\Support\NumberFormatter;
-use Filament\Schemas\Components\Section;
-use Filament\Forms\Components\DatePicker;
-use Illuminate\Contracts\Support\Htmlable;
-use App\Services\Reports\TrialBalanceService;
 use App\Filament\Clusters\Accounting\AccountingCluster;
+use App\Services\Reports\TrialBalanceService;
+use App\Support\NumberFormatter;
+use Carbon\Carbon;
+use Filament\Actions\Action;
+use Filament\Facades\Filament;
+use Filament\Forms\Components\DatePicker;
+use Filament\Pages\Page;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Schema;
+use Illuminate\Contracts\Support\Htmlable;
 
 class ViewTrialBalance extends Page
 {
-    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-scale';
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-scale';
+
     protected string $view = 'filament.pages.reports.view-trial-balance';
 
     public static function shouldRegisterNavigation(): bool
@@ -27,6 +28,7 @@ class ViewTrialBalance extends Page
     protected static ?string $cluster = AccountingCluster::class;
 
     public ?string $asOfDate = null;
+
     public ?array $reportData = null;
 
     public static function getNavigationLabel(): string
@@ -94,7 +96,7 @@ class ViewTrialBalance extends Page
         $this->reportData = [
             'companyName' => $company->name,
             'asOfDate' => $this->asOfDate,
-            'reportLines' => $report->reportLines->map(fn($line) => [
+            'reportLines' => $report->reportLines->map(fn ($line) => [
                 'accountId' => $line->accountId,
                 'accountCode' => $line->accountCode,
                 'accountName' => $line->accountName,

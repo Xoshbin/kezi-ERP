@@ -2,19 +2,20 @@
 
 namespace Tests\Feature;
 
-use Tests\TestCase;
 use App\Models\Company;
 use App\Models\Currency;
 use App\Models\Sequence;
 use App\Services\SequenceService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
+use Tests\TestCase;
 
 class SequenceServiceTest extends TestCase
 {
     use RefreshDatabase;
 
     private Company $company;
+
     private SequenceService $sequenceService;
 
     protected function setUp(): void

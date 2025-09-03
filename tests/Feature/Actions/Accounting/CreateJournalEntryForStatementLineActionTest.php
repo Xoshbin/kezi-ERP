@@ -1,20 +1,19 @@
 <?php
 
-use App\Models\User;
-use Brick\Money\Money;
-use App\Models\Account;
-use App\Models\Company;
-use App\Models\Journal;
-use App\Models\Currency;
-use App\Models\JournalEntry;
-use App\Models\BankStatement;
-use App\Models\BankStatementLine;
-use Illuminate\Support\Facades\DB;
-use Tests\Traits\CreatesApplication;
-use Tests\Traits\WithConfiguredCompany;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use App\Actions\Accounting\CreateJournalEntryForStatementLineAction;
 use App\DataTransferObjects\Accounting\CreateJournalEntryForStatementLineDTO;
+use App\Models\Account;
+use App\Models\BankStatement;
+use App\Models\BankStatementLine;
+use App\Models\Company;
+use App\Models\Currency;
+use App\Models\Journal;
+use App\Models\JournalEntry;
+use App\Models\User;
+use Brick\Money\Money;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\DB;
+use Tests\Traits\WithConfiguredCompany;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);
 
@@ -37,7 +36,7 @@ it('correctly creates a journal entry and links it to the statement line via a p
     $this->assertDatabaseHas('journal_entries', [
         'source_id' => $line->id,
         'source_type' => BankStatementLine::class,
-        'description' => 'Test Write Off'
+        'description' => 'Test Write Off',
     ]);
 });
 

@@ -2,11 +2,11 @@
 
 namespace App\Models;
 
-use App\Casts\DocumentCurrencyMoneyCast;
 use App\Casts\BaseCurrencyMoneyCast;
+use App\Casts\DocumentCurrencyMoneyCast;
 use App\Observers\AdjustmentDocumentLineObserver;
-use Brick\Money\Money;
 use Brick\Math\RoundingMode;
+use Brick\Money\Money;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -33,7 +33,7 @@ class AdjustmentDocumentLine extends Model
         'subtotal_company_currency',
         'total_line_tax',
         'total_line_tax_company_currency',
-        'account_id'
+        'account_id',
     ];
 
     protected $casts = [
@@ -90,8 +90,6 @@ class AdjustmentDocumentLine extends Model
 
     /**
      * Get the company that this rate belongs to.
-     *
-     * @return BelongsTo
      */
     public function company(): BelongsTo
     {
@@ -126,12 +124,9 @@ class AdjustmentDocumentLine extends Model
     /**
      * Get the line items for this adjustment document.
      * An adjustment document consists of multiple detail lines.
-     *
-     * @return HasMany
      */
     public function lines(): HasMany
     {
         return $this->hasMany(AdjustmentDocumentLine::class);
     }
-
 }

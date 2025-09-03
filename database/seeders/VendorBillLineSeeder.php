@@ -2,9 +2,9 @@
 
 namespace Database\Seeders;
 
-use App\Models\Tax;
 use App\Models\Account;
 use App\Models\Product;
+use App\Models\Tax;
 use App\Models\VendorBill;
 use App\Models\VendorBillLine;
 use Illuminate\Database\Seeder;
@@ -60,7 +60,7 @@ class VendorBillLineSeeder extends Seeder
                 [
                     'expense_account_id' => $itEquipmentAccount->id,
                     'quantity' => 1,
-                    'unit_price' => 3000000
+                    'unit_price' => 3000000,
                 ]
             );
         }

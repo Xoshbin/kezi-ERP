@@ -8,7 +8,7 @@ use Illuminate\Support\Collection;
 readonly class GeneralLedgerAccountDTO
 {
     /**
-     * @param Collection<int, GeneralLedgerTransactionLineDTO> $transactionLines
+     * @param  Collection<int, GeneralLedgerTransactionLineDTO>  $transactionLines
      */
     public function __construct(
         public int $accountId,

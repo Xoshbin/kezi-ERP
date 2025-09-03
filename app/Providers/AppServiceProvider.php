@@ -3,16 +3,16 @@
 namespace App\Providers;
 
 use App\Listeners\PostJournalEntry;
-use Illuminate\Support\ServiceProvider;
 use App\Livewire\Synthesizers\MoneySynth;
+use Illuminate\Support\ServiceProvider;
 use Livewire\Livewire;
 
 class AppServiceProvider extends ServiceProvider
 {
-
     protected $subscribe = [
         PostJournalEntry::class,
     ];
+
     /**
      * Register any application services.
      */
