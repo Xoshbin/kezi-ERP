@@ -9,6 +9,7 @@ use Brick\Money\Money;
 use Filament\Actions\DeleteAction;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\Traits\WithConfiguredCompany;
+
 use function Pest\Livewire\livewire;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);
@@ -180,25 +181,24 @@ it('can display correct major amount in edit form', function () {
     ]);
 });
 
-
 it('can create capital injection journal entry following Step 4 scenario', function () {
     // Arrange: Create the specific accounts needed for the capital injection scenario
     $bankAccount = Account::factory()->for($this->company)->create([
         'code' => '1010',
         'name' => 'Bank',
-        'type' => 'bank_and_cash'
+        'type' => 'bank_and_cash',
     ]);
 
     $ownersEquityAccount = Account::factory()->for($this->company)->create([
         'code' => '3000',
         'name' => "Owner's Equity",
-        'type' => 'equity'
+        'type' => 'equity',
     ]);
 
     // Create a Bank journal for the transaction
     $bankJournal = Journal::factory()->for($this->company)->create([
         'name' => 'Bank',
-        'type' => 'bank'
+        'type' => 'bank',
     ]);
 
     // Act: Create the capital injection journal entry
@@ -294,23 +294,23 @@ it('can create and post capital injection journal entry using Filament interface
     $bankAccount = Account::factory()->for($this->company)->create([
         'code' => '1010',
         'name' => 'Bank',
-        'type' => 'bank_and_cash'
+        'type' => 'bank_and_cash',
     ]);
 
     $ownersEquityAccount = Account::factory()->for($this->company)->create([
         'code' => '3000',
         'name' => "Owner's Equity",
-        'type' => 'equity'
+        'type' => 'equity',
     ]);
 
     // Create a Bank journal for the transaction
     $bankJournal = Journal::factory()->for($this->company)->create([
         'name' => 'Bank',
-        'type' => 'bank'
+        'type' => 'bank',
     ]);
 
     // Use a unique reference to avoid duplicate entry issues
-    $uniqueReference = 'Capital Investment Test ' . now()->timestamp;
+    $uniqueReference = 'Capital Investment Test '.now()->timestamp;
 
     // Act: Create the capital injection journal entry using Filament form
     livewire(\App\Filament\Clusters\Accounting\Resources\JournalEntries\Pages\CreateJournalEntry::class)
@@ -391,7 +391,7 @@ it('can create and post capital injection journal entry using Filament interface
     // Verify immutability: Attempt to update posted entry should throw exception
     $journalEntry->description = 'Attempted unauthorized update';
 
-    expect(fn() => $journalEntry->save())
+    expect(fn () => $journalEntry->save())
         ->toThrow(\RuntimeException::class, "Attempted to modify immutable posted journal entry field: 'description'");
 
     // Verify the description was not changed in the database
@@ -402,7 +402,7 @@ it('can create and post capital injection journal entry using Filament interface
 
     // Verify deletion is prevented for posted entries
     $journalEntryService = app(\App\Services\JournalEntryService::class);
-    expect(fn() => $journalEntryService->delete($journalEntry))
+    expect(fn () => $journalEntryService->delete($journalEntry))
         ->toThrow(\App\Exceptions\DeletionNotAllowedException::class, 'Cannot delete a posted journal entry');
 
     // Verify the accounting equation: Assets = Liabilities + Equity
@@ -420,19 +420,19 @@ it('shows proper error when trying to create duplicate reference', function () {
     $bankAccount = Account::factory()->for($this->company)->create([
         'code' => '1010',
         'name' => 'Bank',
-        'type' => 'bank_and_cash'
+        'type' => 'bank_and_cash',
     ]);
 
     $ownersEquityAccount = Account::factory()->for($this->company)->create([
         'code' => '3000',
         'name' => "Owner's Equity",
-        'type' => 'equity'
+        'type' => 'equity',
     ]);
 
     // Create a Bank journal for the transaction
     $bankJournal = Journal::factory()->for($this->company)->create([
         'name' => 'Bank',
-        'type' => 'bank'
+        'type' => 'bank',
     ]);
 
     // First, create a journal entry successfully
@@ -442,7 +442,7 @@ it('shows proper error when trying to create duplicate reference', function () {
             'currency_id' => $this->company->currency_id,
             'entry_date' => now()->format('Y-m-d'),
             'reference' => 'Duplicate Reference Test',
-            'description' => "First journal entry",
+            'description' => 'First journal entry',
             'lines' => [
                 [
                     'account_id' => $bankAccount->id,
@@ -482,7 +482,7 @@ it('shows proper error when trying to create duplicate reference', function () {
             'currency_id' => $this->company->currency_id,
             'entry_date' => now()->format('Y-m-d'),
             'reference' => 'Duplicate Reference Test', // Same reference as before
-            'description' => "Second journal entry with duplicate reference",
+            'description' => 'Second journal entry with duplicate reference',
             'lines' => [
                 [
                     'account_id' => $bankAccount->id,
@@ -545,13 +545,13 @@ it('reactively updates totals when lines change', function () {
             'debit' => 100,
             'credit' => 0,
             'description' => 'Line 1',
-        ]
+        ],
     ])
-    ->assertFormSet([
-        'total_debit' => 100.0,
-        'total_credit' => 0.0,
-        'balance' => 100.0,
-    ]);
+        ->assertFormSet([
+            'total_debit' => 100.0,
+            'total_credit' => 0.0,
+            'balance' => 100.0,
+        ]);
 
     // Add second line
     $wire->set('data.lines', [
@@ -566,13 +566,13 @@ it('reactively updates totals when lines change', function () {
             'debit' => 0,
             'credit' => 50,
             'description' => 'Line 2',
-        ]
+        ],
     ])
-    ->assertFormSet([
-        'total_debit' => 100.0,
-        'total_credit' => 50.0,
-        'balance' => 50.0,
-    ]);
+        ->assertFormSet([
+            'total_debit' => 100.0,
+            'total_credit' => 50.0,
+            'balance' => 50.0,
+        ]);
 
     // Update a line
     $lines = $wire->get('data.lines');
@@ -615,11 +615,11 @@ it('calculates and fills totals on edit page load', function () {
     livewire(\App\Filament\Clusters\Accounting\Resources\JournalEntries\Pages\EditJournalEntry::class, [
         'record' => $journalEntry->getRouteKey(),
     ])
-    ->assertFormSet([
-        'total_debit' => '500.000',
-        'total_credit' => '200.000',
-        'balance' => '300.000',
-    ]);
+        ->assertFormSet([
+            'total_debit' => '500.000',
+            'total_credit' => '200.000',
+            'balance' => '300.000',
+        ]);
 });
 
 it('can create multi-currency capital injection journal entry in USD with proper conversion to IQD base currency', function () {
@@ -679,7 +679,7 @@ it('can create multi-currency capital injection journal entry in USD with proper
         'short_code' => 'MISC',
     ]);
 
-    $uniqueReference = 'CAPITAL-001-' . now()->timestamp;
+    $uniqueReference = 'CAPITAL-001-'.now()->timestamp;
 
     // Act: Create the capital injection journal entry using Filament form
     // User enters amounts in USD as described in the scenario
@@ -804,6 +804,6 @@ it('can create multi-currency capital injection journal entry in USD with proper
 
     // Verify immutability after posting
     $journalEntry->description = 'Attempted unauthorized update';
-    expect(fn() => $journalEntry->save())
+    expect(fn () => $journalEntry->save())
         ->toThrow(\RuntimeException::class, "Attempted to modify immutable posted journal entry field: 'description'");
 });

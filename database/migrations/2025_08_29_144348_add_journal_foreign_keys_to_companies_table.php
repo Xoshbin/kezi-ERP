@@ -42,10 +42,10 @@ return new class extends Migration
 
         Schema::table('journal_entry_lines', function (Blueprint $table) {
             $table->foreignId('original_currency_id')
-                  ->nullable()
-                  ->after('original_currency_amount')
-                  ->constrained('currencies')
-                  ->comment('Currency of the original transaction amount');
+                ->nullable()
+                ->after('original_currency_amount')
+                ->constrained('currencies')
+                ->comment('Currency of the original transaction amount');
         });
 
         Schema::table('vendor_bill_lines', function (Blueprint $table) {

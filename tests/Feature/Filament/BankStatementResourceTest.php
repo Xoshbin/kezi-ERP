@@ -10,6 +10,7 @@ use App\Models\Partner;
 use Brick\Money\Money;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\Traits\WithConfiguredCompany;
+
 use function Pest\Livewire\livewire;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);
@@ -601,18 +602,18 @@ it('can toggle bank lines and payments in reconciliation interface', function ()
 
     // Test toggling bank line
     $bankTableComponent->call('toggleBankLine', $statementLine->id)
-                       ->assertSet('selectedBankLines', [$statementLine->id]);
+        ->assertSet('selectedBankLines', [$statementLine->id]);
 
     // Test toggling payment
     $paymentTableComponent->call('togglePayment', $payment->id)
-                          ->assertSet('selectedPayments', [$payment->id]);
+        ->assertSet('selectedPayments', [$payment->id]);
 
     // Test toggling off
     $bankTableComponent->call('toggleBankLine', $statementLine->id)
-                       ->assertSet('selectedBankLines', []);
+        ->assertSet('selectedBankLines', []);
 
     $paymentTableComponent->call('togglePayment', $payment->id)
-                          ->assertSet('selectedPayments', []);
+        ->assertSet('selectedPayments', []);
 });
 
 it('can perform reconciliation through the livewire component', function () {
@@ -850,7 +851,7 @@ it('can write off payments', function () {
 
     // Test that the payment can be selected (which is the main functionality)
     $paymentTableComponent->call('togglePayment', $payment->id)
-                          ->assertSet('selectedPayments', [$payment->id]);
+        ->assertSet('selectedPayments', [$payment->id]);
 
     // Verify the payment is still in confirmed status (not reconciled yet)
     $payment->refresh();

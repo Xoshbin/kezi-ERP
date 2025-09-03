@@ -3,28 +3,22 @@
 namespace App\Models;
 
 use App\Enums\Purchases\VendorBillStatus;
-use Carbon\Carbon;
+use App\Enums\Settings\NumberingType;
 use App\Observers\CompanyObserver;
+use Carbon\Carbon;
 use Database\Factories\CompanyFactory;
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Attributes\ObservedBy;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-use App\Enums\Settings\NumberingType;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
  * Class Company
  *
- * @package App\Models
- *
- * This Eloquent model represents a distinct legal entity or branch within the
- * multi-company accounting system. It serves as the root for all financial
- * data and configurations, ensuring proper segregation and adherence to
- * specific fiscal requirements.
  * @property int $id
  * @property string $name
  * @property string|null $address
@@ -74,6 +68,7 @@ use App\Enums\Settings\NumberingType;
  * @property-read int|null $users_count
  * @property-read Collection<int, VendorBill> $vendorBills
  * @property-read int|null $vendor_bills_count
+ *
  * @method static CompanyFactory factory($count = null, $state = [])
  * @method static Builder<static>|Company newModelQuery()
  * @method static Builder<static>|Company newQuery()
@@ -87,6 +82,7 @@ use App\Enums\Settings\NumberingType;
  * @method static Builder<static>|Company whereParentCompanyId($value)
  * @method static Builder<static>|Company whereTaxId($value)
  * @method static Builder<static>|Company whereUpdatedAt($value)
+ *
  * @mixin \Eloquent
  */
 #[ObservedBy([CompanyObserver::class])]
@@ -167,8 +163,6 @@ class Company extends Model
     /**
      * Get the default operating currency for the company.
      * A company operates within a specific default currency for its financial records [1, 4].
-     *
-     * @return BelongsTo
      */
     public function currency(): BelongsTo
     {
@@ -178,8 +172,6 @@ class Company extends Model
     /**
      * Get the parent company if this company is a branch or subsidiary.
      * Supports multi-branch/multi-company structures [1, 3].
-     *
-     * @return BelongsTo
      */
     public function parentCompany(): BelongsTo
     {
@@ -189,8 +181,6 @@ class Company extends Model
     /**
      * Get the child companies if this company is a parent.
      * This defines the hierarchical structure within the business group [1, 3].
-     *
-     * @return HasMany
      */
     public function childrenCompanies(): HasMany
     {
@@ -211,8 +201,6 @@ class Company extends Model
     /**
      * Get the audit logs associated with actions performed within this company.
      * Comprehensive auditability is a non-negotiable principle for accounting software [1].
-     *
-     * @return HasMany
      */
     public function auditLogs(): HasMany
     {
@@ -222,8 +210,6 @@ class Company extends Model
     /**
      * Get the lock dates configured for this company.
      * Lock dates are crucial for preventing modifications to historical financial periods [1].
-     *
-     * @return HasMany
      */
     public function lockDates(): HasMany
     {
@@ -233,8 +219,6 @@ class Company extends Model
     /**
      * Get the chart of accounts (accounts) belonging to this company.
      * Each company maintains its own unique chart of accounts [1, 5].
-     *
-     * @return HasMany
      */
     public function accounts(): HasMany
     {
@@ -244,8 +228,6 @@ class Company extends Model
     /**
      * Get the journals belonging to this company.
      * Journals categorize and sequence financial transactions [1, 6-8].
-     *
-     * @return HasMany
      */
     public function journals(): HasMany
     {
@@ -255,8 +237,6 @@ class Company extends Model
     /**
      * Get the journal entries posted by this company.
      * Journal entries are the immutable records of all financial transactions [1].
-     *
-     * @return HasMany
      */
     public function journalEntries(): HasMany
     {
@@ -265,8 +245,6 @@ class Company extends Model
 
     /**
      * Get the customer invoices issued by this company.
-     *
-     * @return HasMany
      */
     public function invoices(): HasMany
     {
@@ -275,8 +253,6 @@ class Company extends Model
 
     /**
      * Get the vendor bills received by this company.
-     *
-     * @return HasMany
      */
     public function vendorBills(): HasMany
     {
@@ -285,8 +261,6 @@ class Company extends Model
 
     /**
      * Get the payments (inbound/outbound) processed by this company.
-     *
-     * @return HasMany
      */
     public function payments(): HasMany
     {
@@ -295,8 +269,6 @@ class Company extends Model
 
     /**
      * Get the adjustment documents (e.g., credit/debit notes) created by this company.
-     *
-     * @return HasMany
      */
     public function adjustmentDocuments(): HasMany
     {
@@ -306,8 +278,6 @@ class Company extends Model
     /**
      * Get the partners (customers/vendors) associated with this company.
      * Partners can be defined per internal company [2].
-     *
-     * @return HasMany
      */
     public function partners(): HasMany
     {
@@ -317,8 +287,6 @@ class Company extends Model
     /**
      * Get the products managed by this company.
      * Products can be company-specific [2].
-     *
-     * @return HasMany
      */
     public function products(): HasMany
     {
@@ -328,8 +296,6 @@ class Company extends Model
     /**
      * Get the tax definitions for this company.
      * Taxes are configured per company [2].
-     *
-     * @return HasMany
      */
     public function taxes(): HasMany
     {
@@ -339,8 +305,6 @@ class Company extends Model
     /**
      * Get the fiscal positions defined for this company.
      * Fiscal positions handle tax and account mapping based on partner location/type [2].
-     *
-     * @return HasMany
      */
     public function fiscalPositions(): HasMany
     {
@@ -349,8 +313,6 @@ class Company extends Model
 
     /**
      * Get the fixed assets owned by this company.
-     *
-     * @return HasMany
      */
     public function assets(): HasMany
     {
@@ -360,8 +322,6 @@ class Company extends Model
     /**
      * Get the analytic accounts defined for this company.
      * Used for management/cost accounting, separate from general ledger accounts [2, 9].
-     *
-     * @return HasMany
      */
     public function analyticAccounts(): HasMany
     {
@@ -371,8 +331,6 @@ class Company extends Model
     /**
      * Get the analytic plans defined for this company.
      * Used to group analytic accounts or define budget structures [2].
-     *
-     * @return HasMany
      */
     public function analyticPlans(): HasMany
     {
@@ -381,8 +339,6 @@ class Company extends Model
 
     /**
      * Get the budgets created for this company.
-     *
-     * @return HasMany
      */
     public function budgets(): HasMany
     {
@@ -505,7 +461,7 @@ class Company extends Model
      * a core principle of the accounting system [1, 8]. It queries the `lock_dates`
      * table to determine if any lock date prevents transactions on the given date.
      *
-     * @param string|Carbon $date The date to check.
+     * @param  string|Carbon  $date  The date to check.
      * @return bool True if the date is locked, false otherwise.
      */
     public function isDateLocked($date): bool
@@ -580,6 +536,7 @@ class Company extends Model
     public function getInvoiceNumberingConfig(): array
     {
         $settings = $this->getNumberingSettings();
+
         return $settings['invoice'] ?? $this->getDefaultNumberingSettings()['invoice'];
     }
 
@@ -589,6 +546,7 @@ class Company extends Model
     public function getVendorBillNumberingConfig(): array
     {
         $settings = $this->getNumberingSettings();
+
         return $settings['vendor_bill'] ?? $this->getDefaultNumberingSettings()['vendor_bill'];
     }
 
@@ -609,7 +567,7 @@ class Company extends Model
             ->whereNotNull('bill_reference')
             ->exists();
 
-        return !$hasPostedInvoices && !$hasPostedBills;
+        return ! $hasPostedInvoices && ! $hasPostedBills;
     }
 
     /**

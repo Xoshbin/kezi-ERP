@@ -9,7 +9,6 @@ use App\Models\Company;
 use App\Models\JournalEntryLine;
 use Brick\Money\Money;
 use Carbon\Carbon;
-use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
 class TrialBalanceService
@@ -25,7 +24,7 @@ class TrialBalanceService
                 'accounts.code as account_code',
                 'accounts.name as account_name',
                 'accounts.type as account_type',
-                DB::raw('SUM(journal_entry_lines.debit) - SUM(journal_entry_lines.credit) as balance')
+                DB::raw('SUM(journal_entry_lines.debit) - SUM(journal_entry_lines.credit) as balance'),
             ])
             ->join('accounts', 'journal_entry_lines.account_id', '=', 'accounts.id')
             ->join('journal_entries', 'journal_entry_lines.journal_entry_id', '=', 'journal_entries.id')

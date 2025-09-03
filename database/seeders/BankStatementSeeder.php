@@ -28,15 +28,17 @@ class BankStatementSeeder extends Seeder
         $initialCapital = Money::of(15000000, $currencyCode);
 
         $hawrePaymentRecord = Payment::where('paid_to_from_partner_id', $hawrePartner->id)->first();
-        if (!$hawrePaymentRecord) {
+        if (! $hawrePaymentRecord) {
             $this->command->error('Payment for Hawre Trading Group not found. Please run the PaymentSeeder first.');
+
             return;
         }
         $hawrePayment = $hawrePaymentRecord->amount;
 
         $paykarPaymentRecord = Payment::where('paid_to_from_partner_id', $paykarPartner->id)->first();
-        if (!$paykarPaymentRecord) {
+        if (! $paykarPaymentRecord) {
             $this->command->error('Payment for Paykar Tech Supplies not found. Please run the PaymentSeeder first.');
+
             return;
         }
         $paykarPayment = $paykarPaymentRecord->amount;

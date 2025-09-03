@@ -1,15 +1,13 @@
 <?php
 
-use App\Models\Tax;
-use App\Models\User;
-use Brick\Money\Money;
+use App\Actions\Accounting\CreateJournalEntryForInvoiceAction;
+use App\Enums\Sales\InvoiceStatus;
 use App\Models\Invoice;
 use App\Models\Product;
-use App\Enums\Sales\InvoiceStatus;
-use Tests\Traits\CreatesApplication;
-use Tests\Traits\WithConfiguredCompany;
+use App\Models\Tax;
+use Brick\Money\Money;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use App\Actions\Accounting\CreateJournalEntryForInvoiceAction;
+use Tests\Traits\WithConfiguredCompany;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);
 
@@ -26,7 +24,7 @@ test('it creates a correct journal entry for a posted invoice', function () {
     $invoice = Invoice::factory()->for($this->company)->create([
         'status' => InvoiceStatus::Posted,
         'posted_at' => now(),
-        'invoice_number' => 'TEST-INV-001'
+        'invoice_number' => 'TEST-INV-001',
     ]);
     $unitPrice = Money::of(100, $this->company->currency->code);
     $subtotal = $unitPrice->multipliedBy(2);

@@ -7,7 +7,7 @@ use Illuminate\Support\Collection;
 readonly class GeneralLedgerDTO
 {
     /**
-     * @param Collection<int, GeneralLedgerAccountDTO> $accounts
+     * @param  Collection<int, GeneralLedgerAccountDTO>  $accounts
      */
     public function __construct(
         public Collection $accounts,

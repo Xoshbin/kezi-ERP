@@ -2,23 +2,23 @@
 
 namespace App\Models;
 
-use Illuminate\Support\Carbon;
-use Illuminate\Database\Eloquent\Collection;
-use Database\Factories\VendorBillFactory;
-use Illuminate\Database\Eloquent\Builder;
-use Brick\Money\Money;
-use App\Casts\DocumentCurrencyMoneyCast;
 use App\Casts\BaseCurrencyMoneyCast;
-use App\Traits\HasPaymentState;
+use App\Casts\DocumentCurrencyMoneyCast;
+use App\Enums\Purchases\VendorBillStatus;
 use App\Observers\AuditLogObserver;
 use App\Observers\VendorBillObserver;
-use Illuminate\Database\Eloquent\Model;
-use App\Enums\Purchases\VendorBillStatus;
-use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Traits\HasPaymentState;
+use Brick\Money\Money;
+use Database\Factories\VendorBillFactory;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Carbon;
 
 // As a fundamental principle of accounting data integrity,
 // 'posted' financial records, such as Vendor Bills, must be **immutable** [1-3].
@@ -50,6 +50,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
  * @property-read Collection<int, VendorBillLine> $lines
  * @property-read int|null $lines_count
  * @property-read Partner $vendor
+ *
  * @method static VendorBillFactory factory($count = null, $state = [])
  * @method static Builder<static>|VendorBill newModelQuery()
  * @method static Builder<static>|VendorBill newQuery()
@@ -71,6 +72,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
  * @method static Builder<static>|VendorBill whereTotalTax($value)
  * @method static Builder<static>|VendorBill whereUpdatedAt($value)
  * @method static Builder<static>|VendorBill whereVendorId($value)
+ *
  * @mixin \Eloquent
  */
 #[ObservedBy([AuditLogObserver::class, VendorBillObserver::class])]
@@ -122,22 +124,22 @@ class VendorBill extends Model
      * @var array<string, string>
      */
     protected $casts = [
-        'bill_date'          => 'date',       // Cast to date for consistency .
-        'accounting_date'    => 'date',       // Cast to date for consistency .
-        'due_date'           => 'date',       // Cast to date for consistency .
-        'status'             => VendorBillStatus::class,
+        'bill_date' => 'date',       // Cast to date for consistency .
+        'accounting_date' => 'date',       // Cast to date for consistency .
+        'due_date' => 'date',       // Cast to date for consistency .
+        'status' => VendorBillStatus::class,
         'exchange_rate_at_creation' => 'decimal:10',
-        'total_amount'       => DocumentCurrencyMoneyCast::class,  // Document currency amounts
-        'total_tax'          => DocumentCurrencyMoneyCast::class,  // Document currency amounts
+        'total_amount' => DocumentCurrencyMoneyCast::class,  // Document currency amounts
+        'total_tax' => DocumentCurrencyMoneyCast::class,  // Document currency amounts
         'total_amount_company_currency' => BaseCurrencyMoneyCast::class,  // Company base currency amounts
         'total_tax_company_currency' => BaseCurrencyMoneyCast::class,  // Company base currency amounts
-        'posted_at'          => 'datetime',   // Records the exact time of posting for audit .
+        'posted_at' => 'datetime',   // Records the exact time of posting for audit .
         'reset_to_draft_log' => 'json',       // Stores audit log as JSON .
-        'created_at'         => 'datetime',   // Automatically managed by Eloquent.
-        'updated_at'         => 'datetime',   // Automatically managed by Eloquent.
+        'created_at' => 'datetime',   // Automatically managed by Eloquent.
+        'updated_at' => 'datetime',   // Automatically managed by Eloquent.
     ];
 
-     protected static function booted(): void
+    protected static function booted(): void
     {
         static::saving(function (self $vendorBill) {
             if ($vendorBill->relationLoaded('lines')) {
@@ -171,8 +173,6 @@ class VendorBill extends Model
      * Get the Company that owns the Vendor Bill.
      * This defines a **BelongsTo** relationship, enforcing the multi-company architecture
      * where each vendor bill belongs to a specific company .
-     *
-     * @return BelongsTo
      */
     public function company(): BelongsTo
     {
@@ -183,8 +183,6 @@ class VendorBill extends Model
      * Get the Vendor (Partner) associated with the Vendor Bill.
      * Establishes a **BelongsTo** relationship with the Partner model,
      * identifying the supplier of the goods or services .
-     *
-     * @return BelongsTo
      */
     public function vendor(): BelongsTo
     {
@@ -195,8 +193,6 @@ class VendorBill extends Model
      * Get the Currency of the Vendor Bill.
      * Defines a **BelongsTo** relationship to the Currency model,
      * indicating the currency in which the bill is denominated .
-     *
-     * @return BelongsTo
      */
     public function currency(): BelongsTo
     {
@@ -208,8 +204,6 @@ class VendorBill extends Model
      * This **BelongsTo** relationship is fundamental for the double-entry accounting system,
      * linking the business document to its corresponding immutable financial transaction .
      * The `journal_entry_id` is nullable as it is only populated upon posting .
-     *
-     * @return BelongsTo
      */
     public function journalEntry(): BelongsTo
     {
@@ -218,8 +212,6 @@ class VendorBill extends Model
 
     /**
      * Get the Payments that are applied to this Vendor Bill.
-     *
-     * @return BelongsToMany
      */
     public function payments(): BelongsToMany
     {
@@ -230,8 +222,6 @@ class VendorBill extends Model
     /**
      * Get the direct PaymentDocumentLink records for this vendor bill.
      * This provides access to the raw pivot data for multi-currency payment calculations.
-     *
-     * @return HasMany
      */
     public function paymentDocumentLinks(): HasMany
     {
@@ -242,8 +232,6 @@ class VendorBill extends Model
      * Get the Vendor Bill Lines for the Vendor Bill.
      * Defines a **HasMany** relationship, indicating that a vendor bill can have
      * multiple line items detailing the products or services purchased .
-     *
-     * @return HasMany
      */
     public function lines(): HasMany
     {
@@ -253,8 +241,6 @@ class VendorBill extends Model
     /**
      * Get the attachments for the vendor bill.
      * Defines a **HasMany** relationship for file attachments.
-     *
-     * @return HasMany
      */
     public function attachments(): HasMany
     {
@@ -264,8 +250,6 @@ class VendorBill extends Model
     /**
      * Get the Adjustment Documents (debit notes, etc.) that relate to this Vendor Bill.
      * These are used for corrections, reversals, and adjustments to posted vendor bills.
-     *
-     * @return HasMany
      */
     public function adjustmentDocuments(): HasMany
     {
@@ -276,7 +260,7 @@ class VendorBill extends Model
      * Scope a query to only include vendor bills that have been 'Posted'.
      * This facilitates querying for financial records that have had an accounting impact .
      *
-     * @param Builder $query
+     * @param  Builder  $query
      * @return Builder
      */
     public function scopePosted($query)
@@ -287,8 +271,6 @@ class VendorBill extends Model
     /**
      * Determine if the vendor bill has been confirmed and posted to the ledger.
      * Posted bills are considered **immutable** records [4, 7].
-     *
-     * @return bool
      */
     public function isPosted(): bool
     {
@@ -298,8 +280,6 @@ class VendorBill extends Model
     /**
      * Determine if the vendor bill is currently in 'Draft' status.
      * Only bills in 'Draft' status can be directly modified or deleted .
-     *
-     * @return bool
      */
     public function isDraft(): bool
     {
@@ -310,13 +290,9 @@ class VendorBill extends Model
      * Determine if the vendor bill is considered modifiable.
      * In adherence to accounting principles, **only draft documents are modifiable**;
      * posted documents require formal contra-entries for any adjustments [1-4].
-     *
-     * @return bool
      */
     public function canBeModified(): bool
     {
         return $this->isDraft();
     }
-
-
 }

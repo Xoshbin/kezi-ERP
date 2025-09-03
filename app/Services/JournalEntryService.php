@@ -2,23 +2,22 @@
 
 namespace App\Services;
 
-use App\DataTransferObjects\Accounting\CreateJournalEntryLineDTO;
-use App\DataTransferObjects\Accounting\CreateJournalEntryDTO;
 use App\Actions\Accounting\CreateJournalEntryAction;
-use Exception;
-use Carbon\Carbon;
-use App\Models\User;
-use Brick\Money\Money;
-use App\Models\Company;
-use App\Models\JournalEntry;
-use Illuminate\Support\Facades\DB;
-use App\Exceptions\PeriodIsLockedException;
-use App\Services\Accounting\LockDateService;
-use Illuminate\Validation\ValidationException;
-use App\Exceptions\DeletionNotAllowedException;
 use App\Actions\Accounting\ReverseJournalEntryAction;
-use App\Services\CurrencyConverterService;
+use App\DataTransferObjects\Accounting\CreateJournalEntryDTO;
+use App\DataTransferObjects\Accounting\CreateJournalEntryLineDTO;
+use App\Exceptions\DeletionNotAllowedException;
+use App\Exceptions\PeriodIsLockedException;
+use App\Models\Company;
 use App\Models\Currency;
+use App\Models\JournalEntry;
+use App\Models\User;
+use App\Services\Accounting\LockDateService;
+use Brick\Money\Money;
+use Carbon\Carbon;
+use Exception;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\ValidationException;
 
 class JournalEntryService
 {
@@ -26,7 +25,6 @@ class JournalEntryService
         protected LockDateService $lockDateService,
         protected CurrencyConverterService $currencyConverter
     ) {}
-
 
     public function post(JournalEntry $journalEntry): bool
     {
@@ -47,7 +45,7 @@ class JournalEntryService
         }
 
         // MODIFIED: Use isEqualTo() for Money object comparison
-        if (!$totalDebit->isEqualTo($totalCredit)) {
+        if (! $totalDebit->isEqualTo($totalCredit)) {
             throw ValidationException::withMessages(['lines' => 'Cannot post an unbalanced entry.']);
         }
 
@@ -65,8 +63,9 @@ class JournalEntryService
      * Deletes a JournalEntry if it is in draft status.
      * Deletion is blocked for posted entries to maintain financial integrity.
      *
-     * @param JournalEntry $journalEntry The entry to delete.
+     * @param  JournalEntry  $journalEntry  The entry to delete.
      * @return bool|null True on successful deletion.
+     *
      * @throws DeletionNotAllowedException If the entry is already posted.
      * @throws PeriodIsLockedException If the entry's date is in a locked period.
      */
@@ -75,7 +74,6 @@ class JournalEntryService
         // First, check if the entry's date is in a locked period.
         // This applies to ALL entries, whether draft or posted, if their date falls within a locked period.
         $this->lockDateService->enforce($journalEntry->company, Carbon::parse($journalEntry->entry_date));
-
 
         // Block deletion if the entry has been posted.
         // Block deletion if the entry has been posted. This is the non-negotiable immutability rule.
@@ -97,15 +95,16 @@ class JournalEntryService
     /**
      * Creates and posts a reversing journal entry for a given posted entry.
      *
-     * @param JournalEntry $originalEntry The entry to be reversed.
-     * @param string $reason The reason for the reversal.
-     * @param User $user The user performing the action.
+     * @param  JournalEntry  $originalEntry  The entry to be reversed.
+     * @param  string  $reason  The reason for the reversal.
+     * @param  User  $user  The user performing the action.
      * @return JournalEntry The newly created reversing entry.
+     *
      * @throws Exception
      */
     public function createReversal(JournalEntry $originalEntry, string $reason, User $user): JournalEntry
     {
-        if (!$originalEntry->is_posted) {
+        if (! $originalEntry->is_posted) {
             throw new Exception('Only posted journal entries can be reversed.');
         }
 

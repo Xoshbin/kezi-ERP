@@ -1,17 +1,14 @@
 <?php
 
-use App\Models\User;
-use Brick\Money\Money;
+use App\Actions\Purchases\CreateVendorBillLineAction;
+use App\DataTransferObjects\Purchases\CreateVendorBillLineDTO;
+use App\Enums\Accounting\JournalEntryState;
+use App\Enums\Purchases\VendorBillStatus;
 use App\Models\Account;
 use App\Models\VendorBill;
 use App\Services\VendorBillService;
-use Tests\Traits\CreatesApplication;
-use Tests\Traits\WithConfiguredCompany;
-use App\Enums\Purchases\VendorBillStatus;
-use App\Enums\Accounting\JournalEntryState;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use App\Actions\Purchases\CreateVendorBillLineAction; // Import the Action
-use App\DataTransferObjects\Purchases\CreateVendorBillLineDTO; // Import the DTO
+use Illuminate\Foundation\Testing\RefreshDatabase; // Import the Action
+use Tests\Traits\WithConfiguredCompany; // Import the DTO
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);
 
@@ -58,6 +55,6 @@ test('cancelling a posted vendor bill creates a reversing journal entry and an a
         'auditable_id' => $vendorBill->id,
         'user_id' => $this->user->id,
         'event_type' => 'cancellation',
-        'description' => 'Vendor Bill Cancelled: ' . $cancellationReason,
+        'description' => 'Vendor Bill Cancelled: '.$cancellationReason,
     ]);
 });

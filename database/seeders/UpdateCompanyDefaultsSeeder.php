@@ -2,10 +2,10 @@
 
 namespace Database\Seeders;
 
-use Exception;
 use App\Models\Account;
 use App\Models\Company;
 use App\Models\Journal;
+use Exception;
 use Illuminate\Database\Seeder;
 
 class UpdateCompanyDefaultsSeeder extends Seeder
@@ -17,7 +17,7 @@ class UpdateCompanyDefaultsSeeder extends Seeder
     public function run(): void
     {
         $company = Company::where('name', 'Jmeryar Solutions')->first();
-        if (!$company) {
+        if (! $company) {
             throw new Exception('Company "Jmeryar Solutions" not found. Please run the CompanySeeder first.');
         }
 
@@ -36,18 +36,36 @@ class UpdateCompanyDefaultsSeeder extends Seeder
 
         // Check if all required records were found before attempting to update the company.
         $missing = [];
-        if (!$apAccount) $missing[] = 'Accounts Payable Account (210101)';
-        if (!$arAccount) $missing[] = 'Accounts Receivable Account (120101)';
-        if (!$salesDiscountAccount) $missing[] = 'Sales Discount Account (490101)';
-        if (!$bankAccount) $missing[] = 'Bank Account (110101)';
-        if (!$outstandingReceiptsAccount) $missing[] = 'Outstanding Receipts Account (110301)';
-        if (!$taxAccount) $missing[] = 'Tax Account (220101)';
-        if (!$purchaseJournal) $missing[] = 'Purchase Journal (short_code: BILL)';
-        if (!$salesJournal) $missing[] = 'Sales Journal (short_code: INV)';
-        if (!$depreciationJournal) $missing[] = 'Depreciation Journal (short_code: DEPR)';
+        if (! $apAccount) {
+            $missing[] = 'Accounts Payable Account (210101)';
+        }
+        if (! $arAccount) {
+            $missing[] = 'Accounts Receivable Account (120101)';
+        }
+        if (! $salesDiscountAccount) {
+            $missing[] = 'Sales Discount Account (490101)';
+        }
+        if (! $bankAccount) {
+            $missing[] = 'Bank Account (110101)';
+        }
+        if (! $outstandingReceiptsAccount) {
+            $missing[] = 'Outstanding Receipts Account (110301)';
+        }
+        if (! $taxAccount) {
+            $missing[] = 'Tax Account (220101)';
+        }
+        if (! $purchaseJournal) {
+            $missing[] = 'Purchase Journal (short_code: BILL)';
+        }
+        if (! $salesJournal) {
+            $missing[] = 'Sales Journal (short_code: INV)';
+        }
+        if (! $depreciationJournal) {
+            $missing[] = 'Depreciation Journal (short_code: DEPR)';
+        }
 
-        if (!empty($missing)) {
-            throw new Exception('Failed to find the following required records: ' . implode(', ', $missing) . '. Please ensure all seeders have run successfully before this one.');
+        if (! empty($missing)) {
+            throw new Exception('Failed to find the following required records: '.implode(', ', $missing).'. Please ensure all seeders have run successfully before this one.');
         }
 
         // Update the company with the default IDs.

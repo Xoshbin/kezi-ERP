@@ -45,7 +45,7 @@ class BalanceSheetService
         $totalLiabilitiesAndEquity = $totalLiabilities->plus($totalEquity);
 
         // Crucial accounting validation
-        if (!$totalAssets->isEqualTo($totalLiabilitiesAndEquity)) {
+        if (! $totalAssets->isEqualTo($totalLiabilitiesAndEquity)) {
             throw new BalanceSheetNotBalancedException(
                 "Assets ({$totalAssets}) do not equal Liabilities and Equity ({$totalLiabilitiesAndEquity})."
             );
@@ -72,12 +72,12 @@ class BalanceSheetService
                 'accounts.code as account_code',
                 'accounts.name as account_name',
                 'accounts.type as account_type',
-                DB::raw('SUM(journal_entry_lines.debit) - SUM(journal_entry_lines.credit) as balance')
+                DB::raw('SUM(journal_entry_lines.debit) - SUM(journal_entry_lines.credit) as balance'),
             ])
             ->join('accounts', 'journal_entry_lines.account_id', '=', 'accounts.id')
             ->join('journal_entries', 'journal_entry_lines.journal_entry_id', '=', 'journal_entries.id')
             ->where('accounts.company_id', $company->id)
-            ->whereIn('accounts.type', array_map(fn($type) => $type->value, AccountType::balanceSheetTypes()))
+            ->whereIn('accounts.type', array_map(fn ($type) => $type->value, AccountType::balanceSheetTypes()))
             ->where('journal_entries.state', JournalEntryState::Posted->value)
             ->where('journal_entries.entry_date', '<=', $asOfDate->toDateString())
             ->groupBy('accounts.id', 'accounts.code', 'accounts.name', 'accounts.type')
@@ -90,7 +90,7 @@ class BalanceSheetService
         $balances = JournalEntryLine::query()
             ->select([
                 'accounts.type as account_type',
-                DB::raw('SUM(journal_entry_lines.debit) - SUM(journal_entry_lines.credit) as balance')
+                DB::raw('SUM(journal_entry_lines.debit) - SUM(journal_entry_lines.credit) as balance'),
             ])
             ->join('accounts', 'journal_entry_lines.account_id', '=', 'accounts.id')
             ->join('journal_entries', 'journal_entry_lines.journal_entry_id', '=', 'journal_entries.id')
@@ -115,21 +115,22 @@ class BalanceSheetService
 
         // Calculate total expenses (Expense accounts have debit nature)
         $totalExpenses = Money::ofMinor(
-            $balances->get(AccountType::Expense->value, 0) + 
-            $balances->get(AccountType::Depreciation->value, 0) + 
+            $balances->get(AccountType::Expense->value, 0) +
+            $balances->get(AccountType::Depreciation->value, 0) +
             $balances->get(AccountType::CostOfRevenue->value, 0),
             $company->currency->code
         );
 
         return $totalRevenue->minus($totalExpenses);
     }
-    
+
     private function mapBalancesToReportLines(Collection $balances, array $types, string $currency, Collection $accounts, bool $negate = false): Collection
     {
-        return $balances->whereIn('account_type', array_map(fn($type) => $type->value, $types))
+        return $balances->whereIn('account_type', array_map(fn ($type) => $type->value, $types))
             ->map(function ($row) use ($currency, $accounts, $negate) {
                 $balance = Money::ofMinor($row->balance, $currency);
                 $account = $accounts->get($row->account_id);
+
                 return new ReportLineDTO(
                     accountId: $row->account_id,
                     accountCode: $row->account_code,
@@ -138,7 +139,7 @@ class BalanceSheetService
                 );
             })->values();
     }
-    
+
     private function sumLines(Collection $lines, Money $zero): Money
     {
         return $lines->reduce(

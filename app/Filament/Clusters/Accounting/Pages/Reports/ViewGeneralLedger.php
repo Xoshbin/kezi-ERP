@@ -2,23 +2,24 @@
 
 namespace App\Filament\Clusters\Accounting\Pages\Reports;
 
-use Filament\Facades\Filament;
-use Carbon\Carbon;
-use App\Models\Account;
-use Filament\Pages\Page;
-use Filament\Actions\Action;
-use Filament\Schemas\Schema;
-use App\Support\NumberFormatter;
-use Filament\Forms\Components\Select;
-use Filament\Schemas\Components\Section;
-use Filament\Forms\Components\DatePicker;
-use Illuminate\Contracts\Support\Htmlable;
-use App\Services\Reports\GeneralLedgerService;
 use App\Filament\Clusters\Accounting\AccountingCluster;
+use App\Models\Account;
+use App\Services\Reports\GeneralLedgerService;
+use App\Support\NumberFormatter;
+use Carbon\Carbon;
+use Filament\Actions\Action;
+use Filament\Facades\Filament;
+use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\Select;
+use Filament\Pages\Page;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Schema;
+use Illuminate\Contracts\Support\Htmlable;
 
 class ViewGeneralLedger extends Page
 {
-    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-document-text';
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-document-text';
+
     protected string $view = 'filament.pages.reports.view-general-ledger';
 
     public static function shouldRegisterNavigation(): bool
@@ -29,8 +30,11 @@ class ViewGeneralLedger extends Page
     protected static ?string $cluster = AccountingCluster::class;
 
     public ?string $startDate = null;
+
     public ?string $endDate = null;
+
     public ?array $accountIds = null;
+
     public ?array $reportData = null;
 
     public static function getNavigationLabel(): string
@@ -79,17 +83,18 @@ class ViewGeneralLedger extends Page
                             ->searchable()
                             ->getSearchResultsUsing(function (string $search): array {
                                 $company = Filament::getTenant();
+
                                 return Account::searchTranslatable($search)
                                     ->where('company_id', $company->id)
                                     ->limit(50)
                                     ->get()
-                                    ->mapWithKeys(fn($account) => [$account->id => $account->code . ' - ' . $account->getTranslatedLabel('name')])
+                                    ->mapWithKeys(fn ($account) => [$account->id => $account->code.' - '.$account->getTranslatedLabel('name')])
                                     ->toArray();
                             })
                             ->getOptionLabelsUsing(function (array $values): array {
                                 return Account::whereIn('id', $values)
                                     ->get()
-                                    ->mapWithKeys(fn($account) => [$account->id => "{$account->code} - {$account->name}"])
+                                    ->mapWithKeys(fn ($account) => [$account->id => "{$account->code} - {$account->name}"])
                                     ->toArray();
                             })
                             ->placeholder(__('reports.all_accounts'))
@@ -128,7 +133,7 @@ class ViewGeneralLedger extends Page
 
         // Convert to array format that Livewire can handle
         $this->reportData = [
-            'accounts' => $report->accounts->map(fn($account) => [
+            'accounts' => $report->accounts->map(fn ($account) => [
                 'accountId' => $account->accountId,
                 'accountCode' => $account->accountCode,
                 'accountName' => $account->accountName,
@@ -136,7 +141,7 @@ class ViewGeneralLedger extends Page
                 'openingBalanceAmount' => $account->openingBalance->getAmount()->toFloat(),
                 'closingBalance' => NumberFormatter::formatMoneyTo($account->closingBalance),
                 'closingBalanceAmount' => $account->closingBalance->getAmount()->toFloat(),
-                'transactionLines' => $account->transactionLines->map(fn($line) => [
+                'transactionLines' => $account->transactionLines->map(fn ($line) => [
                     'journalEntryId' => $line->journalEntryId,
                     'date' => $line->date->format('Y-m-d'),
                     'reference' => $line->reference,

@@ -2,19 +2,19 @@
 
 namespace Tests\Feature\Traits;
 
-use Brick\Money\Money;
-use App\Models\Invoice;
-use App\Models\VendorBill;
-use App\Models\Payment;
-use App\Models\Partner;
-use App\Models\Journal;
-use App\Models\PaymentDocumentLink;
-use App\Enums\Shared\PaymentState;
-use App\Enums\Sales\InvoiceStatus;
-use App\Enums\Purchases\VendorBillStatus;
 use App\Enums\Payments\PaymentStatus;
-use Tests\Traits\WithConfiguredCompany;
+use App\Enums\Purchases\VendorBillStatus;
+use App\Enums\Sales\InvoiceStatus;
+use App\Enums\Shared\PaymentState;
+use App\Models\Invoice;
+use App\Models\Journal;
+use App\Models\Partner;
+use App\Models\Payment;
+use App\Models\PaymentDocumentLink;
+use App\Models\VendorBill;
+use Brick\Money\Money;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\Traits\WithConfiguredCompany;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);
 

@@ -2,11 +2,6 @@
 
 namespace App\Filament\Clusters\Accounting\Resources\AdjustmentDocuments;
 
-use App\Models\Currency;
-use Filament\Facades\Filament;
-use Filament\Actions\Action;
-use App\Models\Tax;
-use App\Models\Account;
 use App\Enums\Accounting\AccountType;
 use App\Enums\Adjustments\AdjustmentDocumentStatus;
 use App\Enums\Adjustments\AdjustmentDocumentType;
@@ -16,15 +11,20 @@ use App\Filament\Clusters\Accounting\Resources\AdjustmentDocuments\Pages\EditAdj
 use App\Filament\Clusters\Accounting\Resources\AdjustmentDocuments\Pages\ListAdjustmentDocuments;
 use App\Filament\Forms\Components\MoneyInput;
 use App\Filament\Support\TranslatableSelect;
+use App\Models\Account;
 use App\Models\AdjustmentDocument;
+use App\Models\Currency;
 use App\Models\Invoice;
 use App\Models\Product;
+use App\Models\Tax;
 use App\Models\VendorBill;
 use App\Rules\NotInLockedPeriod;
+use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
+use Filament\Facades\Filament;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Repeater\TableColumn;
@@ -45,7 +45,7 @@ class AdjustmentDocumentResource extends Resource
 {
     protected static ?string $model = AdjustmentDocument::class;
 
-    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-document-duplicate';
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-document-duplicate';
 
     protected static ?int $navigationSort = 3;
 
@@ -71,7 +71,6 @@ class AdjustmentDocumentResource extends Resource
         return __('adjustment_document.plural_label');
     }
 
-
     public static function form(Schema $schema): Schema
     {
         return $schema->components([
@@ -82,8 +81,8 @@ class AdjustmentDocumentResource extends Resource
                         ->required()
                         ->live()
                         ->columnSpan(2)
-                        ->default(fn() => Filament::getTenant()?->currency_id)
-                        ->disabled(fn (Get $get): bool => !empty($get('original_invoice_id')) || !empty($get('original_vendor_bill_id')))
+                        ->default(fn () => Filament::getTenant()?->currency_id)
+                        ->disabled(fn (Get $get): bool => ! empty($get('original_invoice_id')) || ! empty($get('original_vendor_bill_id')))
                         ->createOptionForm([
                             TextInput::make('code')
                                 ->label(__('currency.code'))
@@ -121,7 +120,7 @@ class AdjustmentDocumentResource extends Resource
                         ->required()
                         ->searchable()
                         ->columnSpan(2),
-                        TextInput::make('reference_number')
+                    TextInput::make('reference_number')
                         ->label(__('adjustment_document.reference_number'))
                         ->required()
                         ->maxLength(255)
@@ -130,13 +129,13 @@ class AdjustmentDocumentResource extends Resource
                     DatePicker::make('date')
                         ->label(__('adjustment_document.adjustment_date'))
                         ->required()
-                        ->rules([new NotInLockedPeriod()])
+                        ->rules([new NotInLockedPeriod])
                         ->default(now())
                         ->native(false)
                         ->columnSpan(1),
                     Select::make('status')
                         ->label(__('adjustment_document.status'))
-                        ->options(collect(AdjustmentDocumentStatus::cases())->mapWithKeys(fn($case) => [$case->value => $case->label()]))
+                        ->options(collect(AdjustmentDocumentStatus::cases())->mapWithKeys(fn ($case) => [$case->value => $case->label()]))
                         ->disabled()
                         ->dehydrated(false)
                         ->default(AdjustmentDocumentStatus::Draft->value)
@@ -158,14 +157,17 @@ class AdjustmentDocumentResource extends Resource
                         ->label(__('adjustment_document.document_type_to_adjust'))
                         ->options([
                             'invoice' => __('adjustment_document.invoice'),
-                            'vendor_bill' => __('adjustment_document.vendor_bill')
+                            'vendor_bill' => __('adjustment_document.vendor_bill'),
                         ])
                         ->reactive()
                         ->afterStateUpdated(fn (Set $set) => [$set('original_invoice_id', null), $set('original_vendor_bill_id', null)])
                         ->dehydrated(false)
                         ->afterStateHydrated(function (Get $get, Set $set) {
-                            if ($get('original_invoice_id')) $set('document_link_type', 'invoice');
-                            elseif ($get('original_vendor_bill_id')) $set('document_link_type', 'vendor_bill');
+                            if ($get('original_invoice_id')) {
+                                $set('document_link_type', 'invoice');
+                            } elseif ($get('original_vendor_bill_id')) {
+                                $set('document_link_type', 'vendor_bill');
+                            }
                         })
                         ->placeholder('Select document type to link...'),
                     Select::make('original_invoice_id')
@@ -175,12 +177,15 @@ class AdjustmentDocumentResource extends Resource
                         ->relationship(
                             'originalInvoice',
                             'invoice_number',
-                            fn($query) => $query->posted()->with('customer')
+                            fn ($query) => $query->posted()->with('customer')
                         )
-                        ->getOptionLabelUsing(function($value): ?string {
+                        ->getOptionLabelUsing(function ($value): ?string {
                             $invoice = Invoice::posted()->with('customer')->find($value);
-                            if (!$invoice) return null;
-                            return $invoice->invoice_number . ' - ' . $invoice->customer->name;
+                            if (! $invoice) {
+                                return null;
+                            }
+
+                            return $invoice->invoice_number.' - '.$invoice->customer->name;
                         })
                         ->visible(fn (Get $get) => $get('document_link_type') === 'invoice')
                         ->reactive()
@@ -195,7 +200,7 @@ class AdjustmentDocumentResource extends Resource
                         ->label('Original Vendor Bill')
                         ->searchable()
                         ->preload()
-                        ->relationship('originalVendorBill', 'bill_reference', fn($query) => $query->posted())
+                        ->relationship('originalVendorBill', 'bill_reference', fn ($query) => $query->posted())
                         ->visible(fn (Get $get) => $get('document_link_type') === 'vendor_bill')
                         ->reactive()
                         ->afterStateUpdated(function ($state, Set $set) {
@@ -312,7 +317,7 @@ class AdjustmentDocumentResource extends Resource
                             TranslatableSelect::withFormatter(
                                 'account_id',
                                 Account::class,
-                                fn($account) => [$account->id => $account->getTranslatedLabel('name') . ' (' . $account->code . ')'],
+                                fn ($account) => [$account->id => $account->getTranslatedLabel('name').' ('.$account->code.')'],
                                 'Account'
                             )
                                 ->required()
@@ -348,7 +353,7 @@ class AdjustmentDocumentResource extends Resource
                                 })
                                 ->columnSpan(3),
                         ])
-                        ->columns(18)
+                        ->columns(18),
                 ])
                 ->columnSpanFull(),
         ]);
@@ -389,19 +394,19 @@ class AdjustmentDocumentResource extends Resource
                     ->icon('heroicon-o-calendar-days'),
                 TextColumn::make('total_amount')
                     ->label('Amount')
-                    ->money(fn($record) => $record->currency->code)
+                    ->money(fn ($record) => $record->currency->code)
                     ->sortable(),
                 TextColumn::make('status')
                     ->label('Status')
-                    ->formatStateUsing(fn(AdjustmentDocumentStatus $state): string => $state->label())
+                    ->formatStateUsing(fn (AdjustmentDocumentStatus $state): string => $state->label())
                     ->badge()
-                    ->color(fn(AdjustmentDocumentStatus $state): string => match ($state) {
+                    ->color(fn (AdjustmentDocumentStatus $state): string => match ($state) {
                         AdjustmentDocumentStatus::Draft => 'warning',
                         AdjustmentDocumentStatus::Posted => 'success',
                         AdjustmentDocumentStatus::Cancelled => 'danger',
                         default => 'gray',
                     })
-                    ->icon(fn(AdjustmentDocumentStatus $state): string => match ($state) {
+                    ->icon(fn (AdjustmentDocumentStatus $state): string => match ($state) {
                         AdjustmentDocumentStatus::Draft => 'heroicon-m-pencil-square',
                         AdjustmentDocumentStatus::Posted => 'heroicon-m-check-circle',
                         AdjustmentDocumentStatus::Cancelled => 'heroicon-m-x-circle',

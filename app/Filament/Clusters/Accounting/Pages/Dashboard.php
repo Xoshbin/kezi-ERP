@@ -5,13 +5,12 @@ namespace App\Filament\Clusters\Accounting\Pages;
 use App\Filament\Clusters\Accounting\Widgets\CashFlowWidget;
 use App\Filament\Clusters\Accounting\Widgets\FinancialStatsOverview;
 use App\Filament\Clusters\Accounting\Widgets\IncomeVsExpenseChart;
-use App\Filament\Widgets\AccountWidget;
 use Filament\Facades\Filament;
 use Filament\Pages\Dashboard as BaseDashboard;
 
 class Dashboard extends BaseDashboard
 {
-    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-chart-bar';
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-chart-bar';
 
     public static function getNavigationLabel(): string
     {
@@ -35,7 +34,7 @@ class Dashboard extends BaseDashboard
 
         return __('dashboard.welcome_message', [
             'company' => $companyName,
-            'date' => now()->format('F j, Y')
+            'date' => now()->format('F j, Y'),
         ]);
     }
 

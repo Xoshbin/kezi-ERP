@@ -2,14 +2,14 @@
 
 namespace Database\Factories;
 
-use App\Models\JournalEntry;
+use App\Enums\Adjustments\AdjustmentDocumentStatus;
+use App\Enums\Adjustments\AdjustmentDocumentType;
 use App\Models\AdjustmentDocument;
 use App\Models\AdjustmentDocumentLine;
-use Brick\Money\Money;
 use App\Models\Company;
 use App\Models\Currency;
-use App\Enums\Adjustments\AdjustmentDocumentType;
-use App\Enums\Adjustments\AdjustmentDocumentStatus;
+use App\Models\JournalEntry;
+use Brick\Money\Money;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -36,16 +36,19 @@ class AdjustmentDocumentFactory extends Factory
             'reference_number' => $this->faker->unique()->bothify('ADJ-#####'),
             'subtotal' => function (array $attributes) {
                 $currency = Currency::find($attributes['currency_id']);
+
                 return Money::of($this->faker->randomFloat(2, 100, 8000), $currency->code);
             },
             'total_tax' => function (array $attributes) {
                 $currency = Currency::find($attributes['currency_id']);
+
                 return Money::of($this->faker->randomFloat(2, 0, 2000), $currency->code);
             },
             'total_amount' => function (array $attributes) {
                 $currency = Currency::find($attributes['currency_id']);
                 $subtotal = $attributes['subtotal'] ?? Money::of(1000, $currency->code);
                 $totalTax = $attributes['total_tax'] ?? Money::of(100, $currency->code);
+
                 return $subtotal->plus($totalTax);
             },
             'reason' => $this->faker->sentence(),

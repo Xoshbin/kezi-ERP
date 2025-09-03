@@ -2,11 +2,10 @@
 
 namespace Database\Factories;
 
-use App\Models\Journal;
+use App\Enums\Accounting\JournalType;
 use App\Models\Account;
 use App\Models\Company;
-use App\Models\Currency;
-use App\Enums\Accounting\JournalType;
+use App\Models\Journal;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**

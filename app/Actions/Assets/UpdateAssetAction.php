@@ -8,10 +8,9 @@ use Illuminate\Support\Facades\DB;
 
 class UpdateAssetAction
 {
-     public function __construct(
+    public function __construct(
         protected ComputeDepreciationScheduleAction $computeDepreciationScheduleAction
-    ) {
-    }
+    ) {}
 
     public function execute(Asset $asset, UpdateAssetDTO $dto): Asset
     {

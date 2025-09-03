@@ -21,10 +21,15 @@ class VendorBillAttachmentFilamentTest extends TestCase
     use RefreshDatabase;
 
     protected User $user;
+
     protected Company $company;
+
     protected Currency $currency;
+
     protected Partner $vendor;
+
     protected Account $expenseAccount;
+
     protected Product $product;
 
     protected function setUp(): void
@@ -99,6 +104,4 @@ class VendorBillAttachmentFilamentTest extends TestCase
         $this->assertEquals('application/pdf', $attachment->mime_type);
         $this->assertEquals($this->user->id, $attachment->uploaded_by_user_id);
     }
-
-
 }

@@ -40,7 +40,7 @@ return new class extends Migration
 
             // Ensure a journal entry line can only be in one reconciliation
             $table->unique('journal_entry_line_id', 'unique_line_reconciliation');
-            
+
             // Index for efficient lookups
             $table->index('reconciliation_id');
         });

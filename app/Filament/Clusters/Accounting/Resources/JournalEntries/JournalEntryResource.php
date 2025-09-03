@@ -2,37 +2,34 @@
 
 namespace App\Filament\Clusters\Accounting\Resources\JournalEntries;
 
-use App\Models\Currency;
-use Filament\Facades\Filament;
-use Filament\Forms\Components\Toggle;
-use App\Models\Account;
-use App\Models\Partner;
 use App\Enums\Accounting\JournalType;
 use App\Filament\Clusters\Accounting\AccountingCluster;
 use App\Filament\Clusters\Accounting\Resources\JournalEntries\Pages\CreateJournalEntry;
 use App\Filament\Clusters\Accounting\Resources\JournalEntries\Pages\EditJournalEntry;
 use App\Filament\Clusters\Accounting\Resources\JournalEntries\Pages\ListJournalEntries;
 use App\Filament\Forms\Components\MoneyInput;
-use App\Filament\Resources\JournalEntryResource\Pages;
-use App\Filament\Resources\JournalEntryResource\RelationManagers;
 use App\Filament\Support\TranslatableSelect;
 use App\Filament\Tables\Columns\MoneyColumn;
+use App\Models\Account;
+use App\Models\Currency;
 use App\Models\Journal;
 use App\Models\JournalEntry;
+use App\Models\Partner;
 use App\Rules\ActiveAccount;
+use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
-use Filament\Actions\Action;
+use Filament\Facades\Filament;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Repeater\TableColumn;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Toggle;
 use Filament\Resources\Resource;
-use Filament\Schemas\Schema;
 use Filament\Schemas\Components\Section;
-use Filament\Tables\Columns\IconColumn;
+use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
@@ -43,7 +40,7 @@ class JournalEntryResource extends Resource
 {
     protected static ?string $model = JournalEntry::class;
 
-    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-document-text';
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-document-text';
 
     protected static ?int $navigationSort = 1;
 
@@ -81,7 +78,7 @@ class JournalEntryResource extends Resource
                     TranslatableSelect::make('currency_id', Currency::class, __('journal_entry.currency'))
                         ->required()
                         ->live()
-                        ->default(fn() => Filament::getTenant()?->currency_id)
+                        ->default(fn () => Filament::getTenant()?->currency_id)
                         ->createOptionForm([
                             TextInput::make('code')->label(__('currency.code'))->required()->maxLength(255),
                             TextInput::make('name')->label(__('currency.name'))->required()->maxLength(255),
@@ -90,7 +87,7 @@ class JournalEntryResource extends Resource
                             Toggle::make('is_active')->label(__('currency.is_active'))->required()->default(true),
                         ])
                         ->createOptionModalHeading(__('common.modal_title_create_currency'))
-                        ->createOptionAction(fn(Action $action) => $action->modalWidth('lg'))
+                        ->createOptionAction(fn (Action $action) => $action->modalWidth('lg'))
                         ->columnSpan(2),
                     DatePicker::make('entry_date')
                         ->label(__('journal_entry.entry_date'))
@@ -114,7 +111,7 @@ class JournalEntryResource extends Resource
                     Repeater::make('lines')
                         ->label(__('journal_entry.lines'))
                         ->disabled(fn (?JournalEntry $record) => $record && $record->is_posted)
-                        ->deletable(fn (?JournalEntry $record) => $record === null || !$record->is_posted)
+                        ->deletable(fn (?JournalEntry $record) => $record === null || ! $record->is_posted)
                         ->table([
                             TableColumn::make(__('journal_entry.account'))->width('20%'),
                             TableColumn::make(__('journal_entry.debit'))->width('15%'),
@@ -126,7 +123,7 @@ class JournalEntryResource extends Resource
                             TranslatableSelect::withFormatter(
                                 'account_id',
                                 Account::class,
-                                fn($account) => [$account->id => $account->getTranslatedLabel('name') . ' (' . $account->code . ')'],
+                                fn ($account) => [$account->id => $account->getTranslatedLabel('name').' ('.$account->code.')'],
                                 __('journal_entry.account')
                             )
                                 ->rules([new ActiveAccount])
@@ -206,10 +203,10 @@ class JournalEntryResource extends Resource
                 // Status (critical for workflow)
                 TextColumn::make('is_posted')
                     ->label(__('journal_entry.is_posted'))
-                    ->formatStateUsing(fn(bool $state): string => $state ? __('enums.journal_entry_state.posted') : __('enums.journal_entry_state.draft'))
+                    ->formatStateUsing(fn (bool $state): string => $state ? __('enums.journal_entry_state.posted') : __('enums.journal_entry_state.draft'))
                     ->badge()
-                    ->color(fn(bool $state): string => $state ? 'success' : 'warning')
-                    ->icon(fn(bool $state): string => $state ? 'heroicon-m-check-circle' : 'heroicon-m-pencil-square')
+                    ->color(fn (bool $state): string => $state ? 'success' : 'warning')
+                    ->icon(fn (bool $state): string => $state ? 'heroicon-m-check-circle' : 'heroicon-m-pencil-square')
                     ->sortable(),
 
                 // Entry Date (important for chronological sorting)
@@ -285,8 +282,8 @@ class JournalEntryResource extends Resource
         $totalCredit = 0;
 
         foreach ($lines as $line) {
-            $totalDebit += (float)($line['debit'] ?? 0);
-            $totalCredit += (float)($line['credit'] ?? 0);
+            $totalDebit += (float) ($line['debit'] ?? 0);
+            $totalCredit += (float) ($line['credit'] ?? 0);
         }
 
         $set('total_debit', (float) $totalDebit);
@@ -297,8 +294,8 @@ class JournalEntryResource extends Resource
     public static function getPages(): array
     {
         return [
-            //TODO:: in the list page of the journal entries
-            //below each journal entry add a dropdown to show the associated lines
+            // TODO:: in the list page of the journal entries
+            // below each journal entry add a dropdown to show the associated lines
             'index' => ListJournalEntries::route('/'),
             'create' => CreateJournalEntry::route('/create'),
             'edit' => EditJournalEntry::route('/{record}/edit'),

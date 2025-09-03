@@ -13,9 +13,7 @@ use RuntimeException;
 
 class CreateJournalEntryForInventoryBillAction
 {
-    public function __construct(private readonly CreateJournalEntryAction $createJournalEntryAction)
-    {
-    }
+    public function __construct(private readonly CreateJournalEntryAction $createJournalEntryAction) {}
 
     public function execute(VendorBill $vendorBill, User $user): JournalEntry
     {
@@ -33,7 +31,7 @@ class CreateJournalEntryForInventoryBillAction
 
             // Determine Accounts Payable account: vendor-specific or company default
             $apAccountId = $vendorBill->vendor->payable_account_id ?? $company->default_accounts_payable_id;
-            if (!$apAccountId) {
+            if (! $apAccountId) {
                 throw new RuntimeException('Default Accounts Payable account is not configured for this company.');
             }
 
@@ -42,7 +40,7 @@ class CreateJournalEntryForInventoryBillAction
 
             foreach ($storableLines as $line) {
                 $inventoryAccount = $line->product->inventoryAccount;
-                if (!$inventoryAccount) {
+                if (! $inventoryAccount) {
                     throw new RuntimeException("Product ID {$line->product_id} is missing default inventory account.");
                 }
 
@@ -60,7 +58,7 @@ class CreateJournalEntryForInventoryBillAction
                 // If tax exists, debit tax receivable (deductible input VAT) and include in AP
                 if ($line->tax_id && $line->total_line_tax->isPositive()) {
                     $taxAccountId = $company->default_tax_receivable_id ?? $company->default_tax_account_id;
-                    if (!$taxAccountId) {
+                    if (! $taxAccountId) {
                         throw new RuntimeException('Default tax account is not configured for this company.');
                     }
                     $lineDTOs[] = new CreateJournalEntryLineDTO(
@@ -90,8 +88,8 @@ class CreateJournalEntryForInventoryBillAction
                 journal_id: $company->default_purchase_journal_id,
                 currency_id: $currency->id,
                 entry_date: $vendorBill->accounting_date,
-                reference: 'BILL/' . $vendorBill->bill_reference,
-                description: 'Inventory purchase (AP recognition) for Bill ' . $vendorBill->bill_reference,
+                reference: 'BILL/'.$vendorBill->bill_reference,
+                description: 'Inventory purchase (AP recognition) for Bill '.$vendorBill->bill_reference,
                 source_type: VendorBill::class,
                 source_id: $vendorBill->id,
                 created_by_user_id: $user->id,

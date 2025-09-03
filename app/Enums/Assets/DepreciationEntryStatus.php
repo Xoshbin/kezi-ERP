@@ -12,6 +12,6 @@ enum DepreciationEntryStatus: string
      */
     public function label(): string
     {
-        return __('enums.depreciation_entry_status.' . $this->value);
+        return __('enums.depreciation_entry_status.'.$this->value);
     }
 }

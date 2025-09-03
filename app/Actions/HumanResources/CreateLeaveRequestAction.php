@@ -4,7 +4,6 @@ namespace App\Actions\HumanResources;
 
 use App\DataTransferObjects\HumanResources\CreateLeaveRequestDTO;
 use App\Models\LeaveRequest;
-use App\Models\Company;
 use Illuminate\Support\Facades\DB;
 
 class CreateLeaveRequestAction
@@ -44,20 +43,20 @@ class CreateLeaveRequestAction
     {
         $prefix = 'LR';
         $year = now()->year;
-        
+
         // Get the next sequential number for this year
         $lastRequest = LeaveRequest::where('company_id', $companyId)
-            ->where('request_number', 'like', $prefix . $year . '%')
+            ->where('request_number', 'like', $prefix.$year.'%')
             ->orderBy('request_number', 'desc')
             ->first();
-        
+
         if ($lastRequest) {
             $lastNumber = (int) substr($lastRequest->request_number, -4);
             $nextNumber = $lastNumber + 1;
         } else {
             $nextNumber = 1;
         }
-        
-        return $prefix . $year . str_pad($nextNumber, 4, '0', STR_PAD_LEFT);
+
+        return $prefix.$year.str_pad($nextNumber, 4, '0', STR_PAD_LEFT);
     }
 }

@@ -7,8 +7,8 @@ use App\DataTransferObjects\Purchases\CreateVendorBillDTO;
 use App\DataTransferObjects\Purchases\CreateVendorBillLineDTO;
 use App\Models\Account;
 use App\Models\AssetCategory;
-use App\Models\VendorBill;
 use App\Models\Partner;
+use App\Models\VendorBill;
 use App\Services\VendorBillService;
 use Brick\Money\Money;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -104,4 +104,3 @@ it('creates asset and posts Dr Asset / Cr AP for asset category bill lines', fun
         'source_id' => $vendorBill->id,
     ]);
 });
-

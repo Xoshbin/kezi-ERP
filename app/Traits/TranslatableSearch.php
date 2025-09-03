@@ -10,15 +10,11 @@ use Illuminate\Support\Collection;
  *
  * Provides multi-locale search functionality for models using Spatie Laravel Translatable.
  * Searches across all translation locales and returns results formatted in current locale.
- *
- * @package App\Traits
  */
 trait TranslatableSearch
 {
     /**
      * Get the available locales for translation search.
-     *
-     * @return array
      */
     public function getSearchLocales(): array
     {
@@ -28,8 +24,6 @@ trait TranslatableSearch
     /**
      * Get the translatable fields that should be searched.
      * Override this method in your model to customize searchable fields.
-     *
-     * @return array
      */
     public function getTranslatableSearchFields(): array
     {
@@ -39,8 +33,6 @@ trait TranslatableSearch
     /**
      * Get the non-translatable fields that should be searched.
      * Override this method in your model to include additional searchable fields.
-     *
-     * @return array
      */
     public function getNonTranslatableSearchFields(): array
     {
@@ -49,11 +41,6 @@ trait TranslatableSearch
 
     /**
      * Scope to search across all translation locales for translatable fields.
-     *
-     * @param Builder $query
-     * @param string $search
-     * @param array|null $fields
-     * @return Builder
      */
     public function scopeSearchTranslatable(Builder $query, string $search, ?array $fields = null): Builder
     {
@@ -67,19 +54,19 @@ trait TranslatableSearch
 
         return $query->where(function (Builder $subQuery) use ($search, $fields, $locales, $nonTranslatableFields) {
             // Search in translatable fields across all locales (only if model has translatable fields)
-            if (!empty($fields) && property_exists($this, 'translatable') && !empty($this->translatable)) {
+            if (! empty($fields) && property_exists($this, 'translatable') && ! empty($this->translatable)) {
                 foreach ($fields as $field) {
                     foreach ($locales as $locale) {
                         // Use database-specific JSON extraction with proper column reference
                         if (config('database.default') === 'sqlite') {
                             $subQuery->orWhereRaw(
-                                'LOWER(json_extract(`' . $field . '`, "$.' . $locale . '")) LIKE ?',
-                                ['%' . strtolower($search) . '%']
+                                'LOWER(json_extract(`'.$field.'`, "$.'.$locale.'")) LIKE ?',
+                                ['%'.strtolower($search).'%']
                             );
                         } else {
                             $subQuery->orWhereRaw(
-                                'LOWER(JSON_UNQUOTE(JSON_EXTRACT(`' . $field . '`, "$.' . $locale . '"))) LIKE ?',
-                                ['%' . strtolower($search) . '%']
+                                'LOWER(JSON_UNQUOTE(JSON_EXTRACT(`'.$field.'`, "$.'.$locale.'"))) LIKE ?',
+                                ['%'.strtolower($search).'%']
                             );
                         }
                     }
@@ -88,7 +75,7 @@ trait TranslatableSearch
 
             // Search in non-translatable fields
             foreach ($nonTranslatableFields as $field) {
-                $subQuery->orWhere($field, 'LIKE', '%' . $search . '%');
+                $subQuery->orWhere($field, 'LIKE', '%'.$search.'%');
             }
         });
     }
@@ -96,12 +83,6 @@ trait TranslatableSearch
     /**
      * Get search results for Filament select components.
      * Returns an array with model ID as key and formatted label as value.
-     *
-     * @param string $search
-     * @param int $limit
-     * @param string|null $labelField
-     * @param array|null $searchFields
-     * @return array
      */
     public static function getFilamentSearchResults(
         string $search,
@@ -116,6 +97,7 @@ trait TranslatableSearch
             ->get()
             ->mapWithKeys(function ($model) use ($labelField) {
                 $label = $model->getTranslatedLabel($labelField);
+
                 return [$model->id => $label];
             })
             ->toArray();
@@ -124,10 +106,6 @@ trait TranslatableSearch
     /**
      * Get the translated label for a field in the current locale.
      * Falls back to the original field value if translation is not available.
-     *
-     * @param string $field
-     * @param string|null $locale
-     * @return string
      */
     public function getTranslatedLabel(string $field, ?string $locale = null): string
     {
@@ -136,6 +114,7 @@ trait TranslatableSearch
         // Check if the field is translatable
         if (in_array($field, $this->translatable ?? [])) {
             $translation = $this->getTranslation($field, $locale);
+
             return $translation ?: ($this->$field ?? '');
         }
 
@@ -146,12 +125,6 @@ trait TranslatableSearch
     /**
      * Get formatted search results with additional context.
      * Useful for complex select options that need more than just the name.
-     *
-     * @param string $search
-     * @param int $limit
-     * @param callable|null $formatter
-     * @param array|null $searchFields
-     * @return array
      */
     public static function getFormattedSearchResults(
         string $search,
@@ -169,6 +142,7 @@ trait TranslatableSearch
 
         return $results->mapWithKeys(function ($model) {
             $label = $model->getTranslatedLabel('name');
+
             return [$model->id => $label];
         })->toArray();
     }
@@ -176,11 +150,6 @@ trait TranslatableSearch
     /**
      * Search for models and return a collection with translated labels.
      * Useful for API responses or other contexts where you need the full model data.
-     *
-     * @param string $search
-     * @param int $limit
-     * @param array|null $searchFields
-     * @return Collection
      */
     public static function searchWithTranslatedLabels(
         string $search,
@@ -192,6 +161,7 @@ trait TranslatableSearch
             ->get()
             ->map(function ($model) {
                 $model->translated_label = $model->getTranslatedLabel('name');
+
                 return $model;
             });
     }
@@ -199,13 +169,10 @@ trait TranslatableSearch
     /**
      * Get all available translations for a specific field.
      * Useful for debugging or administrative purposes.
-     *
-     * @param string $field
-     * @return array
      */
     public function getAllTranslations(string $field): array
     {
-        if (!in_array($field, $this->translatable ?? [])) {
+        if (! in_array($field, $this->translatable ?? [])) {
             return [$field => $this->$field];
         }
 

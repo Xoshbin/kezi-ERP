@@ -27,7 +27,7 @@ class StockMoveObserver
         $user = auth()->user();
 
         // Skip audit logging if no authenticated user (e.g., in console/tinker context)
-        if (!$user) {
+        if (! $user) {
             return;
         }
 

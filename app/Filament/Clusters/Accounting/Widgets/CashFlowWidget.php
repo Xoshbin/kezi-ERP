@@ -19,7 +19,7 @@ class CashFlowWidget extends BaseWidget
     protected function getStats(): array
     {
         $company = Filament::getTenant();
-        if (!$company) {
+        if (! $company) {
             return [];
         }
 
@@ -90,8 +90,6 @@ class CashFlowWidget extends BaseWidget
                 ->color($netCashFlow30Days->isPositive() ? 'success' : ($netCashFlow30Days->isNegative() ? 'danger' : 'gray')),
         ];
     }
-
-
 
     protected function getColumns(): int
     {

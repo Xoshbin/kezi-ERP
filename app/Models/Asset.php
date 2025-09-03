@@ -2,31 +2,26 @@
 
 namespace App\Models;
 
-use Illuminate\Support\Carbon;
-use Brick\Money\Money;
-use Illuminate\Database\Eloquent\Collection;
-use Database\Factories\AssetFactory;
-use Illuminate\Database\Eloquent\Builder;
 use App\Casts\BaseCurrencyMoneyCast;
-use App\Observers\AssetObserver;
 use App\Enums\Assets\AssetStatus;
-use Illuminate\Database\Eloquent\Model;
 use App\Enums\Assets\DepreciationMethod;
-use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\MorphTo;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\MorphMany;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Observers\AssetObserver;
+use Brick\Money\Money;
+use Database\Factories\AssetFactory;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Illuminate\Database\Eloquent\Relations\MorphTo;
+use Illuminate\Support\Carbon;
 
 /**
  * Class Asset
  *
- * @package App\Models
- *
- * This Eloquent model represents a Fixed Asset within the accounting system.
- * It's designed to track long-term tangible assets, their acquisition, depreciation,
- * and eventual disposal, directly impacting the company's financial statements.
  * @property int $id
  * @property int $company_id
  * @property int $asset_account_id
@@ -47,6 +42,7 @@ use Illuminate\Database\Eloquent\Attributes\ObservedBy;
  * @property-read Collection<int, DepreciationEntry> $depreciationEntries
  * @property-read int|null $depreciation_entries_count
  * @property-read Account $depreciationExpenseAccount
+ *
  * @method static AssetFactory factory($count = null, $state = [])
  * @method static Builder<static>|Asset newModelQuery()
  * @method static Builder<static>|Asset newQuery()
@@ -65,6 +61,7 @@ use Illuminate\Database\Eloquent\Attributes\ObservedBy;
  * @method static Builder<static>|Asset whereStatus($value)
  * @method static Builder<static>|Asset whereUpdatedAt($value)
  * @method static Builder<static>|Asset whereUsefulLifeYears($value)
+ *
  * @mixin \Eloquent
  */
 #[ObservedBy([AssetObserver::class])]
@@ -142,8 +139,6 @@ class Asset extends Model
     /**
      * Get the company that owns this asset.
      * An asset is always associated with a specific company in a multi-company setup. [1]
-     *
-     * @return BelongsTo
      */
     public function company(): BelongsTo
     {
@@ -153,8 +148,6 @@ class Asset extends Model
     /**
      * Get the general ledger account (balance sheet) for this asset.
      * This links the asset to its representation on the company's balance sheet. [1]
-     *
-     * @return BelongsTo
      */
     public function assetAccount(): BelongsTo
     {
@@ -164,8 +157,6 @@ class Asset extends Model
     /**
      * Get the depreciation expense account (profit & loss) for this asset.
      * This account records the periodic expense of the asset's wear and tear. [1]
-     *
-     * @return BelongsTo
      */
     public function depreciationExpenseAccount(): BelongsTo
     {
@@ -175,8 +166,6 @@ class Asset extends Model
     /**
      * Get the accumulated depreciation account (contra-asset) for this asset.
      * This account accumulates the total depreciation charged against the asset over its life. [1]
-     *
-     * @return BelongsTo
      */
     public function accumulatedDepreciationAccount(): BelongsTo
     {
@@ -186,8 +175,6 @@ class Asset extends Model
     /**
      * Get the depreciation entries associated with this asset.
      * Each asset generates multiple depreciation entries over its useful life. [1]
-     *
-     * @return HasMany
      */
     public function depreciationEntries(): HasMany
     {
@@ -198,11 +185,10 @@ class Asset extends Model
     {
         return $this->belongsTo(Currency::class);
     }
+
     /**
      * Get the parent source model (e.g., VendorBill).
      * This relationship links the asset to its acquisition document.
-     *
-     * @return MorphTo
      */
     public function source(): MorphTo
     {

@@ -2,30 +2,27 @@
 
 namespace App\Services;
 
-use App\Models\Company;
-use Carbon\Carbon;
-use App\Models\VendorBillLine;
-use Exception;
-use App\Models\User;
-use App\Models\Currency;
-use RuntimeException;
-use App\Models\AuditLog;
-use App\Models\VendorBill;
-use Illuminate\Support\Facades\DB;
-use App\Enums\Products\ProductType;
-use App\Events\VendorBillConfirmed;
-use Illuminate\Support\Facades\Gate;
-use App\Enums\Inventory\StockMoveType;
-use App\Enums\Inventory\StockMoveStatus;
-use App\Enums\Purchases\VendorBillStatus;
-use App\Services\Accounting\LockDateService;
-use App\Exceptions\DeletionNotAllowedException;
+use App\Actions\Accounting\CreateJournalEntryForVendorBillAction;
 use App\Actions\Inventory\CreateStockMoveAction;
 use App\DataTransferObjects\Inventory\CreateStockMoveDTO;
-use App\Actions\Accounting\CreateJournalEntryForVendorBillAction;
-use App\Services\CurrencyConverterService;
-use App\Services\ExchangeRateService;
-use App\Services\SequenceService;
+use App\Enums\Inventory\StockMoveStatus;
+use App\Enums\Inventory\StockMoveType;
+use App\Enums\Products\ProductType;
+use App\Enums\Purchases\VendorBillStatus;
+use App\Events\VendorBillConfirmed;
+use App\Exceptions\DeletionNotAllowedException;
+use App\Models\AuditLog;
+use App\Models\Company;
+use App\Models\Currency;
+use App\Models\User;
+use App\Models\VendorBill;
+use App\Models\VendorBillLine;
+use App\Services\Accounting\LockDateService;
+use Carbon\Carbon;
+use Exception;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Gate;
+use RuntimeException;
 
 class VendorBillService
 {
@@ -45,7 +42,6 @@ class VendorBillService
         }
 
         $this->lockDateService->enforce(Company::find($vendorBill->company_id), Carbon::parse($vendorBill->bill_date));
-
 
         Gate::forUser($user)->authorize('post', $vendorBill);
 
@@ -89,7 +85,7 @@ class VendorBillService
     {
         $company = $vendorBill->company;
 
-        if (!$company->vendorLocation || !$company->defaultStockLocation) {
+        if (! $company->vendorLocation || ! $company->defaultStockLocation) {
             throw new RuntimeException("Default Vendor or Stock Location is not configured for Company ID: {$company->id}.");
         }
 
@@ -142,7 +138,7 @@ class VendorBillService
 
         DB::transaction(function () use ($vendorBill, $user, $reason) {
             $originalEntry = $vendorBill->journalEntry;
-            if (!$originalEntry) {
+            if (! $originalEntry) {
                 throw new Exception('Cannot cancel a bill without a journal entry.');
             }
 
@@ -153,7 +149,7 @@ class VendorBillService
                 'event_type' => 'cancellation', // A more specific event type
                 'auditable_type' => get_class($vendorBill),
                 'auditable_id' => $vendorBill->id,
-                'description' => 'Vendor Bill Cancelled: ' . $reason,
+                'description' => 'Vendor Bill Cancelled: '.$reason,
                 'old_values' => ['status' => $vendorBill->status],
                 'new_values' => ['status' => VendorBillStatus::Cancelled],
                 'ip_address' => request()->ip(),
@@ -163,7 +159,7 @@ class VendorBillService
             // The "reason" is passed to the reversal for the entry's description.
             $this->journalEntryService->createReversal(
                 $originalEntry,
-                'Cancellation of Bill ' . $vendorBill->bill_reference . ': ' . $reason,
+                'Cancellation of Bill '.$vendorBill->bill_reference.': '.$reason,
                 $user
             );
 
@@ -192,6 +188,7 @@ class VendorBillService
             $vendorBill->exchange_rate_at_creation = 1.0;
             $vendorBill->total_amount_company_currency = $vendorBill->total_amount;
             $vendorBill->total_tax_company_currency = $vendorBill->total_tax;
+
             return;
         }
 
@@ -199,10 +196,11 @@ class VendorBillService
         $exchangeRate = $this->currencyConverter->getExchangeRate($vendorBill->currency, $vendorBill->bill_date, $vendorBill->company);
 
         // If no exchange rate is found, skip multi-currency processing for backward compatibility
-        if (!$exchangeRate) {
+        if (! $exchangeRate) {
             $vendorBill->exchange_rate_at_creation = 1.0;
             $vendorBill->total_amount_company_currency = $vendorBill->total_amount;
             $vendorBill->total_tax_company_currency = $vendorBill->total_tax;
+
             return;
         }
 
@@ -285,7 +283,7 @@ class VendorBillService
         DB::transaction(function () use ($vendorBill, $user, $reason) {
             $originalEntry = $vendorBill->journalEntry;
             if ($originalEntry) {
-                $this->journalEntryService->createReversal($originalEntry, 'Reset of Bill ' . $vendorBill->bill_reference . ': ' . $reason, $user);
+                $this->journalEntryService->createReversal($originalEntry, 'Reset of Bill '.$vendorBill->bill_reference.': '.$reason, $user);
             }
 
             $logEntry = [

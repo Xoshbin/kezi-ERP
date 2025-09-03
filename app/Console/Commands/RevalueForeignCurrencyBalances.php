@@ -59,6 +59,7 @@ class RevalueForeignCurrencyBalances extends Command
 
         if ($companies->isEmpty()) {
             $this->error('No companies found to process');
+
             return 1;
         }
 
@@ -67,7 +68,7 @@ class RevalueForeignCurrencyBalances extends Command
         foreach ($companies as $company) {
             $this->info("Processing company: {$company->name} (ID: {$company->id})");
 
-            if (!$dryRun) {
+            if (! $dryRun) {
                 $journalEntries = $this->exchangeGainLossService->performPeriodEndRevaluation(
                     $company,
                     $date,
@@ -85,7 +86,7 @@ class RevalueForeignCurrencyBalances extends Command
                         $this->line("    - Entry #{$entry->id}: {$entry->reference} - {$entry->description}");
                     }
                 } else {
-                    $this->info("  No revaluation entries needed");
+                    $this->info('  No revaluation entries needed');
                 }
             } else {
                 // In dry-run mode, we would show what would be done
@@ -93,10 +94,10 @@ class RevalueForeignCurrencyBalances extends Command
             }
         }
 
-        if (!$dryRun) {
+        if (! $dryRun) {
             $this->info("Revaluation completed. Total journal entries created: {$totalJournalEntries}");
         } else {
-            $this->info("Dry run completed. Use without --dry-run to perform actual revaluation.");
+            $this->info('Dry run completed. Use without --dry-run to perform actual revaluation.');
         }
 
         return 0;

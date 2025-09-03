@@ -2,18 +2,18 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Relations\HasOne;
-use Illuminate\Support\Carbon;
-use Brick\Money\Money;
-use Database\Factories\BankStatementLineFactory;
-use Illuminate\Database\Eloquent\Builder;
 use App\Casts\DocumentCurrencyMoneyCast;
 use App\Casts\OriginalCurrencyMoneyCast;
-use Illuminate\Database\Eloquent\Model;
 use App\Observers\BankStatementLineObserver;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Brick\Money\Money;
+use Database\Factories\BankStatementLineFactory;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Support\Carbon;
 
 /**
  * @property int $id
@@ -28,6 +28,7 @@ use Illuminate\Database\Eloquent\Attributes\ObservedBy;
  * @property Carbon|null $updated_at
  * @property-read BankStatement $bankStatement
  * @property-read Payment|null $payment
+ *
  * @method static BankStatementLineFactory factory($count = null, $state = [])
  * @method static Builder<static>|BankStatementLine newModelQuery()
  * @method static Builder<static>|BankStatementLine newQuery()
@@ -42,6 +43,7 @@ use Illuminate\Database\Eloquent\Attributes\ObservedBy;
  * @method static Builder<static>|BankStatementLine wherePartnerName($value)
  * @method static Builder<static>|BankStatementLine wherePaymentId($value)
  * @method static Builder<static>|BankStatementLine whereUpdatedAt($value)
+ *
  * @mixin \Eloquent
  */
 #[ObservedBy([BankStatementLineObserver::class])]
@@ -60,14 +62,14 @@ class BankStatementLine extends Model
         'foreign_currency_id',
         'amount_in_foreign_currency',
         'is_reconciled',
-        'payment_id'
+        'payment_id',
     ];
 
     protected $casts = [
         'date' => 'date',
         'amount' => DocumentCurrencyMoneyCast::class,
         'amount_in_foreign_currency' => OriginalCurrencyMoneyCast::class,
-        'is_reconciled' => 'boolean'
+        'is_reconciled' => 'boolean',
     ];
 
     /**
@@ -82,10 +84,12 @@ class BankStatementLine extends Model
      * @var array
      */
     protected $with = ['bankStatement.currency', 'foreignCurrency'];
+
     public function bankStatement()
     {
         return $this->belongsTo(BankStatement::class);
     }
+
     public function company()
     {
         return $this->belongsTo(Company::class);
@@ -123,6 +127,4 @@ class BankStatementLine extends Model
         return $this->hasOne(JournalEntry::class, 'source_id')
             ->where('source_type', self::class);
     }
-
-
 }

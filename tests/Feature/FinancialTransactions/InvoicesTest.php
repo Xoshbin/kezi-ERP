@@ -1,33 +1,28 @@
 <?php
 
-use App\Models\User;
-use Brick\Money\Money;
+use App\Actions\Sales\CreateInvoiceAction;
+use App\Actions\Sales\CreateInvoiceLineAction;
+use App\DataTransferObjects\Sales\CreateInvoiceDTO;
+use App\DataTransferObjects\Sales\CreateInvoiceLineDTO;
+use App\DataTransferObjects\Sales\UpdateInvoiceDTO;
+use App\Enums\Sales\InvoiceStatus;
+use App\Events\InvoiceConfirmed;
+use App\Exceptions\DeletionNotAllowedException;
+use App\Exceptions\PeriodIsLockedException;
+use App\Exceptions\UpdateNotAllowedException;
 use App\Models\Account;
 use App\Models\Company;
 use App\Models\Invoice;
 use App\Models\Journal;
+use App\Models\LockDate;
 use App\Models\Partner;
 use App\Models\Product;
-use App\Models\LockDate;
-use App\Models\JournalEntry;
-use App\Events\InvoiceConfirmed;
 use App\Services\InvoiceService;
-use App\Enums\Sales\InvoiceStatus;
-use Illuminate\Support\Facades\DB;
-use Tests\Traits\CreatesApplication;
-use Illuminate\Support\Facades\Event;
-use App\Enums\Accounting\LockDateType;
-use Tests\Traits\WithConfiguredCompany;
-use App\Actions\Sales\CreateInvoiceAction;
-
-use App\Actions\Sales\CreateInvoiceLineAction;
-use App\DataTransferObjects\Sales\CreateInvoiceLineDTO;
-use App\Exceptions\PeriodIsLockedException;
-use App\Exceptions\UpdateNotAllowedException;
-use App\Exceptions\DeletionNotAllowedException;
+use Brick\Money\Money;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use App\DataTransferObjects\Sales\CreateInvoiceDTO;
-use App\DataTransferObjects\Sales\UpdateInvoiceDTO;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Event;
+use Tests\Traits\WithConfiguredCompany;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);
 
@@ -68,7 +63,7 @@ test('confirming an invoice generates the correct journal entry', function () {
     // THE FIX: Ensure the product is created with a default income account.
     $product = Product::factory()->for($this->company)->create([
         'income_account_id' => $productSalesAccount->id,
-        'unit_price' => Money::of(100, $currencyCode)
+        'unit_price' => Money::of(100, $currencyCode),
     ]);
 
     // Arrange: Create a draft invoice...
@@ -118,7 +113,7 @@ test('a posted invoice cannot be updated', function () {
     );
 
     // Assert: Expect the Action to throw the exception because the invoice is posted.
-    expect(fn() => app(\App\Actions\Sales\UpdateInvoiceAction::class)->execute($updateDto))
+    expect(fn () => app(\App\Actions\Sales\UpdateInvoiceAction::class)->execute($updateDto))
         ->toThrow(UpdateNotAllowedException::class, 'Cannot modify a non-draft invoice.');
 
     // Assert: Double-check that the customer_id was not changed in the database.
@@ -140,7 +135,7 @@ test('a posted invoice cannot be deleted', function () {
     ]);
 
     // Assert: Expect the service's delete method to throw our specific exception.
-    expect(fn() => (app(InvoiceService::class))->delete($invoice))
+    expect(fn () => (app(InvoiceService::class))->delete($invoice))
         ->toThrow(DeletionNotAllowedException::class, 'Cannot delete a posted invoice.');
 
     // Assert: As a final check, confirm the model still exists.
@@ -214,7 +209,7 @@ test('an invoice cannot be created or posted in a locked period', function () {
     }
     */
     // With the above (assumed) change to CreateInvoiceAction, this test will pass.
-    expect(fn() => (app(CreateInvoiceAction::class))->execute($invoiceDto))
+    expect(fn () => (app(CreateInvoiceAction::class))->execute($invoiceDto))
         ->toThrow(PeriodIsLockedException::class);
 
     // Arrange: Create a draft invoice with a date in the future (not locked).
@@ -228,6 +223,6 @@ test('an invoice cannot be created or posted in a locked period', function () {
     $draftInvoice->invoice_date = now()->subMonth()->toDateString();
 
     // Assert: Expect that trying to CONFIRM an invoice in a locked period also fails.
-    expect(fn() => (app(InvoiceService::class))->confirm($draftInvoice, $this->user))
+    expect(fn () => (app(InvoiceService::class))->confirm($draftInvoice, $this->user))
         ->toThrow(PeriodIsLockedException::class);
 });

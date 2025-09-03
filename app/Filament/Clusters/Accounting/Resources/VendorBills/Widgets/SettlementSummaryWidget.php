@@ -18,7 +18,7 @@ class SettlementSummaryWidget extends BaseWidget
 
     protected function getStats(): array
     {
-        if (!$this->record instanceof VendorBill) {
+        if (! $this->record instanceof VendorBill) {
             return [];
         }
 
@@ -79,7 +79,7 @@ class SettlementSummaryWidget extends BaseWidget
             ->orderBy('payment_date', 'desc')
             ->first();
 
-        if (!$lastPayment) {
+        if (! $lastPayment) {
             return __('vendor_bill.settlement_widget.no_payments');
         }
 
@@ -97,7 +97,7 @@ class SettlementSummaryWidget extends BaseWidget
             ->count();
 
         if ($draftCount > 0) {
-            return "{$confirmedCount} + {$draftCount} " . __('vendor_bill.settlement_widget.draft');
+            return "{$confirmedCount} + {$draftCount} ".__('vendor_bill.settlement_widget.draft');
         }
 
         return (string) $confirmedCount;
@@ -117,6 +117,7 @@ class SettlementSummaryWidget extends BaseWidget
         $breakdown = $payments->groupBy('journal.name')
             ->map(function ($groupedPayments, $journalName) {
                 $count = $groupedPayments->count();
+
                 return "{$journalName} ({$count})";
             })
             ->values()
@@ -126,7 +127,7 @@ class SettlementSummaryWidget extends BaseWidget
         $totalJournals = $payments->pluck('journal.name')->unique()->count();
         if ($totalJournals > 3) {
             $remaining = $totalJournals - 3;
-            $breakdown .= " +" . $remaining . " " . __('vendor_bill.settlement_widget.more');
+            $breakdown .= ' +'.$remaining.' '.__('vendor_bill.settlement_widget.more');
         }
 
         return $breakdown ?: __('vendor_bill.settlement_widget.various');
@@ -135,6 +136,7 @@ class SettlementSummaryWidget extends BaseWidget
     private function formatMoney(Money $money): string
     {
         $formatter = new NumberFormatter('en_US', NumberFormatter::CURRENCY);
+
         return $formatter->formatCurrency(
             $money->getAmount()->toFloat(),
             $money->getCurrency()->getCurrencyCode()
@@ -146,7 +148,7 @@ class SettlementSummaryWidget extends BaseWidget
         return 3;
     }
 
-    public function getColumnSpan(): int | string | array
+    public function getColumnSpan(): int|string|array
     {
         return 'full';
     }

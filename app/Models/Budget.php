@@ -2,26 +2,20 @@
 
 namespace App\Models;
 
-use Illuminate\Support\Carbon;
-use Illuminate\Database\Eloquent\Collection;
+use App\Enums\Budgets\BudgetStatus;
+use App\Enums\Budgets\BudgetType;
 use Database\Factories\BudgetFactory;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use App\Enums\Budgets\BudgetType;
-use App\Enums\Budgets\BudgetStatus;
+use Illuminate\Support\Carbon;
 
 /**
  * Class Budget
  *
- * @package App\Models
- *
- * This Eloquent model represents a financial or analytic budget within the accounting system.
- * It serves as a planning and control tool, allowing organizations to allocate resources
- * and track performance against predefined targets. Budgets can be defined as 'Analytic'
- * for project/department-level tracking or 'Financial' for general ledger account targets [3, 5].
  * @property int $id
  * @property int $company_id
  * @property string $name
@@ -34,6 +28,7 @@ use App\Enums\Budgets\BudgetStatus;
  * @property-read Collection<int, BudgetLine> $budgetLines
  * @property-read int|null $budget_lines_count
  * @property-read Company $company
+ *
  * @method static BudgetFactory factory($count = null, $state = [])
  * @method static Builder<static>|Budget newModelQuery()
  * @method static Builder<static>|Budget newQuery()
@@ -47,6 +42,7 @@ use App\Enums\Budgets\BudgetStatus;
  * @method static Builder<static>|Budget wherePeriodStartDate($value)
  * @method static Builder<static>|Budget whereStatus($value)
  * @method static Builder<static>|Budget whereUpdatedAt($value)
+ *
  * @mixin \Eloquent
  */
 class Budget extends Model
@@ -92,8 +88,6 @@ class Budget extends Model
         'updated_at' => 'datetime',
     ];
 
-
-
     /*
     |--------------------------------------------------------------------------
     | Relationships
@@ -103,8 +97,6 @@ class Budget extends Model
     /**
      * Get the company that owns this budget.
      * Essential for multi-company accounting setups [3].
-     *
-     * @return BelongsTo
      */
     public function company(): BelongsTo
     {
@@ -114,13 +106,12 @@ class Budget extends Model
     /**
      * Get the budget lines for this budget.
      * Each budget is composed of one or more detailed lines [3].
-     *
-     * @return HasMany
      */
     public function budgetLines(): HasMany
     {
         return $this->hasMany(BudgetLine::class);
     }
+
     public function currency(): BelongsTo
     {
         return $this->belongsTo(Currency::class);

@@ -2,27 +2,20 @@
 
 namespace App\Models;
 
-use Illuminate\Support\Carbon;
-use Database\Factories\DepreciationEntryFactory;
-use Illuminate\Database\Eloquent\Builder;
 use App\Casts\BaseCurrencyMoneyCast;
-use Illuminate\Database\Eloquent\Model;
-use App\Observers\DepreciationEntryObserver;
 use App\Enums\Assets\DepreciationEntryStatus;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Observers\DepreciationEntryObserver;
+use Database\Factories\DepreciationEntryFactory;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Carbon;
 
 /**
  * Class DepreciationEntry
  *
- * @package App\Models
- *
- * This Eloquent model represents a single depreciation event for a fixed asset.
- * It is crucial for automating the depreciation process, recognizing depreciation
- * expense, and maintaining the accuracy of the asset's book value on the balance sheet.
- * These entries are typically system-generated and, once linked to a posted journal entry,
- * become part of the immutable financial record.
  * @property int $id
  * @property int $asset_id
  * @property int|null $journal_entry_id
@@ -33,6 +26,7 @@ use Illuminate\Database\Eloquent\Attributes\ObservedBy;
  * @property Carbon|null $updated_at
  * @property-read Asset $asset
  * @property-read JournalEntry|null $journalEntry
+ *
  * @method static DepreciationEntryFactory factory($count = null, $state = [])
  * @method static Builder<static>|DepreciationEntry newModelQuery()
  * @method static Builder<static>|DepreciationEntry newQuery()
@@ -45,6 +39,7 @@ use Illuminate\Database\Eloquent\Attributes\ObservedBy;
  * @method static Builder<static>|DepreciationEntry whereJournalEntryId($value)
  * @method static Builder<static>|DepreciationEntry whereStatus($value)
  * @method static Builder<static>|DepreciationEntry whereUpdatedAt($value)
+ *
  * @mixin \Eloquent
  */
 #[ObservedBy([DepreciationEntryObserver::class])]
@@ -71,7 +66,7 @@ class DepreciationEntry extends Model
         'depreciation_date',
         'amount',
         'journal_entry_id',
-        'status'
+        'status',
     ];
 
     /**
@@ -120,8 +115,6 @@ class DepreciationEntry extends Model
     /**
      * Get the asset that this depreciation entry belongs to.
      * Each depreciation entry corresponds to a specific fixed asset.
-     *
-     * @return BelongsTo
      */
     public function asset(): BelongsTo
     {
@@ -133,13 +126,9 @@ class DepreciationEntry extends Model
      * This link is crucial for financial traceability and auditability.
      * The 'journal_entry_id' is nullable while the depreciation entry is in 'Draft'
      * but becomes mandatory upon 'Posting' when the actual financial impact occurs.
-     *
-     * @return BelongsTo
      */
     public function journalEntry(): BelongsTo
     {
         return $this->belongsTo(JournalEntry::class);
     }
-
-
 }

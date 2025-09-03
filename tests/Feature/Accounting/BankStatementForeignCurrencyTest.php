@@ -3,11 +3,11 @@
 use App\Actions\Accounting\CreateBankStatementAction;
 use App\DataTransferObjects\Accounting\CreateBankStatementDTO;
 use App\DataTransferObjects\Accounting\CreateBankStatementLineDTO;
-use App\Models\BankStatement;
-use App\Models\Currency;
-use App\Models\Company;
-use App\Models\Journal;
 use App\Enums\Accounting\JournalType;
+use App\Models\BankStatement;
+use App\Models\Company;
+use App\Models\Currency;
+use App\Models\Journal;
 use Brick\Money\Money;
 use Tests\Traits\WithConfiguredCompany;
 
@@ -103,7 +103,7 @@ describe('Bank Statement Foreign Currency Transactions', function () {
 
     it('validates that foreign currency and foreign amount must be provided together', function () {
         // Test case 1: Foreign currency provided but no foreign amount
-        expect(fn() => new CreateBankStatementLineDTO(
+        expect(fn () => new CreateBankStatementLineDTO(
             date: now()->format('Y-m-d'),
             description: 'Test transaction',
             amount: Money::of(100, 'IQD'),
@@ -113,7 +113,7 @@ describe('Bank Statement Foreign Currency Transactions', function () {
         ))->toThrow(InvalidArgumentException::class, 'Foreign amount is required when a foreign currency is specified.');
 
         // Test case 2: Foreign amount provided but no foreign currency
-        expect(fn() => new CreateBankStatementLineDTO(
+        expect(fn () => new CreateBankStatementLineDTO(
             date: now()->format('Y-m-d'),
             description: 'Test transaction',
             amount: Money::of(100, 'IQD'),

@@ -2,14 +2,14 @@
 
 namespace App\Models;
 
-use Illuminate\Support\Carbon;
+use App\Casts\DocumentCurrencyMoneyCast;
 use Database\Factories\BankStatementFactory;
 use Illuminate\Database\Eloquent\Builder;
-use App\Casts\DocumentCurrencyMoneyCast;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Carbon;
 
 /**
  * @property int $id
@@ -23,6 +23,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
  * @property Carbon|null $updated_at
  * @property-read Company $company
  * @property-read Journal $journal
+ *
  * @method static BankStatementFactory factory($count = null, $state = [])
  * @method static Builder<static>|BankStatement newModelQuery()
  * @method static Builder<static>|BankStatement newQuery()
@@ -36,6 +37,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
  * @method static Builder<static>|BankStatement whereReference($value)
  * @method static Builder<static>|BankStatement whereStartingBalance($value)
  * @method static Builder<static>|BankStatement whereUpdatedAt($value)
+ *
  * @mixin \Eloquent
  */
 class BankStatement extends Model

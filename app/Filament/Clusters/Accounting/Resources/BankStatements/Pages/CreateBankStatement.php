@@ -2,13 +2,13 @@
 
 namespace App\Filament\Clusters\Accounting\Resources\BankStatements\Pages;
 
-use Filament\Facades\Filament;
 use App\Actions\Accounting\CreateBankStatementAction;
 use App\DataTransferObjects\Accounting\CreateBankStatementDTO;
 use App\DataTransferObjects\Accounting\CreateBankStatementLineDTO;
 use App\Filament\Clusters\Accounting\Resources\BankStatements\BankStatementResource;
 use App\Models\Currency;
 use Brick\Money\Money;
+use Filament\Facades\Filament;
 use Filament\Resources\Pages\CreateRecord;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
@@ -30,7 +30,7 @@ class CreateBankStatement extends CreateRecord
             $foreignCurrency = null;
             $amountInForeignCurrency = null;
 
-            if (!empty($line['foreign_currency_id']) && !empty($line['amount_in_foreign_currency'])) {
+            if (! empty($line['foreign_currency_id']) && ! empty($line['amount_in_foreign_currency'])) {
                 $foreignCurrency = Currency::find($line['foreign_currency_id']);
                 $amountInForeignCurrency = Money::of($line['amount_in_foreign_currency'], $foreignCurrency->code);
             }

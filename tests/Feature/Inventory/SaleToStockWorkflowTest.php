@@ -27,22 +27,22 @@ beforeEach(function () {
     // Create additional accounts needed for sales workflow
     $this->cogsAccount = \App\Models\Account::factory()->for($this->company)->create([
         'name' => 'Cost of Goods Sold',
-        'type' => 'cost_of_revenue'
+        'type' => 'cost_of_revenue',
     ]);
 
     // Create a customer for sales transactions
     $this->customer = \App\Models\Partner::factory()->for($this->company)->create([
-        'type' => \App\Enums\Partners\PartnerType::Customer
+        'type' => \App\Enums\Partners\PartnerType::Customer,
     ]);
 
     // Create stock locations with the specific names that InvoiceService expects
     $this->warehouseLocation = \App\Models\StockLocation::factory()->for($this->company)->create([
         'name' => 'Warehouse',
-        'type' => \App\Enums\Inventory\StockLocationType::Internal
+        'type' => \App\Enums\Inventory\StockLocationType::Internal,
     ]);
     $this->vendorsLocation = \App\Models\StockLocation::factory()->for($this->company)->create([
         'name' => 'Vendors',
-        'type' => \App\Enums\Inventory\StockLocationType::Vendor
+        'type' => \App\Enums\Inventory\StockLocationType::Vendor,
     ]);
 
     // Create a storable product with inventory settings

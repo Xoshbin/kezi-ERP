@@ -8,8 +8,8 @@ use Illuminate\Support\Collection;
 readonly class TaxReportDTO
 {
     /**
-     * @param Collection<int, TaxReportLineDTO> $outputTaxLines
-     * @param Collection<int, TaxReportLineDTO> $inputTaxLines
+     * @param  Collection<int, TaxReportLineDTO>  $outputTaxLines
+     * @param  Collection<int, TaxReportLineDTO>  $inputTaxLines
      */
     public function __construct(
         public Collection $outputTaxLines,

@@ -2,13 +2,14 @@
 
 namespace App\Models;
 
-use Illuminate\Support\Carbon;
 use Database\Factories\AuditLogFactory;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
+use Illuminate\Support\Carbon;
+
 /**
  * @property int $id
  * @property int $user_id
@@ -23,6 +24,7 @@ use Illuminate\Database\Eloquent\Relations\MorphTo;
  * @property Carbon $created_at
  * @property-read Model|\Eloquent $auditable
  * @property-read User $user
+ *
  * @method static AuditLogFactory factory($count = null, $state = [])
  * @method static Builder<static>|AuditLog newModelQuery()
  * @method static Builder<static>|AuditLog newQuery()
@@ -38,6 +40,7 @@ use Illuminate\Database\Eloquent\Relations\MorphTo;
  * @method static Builder<static>|AuditLog whereOldValues($value)
  * @method static Builder<static>|AuditLog whereUserAgent($value)
  * @method static Builder<static>|AuditLog whereUserId($value)
+ *
  * @mixin \Eloquent
  */
 class AuditLog extends Model
@@ -52,7 +55,6 @@ class AuditLog extends Model
      * @var string|null
      */
     const UPDATED_AT = null; // <-- Add this line
-
 
     /**
      * The table associated with the model.
@@ -97,7 +99,7 @@ class AuditLog extends Model
      */
     protected $casts = [
         'old_values' => 'array',
-        'new_values' => 'array'
+        'new_values' => 'array',
     ];
 
     /**
@@ -105,8 +107,6 @@ class AuditLog extends Model
      * The `user_id` column in the `audit_logs` table acts as a foreign key
      * to the `users` table, identifying the individual responsible for the action [1].
      * This establishes a `belongsTo` relationship to the `User` model [10].
-     *
-     * @return BelongsTo
      */
     public function user(): BelongsTo
     {
@@ -116,8 +116,6 @@ class AuditLog extends Model
     /**
      * Get the company that this audit log belongs to.
      * Audit logs should be company-specific for proper accounting audit trails.
-     *
-     * @return BelongsTo
      */
     public function company(): BelongsTo
     {
@@ -130,8 +128,6 @@ class AuditLog extends Model
      * polymorphic relationship, allowing a single `audit_log` entry to
      * reference different types of models (e.g., `Invoice`, `Account`) [1, 11].
      * This is critical for flexible and comprehensive logging across various entities.
-     *
-     * @return MorphTo
      */
     public function auditable(): MorphTo
     {

@@ -99,6 +99,7 @@ class BankStatementLinesRelationManager extends RelationManager
                         if (strlen($state) <= 50) {
                             return null;
                         }
+
                         return $state;
                     }),
 

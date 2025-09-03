@@ -5,7 +5,6 @@ use App\DataTransferObjects\Accounting\CreateJournalEntryDTO;
 use App\DataTransferObjects\Accounting\CreateJournalEntryLineDTO;
 use App\Exceptions\DeletionNotAllowedException;
 use App\Exceptions\PeriodIsLockedException;
-use App\Exceptions\UpdateNotAllowedException;
 use App\Models\Account;
 use App\Models\Company;
 use App\Models\Journal;
@@ -16,10 +15,8 @@ use App\Services\JournalEntryService;
 use Brick\Money\Money;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Validation\ValidationException;
-use Tests\Traits\CreatesApplication;
 use Tests\Traits\MocksTime;
 use Tests\Traits\WithConfiguredCompany;
-use Tests\Traits\WithUnlockedPeriod;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class, MocksTime::class);
 
@@ -143,7 +140,7 @@ test('a posted journal entry is immutable and cannot be updated', function () {
 
     // Assert: Expect the model's internal 'updating' event listener to throw a RuntimeException.
     // This correctly tests the application's actual data integrity guard.
-    expect(fn() => $journalEntry->save())
+    expect(fn () => $journalEntry->save())
         ->toThrow(\RuntimeException::class, "Attempted to modify immutable posted journal entry field: 'description'.");
 
     // Assert: Double-check that the description was not changed in the database.
@@ -177,7 +174,7 @@ test('a posted journal entry cannot be deleted via the service', function () {
         'total_credit' => Money::of(0, $currencyCode),
     ]);
 
-    expect(fn() => $service->delete($journalEntry))
+    expect(fn () => $service->delete($journalEntry))
         ->toThrow(DeletionNotAllowedException::class, 'Cannot delete a posted journal entry. Corrections must be made with a new reversal entry.');
 
     $this->assertModelExists($journalEntry);
@@ -187,7 +184,7 @@ test('a draft journal entry in a locked period cannot be deleted', function () {
     $service = app(JournalEntryService::class);
     LockDate::factory()->for($this->company)->create([
         'lock_type' => \App\Enums\Accounting\LockDateType::AllUsers->value,
-        'locked_until' => now()->subMonth()
+        'locked_until' => now()->subMonth(),
     ]);
     $currencyCode = $this->company->currency->code;
     $journalEntry = JournalEntry::factory()->for($this->company)->create([
@@ -197,7 +194,7 @@ test('a draft journal entry in a locked period cannot be deleted', function () {
         'total_credit' => Money::of(0, $currencyCode),
     ]);
 
-    expect(fn() => $service->delete($journalEntry))
+    expect(fn () => $service->delete($journalEntry))
         ->toThrow(PeriodIsLockedException::class);
 
     $this->assertModelExists($journalEntry);

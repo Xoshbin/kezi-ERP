@@ -2,7 +2,6 @@
 
 namespace App\Actions\Accounting;
 
-use RuntimeException;
 use App\DataTransferObjects\Accounting\CreateJournalEntryDTO;
 use App\DataTransferObjects\Accounting\CreateJournalEntryLineDTO;
 use App\Models\Invoice;
@@ -10,13 +9,13 @@ use App\Models\JournalEntry;
 use App\Models\User;
 use Brick\Money\Money;
 use Illuminate\Support\Facades\DB;
+use RuntimeException;
 
 class CreateJournalEntryForInvoiceAction
 {
     public function __construct(
         private readonly CreateJournalEntryAction $createJournalEntryAction
-    ) {
-    }
+    ) {}
 
     public function execute(Invoice $invoice, User $user): JournalEntry
     {
@@ -31,7 +30,7 @@ class CreateJournalEntryForInvoiceAction
             $arAccountId = $invoice->customer->receivable_account_id ?? $company->default_accounts_receivable_id;
             $salesJournalId = $company->default_sales_journal_id;
 
-            if (!$arAccountId || !$salesJournalId) {
+            if (! $arAccountId || ! $salesJournalId) {
                 throw new RuntimeException('Default Accounts Receivable or Sales Journal is not configured for this company.');
             }
 
@@ -59,7 +58,7 @@ class CreateJournalEntryForInvoiceAction
                         account_id: $line->tax->tax_account_id,
                         debit: Money::of(0, $currency->code),
                         credit: $line->total_line_tax,
-                        description: 'Tax for ' . $invoice->invoice_number,
+                        description: 'Tax for '.$invoice->invoice_number,
                         partner_id: null,
                         analytic_account_id: null,
                     );
@@ -73,7 +72,7 @@ class CreateJournalEntryForInvoiceAction
                 account_id: $arAccountId,
                 debit: $totalDebit,
                 credit: Money::of(0, $currency->code),
-                description: 'A/R for ' . $invoice->invoice_number,
+                description: 'A/R for '.$invoice->invoice_number,
                 partner_id: $invoice->customer_id,
                 analytic_account_id: null,
             );
@@ -85,7 +84,7 @@ class CreateJournalEntryForInvoiceAction
                 currency_id: $currency->id,
                 entry_date: $invoice->invoice_date,
                 reference: $invoice->invoice_number,
-                description: 'Invoice ' . $invoice->invoice_number,
+                description: 'Invoice '.$invoice->invoice_number,
                 source_type: Invoice::class,
                 source_id: $invoice->id,
                 created_by_user_id: $user->id,

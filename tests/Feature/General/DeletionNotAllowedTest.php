@@ -2,29 +2,25 @@
 
 namespace Tests\Feature;
 
-use App\Models\Tax;
-use App\Models\User;
-use Brick\Money\Money;
+use App\Exceptions\DeletionNotAllowedException;
 use App\Models\Account;
 use App\Models\Company;
-use App\Models\Invoice;
-use App\Models\Journal;
-use App\Models\Partner;
 use App\Models\Currency;
-use App\Models\VendorBill;
+use App\Models\Invoice;
 use App\Models\InvoiceLine;
+use App\Models\Journal;
 use App\Models\JournalEntry;
-use Tests\Traits\CreatesApplication;
+use App\Models\Tax;
+use App\Models\VendorBill;
 use Illuminate\Database\Eloquent\Model;
-use Tests\Traits\WithConfiguredCompany;
-use App\Exceptions\DeletionNotAllowedException;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\Traits\WithConfiguredCompany;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);
 
-//======================================================================
+// ======================================================================
 // Test Case 1: Comprehensive Company Deletion Prevention
-//======================================================================
+// ======================================================================
 test('a company with any financial records cannot be deleted', function (string $relatedModel, array $factoryState = []) {
     /**
      * Principle: A legal entity (Company) cannot be removed if it has any financial history.
@@ -36,7 +32,7 @@ test('a company with any financial records cannot be deleted', function (string 
     $relatedModel::factory()->for($this->company)->create($factoryState);
 
     // Act & Assert: Attempting to delete the company should fail with our specific exception.
-    expect(fn() => $this->company->delete())
+    expect(fn () => $this->company->delete())
         ->toThrow(DeletionNotAllowedException::class, 'Cannot delete a company with associated financial records.');
 
     // Verify: The company must still exist in the database.
@@ -50,10 +46,9 @@ test('a company with any financial records cannot be deleted', function (string 
     'with an Asset' => [\App\Models\Asset::class, ['purchase_value' => 1000, 'salvage_value' => 0]],
 ]);
 
-
-//======================================================================
+// ======================================================================
 // Test Case 2: Journal Deletion Prevention
-//======================================================================
+// ======================================================================
 test('a journal with journal entries cannot be deleted', function () {
     /**
      * Principle: A journal (e.g., Sales Journal, Bank Journal) is a book of original entry.
@@ -65,17 +60,16 @@ test('a journal with journal entries cannot be deleted', function () {
     JournalEntry::factory()->for($this->company)->for($journal)->create(['total_debit' => 0, 'total_credit' => 0]);
 
     // Act & Assert: Attempting to delete the journal should be blocked.
-    expect(fn() => $journal->delete())
+    expect(fn () => $journal->delete())
         ->toThrow(DeletionNotAllowedException::class, 'Cannot delete a journal with associated journal entries.');
 
     // Verify: The journal must still exist.
     $this->assertModelExists($journal);
 });
 
-
-//======================================================================
+// ======================================================================
 // Test Case 3: Currency Deletion Prevention
-//======================================================================
+// ======================================================================
 test('a currency in use by a company or transaction cannot be deleted', function () {
     /**
      * Principle: A currency cannot be deleted if it's the base currency for a company
@@ -86,17 +80,16 @@ test('a currency in use by a company or transaction cannot be deleted', function
     $currencyInUse = $this->company->currency;
 
     // Act & Assert: Attempting to delete this currency should fail.
-    expect(fn() => $currencyInUse->delete())
+    expect(fn () => $currencyInUse->delete())
         ->toThrow(DeletionNotAllowedException::class, 'Cannot delete a currency that is in use.');
 
     // Verify: The currency must still exist.
     $this->assertModelExists($currencyInUse);
 });
 
-
-//======================================================================
+// ======================================================================
 // Test Case 4: Tax Deletion Prevention
-//======================================================================
+// ======================================================================
 test('a tax used in a transaction is deactivated instead of deleted', function () {
     /**
      * Principle: Tax rates used in historical transactions must be preserved for auditing.

@@ -22,7 +22,7 @@ class EditAccount extends EditRecord
             LocaleSwitcher::make(),
             DeleteAction::make()
                 ->action(function (Model $record) {
-                    $accountService = new AccountService();
+                    $accountService = new AccountService;
                     $accountService->delete($record);
                     $this->redirect(AccountResource::getUrl('index'));
                 }),
@@ -31,7 +31,8 @@ class EditAccount extends EditRecord
 
     protected function handleRecordUpdate(Model $record, array $data): Model
     {
-        $accountService = new AccountService();
+        $accountService = new AccountService;
+
         return $accountService->update($record, $data);
     }
 }

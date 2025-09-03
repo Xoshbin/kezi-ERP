@@ -7,8 +7,8 @@ use App\Models\AnalyticAccount;
 use App\Models\Budget;
 use App\Models\BudgetLine;
 use App\Models\Company;
-use Illuminate\Database\Seeder;
 use Exception;
+use Illuminate\Database\Seeder;
 
 class BudgetLineSeeder extends Seeder
 {
@@ -16,51 +16,52 @@ class BudgetLineSeeder extends Seeder
      * Run the database seeds.
      *
      * @return void
+     *
      * @throws Exception
      */
     public function run()
     {
         // Fetch the company
         $company = Company::where('name', 'Jmeryar Solutions')->first();
-        if (!$company) {
+        if (! $company) {
             throw new Exception('Company "Jmeryar Solutions" not found. Please run CompanySeeder.');
         }
 
         // Fetch the budget
         $budget = Budget::where('name', '2025 Annual Budget')->where('company_id', $company->id)->first();
-        if (!$budget) {
+        if (! $budget) {
             throw new Exception('Budget "2025 Annual Budget" not found. Please run BudgetSeeder.');
         }
 
         // Fetch accounts
         $salesAccount = Account::where('code', '4000')->where('company_id', $company->id)->first();
-        if (!$salesAccount) {
+        if (! $salesAccount) {
             throw new Exception('Account with code 4000 (Sales) not found.');
         }
 
         $marketingAccount = Account::where('code', '4100')->where('company_id', $company->id)->first();
-        if (!$marketingAccount) {
+        if (! $marketingAccount) {
             throw new Exception('Account with code 4100 (Marketing) not found.');
         }
 
         $adminAccount = Account::where('code', '4200')->where('company_id', $company->id)->first();
-        if (!$adminAccount) {
+        if (! $adminAccount) {
             throw new Exception('Account with code 4200 (Administration) not found.');
         }
 
         // Fetch analytic accounts
         $salesAnalytic = AnalyticAccount::where('name', 'Sales Department')->where('company_id', $company->id)->first();
-        if (!$salesAnalytic) {
+        if (! $salesAnalytic) {
             throw new Exception('Analytic Account "Sales Department" not found.');
         }
 
         $marketingAnalytic = AnalyticAccount::where('name', 'Marketing Department')->where('company_id', $company->id)->first();
-        if (!$marketingAnalytic) {
+        if (! $marketingAnalytic) {
             throw new Exception('Analytic Account "Marketing Department" not found.');
         }
 
         $adminAnalytic = AnalyticAccount::where('name', 'Administration Department')->where('company_id', $company->id)->first();
-        if (!$adminAnalytic) {
+        if (! $adminAnalytic) {
             throw new Exception('Analytic Account "Administration Department" not found.');
         }
 

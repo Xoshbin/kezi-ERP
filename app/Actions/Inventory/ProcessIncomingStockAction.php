@@ -2,18 +2,16 @@
 
 namespace App\Actions\Inventory;
 
-use Exception;
 use App\Models\StockMove;
 use App\Models\VendorBill;
 use App\Services\Inventory\InventoryValuationService;
-use Illuminate\Support\Facades\DB;
 use Brick\Money\Money;
+use Exception;
+use Illuminate\Support\Facades\DB;
 
 class ProcessIncomingStockAction
 {
-    public function __construct(protected InventoryValuationService $inventoryValuationService)
-    {
-    }
+    public function __construct(protected InventoryValuationService $inventoryValuationService) {}
 
     public function execute(StockMove $stockMove): void
     {
@@ -45,7 +43,7 @@ class ProcessIncomingStockAction
         // For other source types (future: inventory adjustments, transfers, etc.)
         // we can add more extraction logic here
 
-        throw new Exception("Unable to extract cost from source document type: " . get_class($sourceDocument));
+        throw new Exception('Unable to extract cost from source document type: '.get_class($sourceDocument));
     }
 
     /**
@@ -58,7 +56,7 @@ class ProcessIncomingStockAction
             ->where('product_id', $stockMove->product_id)
             ->first();
 
-        if (!$line) {
+        if (! $line) {
             throw new Exception("No vendor bill line found for product {$stockMove->product_id} in vendor bill {$vendorBill->id}");
         }
 

@@ -2,10 +2,9 @@
 
 namespace App\Filament\Clusters\Inventory\Resources\StockLocations\Pages;
 
-use Filament\Actions\EditAction;
-use Filament\Actions\DeleteAction;
 use App\Filament\Clusters\Inventory\Resources\StockLocations\StockLocationResource;
-use Filament\Actions;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\EditAction;
 use Filament\Resources\Pages\ViewRecord;
 
 class ViewStockLocation extends ViewRecord

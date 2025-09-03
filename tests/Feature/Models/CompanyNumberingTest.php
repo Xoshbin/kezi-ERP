@@ -1,11 +1,10 @@
 <?php
 
-use App\Models\Company;
+use App\Enums\Purchases\VendorBillStatus;
+use App\Enums\Sales\InvoiceStatus;
+use App\Enums\Settings\NumberingType;
 use App\Models\Invoice;
 use App\Models\VendorBill;
-use App\Enums\Settings\NumberingType;
-use App\Enums\Sales\InvoiceStatus;
-use App\Enums\Purchases\VendorBillStatus;
 use Tests\Traits\WithConfiguredCompany;
 
 describe('Company Numbering Settings', function () {

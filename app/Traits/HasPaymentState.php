@@ -2,11 +2,11 @@
 
 namespace App\Traits;
 
-use Exception;
 use App\Enums\Payments\PaymentStatus;
-use Brick\Money\Money;
 use App\Enums\Shared\PaymentState;
 use App\Services\CurrencyConverterService;
+use Brick\Money\Money;
+use Exception;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Support\Facades\Log;
 
@@ -31,8 +31,6 @@ trait HasPaymentState
      * Computes the payment state of the document on the fly.
      * This follows the Odoo pattern of separating workflow state from payment state.
      * The value is not stored in the database to maintain data consistency.
-     *
-     * @return Attribute
      */
     protected function paymentState(): Attribute
     {
@@ -59,8 +57,6 @@ trait HasPaymentState
      * This is a helper method that returns the actual Money amount paid.
      * Only considers payments with confirmed or reconciled status.
      * Handles multi-currency payments by converting all payment amounts to document currency.
-     *
-     * @return Money
      */
     public function getPaidAmount(): Money
     {
@@ -95,7 +91,8 @@ trait HasPaymentState
                     $totalPaidInDocumentCurrency = $totalPaidInDocumentCurrency->plus($convertedAmount);
                 } catch (Exception $e) {
                     // If conversion fails, log and skip this payment
-                    Log::warning("Failed to convert payment amount for payment {$payment->id}: " . $e->getMessage());
+                    Log::warning("Failed to convert payment amount for payment {$payment->id}: ".$e->getMessage());
+
                     continue;
                 }
             } else {
@@ -109,8 +106,6 @@ trait HasPaymentState
 
     /**
      * Get the remaining amount to be paid for this document.
-     *
-     * @return Money
      */
     public function getRemainingAmount(): Money
     {
@@ -123,8 +118,6 @@ trait HasPaymentState
 
     /**
      * Check if the document is fully paid.
-     *
-     * @return bool
      */
     public function isFullyPaid(): bool
     {
@@ -133,8 +126,6 @@ trait HasPaymentState
 
     /**
      * Check if the document is partially paid.
-     *
-     * @return bool
      */
     public function isPartiallyPaid(): bool
     {
@@ -143,8 +134,6 @@ trait HasPaymentState
 
     /**
      * Check if the document is not paid at all.
-     *
-     * @return bool
      */
     public function isNotPaid(): bool
     {
