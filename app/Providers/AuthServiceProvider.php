@@ -2,9 +2,7 @@
 
 namespace App\Providers;
 
-use App\Models\JournalEntry;
 use App\Models\Payroll;
-use App\Policies\JournalEntryPolicy;
 use App\Policies\PayrollPolicy;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 

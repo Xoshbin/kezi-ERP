@@ -46,4 +46,3 @@ class AssetCategory extends Model
         return $this->belongsTo(Account::class, 'depreciation_expense_account_id');
     }
 }
-

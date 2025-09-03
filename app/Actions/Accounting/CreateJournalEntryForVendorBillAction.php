@@ -2,10 +2,10 @@
 
 namespace App\Actions\Accounting;
 
-use App\Models\AssetCategory;
 use App\DataTransferObjects\Accounting\CreateJournalEntryDTO;
 use App\DataTransferObjects\Accounting\CreateJournalEntryLineDTO;
 use App\Enums\Products\ProductType;
+use App\Models\AssetCategory;
 use App\Models\JournalEntry;
 use App\Models\User;
 use App\Models\VendorBill;
@@ -15,9 +15,7 @@ use RuntimeException;
 
 class CreateJournalEntryForVendorBillAction
 {
-    public function __construct(private readonly CreateJournalEntryAction $createJournalEntryAction)
-    {
-    }
+    public function __construct(private readonly CreateJournalEntryAction $createJournalEntryAction) {}
 
     public function execute(VendorBill $vendorBill, User $user): JournalEntry
     {
@@ -27,7 +25,7 @@ class CreateJournalEntryForVendorBillAction
             $company = $vendorBill->company;
             $currency = $vendorBill->currency;
             $apAccountId = $vendorBill->vendor->payable_account_id ?? $company->default_accounts_payable_id;
-            if (!$apAccountId) {
+            if (! $apAccountId) {
                 throw new RuntimeException('Default Accounts Payable account is not configured for this company.');
             }
 
@@ -40,7 +38,7 @@ class CreateJournalEntryForVendorBillAction
 
                 if ($isStorable) {
                     $inventoryAccount = $line->product->inventoryAccount;
-                    if (!$inventoryAccount) {
+                    if (! $inventoryAccount) {
                         throw new RuntimeException("Product ID {$line->product_id} missing inventory account");
                     }
                     // Dr Inventory (subtotal)
@@ -55,7 +53,7 @@ class CreateJournalEntryForVendorBillAction
                     $totalAP = $totalAP->plus($line->subtotal);
                 } elseif ($isAsset) {
                     $category = AssetCategory::find($line->asset_category_id);
-                    if (!$category) {
+                    if (! $category) {
                         throw new RuntimeException('Invalid asset category on bill line.');
                     }
                     // Dr Asset (subtotal)
@@ -63,7 +61,7 @@ class CreateJournalEntryForVendorBillAction
                         account_id: $category->asset_account_id,
                         debit: $line->subtotal,
                         credit: Money::of(0, $currency->code),
-                        description: 'Asset: ' . $line->description,
+                        description: 'Asset: '.$line->description,
                         partner_id: null,
                         analytic_account_id: null,
                     );
@@ -84,14 +82,14 @@ class CreateJournalEntryForVendorBillAction
                 // Taxes (deductible): debit input tax, include in AP
                 if ($line->tax_id && $line->total_line_tax->isPositive()) {
                     $taxAccountId = $company->default_tax_receivable_id ?? $company->default_tax_account_id;
-                    if (!$taxAccountId) {
+                    if (! $taxAccountId) {
                         throw new RuntimeException('Default input tax account not configured for company.');
                     }
                     $lineDTOs[] = new CreateJournalEntryLineDTO(
                         account_id: $taxAccountId,
                         debit: $line->total_line_tax,
                         credit: Money::of(0, $currency->code),
-                        description: 'Input tax: ' . $line->description,
+                        description: 'Input tax: '.$line->description,
                         partner_id: null,
                         analytic_account_id: null,
                     );
@@ -115,7 +113,7 @@ class CreateJournalEntryForVendorBillAction
                 currency_id: $currency->id,
                 entry_date: $vendorBill->accounting_date,
                 reference: $vendorBill->bill_reference,
-                description: 'Vendor Bill ' . $vendorBill->bill_reference,
+                description: 'Vendor Bill '.$vendorBill->bill_reference,
                 source_type: VendorBill::class,
                 source_id: $vendorBill->id,
                 created_by_user_id: $user->id,
@@ -127,4 +125,3 @@ class CreateJournalEntryForVendorBillAction
         });
     }
 }
-

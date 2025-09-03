@@ -24,12 +24,13 @@ class CreateAccount extends CreateRecord
 
     public function getTitle(): string
     {
-        return __('filament.actions.create') . ' ' . __('account.label');
+        return __('filament.actions.create').' '.__('account.label');
     }
 
     protected function handleRecordCreation(array $data): Model
     {
-        $accountService = new AccountService();
+        $accountService = new AccountService;
+
         return $accountService->create($data);
     }
 }

@@ -3,13 +3,10 @@
 namespace App\Filament\Clusters\Accounting\Resources\VendorBills\Pages;
 
 use App\Actions\Accounting\BuildVendorBillPostingPreviewAction;
-use Barryvdh\DomPDF\Facade\Pdf;
-use Filament\Facades\Filament;
-use App\Services\PaymentService;
 use App\Actions\Payments\CreatePaymentAction;
 use App\Actions\Purchases\UpdateVendorBillAction;
-use App\DataTransferObjects\Payments\CreatePaymentDTO;
 use App\DataTransferObjects\Payments\CreatePaymentDocumentLinkDTO;
+use App\DataTransferObjects\Payments\CreatePaymentDTO;
 use App\DataTransferObjects\Purchases\UpdateVendorBillDTO;
 use App\DataTransferObjects\Purchases\VendorBillLineDTO;
 use App\Enums\Payments\PaymentPurpose;
@@ -21,11 +18,14 @@ use App\Filament\Forms\Components\MoneyInput;
 use App\Models\Journal;
 use App\Models\VendorBill;
 use App\Models\VendorBillAttachment;
+use App\Services\PaymentService;
 use App\Services\VendorBillService;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Brick\Money\Money;
 use Exception;
 use Filament\Actions\Action;
 use Filament\Actions\DeleteAction;
+use Filament\Facades\Filament;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Select;
@@ -57,6 +57,7 @@ class EditVendorBill extends EditRecord
                 ->modalWidth('7xl')
                 ->modalContent(function (VendorBill $record) {
                     $preview = app(BuildVendorBillPostingPreviewAction::class)->execute($record);
+
                     return view('filament/accounting/vendor-bills/preview-posting', [
                         'preview' => $preview,
                         'bill' => $record,
@@ -83,10 +84,13 @@ class EditVendorBill extends EditRecord
                     }
                     $csv = '';
                     foreach ($rows as $row) {
-                        $csv .= implode(',', array_map(fn($v) => '"' . str_replace('"', '""', (string) $v) . '"', $row)) . "\n";
+                        $csv .= implode(',', array_map(fn ($v) => '"'.str_replace('"', '""', (string) $v).'"', $row))."\n";
                     }
-                    $filename = 'vendor-bill-' . ($record->bill_reference ?: $record->id) . '-preview.csv';
-                    return response()->streamDownload(function () use ($csv) { echo $csv; }, $filename, [
+                    $filename = 'vendor-bill-'.($record->bill_reference ?: $record->id).'-preview.csv';
+
+                    return response()->streamDownload(function () use ($csv) {
+                        echo $csv;
+                    }, $filename, [
                         'Content-Type' => 'text/csv',
                     ]);
                 }),
@@ -101,8 +105,11 @@ class EditVendorBill extends EditRecord
                         'preview' => $preview,
                         'bill' => $record,
                     ]);
-                    $filename = 'vendor-bill-' . ($record->bill_reference ?: $record->id) . '-preview.pdf';
-                    return response()->streamDownload(function () use ($pdf) { echo $pdf->output(); }, $filename, [
+                    $filename = 'vendor-bill-'.($record->bill_reference ?: $record->id).'-preview.pdf';
+
+                    return response()->streamDownload(function () use ($pdf) {
+                        echo $pdf->output();
+                    }, $filename, [
                         'Content-Type' => 'application/pdf',
                     ]);
                 }),
@@ -166,13 +173,13 @@ class EditVendorBill extends EditRecord
                     MoneyInput::make('amount')
                         ->label('Amount')
                         ->currencyField('currency_id')
-                        ->default(fn(VendorBill $record) => $record->getRemainingAmount())
+                        ->default(fn (VendorBill $record) => $record->getRemainingAmount())
                         ->required(),
                     TextInput::make('reference')
                         ->label('Reference')
                         ->placeholder('Optional reference'),
                     Hidden::make('currency_id')
-                        ->default(fn(VendorBill $record) => $record->currency_id),
+                        ->default(fn (VendorBill $record) => $record->currency_id),
                 ])
                 ->action(function (VendorBill $record, array $data) {
                     try {
@@ -216,9 +223,8 @@ class EditVendorBill extends EditRecord
                             ->send();
                     }
                 })
-                ->visible(fn(VendorBill $record) =>
-                    $record->status === VendorBillStatus::Posted &&
-                    !$record->getRemainingAmount()->isZero()
+                ->visible(fn (VendorBill $record) => $record->status === VendorBillStatus::Posted &&
+                    ! $record->getRemainingAmount()->isZero()
                 ),
 
             DeleteAction::make()

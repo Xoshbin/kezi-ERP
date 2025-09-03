@@ -2,9 +2,9 @@
 
 namespace App\DataTransferObjects\Accounting;
 
-use App\Models\User;
 use App\Models\Account;
 use App\Models\BankStatementLine;
+use App\Models\User;
 
 readonly class CreateJournalEntryForStatementLineDTO
 {

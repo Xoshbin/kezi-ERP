@@ -2,23 +2,23 @@
 
 namespace App\Filament\Clusters\Accounting\Resources\Journals;
 
-use App\Models\Currency;
-use Filament\Forms\Components\Toggle;
-use App\Models\Account;
 use App\Enums\Accounting\JournalType;
 use App\Filament\Clusters\Accounting\AccountingCluster;
 use App\Filament\Clusters\Accounting\Resources\Journals\Pages\CreateJournal;
 use App\Filament\Clusters\Accounting\Resources\Journals\Pages\EditJournal;
 use App\Filament\Clusters\Accounting\Resources\Journals\Pages\ListJournals;
 use App\Filament\Clusters\Accounting\Resources\Journals\RelationManagers\JournalEntriesRelationManager;
-use App\Models\Journal;
 use App\Filament\Support\TranslatableSelect;
+use App\Models\Account;
+use App\Models\Currency;
+use App\Models\Journal;
 use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Toggle;
 use Filament\Resources\Resource;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
@@ -32,7 +32,7 @@ class JournalResource extends Resource
 
     protected static ?string $model = Journal::class;
 
-    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-book-open';
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-book-open';
 
     protected static ?int $navigationSort = 2;
 

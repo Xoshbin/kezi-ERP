@@ -2,12 +2,11 @@
 
 namespace App\Observers;
 
-use Brick\Money\Money;
 use App\Models\VendorBillLine;
+use Brick\Money\Money;
 
 class VendorBillLineObserver
 {
-
     /**
      * Handle the VendorBillLine "saved" event.
      * This is triggered on both creation and update.
@@ -48,7 +47,7 @@ class VendorBillLineObserver
      */
     protected function updateCompanyCurrencyTotals($vendorBill): void
     {
-        if (!$vendorBill->exchange_rate_at_creation || $vendorBill->currency_id === $vendorBill->company->currency_id) {
+        if (! $vendorBill->exchange_rate_at_creation || $vendorBill->currency_id === $vendorBill->company->currency_id) {
             return; // No conversion needed
         }
 

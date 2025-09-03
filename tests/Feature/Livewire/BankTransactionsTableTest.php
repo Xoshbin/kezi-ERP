@@ -1,12 +1,12 @@
 <?php
 
-use App\Models\User;
-use App\Models\Company;
+use App\Livewire\Accounting\BankTransactionsTable;
+use App\Models\Account;
 use App\Models\BankStatement;
 use App\Models\BankStatementLine;
-use App\Models\Account;
+use App\Models\Company;
 use App\Models\Journal;
-use App\Livewire\Accounting\BankTransactionsTable;
+use App\Models\User;
 use Brick\Money\Money;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Livewire\Livewire;

@@ -2,32 +2,26 @@
 
 namespace App\Models;
 
-use Illuminate\Support\Carbon;
-use Illuminate\Database\Eloquent\Collection;
-use Database\Factories\JournalEntryFactory;
-use Illuminate\Database\Eloquent\Builder;
 use App\Casts\BaseCurrencyMoneyCast;
 use App\Enums\Accounting\JournalEntryState;
-use App\Observers\AuditLogObserver;
 use App\Observers\JournalEntryObserver;
-use Illuminate\Support\Facades\Auth;
+use Brick\Money\Money;
+use Database\Factories\JournalEntryFactory;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
-use RuntimeException; // For explicit exception handling for immutability violations
-use Brick\Money\Money;
-
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Auth; // For explicit exception handling for immutability violations
+use RuntimeException;
 
 /**
  * Class JournalEntry
  *
- * @package App\Models
- *
- * This Eloquent model represents a financial journal entry in the double-entry accounting system.
- * It serves as the immutable record of all posted financial transactions [1-3].
  * @property int $id
  * @property int $company_id
  * @property int $journal_id
@@ -52,6 +46,7 @@ use Brick\Money\Money;
  * @property-read Collection<int, JournalEntryLine> $lines
  * @property-read int|null $lines_count
  * @property-read Model|\Eloquent|null $source
+ *
  * @method static JournalEntryFactory factory($count = null, $state = [])
  * @method static Builder<static>|JournalEntry newModelQuery()
  * @method static Builder<static>|JournalEntry newQuery()
@@ -73,12 +68,14 @@ use Brick\Money\Money;
  * @method static Builder<static>|JournalEntry whereTotalCredit($value)
  * @method static Builder<static>|JournalEntry whereTotalDebit($value)
  * @method static Builder<static>|JournalEntry whereUpdatedAt($value)
+ *
  * @mixin \Eloquent
  */
 #[ObservedBy([JournalEntryObserver::class])]
 class JournalEntry extends Model
 {
     use HasFactory;
+
     /**
      * The database table associated with the model.
      *
@@ -115,7 +112,7 @@ class JournalEntry extends Model
         'hash',
         'previous_hash',
         'created_by_user_id',
-        'currency_id'
+        'currency_id',
     ];
 
     /**
@@ -152,8 +149,6 @@ class JournalEntry extends Model
      *
      * This static method is invoked once the model has been booted, providing a hook
      * to apply global logic such as event listeners to enforce core accounting principles [18, 19].
-     *
-     * @return void
      */
     protected static function booted(): void
     {
@@ -167,7 +162,6 @@ class JournalEntry extends Model
             // and transitions to `true` via a dedicated posting mechanism in the application's
             // service layer, which also handles hashing.
         });
-
 
         // Strict enforcement of immutability for posted financial records.
         // Direct modification or deletion of posted journal entries is explicitly disallowed
@@ -190,7 +184,7 @@ class JournalEntry extends Model
                     'source_type',
                     'source_id',
                     'created_by_user_id',
-                    'created_at' // Created_at is also considered immutable once set [3].
+                    'created_at', // Created_at is also considered immutable once set [3].
                 ];
 
                 foreach ($financialFields as $field) {
@@ -312,10 +306,7 @@ class JournalEntry extends Model
      * is met at the entry level before an entry is posted [2, 3, 7].
      * This calculation should ideally be performed and validated in the business logic layer
      * before marking the entry as 'posted'.
-     *
-     * @return void
      */
-
     public function calculateTotalsFromLines(): void
     {
         // Ensure the lines relationship is loaded to avoid extra queries

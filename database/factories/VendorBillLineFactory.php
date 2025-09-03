@@ -2,13 +2,13 @@
 
 namespace Database\Factories;
 
-use App\Models\VendorBillLine;
-use App\Models\Tax;
-use Brick\Money\Money;
 use App\Models\Account;
-use App\Models\Product;
-use App\Models\VendorBill;
 use App\Models\AnalyticAccount;
+use App\Models\Product;
+use App\Models\Tax;
+use App\Models\VendorBill;
+use App\Models\VendorBillLine;
+use Brick\Money\Money;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**

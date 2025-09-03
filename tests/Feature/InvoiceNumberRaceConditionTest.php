@@ -2,34 +2,39 @@
 
 namespace Tests\Feature;
 
-use Tests\TestCase;
-use App\Models\User;
-use App\Models\Company;
-use App\Models\Invoice;
-use App\Models\Partner;
-use App\Models\Currency;
-use App\Models\Account;
-use App\Models\Journal;
-use App\Models\Tax;
-
-use App\Services\InvoiceService;
 use App\Actions\Sales\CreateInvoiceAction;
 use App\DataTransferObjects\Sales\CreateInvoiceDTO;
 use App\DataTransferObjects\Sales\CreateInvoiceLineDTO;
+use App\Models\Account;
+use App\Models\Company;
+use App\Models\Currency;
+use App\Models\Invoice;
+use App\Models\Journal;
+use App\Models\Partner;
+use App\Models\Tax;
+use App\Models\User;
+use App\Services\InvoiceService;
 use Brick\Money\Money;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
+use Tests\TestCase;
 
 class InvoiceNumberRaceConditionTest extends TestCase
 {
     use RefreshDatabase;
 
     private Company $company;
+
     private Partner $customer;
+
     private Currency $currency;
+
     private User $user;
+
     private Account $incomeAccount;
+
     private Journal $salesJournal;
+
     private Tax $tax;
 
     protected function setUp(): void
@@ -44,17 +49,17 @@ class InvoiceNumberRaceConditionTest extends TestCase
 
         $this->incomeAccount = Account::factory()->create([
             'company_id' => $this->company->id,
-            'type' => 'income'
+            'type' => 'income',
         ]);
 
         $this->salesJournal = Journal::factory()->create([
             'company_id' => $this->company->id,
-            'type' => 'sale'
+            'type' => 'sale',
         ]);
 
         $this->tax = Tax::factory()->create([
             'company_id' => $this->company->id,
-            'rate' => 10.0
+            'rate' => 10.0,
         ]);
 
         // Set up company defaults
@@ -84,7 +89,7 @@ class InvoiceNumberRaceConditionTest extends TestCase
                         income_account_id: $this->incomeAccount->id,
                         product_id: null,
                         tax_id: $this->tax->id
-                    )
+                    ),
                 ],
                 fiscal_position_id: null
             );
@@ -149,13 +154,13 @@ class InvoiceNumberRaceConditionTest extends TestCase
             due_date: now()->addDays(30)->format('Y-m-d'),
             lines: [
                 new CreateInvoiceLineDTO(
-                    description: "Test Item",
+                    description: 'Test Item',
                     quantity: 1,
                     unit_price: Money::of(100, 'USD'),
                     income_account_id: $this->incomeAccount->id,
                     product_id: null,
                     tax_id: $this->tax->id
-                )
+                ),
             ],
             fiscal_position_id: null
         );

@@ -1,20 +1,17 @@
 <?php
 
-use App\Models\User;
-use Brick\Money\Money;
-use App\Models\Account;
-use App\Models\Company;
-use App\Models\Journal;
-use App\Models\JournalEntry;
-use App\Services\AccountService;
 use App\Actions\Accounting\CreateJournalEntryAction;
 use App\DataTransferObjects\Accounting\CreateJournalEntryDTO;
 use App\DataTransferObjects\Accounting\CreateJournalEntryLineDTO;
+use App\Models\Account;
+use App\Models\Company;
+use App\Models\Journal;
+use App\Services\AccountService;
 use App\Services\JournalService;
-use Tests\Traits\CreatesApplication;
-use Tests\Traits\WithConfiguredCompany;
-use Illuminate\Validation\ValidationException;
+use Brick\Money\Money;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Validation\ValidationException;
+use Tests\Traits\WithConfiguredCompany;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);
 
@@ -35,7 +32,7 @@ test('creating an account with a duplicate code for the same company is prevente
 
     // Assert: Expect that trying to create the duplicate account will fail
     // with a ValidationException. This proves your backend rule works.
-    expect(fn() => $accountService->create($duplicateAccountData))
+    expect(fn () => $accountService->create($duplicateAccountData))
         ->toThrow(ValidationException::class);
 });
 
@@ -77,7 +74,6 @@ test('an account with existing transactions is marked as deprecated instead of b
             ),
         ]
     ));
-
 
     // Act: Attempt to delete the account. We expect our Observer to intercept this.
     // The delete() method should return false because the Observer cancels the operation.
@@ -137,7 +133,7 @@ test('a deprecated account cannot be used for new financial transactions', funct
 
     // Assert: Expect the action to throw a specific, clear exception when it detects
     // the use of a deprecated account. This confirms the backend rule is enforced.
-    expect(fn() => $createJournalEntryAction->execute($journalEntryDTO))
+    expect(fn () => $createJournalEntryAction->execute($journalEntryDTO))
         ->toThrow(ValidationException::class);
 });
 
@@ -158,6 +154,6 @@ test('creating a journal with an existing short code for the same company is pre
 
     // Assert: Expect the service to throw a ValidationException when it
     // detects the duplicate short code for the given company.
-    expect(fn() => $journalService->create($duplicateData))
+    expect(fn () => $journalService->create($duplicateData))
         ->toThrow(ValidationException::class);
 });

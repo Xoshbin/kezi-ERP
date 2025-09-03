@@ -14,7 +14,7 @@ class JournalService
             'short_code' => [
                 'required',
                 // This rule checks if the short_code is unique for the given company_id.
-                Rule::unique('journals')->where('company_id', $data['company_id'])
+                Rule::unique('journals')->where('company_id', $data['company_id']),
             ],
             // ... other rules
         ])->validate();

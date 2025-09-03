@@ -11,6 +11,7 @@ use App\Models\Payment;
 use Brick\Money\Money;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\Traits\WithConfiguredCompany;
+
 use function Pest\Livewire\livewire;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);
@@ -369,7 +370,6 @@ it('cannot delete a confirmed payment', function () {
         ->assertActionHidden('delete');
 });
 
-
 it('can display journal entries relation manager', function () {
     /** @var \App\Models\Partner $customer */
     $customer = Partner::factory()->customer()->create([
@@ -397,7 +397,7 @@ it('can display journal entries relation manager', function () {
         'currency_id' => $this->company->currency_id,
         'source_type' => Payment::class,
         'source_id' => $payment->id,
-        'reference' => 'PAY/' . $payment->id,
+        'reference' => 'PAY/'.$payment->id,
         'description' => 'Payment journal entry',
         'total_debit' => Money::of(1000, $this->company->currency->code),
         'total_credit' => Money::of(1000, $this->company->currency->code),

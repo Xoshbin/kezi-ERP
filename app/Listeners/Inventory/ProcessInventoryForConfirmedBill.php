@@ -2,19 +2,17 @@
 
 namespace App\Listeners\Inventory;
 
-use RuntimeException;
 use App\Actions\Inventory\UpdateProductInventoryStatsAction;
 use App\Enums\Inventory\StockMoveStatus;
 use App\Enums\Inventory\StockMoveType;
 use App\Enums\Products\ProductType;
 use App\Events\VendorBillConfirmed;
 use App\Models\StockMove;
+use RuntimeException;
 
 class ProcessInventoryForConfirmedBill
 {
-    public function __construct(private readonly UpdateProductInventoryStatsAction $updateProductInventoryStatsAction)
-    {
-    }
+    public function __construct(private readonly UpdateProductInventoryStatsAction $updateProductInventoryStatsAction) {}
 
     public function handle(VendorBillConfirmed $event): void
     {
@@ -33,7 +31,7 @@ class ProcessInventoryForConfirmedBill
         $product = $line->product;
         $company = $vendorBill->company;
 
-        if (!$company->vendorLocation || !$company->defaultStockLocation) {
+        if (! $company->vendorLocation || ! $company->defaultStockLocation) {
             throw new RuntimeException("Default Vendor or Stock Location is not configured for Company ID: {$company->id}.");
         }
 

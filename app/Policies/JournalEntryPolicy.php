@@ -32,15 +32,11 @@ class JournalEntryPolicy
 
     public function delete(User $user, JournalEntry $journalEntry): bool
     {
-        return !$journalEntry->is_posted;
+        return ! $journalEntry->is_posted;
     }
 
     /**
      * Determine whether the user can reverse the journal entry.
-     *
-     * @param User $user
-     * @param JournalEntry $journalEntry
-     * @return bool
      */
     public function reverse(User $user, JournalEntry $journalEntry): bool
     {

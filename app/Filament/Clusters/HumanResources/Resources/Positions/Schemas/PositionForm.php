@@ -2,14 +2,14 @@
 
 namespace App\Filament\Clusters\HumanResources\Resources\Positions\Schemas;
 
-use App\Models\Department;
-use App\Models\Currency;
-use Filament\Facades\Filament;
 use App\Filament\Forms\Components\MoneyInput;
 use App\Filament\Support\TranslatableSelect;
+use App\Models\Currency;
+use App\Models\Department;
+use Filament\Facades\Filament;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
@@ -95,7 +95,7 @@ class PositionForm
                 ->schema([
                     TranslatableSelect::make('salary_currency_id', Currency::class, __('position.salary_currency'))
                         ->live()
-                        ->default(fn() => Filament::getTenant()?->currency_id)
+                        ->default(fn () => Filament::getTenant()?->currency_id)
                         ->columnSpan(3),
 
                     MoneyInput::make('min_salary')

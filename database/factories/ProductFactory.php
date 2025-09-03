@@ -2,11 +2,11 @@
 
 namespace Database\Factories;
 
-use App\Models\Product;
-use Brick\Money\Money;
+use App\Enums\Products\ProductType;
 use App\Models\Account;
 use App\Models\Company;
-use App\Enums\Products\ProductType;
+use App\Models\Product;
+use Brick\Money\Money;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**

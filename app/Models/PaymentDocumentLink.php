@@ -2,15 +2,15 @@
 
 namespace App\Models;
 
-use InvalidArgumentException;
-use Illuminate\Support\Carbon;
+use App\Casts\DocumentCurrencyMoneyCast;
 use Database\Factories\PaymentDocumentLinkFactory;
 use Illuminate\Database\Eloquent\Builder;
-use App\Casts\DocumentCurrencyMoneyCast;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasOneThrough;
+use Illuminate\Support\Carbon;
+use InvalidArgumentException;
 
 /**
  * @property int $id
@@ -23,6 +23,7 @@ use Illuminate\Database\Eloquent\Relations\HasOneThrough;
  * @property-read Invoice|null $invoice
  * @property-read Payment $payment
  * @property-read VendorBill|null $vendorBill
+ *
  * @method static PaymentDocumentLinkFactory factory($count = null, $state = [])
  * @method static Builder<static>|PaymentDocumentLink newModelQuery()
  * @method static Builder<static>|PaymentDocumentLink newQuery()
@@ -34,6 +35,7 @@ use Illuminate\Database\Eloquent\Relations\HasOneThrough;
  * @method static Builder<static>|PaymentDocumentLink wherePaymentId($value)
  * @method static Builder<static>|PaymentDocumentLink whereUpdatedAt($value)
  * @method static Builder<static>|PaymentDocumentLink whereVendorBillId($value)
+ *
  * @mixin \Eloquent
  */
 class PaymentDocumentLink extends Model
@@ -87,8 +89,6 @@ class PaymentDocumentLink extends Model
 
     /**
      * Get the company that this rate belongs to.
-     *
-     * @return BelongsTo
      */
     public function company(): BelongsTo
     {
@@ -98,8 +98,6 @@ class PaymentDocumentLink extends Model
     /**
      * Get the payment that owns this document link.
      * This defines a one-to-many (inverse) relationship, where a PaymentDocumentLink belongs to a Payment.
-     *
-     * @return BelongsTo
      */
     public function payment(): BelongsTo
     {
@@ -109,8 +107,6 @@ class PaymentDocumentLink extends Model
     /**
      * Get the customer invoice that this document link is associated with.
      * This is a conditional relationship, as a link will be to either an invoice or a vendor bill.
-     *
-     * @return BelongsTo
      */
     public function invoice(): BelongsTo
     {
@@ -120,8 +116,6 @@ class PaymentDocumentLink extends Model
     /**
      * Get the vendor bill that this document link is associated with.
      * This is a conditional relationship, as a link will be to either a vendor bill or an invoice.
-     *
-     * @return BelongsTo
      */
     public function vendorBill(): BelongsTo
     {
@@ -155,8 +149,6 @@ class PaymentDocumentLink extends Model
      * We enforce the critical constraint that a `PaymentDocumentLink` **must be associated with either an invoice or a vendor bill** .
      * While robust validation should ideally occur at the incoming request or service layer [9],
      * this model-level check serves as an important **last line of defense** to prevent inconsistent data states.
-     *
-     * @return void
      */
     protected static function booted(): void
     {
@@ -167,7 +159,7 @@ class PaymentDocumentLink extends Model
             }
 
             // Set company_id from parent payment to maintain tenancy
-            if (!$link->company_id && $link->payment) {
+            if (! $link->company_id && $link->payment) {
                 $link->company_id = $link->payment->company_id;
             }
         });

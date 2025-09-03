@@ -2,22 +2,16 @@
 
 namespace App\Models;
 
-use Illuminate\Support\Carbon;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Database\Factories\CurrencyRateFactory;
 use Illuminate\Database\Eloquent\Builder;
-
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Carbon;
 
 /**
  * Class CurrencyRate
  *
- * @package App\Models
- *
- * This Eloquent model represents historical exchange rates for currencies.
- * It maintains a complete history of exchange rate changes over time,
- * which is essential for accurate multi-currency accounting and reporting.
  *
  * @property int $id
  * @property int $currency_id
@@ -27,6 +21,7 @@ use Illuminate\Database\Eloquent\Builder;
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property-read Currency $currency
+ *
  * @method static CurrencyRateFactory factory($count = null, $state = [])
  * @method static Builder<static>|CurrencyRate newModelQuery()
  * @method static Builder<static>|CurrencyRate newQuery()
@@ -37,6 +32,7 @@ use Illuminate\Database\Eloquent\Builder;
  * @method static Builder<static>|CurrencyRate whereSource($value)
  * @method static Builder<static>|CurrencyRate whereCreatedAt($value)
  * @method static Builder<static>|CurrencyRate whereUpdatedAt($value)
+ *
  * @mixin \Eloquent
  */
 class CurrencyRate extends Model
@@ -83,8 +79,6 @@ class CurrencyRate extends Model
 
     /**
      * Get the company that this rate belongs to.
-     *
-     * @return BelongsTo
      */
     public function company(): BelongsTo
     {
@@ -93,8 +87,6 @@ class CurrencyRate extends Model
 
     /**
      * Get the currency that this rate belongs to.
-     *
-     * @return BelongsTo
      */
     public function currency(): BelongsTo
     {
@@ -110,16 +102,12 @@ class CurrencyRate extends Model
     /**
      * Scope to get the latest rate for a currency on or before a specific date for a specific company.
      *
-     * @param Builder $query
-     * @param int $currencyId
-     * @param Carbon|string $date
-     * @param int $companyId
-     * @return Builder
+     * @param  Carbon|string  $date
      */
     public function scopeLatestRateForDate(Builder $query, int $currencyId, $date, int $companyId): Builder
     {
         // Ensure date is a Carbon instance for proper comparison
-        if (!$date instanceof Carbon) {
+        if (! $date instanceof Carbon) {
             $date = Carbon::parse($date);
         }
 
@@ -132,10 +120,6 @@ class CurrencyRate extends Model
 
     /**
      * Scope to get rates for a specific currency.
-     *
-     * @param Builder $query
-     * @param int $currencyId
-     * @return Builder
      */
     public function scopeForCurrency(Builder $query, int $currencyId): Builder
     {
@@ -152,10 +136,7 @@ class CurrencyRate extends Model
      * Get the exchange rate for a currency on a specific date for a specific company.
      * Returns the most recent rate on or before the given date.
      *
-     * @param int $currencyId
-     * @param Carbon|string $date
-     * @param int $companyId
-     * @return float|null
+     * @param  Carbon|string  $date
      */
     public static function getRateForDate(int $currencyId, $date, int $companyId): ?float
     {
@@ -166,10 +147,6 @@ class CurrencyRate extends Model
 
     /**
      * Get the latest exchange rate for a currency for a specific company.
-     *
-     * @param int $currencyId
-     * @param int $companyId
-     * @return float|null
      */
     public static function getLatestRate(int $currencyId, int $companyId): ?float
     {
@@ -180,5 +157,4 @@ class CurrencyRate extends Model
 
         return $rate?->rate;
     }
-
 }

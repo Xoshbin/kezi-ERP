@@ -1,9 +1,9 @@
 <?php
 
+use App\Enums\Adjustments\AdjustmentDocumentStatus;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
-use App\Enums\Adjustments\AdjustmentDocumentStatus;
 
 return new class extends Migration
 {
@@ -22,7 +22,7 @@ return new class extends Migration
             $table->foreignId('original_vendor_bill_id')->nullable()->constrained('vendor_bills');
             $table->foreignId('journal_entry_id')->nullable()->constrained('journal_entries')->onDelete('set null');
             $table->foreignId('currency_id')->constrained('currencies');
-             // Add subtotal field (missing from original schema but present in VendorBill)
+            // Add subtotal field (missing from original schema but present in VendorBill)
             $table->unsignedBigInteger('subtotal');
 
             // Add exchange rate captured at adjustment document creation/posting

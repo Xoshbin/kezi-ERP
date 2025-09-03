@@ -19,22 +19,22 @@ class CreateAttendanceAction
             $breakHours = null;
 
             if ($createAttendanceDTO->clock_in_time && $createAttendanceDTO->clock_out_time) {
-                $clockIn = Carbon::parse($createAttendanceDTO->attendance_date . ' ' . $createAttendanceDTO->clock_in_time);
-                $clockOut = Carbon::parse($createAttendanceDTO->attendance_date . ' ' . $createAttendanceDTO->clock_out_time);
-                
+                $clockIn = Carbon::parse($createAttendanceDTO->attendance_date.' '.$createAttendanceDTO->clock_in_time);
+                $clockOut = Carbon::parse($createAttendanceDTO->attendance_date.' '.$createAttendanceDTO->clock_out_time);
+
                 $totalMinutes = $clockOut->diffInMinutes($clockIn);
-                
+
                 // Calculate break time if provided
                 if ($createAttendanceDTO->break_start_time && $createAttendanceDTO->break_end_time) {
-                    $breakStart = Carbon::parse($createAttendanceDTO->attendance_date . ' ' . $createAttendanceDTO->break_start_time);
-                    $breakEnd = Carbon::parse($createAttendanceDTO->attendance_date . ' ' . $createAttendanceDTO->break_end_time);
+                    $breakStart = Carbon::parse($createAttendanceDTO->attendance_date.' '.$createAttendanceDTO->break_start_time);
+                    $breakEnd = Carbon::parse($createAttendanceDTO->attendance_date.' '.$createAttendanceDTO->break_end_time);
                     $breakMinutes = $breakEnd->diffInMinutes($breakStart);
                     $breakHours = round($breakMinutes / 60, 2);
                     $totalMinutes -= $breakMinutes;
                 }
-                
+
                 $totalHours = round($totalMinutes / 60, 2);
-                
+
                 // Calculate regular vs overtime hours (assuming 8 hours is regular)
                 $regularHours = min($totalHours, 8);
                 $overtimeHours = max(0, $totalHours - 8);

@@ -49,7 +49,7 @@ class EmployeeFactory extends Factory
             'termination_date' => null,
             'employment_status' => 'active',
             'employee_type' => $this->faker->randomElement(['full_time', 'part_time', 'contract', 'intern']),
-            'bank_name' => $this->faker->company . ' Bank',
+            'bank_name' => $this->faker->company.' Bank',
             'bank_account_number' => $this->faker->bankAccountNumber,
             'bank_routing_number' => $this->faker->numerify('###'),
             'is_active' => true,

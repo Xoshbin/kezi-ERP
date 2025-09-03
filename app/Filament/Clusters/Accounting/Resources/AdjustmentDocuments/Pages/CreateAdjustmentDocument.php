@@ -1,10 +1,10 @@
 <?php
+
 // in app/Filament/Resources/AdjustmentDocumentResource/Pages/CreateAdjustmentDocument.php
 
 namespace App\Filament\Clusters\Accounting\Resources\AdjustmentDocuments\Pages;
 
 // Add imports for Invoice and VendorBill
-use Filament\Facades\Filament;
 use App\Actions\Adjustments\CreateAdjustmentDocumentAction;
 use App\DataTransferObjects\Adjustments\CreateAdjustmentDocumentDTO;
 use App\DataTransferObjects\Adjustments\CreateAdjustmentDocumentLineDTO;
@@ -14,6 +14,7 @@ use App\Models\Currency;
 use App\Models\Invoice;
 use App\Models\VendorBill;
 use Brick\Money\Money;
+use Filament\Facades\Filament;
 use Filament\Resources\Pages\CreateRecord;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Validation\ValidationException;
@@ -29,9 +30,9 @@ class CreateAdjustmentDocument extends CreateRecord
         // --- START OF THE FIX ---
         // 1. Forcefully derive currency_id if it's missing but a source document is linked.
         if (empty($data['currency_id'])) {
-            if (!empty($data['original_invoice_id'])) {
+            if (! empty($data['original_invoice_id'])) {
                 $data['currency_id'] = Invoice::find($data['original_invoice_id'])?->currency_id;
-            } elseif (!empty($data['original_vendor_bill_id'])) {
+            } elseif (! empty($data['original_vendor_bill_id'])) {
                 $data['currency_id'] = VendorBill::find($data['original_vendor_bill_id'])?->currency_id;
             }
         }

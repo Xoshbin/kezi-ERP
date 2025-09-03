@@ -8,9 +8,7 @@ use Illuminate\Support\Facades\DB;
 
 class AdjustInventoryAction
 {
-    public function __construct(protected InventoryValuationService $inventoryValuationService)
-    {
-    }
+    public function __construct(protected InventoryValuationService $inventoryValuationService) {}
 
     public function execute(AdjustInventoryDTO $dto): void
     {

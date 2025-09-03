@@ -2,25 +2,25 @@
 
 namespace App\Services\HumanResources;
 
-use Exception;
-use Brick\Math\RoundingMode;
-use InvalidArgumentException;
-use App\Actions\HumanResources\ProcessPayrollAction;
-use App\Actions\HumanResources\CreatePaymentFromPayrollAction;
-use App\DataTransferObjects\HumanResources\ProcessPayrollDTO;
-use App\DataTransferObjects\HumanResources\PayrollLineDTO;
-use App\Models\Payroll;
-use App\Models\Employee;
-use App\Models\User;
-use App\Models\Company;
-use App\Models\Account;
-use App\Models\Payment;
-use App\Services\Accounting\LockDateService;
 use App\Actions\Accounting\CreateJournalEntryForPayrollAction;
+use App\Actions\HumanResources\CreatePaymentFromPayrollAction;
+use App\Actions\HumanResources\ProcessPayrollAction;
+use App\DataTransferObjects\HumanResources\PayrollLineDTO;
+use App\DataTransferObjects\HumanResources\ProcessPayrollDTO;
+use App\Models\Account;
+use App\Models\Company;
+use App\Models\Employee;
+use App\Models\Payment;
+use App\Models\Payroll;
+use App\Models\User;
+use App\Services\Accounting\LockDateService;
+use Brick\Math\RoundingMode;
 use Brick\Money\Money;
 use Carbon\Carbon;
+use Exception;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
+use InvalidArgumentException;
 
 class PayrollService
 {
@@ -29,8 +29,7 @@ class PayrollService
         protected LockDateService $lockDateService,
         protected CreateJournalEntryForPayrollAction $createJournalEntryForPayrollAction,
         protected CreatePaymentFromPayrollAction $createPaymentFromPayrollAction,
-    ) {
-    }
+    ) {}
 
     /**
      * Process payroll for an employee.
@@ -43,7 +42,7 @@ class PayrollService
 
         return DB::transaction(function () use ($employee, $periodStartDate, $periodEndDate, $payDate, $user) {
             $contract = $employee->currentContract;
-            if (!$contract) {
+            if (! $contract) {
                 throw new Exception('Employee does not have an active contract.');
             }
 
@@ -52,8 +51,6 @@ class PayrollService
 
             // Calculate base salary (prorated if needed)
             $baseSalary = $this->calculateBaseSalary($contract, $periodStartDate, $periodEndDate);
-
-
 
             // Calculate overtime
             $overtimeAmount = $this->calculateOvertimeAmount($contract, $attendanceData['overtime_hours']);
@@ -191,8 +188,6 @@ class PayrollService
             $regularHourlyRate = $contract->base_salary->dividedBy($monthlyHours, RoundingMode::HALF_UP);
         }
 
-
-
         $overtimeRate = $regularHourlyRate->multipliedBy(1.5, RoundingMode::HALF_UP);
 
         return $overtimeRate->multipliedBy($overtimeHours, RoundingMode::HALF_UP);
@@ -236,7 +231,7 @@ class PayrollService
         $pensionPayableAccountId = $company->default_pension_payable_account_id;
 
         // Use fallback accounts if not configured (for testing/development)
-        if (!$salaryExpenseAccountId) {
+        if (! $salaryExpenseAccountId) {
             $salaryExpenseAccountId = 1; // fallback account ID
         }
 

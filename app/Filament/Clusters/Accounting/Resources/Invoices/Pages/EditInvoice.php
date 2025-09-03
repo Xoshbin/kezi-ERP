@@ -3,13 +3,10 @@
 namespace App\Filament\Clusters\Accounting\Resources\Invoices\Pages;
 
 use App\Actions\Accounting\BuildInvoicePostingPreviewAction;
-use Barryvdh\DomPDF\Facade\Pdf;
-use Filament\Facades\Filament;
-use App\Services\PaymentService;
 use App\Actions\Payments\CreatePaymentAction;
 use App\Actions\Sales\UpdateInvoiceAction;
-use App\DataTransferObjects\Payments\CreatePaymentDTO;
 use App\DataTransferObjects\Payments\CreatePaymentDocumentLinkDTO;
+use App\DataTransferObjects\Payments\CreatePaymentDTO;
 use App\DataTransferObjects\Sales\UpdateInvoiceDTO;
 use App\DataTransferObjects\Sales\UpdateInvoiceLineDTO;
 use App\Enums\Payments\PaymentPurpose;
@@ -17,15 +14,18 @@ use App\Enums\Payments\PaymentType;
 use App\Enums\Sales\InvoiceStatus;
 use App\Filament\Clusters\Accounting\Resources\Invoices\InvoiceResource;
 use App\Filament\Clusters\Accounting\Resources\Invoices\Widgets\SettlementSummaryWidget;
+use App\Filament\Forms\Components\MoneyInput;
 use App\Models\Invoice;
 use App\Models\Journal;
 use App\Services\InvoiceService;
+use App\Services\PaymentService;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Brick\Money\Money;
 use Exception;
 use Filament\Actions\Action;
 use Filament\Actions\ActionGroup;
 use Filament\Actions\DeleteAction;
-use App\Filament\Forms\Components\MoneyInput;
+use Filament\Facades\Filament;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Select;
@@ -74,6 +74,7 @@ class EditInvoice extends EditRecord
                 ->modalWidth('7xl')
                 ->modalContent(function (Invoice $record) {
                     $preview = app(BuildInvoicePostingPreviewAction::class)->execute($record);
+
                     return view('filament/accounting/invoices/preview-posting', [
                         'preview' => $preview,
                         'invoice' => $record,
@@ -100,10 +101,13 @@ class EditInvoice extends EditRecord
                     }
                     $csv = '';
                     foreach ($rows as $row) {
-                        $csv .= implode(',', array_map(fn($v) => '"' . str_replace('"', '""', (string) $v) . '"', $row)) . "\n";
+                        $csv .= implode(',', array_map(fn ($v) => '"'.str_replace('"', '""', (string) $v).'"', $row))."\n";
                     }
-                    $filename = 'invoice-' . ($record->invoice_number ?: ('DRAFT-' . str_pad($record->id, 5, '0', STR_PAD_LEFT))) . '-preview.csv';
-                    return response()->streamDownload(function () use ($csv) { echo $csv; }, $filename, [
+                    $filename = 'invoice-'.($record->invoice_number ?: ('DRAFT-'.str_pad($record->id, 5, '0', STR_PAD_LEFT))).'-preview.csv';
+
+                    return response()->streamDownload(function () use ($csv) {
+                        echo $csv;
+                    }, $filename, [
                         'Content-Type' => 'text/csv',
                     ]);
                 }),
@@ -119,8 +123,11 @@ class EditInvoice extends EditRecord
                         'preview' => $preview,
                         'invoice' => $record,
                     ]);
-                    $filename = 'invoice-' . ($record->invoice_number ?: ('DRAFT-' . str_pad($record->id, 5, '0', STR_PAD_LEFT))) . '-preview.pdf';
-                    return response()->streamDownload(function () use ($pdf) { echo $pdf->output(); }, $filename, [
+                    $filename = 'invoice-'.($record->invoice_number ?: ('DRAFT-'.str_pad($record->id, 5, '0', STR_PAD_LEFT))).'-preview.pdf';
+
+                    return response()->streamDownload(function () use ($pdf) {
+                        echo $pdf->output();
+                    }, $filename, [
                         'Content-Type' => 'application/pdf',
                     ]);
                 }),
@@ -167,13 +174,13 @@ class EditInvoice extends EditRecord
                     MoneyInput::make('amount')
                         ->label(__('payment.form.amount'))
                         ->currencyField('currency_id')
-                        ->default(fn(Invoice $record) => $record->getRemainingAmount())
+                        ->default(fn (Invoice $record) => $record->getRemainingAmount())
                         ->required(),
                     TextInput::make('reference')
                         ->label(__('payment.form.reference'))
                         ->placeholder(__('Optional reference')),
                     Hidden::make('currency_id')
-                        ->default(fn(Invoice $record) => $record->currency_id),
+                        ->default(fn (Invoice $record) => $record->currency_id),
                 ])
                 ->action(function (Invoice $record, array $data) {
                     try {
@@ -217,9 +224,8 @@ class EditInvoice extends EditRecord
                             ->send();
                     }
                 })
-                ->visible(fn(Invoice $record) =>
-                    $record->status === InvoiceStatus::Posted &&
-                    !$record->getRemainingAmount()->isZero()
+                ->visible(fn (Invoice $record) => $record->status === InvoiceStatus::Posted &&
+                    ! $record->getRemainingAmount()->isZero()
                 ),
 
             // Actions\Action::make('resetToDraft')
@@ -262,6 +268,7 @@ class EditInvoice extends EditRecord
             ];
         })->toArray();
         $data['invoiceLines'] = $linesData;
+
         return $data;
     }
 

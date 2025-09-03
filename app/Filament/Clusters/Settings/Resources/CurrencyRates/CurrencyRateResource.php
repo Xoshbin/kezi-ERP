@@ -9,7 +9,6 @@ use App\Filament\Clusters\Settings\Resources\CurrencyRates\Schemas\CurrencyRateF
 use App\Filament\Clusters\Settings\Resources\CurrencyRates\Tables\CurrencyRatesTable;
 use App\Filament\Clusters\Settings\SettingsCluster;
 use App\Models\CurrencyRate;
-use BackedEnum;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
@@ -22,7 +21,7 @@ class CurrencyRateResource extends Resource
 
     protected static ?string $model = CurrencyRate::class;
 
-    protected static string | \BackedEnum | null $navigationIcon = Heroicon::OutlinedCurrencyDollar;
+    protected static string|\BackedEnum|null $navigationIcon = Heroicon::OutlinedCurrencyDollar;
 
     protected static ?string $cluster = SettingsCluster::class;
 

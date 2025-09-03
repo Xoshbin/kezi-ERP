@@ -2,8 +2,8 @@
 
 namespace App\Filament\Clusters\Accounting\Resources\Partners\Pages;
 
-use Filament\Facades\Filament;
 use App\Filament\Clusters\Accounting\Resources\Partners\PartnerResource;
+use Filament\Facades\Filament;
 use Filament\Resources\Pages\CreateRecord;
 use Illuminate\Database\Eloquent\Model;
 

@@ -2,9 +2,9 @@
 
 namespace App\Services;
 
+use App\Enums\Settings\NumberingType;
 use App\Models\Company;
 use App\Models\Sequence;
-use App\Enums\Settings\NumberingType;
 use Carbon\Carbon;
 
 /**
@@ -19,9 +19,7 @@ class SequenceService
     /**
      * Generate the next invoice number for a company.
      *
-     * @param Company $company
-     * @param Carbon|null $date The invoice date for date-based numbering
-     * @return string
+     * @param  Carbon|null  $date  The invoice date for date-based numbering
      */
     public function getNextInvoiceNumber(Company $company, ?Carbon $date = null): string
     {
@@ -57,9 +55,7 @@ class SequenceService
     /**
      * Generate the next vendor bill number for a company.
      *
-     * @param Company $company
-     * @param Carbon|null $date The bill date for date-based numbering
-     * @return string
+     * @param  Carbon|null  $date  The bill date for date-based numbering
      */
     public function getNextVendorBillNumber(Company $company, ?Carbon $date = null): string
     {
@@ -94,9 +90,6 @@ class SequenceService
 
     /**
      * Generate the next payment number for a company.
-     *
-     * @param Company $company
-     * @return string
      */
     public function getNextPaymentNumber(Company $company): string
     {
@@ -112,9 +105,6 @@ class SequenceService
 
     /**
      * Generate the next credit note number for a company.
-     *
-     * @param Company $company
-     * @return string
      */
     public function getNextCreditNoteNumber(Company $company): string
     {
@@ -130,9 +120,6 @@ class SequenceService
 
     /**
      * Generate the next journal entry number for a company.
-     *
-     * @param Company $company
-     * @return string
      */
     public function getNextJournalEntryNumber(Company $company): string
     {
@@ -148,12 +135,6 @@ class SequenceService
 
     /**
      * Generate the next number for any document type.
-     *
-     * @param Company $company
-     * @param string $documentType
-     * @param string $prefix
-     * @param int $padding
-     * @return string
      */
     public function getNextNumber(
         Company $company,
@@ -173,10 +154,6 @@ class SequenceService
 
     /**
      * Get the current number for a document type without incrementing.
-     *
-     * @param Company $company
-     * @param string $documentType
-     * @return int
      */
     public function getCurrentNumber(Company $company, string $documentType): int
     {
@@ -190,11 +167,6 @@ class SequenceService
     /**
      * Reset a sequence to a specific number (use with caution).
      * This should only be used during data migration or setup.
-     *
-     * @param Company $company
-     * @param string $documentType
-     * @param int $number
-     * @return void
      */
     public function resetSequence(Company $company, string $documentType, int $number): void
     {

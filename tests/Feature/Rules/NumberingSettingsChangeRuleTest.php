@@ -1,11 +1,10 @@
 <?php
 
-use App\Rules\NumberingSettingsChangeRule;
-use App\Models\Company;
+use App\Enums\Purchases\VendorBillStatus;
+use App\Enums\Sales\InvoiceStatus;
 use App\Models\Invoice;
 use App\Models\VendorBill;
-use App\Enums\Sales\InvoiceStatus;
-use App\Enums\Purchases\VendorBillStatus;
+use App\Rules\NumberingSettingsChangeRule;
 use Tests\Traits\WithConfiguredCompany;
 
 describe('NumberingSettingsChangeRule', function () {

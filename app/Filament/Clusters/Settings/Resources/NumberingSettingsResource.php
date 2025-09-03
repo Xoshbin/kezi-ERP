@@ -2,34 +2,34 @@
 
 namespace App\Filament\Clusters\Settings\Resources;
 
-use Filament\Facades\Filament;
-use App\Models\Company;
 use App\Enums\Settings\NumberingType;
-use App\Rules\NumberingSettingsChangeRule;
-use App\Filament\Clusters\Settings\SettingsCluster;
-use App\Filament\Clusters\Settings\Resources\NumberingSettingsResource\Pages\ListNumberingSettings;
 use App\Filament\Clusters\Settings\Resources\NumberingSettingsResource\Pages\EditNumberingSettings;
-use Filament\Resources\Resource;
-use Filament\Schemas\Schema;
-use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Model;
-use Filament\Schemas\Components\Section;
+use App\Filament\Clusters\Settings\Resources\NumberingSettingsResource\Pages\ListNumberingSettings;
+use App\Filament\Clusters\Settings\SettingsCluster;
+use App\Models\Company;
+use App\Rules\NumberingSettingsChangeRule;
+use Filament\Actions\EditAction;
+use Filament\Facades\Filament;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\ViewField;
-use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Columns\IconColumn;
-use Filament\Actions\EditAction;
 use Filament\Notifications\Notification;
+use Filament\Resources\Resource;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Schema;
+use Filament\Tables\Columns\IconColumn;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 
 class NumberingSettingsResource extends Resource
 {
-    public static null|string $tenantOwnershipRelationshipName = 'users';
+    public static ?string $tenantOwnershipRelationshipName = 'users';
 
     protected static ?string $model = Company::class;
 
-    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-hashtag';
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-hashtag';
 
     protected static ?int $navigationSort = 3;
 
@@ -60,7 +60,7 @@ class NumberingSettingsResource extends Resource
                             'required',
                             function () {
                                 return new NumberingSettingsChangeRule(Filament::getTenant());
-                            }
+                            },
                         ])
                         ->live()
                         ->afterStateUpdated(function ($state, callable $get, callable $set) {
@@ -83,7 +83,7 @@ class NumberingSettingsResource extends Resource
                             'max:10',
                             function () {
                                 return new NumberingSettingsChangeRule(Filament::getTenant());
-                            }
+                            },
                         ])
                         ->live()
                         ->afterStateUpdated(function ($state, callable $get, callable $set) {
@@ -110,7 +110,7 @@ class NumberingSettingsResource extends Resource
                             'max:10',
                             function () {
                                 return new NumberingSettingsChangeRule(Filament::getTenant());
-                            }
+                            },
                         ])
                         ->columnSpan(1),
 
@@ -120,6 +120,7 @@ class NumberingSettingsResource extends Resource
                         ->viewData(function (callable $get) {
                             $type = $get('numbering_settings.invoice.type') ?? NumberingType::SLASH_YEAR_MONTH->value;
                             $prefix = $get('numbering_settings.invoice.prefix') ?? 'INV';
+
                             return ['example' => NumberingType::from($type)->getExample($prefix)];
                         })
                         ->columnSpan(2),
@@ -139,7 +140,7 @@ class NumberingSettingsResource extends Resource
                             'required',
                             function () {
                                 return new NumberingSettingsChangeRule(Filament::getTenant());
-                            }
+                            },
                         ])
                         ->live()
                         ->afterStateUpdated(function ($state, callable $get, callable $set) {
@@ -162,7 +163,7 @@ class NumberingSettingsResource extends Resource
                             'max:10',
                             function () {
                                 return new NumberingSettingsChangeRule(Filament::getTenant());
-                            }
+                            },
                         ])
                         ->live()
                         ->afterStateUpdated(function ($state, callable $get, callable $set) {
@@ -189,7 +190,7 @@ class NumberingSettingsResource extends Resource
                             'max:10',
                             function () {
                                 return new NumberingSettingsChangeRule(Filament::getTenant());
-                            }
+                            },
                         ])
                         ->columnSpan(1),
 
@@ -199,6 +200,7 @@ class NumberingSettingsResource extends Resource
                         ->viewData(function (callable $get) {
                             $type = $get('numbering_settings.vendor_bill.type') ?? NumberingType::SLASH_YEAR_MONTH->value;
                             $prefix = $get('numbering_settings.vendor_bill.prefix') ?? 'BILL';
+
                             return ['example' => NumberingType::from($type)->getExample($prefix)];
                         })
                         ->columnSpan(2),
@@ -223,6 +225,7 @@ class NumberingSettingsResource extends Resource
                     ->getStateUsing(function (Company $record): string {
                         $config = $record->getInvoiceNumberingConfig();
                         $type = NumberingType::from($config['type']);
+
                         return $type->getExample($config['prefix']);
                     })
                     ->badge()
@@ -234,6 +237,7 @@ class NumberingSettingsResource extends Resource
                     ->getStateUsing(function (Company $record): string {
                         $config = $record->getVendorBillNumberingConfig();
                         $type = NumberingType::from($config['type']);
+
                         return $type->getExample($config['prefix']);
                     })
                     ->badge()
@@ -261,11 +265,11 @@ class NumberingSettingsResource extends Resource
             ->recordActions([
                 EditAction::make()
                     ->before(function (Company $record) {
-                        if (!$record->canChangeNumberingSettings()) {
+                        if (! $record->canChangeNumberingSettings()) {
                             $errors = $record->getNumberingChangeValidationErrors();
                             Notification::make()
                                 ->title(__('numbering.settings.cannot_change_title'))
-                                ->body(__('numbering.settings.cannot_change_message') . ' (' . implode(', ', $errors) . ')')
+                                ->body(__('numbering.settings.cannot_change_message').' ('.implode(', ', $errors).')')
                                 ->danger()
                                 ->send();
 
@@ -282,6 +286,7 @@ class NumberingSettingsResource extends Resource
     {
         // Only show the current tenant company
         $tenant = Filament::getTenant();
+
         return parent::getEloquentQuery()->where('id', $tenant?->id);
     }
 

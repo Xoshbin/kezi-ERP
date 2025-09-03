@@ -2,49 +2,42 @@
 
 namespace App\Filament\Clusters\Inventory\Resources\Products;
 
-use Filament\Facades\Filament;
-use Filament\Schemas\Schema;
-use Filament\Schemas\Components\Section;
-use Filament\Schemas\Components\Grid;
-use Filament\Forms\Components\Select;
-use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\Textarea;
+use App\Enums\Accounting\AccountType;
+use App\Enums\Inventory\ValuationMethod;
+use App\Enums\Products\ProductType;
+use App\Filament\Clusters\Inventory\InventoryCluster;
+use App\Filament\Clusters\Inventory\Resources\Products\Pages\CreateProduct;
+use App\Filament\Clusters\Inventory\Resources\Products\Pages\EditProduct;
+use App\Filament\Clusters\Inventory\Resources\Products\Pages\ListProducts;
+use App\Filament\Clusters\Inventory\Resources\Products\RelationManagers\InventoryCostLayersRelationManager;
+use App\Filament\Clusters\Inventory\Resources\Products\RelationManagers\StockMovesRelationManager;
+use App\Filament\Forms\Components\MoneyInput;
+use App\Filament\Tables\Columns\MoneyColumn;
+use App\Models\Product;
 use Filament\Actions\Action;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\DeleteBulkAction;
+use Filament\Actions\EditAction;
+use Filament\Actions\ForceDeleteBulkAction;
+use Filament\Actions\RestoreBulkAction;
+use Filament\Actions\ViewAction;
+use Filament\Facades\Filament;
 use Filament\Forms\Components\Hidden;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
+use Filament\Resources\Resource;
+use Filament\Schemas\Components\Grid;
+use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Utilities\Get;
-use Filament\Tables\Columns\TextColumn;
+use Filament\Schemas\Schema;
 use Filament\Tables\Columns\IconColumn;
+use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Filters\TrashedFilter;
-use Filament\Actions\ViewAction;
-use Filament\Actions\EditAction;
-use Filament\Actions\DeleteAction;
-use Filament\Actions\BulkActionGroup;
-use Filament\Actions\DeleteBulkAction;
-use Filament\Actions\RestoreBulkAction;
-use Filament\Actions\ForceDeleteBulkAction;
-use App\Filament\Clusters\Inventory\Resources\Products\RelationManagers\StockMovesRelationManager;
-use App\Filament\Clusters\Inventory\Resources\Products\RelationManagers\InventoryCostLayersRelationManager;
-use App\Filament\Clusters\Inventory\Resources\Products\Pages\ListProducts;
-use App\Filament\Clusters\Inventory\Resources\Products\Pages\CreateProduct;
-use App\Filament\Clusters\Inventory\Resources\Products\Pages\EditProduct;
-use App\Filament\Forms\Components\MoneyInput;
-use App\Filament\Clusters\Inventory\Resources\ProductResource\Pages;
-use App\Filament\Clusters\Inventory\Resources\ProductResource\RelationManagers;
-use App\Filament\Tables\Columns\MoneyColumn;
-use App\Models\Company;
-use App\Models\Product;
-use App\Models\Currency;
-use App\Models\Account;
-use App\Enums\Products\ProductType;
-use App\Enums\Inventory\ValuationMethod;
-use App\Enums\Accounting\AccountType;
-use App\Filament\Clusters\Inventory\InventoryCluster;
-use Filament\Forms;
-use Filament\Resources\Resource;
-use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
@@ -55,7 +48,7 @@ class ProductResource extends Resource
 
     protected static ?string $cluster = InventoryCluster::class;
 
-    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-squares-2x2';
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-squares-2x2';
 
     protected static ?int $navigationSort = 1;
 
@@ -114,8 +107,8 @@ class ProductResource extends Resource
                 ->schema([
                     Hidden::make('currency_id'),
                     MoneyInput::make('unit_price')
+                        ->nullable()
                         ->label(__('product.unit_price'))
-                        ->required()
                         ->currencyField('currency_id'),
                 ]),
 
@@ -127,7 +120,7 @@ class ProductResource extends Resource
                         Select::make('income_account_id')
                             ->relationship('incomeAccount', 'name')
                             ->label(__('product.income_account'))
-                            ->required()
+                            ->nullable()
                             ->searchable()
                             ->preload()
                             ->createOptionForm([
@@ -161,7 +154,7 @@ class ProductResource extends Resource
                         Select::make('expense_account_id')
                             ->relationship('expenseAccount', 'name')
                             ->label(__('product.expense_account'))
-                            ->required()
+                            ->nullable()
                             ->searchable()
                             ->preload()
                             ->createOptionForm([

@@ -66,6 +66,4 @@ class StockMoveValuation extends Model
     {
         return $this->morphTo();
     }
-
-
 }

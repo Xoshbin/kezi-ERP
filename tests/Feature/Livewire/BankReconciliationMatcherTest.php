@@ -1,21 +1,21 @@
 <?php
 
-use App\Models\User;
-use App\Models\Company;
-use App\Models\Currency;
-use App\Models\CurrencyRate;
-use App\Models\BankStatement;
-use App\Models\BankStatementLine;
-use App\Models\Payment;
-use App\Models\Account;
-use App\Models\Journal;
-use App\Models\Partner;
+use App\Enums\Payments\PaymentStatus;
+use App\Enums\Payments\PaymentType;
 use App\Livewire\Accounting\BankReconciliationMatcher;
 use App\Livewire\Accounting\BankTransactionsTable;
 use App\Livewire\Accounting\SystemPaymentsTable;
+use App\Models\Account;
+use App\Models\BankStatement;
+use App\Models\BankStatementLine;
+use App\Models\Company;
+use App\Models\Currency;
+use App\Models\CurrencyRate;
+use App\Models\Journal;
+use App\Models\Partner;
+use App\Models\Payment;
+use App\Models\User;
 use Brick\Money\Money;
-use App\Enums\Payments\PaymentStatus;
-use App\Enums\Payments\PaymentType;
 use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Livewire\Livewire;

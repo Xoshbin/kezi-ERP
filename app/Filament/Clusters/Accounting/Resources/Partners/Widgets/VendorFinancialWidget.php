@@ -14,7 +14,7 @@ class VendorFinancialWidget extends BaseWidget
 
     protected function getStats(): array
     {
-        if (!$this->record instanceof Partner) {
+        if (! $this->record instanceof Partner) {
             return [];
         }
 
@@ -22,7 +22,7 @@ class VendorFinancialWidget extends BaseWidget
         $partner = $this->record;
 
         // Only show for vendors and both types
-        if (!in_array($partner->type, [PartnerType::Vendor, PartnerType::Both])) {
+        if (! in_array($partner->type, [PartnerType::Vendor, PartnerType::Both])) {
             return [];
         }
 
@@ -40,7 +40,7 @@ class VendorFinancialWidget extends BaseWidget
             ->descriptionIcon('heroicon-m-credit-card')
             ->color($outstandingBalance->isZero() ? 'gray' : 'danger')
             ->extraAttributes([
-                'class' => 'text-sm'
+                'class' => 'text-sm',
             ]);
 
         // Due Within 7 Days - like in image
@@ -49,7 +49,7 @@ class VendorFinancialWidget extends BaseWidget
             ->descriptionIcon('heroicon-m-exclamation-triangle')
             ->color($dueIn7Days->isZero() ? 'gray' : 'warning')
             ->extraAttributes([
-                'class' => 'text-sm'
+                'class' => 'text-sm',
             ]);
 
         // Average Payment Time - like in image
@@ -72,7 +72,7 @@ class VendorFinancialWidget extends BaseWidget
             ->descriptionIcon('heroicon-m-arrow-trending-down')
             ->color($monthlyPaid->isZero() ? 'gray' : 'info')
             ->extraAttributes([
-                'class' => 'text-sm'
+                'class' => 'text-sm',
             ]);
 
         return $stats;

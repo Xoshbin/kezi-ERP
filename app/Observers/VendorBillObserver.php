@@ -2,8 +2,6 @@
 
 namespace App\Observers;
 
-use RuntimeException;
-use Illuminate\Support\Facades\DB;
 use App\Enums\Inventory\StockMoveStatus;
 use App\Enums\Inventory\StockMoveType;
 use App\Enums\Products\ProductType;
@@ -12,6 +10,8 @@ use App\Models\StockMove;
 use App\Models\VendorBill;
 use Brick\Math\RoundingMode;
 use Brick\Money\Money;
+use Illuminate\Support\Facades\DB;
+use RuntimeException;
 
 class VendorBillObserver
 {
@@ -34,14 +34,14 @@ class VendorBillObserver
 
     public function processStorableProductLine(VendorBill $vendorBill, $line): void
     {
-        if (!$line->product) {
+        if (! $line->product) {
             return;
         }
 
         $product = $line->product;
         $company = $vendorBill->company->fresh();
 
-        if (!$company->vendorLocation || !$company->defaultStockLocation) {
+        if (! $company->vendorLocation || ! $company->defaultStockLocation) {
             throw new RuntimeException("Default Vendor or Stock Location is not configured for Company ID: {$company->id}.");
         }
 

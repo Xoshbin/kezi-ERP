@@ -2,12 +2,11 @@
 
 namespace App\Observers;
 
-use Brick\Money\Money;
 use App\Models\AdjustmentDocumentLine;
+use Brick\Money\Money;
 
 class AdjustmentDocumentLineObserver
 {
-
     /**
      * Handle the AdjustmentDocumentLine "saved" event.
      * This is triggered on both creation and update.
@@ -48,7 +47,7 @@ class AdjustmentDocumentLineObserver
      */
     protected function updateCompanyCurrencyTotals($adjustmentDocument): void
     {
-        if (!$adjustmentDocument->exchange_rate_at_creation || $adjustmentDocument->currency_id === $adjustmentDocument->company->currency_id) {
+        if (! $adjustmentDocument->exchange_rate_at_creation || $adjustmentDocument->currency_id === $adjustmentDocument->company->currency_id) {
             return; // No conversion needed
         }
 

@@ -2,15 +2,15 @@
 
 namespace App\DataTransferObjects\Payments;
 
-use App\Models\Payment;
 use App\Enums\Payments\PaymentPurpose;
 use App\Enums\Payments\PaymentType;
+use App\Models\Payment;
 use Brick\Money\Money;
 
 class UpdatePaymentDTO
 {
     /**
-     * @param UpdatePaymentDocumentLinkDTO[] $document_links
+     * @param  UpdatePaymentDocumentLinkDTO[]  $document_links
      */
     public function __construct(
         public readonly Payment $payment,

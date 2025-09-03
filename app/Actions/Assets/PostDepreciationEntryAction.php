@@ -10,9 +10,7 @@ use Illuminate\Support\Facades\DB;
 
 class PostDepreciationEntryAction
 {
-    public function __construct(protected CreateJournalEntryForDepreciationAction $createJournalEntry)
-    {
-    }
+    public function __construct(protected CreateJournalEntryForDepreciationAction $createJournalEntry) {}
 
     public function execute(DepreciationEntry $depreciationEntry, User $user): DepreciationEntry
     {

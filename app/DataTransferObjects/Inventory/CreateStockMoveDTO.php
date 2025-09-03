@@ -21,6 +21,5 @@ readonly class CreateStockMoveDTO
         public ?string $reference = null,
         public ?string $source_type = null,
         public ?int $source_id = null,
-    ) {
-    }
+    ) {}
 }

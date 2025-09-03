@@ -1,20 +1,16 @@
 <?php
 
-use App\Models\User;
+use App\Actions\Accounting\CreateJournalEntryForStatementLineAction;
+use App\Actions\Accounting\ReverseJournalEntryAction;
+use App\DataTransferObjects\Accounting\CreateJournalEntryForStatementLineDTO;
+use App\Enums\Accounting\JournalEntryState;
 use App\Models\Account;
-use App\Models\Company;
-use App\Models\Journal;
-use App\Models\JournalEntry;
 use App\Models\BankStatement;
 use App\Models\BankStatementLine;
-use Illuminate\Support\Facades\Gate;
-use Tests\Traits\CreatesApplication;
-use Tests\Traits\WithConfiguredCompany;
-use App\Enums\Accounting\JournalEntryState;
+use App\Models\Journal;
+use App\Models\JournalEntry;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use App\Actions\Accounting\ReverseJournalEntryAction;
-use App\Actions\Accounting\CreateJournalEntryForStatementLineAction;
-use App\DataTransferObjects\Accounting\CreateJournalEntryForStatementLineDTO;
+use Tests\Traits\WithConfiguredCompany;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);
 
@@ -45,11 +41,11 @@ it('creates a correct reversing journal entry with inverted amounts', function (
     $this->assertDatabaseHas('journal_entries', [
         'id' => $reversingJe->id,
         'reversed_entry_id' => $this->originalJe->id,
-        'reference' => 'REV/' . $this->originalJe->reference,
+        'reference' => 'REV/'.$this->originalJe->reference,
     ]);
 
-    $originalDebit = $this->originalJe->lines->sum(fn($line) => $line->debit->getMinorAmount()->toInt());
-    $originalCredit = $this->originalJe->lines->sum(fn($line) => $line->credit->getMinorAmount()->toInt());
+    $originalDebit = $this->originalJe->lines->sum(fn ($line) => $line->debit->getMinorAmount()->toInt());
+    $originalCredit = $this->originalJe->lines->sum(fn ($line) => $line->credit->getMinorAmount()->toInt());
 
     expect($reversingJe->total_credit->getMinorAmount()->toInt())->toBe($originalDebit);
     expect($reversingJe->total_debit->getMinorAmount()->toInt())->toBe($originalCredit);

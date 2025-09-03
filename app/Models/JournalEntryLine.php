@@ -2,27 +2,22 @@
 
 namespace App\Models;
 
+use App\Casts\BaseCurrencyMoneyCast;
+use App\Casts\OriginalCurrencyMoneyCast;
 use App\Observers\JournalEntryLineObserver;
 use Brick\Money\Money;
-use Illuminate\Support\Carbon;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Builder;
-use App\Casts\BaseCurrencyMoneyCast;
-
-use App\Casts\OriginalCurrencyMoneyCast;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-use RuntimeException; // Utilized for explicit enforcement of immutability and data integrity.
-use Illuminate\Database\Eloquent\Attributes\ObservedBy;
+use Illuminate\Support\Carbon; // Utilized for explicit enforcement of immutability and data integrity.
+use RuntimeException;
+
 /**
  * Class JournalEntryLine
  *
- * @package App\Models
- *
- * This Eloquent model precisely represents a single debit or credit line within a comprehensive JournalEntry.
- * Each instance records the specific financial impact of a transaction on a designated account,
- * adhering to the fundamental tenets of double-entry bookkeeping.
  * @property int $id
  * @property int $journal_entry_id
  * @property int $account_id
@@ -40,6 +35,7 @@ use Illuminate\Database\Eloquent\Attributes\ObservedBy;
  * @property-read AnalyticAccount|null $analyticAccount
  * @property-read JournalEntry $journalEntry
  * @property-read Partner|null $partner
+ *
  * @method static Builder<static>|JournalEntryLine newModelQuery()
  * @method static Builder<static>|JournalEntryLine newQuery()
  * @method static Builder<static>|JournalEntryLine query()
@@ -56,6 +52,7 @@ use Illuminate\Database\Eloquent\Attributes\ObservedBy;
  * @method static Builder<static>|JournalEntryLine whereOriginalCurrencyAmount($value)
  * @method static Builder<static>|JournalEntryLine wherePartnerId($value)
  * @method static Builder<static>|JournalEntryLine whereUpdatedAt($value)
+ *
  * @mixin \Eloquent
  */
 #[ObservedBy([JournalEntryLineObserver::class])]
@@ -93,7 +90,7 @@ class JournalEntryLine extends Model
         'analytic_account_id',
         'original_currency_amount',
         'original_currency_id',
-        'exchange_rate_at_transaction'
+        'exchange_rate_at_transaction',
     ];
 
     /**
@@ -108,8 +105,6 @@ class JournalEntryLine extends Model
         // These fields are ALWAYS in the company's base currency
         'debit' => BaseCurrencyMoneyCast::class,
         'credit' => BaseCurrencyMoneyCast::class,
-
-
 
         // This field is in the foreign currency
         'original_currency_amount' => OriginalCurrencyMoneyCast::class,
@@ -136,8 +131,6 @@ class JournalEntryLine extends Model
      * enforcement point for core accounting principles, particularly the **immutability of posted financial records** [1-4].
      * By preventing direct modification or deletion of lines belonging to posted journal entries,
      * we reinforce data integrity and ensure an auditable financial history [1-4].
-     *
-     * @return void
      */
     protected static function booted(): void
     {
@@ -169,9 +162,9 @@ class JournalEntryLine extends Model
                         // Throw a RuntimeException to immediately halt the operation,
                         // emphasizing that direct alteration of posted financial records is prohibited [1-3].
                         throw new RuntimeException(
-                            "Attempted to modify immutable journal entry line field: '{$field}'. " .
-                                "The parent journal entry is already posted. Corrections to posted financial records " .
-                                "must be made exclusively via new, offsetting contra-entries at the parent entry level [1-4]."
+                            "Attempted to modify immutable journal entry line field: '{$field}'. ".
+                                'The parent journal entry is already posted. Corrections to posted financial records '.
+                                'must be made exclusively via new, offsetting contra-entries at the parent entry level [1-4].'
                         );
                     }
                 }
@@ -185,8 +178,8 @@ class JournalEntryLine extends Model
                 // Similar to updates, deletions are strictly disallowed for posted records,
                 // enforcing that financial history remains complete and auditable [1-3].
                 throw new RuntimeException(
-                    "Cannot delete a journal entry line because its parent journal entry is already posted. " .
-                        "Financial records are immutable. Corrections must be made via new, offsetting contra-entries [1-4]."
+                    'Cannot delete a journal entry line because its parent journal entry is already posted. '.
+                        'Financial records are immutable. Corrections must be made via new, offsetting contra-entries [1-4].'
                 );
             }
         });
@@ -204,8 +197,6 @@ class JournalEntryLine extends Model
 
     /**
      * Get the company that this rate belongs to.
-     *
-     * @return BelongsTo
      */
     public function company(): BelongsTo
     {
@@ -286,8 +277,6 @@ class JournalEntryLine extends Model
      *
      * A journal entry line can be part of multiple reconciliations over time
      * (e.g., if a reconciliation is reversed and a new one is created).
-     *
-     * @return BelongsToMany
      */
     public function reconciliations(): BelongsToMany
     {

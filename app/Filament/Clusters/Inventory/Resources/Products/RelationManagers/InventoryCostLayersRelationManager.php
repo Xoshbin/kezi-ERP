@@ -2,19 +2,17 @@
 
 namespace App\Filament\Clusters\Inventory\Resources\Products\RelationManagers;
 
-use Illuminate\Database\Eloquent\Model;
-use Filament\Schemas\Schema;
-use Filament\Forms\Components\Placeholder;
-use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Filters\Filter;
-use Filament\Actions\ViewAction;
 use App\Filament\Tables\Columns\MoneyColumn;
 use App\Models\InventoryCostLayer;
-use Filament\Forms;
+use Filament\Actions\ViewAction;
+use Filament\Forms\Components\Placeholder;
 use Filament\Resources\RelationManagers\RelationManager;
-use Filament\Tables;
+use Filament\Schemas\Schema;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\Filter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 
 class InventoryCostLayersRelationManager extends RelationManager
 {
@@ -61,6 +59,7 @@ class InventoryCostLayersRelationManager extends RelationManager
                     ->label(__('inventory_cost_layer.total_cost'))
                     ->formatStateUsing(function (InventoryCostLayer $record): string {
                         $totalCost = $record->cost_per_unit->multipliedBy($record->quantity);
+
                         return $totalCost->formatTo('en_US');
                     })
                     ->sortable(),
@@ -68,6 +67,7 @@ class InventoryCostLayersRelationManager extends RelationManager
                     ->label(__('inventory_cost_layer.remaining_value'))
                     ->formatStateUsing(function (InventoryCostLayer $record): string {
                         $remainingValue = $record->cost_per_unit->multipliedBy($record->remaining_quantity);
+
                         return $remainingValue->formatTo('en_US');
                     })
                     ->sortable(),

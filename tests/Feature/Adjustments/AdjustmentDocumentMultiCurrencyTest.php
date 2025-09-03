@@ -2,33 +2,38 @@
 
 namespace Tests\Feature\Adjustments;
 
-use Tests\TestCase;
-use App\Models\Company;
-use App\Models\Currency;
-use App\Models\CurrencyRate;
-use App\Models\AdjustmentDocument;
-use App\Models\AdjustmentDocumentLine;
-use App\Models\Product;
-use App\Models\Tax;
-use App\Models\Account;
 use App\Actions\Adjustments\CreateAdjustmentDocumentAction;
 use App\DataTransferObjects\Adjustments\CreateAdjustmentDocumentDTO;
 use App\DataTransferObjects\Adjustments\CreateAdjustmentDocumentLineDTO;
 use App\Enums\Adjustments\AdjustmentDocumentType;
-use Tests\Traits\WithConfiguredCompany;
+use App\Models\Account;
+use App\Models\AdjustmentDocument;
+use App\Models\AdjustmentDocumentLine;
+use App\Models\Company;
+use App\Models\Currency;
+use App\Models\CurrencyRate;
+use App\Models\Product;
+use App\Models\Tax;
 use Brick\Money\Money;
 use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\TestCase;
+use Tests\Traits\WithConfiguredCompany;
 
 class AdjustmentDocumentMultiCurrencyTest extends TestCase
 {
     use RefreshDatabase, WithConfiguredCompany;
 
     protected Company $company;
+
     protected Currency $iqd;
+
     protected Currency $usd;
+
     protected Product $product;
+
     protected Tax $tax;
+
     protected Account $account;
 
     protected function setUp(): void
@@ -86,7 +91,7 @@ class AdjustmentDocumentMultiCurrencyTest extends TestCase
                     unit_price: Money::of(100, 'IQD'),
                     tax_id: $this->tax->id,
                     account_id: $this->account->id
-                )
+                ),
             ]
         );
 
@@ -138,7 +143,7 @@ class AdjustmentDocumentMultiCurrencyTest extends TestCase
                     unit_price: Money::of(10, 'USD'), // $10 USD
                     tax_id: $this->tax->id,
                     account_id: $this->account->id
-                )
+                ),
             ]
         );
 
@@ -193,7 +198,7 @@ class AdjustmentDocumentMultiCurrencyTest extends TestCase
                     unit_price: Money::of(10, 'USD'),
                     tax_id: $this->tax->id,
                     account_id: $this->account->id
-                )
+                ),
             ]
         );
 
@@ -202,9 +207,9 @@ class AdjustmentDocumentMultiCurrencyTest extends TestCase
         // Should fallback to rate 1.0 and use original amounts
         $this->assertEquals(1.0, $adjustmentDocument->exchange_rate_at_creation);
         $this->assertEquals($adjustmentDocument->subtotal->getMinorAmount()->toInt(),
-                          $adjustmentDocument->subtotal_company_currency->getMinorAmount()->toInt());
+            $adjustmentDocument->subtotal_company_currency->getMinorAmount()->toInt());
         $this->assertEquals($adjustmentDocument->total_amount->getMinorAmount()->toInt(),
-                          $adjustmentDocument->total_amount_company_currency->getMinorAmount()->toInt());
+            $adjustmentDocument->total_amount_company_currency->getMinorAmount()->toInt());
     }
 
     /** @test */
@@ -265,7 +270,7 @@ class AdjustmentDocumentMultiCurrencyTest extends TestCase
                     unit_price: Money::of(100, 'USD'), // $100 USD
                     tax_id: $this->tax->id,
                     account_id: $this->account->id
-                )
+                ),
             ]
         );
 
@@ -303,6 +308,6 @@ class AdjustmentDocumentMultiCurrencyTest extends TestCase
 
         // Verify that the journal entry total matches the adjustment document total converted to base currency
         $this->assertEquals($adjustmentDocument->total_amount_company_currency->getMinorAmount()->toInt(),
-                          $totalDebit->getMinorAmount()->toInt());
+            $totalDebit->getMinorAmount()->toInt());
     }
 }

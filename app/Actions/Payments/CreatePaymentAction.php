@@ -3,15 +3,15 @@
 namespace App\Actions\Payments;
 
 use App\DataTransferObjects\Payments\CreatePaymentDTO;
+use App\Enums\Payments\PaymentPurpose;
+use App\Enums\Payments\PaymentStatus;
+use App\Enums\Payments\PaymentType;
 use App\Models\Company;
 use App\Models\Currency;
 use App\Models\Invoice;
 use App\Models\Payment;
 use App\Models\User;
 use App\Models\VendorBill;
-use App\Enums\Payments\PaymentType;
-use App\Enums\Payments\PaymentStatus;
-use App\Enums\Payments\PaymentPurpose;
 use App\Services\Accounting\LockDateService;
 use App\Services\Payments\Strategies\SettlementStrategy;
 use Brick\Money\Money;
@@ -21,9 +21,7 @@ use InvalidArgumentException;
 
 class CreatePaymentAction
 {
-    public function __construct(private readonly LockDateService $lockDateService)
-    {
-    }
+    public function __construct(private readonly LockDateService $lockDateService) {}
 
     public function execute(CreatePaymentDTO $dto, User $user): Payment
     {
@@ -32,7 +30,7 @@ class CreatePaymentAction
             throw new InvalidArgumentException('Settlement payments must be linked to at least one document.');
         }
 
-        if ($dto->payment_purpose !== PaymentPurpose::Settlement && !$dto->counterpart_account_id) {
+        if ($dto->payment_purpose !== PaymentPurpose::Settlement && ! $dto->counterpart_account_id) {
             throw new InvalidArgumentException('Non-settlement payments must have a counterpart account.');
         }
 
@@ -53,7 +51,7 @@ class CreatePaymentAction
                     $totalAmount = $totalAmount->plus($link->amount_applied);
                     $documentTypes[$link->document_type] = true;
 
-                    if (!$partnerId) {
+                    if (! $partnerId) {
                         if ($link->document_type === 'invoice') {
                             $partnerId = Invoice::findOrFail($link->document_id)->customer_id;
                         } elseif ($link->document_type === 'vendor_bill') {

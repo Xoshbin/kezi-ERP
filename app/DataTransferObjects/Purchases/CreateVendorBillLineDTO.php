@@ -7,7 +7,7 @@ use Brick\Money\Money;
 class CreateVendorBillLineDTO
 {
     /**
-     * @param string|Money $unit_price This can be a string or a Money object.
+     * @param  string|Money  $unit_price  This can be a string or a Money object.
      */
     public function __construct(
         // CORRECTED: product_id must be nullable to allow for service/description-only lines.

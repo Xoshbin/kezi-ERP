@@ -2,33 +2,40 @@
 
 namespace Tests\Feature;
 
-use Tests\TestCase;
-use App\Models\User;
-use App\Models\Company;
-use App\Models\Invoice;
-use App\Models\Partner;
-use App\Models\Currency;
-use App\Models\Account;
-use App\Models\Journal;
-use App\Models\Tax;
-use App\Services\InvoiceService;
 use App\Actions\Sales\CreateInvoiceAction;
 use App\DataTransferObjects\Sales\CreateInvoiceDTO;
 use App\DataTransferObjects\Sales\CreateInvoiceLineDTO;
+use App\Models\Account;
+use App\Models\Company;
+use App\Models\Currency;
+use App\Models\Invoice;
+use App\Models\Journal;
+use App\Models\Partner;
+use App\Models\Tax;
+use App\Models\User;
+use App\Services\InvoiceService;
 use Brick\Money\Money;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\TestCase;
 
 class InvoicePostingIntegrationTest extends TestCase
 {
     use RefreshDatabase;
 
     private Company $company;
+
     private Partner $customer;
+
     private Currency $currency;
+
     private User $user;
+
     private Account $incomeAccount;
+
     private Account $receivableAccount;
+
     private Journal $salesJournal;
+
     private Tax $tax;
 
     protected function setUp(): void
@@ -43,22 +50,22 @@ class InvoicePostingIntegrationTest extends TestCase
 
         $this->incomeAccount = Account::factory()->create([
             'company_id' => $this->company->id,
-            'type' => 'income'
+            'type' => 'income',
         ]);
 
         $this->receivableAccount = Account::factory()->create([
             'company_id' => $this->company->id,
-            'type' => 'receivable'
+            'type' => 'receivable',
         ]);
 
         $this->salesJournal = Journal::factory()->create([
             'company_id' => $this->company->id,
-            'type' => 'sale'
+            'type' => 'sale',
         ]);
 
         $this->tax = Tax::factory()->create([
             'company_id' => $this->company->id,
-            'rate' => 10.0
+            'rate' => 10.0,
         ]);
 
         // Set up company defaults
@@ -73,15 +80,15 @@ class InvoicePostingIntegrationTest extends TestCase
         $invoiceService = app(InvoiceService::class);
 
         // Create and post first invoice
-        $invoice1 = $this->createTestInvoice("First Invoice");
+        $invoice1 = $this->createTestInvoice('First Invoice');
         $invoiceService->confirm($invoice1, $this->user);
 
         // Create and post second invoice
-        $invoice2 = $this->createTestInvoice("Second Invoice");
+        $invoice2 = $this->createTestInvoice('Second Invoice');
         $invoiceService->confirm($invoice2, $this->user);
 
         // Create and post third invoice
-        $invoice3 = $this->createTestInvoice("Third Invoice");
+        $invoice3 = $this->createTestInvoice('Third Invoice');
         $invoiceService->confirm($invoice3, $this->user);
 
         // Refresh to get updated data
@@ -165,7 +172,7 @@ class InvoicePostingIntegrationTest extends TestCase
         $this->assertCount(5, array_unique($journalEntryReferences));
     }
 
-    private function createTestInvoice(string $description = "Test Item"): Invoice
+    private function createTestInvoice(string $description = 'Test Item'): Invoice
     {
         $invoiceDTO = new CreateInvoiceDTO(
             company_id: $this->company->id,
@@ -181,7 +188,7 @@ class InvoicePostingIntegrationTest extends TestCase
                     income_account_id: $this->incomeAccount->id,
                     product_id: null,
                     tax_id: $this->tax->id
-                )
+                ),
             ],
             fiscal_position_id: null
         );

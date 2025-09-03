@@ -2,14 +2,14 @@
 
 namespace App\Filament\Clusters\HumanResources\Resources\Positions\Pages;
 
-use Filament\Facades\Filament;
-use Log;
-use Illuminate\Database\Eloquent\Model;
-use Exception;
 use App\Filament\Clusters\HumanResources\Resources\Positions\PositionResource;
+use Exception;
+use Filament\Facades\Filament;
 use Filament\Resources\Pages\CreateRecord;
-use LaraZeus\SpatieTranslatable\Resources\Pages\CreateRecord\Concerns\Translatable;
+use Illuminate\Database\Eloquent\Model;
 use LaraZeus\SpatieTranslatable\Actions\LocaleSwitcher;
+use LaraZeus\SpatieTranslatable\Resources\Pages\CreateRecord\Concerns\Translatable;
+use Log;
 
 class CreatePosition extends CreateRecord
 {
@@ -41,12 +41,13 @@ class CreatePosition extends CreateRecord
             Log::info('Attempting to create position with data:', $data);
             $record = parent::handleRecordCreation($data);
             Log::info('Successfully created position:', $record->toArray());
+
             return $record;
         } catch (Exception $e) {
             Log::error('Failed to create position:', [
                 'error' => $e->getMessage(),
                 'data' => $data,
-                'trace' => $e->getTraceAsString()
+                'trace' => $e->getTraceAsString(),
             ]);
             throw $e;
         }

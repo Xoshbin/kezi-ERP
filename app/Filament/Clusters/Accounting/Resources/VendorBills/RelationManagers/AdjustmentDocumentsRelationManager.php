@@ -45,13 +45,13 @@ class AdjustmentDocumentsRelationManager extends RelationManager
                             ->relationship('company', 'name')
                             ->label(__('vendor_bill.adjustment_documents_relation_manager.company'))
                             ->required()
-                            ->default(fn() => $this->getOwnerRecord()->company_id),
+                            ->default(fn () => $this->getOwnerRecord()->company_id),
 
                         Select::make('currency_id')
                             ->relationship('currency', 'name')
                             ->label(__('vendor_bill.adjustment_documents_relation_manager.currency'))
                             ->required()
-                            ->default(fn() => $this->getOwnerRecord()->currency_id),
+                            ->default(fn () => $this->getOwnerRecord()->currency_id),
 
                         Select::make('type')
                             ->label(__('vendor_bill.adjustment_documents_relation_manager.type'))
@@ -106,9 +106,9 @@ class AdjustmentDocumentsRelationManager extends RelationManager
 
                 TextColumn::make('type')
                     ->label(__('vendor_bill.adjustment_documents_relation_manager.type'))
-                    ->formatStateUsing(fn(AdjustmentDocumentType $state): string => $state->label())
+                    ->formatStateUsing(fn (AdjustmentDocumentType $state): string => $state->label())
                     ->badge()
-                    ->color(fn(AdjustmentDocumentType $state): string => match($state) {
+                    ->color(fn (AdjustmentDocumentType $state): string => match ($state) {
                         AdjustmentDocumentType::CreditNote => 'success',
                         AdjustmentDocumentType::DebitNote => 'warning',
                         AdjustmentDocumentType::Miscellaneous => 'info',
@@ -129,9 +129,9 @@ class AdjustmentDocumentsRelationManager extends RelationManager
 
                 TextColumn::make('status')
                     ->label(__('vendor_bill.adjustment_documents_relation_manager.status'))
-                    ->formatStateUsing(fn(AdjustmentDocumentStatus $state): string => $state->label())
+                    ->formatStateUsing(fn (AdjustmentDocumentStatus $state): string => $state->label())
                     ->badge()
-                    ->color(fn(AdjustmentDocumentStatus $state): string => match($state) {
+                    ->color(fn (AdjustmentDocumentStatus $state): string => match ($state) {
                         AdjustmentDocumentStatus::Draft => 'gray',
                         AdjustmentDocumentStatus::Posted => 'success',
                         AdjustmentDocumentStatus::Cancelled => 'danger',
@@ -145,6 +145,7 @@ class AdjustmentDocumentsRelationManager extends RelationManager
                         if (strlen($state) <= 50) {
                             return null;
                         }
+
                         return $state;
                     }),
 
@@ -186,20 +187,21 @@ class AdjustmentDocumentsRelationManager extends RelationManager
                     ->label(__('vendor_bill.adjustment_documents_relation_manager.create_adjustment'))
                     ->mutateDataUsing(function (array $data): array {
                         $data['original_vendor_bill_id'] = $this->getOwnerRecord()->id;
+
                         return $data;
                     }),
             ])
             ->recordActions([
                 ViewAction::make(),
                 EditAction::make()
-                    ->visible(fn(AdjustmentDocument $record): bool => $record->status === AdjustmentDocumentStatus::Draft),
+                    ->visible(fn (AdjustmentDocument $record): bool => $record->status === AdjustmentDocumentStatus::Draft),
                 DeleteAction::make()
-                    ->visible(fn(AdjustmentDocument $record): bool => $record->status === AdjustmentDocumentStatus::Draft),
+                    ->visible(fn (AdjustmentDocument $record): bool => $record->status === AdjustmentDocumentStatus::Draft),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
                     DeleteBulkAction::make()
-                        ->visible(fn(): bool => true), // Add custom logic if needed
+                        ->visible(fn (): bool => true), // Add custom logic if needed
                 ]),
             ])
             ->defaultSort('date', 'desc');

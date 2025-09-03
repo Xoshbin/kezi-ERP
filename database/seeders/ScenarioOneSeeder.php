@@ -4,10 +4,10 @@ namespace Database\Seeders;
 
 use App\Models\Invoice;
 use App\Models\VendorBill;
-use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
+use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 
 class ScenarioOneSeeder extends Seeder
 {
@@ -38,8 +38,7 @@ class ScenarioOneSeeder extends Seeder
             'updated_at' => now(),
         ]);
 
-                (new UserSeeder())->run();
-
+        (new UserSeeder)->run();
 
         // Step 1.3: Create User (Soran)
         $user = DB::table('users')->insertGetId([
@@ -113,7 +112,7 @@ class ScenarioOneSeeder extends Seeder
         ]);
 
         // Step 4: Capital Injection (Manual Journal Entry)
-        $jeHash = hash('sha256', 'capital_injection_' . now());
+        $jeHash = hash('sha256', 'capital_injection_'.now());
         $journalEntryId = DB::table('journal_entries')->insertGetId([
             'company_id' => $company,
             'journal_id' => $journalIds['Bank'],
@@ -187,7 +186,7 @@ class ScenarioOneSeeder extends Seeder
             'created_at' => now(),
             'updated_at' => now(),
         ]);
-        $vbJeHash = hash('sha256', 'vendor_bill_' . now());
+        $vbJeHash = hash('sha256', 'vendor_bill_'.now());
         $vendorBillJournalEntryId = DB::table('journal_entries')->insertGetId([
             'company_id' => $company,
             'journal_id' => $journalIds['Purchases'],
@@ -266,7 +265,7 @@ class ScenarioOneSeeder extends Seeder
             'created_at' => now(),
             'updated_at' => now(),
         ]);
-        $invJeHash = hash('sha256', 'invoice_' . now());
+        $invJeHash = hash('sha256', 'invoice_'.now());
         $invoiceJournalEntryId = DB::table('journal_entries')->insertGetId([
             'company_id' => $company,
             'journal_id' => $journalIds['Sales'],
@@ -324,7 +323,7 @@ class ScenarioOneSeeder extends Seeder
             'created_at' => now(),
             'updated_at' => now(),
         ]);
-        $payJeHash = hash('sha256', 'payment_' . now());
+        $payJeHash = hash('sha256', 'payment_'.now());
         $paymentJournalEntryId = DB::table('journal_entries')->insertGetId([
             'company_id' => $company,
             'journal_id' => $journalIds['Bank'],
@@ -390,7 +389,7 @@ class ScenarioOneSeeder extends Seeder
             'created_at' => now(),
             'updated_at' => now(),
         ]);
-        $vendorPayJeHash = hash('sha256', 'vendor_payment_' . now());
+        $vendorPayJeHash = hash('sha256', 'vendor_payment_'.now());
         $vendorPaymentJournalEntryId = DB::table('journal_entries')->insertGetId([
             'company_id' => $company,
             'currency_id' => $iqd,
@@ -469,7 +468,7 @@ class ScenarioOneSeeder extends Seeder
             'created_at' => now(),
             'updated_at' => now(),
         ]);
-        $cnJeHash = hash('sha256', 'credit_note_' . now());
+        $cnJeHash = hash('sha256', 'credit_note_'.now());
         $creditNoteJournalEntryId = DB::table('journal_entries')->insertGetId([
             'company_id' => $company,
             'currency_id' => $iqd,

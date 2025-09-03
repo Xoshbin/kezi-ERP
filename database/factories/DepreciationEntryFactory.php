@@ -2,10 +2,10 @@
 
 namespace Database\Factories;
 
-use App\Models\Asset;
-use Brick\Money\Money;
-use App\Models\DepreciationEntry;
 use App\Enums\Assets\DepreciationEntryStatus;
+use App\Models\Asset;
+use App\Models\DepreciationEntry;
+use Brick\Money\Money;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -33,5 +33,4 @@ class DepreciationEntryFactory extends Factory
             'status' => DepreciationEntryStatus::Posted, // FIX: Align with the status set by the service.
         ];
     }
-
 }

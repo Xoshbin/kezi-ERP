@@ -2,24 +2,25 @@
 
 namespace App\Filament\Clusters\Accounting\Pages\Reports;
 
-use Carbon\Carbon;
+use App\Filament\Clusters\Accounting\AccountingCluster;
 use App\Models\Company;
 use App\Models\Partner;
-use Filament\Pages\Page;
-use Filament\Actions\Action;
-use Filament\Schemas\Schema;
-use Filament\Facades\Filament;
-use App\Support\NumberFormatter;
-use Filament\Forms\Components\Select;
-use Filament\Schemas\Components\Section;
-use Filament\Forms\Components\DatePicker;
-use Illuminate\Contracts\Support\Htmlable;
 use App\Services\Reports\PartnerLedgerService;
-use App\Filament\Clusters\Accounting\AccountingCluster;
+use App\Support\NumberFormatter;
+use Carbon\Carbon;
+use Filament\Actions\Action;
+use Filament\Facades\Filament;
+use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\Select;
+use Filament\Pages\Page;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Schema;
+use Illuminate\Contracts\Support\Htmlable;
 
 class ViewPartnerLedger extends Page
 {
-    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-document-text';
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-document-text';
+
     protected string $view = 'filament.pages.reports.view-partner-ledger';
 
     public static function shouldRegisterNavigation(): bool
@@ -30,8 +31,11 @@ class ViewPartnerLedger extends Page
     protected static ?string $cluster = AccountingCluster::class;
 
     public ?string $startDate = null;
+
     public ?string $endDate = null;
+
     public ?int $partnerId = null;
+
     public ?array $reportData = null;
 
     public static function getNavigationLabel(): string
@@ -67,13 +71,15 @@ class ViewPartnerLedger extends Page
                             ->searchable()
                             ->options(function () {
                                 $user = Filament::auth()->user();
+
                                 return Partner::where('company_id', $user->company_id)
                                     ->with(['receivableAccount', 'payableAccount'])
                                     ->get()
                                     ->mapWithKeys(function ($partner) {
                                         $hasAccounts = $partner->receivable_account_id && $partner->payable_account_id;
                                         $suffix = $hasAccounts ? '' : ' (⚠️ Missing Accounts)';
-                                        return [$partner->id => $partner->name . $suffix];
+
+                                        return [$partner->id => $partner->name.$suffix];
                                     });
                             })
                             ->placeholder(__('reports.select_partner'))
@@ -133,7 +139,7 @@ class ViewPartnerLedger extends Page
             'openingBalanceAmount' => $report->openingBalance->getAmount()->toFloat(),
             'closingBalance' => NumberFormatter::formatMoneyTo($report->closingBalance),
             'closingBalanceAmount' => $report->closingBalance->getAmount()->toFloat(),
-            'transactionLines' => $report->transactionLines->map(fn($line) => [
+            'transactionLines' => $report->transactionLines->map(fn ($line) => [
                 'date' => $line->date->format('Y-m-d'),
                 'reference' => $line->reference,
                 'transactionType' => $line->transactionType,

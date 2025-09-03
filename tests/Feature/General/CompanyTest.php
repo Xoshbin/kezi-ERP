@@ -4,8 +4,8 @@ namespace Tests\Feature\General;
 
 use App\Models\Currency;
 use App\Models\Invoice;
-use Tests\Traits\WithConfiguredCompany;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\Traits\WithConfiguredCompany;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);
 
