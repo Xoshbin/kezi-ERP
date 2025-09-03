@@ -63,13 +63,25 @@ jobs:
       - name: "Generate key"
         run: php artisan key:generate
 
-  # Use in-memory SQLite for tests to avoid cross-process/file locking issues on CI.
+  # Use a file-backed SQLite database for CI tests to ensure all connections/processes
+  # share the same schema and data during the test run (avoids :memory: isolation issues).
 
-      # This step runs the application's test suite using Pest.
+      - name: "Prepare SQLite database"
+        run: |
+          mkdir -p database
+          rm -f database/database.sqlite
+          touch database/database.sqlite
+
+      - name: "Migrate database"
+        env:
+          DB_CONNECTION: sqlite
+          DB_DATABASE: database/database.sqlite
+        run: php artisan migrate --force
+
       - name: "Run tests"
         env:
           DB_CONNECTION: sqlite
-          DB_DATABASE: ':memory:'
+          DB_DATABASE: database/database.sqlite
         run: vendor/bin/pest --ci
 
   # The 'autofix' job automatically fixes code style and commits the changes.
@@ -106,8 +118,7 @@ jobs:
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
           commit_message: "style: apply automatic code style fixes"
-          # 'skip_ci: true' prevents this new commit from triggering the workflow again, avoiding an infinite loop.
-          skip_ci: true
+          # Prevent re-triggering CI by including [skip ci] in the commit message when desired.
 
   # The 'deploy' job is responsible for deploying the application.
   deploy:
