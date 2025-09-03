@@ -63,25 +63,12 @@ jobs:
       - name: "Generate key"
         run: php artisan key:generate
 
-  # Use a file-backed SQLite database for CI tests to ensure all connections/processes
-  # share the same schema and data during the test run (avoids :memory: isolation issues).
-
-      - name: "Prepare SQLite database"
-        run: |
-          mkdir -p database
-          rm -f database/database.sqlite
-          touch database/database.sqlite
-
-      - name: "Migrate database"
-        env:
-          DB_CONNECTION: sqlite
-          DB_DATABASE: database/database.sqlite
-        run: php artisan migrate --force
-
+      # Run tests with in-memory SQLite database (same as local environment)
+      # The RefreshDatabase trait will handle database setup and cleanup
       - name: "Run tests"
         env:
           DB_CONNECTION: sqlite
-          DB_DATABASE: database/database.sqlite
+          DB_DATABASE: ":memory:"
         run: vendor/bin/pest --ci
 
   # The 'autofix' job automatically fixes code style and commits the changes.
