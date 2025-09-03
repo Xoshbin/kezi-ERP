@@ -2,7 +2,7 @@
 
 namespace App\Filament\Clusters\Accounting\Resources\Partners\RelationManagers;
 
-use App\Models\Invoice;
+use App\Enums\Sales\InvoiceStatus;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
@@ -43,7 +43,7 @@ class InvoicesRelationManager extends RelationManager
                     ->label(__('partner.invoices_relation_manager.status'))
                     ->required()
                     ->maxLength(255)
-                    ->default(Invoice::TYPE_DRAFT),
+                    ->default(InvoiceStatus::Draft->value),
                 TextInput::make('total_amount')
                     ->label(__('partner.invoices_relation_manager.total_amount'))
                     ->required()

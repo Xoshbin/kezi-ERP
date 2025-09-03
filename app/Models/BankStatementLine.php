@@ -85,7 +85,7 @@ class BankStatementLine extends Model
      */
     protected $with = ['bankStatement.currency', 'foreignCurrency'];
 
-    public function bankStatement()
+    public function bankStatement(): BelongsTo
     {
         return $this->belongsTo(BankStatement::class);
     }

@@ -63,6 +63,9 @@ class DepreciationEntryRelationManager extends RelationManager
     public function postDepreciation(DepreciationEntry $entry): void
     {
         app(AssetService::class)->postDepreciation($entry, request()->user());
-        $this->notify('success', __('asset.post_depreciation_success'));
+        \Filament\Notifications\Notification::make()
+            ->title(__('asset.post_depreciation_success'))
+            ->success()
+            ->send();
     }
 }

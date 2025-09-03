@@ -2,7 +2,7 @@
 
 namespace App\Filament\Clusters\Accounting\Resources\Partners\RelationManagers;
 
-use App\Models\VendorBill;
+use App\Enums\Purchases\VendorBillStatus;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
@@ -46,7 +46,7 @@ class VendorBillsRelationManager extends RelationManager
                     ->label(__('partner.vendor_bills_relation_manager.status'))
                     ->required()
                     ->maxLength(255)
-                    ->default(VendorBill::TYPE_DRAFT),
+                    ->default(VendorBillStatus::Draft->value),
                 TextInput::make('total_amount')
                     ->label(__('partner.vendor_bills_relation_manager.total_amount'))
                     ->required()

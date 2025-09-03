@@ -7,7 +7,6 @@ use App\Enums\Shared\PaymentState;
 use App\Services\CurrencyConverterService;
 use Brick\Money\Money;
 use Exception;
-use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Support\Facades\Log;
 
 /**
@@ -32,24 +31,20 @@ trait HasPaymentState
      * This follows the Odoo pattern of separating workflow state from payment state.
      * The value is not stored in the database to maintain data consistency.
      */
-    protected function paymentState(): Attribute
+    public function getPaymentStateAttribute(): PaymentState
     {
-        return Attribute::make(
-            get: function (): PaymentState {
-                $paidAmount = $this->getPaidAmount();
+        $paidAmount = $this->getPaidAmount();
 
-                if ($paidAmount->isZero()) {
-                    return PaymentState::NotPaid;
-                }
+        if ($paidAmount->isZero()) {
+            return PaymentState::NotPaid;
+        }
 
-                // isGreaterThanOrEqual() handles cases of overpayment correctly.
-                if ($paidAmount->isGreaterThanOrEqualTo($this->total_amount)) {
-                    return PaymentState::Paid;
-                }
+        // isGreaterThanOrEqual() handles cases of overpayment correctly.
+        if ($paidAmount->isGreaterThanOrEqualTo($this->total_amount)) {
+            return PaymentState::Paid;
+        }
 
-                return PaymentState::PartiallyPaid;
-            }
-        );
+        return PaymentState::PartiallyPaid;
     }
 
     /**
@@ -121,7 +116,7 @@ trait HasPaymentState
      */
     public function isFullyPaid(): bool
     {
-        return $this->paymentState === PaymentState::Paid;
+        return $this->payment_state === PaymentState::Paid;
     }
 
     /**
@@ -129,7 +124,7 @@ trait HasPaymentState
      */
     public function isPartiallyPaid(): bool
     {
-        return $this->paymentState === PaymentState::PartiallyPaid;
+        return $this->payment_state === PaymentState::PartiallyPaid;
     }
 
     /**
@@ -137,6 +132,6 @@ trait HasPaymentState
      */
     public function isNotPaid(): bool
     {
-        return $this->paymentState === PaymentState::NotPaid;
+        return $this->payment_state === PaymentState::NotPaid;
     }
 }
