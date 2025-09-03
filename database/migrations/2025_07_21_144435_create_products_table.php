@@ -14,12 +14,12 @@ return new class extends Migration
         Schema::create('products', function (Blueprint $table) {
             $table->id();
             $table->foreignId('company_id')->constrained('companies');
-            $table->foreignId('income_account_id')->constrained('accounts');
-            $table->foreignId('expense_account_id')->constrained('accounts');
+            $table->foreignId('income_account_id')->nullable()->constrained('accounts');
+            $table->foreignId('expense_account_id')->nullable()->constrained('accounts');
             $table->string('name');
             $table->string('sku');
             $table->text('description')->nullable();
-            $table->unsignedBigInteger('unit_price');
+            $table->unsignedBigInteger('unit_price')->nullable();
             $table->string('type'); // 'service', 'storable product'
             $table->boolean('is_active')->default(true);
             $table->timestamps();
