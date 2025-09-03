@@ -2,35 +2,33 @@
 
 namespace Tests\Feature\FinancialTransactions;
 
-use Brick\Money\Money;
+use App\Actions\Purchases\CreateVendorBillAction;
+use App\Actions\Purchases\CreateVendorBillLineAction;
+use App\Actions\Purchases\UpdateVendorBillAction;
+use App\DataTransferObjects\Purchases\CreateVendorBillDTO;
+use App\DataTransferObjects\Purchases\CreateVendorBillLineDTO;
+use App\DataTransferObjects\Purchases\UpdateVendorBillDTO;
+use App\Enums\Payments\PaymentStatus;
+use App\Enums\Purchases\VendorBillStatus;
+use App\Enums\Shared\PaymentState;
+use App\Events\VendorBillConfirmed;
+use App\Exceptions\DeletionNotAllowedException;
+use App\Exceptions\PeriodIsLockedException;
+use App\Exceptions\UpdateNotAllowedException;
 use App\Models\Account;
+use App\Models\JournalEntry;
+use App\Models\LockDate;
 use App\Models\Partner;
 use App\Models\Payment;
 use App\Models\PaymentDocumentLink;
 use App\Models\Product;
-use App\Models\LockDate;
 use App\Models\VendorBill;
-use Tests\Traits\MocksTime;
-use App\Models\JournalEntry;
-use App\Models\StockLocation;
-use App\Enums\Shared\PaymentState;
-use App\Events\VendorBillConfirmed;
 use App\Services\VendorBillService;
-use App\Enums\Payments\PaymentStatus;
-use Illuminate\Support\Facades\Event;
-use Tests\Traits\WithConfiguredCompany;
-use App\Enums\Purchases\VendorBillStatus;
-use App\Enums\Inventory\StockLocationType;
-use App\Exceptions\PeriodIsLockedException;
-use App\Exceptions\UpdateNotAllowedException;
-use App\Exceptions\DeletionNotAllowedException;
-use App\Actions\Purchases\CreateVendorBillAction;
-use App\Actions\Purchases\UpdateVendorBillAction;
+use Brick\Money\Money;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use App\DataTransferObjects\Purchases\CreateVendorBillDTO;
-use App\DataTransferObjects\Purchases\UpdateVendorBillDTO;
-use App\Actions\Purchases\CreateVendorBillLineAction; // Import the Action
-use App\DataTransferObjects\Purchases\CreateVendorBillLineDTO; // Import the DTO
+use Illuminate\Support\Facades\Event;
+use Tests\Traits\MocksTime; // Import the Action
+use Tests\Traits\WithConfiguredCompany; // Import the DTO
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class, MocksTime::class);
 
@@ -59,7 +57,7 @@ test('a draft vendor bill can be confirmed, which posts it and dispatches an eve
 
     $vendorBill->refresh();
     expect($vendorBill->status)->toBe(VendorBillStatus::Posted);
-    Event::assertDispatched(VendorBillConfirmed::class, fn($event) => $event->vendorBill->id === $vendorBill->id);
+    Event::assertDispatched(VendorBillConfirmed::class, fn ($event) => $event->vendorBill->id === $vendorBill->id);
 });
 
 test('confirming a vendor bill generates the correct journal entry', function () {
@@ -115,13 +113,13 @@ test('a posted vendor bill cannot be updated', function () {
         updated_by_user_id: $this->user->id
     );
 
-    expect(fn() => app(UpdateVendorBillAction::class)->execute($updateDto))
+    expect(fn () => app(UpdateVendorBillAction::class)->execute($updateDto))
         ->toThrow(UpdateNotAllowedException::class);
 });
 
 test('a posted vendor bill cannot be deleted', function () {
     $vendorBill = VendorBill::factory()->for($this->company)->create(['status' => 'posted']);
-    expect(fn() => app(VendorBillService::class)->delete($vendorBill))
+    expect(fn () => app(VendorBillService::class)->delete($vendorBill))
         ->toThrow(DeletionNotAllowedException::class);
 });
 
@@ -151,7 +149,7 @@ test('a vendor bill cannot be created in a locked period', function () {
         created_by_user_id: $this->user->id
     );
 
-    expect(fn() => app(CreateVendorBillAction::class)->execute($vendorBillDto))
+    expect(fn () => app(CreateVendorBillAction::class)->execute($vendorBillDto))
         ->toThrow(PeriodIsLockedException::class);
 });
 
@@ -166,7 +164,7 @@ test('it correctly computes its payment state via a many-to-many relationship', 
     if (! $paidAmount->isZero()) {
         $payment = Payment::factory()->create([
             'currency_id' => $this->company->currency->id,
-            'status' => PaymentStatus::Confirmed // Only confirmed/reconciled payments count toward payment state
+            'status' => PaymentStatus::Confirmed, // Only confirmed/reconciled payments count toward payment state
         ]);
 
         // Action: Create payment document link using proper method

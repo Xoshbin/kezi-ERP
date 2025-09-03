@@ -1,16 +1,14 @@
 <?php
 
-use App\Models\User;
+use App\Exceptions\DeletionNotAllowedException;
 use App\Models\Account;
 use App\Models\Company;
 use App\Models\Currency;
 use App\Services\CompanyService;
 use App\Services\CurrencyService;
-use Tests\Traits\CreatesApplication;
-use Tests\Traits\WithConfiguredCompany;
-use Illuminate\Validation\ValidationException;
-use App\Exceptions\DeletionNotAllowedException;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Validation\ValidationException;
+use Tests\Traits\WithConfiguredCompany;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);
 
@@ -19,7 +17,7 @@ test('a company with existing financial records cannot be deleted', function () 
     Account::factory()->for($this->company)->create();
 
     // Assert: Expect the exact message thrown by the CompanyObserver.
-    expect(fn() => $this->company->delete())
+    expect(fn () => $this->company->delete())
         ->toThrow(DeletionNotAllowedException::class, 'Cannot delete a company with associated financial records.'); // <-- Corrected Message
 
     // Verify: Double-check that the company was NOT removed from the database.
@@ -48,7 +46,7 @@ test('duplicate tax ID for a company in the same fiscal country is prevented', f
 
     // Assert: We expect that calling the service's create method with duplicate data
     // will fail validation and throw Laravel's standard ValidationException.
-    expect(fn() => $companyService->create($duplicateCompanyData))
+    expect(fn () => $companyService->create($duplicateCompanyData))
         ->toThrow(ValidationException::class);
 });
 
@@ -69,6 +67,6 @@ test('creating a currency with an existing code is prevented', function () {
 
     // Assert: Expect the service to throw a ValidationException when trying to create
     // the duplicate record, proving the business rule is enforced.
-    expect(fn() => $currencyService->create($duplicateData))
+    expect(fn () => $currencyService->create($duplicateData))
         ->toThrow(ValidationException::class);
 });

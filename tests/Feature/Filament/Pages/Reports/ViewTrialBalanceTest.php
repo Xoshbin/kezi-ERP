@@ -2,16 +2,16 @@
 
 namespace Tests\Feature\Filament\Pages\Reports;
 
-use Carbon\Carbon;
-use Livewire\Livewire;
+use App\Enums\Accounting\AccountType;
+use App\Filament\Clusters\Accounting\Pages\Reports\ViewTrialBalance;
 use App\Models\Account;
 use App\Models\Journal;
 use App\Models\JournalEntry;
 use App\Models\JournalEntryLine;
-use App\Enums\Accounting\AccountType;
-use Tests\Traits\WithConfiguredCompany;
+use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use App\Filament\Clusters\Accounting\Pages\Reports\ViewTrialBalance;
+use Livewire\Livewire;
+use Tests\Traits\WithConfiguredCompany;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);
 
@@ -38,49 +38,49 @@ test('it generates a balanced trial balance report', function () {
     $bankAccount = Account::factory()->for($company)->create([
         'code' => '1000',
         'name' => 'Bank Account',
-        'type' => AccountType::BankAndCash
+        'type' => AccountType::BankAndCash,
     ]);
     $salesAccount = Account::factory()->for($company)->create([
         'code' => '4000',
         'name' => 'Sales Revenue',
-        'type' => AccountType::Income
+        'type' => AccountType::Income,
     ]);
     $expenseAccount = Account::factory()->for($company)->create([
         'code' => '5000',
         'name' => 'Office Expenses',
-        'type' => AccountType::Expense
+        'type' => AccountType::Expense,
     ]);
 
     // Transaction 1: Receive cash for a sale (1,500,000 IQD)
     $entry1 = JournalEntry::factory()->for($company)->for($journal)->create([
         'entry_date' => '2025-06-10',
-        'state' => 'posted'
+        'state' => 'posted',
     ]);
     JournalEntryLine::factory()->for($entry1)->create([
         'account_id' => $bankAccount->id,
         'debit' => 1500000,
-        'credit' => 0
+        'credit' => 0,
     ]);
     JournalEntryLine::factory()->for($entry1)->create([
         'account_id' => $salesAccount->id,
         'debit' => 0,
-        'credit' => 1500000
+        'credit' => 1500000,
     ]);
 
     // Transaction 2: Pay an expense from the bank (350,000 IQD)
     $entry2 = JournalEntry::factory()->for($company)->for($journal)->create([
         'entry_date' => '2025-07-15',
-        'state' => 'posted'
+        'state' => 'posted',
     ]);
     JournalEntryLine::factory()->for($entry2)->create([
         'account_id' => $expenseAccount->id,
         'debit' => 350000,
-        'credit' => 0
+        'credit' => 0,
     ]);
     JournalEntryLine::factory()->for($entry2)->create([
         'account_id' => $bankAccount->id,
         'debit' => 0,
-        'credit' => 350000
+        'credit' => 350000,
     ]);
 
     // Action & Assert
@@ -117,12 +117,12 @@ test('it shows unbalanced status when trial balance does not balance', function 
     // Create an unbalanced entry by directly inserting into database
     $entry = JournalEntry::factory()->for($company)->for($journal)->create([
         'entry_date' => '2025-06-10',
-        'state' => 'posted'
+        'state' => 'posted',
     ]);
     JournalEntryLine::factory()->for($entry)->create([
         'account_id' => $bankAccount->id,
         'debit' => 1000000,
-        'credit' => 0
+        'credit' => 0,
     ]);
     // Missing credit side to make it unbalanced
 
@@ -161,17 +161,17 @@ test('it excludes draft journal entries from trial balance', function () {
     // Draft transaction (should be excluded)
     $draftEntry = JournalEntry::factory()->for($company)->for($journal)->create([
         'entry_date' => '2025-06-10',
-        'state' => 'draft'
+        'state' => 'draft',
     ]);
     JournalEntryLine::factory()->for($draftEntry)->create([
         'account_id' => $bankAccount->id,
         'debit' => 1000000,
-        'credit' => 0
+        'credit' => 0,
     ]);
     JournalEntryLine::factory()->for($draftEntry)->create([
         'account_id' => $salesAccount->id,
         'debit' => 0,
-        'credit' => 1000000
+        'credit' => 1000000,
     ]);
 
     // Action & Assert
@@ -194,33 +194,33 @@ test('it respects the as of date filter', function () {
     // Transaction before the as of date (should be included)
     $entry1 = JournalEntry::factory()->for($company)->for($journal)->create([
         'entry_date' => '2025-06-10',
-        'state' => 'posted'
+        'state' => 'posted',
     ]);
     JournalEntryLine::factory()->for($entry1)->create([
         'account_id' => $bankAccount->id,
         'debit' => 1000000,
-        'credit' => 0
+        'credit' => 0,
     ]);
     JournalEntryLine::factory()->for($entry1)->create([
         'account_id' => $salesAccount->id,
         'debit' => 0,
-        'credit' => 1000000
+        'credit' => 1000000,
     ]);
 
     // Transaction after the as of date (should be excluded)
     $entry2 = JournalEntry::factory()->for($company)->for($journal)->create([
         'entry_date' => '2025-06-20',
-        'state' => 'posted'
+        'state' => 'posted',
     ]);
     JournalEntryLine::factory()->for($entry2)->create([
         'account_id' => $bankAccount->id,
         'debit' => 500000,
-        'credit' => 0
+        'credit' => 0,
     ]);
     JournalEntryLine::factory()->for($entry2)->create([
         'account_id' => $salesAccount->id,
         'debit' => 0,
-        'credit' => 500000
+        'credit' => 500000,
     ]);
 
     // Action & Assert

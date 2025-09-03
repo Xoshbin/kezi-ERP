@@ -2,23 +2,22 @@
 
 namespace Xoshbin\FilamentAiHelper\Actions;
 
-use Xoshbin\FilamentAiHelper\DTOs\AIHelperContextDTO;
-use Xoshbin\FilamentAiHelper\DTOs\AIAssistantRequestDTO;
-use Xoshbin\FilamentAiHelper\DTOs\AIAssistantResponseDTO;
-use Xoshbin\FilamentAiHelper\Exceptions\GeminiApiException;
-use Xoshbin\FilamentAiHelper\Services\GeminiService;
-use Xoshbin\FilamentAiHelper\Services\DeepContextService;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
+use Xoshbin\FilamentAiHelper\DTOs\AIAssistantRequestDTO;
+use Xoshbin\FilamentAiHelper\DTOs\AIAssistantResponseDTO;
+use Xoshbin\FilamentAiHelper\DTOs\AIHelperContextDTO;
+use Xoshbin\FilamentAiHelper\Exceptions\GeminiApiException;
+use Xoshbin\FilamentAiHelper\Services\DeepContextService;
+use Xoshbin\FilamentAiHelper\Services\GeminiService;
 
 class GetAIAssistantResponseAction
 {
     public function __construct(
         protected GeminiService $geminiService,
         private readonly DeepContextService $deepContextService
-    ) {
-    }
+    ) {}
 
     /**
      * Execute the action and get AI response
@@ -28,6 +27,7 @@ class GetAIAssistantResponseAction
         // Handle both DTO types for backward compatibility
         if ($context instanceof AIAssistantRequestDTO) {
             $result = $this->executeFromRequest($context);
+
             // Return just the response string for consistency
             return $result->response ?? 'No response available';
         }
@@ -114,19 +114,19 @@ class GetAIAssistantResponseAction
         $userQuestion = $context->getSanitizedQuestion();
 
         return implode("\n\n", [
-            "SYSTEM INSTRUCTIONS:",
+            'SYSTEM INSTRUCTIONS:',
             $systemPrompt,
-            "",
-            "CONTEXT DATA:",
+            '',
+            'CONTEXT DATA:',
             $contextData,
-            "",
-            "TASK INSTRUCTIONS:",
+            '',
+            'TASK INSTRUCTIONS:',
             $taskInstructions,
-            "",
-            "USER QUESTION:",
+            '',
+            'USER QUESTION:',
             $userQuestion,
-            "",
-            "Please provide your response in {$context->locale} language."
+            '',
+            "Please provide your response in {$context->locale} language.",
         ]);
     }
 
@@ -137,7 +137,7 @@ class GetAIAssistantResponseAction
     {
         $basePrompt = config('filament-ai-helper.assistant.system_prompt');
 
-        return $basePrompt . " All responses must be in the {$context->locale} language.";
+        return $basePrompt." All responses must be in the {$context->locale} language.";
     }
 
     /**
@@ -147,8 +147,8 @@ class GetAIAssistantResponseAction
     {
         $model = $context->getModel();
 
-        if (!$model) {
-            return "No record data available.";
+        if (! $model) {
+            return 'No record data available.';
         }
 
         // Load relationships if configured
@@ -163,7 +163,7 @@ class GetAIAssistantResponseAction
         // Limit context length if configured
         $maxLength = config('filament-ai-helper.assistant.max_context_length', 15000); // Increased for deep context
         if (strlen($contextData) > $maxLength) {
-            $contextData = substr($contextData, 0, $maxLength) . "\n... (context truncated due to length)";
+            $contextData = substr($contextData, 0, $maxLength)."\n... (context truncated due to length)";
         }
 
         return $contextData;
@@ -174,7 +174,7 @@ class GetAIAssistantResponseAction
      */
     protected function loadRelationships(Model $model): void
     {
-        if (!config('filament-ai-helper.assistant.include_relationships', true)) {
+        if (! config('filament-ai-helper.assistant.include_relationships', true)) {
             return;
         }
 
@@ -215,53 +215,53 @@ class GetAIAssistantResponseAction
     {
         $output = [];
 
-        $output[] = "=== COMPREHENSIVE RECORD ANALYSIS ===";
+        $output[] = '=== COMPREHENSIVE RECORD ANALYSIS ===';
         $output[] = "Record Type: {$context->getModelName()}";
         $output[] = "Record ID: {$context->modelId}";
-        $output[] = "";
+        $output[] = '';
 
         // Basic Information
         if (isset($deepContext['basic_info'])) {
-            $output[] = "BASIC INFORMATION:";
+            $output[] = 'BASIC INFORMATION:';
             foreach ($deepContext['basic_info'] as $key => $value) {
                 $output[] = "  {$key}: {$value}";
             }
-            $output[] = "";
+            $output[] = '';
         }
 
         // Relationship Context
         if (isset($deepContext['relationships'])) {
-            $output[] = "RELATIONSHIP CONTEXT:";
+            $output[] = 'RELATIONSHIP CONTEXT:';
             $output[] = $this->formatRelationshipContext($deepContext['relationships']);
-            $output[] = "";
+            $output[] = '';
         }
 
         // Historical Data
-        if (isset($deepContext['historical_data']) && !empty($deepContext['historical_data'])) {
-            $output[] = "HISTORICAL DATA:";
+        if (isset($deepContext['historical_data']) && ! empty($deepContext['historical_data'])) {
+            $output[] = 'HISTORICAL DATA:';
             $output[] = json_encode($deepContext['historical_data'], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
-            $output[] = "";
+            $output[] = '';
         }
 
         // Financial Metrics
-        if (isset($deepContext['financial_metrics']) && !empty($deepContext['financial_metrics'])) {
-            $output[] = "FINANCIAL METRICS:";
+        if (isset($deepContext['financial_metrics']) && ! empty($deepContext['financial_metrics'])) {
+            $output[] = 'FINANCIAL METRICS:';
             $output[] = json_encode($deepContext['financial_metrics'], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
-            $output[] = "";
+            $output[] = '';
         }
 
         // Risk Indicators
-        if (isset($deepContext['risk_indicators']) && !empty($deepContext['risk_indicators'])) {
-            $output[] = "RISK INDICATORS:";
+        if (isset($deepContext['risk_indicators']) && ! empty($deepContext['risk_indicators'])) {
+            $output[] = 'RISK INDICATORS:';
             $output[] = json_encode($deepContext['risk_indicators'], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
-            $output[] = "";
+            $output[] = '';
         }
 
         // Business Insights
-        if (isset($deepContext['business_insights']) && !empty($deepContext['business_insights'])) {
-            $output[] = "BUSINESS INSIGHTS:";
+        if (isset($deepContext['business_insights']) && ! empty($deepContext['business_insights'])) {
+            $output[] = 'BUSINESS INSIGHTS:';
             $output[] = json_encode($deepContext['business_insights'], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
-            $output[] = "";
+            $output[] = '';
         }
 
         return implode("\n", $output);
@@ -278,7 +278,7 @@ class GetAIAssistantResponseAction
             $output[] = "  {$relationshipType}:";
 
             if (is_array($data)) {
-                $output[] = "    " . json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+                $output[] = '    '.json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
             } else {
                 $output[] = "    {$data}";
             }
@@ -313,8 +313,8 @@ class GetAIAssistantResponseAction
     protected function getFallbackResponse(AIHelperContextDTO $context): string
     {
         $modelName = $context->getModelName();
-        $fallbackMessage = "I apologize, but I'm currently unable to analyze this {$modelName} record due to a technical issue. " .
-                          "Please try again later or contact support if the problem persists.";
+        $fallbackMessage = "I apologize, but I'm currently unable to analyze this {$modelName} record due to a technical issue. ".
+                          'Please try again later or contact support if the problem persists.';
 
         return $fallbackMessage;
     }
@@ -324,25 +324,25 @@ class GetAIAssistantResponseAction
      */
     public function generateWelcomeMessage(AIHelperContextDTO $context): string
     {
-        if (!config('filament-ai-helper.ui.enable_welcome_message', true)) {
+        if (! config('filament-ai-helper.ui.enable_welcome_message', true)) {
             return '';
         }
 
         $model = $context->getModel();
         $modelName = $context->getModelName();
 
-        if (!$model) {
+        if (! $model) {
             return "Hello! I'm AccounTech Pro, your AI accounting assistant. How can I help you today?";
         }
 
         // Try to get a meaningful identifier for the record
         $identifier = $this->getRecordIdentifier($model);
 
-        return "Hello! I can see you're looking at {$modelName} {$identifier}. " .
-               "I'm AccounTech Pro, your AI accounting assistant. " .
-               "I can help you analyze this record, check for potential issues, " .
-               "and provide insights based on accounting best practices. " .
-               "What would you like to know?";
+        return "Hello! I can see you're looking at {$modelName} {$identifier}. ".
+               "I'm AccounTech Pro, your AI accounting assistant. ".
+               'I can help you analyze this record, check for potential issues, '.
+               'and provide insights based on accounting best practices. '.
+               'What would you like to know?';
     }
 
     /**
@@ -354,7 +354,7 @@ class GetAIAssistantResponseAction
         $identifierFields = ['number', 'code', 'name', 'title', 'reference', 'id'];
 
         foreach ($identifierFields as $field) {
-            if (isset($model->$field) && !empty($model->$field)) {
+            if (isset($model->$field) && ! empty($model->$field)) {
                 return $model->$field;
             }
         }

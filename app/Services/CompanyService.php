@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\Company;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
+
 class CompanyService
 {
     public function create(array $data): Company

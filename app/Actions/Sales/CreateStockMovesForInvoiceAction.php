@@ -2,10 +2,10 @@
 
 namespace App\Actions\Sales;
 
-use App\Enums\Inventory\StockLocationType;
 use App\Actions\Inventory\CreateStockMoveAction;
 use App\DataTransferObjects\Inventory\CreateStockMoveDTO;
 use App\DataTransferObjects\Sales\CreateStockMovesForInvoiceDTO;
+use App\Enums\Inventory\StockLocationType;
 use App\Enums\Inventory\StockMoveStatus;
 use App\Enums\Inventory\StockMoveType;
 use App\Enums\Products\ProductType;
@@ -20,13 +20,11 @@ class CreateStockMovesForInvoiceAction
 {
     public function __construct(
         protected CreateStockMoveAction $createStockMoveAction
-    ) {
-    }
+    ) {}
 
     /**
      * Create stock moves for all storable products in an invoice
      *
-     * @param CreateStockMovesForInvoiceDTO $dto
      * @return Collection<StockMove> Collection of created stock moves
      */
     public function execute(CreateStockMovesForInvoiceDTO $dto): Collection
@@ -39,7 +37,7 @@ class CreateStockMovesForInvoiceAction
             // Get stock locations with fallback strategy
             $locations = $this->getStockLocations($invoice);
 
-            if (!$locations['warehouse'] || !$locations['vendor']) {
+            if (! $locations['warehouse'] || ! $locations['vendor']) {
                 // Skip stock move creation if locations are not available
                 return $stockMoves;
             }

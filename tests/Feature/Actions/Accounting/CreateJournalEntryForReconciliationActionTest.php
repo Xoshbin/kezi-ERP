@@ -1,10 +1,10 @@
 <?php
 
-use Brick\Money\Money;
-use App\Models\Payment;
-use Tests\Traits\WithConfiguredCompany;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use App\Actions\Accounting\CreateJournalEntryForReconciliationAction;
+use App\Models\Payment;
+use Brick\Money\Money;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\Traits\WithConfiguredCompany;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);
 

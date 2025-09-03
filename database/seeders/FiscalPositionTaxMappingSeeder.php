@@ -18,14 +18,14 @@ class FiscalPositionTaxMappingSeeder extends Seeder
         // Fetch the domestic fiscal position
         $domesticPosition = FiscalPosition::where('name->en', 'Domestic (Iraq)')->first();
 
-        if (!$domesticPosition) {
+        if (! $domesticPosition) {
             throw new RuntimeException('Fiscal position "Domestic (Iraq)" not found. Please run the FiscalPositionSeeder first.');
         }
 
         // Fetch the VAT 10% tax
         $vat10 = Tax::where('name->en', 'VAT 10%')->first();
 
-        if (!$vat10) {
+        if (! $vat10) {
             throw new RuntimeException('Tax "VAT 10%" not found. Please run the TaxSeeder first.');
         }
 

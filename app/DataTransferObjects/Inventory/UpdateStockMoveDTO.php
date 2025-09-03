@@ -19,6 +19,5 @@ readonly class UpdateStockMoveDTO
         public StockMoveStatus $status,
         public Carbon $move_date,
         public ?string $reference = null,
-    ) {
-    }
+    ) {}
 }

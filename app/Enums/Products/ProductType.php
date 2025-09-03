@@ -14,6 +14,6 @@ enum ProductType: string
      */
     public function label(): string
     {
-        return __('enums.product_type.' . $this->value);
+        return __('enums.product_type.'.$this->value);
     }
 }

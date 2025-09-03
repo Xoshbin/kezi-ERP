@@ -2,23 +2,20 @@
 
 namespace Tests\Feature\Accounting;
 
-use Carbon\Carbon;
-use Tests\TestCase;
-use App\Models\User;
-use Brick\Money\Money;
-use App\Models\Account;
-use App\Models\Company;
-use App\Models\Journal;
-use App\Models\Currency;
-use Tests\Traits\WithConfiguredCompany;
-use App\Services\CurrencyConverterService;
-use App\Services\Accounting\LockDateService;
-use Illuminate\Validation\ValidationException;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use App\Actions\Accounting\CreateJournalEntryAction;
 use App\DataTransferObjects\Accounting\CreateJournalEntryDTO;
 use App\DataTransferObjects\Accounting\CreateJournalEntryLineDTO;
 use App\Enums\Accounting\AccountType;
+use App\Models\Account;
+use App\Models\Company;
+use App\Models\Currency;
+use App\Models\Journal;
+use App\Models\User;
+use Brick\Money\Money;
+use Carbon\Carbon;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Validation\ValidationException;
+use Tests\Traits\WithConfiguredCompany;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);
 
@@ -162,6 +159,6 @@ test('it blocks posting to a currency-locked account with the wrong currency', f
     );
 
     // Act & Assert: Expect a ValidationException to be thrown by the Action
-    expect(fn() => resolve(CreateJournalEntryAction::class)->execute($dto))
+    expect(fn () => resolve(CreateJournalEntryAction::class)->execute($dto))
         ->toThrow(ValidationException::class);
 });

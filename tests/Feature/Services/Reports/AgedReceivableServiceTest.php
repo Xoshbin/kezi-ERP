@@ -2,8 +2,8 @@
 
 namespace Tests\Feature\Services\Reports;
 
-use App\Enums\Sales\InvoiceStatus;
 use App\Enums\Payments\PaymentStatus;
+use App\Enums\Sales\InvoiceStatus;
 use App\Models\Invoice;
 use App\Models\Partner;
 use App\Models\Payment;

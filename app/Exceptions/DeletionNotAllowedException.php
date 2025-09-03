@@ -2,25 +2,22 @@
 
 namespace App\Exceptions;
 
-use Illuminate\Http\Request;
 use Exception;
-use Throwable;
+use Illuminate\Http\Request;
+use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
 // We will use the Symfony Response class as it is the foundational
 // parent for Laravel's HTTP responses (Illuminate\Http\Response, JsonResponse, RedirectResponse).
 // This makes the type hint broader and more compatible.
-use Symfony\Component\HttpFoundation\Response as SymfonyResponse; // Alias to avoid any potential conflicts
+use Throwable; // Alias to avoid any potential conflicts
 
 class DeletionNotAllowedException extends Exception
 {
     /**
      * Create a new deletion not allowed exception instance.
      *
-     * @param string $message
-     * @param int $code
-     * @param Throwable|null $previous
      * @return void
      */
-    public function __construct(string $message = "Deletion of this financial record is not allowed due to accounting principles.", int $code = 0, ?Throwable $previous = null)
+    public function __construct(string $message = 'Deletion of this financial record is not allowed due to accounting principles.', int $code = 0, ?Throwable $previous = null)
     {
         parent::__construct($message, $code, $previous);
     }
@@ -30,7 +27,7 @@ class DeletionNotAllowedException extends Exception
      * This method is crucial for how your application presents errors to the user,
      * whether they are using a web browser or an API client.
      *
-     * @param Request $request
+     * @param  Request  $request
      * @return SymfonyResponse // Changed the return type hint to the more general SymfonyResponse
      */
     public function render($request): SymfonyResponse

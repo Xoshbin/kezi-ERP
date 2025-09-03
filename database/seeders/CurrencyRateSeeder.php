@@ -2,10 +2,10 @@
 
 namespace Database\Seeders;
 
-use Carbon\Carbon;
 use App\Models\Company;
 use App\Models\Currency;
 use App\Models\CurrencyRate;
+use Carbon\Carbon;
 use Illuminate\Database\Seeder;
 
 class CurrencyRateSeeder extends Seeder
@@ -19,16 +19,16 @@ class CurrencyRateSeeder extends Seeder
         // Get all active currencies
         $usd = Currency::where('code', 'USD')->first();
 
-         CurrencyRate::updateOrCreate(
-                [
-                    'currency_id' => $usd->id,
-                    'effective_date' => Carbon::today(),
-                ],
-                [
-                    'company_id' => $company->id,
-                    'rate' => 1460,
-                    'source' => 'seeder',
-                ]
-            );
+        CurrencyRate::updateOrCreate(
+            [
+                'currency_id' => $usd->id,
+                'effective_date' => Carbon::today(),
+            ],
+            [
+                'company_id' => $company->id,
+                'rate' => 1460,
+                'source' => 'seeder',
+            ]
+        );
     }
 }

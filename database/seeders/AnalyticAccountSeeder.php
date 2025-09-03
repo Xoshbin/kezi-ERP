@@ -2,19 +2,17 @@
 
 namespace Database\Seeders;
 
-use Exception;
 use App\Models\AnalyticAccount;
 use App\Models\AnalyticPlan;
 use App\Models\Company;
-use Illuminate\Database\Seeder;
+use Exception;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Database\Seeder;
 
 class AnalyticAccountSeeder extends Seeder
 {
     /**
      * Run the database seeds.
-     *
-     * @return void
      */
     public function run(): void
     {

@@ -2,32 +2,26 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Database\Eloquent\Builder;
-use Database\Factories\InvoiceFactory;
-use Brick\Money\Money;
-use App\Casts\DocumentCurrencyMoneyCast;
 use App\Casts\BaseCurrencyMoneyCast;
-use App\Traits\HasPaymentState;
+use App\Casts\DocumentCurrencyMoneyCast;
 use App\Enums\Sales\InvoiceStatus;
-use Illuminate\Support\Carbon;
 use App\Observers\AuditLogObserver;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Traits\HasPaymentState;
+use Brick\Money\Money;
+use Database\Factories\InvoiceFactory;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Carbon;
 
 /**
  * Class Invoice
  *
- * @package App\Models
- *
- * This Eloquent model represents a customer invoice in the accounting system.
- * It is a foundational document for recording sales transactions and receivables.
- * Key accounting principles, such as immutability post-posting and a clear
- * audit trail for changes or corrections, are deeply embedded in its design.
  * @property int $id
  * @property int $company_id
  * @property int $customer_id
@@ -52,6 +46,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
  * @property-read Collection<int, InvoiceLine> $invoiceLines
  * @property-read int|null $invoice_lines_count
  * @property-read JournalEntry|null $journalEntry
+ *
  * @method static Builder<static>|Invoice draft()
  * @method static InvoiceFactory factory($count = null, $state = [])
  * @method static Builder<static>|Invoice newModelQuery()
@@ -74,6 +69,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
  * @method static Builder<static>|Invoice whereTotalAmount($value)
  * @method static Builder<static>|Invoice whereTotalTax($value)
  * @method static Builder<static>|Invoice whereUpdatedAt($value)
+ *
  * @mixin \Eloquent
  */
 #[ObservedBy([AuditLogObserver::class])]
@@ -138,8 +134,6 @@ class Invoice extends Model
         'posted_at' => 'datetime',
     ];
 
-
-
     /*
     |--------------------------------------------------------------------------
     | Relationships
@@ -150,8 +144,6 @@ class Invoice extends Model
     /**
      * Get the company that owns this invoice.
      * An invoice is always issued by a specific company. [1]
-     *
-     * @return BelongsTo
      */
     public function company(): BelongsTo
     {
@@ -161,8 +153,6 @@ class Invoice extends Model
     /**
      * Get the customer (partner) associated with this invoice.
      * The customer is the entity to whom the invoice is issued. [1]
-     *
-     * @return BelongsTo
      */
     public function customer(): BelongsTo
     {
@@ -172,8 +162,6 @@ class Invoice extends Model
     /**
      * Get the currency of this invoice.
      * Every invoice operates in a specific currency. [1]
-     *
-     * @return BelongsTo
      */
     public function currency(): BelongsTo
     {
@@ -183,8 +171,6 @@ class Invoice extends Model
     /**
      * Get the journal entry associated with this invoice once it is posted.
      * This link is vital for the immutability of financial records. [1]
-     *
-     * @return BelongsTo
      */
     public function journalEntry(): BelongsTo
     {
@@ -194,8 +180,6 @@ class Invoice extends Model
     /**
      * Get the line items for this invoice.
      * An invoice typically consists of multiple product or service lines. [1]
-     *
-     * @return HasMany
      */
     public function invoiceLines(): HasMany
     {
@@ -205,8 +189,6 @@ class Invoice extends Model
     /**
      * Get the fiscal position applied to this invoice.
      * Fiscal positions can automatically adapt taxes and accounts based on specific rules. [4, 7]
-     *
-     * @return BelongsTo
      */
     public function fiscalPosition(): BelongsTo
     {
@@ -217,8 +199,6 @@ class Invoice extends Model
      * Get the Payments that are applied to this Invoice.
      * An invoice can be paid by multiple payments, and a single payment
      * can potentially pay multiple invoices, creating a many-to-many relationship.
-     *
-     * @return BelongsToMany
      */
     public function payments(): BelongsToMany
     {
@@ -229,8 +209,6 @@ class Invoice extends Model
     /**
      * Get the direct PaymentDocumentLink records for this invoice.
      * This provides access to the raw pivot data for multi-currency payment calculations.
-     *
-     * @return HasMany
      */
     public function paymentDocumentLinks(): HasMany
     {
@@ -240,8 +218,6 @@ class Invoice extends Model
     /**
      * Get the Adjustment Documents (credit notes, etc.) that relate to this Invoice.
      * These are used for corrections, reversals, and adjustments to posted invoices.
-     *
-     * @return HasMany
      */
     public function adjustmentDocuments(): HasMany
     {
@@ -256,7 +232,7 @@ class Invoice extends Model
     /**
      * Scope a query to only include posted invoices.
      *
-     * @param Builder $query
+     * @param  Builder  $query
      * @return Builder
      */
     public function scopePosted($query)
@@ -267,7 +243,7 @@ class Invoice extends Model
     /**
      * Scope a query to only include draft invoices.
      *
-     * @param Builder $query
+     * @param  Builder  $query
      * @return Builder
      */
     public function scopeDraft($query)
@@ -283,12 +259,10 @@ class Invoice extends Model
 
     /**
      * Get the full invoice reference, combining number and date for display.
-     *
-     * @return string
      */
     public function getFullReferenceAttribute(): string
     {
-        return $this->invoice_number . ' - ' . $this->invoice_date->format('Y-m-d');
+        return $this->invoice_number.' - '.$this->invoice_date->format('Y-m-d');
     }
 
     public function calculateTotalsFromLines(): void

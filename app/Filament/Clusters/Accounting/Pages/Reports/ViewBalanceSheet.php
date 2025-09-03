@@ -2,21 +2,22 @@
 
 namespace App\Filament\Clusters\Accounting\Pages\Reports;
 
-use Carbon\Carbon;
-use Filament\Pages\Page;
-use Filament\Actions\Action;
-use Filament\Schemas\Schema;
-use Filament\Facades\Filament;
-use App\Support\NumberFormatter;
-use Filament\Schemas\Components\Section;
-use Filament\Forms\Components\DatePicker;
-use Illuminate\Contracts\Support\Htmlable;
-use App\Services\Reports\BalanceSheetService;
 use App\Filament\Clusters\Accounting\AccountingCluster;
+use App\Services\Reports\BalanceSheetService;
+use App\Support\NumberFormatter;
+use Carbon\Carbon;
+use Filament\Actions\Action;
+use Filament\Facades\Filament;
+use Filament\Forms\Components\DatePicker;
+use Filament\Pages\Page;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Schema;
+use Illuminate\Contracts\Support\Htmlable;
 
 class ViewBalanceSheet extends Page
 {
-    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-scale';
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-scale';
+
     protected string $view = 'filament.pages.reports.view-balance-sheet';
 
     public static function shouldRegisterNavigation(): bool
@@ -27,6 +28,7 @@ class ViewBalanceSheet extends Page
     protected static ?string $cluster = AccountingCluster::class;
 
     public ?string $asOfDate = null;
+
     public ?array $reportData = null;
 
     public static function getNavigationLabel(): string
@@ -91,21 +93,21 @@ class ViewBalanceSheet extends Page
 
         // Convert to array format that Livewire can handle
         $this->reportData = [
-            'assetLines' => $report->assetLines->map(fn($line) => [
+            'assetLines' => $report->assetLines->map(fn ($line) => [
                 'accountId' => $line->accountId,
                 'accountCode' => $line->accountCode,
                 'accountName' => $line->accountName,
                 'balance' => NumberFormatter::formatMoneyTo($line->balance),
                 'balanceAmount' => $line->balance->getAmount()->toFloat(),
             ])->toArray(),
-            'liabilityLines' => $report->liabilityLines->map(fn($line) => [
+            'liabilityLines' => $report->liabilityLines->map(fn ($line) => [
                 'accountId' => $line->accountId,
                 'accountCode' => $line->accountCode,
                 'accountName' => $line->accountName,
                 'balance' => NumberFormatter::formatMoneyTo($line->balance),
                 'balanceAmount' => $line->balance->getAmount()->toFloat(),
             ])->toArray(),
-            'equityLines' => $report->equityLines->map(fn($line) => [
+            'equityLines' => $report->equityLines->map(fn ($line) => [
                 'accountId' => $line->accountId,
                 'accountCode' => $line->accountCode,
                 'accountName' => $line->accountName,

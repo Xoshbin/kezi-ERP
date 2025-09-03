@@ -20,12 +20,12 @@ class GenerateInvoicePdfAction
             'invoiceLines.product',
             'invoiceLines.tax',
             'invoiceLines.incomeAccount',
-            'currency'
+            'currency',
         ]);
 
         // Validate template exists
         $templatePath = "pdfs.invoice.{$template}";
-        if (!View::exists($templatePath)) {
+        if (! View::exists($templatePath)) {
             $templatePath = 'pdfs.invoice.classic'; // Fallback to classic template
         }
 
@@ -63,11 +63,11 @@ class GenerateInvoicePdfAction
             'invoiceLines.product',
             'invoiceLines.tax',
             'invoiceLines.incomeAccount',
-            'currency'
+            'currency',
         ]);
 
         $templatePath = "pdfs.invoice.{$template}";
-        if (!View::exists($templatePath)) {
+        if (! View::exists($templatePath)) {
             $templatePath = 'pdfs.invoice.classic';
         }
 

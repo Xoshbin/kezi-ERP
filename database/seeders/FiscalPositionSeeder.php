@@ -2,9 +2,9 @@
 
 namespace Database\Seeders;
 
-use Exception;
 use App\Models\Company;
 use App\Models\FiscalPosition;
+use Exception;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 
@@ -18,7 +18,7 @@ class FiscalPositionSeeder extends Seeder
         DB::transaction(function () {
             $company = Company::where('name', 'Jmeryar Solutions')->first();
 
-            if (!$company) {
+            if (! $company) {
                 throw new Exception('Company "Jmeryar Solutions" not found. Please run the CompanySeeder first.');
             }
 

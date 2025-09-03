@@ -65,7 +65,6 @@ return [
     'relation_manager.invoices.form.status' => 'Status',
     'relation_manager.invoices.form.total_amount' => 'Total Amount',
 
-
     // VendorBillsRelationManager.php
     'relation_manager.vendor_bills.title' => 'Vendor Bills',
     'relation_manager.vendor_bills.column.bill_reference' => 'Bill Reference',

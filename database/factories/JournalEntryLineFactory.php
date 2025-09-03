@@ -2,9 +2,9 @@
 
 namespace Database\Factories;
 
-use Brick\Money\Money;
 use App\Models\Account;
 use App\Models\JournalEntry;
+use Brick\Money\Money;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class JournalEntryLineFactory extends Factory
@@ -23,7 +23,7 @@ class JournalEntryLineFactory extends Factory
             'partner_id' => null,
             'description' => $this->faker->sentence(),
             'debit' => $isDebit ? $amount : 0,
-            'credit' => !$isDebit ? $amount : 0,
+            'credit' => ! $isDebit ? $amount : 0,
         ];
     }
 }

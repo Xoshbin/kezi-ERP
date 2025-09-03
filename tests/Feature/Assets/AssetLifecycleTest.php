@@ -1,20 +1,12 @@
 <?php
 
-use App\Models\User;
-use App\Models\Asset;
-use Brick\Money\Money;
-use App\Models\Account;
-use App\Models\Company;
-use App\Enums\Assets\AssetStatus;
-use Tests\Traits\CreatesApplication;
-use Tests\Traits\WithConfiguredCompany;
-use App\Enums\Assets\DepreciationMethod;
 use App\Actions\Assets\CreateAssetAction;
-use App\Enums\Assets\DepreciationEntryStatus;
-use App\Exceptions\UpdateNotAllowedException;
-use App\Exceptions\DeletionNotAllowedException;
 use App\DataTransferObjects\Assets\CreateAssetDTO;
+use App\Enums\Assets\AssetStatus;
+use App\Models\Account;
+use App\Models\Asset;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\Traits\WithConfiguredCompany;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);
 
@@ -43,7 +35,7 @@ test('asset can be created manually and confirmed', function () {
     );
 
     // Act
-    $asset = (new CreateAssetAction())->execute($assetDTO);
+    $asset = (new CreateAssetAction)->execute($assetDTO);
 
     // Assert
     $this->assertDatabaseHas('assets', [
@@ -62,7 +54,6 @@ test('asset can be created manually and confirmed', function () {
     ]);
 });
 
-
 test('confirming asset generates initial journal entry', function () {
     // Arrange
     $currencyCode = $this->company->currency->code;
@@ -79,7 +70,7 @@ test('confirming asset generates initial journal entry', function () {
         accumulated_depreciation_account_id: $this->accumulatedDepreciationAccount->id,
         currency_id: $this->company->currency_id
     );
-    $asset = (new CreateAssetAction())->execute($assetDTO);
+    $asset = (new CreateAssetAction)->execute($assetDTO);
 
     // Act
     $asset->status = AssetStatus::Confirmed;
@@ -108,7 +99,6 @@ test('confirming asset generates initial journal entry', function () {
     ]);
 });
 
-
 test('depreciation calculation generates correct draft entries', function () {
     // Arrange
     $assetDTO = new CreateAssetDTO(
@@ -124,12 +114,12 @@ test('depreciation calculation generates correct draft entries', function () {
         accumulated_depreciation_account_id: $this->accumulatedDepreciationAccount->id,
         currency_id: $this->company->currency_id
     );
-    $asset = (new CreateAssetAction())->execute($assetDTO);
+    $asset = (new CreateAssetAction)->execute($assetDTO);
     $asset->status = AssetStatus::Confirmed;
     $asset->save();
 
     // Act
-    (new \App\Actions\Assets\ComputeDepreciationScheduleAction())->execute($asset->fresh());
+    (new \App\Actions\Assets\ComputeDepreciationScheduleAction)->execute($asset->fresh());
 
     // Assert
     $this->assertDatabaseCount('depreciation_entries', 120); // 10 years * 12 months
@@ -141,7 +131,6 @@ test('depreciation calculation generates correct draft entries', function () {
         'amount' => 1000000,
     ]);
 });
-
 
 test('automated depreciation job posts correct journal entries periodically', function () {
     // Arrange
@@ -158,10 +147,10 @@ test('automated depreciation job posts correct journal entries periodically', fu
         accumulated_depreciation_account_id: $this->accumulatedDepreciationAccount->id,
         currency_id: $this->company->currency_id
     );
-    $asset = (new CreateAssetAction())->execute($assetDTO);
+    $asset = (new CreateAssetAction)->execute($assetDTO);
     $asset->status = AssetStatus::Confirmed;
     $asset->save();
-    (new \App\Actions\Assets\ComputeDepreciationScheduleAction())->execute($asset->fresh());
+    (new \App\Actions\Assets\ComputeDepreciationScheduleAction)->execute($asset->fresh());
 
     // Act
     $this->artisan('app:process-depreciations');
@@ -191,7 +180,6 @@ test('automated depreciation job posts correct journal entries periodically', fu
     ]);
 });
 
-
 test('posted depreciation entries are immutable and hashed', function () {
     // Arrange
     $assetDTO = new CreateAssetDTO(
@@ -207,10 +195,10 @@ test('posted depreciation entries are immutable and hashed', function () {
         accumulated_depreciation_account_id: $this->accumulatedDepreciationAccount->id,
         currency_id: $this->company->currency_id
     );
-    $asset = (new CreateAssetAction())->execute($assetDTO);
+    $asset = (new CreateAssetAction)->execute($assetDTO);
     $asset->status = AssetStatus::Confirmed;
     $asset->save();
-    (new \App\Actions\Assets\ComputeDepreciationScheduleAction())->execute($asset->fresh());
+    (new \App\Actions\Assets\ComputeDepreciationScheduleAction)->execute($asset->fresh());
     $this->artisan('app:process-depreciations');
 
     $depreciationEntry = $asset->depreciationEntries()->where('status', \App\Enums\Assets\DepreciationEntryStatus::Posted)->first();
@@ -228,7 +216,6 @@ test('posted depreciation entries are immutable and hashed', function () {
     $this->assertNotNull($journalEntry->previous_hash);
 });
 
-
 test('asset modification recomputes future depreciation schedule', function () {
     // Arrange: Create an asset and its initial depreciation schedule.
     $assetDTO = new \App\DataTransferObjects\Assets\CreateAssetDTO(
@@ -244,9 +231,9 @@ test('asset modification recomputes future depreciation schedule', function () {
         accumulated_depreciation_account_id: $this->accumulatedDepreciationAccount->id,
         currency_id: $this->company->currency_id
     );
-    $asset = (new \App\Actions\Assets\CreateAssetAction())->execute($assetDTO);
+    $asset = (new \App\Actions\Assets\CreateAssetAction)->execute($assetDTO);
     $asset->update(['status' => \App\Enums\Assets\AssetStatus::Confirmed]);
-    (new \App\Actions\Assets\ComputeDepreciationScheduleAction())->execute($asset);
+    (new \App\Actions\Assets\ComputeDepreciationScheduleAction)->execute($asset);
 
     // Arrange: Simulate posting the first 12 depreciation entries.
     $asset->depreciationEntries()->where('status', 'draft')->take(12)->get()->each(function ($entry) {
@@ -293,7 +280,6 @@ test('asset modification recomputes future depreciation schedule', function () {
     ]);
 });
 
-
 test('asset disposal correctly generates final journal entries', function () {
     // Arrange
     $assetDTO = new CreateAssetDTO(
@@ -309,10 +295,10 @@ test('asset disposal correctly generates final journal entries', function () {
         accumulated_depreciation_account_id: $this->accumulatedDepreciationAccount->id,
         currency_id: $this->company->currency_id
     );
-    $asset = (new CreateAssetAction())->execute($assetDTO);
+    $asset = (new CreateAssetAction)->execute($assetDTO);
     $asset->status = AssetStatus::Confirmed;
     $asset->save();
-    (new \App\Actions\Assets\ComputeDepreciationScheduleAction())->execute($asset->fresh());
+    (new \App\Actions\Assets\ComputeDepreciationScheduleAction)->execute($asset->fresh());
 
     // Post 5 years of depreciation
     for ($i = 0; $i < 60; $i++) {

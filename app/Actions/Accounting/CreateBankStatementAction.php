@@ -37,7 +37,7 @@ class CreateBankStatementAction
             }
 
             // 3. Create all lines at once. The MoneyCast will receive valid Money objects.
-            if (!empty($linesToCreate)) {
+            if (! empty($linesToCreate)) {
                 $bankStatement->bankStatementLines()->createMany($linesToCreate);
             }
 

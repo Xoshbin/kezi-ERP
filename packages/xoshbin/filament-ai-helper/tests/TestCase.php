@@ -2,10 +2,10 @@
 
 namespace Xoshbin\FilamentAiHelper\Tests;
 
-use Xoshbin\FilamentAiHelper\FilamentAiHelperServiceProvider;
 use Filament\FilamentServiceProvider;
 use Livewire\LivewireServiceProvider;
 use Orchestra\Testbench\TestCase as Orchestra;
+use Xoshbin\FilamentAiHelper\FilamentAiHelperServiceProvider;
 
 class TestCase extends Orchestra
 {

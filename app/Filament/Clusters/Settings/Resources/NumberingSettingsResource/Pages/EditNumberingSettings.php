@@ -3,8 +3,8 @@
 namespace App\Filament\Clusters\Settings\Resources\NumberingSettingsResource\Pages;
 
 use App\Filament\Clusters\Settings\Resources\NumberingSettingsResource;
-use Filament\Resources\Pages\EditRecord;
 use Filament\Notifications\Notification;
+use Filament\Resources\Pages\EditRecord;
 
 class EditNumberingSettings extends EditRecord
 {
@@ -20,15 +20,15 @@ class EditNumberingSettings extends EditRecord
     protected function beforeSave(): void
     {
         // Validate that numbering settings can be changed
-        if (!$this->record->canChangeNumberingSettings()) {
+        if (! $this->record->canChangeNumberingSettings()) {
             $errors = $this->record->getNumberingChangeValidationErrors();
-            
+
             Notification::make()
                 ->title(__('numbering.settings.cannot_change_title'))
-                ->body(__('numbering.settings.cannot_change_message') . ' (' . implode(', ', $errors) . ')')
+                ->body(__('numbering.settings.cannot_change_message').' ('.implode(', ', $errors).')')
                 ->danger()
                 ->send();
-                
+
             $this->halt();
         }
     }
@@ -45,7 +45,7 @@ class EditNumberingSettings extends EditRecord
     protected function mutateFormDataBeforeFill(array $data): array
     {
         // Ensure numbering_settings has default values if not set
-        if (!isset($data['numbering_settings'])) {
+        if (! isset($data['numbering_settings'])) {
             $data['numbering_settings'] = $this->record->getDefaultNumberingSettings();
         }
 

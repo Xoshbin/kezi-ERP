@@ -16,6 +16,6 @@ enum JournalType: string
      */
     public function label(): string
     {
-        return __('enums.journal_type.' . $this->value);
+        return __('enums.journal_type.'.$this->value);
     }
 }

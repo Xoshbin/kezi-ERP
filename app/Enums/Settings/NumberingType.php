@@ -55,10 +55,10 @@ enum NumberingType: string
     /**
      * Generate the formatted number based on the type.
      *
-     * @param string $prefix The document prefix (e.g., 'INV', 'BILL')
-     * @param int $number The sequential number
-     * @param int $padding The number padding (default 5)
-     * @param Carbon|null $date The document date (for date-based formats)
+     * @param  string  $prefix  The document prefix (e.g., 'INV', 'BILL')
+     * @param  int  $number  The sequential number
+     * @param  int  $padding  The number padding (default 5)
+     * @param  Carbon|null  $date  The document date (for date-based formats)
      * @return string The formatted number
      */
     public function formatNumber(string $prefix, int $number, int $padding = 5, ?Carbon $date = null): string
@@ -80,7 +80,7 @@ enum NumberingType: string
     /**
      * Get example format for display purposes.
      *
-     * @param string $prefix The document prefix (e.g., 'INV', 'BILL')
+     * @param  string  $prefix  The document prefix (e.g., 'INV', 'BILL')
      * @return string Example formatted number
      */
     public function getExample(string $prefix = 'INV'): string
@@ -91,8 +91,7 @@ enum NumberingType: string
     /**
      * Get all available numbering types with their labels and examples.
      *
-     * @param string $prefix The document prefix for examples
-     * @return array
+     * @param  string  $prefix  The document prefix for examples
      */
     public static function getOptionsWithExamples(string $prefix = 'INV'): array
     {
@@ -112,15 +111,14 @@ enum NumberingType: string
     /**
      * Get options formatted for Filament select components.
      *
-     * @param string $prefix The document prefix for examples
-     * @return array
+     * @param  string  $prefix  The document prefix for examples
      */
     public static function getFilamentOptions(string $prefix = 'INV'): array
     {
         $options = [];
 
         foreach (self::cases() as $type) {
-            $options[$type->value] = $type->getExample($prefix) . ' (' . ucfirst(str_replace('_', ' ', $type->value)) . ')';
+            $options[$type->value] = $type->getExample($prefix).' ('.ucfirst(str_replace('_', ' ', $type->value)).')';
         }
 
         return $options;

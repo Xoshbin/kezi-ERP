@@ -3,18 +3,17 @@
 namespace App\Models;
 
 use App\Traits\TranslatableSearch;
-use Illuminate\Support\Carbon;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Support\Carbon;
 use Spatie\Translatable\HasTranslations;
 
 /**
  * Class LeaveType
  *
- * @package App\Models
  * @property int $id
  * @property int $company_id
  * @property array $name
@@ -109,8 +108,6 @@ class LeaveType extends Model
 
     /**
      * Get the translatable fields that should be searched.
-     *
-     * @return array
      */
     public function getTranslatableSearchFields(): array
     {
@@ -119,8 +116,6 @@ class LeaveType extends Model
 
     /**
      * Get the non-translatable fields that should be searched.
-     *
-     * @return array
      */
     public function getNonTranslatableSearchFields(): array
     {
@@ -129,8 +124,6 @@ class LeaveType extends Model
 
     /**
      * Get the company that owns the LeaveType.
-     *
-     * @return BelongsTo
      */
     public function company(): BelongsTo
     {
@@ -139,8 +132,6 @@ class LeaveType extends Model
 
     /**
      * Get the leave requests for this leave type.
-     *
-     * @return HasMany
      */
     public function leaveRequests(): HasMany
     {
@@ -155,8 +146,6 @@ class LeaveType extends Model
 
     /**
      * Check if this leave type requires manager approval.
-     *
-     * @return bool
      */
     public function requiresApproval(): bool
     {
@@ -165,8 +154,6 @@ class LeaveType extends Model
 
     /**
      * Check if this leave type is paid.
-     *
-     * @return bool
      */
     public function isPaid(): bool
     {
@@ -175,8 +162,6 @@ class LeaveType extends Model
 
     /**
      * Check if unused days can be carried forward to next year.
-     *
-     * @return bool
      */
     public function canCarryForward(): bool
     {
@@ -185,8 +170,6 @@ class LeaveType extends Model
 
     /**
      * Get the maximum days that can be carried forward.
-     *
-     * @return int
      */
     public function getMaxCarryForwardDays(): int
     {
@@ -195,8 +178,6 @@ class LeaveType extends Model
 
     /**
      * Check if documentation is required for this leave type.
-     *
-     * @return bool
      */
     public function requiresDocumentation(): bool
     {
@@ -205,8 +186,6 @@ class LeaveType extends Model
 
     /**
      * Get the minimum notice required in days.
-     *
-     * @return int
      */
     public function getMinimumNotice(): int
     {
@@ -215,13 +194,10 @@ class LeaveType extends Model
 
     /**
      * Check if the requested days exceed the maximum consecutive days allowed.
-     *
-     * @param int $requestedDays
-     * @return bool
      */
     public function exceedsMaxConsecutiveDays(int $requestedDays): bool
     {
-        if (!$this->max_consecutive_days) {
+        if (! $this->max_consecutive_days) {
             return false;
         }
 
@@ -230,8 +206,6 @@ class LeaveType extends Model
 
     /**
      * Get the total leave requests for this type in the current year.
-     *
-     * @return int
      */
     public function getTotalRequestsThisYear(): int
     {
@@ -243,8 +217,6 @@ class LeaveType extends Model
 
     /**
      * Get the total days requested for this type in the current year.
-     *
-     * @return float
      */
     public function getTotalDaysRequestedThisYear(): float
     {

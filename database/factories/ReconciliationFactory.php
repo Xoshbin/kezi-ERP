@@ -65,7 +65,7 @@ class ReconciliationFactory extends Factory
     /**
      * Indicate that the reconciliation has a reference.
      */
-    public function withReference(string $reference = null): static
+    public function withReference(?string $reference = null): static
     {
         return $this->state(fn (array $attributes) => [
             'reference' => $reference ?? $this->faker->regexify('[A-Z]{3}-[0-9]{4}'),
@@ -75,7 +75,7 @@ class ReconciliationFactory extends Factory
     /**
      * Indicate that the reconciliation has a description.
      */
-    public function withDescription(string $description = null): static
+    public function withDescription(?string $description = null): static
     {
         return $this->state(fn (array $attributes) => [
             'description' => $description ?? $this->faker->sentence(),

@@ -3,10 +3,10 @@
 namespace Database\Factories;
 
 use App\Models\BankStatement;
-use Brick\Money\Money;
 use App\Models\Company;
-use App\Models\Journal;
 use App\Models\Currency;
+use App\Models\Journal;
+use Brick\Money\Money;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**

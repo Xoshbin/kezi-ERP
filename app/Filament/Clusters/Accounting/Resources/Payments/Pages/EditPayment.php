@@ -2,7 +2,6 @@
 
 namespace App\Filament\Clusters\Accounting\Resources\Payments\Pages;
 
-use Filament\Facades\Filament;
 use App\Actions\Payments\UpdatePaymentAction;
 use App\DataTransferObjects\Payments\UpdatePaymentDTO;
 use App\Enums\Payments\PaymentPurpose;
@@ -16,6 +15,7 @@ use Brick\Money\Money;
 use Exception;
 use Filament\Actions\Action;
 use Filament\Actions\DeleteAction;
+use Filament\Facades\Filament;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
 use Illuminate\Database\Eloquent\Model;
@@ -32,7 +32,7 @@ class EditPayment extends EditRecord
                 ->label(__('payment.edit.action.confirm.label'))
                 ->color('success')
                 ->requiresConfirmation()
-                ->visible(fn(Payment $record): bool => $record->status === PaymentStatus::Draft)
+                ->visible(fn (Payment $record): bool => $record->status === PaymentStatus::Draft)
                 ->action(function (Payment $record): void {
                     $this->save();
                     $service = app(PaymentService::class);
@@ -68,7 +68,7 @@ class EditPayment extends EditRecord
             //     // Only show this button for Confirmed payments
             //     ->visible(fn(Payment $record): bool => $record->status === PaymentStatus::Confirmed),
             DeleteAction::make()
-                ->visible(fn(Payment $record): bool => $record->status === PaymentStatus::Draft),
+                ->visible(fn (Payment $record): bool => $record->status === PaymentStatus::Draft),
         ];
     }
 

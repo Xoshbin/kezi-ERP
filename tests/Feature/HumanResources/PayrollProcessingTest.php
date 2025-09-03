@@ -2,22 +2,17 @@
 
 namespace Tests\Feature\HumanResources;
 
-use App\Actions\HumanResources\CreateEmployeeAction;
-use App\Actions\HumanResources\CreateEmploymentContractAction;
-use App\Actions\HumanResources\ProcessPayrollAction;
 use App\DataTransferObjects\HumanResources\CreateEmployeeDTO;
 use App\DataTransferObjects\HumanResources\CreateEmploymentContractDTO;
-use App\DataTransferObjects\HumanResources\ProcessPayrollDTO;
-use App\DataTransferObjects\HumanResources\PayrollLineDTO;
+use App\Models\Account;
 use App\Models\Company;
 use App\Models\Currency;
 use App\Models\Employee;
 use App\Models\EmploymentContract;
-use App\Models\Payroll;
-use App\Models\User;
-use App\Models\Account;
 use App\Models\Journal;
 use App\Models\JournalEntry;
+use App\Models\Payroll;
+use App\Models\User;
 use App\Services\HumanResources\PayrollService;
 use Brick\Money\Money;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -29,9 +24,13 @@ class PayrollProcessingTest extends TestCase
     use RefreshDatabase, WithConfiguredCompany;
 
     private Company $company;
+
     private Currency $currency;
+
     private User $user;
+
     private Employee $employee;
+
     private EmploymentContract $contract;
 
     protected function setUp(): void
@@ -158,8 +157,6 @@ class PayrollProcessingTest extends TestCase
         $expectedTransportAllowance = Money::of(100000, $this->currency->code);
         $expectedMealAllowance = Money::of(50000, $this->currency->code);
 
-
-
         $this->assertTrue($payroll->base_salary->isEqualTo($expectedBaseSalary));
         $this->assertTrue($payroll->housing_allowance->isEqualTo($expectedHousingAllowance));
         $this->assertTrue($payroll->transport_allowance->isEqualTo($expectedTransportAllowance));
@@ -223,8 +220,8 @@ class PayrollProcessingTest extends TestCase
         $this->assertGreaterThan(0, $journalEntry->lines->count());
 
         // Verify debits equal credits
-        $totalDebits = $journalEntry->lines->sum(fn($line) => (int) $line->debit->getMinorAmount()->toInt());
-        $totalCredits = $journalEntry->lines->sum(fn($line) => (int) $line->credit->getMinorAmount()->toInt());
+        $totalDebits = $journalEntry->lines->sum(fn ($line) => (int) $line->debit->getMinorAmount()->toInt());
+        $totalCredits = $journalEntry->lines->sum(fn ($line) => (int) $line->credit->getMinorAmount()->toInt());
         $this->assertEquals($totalDebits, $totalCredits);
     }
 

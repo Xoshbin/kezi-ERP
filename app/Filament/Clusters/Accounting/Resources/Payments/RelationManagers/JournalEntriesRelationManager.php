@@ -87,6 +87,7 @@ class JournalEntriesRelationManager extends RelationManager
                         if (strlen($state) <= 50) {
                             return null;
                         }
+
                         return $state;
                     }),
 
@@ -116,7 +117,7 @@ class JournalEntriesRelationManager extends RelationManager
                 TextColumn::make('source_type')
                     ->label(__('payment.journal_entries_relation_manager.source_type'))
                     ->formatStateUsing(function (?string $state): string {
-                        if (!$state) {
+                        if (! $state) {
                             return __('payment.journal_entries_relation_manager.no_source');
                         }
 

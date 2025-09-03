@@ -2,9 +2,9 @@
 
 namespace Database\Factories;
 
+use App\Enums\Partners\PartnerType;
 use App\Models\Company;
 use App\Models\Partner;
-use App\Enums\Partners\PartnerType;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**

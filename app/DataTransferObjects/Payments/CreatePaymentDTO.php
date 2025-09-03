@@ -9,7 +9,7 @@ use Brick\Money\Money;
 class CreatePaymentDTO
 {
     /**
-     * @param CreatePaymentDocumentLinkDTO[] $document_links
+     * @param  CreatePaymentDocumentLinkDTO[]  $document_links
      */
     public function __construct(
         public readonly int $company_id,

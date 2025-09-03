@@ -2,7 +2,6 @@
 
 namespace Database\Seeders;
 
-use Exception;
 use App\Models\Invoice;
 use App\Models\Payment;
 use App\Models\User;
@@ -10,6 +9,7 @@ use App\Models\VendorBill;
 use App\Services\InvoiceService;
 use App\Services\PaymentService;
 use App\Services\VendorBillService;
+use Exception;
 use Illuminate\Database\Seeder;
 
 class PostTransactionsSeeder extends Seeder
@@ -26,8 +26,9 @@ class PostTransactionsSeeder extends Seeder
     {
         $user = User::first();
 
-        if (!$user) {
+        if (! $user) {
             $this->command->warn('No users found. Skipping transaction posting.');
+
             return;
         }
 

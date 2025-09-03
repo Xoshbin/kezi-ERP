@@ -2,15 +2,15 @@
 
 namespace Database\Seeders;
 
-use Brick\Money\Money;
+use App\Actions\Purchases\CreateVendorBillLineAction;
+use App\DataTransferObjects\Purchases\CreateVendorBillLineDTO;
+use App\Enums\Partners\PartnerType;
 use App\Models\Company;
 use App\Models\Partner;
 use App\Models\Product;
 use App\Models\VendorBill;
+use Brick\Money\Money;
 use Illuminate\Database\Seeder;
-use App\Enums\Partners\PartnerType;
-use App\Actions\Purchases\CreateVendorBillLineAction;
-use App\DataTransferObjects\Purchases\CreateVendorBillLineDTO;
 
 class VendorBillSeeder extends Seeder
 {

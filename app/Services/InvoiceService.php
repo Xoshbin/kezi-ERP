@@ -2,31 +2,22 @@
 
 namespace App\Services;
 
-use Carbon\Carbon;
-use Exception;
-use App\Models\User;
-use Brick\Money\Money;
-use App\Models\Company;
-use App\Models\Invoice;
-use App\Models\Currency;
-use App\Models\JournalEntry;
-use App\Enums\Sales\InvoiceStatus;
-use Brick\Math\RoundingMode;
-use App\Events\InvoiceConfirmed;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Gate;
-use Illuminate\Support\Facades\Validator;
-use App\Models\AuditLog; // Add this import
-use App\Services\Accounting\LockDateService;
-use App\Services\SequenceService;
-use App\Exceptions\UpdateNotAllowedException;
-use Illuminate\Validation\ValidationException;
-use App\Exceptions\DeletionNotAllowedException;
+use App\Actions\Accounting\CreateJournalEntryForInvoiceAction;
 use App\Actions\Sales\CreateStockMovesForInvoiceAction;
 use App\DataTransferObjects\Sales\CreateStockMovesForInvoiceDTO;
-use App\Actions\Accounting\CreateJournalEntryForInvoiceAction;
-use App\Services\CurrencyConverterService;
-use App\Services\ExchangeRateService;
+use App\Enums\Sales\InvoiceStatus;
+use App\Events\InvoiceConfirmed;
+use App\Exceptions\DeletionNotAllowedException;
+use App\Models\AuditLog;
+use App\Models\Company;
+use App\Models\Currency;
+use App\Models\Invoice;
+use App\Models\User; // Add this import
+use App\Services\Accounting\LockDateService;
+use Carbon\Carbon;
+use Exception;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Gate;
 
 class InvoiceService
 {
@@ -38,8 +29,7 @@ class InvoiceService
         protected SequenceService $sequenceService,
         protected CurrencyConverterService $currencyConverter,
         protected ExchangeRateService $exchangeRateService
-    ) {
-    }
+    ) {}
 
     public function delete(Invoice $invoice): bool
     {
@@ -84,8 +74,6 @@ class InvoiceService
         });
     }
 
-
-
     /**
      * Resets a posted invoice back to draft status with a detailed audit log.
      */
@@ -97,7 +85,7 @@ class InvoiceService
 
         DB::transaction(function () use ($invoice, $user, $reason) {
             $originalEntry = $invoice->journalEntry;
-            if (!$originalEntry) {
+            if (! $originalEntry) {
                 throw new Exception('Cannot reset an invoice without a journal entry.');
             }
 
@@ -107,7 +95,7 @@ class InvoiceService
                 'event_type' => 'reset_to_draft',
                 'auditable_type' => get_class($invoice),
                 'auditable_id' => $invoice->id,
-                'description' => 'Invoice Reset to Draft: ' . $reason,
+                'description' => 'Invoice Reset to Draft: '.$reason,
                 'old_values' => ['status' => $invoice->status],
                 'new_values' => ['status' => InvoiceStatus::Draft],
                 'ip_address' => request()->ip(),
@@ -116,7 +104,7 @@ class InvoiceService
             // Step 2: Use the service to create the reversing journal entry.
             $this->journalEntryService->createReversal(
                 $originalEntry,
-                'Reset to Draft of Invoice ' . $invoice->invoice_number . ': ' . $reason,
+                'Reset to Draft of Invoice '.$invoice->invoice_number.': '.$reason,
                 $user
             );
 
@@ -158,7 +146,7 @@ class InvoiceService
 
         DB::transaction(function () use ($invoice, $user, $reason) {
             $originalEntry = $invoice->journalEntry;
-            if (!$originalEntry) {
+            if (! $originalEntry) {
                 throw new Exception('Cannot cancel an invoice without a journal entry.');
             }
 
@@ -168,7 +156,7 @@ class InvoiceService
                 'event_type' => 'cancellation',
                 'auditable_type' => get_class($invoice),
                 'auditable_id' => $invoice->id,
-                'description' => 'Invoice Cancelled: ' . $reason,
+                'description' => 'Invoice Cancelled: '.$reason,
                 'old_values' => ['status' => $invoice->status],
                 'new_values' => ['status' => InvoiceStatus::Cancelled],
                 'ip_address' => request()->ip(),
@@ -177,7 +165,7 @@ class InvoiceService
             // Step 2: Use the service to create the reversing journal entry.
             $this->journalEntryService->createReversal(
                 $originalEntry,
-                'Cancellation of Invoice ' . $invoice->invoice_number . ': ' . $reason,
+                'Cancellation of Invoice '.$invoice->invoice_number.': '.$reason,
                 $user
             );
 
@@ -201,6 +189,7 @@ class InvoiceService
             $invoice->exchange_rate_at_creation = 1.0;
             $invoice->total_amount_company_currency = $invoice->total_amount;
             $invoice->total_tax_company_currency = $invoice->total_tax;
+
             return;
         }
 
@@ -208,10 +197,11 @@ class InvoiceService
         $exchangeRate = $this->currencyConverter->getExchangeRate($invoice->currency, $invoice->invoice_date, $invoice->company);
 
         // If no exchange rate is found, skip multi-currency processing for backward compatibility
-        if (!$exchangeRate) {
+        if (! $exchangeRate) {
             $invoice->exchange_rate_at_creation = 1.0;
             $invoice->total_amount_company_currency = $invoice->total_amount;
             $invoice->total_tax_company_currency = $invoice->total_tax;
+
             return;
         }
 

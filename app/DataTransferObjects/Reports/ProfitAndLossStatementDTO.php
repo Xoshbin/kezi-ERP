@@ -8,8 +8,8 @@ use Illuminate\Support\Collection;
 readonly class ProfitAndLossStatementDTO
 {
     /**
-     * @param Collection<int, ReportLineDTO> $revenueLines
-     * @param Collection<int, ReportLineDTO> $expenseLines
+     * @param  Collection<int, ReportLineDTO>  $revenueLines
+     * @param  Collection<int, ReportLineDTO>  $expenseLines
      */
     public function __construct(
         public Collection $revenueLines,

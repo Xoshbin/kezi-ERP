@@ -2,21 +2,22 @@
 
 namespace App\Filament\Clusters\Accounting\Pages\Reports;
 
-use Carbon\Carbon;
-use App\Models\Company;
-use Filament\Pages\Page;
-use Filament\Actions\Action;
-use Filament\Schemas\Schema;
-use Filament\Facades\Filament;
-use App\Support\NumberFormatter;
-use Filament\Schemas\Components\Section;
-use Filament\Forms\Components\DatePicker;
-use App\Services\Reports\TaxReportService;
 use App\Filament\Clusters\Accounting\AccountingCluster;
+use App\Models\Company;
+use App\Services\Reports\TaxReportService;
+use App\Support\NumberFormatter;
+use Carbon\Carbon;
+use Filament\Actions\Action;
+use Filament\Facades\Filament;
+use Filament\Forms\Components\DatePicker;
+use Filament\Pages\Page;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Schema;
 
 class ViewTaxReport extends Page
 {
-    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-document-text';
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-document-text';
+
     protected string $view = 'filament.pages.reports.view-tax-report';
 
     public static function shouldRegisterNavigation(): bool
@@ -27,7 +28,9 @@ class ViewTaxReport extends Page
     protected static ?string $cluster = AccountingCluster::class;
 
     public ?string $startDate = null;
+
     public ?string $endDate = null;
+
     public ?array $reportData = null;
 
     public static function getNavigationLabel(): string

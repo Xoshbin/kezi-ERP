@@ -1,7 +1,7 @@
 <?php
 
-use Xoshbin\FilamentAiHelper\Http\Controllers\AiChatController;
 use Illuminate\Support\Facades\Route;
+use Xoshbin\FilamentAiHelper\Http\Controllers\AiChatController;
 
 /*
 |--------------------------------------------------------------------------

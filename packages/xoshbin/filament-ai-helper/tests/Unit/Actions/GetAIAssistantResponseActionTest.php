@@ -1,16 +1,17 @@
 <?php
 
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Log;
 use Xoshbin\FilamentAiHelper\Actions\GetAIAssistantResponseAction;
 use Xoshbin\FilamentAiHelper\DTOs\AIHelperContextDTO;
 use Xoshbin\FilamentAiHelper\Exceptions\GeminiApiException;
 use Xoshbin\FilamentAiHelper\Services\GeminiService;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Log;
 
 // Mock model for testing
 class InvoiceModel extends Model
 {
     protected $table = 'invoices';
+
     protected $fillable = ['number', 'total', 'customer_id'];
 
     public function customer()
@@ -27,12 +28,14 @@ class InvoiceModel extends Model
 class CustomerModel extends Model
 {
     protected $table = 'customers';
+
     protected $fillable = ['name', 'email'];
 }
 
 class InvoiceLineModel extends Model
 {
     protected $table = 'invoice_lines';
+
     protected $fillable = ['product_id', 'quantity', 'price'];
 
     public function product()
@@ -44,6 +47,7 @@ class InvoiceLineModel extends Model
 class ProductModel extends Model
 {
     protected $table = 'products';
+
     protected $fillable = ['name', 'price'];
 }
 
@@ -139,7 +143,7 @@ it('builds correct system prompt with locale', function () {
 });
 
 it('includes context data in prompt when model exists', function () {
-    $model = new InvoiceModel();
+    $model = new InvoiceModel;
     $model->id = 1;
     $model->number = 'INV-001';
     $model->total = 1000;
@@ -194,8 +198,8 @@ it('uses specific task instructions for known model types', function () {
     config([
         'filament-ai-helper.assistant.context_prompts' => [
             'invoice' => 'Analyze this invoice for profit margins',
-            'default' => 'General analysis'
-        ]
+            'default' => 'General analysis',
+        ],
     ]);
 
     $geminiService = Mockery::mock(GeminiService::class);
@@ -223,8 +227,8 @@ it('falls back to default task instructions for unknown model types', function (
     config([
         'filament-ai-helper.assistant.context_prompts' => [
             'invoice' => 'Analyze this invoice for profit margins',
-            'default' => 'General analysis'
-        ]
+            'default' => 'General analysis',
+        ],
     ]);
 
     $geminiService = Mockery::mock(GeminiService::class);
@@ -249,7 +253,7 @@ it('falls back to default task instructions for unknown model types', function (
 });
 
 it('generates welcome message with record context', function () {
-    $model = new InvoiceModel();
+    $model = new InvoiceModel;
     $model->id = 1;
     $model->number = 'INV-001';
 
@@ -307,7 +311,7 @@ it('returns empty welcome message when disabled', function () {
 it('truncates context data when too long', function () {
     config(['filament-ai-helper.assistant.max_context_length' => 50]);
 
-    $model = new InvoiceModel();
+    $model = new InvoiceModel;
     $model->id = 1;
     $model->number = 'INV-001';
     $model->description = str_repeat('Very long description ', 100); // Make it very long

@@ -2,8 +2,8 @@
 
 namespace Database\Factories;
 
-use App\Models\BankStatementLine;
 use App\Models\BankStatement;
+use App\Models\BankStatementLine;
 use Brick\Money\Money;
 use Illuminate\Database\Eloquent\Factories\Factory;
 

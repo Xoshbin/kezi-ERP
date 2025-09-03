@@ -2,28 +2,27 @@
 
 namespace App\Services;
 
+use App\Models\Account;
 use App\Models\Company;
 use App\Models\Currency;
 use App\Models\Invoice;
-use App\Models\VendorBill;
-use App\Models\Payment;
 use App\Models\JournalEntry;
-use App\Models\Account;
-use App\Services\CurrencyConverterService;
-use App\Services\JournalEntryService;
+use App\Models\Payment;
+use App\Models\VendorBill;
 use Brick\Money\Money;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
 
 /**
  * ExchangeGainLossService
- * 
+ *
  * Handles calculation and posting of exchange gains and losses
  * for multi-currency transactions and period-end revaluations.
  */
 class ExchangeGainLossService
 {
     protected CurrencyConverterService $currencyConverter;
+
     protected JournalEntryService $journalEntryService;
 
     public function __construct(
@@ -37,10 +36,8 @@ class ExchangeGainLossService
     /**
      * Calculate and post realized exchange gain/loss for a payment reconciliation.
      *
-     * @param Payment $payment
-     * @param Invoice|VendorBill $document
-     * @param Money $amountApplied
-     * @return JournalEntry|null
+     * @param  Payment  $payment
+     * @param  Invoice|VendorBill  $document
      */
     public function processRealizedGainLoss($payment, $document, Money $amountApplied): ?JournalEntry
     {
@@ -86,9 +83,7 @@ class ExchangeGainLossService
     /**
      * Perform period-end revaluation of foreign currency balances.
      *
-     * @param Company $company
-     * @param Carbon $revaluationDate
-     * @param array $accountIds Optional specific accounts to revalue
+     * @param  array  $accountIds  Optional specific accounts to revalue
      * @return Collection Collection of journal entries created
      */
     public function performPeriodEndRevaluation(
@@ -106,8 +101,8 @@ class ExchangeGainLossService
 
             foreach ($foreignCurrencyBalances as $currencyId => $balance) {
                 $currency = Currency::find($currencyId);
-                
-                if (!$currency || $currency->id === $company->currency_id) {
+
+                if (! $currency || $currency->id === $company->currency_id) {
                     continue; // Skip base currency
                 }
 
@@ -205,9 +200,9 @@ class ExchangeGainLossService
     ): JournalEntry {
         $isGain = $exchangeDifference->isPositive();
         $gainLossAccount = $company->default_gain_loss_account_id;
-        
+
         // Determine the receivable/payable account
-        $balanceAccount = $document instanceof Invoice 
+        $balanceAccount = $document instanceof Invoice
             ? $company->default_accounts_receivable_id
             : $company->default_accounts_payable_id;
 
@@ -219,13 +214,13 @@ class ExchangeGainLossService
                 'account_id' => $balanceAccount,
                 'debit' => abs($exchangeDifference->getAmount()->toFloat()),
                 'credit' => 0,
-                'description' => "Realized exchange gain on payment",
+                'description' => 'Realized exchange gain on payment',
             ];
             $lines[] = [
                 'account_id' => $gainLossAccount,
                 'debit' => 0,
                 'credit' => abs($exchangeDifference->getAmount()->toFloat()),
-                'description' => "Realized exchange gain",
+                'description' => 'Realized exchange gain',
             ];
         } else {
             // Debit Exchange Loss, Credit Receivable/Payable
@@ -233,13 +228,13 @@ class ExchangeGainLossService
                 'account_id' => $gainLossAccount,
                 'debit' => abs($exchangeDifference->getAmount()->toFloat()),
                 'credit' => 0,
-                'description' => "Realized exchange loss",
+                'description' => 'Realized exchange loss',
             ];
             $lines[] = [
                 'account_id' => $balanceAccount,
                 'debit' => 0,
                 'credit' => abs($exchangeDifference->getAmount()->toFloat()),
-                'description' => "Realized exchange loss on payment",
+                'description' => 'Realized exchange loss on payment',
             ];
         }
 
@@ -248,7 +243,7 @@ class ExchangeGainLossService
             'journal_id' => $company->default_bank_journal_id, // Or exchange difference journal
             'entry_date' => $payment->payment_date,
             'reference' => "EX-GAIN-LOSS-{$payment->id}",
-            'description' => "Realized exchange " . ($isGain ? 'gain' : 'loss') . " on payment #{$payment->id}",
+            'description' => 'Realized exchange '.($isGain ? 'gain' : 'loss')." on payment #{$payment->id}",
             'currency_id' => $company->currency_id,
             'lines' => $lines,
         ]);
@@ -280,8 +275,8 @@ class ExchangeGainLossService
     protected function getAccountsForRevaluation(Company $company, array $accountIds = []): Collection
     {
         $query = $company->accounts();
-        
-        if (!empty($accountIds)) {
+
+        if (! empty($accountIds)) {
             $query->whereIn('id', $accountIds);
         } else {
             // Typically revalue receivables, payables, and foreign currency bank accounts

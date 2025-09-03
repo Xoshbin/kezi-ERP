@@ -12,6 +12,6 @@ enum BudgetType: string
      */
     public function label(): string
     {
-        return __('enums.budget_type.' . $this->value);
+        return __('enums.budget_type.'.$this->value);
     }
 }

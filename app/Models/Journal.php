@@ -2,21 +2,19 @@
 
 namespace App\Models;
 
-use App\Traits\TranslatableSearch;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Support\Carbon;
-use Illuminate\Database\Eloquent\Collection;
-use Database\Factories\JournalFactory;
-use App\Models\Account;
-use App\Observers\JournalObserver;
 use App\Enums\Accounting\JournalType;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Observers\JournalObserver;
+use App\Traits\TranslatableSearch;
+use Database\Factories\JournalFactory;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Carbon;
 use Spatie\Translatable\HasTranslations;
-
 
 /**
  * @property int $id
@@ -31,6 +29,7 @@ use Spatie\Translatable\HasTranslations;
  * @property-read Currency|null $currency
  * @property-read Collection<int, JournalEntry> $journalEntries
  * @property-read int|null $journal_entries_count
+ *
  * @method static JournalFactory factory($count = null, $state = [])
  * @method static Builder<static>|Journal newModelQuery()
  * @method static Builder<static>|Journal newQuery()
@@ -44,6 +43,7 @@ use Spatie\Translatable\HasTranslations;
  * @method static Builder<static>|Journal whereShortCode($value)
  * @method static Builder<static>|Journal whereType($value)
  * @method static Builder<static>|Journal whereUpdatedAt($value)
+ *
  * @mixin \Eloquent
  */
 #[ObservedBy([JournalObserver::class])]
@@ -83,7 +83,6 @@ class Journal extends Model
     protected $casts = [
         'type' => JournalType::class, // <-- Add this cast
     ];
-
 
     /**
      * Get the default debit account for this journal.
@@ -138,6 +137,7 @@ class Journal extends Model
      * @OA\Property(
      *     property="journal_entries",
      *     type="array",
+     *
      *     @OA\Items(ref="#/components/schemas/JournalEntry")
      * )
      */

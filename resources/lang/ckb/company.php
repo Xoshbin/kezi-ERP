@@ -30,7 +30,7 @@ return [
         'is_deprecated' => 'بەسەرچوو',
     ],
 
-'users' => [
+    'users' => [
         'title' => 'بەکارهێنەران',
         'name' => 'ناو',
         'email' => 'ئیمەیڵ',

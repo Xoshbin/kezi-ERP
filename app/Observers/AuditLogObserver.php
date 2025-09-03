@@ -2,8 +2,8 @@
 
 namespace App\Observers;
 
-use Filament\Facades\Filament;
 use App\Models\AuditLog;
+use Filament\Facades\Filament;
 use Illuminate\Database\Eloquent\Model;
 
 class AuditLogObserver
@@ -47,12 +47,16 @@ class AuditLogObserver
             $oldValues = $model->getAttributes();
         } elseif ($eventType !== 'record_created') {
             foreach ($model->getChanges() as $key => $value) {
-                if ($key === 'updated_at') continue;
+                if ($key === 'updated_at') {
+                    continue;
+                }
                 $oldValues[$key] = $model->getOriginal($key);
                 $newValues[$key] = $value;
             }
 
-            if (empty($newValues)) return;
+            if (empty($newValues)) {
+                return;
+            }
         }
 
         // Determine company_id from Filament tenant or model
@@ -65,9 +69,9 @@ class AuditLogObserver
         }
 
         // If no tenant, try to get company from the model being audited
-        if (!$companyId && method_exists($model, 'company') && $model->company) {
+        if (! $companyId && method_exists($model, 'company') && $model->company) {
             $companyId = $model->company->id;
-        } elseif (!$companyId && isset($model->company_id)) {
+        } elseif (! $companyId && isset($model->company_id)) {
             $companyId = $model->company_id;
         }
 

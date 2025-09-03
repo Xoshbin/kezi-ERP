@@ -3,9 +3,8 @@
 namespace App\Actions\HumanResources;
 
 use App\DataTransferObjects\HumanResources\ProcessPayrollDTO;
-use App\Models\Payroll;
 use App\Models\Currency;
-use App\Models\Company;
+use App\Models\Payroll;
 use Brick\Money\Money;
 use Illuminate\Support\Facades\DB;
 
@@ -13,8 +12,7 @@ class ProcessPayrollAction
 {
     public function __construct(
         protected CreatePayrollLineAction $createPayrollLineAction
-    ) {
-    }
+    ) {}
 
     public function execute(ProcessPayrollDTO $processPayrollDTO): Payroll
     {
@@ -154,20 +152,20 @@ class ProcessPayrollAction
         $prefix = 'PAY';
         $year = now()->year;
         $month = now()->format('m');
-        
+
         // Get the next sequential number for this month
         $lastPayroll = Payroll::where('company_id', $companyId)
-            ->where('payroll_number', 'like', $prefix . $year . $month . '%')
+            ->where('payroll_number', 'like', $prefix.$year.$month.'%')
             ->orderBy('payroll_number', 'desc')
             ->first();
-        
+
         if ($lastPayroll) {
             $lastNumber = (int) substr($lastPayroll->payroll_number, -4);
             $nextNumber = $lastNumber + 1;
         } else {
             $nextNumber = 1;
         }
-        
-        return $prefix . $year . $month . str_pad($nextNumber, 4, '0', STR_PAD_LEFT);
+
+        return $prefix.$year.$month.str_pad($nextNumber, 4, '0', STR_PAD_LEFT);
     }
 }

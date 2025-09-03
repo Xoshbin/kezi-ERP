@@ -1,15 +1,12 @@
 <?php
 
-use App\Models\Tax;
-use App\Models\User;
 use App\Models\Account;
-use App\Models\Company;
 use App\Models\Partner;
 use App\Models\Product;
-use Tests\Traits\CreatesApplication;
+use App\Models\Tax;
+use Brick\Money\Money;
+use Illuminate\Foundation\Testing\RefreshDatabase; // Import the Money class
 use Tests\Traits\WithConfiguredCompany;
-use Brick\Money\Money; // Import the Money class
-use Illuminate\Foundation\Testing\RefreshDatabase;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);
 
@@ -34,7 +31,7 @@ test('a product record is soft-deleted to preserve its history and linkages', fu
     // MODIFIED: The product factory needs a Money object for unit_price
     $currencyCode = $this->company->currency->code;
     $product = Product::factory()->for($this->company)->create([
-        'unit_price' => Money::of(10, $currencyCode)
+        'unit_price' => Money::of(10, $currencyCode),
     ]);
     $product->delete();
 
@@ -47,7 +44,7 @@ test('a soft-deleted product can be retrieved with "withTrashed" for historical 
     // MODIFIED: The product factory needs a Money object for unit_price
     $currencyCode = $this->company->currency->code;
     $product = Product::factory()->for($this->company)->create([
-        'unit_price' => Money::of(10, $currencyCode)
+        'unit_price' => Money::of(10, $currencyCode),
     ]);
     $product->delete();
 
@@ -63,7 +60,7 @@ test('a product is correctly linked to its default income and expense general le
     $product = Product::factory()->for($this->company)->create([
         'income_account_id' => $incomeAccount->id,
         'expense_account_id' => $expenseAccount->id,
-        'unit_price' => Money::of(10, $currencyCode)
+        'unit_price' => Money::of(10, $currencyCode),
     ]);
 
     // Ensures proper accounting categorization for product sales and purchases [3, 5].

@@ -16,6 +16,5 @@ class StockMoveConfirmed
      */
     public function __construct(
         public readonly StockMove $stockMove
-    ) {
-    }
+    ) {}
 }

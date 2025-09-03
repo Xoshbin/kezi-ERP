@@ -2,22 +2,29 @@
 
 namespace Xoshbin\FilamentAiHelper\Livewire;
 
-use Xoshbin\FilamentAiHelper\Actions\GetAIAssistantResponseAction;
-use Xoshbin\FilamentAiHelper\DTOs\AIHelperContextDTO;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\RateLimiter;
 use Livewire\Attributes\On;
 use Livewire\Component;
+use Xoshbin\FilamentAiHelper\Actions\GetAIAssistantResponseAction;
+use Xoshbin\FilamentAiHelper\DTOs\AIHelperContextDTO;
 
 class AiChatBox extends Component
 {
     public string $modelClass = '';
+
     public string $modelId = '';
+
     public string $resourceClass = '';
+
     public string $currentQuestion = '';
+
     public array $messages = [];
+
     public bool $isLoading = false;
+
     public bool $hasError = false;
+
     public string $errorMessage = '';
 
     protected $rules = [
@@ -54,10 +61,11 @@ class AiChatBox extends Component
     {
         if (empty($this->modelClass) || empty($this->modelId)) {
             $this->addMessage('assistant',
-                "Hello! I'm AccounTech Pro, your AI accounting assistant. " .
-                "I can help you with accounting questions and analysis. " .
-                "How can I assist you today?"
+                "Hello! I'm AccounTech Pro, your AI accounting assistant. ".
+                'I can help you with accounting questions and analysis. '.
+                'How can I assist you today?'
             );
+
             return;
         }
 
@@ -66,13 +74,13 @@ class AiChatBox extends Component
             $action = app(GetAIAssistantResponseAction::class);
             $welcomeMessage = $action->generateWelcomeMessage($context);
 
-            if (!empty($welcomeMessage)) {
+            if (! empty($welcomeMessage)) {
                 $this->addMessage('assistant', $welcomeMessage);
             }
         } catch (\Exception $e) {
             $this->addMessage('assistant',
-                "Hello! I'm AccounTech Pro, your AI accounting assistant. " .
-                "How can I help you analyze this record?"
+                "Hello! I'm AccounTech Pro, your AI accounting assistant. ".
+                'How can I help you analyze this record?'
             );
         }
     }
@@ -86,6 +94,7 @@ class AiChatBox extends Component
 
         if ($this->isRateLimited()) {
             $this->addError('currentQuestion', 'Too many requests. Please wait a moment before sending another message.');
+
             return;
         }
 
@@ -162,7 +171,7 @@ class AiChatBox extends Component
         }
 
         try {
-            if (!class_exists($this->modelClass)) {
+            if (! class_exists($this->modelClass)) {
                 return null;
             }
 
@@ -177,11 +186,11 @@ class AiChatBox extends Component
      */
     protected function isRateLimited(): bool
     {
-        if (!config('filament-ai-helper.security.rate_limit.enabled', true)) {
+        if (! config('filament-ai-helper.security.rate_limit.enabled', true)) {
             return false;
         }
 
-        $key = 'ai-helper:' . request()->ip();
+        $key = 'ai-helper:'.request()->ip();
         $maxRequests = config('filament-ai-helper.security.rate_limit.max_requests', 10);
         $perMinutes = config('filament-ai-helper.security.rate_limit.per_minutes', 1);
 
@@ -194,7 +203,7 @@ class AiChatBox extends Component
     #[On('keydown.ctrl.enter')]
     public function handleCtrlEnter(): void
     {
-        if (!empty(trim($this->currentQuestion))) {
+        if (! empty(trim($this->currentQuestion))) {
             $this->sendMessage();
         }
     }
@@ -222,7 +231,7 @@ class AiChatBox extends Component
     {
         $record = $this->getRecord();
 
-        if (!$record) {
+        if (! $record) {
             return [
                 'type' => 'Unknown',
                 'identifier' => 'N/A',
@@ -239,7 +248,7 @@ class AiChatBox extends Component
         $identifier = "#{$record->getKey()}";
 
         foreach ($identifierFields as $field) {
-            if (isset($record->$field) && !empty($record->$field)) {
+            if (isset($record->$field) && ! empty($record->$field)) {
                 $identifier = $record->$field;
                 break;
             }

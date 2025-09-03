@@ -20,7 +20,7 @@ class CompanyFactory extends Factory
                     'name' => 'Iraqi Dinar',
                     'symbol' => 'IQD',
                     'is_active' => true,
-                    'decimal_places' => 3
+                    'decimal_places' => 3,
                 ]
             )->id,
             'fiscal_country' => 'IQ', // Default to Iraq as per project spec

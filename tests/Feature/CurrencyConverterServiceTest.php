@@ -105,7 +105,7 @@ test('throws exception when no exchange rate found', function () {
     $amount = Money::of(100, 'EUR');
     $service = app(CurrencyConverterService::class);
 
-    expect(fn() => $service->convertToBaseCurrency($amount, $foreignCurrency, $baseCurrency, Carbon::today(), $company))
+    expect(fn () => $service->convertToBaseCurrency($amount, $foreignCurrency, $baseCurrency, Carbon::today(), $company))
         ->toThrow(InvalidArgumentException::class, 'No exchange rate found');
 });
 

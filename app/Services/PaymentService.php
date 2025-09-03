@@ -2,27 +2,25 @@
 
 namespace App\Services;
 
-use Exception;
-use App\Models\User;
-use Brick\Money\Money;
-use App\Models\Company;
-use App\Models\Invoice;
-use App\Models\Payment;
-use App\Models\AuditLog;
-use App\Models\Currency;
-use App\Models\VendorBill;
-use App\Models\PaymentDocumentLink;
-use App\Enums\Sales\InvoiceStatus;
+use App\Actions\Accounting\CreateJournalEntryForPaymentAction;
 use App\Enums\Payments\PaymentStatus;
 use App\Enums\Purchases\VendorBillStatus;
-use InvalidArgumentException;
+use App\Enums\Sales\InvoiceStatus;
 use App\Events\PaymentConfirmed;
-use Illuminate\Support\Facades\DB;
-use App\Exceptions\UpdateNotAllowedException;
 use App\Exceptions\DeletionNotAllowedException;
-use App\Actions\Accounting\CreateJournalEntryForPaymentAction;
-use App\Services\CurrencyConverterService;
-use App\Services\ExchangeGainLossService;
+use App\Exceptions\UpdateNotAllowedException;
+use App\Models\AuditLog;
+use App\Models\Company;
+use App\Models\Currency;
+use App\Models\Invoice;
+use App\Models\Payment;
+use App\Models\PaymentDocumentLink;
+use App\Models\User;
+use App\Models\VendorBill;
+use Brick\Money\Money;
+use Exception;
+use Illuminate\Support\Facades\DB;
+use InvalidArgumentException;
 
 class PaymentService
 {
@@ -125,7 +123,7 @@ class PaymentService
 
         DB::transaction(function () use ($payment, $user, $reason) {
             $originalEntry = $payment->journalEntry;
-            if (!$originalEntry) {
+            if (! $originalEntry) {
                 throw new Exception('Cannot cancel payment without a journal entry.');
             }
 
@@ -135,7 +133,7 @@ class PaymentService
                 'event_type' => 'cancellation',
                 'auditable_type' => get_class($payment),
                 'auditable_id' => $payment->id,
-                'description' => 'Payment Cancelled: ' . $reason,
+                'description' => 'Payment Cancelled: '.$reason,
                 'old_values' => ['status' => $payment->status],
                 'new_values' => ['status' => PaymentStatus::Canceled],
                 'ip_address' => request()->ip(),
@@ -144,7 +142,7 @@ class PaymentService
             // Step 2: Create the reversal.
             $this->journalEntryService->createReversal(
                 $originalEntry,
-                'Cancellation of Payment #' . $payment->id . ': ' . $reason,
+                'Cancellation of Payment #'.$payment->id.': '.$reason,
                 $user
             );
 
@@ -158,7 +156,8 @@ class PaymentService
      * Deletes a payment, but only if it is in a draft state.
      * Enforces the accounting principle of immutability for confirmed transactions.
      *
-     * @param Payment $payment The payment to be deleted.
+     * @param  Payment  $payment  The payment to be deleted.
+     *
      * @throws DeletionNotAllowedException If the payment is not in a draft state.
      */
     public function delete(Payment $payment): void
@@ -185,6 +184,7 @@ class PaymentService
         if ($payment->currency_id === $payment->company->currency_id) {
             $payment->exchange_rate_at_payment = 1.0;
             $payment->amount_company_currency = $payment->amount;
+
             return;
         }
 
@@ -192,10 +192,11 @@ class PaymentService
         $exchangeRate = $this->currencyConverter->getExchangeRate($payment->currency, $payment->payment_date, $payment->company);
 
         // If no exchange rate is found, skip multi-currency processing for backward compatibility
-        if (!$exchangeRate) {
+        if (! $exchangeRate) {
             // For backward compatibility, just set the rate to 1.0 and use original amount
             $payment->exchange_rate_at_payment = 1.0;
             $payment->amount_company_currency = $payment->amount;
+
             return;
         }
 

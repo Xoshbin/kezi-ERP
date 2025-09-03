@@ -7,7 +7,7 @@ use Brick\Money\Money;
 readonly class ProcessPayrollDTO
 {
     /**
-     * @param PayrollLineDTO[] $payrollLines
+     * @param  PayrollLineDTO[]  $payrollLines
      */
     public function __construct(
         public int $company_id,
@@ -38,6 +38,5 @@ readonly class ProcessPayrollDTO
         public ?string $notes,
         public ?array $adjustments,
         public int $processed_by_user_id,
-    ) {
-    }
+    ) {}
 }

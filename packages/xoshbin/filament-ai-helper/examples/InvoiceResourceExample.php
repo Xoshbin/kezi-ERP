@@ -2,7 +2,6 @@
 
 namespace App\Filament\Resources;
 
-use Xoshbin\FilamentAiHelper\Concerns\HasAiHelper;
 use App\Filament\Resources\InvoiceResource\Pages;
 use App\Models\Invoice;
 use Filament\Forms;
@@ -79,12 +78,13 @@ class InvoiceResource extends Resource
 }
 
 // Example of using the AI Helper in resource pages
+
 namespace App\Filament\Resources\InvoiceResource\Pages;
 
-use Xoshbin\FilamentAiHelper\Concerns\HasAiHelper;
 use App\Filament\Resources\InvoiceResource;
 use Filament\Actions;
 use Filament\Resources\Pages\EditRecord;
+use Xoshbin\FilamentAiHelper\Concerns\HasAiHelper;
 
 class EditInvoice extends EditRecord
 {
@@ -111,9 +111,9 @@ class EditInvoice extends EditRecord
 
 namespace App\Filament\Resources\InvoiceResource\Pages;
 
-use Xoshbin\FilamentAiHelper\Concerns\HasAiHelper;
 use App\Filament\Resources\InvoiceResource;
 use Filament\Resources\Pages\CreateRecord;
+use Xoshbin\FilamentAiHelper\Concerns\HasAiHelper;
 
 class CreateInvoice extends CreateRecord
 {
@@ -131,10 +131,10 @@ class CreateInvoice extends CreateRecord
 
 namespace App\Filament\Resources\InvoiceResource\Pages;
 
-use Xoshbin\FilamentAiHelper\Concerns\HasAiHelper;
 use App\Filament\Resources\InvoiceResource;
 use Filament\Actions;
 use Filament\Resources\Pages\ListRecords;
+use Xoshbin\FilamentAiHelper\Concerns\HasAiHelper;
 
 class ListInvoices extends ListRecords
 {

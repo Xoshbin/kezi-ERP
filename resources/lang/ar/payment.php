@@ -65,7 +65,6 @@ return [
     'relation_manager.invoices.form.status' => 'حالة',
     'relation_manager.invoices.form.total_amount' => 'المبلغ الإجمالي',
 
-
     // VendorBillsRelationManager.php
     'relation_manager.vendor_bills.title' => 'فواتير الموردين',
     'relation_manager.vendor_bills.column.bill_reference' => 'مرجع الفاتورة',

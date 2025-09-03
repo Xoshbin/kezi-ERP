@@ -2,11 +2,11 @@
 
 namespace App\Filament\Clusters\Accounting\Resources\JournalEntries\Pages;
 
-use App\Models\Currency;
 use App\Actions\Accounting\UpdateJournalEntryAction;
 use App\DataTransferObjects\Accounting\UpdateJournalEntryDTO;
 use App\DataTransferObjects\Accounting\UpdateJournalEntryLineDTO;
 use App\Filament\Clusters\Accounting\Resources\JournalEntries\JournalEntryResource;
+use App\Models\Currency;
 use App\Models\JournalEntry;
 use App\Services\JournalEntryService;
 use Brick\Money\Money;
@@ -30,7 +30,7 @@ class EditJournalEntry extends EditRecord
                 ->color('success')
                 ->requiresConfirmation()
                 // This action is only visible if the entry is a draft.
-                ->visible(fn(JournalEntry $record): bool => !$record->is_posted)
+                ->visible(fn (JournalEntry $record): bool => ! $record->is_posted)
                 ->action(function (JournalEntry $record): void {
                     // First, save any pending changes the user made in the form.
                     $this->save();
@@ -68,7 +68,7 @@ class EditJournalEntry extends EditRecord
 
         $lines = $this->record->lines->map(function ($line) use (&$totalDebit, &$totalCredit, $currencyCode) {
             // Ensure the line has proper currency context by setting missing fields if needed
-            if (!$line->original_currency_id) {
+            if (! $line->original_currency_id) {
                 $line->original_currency_id = $this->record->currency_id;
                 $line->currency_id = $this->record->currency_id;
                 $line->exchange_rate_at_transaction = 1.0;

@@ -16,7 +16,6 @@ use App\Models\Asset;
 use App\Models\DepreciationEntry;
 use App\Models\User;
 use Brick\Math\RoundingMode;
-use Brick\Money\Money;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
 
@@ -27,8 +26,7 @@ class AssetService
         protected UpdateAssetAction $updateAssetAction,
         protected DisposeAssetAction $disposeAssetAction,
         protected PostDepreciationEntryAction $postDepreciationEntryAction
-    ) {
-    }
+    ) {}
 
     public function createAsset(CreateAssetDTO $dto): Asset
     {
@@ -54,8 +52,9 @@ class AssetService
      * Delete an asset, but only if it is in draft status and has no associated financial records.
      * Enforces the accounting principle of immutability for confirmed assets and those with financial history.
      *
-     * @param Asset $asset The asset to be deleted.
+     * @param  Asset  $asset  The asset to be deleted.
      * @return bool True on successful deletion.
+     *
      * @throws DeletionNotAllowedException If the asset cannot be deleted due to business rules.
      */
     public function delete(Asset $asset): bool

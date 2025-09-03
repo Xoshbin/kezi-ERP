@@ -2,19 +2,17 @@
 
 namespace App\Actions\Accounting;
 
-use RuntimeException;
 use App\DataTransferObjects\Accounting\CreateJournalEntryDTO;
 use App\DataTransferObjects\Accounting\CreateJournalEntryLineDTO;
 use App\Models\JournalEntry;
 use App\Models\Payment;
 use App\Models\User;
 use Brick\Money\Money;
+use RuntimeException;
 
 class CreateJournalEntryForReconciliationAction
 {
-    public function __construct(private readonly CreateJournalEntryAction $createJournalEntryAction)
-    {
-    }
+    public function __construct(private readonly CreateJournalEntryAction $createJournalEntryAction) {}
 
     public function execute(Payment $payment, User $user): JournalEntry
     {
@@ -33,7 +31,7 @@ class CreateJournalEntryForReconciliationAction
         $bankAccountId = $company->default_bank_account_id;
         $outstandingAccountId = $company->default_outstanding_receipts_account_id;
 
-        if (!$bankAccountId || !$outstandingAccountId) {
+        if (! $bankAccountId || ! $outstandingAccountId) {
             throw new RuntimeException('Default bank or outstanding receipts account is not configured for this company.');
         }
 
@@ -66,8 +64,8 @@ class CreateJournalEntryForReconciliationAction
             journal_id: $payment->journal_id,
             currency_id: $currency->id,
             entry_date: now(),
-            reference: 'RECO/' . $payment->id,
-            description: 'Reconciliation for Payment #' . $payment->id,
+            reference: 'RECO/'.$payment->id,
+            description: 'Reconciliation for Payment #'.$payment->id,
             source_type: Payment::class,
             source_id: $payment->id,
             created_by_user_id: $user->id,

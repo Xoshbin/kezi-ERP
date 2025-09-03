@@ -1,8 +1,8 @@
 <?php
 
 use App\Filament\Clusters\Settings\Resources\PdfSettings\PdfSettingsResource;
-use App\Models\User;
 use App\Models\Company;
+use App\Models\User;
 use Livewire\Livewire;
 
 beforeEach(function () {

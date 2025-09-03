@@ -7,8 +7,6 @@ use App\Filament\Clusters\Accounting\Resources\Budgets\Pages\CreateBudget;
 use App\Filament\Clusters\Accounting\Resources\Budgets\Pages\EditBudget;
 use App\Filament\Clusters\Accounting\Resources\Budgets\Pages\ListBudgets;
 use App\Filament\Clusters\Accounting\Resources\Budgets\RelationManagers\BudgetLinesRelationManager;
-use App\Filament\Resources\BudgetResource\Pages;
-use App\Filament\Resources\BudgetResource\RelationManagers;
 use App\Models\Budget;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
@@ -25,7 +23,7 @@ class BudgetResource extends Resource
 {
     protected static ?string $model = Budget::class;
 
-    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-chart-bar';
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-chart-bar';
 
     protected static ?int $navigationSort = 1;
 

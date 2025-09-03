@@ -2,17 +2,18 @@
 
 namespace Tests\Feature\Filament\Reports;
 
-use Carbon\Carbon;
+use App\Enums\Accounting\AccountType;
+use App\Enums\Accounting\JournalEntryState;
+use App\Filament\Clusters\Accounting\Pages\Reports\ViewProfitAndLoss;
 use App\Models\Account;
 use App\Models\Journal;
 use App\Models\JournalEntry;
 use App\Models\JournalEntryLine;
-use function Pest\Livewire\livewire;
-use App\Enums\Accounting\AccountType;
-use Tests\Traits\WithConfiguredCompany;
-use App\Enums\Accounting\JournalEntryState;
+use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use App\Filament\Clusters\Accounting\Pages\Reports\ViewProfitAndLoss;
+use Tests\Traits\WithConfiguredCompany;
+
+use function Pest\Livewire\livewire;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);
 

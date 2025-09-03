@@ -2,7 +2,6 @@
 
 namespace App\Filament\Clusters\Accounting\Resources\Assets;
 
-use Filament\Facades\Filament;
 use App\Enums\Accounting\AccountType;
 use App\Enums\Assets\AssetStatus;
 use App\Enums\Assets\DepreciationMethod;
@@ -23,6 +22,7 @@ use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
+use Filament\Facades\Filament;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
@@ -37,7 +37,7 @@ class AssetResource extends Resource
 {
     protected static ?string $model = Asset::class;
 
-    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-archive-box';
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-archive-box';
 
     protected static ?int $navigationSort = 2;
 
@@ -78,7 +78,7 @@ class AssetResource extends Resource
                     TranslatableSelect::make('currency_id', Currency::class, __('asset.currency'))
                         ->required()
                         ->live()
-                        ->default(fn() => Filament::getTenant()?->currency_id)
+                        ->default(fn () => Filament::getTenant()?->currency_id)
                         ->afterStateUpdated(function (callable $set, $state, callable $get) {
                             if ($state) {
                                 $currency = Currency::find($state);
@@ -114,7 +114,7 @@ class AssetResource extends Resource
                                 ->default(1),
                         ])
                         ->createOptionModalHeading(__('common.modal_title_create_currency'))
-                        ->createOptionAction(fn(Action $action) => $action->modalWidth('lg')),
+                        ->createOptionAction(fn (Action $action) => $action->modalWidth('lg')),
 
                     TextInput::make('current_exchange_rate')
                         ->label(__('asset.current_exchange_rate'))
@@ -124,6 +124,7 @@ class AssetResource extends Resource
                         ->visible(function (callable $get) {
                             $currencyId = $get('currency_id');
                             $company = Filament::getTenant();
+
                             return $currencyId && $company && $currencyId != $company->currency_id;
                         })
                         ->helperText(__('asset.exchange_rate_helper')),
@@ -138,7 +139,7 @@ class AssetResource extends Resource
                         ->label(__('asset.purchase_date'))
                         ->default(now())
                         ->required()
-                        ->rules([new NotInLockedPeriod()])
+                        ->rules([new NotInLockedPeriod])
                         ->columnSpan(1),
 
                     MoneyInput::make('purchase_value')
@@ -176,7 +177,7 @@ class AssetResource extends Resource
                         __('asset.asset_account'),
                         'name',
                         null,
-                        fn($query) => $query->where('type', AccountType::FixedAssets->value)
+                        fn ($query) => $query->where('type', AccountType::FixedAssets->value)
                     )
                         ->createOptionForm([
                             Select::make('company_id')
@@ -191,12 +192,12 @@ class AssetResource extends Resource
                                 ->required(),
                             Select::make('type')
                                 ->label(__('account.type'))
-                                ->options(collect(AccountType::cases())->mapWithKeys(fn($t) => [$t->value => $t->label()]))
+                                ->options(collect(AccountType::cases())->mapWithKeys(fn ($t) => [$t->value => $t->label()]))
                                 ->default(AccountType::FixedAssets->value)
                                 ->required(),
                         ])
                         ->createOptionModalHeading(__('common.modal_title_create_account'))
-                        ->createOptionAction(fn(Action $action) => $action->modalWidth('lg'))
+                        ->createOptionAction(fn (Action $action) => $action->modalWidth('lg'))
                         ->required()
                         ->columnSpan(1),
 
@@ -207,7 +208,7 @@ class AssetResource extends Resource
                         __('asset.depreciation_expense_account'),
                         'name',
                         null,
-                        fn($query) => $query->where('type', AccountType::Depreciation->value)
+                        fn ($query) => $query->where('type', AccountType::Depreciation->value)
                     )
                         ->createOptionForm([
                             Select::make('company_id')
@@ -222,12 +223,12 @@ class AssetResource extends Resource
                                 ->required(),
                             Select::make('type')
                                 ->label(__('account.type'))
-                                ->options(collect(AccountType::cases())->mapWithKeys(fn($t) => [$t->value => $t->label()]))
+                                ->options(collect(AccountType::cases())->mapWithKeys(fn ($t) => [$t->value => $t->label()]))
                                 ->default(AccountType::Depreciation->value)
                                 ->required(),
                         ])
                         ->createOptionModalHeading(__('common.modal_title_create_account'))
-                        ->createOptionAction(fn(Action $action) => $action->modalWidth('lg'))
+                        ->createOptionAction(fn (Action $action) => $action->modalWidth('lg'))
                         ->required()
                         ->columnSpan(1),
 
@@ -238,7 +239,7 @@ class AssetResource extends Resource
                         __('asset.accumulated_depreciation_account'),
                         'name',
                         null,
-                        fn($query) => $query->where('type', AccountType::FixedAssets->value)
+                        fn ($query) => $query->where('type', AccountType::FixedAssets->value)
                     )
                         ->createOptionForm([
                             Select::make('company_id')
@@ -253,12 +254,12 @@ class AssetResource extends Resource
                                 ->required(),
                             Select::make('type')
                                 ->label(__('account.type'))
-                                ->options(collect(AccountType::cases())->mapWithKeys(fn($t) => [$t->value => $t->label()]))
+                                ->options(collect(AccountType::cases())->mapWithKeys(fn ($t) => [$t->value => $t->label()]))
                                 ->default(AccountType::FixedAssets->value)
                                 ->required(),
                         ])
                         ->createOptionModalHeading(__('common.modal_title_create_account'))
-                        ->createOptionAction(fn(Action $action) => $action->modalWidth('lg'))
+                        ->createOptionAction(fn (Action $action) => $action->modalWidth('lg'))
                         ->required()
                         ->columnSpan(1),
                 ])
@@ -287,7 +288,7 @@ class AssetResource extends Resource
                 TextColumn::make('status')
                     ->label(__('asset.status'))
                     ->badge()
-                    ->formatStateUsing(fn(AssetStatus $state): string => $state->label())
+                    ->formatStateUsing(fn (AssetStatus $state): string => $state->label())
                     ->colors([
                         'gray' => AssetStatus::Draft,
                         'info' => AssetStatus::Confirmed,
@@ -310,13 +311,13 @@ class AssetResource extends Resource
 
                 TextColumn::make('depreciation_method')
                     ->label(__('asset.depreciation_method'))
-                    ->formatStateUsing(fn(DepreciationMethod $state): string => $state->label())
+                    ->formatStateUsing(fn (DepreciationMethod $state): string => $state->label())
                     ->badge()
                     ->toggleable(),
 
                 TextColumn::make('useful_life_years')
                     ->label(__('asset.useful_life'))
-                    ->suffix(' ' . __('asset.years'))
+                    ->suffix(' '.__('asset.years'))
                     ->toggleable(),
 
                 TextColumn::make('currency.code')

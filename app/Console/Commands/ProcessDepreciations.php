@@ -9,6 +9,7 @@ use Illuminate\Console\Command;
 class ProcessDepreciations extends Command
 {
     protected $signature = 'app:process-depreciations';
+
     protected $description = 'Process due depreciation entries';
 
     public function handle()

@@ -19,7 +19,7 @@ class ListAccounts extends ListRecords
         return [
             LocaleSwitcher::make(),
             CreateAction::make()
-                ->label(__('filament.actions.create') . ' ' . __('account.label')),
+                ->label(__('filament.actions.create').' '.__('account.label')),
         ];
     }
 }

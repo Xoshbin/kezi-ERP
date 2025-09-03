@@ -2,7 +2,6 @@
 
 namespace App\Filament\Clusters\Accounting\Resources\Payments\Pages;
 
-use Filament\Facades\Filament;
 use App\Actions\Payments\CreatePaymentAction;
 use App\DataTransferObjects\Payments\CreatePaymentDTO;
 use App\Enums\Payments\PaymentPurpose;
@@ -10,6 +9,7 @@ use App\Enums\Payments\PaymentType;
 use App\Filament\Clusters\Accounting\Resources\Payments\PaymentResource;
 use App\Models\Currency;
 use Brick\Money\Money;
+use Filament\Facades\Filament;
 use Filament\Resources\Pages\CreateRecord;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;

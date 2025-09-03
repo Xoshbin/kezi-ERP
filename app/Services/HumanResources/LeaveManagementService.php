@@ -2,14 +2,14 @@
 
 namespace App\Services\HumanResources;
 
-use Exception;
 use App\Actions\HumanResources\CreateLeaveRequestAction;
 use App\DataTransferObjects\HumanResources\CreateLeaveRequestDTO;
-use App\Models\LeaveRequest;
 use App\Models\Employee;
+use App\Models\LeaveRequest;
 use App\Models\LeaveType;
 use App\Models\User;
 use Carbon\Carbon;
+use Exception;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 
@@ -17,8 +17,7 @@ class LeaveManagementService
 {
     public function __construct(
         protected CreateLeaveRequestAction $createLeaveRequestAction,
-    ) {
-    }
+    ) {}
 
     /**
      * Create a leave request.
@@ -83,7 +82,7 @@ class LeaveManagementService
     {
         Gate::forUser($user)->authorize('cancel', $leaveRequest);
 
-        if (!in_array($leaveRequest->status, ['pending', 'approved'])) {
+        if (! in_array($leaveRequest->status, ['pending', 'approved'])) {
             throw new Exception('Only pending or approved leave requests can be cancelled.');
         }
 
@@ -108,7 +107,7 @@ class LeaveManagementService
         $year = $year ?? now()->year;
         $contract = $employee->currentContract;
 
-        if (!$contract) {
+        if (! $contract) {
             return [
                 'entitled_days' => 0,
                 'used_days' => 0,
@@ -118,7 +117,7 @@ class LeaveManagementService
         }
 
         // Get entitled days based on leave type and contract
-        $entitledDays = match($leaveType->code) {
+        $entitledDays = match ($leaveType->code) {
             'annual' => $contract->annual_leave_days,
             'sick' => $contract->sick_leave_days,
             'maternity' => $contract->maternity_leave_days,
@@ -170,19 +169,19 @@ class LeaveManagementService
         // Check if employee has sufficient leave balance
         $balance = $this->getLeaveBalance($employee, $leaveType);
         if ($dto->days_requested > $balance['remaining_days']) {
-            throw new Exception('Insufficient leave balance. Available: ' . $balance['remaining_days'] . ' days.');
+            throw new Exception('Insufficient leave balance. Available: '.$balance['remaining_days'].' days.');
         }
 
         // Check minimum notice period
         $startDate = Carbon::parse($dto->start_date);
         $noticeGiven = now()->diffInDays($startDate);
         if ($noticeGiven < $leaveType->min_notice_days) {
-            throw new Exception('Minimum notice of ' . $leaveType->min_notice_days . ' days required.');
+            throw new Exception('Minimum notice of '.$leaveType->min_notice_days.' days required.');
         }
 
         // Check maximum consecutive days
         if ($leaveType->exceedsMaxConsecutiveDays($dto->days_requested)) {
-            throw new Exception('Maximum consecutive days allowed: ' . $leaveType->max_consecutive_days);
+            throw new Exception('Maximum consecutive days allowed: '.$leaveType->max_consecutive_days);
         }
 
         // Check for overlapping leave requests
@@ -191,11 +190,11 @@ class LeaveManagementService
             ->where('status', '!=', 'cancelled')
             ->where(function ($query) use ($dto) {
                 $query->whereBetween('start_date', [$dto->start_date, $dto->end_date])
-                      ->orWhereBetween('end_date', [$dto->start_date, $dto->end_date])
-                      ->orWhere(function ($q) use ($dto) {
-                          $q->where('start_date', '<=', $dto->start_date)
+                    ->orWhereBetween('end_date', [$dto->start_date, $dto->end_date])
+                    ->orWhere(function ($q) use ($dto) {
+                        $q->where('start_date', '<=', $dto->start_date)
                             ->where('end_date', '>=', $dto->end_date);
-                      });
+                    });
             })
             ->exists();
 
@@ -215,7 +214,7 @@ class LeaveManagementService
         $currentDate = $startDate->copy();
         while ($currentDate->lte($endDate)) {
             // Skip weekends (assuming 5-day work week)
-            if (!$currentDate->isWeekend()) {
+            if (! $currentDate->isWeekend()) {
                 $leaveRequest->employee->attendances()->updateOrCreate(
                     [
                         'attendance_date' => $currentDate->format('Y-m-d'),
@@ -225,7 +224,7 @@ class LeaveManagementService
                         'status' => 'on_leave',
                         'attendance_type' => 'regular',
                         'leave_request_id' => $leaveRequest->id,
-                        'notes' => 'On leave: ' . $leaveRequest->leaveType->name,
+                        'notes' => 'On leave: '.$leaveRequest->leaveType->name,
                     ]
                 );
             }

@@ -39,6 +39,7 @@ class JournalEntryObserver
         if ($journalEntry->is_posted) {
             return false;
         }
+
         return true;
     }
 
@@ -70,12 +71,11 @@ class JournalEntryObserver
     private function generateHashForEntry(JournalEntry $journalEntry): string
     {
         // IMPORTANT: The previous_hash is now part of the data being hashed.
-        $dataToHash = $journalEntry->entry_date .
-            $journalEntry->total_debit .
-            $journalEntry->lines->toJson() .
+        $dataToHash = $journalEntry->entry_date.
+            $journalEntry->total_debit.
+            $journalEntry->lines->toJson().
             $journalEntry->previous_hash; // This creates the chain link.
 
         return hash('sha256', $dataToHash);
     }
-
 }

@@ -9,9 +9,7 @@ use Illuminate\Support\Facades\DB;
 
 class ConfirmStockMoveAction
 {
-    public function __construct(protected StockMoveService $stockMoveService)
-    {
-    }
+    public function __construct(protected StockMoveService $stockMoveService) {}
 
     public function execute(ConfirmStockMoveDTO $dto): StockMove
     {

@@ -6,8 +6,6 @@ use App\Filament\Clusters\Settings\Resources\Currencies\Pages\CreateCurrency;
 use App\Filament\Clusters\Settings\Resources\Currencies\Pages\EditCurrency;
 use App\Filament\Clusters\Settings\Resources\Currencies\Pages\ListCurrencies;
 use App\Filament\Clusters\Settings\SettingsCluster;
-use App\Filament\Resources\CurrencyResource\Pages;
-use App\Filament\Resources\CurrencyResource\RelationManagers;
 use App\Models\Currency;
 use App\Support\NumberFormatter;
 use Filament\Actions\BulkActionGroup;
@@ -32,7 +30,7 @@ class CurrencyResource extends Resource
 
     protected static ?string $model = Currency::class;
 
-    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-currency-dollar';
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-currency-dollar';
 
     protected static ?int $navigationSort = 2;
 

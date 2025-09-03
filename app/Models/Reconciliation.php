@@ -2,25 +2,20 @@
 
 namespace App\Models;
 
-use RuntimeException;
-use Carbon\Carbon;
-use Illuminate\Database\Eloquent\Collection;
 use App\Enums\Reconciliation\ReconciliationType;
 use Brick\Money\Money;
+use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Support\Facades\Auth;
+use RuntimeException;
 
 /**
  * Class Reconciliation
  *
- * @package App\Models
- *
- * This model represents a reconciliation record that groups related journal entry lines
- * that have been matched together for accounting reconciliation purposes.
- * It maintains a complete audit trail of who performed the reconciliation and when.
  *
  * @property int $id
  * @property int $company_id
@@ -83,10 +78,10 @@ class Reconciliation extends Model
             $changedFields = array_keys($reconciliation->getDirty());
             $unauthorizedChanges = array_diff($changedFields, $allowedFields);
 
-            if (!empty($unauthorizedChanges)) {
+            if (! empty($unauthorizedChanges)) {
                 throw new RuntimeException(
-                    'Reconciliation records are immutable. Only description can be updated. ' .
-                    'Attempted to change: ' . implode(', ', $unauthorizedChanges)
+                    'Reconciliation records are immutable. Only description can be updated. '.
+                    'Attempted to change: '.implode(', ', $unauthorizedChanges)
                 );
             }
         });
@@ -94,7 +89,7 @@ class Reconciliation extends Model
         // Prevent deletion of reconciliation records
         static::deleting(function (Reconciliation $reconciliation) {
             throw new RuntimeException(
-                'Reconciliation records cannot be deleted to maintain audit trail integrity. ' .
+                'Reconciliation records cannot be deleted to maintain audit trail integrity. '.
                 'Create a reversal reconciliation instead.'
             );
         });

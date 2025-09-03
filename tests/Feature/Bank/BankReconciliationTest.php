@@ -1,18 +1,13 @@
 <?php
 
-use App\Models\User;
-use Brick\Money\Money;
+use App\Enums\Payments\PaymentStatus;
 use App\Models\Account;
-use App\Models\Company;
 use App\Models\Journal;
 use App\Models\Payment;
-use App\Models\JournalEntry;
-use App\Models\BankStatementLine;
-use App\Enums\Payments\PaymentStatus;
-use Tests\Traits\CreatesApplication;
-use Tests\Traits\WithConfiguredCompany;
 use App\Services\BankReconciliationService;
+use Brick\Money\Money;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\Traits\WithConfiguredCompany;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);
 
@@ -27,7 +22,7 @@ test('a bank statement line can be reconciled with a payment', function () {
         ->create([
             'amount' => Money::of(100, $currencyCode),
             'currency_id' => $this->company->currency_id,
-            'status' => PaymentStatus::Confirmed
+            'status' => PaymentStatus::Confirmed,
         ]);
 
     // Arrange: Create a bank statement and a line that matches the payment.

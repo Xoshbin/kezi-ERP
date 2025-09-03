@@ -5,7 +5,7 @@ namespace App\DataTransferObjects\Purchases;
 readonly class CreateVendorBillDTO
 {
     /**
-     * @param CreateVendorBillLineDTO[] $lines
+     * @param  CreateVendorBillLineDTO[]  $lines
      */
     public function __construct(
         public int $company_id,
@@ -17,6 +17,5 @@ readonly class CreateVendorBillDTO
         public ?string $due_date,
         public array $lines,
         public int $created_by_user_id,
-    ) {
-    }
+    ) {}
 }

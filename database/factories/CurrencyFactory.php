@@ -24,7 +24,7 @@ class CurrencyFactory extends Factory
         $counter++;
 
         return [
-            'name' => $currencyCode . ' Currency',
+            'name' => $currencyCode.' Currency',
             'code' => $currencyCode,
             'symbol' => '$',
             'decimal_places' => 2,

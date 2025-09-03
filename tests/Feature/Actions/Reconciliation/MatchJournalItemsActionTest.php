@@ -28,13 +28,13 @@ test('it throws exception when reconciliation is globally disabled', function ()
     // Work with the existing company setup but disable reconciliation
     // First, ensure we have a company (the trait might have created one)
     $company = Company::first();
-    if (!$company) {
+    if (! $company) {
         // If no company exists, create one
         $currency = \App\Models\Currency::firstOrCreate(['code' => 'IQD'], [
             'name' => 'Iraqi Dinar',
             'symbol' => 'IQD',
             'is_active' => true,
-            'decimal_places' => 3
+            'decimal_places' => 3,
         ]);
 
         $company = Company::create([
@@ -103,7 +103,7 @@ test('it throws exception when reconciliation is globally disabled', function ()
     // First, let's verify the journal entry is correctly associated
     expect($journalEntry->company_id)->toBe($company->id);
 
-    $line1 = new JournalEntryLine();
+    $line1 = new JournalEntryLine;
     $line1->journal_entry_id = $journalEntry->id;
     $line1->company_id = $company->id;
     $line1->account_id = $account1->id;
@@ -112,7 +112,7 @@ test('it throws exception when reconciliation is globally disabled', function ()
     $line1->description = 'Test debit line';
     $line1->save();
 
-    $line2 = new JournalEntryLine();
+    $line2 = new JournalEntryLine;
     $line2->journal_entry_id = $journalEntry->id;
     $line2->company_id = $company->id;
     $line2->account_id = $account2->id;
@@ -121,14 +121,14 @@ test('it throws exception when reconciliation is globally disabled', function ()
     $line2->description = 'Test credit line';
     $line2->save();
 
-    expect(fn() => $this->action->execute([$line1->id, $line2->id]))
+    expect(fn () => $this->action->execute([$line1->id, $line2->id]))
         ->toThrow(ReconciliationDisabledException::class);
 });
 
 test('it throws exception when account does not allow reconciliation', function () {
     // Use the existing company and enable reconciliation
     $company = Company::first();
-    if (!$company) {
+    if (! $company) {
         $company = Company::create([
             'name' => 'Test Company',
             'address' => 'Test Address',
@@ -201,7 +201,7 @@ test('it throws exception when account does not allow reconciliation', function 
 
     $lines = collect([$line1, $line2]);
 
-    expect(fn() => $this->action->execute($lines->pluck('id')->toArray()))
+    expect(fn () => $this->action->execute($lines->pluck('id')->toArray()))
         ->toThrow(AccountNotReconcilableException::class);
 });
 
@@ -268,7 +268,7 @@ test('it throws exception when journal entry lines are unbalanced', function () 
 
     $lines = collect([$line1, $line2]);
 
-    expect(fn() => $this->action->execute($lines->pluck('id')->toArray()))
+    expect(fn () => $this->action->execute($lines->pluck('id')->toArray()))
         ->toThrow(UnbalancedReconciliationException::class);
 });
 
@@ -347,7 +347,7 @@ test('it throws exception when journal entry lines have different partners for A
 
     $lines = collect([$line1, $line2]);
 
-    expect(fn() => $this->action->execute($lines->pluck('id')->toArray(), ReconciliationType::ManualArAp))
+    expect(fn () => $this->action->execute($lines->pluck('id')->toArray(), ReconciliationType::ManualArAp))
         ->toThrow(PartnerMismatchException::class);
 });
 
@@ -416,7 +416,7 @@ test('it throws exception when journal entry lines are already reconciled', func
     ]);
     $existingReconciliation->journalEntryLines()->attach($lines->first()->id);
 
-    expect(fn() => $this->action->execute($lines->pluck('id')->toArray()))
+    expect(fn () => $this->action->execute($lines->pluck('id')->toArray()))
         ->toThrow(AlreadyReconciledException::class);
 });
 

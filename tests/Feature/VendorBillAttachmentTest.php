@@ -18,7 +18,9 @@ class VendorBillAttachmentTest extends TestCase
     use RefreshDatabase;
 
     protected User $user;
+
     protected Company $company;
+
     protected VendorBill $vendorBill;
 
     protected function setUp(): void
