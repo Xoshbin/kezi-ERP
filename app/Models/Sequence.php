@@ -2,10 +2,10 @@
 
 namespace App\Models;
 
-use Illuminate\Support\Carbon;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Support\Carbon;
 
 /**
  * Sequence Model
@@ -74,17 +74,11 @@ class Sequence extends Model
         $this->refresh();
 
         // Format the number with prefix and padding
-        return $this->prefix . '-' . str_pad($this->current_number, $this->padding, '0', STR_PAD_LEFT);
+        return $this->prefix.'-'.str_pad($this->current_number, $this->padding, '0', STR_PAD_LEFT);
     }
 
     /**
      * Get or create a sequence for a specific company and document type.
-     *
-     * @param int $companyId
-     * @param string $documentType
-     * @param string $prefix
-     * @param int $padding
-     * @return static
      */
     public static function getOrCreateSequence(
         int $companyId,

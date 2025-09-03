@@ -2,34 +2,35 @@
 
 namespace App\Livewire\Accounting;
 
-use Exception;
-use Filament\Actions\Contracts\HasActions;
-use Filament\Actions\Concerns\InteractsWithActions;
-use Filament\Support\Contracts\TranslatableContentDriver;
-use Brick\Money\Money;
-use App\Models\Payment;
-use Livewire\Component;
-use Filament\Tables\Table;
-use App\Models\BankStatement;
-use App\Enums\Payments\PaymentType;
 use App\Enums\Payments\PaymentStatus;
+use App\Enums\Payments\PaymentType;
+use App\Filament\Tables\Columns\MoneyColumn;
+use App\Models\BankStatement;
+use App\Models\Payment;
+use App\Services\CurrencyConverterService;
+use Brick\Money\Money;
+use Exception;
+use Filament\Actions\Concerns\InteractsWithActions;
+use Filament\Actions\Contracts\HasActions;
+use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
+use Filament\Support\Contracts\TranslatableContentDriver;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Columns\ViewColumn;
-use Filament\Tables\Contracts\HasTable;
-use App\Filament\Tables\Columns\MoneyColumn;
-use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Tables\Concerns\InteractsWithTable;
+use Filament\Tables\Contracts\HasTable;
 use Filament\Tables\Filters\SelectFilter;
-use App\Services\CurrencyConverterService;
+use Filament\Tables\Table;
+use Livewire\Component;
 
-class SystemPaymentsTable extends Component implements HasTable, HasForms, HasActions
+class SystemPaymentsTable extends Component implements HasActions, HasForms, HasTable
 {
     use InteractsWithActions;
-    use InteractsWithTable;
     use InteractsWithForms;
+    use InteractsWithTable;
 
     public BankStatement $bankStatement;
+
     public array $selectedPayments = [];
 
     public function mount(BankStatement $bankStatement): void
@@ -47,7 +48,7 @@ class SystemPaymentsTable extends Component implements HasTable, HasForms, HasAc
                     ->whereDoesntHave('bankStatementLines')  // Only show unreconciled payments
                     ->with(['partner', 'currency', 'company'])
                     // Order by currency compatibility: same currency first, then others
-                    ->orderByRaw("CASE WHEN currency_id = ? THEN 0 ELSE 1 END", [$this->bankStatement->currency_id])
+                    ->orderByRaw('CASE WHEN currency_id = ? THEN 0 ELSE 1 END', [$this->bankStatement->currency_id])
                     ->orderBy('payment_date', 'desc')
             )
             ->columns([
@@ -67,7 +68,7 @@ class SystemPaymentsTable extends Component implements HasTable, HasForms, HasAc
                     ->label(__('bank_statement.type'))
                     ->formatStateUsing(fn ($state) => $state->label())
                     ->badge()
-                    ->color(fn ($state) => match($state->value) {
+                    ->color(fn ($state) => match ($state->value) {
                         'inbound' => 'success',
                         'outbound' => 'danger',
                         default => 'gray',
@@ -78,8 +79,8 @@ class SystemPaymentsTable extends Component implements HasTable, HasForms, HasAc
                 TextColumn::make('currency.code')
                     ->label(__('bank_statement.currency'))
                     ->badge()
-                    ->color(fn($record) => $record->currency_id === $this->bankStatement->currency_id ? 'success' : 'warning')
-                    ->tooltip(fn($record) => $record->currency_id === $this->bankStatement->currency_id
+                    ->color(fn ($record) => $record->currency_id === $this->bankStatement->currency_id ? 'success' : 'warning')
+                    ->tooltip(fn ($record) => $record->currency_id === $this->bankStatement->currency_id
                         ? __('bank_statement.same_currency_as_statement')
                         : __('bank_statement.different_currency_conversion_required')),
             ])
@@ -93,7 +94,7 @@ class SystemPaymentsTable extends Component implements HasTable, HasForms, HasAc
                     ])
                     ->default('all')
                     ->query(function ($query, array $data) {
-                        if (!isset($data['value']) || $data['value'] === 'all') {
+                        if (! isset($data['value']) || $data['value'] === 'all') {
                             return $query;
                         }
 
@@ -117,7 +118,7 @@ class SystemPaymentsTable extends Component implements HasTable, HasForms, HasAc
     public function togglePayment(int $paymentId): void
     {
         if (in_array($paymentId, $this->selectedPayments)) {
-            $this->selectedPayments = array_filter($this->selectedPayments, fn($id) => $id !== $paymentId);
+            $this->selectedPayments = array_filter($this->selectedPayments, fn ($id) => $id !== $paymentId);
         } else {
             $this->selectedPayments[] = $paymentId;
         }
@@ -131,7 +132,7 @@ class SystemPaymentsTable extends Component implements HasTable, HasForms, HasAc
         $bankStatementCurrency = $this->bankStatement->currency->code;
         $total = Money::of(0, $bankStatementCurrency);
 
-        if (!empty($this->selectedPayments)) {
+        if (! empty($this->selectedPayments)) {
             $payments = Payment::whereIn('id', $this->selectedPayments)->with('currency')->get();
             foreach ($payments as $payment) {
                 $paymentAmount = $payment->amount;

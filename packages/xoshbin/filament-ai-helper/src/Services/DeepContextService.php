@@ -2,10 +2,8 @@
 
 namespace Xoshbin\FilamentAiHelper\Services;
 
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Model;
 
 class DeepContextService
 {
@@ -23,7 +21,7 @@ class DeepContextService
             'business_insights' => $this->getBusinessInsights($model),
         ];
 
-        return array_filter($context, fn($value) => !empty($value));
+        return array_filter($context, fn ($value) => ! empty($value));
     }
 
     /**
@@ -73,7 +71,7 @@ class DeepContextService
             'customer',
             'currency',
             'invoiceLines',
-            'payments'
+            'payments',
         ]);
 
         $context = [];
@@ -185,7 +183,7 @@ class DeepContextService
             'recent_invoices' => $paymentHistory,
             'summary' => [
                 'total_invoices_analyzed' => $totalInvoices,
-                'on_time_payment_rate' => $onTimePaymentRate . '%',
+                'on_time_payment_rate' => $onTimePaymentRate.'%',
                 'average_payment_days' => $averagePaymentDays,
                 'last_transaction_date' => $customer->getLastTransactionDate()?->format('Y-m-d'),
             ],
@@ -215,17 +213,17 @@ class DeepContextService
             'current_year' => [
                 'year' => $currentYear,
                 'invoice_count' => $currentYearInvoices->count(),
-                'total_amount' => $currentYearInvoices->sum(fn($inv) => $inv->total_amount?->getAmount() ?? 0),
+                'total_amount' => $currentYearInvoices->sum(fn ($inv) => $inv->total_amount?->getAmount() ?? 0),
                 'average_invoice_amount' => $currentYearInvoices->count() > 0
-                    ? round($currentYearInvoices->avg(fn($inv) => $inv->total_amount?->getAmount() ?? 0), 2)
+                    ? round($currentYearInvoices->avg(fn ($inv) => $inv->total_amount?->getAmount() ?? 0), 2)
                     : 0,
             ],
             'last_year' => [
                 'year' => $lastYear,
                 'invoice_count' => $lastYearInvoices->count(),
-                'total_amount' => $lastYearInvoices->sum(fn($inv) => $inv->total_amount?->getAmount() ?? 0),
+                'total_amount' => $lastYearInvoices->sum(fn ($inv) => $inv->total_amount?->getAmount() ?? 0),
                 'average_invoice_amount' => $lastYearInvoices->count() > 0
-                    ? round($lastYearInvoices->avg(fn($inv) => $inv->total_amount?->getAmount() ?? 0), 2)
+                    ? round($lastYearInvoices->avg(fn ($inv) => $inv->total_amount?->getAmount() ?? 0), 2)
                     : 0,
             ],
             'lifetime_value' => $customer->getTotalLifetimeValue()?->getAmount(),
@@ -242,7 +240,7 @@ class DeepContextService
             ->where('due_date', '<', Carbon::now())
             ->get();
 
-        $totalOverdue = $overdueInvoices->sum(fn($inv) => $inv->total_amount?->getAmount() ?? 0);
+        $totalOverdue = $overdueInvoices->sum(fn ($inv) => $inv->total_amount?->getAmount() ?? 0);
         $oldestOverdue = $overdueInvoices->min('due_date');
 
         return [
@@ -308,8 +306,23 @@ class DeepContextService
     }
 
     // Placeholder methods for other model types
-    protected function getVendorBillRelationshipContext($vendorBill): array { return []; }
-    protected function getPartnerRelationshipContext($partner): array { return []; }
-    protected function getJournalEntryRelationshipContext($journalEntry): array { return []; }
-    protected function getPaymentRelationshipContext($payment): array { return []; }
+    protected function getVendorBillRelationshipContext($vendorBill): array
+    {
+        return [];
+    }
+
+    protected function getPartnerRelationshipContext($partner): array
+    {
+        return [];
+    }
+
+    protected function getJournalEntryRelationshipContext($journalEntry): array
+    {
+        return [];
+    }
+
+    protected function getPaymentRelationshipContext($payment): array
+    {
+        return [];
+    }
 }

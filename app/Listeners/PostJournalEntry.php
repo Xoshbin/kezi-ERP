@@ -11,9 +11,7 @@ use Illuminate\Events\Dispatcher;
 
 class PostJournalEntry
 {
-    public function __construct(private readonly JournalEntryService $journalEntryService)
-    {
-    }
+    public function __construct(private readonly JournalEntryService $journalEntryService) {}
 
     public function handleVendorBillConfirmed(VendorBillConfirmed $event): void
     {

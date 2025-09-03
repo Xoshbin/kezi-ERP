@@ -94,7 +94,7 @@ class DisposeAssetAction
             }
 
             // 3. Prepare the DTO to create the final journal entry
-            if (!$company->default_bank_journal_id) {
+            if (! $company->default_bank_journal_id) {
                 throw new RuntimeException('Default Bank Journal is not configured for the company.');
             }
 

@@ -2,10 +2,10 @@
 
 namespace App\Models;
 
-use Illuminate\Support\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Storage;
 
 /**
@@ -60,19 +60,14 @@ class VendorBillAttachment extends Model
 
     /**
      * Get the company that this rate belongs to.
-     *
-     * @return BelongsTo
      */
     public function company(): BelongsTo
     {
         return $this->belongsTo(Company::class);
     }
 
-
     /**
      * Get the vendor bill that owns the attachment.
-     *
-     * @return BelongsTo
      */
     public function vendorBill(): BelongsTo
     {
@@ -81,20 +76,14 @@ class VendorBillAttachment extends Model
 
     /**
      * Get the user who uploaded the attachment.
-     *
-     * @return BelongsTo
      */
     public function uploadedBy(): BelongsTo
     {
         return $this->belongsTo(User::class, 'uploaded_by_user_id');
     }
 
-
-
     /**
      * Get a human-readable file size.
-     *
-     * @return string
      */
     public function getFormattedFileSizeAttribute(): string
     {
@@ -107,13 +96,11 @@ class VendorBillAttachment extends Model
             $i++;
         }
 
-        return round($bytes, 2) . ' ' . $units[$i];
+        return round($bytes, 2).' '.$units[$i];
     }
 
     /**
      * Check if the file exists in storage.
-     *
-     * @return bool
      */
     public function fileExists(): bool
     {

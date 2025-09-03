@@ -8,14 +8,11 @@ use App\DataTransferObjects\Accounting\CreateJournalEntryLineDTO;
 use Brick\Money\Money;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 use InvalidArgumentException;
 
 class CreateJournalEntryForStatementLineAction
 {
-    public function __construct(private readonly CreateJournalEntryAction $createJournalEntryAction)
-    {
-    }
+    public function __construct(private readonly CreateJournalEntryAction $createJournalEntryAction) {}
 
     public function execute(CreateJournalEntryForStatementLineDTO $dto): void
     {

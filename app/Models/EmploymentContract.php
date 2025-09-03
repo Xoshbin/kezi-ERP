@@ -2,20 +2,18 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-
-use Illuminate\Support\Carbon;
 use App\Casts\DocumentCurrencyMoneyCast;
 use App\Observers\AuditLogObserver;
-use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Brick\Money\Money;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Carbon;
 
 /**
  * Class EmploymentContract
  *
- * @package App\Models
  * @property int $id
  * @property int $company_id
  * @property int $employee_id
@@ -147,8 +145,6 @@ class EmploymentContract extends Model
 
     /**
      * Get the company that owns the EmploymentContract.
-     *
-     * @return BelongsTo
      */
     public function company(): BelongsTo
     {
@@ -157,8 +153,6 @@ class EmploymentContract extends Model
 
     /**
      * Get the employee this contract belongs to.
-     *
-     * @return BelongsTo
      */
     public function employee(): BelongsTo
     {
@@ -167,8 +161,6 @@ class EmploymentContract extends Model
 
     /**
      * Get the currency for this contract.
-     *
-     * @return BelongsTo
      */
     public function currency(): BelongsTo
     {
@@ -177,8 +169,6 @@ class EmploymentContract extends Model
 
     /**
      * Get the user who approved this contract.
-     *
-     * @return BelongsTo
      */
     public function approvedBy(): BelongsTo
     {
@@ -193,8 +183,6 @@ class EmploymentContract extends Model
 
     /**
      * Get the total monthly compensation (base salary + allowances).
-     *
-     * @return Money
      */
     public function getTotalMonthlyCompensation(): Money
     {
@@ -205,18 +193,14 @@ class EmploymentContract extends Model
             ->plus($this->other_allowances);
     }
 
-
-
     /**
      * Get the annual compensation.
-     *
-     * @return Money
      */
     public function getAnnualCompensation(): Money
     {
         $monthlyTotal = $this->getTotalMonthlyCompensation();
 
-        return match($this->pay_frequency) {
+        return match ($this->pay_frequency) {
             'monthly' => $monthlyTotal->multipliedBy(12),
             'bi_weekly' => $monthlyTotal->multipliedBy(26),
             'weekly' => $monthlyTotal->multipliedBy(52),
@@ -227,12 +211,10 @@ class EmploymentContract extends Model
 
     /**
      * Check if the contract is currently active.
-     *
-     * @return bool
      */
     public function isCurrentlyActive(): bool
     {
-        if (!$this->is_active) {
+        if (! $this->is_active) {
             return false;
         }
 
@@ -249,8 +231,6 @@ class EmploymentContract extends Model
 
     /**
      * Check if the employee is currently on probation.
-     *
-     * @return bool
      */
     public function isOnProbation(): bool
     {
@@ -259,12 +239,10 @@ class EmploymentContract extends Model
 
     /**
      * Get the contract duration in months.
-     *
-     * @return int|null
      */
     public function getDurationInMonths(): ?int
     {
-        if (!$this->end_date) {
+        if (! $this->end_date) {
             return null; // Permanent contract
         }
 
@@ -273,29 +251,22 @@ class EmploymentContract extends Model
 
     /**
      * Check if the contract is approved.
-     *
-     * @return bool
      */
     public function isApproved(): bool
     {
-        return !is_null($this->approved_at) && !is_null($this->approved_by_user_id);
+        return ! is_null($this->approved_at) && ! is_null($this->approved_by_user_id);
     }
 
     /**
      * Check if the contract is signed.
-     *
-     * @return bool
      */
     public function isSigned(): bool
     {
-        return !is_null($this->signed_at);
+        return ! is_null($this->signed_at);
     }
 
     /**
      * Generate a unique contract number.
-     *
-     * @param Company $company
-     * @return string
      */
     public static function generateContractNumber(Company $company): string
     {
@@ -304,7 +275,7 @@ class EmploymentContract extends Model
 
         // Get the next sequential number for this year
         $lastContract = static::where('company_id', $company->id)
-            ->where('contract_number', 'like', $prefix . $year . '%')
+            ->where('contract_number', 'like', $prefix.$year.'%')
             ->orderBy('contract_number', 'desc')
             ->first();
 
@@ -315,6 +286,6 @@ class EmploymentContract extends Model
             $nextNumber = 1;
         }
 
-        return $prefix . $year . str_pad($nextNumber, 4, '0', STR_PAD_LEFT);
+        return $prefix.$year.str_pad($nextNumber, 4, '0', STR_PAD_LEFT);
     }
 }

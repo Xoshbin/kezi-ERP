@@ -2,16 +2,16 @@
 
 namespace App\Models;
 
-use Illuminate\Support\Carbon;
-use Database\Factories\InvoiceLineFactory;
-use Illuminate\Database\Eloquent\Builder;
-use App\Casts\DocumentCurrencyMoneyCast;
 use App\Casts\BaseCurrencyMoneyCast;
+use App\Casts\DocumentCurrencyMoneyCast;
 use App\Observers\InvoiceLineObserver;
+use Database\Factories\InvoiceLineFactory;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Carbon;
 
 /**
  * @property int $id
@@ -31,6 +31,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property-read Invoice $invoice
  * @property-read Product|null $product
  * @property-read Tax|null $tax
+ *
  * @method static InvoiceLineFactory factory($count = null, $state = [])
  * @method static Builder<static>|InvoiceLine newModelQuery()
  * @method static Builder<static>|InvoiceLine newQuery()
@@ -47,6 +48,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @method static Builder<static>|InvoiceLine whereTotalLineTax($value)
  * @method static Builder<static>|InvoiceLine whereUnitPrice($value)
  * @method static Builder<static>|InvoiceLine whereUpdatedAt($value)
+ *
  * @mixin \Eloquent
  */
 #[ObservedBy([InvoiceLineObserver::class])]
@@ -118,8 +120,6 @@ class InvoiceLine extends Model
 
     /**
      * Get the company that this rate belongs to.
-     *
-     * @return BelongsTo
      */
     public function company(): BelongsTo
     {
@@ -177,6 +177,5 @@ class InvoiceLine extends Model
     // soft deletes are generally not applied to such core financial transaction components.
     // The immutability and correction mechanisms (contra-entries) are handled at the parent Invoice level [1-3].
     // The migration's `cascadeOnDelete()` for `invoice_id` ensures that if a draft invoice is deleted, its lines follow [4].
-
 
 }

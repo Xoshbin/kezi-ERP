@@ -1,26 +1,21 @@
 <?php
 
-use App\Models\User;
-use Brick\Money\Money;
-use App\Models\Account;
-use App\Models\Company;
+use App\Actions\Payments\CreatePaymentAction;
+use App\DataTransferObjects\Payments\CreatePaymentDocumentLinkDTO;
+use App\DataTransferObjects\Payments\CreatePaymentDTO;
 use App\Enums\Accounting\JournalType;
+use App\Enums\Payments\PaymentPurpose;
+use App\Enums\Payments\PaymentType;
+use App\Models\Account;
 use App\Models\Invoice;
 use App\Models\Journal;
-use App\Models\Partner;
 use App\Models\Payment;
 use App\Models\VendorBill;
-use App\Enums\Payments\PaymentType;
-use App\Enums\Payments\PaymentPurpose;
-use Tests\Traits\MocksTime;
 use App\Services\PaymentService;
-use Tests\Traits\CreatesApplication;
-use Tests\Traits\WithUnlockedPeriod;
-use Tests\Traits\WithConfiguredCompany;
-use App\Actions\Payments\CreatePaymentAction;
+use Brick\Money\Money;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use App\DataTransferObjects\Payments\CreatePaymentDTO;
-use App\DataTransferObjects\Payments\CreatePaymentDocumentLinkDTO;
+use Tests\Traits\MocksTime;
+use Tests\Traits\WithConfiguredCompany;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class, MocksTime::class);
 
@@ -68,7 +63,6 @@ test('an inbound payment can be created and linked to an invoice', function () {
         'invoice_id' => $invoice->id,
     ]);
 });
-
 
 test('an outbound payment can be created and linked to a vendor bill', function () {
     // Arrange: Create a vendor bill to be paid.
@@ -122,7 +116,7 @@ test('creating a payment generates the correct journal entry', function () {
     $bankJournal = Journal::factory()->for($this->company)->create([
         'type' => JournalType::Bank,
         'default_debit_account_id' => $bankAccount->id,
-        'default_credit_account_id' => $bankAccount->id
+        'default_credit_account_id' => $bankAccount->id,
     ]);
     $this->company->update(['default_accounts_receivable_id' => $receivableAccount->id]);
 

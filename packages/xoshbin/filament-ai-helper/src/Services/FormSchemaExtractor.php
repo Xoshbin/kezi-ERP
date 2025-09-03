@@ -2,14 +2,14 @@
 
 namespace Xoshbin\FilamentAiHelper\Services;
 
-use Filament\Forms\Components\Component;
-use Filament\Forms\Components\Select;
-use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\DatePicker;
-use Filament\Forms\Components\Textarea;
-use Filament\Forms\Components\Toggle;
 use Filament\Forms\Components\CheckboxList;
+use Filament\Forms\Components\Component;
+use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Radio;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Toggle;
 use Filament\Forms\Form;
 use Illuminate\Support\Str;
 
@@ -37,13 +37,14 @@ class FormSchemaExtractor
     {
         $name = $component->getName();
 
-        if (!$name) {
+        if (! $name) {
             // Handle container components (like sections, fieldsets)
             if (method_exists($component, 'getChildComponents')) {
                 foreach ($component->getChildComponents() as $child) {
                     $this->extractComponentSchema($child, $schema, $prefix);
                 }
             }
+
             return;
         }
 
@@ -113,14 +114,15 @@ class FormSchemaExtractor
      */
     private function extractOptions(Component $component): array
     {
-        if (!($component instanceof Select) &&
-            !($component instanceof CheckboxList) &&
-            !($component instanceof Radio)) {
+        if (! ($component instanceof Select) &&
+            ! ($component instanceof CheckboxList) &&
+            ! ($component instanceof Radio)) {
             return [];
         }
 
         try {
             $options = $component->getOptions();
+
             return is_array($options) ? $options : [];
         } catch (\Exception $e) {
             return [];
@@ -144,7 +146,7 @@ class FormSchemaExtractor
      */
     public function extractCurrentFormData($livewireComponent): array
     {
-        if (!$livewireComponent) {
+        if (! $livewireComponent) {
             return [];
         }
 
@@ -178,7 +180,7 @@ class FormSchemaExtractor
      */
     public function detectPageType($request = null): ?string
     {
-        if (!$request) {
+        if (! $request) {
             $request = request();
         }
 
@@ -210,7 +212,7 @@ class FormSchemaExtractor
      */
     public function extractFromResourcePage($page): array
     {
-        if (!$page) {
+        if (! $page) {
             return [];
         }
 
@@ -231,6 +233,7 @@ class FormSchemaExtractor
                     foreach ($schema as $component) {
                         $this->extractComponentSchema($component, $extractedSchema);
                     }
+
                     return $extractedSchema;
                 }
             }
@@ -254,11 +257,12 @@ class FormSchemaExtractor
             // Check required fields
             if ($config['required'] && (is_null($value) || $value === '')) {
                 $errors[$field] = "Field {$field} is required";
+
                 continue;
             }
 
             // Type validation
-            if (!is_null($value)) {
+            if (! is_null($value)) {
                 $errors = array_merge($errors, $this->validateFieldType($field, $value, $config));
             }
         }
@@ -276,19 +280,19 @@ class FormSchemaExtractor
 
         switch ($type) {
             case 'date':
-                if (!$this->isValidDate($value)) {
+                if (! $this->isValidDate($value)) {
                     $errors[$field] = "Field {$field} must be a valid date";
                 }
                 break;
 
             case 'boolean':
-                if (!is_bool($value) && !in_array($value, [0, 1, '0', '1', 'true', 'false'])) {
+                if (! is_bool($value) && ! in_array($value, [0, 1, '0', '1', 'true', 'false'])) {
                     $errors[$field] = "Field {$field} must be a boolean value";
                 }
                 break;
 
             case 'select':
-                if (!empty($config['options']) && !array_key_exists($value, $config['options'])) {
+                if (! empty($config['options']) && ! array_key_exists($value, $config['options'])) {
                     $errors[$field] = "Field {$field} must be one of the available options";
                 }
                 break;
@@ -302,11 +306,12 @@ class FormSchemaExtractor
      */
     private function isValidDate($value): bool
     {
-        if (!is_string($value)) {
+        if (! is_string($value)) {
             return false;
         }
 
         $date = \DateTime::createFromFormat('Y-m-d', $value);
+
         return $date && $date->format('Y-m-d') === $value;
     }
 }

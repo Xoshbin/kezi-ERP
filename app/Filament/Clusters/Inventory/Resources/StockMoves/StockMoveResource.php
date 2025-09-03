@@ -2,38 +2,30 @@
 
 namespace App\Filament\Clusters\Inventory\Resources\StockMoves;
 
-use Filament\Schemas\Schema;
-use Filament\Schemas\Components\Section;
-use Filament\Schemas\Components\Grid;
-use Filament\Forms\Components\Select;
-use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\DatePicker;
-use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Filters\SelectFilter;
-use Filament\Tables\Filters\Filter;
-use Filament\Actions\ViewAction;
-use Filament\Actions\EditAction;
-use Filament\Actions\DeleteAction;
-use Filament\Actions\BulkActionGroup;
-use Filament\Actions\DeleteBulkAction;
-use App\Filament\Clusters\Inventory\Resources\StockMoves\Pages\ListStockMoves;
-use App\Filament\Clusters\Inventory\Resources\StockMoves\Pages\CreateStockMove;
-use App\Filament\Clusters\Inventory\Resources\StockMoves\Pages\ViewStockMove;
-use App\Filament\Clusters\Inventory\Resources\StockMoves\Pages\EditStockMove;
-use App\Actions\Inventory\CreateStockMoveAction;
-use App\Actions\Inventory\UpdateStockMoveAction;
-use App\DataTransferObjects\Inventory\CreateStockMoveDTO;
-use App\DataTransferObjects\Inventory\UpdateStockMoveDTO;
 use App\Enums\Inventory\StockMoveStatus;
 use App\Enums\Inventory\StockMoveType;
-use App\Filament\Clusters\Inventory\Resources\StockMoveResource\Pages;
+use App\Filament\Clusters\Inventory\InventoryCluster;
+use App\Filament\Clusters\Inventory\Resources\StockMoves\Pages\CreateStockMove;
+use App\Filament\Clusters\Inventory\Resources\StockMoves\Pages\EditStockMove;
+use App\Filament\Clusters\Inventory\Resources\StockMoves\Pages\ListStockMoves;
+use App\Filament\Clusters\Inventory\Resources\StockMoves\Pages\ViewStockMove;
 use App\Models\Company;
 use App\Models\StockMove;
-use App\Filament\Clusters\Inventory\InventoryCluster;
-use Filament\Facades\Filament;
-use Filament\Forms;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\DeleteBulkAction;
+use Filament\Actions\EditAction;
+use Filament\Actions\ViewAction;
+use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
 use Filament\Resources\Resource;
-use Filament\Tables;
+use Filament\Schemas\Components\Grid;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Schema;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\Filter;
+use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 
@@ -43,7 +35,7 @@ class StockMoveResource extends Resource
 
     protected static ?string $cluster = InventoryCluster::class;
 
-    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-arrow-path';
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-arrow-path';
 
     protected static ?int $navigationSort = 3;
 

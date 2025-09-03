@@ -4,8 +4,8 @@ namespace App\Filament\Clusters\HumanResources\Resources\Departments\Pages;
 
 use App\Filament\Clusters\HumanResources\Resources\Departments\DepartmentResource;
 use Filament\Resources\Pages\CreateRecord;
-use LaraZeus\SpatieTranslatable\Resources\Pages\CreateRecord\Concerns\Translatable;
 use LaraZeus\SpatieTranslatable\Actions\LocaleSwitcher;
+use LaraZeus\SpatieTranslatable\Resources\Pages\CreateRecord\Concerns\Translatable;
 
 class CreateDepartment extends CreateRecord
 {

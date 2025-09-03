@@ -8,8 +8,6 @@ use App\Filament\Clusters\Accounting\Resources\AnalyticPlans\Pages\EditAnalyticP
 use App\Filament\Clusters\Accounting\Resources\AnalyticPlans\Pages\ListAnalyticPlans;
 use App\Filament\Clusters\Accounting\Resources\AnalyticPlans\RelationManagers\AnalyticAccountsRelationManager;
 use App\Filament\Clusters\Accounting\Resources\AnalyticPlans\RelationManagers\BudgetsRelationManager;
-use App\Filament\Resources\AnalyticPlanResource\Pages;
-use App\Filament\Resources\AnalyticPlanResource\RelationManagers;
 use App\Models\AnalyticPlan;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
@@ -28,7 +26,7 @@ class AnalyticPlanResource extends Resource
 
     protected static ?string $model = AnalyticPlan::class;
 
-    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-clipboard-document-list';
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-clipboard-document-list';
 
     protected static ?int $navigationSort = 5;
 

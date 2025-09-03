@@ -7,7 +7,7 @@ use App\Enums\Adjustments\AdjustmentDocumentType;
 class CreateAdjustmentDocumentDTO
 {
     /**
-     * @param CreateAdjustmentDocumentLineDTO[] $lines
+     * @param  CreateAdjustmentDocumentLineDTO[]  $lines
      */
     public function __construct(
         public readonly int $company_id,

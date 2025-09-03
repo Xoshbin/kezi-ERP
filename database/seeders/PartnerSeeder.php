@@ -2,14 +2,14 @@
 
 namespace Database\Seeders;
 
-use Exception;
 use App\Enums\Accounting\AccountType;
+use App\Enums\Partners\PartnerType;
 use App\Models\Account;
 use App\Models\Company;
 use App\Models\Partner;
-use App\Enums\Partners\PartnerType;
-use Illuminate\Database\Seeder;
+use Exception;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Database\Seeder;
 
 class PartnerSeeder extends Seeder
 {
@@ -33,8 +33,8 @@ class PartnerSeeder extends Seeder
             ->where('code', '210101')
             ->first();
 
-        if (!$defaultReceivableAccount || !$defaultPayableAccount) {
-            throw new Exception("Default receivable/payable accounts not found. Please run the AccountSeeder first.");
+        if (! $defaultReceivableAccount || ! $defaultPayableAccount) {
+            throw new Exception('Default receivable/payable accounts not found. Please run the AccountSeeder first.');
         }
 
         $partners = [
@@ -108,6 +108,6 @@ class PartnerSeeder extends Seeder
             ->max('code');
 
         // If no code exists in the range, start with the base code. Otherwise, increment the highest found code.
-        return $latestCode ? (string)($latestCode + 1) : (string)$baseCode;
+        return $latestCode ? (string) ($latestCode + 1) : (string) $baseCode;
     }
 }

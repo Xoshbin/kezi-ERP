@@ -2,21 +2,19 @@
 
 namespace Tests\Feature\Bank;
 
-use App\Models\User;
-use Brick\Money\Money;
-use App\Models\Journal;
-use App\Enums\Accounting\JournalType;
-use App\Models\Partner;
-use App\Models\BankStatement;
-use Tests\Traits\CreatesApplication;
-use Tests\Traits\WithConfiguredCompany;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use App\Actions\Accounting\CreateBankStatementAction;
 use App\Actions\Accounting\UpdateBankStatementAction;
 use App\DataTransferObjects\Accounting\CreateBankStatementDTO;
-use App\DataTransferObjects\Accounting\UpdateBankStatementDTO;
 use App\DataTransferObjects\Accounting\CreateBankStatementLineDTO;
+use App\DataTransferObjects\Accounting\UpdateBankStatementDTO;
 use App\DataTransferObjects\Accounting\UpdateBankStatementLineDTO;
+use App\Enums\Accounting\JournalType;
+use App\Models\BankStatement;
+use App\Models\Journal;
+use App\Models\Partner;
+use Brick\Money\Money;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\Traits\WithConfiguredCompany;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);
 
@@ -36,7 +34,7 @@ test('it creates a bank statement and its lines from a dto', function () {
             date: now()->toDateString(),
             description: 'Incoming Payment #1',
             amount: Money::of('1500.00', $currencyCode),
-            partner_id: (string)$partner->id,
+            partner_id: (string) $partner->id,
         ),
         new CreateBankStatementLineDTO(
             date: now()->toDateString(),
@@ -92,13 +90,13 @@ test('it updates a bank statement and syncs its lines from a dto', function () {
         'company_id' => $this->company->id,
         'date' => now(),
         'description' => 'Line To Remove',
-        'amount' => Money::of(100, $currencyCode)
+        'amount' => Money::of(100, $currencyCode),
     ]);
     $lineToUpdate = $statement->bankStatementLines()->create([
         'company_id' => $this->company->id,
         'date' => now(),
         'description' => 'Original Description',
-        'amount' => Money::of(200, $currencyCode)
+        'amount' => Money::of(200, $currencyCode),
     ]);
 
     // Arrange: Prepare the DTO for the update action.

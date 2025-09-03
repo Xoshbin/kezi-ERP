@@ -14,8 +14,8 @@ class PartnerObserver
      */
     public function deleting(Partner $partner): void
     {
-        if ($partner->invoices()->exists() 
-            || $partner->vendorBills()->exists() 
+        if ($partner->invoices()->exists()
+            || $partner->vendorBills()->exists()
             || $partner->payments()->exists()
         ) {
             // Throw the exception to completely block the deletion.

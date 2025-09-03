@@ -14,7 +14,7 @@ class CustomerFinancialWidget extends BaseWidget
 
     protected function getStats(): array
     {
-        if (!$this->record instanceof Partner) {
+        if (! $this->record instanceof Partner) {
             return [];
         }
 
@@ -22,7 +22,7 @@ class CustomerFinancialWidget extends BaseWidget
         $partner = $this->record;
 
         // Only show for customers and both types
-        if (!in_array($partner->type, [PartnerType::Customer, PartnerType::Both])) {
+        if (! in_array($partner->type, [PartnerType::Customer, PartnerType::Both])) {
             return [];
         }
 
@@ -40,7 +40,7 @@ class CustomerFinancialWidget extends BaseWidget
             ->descriptionIcon('heroicon-m-banknotes')
             ->color($outstandingBalance->isZero() ? 'gray' : 'success')
             ->extraAttributes([
-                'class' => 'text-sm'
+                'class' => 'text-sm',
             ]);
 
         // Due Within 7 Days - like in image
@@ -49,7 +49,7 @@ class CustomerFinancialWidget extends BaseWidget
             ->descriptionIcon('heroicon-m-clock')
             ->color($dueIn7Days->isZero() ? 'gray' : 'warning')
             ->extraAttributes([
-                'class' => 'text-sm'
+                'class' => 'text-sm',
             ]);
 
         // Average Payment Time - like in image
@@ -57,12 +57,12 @@ class CustomerFinancialWidget extends BaseWidget
                            ($avgPaymentDays <= 30 ? 'success' :
                            ($avgPaymentDays <= 60 ? 'warning' : 'danger'));
 
-        $stats[] = Stat::make(__('partner.widgets.average_payment_time'), $avgPaymentDays . ' ' . __('partner.widgets.days'))
+        $stats[] = Stat::make(__('partner.widgets.average_payment_time'), $avgPaymentDays.' '.__('partner.widgets.days'))
             ->description(__('partner.widgets.payment_performance'))
             ->descriptionIcon('heroicon-m-chart-bar')
             ->color($paymentTimeColor)
             ->extraAttributes([
-                'class' => 'text-sm'
+                'class' => 'text-sm',
             ]);
 
         // This Month Received - simplified version
@@ -72,7 +72,7 @@ class CustomerFinancialWidget extends BaseWidget
             ->descriptionIcon('heroicon-m-arrow-trending-up')
             ->color($monthlyReceived->isZero() ? 'gray' : 'success')
             ->extraAttributes([
-                'class' => 'text-sm'
+                'class' => 'text-sm',
             ]);
 
         return $stats;

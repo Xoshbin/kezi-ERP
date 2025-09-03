@@ -11,7 +11,9 @@ use Filament\Widgets\ChartWidget;
 class IncomeVsExpenseChart extends ChartWidget
 {
     protected ?string $heading = null;
-    protected int | string | array $columnSpan = 'full';
+
+    protected int|string|array $columnSpan = 'full';
+
     protected static ?int $sort = 2;
 
     public function getHeading(): string
@@ -22,7 +24,7 @@ class IncomeVsExpenseChart extends ChartWidget
     protected function getData(): array
     {
         $company = Filament::getTenant();
-        if (!$company) {
+        if (! $company) {
             return $this->getEmptyData();
         }
 
@@ -108,7 +110,7 @@ class IncomeVsExpenseChart extends ChartWidget
                                 label += ": ";
                             }
                             if (context.parsed.y !== null) {
-                                label += new Intl.NumberFormat("' . app()->getLocale() . '", {
+                                label += new Intl.NumberFormat("'.app()->getLocale().'", {
                                     style: "currency",
                                     currency: "IQD",
                                     minimumFractionDigits: 0,
@@ -116,8 +118,8 @@ class IncomeVsExpenseChart extends ChartWidget
                                 }).format(context.parsed.y);
                             }
                             return label;
-                        }'
-                    ]
+                        }',
+                    ],
                 ],
             ],
             'scales' => [
@@ -136,15 +138,15 @@ class IncomeVsExpenseChart extends ChartWidget
                     ],
                     'ticks' => [
                         'callback' => 'function(value, index, values) {
-                            return new Intl.NumberFormat("' . app()->getLocale() . '", {
+                            return new Intl.NumberFormat("'.app()->getLocale().'", {
                                 style: "currency",
                                 currency: "IQD",
                                 minimumFractionDigits: 0,
                                 maximumFractionDigits: 0,
                                 notation: "compact"
                             }).format(value);
-                        }'
-                    ]
+                        }',
+                    ],
                 ],
             ],
             'interaction' => [

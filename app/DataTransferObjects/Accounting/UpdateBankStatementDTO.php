@@ -8,7 +8,7 @@ use Brick\Money\Money;
 class UpdateBankStatementDTO
 {
     /**
-     * @param UpdateBankStatementLineDTO[] $lines
+     * @param  UpdateBankStatementLineDTO[]  $lines
      */
     public function __construct(
         public readonly BankStatement $bankStatement,

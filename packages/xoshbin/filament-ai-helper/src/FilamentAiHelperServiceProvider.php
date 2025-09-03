@@ -2,18 +2,18 @@
 
 namespace Xoshbin\FilamentAiHelper;
 
-use Xoshbin\FilamentAiHelper\Actions\GetAIAssistantResponseAction;
-use Xoshbin\FilamentAiHelper\Actions\FillFormAction;
-use Xoshbin\FilamentAiHelper\Actions\UpdateFormAction;
-use Xoshbin\FilamentAiHelper\Services\GeminiService;
-use Xoshbin\FilamentAiHelper\Services\DeepContextService;
-use Xoshbin\FilamentAiHelper\Services\FormSchemaExtractor;
 use Filament\Support\Assets\Css;
 use Filament\Support\Assets\Js;
 use Filament\Support\Facades\FilamentAsset;
 use Filament\Support\Facades\FilamentView;
 use Illuminate\Support\ServiceProvider;
 use Livewire\Livewire;
+use Xoshbin\FilamentAiHelper\Actions\FillFormAction;
+use Xoshbin\FilamentAiHelper\Actions\GetAIAssistantResponseAction;
+use Xoshbin\FilamentAiHelper\Actions\UpdateFormAction;
+use Xoshbin\FilamentAiHelper\Services\DeepContextService;
+use Xoshbin\FilamentAiHelper\Services\FormSchemaExtractor;
+use Xoshbin\FilamentAiHelper\Services\GeminiService;
 
 class FilamentAiHelperServiceProvider extends ServiceProvider
 {
@@ -22,7 +22,7 @@ class FilamentAiHelperServiceProvider extends ServiceProvider
     public function register(): void
     {
         $this->mergeConfigFrom(
-            __DIR__ . '/../config/filament-ai-helper.php',
+            __DIR__.'/../config/filament-ai-helper.php',
             'filament-ai-helper'
         );
 
@@ -46,7 +46,7 @@ class FilamentAiHelperServiceProvider extends ServiceProvider
     public function boot(): void
     {
         // Respect global enable/disable config
-        if (!config('filament-ai-helper.enabled', true)) {
+        if (! config('filament-ai-helper.enabled', true)) {
             return;
         }
 
@@ -55,13 +55,13 @@ class FilamentAiHelperServiceProvider extends ServiceProvider
         Livewire::component('ai-chat-widget', \Xoshbin\FilamentAiHelper\Livewire\AiChatWidget::class);
 
         // Load views
-        $this->loadViewsFrom(__DIR__ . '/../resources/views', 'filament-ai-helper');
+        $this->loadViewsFrom(__DIR__.'/../resources/views', 'filament-ai-helper');
 
         // Load translations
-        $this->loadTranslationsFrom(__DIR__ . '/../resources/lang', 'filament-ai-helper');
+        $this->loadTranslationsFrom(__DIR__.'/../resources/lang', 'filament-ai-helper');
 
         // Load routes
-        $this->loadRoutesFrom(__DIR__ . '/../routes/api.php');
+        $this->loadRoutesFrom(__DIR__.'/../routes/api.php');
 
         // Register assets - use published assets if available, fallback to package assets
         $cssPath = public_path('vendor/filament-ai-helper/filament-ai-helper.css');
@@ -70,28 +70,28 @@ class FilamentAiHelperServiceProvider extends ServiceProvider
         FilamentAsset::register([
             Css::make('filament-ai-helper-styles', file_exists($cssPath)
                 ? asset('vendor/filament-ai-helper/filament-ai-helper.css')
-                : __DIR__ . '/../resources/dist/filament-ai-helper.css'),
+                : __DIR__.'/../resources/dist/filament-ai-helper.css'),
             Js::make('filament-ai-helper-scripts', file_exists($jsPath)
                 ? asset('vendor/filament-ai-helper/filament-ai-helper.js')
-                : __DIR__ . '/../resources/dist/filament-ai-helper.js'),
+                : __DIR__.'/../resources/dist/filament-ai-helper.js'),
         ], package: 'accountech/filament-ai-helper');
 
         // Publish configuration
         if ($this->app->runningInConsole()) {
             $this->publishes([
-                __DIR__ . '/../config/filament-ai-helper.php' => config_path('filament-ai-helper.php'),
+                __DIR__.'/../config/filament-ai-helper.php' => config_path('filament-ai-helper.php'),
             ], 'filament-ai-helper-config');
 
             $this->publishes([
-                __DIR__ . '/../resources/views' => resource_path('views/vendor/filament-ai-helper'),
+                __DIR__.'/../resources/views' => resource_path('views/vendor/filament-ai-helper'),
             ], 'filament-ai-helper-views');
 
             $this->publishes([
-                __DIR__ . '/../resources/lang' => $this->app->langPath('vendor/filament-ai-helper'),
+                __DIR__.'/../resources/lang' => $this->app->langPath('vendor/filament-ai-helper'),
             ], 'filament-ai-helper-translations');
 
             $this->publishes([
-                __DIR__ . '/../resources/dist' => public_path('vendor/filament-ai-helper'),
+                __DIR__.'/../resources/dist' => public_path('vendor/filament-ai-helper'),
             ], 'filament-ai-helper-assets');
         }
 

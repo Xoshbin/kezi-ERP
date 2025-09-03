@@ -21,8 +21,8 @@ uses(RefreshDatabase::class);
 // To test a new model, you simply add a new line here. No new test function is needed.
 dataset('money_cast_scenarios', [
     // Description          Child Model              Parent Model        Relationship      Field          Currency   Input         Expected Minor
-    'Invoice Line IQD'   => [InvoiceLine::class,      Invoice::class,      'invoice',      'unit_price',    'IQD',    5000000,      5000000000],
-    'Invoice Line USD'   => [InvoiceLine::class,      Invoice::class,      'invoice',      'unit_price',    'USD',    '500.55',     50055],
+    'Invoice Line IQD' => [InvoiceLine::class,      Invoice::class,      'invoice',      'unit_price',    'IQD',    5000000,      5000000000],
+    'Invoice Line USD' => [InvoiceLine::class,      Invoice::class,      'invoice',      'unit_price',    'USD',    '500.55',     50055],
     'Vendor Bill Line IQD' => [VendorBillLine::class,   VendorBill::class,   'vendorBill',   'unit_price',    'IQD',    1234,         1234000],
     'Vendor Bill Line USD' => [VendorBillLine::class,   VendorBill::class,   'vendorBill',   'unit_price',    'USD',    '199.99',     19999],
     'Journal Entry Line IQD' => [JournalEntryLine::class, JournalEntry::class, 'journalEntry', 'debit',         'IQD',    '2500.500',   2500500],

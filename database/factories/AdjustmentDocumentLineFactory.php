@@ -2,12 +2,12 @@
 
 namespace Database\Factories;
 
-use App\Models\Tax;
-use Brick\Money\Money;
 use App\Models\Account;
-use App\Models\Product;
 use App\Models\AdjustmentDocument;
 use App\Models\AdjustmentDocumentLine;
+use App\Models\Product;
+use App\Models\Tax;
+use Brick\Money\Money;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class AdjustmentDocumentLineFactory extends Factory
@@ -27,6 +27,7 @@ class AdjustmentDocumentLineFactory extends Factory
             'unit_price' => function (array $attributes) {
                 $adjustmentDocument = AdjustmentDocument::find($attributes['adjustment_document_id']);
                 $currency = $adjustmentDocument->currency;
+
                 return Money::of($this->faker->randomFloat(2, 10, 100), $currency->code);
             },
             'tax_id' => Tax::factory(),

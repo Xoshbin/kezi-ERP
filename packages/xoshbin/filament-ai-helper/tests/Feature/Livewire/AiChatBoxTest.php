@@ -1,27 +1,30 @@
 <?php
 
-use Xoshbin\FilamentAiHelper\Actions\GetAIAssistantResponseAction;
-use Xoshbin\FilamentAiHelper\Livewire\AiChatBox;
-use Xoshbin\FilamentAiHelper\Services\GeminiService;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\RateLimiter;
 use Livewire\Livewire;
+use Xoshbin\FilamentAiHelper\Actions\GetAIAssistantResponseAction;
+use Xoshbin\FilamentAiHelper\Livewire\AiChatBox;
+use Xoshbin\FilamentAiHelper\Services\GeminiService;
 
 // Mock model for testing
 class TestInvoice extends Model
 {
     protected $table = 'test_invoices';
+
     protected $fillable = ['number', 'total'];
 
     public static function find($id)
     {
         if ($id === 1) {
-            $model = new static();
+            $model = new static;
             $model->id = 1;
             $model->number = 'INV-001';
             $model->total = 1000;
+
             return $model;
         }
+
         return null;
     }
 }
@@ -51,7 +54,7 @@ it('initializes with welcome message when model exists', function () {
     Livewire::test(AiChatBox::class, [
         'modelClass' => TestInvoice::class,
         'modelId' => '1',
-        'resourceClass' => 'TestResource'
+        'resourceClass' => 'TestResource',
     ])
         ->assertSet('modelClass', TestInvoice::class)
         ->assertSet('modelId', '1')
@@ -70,7 +73,7 @@ it('can send a message successfully', function () {
     Livewire::test(AiChatBox::class, [
         'modelClass' => TestInvoice::class,
         'modelId' => '1',
-        'resourceClass' => 'TestResource'
+        'resourceClass' => 'TestResource',
     ])
         ->set('currentQuestion', 'What is the total amount?')
         ->call('sendMessage')
@@ -118,7 +121,7 @@ it('can clear chat history', function () {
     Livewire::test(AiChatBox::class, [
         'modelClass' => TestInvoice::class,
         'modelId' => '1',
-        'resourceClass' => 'TestResource'
+        'resourceClass' => 'TestResource',
     ])
         ->set('currentQuestion', 'Test question')
         ->call('sendMessage')
@@ -172,7 +175,7 @@ it('gets record info correctly', function () {
     $component = Livewire::test(AiChatBox::class, [
         'modelClass' => TestInvoice::class,
         'modelId' => '1',
-        'resourceClass' => 'TestResource'
+        'resourceClass' => 'TestResource',
     ]);
 
     $recordInfo = $component->get('recordInfo');
@@ -186,7 +189,7 @@ it('handles non-existent record', function () {
     $component = Livewire::test(AiChatBox::class, [
         'modelClass' => TestInvoice::class,
         'modelId' => '999',
-        'resourceClass' => 'TestResource'
+        'resourceClass' => 'TestResource',
     ]);
 
     $recordInfo = $component->get('recordInfo');
@@ -200,7 +203,7 @@ it('handles empty model class', function () {
     $component = Livewire::test(AiChatBox::class, [
         'modelClass' => '',
         'modelId' => '',
-        'resourceClass' => ''
+        'resourceClass' => '',
     ]);
 
     $recordInfo = $component->get('recordInfo');

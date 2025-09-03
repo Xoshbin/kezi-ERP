@@ -39,12 +39,12 @@ class DepreciationEntrySeeder extends Seeder
                     $depreciationEntry = DepreciationEntry::create([
                         'asset_id' => $asset->id,
                         'company_id' => $asset->company_id,
-                        'reference' => 'DEP-' . str_pad($referenceCounter++, 4, '0', STR_PAD_LEFT),
+                        'reference' => 'DEP-'.str_pad($referenceCounter++, 4, '0', STR_PAD_LEFT),
                         'depreciation_date' => $postingDate,
                         'amount' => $monthlyDepreciation,
                         'accumulated_depreciation' => $accumulatedDepreciation,
                         'status' => 'posted',
-                        'notes' => "Monthly depreciation for {$asset->name} - " . $postingDate->format('F Y'),
+                        'notes' => "Monthly depreciation for {$asset->name} - ".$postingDate->format('F Y'),
                     ]);
 
                     // Create Journal Entry

@@ -12,7 +12,7 @@ class ExchangeRatesWidget extends StatsOverviewWidget
 {
     protected static ?int $sort = 3;
 
-    protected int | string | array $columnSpan = 'full';
+    protected int|string|array $columnSpan = 'full';
 
     protected function getStats(): array
     {
@@ -30,7 +30,7 @@ class ExchangeRatesWidget extends StatsOverviewWidget
         foreach ($currencies as $currency) {
             $latestRate = $currency->latestRate;
 
-            if (!$latestRate) {
+            if (! $latestRate) {
                 continue;
             }
 
@@ -46,7 +46,7 @@ class ExchangeRatesWidget extends StatsOverviewWidget
 
             if ($previousRate) {
                 $changePercent = (($latestRate->rate - $previousRate->rate) / $previousRate->rate) * 100;
-                $change = number_format($changePercent, 2) . '%';
+                $change = number_format($changePercent, 2).'%';
 
                 if ($changePercent > 0) {
                     $changeColor = 'success';
@@ -71,7 +71,7 @@ class ExchangeRatesWidget extends StatsOverviewWidget
                     $previousRate->rate,
                     $latestRate->rate,
                 ])
-                ->color($changeColor);
+                    ->color($changeColor);
 
                 if ($changeIcon) {
                     $stat = $stat->descriptionIcon($changeIcon);

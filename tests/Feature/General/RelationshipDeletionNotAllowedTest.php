@@ -2,32 +2,28 @@
 
 namespace Tests\Feature\General;
 
-use App\Models\User;
-use RuntimeException;
-use Brick\Money\Money;
-use App\Models\Account;
-use App\Models\Invoice;
-use App\Models\Partner;
-use App\Models\Product;
-use App\Models\VendorBill;
-use App\Models\InvoiceLine;
-use App\Models\JournalEntry;
-use App\Models\VendorBillLine;
-use App\Services\InvoiceService;
-use Tests\Traits\CreatesApplication;
-use App\Services\JournalEntryService;
-use Illuminate\Database\QueryException;
-use Tests\Traits\WithConfiguredCompany;
-use App\Exceptions\DeletionNotAllowedException;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use App\Actions\Purchases\CreateVendorBillLineAction;
 use App\DataTransferObjects\Purchases\CreateVendorBillLineDTO;
+use App\Exceptions\DeletionNotAllowedException;
+use App\Models\Account;
+use App\Models\Invoice;
+use App\Models\InvoiceLine;
+use App\Models\JournalEntry;
+use App\Models\Partner;
+use App\Models\Product;
+use App\Models\User;
+use App\Models\VendorBill;
+use Brick\Money\Money;
+use Illuminate\Database\QueryException;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use RuntimeException;
+use Tests\Traits\WithConfiguredCompany;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);
 
-//======================================================================
+// ======================================================================
 // Test Case 1: Protecting Journal Entry Lines
-//======================================================================
+// ======================================================================
 test('a journal entry line cannot be deleted from a posted journal entry', function () {
     /**
      * Principle: The individual lines of a posted journal entry are as immutable as the entry itself.
@@ -57,7 +53,7 @@ test('a journal entry line cannot be deleted from a posted journal entry', funct
     ]);
 
     // Act & Assert: Attempting to delete the line directly should throw a RuntimeException.
-    expect(fn() => $lineToDelete->delete())
+    expect(fn () => $lineToDelete->delete())
         ->toThrow(
             RuntimeException::class,
             'Cannot delete a journal entry line because its parent journal entry is already posted.'
@@ -67,9 +63,9 @@ test('a journal entry line cannot be deleted from a posted journal entry', funct
     $this->assertModelExists($lineToDelete);
 });
 
-//======================================================================
+// ======================================================================
 // Test Case 2: Protecting Associated Master Data (Partner)
-//======================================================================
+// ======================================================================
 test('a partner linked to a posted invoice cannot be deleted', function () {
     /**
      * Principle: Master data (like a customer or vendor) that is part of a posted transaction
@@ -86,7 +82,7 @@ test('a partner linked to a posted invoice cannot be deleted', function () {
     ]);
 
     // Act & Assert: Attempting to delete the partner should be blocked by our observer.
-    expect(fn() => $customer->delete())
+    expect(fn () => $customer->delete())
         ->toThrow(
             DeletionNotAllowedException::class,
             'Cannot delete a partner with associated financial documents (invoices, bills, or payments).'
@@ -96,10 +92,9 @@ test('a partner linked to a posted invoice cannot be deleted', function () {
     $this->assertModelExists($customer);
 });
 
-
-//======================================================================
+// ======================================================================
 // Test Case 3: Protecting Associated Master Data (Product)
-//======================================================================
+// ======================================================================
 test('a product linked to a posted vendor bill line cannot be deleted', function () {
     /**
      * Principle: Master data like a Product, once used in a transaction,
@@ -130,17 +125,16 @@ test('a product linked to a posted vendor bill line cannot be deleted', function
     // --- END OF FIX ---
 
     // Assert: Attempting to delete the product should be blocked by the ProductObserver.
-    expect(fn() => $product->delete())
+    expect(fn () => $product->delete())
         ->toThrow(DeletionNotAllowedException::class, 'Cannot delete a product that has been used in transactions.');
 
     // Verify: The product must not have been soft-deleted.
     $this->assertNotSoftDeleted($product);
 });
 
-
-//======================================================================
+// ======================================================================
 // Test Case 4: Protecting the Audit Trail (User)
-//======================================================================
+// ======================================================================
 test('a user who created a journal entry cannot be deleted', function () {
     /**
      * Principle: The user who creates a financial transaction is a critical part of the audit trail.
@@ -165,9 +159,9 @@ test('a user who created a journal entry cannot be deleted', function () {
     $this->assertModelExists($this->user);
 });
 
-//======================================================================
+// ======================================================================
 // Test Case 5: Protecting Posted Documents (Invoice)
-//======================================================================
+// ======================================================================
 test('a posted invoice with lines cannot be deleted', function () {
     /**
      * Principle: A posted invoice is an immutable financial document. It cannot be deleted.
@@ -187,7 +181,7 @@ test('a posted invoice with lines cannot be deleted', function () {
     // receives a Money object directly and doesn't need to resolve the currency itself during creation.
     InvoiceLine::factory()->for($invoice)->create([
         'unit_price' => Money::of(100, $this->company->currency->code),
-        'quantity' => 1
+        'quantity' => 1,
     ]);
 
     // Act: Confirm the invoice using the service.
@@ -205,4 +199,3 @@ test('a posted invoice with lines cannot be deleted', function () {
     $this->assertModelExists($invoice);
     $this->assertNotNull($invoice->fresh()->journal_entry_id);
 });
-

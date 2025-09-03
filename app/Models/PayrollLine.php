@@ -2,8 +2,8 @@
 
 namespace App\Models;
 
-use App\Casts\PayrollCurrencyMoneyCast;
 use App\Casts\BaseCurrencyMoneyCast;
+use App\Casts\PayrollCurrencyMoneyCast;
 use Illuminate\Database\Eloquent\Model;
 
 class PayrollLine extends Model

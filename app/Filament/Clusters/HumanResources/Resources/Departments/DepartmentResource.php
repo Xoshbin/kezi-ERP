@@ -9,7 +9,6 @@ use App\Filament\Clusters\HumanResources\Resources\Departments\Pages\ListDepartm
 use App\Filament\Clusters\HumanResources\Resources\Departments\Schemas\DepartmentForm;
 use App\Filament\Clusters\HumanResources\Resources\Departments\Tables\DepartmentsTable;
 use App\Models\Department;
-use BackedEnum;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Tables\Table;
@@ -21,7 +20,7 @@ class DepartmentResource extends Resource
 
     protected static ?string $model = Department::class;
 
-    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-building-office-2';
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-building-office-2';
 
     protected static ?string $cluster = HumanResourcesCluster::class;
 

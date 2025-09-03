@@ -11,15 +11,22 @@ use Livewire\Component;
 class AiChatWidget extends Component
 {
     public bool $isOpen = false;
+
     public bool $isLoading = false;
+
     public bool $hasError = false;
+
     public string $errorMessage = '';
+
     public string $currentQuestion = '';
+
     public array $messages = [];
 
     // Record context
     public ?string $modelClass = null;
+
     public ?string $modelId = null;
+
     public ?string $resourceClass = null;
 
     protected $rules = [
@@ -40,7 +47,7 @@ class AiChatWidget extends Component
     #[On('ai-chat-toggle')]
     public function toggleChat(): void
     {
-        $this->isOpen = !$this->isOpen;
+        $this->isOpen = ! $this->isOpen;
 
         if ($this->isOpen) {
             $this->loadRecordContext();
@@ -172,7 +179,7 @@ class AiChatWidget extends Component
 
     protected function getCurrentRecord(): ?Model
     {
-        if (!$this->modelClass || !$this->modelId) {
+        if (! $this->modelClass || ! $this->modelId) {
             return null;
         }
 
@@ -191,7 +198,7 @@ class AiChatWidget extends Component
     {
         $record = $this->getCurrentRecord();
 
-        if (!$record) {
+        if (! $record) {
             return [
                 'exists' => false,
                 'type' => 'Unknown',
@@ -200,7 +207,7 @@ class AiChatWidget extends Component
         }
 
         $type = class_basename($record);
-        $identifier = $record->name ?? $record->title ?? $record->reference ?? '#' . $record->id;
+        $identifier = $record->name ?? $record->title ?? $record->reference ?? '#'.$record->id;
 
         return [
             'exists' => true,
@@ -221,12 +228,12 @@ class AiChatWidget extends Component
         }
 
         if ($pageType === 'create') {
-            return $baseMessage . " I can help you fill out this form, analyze data, and provide insights based on accounting best practices. Try asking me to 'create an invoice for customer X' or 'fill the form with default values'. What would you like me to help you with?";
+            return $baseMessage." I can help you fill out this form, analyze data, and provide insights based on accounting best practices. Try asking me to 'create an invoice for customer X' or 'fill the form with default values'. What would you like me to help you with?";
         } elseif ($pageType === 'edit') {
-            return $baseMessage . " I can help you update this form, analyze the current data, and provide insights based on accounting best practices. Try asking me to 'change the amount to 1000' or 'update the due date'. What would you like me to help you with?";
+            return $baseMessage." I can help you update this form, analyze the current data, and provide insights based on accounting best practices. Try asking me to 'change the amount to 1000' or 'update the due date'. What would you like me to help you with?";
         }
 
-        return $baseMessage . " I can help you analyze records, check for potential issues, and provide insights based on accounting best practices. How can I assist you today?";
+        return $baseMessage.' I can help you analyze records, check for potential issues, and provide insights based on accounting best practices. How can I assist you today?';
     }
 
     /**
@@ -256,7 +263,7 @@ class AiChatWidget extends Component
         // For now, return basic schema based on page type
         $pageType = $this->detectPageType();
 
-        if (!$pageType) {
+        if (! $pageType) {
             return null;
         }
 

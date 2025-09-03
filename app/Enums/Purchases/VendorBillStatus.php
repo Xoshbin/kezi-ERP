@@ -14,6 +14,6 @@ enum VendorBillStatus: string
      */
     public function label(): string
     {
-        return __('enums.vendor_bill_status.' . $this->value);
+        return __('enums.vendor_bill_status.'.$this->value);
     }
 }

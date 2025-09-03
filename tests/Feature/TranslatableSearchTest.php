@@ -2,18 +2,13 @@
 
 namespace Tests\Feature;
 
-use App\Models\Account;
-use App\Models\Currency;
-use App\Models\Tax;
-use App\Models\Journal;
-use App\Models\FiscalPosition;
-use App\Models\Partner;
-use App\Models\Product;
-use App\Models\Company;
 use App\Enums\Accounting\AccountType;
-use App\Enums\Accounting\JournalType;
 use App\Enums\Partners\PartnerType;
-use App\Enums\Products\ProductType;
+use App\Models\Account;
+use App\Models\Company;
+use App\Models\Currency;
+use App\Models\Partner;
+use App\Models\Tax;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -41,10 +36,10 @@ class TranslatableSearchTest extends TestCase
             'name' => [
                 'en' => 'US Dollar',
                 'ckb' => 'دۆلاری ئەمریکی',
-                'ar' => 'الدولار الأمريكي'
+                'ar' => 'الدولار الأمريكي',
             ],
             'code' => 'USD',
-            'symbol' => '$'
+            'symbol' => '$',
         ]);
 
         // Test search in English
@@ -74,10 +69,10 @@ class TranslatableSearchTest extends TestCase
             'name' => [
                 'en' => 'Euro',
                 'ckb' => 'یۆرۆ',
-                'ar' => 'اليورو'
+                'ar' => 'اليورو',
             ],
             'code' => 'EUR',
-            'symbol' => '€'
+            'symbol' => '€',
         ]);
 
         // Set locale to Kurdish
@@ -105,10 +100,10 @@ class TranslatableSearchTest extends TestCase
             'name' => [
                 'en' => 'Cash Account',
                 'ckb' => 'حسابی کاش',
-                'ar' => 'حساب النقد'
+                'ar' => 'حساب النقد',
             ],
             'code' => '1001',
-            'type' => AccountType::BankAndCash
+            'type' => AccountType::BankAndCash,
         ]);
 
         // Search by code
@@ -134,14 +129,14 @@ class TranslatableSearchTest extends TestCase
             'name' => [
                 'en' => 'VAT',
                 'ckb' => 'باجی زیادکراو',
-                'ar' => 'ضريبة القيمة المضافة'
+                'ar' => 'ضريبة القيمة المضافة',
             ],
             'label_on_invoices' => [
                 'en' => 'Value Added Tax',
                 'ckb' => 'باجی بەهای زیادکراو',
-                'ar' => 'ضريبة القيمة المضافة'
+                'ar' => 'ضريبة القيمة المضافة',
             ],
-            'rate' => 15.0
+            'rate' => 15.0,
         ]);
 
         // Search by name
@@ -169,7 +164,7 @@ class TranslatableSearchTest extends TestCase
             'name' => 'John Doe Company',
             'email' => 'john@example.com',
             'contact_person' => 'John Doe',
-            'type' => PartnerType::Customer
+            'type' => PartnerType::Customer,
         ]);
 
         // Search by name
@@ -194,7 +189,7 @@ class TranslatableSearchTest extends TestCase
                 // Missing Kurdish and Arabic translations
             ],
             'code' => 'GBP',
-            'symbol' => '£'
+            'symbol' => '£',
         ]);
 
         // Should still find the currency and return the available translation
@@ -221,13 +216,13 @@ class TranslatableSearchTest extends TestCase
             'name' => [
                 'en' => 'Bank Account',
                 'ckb' => 'حسابی بانک',
-                'ar' => 'حساب البنك'
+                'ar' => 'حساب البنك',
             ],
             'code' => '1100',
-            'type' => AccountType::BankAndCash
+            'type' => AccountType::BankAndCash,
         ]);
 
-        $formatter = fn($account) => [$account->id => $account->getTranslatedLabel('name') . ' (' . $account->code . ')'];
+        $formatter = fn ($account) => [$account->id => $account->getTranslatedLabel('name').' ('.$account->code.')'];
 
         $results = Account::getFormattedSearchResults('Bank', 50, $formatter);
         $this->assertArrayHasKey($account->id, $results);
@@ -243,10 +238,10 @@ class TranslatableSearchTest extends TestCase
                 'name' => [
                     'en' => "Currency $i",
                     'ckb' => "دراو $i",
-                    'ar' => "عملة $i"
+                    'ar' => "عملة $i",
                 ],
                 'code' => "CUR$i",
-                'symbol' => "$i"
+                'symbol' => "$i",
             ]);
         }
 
@@ -266,10 +261,10 @@ class TranslatableSearchTest extends TestCase
             'name' => [
                 'en' => 'Japanese Yen',
                 'ckb' => 'یەنی ژاپۆنی',
-                'ar' => 'الين الياباني'
+                'ar' => 'الين الياباني',
             ],
             'code' => 'JPY',
-            'symbol' => '¥'
+            'symbol' => '¥',
         ]);
 
         $translations = $currency->getAllTranslations('name');

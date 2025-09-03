@@ -12,6 +12,6 @@ enum BudgetStatus: string
      */
     public function label(): string
     {
-        return __('enums.budget_status.' . $this->value);
+        return __('enums.budget_status.'.$this->value);
     }
 }

@@ -16,8 +16,6 @@ class NumberFormatter
 {
     /**
      * Get the locale to use for number formatting.
-     *
-     * @return string
      */
     public static function getNumberLocale(): string
     {
@@ -32,8 +30,6 @@ class NumberFormatter
 
     /**
      * Get the locale to use for currency formatting.
-     *
-     * @return string
      */
     public static function getCurrencyLocale(): string
     {
@@ -48,9 +44,6 @@ class NumberFormatter
 
     /**
      * Format a Money object for display using Laravel's Number utility.
-     *
-     * @param Money $money
-     * @return string
      */
     public static function formatMoney(Money $money): string
     {
@@ -65,9 +58,6 @@ class NumberFormatter
 
     /**
      * Format a Money object using Brick\Money's formatTo method with configured locale.
-     *
-     * @param Money $money
-     * @return string
      */
     public static function formatMoneyTo(Money $money): string
     {
@@ -77,9 +67,7 @@ class NumberFormatter
     /**
      * Format a number for display using Laravel's Number utility.
      *
-     * @param float|int $number
-     * @param int|null $precision
-     * @return string
+     * @param  float|int  $number
      */
     public static function formatNumber($number, ?int $precision = null): string
     {
@@ -91,9 +79,7 @@ class NumberFormatter
     /**
      * Format a percentage using Laravel's Number utility.
      *
-     * @param float|int $percentage
-     * @param int $precision
-     * @return string
+     * @param  float|int  $percentage
      */
     public static function formatPercentage($percentage, int $precision = 1): string
     {

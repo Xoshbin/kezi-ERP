@@ -1,9 +1,9 @@
 <?php
 
-use App\Services\InvoiceService;
-use App\Models\Invoice;
-use App\Enums\Settings\NumberingType;
 use App\Enums\Sales\InvoiceStatus;
+use App\Enums\Settings\NumberingType;
+use App\Models\Invoice;
+use App\Services\InvoiceService;
 use Tests\Traits\WithConfiguredCompany;
 
 describe('Invoice Numbering Integration', function () {

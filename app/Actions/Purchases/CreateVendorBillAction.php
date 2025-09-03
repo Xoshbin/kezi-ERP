@@ -2,13 +2,10 @@
 
 namespace App\Actions\Purchases;
 
-use App\Models\Tax;
+use App\DataTransferObjects\Purchases\CreateVendorBillDTO;
 use App\Models\Company;
-use Brick\Money\Money;
-use App\Models\Currency;
 use App\Models\VendorBill;
 use App\Services\Accounting\LockDateService;
-use App\DataTransferObjects\Purchases\CreateVendorBillDTO;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 
@@ -17,8 +14,7 @@ class CreateVendorBillAction
     public function __construct(
         protected LockDateService $lockDateService,
         protected CreateVendorBillLineAction $createVendorBillLineAction
-    ) {
-    }
+    ) {}
 
     public function execute(CreateVendorBillDTO $createVendorBillDTO): VendorBill
     {

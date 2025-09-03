@@ -25,7 +25,8 @@ abstract class MoneyCast implements CastsAttributes
     /**
      * Get the real value of an attribute.
      *
-     * @param array<string, mixed> $attributes
+     * @param  array<string, mixed>  $attributes
+     *
      * @throws MathException
      */
     public function get($model, string $key, $value, array $attributes): ?Money
@@ -42,7 +43,7 @@ abstract class MoneyCast implements CastsAttributes
     /**
      * Prepare the value for storage.
      *
-     * @param array<string, mixed> $attributes
+     * @param  array<string, mixed>  $attributes
      */
     public function set($model, string $key, $value, array $attributes): ?array
     {
@@ -57,10 +58,11 @@ abstract class MoneyCast implements CastsAttributes
         if (is_numeric($value)) {
             $currency = $this->resolveCurrency($model);
             $money = Money::of($value, $currency->code);
+
             return [$key => $money->getMinorAmount()->toInt()];
         }
 
-        throw new InvalidArgumentException("Invalid value for MoneyCast: must be numeric or Money instance.");
+        throw new InvalidArgumentException('Invalid value for MoneyCast: must be numeric or Money instance.');
     }
 
     /**

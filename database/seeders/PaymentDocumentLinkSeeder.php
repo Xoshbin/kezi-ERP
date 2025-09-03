@@ -4,7 +4,6 @@ namespace Database\Seeders;
 
 use App\Enums\Partners\PartnerType;
 use App\Models\Invoice;
-use App\Models\Partner;
 use App\Models\Payment;
 use App\Models\PaymentDocumentLink;
 use App\Models\VendorBill;
@@ -22,8 +21,8 @@ class PaymentDocumentLinkSeeder extends Seeder
         foreach ($payments as $payment) {
             if ($payment->payment_type === 'customer') {
                 $invoice = Invoice::where('partner_id', $payment->partner_id)
-                                  ->where('company_id', $payment->company_id)
-                                  ->first();
+                    ->where('company_id', $payment->company_id)
+                    ->first();
 
                 if ($invoice) {
                     PaymentDocumentLink::updateOrCreate(
@@ -40,8 +39,8 @@ class PaymentDocumentLinkSeeder extends Seeder
                 }
             } elseif ($payment->payment_type === PartnerType::Vendor) {
                 $vendorBill = VendorBill::where('partner_id', $payment->partner_id)
-                                        ->where('company_id', $payment->company_id)
-                                        ->first();
+                    ->where('company_id', $payment->company_id)
+                    ->first();
 
                 if ($vendorBill) {
                     PaymentDocumentLink::updateOrCreate(

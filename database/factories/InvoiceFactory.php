@@ -2,13 +2,12 @@
 
 namespace Database\Factories;
 
-use App\Models\InvoiceLine;
-use Brick\Money\Money;
+use App\Enums\Sales\InvoiceStatus;
 use App\Models\Company;
 use App\Models\Invoice;
+use App\Models\InvoiceLine;
 use App\Models\Partner;
-use App\Models\Currency;
-use App\Enums\Sales\InvoiceStatus;
+use Brick\Money\Money;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class InvoiceFactory extends Factory

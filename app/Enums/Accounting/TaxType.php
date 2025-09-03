@@ -13,6 +13,6 @@ enum TaxType: string
      */
     public function label(): string
     {
-        return __('enums.tax_type.' . $this->value);
+        return __('enums.tax_type.'.$this->value);
     }
 }

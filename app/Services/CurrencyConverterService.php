@@ -2,9 +2,9 @@
 
 namespace App\Services;
 
+use App\Models\Company;
 use App\Models\Currency;
 use App\Models\CurrencyRate;
-use App\Models\Company;
 use Brick\Money\Money;
 use Carbon\Carbon;
 use InvalidArgumentException;
@@ -22,18 +22,19 @@ class CurrencyConverterService
      * Convert an amount from one currency to another using the exchange rate
      * effective on a specific date.
      *
-     * @param Money $amount The amount to convert
-     * @param Currency $toCurrency The target currency
-     * @param Carbon|string $date The date for which to use the exchange rate
-     * @param Company $company The company context for base currency
+     * @param  Money  $amount  The amount to convert
+     * @param  Currency  $toCurrency  The target currency
+     * @param  Carbon|string  $date  The date for which to use the exchange rate
+     * @param  Company  $company  The company context for base currency
      * @return Money The converted amount
+     *
      * @throws InvalidArgumentException If conversion is not possible
      */
     public function convert(Money $amount, Currency $toCurrency, $date, Company $company): Money
     {
         $fromCurrency = Currency::where('code', $amount->getCurrency()->getCurrencyCode())->first();
 
-        if (!$fromCurrency) {
+        if (! $fromCurrency) {
             throw new InvalidArgumentException("Currency {$amount->getCurrency()->getCurrencyCode()} not found");
         }
 
@@ -58,12 +59,8 @@ class CurrencyConverterService
     /**
      * Convert an amount to the company's base currency.
      *
-     * @param Money $amount
-     * @param Currency $fromCurrency
-     * @param Currency $baseCurrency
-     * @param Carbon|string $date
-     * @param Company $company
-     * @return Money
+     * @param  Carbon|string  $date
+     *
      * @throws InvalidArgumentException
      */
     public function convertToBaseCurrency(Money $amount, Currency $fromCurrency, Currency $baseCurrency, $date, Company $company): Money
@@ -91,11 +88,8 @@ class CurrencyConverterService
     /**
      * Convert an amount from the company's base currency to another currency.
      *
-     * @param Money $amount
-     * @param Currency $toCurrency
-     * @param Carbon|string $date
-     * @param Company $company
-     * @return Money
+     * @param  Carbon|string  $date
+     *
      * @throws InvalidArgumentException
      */
     public function convertFromBaseCurrency(Money $amount, Currency $toCurrency, $date, Company $company): Money
@@ -120,10 +114,7 @@ class CurrencyConverterService
      * Get the exchange rate for a currency on a specific date for a specific company.
      * The rate represents how much of the base currency equals 1 unit of the foreign currency.
      *
-     * @param Currency $currency
-     * @param Carbon|string $date
-     * @param Company $company
-     * @return float|null
+     * @param  Carbon|string  $date
      */
     public function getExchangeRate(Currency $currency, $date, Company $company): ?float
     {
@@ -132,10 +123,6 @@ class CurrencyConverterService
 
     /**
      * Get the latest exchange rate for a currency for a specific company.
-     *
-     * @param Currency $currency
-     * @param Company $company
-     * @return float|null
      */
     public function getLatestExchangeRate(Currency $currency, Company $company): ?float
     {
@@ -146,11 +133,7 @@ class CurrencyConverterService
      * Convert an amount using a specific exchange rate.
      * This method is useful when you already have the rate and don't need to look it up.
      *
-     * @param Money $amount
-     * @param float $rate
-     * @param string $toCurrencyCode
-     * @param bool $isFromBaseCurrency Whether converting from base currency (divide) or to base currency (multiply)
-     * @return Money
+     * @param  bool  $isFromBaseCurrency  Whether converting from base currency (divide) or to base currency (multiply)
      */
     public function convertWithRate(Money $amount, float $rate, string $toCurrencyCode, bool $isFromBaseCurrency = false): Money
     {
@@ -169,11 +152,11 @@ class CurrencyConverterService
      * Calculate the exchange difference between two amounts in different currencies
      * when they should represent the same value.
      *
-     * @param Money $originalAmount Original amount in foreign currency
-     * @param Money $currentAmount Current amount in base currency
-     * @param float $originalRate The rate used for the original conversion
-     * @param float $currentRate The current rate
-     * @param string $baseCurrencyCode The base currency code
+     * @param  Money  $originalAmount  Original amount in foreign currency
+     * @param  Money  $currentAmount  Current amount in base currency
+     * @param  float  $originalRate  The rate used for the original conversion
+     * @param  float  $currentRate  The current rate
+     * @param  string  $baseCurrencyCode  The base currency code
      * @return Money The exchange difference (positive for gain, negative for loss)
      */
     public function calculateExchangeDifference(

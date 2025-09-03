@@ -2,14 +2,13 @@
 
 namespace App\Actions\Accounting;
 
-use App\Models\User;
 use App\DataTransferObjects\Accounting\CreateJournalEntryDTO;
 use App\DataTransferObjects\Accounting\CreateJournalEntryLineDTO;
 use App\Enums\Accounting\JournalEntryState;
 use App\Models\BankStatementLine;
 use App\Models\JournalEntry;
+use App\Models\User;
 use Brick\Money\Money;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 class ReverseJournalEntryAction
@@ -48,7 +47,7 @@ class ReverseJournalEntryAction
                 journal_id: $journalEntry->journal_id,
                 currency_id: $journalEntry->currency_id,
                 entry_date: now()->format('Y-m-d'),
-                reference: 'REV/' . $journalEntry->reference,
+                reference: 'REV/'.$journalEntry->reference,
                 description: $reason,
                 created_by_user_id: $user->id,
                 is_posted: true, // Reversing entries are posted immediately

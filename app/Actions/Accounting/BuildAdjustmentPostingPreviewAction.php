@@ -9,8 +9,11 @@ class BuildAdjustmentPostingPreviewAction
 {
     private function accountLabelName($account): string
     {
-        if (!$account) return '';
+        if (! $account) {
+            return '';
+        }
         $name = is_array($account->name ?? null) ? ($account->name['en'] ?? reset($account->name)) : ($account->name ?? '');
+
         return $name;
     }
 
@@ -29,12 +32,15 @@ class BuildAdjustmentPostingPreviewAction
         $salesJournalId = $company->default_sales_journal_id;
 
         foreach ([
-            ['cond' => !$arAccountId, 'type' => 'ar_account_missing', 'msg' => 'Company default Accounts Receivable account is not configured.'],
-            ['cond' => !$salesDiscountId, 'type' => 'sales_discount_missing', 'msg' => 'Company default Sales Discount account is not configured.'],
-            ['cond' => !$taxAccountId, 'type' => 'tax_payable_missing', 'msg' => 'Company default Tax Payable account is not configured.'],
-            ['cond' => !$salesJournalId, 'type' => 'sales_journal_missing', 'msg' => 'Company default sales journal is not configured.'],
+            ['cond' => ! $arAccountId, 'type' => 'ar_account_missing', 'msg' => 'Company default Accounts Receivable account is not configured.'],
+            ['cond' => ! $salesDiscountId, 'type' => 'sales_discount_missing', 'msg' => 'Company default Sales Discount account is not configured.'],
+            ['cond' => ! $taxAccountId, 'type' => 'tax_payable_missing', 'msg' => 'Company default Tax Payable account is not configured.'],
+            ['cond' => ! $salesJournalId, 'type' => 'sales_journal_missing', 'msg' => 'Company default sales journal is not configured.'],
         ] as $check) {
-            if ($check['cond']) { $errors[] = $check['msg']; $issues[] = ['type' => $check['type'], 'message' => $check['msg']]; }
+            if ($check['cond']) {
+                $errors[] = $check['msg'];
+                $issues[] = ['type' => $check['type'], 'message' => $check['msg']];
+            }
         }
 
         $linesPreview = [];
@@ -96,4 +102,3 @@ class BuildAdjustmentPostingPreviewAction
         ];
     }
 }
-

@@ -2,9 +2,9 @@
 
 namespace App\Actions\Accounting;
 
+use App\DataTransferObjects\Accounting\UpdateBankStatementDTO;
 use App\Models\BankStatement;
 use Illuminate\Support\Facades\DB;
-use App\DataTransferObjects\Accounting\UpdateBankStatementDTO;
 
 class UpdateBankStatementAction
 {
@@ -26,9 +26,8 @@ class UpdateBankStatementAction
             // 2. Delete existing lines and recreate them
             $bankStatement->bankStatementLines()->delete();
 
-
             // 3. Create new lines from DTO
-            if (!empty($dto->lines)) {
+            if (! empty($dto->lines)) {
                 $linesToCreate = [];
 
                 foreach ($dto->lines as $lineDto) {

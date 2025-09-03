@@ -2,28 +2,26 @@
 
 namespace App\Models;
 
+use App\Enums\Partners\PartnerType;
+use App\Enums\Purchases\VendorBillStatus;
+use App\Enums\Sales\InvoiceStatus;
+use App\Observers\PartnerObserver;
 use App\Traits\TranslatableSearch;
-use Illuminate\Database\Eloquent\Collection;
+use Brick\Money\Money;
 use Database\Factories\PartnerFactory;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\HasManyThrough;
-use App\Observers\PartnerObserver;
-use App\Enums\Partners\PartnerType;
-use App\Enums\Sales\InvoiceStatus;
-use App\Enums\Purchases\VendorBillStatus;
-use Brick\Money\Money;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Support\Carbon;
 
 /**
  * Class Partner
  *
- * @package App\Models
  * @property int $id
  * @property int|null $company_id
  * @property string $name
@@ -51,6 +49,7 @@ use Illuminate\Support\Carbon;
  * @property-read int|null $payments_count
  * @property-read Collection<int, VendorBill> $vendorBills
  * @property-read int|null $vendor_bills_count
+ *
  * @method static PartnerFactory factory($count = null, $state = [])
  * @method static Builder<static>|Partner newModelQuery()
  * @method static Builder<static>|Partner newQuery()
@@ -76,6 +75,7 @@ use Illuminate\Support\Carbon;
  * @method static Builder<static>|Partner whereZipCode($value)
  * @method static Builder<static>|Partner withTrashed(bool $withTrashed = true)
  * @method static Builder<static>|Partner withoutTrashed()
+ *
  * @mixin \Eloquent
  */
 #[ObservedBy([PartnerObserver::class])]
@@ -132,15 +132,11 @@ class Partner extends Model
 
     /**
      * Get the non-translatable fields that should be searched.
-     *
-     * @return array
      */
     public function getNonTranslatableSearchFields(): array
     {
         return ['name', 'email', 'contact_person'];
     }
-
-
 
     /**
      * Get the company that owns the Partner.
@@ -223,13 +219,12 @@ class Partner extends Model
     /**
      * Get the total outstanding customer balance (accounts receivable).
      * This represents money that customers owe us from unpaid invoices.
-     *
-     * @return Money
      */
     public function getCustomerOutstandingBalance(): Money
     {
-        if (!in_array($this->type, [PartnerType::Customer, PartnerType::Both])) {
+        if (! in_array($this->type, [PartnerType::Customer, PartnerType::Both])) {
             $this->loadMissing('company.currency');
+
             return Money::of(0, $this->company->currency->code);
         }
 
@@ -248,13 +243,12 @@ class Partner extends Model
     /**
      * Get the total outstanding vendor balance (accounts payable).
      * This represents money that we owe to vendors from unpaid bills.
-     *
-     * @return Money
      */
     public function getVendorOutstandingBalance(): Money
     {
-        if (!in_array($this->type, [PartnerType::Vendor, PartnerType::Both])) {
+        if (! in_array($this->type, [PartnerType::Vendor, PartnerType::Both])) {
             $this->loadMissing('company.currency');
+
             return Money::of(0, $this->company->currency->code);
         }
 
@@ -273,13 +267,12 @@ class Partner extends Model
     /**
      * Get the overdue customer balance (past due invoices).
      * This represents money from invoices that are past their due date.
-     *
-     * @return Money
      */
     public function getCustomerOverdueBalance(): Money
     {
-        if (!in_array($this->type, [PartnerType::Customer, PartnerType::Both])) {
+        if (! in_array($this->type, [PartnerType::Customer, PartnerType::Both])) {
             $this->loadMissing('company.currency');
+
             return Money::of(0, $this->company->currency->code);
         }
 
@@ -299,13 +292,12 @@ class Partner extends Model
     /**
      * Get the overdue vendor balance (past due bills).
      * This represents money from bills that are past their due date.
-     *
-     * @return Money
      */
     public function getVendorOverdueBalance(): Money
     {
-        if (!in_array($this->type, [PartnerType::Vendor, PartnerType::Both])) {
+        if (! in_array($this->type, [PartnerType::Vendor, PartnerType::Both])) {
             $this->loadMissing('company.currency');
+
             return Money::of(0, $this->company->currency->code);
         }
 
@@ -325,8 +317,6 @@ class Partner extends Model
     /**
      * Get the last transaction date for this partner.
      * Returns the most recent date from invoices, vendor bills, or payments.
-     *
-     * @return Carbon|null
      */
     public function getLastTransactionDate(): ?Carbon
     {
@@ -345,20 +335,16 @@ class Partner extends Model
 
     /**
      * Check if this partner has any overdue amounts.
-     *
-     * @return bool
      */
     public function hasOverdueAmounts(): bool
     {
-        return !$this->getCustomerOverdueBalance()->isZero() ||
-               !$this->getVendorOverdueBalance()->isZero();
+        return ! $this->getCustomerOverdueBalance()->isZero() ||
+               ! $this->getVendorOverdueBalance()->isZero();
     }
 
     /**
      * Get the total transaction volume (lifetime value) for this partner.
      * This includes all posted invoices and vendor bills regardless of payment status.
-     *
-     * @return Money
      */
     public function getTotalLifetimeValue(): Money
     {
@@ -389,8 +375,9 @@ class Partner extends Model
      */
     public function getCustomerDueWithinDays(int $days): Money
     {
-        if (!in_array($this->type, [PartnerType::Customer, PartnerType::Both])) {
+        if (! in_array($this->type, [PartnerType::Customer, PartnerType::Both])) {
             $this->loadMissing('company.currency');
+
             return Money::of(0, $this->company->currency->code);
         }
 
@@ -416,8 +403,9 @@ class Partner extends Model
      */
     public function getVendorDueWithinDays(int $days): Money
     {
-        if (!in_array($this->type, [PartnerType::Vendor, PartnerType::Both])) {
+        if (! in_array($this->type, [PartnerType::Vendor, PartnerType::Both])) {
             $this->loadMissing('company.currency');
+
             return Money::of(0, $this->company->currency->code);
         }
 

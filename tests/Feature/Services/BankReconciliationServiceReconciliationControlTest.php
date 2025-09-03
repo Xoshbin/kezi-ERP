@@ -88,7 +88,7 @@ test('reconcilePayment throws exception when reconciliation is disabled', functi
         'is_reconciled' => false,
     ]);
 
-    expect(fn() => $this->service->reconcilePayment($payment, $statementLine, $this->user))
+    expect(fn () => $this->service->reconcilePayment($payment, $statementLine, $this->user))
         ->toThrow(ReconciliationDisabledException::class);
 });
 
@@ -102,14 +102,14 @@ test('reconcilePayment succeeds when reconciliation is enabled', function () {
     // Create payment and bank statement line
     $payment = Payment::factory()->for($company)->create([
         'currency_id' => $company->currency_id,
-        'status' => \App\Enums\Payments\PaymentStatus::Confirmed
+        'status' => \App\Enums\Payments\PaymentStatus::Confirmed,
     ]);
     $bankStatement = BankStatement::factory()->for($company)->create([
-        'currency_id' => $company->currency_id
+        'currency_id' => $company->currency_id,
     ]);
     $statementLine = BankStatementLine::factory()->for($bankStatement)->create([
         'company_id' => $company->id,
-        'is_reconciled' => false
+        'is_reconciled' => false,
     ]);
 
     $this->service->reconcilePayment($payment, $statementLine, $this->user);
@@ -126,7 +126,7 @@ test('reconcile throws exception when reconciliation is disabled for payments', 
     // Create payments
     $payments = Payment::factory()->for($company)->count(2)->create();
 
-    expect(fn() => $this->service->reconcile([], $payments->pluck('id')->toArray(), $this->user))
+    expect(fn () => $this->service->reconcile([], $payments->pluck('id')->toArray(), $this->user))
         ->toThrow(ReconciliationDisabledException::class);
 });
 
@@ -138,7 +138,7 @@ test('reconcile throws exception when reconciliation is disabled for bank statem
     $bankStatement = BankStatement::factory()->for($company)->create();
     $lines = BankStatementLine::factory()->for($bankStatement)->count(2)->create();
 
-    expect(fn() => $this->service->reconcile($lines->pluck('id')->toArray(), [], $this->user))
+    expect(fn () => $this->service->reconcile($lines->pluck('id')->toArray(), [], $this->user))
         ->toThrow(ReconciliationDisabledException::class);
 });
 
@@ -155,16 +155,16 @@ test('reconcile succeeds when reconciliation is enabled', function () {
     $payment = Payment::factory()->for($company)->create([
         'currency_id' => $company->currency_id,
         'amount' => $amount->getMinorAmount()->toInt(),
-        'status' => \App\Enums\Payments\PaymentStatus::Confirmed
+        'status' => \App\Enums\Payments\PaymentStatus::Confirmed,
     ]);
 
     $bankStatement = BankStatement::factory()->for($company)->create([
-        'currency_id' => $company->currency_id
+        'currency_id' => $company->currency_id,
     ]);
     $statementLine = BankStatementLine::factory()->for($bankStatement)->create([
         'company_id' => $company->id,
         'amount' => $amount->getMinorAmount()->toInt(),
-        'is_reconciled' => false
+        'is_reconciled' => false,
     ]);
 
     $this->service->reconcile(
@@ -184,7 +184,7 @@ test('reconcileMultiple throws exception when reconciliation is disabled for pay
     // Create payments
     $payments = Payment::factory()->for($company)->count(2)->create();
 
-    expect(fn() => $this->service->reconcileMultiple([], $payments->pluck('id')->toArray(), $this->user))
+    expect(fn () => $this->service->reconcileMultiple([], $payments->pluck('id')->toArray(), $this->user))
         ->toThrow(ReconciliationDisabledException::class);
 });
 
@@ -196,7 +196,7 @@ test('reconcileMultiple throws exception when reconciliation is disabled for ban
     $bankStatement = BankStatement::factory()->for($company)->create();
     $lines = BankStatementLine::factory()->for($bankStatement)->count(2)->create();
 
-    expect(fn() => $this->service->reconcileMultiple($lines->pluck('id')->toArray(), [], $this->user))
+    expect(fn () => $this->service->reconcileMultiple($lines->pluck('id')->toArray(), [], $this->user))
         ->toThrow(ReconciliationDisabledException::class);
 });
 
@@ -216,30 +216,30 @@ test('reconcileMultiple succeeds when reconciliation is enabled', function () {
             'currency_id' => $company->currency_id,
             'amount' => $amount1,
             'payment_type' => \App\Enums\Payments\PaymentType::Inbound,
-            'status' => \App\Enums\Payments\PaymentStatus::Confirmed
+            'status' => \App\Enums\Payments\PaymentStatus::Confirmed,
         ]),
         Payment::factory()->for($company)->create([
             'currency_id' => $company->currency_id,
             'amount' => $amount2,
             'payment_type' => \App\Enums\Payments\PaymentType::Inbound,
-            'status' => \App\Enums\Payments\PaymentStatus::Confirmed
-        ])
+            'status' => \App\Enums\Payments\PaymentStatus::Confirmed,
+        ]),
     ]);
 
     $bankStatement = BankStatement::factory()->for($company)->create([
-        'currency_id' => $company->currency_id
+        'currency_id' => $company->currency_id,
     ]);
     $lines = collect([
         BankStatementLine::factory()->for($bankStatement)->create([
             'company_id' => $company->id,
             'amount' => $amount1,
-            'is_reconciled' => false
+            'is_reconciled' => false,
         ]),
         BankStatementLine::factory()->for($bankStatement)->create([
             'company_id' => $company->id,
             'amount' => $amount2,
-            'is_reconciled' => false
-        ])
+            'is_reconciled' => false,
+        ]),
     ]);
 
     $this->service->reconcileMultiple(
@@ -287,10 +287,10 @@ test('getUnreconciledPayments returns only unreconciled payments', function () {
 
     // Create confirmed and reconciled payments
     $confirmedPayment = Payment::factory()->for($company)->create([
-        'status' => \App\Enums\Payments\PaymentStatus::Confirmed
+        'status' => \App\Enums\Payments\PaymentStatus::Confirmed,
     ]);
     Payment::factory()->for($company)->create([
-        'status' => \App\Enums\Payments\PaymentStatus::Reconciled
+        'status' => \App\Enums\Payments\PaymentStatus::Reconciled,
     ]);
 
     $result = $this->service->getUnreconciledPayments($company->id);

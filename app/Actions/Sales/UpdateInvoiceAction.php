@@ -2,23 +2,21 @@
 
 namespace App\Actions\Sales;
 
-use Carbon\Carbon;
-use App\Models\InvoiceLine;
 use App\DataTransferObjects\Sales\UpdateInvoiceDTO;
+use App\Enums\Sales\InvoiceStatus;
 use App\Exceptions\UpdateNotAllowedException;
 use App\Models\Invoice;
+use App\Models\InvoiceLine;
 use App\Models\Tax;
-use App\Enums\Sales\InvoiceStatus;
 use App\Services\Accounting\LockDateService;
 use Brick\Math\RoundingMode;
 use Brick\Money\Money;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 
 class UpdateInvoiceAction
 {
-    public function __construct(protected LockDateService $lockDateService)
-    {
-    }
+    public function __construct(protected LockDateService $lockDateService) {}
 
     public function execute(UpdateInvoiceDTO $dto): Invoice
     {

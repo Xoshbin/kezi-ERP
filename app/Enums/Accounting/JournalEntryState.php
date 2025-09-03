@@ -13,6 +13,6 @@ enum JournalEntryState: string
      */
     public function label(): string
     {
-        return __('enums.journal_entry_state.' . $this->value);
+        return __('enums.journal_entry_state.'.$this->value);
     }
 }

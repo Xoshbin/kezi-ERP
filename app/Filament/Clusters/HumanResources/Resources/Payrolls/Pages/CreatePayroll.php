@@ -2,8 +2,8 @@
 
 namespace App\Filament\Clusters\HumanResources\Resources\Payrolls\Pages;
 
-use Filament\Facades\Filament;
 use App\Filament\Clusters\HumanResources\Resources\Payrolls\PayrollResource;
+use Filament\Facades\Filament;
 use Filament\Resources\Pages\CreateRecord;
 
 class CreatePayroll extends CreateRecord

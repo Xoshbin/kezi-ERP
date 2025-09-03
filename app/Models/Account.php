@@ -2,30 +2,24 @@
 
 namespace App\Models;
 
-use App\Traits\TranslatableSearch;
-use Illuminate\Support\Carbon;
-use Illuminate\Database\Eloquent\Collection;
-use Database\Factories\AccountFactory;
-use Illuminate\Database\Eloquent\Builder;
+use App\Enums\Accounting\AccountType;
 use App\Observers\AccountObserver;
 use App\Observers\AuditLogObserver;
-use App\Enums\Accounting\AccountType;
-use Illuminate\Database\Eloquent\Model;
-use Spatie\Translatable\HasTranslations;
-use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Traits\TranslatableSearch;
+use Database\Factories\AccountFactory;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Carbon;
+use Spatie\Translatable\HasTranslations;
 
 /**
  * Class Account
  *
- * @package App\Models
- *
- * This Eloquent model represents an account within the Chart of Accounts.
- * It is designed with core accounting principles in mind, such as immutability
- * for financial transactions and robust auditability. Accounts, once used
- * in a financial transaction, cannot be deleted but can be marked as deprecated.
  * @property int $id
  * @property int $company_id
  * @property string $code
@@ -55,6 +49,7 @@ use Illuminate\Database\Eloquent\Attributes\ObservedBy;
  * @property-read int|null $original_fiscal_position_mappings_count
  * @property-read Collection<int, Tax> $taxes
  * @property-read int|null $taxes_count
+ *
  * @method static AccountFactory factory($count = null, $state = [])
  * @method static Builder<static>|Account newModelQuery()
  * @method static Builder<static>|Account newQuery()
@@ -67,9 +62,10 @@ use Illuminate\Database\Eloquent\Attributes\ObservedBy;
  * @method static Builder<static>|Account whereName($value)
  * @method static Builder<static>|Account whereType($value)
  * @method static Builder<static>|Account whereUpdatedAt($value)
+ *
  * @mixin \Eloquent
  */
-#[ObservedBy([AccountObserver::class, AuditLogObserver::class])] //(to log when accounts are created or deprecated)
+#[ObservedBy([AccountObserver::class, AuditLogObserver::class])] // (to log when accounts are created or deprecated)
 class Account extends Model
 {
     use HasFactory, HasTranslations;
@@ -79,8 +75,6 @@ class Account extends Model
 
     /**
      * Get the non-translatable fields that should be searched.
-     *
-     * @return array
      */
     public function getNonTranslatableSearchFields(): array
     {
@@ -147,20 +141,15 @@ class Account extends Model
     /**
      * Get the currency of this invoice.
      * Every invoice operates in a specific currency. [1]
-     *
-     * @return BelongsTo
      */
     public function currency(): BelongsTo
     {
         return $this->belongsTo(Currency::class);
     }
 
-
     /**
      * Get the company that owns this account.
      * An account logically belongs to a specific company in a multi-company setup [5].
-     *
-     * @return BelongsTo
      */
     public function company(): BelongsTo
     {
@@ -173,8 +162,6 @@ class Account extends Model
      * Every financial transaction involves at least two journal entry lines,
      * one debit and one credit, each linked to a specific account [5].
      * This forms the bedrock of double-entry bookkeeping [15].
-     *
-     * @return HasMany
      */
     public function journalEntryLines(): HasMany
     {
@@ -185,8 +172,6 @@ class Account extends Model
      * Get the invoice lines where this account serves as the income account.
      *
      * Revenue recognition is tied to specific income accounts [5].
-     *
-     * @return HasMany
      */
     public function incomeInvoiceLines(): HasMany
     {
@@ -197,8 +182,6 @@ class Account extends Model
      * Get the vendor bill lines where this account serves as the expense account.
      *
      * Similarly, expenses are categorized under specific expense accounts [5].
-     *
-     * @return HasMany
      */
     public function expenseVendorBillLines(): HasMany
     {
@@ -209,8 +192,6 @@ class Account extends Model
      * Get the taxes that are linked to this account for posting tax amounts.
      *
      * Tax management often involves posting to dedicated tax liability/asset accounts [16].
-     *
-     * @return HasMany
      */
     public function taxes(): HasMany
     {
@@ -221,8 +202,6 @@ class Account extends Model
      * Get the fixed assets that use this account as their primary asset account.
      *
      * Fixed assets are recorded on specific balance sheet accounts [16].
-     *
-     * @return HasMany
      */
     public function assets(): HasMany
     {
@@ -233,8 +212,6 @@ class Account extends Model
      * Get the fixed assets that use this account for their depreciation expense.
      *
      * Depreciation expense is typically recognized in a profit and loss account [16].
-     *
-     * @return HasMany
      */
     public function depreciationExpenseAssets(): HasMany
     {
@@ -245,8 +222,6 @@ class Account extends Model
      * Get the fixed assets that use this account as their accumulated depreciation contra-asset account.
      *
      * Accumulated depreciation reduces the book value of an asset on the balance sheet [16].
-     *
-     * @return HasMany
      */
     public function accumulatedDepreciationAssets(): HasMany
     {
@@ -257,8 +232,6 @@ class Account extends Model
      * Get the fiscal position account mappings where this account is the original account.
      *
      * Fiscal positions may remap default accounts based on specific criteria [16].
-     *
-     * @return HasMany
      */
     public function originalFiscalPositionMappings(): HasMany
     {
@@ -267,8 +240,6 @@ class Account extends Model
 
     /**
      * Get the fiscal position account mappings where this account is the mapped (new) account.
-     *
-     * @return HasMany
      */
     public function mappedFiscalPositionMappings(): HasMany
     {
@@ -279,8 +250,6 @@ class Account extends Model
      * Get the budget lines associated with this account.
      *
      * Accounts can be linked to financial budget lines for detailed budget vs. actual analysis [16].
-     *
-     * @return HasMany
      */
     public function budgetLines(): HasMany
     {
@@ -304,14 +273,13 @@ class Account extends Model
      * transactions is **strictly prohibited** to maintain data integrity and auditability [6-8].
      * Instead, accounts are inactivated or "deprecated" to prevent future use
      * while preserving historical records [2, 5].
-     *
-     * @return bool
      */
     public function deprecate(): bool
     {
         // One could add a check here to ensure no future-dated transactions are assigned,
         // although the lock dates mechanism should already prevent this [2, 6, 8, 17].
         $this->is_deprecated = true;
+
         return $this->save();
     }
 
@@ -319,12 +287,11 @@ class Account extends Model
      * Reactivate a deprecated account.
      *
      * Allows an account previously marked as deprecated to be used again.
-     *
-     * @return bool
      */
     public function activate(): bool
     {
         $this->is_deprecated = false;
+
         return $this->save();
     }
 
@@ -334,8 +301,6 @@ class Account extends Model
      * This method is crucial for enforcing the immutability principle.
      * Accounts should only be physically deleted if no financial transactions
      * have ever been posted against them [6-8].
-     *
-     * @return bool
      */
     public function canBeDeleted(): bool
     {

@@ -1,16 +1,16 @@
 <?php
 
-use App\Services\Payments\Strategies\SettlementStrategy;
-use App\DataTransferObjects\Payments\CreatePaymentDTO;
-use App\DataTransferObjects\Payments\UpdatePaymentDTO;
 use App\DataTransferObjects\Payments\CreatePaymentDocumentLinkDTO;
+use App\DataTransferObjects\Payments\CreatePaymentDTO;
 use App\DataTransferObjects\Payments\UpdatePaymentDocumentLinkDTO;
-use App\Models\Payment;
-use App\Models\Invoice;
-use App\Models\VendorBill;
-use App\Models\PaymentDocumentLink;
+use App\DataTransferObjects\Payments\UpdatePaymentDTO;
 use App\Enums\Payments\PaymentPurpose;
 use App\Enums\Payments\PaymentType;
+use App\Models\Invoice;
+use App\Models\Payment;
+use App\Models\PaymentDocumentLink;
+use App\Models\VendorBill;
+use App\Services\Payments\Strategies\SettlementStrategy;
 use Brick\Money\Money;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\Traits\WithConfiguredCompany;
@@ -19,7 +19,7 @@ uses(RefreshDatabase::class, WithConfiguredCompany::class);
 
 beforeEach(function () {
     $this->setupWithConfiguredCompany();
-    $this->strategy = new SettlementStrategy();
+    $this->strategy = new SettlementStrategy;
 });
 
 test('it creates payment document links for settlement payment creation', function () {

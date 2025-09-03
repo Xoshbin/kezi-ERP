@@ -3,8 +3,8 @@
 namespace App\Actions\Adjustments;
 
 use App\DataTransferObjects\Adjustments\CreateAdjustmentDocumentDTO;
-use App\Models\AdjustmentDocument;
 use App\Enums\Adjustments\AdjustmentDocumentStatus;
+use App\Models\AdjustmentDocument;
 use App\Models\Company;
 use App\Models\Currency;
 use App\Services\Accounting\LockDateService;
@@ -19,8 +19,7 @@ class CreateAdjustmentDocumentAction
         private readonly LockDateService $lockDateService,
         private readonly CreateAdjustmentDocumentLineAction $createAdjustmentDocumentLineAction,
         private readonly CurrencyConverterService $currencyConverter
-    ) {
-    }
+    ) {}
 
     public function execute(CreateAdjustmentDocumentDTO $dto): AdjustmentDocument
     {
@@ -88,6 +87,7 @@ class CreateAdjustmentDocumentAction
             }
 
             $adjustmentDocument->save();
+
             return;
         }
 
@@ -95,12 +95,13 @@ class CreateAdjustmentDocumentAction
         $exchangeRate = $this->currencyConverter->getExchangeRate($adjustmentDocument->currency, $adjustmentDocument->date, $adjustmentDocument->company);
 
         // If no exchange rate is found, skip multi-currency processing for backward compatibility
-        if (!$exchangeRate) {
+        if (! $exchangeRate) {
             $adjustmentDocument->exchange_rate_at_creation = 1.0;
             $adjustmentDocument->subtotal_company_currency = $adjustmentDocument->subtotal;
             $adjustmentDocument->total_amount_company_currency = $adjustmentDocument->total_amount;
             $adjustmentDocument->total_tax_company_currency = $adjustmentDocument->total_tax;
             $adjustmentDocument->save();
+
             return;
         }
 

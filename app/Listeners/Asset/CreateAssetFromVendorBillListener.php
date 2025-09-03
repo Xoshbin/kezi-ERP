@@ -2,21 +2,18 @@
 
 namespace App\Listeners\Asset;
 
-use App\Models\AssetCategory;
-use Exception;
 use App\Actions\Assets\CreateAssetAction;
 use App\DataTransferObjects\Assets\CreateAssetDTO;
 use App\Enums\Assets\DepreciationMethod;
 use App\Events\VendorBillConfirmed;
-
+use App\Models\AssetCategory;
+use Exception;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Support\Facades\Log;
 
 class CreateAssetFromVendorBillListener implements ShouldQueue
 {
-    public function __construct(private readonly CreateAssetAction $createAssetAction)
-    {
-    }
+    public function __construct(private readonly CreateAssetAction $createAssetAction) {}
 
     public function handle(VendorBillConfirmed $event): void
     {
@@ -33,10 +30,13 @@ class CreateAssetFromVendorBillListener implements ShouldQueue
                 $category = AssetCategory::find($line->asset_category_id);
             } elseif ($line->expenseAccount?->can_create_assets) {
                 // Implicit asset via account; map into a temporary category-like structure using company defaults
-                $category = new class($company, $line) {
+                $category = new class($company, $line)
+                {
                     public function __construct(public $company, public $line) {}
-                    public function __get($name) {
-                        return match($name) {
+
+                    public function __get($name)
+                    {
+                        return match ($name) {
                             'asset_account_id' => $this->line->expense_account_id,
                             'depreciation_expense_account_id' => $this->company->default_depreciation_expense_account_id
                                 ?? $this->company->default_sales_discount_account_id
@@ -54,7 +54,7 @@ class CreateAssetFromVendorBillListener implements ShouldQueue
                 };
             }
 
-            if (!$category) {
+            if (! $category) {
                 continue; // Not an asset line
             }
 

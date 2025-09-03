@@ -5,20 +5,27 @@ namespace Xoshbin\FilamentAiHelper;
 use Filament\Contracts\Plugin;
 use Filament\Panel;
 use Filament\Support\Concerns\EvaluatesClosures;
-use Filament\View\PanelsRenderHook;
 
 class FilamentAiHelperPlugin implements Plugin
 {
     use EvaluatesClosures;
 
     protected bool $enabled = true;
+
     protected ?string $buttonLabel = null;
+
     protected ?string $buttonIcon = null;
+
     protected ?string $brandName = null;
+
     protected ?string $modalWidth = null;
+
     protected ?string $position = null;
+
     protected ?string $theme = null;
+
     protected ?bool $enableWelcomeMessage = null;
+
     protected array $contextMapping = [];
 
     public function getId(): string
@@ -30,7 +37,7 @@ class FilamentAiHelperPlugin implements Plugin
     {
         // Respect both plugin state and global config
         $globallyEnabled = (bool) config('filament-ai-helper.enabled', true);
-        if (!$globallyEnabled || !$this->enabled) {
+        if (! $globallyEnabled || ! $this->enabled) {
             return;
         }
 
@@ -68,56 +75,56 @@ class FilamentAiHelperPlugin implements Plugin
         return $plugin;
     }
 
-    public function enabled(bool | \Closure $condition = true): static
+    public function enabled(bool|\Closure $condition = true): static
     {
         $this->enabled = $this->evaluate($condition);
 
         return $this;
     }
 
-    public function buttonLabel(string | \Closure | null $label): static
+    public function buttonLabel(string|\Closure|null $label): static
     {
         $this->buttonLabel = $label;
 
         return $this;
     }
 
-    public function buttonIcon(string | \Closure | null $icon): static
+    public function buttonIcon(string|\Closure|null $icon): static
     {
         $this->buttonIcon = $icon;
 
         return $this;
     }
 
-    public function modalWidth(string | \Closure | null $width): static
+    public function modalWidth(string|\Closure|null $width): static
     {
         $this->modalWidth = $width;
 
         return $this;
     }
 
-    public function brandName(string | \Closure | null $name): static
+    public function brandName(string|\Closure|null $name): static
     {
         $this->brandName = $name;
 
         return $this;
     }
 
-    public function position(string | \Closure | null $position): static
+    public function position(string|\Closure|null $position): static
     {
         $this->position = $position;
 
         return $this;
     }
 
-    public function theme(string | \Closure | null $theme): static
+    public function theme(string|\Closure|null $theme): static
     {
         $this->theme = $theme;
 
         return $this;
     }
 
-    public function enableWelcomeMessage(bool | \Closure | null $condition): static
+    public function enableWelcomeMessage(bool|\Closure|null $condition): static
     {
         $this->enableWelcomeMessage = $condition;
 

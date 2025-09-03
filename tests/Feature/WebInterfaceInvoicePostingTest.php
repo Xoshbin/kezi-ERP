@@ -93,7 +93,7 @@ class WebInterfaceInvoicePostingTest extends TestCase
         $this->assertMatchesRegularExpression('/^INV\/\d{4}\/\d{2}\/\d{7}$/', $postedInvoiceNumbers[2]);
 
         // Extract the numeric parts from the new format and verify they're sequential
-        $numbers = array_map(function($invoiceNumber) {
+        $numbers = array_map(function ($invoiceNumber) {
             // Extract the last part after the last slash (e.g., "0000001" from "INV/2025/08/0000001")
             return (int) substr($invoiceNumber, strrpos($invoiceNumber, '/') + 1);
         }, $postedInvoiceNumbers);

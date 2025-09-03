@@ -7,7 +7,6 @@ use App\Enums\Sales\InvoiceStatus;
 use App\Filament\Clusters\Accounting\Widgets\CashFlowWidget;
 use App\Filament\Clusters\Accounting\Widgets\FinancialStatsOverview;
 use App\Filament\Clusters\Accounting\Widgets\IncomeVsExpenseChart;
-use App\Filament\Widgets\AccountWidget;
 use App\Models\Invoice;
 use App\Models\InvoiceLine;
 use App\Models\Partner;
@@ -31,7 +30,7 @@ beforeEach(function () {
 it('can render financial stats overview widget', function () {
     $this->actingAs($this->user);
 
-    $widget = new FinancialStatsOverview();
+    $widget = new FinancialStatsOverview;
 
     // Use reflection to access protected method
     $reflection = new \ReflectionClass($widget);
@@ -54,10 +53,8 @@ it('displays correct financial stats with real data', function () {
     // Create test data
     $customer = Partner::factory()->for($this->company)->create([
         'type' => PartnerType::Customer,
-        'name' => 'Test Customer'
+        'name' => 'Test Customer',
     ]);
-
-
 
     $product = Product::factory()->for($this->company)->create([
         'name' => 'Test Product',
@@ -83,7 +80,7 @@ it('displays correct financial stats with real data', function () {
 
     // Test with just the invoice for simplicity
 
-    $widget = new FinancialStatsOverview();
+    $widget = new FinancialStatsOverview;
 
     // Use reflection to access protected method
     $reflection = new \ReflectionClass($widget);
@@ -98,7 +95,7 @@ it('displays correct financial stats with real data', function () {
 it('can render income vs expense chart widget', function () {
     $this->actingAs($this->user);
 
-    $widget = new IncomeVsExpenseChart();
+    $widget = new IncomeVsExpenseChart;
 
     // Use reflection to access protected method
     $reflection = new \ReflectionClass($widget);
@@ -114,7 +111,7 @@ it('can render income vs expense chart widget', function () {
 it('can render cash flow widget', function () {
     $this->actingAs($this->user);
 
-    $widget = new CashFlowWidget();
+    $widget = new CashFlowWidget;
 
     // Use reflection to access protected method
     $reflection = new \ReflectionClass($widget);
@@ -178,7 +175,7 @@ it('calculates cash flow forecasts correctly', function () {
         'total_amount' => Money::of(3000, $this->company->currency->code),
     ]);
 
-    $widget = new CashFlowWidget();
+    $widget = new CashFlowWidget;
 
     // Use reflection to access protected method
     $reflection = new \ReflectionClass($widget);

@@ -2,23 +2,17 @@
 
 namespace Tests\Feature\Adjustments;
 
-use App\Models\Tax;
-use Tests\TestCase;
-use App\Models\User;
-use Brick\Money\Money;
-use App\Models\Account;
-use App\Models\Product;
-use Tests\Traits\MocksTime;
-use App\Models\AdjustmentDocument;
-use App\Enums\Adjustments\AdjustmentDocumentType;
-use Tests\Traits\CreatesApplication;
-use Tests\Traits\WithUnlockedPeriod;
-use Tests\Traits\WithConfiguredCompany;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use App\Actions\Adjustments\CreateAdjustmentDocumentAction;
 use App\Actions\Adjustments\CreateAdjustmentDocumentLineAction;
 use App\DataTransferObjects\Adjustments\CreateAdjustmentDocumentDTO;
 use App\DataTransferObjects\Adjustments\CreateAdjustmentDocumentLineDTO;
+use App\Enums\Adjustments\AdjustmentDocumentType;
+use App\Models\Account;
+use App\Models\AdjustmentDocument;
+use App\Models\Tax;
+use Brick\Money\Money;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\Traits\MocksTime;
+use Tests\Traits\WithConfiguredCompany;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class, MocksTime::class);
 
@@ -65,7 +59,6 @@ test('adjustment document totals are calculated correctly from lines', function 
     expect($adjustmentDoc->total_tax->getMinorAmount()->toInt())->toBe(20000);
     expect($adjustmentDoc->total_amount->getMinorAmount()->toInt())->toBe(270000);
 });
-
 
 test('create adjustment document action correctly creates document with lines', function () {
     // Arrange

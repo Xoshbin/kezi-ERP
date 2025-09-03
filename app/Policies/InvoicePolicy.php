@@ -4,7 +4,6 @@ namespace App\Policies;
 
 use App\Models\Invoice;
 use App\Models\User;
-use Illuminate\Auth\Access\Response;
 
 class InvoicePolicy
 {
@@ -13,7 +12,7 @@ class InvoicePolicy
      */
     public function viewAny(User $user): bool
     {
-        //TODO: Change this to implement actual logic before deploying
+        // TODO: Change this to implement actual logic before deploying
         return true;
     }
 
@@ -22,7 +21,7 @@ class InvoicePolicy
      */
     public function view(User $user, Invoice $invoice): bool
     {
-        //TODO: Change this to implement actual logic before deploying
+        // TODO: Change this to implement actual logic before deploying
         return true;
     }
 
@@ -31,7 +30,7 @@ class InvoicePolicy
      */
     public function create(User $user): bool
     {
-        //TODO: Change this to implement actual logic before deploying
+        // TODO: Change this to implement actual logic before deploying
         return true;
     }
 
@@ -40,7 +39,7 @@ class InvoicePolicy
      */
     public function update(User $user, Invoice $invoice): bool
     {
-        //TODO: Change this to implement actual logic before deploying
+        // TODO: Change this to implement actual logic before deploying
         return true;
     }
 
@@ -49,7 +48,7 @@ class InvoicePolicy
      */
     public function delete(User $user, Invoice $invoice): bool
     {
-        //TODO: Change this to implement actual logic before deploying
+        // TODO: Change this to implement actual logic before deploying
         return true;
     }
 
@@ -58,7 +57,7 @@ class InvoicePolicy
      */
     public function restore(User $user, Invoice $invoice): bool
     {
-        //TODO: Change this to implement actual logic before deploying
+        // TODO: Change this to implement actual logic before deploying
         return true;
     }
 
@@ -67,7 +66,7 @@ class InvoicePolicy
      */
     public function forceDelete(User $user, Invoice $invoice): bool
     {
-        //TODO: Change this to implement actual logic before deploying
+        // TODO: Change this to implement actual logic before deploying
         return true;
     }
 
@@ -81,7 +80,7 @@ class InvoicePolicy
         // for example: return $user->hasRole('manager');
 
         // For the test to pass, we will simply allow it.
-        //TODO: Change this to implement actual logic before deploying
+        // TODO: Change this to implement actual logic before deploying
         return true;
     }
 

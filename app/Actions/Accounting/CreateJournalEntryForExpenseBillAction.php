@@ -2,21 +2,19 @@
 
 namespace App\Actions\Accounting;
 
+use App\DataTransferObjects\Accounting\CreateJournalEntryDTO;
+use App\DataTransferObjects\Accounting\CreateJournalEntryLineDTO;
 use App\Models\AssetCategory;
 use App\Models\JournalEntry;
 use App\Models\User;
 use App\Models\VendorBill;
-use App\DataTransferObjects\Accounting\CreateJournalEntryDTO;
-use App\DataTransferObjects\Accounting\CreateJournalEntryLineDTO;
 use Brick\Money\Money;
 use Illuminate\Support\Facades\DB;
 use RuntimeException;
 
 class CreateJournalEntryForExpenseBillAction
 {
-    public function __construct(private readonly CreateJournalEntryAction $createJournalEntryAction)
-    {
-    }
+    public function __construct(private readonly CreateJournalEntryAction $createJournalEntryAction) {}
 
     public function execute(VendorBill $vendorBill, User $user): JournalEntry
     {
@@ -29,7 +27,7 @@ class CreateJournalEntryForExpenseBillAction
             // Use vendor's individual payable account if available, otherwise fall back to default
             $apAccountId = $vendorBill->vendor->payable_account_id ?? $company->default_accounts_payable_id;
 
-            if (!$apAccountId) {
+            if (! $apAccountId) {
                 throw new RuntimeException('Default Accounts Payable account is not configured for this company.');
             }
 
@@ -42,7 +40,7 @@ class CreateJournalEntryForExpenseBillAction
                 // If an asset category is provided, treat as asset acquisition
                 if ($line->asset_category_id) {
                     $category = AssetCategory::find($line->asset_category_id);
-                    if (!$category) {
+                    if (! $category) {
                         throw new RuntimeException('Invalid asset category selected on bill line.');
                     }
                     // Dr Asset (subtotal), Dr Input Tax, Cr AP
@@ -50,7 +48,7 @@ class CreateJournalEntryForExpenseBillAction
                         account_id: $category->asset_account_id,
                         debit: $line->subtotal,
                         credit: Money::of(0, $currency->code),
-                        description: 'Asset: ' . $line->description,
+                        description: 'Asset: '.$line->description,
                         partner_id: null,
                         analytic_account_id: null,
                     );
@@ -62,7 +60,7 @@ class CreateJournalEntryForExpenseBillAction
                             account_id: $taxAccountId,
                             debit: $line->total_line_tax,
                             credit: Money::of(0, $currency->code),
-                            description: 'Input tax for asset: ' . $line->description,
+                            description: 'Input tax for asset: '.$line->description,
                             partner_id: null,
                             analytic_account_id: null,
                         );
@@ -112,7 +110,7 @@ class CreateJournalEntryForExpenseBillAction
                 currency_id: $currency->id,
                 entry_date: $vendorBill->accounting_date,
                 reference: $vendorBill->bill_reference,
-                description: 'Vendor Bill ' . $vendorBill->bill_reference,
+                description: 'Vendor Bill '.$vendorBill->bill_reference,
                 source_type: VendorBill::class,
                 source_id: $vendorBill->id,
                 created_by_user_id: $user->id,

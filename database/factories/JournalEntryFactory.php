@@ -2,12 +2,11 @@
 
 namespace Database\Factories;
 
+use App\Models\Company;
+use App\Models\Journal;
 use App\Models\JournalEntry;
 use App\Models\User;
 use Brick\Money\Money;
-use App\Models\Company;
-use App\Models\Journal;
-use App\Models\Currency;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**

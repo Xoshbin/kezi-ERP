@@ -38,9 +38,9 @@ it('can access invoice edit page with ai helper trait', function () {
     // Test that the page loads without errors
     $this->get(route('filament.jmeryar.accounting.resources.invoices.edit', [
         'tenant' => $this->company,
-        'record' => $invoice
+        'record' => $invoice,
     ]))
-    ->assertSuccessful();
+        ->assertSuccessful();
 });
 
 it('can access journal entry edit page with ai helper trait', function () {
@@ -52,9 +52,9 @@ it('can access journal entry edit page with ai helper trait', function () {
     // Test that the page loads without errors
     $this->get(route('filament.jmeryar.accounting.resources.journal-entries.edit', [
         'tenant' => $this->company,
-        'record' => $journalEntry
+        'record' => $journalEntry,
     ]))
-    ->assertSuccessful();
+        ->assertSuccessful();
 });
 
 it('can access vendor bill edit page with ai helper trait', function () {
@@ -68,9 +68,9 @@ it('can access vendor bill edit page with ai helper trait', function () {
     // Test that the page loads without errors
     $this->get(route('filament.jmeryar.accounting.resources.vendor-bills.edit', [
         'tenant' => $this->company,
-        'record' => $vendorBill
+        'record' => $vendorBill,
     ]))
-    ->assertSuccessful();
+        ->assertSuccessful();
 });
 
 it('can access partner edit page with ai helper trait', function () {
@@ -80,9 +80,9 @@ it('can access partner edit page with ai helper trait', function () {
     // Test that the page loads without errors
     $this->get(route('filament.jmeryar.accounting.resources.partners.edit', [
         'tenant' => $this->company,
-        'record' => $partner
+        'record' => $partner,
     ]))
-    ->assertSuccessful();
+        ->assertSuccessful();
 });
 
 it('has proper ai helper context prompts for accounting models', function () {
@@ -137,7 +137,7 @@ it('works correctly with multi-tenancy context', function () {
     // Test that the AI Helper can access the invoice with correct company context
     $response = $this->get(route('filament.jmeryar.accounting.resources.invoices.edit', [
         'tenant' => $this->company,
-        'record' => $invoice
+        'record' => $invoice,
     ]));
 
     $response->assertSuccessful();

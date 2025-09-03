@@ -20,7 +20,7 @@ class FinancialStatsOverview extends BaseWidget
     protected function getStats(): array
     {
         $company = Filament::getTenant();
-        if (!$company) {
+        if (! $company) {
             return [];
         }
 

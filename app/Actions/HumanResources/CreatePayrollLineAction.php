@@ -3,9 +3,9 @@
 namespace App\Actions\HumanResources;
 
 use App\DataTransferObjects\HumanResources\PayrollLineDTO;
+use App\Models\Currency;
 use App\Models\Payroll;
 use App\Models\PayrollLine;
-use App\Models\Currency;
 use Brick\Money\Money;
 
 class CreatePayrollLineAction

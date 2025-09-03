@@ -65,7 +65,7 @@ class PayrollObserver
 
         // Get the next sequential number for this month
         $lastPayroll = Payroll::where('company_id', $companyId)
-            ->where('payroll_number', 'like', $prefix . $year . $month . '%')
+            ->where('payroll_number', 'like', $prefix.$year.$month.'%')
             ->orderBy('payroll_number', 'desc')
             ->first();
 
@@ -76,6 +76,6 @@ class PayrollObserver
             $nextNumber = 1;
         }
 
-        return $prefix . $year . $month . str_pad($nextNumber, 4, '0', STR_PAD_LEFT);
+        return $prefix.$year.$month.str_pad($nextNumber, 4, '0', STR_PAD_LEFT);
     }
 }

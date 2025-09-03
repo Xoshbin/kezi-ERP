@@ -28,10 +28,10 @@ class MatchJournalItemsAction
     /**
      * Execute the reconciliation of journal entry lines.
      *
-     * @param array $journalLineIds Array of JournalEntryLine IDs to reconcile
-     * @param ReconciliationType $reconciliationType Type of reconciliation
-     * @param string|null $reference Optional reference for the reconciliation
-     * @param string|null $description Optional description for the reconciliation
+     * @param  array  $journalLineIds  Array of JournalEntryLine IDs to reconcile
+     * @param  ReconciliationType  $reconciliationType  Type of reconciliation
+     * @param  string|null  $reference  Optional reference for the reconciliation
+     * @param  string|null  $description  Optional description for the reconciliation
      * @return Reconciliation The created reconciliation record
      *
      * @throws ReconciliationDisabledException
@@ -58,7 +58,7 @@ class MatchJournalItemsAction
                 'journalEntry.company',
                 'account',
                 'partner',
-                'reconciliations'
+                'reconciliations',
             ])
             ->get();
 
@@ -102,8 +102,8 @@ class MatchJournalItemsAction
      */
     private function validateGlobalReconciliationSetting(Company $company): void
     {
-        if (!$company->enable_reconciliation) {
-            throw new ReconciliationDisabledException();
+        if (! $company->enable_reconciliation) {
+            throw new ReconciliationDisabledException;
         }
     }
 
@@ -116,7 +116,7 @@ class MatchJournalItemsAction
             ->pluck('id')
             ->toArray();
 
-        if (!empty($reconciledLineIds)) {
+        if (! empty($reconciledLineIds)) {
             throw new AlreadyReconciledException($reconciledLineIds);
         }
     }
@@ -127,10 +127,10 @@ class MatchJournalItemsAction
     private function validateAccountsAllowReconciliation(Collection $journalLines): void
     {
         $nonReconcilableAccounts = $journalLines->filter(
-            fn (JournalEntryLine $line) => !$line->account->allow_reconciliation
+            fn (JournalEntryLine $line) => ! $line->account->allow_reconciliation
         )->pluck('account.code')->unique()->toArray();
 
-        if (!empty($nonReconcilableAccounts)) {
+        if (! empty($nonReconcilableAccounts)) {
             throw new AccountNotReconcilableException($nonReconcilableAccounts);
         }
     }
@@ -141,7 +141,7 @@ class MatchJournalItemsAction
     private function validateLinesArePosted(Collection $journalLines): void
     {
         $unpostedLines = $journalLines->filter(
-            fn (JournalEntryLine $line) => !$line->journalEntry->is_posted
+            fn (JournalEntryLine $line) => ! $line->journalEntry->is_posted
         );
 
         if ($unpostedLines->isNotEmpty()) {
@@ -169,7 +169,7 @@ class MatchJournalItemsAction
             return $carry->plus($line->credit);
         }, Money::of(0, $currency));
 
-        if (!$totalDebits->isEqualTo($totalCredits)) {
+        if (! $totalDebits->isEqualTo($totalCredits)) {
             throw new UnbalancedReconciliationException($totalDebits, $totalCredits);
         }
     }

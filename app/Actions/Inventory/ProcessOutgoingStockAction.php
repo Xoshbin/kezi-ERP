@@ -8,9 +8,7 @@ use Illuminate\Support\Facades\DB;
 
 class ProcessOutgoingStockAction
 {
-    public function __construct(protected InventoryValuationService $inventoryValuationService)
-    {
-    }
+    public function __construct(protected InventoryValuationService $inventoryValuationService) {}
 
     public function execute(StockMove $stockMove): void
     {

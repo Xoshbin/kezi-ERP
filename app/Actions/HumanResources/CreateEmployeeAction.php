@@ -3,8 +3,8 @@
 namespace App\Actions\HumanResources;
 
 use App\DataTransferObjects\HumanResources\CreateEmployeeDTO;
-use App\Models\Employee;
 use App\Models\Company;
+use App\Models\Employee;
 use Illuminate\Support\Facades\DB;
 
 class CreateEmployeeAction

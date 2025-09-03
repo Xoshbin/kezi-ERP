@@ -2,22 +2,19 @@
 
 namespace App\Exceptions;
 
-use Illuminate\Http\Request;
 use Exception;
-use Throwable;
+use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
+use Throwable;
 
 class BalanceSheetNotBalancedException extends Exception
 {
     /**
      * Create a new balance sheet not balanced exception instance.
      *
-     * @param string $message
-     * @param int $code
-     * @param Throwable|null $previous
      * @return void
      */
-    public function __construct(string $message = "The Balance Sheet does not balance. Assets must equal Liabilities plus Equity.", int $code = 0, ?Throwable $previous = null)
+    public function __construct(string $message = 'The Balance Sheet does not balance. Assets must equal Liabilities plus Equity.', int $code = 0, ?Throwable $previous = null)
     {
         parent::__construct($message, $code, $previous);
     }
@@ -25,8 +22,7 @@ class BalanceSheetNotBalancedException extends Exception
     /**
      * Render the exception into an HTTP response.
      *
-     * @param Request $request
-     * @return SymfonyResponse
+     * @param  Request  $request
      */
     public function render($request): SymfonyResponse
     {

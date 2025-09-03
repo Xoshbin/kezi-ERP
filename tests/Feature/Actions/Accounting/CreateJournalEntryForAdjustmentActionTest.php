@@ -1,12 +1,10 @@
 <?php
 
-use App\Models\User;
-use Brick\Money\Money;
-use App\Models\AdjustmentDocument;
-use Tests\Traits\CreatesApplication;
-use Tests\Traits\WithConfiguredCompany;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use App\Actions\Accounting\CreateJournalEntryForAdjustmentAction;
+use App\Models\AdjustmentDocument;
+use Brick\Money\Money;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\Traits\WithConfiguredCompany;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);
 

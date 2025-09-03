@@ -8,9 +8,9 @@ use Illuminate\Support\Collection;
 readonly class BalanceSheetDTO
 {
     /**
-     * @param Collection<int, ReportLineDTO> $assetLines
-     * @param Collection<int, ReportLineDTO> $liabilityLines
-     * @param Collection<int, ReportLineDTO> $equityLines
+     * @param  Collection<int, ReportLineDTO>  $assetLines
+     * @param  Collection<int, ReportLineDTO>  $liabilityLines
+     * @param  Collection<int, ReportLineDTO>  $equityLines
      */
     public function __construct(
         public Collection $assetLines,

@@ -2,20 +2,23 @@
 
 namespace Xoshbin\FilamentAiHelper\Services;
 
-use Xoshbin\FilamentAiHelper\Exceptions\GeminiApiException;
 use GuzzleHttp\Client;
-use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\Exception\RequestException;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 use Psr\Http\Message\ResponseInterface;
+use Xoshbin\FilamentAiHelper\Exceptions\GeminiApiException;
 
 class GeminiService
 {
     protected Client $httpClient;
+
     protected string $apiKey;
+
     protected string $apiUrl;
+
     protected int $timeout;
+
     protected int $maxRetries;
 
     public function __construct(
@@ -120,7 +123,7 @@ class GeminiService
         }
 
         throw new GeminiApiException(
-            'Failed to get response from Gemini API after ' . $this->maxRetries . ' attempts: ' .
+            'Failed to get response from Gemini API after '.$this->maxRetries.' attempts: '.
             ($lastException ? $lastException->getMessage() : 'Unknown error'),
             0,
             $lastException
@@ -137,10 +140,10 @@ class GeminiService
                 [
                     'parts' => [
                         [
-                            'text' => $prompt
-                        ]
-                    ]
-                ]
+                            'text' => $prompt,
+                        ],
+                    ],
+                ],
             ],
             'generationConfig' => [
                 'temperature' => 0.7,
@@ -151,21 +154,21 @@ class GeminiService
             'safetySettings' => [
                 [
                     'category' => 'HARM_CATEGORY_HARASSMENT',
-                    'threshold' => 'BLOCK_MEDIUM_AND_ABOVE'
+                    'threshold' => 'BLOCK_MEDIUM_AND_ABOVE',
                 ],
                 [
                     'category' => 'HARM_CATEGORY_HATE_SPEECH',
-                    'threshold' => 'BLOCK_MEDIUM_AND_ABOVE'
+                    'threshold' => 'BLOCK_MEDIUM_AND_ABOVE',
                 ],
                 [
                     'category' => 'HARM_CATEGORY_SEXUALLY_EXPLICIT',
-                    'threshold' => 'BLOCK_MEDIUM_AND_ABOVE'
+                    'threshold' => 'BLOCK_MEDIUM_AND_ABOVE',
                 ],
                 [
                     'category' => 'HARM_CATEGORY_DANGEROUS_CONTENT',
-                    'threshold' => 'BLOCK_MEDIUM_AND_ABOVE'
-                ]
-            ]
+                    'threshold' => 'BLOCK_MEDIUM_AND_ABOVE',
+                ],
+            ],
         ];
     }
 
@@ -174,7 +177,7 @@ class GeminiService
      */
     protected function buildApiUrl(): string
     {
-        return $this->apiUrl . '?key=' . $this->apiKey;
+        return $this->apiUrl.'?key='.$this->apiKey;
     }
 
     /**
@@ -186,10 +189,10 @@ class GeminiService
         $data = json_decode($body, true);
 
         if (json_last_error() !== JSON_ERROR_NONE) {
-            throw new GeminiApiException('Invalid JSON response from Gemini API: ' . json_last_error_msg());
+            throw new GeminiApiException('Invalid JSON response from Gemini API: '.json_last_error_msg());
         }
 
-        if (!isset($data['candidates'][0]['content']['parts'][0]['text'])) {
+        if (! isset($data['candidates'][0]['content']['parts'][0]['text'])) {
             throw new GeminiApiException('Unexpected response format from Gemini API');
         }
 
@@ -206,7 +209,7 @@ class GeminiService
             'context' => $context,
         ];
 
-        return config('filament-ai-helper.cache.key_prefix', 'filament_ai_helper') . ':' .
+        return config('filament-ai-helper.cache.key_prefix', 'filament_ai_helper').':'.
                md5(serialize($keyData));
     }
 
@@ -224,10 +227,10 @@ class GeminiService
                     'due_date' => '2025-08-23',
                     'description' => 'Service provided by Hawre Trading',
                     'unit_price' => '5000000',
-                    'quantity' => '1'
+                    'quantity' => '1',
                 ],
                 'explanation' => 'I have filled the form with the invoice details for Hawre Trading. The service amount is set to 5,000,000 IQD as requested.',
-                'warnings' => ['Please verify the customer details and due date before saving.']
+                'warnings' => ['Please verify the customer details and due date before saving.'],
             ]);
         }
 
@@ -242,9 +245,11 @@ class GeminiService
     {
         try {
             $this->generateResponse('Hello, this is a test message.');
+
             return true;
         } catch (GeminiApiException $e) {
             Log::error('Gemini API connection test failed', ['error' => $e->getMessage()]);
+
             return false;
         }
     }

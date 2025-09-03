@@ -2,10 +2,10 @@
 
 namespace Xoshbin\FilamentAiHelper\Actions;
 
+use Illuminate\Support\Facades\Log;
 use Xoshbin\FilamentAiHelper\DTOs\AIHelperContextDTO;
 use Xoshbin\FilamentAiHelper\DTOs\FormManipulationResponseDTO;
 use Xoshbin\FilamentAiHelper\Services\GeminiService;
-use Illuminate\Support\Facades\Log;
 
 class FillFormAction
 {
@@ -37,7 +37,7 @@ class FillFormAction
         } catch (\Exception $e) {
             Log::error('Form fill action failed', [
                 'error' => $e->getMessage(),
-                'context' => $context->toArray()
+                'context' => $context->toArray(),
             ]);
 
             return new FormManipulationResponseDTO(
@@ -62,13 +62,13 @@ You are helping to fill a form for creating a new {$context->modelClass}.
 USER REQUEST: {$context->userQuestion}
 
 AVAILABLE FORM FIELDS:
-" . $this->formatFormSchema($context->formSchema ?? []) . "
+".$this->formatFormSchema($context->formSchema ?? []).'
 
 CURRENT FORM STATE:
-" . $this->formatCurrentFormData($context->currentFormData ?? []) . "
+'.$this->formatCurrentFormData($context->currentFormData ?? []).'
 
 CONTEXT INFORMATION:
-" . $this->formatContextInfo($context) . "
+'.$this->formatContextInfo($context)."
 
 INSTRUCTIONS:
 1. Based on the user's request, determine what form fields should be filled
@@ -96,13 +96,13 @@ IMPORTANT:
 - If information is missing, ask for clarification in the explanation
 ";
 
-        return $basePrompt . "\n\n" . $formPrompt;
+        return $basePrompt."\n\n".$formPrompt;
     }
 
     private function formatFormSchema(array $schema): string
     {
         if (empty($schema)) {
-            return "No form schema available";
+            return 'No form schema available';
         }
 
         $formatted = [];
@@ -113,13 +113,13 @@ IMPORTANT:
 
             $fieldInfo = "- {$field} ({$type})";
             if ($required) {
-                $fieldInfo .= " [REQUIRED]";
+                $fieldInfo .= ' [REQUIRED]';
             }
-            if (!empty($options)) {
-                $fieldInfo .= " Options: " . implode(', ', array_keys($options));
+            if (! empty($options)) {
+                $fieldInfo .= ' Options: '.implode(', ', array_keys($options));
             }
-            if (!empty($config['validation'])) {
-                $fieldInfo .= " Validation: " . implode(', ', $config['validation']);
+            if (! empty($config['validation'])) {
+                $fieldInfo .= ' Validation: '.implode(', ', $config['validation']);
             }
 
             $formatted[] = $fieldInfo;
@@ -131,12 +131,12 @@ IMPORTANT:
     private function formatCurrentFormData(array $data): string
     {
         if (empty($data)) {
-            return "Form is empty (new record)";
+            return 'Form is empty (new record)';
         }
 
         $formatted = [];
         foreach ($data as $field => $value) {
-            $formatted[] = "- {$field}: " . (is_null($value) ? 'null' : $value);
+            $formatted[] = "- {$field}: ".(is_null($value) ? 'null' : $value);
         }
 
         return implode("\n", $formatted);
@@ -147,7 +147,7 @@ IMPORTANT:
         $info = [];
 
         if ($context->record) {
-            $info[] = "Related Record: " . get_class($context->record) . " ID: " . $context->record->getKey();
+            $info[] = 'Related Record: '.get_class($context->record).' ID: '.$context->record->getKey();
         }
 
         if ($context->additionalContext) {
@@ -158,7 +158,7 @@ IMPORTANT:
             }
         }
 
-        return empty($info) ? "No additional context" : implode("\n", $info);
+        return empty($info) ? 'No additional context' : implode("\n", $info);
     }
 
     private function parseFormResponse(string $response): array
@@ -175,11 +175,11 @@ IMPORTANT:
         $decoded = json_decode($jsonString, true);
 
         if (json_last_error() !== JSON_ERROR_NONE) {
-            throw new \Exception('Invalid JSON in AI response: ' . json_last_error_msg());
+            throw new \Exception('Invalid JSON in AI response: '.json_last_error_msg());
         }
 
         // Validate required fields
-        if (!isset($decoded['action']) || !isset($decoded['fields'])) {
+        if (! isset($decoded['action']) || ! isset($decoded['fields'])) {
             throw new \Exception('AI response missing required fields (action, fields)');
         }
 

@@ -2,17 +2,16 @@
 
 namespace App\Filament\Clusters\Inventory\Resources\StockMoves\Pages;
 
-use Filament\Actions\ViewAction;
-use Filament\Actions\DeleteAction;
-use Illuminate\Database\Eloquent\Model;
 use App\Actions\Inventory\UpdateStockMoveAction;
 use App\DataTransferObjects\Inventory\UpdateStockMoveDTO;
 use App\Enums\Inventory\StockMoveStatus;
 use App\Enums\Inventory\StockMoveType;
 use App\Filament\Clusters\Inventory\Resources\StockMoves\StockMoveResource;
 use Carbon\Carbon;
-use Filament\Actions;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\ViewAction;
 use Filament\Resources\Pages\EditRecord;
+use Illuminate\Database\Eloquent\Model;
 
 class EditStockMove extends EditRecord
 {

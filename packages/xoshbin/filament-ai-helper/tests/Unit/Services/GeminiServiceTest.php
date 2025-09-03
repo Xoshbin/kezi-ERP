@@ -1,7 +1,5 @@
 <?php
 
-use Xoshbin\FilamentAiHelper\Exceptions\GeminiApiException;
-use Xoshbin\FilamentAiHelper\Services\GeminiService;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Handler\MockHandler;
@@ -9,6 +7,8 @@ use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response;
 use Illuminate\Support\Facades\Cache;
+use Xoshbin\FilamentAiHelper\Exceptions\GeminiApiException;
+use Xoshbin\FilamentAiHelper\Services\GeminiService;
 
 beforeEach(function () {
     Cache::flush();
@@ -36,15 +36,15 @@ it('can generate response successfully', function () {
             [
                 'content' => [
                     'parts' => [
-                        ['text' => 'This is a test response from Gemini API']
-                    ]
-                ]
-            ]
-        ]
+                        ['text' => 'This is a test response from Gemini API'],
+                    ],
+                ],
+            ],
+        ],
     ];
 
     $mock = new MockHandler([
-        new Response(200, [], json_encode($mockResponse))
+        new Response(200, [], json_encode($mockResponse)),
     ]);
 
     $handlerStack = HandlerStack::create($mock);
@@ -65,7 +65,7 @@ it('can generate response successfully', function () {
 
 it('handles api errors gracefully', function () {
     $mock = new MockHandler([
-        new RequestException('API Error', new Request('POST', 'test'))
+        new RequestException('API Error', new Request('POST', 'test')),
     ]);
 
     $handlerStack = HandlerStack::create($mock);
@@ -88,9 +88,9 @@ it('retries failed requests', function () {
         new RequestException('Second failure', new Request('POST', 'test')),
         new Response(200, [], json_encode([
             'candidates' => [
-                ['content' => ['parts' => [['text' => 'Success after retries']]]]
-            ]
-        ]))
+                ['content' => ['parts' => [['text' => 'Success after retries']]]],
+            ],
+        ])),
     ]);
 
     $handlerStack = HandlerStack::create($mock);
@@ -110,7 +110,7 @@ it('retries failed requests', function () {
 
 it('handles invalid json response', function () {
     $mock = new MockHandler([
-        new Response(200, [], 'invalid json')
+        new Response(200, [], 'invalid json'),
     ]);
 
     $handlerStack = HandlerStack::create($mock);
@@ -129,7 +129,7 @@ it('handles invalid json response', function () {
 
 it('handles unexpected response format', function () {
     $mock = new MockHandler([
-        new Response(200, [], json_encode(['unexpected' => 'format']))
+        new Response(200, [], json_encode(['unexpected' => 'format'])),
     ]);
 
     $handlerStack = HandlerStack::create($mock);
@@ -151,12 +151,12 @@ it('caches responses when enabled', function () {
 
     $mockResponse = [
         'candidates' => [
-            ['content' => ['parts' => [['text' => 'Cached response']]]]
-        ]
+            ['content' => ['parts' => [['text' => 'Cached response']]]],
+        ],
     ];
 
     $mock = new MockHandler([
-        new Response(200, [], json_encode($mockResponse))
+        new Response(200, [], json_encode($mockResponse)),
     ]);
 
     $handlerStack = HandlerStack::create($mock);
@@ -179,18 +179,18 @@ it('caches responses when enabled', function () {
     expect($response2)->toBe('Cached response');
 
     // Verify cache was used
-    expect(Cache::has('filament_ai_helper:' . md5(serialize(['prompt' => 'Test prompt', 'context' => []]))))->toBeTrue();
+    expect(Cache::has('filament_ai_helper:'.md5(serialize(['prompt' => 'Test prompt', 'context' => []]))))->toBeTrue();
 });
 
 it('can test connection', function () {
     $mockResponse = [
         'candidates' => [
-            ['content' => ['parts' => [['text' => 'Connection test successful']]]]
-        ]
+            ['content' => ['parts' => [['text' => 'Connection test successful']]]],
+        ],
     ];
 
     $mock = new MockHandler([
-        new Response(200, [], json_encode($mockResponse))
+        new Response(200, [], json_encode($mockResponse)),
     ]);
 
     $handlerStack = HandlerStack::create($mock);
@@ -208,7 +208,7 @@ it('can test connection', function () {
 
 it('returns false for failed connection test', function () {
     $mock = new MockHandler([
-        new RequestException('Connection failed', new Request('POST', 'test'))
+        new RequestException('Connection failed', new Request('POST', 'test')),
     ]);
 
     $handlerStack = HandlerStack::create($mock);

@@ -2,25 +2,24 @@
 
 namespace App\Actions\Accounting;
 
-use Brick\Math\RoundingMode;
-use Illuminate\Support\Facades\Log;
-use RuntimeException;
 use App\DataTransferObjects\Accounting\CreateJournalEntryDTO;
 use App\DataTransferObjects\Accounting\CreateJournalEntryLineDTO;
+use App\Enums\Payments\PaymentPurpose;
+use App\Enums\Payments\PaymentType;
 use App\Models\JournalEntry;
 use App\Models\Payment;
 use App\Models\User;
-use App\Enums\Payments\PaymentType;
-use App\Enums\Payments\PaymentPurpose;
+use Brick\Math\RoundingMode;
 use Brick\Money\Money;
+use Illuminate\Support\Facades\Log;
 use InvalidArgumentException;
+use RuntimeException;
 
 class CreateJournalEntryForPaymentAction
 {
     public function __construct(
         private readonly CreateJournalEntryAction $createJournalEntryAction
-    ) {
-    }
+    ) {}
 
     public function execute(Payment $payment, User $user): JournalEntry
     {
@@ -41,7 +40,7 @@ class CreateJournalEntryForPaymentAction
 
         // 1. Determine the correct accounts based on accounting rules.
         $bankAccountId = $payment->journal->default_debit_account_id;
-        if (!$bankAccountId) {
+        if (! $bankAccountId) {
             throw new InvalidArgumentException('The payment journal is not configured with a default bank account.');
         }
 
@@ -64,7 +63,7 @@ class CreateJournalEntryForPaymentAction
             if ($payment->payment_type === PaymentType::Inbound) {
                 // Use partner's individual receivable account if available, otherwise fall back to default
                 $counterpartAccountId = $payment->partner->receivable_account_id ?? $company->default_accounts_receivable_id;
-                if (!$counterpartAccountId) {
+                if (! $counterpartAccountId) {
                     throw new RuntimeException('Default Accounts Receivable is not configured for this company.');
                 }
                 // Rule: Inbound payment DEBITS the bank, CREDITS Accounts Receivable.
@@ -87,7 +86,7 @@ class CreateJournalEntryForPaymentAction
             } else { // Outbound
                 // Use partner's individual payable account if available, otherwise fall back to default
                 $counterpartAccountId = $payment->partner->payable_account_id ?? $company->default_accounts_payable_id;
-                if (!$counterpartAccountId) {
+                if (! $counterpartAccountId) {
                     throw new RuntimeException('Default Accounts Payable is not configured for this company.');
                 }
                 // Rule: Outbound payment DEBITS Accounts Payable, CREDITS the bank.
@@ -110,7 +109,7 @@ class CreateJournalEntryForPaymentAction
             }
         } else {
             // For direct payments (loan, capital injection, etc.), use the specified counterpart account
-            if (!$payment->counterpart_account_id) {
+            if (! $payment->counterpart_account_id) {
                 throw new InvalidArgumentException('Non-settlement payments must have a counterpart account.');
             }
 
@@ -159,8 +158,8 @@ class CreateJournalEntryForPaymentAction
             journal_id: $payment->journal_id,
             currency_id: $baseCurrency->id, // Journal Entry is always in the company's base currency
             entry_date: $payment->payment_date,
-            reference: 'Payment #' . $payment->id,
-            description: 'Payment from/to ' . $payment->partner->name,
+            reference: 'Payment #'.$payment->id,
+            description: 'Payment from/to '.$payment->partner->name,
             created_by_user_id: $user->id,
             is_posted: true, // Journal entries for payments are posted immediately.
             lines: $lines,

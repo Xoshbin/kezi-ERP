@@ -2,19 +2,17 @@
 
 namespace App\Actions\Accounting;
 
-use RuntimeException;
 use App\DataTransferObjects\Accounting\CreateJournalEntryDTO;
 use App\DataTransferObjects\Accounting\CreateJournalEntryLineDTO;
 use App\Models\AdjustmentDocument;
 use App\Models\JournalEntry;
 use App\Models\User;
 use Brick\Money\Money;
+use RuntimeException;
 
 class CreateJournalEntryForAdjustmentAction
 {
-    public function __construct(private readonly CreateJournalEntryAction $createJournalEntryAction)
-    {
-    }
+    public function __construct(private readonly CreateJournalEntryAction $createJournalEntryAction) {}
 
     public function execute(AdjustmentDocument $adjustment, User $user): JournalEntry
     {
@@ -29,7 +27,7 @@ class CreateJournalEntryForAdjustmentAction
         $taxAccountId = $company->default_tax_account_id;
         $salesJournalId = $company->default_sales_journal_id;
 
-        if (!$arAccountId || !$salesDiscountAccountId || !$taxAccountId || !$salesJournalId) {
+        if (! $arAccountId || ! $salesDiscountAccountId || ! $taxAccountId || ! $salesJournalId) {
             throw new RuntimeException('Default accounting accounts for adjustments are not configured for this company.');
         }
 
@@ -78,8 +76,8 @@ class CreateJournalEntryForAdjustmentAction
             currency_id: $adjustment->currency_id,
             journal_id: $salesJournalId,
             entry_date: $adjustment->posted_at,
-            reference: 'CN-' . $adjustment->reference_number,
-            description: 'Credit Note ' . $adjustment->reference_number,
+            reference: 'CN-'.$adjustment->reference_number,
+            description: 'Credit Note '.$adjustment->reference_number,
             source_type: AdjustmentDocument::class,
             source_id: $adjustment->id,
             created_by_user_id: $user->id,

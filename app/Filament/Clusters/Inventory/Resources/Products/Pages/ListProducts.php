@@ -2,9 +2,8 @@
 
 namespace App\Filament\Clusters\Inventory\Resources\Products\Pages;
 
-use Filament\Actions\CreateAction;
 use App\Filament\Clusters\Inventory\Resources\Products\ProductResource;
-use Filament\Actions;
+use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
 
 class ListProducts extends ListRecords

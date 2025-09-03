@@ -2,13 +2,13 @@
 
 use App\Actions\Sales\CreateInvoiceLineAction;
 use App\DataTransferObjects\Sales\CreateInvoiceLineDTO;
-use App\Models\Invoice;
-use App\Enums\Sales\InvoiceStatus;
-use Tests\Traits\MocksTime;
-use App\Services\InvoiceService;
-use Tests\Traits\WithConfiguredCompany;
 use App\Enums\Accounting\JournalEntryState;
+use App\Enums\Sales\InvoiceStatus;
+use App\Models\Invoice;
+use App\Services\InvoiceService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\Traits\MocksTime;
+use Tests\Traits\WithConfiguredCompany;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class, MocksTime::class);
 
@@ -53,6 +53,6 @@ test('cancelling a posted invoice creates a reversing journal entry and an audit
         'auditable_id' => $invoice->id,
         'user_id' => $this->user->id,
         'event_type' => 'cancellation',
-        'description' => 'Invoice Cancelled: ' . $cancellationReason,
+        'description' => 'Invoice Cancelled: '.$cancellationReason,
     ]);
 });

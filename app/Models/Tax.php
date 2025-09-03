@@ -2,18 +2,17 @@
 
 namespace App\Models;
 
-use App\Traits\TranslatableSearch;
-use Illuminate\Support\Carbon;
-use Illuminate\Database\Eloquent\Builder;
-use Database\Factories\TaxFactory;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use App\Casts\MoneyCast;
-use App\Observers\TaxObserver;
 use App\Enums\Accounting\TaxType;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Observers\TaxObserver;
+use App\Traits\TranslatableSearch;
+use Database\Factories\TaxFactory;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Carbon;
 use Spatie\Translatable\HasTranslations;
 
 // The SoftDeletes trait is intentionally omitted for the Tax model.
@@ -32,6 +31,7 @@ use Spatie\Translatable\HasTranslations;
  * @property-read Company $company
  * @property-read float $rate_percentage
  * @property-read Account $taxAccount
+ *
  * @method static Builder<static>|Tax active()
  * @method static TaxFactory factory($count = null, $state = [])
  * @method static Builder<static>|Tax newModelQuery()
@@ -46,6 +46,7 @@ use Spatie\Translatable\HasTranslations;
  * @method static Builder<static>|Tax whereTaxAccountId($value)
  * @method static Builder<static>|Tax whereType($value)
  * @method static Builder<static>|Tax whereUpdatedAt($value)
+ *
  * @mixin \Eloquent
  */
 #[ObservedBy([TaxObserver::class])]
@@ -59,8 +60,6 @@ class Tax extends Model
 
     /**
      * Get the translatable fields that should be searched.
-     *
-     * @return array
      */
     public function getTranslatableSearchFields(): array
     {
@@ -103,8 +102,6 @@ class Tax extends Model
         'updated_at' => 'datetime',
     ];
 
-
-
     /**
      * Get the Company that owns the Tax.
      * This relationship enforces the multi-company architecture, ensuring that each tax
@@ -135,7 +132,7 @@ class Tax extends Model
      * reflecting the principle that taxes are deactivated rather than deleted
      * to preserve historical transaction integrity [2].
      *
-     * @param Builder $query
+     * @param  Builder  $query
      * @return Builder
      */
     public function scopeActive($query)
@@ -145,8 +142,6 @@ class Tax extends Model
 
     /**
      * Accessor to get the tax rate as a percentage for display purposes.
-     *
-     * @return float
      */
     public function getRatePercentageAttribute(): float
     {
@@ -160,8 +155,6 @@ class Tax extends Model
 
     /**
      * Determine if the tax is applicable to sales transactions.
-     *
-     * @return bool
      */
     public function isSalesTax(): bool
     {
@@ -170,8 +163,6 @@ class Tax extends Model
 
     /**
      * Determine if the tax is applicable to purchase transactions.
-     *
-     * @return bool
      */
     public function isPurchaseTax(): bool
     {

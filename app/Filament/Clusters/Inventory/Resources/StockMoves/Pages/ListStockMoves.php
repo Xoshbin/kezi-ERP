@@ -2,9 +2,8 @@
 
 namespace App\Filament\Clusters\Inventory\Resources\StockMoves\Pages;
 
-use Filament\Actions\CreateAction;
 use App\Filament\Clusters\Inventory\Resources\StockMoves\StockMoveResource;
-use Filament\Actions;
+use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
 
 class ListStockMoves extends ListRecords

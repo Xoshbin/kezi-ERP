@@ -2,8 +2,8 @@
 
 namespace App\Observers;
 
-use Brick\Money\Money;
 use App\Models\InvoiceLine;
+use Brick\Money\Money;
 
 class InvoiceLineObserver
 {
@@ -47,7 +47,7 @@ class InvoiceLineObserver
      */
     protected function updateCompanyCurrencyTotals($invoice): void
     {
-        if (!$invoice->exchange_rate_at_creation || $invoice->currency_id === $invoice->company->currency_id) {
+        if (! $invoice->exchange_rate_at_creation || $invoice->currency_id === $invoice->company->currency_id) {
             return; // No conversion needed
         }
 

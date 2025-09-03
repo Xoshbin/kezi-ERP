@@ -2,12 +2,12 @@
 
 namespace App\Filament\Tables\Columns;
 
-use Exception;
+use App\Models\Currency;
+use App\Support\NumberFormatter;
 use Brick\Money\Money;
+use Exception;
 use Filament\Tables\Columns\TextColumn;
 use Illuminate\Database\Eloquent\Model;
-use App\Support\NumberFormatter;
-use App\Models\Currency;
 
 class MoneyColumn extends TextColumn
 {
@@ -46,7 +46,7 @@ class MoneyColumn extends TextColumn
      */
     protected function getMoneyObject($state, Model $record): ?Money
     {
-        if (!is_numeric($state)) {
+        if (! is_numeric($state)) {
             return null;
         }
 
@@ -64,7 +64,7 @@ class MoneyColumn extends TextColumn
 
         // Strategy 2: For pivot relationships, try to get currency from the table context
         // This handles cases where we're in a relation manager and need the parent record's currency
-        if (!$currencyCode && $this->getTable()) {
+        if (! $currencyCode && $this->getTable()) {
             $livewire = $this->getTable()->getLivewire();
             if (method_exists($livewire, 'getOwnerRecord')) {
                 $ownerRecord = $livewire->getOwnerRecord();
@@ -77,7 +77,7 @@ class MoneyColumn extends TextColumn
         // If we have a currency, create the Money object from minor units
         if ($currencyCode) {
             try {
-                return Money::ofMinor((int)$state, $currencyCode);
+                return Money::ofMinor((int) $state, $currencyCode);
             } catch (Exception $e) {
                 // If minor units fail, try as major units
                 try {

@@ -7,7 +7,7 @@ use App\Models\JournalEntry;
 class UpdateJournalEntryDTO
 {
     /**
-     * @param UpdateJournalEntryLineDTO[] $lines
+     * @param  UpdateJournalEntryLineDTO[]  $lines
      */
     public function __construct(
         public readonly JournalEntry $journalEntry,
