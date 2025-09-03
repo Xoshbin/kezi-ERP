@@ -32,7 +32,10 @@ class EditAsset extends EditRecord
     public function computeDepreciation(): void
     {
         app(AssetService::class)->computeDepreciation($this->getRecord());
-        $this->notify('success', 'Depreciation board computed.');
+        \Filament\Notifications\Notification::make()
+            ->title('Depreciation board computed')
+            ->success()
+            ->send();
     }
 
     protected function handleRecordUpdate(Model $record, array $data): Model

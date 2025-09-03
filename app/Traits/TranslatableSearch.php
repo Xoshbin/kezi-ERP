@@ -112,7 +112,7 @@ trait TranslatableSearch
         $locale = $locale ?? app()->getLocale();
 
         // Check if the field is translatable
-        if (in_array($field, $this->translatable ?? [])) {
+        if (in_array($field, $this->translatable ?? []) && method_exists($this, 'getTranslation')) {
             $translation = $this->getTranslation($field, $locale);
 
             return $translation ?: ($this->$field ?? '');
@@ -178,9 +178,11 @@ trait TranslatableSearch
 
         $translations = [];
         foreach ($this->getSearchLocales() as $locale) {
-            $translation = $this->getTranslation($field, $locale);
-            if ($translation) {
-                $translations[$locale] = $translation;
+            if (method_exists($this, 'getTranslation')) {
+                $translation = $this->getTranslation($field, $locale);
+                if ($translation) {
+                    $translations[$locale] = $translation;
+                }
             }
         }
 
