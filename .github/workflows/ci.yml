@@ -72,7 +72,7 @@ jobs:
         env:
           DB_CONNECTION: sqlite
           DB_DATABASE: database/database.sqlite
-        run: vendor/bin/pest --ci
+        run: vendor/bin/pest --ci --parallel
 
   # The 'autofix' job automatically fixes code style and commits the changes.
   autofix:
