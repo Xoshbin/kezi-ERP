@@ -63,17 +63,13 @@ jobs:
       - name: "Generate key"
         run: php artisan key:generate
 
-      # This step prepares an in-memory SQLite database for testing.
-      - name: "Prepare SQLite database"
-        run: |
-          mkdir -p database
-          touch database/database.sqlite
+  # Use in-memory SQLite for tests to avoid cross-process/file locking issues on CI.
 
       # This step runs the application's test suite using Pest.
       - name: "Run tests"
         env:
           DB_CONNECTION: sqlite
-          DB_DATABASE: database/database.sqlite
+          DB_DATABASE: ':memory:'
         run: vendor/bin/pest --ci
 
   # The 'autofix' job automatically fixes code style and commits the changes.
