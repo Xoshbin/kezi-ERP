@@ -301,8 +301,11 @@ test('asset disposal correctly generates final journal entries', function () {
     (new \App\Actions\Assets\ComputeDepreciationScheduleAction)->execute($asset->fresh());
 
     // Post 5 years of depreciation
-    for ($i = 0; $i < 60; $i++) {
-        $this->artisan('app:process-depreciations');
+    $entriesToPost = $asset->depreciationEntries()->where('status', 'draft')->orderBy('depreciation_date')->take(60)->get();
+    $postAction = app(\App\Actions\Assets\PostDepreciationEntryAction::class);
+
+    foreach ($entriesToPost as $entry) {
+        $postAction->execute($entry, $this->user);
     }
 
     // Act
