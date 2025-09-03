@@ -48,7 +48,8 @@ class ViewAgedPayables extends Page
 
     public function mount(): void
     {
-        $this->form->fill([
+        // Use explicit schema getter to satisfy static analysis
+        $this->getSchema('form')?->fill([
             'asOfDate' => Carbon::now()->toDateString(),
         ]);
     }

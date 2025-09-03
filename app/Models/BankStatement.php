@@ -66,7 +66,7 @@ class BankStatement extends Model
         return $this->belongsTo(Company::class);
     }
 
-    public function journal()
+    public function journal(): BelongsTo
     {
         return $this->belongsTo(Journal::class);
     }
