@@ -2,17 +2,19 @@
 
 namespace App\Actions\Accounting;
 
+use App\Models\Account;
 use App\Models\AdjustmentDocument;
 use Brick\Money\Money;
 
 class BuildAdjustmentPostingPreviewAction
 {
-    private function accountLabelName($account): string
+    private function accountLabelName(?Account $account): string
     {
         if (! $account) {
             return '';
         }
-        $name = is_array($account->name ?? null) ? ($account->name['en'] ?? reset($account->name)) : ($account->name ?? '');
+        $raw = $account->name ?? '';
+        $name = is_array($raw) ? ($raw['en'] ?? reset($raw)) : (string) $raw;
 
         return $name;
     }
@@ -52,6 +54,7 @@ class BuildAdjustmentPostingPreviewAction
         $subtotal = $totalAmount->minus($totalTax);
 
         if ($salesDiscountId) {
+            /** @var \App\Models\Account|null $salesDiscount */
             $salesDiscount = $company->defaultSalesDiscountAccount;
             $linesPreview[] = [
                 'account_id' => $salesDiscountId,
@@ -65,7 +68,8 @@ class BuildAdjustmentPostingPreviewAction
         }
 
         if ($totalTax->isPositive() && $taxAccountId) {
-            $taxAccount = $company->taxAccount;
+            /** @var \App\Models\Account|null $taxAccount */
+            $taxAccount = $company->defaultTaxAccount;
             $linesPreview[] = [
                 'account_id' => $taxAccountId,
                 'account_name' => $this->accountLabelName($taxAccount),
@@ -78,7 +82,8 @@ class BuildAdjustmentPostingPreviewAction
         }
 
         if ($arAccountId) {
-            $ar = $company->accountsReceivableAccount;
+            /** @var \App\Models\Account|null $ar */
+            $ar = $company->defaultAccountsReceivable;
             $linesPreview[] = [
                 'account_id' => $arAccountId,
                 'account_name' => $this->accountLabelName($ar),

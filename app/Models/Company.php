@@ -191,7 +191,7 @@ class Company extends Model
      * Get the users associated with this company.
      * In a multi-company setup, users typically belong to a specific company [1].
      *
-     * @return BelongToMany
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
     public function users(): BelongsToMany
     {

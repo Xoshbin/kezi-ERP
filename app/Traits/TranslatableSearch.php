@@ -160,7 +160,8 @@ trait TranslatableSearch
             ->limit($limit)
             ->get()
             ->map(function ($model) {
-                $model->translated_label = $model->getTranslatedLabel('name');
+                // Use attribute bag to avoid dynamic property warning for static analysis tools
+                $model->setAttribute('translated_label', $model->getTranslatedLabel('name'));
 
                 return $model;
             });

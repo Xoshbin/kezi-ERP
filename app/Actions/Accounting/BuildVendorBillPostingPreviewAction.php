@@ -9,13 +9,14 @@ use Brick\Money\Money;
 
 class BuildVendorBillPostingPreviewAction
 {
-    private function accountLabelName($account): string
+    private function accountLabelName(?\App\Models\Account $account): string
     {
         if (! $account) {
             return '';
         }
         // Some models may cast name as array (translatable); normalize to string
-        $name = is_array($account->name ?? null) ? ($account->name['en'] ?? reset($account->name)) : ($account->name ?? '');
+        $raw = $account->name ?? '';
+        $name = is_array($raw) ? ($raw['en'] ?? reset($raw)) : (string) $raw;
 
         return $name;
     }
@@ -50,6 +51,7 @@ class BuildVendorBillPostingPreviewAction
             $isAsset = (bool) $line->asset_category_id;
 
             if ($isStorable) {
+                /** @var \App\Models\Account|null $inventoryAccount */
                 $inventoryAccount = $line->product->inventoryAccount;
                 if (! $inventoryAccount) {
                     $msg = "Product ID {$line->product_id} is missing its inventory account.";
@@ -105,7 +107,8 @@ class BuildVendorBillPostingPreviewAction
                     $errors[] = $msg;
                     $issues[] = ['type' => 'input_tax_missing', 'message' => $msg];
                 } else {
-                    $taxAccount = $company->taxReceivableAccount ?? $company->taxAccount;
+                    /** @var \App\Models\Account|null $taxAccount */
+                    $taxAccount = $company->defaultTaxReceivable ?? $company->defaultTaxAccount;
                     $linesPreview[] = [
                         'account_id' => $taxAccountId,
                         'account_name' => $this->accountLabelName($taxAccount),
@@ -120,7 +123,8 @@ class BuildVendorBillPostingPreviewAction
         }
 
         if ($apAccountId) {
-            $apAccount = $vendorBill->vendor->payableAccount ?? $company->accountsPayableAccount;
+            /** @var \App\Models\Account|null $apAccount */
+            $apAccount = $vendorBill->vendor->payableAccount ?? $company->defaultAccountsPayable;
             $linesPreview[] = [
                 'account_id' => $apAccountId,
                 'account_name' => $this->accountLabelName($apAccount),
