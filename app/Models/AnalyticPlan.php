@@ -63,7 +63,7 @@ class AnalyticPlan extends Model
      * The attributes that are mass assignable.
      * These fields are essential for defining the characteristics and relationships of an analytic plan.
      *
-     * @var array<int, string>
+     * @var list<string>
      */
     protected $fillable = [
         'name',

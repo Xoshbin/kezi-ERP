@@ -70,7 +70,7 @@ class InvoiceLine extends Model
      * This array specifies which attributes can be filled via mass assignment,
      * protecting against the mass assignment vulnerability [8-10].
      *
-     * @var array<int, string>
+     * @var list<string>
      */
     protected $fillable = [
         'company_id',          // Foreign key to the parent company [3, 4]
@@ -114,7 +114,7 @@ class InvoiceLine extends Model
      * Without this, any retrieval of an `InvoiceLine` would fail when casting monetary values
      * due to the missing currency information, leading to a "currency_id on null" error.
      *
-     * @var array
+     * @var list<string>
      */
     protected $with = ['invoice.currency'];
 

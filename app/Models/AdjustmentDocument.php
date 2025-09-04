@@ -28,7 +28,7 @@ use Illuminate\Support\Carbon;
  * @property \Brick\Money\Money $total_amount
  * @property \Brick\Money\Money $total_tax
  * @property string $reason
- * @property string $status
+ * @property AdjustmentDocumentStatus $status
  * @property string|null $posted_at
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
@@ -78,7 +78,7 @@ class AdjustmentDocument extends Model
      * These fields align with the columns defined in your database migration
      * for the 'adjustment_documents' table, allowing for bulk assignment.
      *
-     * @var array<int, string>
+     * @var list<string>
      */
     protected $fillable = [
         'company_id',             // [5]

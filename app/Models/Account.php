@@ -98,7 +98,7 @@ class Account extends Model
      * is crucial for preventing mass assignment vulnerabilities, ensuring
      * that only expected data can be set via mass assignment operations [10].
      *
-     * @var array<int, string>
+     * @var list<string>
      */
     protected $fillable = [
         'company_id',

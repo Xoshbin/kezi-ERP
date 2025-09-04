@@ -94,7 +94,7 @@ class JournalEntry extends Model
      * are managed programmatically and are excluded from mass assignment to prevent vulnerabilities
      * and enforce strict data integrity rules [3].
      *
-     * @var array<int, string>
+     * @var list<string>
      */
     protected $fillable = [
         'company_id',
@@ -140,7 +140,7 @@ class JournalEntry extends Model
      * Without this, any retrieval of a `JournalEntry` would fail when casting monetary values
      * due to the missing currency information, leading to a "currency_id on null" error.
      *
-     * @var array
+     * @var list<string>
      */
     protected $with = ['company.currency'];
 

@@ -36,7 +36,7 @@ use Illuminate\Support\Carbon;
  * @property \Brick\Money\Money $amount
  * @property string $payment_type
  * @property string|null $reference
- * @property string $status
+ * @property PaymentStatus $status
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property-read Company $company
@@ -80,7 +80,7 @@ class Payment extends Model
      * The attributes that are mass assignable.
      * These fields are explicitly allowed for mass assignment for secure data entry [9].
      *
-     * @var array<int, string>
+     * @var list<string>
      */
     protected $fillable = [
         'company_id',

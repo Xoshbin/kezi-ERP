@@ -79,7 +79,7 @@ class VendorBillLine extends Model
      * These fields can be safely filled via mass assignment, ensuring
      * that only expected data is set on creation or update, a crucial security feature [5, 6].
      *
-     * @var array<int, string>
+     * @var list<string>
      */
     protected $fillable = [
         'company_id',             // Foreign key to the parent company, ensuring data integrity [2, 3].
@@ -127,7 +127,7 @@ class VendorBillLine extends Model
      * Without this, any retrieval of a `VendorBillLine` would fail when casting monetary values
      * due to the missing currency information, leading to a "currency_id on null" error.
      *
-     * @var array
+     * @var list<string>
      */
     protected $with = ['vendorBill'];
 

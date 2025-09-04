@@ -81,7 +81,7 @@ class BankStatementLine extends Model
      * Without this, any retrieval of a `BankStatementLine` would fail when casting monetary values
      * due to the missing currency information, leading to a "currency_id on null" error.
      *
-     * @var array
+     * @var list<string>
      */
     protected $with = ['bankStatement.currency', 'foreignCurrency'];
 

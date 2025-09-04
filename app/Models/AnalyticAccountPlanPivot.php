@@ -42,7 +42,7 @@ class AnalyticAccountPlanPivot extends Pivot
      * The attributes that are mass assignable.
      * These are the foreign keys that establish the many-to-many relationship.
      *
-     * @var array<int, string>
+     * @var list<string>
      */
     protected $fillable = [
         'company_id',          // Foreign key to the parent company, ensuring data integrity [2, 3].
