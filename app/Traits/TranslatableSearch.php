@@ -111,9 +111,9 @@ trait TranslatableSearch
     {
         $locale = $locale ?? app()->getLocale();
 
-        // Check if the field is translatable
-        if (in_array($field, $this->translatable ?? [])) {
-            $translation = $this->getTranslation($field, $locale);
+        // Check if the field is translatable and the model has the HasTranslations trait
+        if (in_array($field, $this->translatable ?? []) && $this->hasTranslationsSupport()) {
+            $translation = $this->getTranslation($field, $locale); // @phpstan-ignore-line
 
             return $translation ?: ($this->$field ?? '');
         }
@@ -173,18 +173,27 @@ trait TranslatableSearch
      */
     public function getAllTranslations(string $field): array
     {
-        if (! in_array($field, $this->translatable ?? [])) {
+        if (! in_array($field, $this->translatable ?? []) || ! $this->hasTranslationsSupport()) {
             return [$field => $this->$field];
         }
 
         $translations = [];
         foreach ($this->getSearchLocales() as $locale) {
-            $translation = $this->getTranslation($field, $locale);
+            $translation = $this->getTranslation($field, $locale); // @phpstan-ignore-line
             if ($translation) {
                 $translations[$locale] = $translation;
             }
         }
 
         return $translations;
+    }
+
+    /**
+     * Check if the model has translation support.
+     * This method helps avoid PHPStan warnings about method_exists always being true.
+     */
+    private function hasTranslationsSupport(): bool
+    {
+        return method_exists($this, 'getTranslation'); // @phpstan-ignore-line
     }
 }

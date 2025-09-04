@@ -127,6 +127,7 @@ class BankStatementResource extends Resource
                                     return;
                                 }
 
+                                /** @var Journal|null $journal */
                                 $journal = Journal::find($value);
                                 if (! $journal) {
                                     $fail('The selected bank journal is invalid.');
@@ -138,7 +139,9 @@ class BankStatementResource extends Resource
                                     return;
                                 }
 
-                                if ($journal->type !== JournalType::Bank) {
+                                /** @var JournalType $journalType */
+                                $journalType = $journal->type;
+                                if ($journalType !== JournalType::Bank) {
                                     $fail('The selected bank journal is invalid.');
                                 }
                             };

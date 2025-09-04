@@ -29,8 +29,10 @@ class AdjustmentDocumentLineObserver
      */
     protected function updateParentAdjustmentDocumentTotals(AdjustmentDocumentLine $adjustmentDocumentLine): void
     {
+        // The adjustmentDocument relationship is guaranteed to exist due to foreign key constraints,
+        // but we keep this check for defensive programming
         $adjustmentDocument = $adjustmentDocumentLine->adjustmentDocument;
-        if ($adjustmentDocument) {
+        if ($adjustmentDocument !== null) { // @phpstan-ignore-line
             $adjustmentDocument->calculateTotalsFromLines();
 
             // Also update company currency totals if exchange rate is available
