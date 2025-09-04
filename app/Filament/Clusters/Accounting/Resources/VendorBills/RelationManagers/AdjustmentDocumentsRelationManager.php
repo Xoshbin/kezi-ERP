@@ -45,13 +45,19 @@ class AdjustmentDocumentsRelationManager extends RelationManager
                             ->relationship('company', 'name')
                             ->label(__('vendor_bill.adjustment_documents_relation_manager.company'))
                             ->required()
-                            ->default(fn () => $this->getOwnerRecord()->company_id),
+                            ->default(function (): ?int {
+                                $owner = $this->getOwnerRecord();
+                                return $owner instanceof \App\Models\VendorBill ? $owner->company_id : null;
+                            }),
 
                         Select::make('currency_id')
                             ->relationship('currency', 'name')
                             ->label(__('vendor_bill.adjustment_documents_relation_manager.currency'))
                             ->required()
-                            ->default(fn () => $this->getOwnerRecord()->currency_id),
+                            ->default(function (): ?int {
+                                $owner = $this->getOwnerRecord();
+                                return $owner instanceof \App\Models\VendorBill ? $owner->currency_id : null;
+                            }),
 
                         Select::make('type')
                             ->label(__('vendor_bill.adjustment_documents_relation_manager.type'))
@@ -186,7 +192,8 @@ class AdjustmentDocumentsRelationManager extends RelationManager
                 CreateAction::make()
                     ->label(__('vendor_bill.adjustment_documents_relation_manager.create_adjustment'))
                     ->mutateDataUsing(function (array $data): array {
-                        $data['original_vendor_bill_id'] = $this->getOwnerRecord()->id;
+                        $owner = $this->getOwnerRecord();
+                        $data['original_vendor_bill_id'] = $owner instanceof \App\Models\VendorBill ? $owner->getKey() : null;
 
                         return $data;
                     }),

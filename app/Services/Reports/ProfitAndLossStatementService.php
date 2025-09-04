@@ -19,7 +19,8 @@ class ProfitAndLossStatementService
         $currency = $company->currency->code;
         $zero = Money::zero($currency);
 
-        $results = JournalEntryLine::query()
+        /** @var \Illuminate\Support\Collection<int, object> $results */
+        $results = DB::table('journal_entry_lines')
             ->select([
                 'accounts.id as account_id',
                 'accounts.code as account_code',
@@ -45,22 +46,25 @@ class ProfitAndLossStatementService
 
         // Get account models to access translated names
         $accountIds = $results->pluck('account_id')->unique();
+        /** @var \Illuminate\Support\Collection<int, \App\Models\Account> $accounts */
         $accounts = $company->accounts()->whereIn('id', $accountIds)->get()->keyBy('id');
 
         $revenueLines = $results->whereIn('account_type', [
             AccountType::Income->value,
             AccountType::OtherIncome->value,
         ])
-            ->map(function ($row) use ($currency, $accounts) {
+            ->map(function (object $row) use ($currency, $accounts) {
                 // Invert the sign for presentation, as income accounts have a natural credit balance.
                 // The balance from the query is already in minor units, so use it directly
-                $balance = Money::ofMinor(-$row->balance, $currency);
+                $balance = Money::ofMinor(-(int) $row->balance, $currency);
+                /** @var \App\Models\Account|null $account */
                 $account = $accounts->get($row->account_id);
+                $accountName = $account?->name ?? (string) $row->account_name;
 
                 return new ReportLineDTO(
                     accountId: $row->account_id,
                     accountCode: $row->account_code,
-                    accountName: $account ? $account->name : $row->account_name,
+                    accountName: $accountName,
                     balance: $balance
                 );
             });
@@ -70,16 +74,18 @@ class ProfitAndLossStatementService
             AccountType::Depreciation->value,
             AccountType::CostOfRevenue->value,
         ])
-            ->map(function ($row) use ($currency, $accounts) {
+            ->map(function (object $row) use ($currency, $accounts) {
                 // Expense accounts have a natural debit balance, which is correct for presentation.
                 // The balance from the query is already in minor units, so use it directly
-                $balance = Money::ofMinor($row->balance, $currency);
+                $balance = Money::ofMinor((int) $row->balance, $currency);
+                /** @var \App\Models\Account|null $account */
                 $account = $accounts->get($row->account_id);
+                $accountName = $account?->name ?? (string) $row->account_name;
 
                 return new ReportLineDTO(
                     accountId: $row->account_id,
                     accountCode: $row->account_code,
-                    accountName: $account ? $account->name : $row->account_name,
+                    accountName: $accountName,
                     balance: $balance
                 );
             });

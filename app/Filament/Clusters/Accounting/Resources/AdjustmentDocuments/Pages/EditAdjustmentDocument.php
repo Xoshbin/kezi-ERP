@@ -137,7 +137,9 @@ class EditAdjustmentDocument extends EditRecord
 
         // 2. As a final fallback, get it from the original record being edited.
         if (empty($data['currency_id'])) {
-            $data['currency_id'] = $this->record->currency_id;
+            /** @var AdjustmentDocument $rec */
+            $rec = $this->record;
+            $data['currency_id'] = is_object($rec) ? $rec->getAttribute('currency_id') : null;
         }
 
         // 3. If it's *still* missing, stop with a clean validation error.
@@ -164,10 +166,12 @@ class EditAdjustmentDocument extends EditRecord
 
     protected function mutateFormDataBeforeFill(array $data): array
     {
-        $this->record->loadMissing('lines');
+        /** @var AdjustmentDocument $rec */
+        $rec = $this->record;
+        $rec->loadMissing('lines');
 
         // Keep Money objects for MoneyInput components
-        $linesData = $this->record->lines->map(function ($line) {
+        $linesData = $rec->lines->map(function (\App\Models\AdjustmentDocumentLine $line) {
             return [
                 'product_id' => $line->product_id,
                 'description' => $line->description,

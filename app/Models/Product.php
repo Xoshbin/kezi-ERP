@@ -35,6 +35,9 @@ use Illuminate\Support\Carbon;
  * @property-read Company $company
  * @property-read Account|null $expenseAccount
  * @property-read Account|null $incomeAccount
+ * @property-read Account|null $inventoryAccount
+ * @property-read Account|null $defaultCogsAccount
+ * @property-read Account|null $stockInputAccount
  *
  * @method static Builder<static>|Product active()
  * @method static Builder<static>|Product bySku($sku, $companyId)

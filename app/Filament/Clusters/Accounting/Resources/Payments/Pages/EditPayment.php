@@ -75,21 +75,29 @@ class EditPayment extends EditRecord
     protected function mutateFormDataBeforeFill(array $data): array
     {
         // Set the 'amount' field from the record's Money object for standalone payments
-        $data['amount'] = $this->record->amount?->getAmount()->toFloat();
+        $record = $this->getRecord();
+        if ($record instanceof Payment) {
+            $data['amount'] = $record->amount?->getAmount()->toFloat();
+        }
+
 
         return $data;
     }
 
     protected function handleRecordUpdate(Model $record, array $data): Model
     {
-        $currency = Currency::find($data['currency_id']);
+        if (! $record instanceof Payment) {
+            throw new \InvalidArgumentException('Expected Payment record');
+        }
+
+        $currency = Currency::findOrFail($data['currency_id']);
 
         // Prepare amount for standalone payments
         $amount = Money::of($data['amount'], $currency->code);
 
         $paymentDTO = new UpdatePaymentDTO(
             payment: $record,
-            company_id: Filament::getTenant()->id,
+            company_id: $record->company_id,
             journal_id: $data['journal_id'],
             currency_id: $data['currency_id'],
             payment_date: $data['payment_date'],

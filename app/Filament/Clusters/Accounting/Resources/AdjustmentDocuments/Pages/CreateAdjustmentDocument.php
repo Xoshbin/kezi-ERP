@@ -62,7 +62,7 @@ class CreateAdjustmentDocument extends CreateRecord
     protected function handleRecordCreation(array $data): Model
     {
         // This method will now always receive a valid $data['currency_id']
-        $currency = Currency::find($data['currency_id']);
+        $currency = Currency::findOrFail($data['currency_id']);
         $lineDTOs = [];
         foreach ($data['lines'] as $line) {
             $lineDTOs[] = new CreateAdjustmentDocumentLineDTO(
@@ -76,7 +76,7 @@ class CreateAdjustmentDocument extends CreateRecord
         }
 
         $dto = new CreateAdjustmentDocumentDTO(
-            company_id: Filament::getTenant()->id,
+            company_id: (int) (Filament::getTenant()?->getKey() ?? 0),
             type: AdjustmentDocumentType::from($data['type']),
             date: $data['date'],
             reference_number: $data['reference_number'],

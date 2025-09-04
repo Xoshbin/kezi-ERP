@@ -41,8 +41,8 @@ class BankReconciliation extends Page
      */
     public static function canAccess(array $parameters = []): bool
     {
-        $company = \Filament\Facades\Filament::getTenant();
+        $tenant = \Filament\Facades\Filament::getTenant();
 
-        return (bool) ($company?->enable_reconciliation);
+        return $tenant instanceof \App\Models\Company && $tenant->enable_reconciliation;
     }
 }

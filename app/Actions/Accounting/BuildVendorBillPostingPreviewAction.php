@@ -61,6 +61,7 @@ class BuildVendorBillPostingPreviewAction
                     $linesPreview[] = [
                         'account_id' => $inventoryAccount->id,
                         'account_name' => $this->accountLabelName($inventoryAccount),
+                        /** @var \App\Models\Account $inventoryAccount */
                         'account_code' => $inventoryAccount->code,
                         'debit_minor' => $line->subtotal->getMinorAmount()->toInt(),
                         'credit_minor' => 0,
@@ -76,11 +77,13 @@ class BuildVendorBillPostingPreviewAction
                     $errors[] = $msg;
                     $issues[] = ['type' => 'asset_category_invalid', 'message' => $msg];
                 } else {
+                    /** @var \App\Models\Account|null $assetAccount */
                     $assetAccount = $category->assetAccount;
                     $linesPreview[] = [
                         'account_id' => $category->asset_account_id,
                         'account_name' => $this->accountLabelName($assetAccount),
-                        'account_code' => $assetAccount?->code,
+                        /** @var \App\Models\Account|null $assetAccount */
+                        'account_code' => $assetAccount instanceof \App\Models\Account ? $assetAccount->code : null,
                         'debit_minor' => $line->subtotal->getMinorAmount()->toInt(),
                         'credit_minor' => 0,
                         'description' => 'Asset: '.$line->description,
@@ -88,6 +91,7 @@ class BuildVendorBillPostingPreviewAction
                     $debitTotal = $debitTotal->plus($line->subtotal);
                 }
             } else {
+                /** @var \App\Models\Account|null $expenseAccount */
                 $expenseAccount = $line->expenseAccount;
                 $linesPreview[] = [
                     'account_id' => $line->expense_account_id,

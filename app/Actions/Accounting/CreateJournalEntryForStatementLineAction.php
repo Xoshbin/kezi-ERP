@@ -48,7 +48,7 @@ class CreateJournalEntryForStatementLineAction
                     analytic_account_id: null,
                 ),
                 new CreateJournalEntryLineDTO(
-                    account_id: $bankAccount->id,
+                    account_id: (int) $bankAccount->getKey(),
                     debit: $isCreditToBank ? $zero : $amount,
                     credit: $isCreditToBank ? $amount : $zero,
                     description: $description,
@@ -62,7 +62,7 @@ class CreateJournalEntryForStatementLineAction
                 journal_id: $journal->id,
                 currency_id: $line->bankStatement->currency_id,
                 entry_date: Carbon::today()->toDateString(),
-                reference: $line->payment_ref ?: 'Reconciliation Write-Off',
+                reference: $line->description ?: 'Reconciliation Write-Off',
                 description: $description,
                 created_by_user_id: $user->id,
                 is_posted: true,
@@ -72,7 +72,7 @@ class CreateJournalEntryForStatementLineAction
             );
 
             // Create the journal entry
-            $journalEntry = $this->createJournalEntryAction->execute($journalEntryData);
+            $this->createJournalEntryAction->execute($journalEntryData);
 
             // Mark the statement line as reconciled
             $line->update(['is_reconciled' => true]);

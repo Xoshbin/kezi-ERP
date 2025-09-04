@@ -70,8 +70,8 @@ class VendorBillService
             $journalEntry = app(CreateJournalEntryForVendorBillAction::class)->execute($vendorBill, $user);
 
             // Associate the created journal entry with the bill
-            if (isset($journalEntry)) {
-                $vendorBill->update(['journal_entry_id' => $journalEntry->id]);
+            if ($journalEntry) {
+                $vendorBill->update(['journal_entry_id' => $journalEntry->getKey()]);
             }
         });
 
@@ -86,21 +86,21 @@ class VendorBillService
         $company = $vendorBill->company;
 
         if (! $company->vendorLocation || ! $company->defaultStockLocation) {
-            throw new RuntimeException("Default Vendor or Stock Location is not configured for Company ID: {$company->id}.");
+            throw new RuntimeException("Default Vendor or Stock Location is not configured for Company ID: {$company->getKey()}.");
         }
 
         $dto = new CreateStockMoveDTO(
-            company_id: $company->id,
+            company_id: $company->getKey(),
             product_id: $line->product_id,
             quantity: $line->quantity,
-            from_location_id: $company->vendorLocation->id,
-            to_location_id: $company->defaultStockLocation->id,
+            from_location_id: $company->vendorLocation->getKey(),
+            to_location_id: $company->defaultStockLocation->getKey(),
             move_type: StockMoveType::Incoming,
             status: StockMoveStatus::Done, // Moves from bills are immediately 'done'
             move_date: $vendorBill->bill_date,
             reference: $vendorBill->bill_reference,
             source_type: VendorBill::class,
-            source_id: $vendorBill->id,
+            source_id: $vendorBill->getKey(),
             created_by_user_id: $user->id
         );
 

@@ -47,18 +47,18 @@ class VendorBillObserver
 
         // Create the physical stock move record
         StockMove::create([
-            'company_id' => $company->id,
-            'product_id' => $product->id,
+            'company_id' => $company->getKey(),
+            'product_id' => $product->getKey(),
             'quantity' => $line->quantity,
-            'from_location_id' => $company->vendorLocation->id,
-            'to_location_id' => $company->defaultStockLocation->id,
+            'from_location_id' => $company->vendorLocation->getKey(),
+            'to_location_id' => $company->defaultStockLocation->getKey(),
             'source_type' => get_class($vendorBill),
-            'source_id' => $vendorBill->id,
+            'source_id' => $vendorBill->getKey(),
             'completed_at' => now(),
             'move_date' => $vendorBill->accounting_date,
             'move_type' => StockMoveType::Incoming,
             'status' => StockMoveStatus::Done,
-            'created_by_user_id' => $vendorBill->user_id,
+            'created_by_user_id' => (int) $vendorBill->user_id,
         ]);
 
         // Recalculate Average Cost (AVCO) using company currency amounts for consistency
@@ -85,7 +85,7 @@ class VendorBillObserver
 
         $purchaseValue = $unitPriceInCompanyCurrency->multipliedBy($line->quantity);
         $oldValue = ($product->average_cost ?? Money::zero($costCurrency))->multipliedBy($product->quantity_on_hand);
-        $totalQuantity = $product->quantity_on_hand + $line->quantity;
+        $totalQuantity = (float) $product->quantity_on_hand + (float) $line->quantity;
         $totalValue = $oldValue->plus($purchaseValue);
 
         $newAverageCost = $totalQuantity > 0

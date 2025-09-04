@@ -78,7 +78,7 @@ class JournalEntryResource extends Resource
                     TranslatableSelect::make('currency_id', Currency::class, __('journal_entry.currency'))
                         ->required()
                         ->live()
-                        ->default(fn () => Filament::getTenant()?->currency_id)
+                        ->default(fn () => (\Filament\Facades\Filament::getTenant() instanceof \App\Models\Company) ? \Filament\Facades\Filament::getTenant()->currency_id : null)
                         ->createOptionForm([
                             TextInput::make('code')->label(__('currency.code'))->required()->maxLength(255),
                             TextInput::make('name')->label(__('currency.name'))->required()->maxLength(255),

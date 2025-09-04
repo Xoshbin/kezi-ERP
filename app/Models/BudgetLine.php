@@ -17,9 +17,9 @@ use Illuminate\Support\Carbon;
  * @property int $budget_id
  * @property int|null $analytic_account_id
  * @property int|null $account_id
- * @property float $budgeted_amount
- * @property float $achieved_amount
- * @property float $committed_amount
+ * @property \Brick\Money\Money $budgeted_amount
+ * @property \Brick\Money\Money $achieved_amount
+ * @property \Brick\Money\Money $committed_amount
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property-read Account|null $account

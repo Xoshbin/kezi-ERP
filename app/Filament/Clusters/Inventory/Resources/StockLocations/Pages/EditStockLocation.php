@@ -23,7 +23,9 @@ class EditStockLocation extends EditRecord
 
     public function getTitle(): string
     {
-        return __('stock_location.edit_title', ['name' => $this->record->name]);
+        $record = $this->getRecord();
+        $name = method_exists($record, 'getAttribute') ? (string) $record->getAttribute('name') : (string) ($record->name ?? '');
+        return __('stock_location.edit_title', ['name' => $name]);
     }
 
     protected function getRedirectUrl(): string

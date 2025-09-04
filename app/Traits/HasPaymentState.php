@@ -60,6 +60,7 @@ trait HasPaymentState
         $currencyConverter = app(CurrencyConverterService::class);
 
         // Get all confirmed/reconciled payment document links for this document
+        /** @var \Illuminate\Database\Eloquent\Collection<int, \App\Models\PaymentDocumentLink> $paymentLinks */
         $paymentLinks = $this->paymentDocumentLinks()
             ->whereHas('payment', function ($query) {
                 $query->whereIn('status', [PaymentStatus::Confirmed, PaymentStatus::Reconciled]);
@@ -70,8 +71,8 @@ trait HasPaymentState
         $totalPaidInDocumentCurrency = Money::of(0, $this->currency->code);
 
         foreach ($paymentLinks as $link) {
-            $payment = $link->payment;
-            $amountApplied = $link->amount_applied; // This is in payment currency
+            $payment = $link->payment; // Payment model
+            $amountApplied = $link->amount_applied; // Money in payment currency
 
             // If payment currency is different from document currency, convert it
             if ($payment->currency_id !== $this->currency_id) {

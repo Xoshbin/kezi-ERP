@@ -100,7 +100,7 @@ class CreateJournalEntryForExpenseBillAction
                 debit: Money::of(0, $currency->code),
                 credit: $totalDebit,
                 description: 'Accounts Payable',
-                partner_id: $vendorBill->partner_id,
+                partner_id: $vendorBill->vendor_id,
                 analytic_account_id: null,
             );
 

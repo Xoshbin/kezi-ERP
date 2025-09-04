@@ -31,11 +31,12 @@ class BankReconciliationMatcher extends Component
     public function mount(int $bankStatementId): void
     {
         $this->bankStatementId = $bankStatementId;
+        /** @var \App\Models\Company|null $tenant */
         $tenant = Filament::getTenant();
 
         $bankStatement = BankStatement::with(['currency', 'journal'])->find($bankStatementId);
 
-        if (! $bankStatement || ($tenant && $bankStatement->company_id !== $tenant->id)) {
+        if (! $bankStatement || ($tenant && $bankStatement->company_id !== $tenant->getKey())) {
             // Unauthorized or non-existent: render a safe, empty state without leaking data
             $this->bankStatement = new BankStatement([
                 'id' => 0,
@@ -50,7 +51,7 @@ class BankReconciliationMatcher extends Component
             $this->bankStatement = $bankStatement;
         }
 
-        $currencyCode = $this->bankStatement->currency?->code ?? $tenant?->currency?->code ?? 'IQD';
+        $currencyCode = $this->bankStatement->currency?->code ?? $tenant?->currency?->code ?? 'IQD'; // fallback IQD
 
         // Initialize totals
         $this->bankTotal = Money::of(0, $currencyCode);

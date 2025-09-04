@@ -78,7 +78,10 @@ class PaymentResource extends Resource
                     TranslatableSelect::make('currency_id', Currency::class, __('payment.form.currency_id'))
                         ->required()
                         ->columnSpan(2)
-                        ->default(fn () => Filament::getTenant()?->currency_id),
+                        ->default(function (): ?int {
+                            $tenant = Filament::getTenant();
+                            return $tenant instanceof \App\Models\Company ? $tenant->currency_id : null;
+                        }),
                     DatePicker::make('payment_date')
                         ->default(now())
                         ->label(__('payment.form.payment_date'))

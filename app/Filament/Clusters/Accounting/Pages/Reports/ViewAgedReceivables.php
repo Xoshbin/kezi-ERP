@@ -123,7 +123,7 @@ class ViewAgedReceivables extends Page
             'totalBucket90_plusAmount' => $report->totalBucket90_plus->getAmount()->toFloat(),
             'grandTotalDue' => NumberFormatter::formatMoneyTo($report->grandTotalDue),
             'grandTotalDueAmount' => $report->grandTotalDue->getAmount()->toFloat(),
-            'companyName' => $company->name,
+            'companyName' => method_exists($company, 'getAttribute') ? (string) $company->getAttribute('name') : (string) ($company->name ?? ''),
             'asOfDate' => $this->asOfDate,
         ];
     }

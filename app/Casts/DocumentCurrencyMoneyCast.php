@@ -27,43 +27,78 @@ class DocumentCurrencyMoneyCast extends MoneyCast
 
         // Case 2: The model is a LINE ITEM. Find its parent document's currency.
         // This expects the parent relationship to be eager-loaded.
-        if (method_exists($model, 'invoice') && $model->relationLoaded('invoice') && $model->invoice) {
-            return $model->invoice->currency;
+        if (method_exists($model, 'invoice') && $model->relationLoaded('invoice')) {
+            $invoice = $model->getRelation('invoice');
+            if ($invoice instanceof \Illuminate\Database\Eloquent\Model && method_exists($invoice, 'currency')) {
+                $currency = $invoice->relationLoaded('currency') ? $invoice->getRelation('currency') : $invoice->currency()->first();
+                if ($currency instanceof \App\Models\Currency) {
+                    return $currency;
+                }
+            }
         }
-        if (method_exists($model, 'vendorBill') && $model->relationLoaded('vendorBill') && $model->vendorBill) {
-            return $model->vendorBill->currency;
+        if (method_exists($model, 'vendorBill') && $model->relationLoaded('vendorBill')) {
+            $vendorBill = $model->getRelation('vendorBill');
+            if ($vendorBill instanceof \Illuminate\Database\Eloquent\Model && method_exists($vendorBill, 'currency')) {
+                $currency = $vendorBill->relationLoaded('currency') ? $vendorBill->getRelation('currency') : $vendorBill->currency()->first();
+                if ($currency instanceof \App\Models\Currency) {
+                    return $currency;
+                }
+            }
         }
-        if (method_exists($model, 'adjustmentDocument') && $model->relationLoaded('adjustmentDocument') && $model->adjustmentDocument) {
-            return $model->adjustmentDocument->currency;
+        if (method_exists($model, 'adjustmentDocument') && $model->relationLoaded('adjustmentDocument')) {
+            $adjustmentDocument = $model->getRelation('adjustmentDocument');
+            if ($adjustmentDocument instanceof \Illuminate\Database\Eloquent\Model && method_exists($adjustmentDocument, 'currency')) {
+                $currency = $adjustmentDocument->relationLoaded('currency') ? $adjustmentDocument->getRelation('currency') : $adjustmentDocument->currency()->first();
+                if ($currency instanceof \App\Models\Currency) {
+                    return $currency;
+                }
+            }
         }
-        if (method_exists($model, 'payment') && $model->relationLoaded('payment') && $model->payment && $model->payment->relationLoaded('currency')) {
-            return $model->payment->currency;
+        if (method_exists($model, 'payment') && $model->relationLoaded('payment')) {
+            $payment = $model->getRelation('payment');
+            if ($payment instanceof \Illuminate\Database\Eloquent\Model && method_exists($payment, 'currency')) {
+                $currency = $payment->relationLoaded('currency') ? $payment->getRelation('currency') : $payment->currency()->first();
+                if ($currency instanceof \App\Models\Currency) {
+                    return $currency;
+                }
+            }
         }
-        if (method_exists($model, 'bankStatement') && $model->relationLoaded('bankStatement') && $model->bankStatement && $model->bankStatement->relationLoaded('currency')) {
-            return $model->bankStatement->currency;
+        if (method_exists($model, 'bankStatement') && $model->relationLoaded('bankStatement')) {
+            $bankStatement = $model->getRelation('bankStatement');
+            if ($bankStatement instanceof \Illuminate\Database\Eloquent\Model && method_exists($bankStatement, 'currency')) {
+                $currency = $bankStatement->relationLoaded('currency') ? $bankStatement->getRelation('currency') : $bankStatement->currency()->first();
+                if ($currency instanceof \App\Models\Currency) {
+                    return $currency;
+                }
+            }
         }
         // Add other parent documents here as needed
 
         // Fallback: If relationships are not loaded, perform database queries
         // This is less efficient but ensures the cast always works
         if (method_exists($model, 'invoice') && $model->getAttribute('invoice_id')) {
-            return $model->invoice()->with('currency')->first()->currency;
+            $invoice = $model->invoice()->with('currency')->first();
+            return $invoice?->currency ?? throw new InvalidArgumentException('Invoice currency not found');
         }
         if (method_exists($model, 'vendorBill') && $model->getAttribute('vendor_bill_id')) {
-            return $model->vendorBill()->with('currency')->first()->currency;
+            $vendorBill = $model->vendorBill()->with('currency')->first();
+            return $vendorBill?->currency ?? throw new InvalidArgumentException('Vendor bill currency not found');
         }
         if (method_exists($model, 'adjustmentDocument') && $model->getAttribute('adjustment_document_id')) {
-            return $model->adjustmentDocument()->with('currency')->first()->currency;
+            $adj = $model->adjustmentDocument()->with('currency')->first();
+            return $adj?->currency ?? throw new InvalidArgumentException('Adjustment document currency not found');
         }
         if (method_exists($model, 'payment') && $model->getAttribute('payment_id')) {
-            return $model->payment()->with('currency')->first()->currency;
+            $payment = $model->payment()->with('currency')->first();
+            return $payment?->currency ?? throw new InvalidArgumentException('Payment currency not found');
         }
         if (method_exists($model, 'bankStatement') && $model->getAttribute('bank_statement_id')) {
-            return $model->bankStatement()->with('currency')->first()->currency;
+            $stmt = $model->bankStatement()->with('currency')->first();
+            return $stmt?->currency ?? throw new InvalidArgumentException('Bank statement currency not found');
         }
         // Some models expose a direct currency() relationship (e.g., PaymentDocumentLink)
         if (method_exists($model, 'currency')) {
-            $currency = $model->relationLoaded('currency') ? $model->currency : $model->currency()->first();
+            $currency = $model->relationLoaded('currency') ? $model->getRelation('currency') : $model->currency()->first();
             if ($currency instanceof Currency) {
                 return $currency;
             }
@@ -75,7 +110,7 @@ class DocumentCurrencyMoneyCast extends MoneyCast
     /**
      * Override set to resolve currency using incoming attributes when model FKs are not yet set.
      */
-    public function set($model, string $key, $value, array $attributes): ?array
+    public function set(Model $model, string $key, mixed $value, array $attributes): ?array
     {
         if ($value === null) {
             return [$key => null];

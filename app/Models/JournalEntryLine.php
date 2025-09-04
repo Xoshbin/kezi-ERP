@@ -26,7 +26,7 @@ use RuntimeException;
  * @property int|null $analytic_account_id
  * @property Money $debit
  * @property Money $credit
- * @property float $original_currency_amount
+ * @property Money $original_currency_amount
  * @property string $exchange_rate_at_transaction
  * @property string|null $description
  * @property Carbon|null $created_at
@@ -143,7 +143,8 @@ class JournalEntryLine extends Model
             // Retrieve the parent JournalEntry to check its `is_posted` status from the database.
             // Using `fresh()` or a direct query (`first()`) ensures we operate on the most current state,
             // avoiding potential stale in-memory data for this critical check.
-            if ($line->journalEntry()->first()?->is_posted) {
+            $parent = $line->journalEntry()->first();
+            if ($parent instanceof JournalEntry && $parent->is_posted) {
                 // Defines the specific fields within the JournalEntryLine that are considered
                 // immutable once the parent JournalEntry is posted. This covers all financial and linking data.
                 $immutableFields = [
@@ -174,7 +175,8 @@ class JournalEntryLine extends Model
         // Critical immutability enforcement: Prevent deletion of any journal entry line
         // if its parent journal entry has already been posted.
         static::deleting(function (JournalEntryLine $line) {
-            if ($line->journalEntry()->first()?->is_posted) {
+            $parent = $line->journalEntry()->first();
+            if ($parent instanceof JournalEntry && $parent->is_posted) {
                 // Similar to updates, deletions are strictly disallowed for posted records,
                 // enforcing that financial history remains complete and auditable [1-3].
                 throw new RuntimeException(

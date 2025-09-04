@@ -87,13 +87,15 @@ class LeaveManagementService
         }
 
         DB::transaction(function () use ($leaveRequest, $reason) {
+            $wasApproved = $leaveRequest->status === 'approved';
+
             $leaveRequest->update([
                 'status' => 'cancelled',
                 'rejection_reason' => $reason,
             ]);
 
             // Remove attendance records if leave was already approved
-            if ($leaveRequest->status === 'approved') {
+            if ($wasApproved) {
                 $this->removeLeaveAttendanceRecords($leaveRequest);
             }
         });
@@ -215,7 +217,9 @@ class LeaveManagementService
         while ($currentDate->lte($endDate)) {
             // Skip weekends (assuming 5-day work week)
             if (! $currentDate->isWeekend()) {
-                $leaveRequest->employee->attendances()->updateOrCreate(
+                /** @var \App\Models\Employee $employee */
+                $employee = $leaveRequest->employee;
+                $employee->attendances()->updateOrCreate(
                     [
                         'attendance_date' => $currentDate->format('Y-m-d'),
                     ],
@@ -223,8 +227,13 @@ class LeaveManagementService
                         'company_id' => $leaveRequest->company_id,
                         'status' => 'on_leave',
                         'attendance_type' => 'regular',
-                        'leave_request_id' => $leaveRequest->id,
-                        'notes' => 'On leave: '.$leaveRequest->leaveType->name,
+                        'leave_request_id' => $leaveRequest->getKey(),
+                        'notes' => 'On leave: '.(method_exists($leaveRequest->leaveType, 'getTranslation')
+                    ? $leaveRequest->leaveType->getTranslation('name', app()->getLocale())
+                    : (is_array($leaveRequest->leaveType->name)
+                        ? ($leaveRequest->leaveType->name[app()->getLocale()] ?? reset($leaveRequest->leaveType->name))
+                        : (string) $leaveRequest->leaveType->name
+                    )),
                     ]
                 );
             }
@@ -237,8 +246,10 @@ class LeaveManagementService
      */
     private function removeLeaveAttendanceRecords(LeaveRequest $leaveRequest): void
     {
-        $leaveRequest->employee->attendances()
-            ->where('leave_request_id', $leaveRequest->id)
+        /** @var \App\Models\Employee $employee */
+        $employee = $leaveRequest->employee;
+        $employee->attendances()
+            ->where('leave_request_id', $leaveRequest->getKey())
             ->delete();
     }
 

@@ -5,6 +5,7 @@ namespace App\Actions\Adjustments;
 use App\DataTransferObjects\Adjustments\CreateAdjustmentDocumentDTO;
 use App\Enums\Adjustments\AdjustmentDocumentStatus;
 use App\Models\AdjustmentDocument;
+use App\Models\AdjustmentDocumentLine;
 use App\Models\Company;
 use App\Models\Currency;
 use App\Services\Accounting\LockDateService;
@@ -78,6 +79,7 @@ class CreateAdjustmentDocumentAction
             $adjustmentDocument->total_tax_company_currency = $adjustmentDocument->total_tax;
 
             // Also set line-level company currency amounts (same as document currency)
+            /** @var AdjustmentDocumentLine $line */
             foreach ($adjustmentDocument->lines as $line) {
                 $line->update([
                     'unit_price_company_currency' => $line->unit_price,
@@ -133,6 +135,7 @@ class CreateAdjustmentDocumentAction
         );
 
         // Convert adjustment document line amounts
+        /** @var AdjustmentDocumentLine $line */
         foreach ($adjustmentDocument->lines as $line) {
             $this->convertAdjustmentDocumentLineAmounts($line, $companyCurrency, $adjustmentDocument->company);
         }
@@ -149,29 +152,32 @@ class CreateAdjustmentDocumentAction
     /**
      * Convert adjustment document line amounts to company currency.
      */
-    protected function convertAdjustmentDocumentLineAmounts($line, Currency $companyCurrency, Company $company): void
+    protected function convertAdjustmentDocumentLineAmounts(AdjustmentDocumentLine $line, Currency $companyCurrency, Company $company): void
     {
+        /** @var \App\Models\AdjustmentDocument $doc */
+        $doc = $line->adjustmentDocument;
+
         $unitPriceCompanyCurrency = $this->currencyConverter->convertToBaseCurrency(
             $line->unit_price,
-            $line->adjustmentDocument->currency,
+            $doc->currency,
             $companyCurrency,
-            $line->adjustmentDocument->date,
+            $doc->date,
             $company
         );
 
         $subtotalCompanyCurrency = $this->currencyConverter->convertToBaseCurrency(
             $line->subtotal,
-            $line->adjustmentDocument->currency,
+            $doc->currency,
             $companyCurrency,
-            $line->adjustmentDocument->date,
+            $doc->date,
             $company
         );
 
         $totalLineTaxCompanyCurrency = $this->currencyConverter->convertToBaseCurrency(
             $line->total_line_tax,
-            $line->adjustmentDocument->currency,
+            $doc->currency,
             $companyCurrency,
-            $line->adjustmentDocument->date,
+            $doc->date,
             $company
         );
 
