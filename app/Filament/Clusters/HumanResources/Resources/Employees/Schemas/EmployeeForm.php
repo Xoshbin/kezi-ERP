@@ -19,6 +19,8 @@ class EmployeeForm
 {
     public static function configure(Schema $schema): Schema
     {
+        /** @var \App\Models\Company|null $tenant */
+        $tenant = Filament::getTenant();
         return $schema->components([
             Section::make(__('employee.basic_information'))
                 ->description(__('employee.basic_information_description'))
@@ -69,7 +71,7 @@ class EmployeeForm
                         __('employee.department'),
                         'name',
                         null,
-                        fn ($query) => $query->where('company_id', Filament::getTenant()->id)
+                        fn ($query) => $query->where('company_id', $tenant?->id)
                     )
                         ->columnSpan(1),
 
@@ -80,7 +82,7 @@ class EmployeeForm
                         __('employee.position'),
                         'title',
                         null,
-                        fn ($query) => $query->where('company_id', Filament::getTenant()->id)
+                        fn ($query) => $query->where('company_id', $tenant?->id)
                     )
                         ->columnSpan(1),
 
@@ -90,7 +92,7 @@ class EmployeeForm
                         ['first_name', 'last_name', 'employee_number'],
                         __('employee.manager'),
                         'first_name',
-                        fn ($query) => $query->where('company_id', Filament::getTenant()->id)
+                        fn ($query) => $query->where('company_id', $tenant?->id)
                     )
                         ->columnSpan(1),
 
@@ -100,7 +102,7 @@ class EmployeeForm
                         ['name', 'email'],
                         __('employee.user_account'),
                         'name',
-                        fn ($query) => $query->whereHas('companies', fn ($q) => $q->where('companies.id', Filament::getTenant()->id))
+                        fn ($query) => $query->whereHas('companies', fn ($q) => $q->where('companies.id', $tenant?->id))
                     )
                         ->columnSpan(1),
                 ])

@@ -67,7 +67,9 @@ class MatchJournalItemsAction
         }
 
         // Get the company from the first line (all should belong to same company due to tenancy)
-        $company = $journalLines->first()->journalEntry->company;
+        /** @var JournalEntryLine $first */
+        $first = $journalLines->first();
+        $company = $first->journalEntry->company;
 
         // Perform all validations in order
         $this->validateGlobalReconciliationSetting($company);
@@ -157,15 +159,16 @@ class MatchJournalItemsAction
     private function validateBalance(Collection $journalLines): void
     {
         // Get the first line to determine the currency for zero amounts
+        /** @var JournalEntryLine $firstLine */
         $firstLine = $journalLines->first();
         $currency = $firstLine->journalEntry->company->currency->code;
 
         // Sum the Money objects properly
-        $totalDebits = $journalLines->reduce(function ($carry, $line) {
+        $totalDebits = $journalLines->reduce(function (Money $carry, JournalEntryLine $line): Money {
             return $carry->plus($line->debit);
         }, Money::of(0, $currency));
 
-        $totalCredits = $journalLines->reduce(function ($carry, $line) {
+        $totalCredits = $journalLines->reduce(function (Money $carry, JournalEntryLine $line): Money {
             return $carry->plus($line->credit);
         }, Money::of(0, $currency));
 

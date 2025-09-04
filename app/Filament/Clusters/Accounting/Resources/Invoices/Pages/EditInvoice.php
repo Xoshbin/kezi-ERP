@@ -17,6 +17,7 @@ use App\Filament\Clusters\Accounting\Resources\Invoices\Widgets\SettlementSummar
 use App\Filament\Forms\Components\MoneyInput;
 use App\Models\Invoice;
 use App\Models\Journal;
+use App\Models\Company;
 use App\Services\InvoiceService;
 use App\Services\PaymentService;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -86,7 +87,7 @@ class EditInvoice extends EditRecord
                 ->icon('heroicon-o-arrow-down-tray')
                 ->color('gray')
                 ->visible(fn (Invoice $record): bool => $record->status === InvoiceStatus::Draft && config('app.debug') && ! app()->environment('production'))
-                ->action(function (Invoice $record) {
+                ->action(function (Invoice $record): \Symfony\Component\HttpFoundation\StreamedResponse {
                     $preview = app(BuildInvoicePostingPreviewAction::class)->execute($record);
                     $rows = [];
                     $rows[] = ['Account Code', 'Account Name', 'Description', 'Debit', 'Credit'];
@@ -105,7 +106,7 @@ class EditInvoice extends EditRecord
                     }
                     $filename = 'invoice-'.($record->invoice_number ?: ('DRAFT-'.str_pad($record->id, 5, '0', STR_PAD_LEFT))).'-preview.csv';
 
-                    return response()->streamDownload(function () use ($csv) {
+                    return response()->streamDownload(function () use ($csv): void {
                         echo $csv;
                     }, $filename, [
                         'Content-Type' => 'text/csv',
@@ -117,7 +118,7 @@ class EditInvoice extends EditRecord
                 ->icon('heroicon-o-document-arrow-down')
                 ->color('gray')
                 ->visible(fn (Invoice $record): bool => $record->status === InvoiceStatus::Draft && config('app.debug') && ! app()->environment('production'))
-                ->action(function (Invoice $record) {
+                ->action(function (Invoice $record): \Symfony\Component\HttpFoundation\StreamedResponse {
                     $preview = app(BuildInvoicePostingPreviewAction::class)->execute($record);
                     $pdf = Pdf::loadView('filament/accounting/invoices/preview-posting-pdf', [
                         'preview' => $preview,
@@ -125,7 +126,7 @@ class EditInvoice extends EditRecord
                     ]);
                     $filename = 'invoice-'.($record->invoice_number ?: ('DRAFT-'.str_pad($record->id, 5, '0', STR_PAD_LEFT))).'-preview.pdf';
 
-                    return response()->streamDownload(function () use ($pdf) {
+                    return response()->streamDownload(function () use ($pdf): void {
                         echo $pdf->output();
                     }, $filename, [
                         'Content-Type' => 'application/pdf',
@@ -157,15 +158,26 @@ class EditInvoice extends EditRecord
                 ->schema([
                     Select::make('journal_id')
                         ->label(__('payment.form.journal_id'))
-                        ->options(function () {
-                            return Journal::where('company_id', Filament::getTenant()->id)
-                                ->pluck('name', 'id');
+                        ->options(function (): array {
+                            $tenant = Filament::getTenant();
+                            if (! $tenant instanceof Company) {
+                                return [];
+                            }
+
+                            return Journal::where('company_id', $tenant->getKey())
+                                ->pluck('name', 'id')
+                                ->all();
                         })
                         ->required()
-                        ->default(function () {
-                            return Journal::where('company_id', Filament::getTenant()->id)
+                        ->default(function (): ?int {
+                            $tenant = Filament::getTenant();
+                            if (! $tenant instanceof Company) {
+                                return null;
+                            }
+
+                            return Journal::where('company_id', $tenant->getKey())
                                 ->where('type', 'bank')
-                                ->first()?->id;
+                                ->value('id');
                         }),
                     DatePicker::make('payment_date')
                         ->label(__('payment.form.payment_date'))
@@ -195,7 +207,7 @@ class EditInvoice extends EditRecord
 
                         // Create payment DTO
                         $paymentDTO = new CreatePaymentDTO(
-                            company_id: Filament::getTenant()->id,
+                            company_id: $record->company_id,
                             journal_id: $data['journal_id'],
                             currency_id: $record->currency_id,
                             payment_date: $data['payment_date'],
@@ -256,8 +268,12 @@ class EditInvoice extends EditRecord
 
     protected function mutateFormDataBeforeFill(array $data): array
     {
-        $this->record->loadMissing('invoiceLines', 'currency');
-        $linesData = $this->record->invoiceLines->map(function ($line) {
+        $record = $this->getRecord();
+        if (! $record instanceof Invoice) {
+            return $data;
+        }
+        $record->loadMissing('invoiceLines', 'currency');
+        $linesData = $record->invoiceLines->map(function ($line) {
             return [
                 'product_id' => $line->product_id,
                 'description' => $line->description,
@@ -274,6 +290,11 @@ class EditInvoice extends EditRecord
 
     protected function handleRecordUpdate(Model $record, array $data): Model
     {
+        if (! $record instanceof Invoice) {
+            // Filament guarantees the record is an Invoice, but add guard for Larastan
+            $record = Invoice::findOrFail((int) $record->getKey());
+        }
+
         $lineDTOs = [];
         foreach ($data['invoiceLines'] as $line) {
             $lineDTOs[] = new UpdateInvoiceLineDTO(

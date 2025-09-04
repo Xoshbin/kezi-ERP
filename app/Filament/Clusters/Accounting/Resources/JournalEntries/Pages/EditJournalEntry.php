@@ -8,6 +8,7 @@ use App\DataTransferObjects\Accounting\UpdateJournalEntryLineDTO;
 use App\Filament\Clusters\Accounting\Resources\JournalEntries\JournalEntryResource;
 use App\Models\Currency;
 use App\Models\JournalEntry;
+use App\Models\JournalEntryLine;
 use App\Services\JournalEntryService;
 use Brick\Money\Money;
 use Exception;
@@ -17,6 +18,9 @@ use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * @property JournalEntry $record
+ */
 class EditJournalEntry extends EditRecord
 {
     protected static string $resource = JournalEntryResource::class;
@@ -46,7 +50,7 @@ class EditJournalEntry extends EditRecord
                 }),
 
             DeleteAction::make()
-                ->action(function (Model $record) {
+                ->action(function (JournalEntry $record): void {
                     $journalEntryService = app(JournalEntryService::class);
                     $journalEntryService->delete($record);
                     $this->redirect(JournalEntryResource::getUrl('index'));
@@ -56,21 +60,28 @@ class EditJournalEntry extends EditRecord
 
     protected function mutateFormDataBeforeFill(array $data): array
     {
-        // Eager-load the necessary relationships including original currency
-        $this->record->load('currency', 'lines.journalEntry.currency', 'lines.originalCurrency');
+        if (! $this->record instanceof JournalEntry) {
+            return $data;
+        }
+        /** @var JournalEntry $record */
+        $record = $this->record;
 
-        // Get the currency code for creating zero-value money objects
-        $currencyCode = $this->record->currency->code;
+        // Ensure necessary relationships are loaded
+        $record->loadMissing('currency', 'company.currency', 'lines.journalEntry.currency', 'lines.originalCurrency');
+
+        // Resolve currency code safely, prefer eager-loaded relation
+        $currencyModel = $record->relationLoaded('currency') ? $record->getRelation('currency') : $record->currency()->first();
+        $currencyCode = $currencyModel?->code ?? ($record->company?->currency?->code ?? 'USD');
 
         // Initialize totals
         $totalDebit = Money::zero($currencyCode);
         $totalCredit = Money::zero($currencyCode);
 
-        $lines = $this->record->lines->map(function ($line) use (&$totalDebit, &$totalCredit, $currencyCode) {
+        $lines = $record->lines->map(function (JournalEntryLine $line) use (&$totalDebit, &$totalCredit, $currencyCode, $record): array {
             // Ensure the line has proper currency context by setting missing fields if needed
             if (! $line->original_currency_id) {
-                $line->original_currency_id = $this->record->currency_id;
-                $line->currency_id = $this->record->currency_id;
+                $line->original_currency_id = $record->currency_id;
+                $line->currency_id = $record->currency_id;
                 $line->exchange_rate_at_transaction = 1.0;
                 $line->save();
             }
@@ -80,12 +91,12 @@ class EditJournalEntry extends EditRecord
             $creditMoney = Money::zero($currencyCode);
 
             // Check if this is a multi-currency transaction with original amounts
-            $hasOriginalAmounts = $line->original_currency_amount && $line->original_currency_id;
-            $isMultiCurrency = $hasOriginalAmounts && $line->original_currency_id != $this->record->company->currency_id;
+            $hasOriginalAmounts = ($line->original_currency_amount ?? null) && ($line->original_currency_id ?? null);
+            $isMultiCurrency = $hasOriginalAmounts && $line->original_currency_id != $record->company?->currency_id;
 
             if ($isMultiCurrency) {
                 // Multi-currency entry: use original amounts in transaction currency
-                $originalCurrency = Currency::find($line->original_currency_id);
+                $originalCurrency = $line->original_currency_id ? Currency::find($line->original_currency_id) : null;
                 if ($originalCurrency && $originalCurrency->code === $currencyCode) {
                     // Determine if this line was a debit or credit based on base currency amounts
                     $isDebit = $line->debit->isPositive();
@@ -103,13 +114,11 @@ class EditJournalEntry extends EditRecord
 
             // Ensure currency consistency before adding to totals
             if ($debitMoney && $debitMoney->isPositive()) {
-                // Convert to the same currency as totals if needed
                 if ($debitMoney->getCurrency()->getCurrencyCode() === $currencyCode) {
                     $totalDebit = $totalDebit->plus($debitMoney);
                 }
             }
             if ($creditMoney && $creditMoney->isPositive()) {
-                // Convert to the same currency as totals if needed
                 if ($creditMoney->getCurrency()->getCurrencyCode() === $currencyCode) {
                     $totalCredit = $totalCredit->plus($creditMoney);
                 }
@@ -120,8 +129,8 @@ class EditJournalEntry extends EditRecord
                 'partner_id' => $line->partner_id,
                 'analytic_account_id' => $line->analytic_account_id,
                 'description' => $line->description,
-                'debit' => $debitMoney ?? Money::zero($currencyCode),
-                'credit' => $creditMoney ?? Money::zero($currencyCode),
+                'debit' => $debitMoney,
+                'credit' => $creditMoney,
             ];
         })->toArray();
 
@@ -136,6 +145,10 @@ class EditJournalEntry extends EditRecord
 
     protected function handleRecordUpdate(Model $record, array $data): Model
     {
+        if (! $record instanceof JournalEntry) {
+            return $record;
+        }
+        /** @var JournalEntry $record */
         $lineDTOs = [];
 
         // Handle case where lines might not be present in the data (e.g., when calling actions)

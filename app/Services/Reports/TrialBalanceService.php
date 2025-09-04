@@ -18,7 +18,8 @@ class TrialBalanceService
         $currency = $company->currency->code;
         $zero = Money::zero($currency);
 
-        $results = JournalEntryLine::query()
+        /** @var \Illuminate\Support\Collection<int, object> $results */
+        $results = DB::table('journal_entry_lines')
             ->select([
                 'accounts.id as account_id',
                 'accounts.code as account_code',
@@ -39,8 +40,8 @@ class TrialBalanceService
         $totalDebit = $zero;
         $totalCredit = $zero;
 
-        $reportLines = $results->map(function ($row) use ($currency, $zero, &$totalDebit, &$totalCredit) {
-            $balance = Money::ofMinor($row->balance, $currency);
+        $reportLines = $results->map(function (object $row) use ($currency, $zero, &$totalDebit, &$totalCredit) {
+            $balance = Money::ofMinor((int) $row->balance, $currency);
             $debit = $zero;
             $credit = $zero;
 

@@ -30,7 +30,7 @@ class AdjustmentDocumentLineObserver
     protected function updateParentAdjustmentDocumentTotals(AdjustmentDocumentLine $adjustmentDocumentLine): void
     {
         $adjustmentDocument = $adjustmentDocumentLine->adjustmentDocument;
-        if ($adjustmentDocument) {
+        if ($adjustmentDocument instanceof \App\Models\AdjustmentDocument) {
             $adjustmentDocument->calculateTotalsFromLines();
 
             // Also update company currency totals if exchange rate is available
@@ -45,7 +45,7 @@ class AdjustmentDocumentLineObserver
     /**
      * Update company currency totals based on current line totals and exchange rate.
      */
-    protected function updateCompanyCurrencyTotals($adjustmentDocument): void
+    protected function updateCompanyCurrencyTotals(\App\Models\AdjustmentDocument $adjustmentDocument): void
     {
         if (! $adjustmentDocument->exchange_rate_at_creation || $adjustmentDocument->currency_id === $adjustmentDocument->company->currency_id) {
             return; // No conversion needed

@@ -18,6 +18,8 @@ class PositionForm
 {
     public static function configure(Schema $schema): Schema
     {
+        /** @var \App\Models\Company|null $tenant */
+        $tenant = Filament::getTenant();
         return $schema->components([
             Section::make(__('position.basic_information'))
                 ->description(__('position.basic_information_description'))
@@ -95,7 +97,7 @@ class PositionForm
                 ->schema([
                     TranslatableSelect::make('salary_currency_id', Currency::class, __('position.salary_currency'))
                         ->live()
-                        ->default(fn () => Filament::getTenant()?->currency_id)
+                        ->default(fn () => $tenant?->currency_id)
                         ->columnSpan(3),
 
                     MoneyInput::make('min_salary')

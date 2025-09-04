@@ -81,7 +81,10 @@ class AdjustmentDocumentResource extends Resource
                         ->required()
                         ->live()
                         ->columnSpan(2)
-                        ->default(fn () => Filament::getTenant()?->currency_id)
+                        ->default(function (): ?int {
+                            $tenant = Filament::getTenant();
+                            return $tenant instanceof \App\Models\Company ? $tenant->currency_id : null;
+                        })
                         ->disabled(fn (Get $get): bool => ! empty($get('original_invoice_id')) || ! empty($get('original_vendor_bill_id')))
                         ->createOptionForm([
                             TextInput::make('code')

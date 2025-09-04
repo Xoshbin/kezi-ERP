@@ -13,6 +13,9 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
+/**
+ * @property-read \App\Models\AdjustmentDocument $adjustmentDocument
+ */
 #[ObservedBy([AdjustmentDocumentLineObserver::class])]
 class AdjustmentDocumentLine extends Model
 {
@@ -66,6 +69,7 @@ class AdjustmentDocumentLine extends Model
 
     public function calculateLineTotals(): void
     {
+        /** @var \App\Models\Currency $currency */
         $currency = $this->adjustmentDocument->currency;
         $quantity = $this->quantity;
 

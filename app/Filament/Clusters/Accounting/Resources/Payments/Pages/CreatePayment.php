@@ -20,13 +20,16 @@ class CreatePayment extends CreateRecord
 
     protected function handleRecordCreation(array $data): Model
     {
-        $currency = Currency::find($data['currency_id']);
+        $currency = Currency::findOrFail($data['currency_id']);
 
         // Prepare amount for standalone payments
         $amount = Money::of($data['amount'], $currency->code);
 
+        $tenant = Filament::getTenant();
+        $companyId = method_exists($tenant, 'getKey') ? (int) $tenant->getKey() : 0;
+
         $paymentDTO = new CreatePaymentDTO(
-            company_id: Filament::getTenant()->id,
+            company_id: $companyId,
             journal_id: $data['journal_id'],
             currency_id: $data['currency_id'],
             payment_date: $data['payment_date'],

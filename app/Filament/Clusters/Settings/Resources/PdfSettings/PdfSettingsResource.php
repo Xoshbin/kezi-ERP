@@ -158,7 +158,7 @@ class PdfSettingsResource extends Resource
         // Only show the current tenant company
         $tenant = Filament::getTenant();
 
-        return parent::getEloquentQuery()->where('id', $tenant?->id);
+        return parent::getEloquentQuery()->where('id', $tenant instanceof \App\Models\Company ? $tenant->getKey() : null);
     }
 
     public static function getPages(): array

@@ -2,6 +2,9 @@
 
 namespace App\Services;
 
+use App\Actions\Accounting\CreateJournalEntryAction;
+use App\DataTransferObjects\Accounting\CreateJournalEntryDTO;
+use App\DataTransferObjects\Accounting\CreateJournalEntryLineDTO;
 use App\Models\Account;
 use App\Models\Company;
 use App\Models\Currency;
@@ -168,7 +171,7 @@ class ExchangeGainLossService
         Company $company,
         Carbon $revaluationDate
     ): Money {
-        $currentRate = $this->currencyConverter->getExchangeRate($currency, $revaluationDate);
+        $currentRate = $this->currencyConverter->getExchangeRate($currency, $revaluationDate, $company);
 
         if ($currentRate === null) {
             return Money::of(0, $company->currency->code);
@@ -238,15 +241,35 @@ class ExchangeGainLossService
             ];
         }
 
-        return $this->journalEntryService->createEntry([
-            'company_id' => $company->id,
-            'journal_id' => $company->default_bank_journal_id, // Or exchange difference journal
-            'entry_date' => $payment->payment_date,
-            'reference' => "EX-GAIN-LOSS-{$payment->id}",
-            'description' => 'Realized exchange '.($isGain ? 'gain' : 'loss')." on payment #{$payment->id}",
-            'currency_id' => $company->currency_id,
-            'lines' => $lines,
-        ]);
+        // Build DTO-based journal entry in base currency
+        $baseCurrencyCode = $company->currency->code;
+        $lineDTOs = [];
+        foreach ($lines as $line) {
+            $lineDTOs[] = new CreateJournalEntryLineDTO(
+                account_id: $line['account_id'],
+                debit: Money::of($line['debit'], $baseCurrencyCode),
+                credit: Money::of($line['credit'], $baseCurrencyCode),
+                description: $line['description'],
+                partner_id: null,
+                analytic_account_id: null,
+            );
+        }
+
+        $entryDTO = new CreateJournalEntryDTO(
+            company_id: $company->id,
+            journal_id: $company->default_bank_journal_id,
+            currency_id: $company->currency_id,
+            entry_date: $payment->payment_date->toDateString(),
+            reference: "EX-GAIN-LOSS-{$payment->getKey()}",
+            description: 'Realized exchange '.($isGain ? 'gain' : 'loss')." on payment #{$payment->getKey()}",
+            created_by_user_id: $payment->created_by_user_id ?? $payment->user_id ?? optional($payment->company->users()->first())->getKey() ?? 1,
+            is_posted: true,
+            lines: $lineDTOs,
+            source_type: get_class($payment),
+            source_id: $payment->getKey(),
+        );
+
+        return app(CreateJournalEntryAction::class)->execute($entryDTO);
     }
 
     /**

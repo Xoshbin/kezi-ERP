@@ -20,7 +20,7 @@ class PayrollCurrencyMoneyCast extends MoneyCast
     protected function resolveCurrency(Model $model): Currency
     {
         // Check if the model has a payroll relationship
-        if (method_exists($model, 'payroll') && $model->payroll_id) {
+        if (method_exists($model, 'payroll') && $model->getAttribute('payroll_id')) {
             $payroll = $model->payroll()->with('currency')->first();
             if ($payroll && $payroll->currency) {
                 return $payroll->currency;

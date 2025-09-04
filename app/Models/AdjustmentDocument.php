@@ -33,6 +33,7 @@ use Illuminate\Support\Carbon;
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property-read Company $company
+ * @property-read Currency $currency
  * @property-read JournalEntry|null $journalEntry
  * @property-read Invoice|null $originalInvoice
  * @property-read VendorBill|null $originalVendorBill

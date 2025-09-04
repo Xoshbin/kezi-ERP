@@ -53,8 +53,11 @@ class MoneyColumn extends TextColumn
         $currencyCode = null;
 
         // Strategy 1: Try to get currency directly from the record
-        if (method_exists($record, 'currency') && $record->currency) {
-            $currencyCode = $record->currency->code;
+        if (method_exists($record, 'currency')) {
+            $currencyModel = $record->relationLoaded('currency') ? $record->getRelation('currency') : $record->currency()->first();
+            if ($currencyModel) {
+                $currencyCode = $currencyModel->code;
+            }
         } elseif (isset($record->currency_id)) {
             $currency = Currency::find($record->currency_id);
             if ($currency) {
@@ -66,10 +69,21 @@ class MoneyColumn extends TextColumn
         // This handles cases where we're in a relation manager and need the parent record's currency
         if (! $currencyCode && $this->getTable()) {
             $livewire = $this->getTable()->getLivewire();
-            if (method_exists($livewire, 'getOwnerRecord')) {
+            if (is_object($livewire) && method_exists($livewire, 'getOwnerRecord')) {
+                /** @var \Illuminate\Database\Eloquent\Model|null $ownerRecord */
                 $ownerRecord = $livewire->getOwnerRecord();
-                if ($ownerRecord && method_exists($ownerRecord, 'currency') && $ownerRecord->currency) {
-                    $currencyCode = $ownerRecord->currency->code;
+            } elseif (is_object($livewire) && method_exists($livewire, 'getRecord')) {
+                // getRecord() exists only on some resource pages
+                /** @var \Illuminate\Database\Eloquent\Model|null $ownerRecord */
+                $ownerRecord = $livewire->getRecord();
+            } else {
+                $ownerRecord = null;
+            }
+            if ($ownerRecord instanceof \Illuminate\Database\Eloquent\Model && method_exists($ownerRecord, 'currency')) {
+                /** @var \App\Models\Currency|null $currency */
+                $currency = $ownerRecord->relationLoaded('currency') ? $ownerRecord->getRelation('currency') : $ownerRecord->currency()->first();
+                if ($currency) {
+                    $currencyCode = $currency->code;
                 }
             }
         }
@@ -78,11 +92,11 @@ class MoneyColumn extends TextColumn
         if ($currencyCode) {
             try {
                 return Money::ofMinor((int) $state, $currencyCode);
-            } catch (Exception $e) {
+            } catch (Exception) {
                 // If minor units fail, try as major units
                 try {
                     return Money::of($state, $currencyCode);
-                } catch (Exception $e) {
+                } catch (Exception) {
                     // Fall through to return null
                 }
             }

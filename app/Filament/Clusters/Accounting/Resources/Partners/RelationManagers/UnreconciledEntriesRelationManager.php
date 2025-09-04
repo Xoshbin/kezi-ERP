@@ -58,9 +58,9 @@ class UnreconciledEntriesRelationManager extends RelationManager
      */
     protected function isReconciliationEnabled(): bool
     {
-        $company = Filament::getTenant();
+        $tenant = Filament::getTenant();
 
-        return $company && $company->enable_reconciliation;
+        return $tenant instanceof \App\Models\Company && $tenant->enable_reconciliation;
     }
 
     public function form(Schema $schema): Schema

@@ -86,6 +86,9 @@ class ViewTrialBalance extends Page
         ]);
 
         $company = Filament::getTenant();
+        if (! $company instanceof \App\Models\Company) {
+            return;
+        }
         $service = app(TrialBalanceService::class);
 
         $report = $service->generate(

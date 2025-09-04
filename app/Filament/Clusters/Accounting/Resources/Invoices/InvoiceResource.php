@@ -134,13 +134,16 @@ class InvoiceResource extends Resource
                     TranslatableSelect::make('currency_id', Currency::class, __('invoice.currency'))
                         ->required()
                         ->live()
-                        ->default(fn () => Filament::getTenant()?->currency_id)
-                        ->afterStateUpdated(function (callable $set, $state, callable $get) {
+                        ->default(function (): ?int {
+                            $tenant = Filament::getTenant();
+                            return $tenant instanceof \App\Models\Company ? $tenant->currency_id : null;
+                        })
+                        ->afterStateUpdated(function (callable $set, $state) {
                             if ($state) {
                                 $currency = Currency::find($state);
                                 $company = Filament::getTenant();
 
-                                if ($currency && $company && $currency->id !== $company->currency_id) {
+                                if ($currency && $company instanceof \App\Models\Company && $currency->id !== $company->currency_id) {
                                     // Get latest exchange rate for this company
                                     $latestRate = CurrencyRate::getLatestRate($currency->id, $company->id);
                                     if ($latestRate) {
@@ -189,7 +192,7 @@ class InvoiceResource extends Resource
                             $currencyId = $get('currency_id');
                             $company = Filament::getTenant();
 
-                            return $currencyId && $company && $currencyId != $company->currency_id;
+                            return $currencyId && $company instanceof \App\Models\Company && $currencyId != $company->currency_id;
                         })
                         ->helperText(__('invoice.exchange_rate_helper')),
                 ])
@@ -528,15 +531,26 @@ class InvoiceResource extends Resource
                     ->schema([
                         Select::make('journal_id')
                             ->label(__('payment.form.journal_id'))
-                            ->options(function () {
-                                return Journal::where('company_id', Filament::getTenant()->id)
-                                    ->pluck('name', 'id');
+                            ->options(function (): array {
+                                $tenant = Filament::getTenant();
+                                if (! $tenant instanceof \App\Models\Company) {
+                                    return [];
+                                }
+
+                                return Journal::where('company_id', $tenant->getKey())
+                                    ->pluck('name', 'id')
+                                    ->all();
                             })
                             ->required()
-                            ->default(function () {
-                                return Journal::where('company_id', Filament::getTenant()->id)
+                            ->default(function (): ?int {
+                                $tenant = Filament::getTenant();
+                                if (! $tenant instanceof \App\Models\Company) {
+                                    return null;
+                                }
+
+                                return Journal::where('company_id', $tenant->getKey())
                                     ->where('type', 'bank')
-                                    ->first()?->id;
+                                    ->value('id');
                             }),
                         DatePicker::make('payment_date')
                             ->label(__('payment.form.payment_date'))
@@ -560,13 +574,13 @@ class InvoiceResource extends Resource
                             // Create payment document link DTO
                             $documentLink = new CreatePaymentDocumentLinkDTO(
                                 document_type: 'invoice',
-                                document_id: $record->id,
+                                document_id: $record->getKey(),
                                 amount_applied: Money::of($data['amount'], $currency->code)
                             );
 
                             // Create payment DTO
                             $paymentDTO = new CreatePaymentDTO(
-                                company_id: Filament::getTenant()->id,
+                                company_id: $record->company_id,
                                 journal_id: $data['journal_id'],
                                 currency_id: $record->currency_id,
                                 payment_date: $data['payment_date'],

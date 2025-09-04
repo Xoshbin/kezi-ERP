@@ -52,12 +52,14 @@ class BuildInvoicePostingPreviewAction
                 $errors[] = $msg;
                 $issues[] = ['type' => 'income_account_missing', 'message' => $msg, 'product_id' => $line->product_id];
             } else {
+                /** @var \App\Models\Account|null $incomeAccount */
                 $incomeAccount = $line->incomeAccount;
                 $linesPreview[] = [
                     'account_id' => $incomeAccountId,
                     'account_name' => $this->accountLabelName($incomeAccount),
                     /** @var \App\Models\Account|null $incomeAccount */
-                'account_code' => $incomeAccount?->code,
+                /** @var \App\Models\Account|null $incomeAccount */
+                    'account_code' => $incomeAccount?->code,
                     'debit_minor' => 0,
                     'credit_minor' => ($line->subtotal instanceof \Brick\Money\Money ? $line->subtotal : \Brick\Money\Money::of($line->subtotal, $currencyCode))->getMinorAmount()->toInt(),
                     'description' => 'Revenue: '.$line->description,
@@ -90,10 +92,12 @@ class BuildInvoicePostingPreviewAction
 
         // Debit: Accounts Receivable total
         if ($arAccountId) {
+            /** @var \App\Models\Account|null $arAccount */
             $arAccount = $invoice->customer->receivableAccount ?? $company->defaultAccountsReceivable;
             $linesPreview[] = [
                 'account_id' => $arAccountId,
                 'account_name' => $this->accountLabelName($arAccount),
+                /** @var \App\Models\Account|null $arAccount */
                 'account_code' => $arAccount?->code,
                 'debit_minor' => $totalCredit->getMinorAmount()->toInt(),
                 'credit_minor' => 0,

@@ -75,7 +75,10 @@ class BankStatementResource extends Resource
                         ->required()
                         ->live()
                         ->columnSpan(2)
-                        ->default(fn () => Filament::getTenant()?->currency_id)
+                        ->default(function (): ?int {
+                            $tenant = Filament::getTenant();
+                            return $tenant instanceof \App\Models\Company ? $tenant->currency_id : null;
+                        })
                         ->createOptionForm([
                             TextInput::make('code')
                                 ->label(__('currency.code'))
@@ -102,30 +105,30 @@ class BankStatementResource extends Resource
                         ->createOptionModalHeading(__('common.modal_title_create_currency')),
                     Select::make('journal_id')
                         ->label(__('bank_statement.bank_journal'))
-                        ->options(function () {
-                            $company = Filament::getTenant();
-                            if (! $company) {
+                        ->options(function (): array {
+                            $tenant = Filament::getTenant();
+                            if (! $tenant || ! method_exists($tenant, 'getKey')) {
                                 return [];
                             }
 
                             return Journal::where('type', JournalType::Bank)
-                                ->where('company_id', $company->id)
-                                ->pluck('name', 'id');
+                                ->where('company_id', $tenant->getKey())
+                                ->pluck('name', 'id')
+                                ->all();
                         })
                         ->searchable()
                         ->required()
                         ->columnSpan(2)
-                        ->rule(function () {
-                            return function (string $attribute, $value, Closure $fail) {
-                                $company = Filament::getTenant();
-                                if (! $company) {
+                        ->rule(function (): Closure {
+                            return function (string $attribute, $value, Closure $fail): void {
+                                $tenant = Filament::getTenant();
+                                if (! $tenant || ! method_exists($tenant, 'getKey')) {
                                     $fail('Company context is required.');
-
                                     return;
                                 }
 
                                 $journal = Journal::find($value);
-                                if (! $journal || $journal->company_id !== $company->id || $journal->type !== JournalType::Bank) {
+                                if (! $journal || $journal->company_id !== (int) $tenant->getKey() || $journal->type !== JournalType::Bank) {
                                     $fail('The selected bank journal is invalid.');
                                 }
                             };

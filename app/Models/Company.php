@@ -45,6 +45,10 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property-read Collection<int, Company> $childrenCompanies
  * @property-read int|null $children_companies_count
  * @property-read Currency $currency
+ * @property-read Account|null $defaultAccountsReceivable
+ * @property-read Account|null $defaultSalesDiscountAccount
+ * @property-read Account|null $defaultTaxAccount
+ * @property-read Journal|null $defaultSalesJournal
  * @property-read Collection<int, FiscalPosition> $fiscalPositions
  * @property-read int|null $fiscal_positions_count
  * @property-read Collection<int, Invoice> $invoices

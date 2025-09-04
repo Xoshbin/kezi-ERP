@@ -24,7 +24,7 @@ class CreateJournalEntry extends CreateRecord
     {
         $lineDTOs = [];
         if (isset($data['lines']) && is_array($data['lines'])) {
-            $currency = Currency::find($data['currency_id']);
+            $currency = Currency::findOrFail($data['currency_id']);
             if ($currency) {
                 foreach ($data['lines'] as $line) {
                     $lineDTOs[] = new CreateJournalEntryLineDTO(
@@ -47,7 +47,7 @@ class CreateJournalEntry extends CreateRecord
     protected function handleRecordCreation(array $data): Model
     {
         $journalEntryDTO = new CreateJournalEntryDTO(
-            company_id: Filament::getTenant()->id,
+            company_id: (int) (Filament::getTenant()?->getKey() ?? 0),
             journal_id: $data['journal_id'],
             currency_id: $data['currency_id'],
             entry_date: $data['entry_date'],

@@ -19,7 +19,7 @@ class CashFlowWidget extends BaseWidget
     protected function getStats(): array
     {
         $company = Filament::getTenant();
-        if (! $company) {
+        if (! $company instanceof \App\Models\Company) {
             return [];
         }
 
@@ -52,10 +52,7 @@ class CashFlowWidget extends BaseWidget
             $netCashFlowSoon = $receivablesDueSoon->minus($payablesDueSoon);
             $netCashFlow30Days = $receivablesDue30Days->minus($payablesDue30Days);
 
-        } catch (Exception $e) {
-            $currency = $company->currency->code;
-            $zero = Money::zero($currency);
-
+        } catch (Exception) {
             return [
                 Stat::make(__('dashboard.cash_flow.error'), __('dashboard.cash_flow.data_unavailable'))
                     ->description(__('dashboard.cash_flow.please_check_setup'))

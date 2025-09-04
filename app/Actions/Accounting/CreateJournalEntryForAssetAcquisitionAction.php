@@ -19,7 +19,8 @@ class CreateJournalEntryForAssetAcquisitionAction
     public function execute(Asset $asset, User $user): JournalEntry
     {
         $company = $asset->company;
-        $currencyCode = $asset->currency->code;
+        /** @var \App\Models\Currency $assetCurrency */
+        $assetCurrency = $asset->currency;
 
         $payableAccountId = $company->default_accounts_payable_id;
         if (! $payableAccountId) {
@@ -32,7 +33,7 @@ class CreateJournalEntryForAssetAcquisitionAction
             new CreateJournalEntryLineDTO(
                 account_id: $asset->asset_account_id,
                 debit: $purchaseValue,
-                credit: Money::zero($asset->currency->code),
+                credit: Money::zero($assetCurrency->code),
                 description: 'Asset Acquisition: '.$asset->name,
                 partner_id: null,
                 analytic_account_id: null,
@@ -40,7 +41,7 @@ class CreateJournalEntryForAssetAcquisitionAction
             new CreateJournalEntryLineDTO(
                 account_id: $payableAccountId,
                 credit: $purchaseValue,
-                debit: Money::zero($asset->currency->code),
+                debit: Money::zero($assetCurrency->code),
                 description: 'Acquisition of Asset: '.$asset->name,
                 partner_id: null,
                 analytic_account_id: null,

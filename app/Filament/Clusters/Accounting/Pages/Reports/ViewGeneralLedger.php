@@ -82,10 +82,10 @@ class ViewGeneralLedger extends Page
                             ->multiple()
                             ->searchable()
                             ->getSearchResultsUsing(function (string $search): array {
-                                $company = Filament::getTenant();
+                                $tenant = Filament::getTenant();
 
                                 return Account::searchTranslatable($search)
-                                    ->where('company_id', $company->id)
+                                    ->where('company_id', method_exists($tenant, 'getKey') ? $tenant->getKey() : null)
                                     ->limit(50)
                                     ->get()
                                     ->mapWithKeys(fn ($account) => [$account->id => $account->code.' - '.$account->getTranslatedLabel('name')])
@@ -94,7 +94,7 @@ class ViewGeneralLedger extends Page
                             ->getOptionLabelsUsing(function (array $values): array {
                                 return Account::whereIn('id', $values)
                                     ->get()
-                                    ->mapWithKeys(fn ($account) => [$account->id => "{$account->code} - {$account->name}"])
+                                    ->mapWithKeys(fn (Account $account) => [$account->id => "{$account->code} - {$account->name}"])
                                     ->toArray();
                             })
                             ->placeholder(__('reports.all_accounts'))
@@ -122,6 +122,9 @@ class ViewGeneralLedger extends Page
         ]);
 
         $company = Filament::getTenant();
+        if (! $company instanceof \App\Models\Company) {
+            return;
+        }
         $service = app(GeneralLedgerService::class);
 
         $report = $service->generate(

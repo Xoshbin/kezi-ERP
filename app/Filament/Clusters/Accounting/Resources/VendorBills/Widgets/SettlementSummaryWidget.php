@@ -5,6 +5,7 @@ namespace App\Filament\Clusters\Accounting\Resources\VendorBills\Widgets;
 use App\Enums\Payments\PaymentStatus;
 use App\Enums\Purchases\VendorBillStatus;
 use App\Models\VendorBill;
+use App\Models\Payment;
 use Brick\Money\Money;
 use Carbon\Carbon;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
@@ -74,6 +75,7 @@ class SettlementSummaryWidget extends BaseWidget
 
     private function getLastPaymentDate(VendorBill $vendorBill): string
     {
+        /** @var Payment|null $lastPayment */
         $lastPayment = $vendorBill->payments()
             ->whereIn('status', [PaymentStatus::Confirmed, PaymentStatus::Reconciled])
             ->orderBy('payment_date', 'desc')

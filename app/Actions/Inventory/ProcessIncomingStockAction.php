@@ -56,8 +56,8 @@ class ProcessIncomingStockAction
             ->where('product_id', $stockMove->product_id)
             ->first();
 
-        if (! $line) {
-            throw new Exception("No vendor bill line found for product {$stockMove->product_id} in vendor bill {$vendorBill->id}");
+        if (! ($line instanceof \App\Models\VendorBillLine)) {
+            throw new Exception("No vendor bill line found for product {$stockMove->product_id} in vendor bill {$vendorBill->getKey()}");
         }
 
         return $line->unit_price;

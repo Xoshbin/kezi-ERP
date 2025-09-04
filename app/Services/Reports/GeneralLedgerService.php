@@ -27,6 +27,7 @@ class GeneralLedgerService
             $accountsQuery->whereIn('id', $accountIds);
         }
 
+        /** @var \Illuminate\Support\Collection<int, Account> $accounts */
         $accounts = $accountsQuery->orderBy('code')->get();
         $reportAccounts = new Collection;
 
@@ -39,6 +40,7 @@ class GeneralLedgerService
             }
 
             $runningBalance = $openingBalance;
+            /** @var Collection<int, GeneralLedgerTransactionLineDTO> $transactionLines */
             $transactionLines = new Collection;
 
             foreach ($transactions as $line) {
@@ -86,7 +88,7 @@ class GeneralLedgerService
     private function getTransactionsForPeriod(Account $account, Carbon $startDate, Carbon $endDate): Collection
     {
         return JournalEntryLine::query()
-            ->with('journalEntry.lines.account') // Eager load for contra-account lookup
+            ->with(['journalEntry.lines.account']) // Eager load for contra-account lookup
             ->join('journal_entries', 'journal_entry_lines.journal_entry_id', '=', 'journal_entries.id')
             ->where('journal_entry_lines.account_id', $account->id)
             ->where('journal_entries.state', 'posted')
@@ -100,9 +102,14 @@ class GeneralLedgerService
     private function getContraAccountDescription(JournalEntryLine $line): string
     {
         // Find other lines in the same journal entry to describe the other side of the transaction.
-        return $line->journalEntry->lines
-            ->where('id', '!=', $line->id)
-            ->map(fn ($l) => $l->account->name)
-            ->implode(', ');
+        /** @var \Illuminate\Support\Collection<int, JournalEntryLine> $otherLines */
+        $otherLines = $line->journalEntry->lines->where('id', '!=', $line->id);
+
+        /** @var \Illuminate\Support\Collection<int, string> $names */
+        $names = $otherLines->map(function (JournalEntryLine $l): string {
+            return $l->account?->name ?? '';
+        });
+
+        return $names->filter()->implode(', ');
     }
 }

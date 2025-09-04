@@ -38,9 +38,9 @@ class AssetService
         return $this->updateAssetAction->execute($asset, $dto);
     }
 
-    public function disposeAsset(Asset $asset, DisposeAssetDTO $dto): Asset
+    public function disposeAsset(Asset $asset, DisposeAssetDTO $dto, User $user): Asset
     {
-        return $this->disposeAssetAction->execute($asset, $dto);
+        return $this->disposeAssetAction->execute($asset, $dto, $user);
     }
 
     public function postDepreciation(DepreciationEntry $depreciationEntry, User $user): DepreciationEntry
