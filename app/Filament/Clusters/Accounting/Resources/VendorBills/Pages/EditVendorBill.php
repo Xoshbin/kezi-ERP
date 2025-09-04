@@ -320,7 +320,7 @@ class EditVendorBill extends EditRecord
                 VendorBillAttachment::create([
                     'company_id' => $record->company_id,
                     'vendor_bill_id' => $record->id,
-                    'file_name' => $fileInfo['basename'] ?? basename($filePath),
+                    'file_name' => $fileInfo['basename'],
                     'file_path' => $filePath,
                     'file_size' => $fileSize,
                     'mime_type' => $mimeType,

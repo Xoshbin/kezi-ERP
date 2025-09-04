@@ -27,7 +27,7 @@ class ViewStockMove extends ViewRecord
     public function getTitle(): string
     {
         $record = $this->getRecord();
-        $reference = is_object($record) ? ($record->reference ?? $record->id ?? '') : '';
+        $reference = $record->reference ?? $record->id ?? '';
         return __('stock_move.view_title', ['reference' => $reference]);
     }
 }
