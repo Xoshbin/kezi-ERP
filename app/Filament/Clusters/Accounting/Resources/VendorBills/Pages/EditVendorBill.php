@@ -16,6 +16,7 @@ use App\Filament\Clusters\Accounting\Resources\VendorBills\VendorBillResource;
 use App\Filament\Clusters\Accounting\Resources\VendorBills\Widgets\SettlementSummaryWidget;
 use App\Filament\Forms\Components\MoneyInput;
 use App\Models\Journal;
+use App\Models\Company;
 use App\Models\VendorBill;
 use App\Models\VendorBillAttachment;
 use App\Services\PaymentService;
@@ -69,7 +70,7 @@ class EditVendorBill extends EditRecord
                 ->icon('heroicon-o-arrow-down-tray')
                 ->color('gray')
                 ->visible(fn (VendorBill $record): bool => $record->status === VendorBillStatus::Draft && config('app.debug') && ! app()->environment('production'))
-                ->action(function (VendorBill $record) {
+                ->action(function (VendorBill $record): \Symfony\Component\HttpFoundation\StreamedResponse {
                     $preview = app(BuildVendorBillPostingPreviewAction::class)->execute($record);
                     $rows = [];
                     $rows[] = ['Account Code', 'Account Name', 'Description', 'Debit', 'Credit'];
@@ -99,7 +100,7 @@ class EditVendorBill extends EditRecord
                 ->icon('heroicon-o-document-arrow-down')
                 ->color('gray')
                 ->visible(fn (VendorBill $record): bool => $record->status === VendorBillStatus::Draft && config('app.debug') && ! app()->environment('production'))
-                ->action(function (VendorBill $record) {
+                ->action(function (VendorBill $record): \Symfony\Component\HttpFoundation\StreamedResponse {
                     $preview = app(BuildVendorBillPostingPreviewAction::class)->execute($record);
                     $pdf = Pdf::loadView('filament/accounting/vendor-bills/preview-posting-pdf', [
                         'preview' => $preview,
@@ -156,15 +157,26 @@ class EditVendorBill extends EditRecord
                 ->schema([
                     Select::make('journal_id')
                         ->label('Journal')
-                        ->options(function () {
-                            return Journal::where('company_id', Filament::getTenant()->id)
-                                ->pluck('name', 'id');
+                        ->options(function (): array {
+                            $tenant = Filament::getTenant();
+                            if (! $tenant instanceof Company) {
+                                return [];
+                            }
+
+                            return Journal::where('company_id', $tenant->getKey())
+                                ->pluck('name', 'id')
+                                ->all();
                         })
                         ->required()
-                        ->default(function () {
-                            return Journal::where('company_id', Filament::getTenant()->id)
+                        ->default(function (): ?int {
+                            $tenant = Filament::getTenant();
+                            if (! $tenant instanceof Company) {
+                                return null;
+                            }
+
+                            return Journal::where('company_id', $tenant->getKey())
                                 ->where('type', 'bank')
-                                ->first()?->id;
+                                ->value('id');
                         }),
                     DatePicker::make('payment_date')
                         ->label('Payment Date')
@@ -181,7 +193,7 @@ class EditVendorBill extends EditRecord
                     Hidden::make('currency_id')
                         ->default(fn (VendorBill $record) => $record->currency_id),
                 ])
-                ->action(function (VendorBill $record, array $data) {
+                ->action(function (VendorBill $record, array $data): void {
                     try {
                         $currency = $record->currency;
 
@@ -194,7 +206,7 @@ class EditVendorBill extends EditRecord
 
                         // Create payment DTO
                         $paymentDTO = new CreatePaymentDTO(
-                            company_id: Filament::getTenant()->id,
+                            company_id: $record->company_id,
                             journal_id: $data['journal_id'],
                             currency_id: $record->currency_id,
                             payment_date: $data['payment_date'],
@@ -237,6 +249,10 @@ class EditVendorBill extends EditRecord
 
     protected function handleRecordUpdate(Model $record, array $data): Model
     {
+        if (! $record instanceof VendorBill) {
+            throw new \InvalidArgumentException('Expected VendorBill record');
+        }
+
         // Store new attachments separately and remove from data for DTO
         $this->newAttachments = $data['attachments'] ?? [];
         unset($data['attachments']);
@@ -256,7 +272,7 @@ class EditVendorBill extends EditRecord
 
         $vendorBillDTO = new UpdateVendorBillDTO(
             vendorBill: $record,
-            company_id: Filament::getTenant()->id,
+            company_id: $record->company_id,
             vendor_id: $data['vendor_id'],
             currency_id: $data['currency_id'],
             bill_reference: $data['bill_reference'],
@@ -281,24 +297,30 @@ class EditVendorBill extends EditRecord
             return;
         }
 
+        $record = $this->getRecord();
+        if (! $record instanceof VendorBill) {
+            return;
+        }
+
         // Get existing attachment file paths to avoid duplicates
-        $existingPaths = $this->record->attachments()->pluck('file_path')->toArray();
+        $existingPaths = $record->attachments()->pluck('file_path')->toArray();
 
         foreach ($this->newAttachments as $filePath) {
             // Skip if this file is already attached
-            if (in_array($filePath, $existingPaths)) {
+            if (in_array($filePath, $existingPaths, true)) {
                 continue;
             }
 
             if (Storage::disk('local')->exists($filePath)) {
                 $fileInfo = pathinfo($filePath);
-                $mimeType = Storage::disk('local')->mimeType($filePath);
+                $absolutePath = Storage::disk('local')->path($filePath);
+                $mimeType = \Illuminate\Support\Facades\File::mimeType($absolutePath);
                 $fileSize = Storage::disk('local')->size($filePath);
 
                 VendorBillAttachment::create([
-                    'company_id' => $this->record->company_id,
-                    'vendor_bill_id' => $this->record->id,
-                    'file_name' => $fileInfo['basename'],
+                    'company_id' => $record->company_id,
+                    'vendor_bill_id' => $record->id,
+                    'file_name' => $fileInfo['basename'] ?? basename($filePath),
                     'file_path' => $filePath,
                     'file_size' => $fileSize,
                     'mime_type' => $mimeType,
@@ -310,9 +332,14 @@ class EditVendorBill extends EditRecord
 
     protected function mutateFormDataBeforeFill(array $data): array
     {
-        $this->record->loadMissing('lines', 'currency', 'attachments');
+        $record = $this->getRecord();
+        if (! $record instanceof VendorBill) {
+            return $data;
+        }
 
-        $linesData = $this->record->lines->map(function ($line) {
+        $record->loadMissing('lines', 'currency', 'attachments');
+
+        $linesData = $record->lines->map(function ($line) {
             return [
                 'product_id' => $line->product_id,
                 'description' => $line->description,
@@ -324,7 +351,7 @@ class EditVendorBill extends EditRecord
             ];
         })->toArray();
 
-        $attachmentsData = $this->record->attachments->pluck('file_path')->toArray();
+        $attachmentsData = $record->attachments->pluck('file_path')->toArray();
 
         $data['lines'] = $linesData;
         $data['attachments'] = $attachmentsData;

@@ -24,13 +24,15 @@ class EditStockMove extends EditRecord
                 ->icon('heroicon-o-eye'),
             DeleteAction::make()
                 ->icon('heroicon-o-trash')
-                ->visible(fn (): bool => $this->record->status === StockMoveStatus::Draft),
+                ->visible(fn (): bool => ($this->getRecord() instanceof \App\Models\StockMove) && $this->getRecord()->status === StockMoveStatus::Draft),
         ];
     }
 
     public function getTitle(): string
     {
-        return __('stock_move.edit_title', ['reference' => $this->record->reference ?? $this->record->id]);
+        $record = $this->getRecord();
+        $reference = is_object($record) ? ($record->reference ?? $record->id ?? '') : '';
+        return __('stock_move.edit_title', ['reference' => $reference]);
     }
 
     protected function getRedirectUrl(): string
@@ -41,7 +43,7 @@ class EditStockMove extends EditRecord
     protected function handleRecordUpdate(Model $record, array $data): Model
     {
         $dto = new UpdateStockMoveDTO(
-            id: $record->id,
+            id: (int) $record->getKey(),
             company_id: $data['company_id'],
             product_id: $data['product_id'],
             quantity: $data['quantity'],

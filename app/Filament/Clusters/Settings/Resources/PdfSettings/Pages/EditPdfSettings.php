@@ -18,7 +18,11 @@ class EditPdfSettings extends EditRecord
                 ->label(__('pdf_settings.preview_pdf'))
                 ->icon('heroicon-o-eye')
                 ->color('info')
-                ->url(fn () => route('pdf.preview', ['company' => $this->record->id]))
+                ->url(function (): string {
+                    $record = $this->getRecord();
+                    $id = $record instanceof \App\Models\Company ? (int) $record->getKey() : 0;
+                    return route('pdf.preview', ['company' => $id]);
+                })
                 ->openUrlInNewTab(),
         ];
     }
@@ -30,7 +34,9 @@ class EditPdfSettings extends EditRecord
 
     public function getHeading(): string
     {
-        return __('pdf_settings.edit_heading', ['company' => $this->record->name]);
+        $record = $this->getRecord();
+        $name = $record instanceof \App\Models\Company ? (string) $record->name : '';
+        return __('pdf_settings.edit_heading', ['company' => $name]);
     }
 
     protected function getRedirectUrl(): string

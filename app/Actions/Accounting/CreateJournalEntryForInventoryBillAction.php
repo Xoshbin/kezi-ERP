@@ -46,7 +46,7 @@ class CreateJournalEntryForInventoryBillAction
 
                 // Debit Inventory for net amount (exclude deductible tax)
                 $lineDTOs[] = new CreateJournalEntryLineDTO(
-                    account_id: $inventoryAccount->id,
+                    account_id: (int) $inventoryAccount->getKey(),
                     debit: $line->subtotal,
                     credit: Money::of(0, $currency->code),
                     description: "Inventory valuation for: {$line->description}",

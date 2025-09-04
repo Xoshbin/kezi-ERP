@@ -20,8 +20,9 @@ class EditNumberingSettings extends EditRecord
     protected function beforeSave(): void
     {
         // Validate that numbering settings can be changed
-        if (! $this->record->canChangeNumberingSettings()) {
-            $errors = $this->record->getNumberingChangeValidationErrors();
+        $record = $this->getRecord();
+        if (! $record instanceof \App\Models\Company || ! $record->canChangeNumberingSettings()) {
+            $errors = method_exists($record, 'getNumberingChangeValidationErrors') ? $record->getNumberingChangeValidationErrors() : [];
 
             Notification::make()
                 ->title(__('numbering.settings.cannot_change_title'))
@@ -46,7 +47,10 @@ class EditNumberingSettings extends EditRecord
     {
         // Ensure numbering_settings has default values if not set
         if (! isset($data['numbering_settings'])) {
-            $data['numbering_settings'] = $this->record->getDefaultNumberingSettings();
+            $record = $this->getRecord();
+            if ($record instanceof \App\Models\Company) {
+                $data['numbering_settings'] = $record->getDefaultNumberingSettings();
+            }
         }
 
         return $data;

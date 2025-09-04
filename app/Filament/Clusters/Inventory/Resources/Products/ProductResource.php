@@ -69,6 +69,8 @@ class ProductResource extends Resource
 
     public static function form(Schema $schema): Schema
     {
+        /** @var \App\Models\Company|null $tenant */
+        $tenant = Filament::getTenant();
         return $schema->components([
             Section::make(__('product.basic_information'))
                 ->description(__('product.basic_information_description'))
@@ -125,7 +127,7 @@ class ProductResource extends Resource
                             ->preload()
                             ->createOptionForm([
                                 Hidden::make('company_id')
-                                    ->default(fn () => Filament::getTenant()?->id),
+                                    ->default(fn () => $tenant?->getKey()),
                                 TextInput::make('code')
                                     ->label(__('account.code'))
                                     ->required()
@@ -159,7 +161,7 @@ class ProductResource extends Resource
                             ->preload()
                             ->createOptionForm([
                                 Hidden::make('company_id')
-                                    ->default(fn () => Filament::getTenant()?->id),
+                                    ->default(fn () => $tenant?->getKey()),
                                 TextInput::make('code')
                                     ->label(__('account.code'))
                                     ->required()
@@ -219,7 +221,7 @@ class ProductResource extends Resource
                             ->visible(fn (Get $get) => $get('type') === ProductType::Storable->value)
                             ->createOptionForm([
                                 Hidden::make('company_id')
-                                    ->default(fn () => Filament::getTenant()?->id),
+                                    ->default(fn () => $tenant?->getKey()),
                                 TextInput::make('code')
                                     ->label(__('account.code'))
                                     ->required()
@@ -252,7 +254,7 @@ class ProductResource extends Resource
                             ->visible(fn (Get $get) => $get('type') === ProductType::Storable->value)
                             ->createOptionForm([
                                 Hidden::make('company_id')
-                                    ->default(fn () => Filament::getTenant()?->id),
+                                    ->default(fn () => $tenant?->getKey()),
                                 TextInput::make('code')
                                     ->label(__('account.code'))
                                     ->required()
@@ -287,7 +289,7 @@ class ProductResource extends Resource
                             ->visible(fn (Get $get) => $get('type') === ProductType::Storable->value)
                             ->createOptionForm([
                                 Hidden::make('company_id')
-                                    ->default(fn () => Filament::getTenant()?->id),
+                                    ->default(fn () => $tenant?->getKey()),
                                 TextInput::make('code')
                                     ->label(__('account.code'))
                                     ->required()
@@ -320,7 +322,7 @@ class ProductResource extends Resource
                             ->visible(fn (Get $get) => $get('type') === ProductType::Storable->value)
                             ->createOptionForm([
                                 Hidden::make('company_id')
-                                    ->default(fn () => Filament::getTenant()?->id),
+                                    ->default(fn () => $tenant?->getKey()),
                                 TextInput::make('code')
                                     ->label(__('account.code'))
                                     ->required()

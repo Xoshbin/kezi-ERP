@@ -36,9 +36,10 @@ class CreatePaymentFromPayrollAction
 
         // Get company's default bank journal for payments
         $company = $payroll->company;
+        /** @var Journal|null $bankJournal */
         $bankJournal = $company->defaultBankJournal;
 
-        if (! $bankJournal) {
+        if (! $bankJournal instanceof Journal) {
             throw new InvalidArgumentException('No default bank journal found for company.');
         }
 
@@ -55,7 +56,7 @@ class CreatePaymentFromPayrollAction
         // Create payment DTO
         $createPaymentDTO = new CreatePaymentDTO(
             company_id: $payroll->company_id,
-            journal_id: $bankJournal->id,
+            journal_id: $bankJournal->getKey(),
             currency_id: $payroll->currency_id,
             payment_date: $payroll->pay_date->format('Y-m-d'),
             payment_purpose: PaymentPurpose::Payroll,

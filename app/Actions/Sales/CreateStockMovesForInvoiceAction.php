@@ -25,7 +25,7 @@ class CreateStockMovesForInvoiceAction
     /**
      * Create stock moves for all storable products in an invoice
      *
-     * @return Collection<StockMove> Collection of created stock moves
+     * @return Collection<\App\Models\StockMove> Collection of created stock moves
      */
     public function execute(CreateStockMovesForInvoiceDTO $dto): Collection
     {

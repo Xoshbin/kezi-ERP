@@ -193,7 +193,10 @@ class PartnerResource extends Resource
                                     ->preload()
                                     ->createOptionForm([
                                         Hidden::make('company_id')
-                                            ->default(fn () => Filament::getTenant()?->id),
+                                            ->default(function (): ?int {
+                                                $tenant = Filament::getTenant();
+                                                return method_exists($tenant, 'getKey') ? (int) $tenant->getKey() : null;
+                                            }),
                                         TextInput::make('name')
                                             ->label(__('account.name'))
                                             ->required()
@@ -224,7 +227,10 @@ class PartnerResource extends Resource
                                     ->preload()
                                     ->createOptionForm([
                                         Hidden::make('company_id')
-                                            ->default(fn () => Filament::getTenant()?->id),
+                                            ->default(function (): ?int {
+                                                $tenant = Filament::getTenant();
+                                                return method_exists($tenant, 'getKey') ? (int) $tenant->getKey() : null;
+                                            }),
                                         TextInput::make('name')
                                             ->label(__('account.name'))
                                             ->required()

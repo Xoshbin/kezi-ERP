@@ -32,8 +32,8 @@ use Illuminate\Support\Carbon;
  * @property Carbon $invoice_date
  * @property Carbon $due_date
  * @property string $status
- * @property float $total_amount
- * @property float $total_tax
+ * @property \Brick\Money\Money $total_amount
+ * @property \Brick\Money\Money $total_tax
  * @property Carbon|null $posted_at
  * @property array<array-key, mixed>|null $reset_to_draft_log
  * @property Carbon|null $created_at

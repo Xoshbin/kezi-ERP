@@ -27,12 +27,14 @@ class SalaryCurrencyMoneyCast extends MoneyCast
         }
 
         // If no salary_currency_id is set, fall back to company's base currency
-        if ($model->relationLoaded('company') && $model->company) {
-            return $model->company->currency;
+        if ($model->relationLoaded('company') && $model->getRelationValue('company')) {
+            /** @var \App\Models\Company $company */
+            $company = $model->getRelationValue('company');
+            return $company->currency;
         }
 
         // Fallback: If relationships are not loaded, perform database queries
-        if (method_exists($model, 'company') && $model->company_id) {
+        if (method_exists($model, 'company') && isset($model->company_id)) {
             $company = $model->company()->with('currency')->first();
             if ($company && $company->currency) {
                 return $company->currency;
@@ -42,10 +44,13 @@ class SalaryCurrencyMoneyCast extends MoneyCast
         // Last resort: Try to get currency from Filament tenant context
         try {
             $tenant = Filament::getTenant();
-            if ($tenant && method_exists($tenant, 'currency') && $tenant->currency) {
-                return $tenant->currency;
+            if ($tenant instanceof \App\Models\Company) {
+                $currency = $tenant->currency;
+                if ($currency) {
+                    return $currency;
+                }
             }
-        } catch (Exception $e) {
+        } catch (Exception) {
             // Ignore tenant resolution errors
         }
 

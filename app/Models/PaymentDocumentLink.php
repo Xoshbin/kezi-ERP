@@ -17,7 +17,7 @@ use InvalidArgumentException;
  * @property int $payment_id
  * @property int|null $invoice_id
  * @property int|null $vendor_bill_id
- * @property float $amount_applied
+ * @property \Brick\Money\Money $amount_applied
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property-read Invoice|null $invoice

@@ -84,7 +84,7 @@ class InventoryValuationService
 
         $journal = JournalEntry::create([
             'company_id' => $product->company_id,
-            'journal_id' => $product->company->default_inventory_journal_id,
+            'journal_id' => $product->company->default_purchase_journal_id,
             'date' => $dto->adjustment_date,
             'state' => JournalEntryState::Posted,
             'reference' => $dto->reference ?? "Inventory Adjustment for product {$product->name}",
@@ -93,7 +93,7 @@ class InventoryValuationService
         // Debit the inventory adjustment account
         JournalEntryLine::create([
             'journal_entry_id' => $journal->id,
-            'account_id' => $product->company->inventoryAdjustmentAccount->id,
+            'account_id' => $product->company->inventory_adjustment_account_id,
             'partner_id' => null,
             'label' => "Inventory Adjustment for product {$product->name}",
             'debit' => $adjustmentValue,
@@ -103,7 +103,7 @@ class InventoryValuationService
         // Credit the stock valuation account
         JournalEntryLine::create([
             'journal_entry_id' => $journal->id,
-            'account_id' => $product->stock_valuation_account_id,
+            'account_id' => $product->default_inventory_account_id,
             'partner_id' => null,
             'label' => "Inventory Adjustment for product {$product->name}",
             'debit' => Money::of(0, $product->company->currency->code),
@@ -158,7 +158,7 @@ class InventoryValuationService
             }
 
             $quantityToConsume = min($remainingQuantity, $layer->remaining_quantity);
-            $layerCOGS = $layer->unit_cost->multipliedBy($quantityToConsume);
+            $layerCOGS = $layer->cost_per_unit->multipliedBy($quantityToConsume);
             $totalCOGS = $totalCOGS->plus($layerCOGS);
 
             // Update the cost layer
@@ -318,13 +318,11 @@ class InventoryValuationService
     {
         // Create a new cost layer for FIFO/LIFO tracking
         InventoryCostLayer::create([
-            'company_id' => $product->company_id,
             'product_id' => $product->id,
             'quantity' => $quantity,
             'remaining_quantity' => $quantity,
-            'unit_cost' => $costPerUnit,
-            'total_cost' => $costPerUnit->multipliedBy($quantity),
-            'layer_date' => $date,
+            'cost_per_unit' => $costPerUnit,
+            'purchase_date' => $date,
         ]);
 
         // Update product quantity

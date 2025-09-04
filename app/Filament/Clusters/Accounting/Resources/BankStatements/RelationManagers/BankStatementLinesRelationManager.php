@@ -4,6 +4,7 @@ namespace App\Filament\Clusters\Accounting\Resources\BankStatements\RelationMana
 
 use App\Actions\Accounting\ReverseJournalEntryAction;
 use App\Enums\Accounting\JournalEntryState;
+use App\Models\BankStatementLine;
 use Exception;
 use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
@@ -21,6 +22,7 @@ use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 
 class BankStatementLinesRelationManager extends RelationManager
@@ -85,15 +87,25 @@ class BankStatementLinesRelationManager extends RelationManager
                     ->label('Reverse Write-Off')
                     ->icon('heroicon-o-arrow-uturn-left')
                     ->color('danger')
-                    ->visible(fn ($record) => $record->is_reconciled && $record->journalEntry?->state === JournalEntryState::Posted)
-                    ->authorize(fn ($record) => Gate::allows('reverse', $record->journalEntry))
+                    ->visible(function (BankStatementLine $record) {
+                        $je = $record->journalEntry;
+                        return $record->is_reconciled && $je instanceof \App\Models\JournalEntry && $je->state === JournalEntryState::Posted;
+                    })
+                    ->authorize(function (BankStatementLine $record) {
+                        $je = $record->journalEntry;
+                        return $je instanceof \App\Models\JournalEntry && Gate::allows('reverse', $je);
+                    })
                     ->requiresConfirmation()
                     ->modalHeading('Reverse Write-Off')
                     ->modalDescription('Are you sure you want to reverse this write-off? This will create a reversing journal entry and mark the bank statement line as unreconciled.')
-                    ->action(function ($record) {
+                    ->action(function (BankStatementLine $record) {
                         try {
                             $reverseAction = app(ReverseJournalEntryAction::class);
-                            $reverseAction->execute($record->journalEntry);
+                            $reverseAction->execute(
+                                $record->journalEntry,
+                                'Bank statement line write-off reversal',
+                                Auth::user()
+                            );
 
                             Notification::make()
                                 ->title('Write-off reversed successfully')

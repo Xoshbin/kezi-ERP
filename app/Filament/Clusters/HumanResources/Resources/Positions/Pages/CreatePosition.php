@@ -9,7 +9,7 @@ use Filament\Resources\Pages\CreateRecord;
 use Illuminate\Database\Eloquent\Model;
 use LaraZeus\SpatieTranslatable\Actions\LocaleSwitcher;
 use LaraZeus\SpatieTranslatable\Resources\Pages\CreateRecord\Concerns\Translatable;
-use Log;
+use Illuminate\Support\Facades\Log;
 
 class CreatePosition extends CreateRecord
 {
@@ -27,7 +27,9 @@ class CreatePosition extends CreateRecord
     protected function mutateFormDataBeforeCreate(array $data): array
     {
         // Ensure company_id is set from the current tenant
-        $data['company_id'] = Filament::getTenant()->id;
+        /** @var \App\Models\Company|null $tenant */
+        $tenant = Filament::getTenant();
+        $data['company_id'] = $tenant?->getKey();
 
         // Debug: Log the data being created
         Log::info('Creating position with data:', $data);

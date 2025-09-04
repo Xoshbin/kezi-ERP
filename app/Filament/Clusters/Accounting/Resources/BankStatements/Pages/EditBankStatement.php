@@ -7,6 +7,8 @@ use App\DataTransferObjects\Accounting\UpdateBankStatementDTO;
 use App\DataTransferObjects\Accounting\UpdateBankStatementLineDTO;
 use App\Filament\Clusters\Accounting\Resources\BankStatements\BankStatementResource;
 use App\Models\Currency;
+use App\Models\BankStatement;
+use App\Models\BankStatementLine;
 use Brick\Money\Money;
 use Filament\Actions\DeleteAction;
 use Filament\Resources\Pages\EditRecord;
@@ -30,8 +32,10 @@ class EditBankStatement extends EditRecord
 
     protected function mutateFormDataBeforeFill(array $data): array
     {
-        $this->record->loadMissing('bankStatementLines', 'currency');
-        $linesData = $this->record->bankStatementLines->map(function ($line) {
+        /** @var \App\Models\BankStatement $record */
+        $record = $this->record;
+        $record->loadMissing('bankStatementLines', 'currency');
+        $linesData = $record->bankStatementLines->map(function (BankStatementLine $line) {
             return [
                 'date' => $line->date->format('Y-m-d'),
                 'description' => $line->description,
@@ -48,6 +52,7 @@ class EditBankStatement extends EditRecord
 
     protected function handleRecordUpdate(Model $record, array $data): Model
     {
+        /** @var BankStatement $record */
         $lineDTOs = [];
         foreach ($data['bankStatementLines'] as $line) {
             $foreignCurrency = null;
@@ -62,7 +67,7 @@ class EditBankStatement extends EditRecord
                 id: $line['id'] ?? null,
                 date: $line['date'],
                 description: $line['description'],
-                amount: Money::of($line['amount'], $record->currency->code),
+                amount: Money::of($line['amount'], ($record->relationLoaded('currency') ? $record->getRelation('currency') : $record->currency()->first())->code),
                 partner_id: $line['partner_id'],
                 foreign_currency_id: $line['foreign_currency_id'] ?? null,
                 amount_in_foreign_currency: $amountInForeignCurrency
@@ -75,8 +80,8 @@ class EditBankStatement extends EditRecord
             journal_id: $data['journal_id'],
             reference: $data['reference'],
             date: $data['date'],
-            starting_balance: Money::of($data['starting_balance'], $record->currency->code),
-            ending_balance: Money::of($data['ending_balance'], $record->currency->code),
+            starting_balance: Money::of($data['starting_balance'], ($record->relationLoaded('currency') ? $record->getRelation('currency') : $record->currency()->first())->code),
+            ending_balance: Money::of($data['ending_balance'], ($record->relationLoaded('currency') ? $record->getRelation('currency') : $record->currency()->first())->code),
             lines: $lineDTOs
         );
 

@@ -29,7 +29,7 @@ abstract class MoneyCast implements CastsAttributes
      *
      * @throws MathException
      */
-    public function get($model, string $key, $value, array $attributes): ?Money
+    public function get(Model $model, string $key, mixed $value, array $attributes): ?Money
     {
         if ($value === null) {
             return null;
@@ -45,7 +45,7 @@ abstract class MoneyCast implements CastsAttributes
      *
      * @param  array<string, mixed>  $attributes
      */
-    public function set($model, string $key, $value, array $attributes): ?array
+    public function set(Model $model, string $key, mixed $value, array $attributes): ?array
     {
         if ($value === null) {
             return [$key => null];

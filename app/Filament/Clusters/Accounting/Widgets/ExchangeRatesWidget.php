@@ -28,14 +28,16 @@ class ExchangeRatesWidget extends StatsOverviewWidget
             ->get();
 
         foreach ($currencies as $currency) {
+            /** @var CurrencyRate|null $latestRate */
             $latestRate = $currency->latestRate;
 
-            if (! $latestRate) {
+            if (! $latestRate instanceof CurrencyRate) {
                 continue;
             }
 
             // Get previous rate for comparison
-            $previousRate = CurrencyRate::where('currency_id', $currency->id)
+            /** @var CurrencyRate|null $previousRate */
+            $previousRate = CurrencyRate::where('currency_id', $currency->getKey())
                 ->where('effective_date', '<', $latestRate->effective_date)
                 ->orderBy('effective_date', 'desc')
                 ->first();
@@ -44,8 +46,8 @@ class ExchangeRatesWidget extends StatsOverviewWidget
             $changeColor = 'gray';
             $changeIcon = null;
 
-            if ($previousRate) {
-                $changePercent = (($latestRate->rate - $previousRate->rate) / $previousRate->rate) * 100;
+            if ($previousRate instanceof CurrencyRate) {
+                $changePercent = (((float) $latestRate->rate - (float) $previousRate->rate) / max((float) $previousRate->rate, 0.000001)) * 100;
                 $change = number_format($changePercent, 2).'%';
 
                 if ($changePercent > 0) {
@@ -61,15 +63,15 @@ class ExchangeRatesWidget extends StatsOverviewWidget
 
             $stat = Stat::make(
                 $currency->code,
-                number_format($latestRate->rate, 6)
+                number_format((float) $latestRate->rate, 6)
             )
                 ->description($currency->name)
                 ->descriptionIcon('heroicon-m-currency-dollar');
 
             if ($change) {
                 $stat = $stat->chart([
-                    $previousRate->rate,
-                    $latestRate->rate,
+                    (float) $previousRate->rate,
+                    (float) $latestRate->rate,
                 ])
                     ->color($changeColor);
 

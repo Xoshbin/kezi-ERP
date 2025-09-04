@@ -78,13 +78,16 @@ class AssetResource extends Resource
                     TranslatableSelect::make('currency_id', Currency::class, __('asset.currency'))
                         ->required()
                         ->live()
-                        ->default(fn () => Filament::getTenant()?->currency_id)
-                        ->afterStateUpdated(function (callable $set, $state, callable $get) {
+                        ->default(function (): ?int {
+                            $tenant = Filament::getTenant();
+                            return $tenant instanceof \App\Models\Company ? $tenant->currency_id : null;
+                        })
+                        ->afterStateUpdated(function (callable $set, $state) {
                             if ($state) {
                                 $currency = Currency::find($state);
                                 $company = Filament::getTenant();
 
-                                if ($currency && $company && $currency->id !== $company->currency_id) {
+                                if ($currency && $company instanceof \App\Models\Company && $currency->id !== $company->currency_id) {
                                     $latestRate = CurrencyRate::getLatestRate($currency->id, $company->id);
                                     if ($latestRate) {
                                         $set('current_exchange_rate', $latestRate);
@@ -125,7 +128,7 @@ class AssetResource extends Resource
                             $currencyId = $get('currency_id');
                             $company = Filament::getTenant();
 
-                            return $currencyId && $company && $currencyId != $company->currency_id;
+                            return $currencyId && $company instanceof \App\Models\Company && $currencyId != $company->currency_id;
                         })
                         ->helperText(__('asset.exchange_rate_helper')),
                 ])

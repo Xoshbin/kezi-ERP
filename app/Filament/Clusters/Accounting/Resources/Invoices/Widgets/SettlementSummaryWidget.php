@@ -4,6 +4,7 @@ namespace App\Filament\Clusters\Accounting\Resources\Invoices\Widgets;
 
 use App\Enums\Payments\PaymentStatus;
 use App\Enums\Sales\InvoiceStatus;
+use App\Models\Payment;
 use App\Models\Invoice;
 use Brick\Money\Money;
 use Carbon\Carbon;
@@ -74,6 +75,7 @@ class SettlementSummaryWidget extends BaseWidget
 
     private function getLastPaymentDate(Invoice $invoice): string
     {
+        /** @var Payment|null $lastPayment */
         $lastPayment = $invoice->payments()
             ->whereIn('status', [PaymentStatus::Confirmed, PaymentStatus::Reconciled])
             ->orderBy('payment_date', 'desc')
