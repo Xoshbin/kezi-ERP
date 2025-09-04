@@ -37,7 +37,7 @@ use Illuminate\Support\Carbon;
  * @property Carbon $bill_date
  * @property Carbon $accounting_date
  * @property Carbon|null $due_date
- * @property string $status
+ * @property VendorBillStatus $status
  * @property Money $total_amount
  * @property Money $total_tax
  * @property Carbon|null $posted_at
@@ -92,7 +92,7 @@ class VendorBill extends Model
      * The attributes that are mass assignable.
      * These fields are typically filled from user input or automated processes.
      *
-     * @var array<int, string>
+     * @var list<string>
      */
     protected $fillable = [
         'company_id',           // Foreign key to the Company model for multi-company support .

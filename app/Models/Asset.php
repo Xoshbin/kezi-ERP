@@ -81,7 +81,7 @@ class Asset extends Model
      * The attributes that are mass assignable.
      * These fields are essential for defining an asset's core characteristics.
      *
-     * @var array<int, string>
+     * @var list<string>
      */
     protected $fillable = [
         'company_id',
@@ -124,7 +124,7 @@ class Asset extends Model
      * Without this, any retrieval of an `Asset` would fail when casting monetary values
      * due to the missing currency information, leading to a "currency_id on null" error.
      *
-     * @var array
+     * @var list<string>
      */
     protected $with = ['company.currency'];
 

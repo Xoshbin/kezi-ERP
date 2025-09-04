@@ -26,7 +26,8 @@ class CreateInvoiceLineAction
         }
 
         // 2. The create method now receives a complete, valid array of attributes.
-        return $invoice->invoiceLines()->create([
+        /** @var InvoiceLine $invoiceLine */
+        $invoiceLine = $invoice->invoiceLines()->create([
             'company_id' => $invoice->company_id,
             'product_id' => $dto->product_id,
             'description' => $dto->description,
@@ -37,5 +38,7 @@ class CreateInvoiceLineAction
             'subtotal' => $subtotal, // Explicitly provide the calculated subtotal
             'total_line_tax' => $taxAmount, // Explicitly provide the calculated tax
         ]);
+
+        return $invoiceLine;
     }
 }

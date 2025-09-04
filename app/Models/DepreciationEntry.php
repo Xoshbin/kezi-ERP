@@ -58,7 +58,7 @@ class DepreciationEntry extends Model
      * The attributes that are mass assignable.
      * These fields define the core properties of a depreciation event.
      *
-     * @var array<int, string>
+     * @var list<string>
      */
     protected $fillable = [
         'company_id', // Foreign key to the parent company, ensuring data integrity [2, 3].
@@ -92,7 +92,7 @@ class DepreciationEntry extends Model
      * Without this, any retrieval of a `DepreciationEntry` would fail when casting monetary values
      * due to the missing currency information, leading to a "currency_id on null" error.
      *
-     * @var array
+     * @var list<string>
      */
     protected $with = ['asset.company.currency'];
 

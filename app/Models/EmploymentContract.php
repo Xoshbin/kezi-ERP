@@ -60,7 +60,7 @@ class EmploymentContract extends Model
     /**
      * The attributes that are mass assignable.
      *
-     * @var array<int, string>
+     * @var list<string>
      */
     protected $fillable = [
         'company_id',
@@ -246,7 +246,7 @@ class EmploymentContract extends Model
             return null; // Permanent contract
         }
 
-        return $this->start_date->diffInMonths($this->end_date);
+        return (int) $this->start_date->diffInMonths($this->end_date);
     }
 
     /**

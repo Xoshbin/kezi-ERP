@@ -31,7 +31,7 @@ use Illuminate\Support\Carbon;
  * @property string|null $invoice_number
  * @property Carbon $invoice_date
  * @property Carbon $due_date
- * @property string $status
+ * @property InvoiceStatus $status
  * @property \Brick\Money\Money $total_amount
  * @property \Brick\Money\Money $total_tax
  * @property Carbon|null $posted_at
@@ -92,7 +92,7 @@ class Invoice extends Model
      * typically managed internally by the application's logic upon confirmation
      * or posting, rather than being directly mass-assigned from user input. [1, 6]
      *
-     * @var array<int, string>
+     * @var list<string>
      */
     protected $fillable = [
         'company_id',

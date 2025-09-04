@@ -60,7 +60,7 @@ class AnalyticAccount extends Model
      * The attributes that are mass assignable.
      * These fields directly map to the 'analytic_accounts' table schema.
      *
-     * @var array<int, string>
+     * @var list<string>
      */
     protected $fillable = [
         'company_id',   // Essential for multi-company environments [3]

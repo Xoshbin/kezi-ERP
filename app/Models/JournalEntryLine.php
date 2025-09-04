@@ -27,7 +27,7 @@ use RuntimeException;
  * @property Money $debit
  * @property Money $credit
  * @property Money $original_currency_amount
- * @property string $exchange_rate_at_transaction
+ * @property float $exchange_rate_at_transaction
  * @property string|null $description
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
@@ -76,7 +76,7 @@ class JournalEntryLine extends Model
      * Critical integrity-related fields (e.g., those implying 'posted' status or calculated totals) are omitted
      * as they should be managed programmatically by the application's business logic, not direct user input.
      *
-     * @var array<int, string>
+     * @var list<string>
      */
     protected $fillable = [
         'company_id',
@@ -120,7 +120,7 @@ class JournalEntryLine extends Model
      * Without this, any retrieval of a `JournalEntryLine` would fail when casting monetary values
      * due to the missing currency information, leading to a "currency_id on null" error.
      *
-     * @var array
+     * @var list<string>
      */
     protected $with = ['journalEntry.company.currency'];
 
@@ -300,6 +300,9 @@ class JournalEntryLine extends Model
      */
     public function currentReconciliation(): ?Reconciliation
     {
-        return $this->reconciliations()->latest('reconciled_at')->first();
+        /** @var Reconciliation|null $reconciliation */
+        $reconciliation = $this->reconciliations()->latest('reconciled_at')->first();
+
+        return $reconciliation;
     }
 }

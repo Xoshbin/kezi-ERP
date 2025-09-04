@@ -72,7 +72,7 @@ class AuditLog extends Model
      * We explicitly list the fields defined in the migration and schema
      * that users or the system will set when creating an audit entry.
      *
-     * @var array<int, string>
+     * @var list<string>
      */
     protected $fillable = [
         'user_id',

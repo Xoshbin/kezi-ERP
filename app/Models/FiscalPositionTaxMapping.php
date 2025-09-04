@@ -50,7 +50,7 @@ class FiscalPositionTaxMapping extends Model
      * These fields can be safely filled via mass assignment, reflecting the core data
      * necessary for a tax mapping rule.
      *
-     * @var array<int, string>
+     * @var list<string>
      */
     protected $fillable = [
         'company_id',             // Foreign key to the parent company, ensuring data integrity [2, 3].

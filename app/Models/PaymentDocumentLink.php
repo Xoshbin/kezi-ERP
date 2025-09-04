@@ -54,7 +54,7 @@ class PaymentDocumentLink extends Model
      * The attributes that are mass assignable.
      * These fields can be safely filled via mass assignment operations.
      *
-     * @var array<int, string>
+     * @var list<string>
      */
     protected $fillable = [
         'company_id', // Foreign key to the parent company, ensuring data integrity [2, 3].
@@ -83,7 +83,7 @@ class PaymentDocumentLink extends Model
      * Without this, any retrieval of a `PaymentDocumentLink` would fail when casting monetary values
      * due to the missing currency information, leading to a "currency_id on null" error.
      *
-     * @var array
+     * @var list<string>
      */
     protected $with = ['payment.currency'];
 

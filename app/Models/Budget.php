@@ -61,7 +61,7 @@ class Budget extends Model
      * The attributes that are mass assignable.
      * These fields are crucial for creating and managing a budget's core properties.
      *
-     * @var array<int, string>
+     * @var list<string>
      */
     protected $fillable = [
         'company_id',
