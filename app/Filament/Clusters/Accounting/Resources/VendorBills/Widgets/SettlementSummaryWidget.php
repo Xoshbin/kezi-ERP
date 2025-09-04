@@ -2,12 +2,9 @@
 
 namespace App\Filament\Clusters\Accounting\Resources\VendorBills\Widgets;
 
-use App\Enums\Payments\PaymentStatus;
 use App\Enums\Purchases\VendorBillStatus;
 use App\Models\VendorBill;
-use App\Models\Payment;
 use Brick\Money\Money;
-use Carbon\Carbon;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
 use Illuminate\Database\Eloquent\Model;
@@ -37,8 +34,6 @@ class SettlementSummaryWidget extends BaseWidget
         $totalAmount = $vendorBill->total_amount;
         $paidAmount = $vendorBill->getPaidAmount();
         $outstandingBalance = $totalAmount->minus($paidAmount);
-        $lastPaymentDate = $this->getLastPaymentDate($vendorBill);
-        $paymentMethodBreakdown = $this->getPaymentMethodBreakdown($vendorBill);
 
         return [
             Stat::make(__('vendor_bill.settlement_widget.total_amount'), $this->formatMoney($totalAmount))
@@ -73,67 +68,7 @@ class SettlementSummaryWidget extends BaseWidget
         ];
     }
 
-    private function getLastPaymentDate(VendorBill $vendorBill): string
-    {
-        /** @var Payment|null $lastPayment */
-        $lastPayment = $vendorBill->payments()
-            ->whereIn('status', [PaymentStatus::Confirmed, PaymentStatus::Reconciled])
-            ->orderBy('payment_date', 'desc')
-            ->first();
 
-        if (! $lastPayment) {
-            return __('vendor_bill.settlement_widget.no_payments');
-        }
-
-        return Carbon::parse($lastPayment->payment_date)->format('M j, Y');
-    }
-
-    private function getPaymentCount(VendorBill $vendorBill): string
-    {
-        $confirmedCount = $vendorBill->payments()
-            ->whereIn('status', [PaymentStatus::Confirmed, PaymentStatus::Reconciled])
-            ->count();
-
-        $draftCount = $vendorBill->payments()
-            ->where('status', PaymentStatus::Draft)
-            ->count();
-
-        if ($draftCount > 0) {
-            return "{$confirmedCount} + {$draftCount} ".__('vendor_bill.settlement_widget.draft');
-        }
-
-        return (string) $confirmedCount;
-    }
-
-    private function getPaymentMethodBreakdown(VendorBill $vendorBill): string
-    {
-        $payments = $vendorBill->payments()
-            ->whereIn('status', [PaymentStatus::Confirmed, PaymentStatus::Reconciled])
-            ->with('journal')
-            ->get();
-
-        if ($payments->isEmpty()) {
-            return __('vendor_bill.settlement_widget.no_payments');
-        }
-
-        $breakdown = $payments->groupBy('journal.name')
-            ->map(function ($groupedPayments, $journalName) {
-                $count = $groupedPayments->count();
-
-                return "{$journalName} ({$count})";
-            })
-            ->values()
-            ->take(3) // Limit to first 3 to avoid overflow
-            ->implode(', ');
-
-        $totalJournals = $payments->pluck('journal.name')->unique()->count();
-        if ($totalJournals > 3) {
-            $remaining = $totalJournals - 3;
-            $breakdown .= ' +'.$remaining.' '.__('vendor_bill.settlement_widget.more');
-        }
-
-        return $breakdown ?: __('vendor_bill.settlement_widget.various');
-    }
 
     private function formatMoney(Money $money): string
     {
