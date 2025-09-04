@@ -34,7 +34,7 @@ use Illuminate\Support\Carbon;
  * @property int|null $journal_entry_id
  * @property Carbon $payment_date
  * @property \Brick\Money\Money $amount
- * @property string $payment_type
+ * @property PaymentType $payment_type
  * @property string|null $reference
  * @property PaymentStatus $status
  * @property Carbon|null $created_at

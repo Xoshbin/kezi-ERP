@@ -77,7 +77,7 @@ class EditPayment extends EditRecord
         // Set the 'amount' field from the record's Money object for standalone payments
         $record = $this->getRecord();
         if ($record instanceof Payment) {
-            $data['amount'] = $record->amount?->getAmount()->toFloat();
+            $data['amount'] = $record->amount->getAmount()->toFloat();
         }
 
 

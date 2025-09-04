@@ -201,13 +201,13 @@ class BankStatementResource extends Resource
                                     if ($currencyId) {
                                         $currency = Currency::find($currencyId);
 
-                                        return $currency?->code ?? 'IQD';
+                                        return $currency->code ?? 'IQD';
                                     }
 
                                     // Fallback to tenant currency
                                     $tenant = Filament::getTenant();
 
-                                    return $tenant?->currency?->code ?? 'IQD';
+                                    return $tenant->currency->code ?? 'IQD';
                                 })
                                 ->live()
                                 ->reactive()
@@ -312,7 +312,7 @@ class BankStatementResource extends Resource
                     ->icon('heroicon-o-scale')
                     ->color('success')
                     ->url(fn (BankStatement $record): string => static::getUrl('reconcile', ['record' => $record]))
-                    ->visible(fn (): bool => Filament::getTenant()?->enable_reconciliation ?? false),
+                    ->visible(fn (): bool => Filament::getTenant()->enable_reconciliation ?? false),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([

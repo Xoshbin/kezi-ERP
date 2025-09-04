@@ -19,7 +19,7 @@ use Spatie\Translatable\HasTranslations;
 /**
  * @property int $id
  * @property int $company_id
- * @property string $name
+ * @property string|array $name
  * @property string $type
  * @property string $short_code
  * @property int|null $currency_id

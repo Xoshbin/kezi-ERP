@@ -59,7 +59,7 @@ class ProfitAndLossStatementService
                 $balance = Money::ofMinor(-(int) $row->balance, $currency);
                 /** @var \App\Models\Account|null $account */
                 $account = $accounts->get($row->account_id);
-                $accountName = $account?->name ?? (string) $row->account_name;
+                $accountName = $account->name ?? (string) $row->account_name;
 
                 return new ReportLineDTO(
                     accountId: $row->account_id,
@@ -80,7 +80,7 @@ class ProfitAndLossStatementService
                 $balance = Money::ofMinor((int) $row->balance, $currency);
                 /** @var \App\Models\Account|null $account */
                 $account = $accounts->get($row->account_id);
-                $accountName = $account?->name ?? (string) $row->account_name;
+                $accountName = $account->name ?? (string) $row->account_name;
 
                 return new ReportLineDTO(
                     accountId: $row->account_id,
