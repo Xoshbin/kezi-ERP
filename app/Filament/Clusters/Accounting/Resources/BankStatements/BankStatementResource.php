@@ -107,7 +107,7 @@ class BankStatementResource extends Resource
                         ->label(__('bank_statement.bank_journal'))
                         ->options(function (): array {
                             $tenant = Filament::getTenant();
-                            if (! $tenant || ! method_exists($tenant, 'getKey')) {
+                            if (! $tenant) {
                                 return [];
                             }
 
@@ -122,13 +122,18 @@ class BankStatementResource extends Resource
                         ->rule(function (): Closure {
                             return function (string $attribute, $value, Closure $fail): void {
                                 $tenant = Filament::getTenant();
-                                if (! $tenant || ! method_exists($tenant, 'getKey')) {
+                                if (! $tenant) {
                                     $fail('Company context is required.');
                                     return;
                                 }
 
                                 $journal = Journal::find($value);
-                                if (! $journal || $journal->company_id !== (int) $tenant->getKey() || $journal->type !== JournalType::Bank) {
+                                if (! $journal) {
+                                    $fail('The selected bank journal is invalid.');
+                                    return;
+                                }
+
+                                if ($journal->company_id !== (int) $tenant->getKey() || $journal->type !== JournalType::Bank) {
                                     $fail('The selected bank journal is invalid.');
                                 }
                             };

@@ -407,13 +407,11 @@ class AdjustmentDocumentResource extends Resource
                         AdjustmentDocumentStatus::Draft => 'warning',
                         AdjustmentDocumentStatus::Posted => 'success',
                         AdjustmentDocumentStatus::Cancelled => 'danger',
-                        default => 'gray',
                     })
                     ->icon(fn (AdjustmentDocumentStatus $state): string => match ($state) {
                         AdjustmentDocumentStatus::Draft => 'heroicon-m-pencil-square',
                         AdjustmentDocumentStatus::Posted => 'heroicon-m-check-circle',
                         AdjustmentDocumentStatus::Cancelled => 'heroicon-m-x-circle',
-                        default => 'heroicon-m-question-mark-circle',
                     })
                     ->searchable(),
             ])

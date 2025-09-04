@@ -153,7 +153,6 @@ class StockLocationResource extends Resource
                         StockLocationType::Customer => 'success',
                         StockLocationType::Vendor => 'warning',
                         StockLocationType::InventoryAdjustment => 'info',
-                        default => 'gray',
                     }),
                 TextColumn::make('parent.name')
                     ->label(__('stock_location.parent'))

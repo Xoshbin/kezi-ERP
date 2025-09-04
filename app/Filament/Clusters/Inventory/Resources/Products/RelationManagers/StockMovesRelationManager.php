@@ -116,7 +116,6 @@ class StockMovesRelationManager extends RelationManager
                         StockMoveType::Outgoing => 'danger',
                         StockMoveType::InternalTransfer => 'info',
                         StockMoveType::Adjustment => 'warning',
-                        default => 'gray',
                     }),
                 TextColumn::make('status')
                     ->label(__('stock_move.status'))
@@ -127,7 +126,6 @@ class StockMovesRelationManager extends RelationManager
                         StockMoveStatus::Confirmed => 'warning',
                         StockMoveStatus::Done => 'success',
                         StockMoveStatus::Cancelled => 'danger',
-                        default => 'gray',
                     }),
                 TextColumn::make('source_type')
                     ->label(__('stock_move.source'))

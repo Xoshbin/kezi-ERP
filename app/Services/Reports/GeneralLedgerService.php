@@ -107,7 +107,7 @@ class GeneralLedgerService
 
         /** @var \Illuminate\Support\Collection<int, string> $names */
         $names = $otherLines->map(function (JournalEntryLine $l): string {
-            return $l->account?->name ?? '';
+            return $l->account->name ?: '';
         });
 
         return $names->filter()->implode(', ');

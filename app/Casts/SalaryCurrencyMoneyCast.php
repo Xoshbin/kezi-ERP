@@ -45,10 +45,7 @@ class SalaryCurrencyMoneyCast extends MoneyCast
         try {
             $tenant = Filament::getTenant();
             if ($tenant instanceof \App\Models\Company) {
-                $currency = $tenant->currency;
-                if ($currency) {
-                    return $currency;
-                }
+                return $tenant->currency;
             }
         } catch (Exception) {
             // Ignore tenant resolution errors

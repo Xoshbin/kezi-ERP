@@ -139,7 +139,7 @@ class EditAdjustmentDocument extends EditRecord
         if (empty($data['currency_id'])) {
             /** @var AdjustmentDocument $rec */
             $rec = $this->record;
-            $data['currency_id'] = is_object($rec) ? $rec->getAttribute('currency_id') : null;
+            $data['currency_id'] = $rec->getAttribute('currency_id');
         }
 
         // 3. If it's *still* missing, stop with a clean validation error.
