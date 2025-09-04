@@ -140,6 +140,7 @@ class PartnerLedgerService
     private function getTransactionType(JournalEntryLine $line): string
     {
         // Derive a business-friendly name from the journal's type.
+        /** @var JournalType $type */
         $type = $line->journalEntry->journal->type;
         return match ($type) {
             JournalType::Sale => 'Invoice',
