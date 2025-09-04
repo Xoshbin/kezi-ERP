@@ -159,7 +159,7 @@ class PaymentDocumentLink extends Model
             }
 
             // Set company_id from parent payment to maintain tenancy
-            if (! $link->company_id && $link->payment) {
+            if (! $link->company_id) {
                 $link->company_id = $link->payment->company_id;
             }
         });

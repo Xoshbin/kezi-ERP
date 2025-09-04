@@ -49,11 +49,14 @@ class MoneyInput extends TextInput
                 }
 
                 // New fallback logic for the Create page before a value is entered.
-                if ($this->currencyFieldName && is_string($this->currencyFieldName)) {
+                if ($this->currencyFieldName) {
                     /** @var int|null $currencyId */
                     $currencyId = $get($this->currencyFieldName);
                     if ($currencyId) {
-                        return Currency::find($currencyId)?->code;
+                        $currency = Currency::find($currencyId);
+                        if ($currency) {
+                            return $currency->code;
+                        }
                     }
                 }
 
@@ -123,7 +126,7 @@ class MoneyInput extends TextInput
 
         // Strategy 1: Use the configured currency field from the form state (`$get`).
         // This is for the Create page or live updates.
-        if ($this->currencyFieldName && is_string($this->currencyFieldName)) {
+        if ($this->currencyFieldName) {
             $currencyId = $get($this->currencyFieldName);
             if ($currencyId) {
                 // To avoid too many database queries, we can cache the result.

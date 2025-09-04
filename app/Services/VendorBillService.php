@@ -71,9 +71,8 @@ class VendorBillService
             $journalEntry = app(CreateJournalEntryForVendorBillAction::class)->execute($vendorBill, $user);
 
             // Associate the created journal entry with the bill
-            if ($journalEntry) {
-                $vendorBill->update(['journal_entry_id' => $journalEntry->getKey()]);
-            }
+            // Journal entry is always created
+            $vendorBill->update(['journal_entry_id' => $journalEntry->getKey()]);
         });
 
         VendorBillConfirmed::dispatch($vendorBill, $user);

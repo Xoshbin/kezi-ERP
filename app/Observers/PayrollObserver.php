@@ -24,9 +24,7 @@ class PayrollObserver
      */
     private function calculatePayrollTotals(Payroll $payroll): void
     {
-        // Get currency code for calculations
-        $currency = $payroll->currency;
-        $currencyCode = $currency ? $currency->code : 'IQD';
+
 
         // Calculate gross salary (sum of all salary components)
         $grossSalary = $payroll->base_salary

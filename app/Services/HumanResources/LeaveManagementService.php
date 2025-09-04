@@ -228,12 +228,7 @@ class LeaveManagementService
                         'status' => 'on_leave',
                         'attendance_type' => 'regular',
                         'leave_request_id' => $leaveRequest->getKey(),
-                        'notes' => 'On leave: '.(method_exists($leaveRequest->leaveType, 'getTranslation')
-                    ? $leaveRequest->leaveType->getTranslation('name', app()->getLocale())
-                    : (is_array($leaveRequest->leaveType->name)
-                        ? ($leaveRequest->leaveType->name[app()->getLocale()] ?? reset($leaveRequest->leaveType->name))
-                        : (string) $leaveRequest->leaveType->name
-                    )),
+                        'notes' => 'On leave: '.$leaveRequest->leaveType->getTranslation('name', app()->getLocale()),
                     ]
                 );
             }
