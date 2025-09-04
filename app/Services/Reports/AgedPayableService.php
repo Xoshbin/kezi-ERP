@@ -69,6 +69,7 @@ class AgedPayableService
                     'bucket31_60' => Money::zero($currency),
                     'bucket61_90' => Money::zero($currency),
                     'bucket90_plus' => Money::zero($currency),
+                    'totalDue' => Money::zero($currency),
                 ];
             }
 

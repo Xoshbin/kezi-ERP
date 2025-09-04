@@ -78,7 +78,7 @@ class Employee extends Model
     /**
      * The attributes that are mass assignable.
      *
-     * @var array<int, string>
+     * @var list<string>
      */
     protected $fillable = [
         'company_id',
@@ -272,7 +272,7 @@ class Employee extends Model
      */
     public function getYearsOfServiceAttribute(): int
     {
-        return $this->hire_date->diffInYears(now());
+        return (int) $this->hire_date->diffInYears(now());
     }
 
     /**
@@ -359,9 +359,12 @@ class Employee extends Model
      */
     public function getAttendanceForDate(Carbon $date): ?Attendance
     {
-        return $this->attendances()
+        /** @var Attendance|null $attendance */
+        $attendance = $this->attendances()
             ->where('attendance_date', $date->format('Y-m-d'))
             ->first();
+
+        return $attendance;
     }
 
     /**
@@ -389,10 +392,13 @@ class Employee extends Model
      */
     public function getLatestPayroll(): ?Payroll
     {
-        return $this->payrolls()
+        /** @var Payroll|null $payroll */
+        $payroll = $this->payrolls()
             ->where('status', '!=', 'cancelled')
             ->latest('period_end_date')
             ->first();
+
+        return $payroll;
     }
 
     /**

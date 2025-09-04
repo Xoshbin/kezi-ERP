@@ -75,7 +75,7 @@ class Currency extends Model
      * The attributes that are mass assignable.
      * These fields define the core properties of a currency.
      *
-     * @var array<int, string>
+     * @var list<string>
      */
     protected $fillable = [
         'code',

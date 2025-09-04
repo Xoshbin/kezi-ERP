@@ -60,6 +60,7 @@ class VendorBillService
             $vendorBill->save();
 
             // Always create stock moves for storable product lines
+            /** @var VendorBillLine $line */
             foreach ($vendorBill->lines()->with('product')->get() as $line) {
                 if ($line->product?->type === ProductType::Storable) {
                     $this->createStockMoveForLine($vendorBill, $line, $user);

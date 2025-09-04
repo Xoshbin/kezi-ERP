@@ -58,7 +58,7 @@ class BudgetLine extends Model
      * The attributes that are mass assignable.
      * These fields define the specifics of a budgeted item.
      *
-     * @var array<int, string>
+     * @var list<string>
      */
     protected $fillable = [
         'company_id',             // Foreign key to the parent company, ensuring data integrity [2, 3].

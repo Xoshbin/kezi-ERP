@@ -77,7 +77,7 @@ class Tax extends Model
      * The attributes that are mass assignable.
      * These fields are intended for direct assignment, often from user input.
      *
-     * @var array<int, string>
+     * @var list<string>
      */
     protected $fillable = [
         'company_id',

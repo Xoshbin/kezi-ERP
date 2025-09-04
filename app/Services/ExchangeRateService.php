@@ -121,9 +121,12 @@ class ExchangeRateService
      */
     public function getLatestRate(Currency $currency): ?CurrencyRate
     {
-        return $currency->rates()
+        /** @var CurrencyRate|null $rate */
+        $rate = $currency->rates()
             ->orderBy('effective_date', 'desc')
             ->first();
+
+        return $rate;
     }
 
     /**
@@ -131,10 +134,13 @@ class ExchangeRateService
      */
     public function getRateForDate(Currency $currency, Carbon $date): ?CurrencyRate
     {
-        return $currency->rates()
+        /** @var CurrencyRate|null $rate */
+        $rate = $currency->rates()
             ->where('effective_date', '<=', $date->toDateString())
             ->orderBy('effective_date', 'desc')
             ->first();
+
+        return $rate;
     }
 
     /**

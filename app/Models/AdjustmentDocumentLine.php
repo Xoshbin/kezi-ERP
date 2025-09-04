@@ -56,7 +56,7 @@ class AdjustmentDocumentLine extends Model
      * Without this, any retrieval of an `AdjustmentDocumentLine` would fail when casting monetary values
      * due to the missing currency information, leading to a "currency_id on null" error.
      *
-     * @var array
+     * @var list<string>
      */
     protected $with = ['adjustmentDocument.currency'];
 

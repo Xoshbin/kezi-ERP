@@ -100,7 +100,7 @@ class Company extends Model
      * to prevent unauthorized mass assignment vulnerabilities and maintain
      * data integrity [1].
      *
-     * @var array<int, string>
+     * @var list<string>
      */
     protected $fillable = [
         'name',
