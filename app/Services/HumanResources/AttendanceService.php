@@ -50,7 +50,7 @@ class AttendanceService
             notes: null,
             is_manual_entry: $user !== null,
             leave_request_id: null,
-            created_by_user_id: $user?->id ?? $employee->user_id ?? 1,
+            created_by_user_id: $user->id ?? $employee->user_id ?? 1,
         );
 
         return $this->createAttendanceAction->execute($createAttendanceDTO);

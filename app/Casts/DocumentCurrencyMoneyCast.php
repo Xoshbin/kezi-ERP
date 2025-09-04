@@ -78,23 +78,23 @@ class DocumentCurrencyMoneyCast extends MoneyCast
         // This is less efficient but ensures the cast always works
         if (method_exists($model, 'invoice') && $model->getAttribute('invoice_id')) {
             $invoice = $model->invoice()->with('currency')->first();
-            return $invoice?->currency ?? throw new InvalidArgumentException('Invoice currency not found');
+            return $invoice->currency ?? throw new InvalidArgumentException('Invoice currency not found');
         }
         if (method_exists($model, 'vendorBill') && $model->getAttribute('vendor_bill_id')) {
             $vendorBill = $model->vendorBill()->with('currency')->first();
-            return $vendorBill?->currency ?? throw new InvalidArgumentException('Vendor bill currency not found');
+            return $vendorBill->currency ?? throw new InvalidArgumentException('Vendor bill currency not found');
         }
         if (method_exists($model, 'adjustmentDocument') && $model->getAttribute('adjustment_document_id')) {
             $adj = $model->adjustmentDocument()->with('currency')->first();
-            return $adj?->currency ?? throw new InvalidArgumentException('Adjustment document currency not found');
+            return $adj->currency ?? throw new InvalidArgumentException('Adjustment document currency not found');
         }
         if (method_exists($model, 'payment') && $model->getAttribute('payment_id')) {
             $payment = $model->payment()->with('currency')->first();
-            return $payment?->currency ?? throw new InvalidArgumentException('Payment currency not found');
+            return $payment->currency ?? throw new InvalidArgumentException('Payment currency not found');
         }
         if (method_exists($model, 'bankStatement') && $model->getAttribute('bank_statement_id')) {
             $stmt = $model->bankStatement()->with('currency')->first();
-            return $stmt?->currency ?? throw new InvalidArgumentException('Bank statement currency not found');
+            return $stmt->currency ?? throw new InvalidArgumentException('Bank statement currency not found');
         }
         // Some models expose a direct currency() relationship (e.g., PaymentDocumentLink)
         if (method_exists($model, 'currency')) {

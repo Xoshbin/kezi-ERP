@@ -19,7 +19,7 @@ use Spatie\Translatable\HasTranslations;
  *
  * @property int $id
  * @property int $company_id
- * @property string $name
+ * @property string|array $name
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property-read AnalyticAccountPlanPivot|null $pivot

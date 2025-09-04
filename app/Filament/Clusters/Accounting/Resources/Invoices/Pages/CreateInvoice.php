@@ -40,7 +40,7 @@ class CreateInvoice extends CreateRecord
     protected function handleRecordCreation(array $data): Model
     {
         $invoiceDTO = new CreateInvoiceDTO(
-            company_id: (int) (Filament::getTenant()?->id ?? 0),
+            company_id: (int) (Filament::getTenant()->id ?? 0),
             customer_id: $data['customer_id'],
             currency_id: $data['currency_id'],
             invoice_date: $data['invoice_date'],

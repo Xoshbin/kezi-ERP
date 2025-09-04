@@ -23,7 +23,7 @@ use Spatie\Translatable\HasTranslations;
  * @property int $id
  * @property int $company_id
  * @property string $code
- * @property string $name
+ * @property string|array $name
  * @property string $type
  * @property bool $is_deprecated
  * @property Carbon|null $created_at

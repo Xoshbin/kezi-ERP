@@ -25,7 +25,7 @@ use Illuminate\Support\Carbon;
  * @property int $id
  * @property int|null $company_id
  * @property string $name
- * @property string $type
+ * @property PartnerType $type
  * @property string|null $contact_person
  * @property string|null $email
  * @property string|null $phone
@@ -233,7 +233,7 @@ class Partner extends Model
         $totalOutstanding = $this->invoices()
             ->whereIn('status', [InvoiceStatus::Posted, InvoiceStatus::Paid])
             ->get()
-            ->sum(function ($invoice) {
+            ->sum(function (Invoice $invoice) {
                 return $invoice->getRemainingAmount()->getMinorAmount()->toInt();
             });
 
@@ -257,7 +257,7 @@ class Partner extends Model
         $totalOutstanding = $this->vendorBills()
             ->whereIn('status', [VendorBillStatus::Posted, VendorBillStatus::Paid])
             ->get()
-            ->sum(function ($bill) {
+            ->sum(function (VendorBill $bill) {
                 return $bill->getRemainingAmount()->getMinorAmount()->toInt();
             });
 
@@ -282,7 +282,7 @@ class Partner extends Model
             ->whereIn('status', [InvoiceStatus::Posted, InvoiceStatus::Paid])
             ->where('due_date', '<', Carbon::today())
             ->get()
-            ->sum(function ($invoice) {
+            ->sum(function (Invoice $invoice) {
                 return $invoice->getRemainingAmount()->getMinorAmount()->toInt();
             });
 
@@ -307,7 +307,7 @@ class Partner extends Model
             ->whereIn('status', [VendorBillStatus::Posted, VendorBillStatus::Paid])
             ->where('due_date', '<', Carbon::today())
             ->get()
-            ->sum(function ($bill) {
+            ->sum(function (VendorBill $bill) {
                 return $bill->getRemainingAmount()->getMinorAmount()->toInt();
             });
 
@@ -390,7 +390,7 @@ class Partner extends Model
             ->where('due_date', '<=', $dueDate)
             ->where('due_date', '>=', Carbon::today())
             ->get()
-            ->sum(function ($invoice) {
+            ->sum(function (Invoice $invoice) {
                 return $invoice->getRemainingAmount()->getMinorAmount()->toInt();
             });
 
@@ -418,7 +418,7 @@ class Partner extends Model
             ->where('due_date', '<=', $dueDate)
             ->where('due_date', '>=', Carbon::today())
             ->get()
-            ->sum(function ($bill) {
+            ->sum(function (VendorBill $bill) {
                 return $bill->getRemainingAmount()->getMinorAmount()->toInt();
             });
 

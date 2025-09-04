@@ -20,7 +20,7 @@ use Spatie\Translatable\HasTranslations;
  *
  * @property int $id
  * @property string $code
- * @property string $name
+ * @property string|array $name
  * @property string $symbol
  * @property float $exchange_rate
  * @property bool $is_active

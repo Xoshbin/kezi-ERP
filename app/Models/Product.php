@@ -27,7 +27,7 @@ use Illuminate\Support\Carbon;
  * @property string $sku
  * @property string|null $description
  * @property Money|null $unit_price
- * @property string $type
+ * @property ProductType $type
  * @property bool $is_active
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at

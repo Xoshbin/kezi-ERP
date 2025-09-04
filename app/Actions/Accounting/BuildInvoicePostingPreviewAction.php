@@ -61,14 +61,14 @@ class BuildInvoicePostingPreviewAction
                 /** @var \App\Models\Account|null $incomeAccount */
                     'account_code' => $incomeAccount?->code,
                     'debit_minor' => 0,
-                    'credit_minor' => ($line->subtotal instanceof \Brick\Money\Money ? $line->subtotal : \Brick\Money\Money::of($line->subtotal, $currencyCode))->getMinorAmount()->toInt(),
+                    'credit_minor' => $line->subtotal->getMinorAmount()->toInt(),
                     'description' => 'Revenue: '.$line->description,
                 ];
                 $totalCredit = $totalCredit->plus($line->subtotal);
             }
 
             // Credit: tax account per line when applicable
-            if (($line->total_line_tax instanceof \Brick\Money\Money ? $line->total_line_tax : \Brick\Money\Money::of($line->total_line_tax, $currencyCode))->isPositive()) {
+            if ($line->total_line_tax->isPositive()) {
                 $tax = $line->tax;
                 $taxAccountId = $tax?->tax_account_id;
                 if (! $taxAccountId) {
@@ -76,13 +76,13 @@ class BuildInvoicePostingPreviewAction
                     $errors[] = $msg;
                     $issues[] = ['type' => 'tax_account_missing', 'message' => $msg, 'tax_id' => $tax?->id];
                 } else {
-                    $taxAccount = $tax?->taxAccount;
+                    $taxAccount = $tax->taxAccount;
                     $linesPreview[] = [
                         'account_id' => $taxAccountId,
                         'account_name' => $this->accountLabelName($taxAccount),
-                        'account_code' => $taxAccount?->code,
+                        'account_code' => $taxAccount->code,
                         'debit_minor' => 0,
-                        'credit_minor' => ($line->total_line_tax instanceof \Brick\Money\Money ? $line->total_line_tax : \Brick\Money\Money::of($line->total_line_tax, $currencyCode))->getMinorAmount()->toInt(),
+                        'credit_minor' => $line->total_line_tax->getMinorAmount()->toInt(),
                         'description' => 'Output tax: '.$line->description,
                     ];
                     $totalCredit = $totalCredit->plus($line->total_line_tax);

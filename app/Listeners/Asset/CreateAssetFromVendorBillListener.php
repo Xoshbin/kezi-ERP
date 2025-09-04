@@ -28,7 +28,7 @@ class CreateAssetFromVendorBillListener implements ShouldQueue
             $category = null;
             if ($line->asset_category_id) {
                 $category = AssetCategory::find($line->asset_category_id);
-            } elseif ($line->expenseAccount?->can_create_assets) {
+            } elseif ($line->expenseAccount->can_create_assets) {
                 // Implicit asset via account; map into a temporary category-like structure using company defaults
                 $category = new class($company, $line)
                 {
@@ -46,8 +46,8 @@ class CreateAssetFromVendorBillListener implements ShouldQueue
                                 ?? $this->company->default_outstanding_receipts_account_id
                                 ?? $this->company->default_accounts_receivable_id
                                 ?? $this->line->expense_account_id,
-                            'useful_life_years' => $this->line->product?->useful_life_years ?? 5,
-                            'depreciation_method' => $this->line->product?->depreciation_method ?? DepreciationMethod::StraightLine,
+                            'useful_life_years' => $this->line->product->useful_life_years ?? 5,
+                            'depreciation_method' => $this->line->product->depreciation_method ?? DepreciationMethod::StraightLine,
                             default => null,
                         };
                     }
