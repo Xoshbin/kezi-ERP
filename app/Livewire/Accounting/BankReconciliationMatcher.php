@@ -44,7 +44,7 @@ class BankReconciliationMatcher extends Component
                 'currency_id' => $tenant?->currency_id,
             ]);
 
-            if ($tenant && $tenant->currency) {
+            if ($tenant) {
                 $this->bankStatement->setRelation('currency', $tenant->currency);
             }
         } else {

@@ -54,7 +54,7 @@ trait TranslatableSearch
 
         return $query->where(function (Builder $subQuery) use ($search, $fields, $locales, $nonTranslatableFields) {
             // Search in translatable fields across all locales (only if model has translatable fields)
-            if (! empty($fields) && property_exists($this, 'translatable') && ! empty($this->translatable)) {
+            if (! empty($fields) && ! empty($this->translatable)) {
                 foreach ($fields as $field) {
                     foreach ($locales as $locale) {
                         // Use database-specific JSON extraction with proper column reference
@@ -112,7 +112,7 @@ trait TranslatableSearch
         $locale = $locale ?? app()->getLocale();
 
         // Check if the field is translatable
-        if (in_array($field, $this->translatable ?? []) && method_exists($this, 'getTranslation')) {
+        if (in_array($field, $this->translatable ?? [])) {
             $translation = $this->getTranslation($field, $locale);
 
             return $translation ?: ($this->$field ?? '');
@@ -179,11 +179,9 @@ trait TranslatableSearch
 
         $translations = [];
         foreach ($this->getSearchLocales() as $locale) {
-            if (method_exists($this, 'getTranslation')) {
-                $translation = $this->getTranslation($field, $locale);
-                if ($translation) {
-                    $translations[$locale] = $translation;
-                }
+            $translation = $this->getTranslation($field, $locale);
+            if ($translation) {
+                $translations[$locale] = $translation;
             }
         }
 

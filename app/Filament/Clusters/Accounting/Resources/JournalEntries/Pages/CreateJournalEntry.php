@@ -25,17 +25,15 @@ class CreateJournalEntry extends CreateRecord
         $lineDTOs = [];
         if (isset($data['lines']) && is_array($data['lines'])) {
             $currency = Currency::findOrFail($data['currency_id']);
-            if ($currency) {
-                foreach ($data['lines'] as $line) {
-                    $lineDTOs[] = new CreateJournalEntryLineDTO(
-                        account_id: $line['account_id'],
-                        debit: Money::of($line['debit'] ?? 0, $currency->code),
-                        credit: Money::of($line['credit'] ?? 0, $currency->code),
-                        description: $line['description'] ?? null,
-                        partner_id: $line['partner_id'] ?? null,
-                        analytic_account_id: $line['analytic_account_id'] ?? null
-                    );
-                }
+            foreach ($data['lines'] as $line) {
+                $lineDTOs[] = new CreateJournalEntryLineDTO(
+                    account_id: $line['account_id'],
+                    debit: Money::of($line['debit'] ?? 0, $currency->code),
+                    credit: Money::of($line['credit'] ?? 0, $currency->code),
+                    description: $line['description'] ?? null,
+                    partner_id: $line['partner_id'] ?? null,
+                    analytic_account_id: $line['analytic_account_id'] ?? null
+                );
             }
         }
         $data['lines'] = $lineDTOs;

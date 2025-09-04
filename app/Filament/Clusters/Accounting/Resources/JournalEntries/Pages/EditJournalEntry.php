@@ -60,9 +60,6 @@ class EditJournalEntry extends EditRecord
 
     protected function mutateFormDataBeforeFill(array $data): array
     {
-        if (! $this->record instanceof JournalEntry) {
-            return $data;
-        }
         /** @var JournalEntry $record */
         $record = $this->record;
 
@@ -113,12 +110,12 @@ class EditJournalEntry extends EditRecord
             }
 
             // Ensure currency consistency before adding to totals
-            if ($debitMoney && $debitMoney->isPositive()) {
+            if ($debitMoney->isPositive()) {
                 if ($debitMoney->getCurrency()->getCurrencyCode() === $currencyCode) {
                     $totalDebit = $totalDebit->plus($debitMoney);
                 }
             }
-            if ($creditMoney && $creditMoney->isPositive()) {
+            if ($creditMoney->isPositive()) {
                 if ($creditMoney->getCurrency()->getCurrencyCode() === $currencyCode) {
                     $totalCredit = $totalCredit->plus($creditMoney);
                 }
