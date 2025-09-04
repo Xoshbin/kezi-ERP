@@ -29,8 +29,10 @@ class VendorBillLineObserver
      */
     protected function updateParentVendorBillTotals(VendorBillLine $vendorBillLine): void
     {
+        // The vendorBill relationship is guaranteed to exist due to foreign key constraints,
+        // but we keep this check for defensive programming
         $vendorBill = $vendorBillLine->vendorBill;
-        if ($vendorBill) {
+        if ($vendorBill !== null) { // @phpstan-ignore-line
             $vendorBill->calculateTotalsFromLines();
 
             // Also update company currency totals if exchange rate is available

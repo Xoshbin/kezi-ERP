@@ -67,15 +67,20 @@ class MoneyColumn extends TextColumn
 
         // Strategy 2: For pivot relationships, try to get currency from the table context
         // This handles cases where we're in a relation manager and need the parent record's currency
-        if (! $currencyCode && $this->getTable()) {
-            $livewire = $this->getTable()->getLivewire();
-            if (method_exists($livewire, 'getOwnerRecord')) {
-                /** @var \Illuminate\Database\Eloquent\Model|null $ownerRecord */
-                $ownerRecord = $livewire->getOwnerRecord(); // @phpstan-ignore-line
-            } elseif (method_exists($livewire, 'getRecord')) {
-                // getRecord() exists only on some resource pages
-                /** @var \Illuminate\Database\Eloquent\Model|null $ownerRecord */
-                $ownerRecord = $livewire->getRecord(); // @phpstan-ignore-line
+        if (! $currencyCode) {
+            $table = $this->getTable();
+            if ($table !== null) { // @phpstan-ignore-line
+                $livewire = $table->getLivewire();
+                if (method_exists($livewire, 'getOwnerRecord')) {
+                    /** @var \Illuminate\Database\Eloquent\Model|null $ownerRecord */
+                    $ownerRecord = $livewire->getOwnerRecord();
+                } elseif (method_exists($livewire, 'getRecord')) {
+                    // getRecord() exists only on some resource pages
+                    /** @var \Illuminate\Database\Eloquent\Model|null $ownerRecord */
+                    $ownerRecord = $livewire->getRecord();
+                } else {
+                    $ownerRecord = null;
+                }
             } else {
                 $ownerRecord = null;
             }

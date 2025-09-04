@@ -29,8 +29,10 @@ class InvoiceLineObserver
      */
     protected function updateParentInvoiceTotals(InvoiceLine $invoiceLine): void
     {
+        // The invoice relationship is guaranteed to exist due to foreign key constraints,
+        // but we keep this check for defensive programming
         $invoice = $invoiceLine->invoice;
-        if ($invoice) {
+        if ($invoice !== null) { // @phpstan-ignore-line
             $invoice->calculateTotalsFromLines();
 
             // Also update company currency totals if exchange rate is available
