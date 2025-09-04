@@ -133,7 +133,12 @@ class BankStatementResource extends Resource
                                     return;
                                 }
 
-                                if ($journal->company_id !== (int) $tenant->getKey() || $journal->type !== JournalType::Bank) {
+                                if ($journal->company_id !== (int) $tenant->getKey()) {
+                                    $fail('The selected bank journal is invalid.');
+                                    return;
+                                }
+
+                                if ($journal->type !== JournalType::Bank) {
                                     $fail('The selected bank journal is invalid.');
                                 }
                             };

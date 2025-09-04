@@ -24,6 +24,7 @@ class AssetCategory extends Model
 
     protected $casts = [
         'is_active' => 'boolean',
+        'depreciation_method' => \App\Enums\Assets\DepreciationMethod::class,
     ];
 
     public function company(): BelongsTo

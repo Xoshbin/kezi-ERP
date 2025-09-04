@@ -4,6 +4,7 @@ namespace App\Services\Reports;
 
 use App\DataTransferObjects\Reports\PartnerLedgerDTO;
 use App\DataTransferObjects\Reports\PartnerLedgerTransactionLineDTO;
+use App\Enums\Accounting\JournalType;
 use App\Models\Company;
 use App\Models\JournalEntryLine;
 use App\Models\Partner;
@@ -39,9 +40,7 @@ class PartnerLedgerService
         $allTransactions = $receivableTransactions->concat($payableTransactions)
             ->sortBy(function (JournalEntryLine $l) {
                 $date = $l->journalEntry->entry_date;
-                $ymd = $date instanceof \Carbon\CarbonInterface
-                    ? $date->format('Ymd')
-                    : (is_string($date) ? date('Ymd', strtotime($date)) : '00000000');
+                $ymd = $date->format('Ymd');
 
                 return sprintf('%s:%010d', $ymd, (int) $l->journalEntry->getKey());
             });
@@ -142,10 +141,10 @@ class PartnerLedgerService
     {
         // Derive a business-friendly name from the journal's type.
         $type = $line->journalEntry->journal->type;
-        return match ($type instanceof \App\Enums\Accounting\JournalType ? $type->value : $type) {
-            'sale' => 'Invoice',
-            'purchase' => 'Vendor Bill',
-            'bank' => 'Payment',
+        return match ($type) {
+            JournalType::Sale => 'Invoice',
+            JournalType::Purchase => 'Vendor Bill',
+            JournalType::Bank => 'Payment',
             default => 'Journal Entry',
         };
     }

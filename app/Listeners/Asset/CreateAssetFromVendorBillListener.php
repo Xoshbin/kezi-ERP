@@ -66,9 +66,7 @@ class CreateAssetFromVendorBillListener implements ShouldQueue
                     purchase_value: (string) $line->subtotal->getAmount(),
                     salvage_value: 0,
                     useful_life_years: $category->useful_life_years,
-                    depreciation_method: is_string($category->depreciation_method)
-                        ? DepreciationMethod::from($category->depreciation_method)
-                        : $category->depreciation_method,
+                    depreciation_method: $category->depreciation_method,
                     asset_account_id: $category->asset_account_id,
                     depreciation_expense_account_id: $category->depreciation_expense_account_id,
                     accumulated_depreciation_account_id: $category->accumulated_depreciation_account_id,

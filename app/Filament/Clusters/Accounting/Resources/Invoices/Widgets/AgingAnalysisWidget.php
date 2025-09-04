@@ -63,9 +63,7 @@ class AgingAnalysisWidget extends BaseWidget
 
     private function calculateDaysOutstanding(Invoice $invoice): int
     {
-        if (! $invoice->due_date) {
-            return 0;
-        }
+        // Due date is always set for posted invoices
 
         $dueDate = Carbon::parse($invoice->due_date);
         $today = Carbon::today();
