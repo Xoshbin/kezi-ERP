@@ -73,7 +73,7 @@ class AuditLogObserver
         if (! $companyId && method_exists($model, 'company') && $model->relationLoaded('company') && $model->getAttribute('company')) {
             /** @var \App\Models\Company $company */
             $company = $model->getAttribute('company');
-            $companyId = $company?->getKey();
+            $companyId = $company->getKey();
         } elseif (! $companyId && isset($model->company_id)) {
             $companyId = $model->getAttribute('company_id');
         }

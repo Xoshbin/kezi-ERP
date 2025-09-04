@@ -21,7 +21,7 @@ use Illuminate\Support\Carbon;
  * @property int|null $journal_entry_id
  * @property Carbon $depreciation_date
  * @property \Brick\Money\Money $amount
- * @property string $status
+ * @property DepreciationEntryStatus $status
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property-read Asset $asset

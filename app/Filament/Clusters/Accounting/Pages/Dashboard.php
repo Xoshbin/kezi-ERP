@@ -30,7 +30,7 @@ class Dashboard extends BaseDashboard
     public function getSubheading(): ?string
     {
         $company = Filament::getTenant();
-        $companyName = $company?->name ?? __('dashboard.no_company');
+        $companyName = $company->name ?? __('dashboard.no_company');
 
         return __('dashboard.welcome_message', [
             'company' => $companyName,

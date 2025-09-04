@@ -22,9 +22,10 @@ use Spatie\Translatable\HasTranslations;
  * @property int $id
  * @property int $company_id
  * @property int $tax_account_id
- * @property string $name
+ * @property string|array $name
+ * @property string|array|null $label_on_invoices
  * @property float $rate
- * @property string $type
+ * @property TaxType $type
  * @property bool $is_active
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at

@@ -71,7 +71,7 @@ class EditJournalEntry extends EditRecord
 
         // Resolve currency code safely, prefer eager-loaded relation
         $currencyModel = $record->relationLoaded('currency') ? $record->getRelation('currency') : $record->currency()->first();
-        $currencyCode = $currencyModel?->code ?? ($record->company?->currency?->code ?? 'USD');
+        $currencyCode = $currencyModel->code ?? ($record->company->currency->code ?? 'USD');
 
         // Initialize totals
         $totalDebit = Money::zero($currencyCode);
@@ -92,7 +92,7 @@ class EditJournalEntry extends EditRecord
 
             // Check if this is a multi-currency transaction with original amounts
             $hasOriginalAmounts = ($line->original_currency_amount ?? null) && ($line->original_currency_id ?? null);
-            $isMultiCurrency = $hasOriginalAmounts && $line->original_currency_id != $record->company?->currency_id;
+            $isMultiCurrency = $hasOriginalAmounts && $line->original_currency_id != $record->company->currency_id;
 
             if ($isMultiCurrency) {
                 // Multi-currency entry: use original amounts in transaction currency

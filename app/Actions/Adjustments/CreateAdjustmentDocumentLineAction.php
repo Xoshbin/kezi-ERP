@@ -15,10 +15,8 @@ class CreateAdjustmentDocumentLineAction
     {
         $currency = $adjustmentDocument->currency;
 
-        // 1. Explicitly create the Money object from the DTO.
-        $unitPrice = $dto->unit_price instanceof Money
-            ? $dto->unit_price
-            : Money::of($dto->unit_price, $currency->code);
+        // 1. Use the Money object from the DTO.
+        $unitPrice = $dto->unit_price;
 
         // 2. Perform calculations with full context.
         $subtotal = $unitPrice->multipliedBy($dto->quantity, RoundingMode::HALF_UP);

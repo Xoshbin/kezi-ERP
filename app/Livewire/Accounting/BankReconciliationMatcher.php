@@ -51,7 +51,7 @@ class BankReconciliationMatcher extends Component
             $this->bankStatement = $bankStatement;
         }
 
-        $currencyCode = $this->bankStatement->currency?->code ?? $tenant?->currency?->code ?? 'IQD'; // fallback IQD
+        $currencyCode = $this->bankStatement->currency->code ?? $tenant->currency->code ?? 'IQD'; // fallback IQD
 
         // Initialize totals
         $this->bankTotal = Money::of(0, $currencyCode);

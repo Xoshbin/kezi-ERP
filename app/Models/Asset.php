@@ -32,8 +32,8 @@ use Illuminate\Support\Carbon;
  * @property Money $purchase_value
  * @property Money $salvage_value
  * @property int $useful_life_years
- * @property string $depreciation_method
- * @property string $status
+ * @property DepreciationMethod $depreciation_method
+ * @property AssetStatus $status
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property-read Account $accumulatedDepreciationAccount
