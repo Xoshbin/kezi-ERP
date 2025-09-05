@@ -225,7 +225,7 @@ class PayrollService
      *
      * @param  array<string, mixed>  $attendanceData
      * @param  array<string, mixed>  $deductions
-     * @return array<string, mixed>
+     * @return list<PayrollLineDTO>
      */
     private function createPayrollLines(Employee $employee, Money $baseSalary, array $attendanceData, array $deductions): array
     {

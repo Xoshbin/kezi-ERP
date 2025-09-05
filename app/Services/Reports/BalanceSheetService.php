@@ -31,6 +31,7 @@ class BalanceSheetService
 
         // 3. Get account models to access translated names
         $accountIds = $accountBalances->pluck('account_id')->unique();
+        /** @var \Illuminate\Database\Eloquent\Collection<int, \App\Models\Account> $accounts */
         $accounts = $company->accounts()->whereIn('id', $accountIds)->get()->keyBy('id');
 
         // 4. Process and assemble the DTO
@@ -65,10 +66,11 @@ class BalanceSheetService
     }
 
     /**
-     * @return Collection<int, object>
+     * @return \Illuminate\Support\Collection<int, object>
      */
     private function getAccountBalances(Company $company, Carbon $asOfDate): Collection
     {
+        /** @var \Illuminate\Support\Collection<int, object> */
         return JournalEntryLine::query()
             ->select([
                 'accounts.id as account_id',
@@ -128,10 +130,10 @@ class BalanceSheetService
     }
 
     /**
-     * @param  Collection<int, object>  $balances
+     * @param  \Illuminate\Support\Collection<int, object>  $balances
      * @param  array<AccountType>  $types
-     * @param  Collection<int, Account>  $accounts
-     * @return Collection<int, object>
+     * @param  \Illuminate\Database\Eloquent\Collection<int, \App\Models\Account>  $accounts
+     * @return \Illuminate\Support\Collection<int, ReportLineDTO>
      */
     private function mapBalancesToReportLines(Collection $balances, array $types, string $currency, Collection $accounts, bool $negate = false): Collection
     {
@@ -150,7 +152,7 @@ class BalanceSheetService
     }
 
     /**
-     * @param  Collection<int, ReportLineDTO>  $lines
+     * @param  \Illuminate\Support\Collection<int, ReportLineDTO>  $lines
      */
     private function sumLines(Collection $lines, Money $zero): Money
     {

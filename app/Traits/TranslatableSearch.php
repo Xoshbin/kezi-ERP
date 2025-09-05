@@ -154,10 +154,12 @@ trait TranslatableSearch
 
         if ($formatter) {
             /** @var array<int, string> */
+
             return $results->mapWithKeys($formatter)->toArray();
         }
 
         /** @var array<int, string> */
+
         return $results->mapWithKeys(function ($model) {
             $label = $model->getTranslatedLabel('name');
 
@@ -170,13 +172,14 @@ trait TranslatableSearch
      * Useful for API responses or other contexts where you need the full model data.
      *
      * @param array<int, string>|null $searchFields
-     * @return \Illuminate\Database\Eloquent\Collection<int, static>
+     * @return \Illuminate\Database\Eloquent\Collection<int, \Illuminate\Database\Eloquent\Model>
      */
     public static function searchWithTranslatedLabels(
         string $search,
         int $limit = 50,
         ?array $searchFields = null
     ): Collection {
+
         return static::searchTranslatable($search, $searchFields)
             ->limit($limit)
             ->get()

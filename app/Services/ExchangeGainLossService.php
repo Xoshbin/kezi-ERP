@@ -296,7 +296,7 @@ class ExchangeGainLossService
      * Get accounts that need revaluation.
      *
      * @param  array<int>  $accountIds
-     * @return Collection<int, Account>
+     * @return \Illuminate\Database\Eloquent\Collection<int, Account>
      */
     protected function getAccountsForRevaluation(Company $company, array $accountIds = []): Collection
     {
@@ -309,6 +309,7 @@ class ExchangeGainLossService
             $query->whereIn('type', ['ASSET', 'LIABILITY']);
         }
 
+        /** @var \Illuminate\Database\Eloquent\Collection<int, Account> */
         return $query->get();
     }
 
