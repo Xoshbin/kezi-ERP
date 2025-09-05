@@ -227,10 +227,18 @@ class Partner extends Model
         if (! in_array($this->type, [PartnerType::Customer, PartnerType::Both])) {
             $this->loadMissing('company.currency');
 
+            if (!$this->company?->currency) {
+                throw new \RuntimeException('Partner company or currency not found');
+            }
+
             return Money::of(0, $this->company->currency->code);
         }
 
         $this->loadMissing('company.currency');
+
+        if (!$this->company?->currency) {
+            throw new \RuntimeException('Partner company or currency not found');
+        }
 
         /** @var \Illuminate\Database\Eloquent\Collection<int, Invoice> $invoices */
         $invoices = $this->invoices()
@@ -253,10 +261,18 @@ class Partner extends Model
         if (! in_array($this->type, [PartnerType::Vendor, PartnerType::Both])) {
             $this->loadMissing('company.currency');
 
+            if (!$this->company?->currency) {
+                throw new \RuntimeException('Partner company or currency not found');
+            }
+
             return Money::of(0, $this->company->currency->code);
         }
 
         $this->loadMissing('company.currency');
+
+        if (!$this->company?->currency) {
+            throw new \RuntimeException('Partner company or currency not found');
+        }
 
         /** @var \Illuminate\Database\Eloquent\Collection<int, VendorBill> $vendorBills */
         $vendorBills = $this->vendorBills()
@@ -279,10 +295,18 @@ class Partner extends Model
         if (! in_array($this->type, [PartnerType::Customer, PartnerType::Both])) {
             $this->loadMissing('company.currency');
 
+            if (!$this->company?->currency) {
+                throw new \RuntimeException('Partner company or currency not found');
+            }
+
             return Money::of(0, $this->company->currency->code);
         }
 
         $this->loadMissing('company.currency');
+
+        if (!$this->company?->currency) {
+            throw new \RuntimeException('Partner company or currency not found');
+        }
 
         /** @var \Illuminate\Database\Eloquent\Collection<int, Invoice> $overdueInvoices */
         $overdueInvoices = $this->invoices()
@@ -306,10 +330,18 @@ class Partner extends Model
         if (! in_array($this->type, [PartnerType::Vendor, PartnerType::Both])) {
             $this->loadMissing('company.currency');
 
+            if (!$this->company?->currency) {
+                throw new \RuntimeException('Partner company or currency not found');
+            }
+
             return Money::of(0, $this->company->currency->code);
         }
 
         $this->loadMissing('company.currency');
+
+        if (!$this->company?->currency) {
+            throw new \RuntimeException('Partner company or currency not found');
+        }
 
         /** @var \Illuminate\Database\Eloquent\Collection<int, VendorBill> $overdueBills */
         $overdueBills = $this->vendorBills()
@@ -360,6 +392,10 @@ class Partner extends Model
     {
         $this->loadMissing('company.currency');
 
+        if (!$this->company?->currency) {
+            throw new \RuntimeException('Partner company or currency not found');
+        }
+
         $invoiceTotal = $this->invoices()
             ->whereIn('status', [InvoiceStatus::Posted, InvoiceStatus::Paid])
             ->sum('total_amount');
@@ -388,10 +424,18 @@ class Partner extends Model
         if (! in_array($this->type, [PartnerType::Customer, PartnerType::Both])) {
             $this->loadMissing('company.currency');
 
+            if (!$this->company?->currency) {
+                throw new \RuntimeException('Partner company or currency not found');
+            }
+
             return Money::of(0, $this->company->currency->code);
         }
 
         $this->loadMissing('company.currency');
+
+        if (!$this->company?->currency) {
+            throw new \RuntimeException('Partner company or currency not found');
+        }
 
         $dueDate = Carbon::today()->addDays($days);
 
@@ -418,10 +462,18 @@ class Partner extends Model
         if (! in_array($this->type, [PartnerType::Vendor, PartnerType::Both])) {
             $this->loadMissing('company.currency');
 
+            if (!$this->company?->currency) {
+                throw new \RuntimeException('Partner company or currency not found');
+            }
+
             return Money::of(0, $this->company->currency->code);
         }
 
         $this->loadMissing('company.currency');
+
+        if (!$this->company?->currency) {
+            throw new \RuntimeException('Partner company or currency not found');
+        }
 
         $dueDate = Carbon::today()->addDays($days);
 
@@ -463,6 +515,10 @@ class Partner extends Model
     public function getMonthlyTransactionValue(): Money
     {
         $this->loadMissing('company.currency');
+
+        if (!$this->company?->currency) {
+            throw new \RuntimeException('Partner company or currency not found');
+        }
 
         $startOfMonth = Carbon::now()->startOfMonth();
         $endOfMonth = Carbon::now()->endOfMonth();

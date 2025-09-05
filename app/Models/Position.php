@@ -197,6 +197,10 @@ class Position extends Model
             return null;
         }
 
+        if (!$this->salaryCurrency) {
+            throw new \RuntimeException('Position salary currency not found');
+        }
+
         if ($this->min_salary && $this->max_salary) {
             return $this->min_salary->formatTo($this->salaryCurrency->code).' - '.
                    $this->max_salary->formatTo($this->salaryCurrency->code);
@@ -204,6 +208,10 @@ class Position extends Model
 
         if ($this->min_salary) {
             return 'From '.$this->min_salary->formatTo($this->salaryCurrency->code);
+        }
+
+        if (!$this->max_salary) {
+            throw new \RuntimeException('Position max salary not found');
         }
 
         return 'Up to '.$this->max_salary->formatTo($this->salaryCurrency->code);

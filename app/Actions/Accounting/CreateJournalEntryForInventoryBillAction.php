@@ -39,6 +39,9 @@ class CreateJournalEntryForInventoryBillAction
             $totalAPCredit = Money::of(0, $currency->code);
 
             foreach ($storableLines as $line) {
+                if (!$line->product) {
+                    throw new RuntimeException("Product is missing for line ID {$line->id}.");
+                }
                 $inventoryAccount = $line->product->inventoryAccount;
                 if (! $inventoryAccount) {
                     throw new RuntimeException("Product ID {$line->product_id} is missing default inventory account.");
@@ -82,6 +85,10 @@ class CreateJournalEntryForInventoryBillAction
                 partner_id: $vendorBill->vendor_id,
                 analytic_account_id: null,
             );
+
+            if (!$company->default_purchase_journal_id) {
+                throw new \InvalidArgumentException('Company default purchase journal is not configured');
+            }
 
             $journalEntryDTO = new CreateJournalEntryDTO(
                 company_id: $company->id,

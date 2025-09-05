@@ -27,8 +27,12 @@ class CreateAdjustmentDocumentAction
         $company = Company::findOrFail($dto->company_id);
         $this->lockDateService->enforce($company, Carbon::parse($dto->date));
 
-        return DB::transaction(function () use ($dto) {
-            $currencyCode = Currency::find($dto->currency_id)->code;
+        return DB::transaction(function () use ($dto): AdjustmentDocument {
+            $currency = Currency::find($dto->currency_id);
+            if (!$currency) {
+                throw new \InvalidArgumentException('Currency not found');
+            }
+            $currencyCode = $currency->code;
 
             // Create the header first with zero totals
             $adjustmentDocument = AdjustmentDocument::create([
@@ -58,7 +62,12 @@ class CreateAdjustmentDocumentAction
             $this->processMultiCurrencyAmounts($adjustmentDocument);
 
             // Return the fresh model with all updates
-            return $adjustmentDocument->fresh();
+            $fresh = $adjustmentDocument->fresh();
+            if (!$fresh) {
+                throw new \RuntimeException('Failed to refresh adjustment document after creation');
+            }
+
+            return $fresh;
         });
     }
 
@@ -157,6 +166,10 @@ class CreateAdjustmentDocumentAction
         /** @var \App\Models\AdjustmentDocument $doc */
         $doc = $line->adjustmentDocument;
 
+        if (!$line->unit_price) {
+            throw new \InvalidArgumentException('Line unit price is required');
+        }
+
         $unitPriceCompanyCurrency = $this->currencyConverter->convertToBaseCurrency(
             $line->unit_price,
             $doc->currency,
@@ -165,6 +178,10 @@ class CreateAdjustmentDocumentAction
             $company
         );
 
+        if (!$line->subtotal) {
+            throw new \InvalidArgumentException('Line subtotal is required');
+        }
+
         $subtotalCompanyCurrency = $this->currencyConverter->convertToBaseCurrency(
             $line->subtotal,
             $doc->currency,
@@ -172,6 +189,10 @@ class CreateAdjustmentDocumentAction
             $doc->date,
             $company
         );
+
+        if (!$line->total_line_tax) {
+            throw new \InvalidArgumentException('Line total tax is required');
+        }
 
         $totalLineTaxCompanyCurrency = $this->currencyConverter->convertToBaseCurrency(
             $line->total_line_tax,

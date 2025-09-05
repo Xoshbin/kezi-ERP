@@ -21,6 +21,11 @@ class CreateJournalEntryForReconciliationAction
         $company = $payment->company;
         $journal = $payment->journal;
         $currency = $journal->currency;
+
+        if (!$currency) {
+            throw new \InvalidArgumentException('Journal currency is not configured');
+        }
+
         $currencyCode = $currency->code;
 
         // The amount must be in the currency of the journal.
