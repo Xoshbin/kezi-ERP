@@ -74,6 +74,6 @@ class PayrollObserver
             $nextNumber = 1;
         }
 
-        return $prefix.$year.$month.str_pad($nextNumber, 4, '0', STR_PAD_LEFT);
+        return $prefix.$year.$month.str_pad((string) $nextNumber, 4, '0', STR_PAD_LEFT);
     }
 }

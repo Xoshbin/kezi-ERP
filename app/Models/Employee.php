@@ -422,6 +422,6 @@ class Employee extends Model
             $nextNumber = 1;
         }
 
-        return $prefix.$year.str_pad($nextNumber, 4, '0', STR_PAD_LEFT);
+        return $prefix.$year.str_pad((string) $nextNumber, 4, '0', STR_PAD_LEFT);
     }
 }

@@ -83,8 +83,8 @@ class ViewTaxReport extends Page
     public function generateReport(): void
     {
         $this->validate([
-            'startDate' => 'required|date',
-            'endDate' => 'required|date|after_or_equal:startDate',
+            'startDate' => ['required', 'date'],
+            'endDate' => ['required', 'date', 'after_or_equal:startDate'],
         ]);
 
         $company = Company::find(Filament::auth()->user()->company_id);

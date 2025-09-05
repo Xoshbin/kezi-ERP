@@ -146,7 +146,7 @@ class PaymentResource extends Resource
                             return $record->reference;
                         }
 
-                        return 'DRAFT-'.str_pad($record->id, 5, '0', STR_PAD_LEFT);
+                        return 'DRAFT-'.str_pad((string) $record->id, 5, '0', STR_PAD_LEFT);
                     })
                     ->badge()
                     ->color(fn (Payment $record): string => $record->reference ? 'success' : 'warning')

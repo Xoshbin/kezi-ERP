@@ -63,7 +63,7 @@ class CreateAssetFromVendorBillListener implements ShouldQueue
                     company_id: $vendorBill->company_id,
                     name: $line->product->name ?? $line->description,
                     purchase_date: $vendorBill->bill_date,
-                    purchase_value: (string) $line->subtotal->getAmount(),
+                    purchase_value: (int) $line->subtotal->getAmount()->toFloat(),
                     salvage_value: 0,
                     useful_life_years: $category->useful_life_years,
                     depreciation_method: $category->depreciation_method,

@@ -59,7 +59,11 @@ class NumberingSettingsResource extends Resource
                         ->rules([
                             'required',
                             function () {
-                                return new NumberingSettingsChangeRule(Filament::getTenant());
+                                $tenant = Filament::getTenant();
+                                if (!$tenant instanceof \App\Models\Company) {
+                                    throw new \Exception('Company not found');
+                                }
+                                return new NumberingSettingsChangeRule($tenant);
                             },
                         ])
                         ->live()
@@ -82,7 +86,11 @@ class NumberingSettingsResource extends Resource
                             'required',
                             'max:10',
                             function () {
-                                return new NumberingSettingsChangeRule(Filament::getTenant());
+                                $tenant = Filament::getTenant();
+                                if (!$tenant instanceof \App\Models\Company) {
+                                    throw new \Exception('Company not found');
+                                }
+                                return new NumberingSettingsChangeRule($tenant);
                             },
                         ])
                         ->live()
@@ -109,7 +117,11 @@ class NumberingSettingsResource extends Resource
                             'min:3',
                             'max:10',
                             function () {
-                                return new NumberingSettingsChangeRule(Filament::getTenant());
+                                $tenant = Filament::getTenant();
+                                if (!$tenant instanceof \App\Models\Company) {
+                                    throw new \Exception('Company not found');
+                                }
+                                return new NumberingSettingsChangeRule($tenant);
                             },
                         ])
                         ->columnSpan(1),
@@ -139,7 +151,11 @@ class NumberingSettingsResource extends Resource
                         ->rules([
                             'required',
                             function () {
-                                return new NumberingSettingsChangeRule(Filament::getTenant());
+                                $tenant = Filament::getTenant();
+                                if (!$tenant instanceof \App\Models\Company) {
+                                    throw new \Exception('Company not found');
+                                }
+                                return new NumberingSettingsChangeRule($tenant);
                             },
                         ])
                         ->live()
@@ -162,7 +178,11 @@ class NumberingSettingsResource extends Resource
                             'required',
                             'max:10',
                             function () {
-                                return new NumberingSettingsChangeRule(Filament::getTenant());
+                                $tenant = Filament::getTenant();
+                                if (!$tenant instanceof \App\Models\Company) {
+                                    throw new \Exception('Company not found');
+                                }
+                                return new NumberingSettingsChangeRule($tenant);
                             },
                         ])
                         ->live()
@@ -189,7 +209,11 @@ class NumberingSettingsResource extends Resource
                             'min:3',
                             'max:10',
                             function () {
-                                return new NumberingSettingsChangeRule(Filament::getTenant());
+                                $tenant = Filament::getTenant();
+                                if (!$tenant instanceof \App\Models\Company) {
+                                    throw new \Exception('Company not found');
+                                }
+                                return new NumberingSettingsChangeRule($tenant);
                             },
                         ])
                         ->columnSpan(1),

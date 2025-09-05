@@ -74,7 +74,7 @@ class Sequence extends Model
         $this->refresh();
 
         // Format the number with prefix and padding
-        return $this->prefix.'-'.str_pad($this->current_number, $this->padding, '0', STR_PAD_LEFT);
+        return $this->prefix.'-'.str_pad((string) $this->current_number, $this->padding, '0', STR_PAD_LEFT);
     }
 
     /**

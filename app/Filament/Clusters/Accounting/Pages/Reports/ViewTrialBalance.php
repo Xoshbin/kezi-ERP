@@ -82,7 +82,7 @@ class ViewTrialBalance extends Page
     public function generateReport(): void
     {
         $this->validate([
-            'asOfDate' => 'required|date',
+            'asOfDate' => ['required', 'date'],
         ]);
 
         $company = Filament::getTenant();

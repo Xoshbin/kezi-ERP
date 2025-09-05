@@ -82,10 +82,14 @@ class ViewAgedPayables extends Page
     public function generateReport(): void
     {
         $this->validate([
-            'asOfDate' => 'required|date',
+            'asOfDate' => ['required', 'date'],
         ]);
 
         $company = Filament::getTenant();
+        if (!$company instanceof \App\Models\Company) {
+            throw new \Exception('Company not found');
+        }
+
         $service = app(AgedPayableService::class);
 
         $report = $service->generate(
@@ -123,7 +127,7 @@ class ViewAgedPayables extends Page
             'totalBucket90_plusAmount' => $report->totalBucket90_plus->getAmount()->toFloat(),
             'grandTotalDue' => NumberFormatter::formatMoneyTo($report->grandTotalDue),
             'grandTotalDueAmount' => $report->grandTotalDue->getAmount()->toFloat(),
-            'companyName' => method_exists($company, 'getAttribute') ? (string) $company->getAttribute('name') : (string) ($company->name ?? ''),
+            'companyName' => (string) ($company->name ?? ''),
             'asOfDate' => $this->asOfDate,
         ];
     }

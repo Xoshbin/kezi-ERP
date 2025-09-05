@@ -104,7 +104,7 @@ class EditInvoice extends EditRecord
                     foreach ($rows as $row) {
                         $csv .= implode(',', array_map(fn ($v) => '"'.str_replace('"', '""', (string) $v).'"', $row))."\n";
                     }
-                    $filename = 'invoice-'.($record->invoice_number ?: ('DRAFT-'.str_pad($record->id, 5, '0', STR_PAD_LEFT))).'-preview.csv';
+                    $filename = 'invoice-'.($record->invoice_number ?: ('DRAFT-'.str_pad((string) $record->id, 5, '0', STR_PAD_LEFT))).'-preview.csv';
 
                     return response()->streamDownload(function () use ($csv): void {
                         echo $csv;
@@ -124,7 +124,7 @@ class EditInvoice extends EditRecord
                         'preview' => $preview,
                         'invoice' => $record,
                     ]);
-                    $filename = 'invoice-'.($record->invoice_number ?: ('DRAFT-'.str_pad($record->id, 5, '0', STR_PAD_LEFT))).'-preview.pdf';
+                    $filename = 'invoice-'.($record->invoice_number ?: ('DRAFT-'.str_pad((string) $record->id, 5, '0', STR_PAD_LEFT))).'-preview.pdf';
 
                     return response()->streamDownload(function () use ($pdf): void {
                         echo $pdf->output();
@@ -260,6 +260,9 @@ class EditInvoice extends EditRecord
 
             DeleteAction::make()
                 ->action(function (Model $record) {
+                    if (!$record instanceof \App\Models\Invoice) {
+                        throw new \Exception('Invalid record type');
+                    }
                     app(InvoiceService::class)->delete($record);
                     $this->redirect(InvoiceResource::getUrl('index'));
                 }),
