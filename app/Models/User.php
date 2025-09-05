@@ -93,10 +93,11 @@ class User extends Authenticatable implements FilamentUser, HasTenants
     }
 
     /**
-     * @return Collection<int, Company>
+     * @return \Illuminate\Database\Eloquent\Collection<int, Company>
      */
     public function getTenants(Panel $panel): Collection
     {
+        /** @var \Illuminate\Database\Eloquent\Collection<int, Company> */
         return $this->companies;
     }
 

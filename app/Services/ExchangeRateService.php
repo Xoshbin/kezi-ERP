@@ -146,10 +146,11 @@ class ExchangeRateService
     /**
      * Get historical rates for a currency within a date range.
      *
-     * @return Collection<int, ExchangeRate>
+     * @return \Illuminate\Database\Eloquent\Collection<int, \App\Models\CurrencyRate>
      */
     public function getHistoricalRates(Currency $currency, Carbon $startDate, Carbon $endDate)
     {
+        /** @var \Illuminate\Database\Eloquent\Collection<int, \App\Models\CurrencyRate> */
         return $currency->rates()
             ->whereBetween('effective_date', [$startDate->toDateString(), $endDate->toDateString()])
             ->orderBy('effective_date', 'asc')
@@ -185,7 +186,7 @@ class ExchangeRateService
      * Validate that all active currencies have recent rates.
      *
      * @param  int  $maxDaysOld  Maximum age of rates in days
-     * @return array<string, mixed> Currencies missing recent rates
+     * @return list<array<string, mixed>> Currencies missing recent rates
      */
     public function validateRecentRates(int $maxDaysOld = 7): array
     {

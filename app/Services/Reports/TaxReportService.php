@@ -26,6 +26,7 @@ class TaxReportService
             ->get();
 
         // Initialize collections for aggregated data
+        /** @var Collection<string, array<string, mixed>> $taxData */
         $taxData = new Collection;
 
         // Get all posted journal entries in the period from sale and purchase journals
@@ -67,8 +68,9 @@ class TaxReportService
             }
 
             // Initialize tax data if not exists
-            if (! $taxData->has($tax->id)) {
-                $taxData->put($tax->id, [
+            $taxKey = (string) $tax->id;
+            if (! $taxData->has($taxKey)) {
+                $taxData->put($taxKey, [
                     'tax' => $tax,
                     'net_amount' => Money::zero($currency),
                     'tax_amount' => Money::zero($currency),
@@ -81,7 +83,7 @@ class TaxReportService
             $lineAmount = $taxLine->credit->minus($taxLine->debit);
 
             // Accumulate the tax amount
-            $currentData = $taxData->get($tax->id);
+            $currentData = $taxData->get($taxKey);
             $currentData['tax_amount'] = $currentData['tax_amount']->plus($lineAmount->abs());
 
             // Calculate net amount from tax amount and rate
@@ -90,7 +92,7 @@ class TaxReportService
                 $currentData['net_amount'] = $netFromTax;
             }
 
-            $taxData->put($tax->id, $currentData);
+            $taxData->put($taxKey, $currentData);
         }
     }
 
