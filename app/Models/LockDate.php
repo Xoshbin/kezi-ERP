@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 #[ObservedBy([LockDateObserver::class])]
 class LockDate extends Model
 {
+    /** @use HasFactory<\Database\Factories\LockDateFactory> */
     use HasFactory;
 
     protected $fillable = [
@@ -24,6 +25,15 @@ class LockDate extends Model
         'lock_type' => LockDateType::class,
         'locked_until' => 'date',
     ];
+
+    /**
+
+
+     * @return BelongsTo<Company, static>
+
+
+     */
+
 
     public function company(): BelongsTo
     {

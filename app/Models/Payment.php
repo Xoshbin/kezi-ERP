@@ -74,6 +74,7 @@ use Illuminate\Support\Carbon;
 #[ObservedBy([AuditLogObserver::class, PaymentObserver::class])]
 class Payment extends Model
 {
+    /** @use HasFactory<\Database\Factories\PaymentFactory> */
     use HasFactory;
 
     /**

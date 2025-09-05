@@ -62,6 +62,7 @@ use Illuminate\Support\Carbon;
  */
 class AdjustmentDocument extends Model
 {
+    /** @use HasFactory<\Database\Factories\AdjustmentDocumentFactory> */
     use HasFactory;
 
     /**
@@ -160,6 +161,9 @@ class AdjustmentDocument extends Model
     | crucial for a cohesive accounting system.
     */
 
+    /**
+     * @return HasMany<AdjustmentDocumentLine, static>
+     */
     public function lines(): HasMany
     {
         return $this->hasMany(AdjustmentDocumentLine::class);
@@ -168,6 +172,8 @@ class AdjustmentDocument extends Model
     /**
      * Get the company that owns the adjustment document.
      * An adjustment document always belongs to a specific company.
+     *
+     * @return BelongsTo<Company, static>
      */
     public function company(): BelongsTo
     {
@@ -178,6 +184,8 @@ class AdjustmentDocument extends Model
      * Get the original invoice that this adjustment document relates to (if any).
      * This is used for credit notes issued against customer invoices.
      * It's nullable as not all adjustment documents will be for invoices.
+     *
+     * @return BelongsTo<Invoice, static>
      */
     public function originalInvoice(): BelongsTo
     {
@@ -188,6 +196,8 @@ class AdjustmentDocument extends Model
      * Get the original vendor bill that this adjustment document relates to (if any).
      * This is used for debit notes issued against vendor bills.
      * It's nullable as not all adjustment documents will be for vendor bills.
+     *
+     * @return BelongsTo<VendorBill, static>
      */
     public function originalVendorBill(): BelongsTo
     {
@@ -198,6 +208,8 @@ class AdjustmentDocument extends Model
      * Get the journal entry associated with this adjustment document.
      * Once an adjustment document is 'Posted', it generates a corresponding
      * journal entry, which is the immutable record in the general ledger.
+     *
+     * @return BelongsTo<JournalEntry, static>
      */
     public function journalEntry(): BelongsTo
     {
@@ -223,6 +235,8 @@ class AdjustmentDocument extends Model
     /**
      * Get the currency of this invoice.
      * Every invoice operates in a specific currency. [1]
+     *
+     * @return BelongsTo<Currency, static>
      */
     public function currency(): BelongsTo
     {

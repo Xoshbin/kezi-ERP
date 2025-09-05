@@ -72,6 +72,8 @@ class AnalyticAccountPlanPivot extends Pivot
 
     /**
      * Get the company that this rate belongs to.
+     *
+     * @return BelongsTo<Company, static>
      */
     public function company(): BelongsTo
     {
@@ -80,6 +82,8 @@ class AnalyticAccountPlanPivot extends Pivot
 
     /**
      * Get the analytic account that this pivot record is associated with.
+     *
+     * @return BelongsTo<AnalyticAccount, static>
      */
     public function analyticAccount(): BelongsTo
     {
@@ -88,6 +92,8 @@ class AnalyticAccountPlanPivot extends Pivot
 
     /**
      * Get the analytic plan that this pivot record is associated with.
+     *
+     * @return BelongsTo<AnalyticPlan, static>
      */
     public function analyticPlan(): BelongsTo
     {

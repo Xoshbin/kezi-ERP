@@ -55,6 +55,7 @@ use Illuminate\Support\Carbon;
 #[ObservedBy([AuditLogObserver::class])]
 class EmploymentContract extends Model
 {
+    /** @use HasFactory<\Database\Factories\EmploymentContractFactory> */
     use HasFactory;
 
     /**
@@ -146,6 +147,12 @@ class EmploymentContract extends Model
     /**
      * Get the company that owns the EmploymentContract.
      */
+    /**
+
+     * @return BelongsTo<Company, static>
+
+     */
+
     public function company(): BelongsTo
     {
         return $this->belongsTo(Company::class);
@@ -154,6 +161,12 @@ class EmploymentContract extends Model
     /**
      * Get the employee this contract belongs to.
      */
+    /**
+
+     * @return BelongsTo<Employee, static>
+
+     */
+
     public function employee(): BelongsTo
     {
         return $this->belongsTo(Employee::class);
@@ -162,6 +175,12 @@ class EmploymentContract extends Model
     /**
      * Get the currency for this contract.
      */
+    /**
+
+     * @return BelongsTo<Currency, static>
+
+     */
+
     public function currency(): BelongsTo
     {
         return $this->belongsTo(Currency::class);
@@ -170,6 +189,12 @@ class EmploymentContract extends Model
     /**
      * Get the user who approved this contract.
      */
+    /**
+
+     * @return BelongsTo<User, static>
+
+     */
+
     public function approvedBy(): BelongsTo
     {
         return $this->belongsTo(User::class, 'approved_by_user_id');

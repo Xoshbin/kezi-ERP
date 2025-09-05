@@ -10,6 +10,9 @@ use Illuminate\Support\Collection;
  *
  * Provides multi-locale search functionality for models using Spatie Laravel Translatable.
  * Searches across all translation locales and returns results formatted in current locale.
+ *
+ * @mixin \Illuminate\Database\Eloquent\Model
+ * @mixin \Spatie\Translatable\HasTranslations
  */
 trait TranslatableSearch
 {
@@ -126,6 +129,7 @@ trait TranslatableSearch
 
         // Check if the field is translatable and the model has the HasTranslations trait
         if (in_array($field, $this->translatable ?? []) && $this->hasTranslationsSupport()) {
+            // Call getTranslation method directly since we've verified it exists
             $translation = $this->getTranslation($field, $locale);
 
             return $translation ?: ($this->$field ?? '');
@@ -153,16 +157,11 @@ trait TranslatableSearch
             ->get();
 
         if ($formatter) {
-            /** @var array<int, string> */
-
             return $results->mapWithKeys($formatter)->toArray();
         }
 
-        /** @var array<int, string> */
-
         return $results->mapWithKeys(function ($model) {
             $label = $model->getTranslatedLabel('name');
-
             return [$model->id => $label];
         })->toArray();
     }
@@ -205,6 +204,7 @@ trait TranslatableSearch
 
         $translations = [];
         foreach ($this->getSearchLocales() as $locale) {
+            // Call getTranslation method directly since we've verified it exists
             $translation = $this->getTranslation($field, $locale);
             if ($translation) {
                 $translations[$locale] = $translation;
@@ -216,10 +216,10 @@ trait TranslatableSearch
 
     /**
      * Check if the model has translation support.
-     * This method helps avoid PHPStan warnings about method_exists always being true.
+     * This method checks if the model uses the HasTranslations trait.
      */
     private function hasTranslationsSupport(): bool
     {
-        return method_exists($this, 'getTranslation');
+        return in_array(\Spatie\Translatable\HasTranslations::class, class_uses_recursive($this));
     }
 }

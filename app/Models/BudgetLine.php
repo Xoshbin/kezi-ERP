@@ -44,6 +44,7 @@ use Illuminate\Support\Carbon;
  */
 class BudgetLine extends Model
 {
+    /** @use HasFactory<\Database\Factories\BudgetLineFactory> */
     use HasFactory;
 
     /**
@@ -95,6 +96,12 @@ class BudgetLine extends Model
     /**
      * Get the company that this rate belongs to.
      */
+    /**
+
+     * @return BelongsTo<Company, static>
+
+     */
+
     public function company(): BelongsTo
     {
         return $this->belongsTo(Company::class);
@@ -103,6 +110,12 @@ class BudgetLine extends Model
     /**
      * Get the budget that owns this budget line.
      */
+    /**
+
+     * @return BelongsTo<Budget, static>
+
+     */
+
     public function budget(): BelongsTo
     {
         return $this->belongsTo(Budget::class);
@@ -112,6 +125,12 @@ class BudgetLine extends Model
      * Get the analytic account associated with this budget line (if applicable).
      * This is crucial for granular cost and revenue tracking against projects or departments [3, 5].
      */
+    /**
+
+     * @return BelongsTo<AnalyticAccount, static>
+
+     */
+
     public function analyticAccount(): BelongsTo
     {
         // AnalyticAccount model is typically in App\Models [7]
@@ -122,6 +141,12 @@ class BudgetLine extends Model
      * Get the general ledger account associated with this budget line (if applicable).
      * This links the budget line to the Chart of Accounts [3, 4].
      */
+    /**
+
+     * @return BelongsTo<Account, static>
+
+     */
+
     public function account(): BelongsTo
     {
         // Account model is typically in App\Models [4, 8]

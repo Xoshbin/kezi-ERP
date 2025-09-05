@@ -29,19 +29,17 @@ class AdjustmentDocumentLineObserver
      */
     protected function updateParentAdjustmentDocumentTotals(AdjustmentDocumentLine $adjustmentDocumentLine): void
     {
-        // The adjustmentDocument relationship is guaranteed to exist due to foreign key constraints,
-        // but we keep this check for defensive programming
+        // The adjustmentDocument relationship is guaranteed to exist due to foreign key constraints
+        // with cascadeOnDelete, so we can safely access it without null checks
         $adjustmentDocument = $adjustmentDocumentLine->adjustmentDocument;
-        if ($adjustmentDocument !== null) {
-            $adjustmentDocument->calculateTotalsFromLines();
+        $adjustmentDocument->calculateTotalsFromLines();
 
-            // Also update company currency totals if exchange rate is available
-            if ($adjustmentDocument->exchange_rate_at_creation) {
-                $this->updateCompanyCurrencyTotals($adjustmentDocument);
-            }
-
-            $adjustmentDocument->saveQuietly();
+        // Also update company currency totals if exchange rate is available
+        if ($adjustmentDocument->exchange_rate_at_creation) {
+            $this->updateCompanyCurrencyTotals($adjustmentDocument);
         }
+
+        $adjustmentDocument->saveQuietly();
     }
 
     /**

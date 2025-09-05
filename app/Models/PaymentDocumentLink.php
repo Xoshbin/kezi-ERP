@@ -40,6 +40,7 @@ use InvalidArgumentException;
  */
 class PaymentDocumentLink extends Model
 {
+    /** @use HasFactory<\Database\Factories\PaymentDocumentLinkFactory> */
     use HasFactory;
 
     /**
@@ -90,6 +91,12 @@ class PaymentDocumentLink extends Model
     /**
      * Get the company that this rate belongs to.
      */
+    /**
+
+     * @return BelongsTo<Company, static>
+
+     */
+
     public function company(): BelongsTo
     {
         return $this->belongsTo(Company::class);
@@ -99,6 +106,12 @@ class PaymentDocumentLink extends Model
      * Get the payment that owns this document link.
      * This defines a one-to-many (inverse) relationship, where a PaymentDocumentLink belongs to a Payment.
      */
+    /**
+
+     * @return BelongsTo<Payment, static>
+
+     */
+
     public function payment(): BelongsTo
     {
         return $this->belongsTo(Payment::class);
@@ -108,6 +121,12 @@ class PaymentDocumentLink extends Model
      * Get the customer invoice that this document link is associated with.
      * This is a conditional relationship, as a link will be to either an invoice or a vendor bill.
      */
+    /**
+
+     * @return BelongsTo<Invoice, static>
+
+     */
+
     public function invoice(): BelongsTo
     {
         return $this->belongsTo(Invoice::class);
@@ -117,6 +136,12 @@ class PaymentDocumentLink extends Model
      * Get the vendor bill that this document link is associated with.
      * This is a conditional relationship, as a link will be to either a vendor bill or an invoice.
      */
+    /**
+
+     * @return BelongsTo<VendorBill, static>
+
+     */
+
     public function vendorBill(): BelongsTo
     {
         return $this->belongsTo(VendorBill::class);

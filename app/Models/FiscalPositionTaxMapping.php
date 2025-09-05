@@ -35,6 +35,7 @@ use Illuminate\Support\Carbon;
  */
 class FiscalPositionTaxMapping extends Model
 {
+    /** @use HasFactory<\Database\Factories\FiscalPositionTaxMappingFactory> */
     use HasFactory;
 
     /**
@@ -82,6 +83,12 @@ class FiscalPositionTaxMapping extends Model
     /**
      * Get the company that this rate belongs to.
      */
+    /**
+
+     * @return BelongsTo<Company, static>
+
+     */
+
     public function company(): BelongsTo
     {
         return $this->belongsTo(Company::class);
@@ -92,6 +99,12 @@ class FiscalPositionTaxMapping extends Model
      * This defines the overarching context or set of rules under which the
      * tax re-mapping is applied [1, 2].
      */
+    /**
+
+     * @return BelongsTo<FiscalPosition, static>
+
+     */
+
     public function fiscalPosition(): BelongsTo
     {
         // A FiscalPositionTaxMapping record is intrinsically tied to one FiscalPosition.
@@ -103,6 +116,12 @@ class FiscalPositionTaxMapping extends Model
      * This represents the default tax rate or rule that would typically be applied
      * before any fiscal position adjustments [1, 3].
      */
+    /**
+
+     * @return BelongsTo<Tax, static>
+
+     */
+
     public function originalTax(): BelongsTo
     {
         // Explicitly defining the foreign key 'original_tax_id' ensures correct
@@ -116,6 +135,12 @@ class FiscalPositionTaxMapping extends Model
      * This is the effective tax rate or rule that will be applied once the
      * fiscal position's mapping rule is triggered [1, 3].
      */
+    /**
+
+     * @return BelongsTo<Tax, static>
+
+     */
+
     public function mappedTax(): BelongsTo
     {
         // Similar to 'originalTax', the foreign key 'mapped_tax_id' is explicitly

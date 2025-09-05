@@ -27,10 +27,28 @@ class InventoryCostLayer extends Model
         'purchase_date' => 'date',
     ];
 
+    /**
+
+
+     * @return BelongsTo<Product, static>
+
+
+     */
+
+
     public function product(): BelongsTo
     {
         return $this->belongsTo(Product::class);
     }
+
+    /**
+
+
+     * @return MorphTo<\Illuminate\Database\Eloquent\Model, static>
+
+
+     */
+
 
     public function source(): MorphTo
     {
