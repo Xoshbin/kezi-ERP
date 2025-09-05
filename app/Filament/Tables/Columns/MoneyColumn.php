@@ -69,7 +69,7 @@ class MoneyColumn extends TextColumn
         // This handles cases where we're in a relation manager and need the parent record's currency
         if (! $currencyCode) {
             $table = $this->getTable();
-            if ($table !== null) { // @phpstan-ignore-line
+            if ($table !== null) {
                 $livewire = $table->getLivewire();
                 if (method_exists($livewire, 'getOwnerRecord')) {
                     /** @var \Illuminate\Database\Eloquent\Model|null $ownerRecord */
