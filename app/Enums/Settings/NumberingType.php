@@ -92,6 +92,7 @@ enum NumberingType: string
      * Get all available numbering types with their labels and examples.
      *
      * @param  string  $prefix  The document prefix for examples
+     * @return array<string, array{label: string, description: string, example: string}>
      */
     public static function getOptionsWithExamples(string $prefix = 'INV'): array
     {
@@ -112,6 +113,7 @@ enum NumberingType: string
      * Get options formatted for Filament select components.
      *
      * @param  string  $prefix  The document prefix for examples
+     * @return array<string, string>
      */
     public static function getFilamentOptions(string $prefix = 'INV'): array
     {

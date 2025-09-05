@@ -33,8 +33,10 @@ class ViewGeneralLedger extends Page
 
     public ?string $endDate = null;
 
+    /** @var array<int, int>|null */
     public ?array $accountIds = null;
 
+    /** @var array<string, mixed>|null */
     public ?array $reportData = null;
 
     public static function getNavigationLabel(): string

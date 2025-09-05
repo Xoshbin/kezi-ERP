@@ -19,6 +19,11 @@ class BuildInvoicePostingPreviewAction
         return $name;
     }
 
+    /**
+     * Execute the invoice posting preview action.
+     *
+     * @return array{errors: array<int, string>, issues: array<int, array{type: string, message: string, product_id?: int, tax_id?: int}>, lines: array<int, array{account_id: int|null, account_name: string, account_code: string|null, debit_minor: int, credit_minor: int, description: string}>, totals: array{debit_minor: int, credit_minor: int, balanced: bool}}
+     */
     public function execute(Invoice $invoice): array
     {
         $invoice->load('company', 'currency', 'customer', 'invoiceLines.tax.taxAccount', 'invoiceLines.incomeAccount');
@@ -57,8 +62,6 @@ class BuildInvoicePostingPreviewAction
                 $linesPreview[] = [
                     'account_id' => $incomeAccountId,
                     'account_name' => $this->accountLabelName($incomeAccount),
-                    /** @var \App\Models\Account|null $incomeAccount */
-                /** @var \App\Models\Account|null $incomeAccount */
                     'account_code' => $incomeAccount?->code,
                     'debit_minor' => 0,
                     'credit_minor' => $line->subtotal->getMinorAmount()->toInt(),
@@ -97,7 +100,6 @@ class BuildInvoicePostingPreviewAction
             $linesPreview[] = [
                 'account_id' => $arAccountId,
                 'account_name' => $this->accountLabelName($arAccount),
-                /** @var \App\Models\Account|null $arAccount */
                 'account_code' => $arAccount?->code,
                 'debit_minor' => $totalCredit->getMinorAmount()->toInt(),
                 'credit_minor' => 0,

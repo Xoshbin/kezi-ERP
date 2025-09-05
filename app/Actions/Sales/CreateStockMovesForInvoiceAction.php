@@ -25,7 +25,7 @@ class CreateStockMovesForInvoiceAction
     /**
      * Create stock moves for all storable products in an invoice
      *
-     * @return Collection<\App\Models\StockMove> Collection of created stock moves
+     * @return Collection<int, \App\Models\StockMove> Collection of created stock moves
      */
     public function execute(CreateStockMovesForInvoiceDTO $dto): Collection
     {
@@ -65,6 +65,8 @@ class CreateStockMovesForInvoiceAction
 
     /**
      * Get stock locations using fallback strategy
+     *
+     * @return array{warehouse: \App\Models\StockLocation|null, vendor: \App\Models\StockLocation|null}
      */
     protected function getStockLocations(Invoice $invoice): array
     {
@@ -92,11 +94,11 @@ class CreateStockMovesForInvoiceAction
      */
     protected function createStockMoveForLine(
         Invoice $invoice,
-        $line,
+        \App\Models\InvoiceLine $line,
         User $user,
         StockLocation $warehouseLocation,
         StockLocation $vendorLocation
-    ) {
+    ): \App\Models\StockMove {
         $dto = new CreateStockMoveDTO(
             company_id: $invoice->company_id,
             product_id: $line->product_id,

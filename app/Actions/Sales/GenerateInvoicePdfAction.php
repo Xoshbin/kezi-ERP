@@ -92,6 +92,9 @@ class GenerateInvoicePdfAction
         return $pdf->download($fileName);
     }
 
+    /**
+     * @return array<string, string>
+     */
     public function getAvailableTemplates(): array
     {
         return [

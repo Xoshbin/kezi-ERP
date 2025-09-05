@@ -36,6 +36,7 @@ class ViewPartnerLedger extends Page
 
     public ?int $partnerId = null;
 
+    /** @var array<string, mixed>|null */
     public ?array $reportData = null;
 
     public static function getNavigationLabel(): string

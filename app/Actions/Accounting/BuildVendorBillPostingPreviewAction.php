@@ -21,6 +21,11 @@ class BuildVendorBillPostingPreviewAction
         return $name;
     }
 
+    /**
+     * Execute the vendor bill posting preview action.
+     *
+     * @return array{errors: array<int, string>, issues: array<int, array{type: string, message: string, product_id?: int}>, lines: array<int, array{account_id: int|null, account_name: string, account_code: string|null, debit_minor: int, credit_minor: int, description: string, product_id?: int}>, totals: array{debit_minor: int, credit_minor: int, balanced: bool}}
+     */
     public function execute(VendorBill $vendorBill): array
     {
         $vendorBill->load('company', 'currency', 'vendor', 'lines.product.inventoryAccount');
@@ -61,7 +66,6 @@ class BuildVendorBillPostingPreviewAction
                     $linesPreview[] = [
                         'account_id' => $inventoryAccount->id,
                         'account_name' => $this->accountLabelName($inventoryAccount),
-                        /** @var \App\Models\Account $inventoryAccount */
                         'account_code' => $inventoryAccount->code,
                         'debit_minor' => $line->subtotal->getMinorAmount()->toInt(),
                         'credit_minor' => 0,
@@ -82,7 +86,6 @@ class BuildVendorBillPostingPreviewAction
                     $linesPreview[] = [
                         'account_id' => $category->asset_account_id,
                         'account_name' => $this->accountLabelName($assetAccount),
-                        /** @var \App\Models\Account|null $assetAccount */
                         'account_code' => $assetAccount instanceof \App\Models\Account ? $assetAccount->code : null,
                         'debit_minor' => $line->subtotal->getMinorAmount()->toInt(),
                         'credit_minor' => 0,

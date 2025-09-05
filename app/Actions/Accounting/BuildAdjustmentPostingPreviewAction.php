@@ -19,6 +19,11 @@ class BuildAdjustmentPostingPreviewAction
         return $name;
     }
 
+    /**
+     * Execute the adjustment posting preview action.
+     *
+     * @return array{errors: array<int, string>, issues: array<int, array{type: string, message: string}>, lines: array<int, array{account_id: int|null, account_name: string, account_code: string|null, debit_minor: int, credit_minor: int, description: string}>, totals: array{debit_minor: int, credit_minor: int, balanced: bool}}
+     */
     public function execute(AdjustmentDocument $adjustment): array
     {
         $adjustment->load('company', 'currency');
