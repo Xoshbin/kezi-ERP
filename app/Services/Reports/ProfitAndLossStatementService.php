@@ -7,7 +7,6 @@ use App\DataTransferObjects\Reports\ReportLineDTO;
 use App\Enums\Accounting\AccountType;
 use App\Enums\Accounting\JournalEntryState;
 use App\Models\Company;
-use App\Models\JournalEntryLine;
 use Brick\Money\Money;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -19,14 +18,15 @@ class ProfitAndLossStatementService
         $currency = $company->currency->code;
         $zero = Money::zero($currency);
 
-        /** @var \Illuminate\Support\Collection<int, object> $results */
-        $results = DB::table('journal_entry_lines')
+        /** @var \Illuminate\Support\Collection<int, object{account_id: int, account_code: string, account_name: string, account_type: string, total_debit: string|null, total_credit: string|null}> $queryResults */
+        $queryResults = DB::table('journal_entry_lines')
             ->select([
                 'accounts.id as account_id',
                 'accounts.code as account_code',
                 'accounts.name as account_name',
                 'accounts.type as account_type',
-                DB::raw('SUM(journal_entry_lines.debit) - SUM(journal_entry_lines.credit) as balance'),
+                DB::raw('SUM(journal_entry_lines.debit) as total_debit'),
+                DB::raw('SUM(journal_entry_lines.credit) as total_credit'),
             ])
             ->join('accounts', 'journal_entry_lines.account_id', '=', 'accounts.id')
             ->join('journal_entries', 'journal_entry_lines.journal_entry_id', '=', 'journal_entries.id')
@@ -41,8 +41,27 @@ class ProfitAndLossStatementService
             ->where('journal_entries.state', JournalEntryState::Posted->value)
             ->whereBetween('journal_entries.entry_date', [$startDate, $endDate])
             ->groupBy('accounts.id', 'accounts.code', 'accounts.name', 'accounts.type')
-            ->havingRaw('SUM(journal_entry_lines.debit) - SUM(journal_entry_lines.credit) != 0')
             ->get();
+
+        // Calculate balance in PHP and filter out zero balances
+        $results = $queryResults->map(function ($result) {
+            /** @var object{account_id: int, account_code: string, account_name: string, account_type: string, total_debit: string|null, total_credit: string|null} $result */
+            $totalDebit = (int) ($result->total_debit ?: 0);
+            $totalCredit = (int) ($result->total_credit ?: 0);
+            $balance = $totalDebit - $totalCredit;
+
+            return (object) [
+                'account_id' => $result->account_id,
+                'account_code' => $result->account_code,
+                'account_name' => $result->account_name,
+                'account_type' => $result->account_type,
+                'total_debit' => $result->total_debit,
+                'total_credit' => $result->total_credit,
+                'balance' => $balance,
+            ];
+        })->filter(function ($result) {
+            return $result->balance != 0;
+        });
 
         // Get account models to access translated names
         $accountIds = $results->pluck('account_id')->unique();
@@ -54,7 +73,6 @@ class ProfitAndLossStatementService
             AccountType::OtherIncome->value,
         ])
             ->map(function (object $row) use ($currency, $accounts) {
-                /** @var object{balance: string, account_id: int, account_code: string, account_name: string} $row */
                 // Invert the sign for presentation, as income accounts have a natural credit balance.
                 // The balance from the query is already in minor units, so use it directly
                 $balance = Money::ofMinor(-(int) $row->balance, $currency);
@@ -76,7 +94,6 @@ class ProfitAndLossStatementService
             AccountType::CostOfRevenue->value,
         ])
             ->map(function (object $row) use ($currency, $accounts) {
-                /** @var object{balance: string, account_id: int, account_code: string, account_name: string} $row */
                 // Expense accounts have a natural debit balance, which is correct for presentation.
                 // The balance from the query is already in minor units, so use it directly
                 $balance = Money::ofMinor((int) $row->balance, $currency);

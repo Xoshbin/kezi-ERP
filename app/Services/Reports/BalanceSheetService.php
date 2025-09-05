@@ -8,7 +8,6 @@ use App\Enums\Accounting\AccountType;
 use App\Enums\Accounting\JournalEntryState;
 use App\Exceptions\BalanceSheetNotBalancedException;
 use App\Models\Company;
-use App\Models\JournalEntryLine;
 use Brick\Money\Money;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
@@ -65,19 +64,17 @@ class BalanceSheetService
         );
     }
 
-    /**
-     * @return \Illuminate\Support\Collection<int, object>
-     */
     private function getAccountBalances(Company $company, Carbon $asOfDate): Collection
     {
-        /** @var \Illuminate\Support\Collection<int, object> */
-        return JournalEntryLine::query()
+        /** @var \Illuminate\Support\Collection<int, object{account_id: int, account_code: string, account_name: string, account_type: string, total_debit: string|null, total_credit: string|null}> $results */
+        $results = DB::table('journal_entry_lines')
             ->select([
                 'accounts.id as account_id',
                 'accounts.code as account_code',
                 'accounts.name as account_name',
                 'accounts.type as account_type',
-                DB::raw('SUM(journal_entry_lines.debit) - SUM(journal_entry_lines.credit) as balance'),
+                DB::raw('SUM(journal_entry_lines.debit) as total_debit'),
+                DB::raw('SUM(journal_entry_lines.credit) as total_credit'),
             ])
             ->join('accounts', 'journal_entry_lines.account_id', '=', 'accounts.id')
             ->join('journal_entries', 'journal_entry_lines.journal_entry_id', '=', 'journal_entries.id')
@@ -86,16 +83,37 @@ class BalanceSheetService
             ->where('journal_entries.state', JournalEntryState::Posted->value)
             ->where('journal_entries.entry_date', '<=', $asOfDate->toDateString())
             ->groupBy('accounts.id', 'accounts.code', 'accounts.name', 'accounts.type')
-            ->havingRaw('SUM(journal_entry_lines.debit) - SUM(journal_entry_lines.credit) != 0')
             ->get();
+
+        // Calculate balance in PHP and filter out zero balances
+        return $results->map(function ($result) {
+            /** @var object{account_id: int, account_code: string, account_name: string, account_type: string, total_debit: string|null, total_credit: string|null} $result */
+            $totalDebit = (int) ($result->total_debit ?: 0);
+            $totalCredit = (int) ($result->total_credit ?: 0);
+            $balance = $totalDebit - $totalCredit;
+
+            return (object) [
+                'account_id' => $result->account_id,
+                'account_code' => $result->account_code,
+                'account_name' => $result->account_name,
+                'account_type' => $result->account_type,
+                'total_debit' => $result->total_debit,
+                'total_credit' => $result->total_credit,
+                'balance' => $balance,
+            ];
+        })->filter(function ($result) {
+            return $result->balance != 0;
+        });
     }
 
     private function getCurrentYearEarnings(Company $company, Carbon $fiscalYearStart, Carbon $asOfDate): Money
     {
-        $balances = JournalEntryLine::query()
+        /** @var \Illuminate\Support\Collection<int, object{account_type: string, total_debit: string|null, total_credit: string|null}> $results */
+        $results = DB::table('journal_entry_lines')
             ->select([
                 'accounts.type as account_type',
-                DB::raw('SUM(journal_entry_lines.debit) - SUM(journal_entry_lines.credit) as balance'),
+                DB::raw('SUM(journal_entry_lines.debit) as total_debit'),
+                DB::raw('SUM(journal_entry_lines.credit) as total_credit'),
             ])
             ->join('accounts', 'journal_entry_lines.account_id', '=', 'accounts.id')
             ->join('journal_entries', 'journal_entry_lines.journal_entry_id', '=', 'journal_entries.id')
@@ -110,7 +128,17 @@ class BalanceSheetService
             ->where('journal_entries.state', JournalEntryState::Posted->value)
             ->whereBetween('journal_entries.entry_date', [$fiscalYearStart, $asOfDate])
             ->groupBy('accounts.type')
-            ->pluck('balance', 'account_type');
+            ->get();
+
+        // Calculate balances in PHP
+        $balances = $results->mapWithKeys(function ($result) {
+            /** @var object{account_type: string, total_debit: string|null, total_credit: string|null} $result */
+            $totalDebit = (int) ($result->total_debit ?: 0);
+            $totalCredit = (int) ($result->total_credit ?: 0);
+            $balance = $totalDebit - $totalCredit;
+
+            return [$result->account_type => $balance];
+        });
 
         // Calculate total revenue (Income accounts have credit nature, so we negate)
         $totalRevenue = Money::ofMinor(
@@ -130,7 +158,7 @@ class BalanceSheetService
     }
 
     /**
-     * @param  \Illuminate\Support\Collection<int, object>  $balances
+     * @param  \Illuminate\Support\Collection  $balances
      * @param  array<AccountType>  $types
      * @param  \Illuminate\Database\Eloquent\Collection<int, \App\Models\Account>  $accounts
      * @return \Illuminate\Support\Collection<int, ReportLineDTO>
@@ -139,7 +167,6 @@ class BalanceSheetService
     {
         return $balances->whereIn('account_type', array_map(fn ($type) => $type->value, $types))
             ->map(function ($row) use ($currency, $accounts, $negate) {
-                /** @var object{balance: string, account_id: int, account_code: string, account_name: string} $row */
                 $balance = Money::ofMinor($row->balance, $currency);
                 $account = $accounts->get($row->account_id);
 
