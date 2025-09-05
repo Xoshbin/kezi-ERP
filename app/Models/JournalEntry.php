@@ -74,6 +74,7 @@ use RuntimeException;
 #[ObservedBy([JournalEntryObserver::class])]
 class JournalEntry extends Model
 {
+    /** @use HasFactory<\Database\Factories\JournalEntryFactory> */
     use HasFactory;
 
     /**
@@ -213,6 +214,12 @@ class JournalEntry extends Model
      *
      * @return BelongsTo An Eloquent relationship instance for the Company model [3, 22].
      */
+    /**
+
+     * @return BelongsTo<Company, static>
+
+     */
+
     public function company(): BelongsTo
     {
         return $this->belongsTo(Company::class);
@@ -223,6 +230,12 @@ class JournalEntry extends Model
      *
      * @return BelongsTo An Eloquent relationship instance for the Journal model [3, 22].
      */
+    /**
+
+     * @return BelongsTo<Journal, static>
+
+     */
+
     public function journal(): BelongsTo
     {
         return $this->belongsTo(Journal::class);
@@ -233,6 +246,12 @@ class JournalEntry extends Model
      *
      * @return BelongsTo An Eloquent relationship instance for the Currency model [3, 22].
      */
+    /**
+
+     * @return BelongsTo<Currency, static>
+
+     */
+
     public function currency(): BelongsTo
     {
         return $this->belongsTo(Currency::class);
@@ -243,6 +262,12 @@ class JournalEntry extends Model
      *
      * @return BelongsTo An Eloquent relationship instance for the User model, specifying the foreign key [3, 22].
      */
+    /**
+
+     * @return BelongsTo<User, static>
+
+     */
+
     public function createdBy(): BelongsTo
     {
         return $this->belongsTo(User::class, 'created_by_user_id');
@@ -255,6 +280,12 @@ class JournalEntry extends Model
      *
      * @return HasMany An Eloquent relationship instance for the JournalEntryLine model [3, 23].
      */
+    /**
+
+     * @return HasMany<JournalEntryLine, static>
+
+     */
+
     public function lines(): HasMany
     {
         return $this->hasMany(JournalEntryLine::class);
@@ -269,6 +300,12 @@ class JournalEntry extends Model
      *
      * @return MorphTo An Eloquent polymorphic relationship instance [3, 24].
      */
+    /**
+
+     * @return MorphTo<\Illuminate\Database\Eloquent\Model, static>
+
+     */
+
     public function source(): MorphTo
     {
         return $this->morphTo();
@@ -283,6 +320,12 @@ class JournalEntry extends Model
      *
      * @return BelongsTo An Eloquent relationship instance for the JournalEntry model.
      */
+    /**
+
+     * @return BelongsTo<JournalEntry, static>
+
+     */
+
     public function reversingEntry(): BelongsTo
     {
         return $this->belongsTo(JournalEntry::class, 'reversed_entry_id');

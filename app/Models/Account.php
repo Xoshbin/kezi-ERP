@@ -68,6 +68,7 @@ use Spatie\Translatable\HasTranslations;
 #[ObservedBy([AccountObserver::class, AuditLogObserver::class])] // (to log when accounts are created or deprecated)
 class Account extends Model
 {
+    /** @use HasFactory<AccountFactory> */
     use HasFactory, HasTranslations;
     use TranslatableSearch;
 
@@ -144,6 +145,8 @@ class Account extends Model
     /**
      * Get the currency of this invoice.
      * Every invoice operates in a specific currency. [1]
+     *
+     * @return BelongsTo<Currency, static>
      */
     public function currency(): BelongsTo
     {
@@ -153,6 +156,8 @@ class Account extends Model
     /**
      * Get the company that owns this account.
      * An account logically belongs to a specific company in a multi-company setup [5].
+     *
+     * @return BelongsTo<Company, static>
      */
     public function company(): BelongsTo
     {
@@ -165,6 +170,8 @@ class Account extends Model
      * Every financial transaction involves at least two journal entry lines,
      * one debit and one credit, each linked to a specific account [5].
      * This forms the bedrock of double-entry bookkeeping [15].
+     *
+     * @return HasMany<JournalEntryLine, static>
      */
     public function journalEntryLines(): HasMany
     {
@@ -175,6 +182,8 @@ class Account extends Model
      * Get the invoice lines where this account serves as the income account.
      *
      * Revenue recognition is tied to specific income accounts [5].
+     *
+     * @return HasMany<InvoiceLine, static>
      */
     public function incomeInvoiceLines(): HasMany
     {
@@ -185,6 +194,8 @@ class Account extends Model
      * Get the vendor bill lines where this account serves as the expense account.
      *
      * Similarly, expenses are categorized under specific expense accounts [5].
+     *
+     * @return HasMany<VendorBillLine, static>
      */
     public function expenseVendorBillLines(): HasMany
     {
@@ -195,6 +206,8 @@ class Account extends Model
      * Get the taxes that are linked to this account for posting tax amounts.
      *
      * Tax management often involves posting to dedicated tax liability/asset accounts [16].
+     *
+     * @return HasMany<Tax, static>
      */
     public function taxes(): HasMany
     {
@@ -205,6 +218,8 @@ class Account extends Model
      * Get the fixed assets that use this account as their primary asset account.
      *
      * Fixed assets are recorded on specific balance sheet accounts [16].
+     *
+     * @return HasMany<Asset, static>
      */
     public function assets(): HasMany
     {
@@ -215,6 +230,8 @@ class Account extends Model
      * Get the fixed assets that use this account for their depreciation expense.
      *
      * Depreciation expense is typically recognized in a profit and loss account [16].
+     *
+     * @return HasMany<Asset, static>
      */
     public function depreciationExpenseAssets(): HasMany
     {
@@ -225,6 +242,8 @@ class Account extends Model
      * Get the fixed assets that use this account as their accumulated depreciation contra-asset account.
      *
      * Accumulated depreciation reduces the book value of an asset on the balance sheet [16].
+     *
+     * @return HasMany<Asset, static>
      */
     public function accumulatedDepreciationAssets(): HasMany
     {
@@ -235,6 +254,8 @@ class Account extends Model
      * Get the fiscal position account mappings where this account is the original account.
      *
      * Fiscal positions may remap default accounts based on specific criteria [16].
+     *
+     * @return HasMany<FiscalPositionAccountMapping, static>
      */
     public function originalFiscalPositionMappings(): HasMany
     {
@@ -243,6 +264,8 @@ class Account extends Model
 
     /**
      * Get the fiscal position account mappings where this account is the mapped (new) account.
+     *
+     * @return HasMany<FiscalPositionAccountMapping, static>
      */
     public function mappedFiscalPositionMappings(): HasMany
     {
@@ -253,6 +276,8 @@ class Account extends Model
      * Get the budget lines associated with this account.
      *
      * Accounts can be linked to financial budget lines for detailed budget vs. actual analysis [16].
+     *
+     * @return HasMany<BudgetLine, static>
      */
     public function budgetLines(): HasMany
     {

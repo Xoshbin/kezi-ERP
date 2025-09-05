@@ -46,6 +46,7 @@ use Spatie\Translatable\HasTranslations;
  */
 class AnalyticPlan extends Model
 {
+    /** @use HasFactory<\Database\Factories\AnalyticPlanFactory> */
     use HasFactory, HasTranslations;
     use TranslatableSearch;
 
@@ -97,6 +98,12 @@ class AnalyticPlan extends Model
      * Get the company that owns this analytic plan.
      * An analytic plan can optionally belong to a specific company, or be shared across all [4-6].
      */
+    /**
+
+     * @return BelongsTo<Company, static>
+
+     */
+
     public function company(): BelongsTo
     {
         return $this->belongsTo(Company::class);
@@ -106,6 +113,8 @@ class AnalyticPlan extends Model
      * Get the analytic accounts that are part of this plan.
      * This establishes the many-to-many relationship via the pivot table,
      * allowing for flexible grouping of analytic accounts [1, 4, 8].
+     *
+     * @return BelongsToMany<AnalyticAccount, static>
      */
     public function analyticAccounts(): BelongsToMany
     {
@@ -124,6 +133,12 @@ class AnalyticPlan extends Model
      * Get the parent analytic plan in a hierarchical structure.
      * Allows for building complex, nested analytic plan organizations [3, 8].
      */
+    /**
+
+     * @return BelongsTo<AnalyticPlan, static>
+
+     */
+
     public function parent(): BelongsTo
     {
         return $this->belongsTo(AnalyticPlan::class, 'parent_id');
@@ -133,6 +148,12 @@ class AnalyticPlan extends Model
      * Get the child analytic plans within this hierarchical structure.
      * Defines the "subplans" mentioned in the sources, allowing for recursive plan definitions [8].
      */
+    /**
+
+     * @return HasMany<AnalyticPlan, static>
+
+     */
+
     public function children(): HasMany
     {
         return $this->hasMany(AnalyticPlan::class, 'parent_id');
@@ -142,6 +163,12 @@ class AnalyticPlan extends Model
      * Get the budgets associated with this analytic plan.
      * Analytic plans are crucial for defining and tracking budgets related to projects or departments [1, 4, 11].
      */
+    /**
+
+     * @return HasMany<Budget, static>
+
+     */
+
     public function budgets(): HasMany
     {
         return $this->hasMany(Budget::class);

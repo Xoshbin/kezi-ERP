@@ -55,6 +55,7 @@ use Illuminate\Support\Carbon;
 class InvoiceLine extends Model
 {
     // Leveraging Laravel's HasFactory trait for simplified model factory creation in testing/seeding [5, 6].
+    /** @use HasFactory<\Database\Factories\InvoiceLineFactory> */
     use HasFactory;
 
     /**
@@ -121,6 +122,12 @@ class InvoiceLine extends Model
     /**
      * Get the company that this rate belongs to.
      */
+    /**
+
+     * @return BelongsTo<Company, static>
+
+     */
+
     public function company(): BelongsTo
     {
         return $this->belongsTo(Company::class);
@@ -131,6 +138,12 @@ class InvoiceLine extends Model
      * Defines a one-to-many (inverse) or "belongs to" relationship [14, 15].
      * This connects an invoice line back to its header invoice.
      */
+    /**
+
+     * @return BelongsTo<Invoice, static>
+
+     */
+
     public function invoice(): BelongsTo
     {
         return $this->belongsTo(Invoice::class);
@@ -141,6 +154,12 @@ class InvoiceLine extends Model
      * Defines a "belongs to" relationship for the product linked to this line item [14, 15].
      * The product_id is nullable in the schema [4], allowing for descriptive lines without a specific product.
      */
+    /**
+
+     * @return BelongsTo<Product, static>
+
+     */
+
     public function product(): BelongsTo
     {
         return $this->belongsTo(Product::class);
@@ -151,6 +170,12 @@ class InvoiceLine extends Model
      * Defines a "belongs to" relationship for the tax [14, 15].
      * The tax_id is nullable in the schema [4].
      */
+    /**
+
+     * @return BelongsTo<Tax, static>
+
+     */
+
     public function tax(): BelongsTo
     {
         return $this->belongsTo(Tax::class);
@@ -162,10 +187,25 @@ class InvoiceLine extends Model
      * The foreign key is explicitly provided as 'income_account_id' because it deviates from Eloquent's default convention
      * (which would assume 'account_id' if the method name were just 'account') [16].
      */
+    /**
+
+     * @return BelongsTo<Account, static>
+
+     */
+
     public function incomeAccount(): BelongsTo
     {
         return $this->belongsTo(Account::class, 'income_account_id');
     }
+
+    /**
+
+
+     * @return BelongsTo<AnalyticAccount, static>
+
+
+     */
+
 
     public function analyticAccount(): BelongsTo
     {

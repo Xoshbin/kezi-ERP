@@ -27,20 +27,56 @@ class AssetCategory extends Model
         'depreciation_method' => \App\Enums\Assets\DepreciationMethod::class,
     ];
 
+    /**
+
+
+     * @return BelongsTo<Company, static>
+
+
+     */
+
+
     public function company(): BelongsTo
     {
         return $this->belongsTo(Company::class);
     }
+
+    /**
+
+
+     * @return BelongsTo<Account, static>
+
+
+     */
+
 
     public function assetAccount(): BelongsTo
     {
         return $this->belongsTo(Account::class, 'asset_account_id');
     }
 
+    /**
+
+
+     * @return BelongsTo<Account, static>
+
+
+     */
+
+
     public function accumulatedDepreciationAccount(): BelongsTo
     {
         return $this->belongsTo(Account::class, 'accumulated_depreciation_account_id');
     }
+
+    /**
+
+
+     * @return BelongsTo<Account, static>
+
+
+     */
+
 
     public function depreciationExpenseAccount(): BelongsTo
     {

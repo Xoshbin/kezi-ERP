@@ -69,21 +69,18 @@ class MoneyColumn extends TextColumn
         // This handles cases where we're in a relation manager and need the parent record's currency
         if (! $currencyCode) {
             $table = $this->getTable();
-            if ($table !== null) {
-                $livewire = $table->getLivewire();
-                if (method_exists($livewire, 'getOwnerRecord')) {
-                    /** @var \Illuminate\Database\Eloquent\Model|null $ownerRecord */
-                    $ownerRecord = $livewire->getOwnerRecord();
-                } elseif (method_exists($livewire, 'getRecord')) {
-                    // getRecord() exists only on some resource pages
-                    /** @var \Illuminate\Database\Eloquent\Model|null $ownerRecord */
-                    $ownerRecord = $livewire->getRecord();
-                } else {
-                    $ownerRecord = null;
-                }
+            $livewire = $table->getLivewire();
+            if (method_exists($livewire, 'getOwnerRecord')) {
+                /** @var \Illuminate\Database\Eloquent\Model|null $ownerRecord */
+                $ownerRecord = $livewire->getOwnerRecord();
+            } elseif (method_exists($livewire, 'getRecord')) {
+                // getRecord() exists only on some resource pages
+                /** @var \Illuminate\Database\Eloquent\Model|null $ownerRecord */
+                $ownerRecord = $livewire->getRecord();
             } else {
                 $ownerRecord = null;
             }
+
             if ($ownerRecord instanceof \Illuminate\Database\Eloquent\Model && method_exists($ownerRecord, 'currency')) {
                 /** @var \App\Models\Currency|null $currency */
                 $currency = $ownerRecord->relationLoaded('currency') ? $ownerRecord->getRelation('currency') : $ownerRecord->currency()->first();
