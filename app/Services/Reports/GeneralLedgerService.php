@@ -76,14 +76,20 @@ class GeneralLedgerService
 
     private function getOpeningBalance(Account $account, Carbon $startDate, string $currency): Money
     {
-        $balance = JournalEntryLine::query()
+        /** @var object{total_debit: string|null, total_credit: string|null}|null $result */
+        $result = DB::table('journal_entry_lines')
             ->join('journal_entries', 'journal_entry_lines.journal_entry_id', '=', 'journal_entries.id')
             ->where('journal_entry_lines.account_id', $account->id)
             ->where('journal_entries.state', 'posted')
             ->where('journal_entries.entry_date', '<', $startDate->toDateString())
-            ->sum(DB::raw('journal_entry_lines.debit - journal_entry_lines.credit'));
+            ->selectRaw('SUM(journal_entry_lines.debit) as total_debit, SUM(journal_entry_lines.credit) as total_credit')
+            ->first();
 
-        return Money::ofMinor($balance ?: 0, $currency);
+        $totalDebit = (int) ($result?->total_debit ?: 0);
+        $totalCredit = (int) ($result?->total_credit ?: 0);
+        $balance = $totalDebit - $totalCredit;
+
+        return Money::ofMinor($balance, $currency);
     }
 
     /**
