@@ -24,7 +24,7 @@ class CreatePayment extends CreateRecord
         // Ensure we have a single Currency model, not a collection
         if ($currency instanceof \Illuminate\Database\Eloquent\Collection) {
             $currency = $currency->first();
-            if (!$currency) {
+            if (! $currency) {
                 throw new \InvalidArgumentException('Currency not found');
             }
         }
@@ -33,7 +33,7 @@ class CreatePayment extends CreateRecord
         $amount = Money::of($data['amount'], $currency->code);
 
         $tenant = Filament::getTenant();
-        $companyId = ($tenant && method_exists($tenant, 'getKey')) ? (int) $tenant->getKey() : 0;
+        $companyId = $tenant?->getKey() ?? 0;
 
         $paymentDTO = new CreatePaymentDTO(
             company_id: $companyId,
@@ -50,7 +50,7 @@ class CreatePayment extends CreateRecord
         );
 
         $user = Auth::user();
-        if (!$user) {
+        if (! $user) {
             throw new \Exception('User must be authenticated to create payment');
         }
 
