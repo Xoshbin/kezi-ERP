@@ -103,6 +103,8 @@ class LeaveManagementService
 
     /**
      * Get leave balance for an employee.
+     *
+     * @return array<string, mixed>
      */
     public function getLeaveBalance(Employee $employee, LeaveType $leaveType, ?int $year = null): array
     {

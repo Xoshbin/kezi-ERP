@@ -22,8 +22,8 @@ use Spatie\Translatable\HasTranslations;
  * @property int $id
  * @property int $company_id
  * @property int $tax_account_id
- * @property string|array $name
- * @property string|array|null $label_on_invoices
+ * @property string|array<string, string> $name
+ * @property string|array<string, string>|null $label_on_invoices
  * @property float $rate
  * @property TaxType $type
  * @property bool $is_active
@@ -62,6 +62,8 @@ class Tax extends Model
 
     /**
      * Get the translatable fields that should be searched.
+     *
+     * @return array<int, string>
      */
     public function getTranslatableSearchFields(): array
     {

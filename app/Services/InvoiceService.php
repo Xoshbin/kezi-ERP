@@ -239,6 +239,8 @@ class InvoiceService
 
     /**
      * Convert invoice line amounts to company currency.
+     *
+     * @param  \App\Models\InvoiceLine  $line
      */
     protected function convertInvoiceLineAmounts($line, Currency $companyCurrency, Company $company): void
     {

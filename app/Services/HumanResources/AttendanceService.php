@@ -189,6 +189,8 @@ class AttendanceService
 
     /**
      * Get attendance summary for an employee.
+     *
+     * @return array<string, mixed>
      */
     public function getAttendanceSummary(Employee $employee, string $startDate, string $endDate): array
     {

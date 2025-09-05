@@ -236,7 +236,7 @@ class PaymentService
         return DB::transaction(function () use ($payment, $applications, &$links) {
             foreach ($applications as $application) {
                 $document = $this->getDocument($application['document_type'], $application['document_id']);
-                $amountApplied = $application['amount'];
+                $amountApplied = Money::of($application['amount_applied'], $payment->currency->code);
 
                 // Create payment document link
                 $link = $this->createPaymentDocumentLink($payment, $document, $amountApplied);
@@ -257,7 +257,7 @@ class PaymentService
     /**
      * Get document by type and ID.
      */
-    protected function getDocument(string $documentType, int $documentId): \Illuminate\Database\Eloquent\Model
+    protected function getDocument(string $documentType, int $documentId): Invoice|VendorBill
     {
         return match ($documentType) {
             'invoice' => Invoice::findOrFail($documentId),

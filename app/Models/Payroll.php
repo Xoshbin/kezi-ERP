@@ -50,7 +50,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property int|null $approved_by_user_id
  * @property Carbon|null $approved_at
  * @property string|null $notes
- * @property array|null $adjustments
+ * @property array<string, mixed>|null $adjustments
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property-read Company $company

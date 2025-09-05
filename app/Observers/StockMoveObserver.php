@@ -22,6 +22,9 @@ class StockMoveObserver
         $this->logAction('deleted', $stockMove);
     }
 
+    /**
+     * @param  array<string, mixed>|null  $dirty
+     */
     protected function logAction(string $action, StockMove $stockMove, ?array $dirty = null): void
     {
         $user = auth()->user();

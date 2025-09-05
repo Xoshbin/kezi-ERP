@@ -31,6 +31,11 @@ class ProcessInventoryForConfirmedBill
         $product = $line->product;
         $company = $vendorBill->company;
 
+        // Ensure product exists (should not be null since we check for storable products)
+        if ($product === null) {
+            throw new RuntimeException("Product is required for storable product lines.");
+        }
+
         if (! $company->vendorLocation || ! $company->defaultStockLocation) {
             throw new RuntimeException("Default Vendor or Stock Location is not configured for Company ID: {$company->id}.");
         }

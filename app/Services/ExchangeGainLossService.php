@@ -86,8 +86,8 @@ class ExchangeGainLossService
     /**
      * Perform period-end revaluation of foreign currency balances.
      *
-     * @param  array  $accountIds  Optional specific accounts to revalue
-     * @return Collection Collection of journal entries created
+     * @param  array<int>  $accountIds  Optional specific accounts to revalue
+     * @return Collection<int, JournalEntry> Collection of journal entries created
      */
     public function performPeriodEndRevaluation(
         Company $company,
@@ -294,6 +294,9 @@ class ExchangeGainLossService
 
     /**
      * Get accounts that need revaluation.
+     *
+     * @param  array<int>  $accountIds
+     * @return Collection<int, Account>
      */
     protected function getAccountsForRevaluation(Company $company, array $accountIds = []): Collection
     {
@@ -311,6 +314,8 @@ class ExchangeGainLossService
 
     /**
      * Get foreign currency balances for an account.
+     *
+     * @return array<string, mixed>
      */
     protected function getForeignCurrencyBalances(Account $account, Carbon $date): array
     {

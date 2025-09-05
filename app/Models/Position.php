@@ -19,10 +19,10 @@ use Spatie\Translatable\HasTranslations;
  * @property int $id
  * @property int $company_id
  * @property int|null $department_id
- * @property array $title
+ * @property array<string, string> $title
  * @property string|null $description
- * @property array|null $requirements
- * @property array|null $responsibilities
+ * @property array<string, mixed>|null $requirements
+ * @property array<string, mixed>|null $responsibilities
  * @property string $employment_type
  * @property string $level
  * @property Money|null $min_salary
@@ -100,6 +100,8 @@ class Position extends Model
 
     /**
      * Get the translatable fields that should be searched.
+     *
+     * @return array<int, string>
      */
     public function getTranslatableSearchFields(): array
     {
@@ -108,6 +110,8 @@ class Position extends Model
 
     /**
      * Get the non-translatable fields that should be searched.
+     *
+     * @return array<int, string>
      */
     public function getNonTranslatableSearchFields(): array
     {

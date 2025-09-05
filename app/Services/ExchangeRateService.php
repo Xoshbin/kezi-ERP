@@ -22,7 +22,7 @@ class ExchangeRateService
      * Update exchange rates for all active currencies from external API.
      *
      * @param  string  $source  The source identifier (e.g., 'api', 'manual')
-     * @return array Results of the update operation
+     * @return array<string, mixed> Results of the update operation
      */
     public function updateAllRates(string $source = 'api'): array
     {
@@ -146,7 +146,7 @@ class ExchangeRateService
     /**
      * Get historical rates for a currency within a date range.
      *
-     * @return Collection
+     * @return Collection<int, ExchangeRate>
      */
     public function getHistoricalRates(Currency $currency, Carbon $startDate, Carbon $endDate)
     {
@@ -185,7 +185,7 @@ class ExchangeRateService
      * Validate that all active currencies have recent rates.
      *
      * @param  int  $maxDaysOld  Maximum age of rates in days
-     * @return array Currencies missing recent rates
+     * @return array<string, mixed> Currencies missing recent rates
      */
     public function validateRecentRates(int $maxDaysOld = 7): array
     {

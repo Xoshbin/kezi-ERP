@@ -44,6 +44,10 @@ class BankReconciliationService
         });
     }
 
+    /**
+     * @param  array<int>  $bankStatementLineIds
+     * @param  array<int>  $paymentIds
+     */
     public function reconcile(array $bankStatementLineIds, array $paymentIds, User $user): void
     {
         // Fetch all necessary models upfront
@@ -102,8 +106,8 @@ class BankReconciliationService
     /**
      * Reconcile multiple bank statement lines with multiple payments
      *
-     * @param  array  $bankLineIds  Array of BankStatementLine IDs
-     * @param  array  $paymentIds  Array of Payment IDs
+     * @param  array<int>  $bankLineIds  Array of BankStatementLine IDs
+     * @param  array<int>  $paymentIds  Array of Payment IDs
      * @param  User  $user  The user performing the reconciliation
      *
      * @throws RuntimeException If totals don't match
@@ -177,7 +181,7 @@ class BankReconciliationService
     /**
      * Get unreconciled bank statement lines for a given bank statement
      *
-     * @return Collection
+     * @return Collection<int, BankStatementLine>
      */
     public function getUnreconciledBankLines(int $bankStatementId)
     {
@@ -189,7 +193,7 @@ class BankReconciliationService
     /**
      * Get unreconciled payments for a given company
      *
-     * @return Collection
+     * @return Collection<int, Payment>
      */
     public function getUnreconciledPayments(int $companyId)
     {
