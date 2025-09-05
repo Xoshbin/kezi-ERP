@@ -17,9 +17,14 @@ class ActiveAccount implements ValidationRule
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {
         $account = Account::find($value);
+        // Ensure we have a single Account model, not a collection
+        if ($account instanceof \Illuminate\Database\Eloquent\Collection) {
+            $account = $account->first();
+        }
 
         if ($account && $account->is_deprecated) {
-            $fail("The account '{$account->name}' is deprecated and cannot be used.");
+            $accountName = is_array($account->name) ? ($account->name['en'] ?? (empty($account->name) ? '' : (string) array_values($account->name)[0])) : (string) $account->name;
+            $fail("The account '{$accountName}' is deprecated and cannot be used.");
         }
     }
 }

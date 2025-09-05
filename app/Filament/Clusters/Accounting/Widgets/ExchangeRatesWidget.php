@@ -61,11 +61,12 @@ class ExchangeRatesWidget extends StatsOverviewWidget
                 }
             }
 
+            $currencyName = is_array($currency->name) ? ($currency->name['en'] ?? (empty($currency->name) ? '' : (string) array_values($currency->name)[0])) : (string) $currency->name;
             $stat = Stat::make(
                 $currency->code,
                 number_format((float) $latestRate->rate, 6)
             )
-                ->description($currency->name)
+                ->description($currencyName)
                 ->descriptionIcon('heroicon-m-currency-dollar');
 
             if ($change) {

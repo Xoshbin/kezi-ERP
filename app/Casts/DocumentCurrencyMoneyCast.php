@@ -22,7 +22,12 @@ class DocumentCurrencyMoneyCast extends MoneyCast
     {
         // Case 1: The model IS the document header (e.g., Invoice, VendorBill).
         if (isset($model->currency_id)) {
-            return Currency::findOrFail($model->currency_id);
+            $currency = Currency::findOrFail($model->currency_id);
+            // Ensure we have a single Currency model, not a collection
+            if ($currency instanceof \Illuminate\Database\Eloquent\Collection) {
+                $currency = $currency->first();
+            }
+            return $currency;
         }
 
         // Case 2: The model is a LINE ITEM. Find its parent document's currency.

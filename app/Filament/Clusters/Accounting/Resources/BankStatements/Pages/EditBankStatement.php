@@ -63,6 +63,10 @@ class EditBankStatement extends EditRecord
 
             if (! empty($line['foreign_currency_id']) && ! empty($line['amount_in_foreign_currency'])) {
                 $foreignCurrency = Currency::find($line['foreign_currency_id']);
+                // Ensure we have a single Currency model, not a collection
+                if ($foreignCurrency instanceof \Illuminate\Database\Eloquent\Collection) {
+                    $foreignCurrency = $foreignCurrency->first();
+                }
                 $amountInForeignCurrency = Money::of($line['amount_in_foreign_currency'], $foreignCurrency->code);
             }
 

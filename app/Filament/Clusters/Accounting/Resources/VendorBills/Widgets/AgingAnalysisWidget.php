@@ -70,7 +70,7 @@ class AgingAnalysisWidget extends BaseWidget
         $dueDate = Carbon::parse($vendorBill->due_date);
         $today = Carbon::today();
 
-        return max(0, $today->diffInDays($dueDate, false));
+        return (int) max(0, $today->diffInDays($dueDate, false));
     }
 
     private function calculateOutstandingAmount(VendorBill $vendorBill): Money

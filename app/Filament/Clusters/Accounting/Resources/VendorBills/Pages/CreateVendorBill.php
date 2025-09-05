@@ -25,6 +25,10 @@ class CreateVendorBill extends CreateRecord
     protected function mutateFormDataBeforeCreate(array $data): array
     {
         $currency = Currency::findOrFail($data['currency_id']);
+        // Ensure we have a single Currency model, not a collection
+        if ($currency instanceof \Illuminate\Database\Eloquent\Collection) {
+            $currency = $currency->first();
+        }
         $lineDTOs = [];
         foreach ($data['lines'] as $line) {
             $lineDTOs[] = new CreateVendorBillLineDTO(

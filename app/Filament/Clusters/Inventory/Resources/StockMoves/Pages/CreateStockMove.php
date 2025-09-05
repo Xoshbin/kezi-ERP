@@ -37,7 +37,7 @@ class CreateStockMove extends CreateRecord
             move_type: StockMoveType::from($data['move_type']),
             status: StockMoveStatus::from($data['status']),
             move_date: Carbon::parse($data['move_date']),
-            created_by_user_id: Filament::auth()->id(),
+            created_by_user_id: (int) Filament::auth()->id(),
             reference: $data['reference'] ?? null,
         );
 

@@ -191,7 +191,7 @@ class Department extends Model
      */
     public function getAllDescendants(): Collection
     {
-        $descendants = collect();
+        $descendants = new \Illuminate\Database\Eloquent\Collection();
 
         foreach ($this->childDepartments as $child) {
             $descendants->push($child);
@@ -208,7 +208,7 @@ class Department extends Model
      */
     public function getAllAncestors(): Collection
     {
-        $ancestors = collect();
+        $ancestors = new \Illuminate\Database\Eloquent\Collection();
         $current = $this->parentDepartment;
 
         while ($current) {

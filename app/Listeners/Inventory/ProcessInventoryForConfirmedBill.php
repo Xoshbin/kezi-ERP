@@ -65,7 +65,7 @@ class ProcessInventoryForConfirmedBill
 
         $this->updateProductInventoryStatsAction->execute(
             $product,
-            $line->quantity,
+            (int) $line->quantity,
             $unitPriceInCompanyCurrency
         );
     }

@@ -49,11 +49,13 @@ class NumberFormatter
     {
         $locale = self::getCurrencyLocale();
 
-        return Number::currency(
+        $result = Number::currency(
             $money->getAmount()->toFloat(),
             in: $money->getCurrency()->getCurrencyCode(),
             locale: $locale
         );
+
+        return $result ?: '0';
     }
 
     /**
@@ -73,7 +75,9 @@ class NumberFormatter
     {
         $locale = self::getNumberLocale();
 
-        return Number::format($number, precision: $precision, locale: $locale);
+        $result = Number::format($number, precision: $precision, locale: $locale);
+
+        return $result ?: '0';
     }
 
     /**
@@ -85,6 +89,8 @@ class NumberFormatter
     {
         $locale = self::getNumberLocale();
 
-        return Number::percentage($percentage, precision: $precision, locale: $locale);
+        $result = Number::percentage($percentage, precision: $precision, locale: $locale);
+
+        return $result ?: '0%';
     }
 }

@@ -92,7 +92,7 @@ class VendorBillService
         $dto = new CreateStockMoveDTO(
             company_id: $company->getKey(),
             product_id: $line->product_id,
-            quantity: $line->quantity,
+            quantity: (float) $line->quantity,
             from_location_id: $company->vendorLocation->getKey(),
             to_location_id: $company->defaultStockLocation->getKey(),
             move_type: StockMoveType::Incoming,

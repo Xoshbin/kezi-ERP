@@ -67,7 +67,7 @@ class Reconciliation extends Model
         // Automatically set the reconciled_by_user_id and reconciled_at when creating
         static::creating(function (Reconciliation $reconciliation) {
             if (Auth::check()) {
-                $reconciliation->reconciled_by_user_id = Auth::id();
+                $reconciliation->reconciled_by_user_id = (int) Auth::id();
             }
             $reconciliation->reconciled_at = now();
         });

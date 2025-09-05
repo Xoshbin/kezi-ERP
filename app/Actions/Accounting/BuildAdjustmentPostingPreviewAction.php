@@ -14,7 +14,11 @@ class BuildAdjustmentPostingPreviewAction
             return '';
         }
         $raw = $account->name ?? '';
-        $name = is_array($raw) ? ($raw['en'] ?? reset($raw)) : (string) $raw;
+        if (is_array($raw)) {
+            $name = $raw['en'] ?? (empty($raw) ? '' : (string) array_values($raw)[0]);
+        } else {
+            $name = (string) $raw;
+        }
 
         return $name;
     }
