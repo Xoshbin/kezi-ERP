@@ -91,8 +91,12 @@ class PayrollsTable
                     ->modalHeading(__('payroll.actions.approve_payroll'))
                     ->modalDescription(__('payroll.actions.approve_payroll_description'))
                     ->action(function (Payroll $record) {
+                        $user = auth()->user();
+                        if (!$user) {
+                            throw new \Exception('User must be authenticated to approve payroll');
+                        }
                         $payrollService = app(PayrollService::class);
-                        $payrollService->approvePayroll($record, auth()->user());
+                        $payrollService->approvePayroll($record, $user);
 
                         return redirect()->back();
                     })
@@ -111,8 +115,12 @@ class PayrollsTable
                     ])
                     )
                     ->action(function (Payroll $record) {
+                        $user = auth()->user();
+                        if (!$user) {
+                            throw new \Exception('User must be authenticated to pay employee');
+                        }
                         $payrollService = app(PayrollService::class);
-                        $payment = $payrollService->payEmployee($record, auth()->user());
+                        $payrollService->payEmployee($record, $user);
 
                         return redirect()->back();
                     })

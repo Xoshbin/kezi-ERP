@@ -41,7 +41,7 @@ class VendorBillService
             return;
         }
 
-        $this->lockDateService->enforce(Company::find($vendorBill->company_id), Carbon::parse($vendorBill->bill_date));
+        $this->lockDateService->enforce(Company::findOrFail($vendorBill->company_id), Carbon::parse($vendorBill->bill_date));
 
         Gate::forUser($user)->authorize('post', $vendorBill);
 
@@ -89,6 +89,10 @@ class VendorBillService
             throw new RuntimeException("Default Vendor or Stock Location is not configured for Company ID: {$company->getKey()}.");
         }
 
+        if (!$line->product_id) {
+            throw new \Exception('Vendor bill line must have a product to create stock move');
+        }
+
         $dto = new CreateStockMoveDTO(
             company_id: $company->getKey(),
             product_id: $line->product_id,
@@ -112,7 +116,7 @@ class VendorBillService
      */
     public function delete(VendorBill $vendorBill): bool
     {
-        $this->lockDateService->enforce(Company::find($vendorBill->company_id), Carbon::parse($vendorBill->bill_date));
+        $this->lockDateService->enforce(Company::findOrFail($vendorBill->company_id), Carbon::parse($vendorBill->bill_date));
 
         if ($vendorBill->status !== VendorBillStatus::Draft) {
             throw new DeletionNotAllowedException(
@@ -121,7 +125,8 @@ class VendorBillService
         }
 
         return DB::transaction(function () use ($vendorBill) {
-            return $vendorBill->delete();
+            $result = $vendorBill->delete();
+            return $result !== null ? $result : false;
         });
     }
 
@@ -292,7 +297,7 @@ class VendorBillService
                 'reset_by_user_id' => $user->id,
                 'reset_at' => now()->toDateTimeString(),
                 'reason' => $reason,
-                'original_posted_at' => $vendorBill->posted_at->toDateTimeString(),
+                'original_posted_at' => $vendorBill->posted_at?->toDateTimeString(),
                 'original_journal_entry_id' => $vendorBill->journal_entry_id,
             ];
 

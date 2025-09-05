@@ -130,7 +130,11 @@ class BankReconciliationService
             $payments = Payment::whereIn('id', $paymentIds)->with(['currency', 'company'])->get();
 
             // Validate that totals match using proper Money arithmetic
-            $currency = $bankLines->first()->bankStatement->currency;
+            $firstBankLine = $bankLines->first();
+            if (!$firstBankLine) {
+                throw new \Exception('No bank lines provided for reconciliation');
+            }
+            $currency = $firstBankLine->bankStatement->currency;
             $bankTotal = Money::of(0, $currency->code);
             foreach ($bankLines as $line) {
                 $bankTotal = $bankTotal->plus($line->amount);

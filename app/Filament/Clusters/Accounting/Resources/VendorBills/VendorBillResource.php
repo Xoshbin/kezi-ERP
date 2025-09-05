@@ -328,7 +328,7 @@ class VendorBillResource extends Resource
                                 'name',
                                 fn ($query) => $query->when(
                                     ($tenant = Filament::getTenant()) instanceof \App\Models\Company,
-                                    fn ($q) => $q->where('company_id', $tenant->getKey())
+                                    fn ($q) => $q->where('company_id', $tenant?->getKey())
                                 )
                             )
                                 ->required()
@@ -661,8 +661,12 @@ class VendorBillResource extends Resource
                             );
 
                             // Create and confirm payment
-                            $payment = app(CreatePaymentAction::class)->execute($paymentDTO, Auth::user());
-                            app(PaymentService::class)->confirm($payment, Auth::user());
+                            $user = Auth::user();
+                            if (!$user) {
+                                throw new \Exception('User must be authenticated to create payment');
+                            }
+                            $payment = app(CreatePaymentAction::class)->execute($paymentDTO, $user);
+                            app(PaymentService::class)->confirm($payment, $user);
 
                             Notification::make()
                                 ->title(__('Payment registered successfully'))

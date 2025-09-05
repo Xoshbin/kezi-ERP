@@ -30,7 +30,7 @@ class InventoryValuationService
 
     public function processIncomingStock(Product $product, float $quantity, Money $costPerUnit, Carbon $date, \Illuminate\Database\Eloquent\Model $sourceDocument): void
     {
-        $this->lockDateService->enforce(Company::find($product->company_id), Carbon::parse($date));
+        $this->lockDateService->enforce(Company::findOrFail($product->company_id), Carbon::parse($date));
 
         // Calculate total cost for this incoming stock
         $totalCost = $costPerUnit->multipliedBy($quantity);
@@ -53,7 +53,7 @@ class InventoryValuationService
 
     public function processOutgoingStock(Product $product, float $quantity, Carbon $date, \Illuminate\Database\Eloquent\Model $sourceDocument): void
     {
-        $this->lockDateService->enforce(Company::find($product->company_id), Carbon::parse($date));
+        $this->lockDateService->enforce(Company::findOrFail($product->company_id), Carbon::parse($date));
 
         // Calculate COGS based on valuation method
         $cogsAmount = $this->calculateCOGS($product, $quantity);
@@ -76,10 +76,13 @@ class InventoryValuationService
     public function adjustInventoryValue(AdjustInventoryDTO $dto): void
     {
         $product = Product::findOrFail($dto->product_id);
-        $this->lockDateService->enforce(Company::find($product->company_id), Carbon::parse($dto->adjustment_date));
+        $this->lockDateService->enforce(Company::findOrFail($product->company_id), Carbon::parse($dto->adjustment_date));
 
         // This is a simplified example. A real implementation would need to calculate the value of the adjustment.
         // For now, we will assume the value is the quantity * the product's average cost.
+        if (!$product->average_cost) {
+            throw new \Exception('Product must have an average cost for inventory adjustment');
+        }
         $adjustmentValue = $product->average_cost->multipliedBy($dto->quantity);
 
         $journal = JournalEntry::create([
@@ -158,6 +161,9 @@ class InventoryValuationService
             }
 
             $quantityToConsume = min($remainingQuantity, $layer->remaining_quantity);
+            if (!$layer->cost_per_unit) {
+                throw new \Exception('Cost layer must have a cost per unit');
+            }
             $layerCOGS = $layer->cost_per_unit->multipliedBy($quantityToConsume);
             $totalCOGS = $totalCOGS->plus($layerCOGS);
 

@@ -88,7 +88,12 @@ class ViewTaxReport extends Page
             'endDate' => ['required', 'date', 'after_or_equal:startDate'],
         ]);
 
-        $company = Company::find(Filament::auth()->user()->company_id);
+        $user = Filament::auth()->user();
+        if (!$user) {
+            throw new \Exception('User must be authenticated to view tax report');
+        }
+
+        $company = Company::findOrFail($user->company_id);
         $service = app(TaxReportService::class);
 
         $report = $service->generate(

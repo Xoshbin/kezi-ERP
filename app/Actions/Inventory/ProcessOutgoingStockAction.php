@@ -18,11 +18,16 @@ class ProcessOutgoingStockAction
                 throw new \Exception('Product not found for stock move');
             }
 
+            $sourceDocument = $stockMove->source;
+            if (!$sourceDocument) {
+                throw new \Exception('Stock move must have a source document');
+            }
+
             $this->inventoryValuationService->processOutgoingStock(
                 $product,
                 $stockMove->quantity,
                 $stockMove->move_date,
-                $stockMove->source
+                $sourceDocument
             );
         });
     }

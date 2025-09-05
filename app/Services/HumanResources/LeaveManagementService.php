@@ -167,8 +167,8 @@ class LeaveManagementService
      */
     private function validateLeaveRequest(CreateLeaveRequestDTO $dto): void
     {
-        $employee = Employee::find($dto->employee_id);
-        $leaveType = LeaveType::find($dto->leave_type_id);
+        $employee = Employee::findOrFail($dto->employee_id);
+        $leaveType = LeaveType::findOrFail($dto->leave_type_id);
 
         // Check if employee has sufficient leave balance
         $balance = $this->getLeaveBalance($employee, $leaveType);

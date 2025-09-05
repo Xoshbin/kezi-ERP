@@ -69,7 +69,7 @@ class ExchangeRatesWidget extends StatsOverviewWidget
                 ->description($currencyName)
                 ->descriptionIcon('heroicon-m-currency-dollar');
 
-            if ($change) {
+            if ($change && $previousRate) {
                 $stat = $stat->chart([
                     (float) $previousRate->rate,
                     (float) $latestRate->rate,

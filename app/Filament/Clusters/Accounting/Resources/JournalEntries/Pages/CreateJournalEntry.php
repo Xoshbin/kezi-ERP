@@ -28,6 +28,9 @@ class CreateJournalEntry extends CreateRecord
             // Ensure we have a single Currency model, not a collection
             if ($currency instanceof \Illuminate\Database\Eloquent\Collection) {
                 $currency = $currency->first();
+                if (!$currency) {
+                    throw new \InvalidArgumentException('Currency not found');
+                }
             }
             foreach ($data['lines'] as $line) {
                 $lineDTOs[] = new CreateJournalEntryLineDTO(
@@ -66,8 +69,9 @@ class CreateJournalEntry extends CreateRecord
             // Check if it's a database constraint violation for duplicate reference
             // MySQL error code 1062 for duplicate entry
             // SQLite error code 19 for UNIQUE constraint failed
-            $isDuplicateEntry = ($e->errorInfo[1] === 1062 && str_contains($e->getMessage(), 'reference_unique')) ||
-                               ($e->errorInfo[1] === 19 && str_contains($e->getMessage(), 'UNIQUE constraint failed') && str_contains($e->getMessage(), 'reference'));
+            $errorCode = $e->errorInfo[1] ?? null;
+            $isDuplicateEntry = ($errorCode === 1062 && str_contains($e->getMessage(), 'reference_unique')) ||
+                               ($errorCode === 19 && str_contains($e->getMessage(), 'UNIQUE constraint failed') && str_contains($e->getMessage(), 'reference'));
 
             if ($isDuplicateEntry) {
                 throw ValidationException::withMessages([

@@ -37,7 +37,11 @@ class EditPayment extends EditRecord
                     $this->save();
                     $service = app(PaymentService::class);
                     try {
-                        $service->confirm($record, Auth::user());
+                        $user = Auth::user();
+                        if (!$user) {
+                            throw new \Exception('User must be authenticated to confirm payment');
+                        }
+                        $service->confirm($record, $user);
                         Notification::make()->title(__('payment.action.confirm.notification.success'))->success()->send();
                     } catch (Exception $e) {
                         Notification::make()->title(__('payment.action.confirm.notification.error'))->body($e->getMessage())->danger()->send();
@@ -94,6 +98,9 @@ class EditPayment extends EditRecord
         // Ensure we have a single Currency model, not a collection
         if ($currency instanceof \Illuminate\Database\Eloquent\Collection) {
             $currency = $currency->first();
+            if (!$currency) {
+                throw new \InvalidArgumentException('Currency not found');
+            }
         }
 
         // Prepare amount for standalone payments

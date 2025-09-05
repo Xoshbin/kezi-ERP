@@ -19,10 +19,13 @@ class CreateInvoice extends CreateRecord
 
     protected function mutateFormDataBeforeCreate(array $data): array
     {
-        $currency = Currency::find($data['currency_id']);
+        $currency = Currency::findOrFail($data['currency_id']);
         // Ensure we have a single Currency model, not a collection
         if ($currency instanceof \Illuminate\Database\Eloquent\Collection) {
             $currency = $currency->first();
+            if (!$currency) {
+                throw new \InvalidArgumentException('Currency not found');
+            }
         }
         $lineDTOs = [];
         foreach ($data['invoiceLines'] as $line) {

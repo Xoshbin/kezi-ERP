@@ -52,7 +52,7 @@ class GeneralLedgerService
                     journalEntryId: $line->journal_entry_id,
                     date: $line->journalEntry->entry_date,
                     reference: $line->journalEntry->reference,
-                    description: $line->journalEntry->description,
+                    description: $line->journalEntry->description ?? '',
                     contraAccount: $this->getContraAccountDescription($line),
                     debit: $debit,
                     credit: $credit,
