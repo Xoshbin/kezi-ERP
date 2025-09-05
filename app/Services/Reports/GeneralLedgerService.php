@@ -85,6 +85,9 @@ class GeneralLedgerService
         return Money::ofMinor($balance ?: 0, $currency);
     }
 
+    /**
+     * @return Collection<int, JournalEntryLine>
+     */
     private function getTransactionsForPeriod(Account $account, Carbon $startDate, Carbon $endDate): Collection
     {
         return JournalEntryLine::query()

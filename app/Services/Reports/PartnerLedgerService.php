@@ -94,6 +94,9 @@ class PartnerLedgerService
         return Money::ofMinor($balance ?: 0, $currency);
     }
 
+    /**
+     * @return Collection<int, JournalEntryLine>
+     */
     private function getTransactionsForAccount(int $accountId, Carbon $startDate, Carbon $endDate): Collection
     {
         return JournalEntryLine::query()

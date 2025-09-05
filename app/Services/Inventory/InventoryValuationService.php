@@ -254,6 +254,8 @@ class InventoryValuationService
 
     /**
      * Create a StockMoveValuation record to link the stock move with its accounting impact
+     *
+     * @param  \Illuminate\Database\Eloquent\Model  $sourceDocument
      */
     private function createStockMoveValuation(Product $product, float $quantity, Money $cogsAmount, JournalEntry $journalEntry, $sourceDocument): StockMoveValuation
     {
@@ -335,6 +337,8 @@ class InventoryValuationService
 
     /**
      * Create a journal entry for incoming stock
+     *
+     * @param  \Illuminate\Database\Eloquent\Model  $sourceDocument
      */
     private function createIncomingStockJournalEntry(Product $product, Money $totalCost, Carbon $date, $sourceDocument): JournalEntry
     {
@@ -401,6 +405,8 @@ class InventoryValuationService
 
     /**
      * Create a StockMoveValuation record for incoming stock
+     *
+     * @param  \Illuminate\Database\Eloquent\Model  $sourceDocument
      */
     private function createIncomingStockMoveValuation(Product $product, float $quantity, Money $totalCost, JournalEntry $journalEntry, $sourceDocument): StockMoveValuation
     {

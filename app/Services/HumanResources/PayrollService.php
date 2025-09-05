@@ -128,6 +128,8 @@ class PayrollService
 
     /**
      * Calculate attendance-based amounts for the period.
+     *
+     * @return array<string, mixed>
      */
     private function calculateAttendanceAmounts(Employee $employee, string $periodStartDate, string $periodEndDate): array
     {
@@ -220,6 +222,10 @@ class PayrollService
 
     /**
      * Create payroll lines for accounting integration.
+     *
+     * @param  array<string, mixed>  $attendanceData
+     * @param  array<string, mixed>  $deductions
+     * @return array<string, mixed>
      */
     private function createPayrollLines(Employee $employee, Money $baseSalary, array $attendanceData, array $deductions): array
     {

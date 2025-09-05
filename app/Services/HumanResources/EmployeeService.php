@@ -143,6 +143,8 @@ class EmployeeService
 
     /**
      * Get employee statistics for a company.
+     *
+     * @return array<string, mixed>
      */
     public function getEmployeeStatistics(Company $company): array
     {

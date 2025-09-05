@@ -238,6 +238,8 @@ class VendorBillService
 
     /**
      * Convert vendor bill line amounts to company currency.
+     *
+     * @param  \App\Models\VendorBillLine  $line
      */
     protected function convertVendorBillLineAmounts($line, Currency $companyCurrency, Company $company): void
     {

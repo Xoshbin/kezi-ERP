@@ -138,6 +138,9 @@ class AgedPayableService
         return $this->calculateTotals($reportLines, $currency);
     }
 
+    /**
+     * @param  Collection<int, AgedPayableLineDTO>  $reportLines
+     */
     private function calculateTotals(Collection $reportLines, string $currency): AgedPayableDTO
     {
         $zero = Money::zero($currency);
