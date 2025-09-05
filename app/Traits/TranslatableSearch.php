@@ -126,7 +126,7 @@ trait TranslatableSearch
 
         // Check if the field is translatable and the model has the HasTranslations trait
         if (in_array($field, $this->translatable ?? []) && $this->hasTranslationsSupport()) {
-            $translation = $this->getTranslation($field, $locale); // @phpstan-ignore-line
+            $translation = $this->getTranslation($field, $locale);
 
             return $translation ?: ($this->$field ?? '');
         }
@@ -205,7 +205,7 @@ trait TranslatableSearch
 
         $translations = [];
         foreach ($this->getSearchLocales() as $locale) {
-            $translation = $this->getTranslation($field, $locale); // @phpstan-ignore-line
+            $translation = $this->getTranslation($field, $locale);
             if ($translation) {
                 $translations[$locale] = $translation;
             }
@@ -220,6 +220,6 @@ trait TranslatableSearch
      */
     private function hasTranslationsSupport(): bool
     {
-        return method_exists($this, 'getTranslation'); // @phpstan-ignore-line
+        return method_exists($this, 'getTranslation');
     }
 }
