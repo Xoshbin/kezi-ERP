@@ -32,6 +32,7 @@ class BankTransactionsTable extends Component implements HasActions, HasForms, H
 
     public BankStatement $bankStatement;
 
+    /** @var array<int, int> */
     public array $selectedBankLines = [];
 
     public function mount(BankStatement $bankStatement): void
@@ -137,7 +138,7 @@ class BankTransactionsTable extends Component implements HasActions, HasForms, H
         return null;
     }
 
-    public function render()
+    public function render(): \Illuminate\Contracts\View\View
     {
         return view('livewire.accounting.bank-transactions-table');
     }

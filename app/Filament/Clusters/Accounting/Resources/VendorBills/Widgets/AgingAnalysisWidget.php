@@ -81,6 +81,9 @@ class AgingAnalysisWidget extends BaseWidget
         return $totalAmount->minus($paidAmount);
     }
 
+    /**
+     * @return array{label: string, color: string}
+     */
     private function getAgingBucket(int $daysOutstanding): array
     {
         if ($daysOutstanding <= 0) {

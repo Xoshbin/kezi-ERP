@@ -57,6 +57,7 @@ class Tax extends Model
     use HasFactory, HasTranslations;
     use TranslatableSearch;
 
+    /** @var array<int, string> */
     public array $translatable = ['name', 'label_on_invoices'];
 
     /**
@@ -149,7 +150,7 @@ class Tax extends Model
         return (float) $this->rate * 100; // 1500 → 15.00%
     }
 
-    public function getRateFractionAttribute()
+    public function getRateFractionAttribute(): float
     {
         return $this->rate / 100; // 1500 → 15.00%
     }

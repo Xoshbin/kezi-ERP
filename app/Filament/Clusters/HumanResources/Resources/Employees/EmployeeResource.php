@@ -69,6 +69,9 @@ class EmployeeResource extends Resource
         ];
     }
 
+    /**
+     * @return Builder<Employee>
+     */
     public static function getRecordRouteBindingEloquentQuery(): Builder
     {
         return parent::getRecordRouteBindingEloquentQuery()

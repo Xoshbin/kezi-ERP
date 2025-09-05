@@ -306,6 +306,9 @@ class NumberingSettingsResource extends Resource
             ]);
     }
 
+    /**
+     * @return Builder<Company>
+     */
     public static function getEloquentQuery(): Builder
     {
         // Only show the current tenant company

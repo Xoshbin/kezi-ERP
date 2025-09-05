@@ -183,6 +183,9 @@ class JournalEntryResource extends Resource
         ]);
     }
 
+    /**
+     * @return Builder<JournalEntry>
+     */
     public static function getEloquentQuery(): Builder
     {
         return parent::getEloquentQuery()
@@ -275,6 +278,9 @@ class JournalEntryResource extends Resource
         ];
     }
 
+    /**
+     * @param array<int, array{debit?: float|string, credit?: float|string}> $state
+     */
     protected static function updateTotals(callable $set, array $state): void
     {
         $lines = $state;

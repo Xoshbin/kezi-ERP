@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Casts\BaseCurrencyMoneyCast;
 use App\Casts\PayrollCurrencyMoneyCast;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class PayrollLine extends Model
 {
@@ -40,22 +41,22 @@ class PayrollLine extends Model
         'is_statutory' => 'boolean',
     ];
 
-    public function company()
+    public function company(): BelongsTo
     {
         return $this->belongsTo(Company::class);
     }
 
-    public function payroll()
+    public function payroll(): BelongsTo
     {
         return $this->belongsTo(Payroll::class);
     }
 
-    public function account()
+    public function account(): BelongsTo
     {
         return $this->belongsTo(Account::class);
     }
 
-    public function analyticAccount()
+    public function analyticAccount(): BelongsTo
     {
         return $this->belongsTo(AnalyticAccount::class);
     }

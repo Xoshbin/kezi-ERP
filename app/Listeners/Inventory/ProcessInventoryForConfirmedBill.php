@@ -26,7 +26,7 @@ class ProcessInventoryForConfirmedBill
         }
     }
 
-    private function processStorableProductLine($vendorBill, $line, $user): void
+    private function processStorableProductLine(\App\Models\VendorBill $vendorBill, \App\Models\VendorBillLine $line, \App\Models\User $user): void
     {
         $product = $line->product;
         $company = $vendorBill->company;

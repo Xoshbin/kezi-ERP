@@ -41,6 +41,7 @@ class EditVendorBill extends EditRecord
 {
     protected static string $resource = VendorBillResource::class;
 
+    /** @var array<string, mixed> */
     protected array $newAttachments = [];
 
     protected function getHeaderActions(): array
@@ -76,11 +77,11 @@ class EditVendorBill extends EditRecord
                     $rows[] = ['Account Code', 'Account Name', 'Description', 'Debit', 'Credit'];
                     foreach ($preview['lines'] as $l) {
                         $rows[] = [
-                            is_array($l['account_code'] ?? null) ? (string) (reset($l['account_code']) ?: '') : (string) ($l['account_code'] ?? ''),
-                            is_array($l['account_name'] ?? null) ? (string) (reset($l['account_name']) ?: '') : (string) ($l['account_name'] ?? ''),
-                            is_array($l['description'] ?? null) ? (string) (reset($l['description']) ?: '') : (string) ($l['description'] ?? ''),
-                            number_format(($l['debit_minor'] ?? 0) / 100, 2, '.', ''),
-                            number_format(($l['credit_minor'] ?? 0) / 100, 2, '.', ''),
+                            (string) ($l['account_code'] ?: ''),
+                            (string) $l['account_name'],
+                            (string) $l['description'],
+                            number_format($l['debit_minor'] / 100, 2, '.', ''),
+                            number_format($l['credit_minor'] / 100, 2, '.', ''),
                         ];
                     }
                     $csv = '';

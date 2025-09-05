@@ -18,7 +18,7 @@ use Spatie\Translatable\HasTranslations;
  *
  * @property int $id
  * @property int $company_id
- * @property string|array $name
+ * @property string|array<string, string> $name
  * @property string|null $country
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
@@ -46,6 +46,7 @@ class FiscalPosition extends Model
     use HasFactory, HasTranslations;
     use TranslatableSearch;
 
+    /** @var array<int, string> */
     public array $translatable = ['name'];
 
     /**

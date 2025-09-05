@@ -71,12 +71,14 @@ class CreateStockMovesForInvoiceAction
     protected function getStockLocations(Invoice $invoice): array
     {
         // Get stock locations - use company defaults or fallback to any available locations
+        /** @var \App\Models\StockLocation|null $warehouseLocation */
         $warehouseLocation = $invoice->company->defaultStockLocation
             ?? StockLocation::where('company_id', $invoice->company_id)
                 ->where('type', StockLocationType::Internal)
                 ->first()
             ?? StockLocation::where('name', 'Warehouse')->first();
 
+        /** @var \App\Models\StockLocation|null $vendorLocation */
         $vendorLocation = $invoice->company->vendorLocation
             ?? StockLocation::where('company_id', $invoice->company_id)
                 ->where('type', StockLocationType::Vendor)

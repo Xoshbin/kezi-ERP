@@ -19,7 +19,7 @@ use Spatie\Translatable\HasTranslations;
 /**
  * @property int $id
  * @property int $company_id
- * @property string|array $name
+ * @property string|array<string, string> $name
  * @property string $type
  * @property string $short_code
  * @property int|null $currency_id
@@ -53,6 +53,7 @@ class Journal extends Model
     use HasFactory, HasTranslations;
     use TranslatableSearch;
 
+    /** @var array<int, string> */
     public array $translatable = ['name'];
 
     /**
