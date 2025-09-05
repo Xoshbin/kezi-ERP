@@ -53,6 +53,9 @@ class DisposeAssetAction
             );
 
             // Debit Cash/Bank for the proceeds from the sale
+            if (!$company->default_bank_account_id) {
+                throw new \InvalidArgumentException('Company default bank account is not configured');
+            }
             $lines[] = new CreateJournalEntryLineDTO(
                 account_id: $company->default_bank_account_id,
                 debit: $disposalPrice,

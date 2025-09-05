@@ -75,7 +75,7 @@ class CreateJournalEntryForAdjustmentAction
             company_id: $adjustment->company_id,
             currency_id: $adjustment->currency_id,
             journal_id: $salesJournalId,
-            entry_date: $adjustment->posted_at,
+            entry_date: $adjustment->posted_at ?? now()->toDateString(),
             reference: 'CN-'.$adjustment->reference_number,
             description: 'Credit Note '.$adjustment->reference_number,
             source_type: AdjustmentDocument::class,
