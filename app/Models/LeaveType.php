@@ -129,6 +129,12 @@ class LeaveType extends Model
     /**
      * Get the company that owns the LeaveType.
      */
+    /**
+
+     * @return BelongsTo<Company, static>
+
+     */
+
     public function company(): BelongsTo
     {
         return $this->belongsTo(Company::class);
@@ -137,6 +143,12 @@ class LeaveType extends Model
     /**
      * Get the leave requests for this leave type.
      */
+    /**
+
+     * @return HasMany<LeaveRequest, static>
+
+     */
+
     public function leaveRequests(): HasMany
     {
         return $this->hasMany(LeaveRequest::class);

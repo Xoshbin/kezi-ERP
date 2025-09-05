@@ -19,6 +19,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 #[ObservedBy([AdjustmentDocumentLineObserver::class])]
 class AdjustmentDocumentLine extends Model
 {
+    /** @use HasFactory<\Database\Factories\AdjustmentDocumentLineFactory> */
     use HasFactory;
 
     protected $table = 'adjustment_document_lines';
@@ -95,25 +96,67 @@ class AdjustmentDocumentLine extends Model
     /**
      * Get the company that this rate belongs to.
      */
+    /**
+
+     * @return BelongsTo<Company, static>
+
+     */
+
     public function company(): BelongsTo
     {
         return $this->belongsTo(Company::class);
     }
+
+    /**
+
+
+     * @return BelongsTo<AdjustmentDocument, static>
+
+
+     */
+
 
     public function adjustmentDocument(): BelongsTo
     {
         return $this->belongsTo(AdjustmentDocument::class);
     }
 
+    /**
+
+
+     * @return BelongsTo<Product, static>
+
+
+     */
+
+
     public function product(): BelongsTo
     {
         return $this->belongsTo(Product::class);
     }
 
+    /**
+
+
+     * @return BelongsTo<Tax, static>
+
+
+     */
+
+
     public function tax(): BelongsTo
     {
         return $this->belongsTo(Tax::class);
     }
+
+    /**
+
+
+     * @return BelongsTo<Account, static>
+
+
+     */
+
 
     public function account(): BelongsTo
     {
@@ -125,6 +168,12 @@ class AdjustmentDocumentLine extends Model
      * Get the line items for this adjustment document.
      * An adjustment document consists of multiple detail lines.
      */
+    /**
+
+     * @return HasMany<AdjustmentDocumentLine, static>
+
+     */
+
     public function lines(): HasMany
     {
         return $this->hasMany(AdjustmentDocumentLine::class);

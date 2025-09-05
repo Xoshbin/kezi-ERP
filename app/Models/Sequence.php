@@ -53,6 +53,12 @@ class Sequence extends Model
     /**
      * Get the company that owns the sequence.
      */
+    /**
+
+     * @return BelongsTo<Company, static>
+
+     */
+
     public function company(): BelongsTo
     {
         return $this->belongsTo(Company::class);

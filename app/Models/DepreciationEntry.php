@@ -45,6 +45,7 @@ use Illuminate\Support\Carbon;
 #[ObservedBy([DepreciationEntryObserver::class])]
 class DepreciationEntry extends Model
 {
+    /** @use HasFactory<\Database\Factories\DepreciationEntryFactory> */
     use HasFactory;
 
     /**
@@ -107,6 +108,12 @@ class DepreciationEntry extends Model
     /**
      * Get the company that this depreciation entry belongs to.
      */
+    /**
+
+     * @return BelongsTo<Company, static>
+
+     */
+
     public function company(): BelongsTo
     {
         return $this->belongsTo(Company::class);
@@ -116,6 +123,12 @@ class DepreciationEntry extends Model
      * Get the asset that this depreciation entry belongs to.
      * Each depreciation entry corresponds to a specific fixed asset.
      */
+    /**
+
+     * @return BelongsTo<Asset, static>
+
+     */
+
     public function asset(): BelongsTo
     {
         return $this->belongsTo(Asset::class);
@@ -127,6 +140,12 @@ class DepreciationEntry extends Model
      * The 'journal_entry_id' is nullable while the depreciation entry is in 'Draft'
      * but becomes mandatory upon 'Posting' when the actual financial impact occurs.
      */
+    /**
+
+     * @return BelongsTo<JournalEntry, static>
+
+     */
+
     public function journalEntry(): BelongsTo
     {
         return $this->belongsTo(JournalEntry::class);
