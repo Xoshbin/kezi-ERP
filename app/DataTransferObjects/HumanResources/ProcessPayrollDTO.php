@@ -34,8 +34,10 @@ readonly class ProcessPayrollDTO
         public string|Money $other_deductions,
         public float $regular_hours,
         public float $overtime_hours,
+        /** @var array<int, PayrollLineDTO> */
         public array $payrollLines,
         public ?string $notes,
+        /** @var array<string, mixed>|null */
         public ?array $adjustments,
         public int $processed_by_user_id,
     ) {}

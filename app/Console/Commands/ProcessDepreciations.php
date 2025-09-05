@@ -12,7 +12,7 @@ class ProcessDepreciations extends Command
 
     protected $description = 'Process due depreciation entries';
 
-    public function handle()
+    public function handle(): void
     {
         $this->info('Processing depreciations...');
 

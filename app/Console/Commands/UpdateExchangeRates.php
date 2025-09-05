@@ -34,7 +34,7 @@ class UpdateExchangeRates extends Command
     /**
      * Execute the console command.
      */
-    public function handle()
+    public function handle(): int
     {
         $source = $this->option('source');
         $validate = $this->option('validate');

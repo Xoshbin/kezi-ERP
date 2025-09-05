@@ -16,6 +16,7 @@ readonly class CreateLeaveRequestDTO
         public ?string $notes,
         public ?int $delegate_employee_id,
         public ?string $delegation_notes,
+        /** @var array<int, string>|null */
         public ?array $attachments,
         public int $requested_by_user_id,
     ) {}

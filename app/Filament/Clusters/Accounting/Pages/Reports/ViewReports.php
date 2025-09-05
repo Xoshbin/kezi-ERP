@@ -37,6 +37,9 @@ class ViewReports extends Page
         return __('reports.select_report_description');
     }
 
+    /**
+     * @return array<string, array<string, mixed>>
+     */
     public function getReportCategories(): array
     {
         $tenant = Filament::getTenant();

@@ -28,7 +28,7 @@ class MatchJournalItemsAction
     /**
      * Execute the reconciliation of journal entry lines.
      *
-     * @param  array  $journalLineIds  Array of JournalEntryLine IDs to reconcile
+     * @param  array<int, int>  $journalLineIds  Array of JournalEntryLine IDs to reconcile
      * @param  ReconciliationType  $reconciliationType  Type of reconciliation
      * @param  string|null  $reference  Optional reference for the reconciliation
      * @param  string|null  $description  Optional description for the reconciliation
@@ -188,6 +188,8 @@ class MatchJournalItemsAction
     /**
      * Validate that all journal entry lines belong to the same partner.
      * This is required for A/R and A/P reconciliation.
+     *
+     * @param Collection<int, \App\Models\JournalEntryLine> $journalLines
      */
     private function validatePartnerConsistency(Collection $journalLines): void
     {
