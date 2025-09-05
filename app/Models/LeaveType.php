@@ -236,7 +236,7 @@ class LeaveType extends Model
      */
     public function getTotalDaysRequestedThisYear(): float
     {
-        return $this->leaveRequests()
+        return (float) $this->leaveRequests()
             ->whereYear('start_date', now()->year)
             ->where('status', 'approved')
             ->sum('days_requested');

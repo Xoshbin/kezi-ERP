@@ -60,10 +60,11 @@ class GeneralLedgerService
                 ));
             }
 
+            $accountName = is_array($account->name) ? ($account->name['en'] ?? (empty($account->name) ? '' : (string) array_values($account->name)[0])) : (string) $account->name;
             $reportAccounts->push(new GeneralLedgerAccountDTO(
                 accountId: $account->id,
                 accountCode: $account->code,
-                accountName: $account->name,
+                accountName: $accountName,
                 openingBalance: $openingBalance,
                 transactionLines: $transactionLines,
                 closingBalance: $runningBalance
@@ -110,7 +111,11 @@ class GeneralLedgerService
 
         /** @var \Illuminate\Support\Collection<int, string> $names */
         $names = $otherLines->map(function (JournalEntryLine $l): string {
-            return $l->account->name ?: '';
+            $accountName = $l->account->name;
+            if (is_array($accountName)) {
+                return $accountName['en'] ?? (empty($accountName) ? '' : (string) array_values($accountName)[0]);
+            }
+            return (string) ($accountName ?: '');
         });
 
         return $names->filter()->implode(', ');

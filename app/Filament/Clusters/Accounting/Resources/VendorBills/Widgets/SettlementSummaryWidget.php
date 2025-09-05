@@ -74,10 +74,12 @@ class SettlementSummaryWidget extends BaseWidget
     {
         $formatter = new NumberFormatter('en_US', NumberFormatter::CURRENCY);
 
-        return $formatter->formatCurrency(
+        $result = $formatter->formatCurrency(
             $money->getAmount()->toFloat(),
             $money->getCurrency()->getCurrencyCode()
         );
+
+        return $result ?: $money->getCurrency()->getCurrencyCode() . ' 0.00';
     }
 
     protected function getColumns(): int

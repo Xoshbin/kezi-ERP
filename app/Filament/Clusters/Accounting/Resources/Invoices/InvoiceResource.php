@@ -141,6 +141,10 @@ class InvoiceResource extends Resource
                         ->afterStateUpdated(function (callable $set, $state) {
                             if ($state) {
                                 $currency = Currency::find($state);
+                                // Ensure we have a single Currency model, not a collection
+                                if ($currency instanceof \Illuminate\Database\Eloquent\Collection) {
+                                    $currency = $currency->first();
+                                }
                                 $company = Filament::getTenant();
 
                                 if ($currency && $company instanceof \App\Models\Company && $currency->id !== $company->currency_id) {
@@ -245,6 +249,10 @@ class InvoiceResource extends Resource
                                 ->afterStateUpdated(function (callable $set, $state) {
                                     if ($state) {
                                         $product = Product::find($state);
+                                        // Ensure we have a single Product model, not a collection
+                                        if ($product instanceof \Illuminate\Database\Eloquent\Collection) {
+                                            $product = $product->first();
+                                        }
                                         if ($product) {
                                             $set('description', $product->description);
                                             $set('unit_price', $product->unit_price);

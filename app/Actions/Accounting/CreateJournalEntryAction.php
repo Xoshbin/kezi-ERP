@@ -40,16 +40,18 @@ class CreateJournalEntryAction
         foreach ($dto->lines as $index => $line) {
             $account = Account::find($line->account_id);
             if ($account && $account->is_deprecated) {
+                $accountName = is_array($account->name) ? ($account->name['en'] ?? (empty($account->name) ? '' : (string) array_values($account->name)[0])) : (string) $account->name;
                 throw ValidationException::withMessages([
-                    "lines.{$index}.account_id" => "Account '{$account->name}' is deprecated and cannot be used.",
+                    "lines.{$index}.account_id" => "Account '{$accountName}' is deprecated and cannot be used.",
                 ]);
             }
 
             // Enforce account currency lock
             if ($account && $account->currency_id && $account->currency_id !== $dto->currency_id) {
                 $accountCurrency = Currency::find($account->currency_id);
+                $accountName = is_array($account->name) ? ($account->name['en'] ?? (empty($account->name) ? '' : (string) array_values($account->name)[0])) : (string) $account->name;
                 throw ValidationException::withMessages([
-                    "lines.{$index}.account_id" => "Account '{$account->name}' is locked to {$accountCurrency->code} currency but transaction is in {$currency->code}.",
+                    "lines.{$index}.account_id" => "Account '{$accountName}' is locked to {$accountCurrency->code} currency but transaction is in {$currency->code}.",
                 ]);
             }
 

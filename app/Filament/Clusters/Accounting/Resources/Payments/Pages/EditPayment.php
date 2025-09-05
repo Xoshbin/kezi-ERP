@@ -91,6 +91,10 @@ class EditPayment extends EditRecord
         }
 
         $currency = Currency::findOrFail($data['currency_id']);
+        // Ensure we have a single Currency model, not a collection
+        if ($currency instanceof \Illuminate\Database\Eloquent\Collection) {
+            $currency = $currency->first();
+        }
 
         // Prepare amount for standalone payments
         $amount = Money::of($data['amount'], $currency->code);
@@ -108,7 +112,7 @@ class EditPayment extends EditRecord
             counterpart_account_id: $data['counterpart_account_id'],
             document_links: [], // No document links for standalone payments
             reference: $data['reference'],
-            updated_by_user_id: Auth::id()
+            updated_by_user_id: (int) Auth::id()
         );
 
         return app(UpdatePaymentAction::class)->execute($paymentDTO);

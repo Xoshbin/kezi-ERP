@@ -25,6 +25,10 @@ class CreateBankStatement extends CreateRecord
     protected function mutateFormDataBeforeCreate(array $data): array
     {
         $currency = Currency::find($data['currency_id']);
+        // Ensure we have a single Currency model, not a collection
+        if ($currency instanceof \Illuminate\Database\Eloquent\Collection) {
+            $currency = $currency->first();
+        }
         $lineDTOs = [];
         foreach ($data['bankStatementLines'] as $line) {
             $foreignCurrency = null;
@@ -32,6 +36,10 @@ class CreateBankStatement extends CreateRecord
 
             if (! empty($line['foreign_currency_id']) && ! empty($line['amount_in_foreign_currency'])) {
                 $foreignCurrency = Currency::find($line['foreign_currency_id']);
+                // Ensure we have a single Currency model, not a collection
+                if ($foreignCurrency instanceof \Illuminate\Database\Eloquent\Collection) {
+                    $foreignCurrency = $foreignCurrency->first();
+                }
                 $amountInForeignCurrency = Money::of($line['amount_in_foreign_currency'], $foreignCurrency->code);
             }
 
@@ -52,14 +60,20 @@ class CreateBankStatement extends CreateRecord
 
     protected function handleRecordCreation(array $data): Model
     {
+        $currency = Currency::find($data['currency_id']);
+        // Ensure we have a single Currency model, not a collection
+        if ($currency instanceof \Illuminate\Database\Eloquent\Collection) {
+            $currency = $currency->first();
+        }
+
         $bankStatementDTO = new CreateBankStatementDTO(
             company_id: (int) (Filament::getTenant()->id ?? 0),
             currency_id: $data['currency_id'],
             journal_id: $data['journal_id'],
             reference: $data['reference'],
             date: $data['date'],
-            starting_balance: Money::of($data['starting_balance'], Currency::find($data['currency_id'])->code),
-            ending_balance: Money::of($data['ending_balance'], Currency::find($data['currency_id'])->code),
+            starting_balance: Money::of($data['starting_balance'], $currency->code),
+            ending_balance: Money::of($data['ending_balance'], $currency->code),
             lines: $data['bankStatementLines']
         );
 

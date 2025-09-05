@@ -284,7 +284,7 @@ class EditVendorBill extends EditRecord
             accounting_date: $data['accounting_date'],
             due_date: $data['due_date'] ?? null,
             lines: $lineDTOs,
-            updated_by_user_id: Auth::id()
+            updated_by_user_id: (int) Auth::id()
         );
 
         return app(UpdateVendorBillAction::class)->execute($vendorBillDTO);

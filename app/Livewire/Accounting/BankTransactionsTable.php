@@ -86,6 +86,10 @@ class BankTransactionsTable extends Component implements HasActions, HasForms, H
                     ])
                     ->action(function (array $data, BankStatementLine $record) {
                         $writeOffAccount = Account::findOrFail($data['account_id']);
+                        // Ensure we have a single Account model, not a collection
+                        if ($writeOffAccount instanceof \Illuminate\Database\Eloquent\Collection) {
+                            $writeOffAccount = $writeOffAccount->first();
+                        }
 
                         app(BankReconciliationService::class)->createWriteOff(
                             $record,

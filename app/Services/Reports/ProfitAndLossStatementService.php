@@ -54,12 +54,13 @@ class ProfitAndLossStatementService
             AccountType::OtherIncome->value,
         ])
             ->map(function (object $row) use ($currency, $accounts) {
+                /** @var object{balance: string, account_id: int, account_code: string, account_name: string} $row */
                 // Invert the sign for presentation, as income accounts have a natural credit balance.
                 // The balance from the query is already in minor units, so use it directly
                 $balance = Money::ofMinor(-(int) $row->balance, $currency);
                 /** @var \App\Models\Account|null $account */
                 $account = $accounts->get($row->account_id);
-                $accountName = $account->name ?? (string) $row->account_name;
+                $accountName = $account ? (is_array($account->name) ? ($account->name['en'] ?? (empty($account->name) ? '' : (string) array_values($account->name)[0])) : (string) $account->name) : (string) $row->account_name;
 
                 return new ReportLineDTO(
                     accountId: $row->account_id,
@@ -75,12 +76,13 @@ class ProfitAndLossStatementService
             AccountType::CostOfRevenue->value,
         ])
             ->map(function (object $row) use ($currency, $accounts) {
+                /** @var object{balance: string, account_id: int, account_code: string, account_name: string} $row */
                 // Expense accounts have a natural debit balance, which is correct for presentation.
                 // The balance from the query is already in minor units, so use it directly
                 $balance = Money::ofMinor((int) $row->balance, $currency);
                 /** @var \App\Models\Account|null $account */
                 $account = $accounts->get($row->account_id);
-                $accountName = $account->name ?? (string) $row->account_name;
+                $accountName = $account ? (is_array($account->name) ? ($account->name['en'] ?? (empty($account->name) ? '' : (string) array_values($account->name)[0])) : (string) $account->name) : (string) $row->account_name;
 
                 return new ReportLineDTO(
                     accountId: $row->account_id,

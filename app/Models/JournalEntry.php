@@ -157,7 +157,7 @@ class JournalEntry extends Model
         // vital for maintaining an accurate audit trail [3, 4, 8].
         static::creating(function (JournalEntry $journalEntry) {
             if (Auth::check()) {
-                $journalEntry->created_by_user_id = Auth::id();
+                $journalEntry->created_by_user_id = (int) Auth::id();
             }
             // `is_posted` is typically initialized to `false` in the migration,
             // and transitions to `true` via a dedicated posting mechanism in the application's

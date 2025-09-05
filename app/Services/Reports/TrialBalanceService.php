@@ -41,6 +41,7 @@ class TrialBalanceService
         $totalCredit = $zero;
 
         $reportLines = $results->map(function (object $row) use ($currency, $zero, &$totalDebit, &$totalCredit) {
+            /** @var object{balance: string, account_id: int, account_code: string, account_name: string, account_type: string} $row */
             $balance = Money::ofMinor((int) $row->balance, $currency);
             $debit = $zero;
             $credit = $zero;

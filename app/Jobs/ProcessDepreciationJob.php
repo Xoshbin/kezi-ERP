@@ -26,6 +26,10 @@ class ProcessDepreciationJob implements ShouldQueue
 
         // Get the actual User model without pivot data
         $user = \App\Models\User::find($userWithPivot->getKey());
+        // Ensure we have a single User model, not a collection
+        if ($user instanceof \Illuminate\Database\Eloquent\Collection) {
+            $user = $user->first();
+        }
         if (!$user) {
             throw new \Exception('User not found');
         }
