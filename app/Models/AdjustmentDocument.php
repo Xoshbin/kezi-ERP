@@ -246,12 +246,15 @@ class AdjustmentDocument extends Model
         $currencyCode = $this->currency->code;
         $zero = Money::of(0, $currencyCode);
 
-        $totalTax = $this->lines->reduce(
+        /** @var \Illuminate\Database\Eloquent\Collection<int, AdjustmentDocumentLine> $lines */
+        $lines = $this->lines;
+
+        $totalTax = $lines->reduce(
             fn (Money $carry, AdjustmentDocumentLine $line) => $carry->plus($line->total_line_tax ?? $zero),
             $zero
         );
 
-        $subtotal = $this->lines->reduce(
+        $subtotal = $lines->reduce(
             fn (Money $carry, AdjustmentDocumentLine $line) => $carry->plus($line->subtotal ?? $zero),
             $zero
         );

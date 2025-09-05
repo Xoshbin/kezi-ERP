@@ -182,7 +182,7 @@ class LeaveManagementService
         }
 
         // Check maximum consecutive days
-        if ($leaveType->exceedsMaxConsecutiveDays($dto->days_requested)) {
+        if ($leaveType->exceedsMaxConsecutiveDays((int) $dto->days_requested)) {
             throw new Exception('Maximum consecutive days allowed: '.$leaveType->max_consecutive_days);
         }
 

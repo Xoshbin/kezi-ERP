@@ -77,7 +77,7 @@ class EditAdjustmentDocument extends EditRecord
                     foreach ($rows as $row) {
                         $csv .= implode(',', array_map(fn ($v) => '"'.str_replace('"', '""', (string) $v).'"', $row))."\n";
                     }
-                    $filename = 'adjustment-'.($record->reference_number ?: ('ADJ-'.str_pad($record->id, 5, '0', STR_PAD_LEFT))).'-preview.csv';
+                    $filename = 'adjustment-'.($record->reference_number ?: ('ADJ-'.str_pad((string) $record->id, 5, '0', STR_PAD_LEFT))).'-preview.csv';
 
                     return response()->streamDownload(function () use ($csv) {
                         echo $csv;
@@ -96,7 +96,7 @@ class EditAdjustmentDocument extends EditRecord
                         'preview' => $preview,
                         'adjustment' => $record,
                     ]);
-                    $filename = 'adjustment-'.($record->reference_number ?: ('ADJ-'.str_pad($record->id, 5, '0', STR_PAD_LEFT))).'-preview.pdf';
+                    $filename = 'adjustment-'.($record->reference_number ?: ('ADJ-'.str_pad((string) $record->id, 5, '0', STR_PAD_LEFT))).'-preview.pdf';
 
                     return response()->streamDownload(function () use ($pdf) {
                         echo $pdf->output();
@@ -171,7 +171,9 @@ class EditAdjustmentDocument extends EditRecord
         $rec->loadMissing('lines');
 
         // Keep Money objects for MoneyInput components
-        $linesData = $rec->lines->map(function (\App\Models\AdjustmentDocumentLine $line) {
+        /** @var \Illuminate\Database\Eloquent\Collection<int, \App\Models\AdjustmentDocumentLine> $lines */
+        $lines = $rec->lines;
+        $linesData = $lines->map(function (\App\Models\AdjustmentDocumentLine $line) {
             return [
                 'product_id' => $line->product_id,
                 'description' => $line->description,
@@ -201,6 +203,10 @@ class EditAdjustmentDocument extends EditRecord
                 product_id: $line['product_id'] ?? null,
                 tax_id: $line['tax_id'] ?? null
             );
+        }
+
+        if (!$record instanceof \App\Models\AdjustmentDocument) {
+            throw new \Exception('Invalid record type');
         }
 
         $dto = new UpdateAdjustmentDocumentDTO(

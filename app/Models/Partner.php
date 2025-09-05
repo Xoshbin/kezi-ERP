@@ -230,12 +230,14 @@ class Partner extends Model
 
         $this->loadMissing('company.currency');
 
-        $totalOutstanding = $this->invoices()
+        /** @var \Illuminate\Database\Eloquent\Collection<int, Invoice> $invoices */
+        $invoices = $this->invoices()
             ->whereIn('status', [InvoiceStatus::Posted, InvoiceStatus::Paid])
-            ->get()
-            ->sum(function (Invoice $invoice) {
-                return $invoice->getRemainingAmount()->getMinorAmount()->toInt();
-            });
+            ->get();
+
+        $totalOutstanding = $invoices->sum(function (Invoice $invoice) {
+            return $invoice->getRemainingAmount()->getMinorAmount()->toInt();
+        });
 
         return Money::ofMinor($totalOutstanding, $this->company->currency->code);
     }
@@ -254,12 +256,14 @@ class Partner extends Model
 
         $this->loadMissing('company.currency');
 
-        $totalOutstanding = $this->vendorBills()
+        /** @var \Illuminate\Database\Eloquent\Collection<int, VendorBill> $vendorBills */
+        $vendorBills = $this->vendorBills()
             ->whereIn('status', [VendorBillStatus::Posted, VendorBillStatus::Paid])
-            ->get()
-            ->sum(function (VendorBill $bill) {
-                return $bill->getRemainingAmount()->getMinorAmount()->toInt();
-            });
+            ->get();
+
+        $totalOutstanding = $vendorBills->sum(function (VendorBill $bill) {
+            return $bill->getRemainingAmount()->getMinorAmount()->toInt();
+        });
 
         return Money::ofMinor($totalOutstanding, $this->company->currency->code);
     }
@@ -278,13 +282,15 @@ class Partner extends Model
 
         $this->loadMissing('company.currency');
 
-        $totalOverdue = $this->invoices()
+        /** @var \Illuminate\Database\Eloquent\Collection<int, Invoice> $overdueInvoices */
+        $overdueInvoices = $this->invoices()
             ->whereIn('status', [InvoiceStatus::Posted, InvoiceStatus::Paid])
             ->where('due_date', '<', Carbon::today())
-            ->get()
-            ->sum(function (Invoice $invoice) {
-                return $invoice->getRemainingAmount()->getMinorAmount()->toInt();
-            });
+            ->get();
+
+        $totalOverdue = $overdueInvoices->sum(function (Invoice $invoice) {
+            return $invoice->getRemainingAmount()->getMinorAmount()->toInt();
+        });
 
         return Money::ofMinor($totalOverdue, $this->company->currency->code);
     }
@@ -303,13 +309,15 @@ class Partner extends Model
 
         $this->loadMissing('company.currency');
 
-        $totalOverdue = $this->vendorBills()
+        /** @var \Illuminate\Database\Eloquent\Collection<int, VendorBill> $overdueBills */
+        $overdueBills = $this->vendorBills()
             ->whereIn('status', [VendorBillStatus::Posted, VendorBillStatus::Paid])
             ->where('due_date', '<', Carbon::today())
-            ->get()
-            ->sum(function (VendorBill $bill) {
-                return $bill->getRemainingAmount()->getMinorAmount()->toInt();
-            });
+            ->get();
+
+        $totalOverdue = $overdueBills->sum(function (VendorBill $bill) {
+            return $bill->getRemainingAmount()->getMinorAmount()->toInt();
+        });
 
         return Money::ofMinor($totalOverdue, $this->company->currency->code);
     }
@@ -385,14 +393,16 @@ class Partner extends Model
 
         $dueDate = Carbon::today()->addDays($days);
 
-        $totalDue = $this->invoices()
+        /** @var \Illuminate\Database\Eloquent\Collection<int, Invoice> $dueInvoices */
+        $dueInvoices = $this->invoices()
             ->whereIn('status', [InvoiceStatus::Posted, InvoiceStatus::Paid])
             ->where('due_date', '<=', $dueDate)
             ->where('due_date', '>=', Carbon::today())
-            ->get()
-            ->sum(function (Invoice $invoice) {
-                return $invoice->getRemainingAmount()->getMinorAmount()->toInt();
-            });
+            ->get();
+
+        $totalDue = $dueInvoices->sum(function (Invoice $invoice) {
+            return $invoice->getRemainingAmount()->getMinorAmount()->toInt();
+        });
 
         return Money::ofMinor($totalDue, $this->company->currency->code);
     }
@@ -413,14 +423,16 @@ class Partner extends Model
 
         $dueDate = Carbon::today()->addDays($days);
 
-        $totalDue = $this->vendorBills()
+        /** @var \Illuminate\Database\Eloquent\Collection<int, VendorBill> $dueBills */
+        $dueBills = $this->vendorBills()
             ->whereIn('status', [VendorBillStatus::Posted, VendorBillStatus::Paid])
             ->where('due_date', '<=', $dueDate)
             ->where('due_date', '>=', Carbon::today())
-            ->get()
-            ->sum(function (VendorBill $bill) {
-                return $bill->getRemainingAmount()->getMinorAmount()->toInt();
-            });
+            ->get();
+
+        $totalDue = $dueBills->sum(function (VendorBill $bill) {
+            return $bill->getRemainingAmount()->getMinorAmount()->toInt();
+        });
 
         return Money::ofMinor($totalDue, $this->company->currency->code);
     }

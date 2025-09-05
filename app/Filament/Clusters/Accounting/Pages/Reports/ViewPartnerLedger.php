@@ -114,9 +114,9 @@ class ViewPartnerLedger extends Page
     public function generateReport(): void
     {
         $this->validate([
-            'partnerId' => 'required|exists:partners,id',
-            'startDate' => 'required|date',
-            'endDate' => 'required|date|after_or_equal:startDate',
+            'partnerId' => ['required', 'exists:partners,id'],
+            'startDate' => ['required', 'date'],
+            'endDate' => ['required', 'date', 'after_or_equal:startDate'],
         ]);
 
         $company = Company::find(Filament::auth()->user()->company_id);

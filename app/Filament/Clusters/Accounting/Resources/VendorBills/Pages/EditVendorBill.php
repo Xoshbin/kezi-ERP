@@ -241,6 +241,9 @@ class EditVendorBill extends EditRecord
 
             DeleteAction::make()
                 ->action(function (Model $record) {
+                    if (!$record instanceof \App\Models\VendorBill) {
+                        throw new \Exception('Invalid record type');
+                    }
                     app(VendorBillService::class)->delete($record);
                     $this->redirect(VendorBillResource::getUrl('index'));
                 }),

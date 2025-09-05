@@ -19,8 +19,13 @@ class ProcessIncomingStockAction
             // Extract the cost per unit from the source document
             $costPerUnit = $this->extractCostFromSource($stockMove);
 
+            $product = $stockMove->product;
+            if (!$product instanceof \App\Models\Product) {
+                throw new \Exception('Product not found for stock move');
+            }
+
             $this->inventoryValuationService->processIncomingStock(
-                $stockMove->product,
+                $product,
                 $stockMove->quantity,
                 $costPerUnit,
                 $stockMove->move_date,

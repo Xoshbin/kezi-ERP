@@ -117,8 +117,8 @@ class ViewGeneralLedger extends Page
     public function generateReport(): void
     {
         $this->validate([
-            'startDate' => 'required|date',
-            'endDate' => 'required|date|after_or_equal:startDate',
+            'startDate' => ['required', 'date'],
+            'endDate' => ['required', 'date', 'after_or_equal:startDate'],
         ]);
 
         $company = Filament::getTenant();

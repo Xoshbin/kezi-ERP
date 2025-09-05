@@ -100,9 +100,14 @@ class BankStatementLinesRelationManager extends RelationManager
                     ->modalDescription('Are you sure you want to reverse this write-off? This will create a reversing journal entry and mark the bank statement line as unreconciled.')
                     ->action(function (BankStatementLine $record) {
                         try {
+                            $journalEntry = $record->journalEntry;
+                            if (!$journalEntry instanceof \App\Models\JournalEntry) {
+                                throw new \Exception('Journal entry not found');
+                            }
+
                             $reverseAction = app(ReverseJournalEntryAction::class);
                             $reverseAction->execute(
-                                $record->journalEntry,
+                                $journalEntry,
                                 'Bank statement line write-off reversal',
                                 Auth::user()
                             );
