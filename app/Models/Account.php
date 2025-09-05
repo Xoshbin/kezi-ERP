@@ -23,7 +23,7 @@ use Spatie\Translatable\HasTranslations;
  * @property int $id
  * @property int $company_id
  * @property string $code
- * @property string|array $name
+ * @property string|array<string, string> $name
  * @property string $type
  * @property bool $is_deprecated
  * @property Carbon|null $created_at
@@ -71,10 +71,13 @@ class Account extends Model
     use HasFactory, HasTranslations;
     use TranslatableSearch;
 
+    /** @var array<int, string> */
     public array $translatable = ['name'];
 
     /**
      * Get the non-translatable fields that should be searched.
+     *
+     * @return array<int, string>
      */
     public function getNonTranslatableSearchFields(): array
     {

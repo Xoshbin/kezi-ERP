@@ -482,6 +482,9 @@ class ProductResource extends Resource
             ]);
     }
 
+    /**
+     * @return Builder<Product>
+     */
     public static function getEloquentQuery(): Builder
     {
         return parent::getEloquentQuery()

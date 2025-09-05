@@ -192,7 +192,7 @@ class EditJournalEntry extends EditRecord
     /**
      * Convert Money object or other value to string for DTO
      */
-    private function convertMoneyToString($value): string
+    private function convertMoneyToString(mixed $value): string
     {
         if ($value instanceof Money) {
             return $value->getAmount()->__toString();

@@ -171,6 +171,8 @@ class JournalEntriesRelationManager extends RelationManager
     /**
      * Modify the query to get all journal entries related to this payment.
      * This includes both the direct journal entry and any polymorphic entries.
+     *
+     * @return Builder<JournalEntry>
      */
     protected function getTableQuery(): Builder
     {

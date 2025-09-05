@@ -44,7 +44,7 @@ class MoneyColumn extends TextColumn
      * Get or create a Money object from raw state and record context.
      * Similar to MoneyInput's getMoneyObject method.
      */
-    protected function getMoneyObject($state, Model $record): ?Money
+    protected function getMoneyObject(mixed $state, Model $record): ?Money
     {
         if (! is_numeric($state)) {
             return null;

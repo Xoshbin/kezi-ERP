@@ -271,6 +271,9 @@ class AssetResource extends Resource
         ]);
     }
 
+    /**
+     * @return Builder<Asset>
+     */
     public static function getEloquentQuery(): Builder
     {
         return parent::getEloquentQuery()

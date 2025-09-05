@@ -8,6 +8,7 @@ use Illuminate\Validation\Rule;
 
 class JournalService
 {
+    /** @param array<string, mixed> $data */
     public function create(array $data): Journal
     {
         Validator::make($data, [

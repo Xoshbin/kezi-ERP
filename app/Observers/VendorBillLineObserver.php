@@ -47,7 +47,7 @@ class VendorBillLineObserver
     /**
      * Update company currency totals based on current line totals and exchange rate.
      */
-    protected function updateCompanyCurrencyTotals($vendorBill): void
+    protected function updateCompanyCurrencyTotals(\App\Models\VendorBill $vendorBill): void
     {
         if (! $vendorBill->exchange_rate_at_creation || $vendorBill->currency_id === $vendorBill->company->currency_id) {
             return; // No conversion needed

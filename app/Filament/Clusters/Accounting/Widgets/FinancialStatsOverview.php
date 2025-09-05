@@ -111,7 +111,7 @@ class FinancialStatsOverview extends BaseWidget
         ];
     }
 
-    private function calculateCashBalance($balanceSheetDto): Money
+    private function calculateCashBalance(\App\DataTransferObjects\Reports\BalanceSheetDTO $balanceSheetDto): Money
     {
         $currency = $balanceSheetDto->assetLines->first()?->balance->getCurrency() ?? 'IQD';
         $cashBalance = Money::zero($currency);
@@ -128,6 +128,9 @@ class FinancialStatsOverview extends BaseWidget
         return $cashBalance;
     }
 
+    /**
+     * @return array<int, float>
+     */
     private function getMonthlyProfitTrend(Company $company, ProfitAndLossStatementService $plService): array
     {
         $data = [];

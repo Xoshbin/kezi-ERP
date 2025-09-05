@@ -90,7 +90,7 @@ enum AccountType: string
     /**
      * Get all Asset account types.
      *
-     * @return array<AccountType>
+     * @return array<int, AccountType>
      */
     public static function assetTypes(): array
     {
@@ -107,7 +107,7 @@ enum AccountType: string
     /**
      * Get all Liability account types.
      *
-     * @return array<AccountType>
+     * @return array<int, AccountType>
      */
     public static function liabilityTypes(): array
     {
@@ -122,7 +122,7 @@ enum AccountType: string
     /**
      * Get all Equity account types.
      *
-     * @return array<AccountType>
+     * @return array<int, AccountType>
      */
     public static function equityTypes(): array
     {
@@ -135,7 +135,7 @@ enum AccountType: string
     /**
      * Get all Balance Sheet account types (Assets, Liabilities, and Equity).
      *
-     * @return array<AccountType>
+     * @return array<int, AccountType>
      */
     public static function balanceSheetTypes(): array
     {

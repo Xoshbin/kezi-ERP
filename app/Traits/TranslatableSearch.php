@@ -15,6 +15,8 @@ trait TranslatableSearch
 {
     /**
      * Get the available locales for translation search.
+     *
+     * @return array<int, string>
      */
     public function getSearchLocales(): array
     {
@@ -24,6 +26,8 @@ trait TranslatableSearch
     /**
      * Get the translatable fields that should be searched.
      * Override this method in your model to customize searchable fields.
+     *
+     * @return array<int, string>
      */
     public function getTranslatableSearchFields(): array
     {
@@ -33,6 +37,8 @@ trait TranslatableSearch
     /**
      * Get the non-translatable fields that should be searched.
      * Override this method in your model to include additional searchable fields.
+     *
+     * @return array<int, string>
      */
     public function getNonTranslatableSearchFields(): array
     {
@@ -41,6 +47,10 @@ trait TranslatableSearch
 
     /**
      * Scope to search across all translation locales for translatable fields.
+     *
+     * @param Builder<static> $query
+     * @param array<int, string>|null $fields
+     * @return Builder<static>
      */
     public function scopeSearchTranslatable(Builder $query, string $search, ?array $fields = null): Builder
     {
@@ -83,6 +93,9 @@ trait TranslatableSearch
     /**
      * Get search results for Filament select components.
      * Returns an array with model ID as key and formatted label as value.
+     *
+     * @param array<int, string>|null $searchFields
+     * @return array<int, string>
      */
     public static function getFilamentSearchResults(
         string $search,
@@ -125,6 +138,9 @@ trait TranslatableSearch
     /**
      * Get formatted search results with additional context.
      * Useful for complex select options that need more than just the name.
+     *
+     * @param array<int, string>|null $searchFields
+     * @return array<int, string>
      */
     public static function getFormattedSearchResults(
         string $search,
@@ -150,6 +166,9 @@ trait TranslatableSearch
     /**
      * Search for models and return a collection with translated labels.
      * Useful for API responses or other contexts where you need the full model data.
+     *
+     * @param array<int, string>|null $searchFields
+     * @return Collection<int, static>
      */
     public static function searchWithTranslatedLabels(
         string $search,
@@ -170,6 +189,8 @@ trait TranslatableSearch
     /**
      * Get all available translations for a specific field.
      * Useful for debugging or administrative purposes.
+     *
+     * @return array<string, string>
      */
     public function getAllTranslations(string $field): array
     {

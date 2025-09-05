@@ -28,7 +28,7 @@ class InventoryValuationService
 {
     public function __construct(protected LockDateService $lockDateService) {}
 
-    public function processIncomingStock(Product $product, float $quantity, Money $costPerUnit, Carbon $date, $sourceDocument): void
+    public function processIncomingStock(Product $product, float $quantity, Money $costPerUnit, Carbon $date, \Illuminate\Database\Eloquent\Model $sourceDocument): void
     {
         $this->lockDateService->enforce(Company::find($product->company_id), Carbon::parse($date));
 
@@ -51,7 +51,7 @@ class InventoryValuationService
         Log::info("Successfully processed incoming stock for product {$product->id}, Total cost: {$totalCost->getAmount()}");
     }
 
-    public function processOutgoingStock(Product $product, float $quantity, Carbon $date, $sourceDocument): void
+    public function processOutgoingStock(Product $product, float $quantity, Carbon $date, \Illuminate\Database\Eloquent\Model $sourceDocument): void
     {
         $this->lockDateService->enforce(Company::find($product->company_id), Carbon::parse($date));
 
@@ -178,7 +178,7 @@ class InventoryValuationService
     /**
      * Create a journal entry for Cost of Goods Sold
      */
-    private function createCOGSJournalEntry(Product $product, Money $cogsAmount, Carbon $date, $sourceDocument): JournalEntry
+    private function createCOGSJournalEntry(Product $product, Money $cogsAmount, Carbon $date, \Illuminate\Database\Eloquent\Model $sourceDocument): JournalEntry
     {
         $company = $product->company;
         $currencyCode = $company->currency->code;
