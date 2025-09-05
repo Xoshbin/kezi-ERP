@@ -45,7 +45,7 @@ class UpdateExchangeRates extends Command
 
         $this->info('Updating exchange rates...');
 
-        $results = $this->exchangeRateService->updateAllRates($source);
+        $results = $this->exchangeRateService->updateAllRates($source ?? 'default');
 
         $successCount = 0;
         $failureCount = 0;

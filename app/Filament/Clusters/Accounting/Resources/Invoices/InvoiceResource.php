@@ -518,7 +518,11 @@ class InvoiceResource extends Resource
                     ->action(function (Invoice $record) {
                         $invoiceService = app(InvoiceService::class);
                         try {
-                            $invoiceService->confirm($record, Auth::user());
+                            $user = Auth::user();
+                            if (!$user) {
+                                throw new \Exception('User must be authenticated to confirm invoice');
+                            }
+                            $invoiceService->confirm($record, $user);
                             Notification::make()
                                 ->title(__('invoice.invoice_confirmed_successfully'))
                                 ->success()
@@ -605,8 +609,12 @@ class InvoiceResource extends Resource
                             );
 
                             // Create and confirm payment
-                            $payment = app(CreatePaymentAction::class)->execute($paymentDTO, Auth::user());
-                            app(PaymentService::class)->confirm($payment, Auth::user());
+                            $user = Auth::user();
+                            if (!$user) {
+                                throw new \Exception('User must be authenticated to create payment');
+                            }
+                            $payment = app(CreatePaymentAction::class)->execute($paymentDTO, $user);
+                            app(PaymentService::class)->confirm($payment, $user);
 
                             Notification::make()
                                 ->title(__('Payment registered successfully'))

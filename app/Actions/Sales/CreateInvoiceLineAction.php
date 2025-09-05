@@ -20,7 +20,8 @@ class CreateInvoiceLineAction
         $subtotal = $unitPrice->multipliedBy($dto->quantity, RoundingMode::HALF_UP);
 
         $taxAmount = Money::zero($currency->code);
-        if ($dto->tax_id && $tax = Tax::find($dto->tax_id)) {
+        if ($dto->tax_id) {
+            $tax = Tax::findOrFail($dto->tax_id);
             // NOTE: The rate in your Tax model is a float (e.g., 0.10 for 10%)
             $taxAmount = $subtotal->multipliedBy($tax->rate, RoundingMode::HALF_UP);
         }

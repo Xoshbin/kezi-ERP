@@ -113,7 +113,11 @@ class EditAdjustmentDocument extends EditRecord
                     $this->save(); // This triggers mutateFormDataBeforeSave -> handleRecordUpdate
                     $service = app(AdjustmentDocumentService::class);
                     try {
-                        $service->post($record, auth()->user());
+                        $user = auth()->user();
+                        if (!$user) {
+                            throw new \Exception('User must be authenticated to post adjustment document');
+                        }
+                        $service->post($record, $user);
                         Notification::make()->title(__('adjustment_document.notification_document_posted_successfully'))->success()->send();
                     } catch (Exception $e) {
                         Notification::make()->title(__('adjustment_document.notification_document_post_error'))->body($e->getMessage())->danger()->send();
@@ -200,10 +204,13 @@ class EditAdjustmentDocument extends EditRecord
     protected function handleRecordUpdate(Model $record, array $data): Model
     {
         // This method will now always receive a valid $data['currency_id']
-        $currency = Currency::find($data['currency_id']);
+        $currency = Currency::findOrFail($data['currency_id']);
         // Ensure we have a single Currency model, not a collection
         if ($currency instanceof \Illuminate\Database\Eloquent\Collection) {
             $currency = $currency->first();
+            if (!$currency) {
+                throw new \InvalidArgumentException('Currency not found');
+            }
         }
         $lineDTOs = [];
         foreach ($data['lines'] as $line) {

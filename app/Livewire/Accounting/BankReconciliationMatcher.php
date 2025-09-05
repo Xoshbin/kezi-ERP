@@ -120,10 +120,14 @@ class BankReconciliationMatcher extends Component
         }
 
         // Use the service to reconcile
+        $user = Auth::user();
+        if (!$user) {
+            throw new \Exception('User must be authenticated to reconcile transactions');
+        }
         app(BankReconciliationService::class)->reconcileMultiple(
             $this->selectedBankLines,
             $this->selectedPayments,
-            Auth::user()
+            $user
         );
 
         // Clear selections and reset totals

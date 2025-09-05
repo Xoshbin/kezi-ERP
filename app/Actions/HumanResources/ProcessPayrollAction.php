@@ -17,7 +17,7 @@ class ProcessPayrollAction
     public function execute(ProcessPayrollDTO $processPayrollDTO): Payroll
     {
         return DB::transaction(function () use ($processPayrollDTO) {
-            $currency = Currency::find($processPayrollDTO->currency_id);
+            $currency = Currency::findOrFail($processPayrollDTO->currency_id);
 
             // Convert Money fields if they're strings
             $baseSalary = $processPayrollDTO->base_salary instanceof Money
@@ -143,7 +143,12 @@ class ProcessPayrollAction
                 $this->createPayrollLineAction->execute($payroll, $lineDTO);
             }
 
-            return $payroll->fresh('payrollLines');
+            $freshPayroll = $payroll->fresh('payrollLines');
+            if (!$freshPayroll) {
+                throw new \Exception('Failed to refresh payroll after creation');
+            }
+
+            return $freshPayroll;
         });
     }
 

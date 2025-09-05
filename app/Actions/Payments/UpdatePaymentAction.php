@@ -42,7 +42,7 @@ class UpdatePaymentAction
         $this->lockDateService->enforce($payment->company, Carbon::parse($dto->payment_date));
 
         return DB::transaction(function () use ($dto, $payment) {
-            $currencyCode = Currency::find($dto->currency_id)->code;
+            $currencyCode = Currency::findOrFail($dto->currency_id)->code;
 
             // Determine payment details based on purpose
             if ($dto->payment_purpose === PaymentPurpose::Settlement) {
@@ -97,7 +97,12 @@ class UpdatePaymentAction
             // For other payment types (loan, capital injection, etc.), no additional logic needed
             // The counterpart_account_id is already updated on the payment record
 
-            return $payment->fresh();
+            $freshPayment = $payment->fresh();
+            if (!$freshPayment) {
+                throw new \Exception('Failed to refresh payment after update');
+            }
+
+            return $freshPayment;
         });
     }
 }

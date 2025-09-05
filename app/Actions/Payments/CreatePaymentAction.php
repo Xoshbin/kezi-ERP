@@ -38,7 +38,7 @@ class CreatePaymentAction
         $this->lockDateService->enforce($company, Carbon::parse($dto->payment_date));
 
         return DB::transaction(function () use ($dto) {
-            $currencyCode = Currency::find($dto->currency_id)->code;
+            $currencyCode = Currency::findOrFail($dto->currency_id)->code;
 
             // Determine payment details based on purpose
             if ($dto->payment_purpose === PaymentPurpose::Settlement) {

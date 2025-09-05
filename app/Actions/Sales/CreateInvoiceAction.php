@@ -25,7 +25,7 @@ class CreateInvoiceAction
         $this->lockDateService->enforce($company, Carbon::parse($dto->invoice_date));
 
         $invoice = DB::transaction(function () use ($dto) {
-            $currencyCode = Currency::find($dto->currency_id)->code;
+            $currencyCode = Currency::findOrFail($dto->currency_id)->code;
 
             $invoice = Invoice::create([
                 'company_id' => $dto->company_id,
@@ -46,6 +46,11 @@ class CreateInvoiceAction
             return $invoice;
         });
 
-        return $invoice->fresh();
+        $freshInvoice = $invoice->fresh();
+        if (!$freshInvoice) {
+            throw new \Exception('Failed to refresh invoice after creation');
+        }
+
+        return $freshInvoice;
     }
 }

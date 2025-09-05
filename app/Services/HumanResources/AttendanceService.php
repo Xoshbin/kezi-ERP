@@ -101,7 +101,12 @@ class AttendanceService
             'overtime_hours' => $overtimeHours,
         ]);
 
-        return $attendance->fresh();
+        $freshAttendance = $attendance->fresh();
+        if (!$freshAttendance) {
+            throw new \Exception('Failed to refresh attendance after clock out');
+        }
+
+        return $freshAttendance;
     }
 
     /**
@@ -122,7 +127,12 @@ class AttendanceService
             'break_start_time' => now()->format('H:i:s'),
         ]);
 
-        return $attendance->fresh();
+        $freshAttendance = $attendance->fresh();
+        if (!$freshAttendance) {
+            throw new \Exception('Failed to refresh attendance after starting break');
+        }
+
+        return $freshAttendance;
     }
 
     /**
@@ -151,7 +161,12 @@ class AttendanceService
             'break_hours' => $breakHours,
         ]);
 
-        return $attendance->fresh();
+        $freshAttendance = $attendance->fresh();
+        if (!$freshAttendance) {
+            throw new \Exception('Failed to refresh attendance after ending break');
+        }
+
+        return $freshAttendance;
     }
 
     /**

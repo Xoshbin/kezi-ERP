@@ -195,7 +195,7 @@ class PartnerResource extends Resource
                                         Hidden::make('company_id')
                                             ->default(function (): ?int {
                                                 $tenant = Filament::getTenant();
-                                                return method_exists($tenant, 'getKey') ? (int) $tenant->getKey() : null;
+                                                return ($tenant && method_exists($tenant, 'getKey')) ? (int) $tenant->getKey() : null;
                                             }),
                                         TextInput::make('name')
                                             ->label(__('account.name'))
@@ -229,7 +229,7 @@ class PartnerResource extends Resource
                                         Hidden::make('company_id')
                                             ->default(function (): ?int {
                                                 $tenant = Filament::getTenant();
-                                                return method_exists($tenant, 'getKey') ? (int) $tenant->getKey() : null;
+                                                return ($tenant && method_exists($tenant, 'getKey')) ? (int) $tenant->getKey() : null;
                                             }),
                                         TextInput::make('name')
                                             ->label(__('account.name'))
