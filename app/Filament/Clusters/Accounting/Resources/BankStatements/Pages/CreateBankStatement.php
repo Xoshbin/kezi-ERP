@@ -24,10 +24,13 @@ class CreateBankStatement extends CreateRecord
 
     protected function mutateFormDataBeforeCreate(array $data): array
     {
-        $currency = Currency::find($data['currency_id']);
+        $currency = Currency::findOrFail($data['currency_id']);
         // Ensure we have a single Currency model, not a collection
         if ($currency instanceof \Illuminate\Database\Eloquent\Collection) {
             $currency = $currency->first();
+            if (!$currency) {
+                throw new \InvalidArgumentException('Currency not found');
+            }
         }
         $lineDTOs = [];
         foreach ($data['bankStatementLines'] as $line) {
@@ -35,10 +38,13 @@ class CreateBankStatement extends CreateRecord
             $amountInForeignCurrency = null;
 
             if (! empty($line['foreign_currency_id']) && ! empty($line['amount_in_foreign_currency'])) {
-                $foreignCurrency = Currency::find($line['foreign_currency_id']);
+                $foreignCurrency = Currency::findOrFail($line['foreign_currency_id']);
                 // Ensure we have a single Currency model, not a collection
                 if ($foreignCurrency instanceof \Illuminate\Database\Eloquent\Collection) {
                     $foreignCurrency = $foreignCurrency->first();
+                    if (!$foreignCurrency) {
+                        throw new \InvalidArgumentException('Foreign currency not found');
+                    }
                 }
                 $amountInForeignCurrency = Money::of($line['amount_in_foreign_currency'], $foreignCurrency->code);
             }
@@ -60,10 +66,13 @@ class CreateBankStatement extends CreateRecord
 
     protected function handleRecordCreation(array $data): Model
     {
-        $currency = Currency::find($data['currency_id']);
+        $currency = Currency::findOrFail($data['currency_id']);
         // Ensure we have a single Currency model, not a collection
         if ($currency instanceof \Illuminate\Database\Eloquent\Collection) {
             $currency = $currency->first();
+            if (!$currency) {
+                throw new \InvalidArgumentException('Currency not found');
+            }
         }
 
         $bankStatementDTO = new CreateBankStatementDTO(

@@ -105,11 +105,15 @@ class BankStatementLinesRelationManager extends RelationManager
                                 throw new \Exception('Journal entry not found');
                             }
 
+                            $user = Auth::user();
+                            if (!$user) {
+                                throw new \Exception('User must be authenticated to reverse journal entry');
+                            }
                             $reverseAction = app(ReverseJournalEntryAction::class);
                             $reverseAction->execute(
                                 $journalEntry,
                                 'Bank statement line write-off reversal',
-                                Auth::user()
+                                $user
                             );
 
                             Notification::make()

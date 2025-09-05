@@ -24,12 +24,17 @@ class ProcessIncomingStockAction
                 throw new \Exception('Product not found for stock move');
             }
 
+            $sourceDocument = $stockMove->source;
+            if (!$sourceDocument) {
+                throw new \Exception('Stock move must have a source document');
+            }
+
             $this->inventoryValuationService->processIncomingStock(
                 $product,
                 $stockMove->quantity,
                 $costPerUnit,
                 $stockMove->move_date,
-                $stockMove->source
+                $sourceDocument
             );
         });
     }
@@ -47,6 +52,10 @@ class ProcessIncomingStockAction
 
         // For other source types (future: inventory adjustments, transfers, etc.)
         // we can add more extraction logic here
+
+        if (!$sourceDocument) {
+            throw new Exception('Source document is null');
+        }
 
         throw new Exception('Unable to extract cost from source document type: '.get_class($sourceDocument));
     }

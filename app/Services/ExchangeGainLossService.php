@@ -245,6 +245,9 @@ class ExchangeGainLossService
         $baseCurrencyCode = $company->currency->code;
         $lineDTOs = [];
         foreach ($lines as $line) {
+            if (!$line['account_id']) {
+                throw new \Exception('Account ID is required for exchange gain/loss journal entry line');
+            }
             $lineDTOs[] = new CreateJournalEntryLineDTO(
                 account_id: $line['account_id'],
                 debit: Money::of($line['debit'], $baseCurrencyCode),
@@ -253,6 +256,10 @@ class ExchangeGainLossService
                 partner_id: null,
                 analytic_account_id: null,
             );
+        }
+
+        if (!$company->default_bank_journal_id) {
+            throw new \Exception('Company must have a default bank journal for exchange gain/loss entries');
         }
 
         $entryDTO = new CreateJournalEntryDTO(

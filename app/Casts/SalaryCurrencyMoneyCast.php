@@ -27,6 +27,9 @@ class SalaryCurrencyMoneyCast extends MoneyCast
             // Ensure we have a single Currency model, not a collection
             if ($currency instanceof \Illuminate\Database\Eloquent\Collection) {
                 $currency = $currency->first();
+                if (!$currency) {
+                    throw new InvalidArgumentException('Salary currency collection is empty');
+                }
             }
             return $currency;
         }

@@ -142,7 +142,11 @@ class EditInvoice extends EditRecord
                     $this->save();
                     $service = app(InvoiceService::class);
                     try {
-                        $service->confirm($record, Auth::user());
+                        $user = Auth::user();
+                        if (!$user) {
+                            throw new \Exception('User must be authenticated to confirm invoice');
+                        }
+                        $service->confirm($record, $user);
                         Notification::make()->title(__('invoice.invoice_confirmed_successfully'))->success()->send();
                     } catch (Exception $e) {
                         Notification::make()->title(__('invoice.error_confirming_invoice'))->body($e->getMessage())->danger()->send();
@@ -221,8 +225,12 @@ class EditInvoice extends EditRecord
                         );
 
                         // Create and confirm payment
-                        $payment = app(CreatePaymentAction::class)->execute($paymentDTO, Auth::user());
-                        app(PaymentService::class)->confirm($payment, Auth::user());
+                        $user = Auth::user();
+                        if (!$user) {
+                            throw new \Exception('User must be authenticated to create payment');
+                        }
+                        $payment = app(CreatePaymentAction::class)->execute($paymentDTO, $user);
+                        app(PaymentService::class)->confirm($payment, $user);
 
                         Notification::make()
                             ->title(__('Payment registered successfully'))

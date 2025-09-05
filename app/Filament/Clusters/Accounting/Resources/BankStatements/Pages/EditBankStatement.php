@@ -62,10 +62,13 @@ class EditBankStatement extends EditRecord
             $amountInForeignCurrency = null;
 
             if (! empty($line['foreign_currency_id']) && ! empty($line['amount_in_foreign_currency'])) {
-                $foreignCurrency = Currency::find($line['foreign_currency_id']);
+                $foreignCurrency = Currency::findOrFail($line['foreign_currency_id']);
                 // Ensure we have a single Currency model, not a collection
                 if ($foreignCurrency instanceof \Illuminate\Database\Eloquent\Collection) {
                     $foreignCurrency = $foreignCurrency->first();
+                    if (!$foreignCurrency) {
+                        throw new \InvalidArgumentException('Foreign currency not found');
+                    }
                 }
                 $amountInForeignCurrency = Money::of($line['amount_in_foreign_currency'], $foreignCurrency->code);
             }

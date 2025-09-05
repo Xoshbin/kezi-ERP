@@ -29,12 +29,20 @@ class PartnerLedgerService
         $partner->load(['receivableAccount', 'payableAccount']);
 
         // Get transactions for both accounts but process them separately to maintain context
-        $receivableTransactions = $this->getTransactionsForAccount($partner->receivable_account_id, $startDate, $endDate);
-        $payableTransactions = $this->getTransactionsForAccount($partner->payable_account_id, $startDate, $endDate);
+        $receivableTransactions = $partner->receivable_account_id
+            ? $this->getTransactionsForAccount($partner->receivable_account_id, $startDate, $endDate)
+            : collect();
+        $payableTransactions = $partner->payable_account_id
+            ? $this->getTransactionsForAccount($partner->payable_account_id, $startDate, $endDate)
+            : collect();
 
         // Calculate opening balances for each account type
-        $receivableOpeningBalance = $this->getAccountOpeningBalance($partner->receivable_account_id, $startDate, $currency);
-        $payableOpeningBalance = $this->getAccountOpeningBalance($partner->payable_account_id, $startDate, $currency);
+        $receivableOpeningBalance = $partner->receivable_account_id
+            ? $this->getAccountOpeningBalance($partner->receivable_account_id, $startDate, $currency)
+            : Money::of(0, $currency);
+        $payableOpeningBalance = $partner->payable_account_id
+            ? $this->getAccountOpeningBalance($partner->payable_account_id, $startDate, $currency)
+            : Money::of(0, $currency);
 
         // Combine and sort all transactions by date, then by journal entry id for stability
         $allTransactions = $receivableTransactions->concat($payableTransactions)

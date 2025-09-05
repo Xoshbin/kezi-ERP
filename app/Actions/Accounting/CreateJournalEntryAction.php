@@ -48,9 +48,9 @@ class CreateJournalEntryAction
 
             // Enforce account currency lock
             if ($account && $account->currency_id && $account->currency_id !== $dto->currency_id) {
-                $accountCurrency = Currency::find($account->currency_id);
+                $accountCurrency = Currency::findOrFail($account->currency_id);
                 $accountName = is_array($account->name) ? ($account->name['en'] ?? (empty($account->name) ? '' : (string) array_values($account->name)[0])) : (string) $account->name;
-                $accountCurrencyCode = $accountCurrency?->code ?? 'Unknown';
+                $accountCurrencyCode = $accountCurrency->code;
                 throw ValidationException::withMessages([
                     "lines.{$index}.account_id" => "Account '{$accountName}' is locked to {$accountCurrencyCode} currency but transaction is in {$currency->code}.",
                 ]);

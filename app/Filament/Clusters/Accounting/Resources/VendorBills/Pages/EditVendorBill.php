@@ -124,7 +124,11 @@ class EditVendorBill extends EditRecord
                 ->action(function (VendorBill $record): void {
                     $vendorBillService = app(VendorBillService::class);
                     try {
-                        $vendorBillService->confirm($record, Auth::user());
+                        $user = Auth::user();
+                        if (!$user) {
+                            throw new \Exception('User must be authenticated to confirm vendor bill');
+                        }
+                        $vendorBillService->confirm($record, $user);
                         Notification::make()->title(__('vendor_bill.notification_bill_confirmed_success'))->success()->send();
                     } catch (Exception $e) {
                         Notification::make()->title(__('vendor_bill.notification_confirm_bill_error'))->body($e->getMessage())->danger()->send();
@@ -221,8 +225,12 @@ class EditVendorBill extends EditRecord
                         );
 
                         // Create and confirm payment
-                        $payment = app(CreatePaymentAction::class)->execute($paymentDTO, Auth::user());
-                        app(PaymentService::class)->confirm($payment, Auth::user());
+                        $user = Auth::user();
+                        if (!$user) {
+                            throw new \Exception('User must be authenticated to create payment');
+                        }
+                        $payment = app(CreatePaymentAction::class)->execute($paymentDTO, $user);
+                        app(PaymentService::class)->confirm($payment, $user);
 
                         Notification::make()
                             ->title(__('Payment registered successfully'))

@@ -14,9 +14,12 @@ class UpdateProductInventoryStatsAction
     {
         return DB::transaction(function () use ($product, $quantityChange, $purchasePricePerUnit) {
             // Lock the product row to prevent race conditions during calculation.
-            $product = Product::lockForUpdate()->find($product->id);
+            $product = Product::lockForUpdate()->findOrFail($product->id);
 
             $purchaseValue = $purchasePricePerUnit->multipliedBy($quantityChange, RoundingMode::HALF_UP);
+            if (!$product->average_cost) {
+                throw new \Exception('Product must have an average cost for inventory update');
+            }
             $oldValue = $product->average_cost->multipliedBy($product->quantity_on_hand, RoundingMode::HALF_UP);
             $totalQuantity = $product->quantity_on_hand + $quantityChange;
             $totalValue = $oldValue->plus($purchaseValue);
@@ -40,7 +43,7 @@ class UpdateProductInventoryStatsAction
             Log::info('After product update', [
                 'product_id' => $product->id,
                 'quantity_on_hand' => $product->quantity_on_hand,
-                'average_cost' => $product->average_cost->getAmount()->toFloat(),
+                'average_cost' => $product->average_cost ? $product->average_cost->getAmount()->toFloat() : 0,
             ]);
 
             return $product;

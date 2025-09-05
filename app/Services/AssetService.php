@@ -81,7 +81,8 @@ class AssetService
         }
 
         // If all guards pass, proceed with the deletion.
-        return $asset->delete();
+        $result = $asset->delete();
+        return $result !== null ? $result : false;
     }
 
     /**
