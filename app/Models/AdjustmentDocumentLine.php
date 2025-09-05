@@ -76,7 +76,7 @@ class AdjustmentDocumentLine extends Model
         // If unit_price is already a Money object, use it. Otherwise, create it from the numeric value.
         $unitPrice = $this->unit_price instanceof Money
             ? $this->unit_price
-            : Money::of($this->unit_price, $currency->code);
+            : Money::of($this->unit_price ?? 0, $currency->code);
 
         $subtotal = $unitPrice->multipliedBy($quantity, RoundingMode::HALF_UP);
         $this->subtotal = $subtotal;

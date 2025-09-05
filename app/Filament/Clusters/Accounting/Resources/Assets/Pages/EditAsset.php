@@ -31,7 +31,12 @@ class EditAsset extends EditRecord
 
     public function computeDepreciation(): void
     {
-        app(AssetService::class)->computeDepreciation($this->getRecord());
+        $asset = $this->getRecord();
+        if (!$asset instanceof \App\Models\Asset) {
+            throw new \Exception('Asset not found');
+        }
+
+        app(AssetService::class)->computeDepreciation($asset);
         \Filament\Notifications\Notification::make()
             ->title('Depreciation board computed')
             ->success()
@@ -40,6 +45,10 @@ class EditAsset extends EditRecord
 
     protected function handleRecordUpdate(Model $record, array $data): Model
     {
+        if (!$record instanceof \App\Models\Asset) {
+            throw new \Exception('Asset not found');
+        }
+
         $dto = new UpdateAssetDTO(...$data);
 
         return DB::transaction(fn () => app(AssetService::class)->updateAsset($record, $dto));

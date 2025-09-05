@@ -378,7 +378,7 @@ class InvoiceResource extends Resource
                             return $record->invoice_number;
                         }
 
-                        return 'DRAFT-'.str_pad($record->id, 5, '0', STR_PAD_LEFT);
+                        return 'DRAFT-'.str_pad((string) $record->id, 5, '0', STR_PAD_LEFT);
                     })
                     ->badge()
                     ->color(fn (Invoice $record): string => $record->invoice_number ? 'success' : 'warning')

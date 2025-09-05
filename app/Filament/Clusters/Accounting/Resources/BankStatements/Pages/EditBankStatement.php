@@ -35,7 +35,10 @@ class EditBankStatement extends EditRecord
         /** @var \App\Models\BankStatement $record */
         $record = $this->record;
         $record->loadMissing('bankStatementLines', 'currency');
-        $linesData = $record->bankStatementLines->map(function (BankStatementLine $line) {
+
+        /** @var \Illuminate\Database\Eloquent\Collection<int, BankStatementLine> $bankStatementLines */
+        $bankStatementLines = $record->bankStatementLines;
+        $linesData = $bankStatementLines->map(function (BankStatementLine $line) {
             return [
                 'date' => $line->date->format('Y-m-d'),
                 'description' => $line->description,

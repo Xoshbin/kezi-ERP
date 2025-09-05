@@ -64,7 +64,7 @@ enum NumberingType: string
     public function formatNumber(string $prefix, int $number, int $padding = 5, ?Carbon $date = null): string
     {
         $date = $date ?? now();
-        $paddedNumber = str_pad($number, $padding, '0', STR_PAD_LEFT);
+        $paddedNumber = str_pad((string) $number, $padding, '0', STR_PAD_LEFT);
 
         return match ($this) {
             self::SIMPLE => "{$prefix}-{$paddedNumber}",
