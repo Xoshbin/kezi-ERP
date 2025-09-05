@@ -74,11 +74,8 @@ class ExchangeRatesWidget extends StatsOverviewWidget
                     (float) $previousRate->rate,
                     (float) $latestRate->rate,
                 ])
-                    ->color($changeColor);
-
-                if ($changeIcon) {
-                    $stat = $stat->descriptionIcon($changeIcon);
-                }
+                    ->color($changeColor)
+                    ->descriptionIcon($changeIcon);
             }
 
             $stats[] = $stat;

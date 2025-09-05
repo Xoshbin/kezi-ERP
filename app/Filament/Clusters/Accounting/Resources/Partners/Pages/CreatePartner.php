@@ -15,7 +15,7 @@ class CreatePartner extends CreateRecord
     {
         // Add company_id from tenant context
         $tenant = Filament::getTenant();
-        $data['company_id'] = ($tenant && method_exists($tenant, 'getKey')) ? (int) $tenant->getKey() : 0;
+        $data['company_id'] = $tenant?->getKey() ?? 0;
 
         return static::getModel()::create($data);
     }
