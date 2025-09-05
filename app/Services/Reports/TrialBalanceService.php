@@ -6,7 +6,6 @@ use App\DataTransferObjects\Reports\TrialBalanceDTO;
 use App\DataTransferObjects\Reports\TrialBalanceLineDTO;
 use App\Enums\Accounting\AccountType;
 use App\Models\Company;
-use App\Models\JournalEntryLine;
 use Brick\Money\Money;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -18,14 +17,15 @@ class TrialBalanceService
         $currency = $company->currency->code;
         $zero = Money::zero($currency);
 
-        /** @var \Illuminate\Support\Collection<int, object> $results */
-        $results = DB::table('journal_entry_lines')
+        /** @var \Illuminate\Support\Collection<int, object{account_id: int, account_code: string, account_name: string, account_type: string, total_debit: string|null, total_credit: string|null}> $queryResults */
+        $queryResults = DB::table('journal_entry_lines')
             ->select([
                 'accounts.id as account_id',
                 'accounts.code as account_code',
                 'accounts.name as account_name',
                 'accounts.type as account_type',
-                DB::raw('SUM(journal_entry_lines.debit) - SUM(journal_entry_lines.credit) as balance'),
+                DB::raw('SUM(journal_entry_lines.debit) as total_debit'),
+                DB::raw('SUM(journal_entry_lines.credit) as total_credit'),
             ])
             ->join('accounts', 'journal_entry_lines.account_id', '=', 'accounts.id')
             ->join('journal_entries', 'journal_entry_lines.journal_entry_id', '=', 'journal_entries.id')
@@ -33,15 +33,33 @@ class TrialBalanceService
             ->where('journal_entries.state', 'posted')
             ->where('journal_entries.entry_date', '<=', $asOfDate->toDateString())
             ->groupBy('accounts.id', 'accounts.code', 'accounts.name', 'accounts.type')
-            ->havingRaw('balance != 0')
             ->orderBy('accounts.code')
             ->get();
+
+        // Calculate balance in PHP and filter out zero balances
+        $results = $queryResults->map(function ($result) {
+            /** @var object{account_id: int, account_code: string, account_name: string, account_type: string, total_debit: string|null, total_credit: string|null} $result */
+            $totalDebit = (int) ($result->total_debit ?: 0);
+            $totalCredit = (int) ($result->total_credit ?: 0);
+            $balance = $totalDebit - $totalCredit;
+
+            return (object) [
+                'account_id' => $result->account_id,
+                'account_code' => $result->account_code,
+                'account_name' => $result->account_name,
+                'account_type' => $result->account_type,
+                'total_debit' => $result->total_debit,
+                'total_credit' => $result->total_credit,
+                'balance' => $balance,
+            ];
+        })->filter(function ($result) {
+            return $result->balance != 0;
+        });
 
         $totalDebit = $zero;
         $totalCredit = $zero;
 
         $reportLines = $results->map(function (object $row) use ($currency, $zero, &$totalDebit, &$totalCredit) {
-            /** @var object{balance: string, account_id: int, account_code: string, account_name: string, account_type: string} $row */
             $balance = Money::ofMinor((int) $row->balance, $currency);
             $debit = $zero;
             $credit = $zero;
