@@ -87,7 +87,7 @@ class ViewGeneralLedger extends Page
                                 $tenant = Filament::getTenant();
 
                                 return Account::searchTranslatable($search)
-                                    ->where('company_id', ($tenant && method_exists($tenant, 'getKey')) ? $tenant->getKey() : null)
+                                    ->where('company_id', $tenant?->getKey())
                                     ->limit(50)
                                     ->get()
                                     ->mapWithKeys(fn ($account) => [$account->id => $account->code.' - '.$account->getTranslatedLabel('name')])
@@ -98,6 +98,7 @@ class ViewGeneralLedger extends Page
                                     ->get()
                                     ->mapWithKeys(function (Account $account) {
                                         $accountName = is_array($account->name) ? ($account->name['en'] ?? (empty($account->name) ? '' : (string) array_values($account->name)[0])) : (string) $account->name;
+
                                         return [$account->id => "{$account->code} - {$accountName}"];
                                     })
                                     ->toArray();

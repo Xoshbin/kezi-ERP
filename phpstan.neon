@@ -8,7 +8,7 @@ parameters:
         - app/
 
     # Level 10 is the highest level
-    level: 6
+    level: 8
 
     ignoreErrors:
         # Laravel relationship covariance issues - these are inherent to Laravel's type system
