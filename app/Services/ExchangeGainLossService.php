@@ -199,7 +199,7 @@ class ExchangeGainLossService
         Company $company,
         Money $exchangeDifference,
         Payment $payment,
-        $document
+        \Illuminate\Database\Eloquent\Model $document
     ): JournalEntry {
         $isGain = $exchangeDifference->isPositive();
         $gainLossAccount = $company->default_gain_loss_account_id;
@@ -275,7 +275,7 @@ class ExchangeGainLossService
     /**
      * Get exchange rate from document (invoice/vendor bill).
      */
-    protected function getDocumentExchangeRate($document): ?float
+    protected function getDocumentExchangeRate(\Illuminate\Database\Eloquent\Model $document): ?float
     {
         // This would need to be implemented based on how you store exchange rates on documents
         // For now, return null as placeholder

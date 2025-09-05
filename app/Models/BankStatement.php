@@ -62,7 +62,7 @@ class BankStatement extends Model
         'ending_balance' => DocumentCurrencyMoneyCast::class,
     ];
 
-    public function company()
+    public function company(): BelongsTo
     {
         return $this->belongsTo(Company::class);
     }

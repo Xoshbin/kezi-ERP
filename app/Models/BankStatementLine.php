@@ -90,12 +90,12 @@ class BankStatementLine extends Model
         return $this->belongsTo(BankStatement::class);
     }
 
-    public function company()
+    public function company(): BelongsTo
     {
         return $this->belongsTo(Company::class);
     }
 
-    public function payment()
+    public function payment(): BelongsTo
     {
         return $this->belongsTo(Payment::class);
     }

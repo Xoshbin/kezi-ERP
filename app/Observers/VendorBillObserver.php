@@ -32,7 +32,7 @@ class VendorBillObserver
         }
     }
 
-    public function processStorableProductLine(VendorBill $vendorBill, $line): void
+    public function processStorableProductLine(VendorBill $vendorBill, \App\Models\VendorBillLine $line): void
     {
         if (! $line->product) {
             return;

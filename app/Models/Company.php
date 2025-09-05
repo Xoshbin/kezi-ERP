@@ -509,6 +509,8 @@ class Company extends Model
 
     /**
      * Get the default numbering settings structure.
+     *
+     * @return array<string, array<string, mixed>>
      */
     public function getDefaultNumberingSettings(): array
     {
@@ -528,6 +530,8 @@ class Company extends Model
 
     /**
      * Get the numbering settings with defaults if not set.
+     *
+     * @return array<string, array<string, mixed>>
      */
     public function getNumberingSettings(): array
     {
@@ -536,6 +540,8 @@ class Company extends Model
 
     /**
      * Get invoice numbering configuration.
+     *
+     * @return array<string, mixed>
      */
     public function getInvoiceNumberingConfig(): array
     {
@@ -546,6 +552,8 @@ class Company extends Model
 
     /**
      * Get vendor bill numbering configuration.
+     *
+     * @return array<string, mixed>
      */
     public function getVendorBillNumberingConfig(): array
     {
@@ -576,6 +584,8 @@ class Company extends Model
 
     /**
      * Get validation errors for numbering settings changes.
+     *
+     * @return array<int, string>
      */
     public function getNumberingChangeValidationErrors(): array
     {

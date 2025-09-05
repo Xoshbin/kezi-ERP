@@ -334,6 +334,9 @@ class BankStatementResource extends Resource
             ]);
     }
 
+    /**
+     * @return Builder<BankStatement>
+     */
     public static function getEloquentQuery(): Builder
     {
         // Tenancy automatically handles company filtering

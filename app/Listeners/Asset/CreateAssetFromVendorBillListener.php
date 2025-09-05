@@ -32,9 +32,9 @@ class CreateAssetFromVendorBillListener implements ShouldQueue
                 // Implicit asset via account; map into a temporary category-like structure using company defaults
                 $category = new class($company, $line)
                 {
-                    public function __construct(public $company, public $line) {}
+                    public function __construct(public \App\Models\Company $company, public \App\Models\VendorBillLine $line) {}
 
-                    public function __get($name)
+                    public function __get(string $name): mixed
                     {
                         return match ($name) {
                             'asset_account_id' => $this->line->expense_account_id,

@@ -153,6 +153,9 @@ class PdfSettingsResource extends Resource
             ]);
     }
 
+    /**
+     * @return Builder<Company>
+     */
     public static function getEloquentQuery(): Builder
     {
         // Only show the current tenant company
@@ -174,7 +177,7 @@ class PdfSettingsResource extends Resource
         return false; // PDF settings are edited, not created
     }
 
-    public static function canDelete($record): bool
+    public static function canDelete(mixed $record): bool
     {
         return false; // PDF settings cannot be deleted
     }

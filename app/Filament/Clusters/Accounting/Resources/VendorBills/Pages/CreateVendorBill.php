@@ -19,6 +19,7 @@ class CreateVendorBill extends CreateRecord
 {
     protected static string $resource = VendorBillResource::class;
 
+    /** @var array<string, mixed> */
     protected array $attachments = [];
 
     protected function mutateFormDataBeforeCreate(array $data): array

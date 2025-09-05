@@ -20,7 +20,7 @@ use Spatie\Translatable\HasTranslations;
  *
  * @property int $id
  * @property string $code
- * @property string|array $name
+ * @property string|array<string, string> $name
  * @property string $symbol
  * @property float $exchange_rate
  * @property bool $is_active
@@ -61,6 +61,7 @@ class Currency extends Model
 {
     use HasFactory, HasTranslations, TranslatableSearch;
 
+    /** @var array<int, string> */
     public array $translatable = ['name'];
 
     /**

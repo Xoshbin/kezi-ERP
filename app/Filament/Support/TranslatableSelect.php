@@ -22,9 +22,9 @@ class TranslatableSelect
      * @param  string  $modelClass  Model class that uses TranslatableSearch trait
      * @param  string|null  $label  Field label (will be auto-generated if null)
      * @param  string  $labelField  Field to use for option labels (default: 'name')
-     * @param  array|null  $searchFields  Fields to search in (uses model default if null)
+     * @param  array<int, string>|null  $searchFields  Fields to search in (uses model default if null)
      * @param  callable|null  $formatter  Custom formatter for option labels
-     * @param  array  $additionalOptions  Additional select component options
+     * @param  array<string, mixed>  $additionalOptions  Additional select component options
      */
     public static function make(
         string $name,
@@ -81,9 +81,9 @@ class TranslatableSelect
      * @param  string  $modelClass  Related model class
      * @param  string|null  $label  Field label
      * @param  string  $labelField  Field to use for option labels
-     * @param  array|null  $searchFields  Fields to search in
+     * @param  array<int, string>|null  $searchFields  Fields to search in
      * @param  callable|null  $queryModifier  Callback to modify the base query
-     * @param  array  $additionalOptions  Additional select component options
+     * @param  array<string, mixed>  $additionalOptions  Additional select component options
      */
     public static function relationship(
         string $name,
@@ -148,8 +148,8 @@ class TranslatableSelect
      * @param  string  $modelClass  Model class
      * @param  callable  $formatter  Formatter function that receives the model and returns [id => label]
      * @param  string|null  $label  Field label
-     * @param  array|null  $searchFields  Fields to search in
-     * @param  array  $additionalOptions  Additional select component options
+     * @param  array<int, string>|null  $searchFields  Fields to search in
+     * @param  array<string, mixed>  $additionalOptions  Additional select component options
      */
     public static function withFormatter(
         string $name,
@@ -202,11 +202,11 @@ class TranslatableSelect
      *
      * @param  string  $name  Field name
      * @param  string  $modelClass  Model class
-     * @param  array  $searchFields  Fields to search in
+     * @param  array<int, string>  $searchFields  Fields to search in
      * @param  string|null  $label  Field label
      * @param  string  $labelField  Field to use for option labels
      * @param  callable|null  $queryModifier  Callback to modify the base query
-     * @param  array  $additionalOptions  Additional select component options
+     * @param  array<string, mixed>  $additionalOptions  Additional select component options
      */
     public static function standard(
         string $name,

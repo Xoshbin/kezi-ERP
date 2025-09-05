@@ -16,7 +16,7 @@ use Spatie\Translatable\HasTranslations;
  *
  * @property int $id
  * @property int $company_id
- * @property array $name
+ * @property array<string, string> $name
  * @property string|null $description
  * @property int|null $parent_department_id
  * @property int|null $manager_id
@@ -82,6 +82,8 @@ class Department extends Model
 
     /**
      * Get the translatable fields that should be searched.
+     *
+     * @return array<int, string>
      */
     public function getTranslatableSearchFields(): array
     {
@@ -90,6 +92,8 @@ class Department extends Model
 
     /**
      * Get the non-translatable fields that should be searched.
+     *
+     * @return array<int, string>
      */
     public function getNonTranslatableSearchFields(): array
     {

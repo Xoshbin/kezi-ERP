@@ -16,7 +16,7 @@ use Spatie\Translatable\HasTranslations;
  *
  * @property int $id
  * @property int $company_id
- * @property array $name
+ * @property array<string, string> $name
  * @property string $code
  * @property string|null $description
  * @property int $default_days_per_year
@@ -108,6 +108,8 @@ class LeaveType extends Model
 
     /**
      * Get the translatable fields that should be searched.
+     *
+     * @return array<int, string>
      */
     public function getTranslatableSearchFields(): array
     {
@@ -116,6 +118,8 @@ class LeaveType extends Model
 
     /**
      * Get the non-translatable fields that should be searched.
+     *
+     * @return array<int, string>
      */
     public function getNonTranslatableSearchFields(): array
     {

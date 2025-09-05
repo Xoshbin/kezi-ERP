@@ -359,6 +359,9 @@ class InvoiceResource extends Resource
         ]);
     }
 
+    /**
+     * @return Builder<Invoice>
+     */
     public static function getEloquentQuery(): Builder
     {
         return parent::getEloquentQuery()

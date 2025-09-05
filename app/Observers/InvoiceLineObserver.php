@@ -47,7 +47,7 @@ class InvoiceLineObserver
     /**
      * Update company currency totals based on current line totals and exchange rate.
      */
-    protected function updateCompanyCurrencyTotals($invoice): void
+    protected function updateCompanyCurrencyTotals(\App\Models\Invoice $invoice): void
     {
         if (! $invoice->exchange_rate_at_creation || $invoice->currency_id === $invoice->company->currency_id) {
             return; // No conversion needed
