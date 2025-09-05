@@ -23,7 +23,12 @@ class SalaryCurrencyMoneyCast extends MoneyCast
     {
         // Check for salary_currency_id field
         if (isset($model->salary_currency_id)) {
-            return Currency::findOrFail($model->salary_currency_id);
+            $currency = Currency::findOrFail($model->salary_currency_id);
+            // Ensure we have a single Currency model, not a collection
+            if ($currency instanceof \Illuminate\Database\Eloquent\Collection) {
+                $currency = $currency->first();
+            }
+            return $currency;
         }
 
         // If no salary_currency_id is set, fall back to company's base currency

@@ -60,6 +60,10 @@ class MoneyColumn extends TextColumn
             }
         } elseif (isset($record->currency_id)) {
             $currency = Currency::find($record->currency_id);
+            // Ensure we have a single Currency model, not a collection
+            if ($currency instanceof \Illuminate\Database\Eloquent\Collection) {
+                $currency = $currency->first();
+            }
             if ($currency) {
                 $currencyCode = $currency->code;
             }

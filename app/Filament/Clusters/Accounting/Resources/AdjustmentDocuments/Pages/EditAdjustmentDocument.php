@@ -129,9 +129,17 @@ class EditAdjustmentDocument extends EditRecord
         // 1. Forcefully derive currency_id if it's missing from the form submission.
         if (empty($data['currency_id'])) {
             if (! empty($data['original_invoice_id'])) {
-                $data['currency_id'] = Invoice::find($data['original_invoice_id'])?->currency_id;
+                $invoice = Invoice::find($data['original_invoice_id']);
+                if ($invoice instanceof \Illuminate\Database\Eloquent\Collection) {
+                    $invoice = $invoice->first();
+                }
+                $data['currency_id'] = $invoice?->currency_id;
             } elseif (! empty($data['original_vendor_bill_id'])) {
-                $data['currency_id'] = VendorBill::find($data['original_vendor_bill_id'])?->currency_id;
+                $bill = VendorBill::find($data['original_vendor_bill_id']);
+                if ($bill instanceof \Illuminate\Database\Eloquent\Collection) {
+                    $bill = $bill->first();
+                }
+                $data['currency_id'] = $bill?->currency_id;
             }
         }
 
@@ -193,6 +201,10 @@ class EditAdjustmentDocument extends EditRecord
     {
         // This method will now always receive a valid $data['currency_id']
         $currency = Currency::find($data['currency_id']);
+        // Ensure we have a single Currency model, not a collection
+        if ($currency instanceof \Illuminate\Database\Eloquent\Collection) {
+            $currency = $currency->first();
+        }
         $lineDTOs = [];
         foreach ($data['lines'] as $line) {
             $lineDTOs[] = new UpdateAdjustmentDocumentLineDTO(

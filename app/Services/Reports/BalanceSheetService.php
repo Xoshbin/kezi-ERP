@@ -139,13 +139,15 @@ class BalanceSheetService
     {
         return $balances->whereIn('account_type', array_map(fn ($type) => $type->value, $types))
             ->map(function ($row) use ($currency, $accounts, $negate) {
+                /** @var object{balance: string, account_id: int, account_code: string, account_name: string} $row */
                 $balance = Money::ofMinor($row->balance, $currency);
                 $account = $accounts->get($row->account_id);
 
+                $accountName = $account ? (is_array($account->name) ? ($account->name['en'] ?? (empty($account->name) ? '' : (string) array_values($account->name)[0])) : (string) $account->name) : $row->account_name;
                 return new ReportLineDTO(
                     accountId: $row->account_id,
                     accountCode: $row->account_code,
-                    accountName: $account ? $account->name : $row->account_name,
+                    accountName: $accountName,
                     balance: $negate ? $balance->negated() : $balance
                 );
             })->values();

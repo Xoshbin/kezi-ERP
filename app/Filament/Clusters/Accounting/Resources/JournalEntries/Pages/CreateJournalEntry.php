@@ -25,6 +25,10 @@ class CreateJournalEntry extends CreateRecord
         $lineDTOs = [];
         if (isset($data['lines']) && is_array($data['lines'])) {
             $currency = Currency::findOrFail($data['currency_id']);
+            // Ensure we have a single Currency model, not a collection
+            if ($currency instanceof \Illuminate\Database\Eloquent\Collection) {
+                $currency = $currency->first();
+            }
             foreach ($data['lines'] as $line) {
                 $lineDTOs[] = new CreateJournalEntryLineDTO(
                     account_id: $line['account_id'],

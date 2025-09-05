@@ -32,22 +32,34 @@ class CreateAssetFromVendorBillListener implements ShouldQueue
                 // Implicit asset via account; map into a temporary category-like structure using company defaults
                 $category = new class($company, $line)
                 {
-                    public function __construct(public \App\Models\Company $company, public \App\Models\VendorBillLine $line) {}
+                    public int $asset_account_id;
+                    public int $depreciation_expense_account_id;
+                    public int $accumulated_depreciation_account_id;
+                    public int $useful_life_years;
+                    public \App\Enums\Assets\DepreciationMethod $depreciation_method;
+
+                    public function __construct(public \App\Models\Company $company, public \App\Models\VendorBillLine $line) {
+                        $this->asset_account_id = $this->line->expense_account_id;
+                        $this->depreciation_expense_account_id = $this->company->default_depreciation_expense_account_id
+                            ?? $this->company->default_sales_discount_account_id
+                            ?? $this->company->default_tax_account_id
+                            ?? $this->line->expense_account_id;
+                        $this->accumulated_depreciation_account_id = $this->company->default_accumulated_depreciation_account_id
+                            ?? $this->company->default_outstanding_receipts_account_id
+                            ?? $this->company->default_accounts_receivable_id
+                            ?? $this->line->expense_account_id;
+                        $this->useful_life_years = $this->line->product->useful_life_years ?? 5;
+                        $this->depreciation_method = $this->line->product->depreciation_method ?? DepreciationMethod::StraightLine;
+                    }
 
                     public function __get(string $name): mixed
                     {
                         return match ($name) {
-                            'asset_account_id' => $this->line->expense_account_id,
-                            'depreciation_expense_account_id' => $this->company->default_depreciation_expense_account_id
-                                ?? $this->company->default_sales_discount_account_id
-                                ?? $this->company->default_tax_account_id
-                                ?? $this->line->expense_account_id,
-                            'accumulated_depreciation_account_id' => $this->company->default_accumulated_depreciation_account_id
-                                ?? $this->company->default_outstanding_receipts_account_id
-                                ?? $this->company->default_accounts_receivable_id
-                                ?? $this->line->expense_account_id,
-                            'useful_life_years' => $this->line->product->useful_life_years ?? 5,
-                            'depreciation_method' => $this->line->product->depreciation_method ?? DepreciationMethod::StraightLine,
+                            'asset_account_id' => $this->asset_account_id,
+                            'depreciation_expense_account_id' => $this->depreciation_expense_account_id,
+                            'accumulated_depreciation_account_id' => $this->accumulated_depreciation_account_id,
+                            'useful_life_years' => $this->useful_life_years,
+                            'depreciation_method' => $this->depreciation_method,
                             default => null,
                         };
                     }

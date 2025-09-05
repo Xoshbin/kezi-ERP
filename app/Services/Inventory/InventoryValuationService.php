@@ -222,7 +222,7 @@ class InventoryValuationService
             entry_date: $date->toDateString(),
             reference: $reference,
             description: "Cost of Goods Sold for {$product->name}",
-            created_by_user_id: Auth::id() ?? 1, // Fallback to system user if no auth context
+            created_by_user_id: (int) (Auth::id() ?? 1), // Fallback to system user if no auth context
             is_posted: true, // COGS entries are posted immediately
             lines: [
                 // Debit: COGS Account (expense increases)
@@ -373,7 +373,7 @@ class InventoryValuationService
             entry_date: $date->toDateString(),
             reference: $reference,
             description: "Stock receipt for {$product->name}",
-            created_by_user_id: Auth::id() ?? 1, // Fallback to system user if no auth context
+            created_by_user_id: (int) (Auth::id() ?? 1), // Fallback to system user if no auth context
             is_posted: true, // Stock entries are posted immediately
             lines: [
                 // Debit: Inventory Account (asset increases)

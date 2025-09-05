@@ -104,7 +104,7 @@ class CreateStockMovesForInvoiceAction
         $dto = new CreateStockMoveDTO(
             company_id: $invoice->company_id,
             product_id: $line->product_id,
-            quantity: $line->quantity,
+            quantity: (float) $line->quantity,
             from_location_id: $warehouseLocation->id,
             to_location_id: $vendorLocation->id,
             move_type: StockMoveType::Outgoing,

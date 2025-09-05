@@ -96,7 +96,10 @@ class ViewGeneralLedger extends Page
                             ->getOptionLabelsUsing(function (array $values): array {
                                 return Account::whereIn('id', $values)
                                     ->get()
-                                    ->mapWithKeys(fn (Account $account) => [$account->id => "{$account->code} - {$account->name}"])
+                                    ->mapWithKeys(function (Account $account) {
+                                        $accountName = is_array($account->name) ? ($account->name['en'] ?? (empty($account->name) ? '' : (string) array_values($account->name)[0])) : (string) $account->name;
+                                        return [$account->id => "{$account->code} - {$accountName}"];
+                                    })
                                     ->toArray();
                             })
                             ->placeholder(__('reports.all_accounts'))

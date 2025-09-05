@@ -23,12 +23,22 @@ class OriginalCurrencyMoneyCast extends MoneyCast
     {
         // Check for original_currency_id (used in journal entry lines)
         if (isset($model->original_currency_id)) {
-            return Currency::findOrFail($model->original_currency_id);
+            $currency = Currency::findOrFail($model->original_currency_id);
+            // Ensure we have a single Currency model, not a collection
+            if ($currency instanceof \Illuminate\Database\Eloquent\Collection) {
+                $currency = $currency->first();
+            }
+            return $currency;
         }
 
         // Check for foreign_currency_id (used in bank statement lines)
         if (isset($model->foreign_currency_id)) {
-            return Currency::findOrFail($model->foreign_currency_id);
+            $currency = Currency::findOrFail($model->foreign_currency_id);
+            // Ensure we have a single Currency model, not a collection
+            if ($currency instanceof \Illuminate\Database\Eloquent\Collection) {
+                $currency = $currency->first();
+            }
+            return $currency;
         }
 
         // Return the currency by ID
