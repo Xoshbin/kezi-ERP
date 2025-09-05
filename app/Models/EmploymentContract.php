@@ -229,7 +229,7 @@ class EmploymentContract extends Model
             'monthly' => $monthlyTotal->multipliedBy(12),
             'bi_weekly' => $monthlyTotal->multipliedBy(26),
             'weekly' => $monthlyTotal->multipliedBy(52),
-            'hourly' => $this->hourly_rate->multipliedBy($this->working_hours_per_week * 52),
+            'hourly' => $this->hourly_rate?->multipliedBy($this->working_hours_per_week * 52) ?? $monthlyTotal->multipliedBy(12),
             default => $monthlyTotal->multipliedBy(12),
         };
     }

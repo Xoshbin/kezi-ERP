@@ -36,7 +36,7 @@ class CreateJournalEntryForVendorBillAction
                 $isStorable = $line->product?->type === ProductType::Storable;
                 $isAsset = (bool) $line->asset_category_id;
 
-                if ($isStorable) {
+                if ($isStorable && $line->product) {
                     $inventoryAccount = $line->product->inventoryAccount;
                     if (! $inventoryAccount) {
                         throw new RuntimeException("Product ID {$line->product_id} missing inventory account");
@@ -106,6 +106,10 @@ class CreateJournalEntryForVendorBillAction
                 partner_id: $vendorBill->vendor_id,
                 analytic_account_id: null,
             );
+
+            if (!$company->default_purchase_journal_id) {
+                throw new \InvalidArgumentException('Company default purchase journal is not configured');
+            }
 
             $journalEntryDTO = new CreateJournalEntryDTO(
                 company_id: $company->id,

@@ -26,7 +26,7 @@ class BuildInvoicePostingPreviewAction
     /**
      * Execute the invoice posting preview action.
      *
-     * @return array{errors: array<int, string>, issues: array<int, array{type: string, message: string, product_id?: int, tax_id?: int}>, lines: array<int, array{account_id: int|null, account_name: string, account_code: string|null, debit_minor: int, credit_minor: int, description: string}>, totals: array{debit_minor: int, credit_minor: int, balanced: bool}}
+     * @return array{errors: array<int, string>, issues: array<int, array{type: string, message: string, product_id?: int|null, tax_id?: int|null}>, lines: array<int, array{account_id: int|null, account_name: string, account_code: string|null, debit_minor: int, credit_minor: int, description: string}>, totals: array{debit_minor: int, credit_minor: int, balanced: bool}}
      */
     public function execute(Invoice $invoice): array
     {

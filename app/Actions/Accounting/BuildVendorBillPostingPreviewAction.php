@@ -28,7 +28,7 @@ class BuildVendorBillPostingPreviewAction
     /**
      * Execute the vendor bill posting preview action.
      *
-     * @return array{errors: array<int, string>, issues: array<int, array{type: string, message: string, product_id?: int}>, lines: array<int, array{account_id: int|null, account_name: string, account_code: string|null, debit_minor: int, credit_minor: int, description: string, product_id?: int}>, totals: array{debit_minor: int, credit_minor: int, balanced: bool}}
+     * @return array{errors: array<int, string>, issues: array<int, array{type: string, message: string, product_id?: int|null}>, lines: array<int, array{account_id: int|null, account_name: string, account_code: string|null, debit_minor: int, credit_minor: int, description: string, product_id?: int|null}>, totals: array{debit_minor: int, credit_minor: int, balanced: bool}}
      */
     public function execute(VendorBill $vendorBill): array
     {
@@ -59,7 +59,7 @@ class BuildVendorBillPostingPreviewAction
             $isStorable = $line->product?->type === ProductType::Storable;
             $isAsset = (bool) $line->asset_category_id;
 
-            if ($isStorable) {
+            if ($isStorable && $line->product) {
                 /** @var \App\Models\Account|null $inventoryAccount */
                 $inventoryAccount = $line->product->inventoryAccount;
                 if (! $inventoryAccount) {

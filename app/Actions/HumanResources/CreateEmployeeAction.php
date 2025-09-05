@@ -11,11 +11,14 @@ class CreateEmployeeAction
 {
     public function execute(CreateEmployeeDTO $createEmployeeDTO): Employee
     {
-        return DB::transaction(function () use ($createEmployeeDTO) {
+        return DB::transaction(function () use ($createEmployeeDTO): Employee {
             // Generate employee number if not provided
             $employeeNumber = $createEmployeeDTO->employee_number;
             if (empty($employeeNumber)) {
                 $company = Company::find($createEmployeeDTO->company_id);
+                if (!$company) {
+                    throw new \InvalidArgumentException('Company not found');
+                }
                 $employeeNumber = Employee::generateEmployeeNumber($company);
             }
 
@@ -55,7 +58,12 @@ class CreateEmployeeAction
                 'is_active' => $createEmployeeDTO->is_active,
             ]);
 
-            return $employee->fresh();
+            $fresh = $employee->fresh();
+            if (!$fresh) {
+                throw new \RuntimeException('Failed to refresh employee after creation');
+            }
+
+            return $fresh;
         });
     }
 }
