@@ -113,6 +113,8 @@ class UpdateJournalEntryAction
 
     /**
      * Convert various input types to Money object
+     *
+     * @param mixed $value
      */
     private function convertToMoney($value, string $currencyCode): Money
     {

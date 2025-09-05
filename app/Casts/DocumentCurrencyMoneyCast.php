@@ -109,8 +109,11 @@ class DocumentCurrencyMoneyCast extends MoneyCast
 
     /**
      * Override set to resolve currency using incoming attributes when model FKs are not yet set.
+     *
+     * @param array<string, mixed> $attributes
+     * @return array<string, int|null>
      */
-    public function set(Model $model, string $key, mixed $value, array $attributes): ?array
+    public function set(Model $model, string $key, mixed $value, array $attributes): array
     {
         if ($value === null) {
             return [$key => null];

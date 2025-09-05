@@ -20,6 +20,9 @@ use InvalidArgumentException;
  * This design follows the Strategy pattern, ensuring each cast has a single,
  * explicit responsibility for currency context resolution.
  */
+/**
+ * @implements CastsAttributes<\Brick\Money\Money|null, \Brick\Money\Money|int|float|string|null>
+ */
 abstract class MoneyCast implements CastsAttributes
 {
     /**
@@ -44,8 +47,9 @@ abstract class MoneyCast implements CastsAttributes
      * Prepare the value for storage.
      *
      * @param  array<string, mixed>  $attributes
+     * @return array<string, int|null>
      */
-    public function set(Model $model, string $key, mixed $value, array $attributes): ?array
+    public function set(Model $model, string $key, mixed $value, array $attributes): array
     {
         if ($value === null) {
             return [$key => null];

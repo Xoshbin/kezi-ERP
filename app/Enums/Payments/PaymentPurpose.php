@@ -31,6 +31,8 @@ enum PaymentPurpose: string
 
     /**
      * Get payment purposes available for inbound payments.
+     *
+     * @return array<int, self>
      */
     public static function inboundPurposes(): array
     {
@@ -43,6 +45,8 @@ enum PaymentPurpose: string
 
     /**
      * Get payment purposes available for outbound payments.
+     *
+     * @return array<int, self>
      */
     public static function outboundPurposes(): array
     {

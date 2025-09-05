@@ -11,6 +11,7 @@ readonly class PayrollLineDTO
         public int $account_id,
         public string $line_type, // earning, deduction, tax, contribution
         public string $code, // salary, overtime, tax, insurance, etc.
+        /** @var array<string, string> */
         public array $description, // Translatable description
         public float $quantity,
         public ?string $unit, // hours, days, percentage, fixed

@@ -31,6 +31,7 @@ class ViewProfitAndLoss extends Page
 
     public ?string $endDate = null;
 
+    /** @var array<string, mixed>|null */
     public ?array $reportData = null;
 
     public static function getNavigationLabel(): string

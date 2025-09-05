@@ -29,6 +29,7 @@ class ViewAgedPayables extends Page
 
     public ?string $asOfDate = null;
 
+    /** @var array<string, mixed>|null */
     public ?array $reportData = null;
 
     public static function getNavigationLabel(): string
