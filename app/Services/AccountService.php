@@ -9,6 +9,9 @@ use Illuminate\Validation\Rule;
 
 class AccountService
 {
+    /**
+     * @param  array<string, mixed>  $data
+     */
     public function create(array $data): Account
     {
         Validator::make($data, [
@@ -24,6 +27,9 @@ class AccountService
         return Account::create($data);
     }
 
+    /**
+     * @param  array<string, mixed>  $data
+     */
     public function update(Account $account, array $data): Account
     {
         Validator::make($data, [

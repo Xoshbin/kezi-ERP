@@ -92,6 +92,9 @@ class User extends Authenticatable implements FilamentUser, HasTenants
         return $this->belongsToMany(Company::class, 'company_user')->withTimestamps();
     }
 
+    /**
+     * @return Collection<int, Company>
+     */
     public function getTenants(Panel $panel): Collection
     {
         return $this->companies;

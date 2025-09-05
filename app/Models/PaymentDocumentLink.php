@@ -126,7 +126,7 @@ class PaymentDocumentLink extends Model
      * Get the currency for this payment document link through the payment.
      * This is needed for the MoneyCast to work properly.
      *
-     * @return HasOneThrough
+     * @return HasOneThrough<Currency, Payment, $this>
      */
     public function currency()
     {

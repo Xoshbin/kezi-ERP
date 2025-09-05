@@ -84,6 +84,9 @@ class AssetService
         return $asset->delete();
     }
 
+    /**
+     * @return Collection<int, array<string, mixed>>
+     */
     public function computeDepreciation(Asset $asset): Collection
     {
         $asset->load('currency');

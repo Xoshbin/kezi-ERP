@@ -45,6 +45,10 @@ class TaxReportService
         return $this->buildReportFromTaxData($taxData, $currency);
     }
 
+    /**
+     * @param  Collection<int, Tax>  $taxes
+     * @param  Collection<string, array<string, mixed>>  $taxData
+     */
     private function processJournalEntry(JournalEntry $entry, Collection $taxes, Collection $taxData, string $currency): void
     {
         // Get lines that are posted to tax accounts
@@ -90,6 +94,9 @@ class TaxReportService
         }
     }
 
+    /**
+     * @param  Collection<string, array<string, mixed>>  $taxData
+     */
     private function buildReportFromTaxData(Collection $taxData, string $currency): TaxReportDTO
     {
         $zero = Money::zero($currency);

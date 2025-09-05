@@ -64,6 +64,9 @@ class BalanceSheetService
         );
     }
 
+    /**
+     * @return Collection<int, object>
+     */
     private function getAccountBalances(Company $company, Carbon $asOfDate): Collection
     {
         return JournalEntryLine::query()
@@ -124,6 +127,12 @@ class BalanceSheetService
         return $totalRevenue->minus($totalExpenses);
     }
 
+    /**
+     * @param  Collection<int, object>  $balances
+     * @param  array<AccountType>  $types
+     * @param  Collection<int, Account>  $accounts
+     * @return Collection<int, object>
+     */
     private function mapBalancesToReportLines(Collection $balances, array $types, string $currency, Collection $accounts, bool $negate = false): Collection
     {
         return $balances->whereIn('account_type', array_map(fn ($type) => $type->value, $types))
@@ -140,6 +149,9 @@ class BalanceSheetService
             })->values();
     }
 
+    /**
+     * @param  Collection<int, ReportLineDTO>  $lines
+     */
     private function sumLines(Collection $lines, Money $zero): Money
     {
         return $lines->reduce(
