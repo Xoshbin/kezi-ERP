@@ -40,12 +40,17 @@ class ProcessInventoryForConfirmedBill
             throw new RuntimeException("Default Vendor or Stock Location is not configured for Company ID: {$company->id}.");
         }
 
+        /** @var \App\Models\StockLocation $vendorLocation */
+        $vendorLocation = $company->vendorLocation;
+        /** @var \App\Models\StockLocation $defaultStockLocation */
+        $defaultStockLocation = $company->defaultStockLocation;
+
         StockMove::create([
             'company_id' => $company->id,
             'product_id' => $product->id,
             'quantity' => $line->quantity,
-            'from_location_id' => $company->vendorLocation->id,
-            'to_location_id' => $company->defaultStockLocation->id,
+            'from_location_id' => $vendorLocation->id,
+            'to_location_id' => $defaultStockLocation->id,
             'source_type' => get_class($vendorBill),
             'source_id' => $vendorBill->id,
             'move_date' => $vendorBill->accounting_date,
