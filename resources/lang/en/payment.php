@@ -17,6 +17,8 @@ return [
     'form.amount' => 'Total Amount',
     'form.payment_type' => 'Payment Type',
     'form.payment_method' => 'Payment Method',
+    'form.receive' => 'Receive',
+    'form.send' => 'Send',
     'form.payment_type_and_purpose' => 'Payment Type',
     'form.payment_type_and_purpose_description' => 'Select the direction of this payment',
     'form.status' => 'Status',

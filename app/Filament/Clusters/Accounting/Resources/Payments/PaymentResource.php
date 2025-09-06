@@ -33,7 +33,9 @@ use Filament\Facades\Filament;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\ToggleButtons;
 use Filament\Resources\Resource;
+use Filament\Schemas\Components\Group;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
@@ -74,53 +76,78 @@ class PaymentResource extends Resource
         return $schema->components([
             Section::make(__('payment.form.payment_information'))
                 ->description(__('payment.form.direct_payment_description'))
+                ->compact()
                 ->schema([
-                    TranslatableSelect::make('journal_id', Journal::class, __('payment.form.journal_id'))
-                        ->required()
-                        ->columnSpan(2),
-                    TranslatableSelect::make('currency_id', Currency::class, __('payment.form.currency_id'))
-                        ->required()
-                        ->columnSpan(2)
-                        ->default(function (): ?int {
-                            $tenant = Filament::getTenant();
-                            return $tenant instanceof \App\Models\Company ? $tenant->currency_id : null;
-                        }),
-                    DatePicker::make('payment_date')
-                        ->default(now())
-                        ->label(__('payment.form.payment_date'))
-                        ->required()
-                        ->columnSpan(2),
-                    TextInput::make('reference')
-                        ->label(__('payment.form.reference'))
-                        ->maxLength(255)
-                        ->columnSpan(2),
-                ])
-                ->columns(4)
-                ->columnSpanFull(),
+                    Group::make()
+                        ->schema([
+                            ToggleButtons::make('payment_type')
+                                ->label(__('payment.form.payment_type'))
+                                ->options([
+                                    PaymentType::Inbound->value => __('payment.form.receive') ?: PaymentType::Inbound->label(),
+                                    PaymentType::Outbound->value => __('payment.form.send') ?: PaymentType::Outbound->label(),
+                                ])
+                                ->colors([
+                                    PaymentType::Inbound->value => 'success',
+                                    PaymentType::Outbound->value => 'danger',
+                                ])
+                                ->icons([
+                                    PaymentType::Inbound->value => 'heroicon-m-arrow-down-circle',
+                                    PaymentType::Outbound->value => 'heroicon-m-arrow-up-circle',
+                                ])
+                                ->inline()
+                                ->required()
+                                ->columnSpanFull(),
 
-            Section::make(__('payment.form.payment_details'))
-                ->description(__('payment.form.payment_details_description'))
-                ->schema([
-                    Select::make('payment_type')
-                        ->label(__('payment.form.payment_type'))
-                        ->options(collect(PaymentType::cases())->mapWithKeys(fn ($case) => [$case->value => $case->label()]))
-                        ->required()
-                        ->columnSpan(2),
-                    Select::make('payment_method')
-                        ->label(__('payment.form.payment_method'))
-                        ->options(collect(PaymentMethod::cases())->mapWithKeys(fn ($case) => [$case->value => $case->label()]))
-                        ->required()
-                        ->columnSpan(2),
-                    TranslatableSelect::make('partner_id', Partner::class, __('payment.form.partner'))
-                        ->required()
-                        ->columnSpan(2),
-                    MoneyInput::make('amount')
-                        ->label(__('payment.form.amount'))
-                        ->currencyField('currency_id')
-                        ->required()
-                        ->columnSpan(2),
+                            TranslatableSelect::make('partner_id', Partner::class, __('payment.form.partner'))
+                                ->required()
+                                ->columnSpanFull(),
+
+                            MoneyInput::make('amount')
+                                ->label(__('payment.form.amount'))
+                                ->currencyField('currency_id')
+                                ->required()
+                                ->columnSpanFull(),
+
+                            Group::make()
+                                ->schema([
+                                    DatePicker::make('payment_date')
+                                        ->default(now())
+                                        ->label(__('payment.form.payment_date'))
+                                        ->required()
+                                        ->columnSpan(6),
+                                    TextInput::make('reference')
+                                        ->label(__('payment.form.reference'))
+                                        ->maxLength(255)
+                                        ->columnSpan(6),
+                                ])
+                                ->columns(12)
+                                ->columnSpanFull(),
+                        ])
+                        ->columns(12)
+                        ->columnSpan(8),
+
+                    Group::make()
+                        ->schema([
+                            TranslatableSelect::make('journal_id', Journal::class, __('payment.form.journal_id'))
+                                ->required()
+                                ->columnSpanFull(),
+                            Select::make('payment_method')
+                                ->label(__('payment.form.payment_method'))
+                                ->options(collect(PaymentMethod::cases())->mapWithKeys(fn ($case) => [$case->value => $case->label()]))
+                                ->required()
+                                ->columnSpanFull(),
+                            TranslatableSelect::make('currency_id', Currency::class, __('payment.form.currency_id'))
+                                ->required()
+                                ->default(function (): ?int {
+                                    $tenant = Filament::getTenant();
+                                    return $tenant instanceof \App\Models\Company ? $tenant->currency_id : null;
+                                })
+                                ->columnSpanFull(),
+                        ])
+                        ->columns(12)
+                        ->columnSpan(4),
                 ])
-                ->columns(4)
+                ->columns(12)
                 ->columnSpanFull(),
         ]);
     }
