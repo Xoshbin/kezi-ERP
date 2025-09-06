@@ -152,3 +152,13 @@ A: We store original amounts and base‑currency equivalents; gains/losses are r
 ---
 
 Need more help? Click the Help/Docs button in Payments, Invoices, Vendor Bills, or during Reconciliation to open this guide.
+
+
+---
+
+## Example
+
+```bash
+# Create a standalone payment (CLI example)
+echo "Record an inbound payment and confirm it"
+```
