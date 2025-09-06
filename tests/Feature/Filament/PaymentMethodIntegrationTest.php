@@ -1,11 +1,13 @@
 <?php
 
 use App\Enums\Payments\PaymentMethod;
+use App\Enums\Payments\PaymentPurpose;
 use App\Enums\Payments\PaymentStatus;
 use App\Enums\Payments\PaymentType;
 use App\Filament\Clusters\Accounting\Resources\Payments\Pages\CreatePayment;
 use App\Filament\Clusters\Accounting\Resources\Payments\Pages\EditPayment;
 use App\Filament\Clusters\Accounting\Resources\Payments\Pages\ListPayments;
+use App\Models\Account;
 use App\Models\Journal;
 use App\Models\Partner;
 use App\Models\Payment;
@@ -61,6 +63,11 @@ it('can create payment with payment method', function () {
         'currency_id' => $this->company->currency_id,
     ]);
 
+    $account = Account::factory()->create([
+        'company_id' => $this->company->id,
+        'type' => \App\Enums\Accounting\AccountType::Expense->value,
+    ]);
+
     $paymentData = [
         'journal_id' => $journal->id,
         'currency_id' => $this->company->currency_id,
@@ -68,8 +75,10 @@ it('can create payment with payment method', function () {
         'reference' => 'TEST-001',
         'payment_type' => PaymentType::Outbound->value,
         'payment_method' => PaymentMethod::BankTransfer->value,
+        'payment_purpose' => PaymentPurpose::Loan->value,
         'partner_id' => $partner->id,
         'amount' => '1000.00',
+        'counterpart_account_id' => $account->id,
     ];
 
     livewire(CreatePayment::class)

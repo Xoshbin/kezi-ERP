@@ -104,6 +104,7 @@ class Invoice extends Model
         'invoice_number',
         'invoice_date',
         'due_date',
+        'payment_term_id',
         'status',
         'total_amount',
         'total_tax',
@@ -264,6 +265,24 @@ class Invoice extends Model
     }
 
     /**
+     * Get the PaymentTerm for this invoice.
+     */
+    public function paymentTerm(): BelongsTo
+    {
+        return $this->belongsTo(PaymentTerm::class);
+    }
+
+    /**
+     * Get the PaymentInstallments for this invoice.
+     */
+    public function paymentInstallments(): HasMany
+    {
+        return $this->hasMany(PaymentInstallment::class, 'installment_id')
+            ->where('installment_type', self::class)
+            ->orderBy('sequence');
+    }
+
+    /**
      * Get the Adjustment Documents (credit notes, etc.) that relate to this Invoice.
      * These are used for corrections, reversals, and adjustments to posted invoices.
      */
@@ -317,6 +336,46 @@ class Invoice extends Model
     public function getFullReferenceAttribute(): string
     {
         return $this->invoice_number.' - '.$this->invoice_date->format('Y-m-d');
+    }
+
+    /**
+     * Generate payment installments based on payment terms.
+     * This should be called when the invoice is posted.
+     */
+    public function generatePaymentInstallments(): void
+    {
+        // Clear existing installments
+        $this->paymentInstallments()->delete();
+
+        $this->loadMissing('paymentTerm');
+
+        if (!$this->paymentTerm instanceof PaymentTerm) {
+            // No payment terms, create single installment with due date
+            PaymentInstallment::create([
+                'company_id' => $this->company_id,
+                'installment_type' => self::class,
+                'installment_id' => $this->id,
+                'sequence' => 1,
+                'due_date' => $this->due_date,
+                'amount' => $this->total_amount,
+                'status' => \App\Enums\PaymentInstallments\InstallmentStatus::Pending,
+            ]);
+            return;
+        }
+
+        $installments = $this->paymentTerm->calculateInstallments($this->invoice_date, $this->total_amount);
+
+        foreach ($installments as $index => $installment) {
+            PaymentInstallment::create([
+                'company_id' => $this->company_id,
+                'installment_type' => self::class,
+                'installment_id' => $this->id,
+                'sequence' => $index + 1,
+                'due_date' => $installment['due_date'],
+                'amount' => $installment['amount'],
+                'status' => \App\Enums\PaymentInstallments\InstallmentStatus::Pending,
+            ]);
+        }
     }
 
     public function calculateTotalsFromLines(): void
