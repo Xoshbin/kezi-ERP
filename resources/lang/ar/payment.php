@@ -17,6 +17,8 @@ return [
     'form.amount' => 'المبلغ الإجمالي',
     'form.payment_type' => 'نوع الدفع',
     'form.payment_method' => 'طريقة الدفع',
+    'form.receive' => 'استلام',
+    'form.send' => 'إرسال',
     'form.payment_purpose' => 'غرض الدفع',
     'form.payment_type_and_purpose' => 'نوع وغرض الدفع',
     'form.payment_type_and_purpose_description' => 'اختر اتجاه وغرض هذه الدفعة',
