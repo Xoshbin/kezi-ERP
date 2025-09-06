@@ -2,7 +2,6 @@
 
 namespace Tests\Feature\HumanResources;
 
-use App\Enums\Payments\PaymentPurpose;
 use App\Enums\Payments\PaymentStatus;
 use App\Enums\Payments\PaymentType;
 use App\Models\Account;
@@ -113,7 +112,7 @@ class PayrollPaymentTest extends TestCase
         $this->assertEquals($payroll->company_id, $payment->company_id);
         $this->assertEquals($payroll->currency_id, $payment->currency_id);
         $this->assertEquals($payroll->pay_date->format('Y-m-d'), $payment->payment_date->format('Y-m-d'));
-        $this->assertEquals(PaymentPurpose::Payroll, $payment->payment_purpose);
+
         $this->assertEquals(PaymentType::Outbound, $payment->payment_type);
         $this->assertEquals(PaymentStatus::Draft, $payment->status);
         $this->assertTrue($payroll->net_salary->isEqualTo($payment->amount));

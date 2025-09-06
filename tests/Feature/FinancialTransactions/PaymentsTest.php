@@ -5,12 +5,11 @@ use App\DataTransferObjects\Payments\CreatePaymentDocumentLinkDTO;
 use App\DataTransferObjects\Payments\CreatePaymentDTO;
 use App\Enums\Accounting\JournalType;
 use App\Enums\Payments\PaymentMethod;
-use App\Enums\Payments\PaymentPurpose;
 use App\Enums\Payments\PaymentType;
 use App\Models\Account;
 use App\Models\Invoice;
 use App\Models\Journal;
-use App\Models\Payment;
+
 use App\Models\VendorBill;
 use App\Services\PaymentService;
 use Brick\Money\Money;
@@ -41,12 +40,11 @@ test('an inbound payment can be created and linked to an invoice', function () {
         journal_id: Journal::factory()->for($this->company)->create(['type' => JournalType::Bank])->id,
         currency_id: $this->company->currency_id,
         payment_date: now()->toDateString(),
-        payment_purpose: PaymentPurpose::Settlement,
+        // settlement inferred by presence of document links
         payment_type: PaymentType::Inbound,
         payment_method: PaymentMethod::BankTransfer,
         partner_id: null,
         amount: null,
-        counterpart_account_id: null,
         document_links: [$documentLinkDTO],
         reference: null
     );
@@ -87,12 +85,11 @@ test('an outbound payment can be created and linked to a vendor bill', function 
         journal_id: Journal::factory()->for($this->company)->create(['type' => JournalType::Bank])->id,
         currency_id: $this->company->currency_id,
         payment_date: now()->toDateString(),
-        payment_purpose: PaymentPurpose::Settlement,
+        // settlement inferred by presence of document links
         payment_type: PaymentType::Outbound,
         payment_method: PaymentMethod::BankTransfer,
         partner_id: null,
         amount: null,
-        counterpart_account_id: null,
         document_links: [$documentLinkDTO],
         reference: null
     );
@@ -142,12 +139,11 @@ test('creating a payment generates the correct journal entry', function () {
         journal_id: $bankJournal->id,
         currency_id: $this->company->currency_id,
         payment_date: now()->toDateString(),
-        payment_purpose: PaymentPurpose::Settlement,
+        // settlement inferred by presence of document links
         payment_type: PaymentType::Outbound,
         payment_method: PaymentMethod::BankTransfer,
         partner_id: null,
         amount: null,
-        counterpart_account_id: null,
         document_links: [$documentLinkDTO],
         reference: 'Test Payment'
     );
