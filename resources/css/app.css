@@ -1,4 +1,5 @@
 @import 'tailwindcss';
+@import './docs.css';
 
 /*
   The default border color has changed to `currentcolor` in Tailwind CSS v4,
