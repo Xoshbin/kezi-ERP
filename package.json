@@ -20,6 +20,7 @@
         "vite": "^6.2.4"
     },
     "dependencies": {
+        "highlight.js": "^11.11.1",
         "playwright": "^1.55.0"
     }
 }

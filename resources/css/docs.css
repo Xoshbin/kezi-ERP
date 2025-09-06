@@ -1,0 +1,266 @@
+/* Enhanced Documentation Styles - Inspired by Filament & Laravel Docs */
+
+/* Import Highlight.js themes */
+@import 'highlight.js/styles/github.css' (prefers-color-scheme: light);
+@import 'highlight.js/styles/github-dark.css' (prefers-color-scheme: dark);
+
+/* Documentation-specific styles */
+.docs-prose a.heading-anchor {
+    @apply opacity-0 ml-2 text-sm text-gray-400 no-underline transition-opacity duration-200;
+}
+
+.docs-prose h2:hover .heading-anchor,
+.docs-prose h3:hover .heading-anchor {
+    @apply opacity-70;
+}
+
+.docs-prose a.heading-anchor:hover {
+    @apply opacity-100 text-orange-500;
+}
+
+/* Smooth scrolling */
+html {
+    scroll-behavior: smooth;
+}
+
+/* Skip link for accessibility */
+.skip-link {
+    @apply absolute -left-[999px] top-auto w-px h-px overflow-hidden;
+}
+
+.skip-link:focus {
+    @apply static w-auto h-auto;
+}
+
+/* Enhanced prose styling for documentation content */
+.docs-content {
+    @apply text-gray-900 dark:text-gray-100;
+}
+
+.docs-content h1 {
+    @apply text-3xl font-bold tracking-tight text-gray-900 dark:text-white mt-8 mb-4 first:mt-0;
+}
+
+.docs-content h2 {
+    @apply text-2xl font-semibold text-gray-900 dark:text-white mt-8 mb-4 first:mt-0;
+    @apply border-b border-gray-200 dark:border-gray-700 pb-2;
+}
+
+.docs-content h3 {
+    @apply text-xl font-semibold text-gray-900 dark:text-white mt-6 mb-3;
+}
+
+.docs-content h4 {
+    @apply text-lg font-semibold text-gray-900 dark:text-white mt-6 mb-3;
+}
+
+.docs-content p {
+    @apply text-gray-700 dark:text-gray-300 leading-7 mb-4;
+}
+
+.docs-content a {
+    @apply text-orange-600 dark:text-orange-400 font-medium hover:text-orange-700 dark:hover:text-orange-300 transition-colors;
+}
+
+.docs-content ul, .docs-content ol {
+    @apply mb-4 ml-6;
+}
+
+.docs-content li {
+    @apply text-gray-700 dark:text-gray-300 leading-7 mb-2;
+}
+
+.docs-content blockquote {
+    @apply border-l-4 border-orange-500 bg-orange-50 dark:bg-orange-900/20 pl-4 py-2 my-4 italic text-gray-700 dark:text-gray-300;
+}
+
+.docs-content pre {
+    @apply bg-gray-50 dark:bg-gray-900 rounded-lg p-4 overflow-x-auto my-4 border border-gray-200 dark:border-gray-700;
+}
+
+.docs-content code {
+    @apply bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100 px-1.5 py-0.5 rounded text-sm font-mono;
+}
+
+.docs-content pre code {
+    @apply bg-transparent p-0 text-sm;
+}
+
+.docs-content table {
+    @apply w-full border-collapse border border-gray-200 dark:border-gray-700 my-4;
+}
+
+.docs-content th {
+    @apply bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 px-4 py-2 text-left font-semibold text-gray-900 dark:text-white;
+}
+
+.docs-content td {
+    @apply border border-gray-200 dark:border-gray-700 px-4 py-2 text-gray-700 dark:text-gray-300;
+}
+
+.docs-content img {
+    @apply rounded-lg shadow-sm my-4 max-w-full h-auto;
+}
+
+.docs-content hr {
+    @apply border-gray-200 dark:border-gray-700 my-8;
+}
+
+/* Alert/Callout styles */
+.docs-content .alert {
+    @apply rounded-lg p-4 my-4 border-l-4;
+}
+
+.docs-content .alert-info {
+    @apply bg-blue-50 dark:bg-blue-900/20 border-blue-500 text-blue-800 dark:text-blue-200;
+}
+
+.docs-content .alert-warning {
+    @apply bg-yellow-50 dark:bg-yellow-900/20 border-yellow-500 text-yellow-800 dark:text-yellow-200;
+}
+
+.docs-content .alert-danger {
+    @apply bg-red-50 dark:bg-red-900/20 border-red-500 text-red-800 dark:text-red-200;
+}
+
+.docs-content .alert-success {
+    @apply bg-green-50 dark:bg-green-900/20 border-green-500 text-green-800 dark:text-green-200;
+}
+
+/* Code block enhancements */
+.docs-content pre[class*="language-"] {
+    @apply relative;
+}
+
+.docs-content pre[class*="language-"]::before {
+    content: attr(data-language);
+    @apply absolute top-2 right-2 text-xs text-gray-500 dark:text-gray-400 uppercase font-mono;
+}
+
+/* Copy button for code blocks */
+.docs-content .code-block-wrapper {
+    @apply relative;
+}
+
+.docs-content .copy-button {
+    @apply absolute top-2 right-2 p-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 transition-colors;
+}
+
+/* Responsive tables */
+.docs-content .table-wrapper {
+    @apply overflow-x-auto;
+}
+
+/* Enhanced list styling */
+.docs-content ul > li {
+    @apply relative pl-6;
+}
+
+.docs-content ul > li::before {
+    content: "•";
+    @apply absolute left-0 text-orange-500 font-bold;
+}
+
+.docs-content ol {
+    @apply list-decimal;
+}
+
+/* Enhanced link styling */
+.docs-content a[href^="http"]::after {
+    content: "↗";
+    @apply ml-1 text-xs text-gray-400;
+}
+
+/* Keyboard shortcuts styling */
+.docs-content kbd {
+    @apply bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded px-2 py-1 text-xs font-mono;
+}
+
+/* Definition lists */
+.docs-content dl {
+    @apply my-4;
+}
+
+.docs-content dt {
+    @apply font-semibold text-gray-900 dark:text-white mb-1;
+}
+
+.docs-content dd {
+    @apply text-gray-700 dark:text-gray-300 ml-4 mb-3;
+}
+
+/* Enhanced focus styles for accessibility */
+.docs-content a:focus,
+.docs-content button:focus {
+    @apply outline-none ring-2 ring-orange-500 ring-offset-2 dark:ring-offset-gray-900;
+}
+
+/* Print styles */
+@media print {
+    .docs-content {
+        @apply text-black;
+    }
+
+    .docs-content a {
+        @apply text-black underline;
+    }
+
+    .docs-content pre {
+        @apply border border-gray-300;
+    }
+}
+
+/* Mobile optimizations */
+@media (max-width: 640px) {
+    .docs-content h1 {
+        @apply text-2xl;
+    }
+
+    .docs-content h2 {
+        @apply text-xl;
+    }
+
+    .docs-content h3 {
+        @apply text-lg;
+    }
+
+    .docs-content pre {
+        @apply text-sm;
+    }
+
+    .docs-content table {
+        @apply text-sm;
+    }
+}
+
+/* Smooth scrolling for anchor links */
+html {
+    scroll-behavior: smooth;
+}
+
+/* Enhanced heading anchor links */
+.docs-content h2:hover .heading-anchor,
+.docs-content h3:hover .heading-anchor {
+    @apply opacity-70;
+}
+
+.docs-content .heading-anchor {
+    @apply opacity-0 ml-2 text-sm text-gray-400 no-underline transition-opacity duration-200;
+}
+
+.docs-content .heading-anchor:hover {
+    @apply opacity-100 text-orange-500;
+}
+
+/* Loading states */
+.docs-loading {
+    @apply animate-pulse;
+}
+
+.docs-loading .docs-content {
+    @apply space-y-4;
+}
+
+.docs-loading .docs-content > * {
+    @apply bg-gray-200 dark:bg-gray-700 rounded;
+}
