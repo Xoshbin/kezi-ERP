@@ -7,8 +7,23 @@ use App\Models\Invoice;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
+
 Route::get('/', function () {
     return view('welcome');
+});
+
+// Documentation Routes (Public access)
+Route::prefix('docs')->group(function () {
+    Route::get('/', [\App\Http\Controllers\Docs\DocumentController::class, 'index'])->name('docs.index');
+
+    // JSON search index (must be before slug route)
+    Route::get('/index.json', function () {
+        $items = \App\Services\DocumentationService::make()->buildIndex();
+        return response()->json($items)->header('Content-Type', 'application/json');
+    })->name('docs.index.json');
+
+    // Must be last: catch-all slug route
+    Route::get('/{slug}', [\App\Http\Controllers\Docs\DocumentController::class, 'show'])->name('docs.show');
 });
 
 // PDF Generation Routes (Protected by authentication)
@@ -57,4 +72,5 @@ Route::middleware(['auth'])->group(function () {
 
         return app(GenerateInvoicePdfAction::class)->execute($invoice, $template);
     })->name('pdf.preview');
+
 });
