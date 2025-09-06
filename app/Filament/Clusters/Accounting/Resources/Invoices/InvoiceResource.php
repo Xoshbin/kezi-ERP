@@ -6,7 +6,8 @@ use App\Actions\Payments\CreatePaymentAction;
 use App\DataTransferObjects\Payments\CreatePaymentDocumentLinkDTO;
 use App\DataTransferObjects\Payments\CreatePaymentDTO;
 use App\Enums\Partners\PartnerType;
-use App\Enums\Payments\PaymentPurpose;
+use App\Enums\Payments\PaymentMethod;
+
 use App\Enums\Payments\PaymentType;
 use App\Enums\Sales\InvoiceStatus;
 use App\Enums\Shared\PaymentState;
@@ -27,6 +28,7 @@ use App\Models\FiscalPosition;
 use App\Models\Invoice;
 use App\Models\Journal;
 use App\Models\Partner;
+use App\Models\PaymentTerm;
 use App\Models\Product;
 use App\Models\Tax;
 use App\Rules\NotInLockedPeriod;
@@ -216,6 +218,10 @@ class InvoiceResource extends Resource
                     DatePicker::make('due_date')
                         ->label(__('invoice.due_date'))
                         ->required(),
+                    TranslatableSelect::make('payment_term_id', PaymentTerm::class, __('invoice.payment_term'))
+                        ->relationship('paymentTerm', 'name')
+                        ->searchable()
+                        ->preload(),
                 ])
                 ->columns(4)
                 ->columnSpanFull(),
@@ -433,6 +439,13 @@ class InvoiceResource extends Resource
                     ->date()
                     ->sortable(),
 
+                // Payment Terms
+                TextColumn::make('paymentTerm.name')
+                    ->label(__('invoice.payment_term'))
+                    ->searchable()
+                    ->sortable()
+                    ->toggleable(),
+
                 // Payment State (critical for collections)
                 TextColumn::make('paymentState')
                     ->label(__('invoice.payment_state'))
@@ -599,11 +612,11 @@ class InvoiceResource extends Resource
                                 journal_id: $data['journal_id'],
                                 currency_id: $record->currency_id,
                                 payment_date: $data['payment_date'],
-                                payment_purpose: PaymentPurpose::Settlement,
+                                // settlement inferred by presence of document links
                                 payment_type: PaymentType::Inbound,
+                                payment_method: PaymentMethod::BankTransfer,
                                 partner_id: $record->customer_id,
                                 amount: Money::of($data['amount'], $currency->code),
-                                counterpart_account_id: null,
                                 document_links: [$documentLink],
                                 reference: $data['reference']
                             );

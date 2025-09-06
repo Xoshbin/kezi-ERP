@@ -100,6 +100,7 @@ class VendorBill extends Model
         'bill_date',            // The date the vendor bill was issued by the supplier .
         'accounting_date',      // The date the bill is recognized in the company's books .
         'due_date',             // The date by which the payment is due .
+        'payment_term_id',      // Foreign key to payment_terms table for installment configuration
         'bill_reference',       // The vendor's reference number; **assigned only upon 'confirmation' or 'posting'**
         // to ensure a clean, unbroken sequence of official documents [4-6].
         'status',               // Current status: e.g., 'Draft', 'Posted', 'Paid', 'Cancelled' .
@@ -265,6 +266,24 @@ class VendorBill extends Model
     }
 
     /**
+     * Get the PaymentTerm for this vendor bill.
+     */
+    public function paymentTerm(): BelongsTo
+    {
+        return $this->belongsTo(PaymentTerm::class);
+    }
+
+    /**
+     * Get the PaymentInstallments for this vendor bill.
+     */
+    public function paymentInstallments(): HasMany
+    {
+        return $this->hasMany(PaymentInstallment::class, 'installment_id')
+            ->where('installment_type', self::class)
+            ->orderBy('sequence');
+    }
+
+    /**
      * Get the Vendor Bill Lines for the Vendor Bill.
      * Defines a **HasMany** relationship, indicating that a vendor bill can have
      * multiple line items detailing the products or services purchased .
@@ -348,5 +367,45 @@ class VendorBill extends Model
     public function canBeModified(): bool
     {
         return $this->isDraft();
+    }
+
+    /**
+     * Generate payment installments based on payment terms.
+     * This should be called when the vendor bill is posted.
+     */
+    public function generatePaymentInstallments(): void
+    {
+        // Clear existing installments
+        $this->paymentInstallments()->delete();
+
+        $this->loadMissing('paymentTerm');
+
+        if (!$this->paymentTerm instanceof PaymentTerm) {
+            // No payment terms, create single installment with due date
+            PaymentInstallment::create([
+                'company_id' => $this->company_id,
+                'installment_type' => self::class,
+                'installment_id' => $this->id,
+                'sequence' => 1,
+                'due_date' => $this->due_date,
+                'amount' => $this->total_amount,
+                'status' => \App\Enums\PaymentInstallments\InstallmentStatus::Pending,
+            ]);
+            return;
+        }
+
+        $installments = $this->paymentTerm->calculateInstallments($this->bill_date, $this->total_amount);
+
+        foreach ($installments as $index => $installment) {
+            PaymentInstallment::create([
+                'company_id' => $this->company_id,
+                'installment_type' => self::class,
+                'installment_id' => $this->id,
+                'sequence' => $index + 1,
+                'due_date' => $installment['due_date'],
+                'amount' => $installment['amount'],
+                'status' => \App\Enums\PaymentInstallments\InstallmentStatus::Pending,
+            ]);
+        }
     }
 }

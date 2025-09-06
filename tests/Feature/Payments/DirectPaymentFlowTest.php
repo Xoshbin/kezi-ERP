@@ -3,7 +3,7 @@
 use App\Actions\Payments\CreatePaymentAction;
 use App\DataTransferObjects\Payments\CreatePaymentDTO;
 use App\Enums\Accounting\JournalType;
-use App\Enums\Payments\PaymentPurpose;
+use App\Enums\Payments\PaymentMethod;
 use App\Enums\Payments\PaymentStatus;
 use App\Enums\Payments\PaymentType;
 use App\Models\Account;
@@ -24,7 +24,6 @@ beforeEach(function () {
 test('a loan payment creates the correct journal entry', function () {
     // Arrange: Create necessary accounts and partners
     $bankJournal = Journal::factory()->for($this->company)->create(['type' => JournalType::Bank]);
-    $loanAccount = Account::factory()->for($this->company)->create(['name' => 'Loans Payable']);
     $partner = Partner::factory()->for($this->company)->create();
 
     $paymentDTO = new CreatePaymentDTO(
@@ -32,11 +31,11 @@ test('a loan payment creates the correct journal entry', function () {
         journal_id: $bankJournal->id,
         currency_id: $this->company->currency_id,
         payment_date: now()->toDateString(),
-        payment_purpose: PaymentPurpose::Loan,
+        // standalone partner advance inferred by absence of document links
         payment_type: PaymentType::Inbound,
+        payment_method: PaymentMethod::BankTransfer,
         partner_id: $partner->id,
         amount: Money::of(10000, $this->company->currency->code),
-        counterpart_account_id: $loanAccount->id,
         document_links: [],
         reference: 'Loan from Bank'
     );
@@ -47,9 +46,7 @@ test('a loan payment creates the correct journal entry', function () {
     $payment->refresh();
 
     // Assert: Payment is created correctly
-    expect($payment->payment_purpose)->toBe(PaymentPurpose::Loan);
     expect($payment->payment_type)->toBe(PaymentType::Inbound);
-    expect($payment->counterpart_account_id)->toBe($loanAccount->id);
     expect($payment->amount->getAmount()->toFloat())->toBe(10000.0);
     expect($payment->status)->toBe(PaymentStatus::Confirmed);
 
@@ -61,21 +58,21 @@ test('a loan payment creates the correct journal entry', function () {
 
     // Assert: Correct debit/credit entries (Inbound loan: Debit Bank, Credit Loan Payable)
     $bankLine = $journalEntry->lines->where('account_id', $bankJournal->default_debit_account_id)->first();
-    $loanLine = $journalEntry->lines->where('account_id', $loanAccount->id)->first();
+    $arAccountId = $this->company->default_accounts_receivable_id;
+    $arLine = $journalEntry->lines->where('account_id', $arAccountId)->first();
 
     expect($bankLine)->not->toBeNull();
     expect($bankLine->debit->getAmount()->toFloat())->toBe(10000.0);
     expect($bankLine->credit->isZero())->toBeTrue();
 
-    expect($loanLine)->not->toBeNull();
-    expect($loanLine->credit->getAmount()->toFloat())->toBe(10000.0);
-    expect($loanLine->debit->isZero())->toBeTrue();
+    expect($arLine)->not->toBeNull();
+    expect($arLine->credit->getAmount()->toFloat())->toBe(10000.0);
+    expect($arLine->debit->isZero())->toBeTrue();
 });
 
 test('a capital injection payment creates the correct journal entry', function () {
     // Arrange
     $bankJournal = Journal::factory()->for($this->company)->create(['type' => JournalType::Bank]);
-    $equityAccount = Account::factory()->for($this->company)->create(['name' => 'Owner Equity']);
     $partner = Partner::factory()->for($this->company)->create();
 
     $paymentDTO = new CreatePaymentDTO(
@@ -83,11 +80,10 @@ test('a capital injection payment creates the correct journal entry', function (
         journal_id: $bankJournal->id,
         currency_id: $this->company->currency_id,
         payment_date: now()->toDateString(),
-        payment_purpose: PaymentPurpose::CapitalInjection,
         payment_type: PaymentType::Inbound,
+        payment_method: PaymentMethod::BankTransfer,
         partner_id: $partner->id,
         amount: Money::of(25000, $this->company->currency->code),
-        counterpart_account_id: $equityAccount->id,
         document_links: [],
         reference: 'Owner Capital Investment'
     );
@@ -98,22 +94,21 @@ test('a capital injection payment creates the correct journal entry', function (
     $payment->refresh();
 
     // Assert: Payment details
-    expect($payment->payment_purpose)->toBe(PaymentPurpose::CapitalInjection);
-    expect($payment->counterpart_account_id)->toBe($equityAccount->id);
 
     // Assert: Journal entry accounting (Inbound capital: Debit Bank, Credit Equity)
     $journalEntry = JournalEntry::find($payment->journal_entry_id);
     $bankLine = $journalEntry->lines->where('account_id', $bankJournal->default_debit_account_id)->first();
-    $equityLine = $journalEntry->lines->where('account_id', $equityAccount->id)->first();
+    // Under new rules, this is a customer advance: Cr AR
+    $arAccountId = $this->company->default_accounts_receivable_id;
+    $arLine = $journalEntry->lines->where('account_id', $arAccountId)->first();
 
     expect($bankLine->debit->getAmount()->toFloat())->toBe(25000.0);
-    expect($equityLine->credit->getAmount()->toFloat())->toBe(25000.0);
+    expect($arLine->credit->getAmount()->toFloat())->toBe(25000.0);
 });
 
 test('an expense claim payment creates the correct journal entry', function () {
     // Arrange
     $bankJournal = Journal::factory()->for($this->company)->create(['type' => JournalType::Bank]);
-    $expenseAccount = Account::factory()->for($this->company)->create(['name' => 'Office Expenses']);
     $partner = Partner::factory()->for($this->company)->create();
 
     $paymentDTO = new CreatePaymentDTO(
@@ -121,11 +116,10 @@ test('an expense claim payment creates the correct journal entry', function () {
         journal_id: $bankJournal->id,
         currency_id: $this->company->currency_id,
         payment_date: now()->toDateString(),
-        payment_purpose: PaymentPurpose::ExpenseClaim,
         payment_type: PaymentType::Outbound,
+        payment_method: PaymentMethod::BankTransfer,
         partner_id: $partner->id,
         amount: Money::of(500, $this->company->currency->code),
-        counterpart_account_id: $expenseAccount->id,
         document_links: [],
         reference: 'Employee Expense Reimbursement'
     );
@@ -136,15 +130,16 @@ test('an expense claim payment creates the correct journal entry', function () {
     $payment->refresh();
 
     // Assert: Payment details
-    expect($payment->payment_purpose)->toBe(PaymentPurpose::ExpenseClaim);
     expect($payment->payment_type)->toBe(PaymentType::Outbound);
 
     // Assert: Journal entry accounting (Outbound expense: Debit Expense, Credit Bank)
     $journalEntry = JournalEntry::find($payment->journal_entry_id);
-    $expenseLine = $journalEntry->lines->where('account_id', $expenseAccount->id)->first();
+    // Under the new workflow, outbound standalone is a vendor advance: Dr AP, Cr Bank
+    $apAccountId = $this->company->default_accounts_payable_id;
     $bankLine = $journalEntry->lines->where('account_id', $bankJournal->default_debit_account_id)->first();
+    $apLine = $journalEntry->lines->where('account_id', $apAccountId)->first();
 
-    expect($expenseLine->debit->getAmount()->toFloat())->toBe(500.0);
+    expect($apLine->debit->getAmount()->toFloat())->toBe(500.0);
     expect($bankLine->credit->getAmount()->toFloat())->toBe(500.0);
 });
 
@@ -154,26 +149,23 @@ test('settlement payments still work as before', function () {
 
     // Arrange
     $bankJournal = Journal::factory()->for($this->company)->create(['type' => JournalType::Bank]);
-    $partner = Partner::factory()->for($this->company)->create();
 
     $paymentDTO = new CreatePaymentDTO(
         company_id: $this->company->id,
         journal_id: $bankJournal->id,
         currency_id: $this->company->currency_id,
         payment_date: now()->toDateString(),
-        payment_purpose: PaymentPurpose::Settlement,
+        // settlement inferred by presence of document links
         payment_type: PaymentType::Inbound,
+        payment_method: PaymentMethod::BankTransfer,
         partner_id: null,
         amount: null,
-        counterpart_account_id: null,
         document_links: [], // Would normally have document links, but testing the purpose assignment
         reference: 'Settlement Payment'
     );
 
-    // Act
+    // Act & Assert: Without document links and without partner, should throw specific error
     expect(fn () => app(CreatePaymentAction::class)->execute($paymentDTO, $this->user))
-        ->toThrow(\InvalidArgumentException::class, 'Settlement payments must be linked to at least one document.');
+        ->toThrow(\InvalidArgumentException::class, 'Payments without document links must specify a partner.');
 
-    // Assert: The validation works correctly for settlement payments
-    expect(true)->toBeTrue(); // Test passes if exception is thrown
 });

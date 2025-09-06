@@ -3,7 +3,7 @@
 namespace App\Actions\Payments;
 
 use App\DataTransferObjects\Payments\CreatePaymentDTO;
-use App\Enums\Payments\PaymentPurpose;
+
 use App\Enums\Payments\PaymentStatus;
 use App\Enums\Payments\PaymentType;
 use App\Models\Company;
@@ -25,13 +25,13 @@ class CreatePaymentAction
 
     public function execute(CreatePaymentDTO $dto, User $user): Payment
     {
-        // Validate based on payment purpose
-        if ($dto->payment_purpose === PaymentPurpose::Settlement && empty($dto->document_links)) {
+        // Infer flow from presence of document links: if provided => settlement; else => partner advance/credit
+        $isSettlement = ! empty($dto->document_links);
+        if ($isSettlement === true && empty($dto->document_links)) {
             throw new InvalidArgumentException('Settlement payments must be linked to at least one document.');
         }
-
-        if ($dto->payment_purpose !== PaymentPurpose::Settlement && ! $dto->counterpart_account_id) {
-            throw new InvalidArgumentException('Non-settlement payments must have a counterpart account.');
+        if ($isSettlement === false && empty($dto->partner_id)) {
+            throw new InvalidArgumentException('Payments without document links must specify a partner.');
         }
 
         $company = Company::findOrFail($dto->company_id);
@@ -40,8 +40,8 @@ class CreatePaymentAction
         return DB::transaction(function () use ($dto) {
             $currencyCode = Currency::findOrFail($dto->currency_id)->code;
 
-            // Determine payment details based on purpose
-            if ($dto->payment_purpose === PaymentPurpose::Settlement) {
+            // Determine payment details based on presence of document links
+            if (! empty($dto->document_links)) {
                 // For settlement payments, calculate from document links
                 $totalAmount = Money::of(0, $currencyCode);
                 $documentTypes = [];
@@ -77,8 +77,8 @@ class CreatePaymentAction
                 'journal_id' => $dto->journal_id,
                 'currency_id' => $dto->currency_id,
                 'payment_date' => $dto->payment_date,
-                'payment_purpose' => $dto->payment_purpose,
-                'counterpart_account_id' => $dto->counterpart_account_id,
+
+                'payment_method' => $dto->payment_method,
                 'reference' => $dto->reference,
                 'amount' => $totalAmount,
                 'payment_type' => $paymentType,
@@ -87,12 +87,11 @@ class CreatePaymentAction
             ]);
 
             // Handle settlement payments (document links)
-            if ($dto->payment_purpose === PaymentPurpose::Settlement) {
+            if (! empty($dto->document_links)) {
                 $settlementStrategy = app(SettlementStrategy::class);
                 $settlementStrategy->executeCreate($payment, $dto);
             }
-            // For other payment types (loan, capital injection, etc.), no additional logic needed
-            // The counterpart_account_id is already set on the payment record
+            // For partner advances/credits (non-settlement), no additional logic needed here
 
             return $payment;
         });

@@ -4,7 +4,7 @@ namespace App\Filament\Clusters\Accounting\Resources\Payments\Pages;
 
 use App\Actions\Payments\CreatePaymentAction;
 use App\DataTransferObjects\Payments\CreatePaymentDTO;
-use App\Enums\Payments\PaymentPurpose;
+use App\Enums\Payments\PaymentMethod;
 use App\Enums\Payments\PaymentType;
 use App\Filament\Clusters\Accounting\Resources\Payments\PaymentResource;
 use App\Models\Currency;
@@ -40,11 +40,10 @@ class CreatePayment extends CreateRecord
             journal_id: $data['journal_id'],
             currency_id: $data['currency_id'],
             payment_date: $data['payment_date'],
-            payment_purpose: PaymentPurpose::from($data['payment_purpose']),
             payment_type: PaymentType::from($data['payment_type']),
+            payment_method: PaymentMethod::from($data['payment_method']),
             partner_id: $data['partner_id'],
             amount: $amount,
-            counterpart_account_id: $data['counterpart_account_id'],
             document_links: [], // No document links for standalone payments
             reference: $data['reference']
         );
