@@ -135,15 +135,7 @@ return [
         'paid' => 'مدفوع',
     ],
 
-    'payment_purpose' => [
-        'settlement' => 'تسوية',
-        'loan' => 'قرض',
-        'capital_injection' => 'حقن رأس المال',
-        'expense_claim' => 'مطالبة مصروفات',
-        'tax_payment' => 'دفع ضريبة',
-        'asset_purchase' => 'شراء أصول',
-        'payroll' => 'كشف الراتب',
-    ],
+
 
     'payment_method' => [
         'manual' => 'يدوي',

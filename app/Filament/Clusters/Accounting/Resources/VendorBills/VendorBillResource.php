@@ -9,7 +9,7 @@ use App\Enums\Accounting\TaxType;
 use App\Enums\Assets\DepreciationMethod;
 use App\Enums\Partners\PartnerType;
 use App\Enums\Payments\PaymentMethod;
-use App\Enums\Payments\PaymentPurpose;
+
 use App\Enums\Payments\PaymentType;
 use App\Enums\Products\ProductType;
 use App\Enums\Purchases\VendorBillStatus;
@@ -29,6 +29,7 @@ use App\Models\Currency;
 use App\Models\CurrencyRate;
 use App\Models\Journal;
 use App\Models\Partner;
+use App\Models\PaymentTerm;
 use App\Models\Product;
 use App\Models\Tax;
 use App\Models\VendorBill;
@@ -227,6 +228,11 @@ class VendorBillResource extends Resource
                         ->columnSpan(1),
                     DatePicker::make('due_date')
                         ->label(__('vendor_bill.due_date'))
+                        ->columnSpan(1),
+                    TranslatableSelect::make('payment_term_id', PaymentTerm::class, __('vendor_bill.payment_term'))
+                        ->relationship('paymentTerm', 'name')
+                        ->searchable()
+                        ->preload()
                         ->columnSpan(1),
                 ])
                 ->columns(4)
@@ -521,6 +527,20 @@ class VendorBillResource extends Resource
                     ->sortable()
                     ->toggleable(),
 
+                // Due Date (critical for cash flow management)
+                TextColumn::make('due_date')
+                    ->label(__('vendor_bill.due_date'))
+                    ->date()
+                    ->sortable()
+                    ->toggleable(),
+
+                // Payment Terms
+                TextColumn::make('paymentTerm.name')
+                    ->label(__('vendor_bill.payment_term'))
+                    ->searchable()
+                    ->sortable()
+                    ->toggleable(),
+
                 // Payment State (critical for cash flow)
                 TextColumn::make('paymentState')
                     ->label(__('vendor_bill.payment_state'))
@@ -652,12 +672,11 @@ class VendorBillResource extends Resource
                                 journal_id: $data['journal_id'],
                                 currency_id: $record->currency_id,
                                 payment_date: $data['payment_date'],
-                                payment_purpose: PaymentPurpose::Settlement,
+                                // settlement inferred by presence of document links
                                 payment_type: PaymentType::Outbound,
                                 payment_method: PaymentMethod::BankTransfer,
                                 partner_id: $record->vendor_id,
                                 amount: Money::of($data['amount'], $currency->code),
-                                counterpart_account_id: null,
                                 document_links: [$documentLink],
                                 reference: $data['reference']
                             );
