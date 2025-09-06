@@ -6,6 +6,7 @@ use App\Enums\Payments\PaymentType;
 use App\Filament\Clusters\Accounting\Resources\Payments\Pages\CreatePayment;
 use App\Filament\Clusters\Accounting\Resources\Payments\Pages\EditPayment;
 use App\Filament\Clusters\Accounting\Resources\Payments\Pages\ListPayments;
+use App\Models\Account;
 use App\Models\Journal;
 use App\Models\Partner;
 use App\Models\Payment;
@@ -61,6 +62,7 @@ it('can create payment with payment method', function () {
         'currency_id' => $this->company->currency_id,
     ]);
 
+
     $paymentData = [
         'journal_id' => $journal->id,
         'currency_id' => $this->company->currency_id,
@@ -70,6 +72,7 @@ it('can create payment with payment method', function () {
         'payment_method' => PaymentMethod::BankTransfer->value,
         'partner_id' => $partner->id,
         'amount' => '1000.00',
+
     ];
 
     livewire(CreatePayment::class)
@@ -77,9 +80,10 @@ it('can create payment with payment method', function () {
         ->call('create')
         ->assertHasNoFormErrors();
 
-    expect(\App\Models\Payment::where('reference', 'TEST-001')->first())
+    $created = \App\Models\Payment::where('reference', 'TEST-001')->first();
+    expect($created)
         ->payment_method->toBe(PaymentMethod::BankTransfer)
-        ->payment_type->toBe(PaymentType::Outbound);
+        ->and($created->payment_type)->toBe(PaymentType::Outbound);
 });
 
 it('displays payment method column in table', function () {
@@ -130,9 +134,6 @@ it('can edit payment method', function () {
         'currency_id' => $this->company->currency_id,
     ]);
 
-    $account = \App\Models\Account::factory()->create([
-        'company_id' => $this->company->id,
-    ]);
 
     $payment = Payment::factory()->create([
         'company_id' => $this->company->id,
@@ -140,8 +141,7 @@ it('can edit payment method', function () {
         'currency_id' => $this->company->currency_id,
         'paid_to_from_partner_id' => $partner->id,
         'payment_method' => PaymentMethod::Manual,
-        'payment_purpose' => \App\Enums\Payments\PaymentPurpose::Loan, // Use loan instead of settlement
-        'counterpart_account_id' => $account->id, // Provide counterpart account for non-settlement
+
         'status' => PaymentStatus::Draft,
         'amount' => Money::of(300, $this->company->currency->code),
     ]);

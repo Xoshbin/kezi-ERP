@@ -4,6 +4,7 @@ namespace App\Filament\Clusters\Accounting\Resources\Payments;
 
 
 use App\Enums\Payments\PaymentMethod;
+
 use App\Enums\Payments\PaymentStatus;
 use App\Enums\Payments\PaymentType;
 use App\Filament\Clusters\Accounting\AccountingCluster;
@@ -17,6 +18,7 @@ use App\Filament\Clusters\Accounting\Resources\Payments\RelationManagers\VendorB
 use App\Filament\Forms\Components\MoneyInput;
 use App\Filament\Support\TranslatableSelect;
 use App\Filament\Tables\Columns\MoneyColumn;
+
 
 use App\Models\Currency;
 use App\Models\Journal;
@@ -71,7 +73,7 @@ class PaymentResource extends Resource
     {
         return $schema->components([
             Section::make(__('payment.form.payment_information'))
-                ->description(__('payment.form.standalone_payment_description'))
+                ->description(__('payment.form.direct_payment_description'))
                 ->schema([
                     TranslatableSelect::make('journal_id', Journal::class, __('payment.form.journal_id'))
                         ->required()
@@ -109,7 +111,6 @@ class PaymentResource extends Resource
                         ->options(collect(PaymentMethod::cases())->mapWithKeys(fn ($case) => [$case->value => $case->label()]))
                         ->required()
                         ->columnSpan(2),
-
                     TranslatableSelect::make('partner_id', Partner::class, __('payment.form.partner'))
                         ->required()
                         ->columnSpan(2),
@@ -118,7 +119,6 @@ class PaymentResource extends Resource
                         ->currencyField('currency_id')
                         ->required()
                         ->columnSpan(2),
-
                 ])
                 ->columns(4)
                 ->columnSpanFull(),
