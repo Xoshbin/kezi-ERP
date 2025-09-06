@@ -16,6 +16,8 @@ return [
     'form.reference' => 'سەرچاوە',
     'form.amount' => 'کۆی گشتی',
     'form.payment_type' => 'جۆری پارەدان',
+    'form.receive' => 'وەرگرتن',
+    'form.send' => 'ناردن',
     'form.payment_purpose' => 'مەبەستی پارەدان',
     'form.payment_type_and_purpose' => 'جۆر و مەبەستی پارەدان',
     'form.payment_type_and_purpose_description' => 'ئاراستە و مەبەستی ئەم پارەدانە هەڵبژێرە',

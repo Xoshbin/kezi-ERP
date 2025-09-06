@@ -34,13 +34,26 @@ it('has correct payment method options', function () {
     $form = $component->instance()->form;
     $paymentMethodField = null;
 
-    foreach ($form->getComponents() as $section) {
-        foreach ($section->getChildComponents() as $field) {
-            if ($field->getName() === 'payment_method') {
-                $paymentMethodField = $field;
-                break 2;
+    // Walk through components recursively to find the field, since the form may contain Groups/Sections
+    $walker = function ($component) use (&$walker, &$paymentMethodField) {
+        if ($paymentMethodField) {
+            return;
+        }
+        if ($component instanceof \Filament\Forms\Components\Field) {
+            if ($component->getName() === 'payment_method') {
+                $paymentMethodField = $component;
+                return;
             }
         }
+        if (is_object($component) && method_exists($component, 'getChildComponents')) {
+            foreach ($component->getChildComponents() as $child) {
+                $walker($child);
+            }
+        }
+    };
+
+    foreach ($form->getComponents() as $componentNode) {
+        $walker($componentNode);
     }
 
     expect($paymentMethodField)->not->toBeNull();
