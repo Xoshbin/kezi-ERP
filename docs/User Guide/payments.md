@@ -1,4 +1,4 @@
-# Payments: Easy Guide for Everyone (Odoo‑style)
+# Payments: Payments
 
 This guide explains how Payments work in the system, how to create a Payment from the Payments menu, and how to register a payment directly on an Invoice or a Vendor Bill. We wrote it for all users — accountants and non‑accountants — so it’s simple, practical, and trustworthy. It follows double‑entry accounting best practices.
 
