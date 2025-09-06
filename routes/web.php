@@ -22,8 +22,10 @@ Route::prefix('docs')->group(function () {
         return response()->json($items)->header('Content-Type', 'application/json');
     })->name('docs.index.json');
 
-    // Must be last: catch-all slug route
-    Route::get('/{slug}', [\App\Http\Controllers\Docs\DocumentController::class, 'show'])->name('docs.show');
+    // Must be last: catch-all slug route (allows slashes for nested docs)
+    Route::get('/{slug}', [\App\Http\Controllers\Docs\DocumentController::class, 'show'])
+        ->where('slug', '.*')
+        ->name('docs.show');
 });
 
 // PDF Generation Routes (Protected by authentication)

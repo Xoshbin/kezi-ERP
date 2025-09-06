@@ -14,7 +14,7 @@ it('shows search input in docs header', function () {
     $response = $this->get('/docs');
 
     $response->assertOk();
-    $response->assertSee('placeholder="Search docs"', false);
+    $response->assertSee('placeholder="Search documentation..."', false);
 });
 
 it('returns docs search index JSON', function () {
