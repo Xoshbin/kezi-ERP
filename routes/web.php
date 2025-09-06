@@ -6,6 +6,7 @@ use App\Models\Company;
 use App\Models\Invoice;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Str;
 
 Route::get('/', function () {
     return view('welcome');
@@ -57,4 +58,16 @@ Route::middleware(['auth'])->group(function () {
 
         return app(GenerateInvoicePdfAction::class)->execute($invoice, $template);
     })->name('pdf.preview');
+
+    // Docs: Payments guide
+    Route::get('/docs/payments', function () {
+        $path = base_path('docs/payments.md');
+        if (! file_exists($path)) {
+            abort(404);
+        }
+        $markdown = file_get_contents($path);
+        $html = Str::markdown($markdown);
+
+        return view('docs.payments', ['html' => $html]);
+    })->name('docs.payments');
 });

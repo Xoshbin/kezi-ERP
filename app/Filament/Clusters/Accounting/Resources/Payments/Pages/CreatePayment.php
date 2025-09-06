@@ -9,6 +9,7 @@ use App\Enums\Payments\PaymentType;
 use App\Filament\Clusters\Accounting\Resources\Payments\PaymentResource;
 use App\Models\Currency;
 use Brick\Money\Money;
+use Filament\Actions\Action;
 use Filament\Facades\Filament;
 use Filament\Resources\Pages\CreateRecord;
 use Illuminate\Database\Eloquent\Model;
@@ -17,6 +18,18 @@ use Illuminate\Support\Facades\Auth;
 class CreatePayment extends CreateRecord
 {
     protected static string $resource = PaymentResource::class;
+
+    protected function getHeaderActions(): array
+    {
+        return [
+            Action::make('payments_docs')
+                ->label(__('Payments Guide'))
+                ->icon('heroicon-o-question-mark-circle')
+                ->color('gray')
+                ->url(route('docs.payments'))
+                ->openUrlInNewTab(),
+        ];
+    }
 
     protected function handleRecordCreation(array $data): Model
     {

@@ -28,6 +28,12 @@ class EditPayment extends EditRecord
     protected function getHeaderActions(): array
     {
         return [
+            Action::make('payments_docs')
+                ->label(__('Payments Guide'))
+                ->icon('heroicon-o-question-mark-circle')
+                ->color('gray')
+                ->url(route('docs.payments'))
+                ->openUrlInNewTab(),
             Action::make('confirm')
                 ->label(__('payment.edit.action.confirm.label'))
                 ->color('success')
