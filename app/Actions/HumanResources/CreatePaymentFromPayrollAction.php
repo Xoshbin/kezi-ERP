@@ -4,6 +4,7 @@ namespace App\Actions\HumanResources;
 
 use App\Actions\Payments\CreatePaymentAction;
 use App\DataTransferObjects\Payments\CreatePaymentDTO;
+use App\Enums\Payments\PaymentMethod;
 use App\Enums\Payments\PaymentPurpose;
 use App\Enums\Payments\PaymentType;
 use App\Models\Journal;
@@ -61,6 +62,7 @@ class CreatePaymentFromPayrollAction
             payment_date: $payroll->pay_date->format('Y-m-d'),
             payment_purpose: PaymentPurpose::Payroll,
             payment_type: PaymentType::Outbound,
+            payment_method: PaymentMethod::BankTransfer, // Default for payroll
             partner_id: null, // For now, no partner relationship
             amount: $payroll->net_salary,
             counterpart_account_id: $salaryPayableAccountId,

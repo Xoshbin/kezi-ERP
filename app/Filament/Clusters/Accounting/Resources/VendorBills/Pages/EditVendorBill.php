@@ -9,6 +9,7 @@ use App\DataTransferObjects\Payments\CreatePaymentDocumentLinkDTO;
 use App\DataTransferObjects\Payments\CreatePaymentDTO;
 use App\DataTransferObjects\Purchases\UpdateVendorBillDTO;
 use App\DataTransferObjects\Purchases\VendorBillLineDTO;
+use App\Enums\Payments\PaymentMethod;
 use App\Enums\Payments\PaymentPurpose;
 use App\Enums\Payments\PaymentType;
 use App\Enums\Purchases\VendorBillStatus;
@@ -217,6 +218,7 @@ class EditVendorBill extends EditRecord
                             payment_date: $data['payment_date'],
                             payment_purpose: PaymentPurpose::Settlement,
                             payment_type: PaymentType::Outbound,
+                            payment_method: PaymentMethod::BankTransfer,
                             partner_id: $record->vendor_id,
                             amount: Money::of($data['amount'], $currency->code),
                             counterpart_account_id: null,

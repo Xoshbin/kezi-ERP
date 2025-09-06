@@ -4,6 +4,7 @@ use App\DataTransferObjects\Payments\CreatePaymentDocumentLinkDTO;
 use App\DataTransferObjects\Payments\CreatePaymentDTO;
 use App\DataTransferObjects\Payments\UpdatePaymentDocumentLinkDTO;
 use App\DataTransferObjects\Payments\UpdatePaymentDTO;
+use App\Enums\Payments\PaymentMethod;
 use App\Enums\Payments\PaymentPurpose;
 use App\Enums\Payments\PaymentType;
 use App\Models\Invoice;
@@ -44,6 +45,7 @@ test('it creates payment document links for settlement payment creation', functi
         payment_date: $payment->payment_date->toDateString(),
         payment_purpose: PaymentPurpose::Settlement,
         payment_type: PaymentType::Inbound,
+        payment_method: PaymentMethod::BankTransfer,
         partner_id: null,
         amount: null,
         counterpart_account_id: null,
@@ -84,6 +86,7 @@ test('it creates payment document links for vendor bill settlement', function ()
         payment_date: $payment->payment_date->toDateString(),
         payment_purpose: PaymentPurpose::Settlement,
         payment_type: PaymentType::Outbound,
+        payment_method: PaymentMethod::BankTransfer,
         partner_id: null,
         amount: null,
         counterpart_account_id: null,
@@ -133,6 +136,7 @@ test('it updates payment document links correctly', function () {
         payment_date: $payment->payment_date->toDateString(),
         payment_purpose: PaymentPurpose::Settlement,
         payment_type: PaymentType::Inbound,
+        payment_method: PaymentMethod::BankTransfer,
         partner_id: null,
         amount: null,
         counterpart_account_id: null,

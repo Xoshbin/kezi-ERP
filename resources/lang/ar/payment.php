@@ -16,6 +16,7 @@ return [
     'form.reference' => 'مرجع',
     'form.amount' => 'المبلغ الإجمالي',
     'form.payment_type' => 'نوع الدفع',
+    'form.payment_method' => 'طريقة الدفع',
     'form.payment_purpose' => 'غرض الدفع',
     'form.payment_type_and_purpose' => 'نوع وغرض الدفع',
     'form.payment_type_and_purpose_description' => 'اختر اتجاه وغرض هذه الدفعة',
@@ -31,6 +32,18 @@ return [
     'form.document_type.vendor_bill' => 'فاتورة مورد',
     'form.document_id' => 'مستند',
     'form.amount_applied' => 'المبلغ المطبق',
+
+    // Simple labels for table columns
+    'reference' => 'مرجع',
+    'partner' => 'شريك',
+    'type' => 'نوع',
+    'method' => 'طريقة',
+    'status' => 'حالة',
+    'date' => 'تاريخ',
+    'amount' => 'مبلغ',
+    'currency' => 'عملة',
+    'journal' => 'دفتر يومية',
+    'company' => 'شركة',
 
     'table.company.name' => 'شركة',
     'table.journal.name' => 'دفتر يومية',

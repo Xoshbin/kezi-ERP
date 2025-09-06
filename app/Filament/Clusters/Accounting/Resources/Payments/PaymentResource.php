@@ -2,7 +2,8 @@
 
 namespace App\Filament\Clusters\Accounting\Resources\Payments;
 
-use App\Enums\Payments\PaymentPurpose;
+
+use App\Enums\Payments\PaymentMethod;
 use App\Enums\Payments\PaymentStatus;
 use App\Enums\Payments\PaymentType;
 use App\Filament\Clusters\Accounting\AccountingCluster;
@@ -16,7 +17,7 @@ use App\Filament\Clusters\Accounting\Resources\Payments\RelationManagers\VendorB
 use App\Filament\Forms\Components\MoneyInput;
 use App\Filament\Support\TranslatableSelect;
 use App\Filament\Tables\Columns\MoneyColumn;
-use App\Models\Account;
+
 use App\Models\Currency;
 use App\Models\Journal;
 use App\Models\Partner;
@@ -103,17 +104,12 @@ class PaymentResource extends Resource
                         ->options(collect(PaymentType::cases())->mapWithKeys(fn ($case) => [$case->value => $case->label()]))
                         ->required()
                         ->columnSpan(2),
-                    Select::make('payment_purpose')
-                        ->label(__('payment.form.payment_purpose'))
-                        ->options(function () {
-                            // Exclude Settlement since it's handled by context-specific actions
-                            $purposes = collect(PaymentPurpose::cases())
-                                ->filter(fn ($purpose) => $purpose !== PaymentPurpose::Settlement);
-
-                            return $purposes->mapWithKeys(fn ($purpose) => [$purpose->value => $purpose->label()]);
-                        })
+                    Select::make('payment_method')
+                        ->label(__('payment.form.payment_method'))
+                        ->options(collect(PaymentMethod::cases())->mapWithKeys(fn ($case) => [$case->value => $case->label()]))
                         ->required()
                         ->columnSpan(2),
+
                     TranslatableSelect::make('partner_id', Partner::class, __('payment.form.partner'))
                         ->required()
                         ->columnSpan(2),
@@ -122,9 +118,7 @@ class PaymentResource extends Resource
                         ->currencyField('currency_id')
                         ->required()
                         ->columnSpan(2),
-                    TranslatableSelect::make('counterpart_account_id', Account::class, __('payment.form.counterpart_account'))
-                        ->required()
-                        ->columnSpan(4),
+
                 ])
                 ->columns(4)
                 ->columnSpanFull(),
@@ -173,6 +167,16 @@ class PaymentResource extends Resource
                         'heroicon-m-arrow-up-circle' => PaymentType::Outbound,
                     ])
                     ->searchable(),
+
+                // Payment Method (important for categorization)
+                TextColumn::make('payment_method')
+                    ->label(__('payment.method'))
+                    ->formatStateUsing(fn (PaymentMethod $state): string => $state->label())
+                    ->badge()
+                    ->color(fn (PaymentMethod $state): string => $state->color())
+                    ->icon(fn (PaymentMethod $state): string => $state->icon())
+                    ->searchable()
+                    ->toggleable(),
 
                 // Status (critical for workflow)
                 TextColumn::make('status')

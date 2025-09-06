@@ -1,6 +1,7 @@
 <?php
 
 use App\Enums\Accounting\JournalType;
+use App\Enums\Payments\PaymentMethod;
 use App\Enums\Payments\PaymentPurpose;
 use App\Enums\Payments\PaymentStatus;
 use App\Enums\Payments\PaymentType;
@@ -51,6 +52,7 @@ it('can create a standalone inbound payment', function () {
             'currency_id' => $this->company->currency_id,
             'payment_date' => now()->format('Y-m-d'),
             'payment_type' => PaymentType::Inbound->value,
+            'payment_method' => PaymentMethod::BankTransfer->value,
             'payment_purpose' => PaymentPurpose::Loan->value,
             'partner_id' => $customer->id,
             'amount' => 500,
@@ -97,6 +99,7 @@ it('can create a standalone outbound payment', function () {
             'currency_id' => $this->company->currency_id,
             'payment_date' => now()->format('Y-m-d'),
             'payment_type' => PaymentType::Outbound->value,
+            'payment_method' => PaymentMethod::BankTransfer->value,
             'payment_purpose' => PaymentPurpose::Loan->value,
             'partner_id' => $vendor->id,
             'amount' => 300,

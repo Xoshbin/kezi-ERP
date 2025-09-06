@@ -15,6 +15,7 @@ use App\DataTransferObjects\Sales\CreateInvoiceLineDTO;
 use App\Enums\Adjustments\AdjustmentDocumentStatus;
 use App\Enums\Adjustments\AdjustmentDocumentType;
 use App\Enums\Partners\PartnerType;
+use App\Enums\Payments\PaymentMethod;
 use App\Enums\Payments\PaymentPurpose;
 use App\Enums\Payments\PaymentType;
 use App\Enums\Sales\InvoiceStatus;
@@ -182,6 +183,7 @@ test('the entire accounting workflow from setup to credit note', function () {
         payment_date: now()->toDateString(),
         payment_purpose: PaymentPurpose::Settlement,
         payment_type: PaymentType::Inbound,
+        payment_method: PaymentMethod::BankTransfer,
         partner_id: null,
         amount: null,
         counterpart_account_id: null,
@@ -219,6 +221,7 @@ test('the entire accounting workflow from setup to credit note', function () {
         payment_date: now()->toDateString(),
         payment_purpose: PaymentPurpose::Settlement,
         payment_type: PaymentType::Outbound,
+        payment_method: PaymentMethod::BankTransfer,
         partner_id: null,
         amount: null,
         counterpart_account_id: null,

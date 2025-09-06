@@ -145,6 +145,19 @@ return [
         'payroll' => 'Payroll',
     ],
 
+    'payment_method' => [
+        'manual' => 'Manual',
+        'check' => 'Check',
+        'bank_transfer' => 'Bank Transfer',
+        'credit_card' => 'Credit Card',
+        'debit_card' => 'Debit Card',
+        'cash' => 'Cash',
+        'wire_transfer' => 'Wire Transfer',
+        'ach' => 'ACH',
+        'sepa' => 'SEPA',
+        'online_payment' => 'Online Payment',
+    ],
+
     'payroll_status' => [
         'draft' => 'Draft',
         'processed' => 'Processed',

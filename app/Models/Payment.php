@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Casts\BaseCurrencyMoneyCast;
 use App\Casts\DocumentCurrencyMoneyCast;
+use App\Enums\Payments\PaymentMethod;
 use App\Enums\Payments\PaymentPurpose;
 use App\Enums\Payments\PaymentStatus;
 use App\Enums\Payments\PaymentType;
@@ -92,6 +93,7 @@ class Payment extends Model
         'currency_id',
         'exchange_rate_at_payment',
         'payment_type',
+        'payment_method',
         'payment_purpose',
         'counterpart_account_id',
         'reference',
@@ -112,6 +114,7 @@ class Payment extends Model
         'amount_company_currency' => BaseCurrencyMoneyCast::class, // Payment amount in company base currency
         'exchange_rate_at_payment' => 'decimal:10',
         'payment_type' => PaymentType::class,
+        'payment_method' => PaymentMethod::class,
         'payment_purpose' => PaymentPurpose::class,
         'status' => PaymentStatus::class,
         'created_at' => 'datetime',
@@ -126,6 +129,7 @@ class Payment extends Model
      */
     protected $attributes = [
         'status' => 'draft',
+        'payment_method' => 'manual',
         'payment_purpose' => 'settlement',
     ];
 

@@ -3,6 +3,7 @@
 namespace Tests\Feature\FinancialTransactions;
 
 use App\Enums\Accounting\JournalEntryState;
+use App\Enums\Payments\PaymentMethod;
 use App\Enums\Payments\PaymentPurpose;
 use App\Enums\Payments\PaymentStatus;
 use App\Enums\Payments\PaymentType;
@@ -102,6 +103,7 @@ describe('Payment Cancellations', function () {
             payment_date: now()->toDateString(),
             payment_purpose: PaymentPurpose::Settlement,
             payment_type: PaymentType::Outbound,
+            payment_method: PaymentMethod::BankTransfer,
             partner_id: null,
             amount: null,
             counterpart_account_id: null,
