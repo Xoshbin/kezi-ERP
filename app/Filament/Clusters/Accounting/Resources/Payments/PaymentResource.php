@@ -4,6 +4,7 @@ namespace App\Filament\Clusters\Accounting\Resources\Payments;
 
 
 use App\Enums\Payments\PaymentMethod;
+use App\Enums\Payments\PaymentPurpose;
 use App\Enums\Payments\PaymentStatus;
 use App\Enums\Payments\PaymentType;
 use App\Filament\Clusters\Accounting\AccountingCluster;
@@ -18,6 +19,7 @@ use App\Filament\Forms\Components\MoneyInput;
 use App\Filament\Support\TranslatableSelect;
 use App\Filament\Tables\Columns\MoneyColumn;
 
+use App\Models\Account;
 use App\Models\Currency;
 use App\Models\Journal;
 use App\Models\Partner;
@@ -109,6 +111,11 @@ class PaymentResource extends Resource
                         ->options(collect(PaymentMethod::cases())->mapWithKeys(fn ($case) => [$case->value => $case->label()]))
                         ->required()
                         ->columnSpan(2),
+                    Select::make('payment_purpose')
+                        ->label(__('payment.form.payment_purpose'))
+                        ->options(collect(PaymentPurpose::cases())->mapWithKeys(fn ($case) => [$case->value => $case->label()]))
+                        ->required()
+                        ->columnSpan(2),
 
                     TranslatableSelect::make('partner_id', Partner::class, __('payment.form.partner'))
                         ->required()
@@ -116,6 +123,9 @@ class PaymentResource extends Resource
                     MoneyInput::make('amount')
                         ->label(__('payment.form.amount'))
                         ->currencyField('currency_id')
+                        ->required()
+                        ->columnSpan(2),
+                    TranslatableSelect::make('counterpart_account_id', Account::class, __('payment.form.counterpart_account'))
                         ->required()
                         ->columnSpan(2),
 

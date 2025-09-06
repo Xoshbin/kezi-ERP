@@ -105,6 +105,8 @@ class Partner extends Model
         'tax_id',
         'receivable_account_id',
         'payable_account_id',
+        'customer_payment_term_id',
+        'vendor_payment_term_id',
         'is_active',
     ];
 
@@ -168,6 +170,22 @@ class Partner extends Model
     public function payableAccount()
     {
         return $this->belongsTo(Account::class, 'payable_account_id');
+    }
+
+    /**
+     * Get the default payment term for this partner when they are a customer.
+     */
+    public function customerPaymentTerm(): BelongsTo
+    {
+        return $this->belongsTo(PaymentTerm::class, 'customer_payment_term_id');
+    }
+
+    /**
+     * Get the default payment term for this partner when they are a vendor.
+     */
+    public function vendorPaymentTerm(): BelongsTo
+    {
+        return $this->belongsTo(PaymentTerm::class, 'vendor_payment_term_id');
     }
 
     /**
