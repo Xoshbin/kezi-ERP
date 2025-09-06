@@ -145,6 +145,19 @@ return [
         'payroll' => 'كشف الراتب',
     ],
 
+    'payment_method' => [
+        'manual' => 'يدوي',
+        'check' => 'شيك',
+        'bank_transfer' => 'تحويل بنكي',
+        'credit_card' => 'بطاقة ائتمان',
+        'debit_card' => 'بطاقة خصم',
+        'cash' => 'نقد',
+        'wire_transfer' => 'تحويل سلكي',
+        'ach' => 'ACH',
+        'sepa' => 'SEPA',
+        'online_payment' => 'دفع إلكتروني',
+    ],
+
     'payroll_status' => [
         'draft' => 'مسودة',
         'processed' => 'معالج',

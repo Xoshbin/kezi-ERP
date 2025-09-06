@@ -15,6 +15,7 @@ use App\DataTransferObjects\Purchases\CreateVendorBillDTO;
 use App\DataTransferObjects\Sales\CreateInvoiceDTO;
 use App\Enums\Accounting\LockDateType;
 use App\Enums\Adjustments\AdjustmentDocumentType;
+use App\Enums\Payments\PaymentMethod;
 use App\Enums\Payments\PaymentPurpose;
 use App\Enums\Payments\PaymentType;
 use App\Exceptions\PeriodIsLockedException;
@@ -163,6 +164,7 @@ describe('Action Integration with Locked Periods', function () {
             payment_date: '2025-12-15', // Date is inside locked period
             payment_purpose: PaymentPurpose::Settlement,
             payment_type: PaymentType::Inbound,
+            payment_method: PaymentMethod::BankTransfer,
             partner_id: null,
             amount: null,
             counterpart_account_id: null,

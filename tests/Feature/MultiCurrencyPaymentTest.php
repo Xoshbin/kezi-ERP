@@ -4,6 +4,7 @@ use App\Actions\Payments\CreatePaymentAction;
 use App\DataTransferObjects\Payments\CreatePaymentDocumentLinkDTO;
 use App\DataTransferObjects\Payments\CreatePaymentDTO;
 use App\Enums\Accounting\JournalType;
+use App\Enums\Payments\PaymentMethod;
 use App\Enums\Payments\PaymentPurpose;
 use App\Enums\Payments\PaymentStatus;
 use App\Enums\Payments\PaymentType;
@@ -95,6 +96,8 @@ describe('Multi-Currency Payment Tests', function () {
             payment_date: $this->invoiceDate->toDateString(), // Same date = same rate
             payment_purpose: PaymentPurpose::Settlement,
             payment_type: PaymentType::Inbound,
+            payment_method: PaymentMethod::BankTransfer,
+            payment_method: PaymentMethod::BankTransfer,
             partner_id: null,
             amount: null,
             counterpart_account_id: null,
@@ -151,6 +154,8 @@ describe('Multi-Currency Payment Tests', function () {
             payment_date: $this->paymentDate->toDateString(), // Later date = different rate
             payment_purpose: PaymentPurpose::Settlement,
             payment_type: PaymentType::Inbound,
+            payment_method: PaymentMethod::BankTransfer,
+            payment_method: PaymentMethod::BankTransfer,
             partner_id: null,
             amount: null,
             counterpart_account_id: null,
@@ -204,6 +209,8 @@ describe('Cross-Currency Payment Tests', function () {
             payment_date: $this->paymentDate->toDateString(),
             payment_purpose: PaymentPurpose::Settlement,
             payment_type: PaymentType::Inbound,
+            payment_method: PaymentMethod::BankTransfer,
+            payment_method: PaymentMethod::BankTransfer,
             partner_id: null,
             amount: null,
             counterpart_account_id: null,
@@ -253,6 +260,7 @@ describe('Cross-Currency Payment Tests', function () {
             payment_date: $this->paymentDate->toDateString(),
             payment_purpose: PaymentPurpose::Settlement,
             payment_type: PaymentType::Inbound,
+            payment_method: PaymentMethod::BankTransfer,
             partner_id: null,
             amount: null,
             counterpart_account_id: null,
@@ -300,6 +308,7 @@ describe('VendorBill Payment Tests', function () {
             payment_date: $this->paymentDate->toDateString(),
             payment_purpose: PaymentPurpose::Settlement,
             payment_type: PaymentType::Outbound,
+            payment_method: PaymentMethod::BankTransfer,
             partner_id: null,
             amount: null,
             counterpart_account_id: null,
@@ -343,6 +352,7 @@ describe('Payment Document Link Tests', function () {
             payment_date: $this->paymentDate->toDateString(),
             payment_purpose: PaymentPurpose::Settlement,
             payment_type: PaymentType::Inbound,
+            payment_method: PaymentMethod::BankTransfer,
             partner_id: null,
             amount: null,
             counterpart_account_id: null,
@@ -388,6 +398,7 @@ describe('Payment Document Link Tests', function () {
             payment_date: $this->paymentDate->toDateString(),
             payment_purpose: PaymentPurpose::Settlement,
             payment_type: PaymentType::Inbound,
+            payment_method: PaymentMethod::BankTransfer,
             partner_id: null,
             amount: null,
             counterpart_account_id: null,
@@ -437,6 +448,7 @@ describe('Payment State Bug Tests', function () {
             payment_date: $this->paymentDate->toDateString(),
             payment_purpose: PaymentPurpose::Settlement,
             payment_type: PaymentType::Inbound,
+            payment_method: PaymentMethod::BankTransfer,
             partner_id: null,
             amount: null,
             counterpart_account_id: null,
@@ -484,6 +496,7 @@ describe('Payment State Bug Tests', function () {
             payment_date: $this->paymentDate->toDateString(),
             payment_purpose: PaymentPurpose::Settlement,
             payment_type: PaymentType::Inbound,
+            payment_method: PaymentMethod::BankTransfer,
             partner_id: null,
             amount: null,
             counterpart_account_id: null,
@@ -531,6 +544,7 @@ describe('Payment State Bug Tests', function () {
             payment_date: $this->paymentDate->toDateString(),
             payment_purpose: PaymentPurpose::Settlement,
             payment_type: PaymentType::Inbound,
+            payment_method: PaymentMethod::BankTransfer,
             partner_id: null,
             amount: null,
             counterpart_account_id: null,

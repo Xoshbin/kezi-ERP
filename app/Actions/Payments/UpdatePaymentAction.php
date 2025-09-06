@@ -82,6 +82,7 @@ class UpdatePaymentAction
                 'currency_id' => $dto->currency_id,
                 'payment_date' => $dto->payment_date,
                 'payment_purpose' => $dto->payment_purpose,
+                'payment_method' => $dto->payment_method,
                 'counterpart_account_id' => $dto->counterpart_account_id,
                 'reference' => $dto->reference,
                 'amount' => $totalAmount,
