@@ -13,9 +13,10 @@ use App\Models\Payment;
 use App\Services\PaymentService;
 use Brick\Money\Money;
 use Exception;
+use App\Support\Filament\DocsAction;
 use Filament\Actions\Action;
 use Filament\Actions\DeleteAction;
-use Filament\Facades\Filament;
+
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
 use Illuminate\Database\Eloquent\Model;
@@ -28,12 +29,7 @@ class EditPayment extends EditRecord
     protected function getHeaderActions(): array
     {
         return [
-            Action::make('payments_docs')
-                ->label(__('Payments Guide'))
-                ->icon('heroicon-o-question-mark-circle')
-                ->color('gray')
-                ->url(route('docs.payments'))
-                ->openUrlInNewTab(),
+            DocsAction::make('payments'),
             Action::make('confirm')
                 ->label(__('payment.edit.action.confirm.label'))
                 ->color('success')
