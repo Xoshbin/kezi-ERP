@@ -9,7 +9,7 @@ use App\Enums\Accounting\TaxType;
 use App\Enums\Assets\DepreciationMethod;
 use App\Enums\Partners\PartnerType;
 use App\Enums\Payments\PaymentMethod;
-use App\Enums\Payments\PaymentPurpose;
+
 use App\Enums\Payments\PaymentType;
 use App\Enums\Products\ProductType;
 use App\Enums\Purchases\VendorBillStatus;
@@ -672,12 +672,11 @@ class VendorBillResource extends Resource
                                 journal_id: $data['journal_id'],
                                 currency_id: $record->currency_id,
                                 payment_date: $data['payment_date'],
-                                payment_purpose: PaymentPurpose::Settlement,
+                                // settlement inferred by presence of document links
                                 payment_type: PaymentType::Outbound,
                                 payment_method: PaymentMethod::BankTransfer,
                                 partner_id: $record->vendor_id,
                                 amount: Money::of($data['amount'], $currency->code),
-                                counterpart_account_id: null,
                                 document_links: [$documentLink],
                                 reference: $data['reference']
                             );

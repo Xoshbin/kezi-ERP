@@ -5,7 +5,6 @@ namespace App\Filament\Clusters\Accounting\Resources\Payments\Pages;
 use App\Actions\Payments\UpdatePaymentAction;
 use App\DataTransferObjects\Payments\UpdatePaymentDTO;
 use App\Enums\Payments\PaymentMethod;
-use App\Enums\Payments\PaymentPurpose;
 use App\Enums\Payments\PaymentStatus;
 use App\Enums\Payments\PaymentType;
 use App\Filament\Clusters\Accounting\Resources\Payments\PaymentResource;
@@ -113,12 +112,10 @@ class EditPayment extends EditRecord
             journal_id: $data['journal_id'],
             currency_id: $data['currency_id'],
             payment_date: $data['payment_date'],
-            payment_purpose: $record->payment_purpose, // Keep existing purpose
             payment_type: PaymentType::from($data['payment_type']),
             payment_method: PaymentMethod::from($data['payment_method']),
             partner_id: $data['partner_id'],
             amount: $amount,
-            counterpart_account_id: $record->counterpart_account_id, // Keep existing counterpart account
             document_links: [], // No document links for standalone payments
             reference: $data['reference'],
             updated_by_user_id: (int) Auth::id()
