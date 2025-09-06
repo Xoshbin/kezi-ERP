@@ -28,6 +28,7 @@ use App\Models\FiscalPosition;
 use App\Models\Invoice;
 use App\Models\Journal;
 use App\Models\Partner;
+use App\Models\PaymentTerm;
 use App\Models\Product;
 use App\Models\Tax;
 use App\Rules\NotInLockedPeriod;
@@ -217,6 +218,10 @@ class InvoiceResource extends Resource
                     DatePicker::make('due_date')
                         ->label(__('invoice.due_date'))
                         ->required(),
+                    TranslatableSelect::make('payment_term_id', PaymentTerm::class, __('invoice.payment_term'))
+                        ->relationship('paymentTerm', 'name')
+                        ->searchable()
+                        ->preload(),
                 ])
                 ->columns(4)
                 ->columnSpanFull(),
@@ -433,6 +438,13 @@ class InvoiceResource extends Resource
                     ->label(__('invoice.due_date'))
                     ->date()
                     ->sortable(),
+
+                // Payment Terms
+                TextColumn::make('paymentTerm.name')
+                    ->label(__('invoice.payment_term'))
+                    ->searchable()
+                    ->sortable()
+                    ->toggleable(),
 
                 // Payment State (critical for collections)
                 TextColumn::make('paymentState')

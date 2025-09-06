@@ -29,6 +29,7 @@ use App\Models\Currency;
 use App\Models\CurrencyRate;
 use App\Models\Journal;
 use App\Models\Partner;
+use App\Models\PaymentTerm;
 use App\Models\Product;
 use App\Models\Tax;
 use App\Models\VendorBill;
@@ -227,6 +228,11 @@ class VendorBillResource extends Resource
                         ->columnSpan(1),
                     DatePicker::make('due_date')
                         ->label(__('vendor_bill.due_date'))
+                        ->columnSpan(1),
+                    TranslatableSelect::make('payment_term_id', PaymentTerm::class, __('vendor_bill.payment_term'))
+                        ->relationship('paymentTerm', 'name')
+                        ->searchable()
+                        ->preload()
                         ->columnSpan(1),
                 ])
                 ->columns(4)
@@ -518,6 +524,20 @@ class VendorBillResource extends Resource
                 TextColumn::make('bill_date')
                     ->label(__('vendor_bill.date'))
                     ->date()
+                    ->sortable()
+                    ->toggleable(),
+
+                // Due Date (critical for cash flow management)
+                TextColumn::make('due_date')
+                    ->label(__('vendor_bill.due_date'))
+                    ->date()
+                    ->sortable()
+                    ->toggleable(),
+
+                // Payment Terms
+                TextColumn::make('paymentTerm.name')
+                    ->label(__('vendor_bill.payment_term'))
+                    ->searchable()
                     ->sortable()
                     ->toggleable(),
 
