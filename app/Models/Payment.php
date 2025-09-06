@@ -4,7 +4,7 @@ namespace App\Models;
 
 use App\Casts\BaseCurrencyMoneyCast;
 use App\Casts\DocumentCurrencyMoneyCast;
-use App\Enums\Payments\PaymentPurpose;
+use App\Enums\Payments\PaymentMethod;
 use App\Enums\Payments\PaymentStatus;
 use App\Enums\Payments\PaymentType;
 use App\Observers\AuditLogObserver;
@@ -92,8 +92,7 @@ class Payment extends Model
         'currency_id',
         'exchange_rate_at_payment',
         'payment_type',
-        'payment_purpose',
-        'counterpart_account_id',
+        'payment_method',
         'reference',
         'status',
         'paid_to_from_partner_id',
@@ -112,7 +111,8 @@ class Payment extends Model
         'amount_company_currency' => BaseCurrencyMoneyCast::class, // Payment amount in company base currency
         'exchange_rate_at_payment' => 'decimal:10',
         'payment_type' => PaymentType::class,
-        'payment_purpose' => PaymentPurpose::class,
+        'payment_method' => PaymentMethod::class,
+
         'status' => PaymentStatus::class,
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
@@ -126,7 +126,8 @@ class Payment extends Model
      */
     protected $attributes = [
         'status' => 'draft',
-        'payment_purpose' => 'settlement',
+        'payment_method' => 'manual',
+
     ];
 
     /**
@@ -184,16 +185,6 @@ class Payment extends Model
         return $this->belongsTo(JournalEntry::class);
     }
 
-    /**
-     * Get the counterpart Account for non-settlement payments.
-     * This is used for direct payments like loans, capital injections, etc.
-     *
-     * @return BelongsTo
-     */
-    public function counterpartAccount()
-    {
-        return $this->belongsTo(Account::class, 'counterpart_account_id');
-    }
 
     /**
      * Get the Invoices that this Payment is applied to.
