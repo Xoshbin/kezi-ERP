@@ -6,6 +6,7 @@ use App\Actions\Payments\CreatePaymentAction;
 use App\DataTransferObjects\Payments\CreatePaymentDocumentLinkDTO;
 use App\DataTransferObjects\Payments\CreatePaymentDTO;
 use App\Enums\Partners\PartnerType;
+use App\Enums\Payments\PaymentMethod;
 use App\Enums\Payments\PaymentPurpose;
 use App\Enums\Payments\PaymentType;
 use App\Enums\Sales\InvoiceStatus;
@@ -601,6 +602,7 @@ class InvoiceResource extends Resource
                                 payment_date: $data['payment_date'],
                                 payment_purpose: PaymentPurpose::Settlement,
                                 payment_type: PaymentType::Inbound,
+                                payment_method: PaymentMethod::BankTransfer,
                                 partner_id: $record->customer_id,
                                 amount: Money::of($data['amount'], $currency->code),
                                 counterpart_account_id: null,

@@ -16,6 +16,7 @@ return [
     'form.reference' => 'Reference',
     'form.amount' => 'Total Amount',
     'form.payment_type' => 'Payment Type',
+    'form.payment_method' => 'Payment Method',
     'form.payment_purpose' => 'Payment Purpose',
     'form.payment_type_and_purpose' => 'Payment Type & Purpose',
     'form.payment_type_and_purpose_description' => 'Select the direction and purpose of this payment',
@@ -31,6 +32,18 @@ return [
     'form.document_type.vendor_bill' => 'Vendor Bill',
     'form.document_id' => 'Document',
     'form.amount_applied' => 'Amount Applied',
+
+    // Simple labels for table columns
+    'reference' => 'Reference',
+    'partner' => 'Partner',
+    'type' => 'Type',
+    'method' => 'Method',
+    'status' => 'Status',
+    'date' => 'Date',
+    'amount' => 'Amount',
+    'currency' => 'Currency',
+    'journal' => 'Journal',
+    'company' => 'Company',
 
     'table.company.name' => 'Company',
     'table.journal.name' => 'Journal',
