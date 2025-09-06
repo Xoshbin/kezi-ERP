@@ -5,14 +5,14 @@ use App\Models\User;
 it('shows payments documentation page for authenticated users', function () {
     $user = User::factory()->create();
 
-    $response = $this->actingAs($user)->get(route('docs.payments'));
+    $response = $this->actingAs($user)->get(route('docs.show', ['slug' => 'User Guide/payments']));
 
     $response->assertStatus(200);
-    $response->assertSee('Payments: Easy Guide for Everyone', false);
+    $response->assertSee('Payments: Payments', false);
 });
 
-it('denies payments documentation page for guests (no auth routes -> 500)', function () {
-    // In this app, unauthenticated access to protected routes results in 500 due to no login route
-    $this->get(route('docs.payments'))->assertStatus(500);
+it('allows payments documentation page for guests (docs are public)', function () {
+    // Documentation is publicly accessible
+    $this->get(route('docs.show', ['slug' => 'User Guide/payments']))->assertStatus(200);
 });
 
