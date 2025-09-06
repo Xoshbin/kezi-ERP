@@ -34,6 +34,7 @@ class CreateInvoiceAction
                 'fiscal_position_id' => $dto->fiscal_position_id,
                 'invoice_date' => $dto->invoice_date,
                 'due_date' => $dto->due_date,
+                'payment_term_id' => $dto->payment_term_id,
                 'status' => InvoiceStatus::Draft,
                 'total_amount' => Money::of(0, $currencyCode),
                 'total_tax' => Money::of(0, $currencyCode),

@@ -30,6 +30,7 @@ class CreateVendorBillAction
                 'accounting_date' => $createVendorBillDTO->accounting_date,
                 'due_date' => $createVendorBillDTO->due_date,
                 'created_by_user_id' => $createVendorBillDTO->created_by_user_id,
+                'payment_term_id' => $createVendorBillDTO->payment_term_id,
                 // Add default zero values to satisfy NOT NULL constraints.
                 // The VendorBillLineObserver will update these as lines are added.
                 'subtotal' => 0,
