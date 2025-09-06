@@ -5,7 +5,6 @@ namespace App\Filament\Clusters\Accounting\Resources\Payments\Pages;
 use App\Actions\Payments\CreatePaymentAction;
 use App\DataTransferObjects\Payments\CreatePaymentDTO;
 use App\Enums\Payments\PaymentMethod;
-use App\Enums\Payments\PaymentPurpose;
 use App\Enums\Payments\PaymentType;
 use App\Filament\Clusters\Accounting\Resources\Payments\PaymentResource;
 use App\Models\Currency;
@@ -36,22 +35,15 @@ class CreatePayment extends CreateRecord
         $tenant = Filament::getTenant();
         $companyId = $tenant?->getKey() ?? 0;
 
-        // For standalone payments, we need a counterpart account
-        // Let's use a default account or create a simple logic
-        $tenant = Filament::getTenant();
-        $defaultAccount = $tenant instanceof \App\Models\Company ? $tenant->accounts()->first() : null;
-
         $paymentDTO = new CreatePaymentDTO(
             company_id: $companyId,
             journal_id: $data['journal_id'],
             currency_id: $data['currency_id'],
             payment_date: $data['payment_date'],
-            payment_purpose: PaymentPurpose::Loan, // Use loan instead of settlement for standalone payments
             payment_type: PaymentType::from($data['payment_type']),
             payment_method: PaymentMethod::from($data['payment_method']),
             partner_id: $data['partner_id'],
             amount: $amount,
-            counterpart_account_id: $defaultAccount?->id, // Use default account for non-settlement payments
             document_links: [], // No document links for standalone payments
             reference: $data['reference']
         );

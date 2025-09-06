@@ -5,7 +5,6 @@ use App\DataTransferObjects\Payments\CreatePaymentDTO;
 use App\DataTransferObjects\Payments\UpdatePaymentDocumentLinkDTO;
 use App\DataTransferObjects\Payments\UpdatePaymentDTO;
 use App\Enums\Payments\PaymentMethod;
-use App\Enums\Payments\PaymentPurpose;
 use App\Enums\Payments\PaymentType;
 use App\Models\Invoice;
 use App\Models\Payment;
@@ -27,7 +26,7 @@ test('it creates payment document links for settlement payment creation', functi
     // Arrange
     $invoice = Invoice::factory()->for($this->company)->create();
     $payment = Payment::factory()->for($this->company)->create([
-        'payment_purpose' => PaymentPurpose::Settlement,
+
         'payment_type' => PaymentType::Inbound,
         'currency_id' => $this->company->currency_id,
     ]);
@@ -43,12 +42,11 @@ test('it creates payment document links for settlement payment creation', functi
         journal_id: $payment->journal_id,
         currency_id: $payment->currency_id,
         payment_date: $payment->payment_date->toDateString(),
-        payment_purpose: PaymentPurpose::Settlement,
+        // settlement inferred by presence of document links
         payment_type: PaymentType::Inbound,
         payment_method: PaymentMethod::BankTransfer,
         partner_id: null,
         amount: null,
-        counterpart_account_id: null,
         document_links: [$linkDTO],
         reference: 'Test Settlement'
     );
@@ -68,7 +66,7 @@ test('it creates payment document links for vendor bill settlement', function ()
     // Arrange
     $vendorBill = VendorBill::factory()->for($this->company)->create();
     $payment = Payment::factory()->for($this->company)->create([
-        'payment_purpose' => PaymentPurpose::Settlement,
+
         'payment_type' => PaymentType::Outbound,
         'currency_id' => $this->company->currency_id,
     ]);
@@ -84,12 +82,11 @@ test('it creates payment document links for vendor bill settlement', function ()
         journal_id: $payment->journal_id,
         currency_id: $payment->currency_id,
         payment_date: $payment->payment_date->toDateString(),
-        payment_purpose: PaymentPurpose::Settlement,
+        // settlement inferred by presence of document links
         payment_type: PaymentType::Outbound,
         payment_method: PaymentMethod::BankTransfer,
         partner_id: null,
         amount: null,
-        counterpart_account_id: null,
         document_links: [$linkDTO],
         reference: 'Test Settlement'
     );
@@ -109,7 +106,7 @@ test('it updates payment document links correctly', function () {
     // Arrange
     $invoice = Invoice::factory()->for($this->company)->create();
     $payment = Payment::factory()->for($this->company)->create([
-        'payment_purpose' => PaymentPurpose::Settlement,
+
         'payment_type' => PaymentType::Inbound,
         'currency_id' => $this->company->currency_id,
     ]);
@@ -134,12 +131,11 @@ test('it updates payment document links correctly', function () {
         journal_id: $payment->journal_id,
         currency_id: $payment->currency_id,
         payment_date: $payment->payment_date->toDateString(),
-        payment_purpose: PaymentPurpose::Settlement,
+        // settlement inferred by presence of document links
         payment_type: PaymentType::Inbound,
         payment_method: PaymentMethod::BankTransfer,
         partner_id: null,
         amount: null,
-        counterpart_account_id: null,
         document_links: [$newLinkDTO],
         reference: 'Updated Settlement',
         updated_by_user_id: $this->user->id

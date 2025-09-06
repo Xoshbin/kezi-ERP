@@ -24,6 +24,10 @@ class DatabaseSeeder extends Seeder
                 UpdateCompanyDefaultsSeeder::class,
                 UserSeeder::class,
 
+                // 2. Payment terms
+                // Common payment terms for all companies
+                PaymentTermsSeeder::class,
+
                 // 3. Operational data
                 // Basic data for transactions (customers, vendors, products).
                 PartnerSeeder::class,

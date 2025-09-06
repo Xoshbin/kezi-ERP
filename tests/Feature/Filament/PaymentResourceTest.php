@@ -2,7 +2,6 @@
 
 use App\Enums\Accounting\JournalType;
 use App\Enums\Payments\PaymentMethod;
-use App\Enums\Payments\PaymentPurpose;
 use App\Enums\Payments\PaymentStatus;
 use App\Enums\Payments\PaymentType;
 use App\Filament\Clusters\Accounting\Resources\Payments\PaymentResource;
@@ -40,11 +39,6 @@ it('can create a standalone inbound payment', function () {
     /** @var \App\Models\Journal $bankJournal */
     $bankJournal = Journal::factory()->for($this->company)->create(['type' => JournalType::Bank]);
 
-    /** @var \App\Models\Account $incomeAccount */
-    $incomeAccount = \App\Models\Account::factory()->create([
-        'company_id' => $this->company->id,
-        'type' => \App\Enums\Accounting\AccountType::Income->value,
-    ]);
 
     livewire(\App\Filament\Clusters\Accounting\Resources\Payments\Pages\CreatePayment::class)
         ->fillForm([
@@ -53,10 +47,9 @@ it('can create a standalone inbound payment', function () {
             'payment_date' => now()->format('Y-m-d'),
             'payment_type' => PaymentType::Inbound->value,
             'payment_method' => PaymentMethod::BankTransfer->value,
-            'payment_purpose' => PaymentPurpose::Loan->value,
+
             'partner_id' => $customer->id,
             'amount' => 500,
-            'counterpart_account_id' => $incomeAccount->id,
             'reference' => 'Standalone Payment',
         ])
         ->call('create')
@@ -68,14 +61,13 @@ it('can create a standalone inbound payment', function () {
         'currency_id' => $this->company->currency_id,
         'reference' => 'Standalone Payment',
         'payment_type' => PaymentType::Inbound,
-        'payment_purpose' => PaymentPurpose::Loan,
+
         'status' => PaymentStatus::Draft,
     ]);
 
     $payment = Payment::where('reference', 'Standalone Payment')->first();
     expect($payment->amount->isEqualTo(Money::of(500, $this->company->currency->code)))->toBeTrue();
     expect($payment->paid_to_from_partner_id)->toBe($customer->id);
-    expect($payment->counterpart_account_id)->toBe($incomeAccount->id);
 });
 
 it('can create a standalone outbound payment', function () {
@@ -87,11 +79,6 @@ it('can create a standalone outbound payment', function () {
     /** @var \App\Models\Journal $bankJournal */
     $bankJournal = Journal::factory()->for($this->company)->create(['type' => JournalType::Bank]);
 
-    /** @var \App\Models\Account $expenseAccount */
-    $expenseAccount = \App\Models\Account::factory()->create([
-        'company_id' => $this->company->id,
-        'type' => \App\Enums\Accounting\AccountType::Expense->value,
-    ]);
 
     livewire(\App\Filament\Clusters\Accounting\Resources\Payments\Pages\CreatePayment::class)
         ->fillForm([
@@ -100,10 +87,9 @@ it('can create a standalone outbound payment', function () {
             'payment_date' => now()->format('Y-m-d'),
             'payment_type' => PaymentType::Outbound->value,
             'payment_method' => PaymentMethod::BankTransfer->value,
-            'payment_purpose' => PaymentPurpose::Loan->value,
+
             'partner_id' => $vendor->id,
             'amount' => 300,
-            'counterpart_account_id' => $expenseAccount->id,
             'reference' => 'Standalone Vendor Payment',
         ])
         ->call('create')
@@ -115,14 +101,13 @@ it('can create a standalone outbound payment', function () {
         'currency_id' => $this->company->currency_id,
         'reference' => 'Standalone Vendor Payment',
         'payment_type' => PaymentType::Outbound,
-        'payment_purpose' => PaymentPurpose::Loan,
+
         'status' => PaymentStatus::Draft,
     ]);
 
     $payment = Payment::where('reference', 'Standalone Vendor Payment')->first();
     expect($payment->amount->isEqualTo(Money::of(300, $this->company->currency->code)))->toBeTrue();
     expect($payment->paid_to_from_partner_id)->toBe($vendor->id);
-    expect($payment->counterpart_account_id)->toBe($expenseAccount->id);
 });
 
 it('can validate input on create', function () {
@@ -132,10 +117,9 @@ it('can validate input on create', function () {
             'currency_id' => null,
             'payment_date' => null,
             'payment_type' => null,
-            'payment_purpose' => null,
+
             'partner_id' => null,
             'amount' => null,
-            'counterpart_account_id' => null,
         ])
         ->call('create')
         ->assertHasFormErrors([
@@ -143,10 +127,8 @@ it('can validate input on create', function () {
             'currency_id' => 'required',
             'payment_date' => 'required',
             'payment_type' => 'required',
-            'payment_purpose' => 'required',
             'partner_id' => 'required',
             'amount' => 'required',
-            'counterpart_account_id' => 'required',
         ]);
 });
 
@@ -165,19 +147,13 @@ it('can edit a draft standalone payment', function () {
         'company_id' => $this->company->id,
     ]);
 
-    /** @var \App\Models\Account $incomeAccount */
-    $incomeAccount = \App\Models\Account::factory()->create([
-        'company_id' => $this->company->id,
-        'type' => \App\Enums\Accounting\AccountType::Income->value,
-    ]);
 
     $payment = Payment::factory()->create([
         'company_id' => $this->company->id,
         'status' => PaymentStatus::Draft,
         'payment_type' => PaymentType::Inbound,
-        'payment_purpose' => PaymentPurpose::Loan,
+
         'paid_to_from_partner_id' => $customer->id,
-        'counterpart_account_id' => $incomeAccount->id,
         'reference' => 'Old Reference',
         'amount' => Money::of(100, $this->company->currency->code),
         'currency_id' => $this->company->currency_id,
@@ -191,10 +167,9 @@ it('can edit a draft standalone payment', function () {
             'currency_id' => $payment->currency_id,
             'payment_date' => $payment->payment_date->format('Y-m-d'),
             'payment_type' => $payment->payment_type->value,
-            'payment_purpose' => $payment->payment_purpose->value,
+
             'partner_id' => $payment->paid_to_from_partner_id,
             'amount' => 150,
-            'counterpart_account_id' => $payment->counterpart_account_id,
             'reference' => 'New Reference',
         ])
         ->call('save')
@@ -211,19 +186,13 @@ it('cannot edit a confirmed standalone payment', function () {
         'company_id' => $this->company->id,
     ]);
 
-    /** @var \App\Models\Account $incomeAccount */
-    $incomeAccount = \App\Models\Account::factory()->create([
-        'company_id' => $this->company->id,
-        'type' => \App\Enums\Accounting\AccountType::Income->value,
-    ]);
 
     $payment = Payment::factory()->create([
         'company_id' => $this->company->id,
         'status' => PaymentStatus::Confirmed,
         'payment_type' => PaymentType::Inbound,
-        'payment_purpose' => PaymentPurpose::Loan,
+
         'paid_to_from_partner_id' => $customer->id,
-        'counterpart_account_id' => $incomeAccount->id,
         'reference' => 'Confirmed Payment',
         'amount' => Money::of(100, $this->company->currency->code),
         'currency_id' => $this->company->currency_id,
@@ -239,10 +208,9 @@ it('cannot edit a confirmed standalone payment', function () {
                 'currency_id' => $payment->currency_id,
                 'payment_date' => $payment->payment_date->format('Y-m-d'),
                 'payment_type' => $payment->payment_type->value,
-                'payment_purpose' => $payment->payment_purpose->value,
+
                 'partner_id' => $payment->paid_to_from_partner_id,
                 'amount' => $payment->amount->getAmount()->toFloat(),
-                'counterpart_account_id' => $payment->counterpart_account_id,
                 'reference' => 'Should Not Change',
             ])
             ->call('save');
@@ -260,11 +228,6 @@ it('can confirm a draft standalone payment', function () {
         'company_id' => $this->company->id,
     ]);
 
-    /** @var \App\Models\Account $incomeAccount */
-    $incomeAccount = \App\Models\Account::factory()->create([
-        'company_id' => $this->company->id,
-        'type' => \App\Enums\Accounting\AccountType::Income->value,
-    ]);
 
     /** @var \App\Models\Account $bankAccount */
     $bankAccount = \App\Models\Account::factory()->create([
@@ -285,8 +248,8 @@ it('can confirm a draft standalone payment', function () {
         'company_id' => $this->company->id,
         'journal_id' => $bankJournal->id,
         'status' => PaymentStatus::Draft,
-        'payment_purpose' => PaymentPurpose::Loan,
-        'counterpart_account_id' => $incomeAccount->id,
+
+
         'amount' => Money::of(100, $this->company->currency->code),
         'currency_id' => $this->company->currency_id,
         'paid_to_from_partner_id' => $customer->id,
@@ -303,10 +266,8 @@ it('can confirm a draft standalone payment', function () {
         'currency_id' => $payment->currency_id,
         'payment_date' => $payment->payment_date->format('Y-m-d'),
         'payment_type' => $payment->payment_type->value,
-        'payment_purpose' => $payment->payment_purpose->value,
         'partner_id' => $payment->paid_to_from_partner_id,
         'amount' => $payment->amount->getAmount()->toFloat(),
-        'counterpart_account_id' => $payment->counterpart_account_id,
         'reference' => $payment->reference,
     ]);
 

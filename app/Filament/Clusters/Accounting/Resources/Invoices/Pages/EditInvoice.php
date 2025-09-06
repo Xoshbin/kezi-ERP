@@ -10,7 +10,7 @@ use App\DataTransferObjects\Payments\CreatePaymentDTO;
 use App\DataTransferObjects\Sales\UpdateInvoiceDTO;
 use App\DataTransferObjects\Sales\UpdateInvoiceLineDTO;
 use App\Enums\Payments\PaymentMethod;
-use App\Enums\Payments\PaymentPurpose;
+
 use App\Enums\Payments\PaymentType;
 use App\Enums\Sales\InvoiceStatus;
 use App\Filament\Clusters\Accounting\Resources\Invoices\InvoiceResource;
@@ -216,12 +216,11 @@ class EditInvoice extends EditRecord
                             journal_id: $data['journal_id'],
                             currency_id: $record->currency_id,
                             payment_date: $data['payment_date'],
-                            payment_purpose: PaymentPurpose::Settlement,
+                            // settlement inferred by presence of document links
                             payment_type: PaymentType::Inbound,
                             payment_method: PaymentMethod::BankTransfer,
                             partner_id: $record->customer_id,
                             amount: Money::of($data['amount'], $currency->code),
-                            counterpart_account_id: null,
                             document_links: [$documentLink],
                             reference: $data['reference']
                         );
