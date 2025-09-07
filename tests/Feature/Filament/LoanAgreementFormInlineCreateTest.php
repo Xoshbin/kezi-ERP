@@ -1,10 +1,9 @@
 <?php
 
-use App\Enums\Partners\PartnerType;
+
 use App\Filament\Clusters\Accounting\Resources\LoanAgreements\Pages\CreateLoanAgreement;
-use App\Models\Currency;
-use App\Models\Partner;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\Support\FilamentInlineCreate as Inline;
 use Tests\Traits\WithConfiguredCompany;
 
 use function Pest\Livewire\livewire;
@@ -16,17 +15,9 @@ beforeEach(function () { $this->setupWithConfiguredCompany(); $this->actingAs($t
 it('can fill create loan form using newly created partner and currency', function () {
     $company = $this->company;
 
-    // Simulate inline create outcome by creating records
-    $partner = Partner::factory()->for($company)->create([
-        'name' => 'Inline Partner Ltd',
-        'type' => PartnerType::Vendor,
-        'email' => 'ap@inline-partner.test',
-        'contact_person' => 'Alice',
-    ]);
-    $currency = Currency::query()->firstOrCreate(
-        ['code' => 'EUR'],
-        ['name' => ['en' => 'Euro'], 'symbol' => '€']
-    );
+    // Simulate inline creation via helper
+    $partner = Inline::partner(['company_id' => $company->id, 'name' => 'Inline Partner Ltd']);
+    $currency = Inline::currency(['code' => 'EUR']);
 
     livewire(CreateLoanAgreement::class)
         ->fillForm([
