@@ -1,3 +1,4 @@
+
 # Loan Agreements: End‑to‑End Guide
 
 This guide explains how to manage loans in the system from setup to day‑to‑day operations, including schedules, interest accrual, repayments, and reclassification. It is written for both accountants and non‑accountants and follows standard double‑entry accounting principles.
