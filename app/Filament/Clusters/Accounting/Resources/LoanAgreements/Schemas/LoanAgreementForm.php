@@ -27,13 +27,27 @@ class LoanAgreementForm
                         return $tenant instanceof \App\Models\Company ? $tenant->getKey() : null;
                     }),
                 // company_id removed: tenancy provides context
-                TranslatableSelect::standard('partner_id', \App\Models\Partner::class, ['name', 'email', 'contact_person']),
+                TranslatableSelect::standard('partner_id', \App\Models\Partner::class, ['name', 'email', 'contact_person'])
+                    ->createOptionForm([
+                        Hidden::make('company_id')->default(fn () => Filament::getTenant()?->getKey()),
+                        TextInput::make('name')->required(),
+                        Select::make('type')->options(\App\Enums\Partners\PartnerType::class)->required(),
+                        TextInput::make('email')->email(),
+                        TextInput::make('contact_person'),
+                    ])
+                    ->createOptionUsing(fn (array $data) => \App\Models\Partner::create($data)->getKey()),
                 TextInput::make('name'),
                 DatePicker::make('loan_date')->required(),
                 DatePicker::make('start_date')->required(),
                 DatePicker::make('maturity_date'),
                 TextInput::make('duration_months')->required()->numeric(),
                 TranslatableSelect::standard('currency_id', \App\Models\Currency::class, ['name', 'code'])
+                    ->createOptionForm([
+                        TextInput::make('code')->required()->length(3),
+                        TextInput::make('name')->required(),
+                        TextInput::make('symbol')->maxLength(4),
+                    ])
+                    ->createOptionUsing(fn (array $data) => \App\Models\Currency::create($data)->getKey())
                     ->required(),
                 MoneyInput::make('principal_amount')
                     ->label(__('Principal'))
