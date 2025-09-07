@@ -3,6 +3,7 @@
 namespace App\Filament\Clusters\Accounting\Resources\LoanAgreements\Pages;
 
 use App\Filament\Clusters\Accounting\Resources\LoanAgreements\LoanAgreementResource;
+use App\Support\Filament\DocsAction;
 use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
 
@@ -14,6 +15,7 @@ class ListLoanAgreements extends ListRecords
     {
         return [
             CreateAction::make(),
+            DocsAction::make('loan-agreements'),
         ];
     }
 }

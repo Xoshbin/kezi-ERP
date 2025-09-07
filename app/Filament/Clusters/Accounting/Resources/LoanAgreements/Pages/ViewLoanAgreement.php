@@ -10,6 +10,7 @@ use App\Actions\Loans\ReclassifyLoanCurrentPortionAction;
 use App\Enums\Accounting\AccountType;
 use App\Enums\Accounting\JournalType;
 use App\Filament\Clusters\Accounting\Resources\LoanAgreements\LoanAgreementResource;
+use App\Support\Filament\DocsAction;
 use App\Models\Account;
 use App\Models\Journal;
 use App\Models\LoanAgreement;
@@ -28,6 +29,7 @@ class ViewLoanAgreement extends ViewRecord
     protected function getHeaderActions(): array
     {
         return [
+            DocsAction::make('loan-agreements'),
             Actions\EditAction::make(),
             Actions\Action::make('computeSchedule')
                 ->label(__('Compute Schedule'))

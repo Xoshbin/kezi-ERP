@@ -128,6 +128,7 @@ Where to find it: Accounting → Banking & Cash → Bank Statements → open a s
 - Prefer Register Payment from the invoice/bill when money settles a specific document
 - Use standalone payments for deposits or advances and apply them later
 - Reconcile regularly: Keep your books aligned with the bank
+- Loan repayments are not recorded via Payments. Use the Post Repayment action on the Loan Agreement; those entries will be reconciled to bank statements.
 
 ---
 
