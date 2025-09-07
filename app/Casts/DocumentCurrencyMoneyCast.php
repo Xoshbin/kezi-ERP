@@ -80,6 +80,16 @@ class DocumentCurrencyMoneyCast extends MoneyCast
                 }
             }
         }
+        // Loan schedule: resolve via parent loan
+        if (method_exists($model, 'loan') && $model->relationLoaded('loan')) {
+            $loan = $model->getRelation('loan');
+            if ($loan instanceof \Illuminate\Database\Eloquent\Model && method_exists($loan, 'currency')) {
+                $currency = $loan->relationLoaded('currency') ? $loan->getRelation('currency') : $loan->currency()->first();
+                if ($currency instanceof \App\Models\Currency) {
+                    return $currency;
+                }
+            }
+        }
         // Add other parent documents here as needed
 
         // Fallback: If relationships are not loaded, perform database queries
@@ -103,6 +113,10 @@ class DocumentCurrencyMoneyCast extends MoneyCast
         if (method_exists($model, 'bankStatement') && $model->getAttribute('bank_statement_id')) {
             $stmt = $model->bankStatement()->with('currency')->first();
             return $stmt->currency ?? throw new InvalidArgumentException('Bank statement currency not found');
+        }
+        if (method_exists($model, 'loan') && $model->getAttribute('loan_id')) {
+            $loan = $model->loan()->with('currency')->first();
+            return $loan->currency ?? throw new InvalidArgumentException('Loan currency not found');
         }
         // Some models expose a direct currency() relationship (e.g., PaymentDocumentLink)
         if (method_exists($model, 'currency')) {
