@@ -34,15 +34,34 @@
 
         <!-- Page Header -->
         <header class="mb-8 border-b border-gray-200 pb-8 dark:border-gray-700">
-            <h1 class="text-4xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-5xl">
-                {{ $title }}
-            </h1>
+            <div class="flex items-start justify-between gap-4">
+                <div>
+                    <h1 class="text-4xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-5xl">
+                        {{ $title }}
+                    </h1>
 
-            @if(isset($description))
-                <p class="mt-4 text-xl text-gray-600 dark:text-gray-400">
-                    {{ $description }}
-                </p>
-            @endif
+                    @if(isset($description))
+                        <p class="mt-4 text-xl text-gray-600 dark:text-gray-400">
+                            {{ $description }}
+                        </p>
+                    @endif
+                </div>
+
+                @if(!empty($alternates))
+                    <div class="mt-1">
+                        <label for="doc-lang-select" class="sr-only">Language</label>
+                        <select id="doc-lang-select"
+                                class="block w-48 rounded-md border-gray-300 bg-white py-1.5 pl-3 pr-8 text-sm text-gray-900 shadow-sm focus:border-orange-500 focus:outline-none focus:ring-1 focus:ring-orange-500 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
+                                onchange="if (this.value) window.location.href = this.value">
+                            @foreach($alternates as $alt)
+                                <option value="{{ $alt['url'] }}" {{ $alt['active'] ? 'selected' : '' }}>
+                                    {{ $alt['label'] }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+                @endif
+            </div>
         </header>
 
         <!-- Main Content -->
