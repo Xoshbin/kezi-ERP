@@ -35,4 +35,9 @@ return [
     // Common timestamps
     'created_at' => 'تم الإنشاء في',
     'updated_at' => 'تم التحديث في',
+
+    // Documentation
+    'Search documentation...' => 'البحث في الوثائق...',
+    'Search documentation' => 'البحث في الوثائق',
+    'Language' => 'اللغة',
 ];
