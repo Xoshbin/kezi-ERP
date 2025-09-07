@@ -40,6 +40,17 @@
 
             <!-- Navigation -->
             <div class="flex items-center gap-4">
+                <!-- Global Language Selector -->
+                <div class="hidden md:block">
+                    <label for="global-lang-select" class="sr-only">{{ __('Language') }}</label>
+                    <select id="global-lang-select"
+                            class="rounded-md border border-gray-300 bg-white px-3 py-1.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-500/20 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 dark:hover:bg-gray-800">
+                        <option value="en" {{ app()->getLocale() === 'en' ? 'selected' : '' }}>English</option>
+                        <option value="ckb" {{ app()->getLocale() === 'ckb' ? 'selected' : '' }}>کوردی (سۆرانی)</option>
+                        <option value="ar" {{ app()->getLocale() === 'ar' ? 'selected' : '' }}>العربية</option>
+                    </select>
+                </div>
+
                 <!-- Version Selector -->
                 <div class="hidden md:block">
                     <select class="rounded-md border border-gray-300 bg-white px-3 py-1.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-500/20 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 dark:hover:bg-gray-800">
