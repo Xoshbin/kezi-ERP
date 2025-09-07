@@ -35,7 +35,7 @@ class DocumentationService
 
     /**
      * List docs as a flat array with minimal metadata (for index/sidebar).
-     * Future: return a tree grouped by folders/locales.
+     * Prioritizes documents in the current application locale.
      * @return array<int, array{slug:string,title:string,order:int,path:string,mtime:int}>
      */
     public function list(): array
@@ -45,24 +45,53 @@ class DocumentationService
             ->reject(fn ($file) => in_array($file->getFilename(), $this->exclude, true))
             ->values();
 
-        $items = [];
+        $currentLocale = app()->getLocale();
+        $seenBaseSlugs = [];
+
         foreach ($files as $file) {
             $relPath = Str::after($file->getPathname(), rtrim($this->root, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR);
             $slug = Str::of($relPath)->replaceLast('.md', '')->replace(DIRECTORY_SEPARATOR, '/')->toString();
+
+            // Determine the locale and base slug for this document
+            $docLocale = 'en'; // default
+            $baseSlug = $slug;
+
+            if (Str::endsWith($slug, '.ar')) {
+                $docLocale = 'ar';
+                $baseSlug = Str::beforeLast($slug, '.ar');
+            } elseif (Str::endsWith($slug, '.ckb')) {
+                $docLocale = 'ckb';
+                $baseSlug = Str::beforeLast($slug, '.ckb');
+            }
+
             $parsed = $this->parseFrontMatter($file->getPathname());
             $title = $parsed['title'] ?? $this->inferTitle($file->getPathname());
             $order = (int) ($parsed['order'] ?? config('docs.default_order', 1000));
-            $items[] = [
+
+            $item = [
                 'slug' => $slug,
                 'title' => $title,
                 'order' => $order,
                 'path' => $file->getPathname(),
                 'mtime' => $file->getMTime(),
+                'locale' => $docLocale,
+                'base_slug' => $baseSlug,
             ];
+
+            // If we haven't seen this base slug yet, or this is the preferred locale, add/replace it
+            if (!isset($seenBaseSlugs[$baseSlug]) || $docLocale === $currentLocale) {
+                $seenBaseSlugs[$baseSlug] = $item;
+            }
         }
 
-        return collect($items)
+        return collect($seenBaseSlugs)
+            ->values()
             ->sortBy(['order', 'title'])
+            ->map(function ($item) {
+                // Remove the helper fields from the final output
+                unset($item['locale'], $item['base_slug']);
+                return $item;
+            })
             ->values()
             ->all();
     }

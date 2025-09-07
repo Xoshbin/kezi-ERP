@@ -41,6 +41,7 @@ class DocsManager {
         this.initSearch();
         this.initTableOfContents();
         this.initKeyboardShortcuts();
+        this.initGlobalLanguageSelector();
     }
 
     /**
@@ -340,6 +341,50 @@ class DocsManager {
                 if (searchInput) {
                     searchInput.blur();
                 }
+            }
+        });
+    }
+
+    /**
+     * Initialize global language selector
+     */
+    initGlobalLanguageSelector() {
+        const globalLangSelect = document.getElementById('global-lang-select');
+        if (!globalLangSelect) return;
+
+        globalLangSelect.addEventListener('change', async (e) => {
+            const selectedLocale = e.target.value;
+
+            try {
+                // Send AJAX request to set locale
+                const response = await fetch(`/locale/${selectedLocale}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+
+                    // If a redirect URL is provided, navigate to it
+                    if (data.redirect_url) {
+                        window.location.href = data.redirect_url;
+                    } else {
+                        // Otherwise, just reload the page
+                        window.location.reload();
+                    }
+                } else {
+                    console.error('Failed to set locale');
+                    // Reset the select to the previous value
+                    e.target.value = document.documentElement.lang.replace('-', '_');
+                }
+            } catch (error) {
+                console.error('Error setting locale:', error);
+                // Reset the select to the previous value
+                e.target.value = document.documentElement.lang.replace('-', '_');
             }
         });
     }
