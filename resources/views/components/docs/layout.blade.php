@@ -1,7 +1,11 @@
 @props(['title' => null])
 
+@php
+$locale = app()->getLocale();
+$isRtl = in_array($locale, ['ar', 'ckb']);
+@endphp
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="h-full">
+<html lang="{{ str_replace('_', '-', $locale) }}" dir="{{ $isRtl ? 'rtl' : 'ltr' }}" class="h-full">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -19,27 +23,50 @@
     @include('docs.components.header')
 
     <div class="mx-auto max-w-8xl px-4 sm:px-6 lg:px-8">
-        <div class="grid grid-cols-1 gap-8 lg:grid-cols-12 lg:gap-12 py-8">
-            <!-- Sidebar -->
-            <aside class="hidden lg:block lg:col-span-3" aria-label="Navigation">
-                <div class="sticky top-24 max-h-[calc(100vh-6rem)] overflow-y-auto">
-                    {{ $sidebar ?? '' }}
-                </div>
-            </aside>
+        <div class="grid grid-cols-1 gap-8 lg:grid-cols-12 lg:gap-12 py-8 {{ $isRtl ? 'rtl' : '' }}">
+            @if($isRtl)
+                <!-- Table of Contents (RTL - moved to left) -->
+                <aside class="hidden xl:block xl:col-span-3 {{ $isRtl ? 'text-right' : '' }}" aria-label="On this page">
+                    <div class="sticky top-24 max-h-[calc(100vh-6rem)] overflow-y-auto">
+                        {{ $toc ?? '' }}
+                    </div>
+                </aside>
 
-            <!-- Main Content -->
-            <main id="main" class="col-span-1 lg:col-span-6 xl:col-span-6 min-w-0">
-                <div class="min-w-0">
-                    {{ $slot }}
-                </div>
-            </main>
+                <!-- Main Content (RTL) -->
+                <main id="main" class="col-span-1 lg:col-span-6 xl:col-span-6 min-w-0 {{ $isRtl ? 'text-right' : '' }}">
+                    <div class="min-w-0">
+                        {{ $slot }}
+                    </div>
+                </main>
 
-            <!-- Table of Contents -->
-            <aside class="hidden xl:block xl:col-span-3" aria-label="On this page">
-                <div class="sticky top-24 max-h-[calc(100vh-6rem)] overflow-y-auto">
-                    {{ $toc ?? '' }}
-                </div>
-            </aside>
+                <!-- Sidebar (RTL - moved to right) -->
+                <aside class="hidden lg:block lg:col-span-3 {{ $isRtl ? 'text-right' : '' }}" aria-label="Navigation">
+                    <div class="sticky top-24 max-h-[calc(100vh-6rem)] overflow-y-auto">
+                        {{ $sidebar ?? '' }}
+                    </div>
+                </aside>
+            @else
+                <!-- Sidebar (LTR) -->
+                <aside class="hidden lg:block lg:col-span-3" aria-label="Navigation">
+                    <div class="sticky top-24 max-h-[calc(100vh-6rem)] overflow-y-auto">
+                        {{ $sidebar ?? '' }}
+                    </div>
+                </aside>
+
+                <!-- Main Content (LTR) -->
+                <main id="main" class="col-span-1 lg:col-span-6 xl:col-span-6 min-w-0">
+                    <div class="min-w-0">
+                        {{ $slot }}
+                    </div>
+                </main>
+
+                <!-- Table of Contents (LTR) -->
+                <aside class="hidden xl:block xl:col-span-3" aria-label="On this page">
+                    <div class="sticky top-24 max-h-[calc(100vh-6rem)] overflow-y-auto">
+                        {{ $toc ?? '' }}
+                    </div>
+                </aside>
+            @endif
         </div>
     </div>
 

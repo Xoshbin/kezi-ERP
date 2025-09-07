@@ -35,4 +35,9 @@ return [
     // Common timestamps
     'created_at' => 'دروستکراو لە',
     'updated_at' => 'نوێکراوەتەوە لە',
+
+    // Documentation
+    'Search documentation...' => 'گەڕان لە بەڵگەنامەکان...',
+    'Search documentation' => 'گەڕان لە بەڵگەنامەکان',
+    'Language' => 'زمان',
 ];

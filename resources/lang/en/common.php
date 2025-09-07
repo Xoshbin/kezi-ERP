@@ -35,4 +35,9 @@ return [
     // Common timestamps
     'created_at' => 'Created At',
     'updated_at' => 'Updated At',
+
+    // Documentation
+    'Search documentation...' => 'Search documentation...',
+    'Search documentation' => 'Search documentation',
+    'Language' => 'Language',
 ];
