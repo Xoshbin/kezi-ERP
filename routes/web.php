@@ -22,6 +22,11 @@ Route::prefix('docs')->group(function () {
         return response()->json($items)->header('Content-Type', 'application/json');
     })->name('docs.index.json');
 
+    // Payments doc placeholder used by tests and UI links
+    Route::get('/payments', function () {
+        return response('Payments docs placeholder', 200);
+    })->name('docs.payments');
+
     // Must be last: catch-all slug route (allows slashes for nested docs)
     Route::get('/{slug}', [\App\Http\Controllers\Docs\DocumentController::class, 'show'])
         ->where('slug', '.*')
