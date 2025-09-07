@@ -7,6 +7,9 @@ use App\Filament\Clusters\Accounting\Resources\LoanAgreements\Pages\CreateLoanAg
 use App\Filament\Clusters\Accounting\Resources\LoanAgreements\Pages\EditLoanAgreement;
 use App\Filament\Clusters\Accounting\Resources\LoanAgreements\Pages\ListLoanAgreements;
 use App\Filament\Clusters\Accounting\Resources\LoanAgreements\Pages\ViewLoanAgreement;
+use App\Filament\Clusters\Accounting\Resources\LoanAgreements\RelationManagers\FeeLinesRelationManager;
+use App\Filament\Clusters\Accounting\Resources\LoanAgreements\RelationManagers\RateChangesRelationManager;
+use App\Filament\Clusters\Accounting\Resources\LoanAgreements\RelationManagers\ScheduleEntriesRelationManager;
 use App\Filament\Clusters\Accounting\Resources\LoanAgreements\Schemas\LoanAgreementForm;
 use App\Filament\Clusters\Accounting\Resources\LoanAgreements\Schemas\LoanAgreementInfolist;
 use App\Filament\Clusters\Accounting\Resources\LoanAgreements\Tables\LoanAgreementsTable;
@@ -45,7 +48,9 @@ class LoanAgreementResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            FeeLinesRelationManager::class,
+            RateChangesRelationManager::class,
+            ScheduleEntriesRelationManager::class,
         ];
     }
 
