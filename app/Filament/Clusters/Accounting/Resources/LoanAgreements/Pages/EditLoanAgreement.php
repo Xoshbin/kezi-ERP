@@ -3,6 +3,7 @@
 namespace App\Filament\Clusters\Accounting\Resources\LoanAgreements\Pages;
 
 use App\Filament\Clusters\Accounting\Resources\LoanAgreements\LoanAgreementResource;
+use App\Support\Filament\DocsAction;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\ViewAction;
 use Filament\Resources\Pages\EditRecord;
@@ -14,6 +15,7 @@ class EditLoanAgreement extends EditRecord
     protected function getHeaderActions(): array
     {
         return [
+            DocsAction::make('loan-agreements'),
             ViewAction::make(),
             DeleteAction::make(),
         ];
