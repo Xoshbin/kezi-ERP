@@ -1,4 +1,4 @@
-# Receipt and Payment Vouchers: سندات القبض والصرف
+# Receipt and Payment Vouchers
 
 This guide explains how to create and manage receipt and payment vouchers in your accounting system. These vouchers record money movements between your company and partners, ensuring proper cash flow tracking and financial control.
 
@@ -6,16 +6,14 @@ This guide explains how to create and manage receipt and payment vouchers in you
 
 ## What are Receipt and Payment Vouchers?
 
-**Receipt Vouchers (سندات القبض)**: Record money received by your company
+**Receipt Vouchers**: Record money received by your company
 - Customer payments for invoices
-- Loan proceeds received
-- Capital contributions
+- Partner advances received
 - Other cash receipts
 
-**Payment Vouchers (سندات الصرف)**: Record money paid by your company  
+**Payment Vouchers**: Record money paid by your company
 - Vendor bill payments
-- Loan repayments
-- Employee advances
+- Partner advances paid
 - Other cash disbursements
 
 **Accounting Impact**: Each voucher creates journal entries that update your cash/bank accounts and corresponding receivable/payable accounts.
@@ -33,97 +31,86 @@ Payments that settle existing invoices or bills:
 Payments without specific document settlement:
 - **Customer Advances**: Prepayments from customers for future orders
 - **Vendor Advances**: Prepayments to vendors for future purchases
-- **Employee Advances**: Cash advances to employees
-- **Loan Transactions**: Borrowing or lending money
+- **Partner Advances**: Cash advances to partners
 
 ---
 
-## Creating Receipt Vouchers (سندات القبض)
+## Creating Receipt Vouchers
 
-Navigate to **Accounting → Payments → Create**
+Navigate to **Accounting → Banking & Cash → Payments → Create**
 
 ### Step 1: Basic Information
 
-**Payment Type**: Select "Inbound (Receive Money)"
-**Journal**: Choose your bank or cash journal
-**Payment Date**: Enter the actual receipt date
+**Payment Type**: Select "Inbound" (Receive)
+**Partner**: Select the customer or partner making the payment
 **Amount**: Enter the total amount received
-**Currency**: Select the payment currency
-**Payment Method**: Choose method (Bank Transfer, Cash, Check, etc.)
+**Payment Date**: Enter the actual receipt date
 **Reference**: Enter check number, transfer reference, or receipt number
+**Journal**: Choose your bank or cash journal
+**Payment Method**: Choose method (Bank Transfer, Cash, Check, etc.)
+**Currency**: Select the payment currency
 
-### Step 2: Partner Selection
-
-**Paid by Partner**: Select the customer or partner making the payment
-
-### Step 3: Settlement vs. Advance
+### Step 2: Settlement vs. Advance
 
 #### For Invoice Settlement (Customer Payment)
-1. **Link to Invoices**: Click "Add Invoice"
-2. **Select Invoices**: Choose outstanding invoices to settle
-3. **Allocation**: Specify amount to apply to each invoice
-4. **Partial Payments**: You can partially pay invoices
+This creates a settlement payment that links to specific invoices. The system automatically determines this is a settlement payment when you link invoices.
 
 **Example**: Customer pays $5,000 for two invoices
 - Invoice #001: $3,000 (full payment)
 - Invoice #002: $2,000 (partial payment of $4,500 invoice)
 
 #### For Customer Advance (Prepayment)
-1. **No Invoice Links**: Leave invoice section empty
-2. **Partner Required**: Ensure customer is selected
-3. **Description**: Add note like "Advance payment for future orders"
+This creates a partner advance payment without linking to specific documents.
 
-### Step 4: Review and Confirm
+1. **No Document Links**: Don't link to any invoices
+2. **Partner Required**: Ensure customer is selected
+3. **Reference**: Add note like "Advance payment for future orders"
+
+### Step 3: Review and Confirm
 
 1. **Verify Amounts**: Check total matches actual receipt
-2. **Check Allocation**: Ensure invoice allocations are correct
-3. **Save as Draft**: Save for review
-4. **Confirm**: Click "Confirm" to post the payment
+2. **Save**: Save the payment as Draft
+3. **Confirm**: Click "Confirm Payment" to post the payment
 
 ---
 
-## Creating Payment Vouchers (سندات الصرف)
+## Creating Payment Vouchers
 
-Navigate to **Accounting → Payments → Create**
+Navigate to **Accounting → Banking & Cash → Payments → Create**
 
 ### Step 1: Basic Information
 
-**Payment Type**: Select "Outbound (Send Money)"
-**Journal**: Choose your bank or cash journal
-**Payment Date**: Enter the actual payment date
+**Payment Type**: Select "Outbound" (Send)
+**Partner**: Select the vendor or partner receiving payment
 **Amount**: Enter the total amount paid
-**Currency**: Select the payment currency
-**Payment Method**: Choose method (Bank Transfer, Cash, Check, etc.)
+**Payment Date**: Enter the actual payment date
 **Reference**: Enter check number, transfer reference, or payment reference
+**Journal**: Choose your bank or cash journal
+**Payment Method**: Choose method (Bank Transfer, Cash, Check, etc.)
+**Currency**: Select the payment currency
 
-### Step 2: Partner Selection
-
-**Paid to Partner**: Select the vendor or partner receiving payment
-
-### Step 3: Settlement vs. Advance
+### Step 2: Settlement vs. Advance
 
 #### For Bill Settlement (Vendor Payment)
-1. **Link to Bills**: Click "Add Vendor Bill"
-2. **Select Bills**: Choose outstanding bills to settle
-3. **Allocation**: Specify amount to apply to each bill
-4. **Partial Payments**: You can partially pay bills
+This creates a settlement payment that links to specific vendor bills. The system automatically determines this is a settlement payment when you link bills.
 
 **Example**: Pay vendor $8,000 for three bills
 - Bill #VB001: $3,000 (full payment)
-- Bill #VB002: $2,500 (full payment)  
+- Bill #VB002: $2,500 (full payment)
 - Bill #VB003: $2,500 (partial payment of $4,000 bill)
 
 #### For Vendor Advance (Prepayment)
-1. **No Bill Links**: Leave bill section empty
-2. **Partner Required**: Ensure vendor is selected
-3. **Description**: Add note like "Advance payment for future purchases"
+This creates a partner advance payment without linking to specific documents.
 
-### Step 4: Review and Confirm
+1. **No Document Links**: Don't link to any vendor bills
+2. **Partner Required**: Ensure vendor is selected
+3. **Reference**: Add note like "Advance payment for future purchases"
+
+### Step 3: Review and Confirm
 
 1. **Verify Amounts**: Check total matches actual payment
-2. **Check Allocation**: Ensure bill allocations are correct
-3. **Save as Draft**: Save for review
-4. **Confirm**: Click "Confirm" to post the payment
+2. **Save**: Save the payment as Draft
+3. **Confirm**: Click "Confirm Payment" to post the payment
 
 ---
 
@@ -152,15 +139,19 @@ When receiving or paying in foreign currency:
 - Can be edited or deleted
 - No accounting impact yet
 
-### Confirmed Status  
+### Confirmed Status
 - Payment is finalized and posted
 - Journal entries are created
-- Cannot be edited (only reversed)
+- Cannot be edited (only canceled)
 
 ### Reconciled Status
 - Payment is matched with bank statement
 - Confirms actual bank transaction
 - Final status in the workflow
+
+### Canceled Status
+- Payment is canceled and cannot be used
+- Used instead of deletion for audit trail
 
 ---
 
@@ -231,11 +222,11 @@ Pay $5,000 toward a $8,000 vendor bill:
 4. Remaining $3,000 stays as outstanding balance
 5. Confirm payment
 
-### Scenario 3: Employee Cash Advance
-Give employee $500 cash advance:
+### Scenario 3: Partner Cash Advance
+Give partner $500 cash advance:
 
 1. Create outbound payment for $500
-2. Select employee as partner
+2. Select partner
 3. No document links (advance payment)
 4. Use cash journal
 5. Confirm payment

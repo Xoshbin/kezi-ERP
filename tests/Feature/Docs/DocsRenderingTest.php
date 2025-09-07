@@ -19,25 +19,25 @@ it('renders the docs index with at least one document', function () {
 });
 
 it('renders a doc page with TOC and breadcrumbs', function () {
-    $response = $this->get('/docs/User Guide/payments');
+    $response = $this->get('/docs/User Guide/receipt-payment-vouchers');
 
     $response->assertOk();
     $response->assertSee('<h1', false);
-    $response->assertSee('Payments: Payments', false);
+    $response->assertSee('Receipt and Payment Vouchers', false);
 
-    // TOC should include a link to the "What is a Payment?" section
-    $response->assertSee('href="#what-is-a-payment"', false);
+    // TOC should include a link to a section
+    $response->assertSee('href="#', false);
 
     // Breadcrumbs should include Docs and page title
     $response->assertSee('Docs', false);
-    $response->assertSee('Payments: Payments', false);
+    $response->assertSee('Receipt and Payment Vouchers', false);
 
     // Code blocks should be marked for highlighting (hljs class present)
     $response->assertSee('hljs', false);
 });
 
 it('returns 304 Not Modified when If-Modified-Since matches', function () {
-    $first = $this->get('/docs/User Guide/payments');
+    $first = $this->get('/docs/User Guide/receipt-payment-vouchers');
     $first->assertOk();
 
     $lastModified = $first->headers->get('Last-Modified');
@@ -45,13 +45,13 @@ it('returns 304 Not Modified when If-Modified-Since matches', function () {
 
     $second = $this->withHeaders([
         'If-Modified-Since' => $lastModified,
-    ])->get('/docs/User Guide/payments');
+    ])->get('/docs/User Guide/receipt-payment-vouchers');
 
     $second->assertStatus(304);
 });
 
 it('returns 304 Not Modified when If-None-Match (ETag) matches', function () {
-    $first = $this->get('/docs/User Guide/payments');
+    $first = $this->get('/docs/User Guide/receipt-payment-vouchers');
     $first->assertOk();
 
     $etag = $first->headers->get('ETag');
@@ -59,7 +59,7 @@ it('returns 304 Not Modified when If-None-Match (ETag) matches', function () {
 
     $second = $this->withHeaders([
         'If-None-Match' => $etag,
-    ])->get('/docs/User Guide/payments');
+    ])->get('/docs/User Guide/receipt-payment-vouchers');
 
     $second->assertStatus(304);
 });

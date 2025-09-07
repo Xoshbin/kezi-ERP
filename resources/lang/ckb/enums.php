@@ -130,12 +130,23 @@ return [
     ],
 
     'payment_state' => [
-        'NotPaid' => 'نەدراوە',
-        'PartiallyPaid' => 'بەشێکی پارەدراو',
-        'Paid' => 'پارەدراو',
+        'not_paid' => 'نەدراوە',
+        'partially_paid' => 'بەشێکی پارەدراو',
+        'paid' => 'پارەدراو',
     ],
 
-
+    'payment_method' => [
+        'manual' => 'دەستی',
+        'check' => 'چێک',
+        'bank_transfer' => 'گواستنەوەی بانکی',
+        'credit_card' => 'کارتی قەرز',
+        'debit_card' => 'کارتی خەرج',
+        'cash' => 'پارە',
+        'wire_transfer' => 'گواستنەوەی تەل',
+        'ach' => 'ACH',
+        'sepa' => 'SEPA',
+        'online_payment' => 'پارەدانی ئۆنلاین',
+    ],
 
     'tax_type' => [
         'sales' => 'فرۆشتن',
