@@ -106,12 +106,18 @@ class DocumentationService
 
             $title = $meta['title'] ?? $this->extractH1($htmlWithLinks) ?? $this->inferTitle($path);
 
+            // Remove first H1 from the content to avoid duplicated page title in the view
+            $htmlWithLinks = preg_replace('/<h1[^>]*>.*?<\/h1>/is', '', $htmlWithLinks, 1) ?? $htmlWithLinks;
+
             $breadcrumbs = [
                 ['title' => __('Docs'), 'slug' => null],
                 ['title' => $title, 'slug' => $slug],
             ];
 
             $etag = 'W/"' . substr(sha1($path . '|' . $mtime . '|' . strlen($htmlWithLinks)), 0, 27) . '"';
+
+            // Language alternates
+            [$alternates, $currentLocale] = $this->buildAlternates($slug);
 
             return [
                 'title' => $title,
@@ -120,6 +126,8 @@ class DocumentationService
                 'breadcrumbs' => $breadcrumbs,
                 'mtime' => $mtime,
                 'etag' => $etag,
+                'alternates' => $alternates,
+                'current_locale' => $currentLocale,
             ];
         });
     }
@@ -288,6 +296,52 @@ class DocumentationService
         }
         $slug = trim($currentDir ? ($currentDir . '/' . $target) : $target, '/');
         return url('/docs/' . $slug);
+    }
+
+    /**
+     * Build language alternate links for a given slug based on available files.
+     * @return array{0: array<int,array{locale:string,label:string,url:string,active:bool}>, 1: string}
+     */
+    protected function buildAlternates(string $slug): array
+    {
+        // Determine base slug (strip locale suffix like .ar or .ckb)
+        $currentLocale = 'en';
+        if (Str::endsWith($slug, '.ar')) {
+            $currentLocale = 'ar';
+            $baseSlug = Str::beforeLast($slug, '.ar');
+        } elseif (Str::endsWith($slug, '.ckb')) {
+            $currentLocale = 'ckb';
+            $baseSlug = Str::beforeLast($slug, '.ckb');
+        } else {
+            $baseSlug = $slug;
+        }
+
+        $locales = [
+            'en' => 'English',
+            'ckb' => 'کوردی (سۆرانی)',
+            'ar' => 'العربية',
+        ];
+
+        $candidates = [
+            'en' => $baseSlug,
+            'ckb' => $baseSlug . '.ckb',
+            'ar' => $baseSlug . '.ar',
+        ];
+
+        $alternates = [];
+        foreach ($candidates as $locale => $candidateSlug) {
+            $path = $this->resolvePathFromSlug($candidateSlug);
+            if (! $path || ! File::exists($path)) continue;
+
+            $alternates[] = [
+                'locale' => $locale,
+                'label' => $locales[$locale],
+                'url' => url('/docs/' . $candidateSlug),
+                'active' => $locale === $currentLocale,
+            ];
+        }
+
+        return [$alternates, $currentLocale];
     }
 }
 
