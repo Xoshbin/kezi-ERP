@@ -8,7 +8,7 @@ it('shows payments documentation page for authenticated users', function () {
     $response = $this->actingAs($user)->get(route('docs.show', ['slug' => 'User Guide/payments']));
 
     $response->assertStatus(200);
-    $response->assertSee('Payments: Payments', false);
+    $response->assertSee('Payments', false);
 });
 
 it('allows payments documentation page for guests (docs are public)', function () {

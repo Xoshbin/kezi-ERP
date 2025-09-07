@@ -32,6 +32,19 @@ return [
     'form.document_type.vendor_bill' => 'پسوڵەی فرۆشیار',
     'form.document_id' => 'بەڵگەنامە',
     'form.amount_applied' => 'بڕی جێبەجێکراو',
+    'form.payment_method' => 'شێوازی پارەدان',
+
+    // Simple labels for table columns
+    'reference' => 'سەرچاوە',
+    'partner' => 'هاوبەش',
+    'type' => 'جۆر',
+    'method' => 'شێواز',
+    'status' => 'دۆخ',
+    'date' => 'بەروار',
+    'amount' => 'بڕ',
+    'currency' => 'دراو',
+    'journal' => 'ڕۆژنامچە',
+    'company' => 'کۆمپانیا',
 
     'table.company.name' => 'کۆمپانیا',
     'table.journal.name' => 'ڕۆژنامچە',
