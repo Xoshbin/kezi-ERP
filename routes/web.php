@@ -12,6 +12,11 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+// Locale switching route
+Route::post('/locale/{locale}', [\App\Http\Controllers\LocaleController::class, 'setLocale'])
+    ->name('locale.set')
+    ->where('locale', 'en|ckb|ar');
+
 // Documentation Routes (Public access)
 Route::prefix('docs')->group(function () {
     Route::get('/', [\App\Http\Controllers\Docs\DocumentController::class, 'index'])->name('docs.index');
