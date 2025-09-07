@@ -18,14 +18,13 @@ class ComputeLoanScheduleAction
     public function execute(LoanAgreement $loan): void
     {
         DB::transaction(function () use ($loan) {
-            $loan->loadMissing('currency', 'scheduleEntries');
+            $loan->loadMissing('currency', 'scheduleEntries', 'rateChanges');
             $loan->scheduleEntries()->delete();
 
             // Guard/annotate for static analysis
             /** @var Money $principal */
             $principal = $loan->principal_amount; // Money in loan currency via DocumentCurrencyMoneyCast
             $n = (int) $loan->duration_months; // monthly frequency for now
-            $rAnnual = (float) $loan->interest_rate;
             $currencyModel = $loan->currency;
             if (! $currencyModel) {
                 throw new \RuntimeException('Loan currency is missing');
@@ -36,28 +35,41 @@ class ComputeLoanScheduleAction
             $balance = $principal;
             $date = Carbon::parse($loan->start_date)->copy();
 
+            // Prepare rate changes lookup by month index (1-based)
+            $rateByMonth = [];
+            foreach ($loan->rateChanges as $rc) {
+                /** @var \App\Models\LoanRateChange $rc */
+                $effective = Carbon::parse($rc->effective_date);
+                $monthIndex = $date->diffInMonths($effective) + 1; // apply to installment whose due date covers period starting at effective
+                $monthIndex = max(1, min($n, $monthIndex));
+                $rateByMonth[$monthIndex] = (float) $rc->annual_rate;
+            }
+
+            $currentAnnualRate = (float) $loan->interest_rate;
+
             for ($i = 1; $i <= $n; $i++) {
-                $interest = Money::of('0', $currency);
-                $principalComponent = Money::of('0', $currency);
-                $paymentAmount = Money::of('0', $currency);
+                if (isset($rateByMonth[$i])) {
+                    $currentAnnualRate = $rateByMonth[$i];
+                }
 
                 // Monthly simple rate
-                $periodRate = ($rAnnual / 100) / 12;
+                $periodRate = ($currentAnnualRate / 100) / 12;
+
+                $interest = Money::of($balance->getAmount()->toFloat() * $periodRate, $currency, null, RoundingMode::HALF_UP);
 
                 if ($loan->schedule_method === ScheduleMethod::Annuity) {
-                    $interest = Money::of($balance->getAmount()->toFloat() * $periodRate, $currency, null, RoundingMode::HALF_UP);
-                    $paymentAmount = $this->interestCalc->annuityPayment($principal, $rAnnual, 12, $n);
+                    $remaining = $n - $i + 1;
+                    $paymentAmount = $this->interestCalc->annuityPayment($balance, $currentAnnualRate, 12, $remaining);
                     $principalComponent = $paymentAmount->minus($interest);
-                } elseif ($loan->schedule_method === ScheduleMethod::StraightLinePrincipal) {
+                } else { // StraightLinePrincipal
                     $principalComponent = $principal->dividedBy($n, RoundingMode::HALF_UP);
-                    $interest = Money::of($balance->getAmount()->toFloat() * $periodRate, $currency, null, RoundingMode::HALF_UP);
                     $paymentAmount = $principalComponent->plus($interest);
                 }
 
                 $balance = $balance->minus($principalComponent);
 
                 $entry = new LoanScheduleEntry();
-                $entry->loan()->associate($loan); // ensure DocumentCurrencyMoneyCast can resolve currency
+                $entry->loan()->associate($loan);
                 $entry->sequence = $i;
                 $entry->due_date = $date->copy()->addMonths($i);
                 $entry->payment_amount = $paymentAmount;

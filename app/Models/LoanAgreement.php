@@ -37,5 +37,7 @@ class LoanAgreement extends Model
     public function partner(): BelongsTo { return $this->belongsTo(Partner::class); }
 
     public function scheduleEntries(): HasMany { return $this->hasMany(LoanScheduleEntry::class, 'loan_id'); }
+    public function feeLines(): HasMany { return $this->hasMany(LoanFeeLine::class, 'loan_id'); }
+    public function rateChanges(): HasMany { return $this->hasMany(LoanRateChange::class, 'loan_id'); }
 }
 
