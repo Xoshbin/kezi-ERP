@@ -264,3 +264,77 @@ html {
 .docs-loading .docs-content > * {
     @apply bg-gray-200 dark:bg-gray-700 rounded;
 }
+
+/* RTL Support */
+[dir="rtl"] .docs-content ul, [dir="rtl"] .docs-content ol {
+    @apply mr-6 ml-0;
+}
+
+[dir="rtl"] .docs-content ul > li {
+    @apply pr-6 pl-0;
+}
+
+[dir="rtl"] .docs-content ul > li::before {
+    @apply right-0 left-auto;
+}
+
+[dir="rtl"] .docs-content blockquote {
+    @apply border-r-4 border-l-0 pr-4 pl-0;
+}
+
+[dir="rtl"] .docs-content th {
+    @apply text-right;
+}
+
+[dir="rtl"] .docs-content dd {
+    @apply mr-4 ml-0;
+}
+
+[dir="rtl"] .docs-content a[href^="http"]::after {
+    content: "↙";
+    @apply mr-1 ml-0;
+}
+
+[dir="rtl"] .docs-prose a.heading-anchor {
+    @apply mr-2 ml-0;
+}
+
+[dir="rtl"] .docs-content pre[class*="language-"]::before {
+    @apply left-2 right-auto;
+}
+
+[dir="rtl"] .docs-content .copy-button {
+    @apply left-2 right-auto;
+}
+
+/* RTL Typography improvements */
+[dir="rtl"] .docs-content {
+    font-family: 'Segoe UI', Tahoma, Arial, Helvetica, sans-serif;
+}
+
+[dir="rtl"] .docs-content h1,
+[dir="rtl"] .docs-content h2,
+[dir="rtl"] .docs-content h3,
+[dir="rtl"] .docs-content h4,
+[dir="rtl"] .docs-content h5,
+[dir="rtl"] .docs-content h6 {
+    font-weight: 600;
+}
+
+/* Ensure proper text alignment for RTL */
+[dir="rtl"] .docs-content p,
+[dir="rtl"] .docs-content li,
+[dir="rtl"] .docs-content td,
+[dir="rtl"] .docs-content th {
+    text-align: right;
+}
+
+/* Fix table alignment for RTL */
+[dir="rtl"] .docs-content table {
+    direction: rtl;
+}
+
+[dir="rtl"] .docs-content td,
+[dir="rtl"] .docs-content th {
+    text-align: right;
+}

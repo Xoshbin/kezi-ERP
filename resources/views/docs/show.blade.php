@@ -1,16 +1,20 @@
-@php /** @var string $html */ @endphp
+@php
+/** @var string $html */
+$locale = app()->getLocale();
+$isRtl = in_array($locale, ['ar', 'ckb']);
+@endphp
 
 <x-docs.layout :title="$title">
     <x-slot:sidebar>
         @include('docs.components.sidebar', ['items' => \App\Services\DocumentationService::make()->list(), 'active' => $slug ?? null])
     </x-slot:sidebar>
 
-    <article class="docs-prose prose prose-slate dark:prose-invert max-w-none">
+    <article class="docs-prose prose prose-slate dark:prose-invert max-w-none {{ $isRtl ? 'text-right' : '' }}" dir="{{ $isRtl ? 'rtl' : 'ltr' }}">
         <!-- Breadcrumb Navigation -->
         <nav class="mb-8" aria-label="Breadcrumb">
-            <ol class="flex items-center space-x-2 text-sm text-gray-500 dark:text-gray-400">
+            <ol class="flex items-center {{ $isRtl ? 'space-x-reverse space-x-2 flex-row-reverse' : 'space-x-2' }} text-sm text-gray-500 dark:text-gray-400">
                 @foreach($breadcrumbs as $crumb)
-                    <li class="flex items-center">
+                    <li class="flex items-center {{ $isRtl ? 'flex-row-reverse' : '' }}">
                         @if($crumb['slug'])
                             <a
                                 href="{{ url('/docs/' . $crumb['slug']) }}"
@@ -23,7 +27,7 @@
                         @endif
 
                         @if(!$loop->last)
-                            <svg class="ml-2 h-4 w-4 flex-shrink-0 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <svg class="{{ $isRtl ? 'mr-2' : 'ml-2' }} h-4 w-4 flex-shrink-0 text-gray-400 {{ $isRtl ? 'rotate-180' : '' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
                             </svg>
                         @endif
@@ -34,8 +38,8 @@
 
         <!-- Page Header -->
         <header class="mb-8 border-b border-gray-200 pb-8 dark:border-gray-700">
-            <div class="flex items-start justify-between gap-4">
-                <div>
+            <div class="flex items-start {{ $isRtl ? 'justify-between flex-row-reverse' : 'justify-between' }} gap-4">
+                <div class="{{ $isRtl ? 'text-right' : '' }}">
                     <h1 class="text-4xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-5xl">
                         {{ $title }}
                     </h1>
@@ -65,13 +69,13 @@
         </header>
 
         <!-- Main Content -->
-        <div class="docs-content">
+        <div class="docs-content {{ $isRtl ? 'text-right' : '' }}" dir="{{ $isRtl ? 'rtl' : 'ltr' }}">
             {!! $html !!}
         </div>
 
         <!-- Page Footer -->
         <footer class="mt-16 border-t border-gray-200 pt-8 dark:border-gray-700">
-            <div class="flex items-center justify-between">
+            <div class="flex items-center {{ $isRtl ? 'justify-between flex-row-reverse' : 'justify-between' }}">
                 <div class="text-sm text-gray-500 dark:text-gray-400">
                     <span>Last updated: </span>
                     <time datetime="{{ date('c', $mtime) }}">
@@ -79,7 +83,7 @@
                     </time>
                 </div>
 
-                <div class="flex items-center gap-4">
+                <div class="flex items-center {{ $isRtl ? 'gap-4 flex-row-reverse' : 'gap-4' }}">
                     <a
                         href="https://github.com/your-repo/edit/main/docs/{{ $slug }}.md"
                         target="_blank"
