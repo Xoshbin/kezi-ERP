@@ -28,7 +28,6 @@ trait HasPaymentState
 {
     /**
      * Computes the payment state of the document on the fly.
-     * This follows the Odoo pattern of separating workflow state from payment state.
      * The value is not stored in the database to maintain data consistency.
      */
     public function getPaymentStateAttribute(): PaymentState

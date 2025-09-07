@@ -87,7 +87,7 @@ class WebInterfaceInvoicePostingTest extends TestCase
             'All journal entry references should be unique'
         );
 
-        // Verify the invoice numbers follow the new Odoo-style format
+        // Verify the invoice numbers follow the new format
         $this->assertMatchesRegularExpression('/^INV\/\d{4}\/\d{2}\/\d{7}$/', $postedInvoiceNumbers[0]);
         $this->assertMatchesRegularExpression('/^INV\/\d{4}\/\d{2}\/\d{7}$/', $postedInvoiceNumbers[1]);
         $this->assertMatchesRegularExpression('/^INV\/\d{4}\/\d{2}\/\d{7}$/', $postedInvoiceNumbers[2]);

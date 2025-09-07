@@ -89,7 +89,7 @@ test('it creates a journal entry in a foreign currency correctly', function () {
         return $line->getAttributes()['credit'] > 0;
     });
 
-    // Assert: Verify all parts of the Odoo-style architecture
+    // Assert: Verify all parts of the architecture
 
     // 1. Assert the Journal Entry Header is correct
     expect($journalEntry->currency_id)->toBe($this->usdCurrency->id)

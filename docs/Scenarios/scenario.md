@@ -71,7 +71,7 @@ Soran, an ambitious IT professional in Slemani, decides to start his own consult
 
 *Goal: Configure the specialized journals and system-wide default account mappings necessary for automated transaction processing. This directly addresses the "no journal created" issue for manual entries and prepares the system for automated ones.*
 
-* **Accounting Rationale:** While the Chart of Accounts defines what is tracked, Journals define where transactions are initially recorded and how they are categorized for audit and automation. Modern systems like Odoo rely on designated journals (e.g., a 'Bank' journal for all bank movements) and pre-set default accounts to streamline transaction processing. Without these, manual journal entries fail (as you observed), and automated processes (like posting invoices) lack the necessary "pointers" to create their underlying journal entries.
+* **Accounting Rationale:** While the Chart of Accounts defines what is tracked, Journals define where transactions are initially recorded and how they are categorized for audit and automation. Modern systems rely on designated journals (e.g., a 'Bank' journal for all bank movements) and pre-set default accounts to streamline transaction processing. Without these, manual journal entries fail (as you observed), and automated processes (like posting invoices) lack the necessary "pointers" to create their underlying journal entries.
 
 ### • 3.1. Create Essential Journals:
 * **Resource:** `JournalResource`
@@ -493,7 +493,7 @@ Soran, an ambitious IT professional in Slemani, decides to start his own consult
 
 ---
 
-As AccounTech Pro, I will update your `scenario.md` with a detailed scenario for `Lock Date Enforcement`, seamlessly integrating it into the existing structure and aligning with your Laravel, Filament, and Pest stack. This is fundamental for maintaining the integrity and auditability of your financial records, a cornerstone of robust accounting inspired by Odoo's principles.
+As AccounTech Pro, I will update your `scenario.md` with a detailed scenario for `Lock Date Enforcement`, seamlessly integrating it into the existing structure and aligning with your Laravel, Filament, and Pest stack. This is fundamental for maintaining the integrity and auditability of your financial records, a cornerstone of robust accounting.
 
 Here is the appended scenario for `Lock Date Enforcement`, placed chronologically after the `Inventory Management` step.
 ---
@@ -502,7 +502,7 @@ Here is the appended scenario for `Lock Date Enforcement`, placed chronologicall
 
 *Goal: Ensure the system strictly enforces financial period lock dates, preventing creation or modification of transactions dated on or before a defined locked period. This is essential for compliance, auditability, and data integrity.*
 
-* **Accounting Rationale:** Once a financial period is closed, it must remain immutable to comply with accounting standards (IFRS/GAAP) and legal regulations. Lock dates prevent retroactive changes that could compromise financial statements or tax compliance. Systems like Odoo implement multiple lock levels (e.g., "Lock Tax Return Date", "Lock Everything Date") for granular control.
+* **Accounting Rationale:** Once a financial period is closed, it must remain immutable to comply with accounting standards (IFRS/GAAP) and legal regulations. Lock dates prevent retroactive changes that could compromise financial statements or tax compliance. Systems implement multiple lock levels (e.g., "Lock Tax Return Date", "Lock Everything Date") for granular control.
 
 * **Technical Implementation:** The application should use a dedicated validation service (e.g., `AccountingValidationService` or `LockDateService`) to check against the `lock_dates` table. Any attempt to bypass this validation should trigger a custom exception such as `PeriodIsLockedException`. Both UI actions (via Filament) and direct service calls must respect the lock.
 
@@ -558,7 +558,7 @@ Beyond these core transactions, ensure your system rigorously tests the followin
 * **Test:** For every posted `JournalEntry`, verify the `hash` field contains a valid SHA-256 hash and `previous_hash` links to the prior entry, forming a cryptographic chain.
 * **Expected Outcome:** An unbroken, verifiable chain of financial transactions.
 
-By addressing these areas, your "Jmeryar ERP" application will achieve robust data integrity, compliance, and reliability, matching the standards of leading platforms like Odoo.
+By addressing these areas, your "Jmeryar ERP" application will achieve robust data integrity, compliance, and reliability, matching the standards of leading platforms.
 
 
 This scenario covers inventory management from setup to purchasing, selling, and adjustments, maintaining strict immutability and auditability. Test these flows thoroughly, focusing on correct Journal Entry generation and hashing.
@@ -571,7 +571,7 @@ This scenario covers inventory management from setup to purchasing, selling, and
 
 ## Additional Post-Scenario Tests & Considerations for Robustness
 
-Beyond these core transactions, a truly robust system, aiming to compete with Odoo, should also rigorously test the following crucial principles:
+Beyond these core transactions, a truly robust system, should also rigorously test the following crucial principles:
 
 ### Lock Date Enforcement:
 * **Test:** Attempt to create or modify any financial transaction (`Journal Entries`, `Invoices`, `Vendor Bills`) with an `entry_date` falling on or before a defined `locked_until` date.
@@ -589,4 +589,4 @@ Beyond these core transactions, a truly robust system, aiming to compete with Od
 * **Test:** For every `JournalEntry` that reaches a `is_posted = true` state, verify that its `hash` field is populated with a valid SHA-256 hash (64 characters long) and that `previous_hash` correctly links to the preceding entry's hash, forming the chain.
 * **Expected Outcome:** An unbroken and verifiable cryptographic chain of financial transactions.
 
-By systematically addressing each of these areas, from the most basic data entities to complex transactional and system-level concerns, your "Jmeryar ERP" application will achieve the highest level of data integrity, compliance, and reliability, effectively competing with established platforms like Odoo in the Iraqi market. This rigorous testing approach will ensure your application's financial records are as immutable and auditable as if they were etched in stone.
+By systematically addressing each of these areas, from the most basic data entities to complex transactional and system-level concerns, your "Jmeryar ERP" application will achieve the highest level of data integrity, compliance, and reliability. This rigorous testing approach will ensure your application's financial records are as immutable and auditable as if they were etched in stone.
