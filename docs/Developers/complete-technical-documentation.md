@@ -19,7 +19,7 @@
 
 ## 1. Application Overview & Purpose
 
-This is a **headless accounting application** specifically designed for the Iraqi market, inspired by Odoo's robust accounting principles but adapted for environments without widespread digital banking infrastructure. The application prioritizes **manual data entry**, **immutability**, and **complete auditability** of financial records.
+This is a **headless accounting application** specifically designed for the Iraqi market, a robust accounting principles but adapted for environments without widespread digital banking infrastructure. The application prioritizes **manual data entry**, **immutability**, and **complete auditability** of financial records.
 
 ### Core Philosophy
 - **Manual Data Entry First**: No external banking integrations (Stripe, PayPal, etc.)

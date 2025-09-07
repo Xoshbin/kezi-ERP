@@ -4,6 +4,7 @@ use App\Enums\Payments\PaymentStatus;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use App\Enums\Payments\PaymentMethod;
 
 return new class extends Migration
 {
@@ -29,13 +30,10 @@ return new class extends Migration
             $table->string('payment_type'); // 'inbound', 'outbound'
             $table->string('reference')->nullable();
             $table->string('status')->default(PaymentStatus::Draft->value)->index(); // 'draft', 'confirmed', 'reconciled'
-            $table->string('payment_purpose')
-                ->default('settlement')
-                ->comment('The business purpose of the payment (e.g., settlement, loan).');
-            $table->foreignId('counterpart_account_id')
-                ->nullable()
-                ->constrained('accounts')
-                ->comment('Account used for non-settlement payments (loans, capital injection, etc.)');
+            $table->string('payment_method')
+                ->default(PaymentMethod::Manual->value)
+                ->after('payment_type')
+                ->comment('The method used for this payment (manual, check, bank_transfer, etc.)');
             $table->timestamps();
         });
     }

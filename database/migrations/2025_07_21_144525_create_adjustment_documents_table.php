@@ -50,8 +50,7 @@ return new class extends Migration
             // a unique index would be: ['company_id', 'type', 'reference_number']
             // If reference_number is guaranteed to be globally unique across all types/companies
             // once posted, the initial $table->string('reference_number')->unique(); is sufficient.
-            // Given the context of Odoo and accounting principles, a sequential number
-            // is usually unique within a journal or company for a specific document type [4, 5].
+            // is usually unique within a journal or company for a specific document type.
             // To align with this, consider:
             // $table->unique(['company_id', 'type', 'reference_number']);
             // However, if the single 'reference_number' is enforced as globally unique (e.g., system-wide unique ID),

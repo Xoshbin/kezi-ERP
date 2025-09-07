@@ -94,7 +94,7 @@ class AnalyticAccount extends Model
     /**
      * Get the company that owns the analytic account.
      * In a multi-company setup, analytic accounts are typically tied to a specific company,
-     * though they can be accessible to all if company_id is null, similar to Odoo's approach [5].
+     * though they can be accessible to all if company_id is null.
      */
     /**
 

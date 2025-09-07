@@ -109,7 +109,7 @@ class InvoiceNumberRaceConditionTest extends TestCase
 
         // With the new sequence system, all numbers should be unique
         $this->assertCount(3, array_unique($generatedNumbers), 'Expected 3 unique invoice numbers');
-        // Check that all numbers follow the new Odoo-style format
+        // Check that all numbers follow the new format
         foreach ($generatedNumbers as $number) {
             $this->assertMatchesRegularExpression('/^INV\/\d{4}\/\d{2}\/\d{7}$/', $number);
         }
