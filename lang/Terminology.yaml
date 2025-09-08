@@ -746,6 +746,11 @@ categories:
         ar: "طباعة"
         ckb: "چاپکردن"
         notes: "Physical printout"
+      ui:
+        en: "UI"
+        ar: "واجهة المستخدم"
+        ckb: "ڕووکاری بەکارهێنەر"
+        notes: "User interface"
 
 # Usage Guidelines
 usage_guidelines:
