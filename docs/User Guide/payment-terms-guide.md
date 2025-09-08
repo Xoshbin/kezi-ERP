@@ -11,7 +11,7 @@ The Payment Terms system allows you to define standardized payment conditions fo
 When you first set up the system, you can seed common payment terms using:
 
 ```bash
-php artisan payment-terms:seed
+php artisan db:seed --class=PaymentTermsSeeder
 ```
 
 This will create 16 common payment terms for all companies, including:
@@ -101,11 +101,6 @@ Payment terms are displayed in the list views:
 - Example: 15th of Next Month = payment due on 15th of next month
 - Handles month transitions and leap years
 
-### 6. Installments
-- Multiple payments with different due dates and percentages
-- Example: 50% now, 50% in 30 days
-- Creates multiple installment records
-
 ## Best Practices
 
 ### 1. Standardization
@@ -153,7 +148,7 @@ Payment terms are displayed in the list views:
 ### Payment Terms Not Showing
 - Ensure payment terms are active (`is_active = true`)
 - Check that payment terms exist for the current company
-- Run `php artisan payment-terms:seed` to create default terms
+- Run `php artisan db:seed --class=PaymentTermsSeeder` to create default terms
 
 ### Installments Not Generated
 - Verify the document has a payment term assigned
@@ -172,3 +167,9 @@ For additional help with the payment terms system:
 2. Review existing payment term configurations
 3. Test with sample documents in a development environment
 4. Consult the technical documentation for advanced configurations
+
+## Related Documentation
+
+- [Customer Invoices Guide](customer-invoices.md) - Learn more about creating invoices
+- [Vendor Bills Guide](vendor-bills.md) - Learn more about vendor bill management
+- [Payments Guide](payments.md) - Learn more about payment processing
