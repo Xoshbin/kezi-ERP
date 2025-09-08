@@ -1,61 +1,58 @@
 # Bank Reconciliation: Ensuring Cash Accuracy and Financial Control
 
-This guide explains how to perform bank reconciliation in your accounting system. Bank reconciliation is the process of matching your internal cash records with the bank's records to ensure accuracy and identify discrepancies.
+This guide explains how to perform bank reconciliation in your accounting system. Bank reconciliation is the process of matching your internal cash records with the bank's records to ensure accuracy and identify discrepancies. This feature requires [bank statements](bank-statements.md) to be created first.
+
+**Important**: Bank reconciliation is only available when the "Enable Reconciliation" setting is activated in your company configuration.
 
 ---
 
 ## What is Bank Reconciliation?
 
-Bank reconciliation is the process of comparing your company's cash records with the bank statement to:
+Bank reconciliation is the process of comparing your company's cash records with the [bank statement](bank-statements.md) to:
 - **Verify Accuracy**: Ensure internal records match bank records
-- **Identify Errors**: Find mistakes in either system
-- **Detect Fraud**: Spot unauthorized transactions
-- **Update Records**: Record bank charges and interest not yet entered
+- **Identify Discrepancies**: Find mistakes or timing differences
+- **Update Records**: Mark payments as reconciled
+- **Handle Unmatched Items**: Write off small discrepancies or investigate larger ones
 
-**Accounting Principle**: Your cash balance should equal the bank balance after accounting for timing differences.
+**Accounting Principle**: Your payment records should match the bank statement transactions after accounting for timing differences.
 
 ---
 
-## Why Reconcile Bank Accounts?
+## System Requirements
 
-### Financial Accuracy
-- **Catch Errors**: Find data entry mistakes or bank errors
-- **Prevent Fraud**: Detect unauthorized transactions quickly
-- **Ensure Completeness**: Identify missing transactions
+### Company Settings
+- **Enable Reconciliation**: Must be turned on in company settings
+- **Default Accounts**: Bank accounts and reconciliation accounts must be configured
+- **User Permissions**: Users need appropriate access to reconciliation features
 
-### Cash Management
-- **Accurate Balances**: Know true available cash
-- **Float Management**: Track outstanding checks and deposits
-- **Liquidity Planning**: Make informed cash flow decisions
-
-### Compliance
-- **Internal Controls**: Meet audit requirements
-- **Regulatory Compliance**: Satisfy banking regulations
-- **Financial Reporting**: Ensure accurate financial statements
+### Prerequisites
+1. **Bank Statement Created**: [Bank statement](bank-statements.md) must exist with transaction lines
+2. **Payment Records**: System payments must be confirmed and ready for matching
+3. **Currency Alignment**: Both bank statements and payments should use compatible currencies
 
 ---
 
 ## Reconciliation Process Overview
 
-### 1. Preparation Phase
-- Obtain bank statement
-- Gather internal payment records
-- Identify previous reconciliation items
+### 1. Access Control
+- Check that reconciliation is enabled for your company
+- Verify you have permission to perform reconciliation
+- Ensure bank statement is available for processing
 
-### 2. Matching Phase
-- Match payments to statement lines
-- Identify timing differences
-- Flag discrepancies for investigation
+### 2. Interface Setup
+- Select bank statement to reconcile
+- System loads interactive reconciliation interface
+- Three-panel view displays bank transactions, system payments, and summary
 
-### 3. Adjustment Phase
-- Record bank charges and interest
-- Create adjustment entries
-- Resolve discrepancies
+### 3. Matching Phase
+- Select bank statement lines from left panel
+- Select corresponding system payments from right panel
+- Real-time balance calculation shows matching status
 
-### 4. Completion Phase
-- Finalize reconciliation
-- Update cash balances
-- Document findings
+### 4. Resolution Phase
+- Reconcile perfectly matched items
+- Write off small unmatched amounts
+- Investigate significant discrepancies
 
 ---
 
@@ -63,249 +60,187 @@ Bank reconciliation is the process of comparing your company's cash records with
 
 Navigate to **Accounting → Banking & Cash → Bank Statements**
 
-### Select Statement to Reconcile
-1. **Choose Bank Account**: Select the account to reconcile
-2. **Select Statement**: Choose the statement period
-3. **Click Reconcile**: Start the reconciliation process
+### Accessing Reconciliation
+1. **Find Bank Statement**: Locate the statement you want to reconcile
+2. **Click Reconcile Action**: Use the "Reconcile" button (green scale icon)
+3. **Access Control**: Action only appears when reconciliation is enabled
 
-### Reconciliation Screen Layout
-**Left Panel**: Bank statement lines (external records)
-**Right Panel**: Internal payment records
-**Bottom Panel**: Reconciliation summary and controls
+**Note**: The reconcile action is only visible when your company has reconciliation enabled in settings.
+
+### Reconciliation Interface Layout
+The reconciliation screen uses an interactive Livewire interface with three main sections:
+
+**Left Panel - Bank Transactions**: Shows unreconciled bank statement lines
+**Right Panel - System Payments**: Displays confirmed payments without reconciliation
+**Bottom Panel - Reconciliation Summary**: Real-time totals and balance validation
 
 ---
 
 ## Matching Transactions
 
-### Automatic Matching
-System automatically matches transactions based on:
-- **Exact Amount**: Payment amount = statement line amount
-- **Date Range**: Within reasonable date tolerance
-- **Reference Match**: Check numbers or transfer references
-- **Partner Match**: Customer/vendor information
+### Interactive Selection Process
+The system provides real-time selection and calculation:
 
-### Manual Matching
-For unmatched items:
+#### Bank Transaction Selection
+1. **View Available Lines**: Left panel shows unreconciled bank statement lines
+2. **Select Items**: Click checkboxes to select bank transactions
+3. **Real-time Total**: System calculates total of selected bank items
+4. **Currency Display**: All amounts shown in statement currency
 
-#### Match Payment to Statement Line
-1. **Select Payment**: Click on internal payment record
-2. **Select Statement Line**: Click on corresponding bank transaction
-3. **Click Match**: Confirm the match
-4. **Verify Details**: Check amounts and dates are reasonable
+#### System Payment Selection  
+1. **View Available Payments**: Right panel shows confirmed, unreconciled payments
+2. **Select Items**: Click checkboxes to select system payments
+3. **Multi-Currency Support**: Payments in different currencies are converted automatically
+4. **Real-time Total**: System calculates total of selected payments
 
-#### Match Multiple Payments
-For statement lines representing multiple payments:
-1. **Select Statement Line**: Choose the bank transaction
-2. **Select Multiple Payments**: Hold Ctrl and click multiple payments
-3. **Verify Total**: Ensure payment total equals statement amount
-4. **Click Match**: Confirm the batch match
+### Balance Validation
+The reconciliation summary provides instant feedback:
+- **Bank Total**: Sum of selected bank statement lines
+- **System Total**: Sum of selected system payments (with currency conversion)
+- **Difference**: Calculated variance between totals
+- **Balance Status**: Green "Balanced" when difference is zero
 
----
-
-## Handling Timing Differences
-
-### Outstanding Checks
-Checks written but not yet cleared by bank:
-- **Show in Internal Records**: Payment recorded in your system
-- **Not on Bank Statement**: Check hasn't cleared yet
-- **Action**: Leave unmatched, will appear on next statement
-
-### Deposits in Transit
-Deposits made but not yet processed by bank:
-- **Show in Internal Records**: Deposit recorded in your system
-- **Not on Bank Statement**: Bank hasn't processed yet
-- **Action**: Leave unmatched, will appear on next statement
-
-### Bank Processing Delays
-- **Weekend Deposits**: May process on next business day
-- **Holiday Delays**: Extended processing times
-- **Cut-off Times**: Transactions after cut-off process next day
+### Reconciliation Execution
+When totals are balanced:
+1. **Click "Reconcile Selected"**: Process the matching
+2. **System Updates**: Payment status changes to "Reconciled"  
+3. **Link Creation**: Bank statement lines linked to payment records
+4. **Automatic Cleanup**: Selections cleared for next set of transactions
 
 ---
 
-## Bank-Only Transactions
+## Handling Unmatched Items
 
-### Bank Charges
-Fees not yet recorded in your system:
-- **Monthly Maintenance**: Regular account fees
-- **Transaction Fees**: Per-transaction charges
-- **Wire Fees**: Wire transfer costs
-- **NSF Fees**: Non-sufficient funds charges
+### Write-Off Functionality
+For small discrepancies or bank fees that don't have corresponding system payments:
 
-#### Recording Bank Charges
-1. **Identify Charge**: Find unmatched bank charge on statement
-2. **Create Adjustment**: Click "Create Adjustment Entry"
-3. **Select Account**: Choose appropriate expense account
-4. **Enter Amount**: Record the charge amount
-5. **Add Description**: Note the type of charge
-6. **Post Entry**: Create the journal entry
+#### Bank Statement Line Write-Offs
+1. **Identify Unmatched Line**: Find bank transaction without corresponding payment
+2. **Click Write-Off Action**: Use the "X" icon in the bank transactions table
+3. **Select Expense Account**: Choose appropriate expense account (e.g., "Bank Charges")
+4. **Enter Reason**: Provide explanation for the write-off
+5. **Create Entry**: System generates journal entry and marks line as reconciled
 
-### Bank Interest
-Interest earned not yet recorded:
-1. **Identify Interest**: Find interest credit on statement
-2. **Create Adjustment**: Click "Create Adjustment Entry"
-3. **Select Account**: Choose interest income account
-4. **Enter Amount**: Record the interest earned
-5. **Post Entry**: Create the journal entry
+#### Write-Off Examples
+- **Bank Fees**: Monthly maintenance fees, transaction fees
+- **Interest Charges**: Overdraft fees, loan interest
+- **Small Discrepancies**: Rounding differences, minor calculation variances
 
----
-
-## Discrepancy Resolution
-
-### Common Discrepancies
-
-#### Amount Differences
-**Problem**: Payment amount ≠ statement amount
-**Investigation**:
-- Check for data entry errors
-- Verify bank processing fees
-- Look for partial payments
-- Review exchange rate differences
-
-#### Date Differences
-**Problem**: Significant date variance between records
-**Investigation**:
-- Check for processing delays
-- Verify transaction dates
-- Look for backdated entries
-- Review cut-off procedures
-
-#### Missing Transactions
-**Problem**: Transaction in one system but not the other
-**Investigation**:
-- Check for duplicate entries
-- Verify transaction actually occurred
-- Look for reversed transactions
-- Review period cut-offs
-
-### Resolution Actions
-
-#### Correct Internal Records
-If error is in your system:
-1. **Create Adjustment Entry**: Correct the internal record
-2. **Document Reason**: Explain the correction
-3. **Update Procedures**: Prevent future errors
-
-#### Contact Bank
-If error appears to be bank's:
-1. **Document Discrepancy**: Prepare detailed information
-2. **Contact Bank**: Report the error
-3. **Follow Up**: Track resolution progress
-4. **Adjust When Resolved**: Update records when bank corrects
+### Investigation Required
+For larger discrepancies:
+1. **Review Transaction Details**: Check dates, amounts, and descriptions
+2. **Verify System Payments**: Ensure all payments are properly recorded
+3. **Check Timing**: Look for payments that might clear in next period
+4. **Create Missing Entries**: Record overlooked transactions if necessary
 
 ---
 
-## Write-Offs and Adjustments
+## Multi-Currency Reconciliation
 
-### Small Differences
-For immaterial amounts (e.g., under $5):
-1. **Assess Materiality**: Determine if investigation is cost-effective
-2. **Create Write-Off**: Record to miscellaneous expense
-3. **Document Decision**: Note reason for write-off
-4. **Approve**: Obtain appropriate authorization
+### Automatic Currency Conversion
+The system handles multi-currency scenarios automatically:
 
-### Reconciling Items
-For items that require adjustment:
-1. **Bank Errors**: Will be corrected by bank
-2. **Timing Differences**: Will resolve in next period
-3. **Permanent Differences**: Require adjustment entries
+#### Different Currency Payments
+- **Automatic Conversion**: Payments in different currencies are converted to statement currency
+- **Real-time Rates**: Uses current exchange rates for calculations
+- **Display Information**: Shows both original and converted amounts
+- **Balance Calculation**: All totals calculated in statement currency
+
+#### Currency Indicators
+- **Same Currency**: Green indicator for matching currencies
+- **Different Currency**: Yellow indicator showing conversion applied
+- **Conversion Details**: Hover or click for rate information
+
+### Reconciliation Considerations
+- **Rate Fluctuations**: Small differences may occur due to exchange rate changes
+- **Tolerance Settings**: System may allow minor variances for currency conversions
+- **Documentation**: Conversion details are recorded for audit purposes
 
 ---
 
 ## Completing Reconciliation
 
-### Final Review
-Before completing reconciliation:
-✅ **All Items Matched**: No unmatched items remain (except timing differences)
-✅ **Adjustments Posted**: All bank charges and interest recorded
-✅ **Discrepancies Resolved**: All differences investigated and resolved
-✅ **Documentation Complete**: All decisions and actions documented
+### Reconciliation Workflow
+The interactive interface provides continuous feedback:
 
-### Reconciliation Summary
-**Reconciled Balance**: Final cash balance after reconciliation
-**Outstanding Items**: List of timing differences
-**Adjustments Made**: Summary of journal entries created
-**Next Steps**: Actions required for next reconciliation
+#### Real-Time Status Monitoring
+- **Balance Indicator**: Shows "Balanced" or "Not Balanced"
+- **Amount Tracking**: Displays bank total, system total, and difference
+- **Selection Count**: Shows number of selected items in each panel
+- **Currency Information**: Indicates any currency conversions applied
 
-### Finalize Reconciliation
-1. **Review Summary**: Check all reconciliation details
-2. **Approve**: Obtain required approvals
-3. **Complete**: Mark reconciliation as complete
-4. **Update Balances**: System updates cash account balance
+#### Successful Reconciliation
+When transactions are successfully reconciled:
+1. **Status Updates**: Payment records change to "Reconciled" status
+2. **Link Creation**: Bank statement lines linked to payment records
+3. **Selection Reset**: Interface clears selections for next reconciliation set
+4. **Notification**: Success message confirms reconciliation completion
 
----
+### Finalizing the Statement
+After reconciling all possible transactions:
+1. **Review Remaining Items**: Check for unmatched transactions
+2. **Handle Write-Offs**: Process small discrepancies through write-off feature
+3. **Investigate Large Items**: Review significant unmatched amounts
+4. **Document Decisions**: Maintain record of reconciliation decisions
 
-## Reconciliation Reports
-
-### Reconciliation Statement
-Shows:
-- Starting bank balance
-- Add: Deposits in transit
-- Less: Outstanding checks
-- Adjusted bank balance
-- Book balance
-- Reconciling items
-- Final reconciled balance
-
-### Outstanding Items Report
-Lists:
-- Outstanding checks by date and amount
-- Deposits in transit
-- Other timing differences
-- Aging of outstanding items
+### Next Statement Preparation
+- **Outstanding Items**: Unmatched transactions will appear in future reconciliations
+- **Timing Differences**: Items may resolve when subsequent [bank statements](bank-statements.md) are processed
+- **Follow-up Required**: Track items needing investigation or correction
 
 ---
 
 ## Best Practices
 
-### Frequency
-- **Daily**: For high-volume accounts
-- **Weekly**: For moderate-volume accounts
-- **Monthly**: For low-volume accounts
-- **Immediately**: After receiving statements
+### Preparation
+- **Enable Reconciliation**: Ensure company setting is activated before beginning
+- **Complete Statements**: Verify [bank statements](bank-statements.md) are fully entered with all transactions
+- **Payment Verification**: Confirm all system payments are in "Confirmed" status
+- **Currency Check**: Review multi-currency transactions for accuracy
 
-### Documentation
-- **Keep Records**: Maintain all reconciliation documentation
-- **Explain Differences**: Document all adjustments and decisions
-- **Approval Process**: Require management review and approval
+### Reconciliation Process
+- **Systematic Approach**: Work through transactions methodically
+- **Real-time Validation**: Use the balance indicator to verify matching
+- **Immediate Write-offs**: Handle small discrepancies promptly using write-off feature
+- **Documentation**: Maintain clear reasons for all write-off entries
 
-### Controls
-- **Segregation of Duties**: Different people handle cash and reconciliation
-- **Independent Review**: Have reconciliations reviewed by others
-- **Timely Performance**: Complete reconciliations promptly
-- **Follow-Up**: Track and resolve outstanding items
+### Quality Control
+- **Regular Reconciliation**: Perform reconciliation promptly after statement creation
+- **Review Unmatched Items**: Investigate significant discrepancies thoroughly
+- **Follow-up Tracking**: Monitor outstanding items across multiple periods
+- **User Training**: Ensure team understands the interactive interface
 
 ---
 
 ## Common Scenarios
 
-### Scenario 1: Standard Monthly Reconciliation
-Reconcile checking account with 25 transactions:
+### Scenario 1: Standard Reconciliation Process
+Reconcile a monthly statement with perfect matches:
 
-1. Open bank statement reconciliation
-2. Review automatic matches (20 items matched)
-3. Manually match remaining 3 payments
-4. Record bank service charge ($15)
-5. Record interest earned ($5)
-6. Complete reconciliation
+1. Access reconciliation from bank statement list
+2. Select matching bank transaction and system payment
+3. Verify balance shows "Balanced" 
+4. Click "Reconcile Selected"
+5. System updates payment status and clears selections
+6. Repeat for remaining transactions
 
-### Scenario 2: Discrepancy Investigation
-Find $100 difference in reconciliation:
+### Scenario 2: Write-Off Small Bank Fee
+Handle a bank maintenance fee:
 
-1. Identify unmatched $100 payment
-2. Check bank statement for similar amount
-3. Find $100 check cleared with different date
-4. Match payment to statement line
-5. Document timing difference
+1. Identify unmatched bank statement line for $15 fee
+2. Click write-off action (X icon) on the bank transaction
+3. Select "Bank Charges" expense account
+4. Enter reason: "Monthly maintenance fee"
+5. System creates journal entry and marks line as reconciled
 
-### Scenario 3: Bank Error Resolution
-Bank incorrectly charged $50 fee:
+### Scenario 3: Multi-Currency Payment
+Reconcile a USD payment against IQD bank statement:
 
-1. Identify unauthorized charge
-2. Contact bank with documentation
-3. Create temporary adjustment entry
-4. Reverse adjustment when bank corrects
-5. Complete reconciliation
+1. Select USD payment from system payments panel
+2. System automatically converts to IQD at current rate
+3. Select corresponding IQD bank statement line
+4. Verify totals are balanced (allowing for minor conversion differences)
+5. Complete reconciliation normally
 
 ---
 
@@ -313,41 +248,51 @@ Bank incorrectly charged $50 fee:
 
 ### Common Issues
 
-**Problem**: Cannot find matching transaction
+**Problem**: Reconcile action not visible
 **Solution**:
-- Check date ranges (expand search period)
-- Look for amount differences (fees, exchange rates)
-- Review transaction descriptions for clues
-- Check for reversed or voided transactions
+- Check that "Enable Reconciliation" is turned on in company settings
+- Verify user has appropriate permissions
+- Confirm bank statement exists and is accessible
 
-**Problem**: Reconciliation won't balance
+**Problem**: Totals don't balance exactly
 **Solution**:
-- Verify all matches are correct
-- Check for duplicate matches
-- Review adjustment entries
-- Recalculate outstanding items
+- Check for currency conversion differences
+- Verify transaction amounts are entered correctly
+- Look for partial payments or fees
+- Use write-off for immaterial differences
 
-**Problem**: Too many outstanding items
+**Problem**: No payments appear in system payments panel
 **Solution**:
-- Investigate old outstanding checks
-- Contact bank about processing delays
-- Review internal procedures for delays
-- Consider voiding stale checks
+- Verify payments are in "Confirmed" status
+- Check that payments haven't already been reconciled
+- Ensure payments belong to the correct company and journal
+
+**Problem**: Cannot complete reconciliation
+**Solution**:
+- Ensure totals are balanced (difference = 0)
+- Verify at least one item is selected in each panel
+- Check for system errors or validation issues
+- Try refreshing the interface if needed
 
 ---
 
-## Advanced Features
+## Integration with Bank Statements
 
-### Automated Reconciliation
-- **Rule-Based Matching**: Set up automatic matching rules
-- **Machine Learning**: System learns from manual matches
-- **Exception Reporting**: Highlight unusual patterns
+Bank reconciliation is tightly integrated with the [bank statement management](bank-statements.md) system:
 
-### Multi-Currency Reconciliation
-- **Exchange Rate Handling**: Automatic rate conversions
-- **Currency Differences**: Track exchange gains/losses
-- **Foreign Bank Accounts**: Manage international accounts
+### Data Flow
+1. **Statement Creation**: [Bank statements](bank-statements.md) provide the external transaction data
+2. **Reconciliation Process**: This interface matches external data with internal payments  
+3. **Status Updates**: Reconciled items are marked and linked in both systems
+4. **Reporting**: Combined data supports comprehensive cash management reporting
+
+### Workflow Sequence
+1. **Create Bank Statement**: Start with [bank statement creation](bank-statements.md)
+2. **Enter Transactions**: Add all bank transactions to the statement
+3. **Validate Statement**: Ensure starting/ending balances are correct
+4. **Begin Reconciliation**: Use this reconciliation process to match transactions
+5. **Complete Cycle**: Prepare for next period's bank statement and reconciliation
 
 ---
 
-Bank reconciliation is a critical control process that ensures the accuracy of your cash records and provides confidence in your financial reporting. Regular, thorough reconciliation protects against errors and fraud while maintaining the integrity of your financial data.
+Bank reconciliation ensures the accuracy of your cash records and provides confidence in your financial reporting. The interactive interface makes the matching process efficient while maintaining complete audit trails and proper accounting controls.
