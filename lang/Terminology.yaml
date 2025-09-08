@@ -751,11 +751,26 @@ categories:
         ar: "واجهة المستخدم"
         ckb: "ڕووکاری بەکارهێنەر"
         notes: "User interface"
-      Record:
+      eecord:
         en: "Record"
         ar: "سجل"
         ckb: "تۆمار"
         notes: "User interface"
+      terminology:
+        en: "Terminology"
+        ar: "المصطلحات"
+        ckb: "زاراوەکان"
+        notes: "Terminology"
+      glossary:
+        en: "Glossary"
+        ar: "المعجم"
+        ckb: "فەرهەنگ"
+        notes: "Glossary"
+      line:
+        en: "Line"
+        ar: "السطر"
+        ckb: "هێڵ"
+        notes: "Individual item in a list"
 
 # Usage Guidelines
 usage_guidelines:
