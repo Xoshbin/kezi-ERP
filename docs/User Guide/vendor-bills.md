@@ -1,18 +1,48 @@
 # Vendor Bills: Purchase Documentation and Expense Recognition
 
-This guide explains how to create, manage, and process vendor bills in your accounting system. Vendor bills document purchases from suppliers and ensure proper expense recognition and accounts payable tracking.
+This comprehensive guide explains how vendor bills work in your accounting system, covering creation, approval workflows, payment processing, and expense recognition. Written for all users — accountants and non‑accountants — it provides practical guidance following double‑entry accounting best practices.
 
 ---
 
 ## What is a Vendor Bill?
 
-A vendor bill is a commercial document that:
-- **Records a Purchase**: Documents goods received or services obtained
-- **Establishes Liability**: Creates obligation to pay the vendor
-- **Recognizes Expenses**: Creates accounting entries for costs
-- **Tracks Payables**: Establishes amounts owed to vendors
+A vendor bill is a commercial document received from suppliers that establishes a legal obligation to pay for goods received or services obtained, creating proper expense recognition and accounts payable tracking.
 
-**Accounting Impact**: Posted bills increase expenses and accounts payable, following the accrual accounting principle.
+- **Records a Purchase**: Documents goods received or services obtained from vendors
+- **Establishes Liability**: Creates legal and accounting obligation to pay the vendor
+- **Recognizes Expenses**: Creates accounting entries for costs under accrual accounting
+- **Tracks Payables**: Establishes amounts owed to vendors in accounts payable
+
+**Accounting Impact**: Posted bills increase expenses and accounts payable, following the accrual accounting principle that recognizes expenses when incurred, not when cash is paid.
+
+---
+
+## System Requirements
+
+### Vendor Configuration
+- **Vendor Records**: Vendor profiles must be created with payment information
+- **Payment Terms**: Payment terms must be configured for vendor agreements
+- **Tax Setup**: Tax rates and rules must be configured for applicable purchases
+- **Currency Support**: Invoice currencies must be active and configured
+
+### Prerequisites
+1. **Vendor Setup**: Vendor must exist in the system with complete information
+2. **Product/Service Configuration**: Items being purchased must be set up if using catalog
+3. **Expense Accounts**: Appropriate expense accounts must be configured
+4. **User Permissions**: Access to purchasing and accounting features required
+
+---
+
+## Where to find it in the UI
+
+Navigate to **Accounting → Purchases → Vendor Bills**
+
+Vendor bills also appear in:
+- **Create Action**: "Create" button for new bill entry
+- **Vendor Records**: Related bills section showing purchase history
+- **Payment Processing**: Available bills for payment in banking section
+
+**Tip**: The header's Help/Docs button opens this guide.
 
 ---
 

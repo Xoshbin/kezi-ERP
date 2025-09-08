@@ -1,38 +1,48 @@
 # Opening Balances: Setting Up Your Financial Foundation
 
-This guide explains how to establish opening balances when setting up your accounting system. Opening balances represent your company's financial position at the start of your accounting period—the foundation upon which all future transactions will build.
+This comprehensive guide explains how opening balances work in your accounting system, covering chart of accounts preparation, journal entry creation, and balance validation. Written for all users — accountants and non‑accountants — it provides practical guidance following double‑entry accounting best practices.
 
 ---
 
 ## What are Opening Balances?
 
-Opening balances are the starting amounts in your accounts at the beginning of your accounting period. They represent:
+Opening balances are the starting amounts in your accounts at the beginning of your accounting period, representing your company's financial position when you begin using the accounting system.
 
 - **Assets**: What your company owns (cash, inventory, equipment, receivables)
-- **Liabilities**: What your company owes (loans, payables, accrued expenses)  
+- **Liabilities**: What your company owes (loans, payables, accrued expenses)
 - **Equity**: The owner's stake in the business (capital, retained earnings)
+- **Foundation**: The starting point for all future accounting transactions
 
-**Accounting Principle**: Assets = Liabilities + Equity. Your opening balances must follow this fundamental equation.
+**Accounting Principle**: Assets = Liabilities + Equity. Your opening balances must follow this fundamental accounting equation to ensure accurate financial reporting.
 
 ---
 
-## Before You Begin
+## System Requirements
+
+### Company Configuration
+- **Company Setup**: Company profile, currency, and fiscal year must be configured
+- **Chart of Accounts**: All necessary accounts created and properly categorized
+- **Journal Configuration**: At least one miscellaneous journal available for entries
+- **Currency Setup**: Base currency and any foreign currencies must be active
 
 ### Prerequisites
+1. **Financial Data Available**: Previous period's closing balances or initial capital information
+2. **Bank Information**: Current bank statements showing actual cash balances
+3. **Outstanding Items**: List of receivables, payables, and other outstanding balances
+4. **Asset Valuations**: Fixed asset values, inventory costs, and depreciation amounts
 
-1. **Company Setup Complete**: Your company profile, currency, and fiscal year are configured
-2. **Chart of Accounts Ready**: All necessary accounts are created and properly categorized
-3. **Financial Data Available**: You have your previous period's closing balances or initial capital information
+---
 
-### Required Information
+## Where to find it in the UI
 
-- Previous period's trial balance or balance sheet
-- Bank statements showing actual cash balances
-- Outstanding customer invoices (accounts receivable)
-- Outstanding vendor bills (accounts payable)
-- Inventory valuations
-- Fixed asset values and accumulated depreciation
-- Loan balances and other liabilities
+Navigate to **Accounting → Journal Entries → Create**
+
+Opening balances also appear in:
+- **Chart of Accounts**: Account balance information after posting entries
+- **Reports**: Trial balance and balance sheet showing opening position
+- **Dashboard**: Account summaries reflecting opening balance impacts
+
+**Tip**: The header's Help/Docs button opens this guide.
 
 ---
 

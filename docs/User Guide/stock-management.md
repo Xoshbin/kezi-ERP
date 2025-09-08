@@ -1,62 +1,51 @@
-# Stock Management User Guide
+# Stock Management: Inventory Tracking and Valuation
 
-## Overview
+This comprehensive guide explains how stock management works in your accounting system, covering inventory configuration, valuation methods, warehouse locations, and movement tracking. Written for all users — accountants and non‑accountants — it provides practical guidance following double‑entry accounting best practices.
 
-The stock management system provides comprehensive inventory tracking and valuation capabilities for your accounting application. It supports multiple valuation methods, hierarchical warehouse structures, and complete audit trails for all stock movements.
+---
 
-## Key Features
+## What is Stock Management?
 
-### 📦 **Product Inventory Configuration**
-- **Valuation Methods**: FIFO, LIFO, AVCO (Average Cost), and Standard Price
-- **Inventory Accounts**: Automatic configuration of inventory asset, COGS, stock input accounts
-- **Average Cost Tracking**: Real-time calculation and display for AVCO products
-- **Stock Movement History**: Complete audit trail of all product movements
-- **Cost Layer Visibility**: View FIFO/LIFO cost layers for detailed cost tracking
-- **Journal Entry Integration**: Automatic accounting entries for all inventory transactions
+Stock management is the systematic tracking and valuation of inventory throughout your business operations, providing accurate cost information for financial reporting and operational decision-making.
 
-### 🏢 **Stock Location Management**
-- **Hierarchical Structure**: Create parent-child relationships between locations
-- **Location Types**: Internal warehouses, customer locations, vendor locations, and inventory adjustment locations
-- **Multi-Company Support**: Company-specific location management
-- **Active/Inactive Status**: Control which locations are available for use
+- **Inventory Tracking**: Monitor stock quantities and locations in real-time
+- **Cost Valuation**: Calculate inventory costs using FIFO, LIFO, AVCO, or Standard Price methods
+- **Movement Recording**: Document all stock movements with complete audit trails
+- **Accounting Integration**: Automatic journal entries for inventory transactions
 
-### 📋 **Stock Movement Tracking**
-- **Movement Types**: Incoming, Outgoing, Internal Transfer, and Adjustment
-- **Status Workflow**: Draft → Confirmed → Done (with cancellation support)
-- **Source Document Integration**: Automatic creation from vendor bills and customer invoices
-- **Reference Numbers**: Optional reference tracking for better organization
-- **Date-based Filtering**: Find movements by date ranges
-- **Lock Date Enforcement**: Prevents modifications to closed periods
+**Accounting Purpose**: Stock management ensures accurate inventory valuation for balance sheet reporting and proper cost of goods sold calculation for income statement accuracy.
 
-## Getting Started
+---
 
-### 1. Configure Products for Inventory
+## System Requirements
 
-1. Navigate to **Products** in the **Inventory** section
-2. Create or edit a product
-3. Set the **Type** to "Storable Product"
-4. In the **Inventory Management** section:
-   - Choose a **Valuation Method** (FIFO, LIFO, AVCO, or Standard Price)
-   - Configure the required **Inventory Accounts**:
-     - Inventory Account (Asset account for stock value)
-     - Cost of Goods Sold Account (Expense account for sold items)
-     - Stock Input Account (Liability account for received stock)
+### Product Configuration
+- **Storable Products**: Products must be configured as "Storable Product" type for inventory tracking
+- **Valuation Methods**: FIFO, LIFO, AVCO (Average Cost), or Standard Price methods must be selected
+- **Account Setup**: Inventory, COGS, and stock input accounts must be configured
+- **Location Structure**: Warehouse locations must be created and organized
 
-### 2. Set Up Stock Locations
+### Prerequisites
+1. **Chart of Accounts**: Inventory asset, COGS expense, and stock input liability accounts configured
+2. **Product Catalog**: Products set up with appropriate inventory configuration
+3. **Location Hierarchy**: Warehouse and location structure established
+4. **User Permissions**: Access to inventory management and accounting features
 
-1. Navigate to **Stock Locations** in the **Inventory** section
-2. Create your warehouse structure:
-   - **Main Warehouse** (Internal type)
-   - **Sub-locations** within warehouses (set parent relationship)
-   - **Vendor Locations** (Vendor type)
-   - **Customer Locations** (Customer type)
-   - **Adjustment Locations** (Inventory Adjustment type) for corrections
+---
 
-### 3. Track Stock Movements
+## Where to find it in the UI
 
-Stock movements are automatically created when:
-- Vendor bills are posted (creates incoming movements)
-- Customer invoices are posted (creates outgoing movements)
+Navigate to **Inventory → Products** or **Inventory → Stock Locations**
+
+Stock management also appears in:
+- **Stock Movements**: View and create inventory movements
+- **Vendor Bills**: Automatic stock movements when posting bills for storable products
+- **Customer Invoices**: Automatic stock movements when posting invoices for storable products
+- **Reports**: Inventory valuation and movement reports
+
+**Tip**: The header's Help/Docs button opens this guide.
+
+---
 
 You can also create manual movements:
 1. Navigate to **Stock Movements** in the **Inventory** section
