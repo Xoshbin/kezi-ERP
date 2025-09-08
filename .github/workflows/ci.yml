@@ -35,11 +35,6 @@ jobs:
       - name: "Install Composer dependencies"
         uses: ramsey/composer-install@v3
 
-      # This step runs Pint in 'dry run' mode. It checks for style issues without fixing them.
-      # If any style issues are found, this step will fail, stopping the workflow.
-      - name: "Run Pint (dry run)"
-        run: vendor/bin/pint --test
-
       # This step creates a copy of the example environment file.
       - name: "Copy .env"
         run: cp .env.example .env
@@ -74,47 +69,25 @@ jobs:
           DB_DATABASE: database/database.sqlite
         run: vendor/bin/pest --ci --parallel
 
-  # The 'autofix' job automatically fixes code style and commits the changes.
-  autofix:
-    name: "Fix Style"
-    # 'needs: test' means this job will only run if the 'test' job completes successfully.
-    needs: test
-    runs-on: ubuntu-latest
-    steps:
-      # Checks out the code again for this job.
-      - name: "Checkout"
-        uses: actions/checkout@v4
-        with:
-          # A GitHub token with write permissions is required to push the new commit.
-          token: ${{ secrets.GITHUB_TOKEN }}
+      # This step runs PHPStan for static analysis.
+      - name: "Run PHPStan"
+        run: vendor/bin/phpstan analyse
 
-      # Sets up PHP again for this job's context.
-      - name: "Setup PHP"
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: '8.3'
-          coverage: none
-
-      # Installs Composer dependencies again for this job.
-      - name: "Install Composer dependencies"
-        uses: ramsey/composer-install@v3
-
-      # This step runs Pint to automatically fix any code style issues.
+      # This step runs Pint to automatically fix any code style issues after tests pass.
       - name: "Run Pint"
         run: vendor/bin/pint
 
       # This step commits the changes made by Pint back to the repository.
-      - name: "Commit changes"
+      - name: "Commit style fixes"
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
           commit_message: "style: apply automatic code style fixes"
-          # Prevent re-triggering CI by including [skip ci] in the commit message when desired.
 
   # The 'deploy' job is responsible for deploying the application.
   deploy:
     name: "Deploy"
-    # 'needs: autofix' ensures this job only runs after the 'autofix' job is successful.
-    needs: autofix
+    # 'needs: test' ensures this job only runs after the 'test' job is successful.
+    needs: test
     # 'if: github.ref == 'refs/heads/main'' ensures this job only runs for pushes to the 'main' branch.
     if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
