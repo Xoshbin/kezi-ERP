@@ -12,60 +12,58 @@ $isRtl = in_array($locale, ['ar', 'ckb']);
     <article class="docs-prose prose prose-slate dark:prose-invert max-w-none {{ $isRtl ? 'text-right' : '' }}" dir="{{ $isRtl ? 'rtl' : 'ltr' }}">
         <!-- Breadcrumb Navigation -->
         <nav class="mb-8" aria-label="Breadcrumb">
-            <ol class="flex items-center {{ $isRtl ? 'space-x-reverse space-x-2 flex-row-reverse' : 'space-x-2' }} text-sm text-gray-500 dark:text-gray-400">
-                @foreach($breadcrumbs as $crumb)
-                    <li class="flex items-center {{ $isRtl ? 'flex-row-reverse' : '' }}">
-                        @if($crumb['slug'])
-                            <a
-                                href="{{ url('/docs/' . $crumb['slug']) }}"
-                                class="font-medium transition-colors hover:text-gray-700 dark:hover:text-gray-300"
-                            >
-                                {{ $crumb['title'] }}
-                            </a>
-                        @else
-                            <span class="font-medium text-gray-900 dark:text-white">{{ $crumb['title'] }}</span>
-                        @endif
+            <ol class="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
+                @if($isRtl)
+                    @foreach(array_reverse($breadcrumbs) as $crumb)
+                        <li class="flex items-center">
+                            @if($crumb['slug'])
+                                <a
+                                    href="{{ url('/docs/' . $crumb['slug']) }}"
+                                    class="font-medium transition-colors hover:text-gray-700 dark:hover:text-gray-300"
+                                >
+                                    {{ $crumb['title'] }}
+                                </a>
+                            @else
+                                <span class="font-medium text-gray-900 dark:text-white">{{ $crumb['title'] }}</span>
+                            @endif
 
-                        @if(!$loop->last)
-                            <svg class="{{ $isRtl ? 'mr-2' : 'ml-2' }} h-4 w-4 flex-shrink-0 text-gray-400 {{ $isRtl ? 'rotate-180' : '' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
-                            </svg>
-                        @endif
-                    </li>
-                @endforeach
+                            @if(!$loop->last)
+                                <svg class="ms-2 h-4 w-4 flex-shrink-0 text-gray-400 breadcrumb-arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                                </svg>
+                            @endif
+                        </li>
+                    @endforeach
+                @else
+                    @foreach($breadcrumbs as $crumb)
+                        <li class="flex items-center">
+                            @if($crumb['slug'])
+                                <a
+                                    href="{{ url('/docs/' . $crumb['slug']) }}"
+                                    class="font-medium transition-colors hover:text-gray-700 dark:hover:text-gray-300"
+                                >
+                                    {{ $crumb['title'] }}
+                                </a>
+                            @else
+                                <span class="font-medium text-gray-900 dark:text-white">{{ $crumb['title'] }}</span>
+                            @endif
+
+                            @if(!$loop->last)
+                                <svg class="ms-2 h-4 w-4 flex-shrink-0 text-gray-400 breadcrumb-arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                                </svg>
+                            @endif
+                        </li>
+                    @endforeach
+                @endif
             </ol>
         </nav>
 
-        <!-- Page Header -->
-        <header class="mb-8 border-b border-gray-200 pb-8 dark:border-gray-700">
-            <div class="flex items-start {{ $isRtl ? 'justify-between flex-row-reverse' : 'justify-between' }} gap-4">
-                <div class="{{ $isRtl ? 'text-right' : '' }}">
-                    <h1 class="text-4xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-5xl">
-                        {{ $title }}
-                    </h1>
-
-                    @if(isset($description))
-                        <p class="mt-4 text-xl text-gray-600 dark:text-gray-400">
-                            {{ $description }}
-                        </p>
-                    @endif
-                </div>
-
-                @if(!empty($alternates))
-                    <div class="mt-1">
-                        <label for="doc-lang-select" class="sr-only">Language</label>
-                        <select id="doc-lang-select"
-                                class="block w-48 rounded-md border-gray-300 bg-white py-1.5 pl-3 pr-8 text-sm text-gray-900 shadow-sm focus:border-orange-500 focus:outline-none focus:ring-1 focus:ring-orange-500 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
-                                onchange="if (this.value) window.location.href = this.value">
-                            @foreach($alternates as $alt)
-                                <option value="{{ $alt['url'] }}" {{ $alt['active'] ? 'selected' : '' }}>
-                                    {{ $alt['label'] }}
-                                </option>
-                            @endforeach
-                        </select>
-                    </div>
-                @endif
-            </div>
+        <!-- Page Title -->
+        <header class="mb-8">
+            <h1 class="text-3xl font-bold tracking-tight text-gray-900 dark:text-white">
+                {{ $title }}
+            </h1>
         </header>
 
         <!-- Main Content -->
@@ -75,7 +73,7 @@ $isRtl = in_array($locale, ['ar', 'ckb']);
 
         <!-- Page Footer -->
         <footer class="mt-16 border-t border-gray-200 pt-8 dark:border-gray-700">
-            <div class="flex items-center {{ $isRtl ? 'justify-between flex-row-reverse' : 'justify-between' }}">
+            <div class="flex items-center justify-between">
                 <div class="text-sm text-gray-500 dark:text-gray-400">
                     <span>Last updated: </span>
                     <time datetime="{{ date('c', $mtime) }}">
@@ -83,7 +81,7 @@ $isRtl = in_array($locale, ['ar', 'ckb']);
                     </time>
                 </div>
 
-                <div class="flex items-center {{ $isRtl ? 'gap-4 flex-row-reverse' : 'gap-4' }}">
+                <div class="flex items-center gap-4">
                     <a
                         href="https://github.com/your-repo/edit/main/docs/{{ $slug }}.md"
                         target="_blank"
