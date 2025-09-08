@@ -751,6 +751,11 @@ categories:
         ar: "واجهة المستخدم"
         ckb: "ڕووکاری بەکارهێنەر"
         notes: "User interface"
+      Record:
+        en: "Record"
+        ar: "سجل"
+        ckb: "تۆمار"
+        notes: "User interface"
 
 # Usage Guidelines
 usage_guidelines:
