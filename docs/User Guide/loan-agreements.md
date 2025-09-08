@@ -1,7 +1,7 @@
 
-# Loan Agreements: End‑to‑End Guide
+# Loan Agreements: Comprehensive Loan Management and Accounting
 
-This guide explains how to manage loans in the system from setup to day‑to‑day operations, including schedules, interest accrual, repayments, and reclassification. It is written for both accountants and non‑accountants and follows standard double‑entry accounting principles.
+This comprehensive guide explains how loan agreements work in your accounting system, covering setup, payment schedules, interest accrual, and financial reporting. Written for all users — accountants and non‑accountants — it provides practical guidance following double‑entry accounting best practices.
 
 ---
 

@@ -1,43 +1,51 @@
-# Receipt and Payment Vouchers
+# Receipt and Payment Vouchers: Cash Flow Documentation and Control
 
-This guide explains how to create and manage receipt and payment vouchers in your accounting system. These vouchers record money movements between your company and partners, ensuring proper cash flow tracking and financial control.
+This comprehensive guide explains how receipt and payment vouchers work in your accounting system, covering creation, settlement processing, and cash flow tracking. Written for all users — accountants and non‑accountants — it provides practical guidance following double‑entry accounting best practices.
 
 ---
 
 ## What are Receipt and Payment Vouchers?
 
-**Receipt Vouchers**: Record money received by your company
-- Customer payments for invoices
-- Partner advances received
-- Other cash receipts
+Receipt and payment vouchers are documents that record money movements between your company and partners, providing essential cash flow tracking and financial control mechanisms.
 
-**Payment Vouchers**: Record money paid by your company
-- Vendor bill payments
-- Partner advances paid
-- Other cash disbursements
+- **Receipt Vouchers**: Record money received by your company from customers, advances, or other sources
+- **Payment Vouchers**: Record money paid by your company to vendors, for advances, or other disbursements
+- **Settlement Function**: Link vouchers to specific invoices or bills for account settlement
+- **Cash Flow Tracking**: Monitor all money movements with complete audit trails
 
-**Accounting Impact**: Each voucher creates journal entries that update your cash/bank accounts and corresponding receivable/payable accounts.
+**Accounting Purpose**: Each voucher creates journal entries that update cash/bank accounts and corresponding receivable/payable accounts, ensuring accurate cash flow reporting.
 
 ---
 
-## Types of Payment Vouchers
+## System Requirements
 
-### 1. Settlement Payments
-Payments that settle existing invoices or bills:
-- **Customer Receipts**: Collecting payment for outstanding invoices
-- **Vendor Payments**: Paying outstanding vendor bills
+### Banking Configuration
+- **Bank Journals**: Bank and cash journals must be configured for voucher processing
+- **Payment Methods**: Payment methods must be set up for different types of transactions
+- **Partner Records**: Customers and vendors must exist for voucher creation
+- **Currency Support**: Multi-currency capabilities must be configured if needed
 
-### 2. Partner Advances/Credits
-Payments without specific document settlement:
-- **Customer Advances**: Prepayments from customers for future orders
-- **Vendor Advances**: Prepayments to vendors for future purchases
-- **Partner Advances**: Cash advances to partners
+### Prerequisites
+1. **Journal Setup**: Bank, cash, and payment journals properly configured
+2. **Partner Information**: Customer and vendor records with payment details
+3. **Document Integration**: Invoice and bill systems configured for settlement linking
+4. **User Permissions**: Access to banking, cash management, and payment features
 
 ---
 
-## Creating Receipt Vouchers
+## Where to find it in the UI
 
 Navigate to **Accounting → Banking & Cash → Payments → Create**
+
+Receipt and payment vouchers also appear in:
+- **Payment List**: Overview of all vouchers with status information
+- **Partner Records**: Related voucher history showing payment patterns
+- **Bank Reconciliation**: Vouchers available for matching with bank statements
+- **Cash Flow Reports**: Voucher data contributing to cash flow analysis
+
+**Tip**: The header's Help/Docs button opens this guide.
+
+---
 
 ### Step 1: Basic Information
 
