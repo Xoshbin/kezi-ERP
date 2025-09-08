@@ -308,6 +308,40 @@ html {
 }
 
 /* RTL Typography improvements */
+[dir="rtl"] * {
+    text-align: right;
+}
+
+[dir="rtl"] h1, [dir="rtl"] h2, [dir="rtl"] h3, [dir="rtl"] h4, [dir="rtl"] h5, [dir="rtl"] h6 {
+    text-align: right;
+}
+
+/* RTL Sidebar styles */
+[dir="rtl"] aside[aria-label="Navigation"] {
+    text-align: right;
+}
+
+[dir="rtl"] aside[aria-label="Navigation"] ul {
+    text-align: right;
+}
+
+[dir="rtl"] aside[aria-label="Navigation"] li {
+    text-align: right;
+}
+
+[dir="rtl"] aside[aria-label="Navigation"] a {
+    text-align: right;
+}
+
+/* RTL Header navigation fixes */
+[dir="rtl"] .flex-row-reverse {
+    flex-direction: row-reverse;
+}
+
+/* RTL breadcrumb fixes */
+[dir="rtl"] .breadcrumb-separator {
+    transform: rotate(180deg);
+}
 [dir="rtl"] .docs-content {
     font-family: 'Segoe UI', Tahoma, Arial, Helvetica, sans-serif;
 }
@@ -337,4 +371,122 @@ html {
 [dir="rtl"] .docs-content td,
 [dir="rtl"] .docs-content th {
     text-align: right;
+}
+
+/* Header RTL Support */
+[dir="rtl"] .header-content {
+    direction: rtl;
+}
+
+/* Breadcrumb RTL Support */
+[dir="rtl"] .breadcrumb-item {
+    flex-direction: row-reverse;
+}
+
+/* Language selector RTL positioning */
+[dir="rtl"] .page-header {
+    direction: rtl;
+}
+
+[dir="rtl"] .language-selector {
+    margin-left: 0;
+    margin-right: auto;
+}
+
+/* Search input RTL support */
+[dir="rtl"] input[type="search"] {
+    text-align: right;
+    padding-left: 2.5rem;
+    padding-right: 1rem;
+}
+
+[dir="rtl"] .search-icon {
+    left: auto;
+    right: 0.75rem;
+}
+
+/* Sidebar positioning for RTL */
+[dir="rtl"] .sidebar {
+    border-left: 1px solid theme('colors.gray.200');
+    border-right: none;
+}
+
+[dir="rtl"] .dark .sidebar {
+    border-left-color: theme('colors.gray.700');
+}
+
+/* Tailwind v4 RTL Enhancements */
+/* Use logical properties for better RTL support */
+.rtl-logical-spacing {
+    margin-inline-start: 1rem;
+    margin-inline-end: 1rem;
+    padding-inline-start: 1rem;
+    padding-inline-end: 1rem;
+}
+
+/* Breadcrumb enhancements */
+[dir="rtl"] .breadcrumb svg {
+    transform: rotate(180deg);
+}
+
+/* Language selector positioning */
+[dir="rtl"] .language-selector {
+    text-align: right;
+}
+
+/* Navigation improvements */
+[dir="rtl"] .nav-flex {
+    flex-direction: row-reverse;
+}
+
+/* Search field RTL */
+[dir="rtl"] input[type="search"] {
+    text-align: right;
+}
+
+/* Grid layout enhancements for RTL */
+@media (min-width: 1024px) {
+    [dir="rtl"] .docs-grid {
+        grid-template-areas: "toc main sidebar";
+    }
+
+    [dir="ltr"] .docs-grid {
+        grid-template-areas: "sidebar main toc";
+    }
+}
+
+/* Better Arabic/Kurdish font rendering */
+[dir="rtl"] {
+    font-feature-settings: "liga" on, "kern" on;
+    text-rendering: optimizeLegibility;
+}
+
+/* Table RTL improvements */
+[dir="rtl"] table {
+    direction: rtl;
+}
+
+[dir="rtl"] th,
+[dir="rtl"] td {
+    text-align: right;
+}
+
+/* Code blocks stay LTR for readability */
+[dir="rtl"] pre,
+[dir="rtl"] code {
+    direction: ltr;
+    text-align: left;
+}
+
+/* But inline code should follow document direction */
+[dir="rtl"] p code,
+[dir="rtl"] li code {
+    direction: rtl;
+    text-align: right;
+}
+
+/* Page title RTL styling */
+[dir="rtl"] header h1 {
+    text-align: right;
+    font-family: 'Segoe UI', Tahoma, Arial, Helvetica, sans-serif;
 }
