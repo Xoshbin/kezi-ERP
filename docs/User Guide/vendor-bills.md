@@ -27,13 +27,17 @@ A vendor bill is a commercial document that:
 ### 2. Posted Status
 - Bill is finalized and approved
 - Creates journal entries
-- Cannot be edited (only credited)
+- Cannot be edited (only adjustment documents)
 - Available for payment
 
 ### 3. Paid Status
 - Vendor payment made
 - Accounts payable cleared
 - Transaction complete
+
+### 4. Cancelled Status
+- Bill is cancelled
+- No accounting impact
 
 ---
 
@@ -45,9 +49,10 @@ Navigate to **Accounting → Purchases → Vendor Bills → Create**
 
 **Vendor**: Select the vendor from the partner list
 **Bill Date**: Enter the vendor's invoice date
+**Accounting Date**: Date for accounting recognition
 **Due Date**: Payment deadline (auto-calculated from payment terms)
 **Currency**: Select bill currency (defaults to vendor currency)
-**Payment Terms**: Choose payment conditions (Net 30, Net 15, etc.)
+**Payment Terms**: Choose payment conditions ([Payment Terms Guide](payment-terms-guide.md))
 **Vendor Reference**: Enter vendor's invoice number
 **Reference**: Internal reference or purchase order number
 
@@ -75,6 +80,7 @@ Click **Add Line** to add purchased items:
 **Description**: Enter expense description
 **Amount**: Total expense amount
 **Account**: Select appropriate expense account
+**Asset Category**: For capital expenditures, select asset category to create an asset
 **Taxes**: Select applicable taxes
 
 ### Step 3: Taxes and Totals
@@ -82,7 +88,7 @@ Click **Add Line** to add purchased items:
 **Tax Calculation**: System automatically calculates taxes based on:
 - Product/service tax configuration
 - Vendor tax settings
-- Fiscal position rules
+- Tax rules and fiscal positions
 
 **Bill Totals**:
 - **Subtotal**: Sum of all line amounts before tax
@@ -92,7 +98,7 @@ Click **Add Line** to add purchased items:
 ### Step 4: Additional Information
 
 **Payment Terms**: Defines when payment is due
-**Fiscal Position**: Tax rules based on vendor location
+**Tax Rules**: Tax handling based on vendor location
 **Journal**: Purchase journal for posting (usually auto-selected)
 **Notes**: Additional terms or delivery instructions
 
@@ -114,18 +120,14 @@ When receiving bills in foreign currency:
 - Exchange Rate: 1 USD = 1,310 IQD
 - Accounting Amount: 2,620,000 IQD
 
-### Three-Way Matching
+### Payment Installments
 
-For purchase order-based procurement:
+The system supports payment installments based on payment terms:
 
-1. **Purchase Order**: Original purchase request
-2. **Goods Receipt**: Confirmation of delivery
-3. **Vendor Bill**: Invoice from vendor
-
-System validates:
-- Quantities match between documents
-- Prices are within tolerance
-- All items were actually received
+1. **Payment Terms Configuration**: Set up installment schedules
+2. **Automatic Generation**: Installments created when bill is posted
+3. **Multiple Due Dates**: Different amounts due on different dates
+4. **Payment Tracking**: Track payments against specific installments
 
 ### Tax Handling
 
@@ -155,15 +157,15 @@ System validates:
 3. **Approve**: Obtain necessary approvals
 4. **Post**: Click "Post" to finalize the bill
 
-**⚠️ Important**: Once posted, bills cannot be edited. Use credit notes for corrections.
+**⚠️ Important**: Once posted, bills cannot be edited. Use adjustment documents for corrections.
 
 ### Journal Entry Created
 
 When posted, the system creates:
 ```
-Dr. Office Supplies Expense    $500
-Dr. Input VAT                  $50
-    Cr. Accounts Payable           $550
+Dr. Office Supplies Expense    500,000 IQD
+Dr. Input VAT                   50,000 IQD
+    Cr. Accounts Payable            550,000 IQD
 ```
 
 ---
@@ -176,6 +178,8 @@ Dr. Input VAT                  $50
 **From Payments**: Create payment and link to bill
 **Batch Payments**: Pay multiple bills in one transaction
 
+For more information about payments, see the [Payments Guide](payments.md).
+
 ### Partial Payments
 
 Vendors may accept partial payments:
@@ -184,13 +188,13 @@ Vendors may accept partial payments:
 3. Outstanding balance tracked automatically
 4. Multiple payments can be applied
 
-### Credit Notes
+### Adjustment Documents
 
 For returns, discounts, or corrections:
-1. Click "Credit Note" on original bill
-2. Select items to credit
-3. Specify credit amount
-4. Post credit note
+1. Click "Adjustment Document" on original bill
+2. Select items to adjust
+3. Specify adjustment amount
+4. Post adjustment document
 5. Apply to vendor account
 
 ---
@@ -222,10 +226,10 @@ For returns, discounts, or corrections:
 ## Approval Workflows
 
 ### Purchase Authorization Limits
-**Department Managers**: Up to $5,000
-**Directors**: Up to $25,000
-**CFO**: Up to $100,000
-**CEO**: Above $100,000
+**Department Managers**: Up to 5,000,000 IQD
+**Directors**: Up to 25,000,000 IQD
+**CFO**: Up to 100,000,000 IQD
+**CEO**: Above 100,000,000 IQD
 
 ### Approval Process
 1. **Requestor**: Creates bill in draft status
@@ -276,6 +280,26 @@ For regular vendor expenses:
 
 ---
 
+## File Attachments
+
+Vendor bills support file attachments:
+
+### Supported File Types
+- PDF documents
+- Word documents (DOC, DOCX)
+- Excel spreadsheets (XLS, XLSX)
+- Images (JPG, PNG, GIF)
+- Text files (TXT)
+
+### Attachment Features
+- Multiple files per bill
+- Maximum 10MB per file
+- Up to 10 files per bill
+- Automatic file validation
+- Secure file storage
+
+---
+
 ## Reporting and Analysis
 
 ### Purchase Reports
@@ -317,31 +341,32 @@ For regular vendor expenses:
 ## Common Scenarios
 
 ### Scenario 1: Office Supplies Purchase
-Purchase office supplies for $500 plus 10% VAT:
+Purchase office supplies for 500,000 IQD plus 10% VAT:
 
 1. Select office supplies vendor
-2. Add office supplies line (Amount: $500)
-3. System calculates VAT: $50
-4. Total bill: $550
+2. Add office supplies line (Amount: 500,000 IQD)
+3. System calculates VAT: 50,000 IQD
+4. Total bill: 550,000 IQD
 5. Post bill
 
 ### Scenario 2: Professional Services
-Legal services bill for $3,000:
+Legal services bill for 3,000,000 IQD:
 
 1. Select law firm vendor
-2. Add legal services line (Hours: 20, Rate: $150)
+2. Add legal services line (Hours: 20, Rate: 150,000 IQD)
 3. No VAT (professional services exempt)
-4. Total bill: $3,000
+4. Total bill: 3,000,000 IQD
 5. Post bill
 
 ### Scenario 3: Equipment Purchase
-Purchase computer equipment for $5,000:
+Purchase computer equipment for 5,000,000 IQD:
 
 1. Select equipment vendor
-2. Add computer equipment line (Qty: 5, Cost: $1,000)
+2. Add computer equipment line (Qty: 5, Cost: 1,000,000 IQD)
 3. Assign to Fixed Assets account
-4. Apply appropriate taxes
-5. Post bill
+4. Select asset category to create asset
+5. Apply appropriate taxes
+6. Post bill
 
 ---
 
@@ -359,22 +384,23 @@ Purchase computer equipment for $5,000:
 **Solution**:
 - Verify vendor tax configuration
 - Check product tax settings
-- Review fiscal position rules
+- Review tax rules and settings
 
-**Problem**: Three-way matching fails
+**Problem**: Payment installment issues
 **Solution**:
-- Check purchase order quantities
-- Verify goods receipt entries
-- Review price tolerances
+- Check payment terms configuration
+- Verify installment schedules
+- Review due date calculations
 
 ---
 
 ## Integration Points
 
-### Purchase Orders
-- Bills can reference purchase orders
-- Automatic matching of quantities and prices
-- Variance reporting for discrepancies
+### Payment System
+- Bills link to payments via document links
+- Support for partial and installment payments
+- Multi-currency payment handling
+- Automatic payment allocation
 
 ### Inventory Management
 - Inventory bills update stock levels
@@ -382,9 +408,14 @@ Purchase computer equipment for $5,000:
 - Integration with stock movements
 
 ### Fixed Assets
-- Capital expenditure bills create assets
-- Automatic depreciation setup
-- Asset register updates
+- Capital expenditure bills create assets via asset categories
+- Automatic asset creation from bill lines
+- Integration with asset depreciation system
+
+### Analytic Accounting
+- Bills support analytic account assignment
+- Cost center and project tracking
+- Management reporting integration
 
 ---
 
