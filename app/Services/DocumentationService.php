@@ -42,7 +42,24 @@ class DocumentationService
     {
         $files = collect(File::allFiles($this->root))
             ->filter(fn ($file) => Str::endsWith($file->getFilename(), '.md'))
-            ->reject(fn ($file) => in_array($file->getFilename(), $this->exclude, true))
+            ->reject(function ($file) {
+                $relPath = Str::after($file->getPathname(), rtrim($this->root, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR);
+
+                // Check if filename is in exclude list
+                if (in_array($file->getFilename(), $this->exclude, true)) {
+                    return true;
+                }
+
+                // Check if any part of the path contains excluded folders
+                $pathParts = explode(DIRECTORY_SEPARATOR, $relPath);
+                foreach ($pathParts as $part) {
+                    if (in_array($part, $this->exclude, true)) {
+                        return true;
+                    }
+                }
+
+                return false;
+            })
             ->values();
 
         $currentLocale = app()->getLocale();
@@ -308,8 +325,24 @@ class DocumentationService
 
     protected function resolvePathFromSlug(string $slug): ?string
     {
+        // First, try the exact slug as requested
         $candidate = $this->root . DIRECTORY_SEPARATOR . str_replace('/', DIRECTORY_SEPARATOR, $slug) . '.md';
-        if (File::exists($candidate)) return $candidate;
+        if (File::exists($candidate)) {
+            return $candidate;
+        }
+
+        // If the slug has a locale suffix (e.g., .ckb, .ar), try falling back to the base version
+        if (Str::contains($slug, '.')) {
+            $localePattern = '/\.(ckb|ar)$/';
+            if (preg_match($localePattern, $slug)) {
+                // Remove the locale suffix and try the base version
+                $baseSlug = preg_replace($localePattern, '', $slug);
+                $baseCandidate = $this->root . DIRECTORY_SEPARATOR . str_replace('/', DIRECTORY_SEPARATOR, $baseSlug) . '.md';
+                if (File::exists($baseCandidate)) {
+                    return $baseCandidate;
+                }
+            }
+        }
 
         // Future: locale-aware resolution like docs/{locale}/{slug}.md
         return null;
