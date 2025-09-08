@@ -38,7 +38,7 @@ Opening balances are the starting amounts in your accounts at the beginning of y
 
 ## Step 1: Prepare Your Chart of Accounts
 
-Navigate to **Accounting → Configuration → Chart of Accounts**
+Navigate to **Settings → Accounts**
 
 ### Essential Account Categories
 
@@ -63,7 +63,7 @@ Navigate to **Accounting → Configuration → Chart of Accounts**
 Ensure each account has:
 - ✅ Correct account type (Asset, Liability, Equity)
 - ✅ Proper currency settings
-- ✅ Reconciliation enabled for bank accounts
+- ✅ Reconciliation enabled for bank accounts (if using [bank reconciliation](bank-reconciliation.md))
 
 ---
 
@@ -73,10 +73,11 @@ Navigate to **Accounting → Journal Entries → Create**
 
 ### Journal Entry Header
 
-1. **Journal**: Select "Miscellaneous Operations" or create an "Opening Balance" journal
-2. **Date**: Use the first day of your accounting period
-3. **Reference**: "Opening Balances" or "OB-2024"
-4. **Description**: "Opening balances as of [date]"
+1. **Journal**: Select your default miscellaneous journal or create an "Opening Balance" journal
+2. **Currency**: Select your company's base currency
+3. **Date**: Use the first day of your accounting period
+4. **Reference**: "Opening Balances" or "OB-2024"
+5. **Description**: "Opening balances as of [date]"
 
 ### Adding Journal Entry Lines
 
@@ -84,16 +85,16 @@ For each account with an opening balance:
 
 **Asset Accounts** (Normal Debit Balance)
 - **Debit**: Enter the opening balance amount
-- **Credit**: Leave blank
+- **Credit**: Leave blank (0)
 - **Account**: Select the specific asset account
 
 **Liability Accounts** (Normal Credit Balance)
-- **Debit**: Leave blank  
+- **Debit**: Leave blank (0)
 - **Credit**: Enter the opening balance amount
 - **Account**: Select the specific liability account
 
 **Equity Accounts** (Normal Credit Balance)
-- **Debit**: Leave blank
+- **Debit**: Leave blank (0)
 - **Credit**: Enter the opening balance amount  
 - **Account**: Select the specific equity account
 
@@ -135,7 +136,7 @@ For each account with an opening balance:
 
 1. Click **Save** to save as draft
 2. Review all line items carefully
-3. Click **Post** to finalize the opening balances
+3. Click **Post Entry** to finalize the opening balances
 
 **⚠️ Important**: Once posted, opening balance entries should not be modified. Create adjustment entries if corrections are needed.
 
@@ -153,11 +154,19 @@ Navigate to **Accounting → Reports → Balance Sheet**
 
 ### Check Individual Account Balances
 
-Navigate to **Accounting → Chart of Accounts**
+Navigate to **Settings → Accounts**
 
 1. Click on each account to view its balance
 2. Verify opening amounts match your source documents
 3. Ensure bank account balances match actual bank statements
+
+### Use Trial Balance Report
+
+Navigate to **Accounting → Reports → Trial Balance**
+
+1. Run trial balance as of your opening date
+2. Verify all balances are correct
+3. Confirm total debits equal total credits
 
 ---
 
@@ -171,13 +180,15 @@ If your company operates in multiple currencies:
 2. **Foreign Currency**: Use exchange rates as of the opening date
 3. **Exchange Differences**: Record any translation adjustments in equity
 
-### Customer and Vendor Balances
+### Partner Balances
 
-For detailed receivables and payables:
+For detailed receivables and payables using the partner system:
 
-1. **Individual Invoices**: Create specific invoice records for each outstanding amount
-2. **Aging**: Ensure due dates reflect actual aging of receivables/payables
-3. **Partner Assignment**: Link each balance to the correct customer or vendor
+1. **Partner Records**: Ensure all partners (customers/vendors) are created in the system
+2. **Individual Invoices**: Create specific [invoice records](customer-invoices.md) for each outstanding customer amount
+3. **Vendor Bills**: Create specific [vendor bills](vendor-bills.md) for each outstanding payable
+4. **Partner Assignment**: Link each balance to the correct partner
+5. **Payment Terms**: Set up appropriate [payment terms](payment-terms-guide.md) for partners
 
 ### Inventory Opening Balances
 
@@ -186,6 +197,16 @@ For inventory-based businesses:
 1. **Product Records**: Ensure all products are created in the system
 2. **Valuation Method**: Use consistent costing method (FIFO, Average, etc.)
 3. **Stock Locations**: Assign inventory to correct warehouse locations
+4. **Stock Management**: See [stock management guide](stock-management-user-guide.md) for details
+
+### Bank Reconciliation Setup
+
+If using bank reconciliation features:
+
+1. **Enable Reconciliation**: Ensure "Enable Reconciliation" is activated in company settings
+2. **Account Settings**: Enable "Allow Reconciliation" for bank accounts
+3. **Bank Statements**: Prepare to import [bank statements](bank-statements.md) for reconciliation
+4. **Opening Reconciliation**: Consider performing [bank reconciliation](bank-reconciliation.md) for the opening date
 
 ---
 
@@ -225,13 +246,19 @@ For inventory-based businesses:
 **Solution**:
 1. Verify the statement date matches your opening date
 2. Check for outstanding checks or deposits in transit
-3. Consider creating a bank reconciliation for the opening date
+3. Consider creating a [bank reconciliation](bank-reconciliation.md) for the opening date
 
-**Problem**: Customer/vendor balances seem incorrect
+**Problem**: Partner balances seem incorrect
 **Solution**:
 1. Review aged receivables/payables reports from previous system
 2. Verify individual invoice/bill amounts
 3. Check for payments that crossed period boundaries
+
+**Problem**: Multi-currency complications
+**Solution**:
+1. Ensure exchange rates are set correctly for the opening date
+2. Use the company's base currency for opening balance entry
+3. Consider currency translation adjustments in equity accounts
 
 ---
 
@@ -239,10 +266,11 @@ For inventory-based businesses:
 
 After establishing opening balances:
 
-1. **Bank Reconciliation**: Reconcile opening bank balances with statements
-2. **Customer Invoices**: Begin processing new customer transactions
-3. **Vendor Bills**: Start recording new vendor transactions
-4. **Regular Operations**: Proceed with day-to-day accounting activities
+1. **Bank Reconciliation**: Reconcile opening bank balances with [bank statements](bank-statements.md)
+2. **Customer Invoices**: Begin processing new [customer transactions](customer-invoices.md)
+3. **Vendor Bills**: Start recording new [vendor transactions](vendor-bills.md)
+4. **Payment Processing**: Set up [payment processing](payments.md) for ongoing operations
+5. **Regular Operations**: Proceed with day-to-day accounting activities
 
 Your opening balances are now established and your accounting system is ready for regular operations. All future transactions will build upon this solid foundation.
 
