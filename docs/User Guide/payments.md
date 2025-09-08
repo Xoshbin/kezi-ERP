@@ -1,6 +1,6 @@
-# Payments
+# Payments: Money Movement and Cash Flow Management
 
-This comprehensive guide explains how Payments work in the system, covering creation, management, and reconciliation. Written for all users — accountants and non‑accountants — it provides practical guidance following double‑entry accounting best practices.
+This comprehensive guide explains how payments work in the accounting system, covering creation, management, multi-currency support, and reconciliation. Written for all users — accountants and non‑accountants — it provides practical guidance following double‑entry accounting best practices.
 
 ---
 
@@ -25,20 +25,33 @@ Each Payment includes:
 
 ---
 
-## Payment Methods
+## System Requirements
 
-The system supports multiple payment methods:
+### Journal Configuration
+- **Bank Journals**: At least one bank journal configured for payment processing
+- **Payment Methods**: Payment methods must be set up for processing options
+- **Currency Setup**: Currencies must be active and exchange rates configured
+- **Partner Records**: Customers and vendors must exist for payment linking
 
-- **Manual** — General manual entry
-- **Check** — Paper check payments
-- **Bank Transfer** — Electronic bank transfers
-- **Credit Card** — Credit card transactions
-- **Debit Card** — Debit card transactions
-- **Cash** — Physical cash payments
-- **Wire Transfer** — International wire transfers
-- **ACH** — Automated Clearing House transfers
-- **SEPA** — Single Euro Payments Area transfers
-- **Online Payment** — Digital payment platforms
+### Prerequisites
+1. **Bank Account Setup**: Bank journals properly configured with accounting integration
+2. **Partner Information**: Customer or vendor records created with payment details
+3. **Invoice/Bill Records**: For linked payments, invoices or bills must be posted
+4. **User Permissions**: Appropriate access to banking and payment features
+
+---
+
+## Where to find it in the UI
+
+Navigate to **Accounting → Banking & Cash → Payments**
+
+Payments also appear in:
+- **Customer Invoices**: "Register Payment" action for posted unpaid invoices
+- **Vendor Bills**: "Register Payment" action for posted unpaid bills  
+- **Bank Reconciliation**: Confirmed payments available for matching with bank statements
+- **Dashboard**: Recent payment activity and cash flow summaries
+
+**Tip**: The header's Help/Docs button opens this guide.
 
 ---
 
@@ -75,15 +88,20 @@ Payments follow a controlled workflow to ensure data integrity:
 
 ---
 
-## Where do Payments appear in the system?
+## Payment Methods
 
-Navigate to payments through: **Accounting → Banking & Cash → Payments**
+The system supports multiple payment methods:
 
-Payments also appear in:
-- **Invoices**: Register Payment action for posted (unpaid) invoices
-- **Vendor Bills**: Register Payment action for posted (unpaid) bills
-- **Bank Reconciliation**: Confirmed payments are matched to bank statement lines
-- **Journal Entries**: View accounting impact of confirmed payments
+- **Manual** — General manual entry
+- **Check** — Paper check payments
+- **Bank Transfer** — Electronic bank transfers
+- **Credit Card** — Credit card transactions
+- **Debit Card** — Debit card transactions
+- **Cash** — Physical cash payments
+- **Wire Transfer** — International wire transfers
+- **ACH** — Automated Clearing House transfers
+- **SEPA** — Single Euro Payments Area transfers
+- **Online Payment** — Digital payment platforms
 
 ---
 

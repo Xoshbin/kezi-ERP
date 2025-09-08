@@ -1,43 +1,51 @@
-# Payment Terms System Guide
+# Payment Terms: Standardized Payment Conditions and Due Date Management
 
-## Overview
+This comprehensive guide explains how payment terms work in your accounting system, covering setup, configuration, automatic due date calculations, and installment generation. Written for all users — accountants and non‑accountants — it provides practical guidance following double‑entry accounting best practices.
 
-The Payment Terms system allows you to define standardized payment conditions for your invoices and vendor bills. When a payment term is applied to a document, the system automatically calculates due dates and generates payment installments.
+---
 
-## Getting Started
+## What are Payment Terms?
 
-### 1. Seeding Common Payment Terms
+Payment terms are standardized payment conditions that define when and how invoices and bills should be paid, automatically calculating due dates and generating payment installments when applied to documents.
 
-When you first set up the system, you can seed common payment terms using:
+- **Due Date Calculation**: Automatically calculate when payments are due based on predefined rules
+- **Installment Generation**: Create multiple payment installments for complex payment arrangements
+- **Early Payment Discounts**: Support for discount terms encouraging prompt payment
+- **Standardized Conditions**: Ensure consistent payment expectations across all transactions
 
-```bash
-php artisan db:seed --class=PaymentTermsSeeder
-```
+**Accounting Purpose**: Payment terms provide structured payment expectations that support cash flow management and accounts receivable/payable aging analysis.
 
-This will create 16 common payment terms for all companies, including:
+---
 
-- **Immediate** - Payment due immediately upon receipt
-- **Net Terms** - Net 15, Net 30, Net 45, Net 60
-- **Early Payment Discounts** - 2% 10 Net 30, 1% 15 Net 30, 3% 7 Net 21
-- **End of Month Terms** - EOM, EOM + 15, EOM + 30
-- **Day of Month Terms** - 1st of Next Month, 15th of Next Month
-- **Installment Terms** - 50/50 split, 30-60-90 days, Quarterly payments
+## System Requirements
 
-### 2. Managing Payment Terms
+### Company Configuration
+- **Payment Terms Setup**: Payment terms must be configured for company use
+- **Currency Support**: Terms must be compatible with invoice and bill currencies
+- **Date Calculations**: System must support various due date calculation methods
+- **Discount Processing**: Early payment discount processing must be enabled if using discount terms
 
-Go to **Settings → Payment Terms** to:
-- View existing payment terms
-- Create new payment terms
-- Edit existing payment terms
-- Activate/deactivate payment terms
+### Prerequisites
+1. **Company Setup**: Company must be configured with appropriate payment processing settings
+2. **Invoice/Bill Configuration**: Customer invoices and vendor bills must support payment term assignment
+3. **Accounting Integration**: Payment terms must integrate with accounts receivable and payable processes
+4. **User Permissions**: Access to settings and payment term configuration
 
-## Using Payment Terms
+---
 
-### In Invoices
+## Where to find it in the UI
 
-1. Go to **Accounting → Invoices → Create Invoice**
-2. Fill in the basic invoice details
-3. Select a **Payment Term** from the dropdown
+Navigate to **Settings → Payment Terms**
+
+Payment terms also appear in:
+- **Customer Invoices**: Payment term selection during invoice creation
+- **Vendor Bills**: Payment term assignment for bill processing
+- **Customer Records**: Default payment terms for specific customers
+- **Vendor Records**: Default payment terms for specific vendors
+
+**Tip**: The header's Help/Docs button opens this guide.
+
+---
 4. The system will use this term to calculate installments when the invoice is posted
 
 ### In Vendor Bills

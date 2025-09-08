@@ -1,49 +1,79 @@
 # Customer Invoices: Sales Documentation and Revenue Recognition
 
-This guide explains how to create, manage, and process customer invoices in your accounting system. Invoices are formal requests for payment that document sales transactions and trigger revenue recognition in your financial records.
+This comprehensive guide explains how customer invoices work in your accounting system, covering creation, payment processing, multi-currency support, and revenue recognition. Written for all users — accountants and non‑accountants — it provides practical guidance following double‑entry accounting best practices.
 
 ---
 
 ## What is a Customer Invoice?
 
-A customer invoice is a commercial document that:
-- **Records a Sale**: Documents goods sold or services provided
-- **Requests Payment**: Formally asks the customer to pay
-- **Recognizes Revenue**: Creates accounting entries for income
-- **Tracks Receivables**: Establishes amounts owed by customers
+A customer invoice is a commercial document that formally requests payment for goods sold or services provided, creating legal and accounting records for the transaction.
 
-**Accounting Impact**: Posted invoices increase revenue and accounts receivable, following the accrual accounting principle.
+- **Records a Sale**: Documents goods sold or services provided to customers
+- **Requests Payment**: Formally asks the customer to pay for delivered goods/services
+- **Recognizes Revenue**: Creates accounting entries for income under accrual accounting
+- **Tracks Receivables**: Establishes amounts owed by customers in accounts receivable
+
+**Accounting Impact**: Posted invoices increase revenue and accounts receivable, following the accrual accounting principle that recognizes income when earned, not when cash is received.
 
 ---
 
-## Invoice Lifecycle
+## System Requirements
 
-### 1. Draft Status
-- Invoice is being prepared
-- Can be edited or deleted
-- No accounting impact
-- No invoice number assigned yet
+### Company Configuration
+- **Customer Setup**: Customer records must be created before invoicing
+- **Product Catalog**: Products and services must be configured with pricing
+- **Tax Configuration**: Tax rates and rules must be set up for applicable jurisdictions
+- **Payment Terms**: Payment terms must be defined for customer agreements
+
+### Prerequisites
+1. **Customer Record**: Customer must exist in the system with complete information
+2. **Product/Service Setup**: Items to be invoiced must be configured in the catalog
+3. **Currency Configuration**: Invoice currency must be active and configured
+4. **User Permissions**: Appropriate access to sales and accounting features
+
+---
+
+## Where to find it in the UI
+
+Navigate to **Accounting → Sales → Invoices**
+
+Customer invoices also appear in:
+- **Create Action**: "Create" button for new invoice entry
+- **Customer Records**: Related invoices section showing invoice history
+- **Dashboard**: Recent invoices and sales summaries
+
+**Tip**: The header's Help/Docs button opens this guide.
+
+---
+
+## Invoice Status Workflow
+
+### Draft Status
+- Invoice is being prepared and can be freely edited
+- No accounting impact created yet
+- No permanent invoice number assigned
 - Not visible to customer
+- Can be deleted if no longer needed
 
-### 2. Posted Status
-- Invoice is finalized with a permanent invoice number
-- Creates journal entries for accounting
+### Posted Status
+- Invoice is finalized with permanent invoice number
+- Journal entries created for accounting recognition
 - Cannot be edited (use adjustment documents for corrections)
-- Available for payment
+- Available for customer payment
 - Stock moves generated for storable products
-- Payment installments generated based on payment terms
+- Payment installments created based on payment terms
 
-### 3. Paid Status
-- Customer payment received and applied
-- Payment state shows as "Paid"
-- Accounts receivable cleared
-- Transaction complete
+### Paid Status
+- Customer payment received and applied to invoice
+- Payment state shows as "Paid" 
+- Accounts receivable balance cleared
+- Transaction cycle complete
 
-### 4. Cancelled Status
-- Invoice has been cancelled
-- Reversing journal entry created
+### Cancelled Status
+- Invoice has been cancelled before or after posting
+- Reversing journal entry created if previously posted
 - Cannot receive payments
-- Audit trail maintained
+- Complete audit trail maintained
 
 ---
 
