@@ -1,0 +1,763 @@
+# Accounting Terminology Glossary
+# Official terminology dictionary for the Jmeryar NotebookLM application
+
+metadata:
+  title: "Accounting Terminology Glossary"
+  description: "Official terminology dictionary for the Jmeryar NotebookLM application"
+  version: "1.0"
+  lastUpdated: "2025-09-08"
+  languages: ["en", "ar", "ckb"]
+  languageNames:
+    en: "English"
+    ar: "Arabic"
+    ckb: "Kurdish (Sorani)"
+
+categories:
+  core_accounting:
+    name:
+      en: "Core Accounting Terms"
+      ar: "المصطلحات المحاسبية الأساسية"
+      ckb: "زاراوەکانی بنەڕەتی ژمێریاری"
+    terms:
+      accounting:
+        en: "Accounting"
+        ar: "المحاسبة"
+        ckb: "ژمێریاری"
+        notes: "Core discipline"
+      account:
+        en: "Account"
+        ar: "الحساب"
+        ckb: "هەژمار"
+        notes: "Individual account"
+      accounts:
+        en: "Accounts"
+        ar: "الحسابات"
+        ckb: "هەژمارەکان"
+        notes: "Multiple accounts"
+      journal:
+        en: "Journal"
+        ar: "اليومية"
+        ckb: "پەرتووکی ڕۆژانە"
+        notes: "Daily record book"
+      journal_entry:
+        en: "Journal Entry"
+        ar: "القيد اليومي"
+        ckb: "تۆماری هەژمار"
+        notes: "Individual transaction record"
+      ledger:
+        en: "Ledger"
+        ar: "دفتر الأستاذ"
+        ckb: "پەرتووکی گشتی"
+        notes: "General ledger"
+      transaction:
+        en: "Transaction"
+        ar: "المعاملة"
+        ckb: "مامەڵە"
+        notes: "Business transaction"
+      entry:
+        en: "Entry"
+        ar: "القيد"
+        ckb: "تۆمار"
+        notes: "Record entry"
+
+  debit_credit:
+    name:
+      en: "Debit and Credit"
+      ar: "المدين والدائن"
+      ckb: "قەرزدار و قەرزخواز"
+    terms:
+      debit:
+        en: "Debit"
+        ar: "مدين"
+        ckb: "قەرزدار (مدين)"
+        notes: "Left side of account"
+      credit:
+        en: "Credit"
+        ar: "دائن"
+        ckb: "قەرزخواز"
+        notes: "Right side of account"
+      debit_amount:
+        en: "Debit Amount"
+        ar: "المبلغ المدين"
+        ckb: "بڕی قەرزدار"
+        notes: "Amount on debit side"
+      credit_amount:
+        en: "Credit Amount"
+        ar: "المبلغ الدائن"
+        ckb: "بڕی قەرزخواز"
+        notes: "Amount on credit side"
+      total_debit:
+        en: "Total Debit"
+        ar: "إجمالي المدين"
+        ckb: "کۆی قەرزدار"
+        notes: "Sum of all debits"
+      total_credit:
+        en: "Total Credit"
+        ar: "إجمالي الدائن"
+        ckb: "کۆی قەرزخواز"
+        notes: "Sum of all credits"
+
+  financial_statements:
+    name:
+      en: "Financial Statements"
+      ar: "القوائم المالية"
+      ckb: "ڕاپۆرتەکانی دارایی"
+    terms:
+      balance_sheet:
+        en: "Balance Sheet"
+        ar: "الميزانية العمومية"
+        ckb: "پەڕەی هاوسەنگی"
+        notes: "Statement of financial position"
+      income_statement:
+        en: "Income Statement"
+        ar: "قائمة الدخل"
+        ckb: "لیستی داهات"
+        notes: "Profit and loss statement"
+      cash_flow_statement:
+        en: "Cash Flow Statement"
+        ar: "قائمة التدفقات النقدية"
+        ckb: "لیستی جووڵەی پارە"
+        notes: "Statement of cash flows"
+      trial_balance:
+        en: "Trial Balance"
+        ar: "ميزان المراجعة"
+        ckb: "پێداچونەوەی هاوسەنگی"
+        notes: "Trial balance"
+      balance:
+        en: "Balance"
+        ar: "الرصيد"
+        ckb: "یەکە"
+        notes: "Account balance"
+      opening_balance:
+        en: "Opening Balance"
+        ar: "الرصيد الافتتاحي"
+        ckb: "یەکەی دەستپێکردن"
+        notes: "Beginning balance"
+      closing_balance:
+        en: "Closing Balance"
+        ar: "الرصيد الختامي"
+        ckb: "یەکەی کۆتایی"
+        notes: "Ending balance"
+
+  business_documents:
+    name:
+      en: "Business Documents"
+      ar: "المستندات التجارية"
+      ckb: "بەڵگەنامەکانی بازرگانی"
+    terms:
+      invoice:
+        en: "Invoice"
+        ar: "المبیعات"
+        ckb: "پسوولەکانی فرۆشتن"
+        notes: "Sales invoice"
+      bill:
+        en: "Bill"
+        ar: "المشتریات"
+        ckb: "پسوولەکانی کڕین"
+        notes: "Purchase bill"
+      receipt:
+        en: "Receipt"
+        ar: "الإيصال"
+        ckb: "پسوولەی وەرگرتن"
+        notes: "Payment receipt"
+      voucher:
+        en: "Voucher"
+        ar: "السند"
+        ckb: "بەڵگە(السند)"
+        notes: "Supporting document"
+      reference:
+        en: "Reference"
+        ar: "المرجع"
+        ckb: "ژمارەی بەڵگە"
+        notes: "Document reference number"
+      document:
+        en: "Document"
+        ar: "الوثيقة"
+        ckb: "بەڵگەنامە(الوثيقة)"
+        notes: "Official document"
+      attachment:
+        en: "Attachment"
+        ar: "المرفق"
+        ckb: "پاشکۆ"
+        notes: "File attachment"
+
+  banking_cash:
+    name:
+      en: "Banking and Cash"
+      ar: "المصارف والنقد"
+      ckb: "بانک و کاش"
+    terms:
+      bank:
+        en: "Bank"
+        ar: "البنك"
+        ckb: "بانک"
+        notes: "Financial institution"
+      bank_statement:
+        en: "Bank Statement"
+        ar: "كشف الحساب البنكي"
+        ckb: "ڕاپۆرتی هەژماری بانک"
+        notes: "Bank account statement"
+      cash:
+        en: "Cash"
+        ar: "النقد"
+        ckb: "کاش"
+        notes: "Physical money"
+      bank_account:
+        en: "Bank Account"
+        ar: "الحساب المصرفي"
+        ckb: "هەژماری بانک"
+        notes: "Bank account"
+      reconciliation:
+        en: "Reconciliation"
+        ar: "التسوية"
+        ckb: "هاوسەنگی بانکی"
+        notes: "Bank reconciliation"
+      payment:
+        en: "Payment"
+        ar: "الدفع"
+        ckb: "پارەدان"
+        notes: "Money payment"
+      receipt:
+        en: "Receipt"
+        ar: "الاستلام"
+        ckb: "وەرگرتن"
+        notes: "Money receipt"
+      transfer:
+        en: "Transfer"
+        ar: "التحويل"
+        ckb: "گواستنەوە"
+        notes: "Money transfer"
+
+  assets_liabilities:
+    name:
+      en: "Assets and Liabilities"
+      ar: "الأصول والالتزامات"
+      ckb: "سامان و قەرزەکان"
+    terms:
+      asset:
+        en: "Asset"
+        ar: "الأصل"
+        ckb: "سامان"
+        notes: "Economic resource"
+      assets:
+        en: "Assets"
+        ar: "الأصول"
+        ckb: "سامانەکان"
+        notes: "Multiple assets"
+      liability:
+        en: "Liability"
+        ar: "الالتزام"
+        ckb: "قەرز"
+        notes: "Financial obligation"
+      liabilities:
+        en: "Liabilities"
+        ar: "الالتزامات"
+        ckb: "قەرزەکان"
+        notes: "Multiple liabilities"
+      equity:
+        en: "Equity"
+        ar: "حقوق الملكية"
+        ckb: "خاوەندارێتی"
+        notes: "Owner's equity"
+      capital:
+        en: "Capital"
+        ar: "رأس المال"
+        ckb: "سەرمایە"
+        notes: "Investment capital"
+      fixed_assets:
+        en: "Fixed Assets"
+        ar: "الأصول الثابتة"
+        ckb: "سامانی جێگیر"
+        notes: "Long-term assets"
+      current_assets:
+        en: "Current Assets"
+        ar: "الأصول المتداولة"
+        ckb: "سامانی گۆڕاو"
+        notes: "Short-term assets"
+
+  revenue_expenses:
+    name:
+      en: "Revenue and Expenses"
+      ar: "الإيرادات والمصروفات"
+      ckb: "داهات و خەرجییەکان"
+    terms:
+      revenue:
+        en: "Revenue"
+        ar: "الإيراد"
+        ckb: "داهات"
+        notes: "Income from operations"
+      income:
+        en: "Income"
+        ar: "الدخل"
+        ckb: "داهات"
+        notes: "Total earnings"
+      expense:
+        en: "Expense"
+        ar: "المصروف"
+        ckb: "خەرجی"
+        notes: "Business costs"
+      expenses:
+        en: "Expenses"
+        ar: "المصروفات"
+        ckb: "خەرجیەکان"
+        notes: "Multiple expenses"
+      cost:
+        en: "Cost"
+        ar: "التكلفة"
+        ckb: "تێچوون"
+        notes: "Cost of goods/services"
+      profit:
+        en: "Profit"
+        ar: "الربح"
+        ckb: "قازانج"
+        notes: "Net earnings"
+      loss:
+        en: "Loss"
+        ar: "الخسارة"
+        ckb: "زیان"
+        notes: "Financial loss"
+      gross_profit:
+        en: "Gross Profit"
+        ar: "الربح الإجمالي"
+        ckb: "قازانجی گشتی"
+        notes: "Revenue minus cost of sales"
+      net_profit:
+        en: "Net Profit"
+        ar: "الربح الصافي"
+        ckb: "قازانجی پاک"
+        notes: "Profit after all expenses"
+
+  customers_vendors:
+    name:
+      en: "Customers and Vendors"
+      ar: "العملاء والموردين"
+      ckb: "کڕیار و فرۆشیارەکان"
+    terms:
+      customer:
+        en: "Customer"
+        ar: "العميل"
+        ckb: "کڕیار"
+        notes: "Sales customer"
+      client:
+        en: "Client"
+        ar: "الزبون"
+        ckb: "کڕیار"
+        notes: "Service client"
+      vendor:
+        en: "Vendor"
+        ar: "المورد"
+        ckb: "فرۆشیار"
+        notes: "Supplier"
+      supplier:
+        en: "Supplier"
+        ar: "المورد"
+        ckb: "دابینکەر"
+        notes: "Provider of goods/services"
+      partner:
+        en: "Partner"
+        ar: "الشريك"
+        ckb: "هاوبەش"
+        notes: "Business partner"
+      debtor:
+        en: "Debtor"
+        ar: "المدين"
+        ckb: "قەرزدار"
+        notes: "Owes money"
+      creditor:
+        en: "Creditor"
+        ar: "الدائن"
+        ckb: "قەرزخواز"
+        notes: "Is owed money"
+
+  tax_legal:
+    name:
+      en: "Tax and Legal"
+      ar: "الضرائب والقانونية"
+      ckb: "باج و یاسایی"
+    terms:
+      tax:
+        en: "Tax"
+        ar: "الضريبة"
+        ckb: "باج"
+        notes: "Government tax"
+      vat:
+        en: "VAT"
+        ar: "ضريبة القيمة المضافة"
+        ckb: "باجی زیادکراو"
+        notes: "Value Added Tax"
+      tax_rate:
+        en: "Tax Rate"
+        ar: "معدل الضريبة"
+        ckb: "ڕێژەی باج"
+        notes: "Percentage of tax"
+      tax_account:
+        en: "Tax Account"
+        ar: "حساب الضريبة"
+        ckb: "هەژماری باج"
+        notes: "Tax ledger account"
+      withholding_tax:
+        en: "Withholding Tax"
+        ar: "ضريبة الاستقطاع"
+        ckb: "باجی بڕدراو"
+        notes: "Tax deducted at source"
+
+  inventory_products:
+    name:
+      en: "Inventory and Products"
+      ar: "المخزون والمنتجات"
+      ckb: "کۆگا و بەرهەمەکان"
+    terms:
+      inventory:
+        en: "Inventory"
+        ar: "المخزون"
+        ckb: "کۆگا"
+        notes: "Stock of goods"
+      product:
+        en: "Product"
+        ar: "المنتج"
+        ckb: "بەرهەم"
+        notes: "Manufactured item"
+      item:
+        en: "Item"
+        ar: "الصنف"
+        ckb: "کاڵا"
+        notes: "Individual item"
+      stock:
+        en: "Stock"
+        ar: "المخزون"
+        ckb: "کۆگا"
+        notes: "Available quantity"
+      unit_price:
+        en: "Unit Price"
+        ar: "سعر الوحدة"
+        ckb: "نرخی یەکە"
+        notes: "Price per unit"
+      quantity:
+        en: "Quantity"
+        ar: "الكمية"
+        ckb: "بڕ"
+        notes: "Amount/number"
+      cost_of_goods_sold:
+        en: "Cost of Goods Sold"
+        ar: "تكلفة البضاعة المباعة"
+        ckb: "تێچوونی کاڵای فرۆشراو"
+        notes: "COGS"
+
+  budget_planning:
+    name:
+      en: "Budget and Planning"
+      ar: "الميزانية والتخطيط"
+      ckb: "بودجە و پلاندانان"
+    terms:
+      budget:
+        en: "Budget"
+        ar: "الميزانية"
+        ckb: "بودجە"
+        notes: "Financial plan"
+      budget_line:
+        en: "Budget Line"
+        ar: "بند الميزانية"
+        ckb: "بڕگەی بودجە"
+        notes: "Individual budget item"
+      budgeted_amount:
+        en: "Budgeted Amount"
+        ar: "المبلغ المخصص"
+        ckb: "بڕی بودجە"
+        notes: "Planned amount"
+      actual_amount:
+        en: "Actual Amount"
+        ar: "المبلغ الفعلي"
+        ckb: "بڕی ڕاستەقینە"
+        notes: "Real amount spent"
+      variance:
+        en: "Variance"
+        ar: "الانحراف"
+        ckb: "جیاوازی"
+        notes: "Difference from budget"
+      forecast:
+        en: "Forecast"
+        ar: "التنبؤ"
+        ckb: "پێشبینی"
+        notes: "Future projection"
+
+  currency_exchange:
+    name:
+      en: "Currency and Exchange"
+      ar: "العملة والصرف"
+      ckb: "دراو و ئاڵوگۆڕ"
+    terms:
+      currency:
+        en: "Currency"
+        ar: "العملة"
+        ckb: "دراو"
+        notes: "Monetary unit"
+      exchange_rate:
+        en: "Exchange Rate"
+        ar: "سعر الصرف"
+        ckb: "نرخی ئاڵوگۆڕ"
+        notes: "Currency conversion rate"
+      foreign_currency:
+        en: "Foreign Currency"
+        ar: "العملة الأجنبية"
+        ckb: "دراوی بیانی"
+        notes: "Non-local currency"
+      base_currency:
+        en: "Base Currency"
+        ar: "العملة الأساسية"
+        ckb: "دراوی بنەڕەتی"
+        notes: "Primary currency"
+      conversion:
+        en: "Conversion"
+        ar: "التحويل"
+        ckb: "ئاڵوگۆڕ"
+        notes: "Currency exchange"
+
+  accounting_periods:
+    name:
+      en: "Accounting Periods"
+      ar: "الفترات المحاسبية"
+      ckb: "ماوەکانی ژمێریاری"
+    terms:
+      accounting_period:
+        en: "Accounting Period"
+        ar: "الفترة المحاسبية"
+        ckb: "ماوەی ژمێریاری"
+        notes: "Financial period"
+      fiscal_year:
+        en: "Fiscal Year"
+        ar: "السنة المالية"
+        ckb: "ساڵی دارایی"
+        notes: "Financial year"
+      month:
+        en: "Month"
+        ar: "الشهر"
+        ckb: "مانگ"
+        notes: "Calendar month"
+      quarter:
+        en: "Quarter"
+        ar: "الربع"
+        ckb: "چارەک"
+        notes: "Three-month period"
+      year:
+        en: "Year"
+        ar: "السنة"
+        ckb: "ساڵ"
+        notes: "Calendar/fiscal year"
+      period_start:
+        en: "Period Start"
+        ar: "بداية الفترة"
+        ckb: "سەرەتای ماوەی ژمێریاری"
+        notes: "Beginning of period"
+      period_end:
+        en: "Period End"
+        ar: "نهاية الفترة"
+        ckb: "کۆتایی ماوەی ژمێریاری"
+        notes: "End of period"
+
+  status_states:
+    name:
+      en: "Status and States"
+      ar: "الحالات والأوضاع"
+      ckb: "بارودۆخ"
+    terms:
+      draft:
+        en: "Draft"
+        ar: "مسودة"
+        ckb: "ڕەشنووس"
+        notes: "Unposted entry"
+      posted:
+        en: "Posted"
+        ar: "مرحل"
+        ckb: "نێردراوە"
+        notes: "Confirmed entry"
+      cancelled:
+        en: "Cancelled"
+        ar: "ملغي"
+        ckb: "هەڵوەشێنراوەتەوە"
+        notes: "Voided entry"
+      active:
+        en: "Active"
+        ar: "نشط"
+        ckb: "چالاک"
+        notes: "Currently in use"
+      inactive:
+        en: "Inactive"
+        ar: "غير نشط"
+        ckb: "چالاک نییە"
+        notes: "Not currently used"
+      pending:
+        en: "Pending"
+        ar: "في الانتظار"
+        ckb: "چاوەڕوان"
+        notes: "Awaiting action"
+      approved:
+        en: "Approved"
+        ar: "موافق عليه"
+        ckb: "پەسەندکراو"
+        notes: "Officially accepted"
+      rejected:
+        en: "Rejected"
+        ar: "مرفوض"
+        ckb: "ڕەتکراوەتەوە"
+        notes: "Officially declined"
+
+  analytics_reporting:
+    name:
+      en: "Analytics and Reporting"
+      ar: "التحليلات والتقارير"
+      ckb: "شیکردنەوە و ڕاپۆرت"
+    terms:
+      analytic_account:
+        en: "Analytic Account"
+        ar: "الحساب التحليلي"
+        ckb: "هەژماری شیکاری"
+        notes: "Cost center account"
+      report:
+        en: "Report"
+        ar: "التقرير"
+        ckb: "ڕاپۆرت"
+        notes: "Financial report"
+      analysis:
+        en: "Analysis"
+        ar: "التحليل"
+        ckb: "شیکردنەوە"
+        notes: "Data analysis"
+      summary:
+        en: "Summary"
+        ar: "الملخص"
+        ckb: "کورتە"
+        notes: "Brief overview"
+      detail:
+        en: "Detail"
+        ar: "التفصيل"
+        ckb: "وردەکاری"
+        notes: "Detailed information"
+      total:
+        en: "Total"
+        ar: "الإجمالي"
+        ckb: "کۆی گشتی"
+        notes: "Sum total"
+      subtotal:
+        en: "Subtotal"
+        ar: "المجموع الفرعي"
+        ckb: "کۆی لقی"
+        notes: "Partial sum"
+
+  general_business:
+    name:
+      en: "General Business Terms"
+      ar: "المصطلحات التجارية العامة"
+      ckb: "زاراوەکانی گشتی بازرگانی"
+    terms:
+      company:
+        en: "Company"
+        ar: "الشركة"
+        ckb: "کۆمپانیا"
+        notes: "Business entity"
+      organization:
+        en: "Organization"
+        ar: "المنظمة"
+        ckb: "ڕێکخراو"
+        notes: "Organized entity"
+      department:
+        en: "Department"
+        ar: "القسم"
+        ckb: "بەش"
+        notes: "Business unit"
+      branch:
+        en: "Branch"
+        ar: "الفرع"
+        ckb: "لق"
+        notes: "Company branch"
+      employee:
+        en: "Employee"
+        ar: "الموظف"
+        ckb: "کارمەند"
+        notes: "Staff member"
+      manager:
+        en: "Manager"
+        ar: "المدير"
+        ckb: "بەڕێوەبەر"
+        notes: "Management person"
+      user:
+        en: "User"
+        ar: "المستخدم"
+        ckb: "بەکارهێنەر"
+        notes: "System user"
+      administrator:
+        en: "Administrator"
+        ar: "المدير"
+        ckb: "بەڕێوەبەری سیستەم"
+        notes: "System admin"
+
+  action_terms:
+    name:
+      en: "Action Terms"
+      ar: "مصطلحات الإجراءات"
+      ckb: "زاراوەکانی کردار"
+    terms:
+      create:
+        en: "Create"
+        ar: "إنشاء"
+        ckb: "دروستکردن"
+        notes: "Make new"
+      edit:
+        en: "Edit"
+        ar: "تحرير"
+        ckb: "دەستکاری"
+        notes: "Modify existing"
+      delete:
+        en: "Delete"
+        ar: "حذف"
+        ckb: "سڕینەوە"
+        notes: "Remove"
+      update:
+        en: "Update"
+        ar: "تحديث"
+        ckb: "نوێکردنەوە"
+        notes: "Refresh/modify"
+      post:
+        en: "Post"
+        ar: "ترحيل"
+        ckb: "ناردن"
+        notes: "Confirm entry"
+      cancel:
+        en: "Cancel"
+        ar: "إلغاء"
+        ckb: "هەڵوەشاندنەوە"
+        notes: "Void/cancel"
+      save:
+        en: "Save"
+        ar: "حفظ"
+        ckb: "پاشەکەوتکردن"
+        notes: "Store data"
+      export:
+        en: "Export"
+        ar: "تصدير"
+        ckb: "هەناردە"
+        notes: "Send out data"
+      import:
+        en: "Import"
+        ar: "استيراد"
+        ckb: "هاوردە"
+        notes: "Bring in data"
+      print:
+        en: "Print"
+        ar: "طباعة"
+        ckb: "چاپکردن"
+        notes: "Physical printout"
+
+# Usage Guidelines
+usage_guidelines:
+  consistency: "Always use the exact terms listed in this glossary"
+  context: "Consider the context when choosing between similar terms"
+  updates: "Any changes to terminology must be reflected in this glossary first"
+  translation_priority: "English terms should be used as primary, with Kurdish (Sorani) and Arabic as secondary references"
+  new_terms: "When adding new accounting terms, follow the pattern established here"
+
+# Additional Notes
+notes:
+  kurdish_terms: "Kurdish terms prioritize clarity and natural Kurdish language flow"
+  arabic_terms: "Arabic terms follow standard accounting terminology used in the Middle East"
+  english_terms: "English terms follow international accounting standards (IFRS/GAAP)"
+  regional_variations: "Some terms may have regional variations; these represent the preferred standard for this application"
