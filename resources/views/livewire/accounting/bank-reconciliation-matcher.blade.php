@@ -4,7 +4,7 @@
         <div class="flex items-center justify-between mb-4">
             <h2 class="text-lg font-medium text-gray-900">{{ __('bank_statement.statement_details') }}</h2>
             <div class="flex items-center space-x-3">
-                <a href="{{ route('docs.payments') }}" target="_blank" class="inline-flex items-center text-xs text-gray-500 hover:text-gray-700">
+                <a href="{{ route('docs.show', ['slug' => 'User Guide/payments']) }}" target="_blank" class="inline-flex items-center text-xs text-gray-500 hover:text-gray-700">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16h6M4 6h16M4 18h16" />
                     </svg>

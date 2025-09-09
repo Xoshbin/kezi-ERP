@@ -1,6 +1,5 @@
-/* Enhanced Documentation Styles - Inspired by Filament & Laravel Docs */
+/* Pertuk Documentation Styles - Migrated from main app docs.css */
 
-/* Import Highlight.js themes */
 @import 'highlight.js/styles/github.css' (prefers-color-scheme: light);
 @import 'highlight.js/styles/github-dark.css' (prefers-color-scheme: dark);
 
@@ -18,12 +17,10 @@
     @apply opacity-100 text-orange-500;
 }
 
-/* Smooth scrolling */
 html {
     scroll-behavior: smooth;
 }
 
-/* Skip link for accessibility */
 .skip-link {
     @apply absolute -left-[999px] top-auto w-px h-px overflow-hidden;
 }
@@ -32,7 +29,6 @@ html {
     @apply static w-auto h-auto;
 }
 
-/* Enhanced prose styling for documentation content */
 .docs-content {
     @apply text-gray-900 dark:text-gray-100;
 }
@@ -106,7 +102,6 @@ html {
     @apply border-gray-200 dark:border-gray-700 my-8;
 }
 
-/* Alert/Callout styles */
 .docs-content .alert {
     @apply rounded-lg p-4 my-4 border-l-4;
 }
@@ -127,7 +122,6 @@ html {
     @apply bg-green-50 dark:bg-green-900/20 border-green-500 text-green-800 dark:text-green-200;
 }
 
-/* Code block enhancements */
 .docs-content pre[class*="language-"] {
     @apply relative;
 }
@@ -137,7 +131,6 @@ html {
     @apply absolute top-2 right-2 text-xs text-gray-500 dark:text-gray-400 uppercase font-mono;
 }
 
-/* Copy button for code blocks */
 .docs-content .code-block-wrapper {
     @apply relative;
 }
@@ -146,12 +139,10 @@ html {
     @apply absolute top-2 right-2 p-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 transition-colors;
 }
 
-/* Responsive tables */
 .docs-content .table-wrapper {
     @apply overflow-x-auto;
 }
 
-/* Enhanced list styling */
 .docs-content ul > li {
     @apply relative pl-6;
 }
@@ -165,18 +156,15 @@ html {
     @apply list-decimal;
 }
 
-/* Enhanced link styling */
 .docs-content a[href^="http"]::after {
     content: "↗";
     @apply ml-1 text-xs text-gray-400;
 }
 
-/* Keyboard shortcuts styling */
 .docs-content kbd {
     @apply bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded px-2 py-1 text-xs font-mono;
 }
 
-/* Definition lists */
 .docs-content dl {
     @apply my-4;
 }
@@ -189,13 +177,11 @@ html {
     @apply text-gray-700 dark:text-gray-300 ml-4 mb-3;
 }
 
-/* Enhanced focus styles for accessibility */
 .docs-content a:focus,
 .docs-content button:focus {
     @apply outline-none ring-2 ring-orange-500 ring-offset-2 dark:ring-offset-gray-900;
 }
 
-/* Print styles */
 @media print {
     .docs-content {
         @apply text-black;
@@ -210,7 +196,6 @@ html {
     }
 }
 
-/* Mobile optimizations */
 @media (max-width: 640px) {
     .docs-content h1 {
         @apply text-2xl;
@@ -233,12 +218,10 @@ html {
     }
 }
 
-/* Smooth scrolling for anchor links */
 html {
     scroll-behavior: smooth;
 }
 
-/* Enhanced heading anchor links */
 .docs-content h2:hover .heading-anchor,
 .docs-content h3:hover .heading-anchor {
     @apply opacity-70;
@@ -252,7 +235,6 @@ html {
     @apply opacity-100 text-orange-500;
 }
 
-/* Loading states */
 .docs-loading {
     @apply animate-pulse;
 }
@@ -265,7 +247,6 @@ html {
     @apply bg-gray-200 dark:bg-gray-700 rounded;
 }
 
-/* RTL Support */
 [dir="rtl"] .docs-content ul, [dir="rtl"] .docs-content ol {
     @apply mr-6 ml-0;
 }
@@ -307,7 +288,6 @@ html {
     @apply left-2 right-auto;
 }
 
-/* RTL Typography improvements */
 [dir="rtl"] * {
     text-align: right;
 }
@@ -316,7 +296,6 @@ html {
     text-align: right;
 }
 
-/* RTL Sidebar styles */
 [dir="rtl"] aside[aria-label="Navigation"] {
     text-align: right;
 }
@@ -333,12 +312,10 @@ html {
     text-align: right;
 }
 
-/* RTL Header navigation fixes */
 [dir="rtl"] .flex-row-reverse {
     flex-direction: row-reverse;
 }
 
-/* RTL breadcrumb fixes */
 [dir="rtl"] .breadcrumb-separator {
     transform: rotate(180deg);
 }
@@ -355,7 +332,6 @@ html {
     font-weight: 600;
 }
 
-/* Ensure proper text alignment for RTL */
 [dir="rtl"] .docs-content p,
 [dir="rtl"] .docs-content li,
 [dir="rtl"] .docs-content td,
@@ -363,7 +339,6 @@ html {
     text-align: right;
 }
 
-/* Fix table alignment for RTL */
 [dir="rtl"] .docs-content table {
     direction: rtl;
 }
@@ -373,17 +348,14 @@ html {
     text-align: right;
 }
 
-/* Header RTL Support */
 [dir="rtl"] .header-content {
     direction: rtl;
 }
 
-/* Breadcrumb RTL Support */
 [dir="rtl"] .breadcrumb-item {
     flex-direction: row-reverse;
 }
 
-/* Language selector RTL positioning */
 [dir="rtl"] .page-header {
     direction: rtl;
 }
@@ -393,7 +365,6 @@ html {
     margin-right: auto;
 }
 
-/* Search input RTL support */
 [dir="rtl"] input[type="search"] {
     text-align: right;
     padding-left: 2.5rem;
@@ -405,7 +376,6 @@ html {
     right: 0.75rem;
 }
 
-/* Sidebar positioning for RTL */
 [dir="rtl"] .sidebar {
     border-left: 1px solid theme('colors.gray.200');
     border-right: none;
@@ -415,8 +385,6 @@ html {
     border-left-color: theme('colors.gray.700');
 }
 
-/* Tailwind v4 RTL Enhancements */
-/* Use logical properties for better RTL support */
 .rtl-logical-spacing {
     margin-inline-start: 1rem;
     margin-inline-end: 1rem;
@@ -424,27 +392,22 @@ html {
     padding-inline-end: 1rem;
 }
 
-/* Breadcrumb enhancements */
 [dir="rtl"] .breadcrumb svg {
     transform: rotate(180deg);
 }
 
-/* Language selector positioning */
 [dir="rtl"] .language-selector {
     text-align: right;
 }
 
-/* Navigation improvements */
 [dir="rtl"] .nav-flex {
     flex-direction: row-reverse;
 }
 
-/* Search field RTL */
 [dir="rtl"] input[type="search"] {
     text-align: right;
 }
 
-/* Grid layout enhancements for RTL */
 @media (min-width: 1024px) {
     [dir="rtl"] .docs-grid {
         grid-template-areas: "toc main sidebar";
@@ -455,13 +418,11 @@ html {
     }
 }
 
-/* Better Arabic/Kurdish font rendering */
 [dir="rtl"] {
     font-feature-settings: "liga" on, "kern" on;
     text-rendering: optimizeLegibility;
 }
 
-/* Table RTL improvements */
 [dir="rtl"] table {
     direction: rtl;
 }
@@ -471,22 +432,20 @@ html {
     text-align: right;
 }
 
-/* Code blocks stay LTR for readability */
 [dir="rtl"] pre,
 [dir="rtl"] code {
     direction: ltr;
     text-align: left;
 }
 
-/* But inline code should follow document direction */
 [dir="rtl"] p code,
 [dir="rtl"] li code {
     direction: rtl;
     text-align: right;
 }
 
-/* Page title RTL styling */
 [dir="rtl"] header h1 {
     text-align: right;
     font-family: 'Segoe UI', Tahoma, Arial, Helvetica, sans-serif;
 }
+

@@ -18,5 +18,13 @@ return [
 
     // Cache TTL (seconds) for parsed HTML & metadata.
     'cache_ttl' => 3600,
-];
 
+    // Enable or disable the documentation system
+    'enabled' => true,
+
+    // Route prefix for documentation
+    'route_prefix' => 'docs',
+
+    // Route middleware
+    'middleware' => [],
+];
