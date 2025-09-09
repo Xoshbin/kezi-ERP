@@ -1,31 +1,35 @@
 @props(['title' => null])
 
 @php
-$locale = app()->getLocale();
-$isRtl = in_array($locale, ['ar', 'ckb']);
+    $locale = app()->getLocale();
+    $isRtl = in_array($locale, ['ar', 'ckb']);
 @endphp
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', $locale) }}" dir="{{ $isRtl ? 'rtl' : 'ltr' }}" class="h-full">
+
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>{{ $title ? ($title . ' · ' . config('app.name')) : (__('Docs') . ' · ' . config('app.name')) }}</title>
+    <title>{{ $title ? $title . ' · ' . config('app.name') : __('Docs') . ' · ' . config('app.name') }}</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 
 
 
 
 </head>
+
 <body class="min-h-screen bg-white text-gray-900 dark:bg-gray-950 dark:text-gray-100 transition-colors duration-200">
-    <a href="#main" class="skip-link bg-orange-600 text-white px-4 py-2 rounded focus:outline-none focus:ring-2 focus:ring-orange-500">Skip to content</a>
+    <a href="#main"
+        class="skip-link bg-orange-600 text-white px-4 py-2 rounded focus:outline-none focus:ring-2 focus:ring-orange-500">Skip
+        to content</a>
 
     @include('docs.components.header')
 
     <div class="mx-auto max-w-8xl px-4 sm:px-6 lg:px-8">
         <div class="grid grid-cols-1 gap-8 lg:grid-cols-12 lg:gap-12 py-8">
             <!-- Sidebar -->
-            <aside class="hidden lg:block lg:col-span-3 {{ $isRtl ? 'lg:order-3' : 'lg:order-1' }}" aria-label="Navigation">
+            <aside class="hidden lg:block lg:col-span-3 lg:order-1" aria-label="Navigation">
                 <div class="sticky top-24 max-h-[calc(100vh-6rem)] overflow-y-auto">
                     {{ $sidebar ?? '' }}
                 </div>
@@ -39,7 +43,7 @@ $isRtl = in_array($locale, ['ar', 'ckb']);
             </main>
 
             <!-- Table of Contents -->
-            <aside class="hidden xl:block xl:col-span-3 {{ $isRtl ? 'lg:order-1' : 'lg:order-3' }}" aria-label="On this page">
+            <aside class="hidden xl:block xl:col-span-3 lg:order-3" aria-label="On this page">
                 <div class="sticky top-24 max-h-[calc(100vh-6rem)] overflow-y-auto">
                     {{ $toc ?? '' }}
                 </div>
@@ -48,5 +52,5 @@ $isRtl = in_array($locale, ['ar', 'ckb']);
     </div>
 
 </body>
-</html>
 
+</html>
