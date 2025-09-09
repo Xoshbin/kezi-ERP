@@ -2,11 +2,11 @@
 
 return [
     // General
-    'label' => 'فرۆشتن',
-    'plural_label' => 'فرۆشتنەکان (مبيعات)',
-    'invoice' => 'فرۆشتن',
-    'invoices' => 'فرۆشتنەکان',
-    'invoice_details' => 'وردەکاریی فرۆشتنە',
+    'label' => 'پسووڵەی فرۆشتن',
+    'plural_label' => 'پسووڵەکانی فرۆشتن',
+    'invoice' => 'پسووڵەی فرۆشتن',
+    'invoices' => 'پسووڵەکانی فرۆشتن',
+    'invoice_details' => 'وردەکاریی پسووڵەی فرۆشتن',
 
     // Form Fields
     'company' => 'کۆمپانیا',
@@ -57,7 +57,23 @@ return [
 
     // Actions
     'confirm' => 'پشتڕاستکردنەوە',
-    'confirm_invoice' => 'پشتڕاستکردنەوەی پسووڵە',
+        'confirm_invoice' => 'پشتڕاستکردنەوەی پسووڵە',
+
+    // Statuses
+    'statuses' => [
+        'draft' => 'ڕەشنووس',
+        'open' => 'کراوە',
+        'partially_paid' => 'بەشەکانی دراوە',
+        'paid' => 'دراوە',
+    ],
+
+    // Notifications
+    'invoice_confirmed_successfully' => 'پسووڵە بە سەرکەوتوویی پشتڕاستکرایەوە',
+    'error_confirming_invoice' => 'هەڵە لە پشتڕاستکردنەوەی پسووڵە',
+    'invoice_reset_to_draft_successfully' => 'پسووڵە بە سەرکەوتوویی گەڕێندرایەوە بۆ ڕەشنووس',
+    'error_resetting_invoice_to_draft' => 'هەڵە لە گەڕاندنەوەی پسووڵە بۆ ڕەشنووس',
+    'invoice_reset_to_draft' => 'گەڕاندنەوەی پسووڵە بۆ ڕەشنووس',
+    'error_resetting_invoice' => 'هەڵە لە گەڕاندنەوەی پسووڵە',
     'reset_to_draft' => 'گەڕاندنەوە بۆ ڕەشنووس',
     'register_payment' => 'تۆمارکردنی پارەدان',
 
@@ -93,7 +109,7 @@ return [
         'detach_selected' => 'جیاکردنەوەی هەڵبژێردراوەکان',
         'filter_status' => 'پاڵاوتن بەپێی دۆخ',
         'filter_payment_type' => 'پاڵاوتن بەپێی جۆر',
-        'bank_statement_reference' => 'سەرچاوەی ڕاپۆرتی بانک',
+        'bank_statement_reference' => 'ژمارەی بەڵگەی ڕاپۆرتی بانک',
         'reconciliation_date' => 'بەرواری ڕێکخستن',
         'reconciliation_status' => 'دۆخی ڕێکخستن',
         'not_reconciled' => 'ڕێکنەخراو',
@@ -130,7 +146,7 @@ return [
     'aging_widget' => [
         'status' => 'دۆخی کۆنبوون',
         'not_applicable' => 'جێبەجێناکرێت',
-        'not_applicable_desc' => 'شیکاری کۆنبوون تەنها بۆ پسووڵە پۆستکراو و نەدراوەکان جێبەجێدەکرێت',
+        'not_applicable_desc' => 'شیکاری کۆنبوون تەنها بۆ پسووڵە نێردراو و نەدراوەکان جێبەجێدەکرێت',
         'days_outstanding' => 'ڕۆژانی ماوە',
         'days_since_due' => 'ڕۆژان لە ڕێکەوتی شایستەوە',
         'outstanding_amount' => 'بڕی ماوە',

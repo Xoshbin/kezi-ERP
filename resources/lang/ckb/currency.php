@@ -9,7 +9,7 @@ return [
     'code' => 'کۆد',
     'name' => 'ناو',
     'symbol' => 'هێما',
-    'exchange_rate' => 'نرخی گۆڕینەوە',
+    'exchange_rate' => 'نرخی ئاڵوگۆڕ',
     'is_active' => 'چالاکە',
     'last_updated_at' => 'کۆتا نوێکردنەوە',
     'created_at' => 'کاتی دروستکردن',
@@ -17,10 +17,10 @@ return [
 
     // Exchange Rates
     'exchange_rates' => [
-        'label' => 'نرخی گۆڕینەوە',
-        'plural_label' => 'نرخەکانی گۆڕینەوە',
+        'label' => 'نرخی ئاڵوگۆڕ',
+        'plural_label' => 'نرخەکانی ئاڵوگۆڕ',
         'currency' => 'دراو',
-        'rate' => 'نرخی گۆڕینەوە',
+        'rate' => 'نرخی ئاڵوگۆڕ',
         'effective_date' => 'بەرواری کارکردن',
         'source' => 'سەرچاوە',
         'rate_helper' => 'نرخ بەراورد بە دراوی بنەڕەتی کۆمپانیا (١ دراوی بیانی = X دراوی بنەڕەتی)',
