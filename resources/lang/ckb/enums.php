@@ -4,24 +4,24 @@
 
 return [
     'account_type' => [
-        'asset' => 'دارایی',
-        'liability' => 'پابەندبوون',
-        'equity' => 'سەرمایە',
+        'asset' => 'سامان',
+        'liability' => 'قەرز',
+        'equity' => 'خاوەندارێتی',
         'income' => 'داهات',
         'expense' => 'خەرجی',
     ],
 
     'journal_entry_state' => [
         'draft' => 'ڕەشنووس',
-        'posted' => 'پۆست کراو',
+        'posted' => 'نێردراوە',
         'reversed' => 'پاشگەڕاوە',
     ],
 
     'journal_type' => [
-        'sale' => 'فرۆشتن',
-        'purchase' => 'کڕین',
+        'sale' => 'پسوولەکانی فرۆشتن',
+        'purchase' => 'پسوولەکانی کڕین',
         'bank' => 'بانک',
-        'cash' => 'نەقد',
+        'cash' => 'کاش',
         'inventory' => 'کۆگا',
         'miscellaneous' => 'جۆراوجۆر',
     ],
@@ -42,7 +42,7 @@ return [
 
     'depreciation_entry_status' => [
         'draft' => 'ڕەشنووس',
-        'posted' => 'پۆست کراو',
+        'posted' => 'نێردراوە',
     ],
 
     'depreciation_method' => [
@@ -93,26 +93,26 @@ return [
 
     'vendor_bill_status' => [
         'draft' => 'ڕەشنووس',
-        'posted' => 'پۆست کراو',
+        'posted' => 'نێردراوە',
         'cancelled' => 'هەڵوەشاوە',
         'paid' => 'پارەدراو',
     ],
 
     'adjustment_document_type' => [
-        'credit_note' => 'پسووڵەی گەڕاندنەوە',
-        'debit_note' => 'پسووڵەی وەرگرتن',
+        'credit_note' => 'پسوولەی گەڕاندنەوە',
+        'debit_note' => 'پسوولەی وەرگرتن',
         'miscellaneous' => 'هەمەجۆر',
     ],
 
     'adjustment_document_status' => [
         'draft' => 'ڕەشنووس',
-        'posted' => 'پۆست کراو',
+        'posted' => 'نێردراوە',
         'cancelled' => 'هەڵوەشاوە',
     ],
 
     'invoice_status' => [
         'draft' => 'ڕەشنووس',
-        'posted' => 'پۆست کراو',
+        'posted' => 'نێردراوە',
         'paid' => 'پارەدراو',
         'cancelled' => 'هەڵوەشاوە',
     ],

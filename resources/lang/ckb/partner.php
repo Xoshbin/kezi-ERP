@@ -26,8 +26,8 @@ return [
     'is_active' => 'چالاکە',
     'receivable_account' => 'هەژماری وەرگرتن',
     'payable_account' => 'هەژماری پارەدان',
-    'receivable_account_help' => 'هەژمار بۆ بەدواداچوونی ئەو پارەیەی ئەم هاوبەشە قەرزاری ئێمەیە (پسوڵەی کڕیار)',
-    'payable_account_help' => 'هەژمار بۆ بەدواداچوونی ئەو پارەیەی ئێمە قەرزاری ئەم هاوبەشەین (پسوڵەی فرۆشیار)',
+    'receivable_account_help' => 'هەژمار بۆ بەدواداچوونی ئەو پارەیەی ئەم هاوبەشە قەرزداری ئێمەیە (پسووڵەی کڕیار)',
+    'payable_account_help' => 'هەژمار بۆ بەدواداچوونی ئەو پارەیەی ئێمە قەرزداری ئەم هاوبەشەین (پسووڵەی فرۆشیار)',
     'create_receivable_account' => 'دروستکردنی هەژماری وەرگرتن',
     'create_payable_account' => 'دروستکردنی هەژماری پارەدان',
 
@@ -143,7 +143,7 @@ return [
     ],
     'vendor_bills_relation_manager' => [
         'title' => 'پسوڵەکانی فرۆشیار',
-        'bill_reference' => 'سەرچاوەی پسوڵە',
+        'bill_reference' => 'ژمارەی بەڵگەی پسووڵە',
         'bill_date' => 'بەرواری پسوڵە',
         'accounting_date' => 'بەرواری ژمێریاری',
         'due_date' => 'بەرواری شایستە',
@@ -155,7 +155,7 @@ return [
         'payment_date' => 'بەرواری پارەدان',
         'amount' => 'بڕ',
         'payment_type' => 'جۆری پارەدان',
-        'reference' => 'سەرچاوە',
+        'reference' => 'ژمارەی بەڵگە',
         'status' => 'بارودۆخ',
     ],
 ];
