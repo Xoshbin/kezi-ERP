@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\App;
@@ -13,7 +14,7 @@ class LocaleController extends Controller
     /**
      * Set the application locale and store it in session.
      */
-    public function setLocale(Request $request, string $locale): Response|JsonResponse
+    public function setLocale(Request $request, string $locale): Response|JsonResponse|RedirectResponse
     {
         // Validate locale against supported locales
         $supportedLocales = ['en', 'ckb', 'ar'];
@@ -41,8 +42,15 @@ class LocaleController extends Controller
             return response()->json($response, 200);
         }
 
-        // For regular requests, redirect back
-        return response('Locale set successfully', 200);
+        // For regular requests, redirect back to the specified URL or referer
+        $redirectUrl = $request->get('redirect') ?: $request->header('referer') ?: url('/docs');
+
+        // If redirect URL is a docs page, get the locale-specific version
+        if (str_contains($redirectUrl, '/docs/')) {
+            $redirectUrl = $this->getLocaleEquivalentUrl($redirectUrl, $locale);
+        }
+
+        return redirect($redirectUrl);
     }
 
     /**
