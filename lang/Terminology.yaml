@@ -42,7 +42,7 @@ categories:
       journal_entry:
         en: "Journal Entry"
         ar: "القيد اليومي"
-        ckb: "تۆماری هەژمار"
+        ckb: "تۆماری ڕۆژانە"
         notes: "Individual transaction record"
       ledger:
         en: "Ledger"
@@ -148,17 +148,17 @@ categories:
       invoice:
         en: "Invoice"
         ar: "المبیعات"
-        ckb: "پسوولەکانی فرۆشتن"
+        ckb: "پسووڵەکانی فرۆشتن"
         notes: "Sales invoice"
       bill:
         en: "Bill"
         ar: "المشتریات"
-        ckb: "پسوولەکانی کڕین"
+        ckb: "پسووڵەکانی کڕین"
         notes: "Purchase bill"
       receipt:
         en: "Receipt"
         ar: "الإيصال"
-        ckb: "پسوولەی وەرگرتن"
+        ckb: "پسووڵەی وەرگرتن"
         notes: "Payment receipt"
       voucher:
         en: "Voucher"
