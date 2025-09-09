@@ -3,7 +3,7 @@
 namespace App\Filament\Clusters\Accounting\Resources\Payments\Pages;
 
 use App\Filament\Clusters\Accounting\Resources\Payments\PaymentResource;
-use App\Support\Filament\DocsAction;
+use Xoshbin\Pertuk\Support\DocsAction;
 
 use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
