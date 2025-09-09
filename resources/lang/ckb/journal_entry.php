@@ -2,49 +2,49 @@
 
 return [
     // General
-    'label' => 'تۆماری ژمێریاری',
-    'plural_label' => 'تۆمارەکانی ژمێریاری',
-    'journal_entry' => 'تۆماری ژمێریاری',
-    'journal_entries' => 'تۆمارەکانی ژمێریاری',
+    'label' => 'تۆماری هەژمار',
+    'plural_label' => 'تۆمارەکانی هەژمار',
+    'journal_entry' => 'تۆماری هەژمار',
+    'journal_entries' => 'تۆمارەکانی هەژمار',
 
     // Fields
     'company' => 'کۆمپانیا',
-    'journal' => 'ڕۆژنامچە',
+    'journal' => 'پەرتووکی ڕۆژانە',
     'currency' => 'دراو',
-    'exchange_rate' => 'نرخی گۆڕینەوە',
+    'exchange_rate' => 'نرخی ئاڵوگۆڕ',
     'created_by' => 'دروستکراوە لەلایەن',
     'entry_date' => 'بەرواری تۆمار',
-    'reference' => 'سەرچاوە',
+    'reference' => 'ژمارەی بەڵگە',
     'description' => 'پێناسە',
     'lines' => 'هێڵەکان',
     'account' => 'هەژمار',
     'debit' => 'قەرزدار (مدين)',
-    'credit' => 'قەرزدەر (دائن)',
+    'credit' => 'قەرزخواز',
     'partner' => 'هاوبەش',
     'analytic_account' => 'هەژماری شیکاری',
-    'is_posted' => 'پۆستکراوە',
+    'is_posted' => 'نێردراوە',
     'hash' => 'هاش',
     'previous_hash' => 'هاشی پێشوو',
     'source_type' => 'جۆری سەرچاوە',
     'source_id' => 'ناسنامەی سەرچاوە',
-    'total_debit' => 'کۆی قەرزدار (مدين)',
-    'total_credit' => 'کۆی قەرزدەر (دائن)',
-    'balance' => 'بالانس',
+    'total_debit' => 'کۆی قەرزدار',
+    'total_credit' => 'کۆی قەرزخواز',
+    'balance' => 'یەکە',
     'company_currency_totals' => 'کۆی گشتی بە دراوی کۆمپانیا',
     'created_at' => 'کاتی دروستکردن',
     'updated_at' => 'کاتی نوێکردنەوە',
 
     // Actions
-    'post_entry' => 'پۆستکردنی تۆمار',
+    'post_entry' => 'ناردنی تۆمار',
 
     // Notifications
-    'entry_posted_successfully' => 'تۆماری ژمێریاری پۆستکرا',
-    'error_posting_entry' => 'هەڵە لە کاتی پۆستکردنی تۆمار',
-    'duplicate_reference_error' => 'سەرچاوەی دووبارە',
+    'entry_posted_successfully' => 'تۆماری هەژمار نێردرا',
+    'error_posting_entry' => 'هەڵە لە کاتی ناردنی تۆمار',
+    'duplicate_reference_error' => 'ژمارەی بەڵگەی دووبارە',
     'creation_error' => 'هەڵە لە دروستکردن',
 
     // Validation
     'period_locked' => 'ماوەی ژمێریاری قفڵ کراوە و ناتوانرێت دەستکاری بکرێت.',
-    'debits_must_equal_credits' => 'کۆی قەرزدارەکان دەبێت یەکسان بێت بە کۆی قەرزدەرەکان.',
-    'reference_already_exists' => 'یادداشتێکی ڕۆژانە بە سەرچاوەی ":reference" پێشتر هەیە لەم ڕۆژنامەیەدا.',
+    'debits_must_equal_credits' => 'کۆی قەرزدارەکان دەبێت یەکسان بێت بە کۆی قەرزخوازەکان.',
+    'reference_already_exists' => 'تۆماری هەژمار بە ژمارەی بەڵگەی ":reference" پێشتر هەیە لەم پەرتووکی ڕۆژانەیەدا.',
 ];

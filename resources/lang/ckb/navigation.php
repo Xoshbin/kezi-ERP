@@ -4,9 +4,9 @@ return [
     // Navigation Groups
     'groups' => [
         'core_accounting' => 'ژمێریاری بنەڕەتی',
-        'sales_purchases' => 'کڕین و فرۆشتن',
+        'sales_purchases' => 'پسووڵەکانی کڕین و فرۆشتن',
         'inventory' => 'بەڕێوەبردنی کۆگا',
-        'banking_cash' => 'بانک و پارە',
+        'banking_cash' => 'بانک و کاش',
         'financial_planning' => 'پلاندانانی دارایی',
         'reports' => 'ڕاپۆرتەکان',
     ],

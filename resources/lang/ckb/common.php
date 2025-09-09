@@ -17,7 +17,7 @@ return [
     'create_new_product' => 'دروستکردنی بەرهەمی نوێ',
     'create_new_currency' => 'دروستکردنی دراوی نوێ',
     'create_new_tax' => 'دروستکردنی باجی نوێ',
-    'create_new_journal' => 'دروستکردنی گۆڤاری نوێ',
+    'create_new_journal' => 'دروستکردنی پەرتووکی ڕۆژانەی نوێ',
     'create_new_analytic_account' => 'دروستکردنی هەژماری شیکاری نوێ',
     'create_new_user' => 'دروستکردنی بەکارهێنەری نوێ',
 
@@ -28,7 +28,7 @@ return [
     'modal_title_create_product' => 'دروستکردنی بەرهەمی نوێ',
     'modal_title_create_currency' => 'دروستکردنی دراوی نوێ',
     'modal_title_create_tax' => 'دروستکردنی باجی نوێ',
-    'modal_title_create_journal' => 'دروستکردنی گۆڤاری نوێ',
+    'modal_title_create_journal' => 'دروستکردنی پەرتووکی ڕۆژانەی نوێ',
     'modal_title_create_analytic_account' => 'دروستکردنی هەژماری شیکاری نوێ',
     'modal_title_create_user' => 'دروستکردنی بەکارهێنەری نوێ',
 
