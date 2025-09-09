@@ -12,9 +12,13 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-// Locale switching route
+// Locale switching routes
 Route::post('/locale/{locale}', [\App\Http\Controllers\LocaleController::class, 'setLocale'])
     ->name('locale.set')
+    ->where('locale', 'en|ckb|ar');
+
+Route::get('/locale/{locale}', [\App\Http\Controllers\LocaleController::class, 'setLocale'])
+    ->name('locale.set.get')
     ->where('locale', 'en|ckb|ar');
 
 // PDF Generation Routes (Protected by authentication)
