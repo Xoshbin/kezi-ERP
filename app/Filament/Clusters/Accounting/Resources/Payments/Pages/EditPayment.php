@@ -13,7 +13,7 @@ use App\Models\Payment;
 use App\Services\PaymentService;
 use Brick\Money\Money;
 use Exception;
-use Xoshbin\Pertuk\Support\DocsAction;
+use App\Filament\Actions\DocsAction;
 use Filament\Actions\Action;
 use Filament\Actions\DeleteAction;
 

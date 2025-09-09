@@ -10,7 +10,7 @@ use App\Actions\Loans\ReclassifyLoanCurrentPortionAction;
 use App\Enums\Accounting\AccountType;
 use App\Enums\Accounting\JournalType;
 use App\Filament\Clusters\Accounting\Resources\LoanAgreements\LoanAgreementResource;
-use Xoshbin\Pertuk\Support\DocsAction;
+use App\Filament\Actions\DocsAction;
 use App\Models\Account;
 use App\Models\Journal;
 use App\Models\LoanAgreement;
