@@ -8798,7 +8798,7 @@
             "dist": {
                 "type": "path",
                 "url": "./packages/xoshbin/pertuk",
-                "reference": "aff929cf972d66a7e4801e51a76a99b89803b8f0"
+                "reference": "3df80e8ac154afdccded8825f96bee8a7f8ff733"
             },
             "require": {
                 "illuminate/contracts": "^11.0||^12.0",
