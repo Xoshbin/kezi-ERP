@@ -13,7 +13,7 @@ return [
     'exclude' => [
         '.DS_Store',
         'README.md',
-        'Developers'
+        'Developers',
     ],
 
     // Cache TTL (seconds) for parsed HTML & metadata.
@@ -26,5 +26,16 @@ return [
     'route_prefix' => 'docs',
 
     // Route middleware
-    'middleware' => [],
+    'middleware' => ['web'],
+
+    // Localization settings
+    'supported_locales' => ['en', 'ckb', 'ar'],
+    'default_locale' => 'en',
+    'rtl_locales' => ['ar', 'ckb'],
+    'locale_labels' => [
+        'en' => 'English',
+        'ckb' => 'کوردی (سۆرانی)',
+        'ar' => 'العربية',
+    ],
+
 ];
