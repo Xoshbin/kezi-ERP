@@ -9,7 +9,7 @@ use App\Enums\Payments\PaymentType;
 use App\Filament\Clusters\Accounting\Resources\Payments\PaymentResource;
 use App\Models\Currency;
 use Brick\Money\Money;
-use App\Support\Filament\DocsAction;
+use Xoshbin\Pertuk\Support\DocsAction;
 
 use Filament\Facades\Filament;
 use Filament\Resources\Pages\CreateRecord;

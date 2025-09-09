@@ -12,32 +12,6 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-// Locale switching route
-Route::post('/locale/{locale}', [\App\Http\Controllers\LocaleController::class, 'setLocale'])
-    ->name('locale.set')
-    ->where('locale', 'en|ckb|ar');
-
-// Documentation Routes (Public access)
-Route::prefix('docs')->group(function () {
-    Route::get('/', [\App\Http\Controllers\Docs\DocumentController::class, 'index'])->name('docs.index');
-
-    // JSON search index (must be before slug route)
-    Route::get('/index.json', function () {
-        $items = \App\Services\DocumentationService::make()->buildIndex();
-        return response()->json($items)->header('Content-Type', 'application/json');
-    })->name('docs.index.json');
-
-    // Payments doc placeholder used by tests and UI links
-    Route::get('/payments', function () {
-        return response('Payments docs placeholder', 200);
-    })->name('docs.payments');
-
-    // Must be last: catch-all slug route (allows slashes for nested docs)
-    Route::get('/{slug}', [\App\Http\Controllers\Docs\DocumentController::class, 'show'])
-        ->where('slug', '.*')
-        ->name('docs.show');
-});
-
 // PDF Generation Routes (Protected by authentication)
 Route::middleware(['auth'])->group(function () {
     // Invoice PDF routes
