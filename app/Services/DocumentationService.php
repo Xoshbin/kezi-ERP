@@ -337,9 +337,11 @@ class DocumentationService
             if (preg_match($localePattern, $slug)) {
                 // Remove the locale suffix and try the base version
                 $baseSlug = preg_replace($localePattern, '', $slug);
-                $baseCandidate = $this->root . DIRECTORY_SEPARATOR . str_replace('/', DIRECTORY_SEPARATOR, $baseSlug) . '.md';
-                if (File::exists($baseCandidate)) {
-                    return $baseCandidate;
+                if ($baseSlug !== null) {
+                    $baseCandidate = $this->root . DIRECTORY_SEPARATOR . str_replace('/', DIRECTORY_SEPARATOR, $baseSlug) . '.md';
+                    if (File::exists($baseCandidate)) {
+                        return $baseCandidate;
+                    }
                 }
             }
         }
