@@ -496,6 +496,11 @@ categories:
         ar: "العملة"
         ckb: "دراو"
         notes: "Monetary unit"
+      multi-currency:
+        en: "Multi-Currency"
+        ar: "العملة"
+        ckb: "فرە-دراو"
+        notes: "Monetary unit"
       exchange_rate:
         en: "Exchange Rate"
         ar: "سعر الصرف"
