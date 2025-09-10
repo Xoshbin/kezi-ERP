@@ -28,7 +28,10 @@ class ReclassifyLoanCurrentPortionAction
     ): JournalEntry {
         return DB::transaction(function () use ($loan, $user, $journalId, $longTermAccountId, $shortTermAccountId, $months, $asOfDate) {
             $loan->loadMissing('currency', 'company', 'scheduleEntries');
-            $currencyModel = $loan->currency; if (! $currencyModel) { throw new \RuntimeException('Loan currency missing'); }
+            $currencyModel = $loan->currency;
+            if (! $currencyModel) {
+                throw new \RuntimeException('Loan currency missing');
+            }
             $code = (string) data_get($currencyModel, 'code');
 
             $asOf = Carbon::parse($asOfDate);
@@ -112,4 +115,3 @@ class ReclassifyLoanCurrentPortionAction
         });
     }
 }
-

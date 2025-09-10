@@ -29,4 +29,3 @@ class ScheduleEntriesRelationManager extends RelationManager
         ]);
     }
 }
-

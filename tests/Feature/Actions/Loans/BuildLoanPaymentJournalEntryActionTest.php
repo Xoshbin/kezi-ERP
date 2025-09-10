@@ -1,8 +1,8 @@
 <?php
 
+use App\Actions\Loans\AccrueLoanInterestAction;
 use App\Actions\Loans\BuildLoanPaymentJournalEntryAction;
 use App\Actions\Loans\ComputeLoanScheduleAction;
-use App\Actions\Loans\AccrueLoanInterestAction;
 use App\Enums\Loans\LoanType;
 use App\Enums\Loans\ScheduleMethod;
 use App\Models\Account;
@@ -69,4 +69,3 @@ it('posts repayment JE for a payable loan, interest-first', function () {
     expect($drPrincipal->isEqualTo($prin))->toBeTrue();
     expect($crBank->isEqualTo($int->plus($prin)))->toBeTrue();
 });
-

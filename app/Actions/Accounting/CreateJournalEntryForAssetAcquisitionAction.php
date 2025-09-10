@@ -48,7 +48,7 @@ class CreateJournalEntryForAssetAcquisitionAction
             ),
         ];
 
-        if (!$company->default_depreciation_journal_id) {
+        if (! $company->default_depreciation_journal_id) {
             throw new \InvalidArgumentException('Company default depreciation journal is not configured');
         }
 

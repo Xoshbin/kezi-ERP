@@ -112,7 +112,7 @@ class MatchJournalItemsAction
     /**
      * Validate that none of the journal entry lines are already reconciled.
      *
-     * @param Collection<int, JournalEntryLine> $journalLines
+     * @param  Collection<int, JournalEntryLine>  $journalLines
      */
     private function validateLinesNotAlreadyReconciled(Collection $journalLines): void
     {
@@ -128,7 +128,7 @@ class MatchJournalItemsAction
     /**
      * Validate that all accounts allow reconciliation.
      *
-     * @param Collection<int, JournalEntryLine> $journalLines
+     * @param  Collection<int, JournalEntryLine>  $journalLines
      */
     private function validateAccountsAllowReconciliation(Collection $journalLines): void
     {
@@ -144,7 +144,7 @@ class MatchJournalItemsAction
     /**
      * Validate that all journal entry lines belong to posted journal entries.
      *
-     * @param Collection<int, JournalEntryLine> $journalLines
+     * @param  Collection<int, JournalEntryLine>  $journalLines
      */
     private function validateLinesArePosted(Collection $journalLines): void
     {
@@ -162,7 +162,7 @@ class MatchJournalItemsAction
     /**
      * Validate that the sum of debits equals the sum of credits.
      *
-     * @param Collection<int, JournalEntryLine> $journalLines
+     * @param  Collection<int, JournalEntryLine>  $journalLines
      */
     private function validateBalance(Collection $journalLines): void
     {
@@ -189,7 +189,7 @@ class MatchJournalItemsAction
      * Validate that all journal entry lines belong to the same partner.
      * This is required for A/R and A/P reconciliation.
      *
-     * @param Collection<int, \App\Models\JournalEntryLine> $journalLines
+     * @param  Collection<int, \App\Models\JournalEntryLine>  $journalLines
      */
     private function validatePartnerConsistency(Collection $journalLines): void
     {

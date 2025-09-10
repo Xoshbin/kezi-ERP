@@ -185,7 +185,6 @@ class Payment extends Model
         return $this->belongsTo(JournalEntry::class);
     }
 
-
     /**
      * Get the Invoices that this Payment is applied to.
      * Payments can be linked to multiple invoices through a pivot table,

@@ -3,7 +3,6 @@
 namespace App\Actions\Payments;
 
 use App\DataTransferObjects\Payments\UpdatePaymentDTO;
-
 use App\Enums\Payments\PaymentStatus;
 use App\Enums\Payments\PaymentType;
 use App\Exceptions\UpdateNotAllowedException;
@@ -97,7 +96,7 @@ class UpdatePaymentAction
             // For partner advances/credits (non-settlement), no additional logic needed here
 
             $freshPayment = $payment->fresh();
-            if (!$freshPayment) {
+            if (! $freshPayment) {
                 throw new \Exception('Failed to refresh payment after update');
             }
 

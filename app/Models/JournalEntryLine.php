@@ -202,11 +202,8 @@ class JournalEntryLine extends Model
      * Get the company that this rate belongs to.
      */
     /**
-
      * @return BelongsTo<Company, static>
-
      */
-
     public function company(): BelongsTo
     {
         return $this->belongsTo(Company::class);
@@ -220,11 +217,8 @@ class JournalEntryLine extends Model
      * @return BelongsTo An Eloquent relationship instance for the `JournalEntry` model.
      */
     /**
-
      * @return BelongsTo<JournalEntry, static>
-
      */
-
     public function journalEntry(): BelongsTo
     {
         return $this->belongsTo(JournalEntry::class);
@@ -238,11 +232,8 @@ class JournalEntryLine extends Model
      * @return BelongsTo An Eloquent relationship instance for the `Account` model.
      */
     /**
-
      * @return BelongsTo<Account, static>
-
      */
-
     public function account(): BelongsTo
     {
         return $this->belongsTo(Account::class);
@@ -256,11 +247,8 @@ class JournalEntryLine extends Model
      * @return BelongsTo An Eloquent relationship instance for the `Partner` model.
      */
     /**
-
      * @return BelongsTo<Partner, static>
-
      */
-
     public function partner(): BelongsTo
     {
         return $this->belongsTo(Partner::class);
@@ -274,11 +262,8 @@ class JournalEntryLine extends Model
      * @return BelongsTo An Eloquent relationship instance for the `AnalyticAccount` model.
      */
     /**
-
      * @return BelongsTo<AnalyticAccount, static>
-
      */
-
     public function analyticAccount(): BelongsTo
     {
         return $this->belongsTo(AnalyticAccount::class);
@@ -293,11 +278,8 @@ class JournalEntryLine extends Model
      * @return BelongsTo An Eloquent relationship instance for the `Currency` model.
      */
     /**
-
      * @return BelongsTo<Currency, static>
-
      */
-
     public function currency(): BelongsTo
     {
         return $this->belongsTo(Currency::class);
@@ -307,11 +289,8 @@ class JournalEntryLine extends Model
      * Relationship to the original currency for this line.
      */
     /**
-
      * @return BelongsTo<Currency, static>
-
      */
-
     public function originalCurrency(): BelongsTo
     {
         return $this->belongsTo(Currency::class, 'original_currency_id');
@@ -324,11 +303,8 @@ class JournalEntryLine extends Model
      * (e.g., if a reconciliation is reversed and a new one is created).
      */
     /**
-
      * @return BelongsToMany<Reconciliation, static>
-
      */
-
     public function reconciliations(): BelongsToMany
     {
         return $this->belongsToMany(Reconciliation::class, 'journal_entry_line_reconciliation')

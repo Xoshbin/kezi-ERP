@@ -77,6 +77,7 @@ class BankStatementResource extends Resource
                         ->columnSpan(2)
                         ->default(function (): ?int {
                             $tenant = Filament::getTenant();
+
                             return $tenant instanceof \App\Models\Company ? $tenant->currency_id : null;
                         })
                         ->createOptionForm([
@@ -124,6 +125,7 @@ class BankStatementResource extends Resource
                                 $tenant = Filament::getTenant();
                                 if (! $tenant) {
                                     $fail('Company context is required.');
+
                                     return;
                                 }
 
@@ -131,11 +133,13 @@ class BankStatementResource extends Resource
                                 $journal = Journal::find($value);
                                 if (! $journal) {
                                     $fail('The selected bank journal is invalid.');
+
                                     return;
                                 }
 
                                 if ($journal->company_id !== (int) $tenant->getKey()) {
                                     $fail('The selected bank journal is invalid.');
+
                                     return;
                                 }
 

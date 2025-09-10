@@ -24,7 +24,9 @@ class AccrueLoanInterestAction
         return DB::transaction(function () use ($loan, $user, $journalId, $interestAccountId, $accruedInterestAccountId, $forMonthSequence) {
             $loan->loadMissing('currency', 'company', 'scheduleEntries');
             $currencyModel = $loan->currency;
-            if (! $currencyModel) { throw new \RuntimeException('Loan currency missing'); }
+            if (! $currencyModel) {
+                throw new \RuntimeException('Loan currency missing');
+            }
             $currencyCode = (string) data_get($currencyModel, 'code');
 
             /** @var LoanScheduleEntry $entry */
@@ -72,4 +74,3 @@ class AccrueLoanInterestAction
         });
     }
 }
-

@@ -121,6 +121,7 @@ class GeneralLedgerService
             if (is_array($accountName)) {
                 return $accountName['en'] ?? (empty($accountName) ? '' : (string) array_values($accountName)[0]);
             }
+
             return (string) ($accountName ?: '');
         });
 

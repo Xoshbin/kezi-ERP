@@ -16,7 +16,7 @@ class CreateEmployeeAction
             $employeeNumber = $createEmployeeDTO->employee_number;
             if (empty($employeeNumber)) {
                 $company = Company::find($createEmployeeDTO->company_id);
-                if (!$company) {
+                if (! $company) {
                     throw new \InvalidArgumentException('Company not found');
                 }
                 $employeeNumber = Employee::generateEmployeeNumber($company);
@@ -59,7 +59,7 @@ class CreateEmployeeAction
             ]);
 
             $fresh = $employee->fresh();
-            if (!$fresh) {
+            if (! $fresh) {
                 throw new \RuntimeException('Failed to refresh employee after creation');
             }
 

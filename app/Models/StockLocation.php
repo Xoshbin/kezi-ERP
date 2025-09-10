@@ -28,42 +28,24 @@ class StockLocation extends Model
     ];
 
     /**
-
-
      * @return BelongsTo<Company, static>
-
-
      */
-
-
     public function company(): BelongsTo
     {
         return $this->belongsTo(Company::class);
     }
 
     /**
-
-
      * @return BelongsTo<StockLocation, static>
-
-
      */
-
-
     public function parent(): BelongsTo
     {
         return $this->belongsTo(StockLocation::class, 'parent_id');
     }
 
     /**
-
-
      * @return HasMany<StockLocation, static>
-
-
      */
-
-
     public function children(): HasMany
     {
         return $this->hasMany(StockLocation::class, 'parent_id');

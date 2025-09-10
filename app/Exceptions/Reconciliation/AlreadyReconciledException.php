@@ -11,7 +11,7 @@ namespace App\Exceptions\Reconciliation;
 class AlreadyReconciledException extends ReconciliationException
 {
     /**
-     * @param array<int, int> $lineIds
+     * @param  array<int, int>  $lineIds
      */
     public function __construct(array $lineIds = [], ?string $message = null)
     {

@@ -29,7 +29,7 @@ class CreateAdjustmentDocumentAction
 
         return DB::transaction(function () use ($dto): AdjustmentDocument {
             $currency = Currency::find($dto->currency_id);
-            if (!$currency) {
+            if (! $currency) {
                 throw new \InvalidArgumentException('Currency not found');
             }
             $currencyCode = $currency->code;
@@ -63,7 +63,7 @@ class CreateAdjustmentDocumentAction
 
             // Return the fresh model with all updates
             $fresh = $adjustmentDocument->fresh();
-            if (!$fresh) {
+            if (! $fresh) {
                 throw new \RuntimeException('Failed to refresh adjustment document after creation');
             }
 
@@ -166,7 +166,7 @@ class CreateAdjustmentDocumentAction
         /** @var \App\Models\AdjustmentDocument $doc */
         $doc = $line->adjustmentDocument;
 
-        if (!$line->unit_price) {
+        if (! $line->unit_price) {
             throw new \InvalidArgumentException('Line unit price is required');
         }
 
@@ -178,7 +178,7 @@ class CreateAdjustmentDocumentAction
             $company
         );
 
-        if (!$line->subtotal) {
+        if (! $line->subtotal) {
             throw new \InvalidArgumentException('Line subtotal is required');
         }
 
@@ -190,7 +190,7 @@ class CreateAdjustmentDocumentAction
             $company
         );
 
-        if (!$line->total_line_tax) {
+        if (! $line->total_line_tax) {
             throw new \InvalidArgumentException('Line total tax is required');
         }
 

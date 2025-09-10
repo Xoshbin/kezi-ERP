@@ -89,11 +89,8 @@ class Journal extends Model
      * Get the default debit account for this journal.
      */
     /**
-
      * @return BelongsTo<Account, static>
-
      */
-
     public function defaultDebitAccount(): BelongsTo
     {
         return $this->belongsTo(Account::class, 'default_debit_account_id');
@@ -103,11 +100,8 @@ class Journal extends Model
      * Get the default credit account for this journal.
      */
     /**
-
      * @return BelongsTo<Account, static>
-
      */
-
     public function defaultCreditAccount(): BelongsTo
     {
         return $this->belongsTo(Account::class, 'default_credit_account_id');
@@ -124,11 +118,8 @@ class Journal extends Model
      * )
      */
     /**
-
      * @return BelongsTo<Company, static>
-
      */
-
     public function company(): BelongsTo
     {
         return $this->belongsTo(Company::class);
@@ -145,11 +136,8 @@ class Journal extends Model
      * )
      */
     /**
-
      * @return BelongsTo<Currency, static>
-
      */
-
     public function currency(): BelongsTo
     {
         return $this->belongsTo(Currency::class);
@@ -167,11 +155,8 @@ class Journal extends Model
      * )
      */
     /**
-
      * @return HasMany<JournalEntry, static>
-
      */
-
     public function journalEntries(): HasMany
     {
         return $this->hasMany(JournalEntry::class);
@@ -181,11 +166,8 @@ class Journal extends Model
      * Get the exchange gain account for this journal.
      */
     /**
-
      * @return BelongsTo<Account, static>
-
      */
-
     public function exchangeGainAccount(): BelongsTo
     {
         return $this->belongsTo(Account::class, 'exchange_gain_account_id');
@@ -195,11 +177,8 @@ class Journal extends Model
      * Get the exchange loss account for this journal.
      */
     /**
-
      * @return BelongsTo<Account, static>
-
      */
-
     public function exchangeLossAccount(): BelongsTo
     {
         return $this->belongsTo(Account::class, 'exchange_loss_account_id');
@@ -209,11 +188,8 @@ class Journal extends Model
      * Get the journal where exchange differences are posted.
      */
     /**
-
      * @return BelongsTo<Journal, static>
-
      */
-
     public function exchangeDifferenceJournal(): BelongsTo
     {
         return $this->belongsTo(Journal::class, 'exchange_difference_journal_id');

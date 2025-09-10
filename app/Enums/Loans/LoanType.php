@@ -7,4 +7,3 @@ enum LoanType: string
     case Payable = 'payable';
     case Receivable = 'receivable';
 }
-

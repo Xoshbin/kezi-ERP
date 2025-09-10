@@ -66,6 +66,7 @@ class BaseCurrencyMoneyCast extends MoneyCast
             if ($company && $company->currency) {
                 /** @var \App\Models\Currency $currency */
                 $currency = $company->currency;
+
                 return $currency;
             }
         }
@@ -74,6 +75,7 @@ class BaseCurrencyMoneyCast extends MoneyCast
             if ($journalEntry && $journalEntry->company && $journalEntry->company->currency) {
                 /** @var \App\Models\Currency $currency */
                 $currency = $journalEntry->company->currency;
+
                 return $currency;
             }
         }

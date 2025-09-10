@@ -40,8 +40,8 @@ class VendorBillObserver
 
         $product = $line->product;
         $company = $vendorBill->company->fresh();
-        if (!$company) {
-            throw new RuntimeException("Failed to refresh company for vendor bill");
+        if (! $company) {
+            throw new RuntimeException('Failed to refresh company for vendor bill');
         }
 
         if (! $company->vendorLocation || ! $company->defaultStockLocation) {

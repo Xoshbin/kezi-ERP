@@ -176,11 +176,8 @@ class VendorBill extends Model
      * where each vendor bill belongs to a specific company .
      */
     /**
-
      * @return BelongsTo<Company, static>
-
      */
-
     public function company(): BelongsTo
     {
         return $this->belongsTo(Company::class, 'company_id');
@@ -192,11 +189,8 @@ class VendorBill extends Model
      * identifying the supplier of the goods or services .
      */
     /**
-
      * @return BelongsTo<Partner, static>
-
      */
-
     public function vendor(): BelongsTo
     {
         return $this->belongsTo(Partner::class, 'vendor_id');
@@ -208,11 +202,8 @@ class VendorBill extends Model
      * indicating the currency in which the bill is denominated .
      */
     /**
-
      * @return BelongsTo<Currency, static>
-
      */
-
     public function currency(): BelongsTo
     {
         return $this->belongsTo(Currency::class, 'currency_id');
@@ -225,11 +216,8 @@ class VendorBill extends Model
      * The `journal_entry_id` is nullable as it is only populated upon posting .
      */
     /**
-
      * @return BelongsTo<JournalEntry, static>
-
      */
-
     public function journalEntry(): BelongsTo
     {
         return $this->belongsTo(JournalEntry::class, 'journal_entry_id');
@@ -239,11 +227,8 @@ class VendorBill extends Model
      * Get the Payments that are applied to this Vendor Bill.
      */
     /**
-
      * @return BelongsToMany<Payment, static>
-
      */
-
     public function payments(): BelongsToMany
     {
         return $this->belongsToMany(Payment::class, 'payment_document_links', 'vendor_bill_id', 'payment_id')
@@ -255,11 +240,8 @@ class VendorBill extends Model
      * This provides access to the raw pivot data for multi-currency payment calculations.
      */
     /**
-
      * @return HasMany<PaymentDocumentLink, static>
-
      */
-
     public function paymentDocumentLinks(): HasMany
     {
         return $this->hasMany(PaymentDocumentLink::class, 'vendor_bill_id');
@@ -289,11 +271,8 @@ class VendorBill extends Model
      * multiple line items detailing the products or services purchased .
      */
     /**
-
      * @return HasMany<VendorBillLine, static>
-
      */
-
     public function lines(): HasMany
     {
         return $this->hasMany(VendorBillLine::class, 'vendor_bill_id');
@@ -304,11 +283,8 @@ class VendorBill extends Model
      * Defines a **HasMany** relationship for file attachments.
      */
     /**
-
      * @return HasMany<VendorBillAttachment, static>
-
      */
-
     public function attachments(): HasMany
     {
         return $this->hasMany(VendorBillAttachment::class, 'vendor_bill_id');
@@ -319,11 +295,8 @@ class VendorBill extends Model
      * These are used for corrections, reversals, and adjustments to posted vendor bills.
      */
     /**
-
      * @return HasMany<AdjustmentDocument, static>
-
      */
-
     public function adjustmentDocuments(): HasMany
     {
         return $this->hasMany(AdjustmentDocument::class, 'original_vendor_bill_id');
@@ -380,7 +353,7 @@ class VendorBill extends Model
 
         $this->loadMissing('paymentTerm');
 
-        if (!$this->paymentTerm instanceof PaymentTerm) {
+        if (! $this->paymentTerm instanceof PaymentTerm) {
             // No payment terms, create single installment with due date
             PaymentInstallment::create([
                 'company_id' => $this->company_id,
@@ -391,6 +364,7 @@ class VendorBill extends Model
                 'amount' => $this->total_amount,
                 'status' => \App\Enums\PaymentInstallments\InstallmentStatus::Pending,
             ]);
+
             return;
         }
 

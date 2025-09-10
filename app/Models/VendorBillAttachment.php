@@ -63,11 +63,8 @@ class VendorBillAttachment extends Model
      * Get the company that this rate belongs to.
      */
     /**
-
      * @return BelongsTo<Company, static>
-
      */
-
     public function company(): BelongsTo
     {
         return $this->belongsTo(Company::class);
@@ -77,11 +74,8 @@ class VendorBillAttachment extends Model
      * Get the vendor bill that owns the attachment.
      */
     /**
-
      * @return BelongsTo<VendorBill, static>
-
      */
-
     public function vendorBill(): BelongsTo
     {
         return $this->belongsTo(VendorBill::class);
@@ -91,11 +85,8 @@ class VendorBillAttachment extends Model
      * Get the user who uploaded the attachment.
      */
     /**
-
      * @return BelongsTo<User, static>
-
      */
-
     public function uploadedBy(): BelongsTo
     {
         return $this->belongsTo(User::class, 'uploaded_by_user_id');

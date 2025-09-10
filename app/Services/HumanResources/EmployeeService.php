@@ -66,7 +66,7 @@ class EmployeeService
             }
 
             $freshEmployee = $employee->fresh(['currentContract', 'department', 'position', 'manager']);
-            if (!$freshEmployee) {
+            if (! $freshEmployee) {
                 throw new \Exception('Failed to refresh employee after creation');
             }
 

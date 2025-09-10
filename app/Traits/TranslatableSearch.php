@@ -51,8 +51,8 @@ trait TranslatableSearch
     /**
      * Scope to search across all translation locales for translatable fields.
      *
-     * @param Builder<static> $query
-     * @param array<int, string>|null $fields
+     * @param  Builder<static>  $query
+     * @param  array<int, string>|null  $fields
      * @return Builder<static>
      */
     public function scopeSearchTranslatable(Builder $query, string $search, ?array $fields = null): Builder
@@ -97,7 +97,7 @@ trait TranslatableSearch
      * Get search results for Filament select components.
      * Returns an array with model ID as key and formatted label as value.
      *
-     * @param array<int, string>|null $searchFields
+     * @param  array<int, string>|null  $searchFields
      * @return array<int, string>
      */
     public static function getFilamentSearchResults(
@@ -143,7 +143,7 @@ trait TranslatableSearch
      * Get formatted search results with additional context.
      * Useful for complex select options that need more than just the name.
      *
-     * @param array<int, string>|null $searchFields
+     * @param  array<int, string>|null  $searchFields
      * @return array<int, string>
      */
     public static function getFormattedSearchResults(
@@ -162,6 +162,7 @@ trait TranslatableSearch
 
         return $results->mapWithKeys(function ($model) {
             $label = $model->getTranslatedLabel('name');
+
             return [$model->id => $label];
         })->toArray();
     }
@@ -170,7 +171,7 @@ trait TranslatableSearch
      * Search for models and return a collection with translated labels.
      * Useful for API responses or other contexts where you need the full model data.
      *
-     * @param array<int, string>|null $searchFields
+     * @param  array<int, string>|null  $searchFields
      * @return \Illuminate\Database\Eloquent\Collection<int, \Illuminate\Database\Eloquent\Model>
      */
     public static function searchWithTranslatedLabels(

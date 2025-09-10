@@ -8,4 +8,3 @@ enum LoanStatus: string
     case Running = 'running';
     case Closed = 'closed';
 }
-

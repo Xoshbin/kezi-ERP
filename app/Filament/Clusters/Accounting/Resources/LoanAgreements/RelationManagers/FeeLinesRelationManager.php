@@ -25,6 +25,7 @@ class FeeLinesRelationManager extends RelationManager
             Hidden::make('currency_id')
                 ->default(function () {
                     $owner = $this->getOwnerRecord();
+
                     return $owner instanceof \App\Models\LoanAgreement ? $owner->currency_id : null;
                 }),
             DatePicker::make('date')->required(),
@@ -46,4 +47,3 @@ class FeeLinesRelationManager extends RelationManager
         ]);
     }
 }
-

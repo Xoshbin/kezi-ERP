@@ -146,11 +146,8 @@ class Employee extends Model
      * Get the company that owns the Employee.
      */
     /**
-
      * @return BelongsTo<Company, static>
-
      */
-
     public function company(): BelongsTo
     {
         return $this->belongsTo(Company::class);
@@ -160,11 +157,8 @@ class Employee extends Model
      * Get the user account associated with this employee.
      */
     /**
-
      * @return BelongsTo<User, static>
-
      */
-
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
@@ -174,11 +168,8 @@ class Employee extends Model
      * Get the department this employee belongs to.
      */
     /**
-
      * @return BelongsTo<Department, static>
-
      */
-
     public function department(): BelongsTo
     {
         return $this->belongsTo(Department::class);
@@ -188,11 +179,8 @@ class Employee extends Model
      * Get the position this employee holds.
      */
     /**
-
      * @return BelongsTo<Position, static>
-
      */
-
     public function position(): BelongsTo
     {
         return $this->belongsTo(Position::class);
@@ -202,11 +190,8 @@ class Employee extends Model
      * Get the manager of this employee.
      */
     /**
-
      * @return BelongsTo<Employee, static>
-
      */
-
     public function manager(): BelongsTo
     {
         return $this->belongsTo(Employee::class, 'manager_id');
@@ -216,11 +201,8 @@ class Employee extends Model
      * Get the direct reports of this employee.
      */
     /**
-
      * @return HasMany<Employee, static>
-
      */
-
     public function directReports(): HasMany
     {
         return $this->hasMany(Employee::class, 'manager_id');
@@ -230,11 +212,8 @@ class Employee extends Model
      * Get the employment contracts for this employee.
      */
     /**
-
      * @return HasMany<EmploymentContract, static>
-
      */
-
     public function employmentContracts(): HasMany
     {
         return $this->hasMany(EmploymentContract::class);
@@ -244,11 +223,8 @@ class Employee extends Model
      * Get the current active employment contract.
      */
     /**
-
      * @return HasOne<EmploymentContract, static>
-
      */
-
     public function currentContract(): HasOne
     {
         return $this->hasOne(EmploymentContract::class)
@@ -265,11 +241,8 @@ class Employee extends Model
      * Get the leave requests for this employee.
      */
     /**
-
      * @return HasMany<LeaveRequest, static>
-
      */
-
     public function leaveRequests(): HasMany
     {
         return $this->hasMany(LeaveRequest::class);
@@ -279,11 +252,8 @@ class Employee extends Model
      * Get the attendance records for this employee.
      */
     /**
-
      * @return HasMany<Attendance, static>
-
      */
-
     public function attendances(): HasMany
     {
         return $this->hasMany(Attendance::class);
@@ -293,11 +263,8 @@ class Employee extends Model
      * Get the payroll records for this employee.
      */
     /**
-
      * @return HasMany<Payroll, static>
-
      */
-
     public function payrolls(): HasMany
     {
         return $this->hasMany(Payroll::class);
@@ -372,7 +339,7 @@ class Employee extends Model
      */
     public function getAllSubordinates(): Collection
     {
-        $subordinates = new \Illuminate\Database\Eloquent\Collection();
+        $subordinates = new \Illuminate\Database\Eloquent\Collection;
 
         foreach ($this->directReports as $directReport) {
             $subordinates->push($directReport);

@@ -2,8 +2,8 @@
 
 namespace App\Filament\Clusters\Settings\Resources\PaymentTermResource\Pages;
 
-use App\Filament\Clusters\Settings\Resources\PaymentTermResource;
 use App\Filament\Actions\DocsAction;
+use App\Filament\Clusters\Settings\Resources\PaymentTermResource;
 use Filament\Actions;
 use Filament\Resources\Pages\ListRecords;
 

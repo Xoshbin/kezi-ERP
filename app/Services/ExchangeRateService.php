@@ -6,7 +6,6 @@ use App\Models\Currency;
 use App\Models\CurrencyRate;
 use Carbon\Carbon;
 use Exception;
-use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 

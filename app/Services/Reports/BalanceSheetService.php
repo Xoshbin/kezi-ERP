@@ -158,7 +158,6 @@ class BalanceSheetService
     }
 
     /**
-     * @param  \Illuminate\Support\Collection  $balances
      * @param  array<AccountType>  $types
      * @param  \Illuminate\Database\Eloquent\Collection<int, \App\Models\Account>  $accounts
      * @return \Illuminate\Support\Collection<int, ReportLineDTO>
@@ -171,6 +170,7 @@ class BalanceSheetService
                 $account = $accounts->get($row->account_id);
 
                 $accountName = $account ? (is_array($account->name) ? ($account->name['en'] ?? (empty($account->name) ? '' : (string) array_values($account->name)[0])) : (string) $account->name) : $row->account_name;
+
                 return new ReportLineDTO(
                     accountId: $row->account_id,
                     accountCode: $row->account_code,

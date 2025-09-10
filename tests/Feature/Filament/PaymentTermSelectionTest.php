@@ -1,12 +1,12 @@
 <?php
 
+use App\Enums\PaymentTerms\PaymentTermType;
 use App\Filament\Clusters\Accounting\Resources\Invoices\Pages\CreateInvoice;
 use App\Filament\Clusters\Accounting\Resources\VendorBills\Pages\CreateVendorBill;
 use App\Models\Journal;
 use App\Models\Partner;
 use App\Models\PaymentTerm;
 use App\Models\PaymentTermLine;
-use App\Enums\PaymentTerms\PaymentTermType;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\Traits\WithConfiguredCompany;
 

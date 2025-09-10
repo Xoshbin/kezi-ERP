@@ -20,7 +20,7 @@ class ProcessDepreciationJob implements ShouldQueue
     {
         // Get the first user associated with the company
         $userWithPivot = $this->entry->asset->company->users()->first();
-        if (!$userWithPivot) {
+        if (! $userWithPivot) {
             throw new \Exception('No user found for company');
         }
 
@@ -30,7 +30,7 @@ class ProcessDepreciationJob implements ShouldQueue
         if ($user instanceof \Illuminate\Database\Eloquent\Collection) {
             $user = $user->first();
         }
-        if (!$user) {
+        if (! $user) {
             throw new \Exception('User not found');
         }
 

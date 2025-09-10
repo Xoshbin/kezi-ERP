@@ -13,7 +13,9 @@ use function Pest\Livewire\livewire;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);
 
-beforeEach(function () { $this->setupWithConfiguredCompany(); });
+beforeEach(function () {
+    $this->setupWithConfiguredCompany();
+});
 
 it('can accrue interest, post repayment, and reclassify from header actions', function () {
     $code = $this->company->currency->code;
@@ -75,4 +77,3 @@ it('can accrue interest, post repayment, and reclassify from header actions', fu
 
     expect(true)->toBeTrue();
 });
-

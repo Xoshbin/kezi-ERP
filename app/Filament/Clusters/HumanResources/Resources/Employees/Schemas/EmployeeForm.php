@@ -21,6 +21,7 @@ class EmployeeForm
     {
         /** @var \App\Models\Company|null $tenant */
         $tenant = Filament::getTenant();
+
         return $schema->components([
             Section::make(__('employee.basic_information'))
                 ->description(__('employee.basic_information_description'))

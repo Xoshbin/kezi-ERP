@@ -10,7 +10,9 @@ use function Pest\Livewire\livewire;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);
 
-beforeEach(function () { $this->setupWithConfiguredCompany(); });
+beforeEach(function () {
+    $this->setupWithConfiguredCompany();
+});
 
 it('can render the list and create pages', function () {
     $this->get(LoanAgreementResource::getUrl('index'))->assertSuccessful();
@@ -63,4 +65,3 @@ it('can run compute schedule and recalc EIR actions from view page', function ()
     $loan->refresh();
     expect($loan->eir_rate)->not->toBeNull();
 });
-

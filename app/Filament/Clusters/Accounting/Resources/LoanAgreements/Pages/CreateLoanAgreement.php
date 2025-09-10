@@ -2,8 +2,8 @@
 
 namespace App\Filament\Clusters\Accounting\Resources\LoanAgreements\Pages;
 
-use App\Filament\Clusters\Accounting\Resources\LoanAgreements\LoanAgreementResource;
 use App\Filament\Actions\DocsAction;
+use App\Filament\Clusters\Accounting\Resources\LoanAgreements\LoanAgreementResource;
 use Filament\Resources\Pages\CreateRecord;
 
 class CreateLoanAgreement extends CreateRecord

@@ -92,7 +92,7 @@ class PayrollsTable
                     ->modalDescription(__('payroll.actions.approve_payroll_description'))
                     ->action(function (Payroll $record) {
                         $user = auth()->user();
-                        if (!$user) {
+                        if (! $user) {
                             throw new \Exception('User must be authenticated to approve payroll');
                         }
                         $payrollService = app(PayrollService::class);
@@ -116,7 +116,7 @@ class PayrollsTable
                     )
                     ->action(function (Payroll $record) {
                         $user = auth()->user();
-                        if (!$user) {
+                        if (! $user) {
                             throw new \Exception('User must be authenticated to pay employee');
                         }
                         $payrollService = app(PayrollService::class);

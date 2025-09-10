@@ -144,7 +144,7 @@ class ProcessPayrollAction
             }
 
             $freshPayroll = $payroll->fresh('payrollLines');
-            if (!$freshPayroll) {
+            if (! $freshPayroll) {
                 throw new \Exception('Failed to refresh payroll after creation');
             }
 

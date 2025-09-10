@@ -52,4 +52,3 @@ it('computes EIR and adjusts interest components', function () {
     $last = $loan->scheduleEntries()->orderByDesc('sequence')->first();
     expect($last->outstanding_balance_after->isZero())->toBeTrue();
 });
-

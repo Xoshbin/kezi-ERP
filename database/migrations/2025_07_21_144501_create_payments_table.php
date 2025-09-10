@@ -1,10 +1,10 @@
 <?php
 
+use App\Enums\Payments\PaymentMethod;
 use App\Enums\Payments\PaymentStatus;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
-use App\Enums\Payments\PaymentMethod;
 
 return new class extends Migration
 {

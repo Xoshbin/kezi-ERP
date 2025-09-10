@@ -80,7 +80,7 @@ class InventoryValuationService
 
         // This is a simplified example. A real implementation would need to calculate the value of the adjustment.
         // For now, we will assume the value is the quantity * the product's average cost.
-        if (!$product->average_cost) {
+        if (! $product->average_cost) {
             throw new \Exception('Product must have an average cost for inventory adjustment');
         }
         $adjustmentValue = $product->average_cost->multipliedBy($dto->quantity);
@@ -161,7 +161,7 @@ class InventoryValuationService
             }
 
             $quantityToConsume = min($remainingQuantity, $layer->remaining_quantity);
-            if (!$layer->cost_per_unit) {
+            if (! $layer->cost_per_unit) {
                 throw new \Exception('Cost layer must have a cost per unit');
             }
             $layerCOGS = $layer->cost_per_unit->multipliedBy($quantityToConsume);

@@ -122,11 +122,8 @@ class Position extends Model
      * Get the company that owns the Position.
      */
     /**
-
      * @return BelongsTo<Company, static>
-
      */
-
     public function company(): BelongsTo
     {
         return $this->belongsTo(Company::class);
@@ -136,11 +133,8 @@ class Position extends Model
      * Get the department this position belongs to.
      */
     /**
-
      * @return BelongsTo<Department, static>
-
      */
-
     public function department(): BelongsTo
     {
         return $this->belongsTo(Department::class);
@@ -150,11 +144,8 @@ class Position extends Model
      * Get the salary currency for this position.
      */
     /**
-
      * @return BelongsTo<Currency, static>
-
      */
-
     public function salaryCurrency(): BelongsTo
     {
         return $this->belongsTo(Currency::class, 'salary_currency_id');
@@ -164,11 +155,8 @@ class Position extends Model
      * Get the employees in this position.
      */
     /**
-
      * @return HasMany<Employee, static>
-
      */
-
     public function employees(): HasMany
     {
         return $this->hasMany(Employee::class);
@@ -178,11 +166,8 @@ class Position extends Model
      * Get the employment contracts for this position.
      */
     /**
-
      * @return HasMany<EmploymentContract, static>
-
      */
-
     public function employmentContracts(): HasMany
     {
         return $this->hasMany(EmploymentContract::class);
@@ -197,7 +182,7 @@ class Position extends Model
             return null;
         }
 
-        if (!$this->salaryCurrency) {
+        if (! $this->salaryCurrency) {
             throw new \RuntimeException('Position salary currency not found');
         }
 
@@ -210,7 +195,7 @@ class Position extends Model
             return 'From '.$this->min_salary->formatTo($this->salaryCurrency->code);
         }
 
-        if (!$this->max_salary) {
+        if (! $this->max_salary) {
             throw new \RuntimeException('Position max salary not found');
         }
 

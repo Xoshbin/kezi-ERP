@@ -22,7 +22,7 @@ class EditAccount extends EditRecord
             LocaleSwitcher::make(),
             DeleteAction::make()
                 ->action(function (Model $record) {
-                    if (!$record instanceof \App\Models\Account) {
+                    if (! $record instanceof \App\Models\Account) {
                         throw new \Exception('Invalid record type');
                     }
                     $accountService = new AccountService;
@@ -34,7 +34,7 @@ class EditAccount extends EditRecord
 
     protected function handleRecordUpdate(Model $record, array $data): Model
     {
-        if (!$record instanceof \App\Models\Account) {
+        if (! $record instanceof \App\Models\Account) {
             throw new \Exception('Invalid record type');
         }
 

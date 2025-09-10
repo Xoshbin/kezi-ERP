@@ -6,7 +6,6 @@ use App\Enums\Accounting\JournalType;
 use App\Enums\Payments\PaymentMethod;
 use App\Enums\Payments\PaymentStatus;
 use App\Enums\Payments\PaymentType;
-use App\Models\Account;
 use App\Models\Journal;
 use App\Models\JournalEntry;
 use App\Models\Partner;

@@ -24,7 +24,7 @@ return [
     'form.payment_type_and_purpose_description' => 'اختر اتجاه وغرض هذه الدفعة',
     'form.status' => 'حالة',
     'form.partner' => 'شريك',
-        'form.document_links' => 'روابط المستندات',
+    'form.document_links' => 'روابط المستندات',
     'form.document_links_description' => 'ربط هذه الدفعة بالفواتير أو فواتير الموردين',
     'form.direct_payment' => 'سلفة/رصيد الشريك',
     'form.direct_payment_description' => 'للحركات البنكية غير المتعلقة بالمدينين/الدائنين (رسوم، ضرائب، قروض، حقوق ملكية، رواتب) استخدم كشوفات البنك/المطابقة أو قيود اليومية المتنوعة. الدفعات بدون روابط مستندات تتطلب شريكاً وسيتم قيدها إلى المدينين أو الدائنين.',

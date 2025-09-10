@@ -94,7 +94,7 @@ class ViewProfitAndLoss extends Page
         ]);
 
         $company = Filament::getTenant() ?? auth()->user()?->company;
-        if (!$company instanceof \App\Models\Company) {
+        if (! $company instanceof \App\Models\Company) {
             throw new \Exception('Company not found');
         }
 

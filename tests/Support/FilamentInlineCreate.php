@@ -6,9 +6,9 @@ use App\Enums\Accounting\AccountType;
 use App\Enums\Accounting\JournalType;
 use App\Models\Account;
 use App\Models\Company;
+use App\Models\Currency;
 use App\Models\Journal;
 use App\Models\Partner;
-use App\Models\Currency;
 use Filament\Facades\Filament;
 use Illuminate\Support\Arr;
 
@@ -20,6 +20,7 @@ class FilamentInlineCreate
         if ($tenant instanceof Company) {
             return $tenant->getKey();
         }
+
         return auth()->user()?->companies()->firstOrFail()->getKey();
     }
 
@@ -79,4 +80,3 @@ class FilamentInlineCreate
         return Account::factory()->for($company)->create($data);
     }
 }
-

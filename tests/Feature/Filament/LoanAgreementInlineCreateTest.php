@@ -14,7 +14,10 @@ use function Pest\Livewire\livewire;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);
 
-beforeEach(function () { $this->setupWithConfiguredCompany(); $this->actingAs($this->user); });
+beforeEach(function () {
+    $this->setupWithConfiguredCompany();
+    $this->actingAs($this->user);
+});
 
 it('configures createOption forms and can post repayment after creating needed records', function () {
     $code = $this->company->currency->code;
@@ -67,7 +70,6 @@ it('configures createOption forms and can post repayment after creating needed r
     // Basic assertion: the repayment journal entry exists with expected reference format
     $this->assertDatabaseHas('journal_entries', [
         'company_id' => $this->company->id,
-        'reference' => 'LOAN-PAY/' . $loan->id . '/1',
+        'reference' => 'LOAN-PAY/'.$loan->id.'/1',
     ]);
 });
-

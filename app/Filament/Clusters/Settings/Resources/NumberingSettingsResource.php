@@ -60,9 +60,10 @@ class NumberingSettingsResource extends Resource
                             'required',
                             function () {
                                 $tenant = Filament::getTenant();
-                                if (!$tenant instanceof \App\Models\Company) {
+                                if (! $tenant instanceof \App\Models\Company) {
                                     throw new \Exception('Company not found');
                                 }
+
                                 return new NumberingSettingsChangeRule($tenant);
                             },
                         ])
@@ -87,9 +88,10 @@ class NumberingSettingsResource extends Resource
                             'max:10',
                             function () {
                                 $tenant = Filament::getTenant();
-                                if (!$tenant instanceof \App\Models\Company) {
+                                if (! $tenant instanceof \App\Models\Company) {
                                     throw new \Exception('Company not found');
                                 }
+
                                 return new NumberingSettingsChangeRule($tenant);
                             },
                         ])
@@ -118,9 +120,10 @@ class NumberingSettingsResource extends Resource
                             'max:10',
                             function () {
                                 $tenant = Filament::getTenant();
-                                if (!$tenant instanceof \App\Models\Company) {
+                                if (! $tenant instanceof \App\Models\Company) {
                                     throw new \Exception('Company not found');
                                 }
+
                                 return new NumberingSettingsChangeRule($tenant);
                             },
                         ])
@@ -152,9 +155,10 @@ class NumberingSettingsResource extends Resource
                             'required',
                             function () {
                                 $tenant = Filament::getTenant();
-                                if (!$tenant instanceof \App\Models\Company) {
+                                if (! $tenant instanceof \App\Models\Company) {
                                     throw new \Exception('Company not found');
                                 }
+
                                 return new NumberingSettingsChangeRule($tenant);
                             },
                         ])
@@ -179,9 +183,10 @@ class NumberingSettingsResource extends Resource
                             'max:10',
                             function () {
                                 $tenant = Filament::getTenant();
-                                if (!$tenant instanceof \App\Models\Company) {
+                                if (! $tenant instanceof \App\Models\Company) {
                                     throw new \Exception('Company not found');
                                 }
+
                                 return new NumberingSettingsChangeRule($tenant);
                             },
                         ])
@@ -210,9 +215,10 @@ class NumberingSettingsResource extends Resource
                             'max:10',
                             function () {
                                 $tenant = Filament::getTenant();
-                                if (!$tenant instanceof \App\Models\Company) {
+                                if (! $tenant instanceof \App\Models\Company) {
                                     throw new \Exception('Company not found');
                                 }
+
                                 return new NumberingSettingsChangeRule($tenant);
                             },
                         ])

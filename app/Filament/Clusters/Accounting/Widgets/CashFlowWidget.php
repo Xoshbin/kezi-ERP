@@ -5,7 +5,6 @@ namespace App\Filament\Clusters\Accounting\Widgets;
 use App\Services\Reports\AgedPayableService;
 use App\Services\Reports\AgedReceivableService;
 use App\Support\NumberFormatter;
-use Brick\Money\Money;
 use Carbon\Carbon;
 use Exception;
 use Filament\Facades\Filament;

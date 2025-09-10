@@ -10,4 +10,3 @@ enum ScheduleMethod: string
     case Bullet = 'bullet';
     case Custom = 'custom';
 }
-

@@ -143,7 +143,7 @@ class PaymentTermLine extends Model
      */
     public function hasEarlyPaymentDiscount(Carbon $documentDate, Carbon $paymentDate): bool
     {
-        if (!$this->discount_percentage || !$this->discount_days) {
+        if (! $this->discount_percentage || ! $this->discount_days) {
             return false;
         }
 
@@ -157,7 +157,7 @@ class PaymentTermLine extends Model
      */
     public function calculateDiscountAmount(\Brick\Money\Money $amount, Carbon $documentDate, Carbon $paymentDate): \Brick\Money\Money
     {
-        if (!$this->hasEarlyPaymentDiscount($documentDate, $paymentDate)) {
+        if (! $this->hasEarlyPaymentDiscount($documentDate, $paymentDate)) {
             return \Brick\Money\Money::of(0, $amount->getCurrency());
         }
 
@@ -179,14 +179,14 @@ class PaymentTermLine extends Model
                 : __('payment_terms.end_of_month'),
             PaymentTermType::DayOfMonth => __('payment_terms.day_of_month', [
                 'day' => (string) $this->day_of_month,
-                'days' => (string) $this->days
+                'days' => (string) $this->days,
             ]),
         };
 
         if ($this->discount_percentage && $this->discount_days) {
-            $description .= ' ' . __('payment_terms.with_discount', [
+            $description .= ' '.__('payment_terms.with_discount', [
                 'percentage' => $this->discount_percentage,
-                'days' => $this->discount_days
+                'days' => $this->discount_days,
             ]);
         }
 
