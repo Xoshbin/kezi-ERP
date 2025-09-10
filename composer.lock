@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "fed4ed5efc681779a0ecbc702fb82783",
+    "content-hash": "d544e99c99ecdd92d12b733fb63f88bf",
     "packages": [
         {
             "name": "anourvalar/eloquent-serialize",
@@ -8794,11 +8794,17 @@
         },
         {
             "name": "xoshbin/pertuk",
-            "version": "dev-main",
+            "version": "0.0.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/Xoshbin/pertuk.git",
+                "reference": "943a2b1134a2e956262cb98bad77ac215b0f6e1e"
+            },
             "dist": {
-                "type": "path",
-                "url": "./packages/xoshbin/pertuk",
-                "reference": "e954f38736de2fa416acb59d466611aa45ae57fa"
+                "type": "zip",
+                "url": "https://api.github.com/repos/Xoshbin/pertuk/zipball/943a2b1134a2e956262cb98bad77ac215b0f6e1e",
+                "reference": "943a2b1134a2e956262cb98bad77ac215b0f6e1e",
+                "shasum": ""
             },
             "require": {
                 "illuminate/contracts": "^11.0||^12.0",
@@ -8834,32 +8840,7 @@
                     "Xoshbin\\Pertuk\\Database\\Factories\\": "database/factories/"
                 }
             },
-            "autoload-dev": {
-                "psr-4": {
-                    "Xoshbin\\Pertuk\\Tests\\": "tests/",
-                    "Workbench\\App\\": "workbench/app/"
-                }
-            },
-            "scripts": {
-                "post-autoload-dump": [
-                    "@composer run prepare"
-                ],
-                "prepare": [
-                    "@php vendor/bin/testbench package:discover --ansi"
-                ],
-                "analyse": [
-                    "vendor/bin/phpstan analyse"
-                ],
-                "test": [
-                    "vendor/bin/pest"
-                ],
-                "test-coverage": [
-                    "vendor/bin/pest --coverage"
-                ],
-                "format": [
-                    "vendor/bin/pint"
-                ]
-            },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
@@ -8873,16 +8854,24 @@
             "description": "A powerful Laravel documentation package with multi-language support, markdown processing, and beautiful UI",
             "homepage": "https://github.com/xoshbin/pertuk",
             "keywords": [
+                "Xoshbin",
                 "docs",
                 "documentation",
                 "laravel",
                 "markdown",
-                "multi-language",
-                "xoshbin"
+                "multi-language"
             ],
-            "transport-options": {
-                "relative": true
-            }
+            "support": {
+                "issues": "https://github.com/Xoshbin/pertuk/issues",
+                "source": "https://github.com/Xoshbin/pertuk/tree/0.0.2"
+            },
+            "funding": [
+                {
+                    "url": "https://github.com/:vendor_name",
+                    "type": "github"
+                }
+            ],
+            "time": "2025-09-09T21:28:52+00:00"
         }
     ],
     "packages-dev": [
@@ -14282,9 +14271,7 @@
     ],
     "aliases": [],
     "minimum-stability": "dev",
-    "stability-flags": {
-        "xoshbin/pertuk": 20
-    },
+    "stability-flags": {},
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {
