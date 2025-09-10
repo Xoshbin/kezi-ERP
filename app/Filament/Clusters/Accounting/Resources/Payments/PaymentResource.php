@@ -94,7 +94,7 @@ class PaymentResource extends Resource
                                 ->required()
                                 ->columnSpanFull(),
 
-                            TranslatableSelect::make('partner_id', Partner::class, __('payment.form.partner'))
+                            TranslatableSelect::make('paid_to_from_partner_id', Partner::class, __('payment.form.partner'))
                                 ->required()
                                 ->columnSpanFull(),
 
