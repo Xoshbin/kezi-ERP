@@ -31,6 +31,7 @@ class ViewProfitAndLoss extends Page
 
     public ?string $endDate = null;
 
+    /** @var array<string, mixed>|null */
     public ?array $reportData = null;
 
     public static function getNavigationLabel(): string
@@ -88,11 +89,15 @@ class ViewProfitAndLoss extends Page
     public function generateReport(): void
     {
         $this->validate([
-            'startDate' => 'required|date',
-            'endDate' => 'required|date|after_or_equal:startDate',
+            'startDate' => ['required', 'date'],
+            'endDate' => ['required', 'date', 'after_or_equal:startDate'],
         ]);
 
         $company = Filament::getTenant() ?? auth()->user()?->company;
+        if (! $company instanceof \App\Models\Company) {
+            throw new \Exception('Company not found');
+        }
+
         $service = app(ProfitAndLossStatementService::class);
 
         $report = $service->generate(

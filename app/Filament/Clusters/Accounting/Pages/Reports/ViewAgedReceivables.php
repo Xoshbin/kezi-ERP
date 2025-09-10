@@ -29,6 +29,7 @@ class ViewAgedReceivables extends Page
 
     public ?string $asOfDate = null;
 
+    /** @var array<string, mixed>|null */
     public ?array $reportData = null;
 
     public static function getNavigationLabel(): string
@@ -48,7 +49,8 @@ class ViewAgedReceivables extends Page
 
     public function mount(): void
     {
-        $this->form->fill([
+        // Use explicit schema getter to satisfy static analysis
+        $this->getSchema('form')?->fill([
             'asOfDate' => Carbon::now()->toDateString(),
         ]);
     }
@@ -81,10 +83,14 @@ class ViewAgedReceivables extends Page
     public function generateReport(): void
     {
         $this->validate([
-            'asOfDate' => 'required|date',
+            'asOfDate' => ['required', 'date'],
         ]);
 
         $company = Filament::getTenant();
+        if (! $company instanceof \App\Models\Company) {
+            throw new \Exception('Company not found');
+        }
+
         $service = app(AgedReceivableService::class);
 
         $report = $service->generate(
@@ -122,7 +128,7 @@ class ViewAgedReceivables extends Page
             'totalBucket90_plusAmount' => $report->totalBucket90_plus->getAmount()->toFloat(),
             'grandTotalDue' => NumberFormatter::formatMoneyTo($report->grandTotalDue),
             'grandTotalDueAmount' => $report->grandTotalDue->getAmount()->toFloat(),
-            'companyName' => $company->name,
+            'companyName' => (string) ($company->name ?? ''),
             'asOfDate' => $this->asOfDate,
         ];
     }

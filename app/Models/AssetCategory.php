@@ -24,23 +24,36 @@ class AssetCategory extends Model
 
     protected $casts = [
         'is_active' => 'boolean',
+        'depreciation_method' => \App\Enums\Assets\DepreciationMethod::class,
     ];
 
+    /**
+     * @return BelongsTo<Company, static>
+     */
     public function company(): BelongsTo
     {
         return $this->belongsTo(Company::class);
     }
 
+    /**
+     * @return BelongsTo<Account, static>
+     */
     public function assetAccount(): BelongsTo
     {
         return $this->belongsTo(Account::class, 'asset_account_id');
     }
 
+    /**
+     * @return BelongsTo<Account, static>
+     */
     public function accumulatedDepreciationAccount(): BelongsTo
     {
         return $this->belongsTo(Account::class, 'accumulated_depreciation_account_id');
     }
 
+    /**
+     * @return BelongsTo<Account, static>
+     */
     public function depreciationExpenseAccount(): BelongsTo
     {
         return $this->belongsTo(Account::class, 'depreciation_expense_account_id');

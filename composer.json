@@ -15,13 +15,14 @@
         "filament/filament": "^4.0",
         "lara-zeus/spatie-translatable": "^1.0",
         "laravel/framework": "^12.0",
-        "laravel/tinker": "^2.10.1"
+        "laravel/tinker": "^2.10.1",
+        "xoshbin/pertuk": "^0.0.4"
     },
     "require-dev": {
         "barryvdh/laravel-ide-helper": "^3.6",
         "fakerphp/faker": "^1.23",
         "larastan/larastan": "^3.0",
-        "laravel/boost": "^1.0",
+        "laravel/boost": "^1.1",
         "laravel/pail": "^1.2.2",
         "laravel/pint": "^1.13",
         "laravel/sail": "^1.41",

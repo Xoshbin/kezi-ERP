@@ -78,7 +78,7 @@ class Employee extends Model
     /**
      * The attributes that are mass assignable.
      *
-     * @var array<int, string>
+     * @var list<string>
      */
     protected $fillable = [
         'company_id',
@@ -145,6 +145,9 @@ class Employee extends Model
     /**
      * Get the company that owns the Employee.
      */
+    /**
+     * @return BelongsTo<Company, static>
+     */
     public function company(): BelongsTo
     {
         return $this->belongsTo(Company::class);
@@ -152,6 +155,9 @@ class Employee extends Model
 
     /**
      * Get the user account associated with this employee.
+     */
+    /**
+     * @return BelongsTo<User, static>
      */
     public function user(): BelongsTo
     {
@@ -161,6 +167,9 @@ class Employee extends Model
     /**
      * Get the department this employee belongs to.
      */
+    /**
+     * @return BelongsTo<Department, static>
+     */
     public function department(): BelongsTo
     {
         return $this->belongsTo(Department::class);
@@ -168,6 +177,9 @@ class Employee extends Model
 
     /**
      * Get the position this employee holds.
+     */
+    /**
+     * @return BelongsTo<Position, static>
      */
     public function position(): BelongsTo
     {
@@ -177,6 +189,9 @@ class Employee extends Model
     /**
      * Get the manager of this employee.
      */
+    /**
+     * @return BelongsTo<Employee, static>
+     */
     public function manager(): BelongsTo
     {
         return $this->belongsTo(Employee::class, 'manager_id');
@@ -184,6 +199,9 @@ class Employee extends Model
 
     /**
      * Get the direct reports of this employee.
+     */
+    /**
+     * @return HasMany<Employee, static>
      */
     public function directReports(): HasMany
     {
@@ -193,6 +211,9 @@ class Employee extends Model
     /**
      * Get the employment contracts for this employee.
      */
+    /**
+     * @return HasMany<EmploymentContract, static>
+     */
     public function employmentContracts(): HasMany
     {
         return $this->hasMany(EmploymentContract::class);
@@ -200,6 +221,9 @@ class Employee extends Model
 
     /**
      * Get the current active employment contract.
+     */
+    /**
+     * @return HasOne<EmploymentContract, static>
      */
     public function currentContract(): HasOne
     {
@@ -216,6 +240,9 @@ class Employee extends Model
     /**
      * Get the leave requests for this employee.
      */
+    /**
+     * @return HasMany<LeaveRequest, static>
+     */
     public function leaveRequests(): HasMany
     {
         return $this->hasMany(LeaveRequest::class);
@@ -224,6 +251,9 @@ class Employee extends Model
     /**
      * Get the attendance records for this employee.
      */
+    /**
+     * @return HasMany<Attendance, static>
+     */
     public function attendances(): HasMany
     {
         return $this->hasMany(Attendance::class);
@@ -231,6 +261,9 @@ class Employee extends Model
 
     /**
      * Get the payroll records for this employee.
+     */
+    /**
+     * @return HasMany<Payroll, static>
      */
     public function payrolls(): HasMany
     {
@@ -272,7 +305,7 @@ class Employee extends Model
      */
     public function getYearsOfServiceAttribute(): int
     {
-        return $this->hire_date->diffInYears(now());
+        return (int) $this->hire_date->diffInYears(now());
     }
 
     /**
@@ -306,7 +339,7 @@ class Employee extends Model
      */
     public function getAllSubordinates(): Collection
     {
-        $subordinates = collect();
+        $subordinates = new \Illuminate\Database\Eloquent\Collection;
 
         foreach ($this->directReports as $directReport) {
             $subordinates->push($directReport);
@@ -359,9 +392,12 @@ class Employee extends Model
      */
     public function getAttendanceForDate(Carbon $date): ?Attendance
     {
-        return $this->attendances()
+        /** @var Attendance|null $attendance */
+        $attendance = $this->attendances()
             ->where('attendance_date', $date->format('Y-m-d'))
             ->first();
+
+        return $attendance;
     }
 
     /**
@@ -389,10 +425,13 @@ class Employee extends Model
      */
     public function getLatestPayroll(): ?Payroll
     {
-        return $this->payrolls()
+        /** @var Payroll|null $payroll */
+        $payroll = $this->payrolls()
             ->where('status', '!=', 'cancelled')
             ->latest('period_end_date')
             ->first();
+
+        return $payroll;
     }
 
     /**
@@ -416,6 +455,6 @@ class Employee extends Model
             $nextNumber = 1;
         }
 
-        return $prefix.$year.str_pad($nextNumber, 4, '0', STR_PAD_LEFT);
+        return $prefix.$year.str_pad((string) $nextNumber, 4, '0', STR_PAD_LEFT);
     }
 }

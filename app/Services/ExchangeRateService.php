@@ -6,7 +6,6 @@ use App\Models\Currency;
 use App\Models\CurrencyRate;
 use Carbon\Carbon;
 use Exception;
-use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 
@@ -22,7 +21,7 @@ class ExchangeRateService
      * Update exchange rates for all active currencies from external API.
      *
      * @param  string  $source  The source identifier (e.g., 'api', 'manual')
-     * @return array Results of the update operation
+     * @return array<string, mixed> Results of the update operation
      */
     public function updateAllRates(string $source = 'api'): array
     {
@@ -121,9 +120,12 @@ class ExchangeRateService
      */
     public function getLatestRate(Currency $currency): ?CurrencyRate
     {
-        return $currency->rates()
+        /** @var CurrencyRate|null $rate */
+        $rate = $currency->rates()
             ->orderBy('effective_date', 'desc')
             ->first();
+
+        return $rate;
     }
 
     /**
@@ -131,19 +133,23 @@ class ExchangeRateService
      */
     public function getRateForDate(Currency $currency, Carbon $date): ?CurrencyRate
     {
-        return $currency->rates()
+        /** @var CurrencyRate|null $rate */
+        $rate = $currency->rates()
             ->where('effective_date', '<=', $date->toDateString())
             ->orderBy('effective_date', 'desc')
             ->first();
+
+        return $rate;
     }
 
     /**
      * Get historical rates for a currency within a date range.
      *
-     * @return Collection
+     * @return \Illuminate\Database\Eloquent\Collection<int, \App\Models\CurrencyRate>
      */
     public function getHistoricalRates(Currency $currency, Carbon $startDate, Carbon $endDate)
     {
+        /** @var \Illuminate\Database\Eloquent\Collection<int, \App\Models\CurrencyRate> */
         return $currency->rates()
             ->whereBetween('effective_date', [$startDate->toDateString(), $endDate->toDateString()])
             ->orderBy('effective_date', 'asc')
@@ -179,7 +185,7 @@ class ExchangeRateService
      * Validate that all active currencies have recent rates.
      *
      * @param  int  $maxDaysOld  Maximum age of rates in days
-     * @return array Currencies missing recent rates
+     * @return list<array<string, mixed>> Currencies missing recent rates
      */
     public function validateRecentRates(int $maxDaysOld = 7): array
     {

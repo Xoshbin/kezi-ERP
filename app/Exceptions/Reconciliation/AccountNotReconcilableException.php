@@ -10,6 +10,9 @@ namespace App\Exceptions\Reconciliation;
  */
 class AccountNotReconcilableException extends ReconciliationException
 {
+    /**
+     * @param  array<int, string>  $accountCodes
+     */
     public function __construct(array $accountCodes = [], ?string $message = null)
     {
         $message = $message ?? sprintf(

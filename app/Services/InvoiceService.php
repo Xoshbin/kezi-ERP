@@ -39,7 +39,9 @@ class InvoiceService
         }
 
         // If the guard passes, proceed with the deletion.
-        return $invoice->delete();
+        $result = $invoice->delete();
+
+        return $result !== null ? $result : false;
     }
 
     public function confirm(Invoice $invoice, User $user): void
@@ -50,7 +52,7 @@ class InvoiceService
             return;
         }
 
-        $this->lockDateService->enforce(Company::find($invoice->company_id), Carbon::parse($invoice->invoice_date));
+        $this->lockDateService->enforce(Company::findOrFail($invoice->company_id), Carbon::parse($invoice->invoice_date));
 
         DB::transaction(function () use ($invoice, $user) {
             // Process multi-currency amounts before posting
@@ -239,6 +241,8 @@ class InvoiceService
 
     /**
      * Convert invoice line amounts to company currency.
+     *
+     * @param  \App\Models\InvoiceLine  $line
      */
     protected function convertInvoiceLineAmounts($line, Currency $companyCurrency, Company $company): void
     {

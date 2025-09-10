@@ -81,7 +81,11 @@ class AdjustmentDocumentResource extends Resource
                         ->required()
                         ->live()
                         ->columnSpan(2)
-                        ->default(fn () => Filament::getTenant()?->currency_id)
+                        ->default(function (): ?int {
+                            $tenant = Filament::getTenant();
+
+                            return $tenant instanceof \App\Models\Company ? $tenant->currency_id : null;
+                        })
                         ->disabled(fn (Get $get): bool => ! empty($get('original_invoice_id')) || ! empty($get('original_vendor_bill_id')))
                         ->createOptionForm([
                             TextInput::make('code')
@@ -184,6 +188,13 @@ class AdjustmentDocumentResource extends Resource
                             if (! $invoice) {
                                 return null;
                             }
+                            // Ensure we have a single Invoice model, not a collection
+                            if ($invoice instanceof \Illuminate\Database\Eloquent\Collection) {
+                                $invoice = $invoice->first();
+                            }
+                            if (! $invoice) {
+                                return null;
+                            }
 
                             return $invoice->invoice_number.' - '.$invoice->customer->name;
                         })
@@ -192,6 +203,10 @@ class AdjustmentDocumentResource extends Resource
                         ->afterStateUpdated(function ($state, Set $set) {
                             if ($state) {
                                 $invoice = Invoice::find($state);
+                                // Ensure we have a single Invoice model, not a collection
+                                if ($invoice instanceof \Illuminate\Database\Eloquent\Collection) {
+                                    $invoice = $invoice->first();
+                                }
                                 $set('currency_id', $invoice?->currency_id);
                             }
                         })
@@ -206,6 +221,10 @@ class AdjustmentDocumentResource extends Resource
                         ->afterStateUpdated(function ($state, Set $set) {
                             if ($state) {
                                 $bill = VendorBill::find($state);
+                                // Ensure we have a single VendorBill model, not a collection
+                                if ($bill instanceof \Illuminate\Database\Eloquent\Collection) {
+                                    $bill = $bill->first();
+                                }
                                 $set('currency_id', $bill?->currency_id);
                             }
                         })
@@ -240,6 +259,10 @@ class AdjustmentDocumentResource extends Resource
                                 ->afterStateUpdated(function (callable $set, $state) {
                                     if ($state) {
                                         $product = Product::find($state);
+                                        // Ensure we have a single Product model, not a collection
+                                        if ($product instanceof \Illuminate\Database\Eloquent\Collection) {
+                                            $product = $product->first();
+                                        }
                                         if ($product) {
                                             $set('description', $product->name);
                                             $set('unit_price', $product->unit_price);
@@ -404,13 +427,11 @@ class AdjustmentDocumentResource extends Resource
                         AdjustmentDocumentStatus::Draft => 'warning',
                         AdjustmentDocumentStatus::Posted => 'success',
                         AdjustmentDocumentStatus::Cancelled => 'danger',
-                        default => 'gray',
                     })
                     ->icon(fn (AdjustmentDocumentStatus $state): string => match ($state) {
                         AdjustmentDocumentStatus::Draft => 'heroicon-m-pencil-square',
                         AdjustmentDocumentStatus::Posted => 'heroicon-m-check-circle',
                         AdjustmentDocumentStatus::Cancelled => 'heroicon-m-x-circle',
-                        default => 'heroicon-m-question-mark-circle',
                     })
                     ->searchable(),
             ])

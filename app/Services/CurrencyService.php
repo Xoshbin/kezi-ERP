@@ -7,6 +7,9 @@ use Illuminate\Support\Facades\Validator;
 
 class CurrencyService
 {
+    /**
+     * @param  array<string, mixed>  $data
+     */
     public function create(array $data): Currency
     {
         Validator::make($data, [

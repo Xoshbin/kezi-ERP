@@ -27,13 +27,20 @@ class UpdateJournalEntryAction
         $journalEntry = $dto->journalEntry;
 
         // 1. Perform all necessary validation before touching the database.
-        $this->lockDateService->enforce(Company::find($journalEntry->company_id), Carbon::parse($journalEntry->entry_date));
+        $company = Company::find($journalEntry->company_id);
+        if (! $company) {
+            throw new \InvalidArgumentException('Company not found');
+        }
+        $this->lockDateService->enforce($company, Carbon::parse($journalEntry->entry_date));
 
         if ($journalEntry->is_posted) {
             throw new UpdateNotAllowedException('Cannot modify a posted journal entry.');
         }
 
         $currency = Currency::find($dto->currency_id);
+        if (! $currency) {
+            throw new \InvalidArgumentException('Currency not found');
+        }
         $totalDebit = Money::zero($currency->code);
         $totalCredit = Money::zero($currency->code);
 
@@ -113,6 +120,8 @@ class UpdateJournalEntryAction
 
     /**
      * Convert various input types to Money object
+     *
+     * @param  mixed  $value
      */
     private function convertToMoney($value, string $currencyCode): Money
     {

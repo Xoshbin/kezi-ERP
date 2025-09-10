@@ -24,7 +24,7 @@ class IncomeVsExpenseChart extends ChartWidget
     protected function getData(): array
     {
         $company = Filament::getTenant();
-        if (! $company) {
+        if (! $company instanceof \App\Models\Company) {
             return $this->getEmptyData();
         }
 
@@ -90,6 +90,9 @@ class IncomeVsExpenseChart extends ChartWidget
         return 'line';
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     protected function getOptions(): array
     {
         return [
@@ -157,6 +160,9 @@ class IncomeVsExpenseChart extends ChartWidget
         ];
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     private function getEmptyData(): array
     {
         return [

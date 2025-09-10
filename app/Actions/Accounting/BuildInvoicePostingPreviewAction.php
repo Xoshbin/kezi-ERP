@@ -2,21 +2,32 @@
 
 namespace App\Actions\Accounting;
 
+use App\Models\Account;
 use App\Models\Invoice;
 use Brick\Money\Money;
 
 class BuildInvoicePostingPreviewAction
 {
-    private function accountLabelName($account): string
+    private function accountLabelName(?Account $account): string
     {
         if (! $account) {
             return '';
         }
-        $name = is_array($account->name ?? null) ? ($account->name['en'] ?? reset($account->name)) : ($account->name ?? '');
+        $raw = $account->name ?? '';
+        if (is_array($raw)) {
+            $name = $raw['en'] ?? (empty($raw) ? '' : (string) array_values($raw)[0]);
+        } else {
+            $name = (string) $raw;
+        }
 
         return $name;
     }
 
+    /**
+     * Execute the invoice posting preview action.
+     *
+     * @return array{errors: array<int, string>, issues: array<int, array{type: string, message: string, product_id?: int|null, tax_id?: int|null}>, lines: array<int, array{account_id: int|null, account_name: string, account_code: string|null, debit_minor: int, credit_minor: int, description: string}>, totals: array{debit_minor: int, credit_minor: int, balanced: bool}}
+     */
     public function execute(Invoice $invoice): array
     {
         $invoice->load('company', 'currency', 'customer', 'invoiceLines.tax.taxAccount', 'invoiceLines.incomeAccount');
@@ -50,6 +61,7 @@ class BuildInvoicePostingPreviewAction
                 $errors[] = $msg;
                 $issues[] = ['type' => 'income_account_missing', 'message' => $msg, 'product_id' => $line->product_id];
             } else {
+                /** @var \App\Models\Account|null $incomeAccount */
                 $incomeAccount = $line->incomeAccount;
                 $linesPreview[] = [
                     'account_id' => $incomeAccountId,
@@ -71,11 +83,11 @@ class BuildInvoicePostingPreviewAction
                     $errors[] = $msg;
                     $issues[] = ['type' => 'tax_account_missing', 'message' => $msg, 'tax_id' => $tax?->id];
                 } else {
-                    $taxAccount = $tax?->taxAccount;
+                    $taxAccount = $tax->taxAccount;
                     $linesPreview[] = [
                         'account_id' => $taxAccountId,
                         'account_name' => $this->accountLabelName($taxAccount),
-                        'account_code' => $taxAccount?->code,
+                        'account_code' => $taxAccount->code,
                         'debit_minor' => 0,
                         'credit_minor' => $line->total_line_tax->getMinorAmount()->toInt(),
                         'description' => 'Output tax: '.$line->description,
@@ -87,7 +99,8 @@ class BuildInvoicePostingPreviewAction
 
         // Debit: Accounts Receivable total
         if ($arAccountId) {
-            $arAccount = $invoice->customer->receivableAccount ?? $company->accountsReceivableAccount;
+            /** @var \App\Models\Account|null $arAccount */
+            $arAccount = $invoice->customer->receivableAccount ?? $company->defaultAccountsReceivable;
             $linesPreview[] = [
                 'account_id' => $arAccountId,
                 'account_name' => $this->accountLabelName($arAccount),

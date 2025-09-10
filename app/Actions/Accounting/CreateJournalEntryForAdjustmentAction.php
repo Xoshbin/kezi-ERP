@@ -66,7 +66,7 @@ class CreateJournalEntryForAdjustmentAction
             debit: Money::of(0, $currencyCode),
             credit: $totalAmount,
             description: 'Accounts Receivable',
-            partner_id: $adjustment->partner_id,
+            partner_id: $adjustment->original_invoice_id ? ($adjustment->originalInvoice?->customer_id) : ($adjustment->original_vendor_bill_id ? ($adjustment->originalVendorBill?->vendor_id) : null),
             analytic_account_id: null,
         );
 
@@ -75,7 +75,7 @@ class CreateJournalEntryForAdjustmentAction
             company_id: $adjustment->company_id,
             currency_id: $adjustment->currency_id,
             journal_id: $salesJournalId,
-            entry_date: $adjustment->posted_at,
+            entry_date: $adjustment->posted_at ?? now()->toDateString(),
             reference: 'CN-'.$adjustment->reference_number,
             description: 'Credit Note '.$adjustment->reference_number,
             source_type: AdjustmentDocument::class,

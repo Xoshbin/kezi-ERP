@@ -4,7 +4,7 @@ use App\Actions\Payments\CreatePaymentAction;
 use App\DataTransferObjects\Payments\CreatePaymentDocumentLinkDTO;
 use App\DataTransferObjects\Payments\CreatePaymentDTO;
 use App\Enums\Accounting\JournalType;
-use App\Enums\Payments\PaymentPurpose;
+use App\Enums\Payments\PaymentMethod;
 use App\Enums\Payments\PaymentStatus;
 use App\Enums\Payments\PaymentType;
 use App\Models\Currency;
@@ -93,11 +93,11 @@ describe('Multi-Currency Payment Tests', function () {
             journal_id: $this->bankJournal->id,
             currency_id: $this->usdCurrency->id,
             payment_date: $this->invoiceDate->toDateString(), // Same date = same rate
-            payment_purpose: PaymentPurpose::Settlement,
+            // settlement inferred by presence of document links
             payment_type: PaymentType::Inbound,
+            payment_method: PaymentMethod::BankTransfer,
             partner_id: null,
             amount: null,
-            counterpart_account_id: null,
             document_links: [$documentLinkDTO],
             reference: 'USD Payment for USD Invoice'
         );
@@ -149,11 +149,11 @@ describe('Multi-Currency Payment Tests', function () {
             journal_id: $this->bankJournal->id,
             currency_id: $this->usdCurrency->id,
             payment_date: $this->paymentDate->toDateString(), // Later date = different rate
-            payment_purpose: PaymentPurpose::Settlement,
+            // settlement inferred by presence of document links
             payment_type: PaymentType::Inbound,
+            payment_method: PaymentMethod::BankTransfer,
             partner_id: null,
             amount: null,
-            counterpart_account_id: null,
             document_links: [$documentLinkDTO],
             reference: 'USD Payment with Exchange Gain'
         );
@@ -202,11 +202,11 @@ describe('Cross-Currency Payment Tests', function () {
             journal_id: $this->bankJournal->id,
             currency_id: $this->company->currency_id, // IQD payment
             payment_date: $this->paymentDate->toDateString(),
-            payment_purpose: PaymentPurpose::Settlement,
+            // settlement inferred by presence of document links
             payment_type: PaymentType::Inbound,
+            payment_method: PaymentMethod::BankTransfer,
             partner_id: null,
             amount: null,
-            counterpart_account_id: null,
             document_links: [$documentLinkDTO],
             reference: 'IQD Payment for USD Invoice'
         );
@@ -251,11 +251,11 @@ describe('Cross-Currency Payment Tests', function () {
             journal_id: $this->bankJournal->id,
             currency_id: $this->usdCurrency->id, // USD payment
             payment_date: $this->paymentDate->toDateString(),
-            payment_purpose: PaymentPurpose::Settlement,
+            // settlement inferred by presence of document links
             payment_type: PaymentType::Inbound,
+            payment_method: PaymentMethod::BankTransfer,
             partner_id: null,
             amount: null,
-            counterpart_account_id: null,
             document_links: [$documentLinkDTO],
             reference: 'USD Payment for IQD Invoice'
         );
@@ -298,11 +298,11 @@ describe('VendorBill Payment Tests', function () {
             journal_id: $this->bankJournal->id,
             currency_id: $this->usdCurrency->id,
             payment_date: $this->paymentDate->toDateString(),
-            payment_purpose: PaymentPurpose::Settlement,
+            // settlement inferred by presence of document links
             payment_type: PaymentType::Outbound,
+            payment_method: PaymentMethod::BankTransfer,
             partner_id: null,
             amount: null,
-            counterpart_account_id: null,
             document_links: [$documentLinkDTO],
             reference: 'USD Payment for USD Vendor Bill'
 
@@ -341,11 +341,11 @@ describe('Payment Document Link Tests', function () {
             journal_id: $this->bankJournal->id,
             currency_id: $this->usdCurrency->id,
             payment_date: $this->paymentDate->toDateString(),
-            payment_purpose: PaymentPurpose::Settlement,
+            // settlement inferred by presence of document links
             payment_type: PaymentType::Inbound,
+            payment_method: PaymentMethod::BankTransfer,
             partner_id: null,
             amount: null,
-            counterpart_account_id: null,
             document_links: [$documentLinkDTO],
             reference: 'Test Payment Document Link'
 
@@ -386,11 +386,11 @@ describe('Payment Document Link Tests', function () {
             journal_id: $this->bankJournal->id,
             currency_id: $this->usdCurrency->id,
             payment_date: $this->paymentDate->toDateString(),
-            payment_purpose: PaymentPurpose::Settlement,
+            // settlement inferred by presence of document links
             payment_type: PaymentType::Inbound,
+            payment_method: PaymentMethod::BankTransfer,
             partner_id: null,
             amount: null,
-            counterpart_account_id: null,
             document_links: [$documentLinkDTO],
             reference: 'Partial USD Payment'
 
@@ -435,11 +435,11 @@ describe('Payment State Bug Tests', function () {
             journal_id: $this->bankJournal->id,
             currency_id: $this->company->currency_id, // IQD payment
             payment_date: $this->paymentDate->toDateString(),
-            payment_purpose: PaymentPurpose::Settlement,
+            // settlement inferred by presence of document links
             payment_type: PaymentType::Inbound,
+            payment_method: PaymentMethod::BankTransfer,
             partner_id: null,
             amount: null,
-            counterpart_account_id: null,
             document_links: [$documentLinkDTO],
             reference: 'Partial IQD Payment for USD Invoice'
         );
@@ -482,11 +482,11 @@ describe('Payment State Bug Tests', function () {
             journal_id: $this->bankJournal->id,
             currency_id: $this->usdCurrency->id, // USD payment
             payment_date: $this->paymentDate->toDateString(),
-            payment_purpose: PaymentPurpose::Settlement,
+            // settlement inferred by presence of document links
             payment_type: PaymentType::Inbound,
+            payment_method: PaymentMethod::BankTransfer,
             partner_id: null,
             amount: null,
-            counterpart_account_id: null,
             document_links: [$documentLinkDTO],
             reference: 'Full USD Payment for USD Invoice'
         );
@@ -529,11 +529,11 @@ describe('Payment State Bug Tests', function () {
             journal_id: $this->bankJournal->id,
             currency_id: $this->company->currency_id, // IQD payment
             payment_date: $this->paymentDate->toDateString(),
-            payment_purpose: PaymentPurpose::Settlement,
+            // settlement inferred by presence of document links
             payment_type: PaymentType::Inbound,
+            payment_method: PaymentMethod::BankTransfer,
             partner_id: null,
             amount: null,
-            counterpart_account_id: null,
             document_links: [$documentLinkDTO],
             reference: 'Real World Scenario: 250,000 IQD for $1500 USD Invoice'
         );

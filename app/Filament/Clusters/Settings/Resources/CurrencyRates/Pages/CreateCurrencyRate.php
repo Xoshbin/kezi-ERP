@@ -12,7 +12,8 @@ class CreateCurrencyRate extends CreateRecord
 
     protected function mutateFormDataBeforeCreate(array $data): array
     {
-        $data['company_id'] = Filament::getTenant()->id;
+        $tenant = Filament::getTenant();
+        $data['company_id'] = $tenant?->getKey() ?? 0;
 
         return $data;
     }

@@ -24,14 +24,16 @@ use Illuminate\Support\Carbon;
  * @property string $type
  * @property Carbon $date
  * @property string $reference_number
- * @property float $total_amount
- * @property float $total_tax
+ * @property \Brick\Money\Money $subtotal
+ * @property \Brick\Money\Money $total_amount
+ * @property \Brick\Money\Money $total_tax
  * @property string $reason
- * @property string $status
+ * @property AdjustmentDocumentStatus $status
  * @property string|null $posted_at
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property-read Company $company
+ * @property-read Currency $currency
  * @property-read JournalEntry|null $journalEntry
  * @property-read Invoice|null $originalInvoice
  * @property-read VendorBill|null $originalVendorBill
@@ -60,6 +62,7 @@ use Illuminate\Support\Carbon;
  */
 class AdjustmentDocument extends Model
 {
+    /** @use HasFactory<\Database\Factories\AdjustmentDocumentFactory> */
     use HasFactory;
 
     /**
@@ -76,7 +79,7 @@ class AdjustmentDocument extends Model
      * These fields align with the columns defined in your database migration
      * for the 'adjustment_documents' table, allowing for bulk assignment.
      *
-     * @var array<int, string>
+     * @var list<string>
      */
     protected $fillable = [
         'company_id',             // [5]
@@ -158,6 +161,9 @@ class AdjustmentDocument extends Model
     | crucial for a cohesive accounting system.
     */
 
+    /**
+     * @return HasMany<AdjustmentDocumentLine, static>
+     */
     public function lines(): HasMany
     {
         return $this->hasMany(AdjustmentDocumentLine::class);
@@ -166,6 +172,8 @@ class AdjustmentDocument extends Model
     /**
      * Get the company that owns the adjustment document.
      * An adjustment document always belongs to a specific company.
+     *
+     * @return BelongsTo<Company, static>
      */
     public function company(): BelongsTo
     {
@@ -176,6 +184,8 @@ class AdjustmentDocument extends Model
      * Get the original invoice that this adjustment document relates to (if any).
      * This is used for credit notes issued against customer invoices.
      * It's nullable as not all adjustment documents will be for invoices.
+     *
+     * @return BelongsTo<Invoice, static>
      */
     public function originalInvoice(): BelongsTo
     {
@@ -186,6 +196,8 @@ class AdjustmentDocument extends Model
      * Get the original vendor bill that this adjustment document relates to (if any).
      * This is used for debit notes issued against vendor bills.
      * It's nullable as not all adjustment documents will be for vendor bills.
+     *
+     * @return BelongsTo<VendorBill, static>
      */
     public function originalVendorBill(): BelongsTo
     {
@@ -196,6 +208,8 @@ class AdjustmentDocument extends Model
      * Get the journal entry associated with this adjustment document.
      * Once an adjustment document is 'Posted', it generates a corresponding
      * journal entry, which is the immutable record in the general ledger.
+     *
+     * @return BelongsTo<JournalEntry, static>
      */
     public function journalEntry(): BelongsTo
     {
@@ -221,6 +235,8 @@ class AdjustmentDocument extends Model
     /**
      * Get the currency of this invoice.
      * Every invoice operates in a specific currency. [1]
+     *
+     * @return BelongsTo<Currency, static>
      */
     public function currency(): BelongsTo
     {
@@ -244,12 +260,15 @@ class AdjustmentDocument extends Model
         $currencyCode = $this->currency->code;
         $zero = Money::of(0, $currencyCode);
 
-        $totalTax = $this->lines->reduce(
+        /** @var \Illuminate\Database\Eloquent\Collection<int, AdjustmentDocumentLine> $lines */
+        $lines = $this->lines;
+
+        $totalTax = $lines->reduce(
             fn (Money $carry, AdjustmentDocumentLine $line) => $carry->plus($line->total_line_tax ?? $zero),
             $zero
         );
 
-        $subtotal = $this->lines->reduce(
+        $subtotal = $lines->reduce(
             fn (Money $carry, AdjustmentDocumentLine $line) => $carry->plus($line->subtotal ?? $zero),
             $zero
         );

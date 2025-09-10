@@ -45,6 +45,7 @@ use Illuminate\Support\Carbon;
  */
 class AuditLog extends Model
 {
+    /** @use HasFactory<\Database\Factories\AuditLogFactory> */
     use HasFactory;
 
     /**
@@ -72,7 +73,7 @@ class AuditLog extends Model
      * We explicitly list the fields defined in the migration and schema
      * that users or the system will set when creating an audit entry.
      *
-     * @var array<int, string>
+     * @var list<string>
      */
     protected $fillable = [
         'user_id',
@@ -108,6 +109,9 @@ class AuditLog extends Model
      * to the `users` table, identifying the individual responsible for the action [1].
      * This establishes a `belongsTo` relationship to the `User` model [10].
      */
+    /**
+     * @return BelongsTo<User, static>
+     */
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
@@ -116,6 +120,9 @@ class AuditLog extends Model
     /**
      * Get the company that this audit log belongs to.
      * Audit logs should be company-specific for proper accounting audit trails.
+     */
+    /**
+     * @return BelongsTo<Company, static>
      */
     public function company(): BelongsTo
     {
@@ -128,6 +135,9 @@ class AuditLog extends Model
      * polymorphic relationship, allowing a single `audit_log` entry to
      * reference different types of models (e.g., `Invoice`, `Account`) [1, 11].
      * This is critical for flexible and comprehensive logging across various entities.
+     */
+    /**
+     * @return MorphTo<\Illuminate\Database\Eloquent\Model, static>
      */
     public function auditable(): MorphTo
     {

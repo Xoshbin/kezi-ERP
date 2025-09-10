@@ -24,32 +24,62 @@ class BaseCurrencyMoneyCast extends MoneyCast
     protected function resolveCurrency(Model $model): Currency
     {
         // This is the most efficient path, traversing loaded relationships.
-        if ($model->relationLoaded('company') && $model->company) {
-            return $model->company->currency;
+        if (method_exists($model, 'company') && $model->relationLoaded('company')) {
+            $company = $model->getRelation('company');
+            if ($company instanceof \Illuminate\Database\Eloquent\Model && method_exists($company, 'currency')) {
+                $currency = $company->relationLoaded('currency') ? $company->getRelation('currency') : $company->currency()->first();
+                if ($currency instanceof \App\Models\Currency) {
+                    return $currency;
+                }
+            }
         }
-        if ($model->relationLoaded('journalEntry') && $model->journalEntry) {
-            return $model->journalEntry->company->currency;
+        if (method_exists($model, 'journalEntry') && $model->relationLoaded('journalEntry')) {
+            $journalEntry = $model->getRelation('journalEntry');
+            if ($journalEntry instanceof \Illuminate\Database\Eloquent\Model && method_exists($journalEntry, 'company')) {
+                $company = $journalEntry->relationLoaded('company') ? $journalEntry->getRelation('company') : $journalEntry->company()->first();
+                if ($company instanceof \Illuminate\Database\Eloquent\Model && method_exists($company, 'currency')) {
+                    $currency = $company->relationLoaded('currency') ? $company->getRelation('currency') : $company->currency()->first();
+                    if ($currency instanceof \App\Models\Currency) {
+                        return $currency;
+                    }
+                }
+            }
         }
-        if ($model->relationLoaded('asset') && $model->asset && $model->asset->relationLoaded('company')) {
-            return $model->asset->company->currency;
+        if (method_exists($model, 'asset') && $model->relationLoaded('asset')) {
+            $asset = $model->getRelation('asset');
+            if ($asset instanceof \Illuminate\Database\Eloquent\Model && method_exists($asset, 'company')) {
+                $company = $asset->relationLoaded('company') ? $asset->getRelation('company') : $asset->company()->first();
+                if ($company instanceof \Illuminate\Database\Eloquent\Model && method_exists($company, 'currency')) {
+                    $currency = $company->relationLoaded('currency') ? $company->getRelation('currency') : $company->currency()->first();
+                    if ($currency instanceof \App\Models\Currency) {
+                        return $currency;
+                    }
+                }
+            }
         }
         // Add other common parent relationships here as needed (e.g., vendorBill)
 
         // Fallback: If relationships are not loaded, perform database queries
         // This is less efficient but ensures the cast always works
-        if (method_exists($model, 'company') && $model->company_id) {
+        if (method_exists($model, 'company') && $model->getAttribute('company_id')) {
             $company = $model->company()->with('currency')->first();
             if ($company && $company->currency) {
-                return $company->currency;
+                /** @var \App\Models\Currency $currency */
+                $currency = $company->currency;
+
+                return $currency;
             }
         }
-        if (method_exists($model, 'journalEntry') && $model->journal_entry_id) {
+        if (method_exists($model, 'journalEntry') && $model->getAttribute('journal_entry_id')) {
             $journalEntry = $model->journalEntry()->with('company.currency')->first();
             if ($journalEntry && $journalEntry->company && $journalEntry->company->currency) {
-                return $journalEntry->company->currency;
+                /** @var \App\Models\Currency $currency */
+                $currency = $journalEntry->company->currency;
+
+                return $currency;
             }
         }
-        if (method_exists($model, 'asset') && $model->asset_id) {
+        if (method_exists($model, 'asset') && $model->getAttribute('asset_id')) {
             $asset = $model->asset()->with('company.currency')->first();
             if ($asset && $asset->company && $asset->company->currency) {
                 return $asset->company->currency;
@@ -59,10 +89,14 @@ class BaseCurrencyMoneyCast extends MoneyCast
         // Last resort: Try to get currency from Filament tenant context
         try {
             $tenant = Filament::getTenant();
-            if ($tenant && method_exists($tenant, 'currency') && $tenant->currency) {
-                return $tenant->currency;
+            if ($tenant instanceof \Illuminate\Database\Eloquent\Model && method_exists($tenant, 'currency')) {
+                /** @var \App\Models\Currency|null $currency */
+                $currency = $tenant->relationLoaded('currency') ? $tenant->getRelation('currency') : $tenant->currency()->first();
+                if ($currency) {
+                    return $currency;
+                }
             }
-        } catch (Exception $e) {
+        } catch (Exception) {
             // Ignore tenant resolution errors
         }
 

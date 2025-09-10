@@ -19,12 +19,22 @@ class ProcessIncomingStockAction
             // Extract the cost per unit from the source document
             $costPerUnit = $this->extractCostFromSource($stockMove);
 
+            $product = $stockMove->product;
+            if (! $product instanceof \App\Models\Product) {
+                throw new \Exception('Product not found for stock move');
+            }
+
+            $sourceDocument = $stockMove->source;
+            if (! $sourceDocument) {
+                throw new \Exception('Stock move must have a source document');
+            }
+
             $this->inventoryValuationService->processIncomingStock(
-                $stockMove->product,
+                $product,
                 $stockMove->quantity,
                 $costPerUnit,
                 $stockMove->move_date,
-                $stockMove->source
+                $sourceDocument
             );
         });
     }
@@ -43,6 +53,10 @@ class ProcessIncomingStockAction
         // For other source types (future: inventory adjustments, transfers, etc.)
         // we can add more extraction logic here
 
+        if (! $sourceDocument) {
+            throw new Exception('Source document is null');
+        }
+
         throw new Exception('Unable to extract cost from source document type: '.get_class($sourceDocument));
     }
 
@@ -56,8 +70,8 @@ class ProcessIncomingStockAction
             ->where('product_id', $stockMove->product_id)
             ->first();
 
-        if (! $line) {
-            throw new Exception("No vendor bill line found for product {$stockMove->product_id} in vendor bill {$vendorBill->id}");
+        if (! ($line instanceof \App\Models\VendorBillLine)) {
+            throw new Exception("No vendor bill line found for product {$stockMove->product_id} in vendor bill {$vendorBill->getKey()}");
         }
 
         return $line->unit_price;

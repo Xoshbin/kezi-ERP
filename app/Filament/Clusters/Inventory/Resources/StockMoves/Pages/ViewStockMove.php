@@ -17,15 +17,18 @@ class ViewStockMove extends ViewRecord
         return [
             EditAction::make()
                 ->icon('heroicon-o-pencil-square')
-                ->visible(fn (): bool => $this->record->status === StockMoveStatus::Draft),
+                ->visible(fn (): bool => ($this->getRecord() instanceof \App\Models\StockMove) && $this->getRecord()->status === StockMoveStatus::Draft),
             DeleteAction::make()
                 ->icon('heroicon-o-trash')
-                ->visible(fn (): bool => $this->record->status === StockMoveStatus::Draft),
+                ->visible(fn (): bool => ($this->getRecord() instanceof \App\Models\StockMove) && $this->getRecord()->status === StockMoveStatus::Draft),
         ];
     }
 
     public function getTitle(): string
     {
-        return __('stock_move.view_title', ['reference' => $this->record->reference ?? $this->record->id]);
+        $record = $this->getRecord();
+        $reference = $record->reference ?? $record->id ?? '';
+
+        return __('stock_move.view_title', ['reference' => $reference]);
     }
 }

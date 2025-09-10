@@ -29,23 +29,23 @@ class AdjustmentDocumentLineObserver
      */
     protected function updateParentAdjustmentDocumentTotals(AdjustmentDocumentLine $adjustmentDocumentLine): void
     {
+        // The adjustmentDocument relationship is guaranteed to exist due to foreign key constraints
+        // with cascadeOnDelete, so we can safely access it without null checks
         $adjustmentDocument = $adjustmentDocumentLine->adjustmentDocument;
-        if ($adjustmentDocument) {
-            $adjustmentDocument->calculateTotalsFromLines();
+        $adjustmentDocument->calculateTotalsFromLines();
 
-            // Also update company currency totals if exchange rate is available
-            if ($adjustmentDocument->exchange_rate_at_creation) {
-                $this->updateCompanyCurrencyTotals($adjustmentDocument);
-            }
-
-            $adjustmentDocument->saveQuietly();
+        // Also update company currency totals if exchange rate is available
+        if ($adjustmentDocument->exchange_rate_at_creation) {
+            $this->updateCompanyCurrencyTotals($adjustmentDocument);
         }
+
+        $adjustmentDocument->saveQuietly();
     }
 
     /**
      * Update company currency totals based on current line totals and exchange rate.
      */
-    protected function updateCompanyCurrencyTotals($adjustmentDocument): void
+    protected function updateCompanyCurrencyTotals(\App\Models\AdjustmentDocument $adjustmentDocument): void
     {
         if (! $adjustmentDocument->exchange_rate_at_creation || $adjustmentDocument->currency_id === $adjustmentDocument->company->currency_id) {
             return; // No conversion needed

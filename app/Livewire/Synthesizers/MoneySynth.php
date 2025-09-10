@@ -39,9 +39,9 @@ class MoneySynth extends Synth
      * This is called when PHP data is being sent TO the browser.
      *
      * @param  Money  $value  The Money object instance.
-     * @return array A tuple array: [$payload, $meta] that the browser can understand.
+     * @return array{0: array{amount: string, currency: string}, 1: array<string, mixed>} A tuple array: [$payload, $meta] that the browser can understand.
      */
-    public function dehydrate($value)
+    public function dehydrate($value): array
     {
         return [
             // The payload: a simple array representing the Money object.
@@ -58,12 +58,11 @@ class MoneySynth extends Synth
      * "Hydrates" the simple payload from the frontend back into a Money object.
      * This is called when data is coming FROM the browser back to the server.
      *
-     * @param  array  $payload  The simple array from the frontend.
-     * @return Money|null
+     * @param  array{amount: string, currency: string}  $payload  The simple array from the frontend.
      */
-    public function hydrate($payload)
+    public function hydrate(array $payload): ?Money
     {
-        if (! isset($payload['amount'], $payload['currency'])) {
+        if (empty($payload['amount']) || empty($payload['currency'])) {
             return null;
         }
 

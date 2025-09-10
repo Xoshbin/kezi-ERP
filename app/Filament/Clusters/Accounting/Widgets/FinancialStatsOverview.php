@@ -20,7 +20,7 @@ class FinancialStatsOverview extends BaseWidget
     protected function getStats(): array
     {
         $company = Filament::getTenant();
-        if (! $company) {
+        if (! $company instanceof Company) {
             return [];
         }
 
@@ -61,11 +61,8 @@ class FinancialStatsOverview extends BaseWidget
             $grossProfitMargin = $totalRevenue->isZero() ? 0 :
                 ($totalRevenue->minus($plDto->totalExpenses))->getAmount()->toFloat() / $totalRevenue->getAmount()->toFloat() * 100;
 
-        } catch (Exception $e) {
+        } catch (Exception) {
             // Fallback to zero values if services fail
-            $currency = $company->currency->code;
-            $zero = Money::zero($currency);
-
             return [
                 Stat::make(__('dashboard.financial.error'), __('dashboard.financial.data_unavailable'))
                     ->description(__('dashboard.financial.please_check_setup'))
@@ -114,7 +111,7 @@ class FinancialStatsOverview extends BaseWidget
         ];
     }
 
-    private function calculateCashBalance($balanceSheetDto): Money
+    private function calculateCashBalance(\App\DataTransferObjects\Reports\BalanceSheetDTO $balanceSheetDto): Money
     {
         $currency = $balanceSheetDto->assetLines->first()?->balance->getCurrency() ?? 'IQD';
         $cashBalance = Money::zero($currency);
@@ -131,6 +128,9 @@ class FinancialStatsOverview extends BaseWidget
         return $cashBalance;
     }
 
+    /**
+     * @return array<int, float>
+     */
     private function getMonthlyProfitTrend(Company $company, ProfitAndLossStatementService $plService): array
     {
         $data = [];
@@ -143,7 +143,7 @@ class FinancialStatsOverview extends BaseWidget
             try {
                 $plDto = $plService->generate($company, $startDate, $endDate);
                 $data[] = $plDto->netIncome->getAmount()->toFloat();
-            } catch (Exception $e) {
+            } catch (Exception) {
                 $data[] = 0;
             }
         }

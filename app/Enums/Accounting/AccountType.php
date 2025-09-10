@@ -5,8 +5,6 @@ namespace App\Enums\Accounting;
 /**
  * Defines the specific type of an account, driving automated accounting logic
  * and the structure of financial reports.
- *
- * @see https://www.odoo.com/documentation/18.0/applications/finance/accounting/get_started/chart_of_accounts.html
  */
 enum AccountType: string
 {
@@ -90,7 +88,7 @@ enum AccountType: string
     /**
      * Get all Asset account types.
      *
-     * @return array<AccountType>
+     * @return array<int, AccountType>
      */
     public static function assetTypes(): array
     {
@@ -107,7 +105,7 @@ enum AccountType: string
     /**
      * Get all Liability account types.
      *
-     * @return array<AccountType>
+     * @return array<int, AccountType>
      */
     public static function liabilityTypes(): array
     {
@@ -122,7 +120,7 @@ enum AccountType: string
     /**
      * Get all Equity account types.
      *
-     * @return array<AccountType>
+     * @return array<int, AccountType>
      */
     public static function equityTypes(): array
     {
@@ -135,7 +133,7 @@ enum AccountType: string
     /**
      * Get all Balance Sheet account types (Assets, Liabilities, and Equity).
      *
-     * @return array<AccountType>
+     * @return array<int, AccountType>
      */
     public static function balanceSheetTypes(): array
     {

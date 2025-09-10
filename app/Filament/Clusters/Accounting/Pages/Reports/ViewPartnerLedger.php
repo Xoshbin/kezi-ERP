@@ -36,6 +36,7 @@ class ViewPartnerLedger extends Page
 
     public ?int $partnerId = null;
 
+    /** @var array<string, mixed>|null */
     public ?array $reportData = null;
 
     public static function getNavigationLabel(): string
@@ -71,6 +72,9 @@ class ViewPartnerLedger extends Page
                             ->searchable()
                             ->options(function () {
                                 $user = Filament::auth()->user();
+                                if (! $user) {
+                                    return [];
+                                }
 
                                 return Partner::where('company_id', $user->company_id)
                                     ->with(['receivableAccount', 'payableAccount'])
@@ -114,13 +118,18 @@ class ViewPartnerLedger extends Page
     public function generateReport(): void
     {
         $this->validate([
-            'partnerId' => 'required|exists:partners,id',
-            'startDate' => 'required|date',
-            'endDate' => 'required|date|after_or_equal:startDate',
+            'partnerId' => ['required', 'exists:partners,id'],
+            'startDate' => ['required', 'date'],
+            'endDate' => ['required', 'date', 'after_or_equal:startDate'],
         ]);
 
-        $company = Company::find(Filament::auth()->user()->company_id);
-        $partner = Partner::find($this->partnerId);
+        $user = Filament::auth()->user();
+        if (! $user) {
+            throw new \Exception('User must be authenticated to view partner ledger');
+        }
+
+        $company = Company::findOrFail($user->company_id);
+        $partner = Partner::findOrFail($this->partnerId);
         $service = app(PartnerLedgerService::class);
 
         $report = $service->generate(

@@ -37,6 +37,7 @@ use Illuminate\Support\Carbon;
  */
 class CurrencyRate extends Model
 {
+    /** @use HasFactory<\Database\Factories\CurrencyRateFactory> */
     use HasFactory;
 
     /**
@@ -49,7 +50,7 @@ class CurrencyRate extends Model
     /**
      * The attributes that are mass assignable.
      *
-     * @var array<int, string>
+     * @var list<string>
      */
     protected $fillable = [
         'currency_id',
@@ -80,6 +81,9 @@ class CurrencyRate extends Model
     /**
      * Get the company that this rate belongs to.
      */
+    /**
+     * @return BelongsTo<Company, static>
+     */
     public function company(): BelongsTo
     {
         return $this->belongsTo(Company::class);
@@ -87,6 +91,9 @@ class CurrencyRate extends Model
 
     /**
      * Get the currency that this rate belongs to.
+     */
+    /**
+     * @return BelongsTo<Currency, static>
      */
     public function currency(): BelongsTo
     {

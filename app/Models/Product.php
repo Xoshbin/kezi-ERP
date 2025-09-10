@@ -27,7 +27,7 @@ use Illuminate\Support\Carbon;
  * @property string $sku
  * @property string|null $description
  * @property Money|null $unit_price
- * @property string $type
+ * @property ProductType $type
  * @property bool $is_active
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
@@ -35,6 +35,9 @@ use Illuminate\Support\Carbon;
  * @property-read Company $company
  * @property-read Account|null $expenseAccount
  * @property-read Account|null $incomeAccount
+ * @property-read Account|null $inventoryAccount
+ * @property-read Account|null $defaultCogsAccount
+ * @property-read Account|null $stockInputAccount
  *
  * @method static Builder<static>|Product active()
  * @method static Builder<static>|Product bySku($sku, $companyId)
@@ -105,12 +108,14 @@ class Product extends Model
      * Without this, any retrieval of a `Product` would fail when casting monetary values
      * due to the missing currency information, leading to a "currency_id on null" error.
      *
-     * @var array
+     * @var list<string>
      */
     protected $with = ['company.currency'];
 
     /**
      * Get the non-translatable fields that should be searched.
+     *
+     * @return array<int, string>
      */
     public function getNonTranslatableSearchFields(): array
     {
@@ -121,6 +126,9 @@ class Product extends Model
      * Get the Company that owns the Product.
      * This relationship is fundamental in a multi-company accounting setup, ensuring products are scoped to specific entities.
      */
+    /**
+     * @return BelongsTo<Company, static>
+     */
     public function company(): BelongsTo
     {
         return $this->belongsTo(Company::class, 'company_id');
@@ -129,6 +137,9 @@ class Product extends Model
     /**
      * Get the Account (from the Chart of Accounts) that is the default income account for this product.
      * This is crucial for automating revenue recognition when the product is sold, impacting the Income Statement.
+     */
+    /**
+     * @return BelongsTo<Account, static>
      */
     public function incomeAccount(): BelongsTo
     {
@@ -139,28 +150,43 @@ class Product extends Model
      * Get the Account (from the Chart of Accounts) that is the default expense account for this product.
      * This enables automated cost allocation and impacts the Expense section of the Income Statement, aligning with the double-entry principle.
      */
+    /**
+     * @return BelongsTo<Account, static>
+     */
     public function expenseAccount(): BelongsTo
     {
         return $this->belongsTo(Account::class, 'expense_account_id');
     }
 
     // ADDED: Relationship to the default inventory/valuation account.
+    /**
+     * @return BelongsTo<Account, static>
+     */
     public function inventoryAccount(): BelongsTo
     {
         return $this->belongsTo(Account::class, 'default_inventory_account_id');
     }
 
+    /**
+     * @return BelongsTo<Account, static>
+     */
     public function defaultCogsAccount(): BelongsTo
     {
         return $this->belongsTo(Account::class, 'default_cogs_account_id');
     }
 
     // ADDED: Relationship to the default stock input/accrual account.
+    /**
+     * @return BelongsTo<Account, static>
+     */
     public function stockInputAccount(): BelongsTo
     {
         return $this->belongsTo(Account::class, 'default_stock_input_account_id');
     }
 
+    /**
+     * @return BelongsTo<Account, static>
+     */
     public function defaultPriceDifferenceAccount(): BelongsTo
     {
         return $this->belongsTo(Account::class, 'default_price_difference_account_id');
@@ -192,21 +218,33 @@ class Product extends Model
         return $query->where('sku', $sku)->where('company_id', $companyId);
     }
 
+    /**
+     * @return HasMany<InvoiceLine, static>
+     */
     public function invoiceLines(): HasMany
     {
         return $this->hasMany(InvoiceLine::class);
     }
 
+    /**
+     * @return HasMany<VendorBillLine, static>
+     */
     public function vendorBillLines(): HasMany
     {
         return $this->hasMany(VendorBillLine::class);
     }
 
+    /**
+     * @return HasMany<StockMove, static>
+     */
     public function stockMoves(): HasMany
     {
         return $this->hasMany(StockMove::class);
     }
 
+    /**
+     * @return HasMany<InventoryCostLayer, static>
+     */
     public function inventoryCostLayers(): HasMany
     {
         return $this->hasMany(InventoryCostLayer::class);

@@ -29,6 +29,7 @@ class ViewBalanceSheet extends Page
 
     public ?string $asOfDate = null;
 
+    /** @var array<string, mixed>|null */
     public ?array $reportData = null;
 
     public static function getNavigationLabel(): string
@@ -80,10 +81,14 @@ class ViewBalanceSheet extends Page
     public function generateReport(): void
     {
         $this->validate([
-            'asOfDate' => 'required|date',
+            'asOfDate' => ['required', 'date'],
         ]);
 
         $company = Filament::getTenant();
+        if (! $company instanceof \App\Models\Company) {
+            throw new \Exception('Company not found');
+        }
+
         $service = app(BalanceSheetService::class);
 
         $report = $service->generate(

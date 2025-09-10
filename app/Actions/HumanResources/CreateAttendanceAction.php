@@ -11,7 +11,7 @@ class CreateAttendanceAction
 {
     public function execute(CreateAttendanceDTO $createAttendanceDTO): Attendance
     {
-        return DB::transaction(function () use ($createAttendanceDTO) {
+        return DB::transaction(function () use ($createAttendanceDTO): Attendance {
             // Calculate total hours if clock in/out times are provided
             $totalHours = null;
             $regularHours = null;
@@ -65,7 +65,12 @@ class CreateAttendanceAction
                 'leave_request_id' => $createAttendanceDTO->leave_request_id,
             ]);
 
-            return $attendance->fresh();
+            $fresh = $attendance->fresh();
+            if (! $fresh) {
+                throw new \RuntimeException('Failed to refresh attendance after creation');
+            }
+
+            return $fresh;
         });
     }
 }

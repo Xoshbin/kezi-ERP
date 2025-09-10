@@ -24,18 +24,21 @@ class BankReconciliationMatcher extends Component
 
     public Money $systemTotal;
 
+    /** @var array<int, int> */
     public array $selectedBankLines = [];
 
+    /** @var array<int, int> */
     public array $selectedPayments = [];
 
     public function mount(int $bankStatementId): void
     {
         $this->bankStatementId = $bankStatementId;
+        /** @var \App\Models\Company|null $tenant */
         $tenant = Filament::getTenant();
 
         $bankStatement = BankStatement::with(['currency', 'journal'])->find($bankStatementId);
 
-        if (! $bankStatement || ($tenant && $bankStatement->company_id !== $tenant->id)) {
+        if (! $bankStatement || ($tenant && $bankStatement->company_id !== $tenant->getKey())) {
             // Unauthorized or non-existent: render a safe, empty state without leaking data
             $this->bankStatement = new BankStatement([
                 'id' => 0,
@@ -43,20 +46,23 @@ class BankReconciliationMatcher extends Component
                 'currency_id' => $tenant?->currency_id,
             ]);
 
-            if ($tenant && $tenant->currency) {
+            if ($tenant) {
                 $this->bankStatement->setRelation('currency', $tenant->currency);
             }
         } else {
             $this->bankStatement = $bankStatement;
         }
 
-        $currencyCode = $this->bankStatement->currency?->code ?? $tenant?->currency?->code ?? 'IQD';
+        $currencyCode = $this->bankStatement->currency->code ?? $tenant->currency->code ?? 'IQD'; // fallback IQD
 
         // Initialize totals
         $this->bankTotal = Money::of(0, $currencyCode);
         $this->systemTotal = Money::of(0, $currencyCode);
     }
 
+    /**
+     * @param  array{selectedIds: array<int, int>, total: int, currency: string}  $data
+     */
     #[On('bank-selection-changed')]
     public function updateBankSelection(array $data): void
     {
@@ -64,6 +70,9 @@ class BankReconciliationMatcher extends Component
         $this->bankTotal = Money::ofMinor($data['total'], $data['currency']);
     }
 
+    /**
+     * @param  array{selectedIds: array<int, int>, total: int, currency: string}  $data
+     */
     #[On('payment-selection-changed')]
     public function updatePaymentSelection(array $data): void
     {
@@ -71,6 +80,9 @@ class BankReconciliationMatcher extends Component
         $this->systemTotal = Money::ofMinor($data['total'], $data['currency']);
     }
 
+    /**
+     * @return array{bankTotal: string, systemTotal: string, difference: string, isBalanced: bool}
+     */
     #[Computed]
     public function summary(): array
     {
@@ -87,7 +99,7 @@ class BankReconciliationMatcher extends Component
         ];
     }
 
-    public function reconcile()
+    public function reconcile(): void
     {
         if (! $this->summary()['isBalanced']) {
             Notification::make()
@@ -108,10 +120,14 @@ class BankReconciliationMatcher extends Component
         }
 
         // Use the service to reconcile
+        $user = Auth::user();
+        if (! $user) {
+            throw new \Exception('User must be authenticated to reconcile transactions');
+        }
         app(BankReconciliationService::class)->reconcileMultiple(
             $this->selectedBankLines,
             $this->selectedPayments,
-            Auth::user()
+            $user
         );
 
         // Clear selections and reset totals
@@ -129,7 +145,7 @@ class BankReconciliationMatcher extends Component
         $this->dispatch('refresh-tables');
     }
 
-    public function render()
+    public function render(): \Illuminate\Contracts\View\View
     {
         return view('livewire.accounting.bank-reconciliation-matcher');
     }

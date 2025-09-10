@@ -3,7 +3,13 @@
     <div class="mb-6 bg-white shadow-sm rounded-lg p-6">
         <div class="flex items-center justify-between mb-4">
             <h2 class="text-lg font-medium text-gray-900">{{ __('bank_statement.statement_details') }}</h2>
-            <div class="flex items-center space-x-2">
+            <div class="flex items-center space-x-3">
+                <a href="{{ route('docs.show', ['slug' => 'User Guide/payments']) }}" target="_blank" class="inline-flex items-center text-xs text-gray-500 hover:text-gray-700">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16h6M4 6h16M4 18h16" />
+                    </svg>
+                    {{ __('Payments Guide') }}
+                </a>
                 <span class="text-sm text-gray-500">{{ __('bank_statement.currency') }}:</span>
                 <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-[var(--color-info-100)] text-[var(--color-info-800)]">
                     {{ $bankStatement->currency->code ?? \Filament\Facades\Filament::getTenant()?->currency?->code }}

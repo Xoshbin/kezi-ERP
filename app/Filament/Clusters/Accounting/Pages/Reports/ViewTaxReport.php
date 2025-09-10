@@ -31,6 +31,7 @@ class ViewTaxReport extends Page
 
     public ?string $endDate = null;
 
+    /** @var array<string, mixed>|null */
     public ?array $reportData = null;
 
     public static function getNavigationLabel(): string
@@ -83,11 +84,16 @@ class ViewTaxReport extends Page
     public function generateReport(): void
     {
         $this->validate([
-            'startDate' => 'required|date',
-            'endDate' => 'required|date|after_or_equal:startDate',
+            'startDate' => ['required', 'date'],
+            'endDate' => ['required', 'date', 'after_or_equal:startDate'],
         ]);
 
-        $company = Company::find(Filament::auth()->user()->company_id);
+        $user = Filament::auth()->user();
+        if (! $user) {
+            throw new \Exception('User must be authenticated to view tax report');
+        }
+
+        $company = Company::findOrFail($user->company_id);
         $service = app(TaxReportService::class);
 
         $report = $service->generate(

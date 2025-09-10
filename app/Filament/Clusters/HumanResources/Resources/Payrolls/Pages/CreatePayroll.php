@@ -13,7 +13,9 @@ class CreatePayroll extends CreateRecord
     protected function mutateFormDataBeforeCreate(array $data): array
     {
         // Set company_id from tenant context
-        $data['company_id'] = Filament::getTenant()?->id;
+        /** @var \App\Models\Company|null $tenant */
+        $tenant = Filament::getTenant();
+        $data['company_id'] = $tenant?->getKey();
 
         return $data;
     }

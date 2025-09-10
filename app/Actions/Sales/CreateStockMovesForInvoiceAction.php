@@ -25,7 +25,7 @@ class CreateStockMovesForInvoiceAction
     /**
      * Create stock moves for all storable products in an invoice
      *
-     * @return Collection<StockMove> Collection of created stock moves
+     * @return Collection<int, \App\Models\StockMove> Collection of created stock moves
      */
     public function execute(CreateStockMovesForInvoiceDTO $dto): Collection
     {
@@ -65,16 +65,20 @@ class CreateStockMovesForInvoiceAction
 
     /**
      * Get stock locations using fallback strategy
+     *
+     * @return array{warehouse: \App\Models\StockLocation|null, vendor: \App\Models\StockLocation|null}
      */
     protected function getStockLocations(Invoice $invoice): array
     {
         // Get stock locations - use company defaults or fallback to any available locations
+        /** @var \App\Models\StockLocation|null $warehouseLocation */
         $warehouseLocation = $invoice->company->defaultStockLocation
             ?? StockLocation::where('company_id', $invoice->company_id)
                 ->where('type', StockLocationType::Internal)
                 ->first()
             ?? StockLocation::where('name', 'Warehouse')->first();
 
+        /** @var \App\Models\StockLocation|null $vendorLocation */
         $vendorLocation = $invoice->company->vendorLocation
             ?? StockLocation::where('company_id', $invoice->company_id)
                 ->where('type', StockLocationType::Vendor)
@@ -92,15 +96,19 @@ class CreateStockMovesForInvoiceAction
      */
     protected function createStockMoveForLine(
         Invoice $invoice,
-        $line,
+        \App\Models\InvoiceLine $line,
         User $user,
         StockLocation $warehouseLocation,
         StockLocation $vendorLocation
-    ) {
+    ): \App\Models\StockMove {
+        if (! $line->product_id) {
+            throw new \Exception('Invoice line must have a product to create stock move');
+        }
+
         $dto = new CreateStockMoveDTO(
             company_id: $invoice->company_id,
             product_id: $line->product_id,
-            quantity: $line->quantity,
+            quantity: (float) $line->quantity,
             from_location_id: $warehouseLocation->id,
             to_location_id: $vendorLocation->id,
             move_type: StockMoveType::Outgoing,

@@ -64,6 +64,7 @@ use Illuminate\Support\Carbon;
 #[ObservedBy([VendorBillLineObserver::class])]
 class VendorBillLine extends Model
 {
+    /** @use HasFactory<\Database\Factories\VendorBillLineFactory> */
     use HasFactory;
 
     /**
@@ -79,7 +80,7 @@ class VendorBillLine extends Model
      * These fields can be safely filled via mass assignment, ensuring
      * that only expected data is set on creation or update, a crucial security feature [5, 6].
      *
-     * @var array<int, string>
+     * @var list<string>
      */
     protected $fillable = [
         'company_id',             // Foreign key to the parent company, ensuring data integrity [2, 3].
@@ -97,7 +98,6 @@ class VendorBillLine extends Model
         'expense_account_id',      // Foreign key to the Account model, for proper expense classification in the Chart of Accounts [2].
         'asset_category_id',       // Optional link to asset category to create an asset from this line.
         'analytic_account_id',     // Nullable foreign key to the AnalyticAccount model for management/cost accounting [2, 7].
-        // While explicitly listed for `journal_entry_lines` [2], Odoo's design [8]
         // implies its applicability at the document line level for richer analytic tracking.
     ];
 
@@ -127,12 +127,15 @@ class VendorBillLine extends Model
      * Without this, any retrieval of a `VendorBillLine` would fail when casting monetary values
      * due to the missing currency information, leading to a "currency_id on null" error.
      *
-     * @var array
+     * @var list<string>
      */
     protected $with = ['vendorBill'];
 
     /**
      * Get the company that this rate belongs to.
+     */
+    /**
+     * @return BelongsTo<Company, static>
      */
     public function company(): BelongsTo
     {
@@ -143,6 +146,9 @@ class VendorBillLine extends Model
      * Get the Vendor Bill that owns the Vendor Bill Line.
      * Establishes a **BelongsTo** relationship with the `VendorBill` model,
      * linking each line item directly to its originating vendor bill document [2, 10-12].
+     */
+    /**
+     * @return BelongsTo<VendorBill, static>
      */
     public function vendorBill(): BelongsTo
     {
@@ -155,6 +161,9 @@ class VendorBillLine extends Model
      * This relationship is nullable, acknowledging that some bill lines may simply be descriptive
      * without linking to a specific product from the catalog [2].
      */
+    /**
+     * @return BelongsTo<Product, static>
+     */
     public function product(): BelongsTo
     {
         return $this->belongsTo(Product::class, 'product_id');
@@ -165,6 +174,9 @@ class VendorBillLine extends Model
      * Establishes a **BelongsTo** relationship with the `Tax` model [10-12].
      * This is crucial for correct tax calculation and reporting, and is nullable for tax-exempt items [2].
      */
+    /**
+     * @return BelongsTo<Tax, static>
+     */
     public function tax(): BelongsTo
     {
         return $this->belongsTo(Tax::class, 'tax_id');
@@ -174,6 +186,9 @@ class VendorBillLine extends Model
      * Get the Expense Account associated with the Vendor Bill Line.
      * This **BelongsTo** relationship is fundamental for the double-entry accounting system,
      * directing the cost of each line item to the appropriate expense account in the Chart of Accounts [2, 10-12].
+     */
+    /**
+     * @return BelongsTo<Account, static>
      */
     public function expenseAccount(): BelongsTo
     {
@@ -186,6 +201,9 @@ class VendorBillLine extends Model
      * This provides a granular layer for internal management accounting, allowing costs
      * to be tracked against specific projects, departments, or other analytic dimensions [2, 7, 8].
      * It is nullable as not all expense lines may require analytic tracking.
+     */
+    /**
+     * @return BelongsTo<AnalyticAccount, static>
      */
     public function analyticAccount(): BelongsTo
     {

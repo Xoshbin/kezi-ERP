@@ -6,6 +6,7 @@ use App\Actions\Inventory\CreateStockMoveAction;
 use App\DataTransferObjects\Inventory\CreateStockMoveDTO;
 use App\Enums\Inventory\StockMoveStatus;
 use App\Enums\Inventory\StockMoveType;
+use App\Filament\Actions\DocsAction;
 use App\Filament\Clusters\Inventory\Resources\StockMoves\StockMoveResource;
 use Carbon\Carbon;
 use Filament\Facades\Filament;
@@ -37,10 +38,17 @@ class CreateStockMove extends CreateRecord
             move_type: StockMoveType::from($data['move_type']),
             status: StockMoveStatus::from($data['status']),
             move_date: Carbon::parse($data['move_date']),
-            created_by_user_id: Filament::auth()->id(),
+            created_by_user_id: (int) Filament::auth()->id(),
             reference: $data['reference'] ?? null,
         );
 
         return app(CreateStockMoveAction::class)->execute($dto);
+    }
+
+    protected function getHeaderActions(): array
+    {
+        return [
+            DocsAction::make('stock-management'),
+        ];
     }
 }

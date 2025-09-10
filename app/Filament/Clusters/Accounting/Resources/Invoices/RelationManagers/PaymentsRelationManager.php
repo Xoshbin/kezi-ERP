@@ -47,7 +47,11 @@ class PaymentsRelationManager extends RelationManager
                             ->relationship('company', 'name')
                             ->label(__('invoice.payments_relation_manager.company'))
                             ->required()
-                            ->default(fn () => $this->getOwnerRecord()->company_id),
+                            ->default(function (): ?int {
+                                $owner = $this->getOwnerRecord();
+
+                                return $owner instanceof \App\Models\Invoice ? $owner->company_id : null;
+                            }),
 
                         Select::make('journal_id')
                             ->relationship('journal', 'name')
@@ -58,7 +62,11 @@ class PaymentsRelationManager extends RelationManager
                             ->relationship('currency', 'name')
                             ->label(__('invoice.payments_relation_manager.currency'))
                             ->required()
-                            ->default(fn () => $this->getOwnerRecord()->currency_id),
+                            ->default(function (): ?int {
+                                $owner = $this->getOwnerRecord();
+
+                                return $owner instanceof \App\Models\Invoice ? $owner->currency_id : null;
+                            }),
 
                         DatePicker::make('payment_date')
                             ->label(__('invoice.payments_relation_manager.payment_date'))
@@ -228,7 +236,8 @@ class PaymentsRelationManager extends RelationManager
                 CreateAction::make()
                     ->label(__('invoice.payments_relation_manager.create_payment'))
                     ->mutateDataUsing(function (array $data): array {
-                        $data['paid_to_from_partner_id'] = $this->getOwnerRecord()->customer_id;
+                        $owner = $this->getOwnerRecord();
+                        $data['paid_to_from_partner_id'] = $owner instanceof \App\Models\Invoice ? $owner->customer_id : null;
 
                         return $data;
                     }),

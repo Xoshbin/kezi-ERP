@@ -2,11 +2,9 @@
 
 namespace App\Filament\Clusters\Accounting\Resources\Invoices\Widgets;
 
-use App\Enums\Payments\PaymentStatus;
 use App\Enums\Sales\InvoiceStatus;
 use App\Models\Invoice;
 use Brick\Money\Money;
-use Carbon\Carbon;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
 use Illuminate\Database\Eloquent\Model;
@@ -36,8 +34,6 @@ class SettlementSummaryWidget extends BaseWidget
         $totalAmount = $invoice->total_amount;
         $paidAmount = $invoice->getPaidAmount();
         $outstandingBalance = $totalAmount->minus($paidAmount);
-        $lastPaymentDate = $this->getLastPaymentDate($invoice);
-        $paymentMethodBreakdown = $this->getPaymentMethodBreakdown($invoice);
 
         return [
             Stat::make(__('invoice.settlement_widget.total_amount'), $this->formatMoney($totalAmount))
@@ -72,75 +68,16 @@ class SettlementSummaryWidget extends BaseWidget
         ];
     }
 
-    private function getLastPaymentDate(Invoice $invoice): string
-    {
-        $lastPayment = $invoice->payments()
-            ->whereIn('status', [PaymentStatus::Confirmed, PaymentStatus::Reconciled])
-            ->orderBy('payment_date', 'desc')
-            ->first();
-
-        if (! $lastPayment) {
-            return __('invoice.settlement_widget.no_payments');
-        }
-
-        return Carbon::parse($lastPayment->payment_date)->format('M j, Y');
-    }
-
-    private function getPaymentCount(Invoice $invoice): string
-    {
-        $confirmedCount = $invoice->payments()
-            ->whereIn('status', [PaymentStatus::Confirmed, PaymentStatus::Reconciled])
-            ->count();
-
-        $draftCount = $invoice->payments()
-            ->where('status', PaymentStatus::Draft)
-            ->count();
-
-        if ($draftCount > 0) {
-            return "{$confirmedCount} + {$draftCount} ".__('invoice.settlement_widget.draft');
-        }
-
-        return (string) $confirmedCount;
-    }
-
-    private function getPaymentMethodBreakdown(Invoice $invoice): string
-    {
-        $payments = $invoice->payments()
-            ->whereIn('status', [PaymentStatus::Confirmed, PaymentStatus::Reconciled])
-            ->with('journal')
-            ->get();
-
-        if ($payments->isEmpty()) {
-            return __('invoice.settlement_widget.no_payments');
-        }
-
-        $breakdown = $payments->groupBy('journal.name')
-            ->map(function ($groupedPayments, $journalName) {
-                $count = $groupedPayments->count();
-
-                return "{$journalName} ({$count})";
-            })
-            ->values()
-            ->take(3) // Limit to first 3 to avoid overflow
-            ->implode(', ');
-
-        $totalJournals = $payments->pluck('journal.name')->unique()->count();
-        if ($totalJournals > 3) {
-            $remaining = $totalJournals - 3;
-            $breakdown .= ' +'.$remaining.' '.__('invoice.settlement_widget.more');
-        }
-
-        return $breakdown ?: __('invoice.settlement_widget.various');
-    }
-
     private function formatMoney(Money $money): string
     {
         $formatter = new NumberFormatter('en_US', NumberFormatter::CURRENCY);
 
-        return $formatter->formatCurrency(
+        $result = $formatter->formatCurrency(
             $money->getAmount()->toFloat(),
             $money->getCurrency()->getCurrencyCode()
         );
+
+        return $result ?: $money->getCurrency()->getCurrencyCode().' 0.00';
     }
 
     protected function getColumns(): int

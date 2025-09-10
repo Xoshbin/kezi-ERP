@@ -38,14 +38,16 @@ class RevalueForeignCurrencyBalances extends Command
     /**
      * Execute the console command.
      */
-    public function handle()
+    public function handle(): int
     {
         $this->info('Starting foreign currency revaluation...');
 
         // Parse options
         $companyId = $this->option('company');
         $date = $this->option('date') ? Carbon::parse($this->option('date')) : Carbon::today();
-        $accountIds = $this->option('accounts') ? explode(',', $this->option('accounts')) : [];
+        $accountIds = $this->option('accounts')
+            ? array_map('intval', explode(',', $this->option('accounts')))
+            : [];
         $dryRun = $this->option('dry-run');
 
         if ($dryRun) {

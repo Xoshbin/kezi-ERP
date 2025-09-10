@@ -2,8 +2,8 @@
 
 return [
     // Labels
-    'label' => 'رۆژنامچە',
-    'plural_label' => 'رۆژنامچەکان',
+    'label' => 'پەرتووکی ڕۆژانە',
+    'plural_label' => 'پەرتووکەکانی ڕۆژانە',
 
     // Basic fields
     'company' => 'کۆمپانیا',
@@ -15,23 +15,23 @@ return [
     'updated_at' => 'کاتی نوێکردنەوە',
 
     // Sections
-    'details' => 'ووردەکارییەکانی رۆژنامچە',
-    'details_description' => 'ناو، جۆر، کۆدی کورت و دراو بۆ ئەم رۆژنامچەیە دابنێ',
+    'details' => 'ووردەکارییەکانی پەرتووکی ڕۆژانە',
+    'details_description' => 'ناو، جۆر، کۆدی کورت و دراو بۆ ئەم پەرتووکی ڕۆژانەیە دابنێ',
     'default_accounts' => 'هەژمارەکانی بنەڕەت',
-    'default_accounts_description' => 'هەژماری قەرز و خاوەن قەرزی بنەڕەت کە لەلایەن ئەم رۆژنامچەیەوە بەکاردەهێنرێن',
+    'default_accounts_description' => 'هەژماری قەرزدار و قەرزخوازی بنەڕەت کە لەلایەن ئەم پەرتووکی ڕۆژانەیەوە بەکاردەهێنرێن',
 
     // JournalResource.php
-    'default_debit_account' => 'هەژماری قەرزی بنەڕەت',
-    'default_debit_account_helper' => 'بۆ رۆژنامچەی بانک/کاش، ئەمە ئەو هەژمارە بانکییەیە کە بۆ پارەدان بەکاردێت.',
-    'default_credit_account' => 'هەژماری خاوەن قەرزی بنەڕەت',
-    'default_credit_account_helper' => 'بۆ رۆژنامچەی بانک/کاش، ئەمە ئەو هەژمارە بانکییەیە کە بۆ پارەدان بەکاردێت.',
-    'default_debit_account_short' => 'هەژماری قەرزی بنەڕەت',
-    'default_credit_account_short' => 'هەژماری خاوەن قەرزی بنەڕەت',
+    'default_debit_account' => 'هەژماری قەرزداری بنەڕەت',
+    'default_debit_account_helper' => 'بۆ پەرتووکی ڕۆژانەی بانک/کاش، ئەمە ئەو هەژمارە بانکییەیە کە بۆ پارەدان بەکاردێت.',
+    'default_credit_account' => 'هەژماری قەرزخوازی بنەڕەت',
+    'default_credit_account_helper' => 'بۆ پەرتووکی ڕۆژانەی بانک/کاش، ئەمە ئەو هەژمارە بانکییەیە کە بۆ پارەدان بەکاردێت.',
+    'default_debit_account_short' => 'هەژماری قەرزداری بنەڕەت',
+    'default_credit_account_short' => 'هەژماری قەرزخوازی بنەڕەت',
 
     // JournalEntriesRelationManager.php
     'entry_date' => 'بەرواری تۆمارکردن',
-    'reference' => 'سەرچاوە',
+    'reference' => 'ژمارەی بەڵگە',
     'description' => 'پێناسە',
-    'is_posted' => 'پۆستکراوە',
-    'journal_entries' => 'تۆمارەکانی رۆژنامچە',
+    'is_posted' => 'نێردراوە',
+    'journal_entries' => 'تۆمارەکانی پەرتووکی ڕۆژانە',
 ];

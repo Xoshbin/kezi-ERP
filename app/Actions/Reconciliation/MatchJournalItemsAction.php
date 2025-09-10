@@ -28,7 +28,7 @@ class MatchJournalItemsAction
     /**
      * Execute the reconciliation of journal entry lines.
      *
-     * @param  array  $journalLineIds  Array of JournalEntryLine IDs to reconcile
+     * @param  array<int, int>  $journalLineIds  Array of JournalEntryLine IDs to reconcile
      * @param  ReconciliationType  $reconciliationType  Type of reconciliation
      * @param  string|null  $reference  Optional reference for the reconciliation
      * @param  string|null  $description  Optional description for the reconciliation
@@ -67,7 +67,9 @@ class MatchJournalItemsAction
         }
 
         // Get the company from the first line (all should belong to same company due to tenancy)
-        $company = $journalLines->first()->journalEntry->company;
+        /** @var JournalEntryLine $first */
+        $first = $journalLines->first();
+        $company = $first->journalEntry->company;
 
         // Perform all validations in order
         $this->validateGlobalReconciliationSetting($company);
@@ -109,6 +111,8 @@ class MatchJournalItemsAction
 
     /**
      * Validate that none of the journal entry lines are already reconciled.
+     *
+     * @param  Collection<int, JournalEntryLine>  $journalLines
      */
     private function validateLinesNotAlreadyReconciled(Collection $journalLines): void
     {
@@ -123,6 +127,8 @@ class MatchJournalItemsAction
 
     /**
      * Validate that all accounts allow reconciliation.
+     *
+     * @param  Collection<int, JournalEntryLine>  $journalLines
      */
     private function validateAccountsAllowReconciliation(Collection $journalLines): void
     {
@@ -137,6 +143,8 @@ class MatchJournalItemsAction
 
     /**
      * Validate that all journal entry lines belong to posted journal entries.
+     *
+     * @param  Collection<int, JournalEntryLine>  $journalLines
      */
     private function validateLinesArePosted(Collection $journalLines): void
     {
@@ -153,19 +161,22 @@ class MatchJournalItemsAction
 
     /**
      * Validate that the sum of debits equals the sum of credits.
+     *
+     * @param  Collection<int, JournalEntryLine>  $journalLines
      */
     private function validateBalance(Collection $journalLines): void
     {
         // Get the first line to determine the currency for zero amounts
+        /** @var JournalEntryLine $firstLine */
         $firstLine = $journalLines->first();
         $currency = $firstLine->journalEntry->company->currency->code;
 
         // Sum the Money objects properly
-        $totalDebits = $journalLines->reduce(function ($carry, $line) {
+        $totalDebits = $journalLines->reduce(function (Money $carry, JournalEntryLine $line): Money {
             return $carry->plus($line->debit);
         }, Money::of(0, $currency));
 
-        $totalCredits = $journalLines->reduce(function ($carry, $line) {
+        $totalCredits = $journalLines->reduce(function (Money $carry, JournalEntryLine $line): Money {
             return $carry->plus($line->credit);
         }, Money::of(0, $currency));
 
@@ -177,6 +188,8 @@ class MatchJournalItemsAction
     /**
      * Validate that all journal entry lines belong to the same partner.
      * This is required for A/R and A/P reconciliation.
+     *
+     * @param  Collection<int, \App\Models\JournalEntryLine>  $journalLines
      */
     private function validatePartnerConsistency(Collection $journalLines): void
     {

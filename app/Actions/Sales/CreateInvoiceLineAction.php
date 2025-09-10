@@ -20,13 +20,15 @@ class CreateInvoiceLineAction
         $subtotal = $unitPrice->multipliedBy($dto->quantity, RoundingMode::HALF_UP);
 
         $taxAmount = Money::zero($currency->code);
-        if ($dto->tax_id && $tax = Tax::find($dto->tax_id)) {
+        if ($dto->tax_id) {
+            $tax = Tax::findOrFail($dto->tax_id);
             // NOTE: The rate in your Tax model is a float (e.g., 0.10 for 10%)
             $taxAmount = $subtotal->multipliedBy($tax->rate, RoundingMode::HALF_UP);
         }
 
         // 2. The create method now receives a complete, valid array of attributes.
-        return $invoice->invoiceLines()->create([
+        /** @var InvoiceLine $invoiceLine */
+        $invoiceLine = $invoice->invoiceLines()->create([
             'company_id' => $invoice->company_id,
             'product_id' => $dto->product_id,
             'description' => $dto->description,
@@ -37,5 +39,7 @@ class CreateInvoiceLineAction
             'subtotal' => $subtotal, // Explicitly provide the calculated subtotal
             'total_line_tax' => $taxAmount, // Explicitly provide the calculated tax
         ]);
+
+        return $invoiceLine;
     }
 }

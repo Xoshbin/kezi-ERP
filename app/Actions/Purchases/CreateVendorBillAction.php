@@ -18,7 +18,7 @@ class CreateVendorBillAction
 
     public function execute(CreateVendorBillDTO $createVendorBillDTO): VendorBill
     {
-        $this->lockDateService->enforce(Company::find($createVendorBillDTO->company_id), Carbon::parse($createVendorBillDTO->bill_date));
+        $this->lockDateService->enforce(Company::findOrFail($createVendorBillDTO->company_id), Carbon::parse($createVendorBillDTO->bill_date));
 
         return DB::transaction(function () use ($createVendorBillDTO) {
             $vendorBill = VendorBill::create([
@@ -30,6 +30,7 @@ class CreateVendorBillAction
                 'accounting_date' => $createVendorBillDTO->accounting_date,
                 'due_date' => $createVendorBillDTO->due_date,
                 'created_by_user_id' => $createVendorBillDTO->created_by_user_id,
+                'payment_term_id' => $createVendorBillDTO->payment_term_id,
                 // Add default zero values to satisfy NOT NULL constraints.
                 // The VendorBillLineObserver will update these as lines are added.
                 'subtotal' => 0,
@@ -43,7 +44,12 @@ class CreateVendorBillAction
 
             // The VendorBillLineObserver will handle recalculating totals.
             // We just need to reload the relationship to get the fresh data.
-            return $vendorBill->fresh('lines');
+            $freshVendorBill = $vendorBill->fresh('lines');
+            if (! $freshVendorBill) {
+                throw new \Exception('Failed to refresh vendor bill after creation');
+            }
+
+            return $freshVendorBill;
         });
     }
 }

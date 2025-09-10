@@ -35,6 +35,7 @@ use Illuminate\Support\Carbon;
  */
 class FiscalPositionAccountMapping extends Model
 {
+    /** @use HasFactory<\Database\Factories\FiscalPositionAccountMappingFactory> */
     use HasFactory;
 
     /**
@@ -49,7 +50,7 @@ class FiscalPositionAccountMapping extends Model
      * The attributes that are mass assignable.
      * These fields can be filled using mass assignment [4].
      *
-     * @var array<int, string>
+     * @var list<string>
      */
     protected $fillable = [
         'company_id',          // Foreign key to the parent company, ensuring data integrity [2, 3].
@@ -80,6 +81,9 @@ class FiscalPositionAccountMapping extends Model
     /**
      * Get the company that this rate belongs to.
      */
+    /**
+     * @return BelongsTo<Company, static>
+     */
     public function company(): BelongsTo
     {
         return $this->belongsTo(Company::class);
@@ -88,6 +92,9 @@ class FiscalPositionAccountMapping extends Model
     /**
      * Get the fiscal position that this account mapping belongs to.
      * This defines the context under which the account re-mapping takes place [1, 2].
+     */
+    /**
+     * @return BelongsTo<FiscalPosition, static>
      */
     public function fiscalPosition(): BelongsTo
     {
@@ -99,6 +106,9 @@ class FiscalPositionAccountMapping extends Model
      * Get the original account that is being mapped.
      * This is the source account (e.g., a standard sales income account) that will be
      * replaced when the fiscal position is applied [1, 2].
+     */
+    /**
+     * @return BelongsTo<Account, static>
      */
     public function originalAccount(): BelongsTo
     {
@@ -112,6 +122,9 @@ class FiscalPositionAccountMapping extends Model
      * Get the account that the original account is mapped to.
      * This is the target account (e.g., an export sales income account) that will be
      * used after the fiscal position's rule is applied [1, 2].
+     */
+    /**
+     * @return BelongsTo<Account, static>
      */
     public function mappedAccount(): BelongsTo
     {

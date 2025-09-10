@@ -81,21 +81,21 @@ class BankStatementLine extends Model
      * Without this, any retrieval of a `BankStatementLine` would fail when casting monetary values
      * due to the missing currency information, leading to a "currency_id on null" error.
      *
-     * @var array
+     * @var list<string>
      */
     protected $with = ['bankStatement.currency', 'foreignCurrency'];
 
-    public function bankStatement()
+    public function bankStatement(): BelongsTo
     {
         return $this->belongsTo(BankStatement::class);
     }
 
-    public function company()
+    public function company(): BelongsTo
     {
         return $this->belongsTo(Company::class);
     }
 
-    public function payment()
+    public function payment(): BelongsTo
     {
         return $this->belongsTo(Payment::class);
     }

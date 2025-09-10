@@ -43,6 +43,10 @@ class CreateJournalEntryForPayrollAction
             foreach ($payroll->payrollLines as $payrollLine) {
                 $amount = $payrollLine->amount;
 
+                if (! $amount) {
+                    throw new \InvalidArgumentException("Payroll line {$payrollLine->id} has no amount");
+                }
+
                 if ($payrollLine->debit_credit === 'debit') {
                     // Debit expense accounts (salary, benefits, etc.)
                     $lineDTOs[] = new CreateJournalEntryLineDTO(

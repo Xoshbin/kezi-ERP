@@ -14,7 +14,8 @@ class CreatePartner extends CreateRecord
     protected function handleRecordCreation(array $data): Model
     {
         // Add company_id from tenant context
-        $data['company_id'] = Filament::getTenant()->id;
+        $tenant = Filament::getTenant();
+        $data['company_id'] = $tenant?->getKey() ?? 0;
 
         return static::getModel()::create($data);
     }

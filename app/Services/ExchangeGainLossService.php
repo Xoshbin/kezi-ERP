@@ -2,6 +2,9 @@
 
 namespace App\Services;
 
+use App\Actions\Accounting\CreateJournalEntryAction;
+use App\DataTransferObjects\Accounting\CreateJournalEntryDTO;
+use App\DataTransferObjects\Accounting\CreateJournalEntryLineDTO;
 use App\Models\Account;
 use App\Models\Company;
 use App\Models\Currency;
@@ -83,8 +86,8 @@ class ExchangeGainLossService
     /**
      * Perform period-end revaluation of foreign currency balances.
      *
-     * @param  array  $accountIds  Optional specific accounts to revalue
-     * @return Collection Collection of journal entries created
+     * @param  array<int>  $accountIds  Optional specific accounts to revalue
+     * @return Collection<int, JournalEntry> Collection of journal entries created
      */
     public function performPeriodEndRevaluation(
         Company $company,
@@ -168,7 +171,7 @@ class ExchangeGainLossService
         Company $company,
         Carbon $revaluationDate
     ): Money {
-        $currentRate = $this->currencyConverter->getExchangeRate($currency, $revaluationDate);
+        $currentRate = $this->currencyConverter->getExchangeRate($currency, $revaluationDate, $company);
 
         if ($currentRate === null) {
             return Money::of(0, $company->currency->code);
@@ -196,7 +199,7 @@ class ExchangeGainLossService
         Company $company,
         Money $exchangeDifference,
         Payment $payment,
-        $document
+        \Illuminate\Database\Eloquent\Model $document
     ): JournalEntry {
         $isGain = $exchangeDifference->isPositive();
         $gainLossAccount = $company->default_gain_loss_account_id;
@@ -238,21 +241,48 @@ class ExchangeGainLossService
             ];
         }
 
-        return $this->journalEntryService->createEntry([
-            'company_id' => $company->id,
-            'journal_id' => $company->default_bank_journal_id, // Or exchange difference journal
-            'entry_date' => $payment->payment_date,
-            'reference' => "EX-GAIN-LOSS-{$payment->id}",
-            'description' => 'Realized exchange '.($isGain ? 'gain' : 'loss')." on payment #{$payment->id}",
-            'currency_id' => $company->currency_id,
-            'lines' => $lines,
-        ]);
+        // Build DTO-based journal entry in base currency
+        $baseCurrencyCode = $company->currency->code;
+        $lineDTOs = [];
+        foreach ($lines as $line) {
+            if (! $line['account_id']) {
+                throw new \Exception('Account ID is required for exchange gain/loss journal entry line');
+            }
+            $lineDTOs[] = new CreateJournalEntryLineDTO(
+                account_id: $line['account_id'],
+                debit: Money::of($line['debit'], $baseCurrencyCode),
+                credit: Money::of($line['credit'], $baseCurrencyCode),
+                description: $line['description'],
+                partner_id: null,
+                analytic_account_id: null,
+            );
+        }
+
+        if (! $company->default_bank_journal_id) {
+            throw new \Exception('Company must have a default bank journal for exchange gain/loss entries');
+        }
+
+        $entryDTO = new CreateJournalEntryDTO(
+            company_id: $company->id,
+            journal_id: $company->default_bank_journal_id,
+            currency_id: $company->currency_id,
+            entry_date: $payment->payment_date->toDateString(),
+            reference: "EX-GAIN-LOSS-{$payment->getKey()}",
+            description: 'Realized exchange '.($isGain ? 'gain' : 'loss')." on payment #{$payment->getKey()}",
+            created_by_user_id: $payment->created_by_user_id ?? $payment->user_id ?? optional($payment->company->users()->first())->getKey() ?? 1,
+            is_posted: true,
+            lines: $lineDTOs,
+            source_type: get_class($payment),
+            source_id: $payment->getKey(),
+        );
+
+        return app(CreateJournalEntryAction::class)->execute($entryDTO);
     }
 
     /**
      * Get exchange rate from document (invoice/vendor bill).
      */
-    protected function getDocumentExchangeRate($document): ?float
+    protected function getDocumentExchangeRate(\Illuminate\Database\Eloquent\Model $document): ?float
     {
         // This would need to be implemented based on how you store exchange rates on documents
         // For now, return null as placeholder
@@ -271,6 +301,9 @@ class ExchangeGainLossService
 
     /**
      * Get accounts that need revaluation.
+     *
+     * @param  array<int>  $accountIds
+     * @return \Illuminate\Database\Eloquent\Collection<int, Account>
      */
     protected function getAccountsForRevaluation(Company $company, array $accountIds = []): Collection
     {
@@ -283,11 +316,14 @@ class ExchangeGainLossService
             $query->whereIn('type', ['ASSET', 'LIABILITY']);
         }
 
+        /** @var \Illuminate\Database\Eloquent\Collection<int, Account> */
         return $query->get();
     }
 
     /**
      * Get foreign currency balances for an account.
+     *
+     * @return array<string, mixed>
      */
     protected function getForeignCurrencyBalances(Account $account, Carbon $date): array
     {

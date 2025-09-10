@@ -20,8 +20,8 @@ use Illuminate\Support\Carbon;
  * @property int $asset_id
  * @property int|null $journal_entry_id
  * @property Carbon $depreciation_date
- * @property float $amount
- * @property string $status
+ * @property \Brick\Money\Money $amount
+ * @property DepreciationEntryStatus $status
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property-read Asset $asset
@@ -45,6 +45,7 @@ use Illuminate\Support\Carbon;
 #[ObservedBy([DepreciationEntryObserver::class])]
 class DepreciationEntry extends Model
 {
+    /** @use HasFactory<\Database\Factories\DepreciationEntryFactory> */
     use HasFactory;
 
     /**
@@ -58,7 +59,7 @@ class DepreciationEntry extends Model
      * The attributes that are mass assignable.
      * These fields define the core properties of a depreciation event.
      *
-     * @var array<int, string>
+     * @var list<string>
      */
     protected $fillable = [
         'company_id', // Foreign key to the parent company, ensuring data integrity [2, 3].
@@ -92,7 +93,7 @@ class DepreciationEntry extends Model
      * Without this, any retrieval of a `DepreciationEntry` would fail when casting monetary values
      * due to the missing currency information, leading to a "currency_id on null" error.
      *
-     * @var array
+     * @var list<string>
      */
     protected $with = ['asset.company.currency'];
 
@@ -107,6 +108,9 @@ class DepreciationEntry extends Model
     /**
      * Get the company that this depreciation entry belongs to.
      */
+    /**
+     * @return BelongsTo<Company, static>
+     */
     public function company(): BelongsTo
     {
         return $this->belongsTo(Company::class);
@@ -115,6 +119,9 @@ class DepreciationEntry extends Model
     /**
      * Get the asset that this depreciation entry belongs to.
      * Each depreciation entry corresponds to a specific fixed asset.
+     */
+    /**
+     * @return BelongsTo<Asset, static>
      */
     public function asset(): BelongsTo
     {
@@ -126,6 +133,9 @@ class DepreciationEntry extends Model
      * This link is crucial for financial traceability and auditability.
      * The 'journal_entry_id' is nullable while the depreciation entry is in 'Draft'
      * but becomes mandatory upon 'Posting' when the actual financial impact occurs.
+     */
+    /**
+     * @return BelongsTo<JournalEntry, static>
      */
     public function journalEntry(): BelongsTo
     {

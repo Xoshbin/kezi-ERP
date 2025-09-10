@@ -35,6 +35,7 @@ use Illuminate\Support\Carbon;
  */
 class FiscalPositionTaxMapping extends Model
 {
+    /** @use HasFactory<\Database\Factories\FiscalPositionTaxMappingFactory> */
     use HasFactory;
 
     /**
@@ -50,7 +51,7 @@ class FiscalPositionTaxMapping extends Model
      * These fields can be safely filled via mass assignment, reflecting the core data
      * necessary for a tax mapping rule.
      *
-     * @var array<int, string>
+     * @var list<string>
      */
     protected $fillable = [
         'company_id',             // Foreign key to the parent company, ensuring data integrity [2, 3].
@@ -82,6 +83,9 @@ class FiscalPositionTaxMapping extends Model
     /**
      * Get the company that this rate belongs to.
      */
+    /**
+     * @return BelongsTo<Company, static>
+     */
     public function company(): BelongsTo
     {
         return $this->belongsTo(Company::class);
@@ -91,6 +95,9 @@ class FiscalPositionTaxMapping extends Model
      * Get the fiscal position that this tax mapping belongs to.
      * This defines the overarching context or set of rules under which the
      * tax re-mapping is applied [1, 2].
+     */
+    /**
+     * @return BelongsTo<FiscalPosition, static>
      */
     public function fiscalPosition(): BelongsTo
     {
@@ -102,6 +109,9 @@ class FiscalPositionTaxMapping extends Model
      * Get the original tax that is subject to re-mapping.
      * This represents the default tax rate or rule that would typically be applied
      * before any fiscal position adjustments [1, 3].
+     */
+    /**
+     * @return BelongsTo<Tax, static>
      */
     public function originalTax(): BelongsTo
     {
@@ -115,6 +125,9 @@ class FiscalPositionTaxMapping extends Model
      * Get the tax to which the original tax is re-mapped.
      * This is the effective tax rate or rule that will be applied once the
      * fiscal position's mapping rule is triggered [1, 3].
+     */
+    /**
+     * @return BelongsTo<Tax, static>
      */
     public function mappedTax(): BelongsTo
     {

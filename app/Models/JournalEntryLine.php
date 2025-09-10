@@ -26,8 +26,8 @@ use RuntimeException;
  * @property int|null $analytic_account_id
  * @property Money $debit
  * @property Money $credit
- * @property float $original_currency_amount
- * @property string $exchange_rate_at_transaction
+ * @property Money $original_currency_amount
+ * @property float $exchange_rate_at_transaction
  * @property string|null $description
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
@@ -58,6 +58,7 @@ use RuntimeException;
 #[ObservedBy([JournalEntryLineObserver::class])]
 class JournalEntryLine extends Model
 {
+    /** @use HasFactory<\Database\Factories\JournalEntryLineFactory> */
     use HasFactory;
 
     /**
@@ -76,7 +77,7 @@ class JournalEntryLine extends Model
      * Critical integrity-related fields (e.g., those implying 'posted' status or calculated totals) are omitted
      * as they should be managed programmatically by the application's business logic, not direct user input.
      *
-     * @var array<int, string>
+     * @var list<string>
      */
     protected $fillable = [
         'company_id',
@@ -120,7 +121,7 @@ class JournalEntryLine extends Model
      * Without this, any retrieval of a `JournalEntryLine` would fail when casting monetary values
      * due to the missing currency information, leading to a "currency_id on null" error.
      *
-     * @var array
+     * @var list<string>
      */
     protected $with = ['journalEntry.company.currency'];
 
@@ -143,7 +144,8 @@ class JournalEntryLine extends Model
             // Retrieve the parent JournalEntry to check its `is_posted` status from the database.
             // Using `fresh()` or a direct query (`first()`) ensures we operate on the most current state,
             // avoiding potential stale in-memory data for this critical check.
-            if ($line->journalEntry()->first()?->is_posted) {
+            $parent = $line->journalEntry()->first();
+            if ($parent instanceof JournalEntry && $parent->is_posted) {
                 // Defines the specific fields within the JournalEntryLine that are considered
                 // immutable once the parent JournalEntry is posted. This covers all financial and linking data.
                 $immutableFields = [
@@ -174,7 +176,8 @@ class JournalEntryLine extends Model
         // Critical immutability enforcement: Prevent deletion of any journal entry line
         // if its parent journal entry has already been posted.
         static::deleting(function (JournalEntryLine $line) {
-            if ($line->journalEntry()->first()?->is_posted) {
+            $parent = $line->journalEntry()->first();
+            if ($parent instanceof JournalEntry && $parent->is_posted) {
                 // Similar to updates, deletions are strictly disallowed for posted records,
                 // enforcing that financial history remains complete and auditable [1-3].
                 throw new RuntimeException(
@@ -198,6 +201,9 @@ class JournalEntryLine extends Model
     /**
      * Get the company that this rate belongs to.
      */
+    /**
+     * @return BelongsTo<Company, static>
+     */
     public function company(): BelongsTo
     {
         return $this->belongsTo(Company::class);
@@ -209,6 +215,9 @@ class JournalEntryLine extends Model
      * This `belongsTo` relationship is foundational, linking each line to its overarching transaction.
      *
      * @return BelongsTo An Eloquent relationship instance for the `JournalEntry` model.
+     */
+    /**
+     * @return BelongsTo<JournalEntry, static>
      */
     public function journalEntry(): BelongsTo
     {
@@ -222,6 +231,9 @@ class JournalEntryLine extends Model
      *
      * @return BelongsTo An Eloquent relationship instance for the `Account` model.
      */
+    /**
+     * @return BelongsTo<Account, static>
+     */
     public function account(): BelongsTo
     {
         return $this->belongsTo(Account::class);
@@ -234,6 +246,9 @@ class JournalEntryLine extends Model
      *
      * @return BelongsTo An Eloquent relationship instance for the `Partner` model.
      */
+    /**
+     * @return BelongsTo<Partner, static>
+     */
     public function partner(): BelongsTo
     {
         return $this->belongsTo(Partner::class);
@@ -245,6 +260,9 @@ class JournalEntryLine extends Model
      * Used for management accounting, allowing cost and revenue tracking against projects, departments, or other dimensions.
      *
      * @return BelongsTo An Eloquent relationship instance for the `AnalyticAccount` model.
+     */
+    /**
+     * @return BelongsTo<AnalyticAccount, static>
      */
     public function analyticAccount(): BelongsTo
     {
@@ -259,6 +277,9 @@ class JournalEntryLine extends Model
      *
      * @return BelongsTo An Eloquent relationship instance for the `Currency` model.
      */
+    /**
+     * @return BelongsTo<Currency, static>
+     */
     public function currency(): BelongsTo
     {
         return $this->belongsTo(Currency::class);
@@ -266,6 +287,9 @@ class JournalEntryLine extends Model
 
     /**
      * Relationship to the original currency for this line.
+     */
+    /**
+     * @return BelongsTo<Currency, static>
      */
     public function originalCurrency(): BelongsTo
     {
@@ -277,6 +301,9 @@ class JournalEntryLine extends Model
      *
      * A journal entry line can be part of multiple reconciliations over time
      * (e.g., if a reconciliation is reversed and a new one is created).
+     */
+    /**
+     * @return BelongsToMany<Reconciliation, static>
      */
     public function reconciliations(): BelongsToMany
     {
@@ -298,6 +325,9 @@ class JournalEntryLine extends Model
      */
     public function currentReconciliation(): ?Reconciliation
     {
-        return $this->reconciliations()->latest('reconciled_at')->first();
+        /** @var Reconciliation|null $reconciliation */
+        $reconciliation = $this->reconciliations()->latest('reconciled_at')->first();
+
+        return $reconciliation;
     }
 }
