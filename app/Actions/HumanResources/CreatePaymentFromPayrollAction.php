@@ -4,7 +4,7 @@ namespace App\Actions\HumanResources;
 
 use App\Actions\Payments\CreatePaymentAction;
 use App\DataTransferObjects\Payments\CreatePaymentDTO;
-use App\Enums\Payments\PaymentPurpose;
+use App\Enums\Payments\PaymentMethod;
 use App\Enums\Payments\PaymentType;
 use App\Models\Journal;
 use App\Models\Payment;
@@ -36,9 +36,10 @@ class CreatePaymentFromPayrollAction
 
         // Get company's default bank journal for payments
         $company = $payroll->company;
+        /** @var Journal|null $bankJournal */
         $bankJournal = $company->defaultBankJournal;
 
-        if (! $bankJournal) {
+        if (! $bankJournal instanceof Journal) {
             throw new InvalidArgumentException('No default bank journal found for company.');
         }
 
@@ -55,14 +56,13 @@ class CreatePaymentFromPayrollAction
         // Create payment DTO
         $createPaymentDTO = new CreatePaymentDTO(
             company_id: $payroll->company_id,
-            journal_id: $bankJournal->id,
+            journal_id: $bankJournal->getKey(),
             currency_id: $payroll->currency_id,
             payment_date: $payroll->pay_date->format('Y-m-d'),
-            payment_purpose: PaymentPurpose::Payroll,
             payment_type: PaymentType::Outbound,
+            payment_method: PaymentMethod::BankTransfer, // Default for payroll
             partner_id: null, // For now, no partner relationship
             amount: $payroll->net_salary,
-            counterpart_account_id: $salaryPayableAccountId,
             document_links: [], // No document links for payroll payments
             reference: $reference
         );

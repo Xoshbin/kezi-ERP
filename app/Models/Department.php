@@ -16,7 +16,7 @@ use Spatie\Translatable\HasTranslations;
  *
  * @property int $id
  * @property int $company_id
- * @property array $name
+ * @property array<string, string> $name
  * @property string|null $description
  * @property int|null $parent_department_id
  * @property int|null $manager_id
@@ -41,7 +41,7 @@ class Department extends Model
     /**
      * The attributes that are mass assignable.
      *
-     * @var array<int, string>
+     * @var list<string>
      */
     protected $fillable = [
         'company_id',
@@ -82,6 +82,8 @@ class Department extends Model
 
     /**
      * Get the translatable fields that should be searched.
+     *
+     * @return array<int, string>
      */
     public function getTranslatableSearchFields(): array
     {
@@ -90,6 +92,8 @@ class Department extends Model
 
     /**
      * Get the non-translatable fields that should be searched.
+     *
+     * @return array<int, string>
      */
     public function getNonTranslatableSearchFields(): array
     {
@@ -99,6 +103,9 @@ class Department extends Model
     /**
      * Get the company that owns the Department.
      */
+    /**
+     * @return BelongsTo<Company, static>
+     */
     public function company(): BelongsTo
     {
         return $this->belongsTo(Company::class);
@@ -106,6 +113,9 @@ class Department extends Model
 
     /**
      * Get the parent department.
+     */
+    /**
+     * @return BelongsTo<Department, static>
      */
     public function parentDepartment(): BelongsTo
     {
@@ -115,6 +125,9 @@ class Department extends Model
     /**
      * Get the child departments.
      */
+    /**
+     * @return HasMany<Department, static>
+     */
     public function childDepartments(): HasMany
     {
         return $this->hasMany(Department::class, 'parent_department_id');
@@ -122,6 +135,9 @@ class Department extends Model
 
     /**
      * Get the manager of this department.
+     */
+    /**
+     * @return BelongsTo<User, static>
      */
     public function manager(): BelongsTo
     {
@@ -131,6 +147,9 @@ class Department extends Model
     /**
      * Get the employees in this department.
      */
+    /**
+     * @return HasMany<Employee, static>
+     */
     public function employees(): HasMany
     {
         return $this->hasMany(Employee::class);
@@ -138,6 +157,9 @@ class Department extends Model
 
     /**
      * Get the positions in this department.
+     */
+    /**
+     * @return HasMany<Position, static>
      */
     public function positions(): HasMany
     {
@@ -151,7 +173,7 @@ class Department extends Model
      */
     public function getAllDescendants(): Collection
     {
-        $descendants = collect();
+        $descendants = new \Illuminate\Database\Eloquent\Collection;
 
         foreach ($this->childDepartments as $child) {
             $descendants->push($child);
@@ -168,7 +190,7 @@ class Department extends Model
      */
     public function getAllAncestors(): Collection
     {
-        $ancestors = collect();
+        $ancestors = new \Illuminate\Database\Eloquent\Collection;
         $current = $this->parentDepartment;
 
         while ($current) {

@@ -46,7 +46,11 @@ class PayrollForm
                     Select::make('currency_id')
                         ->label(__('payroll.fields.currency'))
                         ->relationship('currency', 'name')
-                        ->getOptionLabelFromRecordUsing(fn (Currency $record): string => "{$record->name} ({$record->code})")
+                        ->getOptionLabelFromRecordUsing(function (Currency $record): string {
+                            $currencyName = is_array($record->name) ? ($record->name['en'] ?? (empty($record->name) ? '' : (string) array_values($record->name)[0])) : (string) $record->name;
+
+                            return "{$currencyName} ({$record->code})";
+                        })
                         ->required()
                         ->searchable()
                         ->preload()

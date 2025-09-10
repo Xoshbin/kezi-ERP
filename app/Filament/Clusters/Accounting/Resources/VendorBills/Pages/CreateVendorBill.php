@@ -5,6 +5,7 @@ namespace App\Filament\Clusters\Accounting\Resources\VendorBills\Pages;
 use App\Actions\Purchases\CreateVendorBillAction;
 use App\DataTransferObjects\Purchases\CreateVendorBillDTO;
 use App\DataTransferObjects\Purchases\CreateVendorBillLineDTO;
+use App\Filament\Actions\DocsAction;
 use App\Filament\Clusters\Accounting\Resources\VendorBills\VendorBillResource;
 use App\Models\Currency;
 use App\Models\VendorBillAttachment;
@@ -19,11 +20,19 @@ class CreateVendorBill extends CreateRecord
 {
     protected static string $resource = VendorBillResource::class;
 
+    /** @var array<string, mixed> */
     protected array $attachments = [];
 
     protected function mutateFormDataBeforeCreate(array $data): array
     {
-        $currency = Currency::find($data['currency_id']);
+        $currency = Currency::findOrFail($data['currency_id']);
+        // Ensure we have a single Currency model, not a collection
+        if ($currency instanceof \Illuminate\Database\Eloquent\Collection) {
+            $currency = $currency->first();
+            if (! $currency) {
+                throw new \InvalidArgumentException('Currency not found');
+            }
+        }
         $lineDTOs = [];
         foreach ($data['lines'] as $line) {
             $lineDTOs[] = new CreateVendorBillLineDTO(
@@ -50,7 +59,7 @@ class CreateVendorBill extends CreateRecord
         unset($data['attachments']);
 
         // Add company_id from tenant context
-        $data['company_id'] = Filament::getTenant()->id;
+        $data['company_id'] = (int) (Filament::getTenant()?->getKey() ?? 0);
 
         $vendorBillDTO = new CreateVendorBillDTO(...$data);
         $vendorBill = app(CreateVendorBillAction::class)->execute($vendorBillDTO);
@@ -75,12 +84,12 @@ class CreateVendorBill extends CreateRecord
         foreach ($this->attachments as $filePath) {
             if (Storage::disk('local')->exists($filePath)) {
                 $fileInfo = pathinfo($filePath);
-                $mimeType = Storage::disk('local')->mimeType($filePath);
+                $mimeType = \Illuminate\Support\Facades\File::mimeType(\Illuminate\Support\Facades\Storage::disk('local')->path($filePath));
                 $fileSize = Storage::disk('local')->size($filePath);
 
                 VendorBillAttachment::create([
-                    'company_id' => $this->record->company_id,
-                    'vendor_bill_id' => $this->record->id,
+                    'company_id' => $this->getRecord() instanceof \App\Models\VendorBill ? $this->getRecord()->company_id : null,
+                    'vendor_bill_id' => $this->getRecord()?->getKey(),
                     'file_name' => $fileInfo['basename'],
                     'file_path' => $filePath,
                     'file_size' => $fileSize,
@@ -89,5 +98,12 @@ class CreateVendorBill extends CreateRecord
                 ]);
             }
         }
+    }
+
+    protected function getHeaderActions(): array
+    {
+        return [
+            DocsAction::make('vendor-bills'),
+        ];
     }
 }

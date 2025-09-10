@@ -6,7 +6,7 @@ use App\Actions\Payments\CreatePaymentAction;
 use App\DataTransferObjects\Payments\CreatePaymentDocumentLinkDTO;
 use App\DataTransferObjects\Payments\CreatePaymentDTO;
 use App\Enums\Partners\PartnerType;
-use App\Enums\Payments\PaymentPurpose;
+use App\Enums\Payments\PaymentMethod;
 use App\Enums\Payments\PaymentType;
 use App\Enums\Sales\InvoiceStatus;
 use App\Enums\Shared\PaymentState;
@@ -27,6 +27,7 @@ use App\Models\FiscalPosition;
 use App\Models\Invoice;
 use App\Models\Journal;
 use App\Models\Partner;
+use App\Models\PaymentTerm;
 use App\Models\Product;
 use App\Models\Tax;
 use App\Rules\NotInLockedPeriod;
@@ -134,13 +135,21 @@ class InvoiceResource extends Resource
                     TranslatableSelect::make('currency_id', Currency::class, __('invoice.currency'))
                         ->required()
                         ->live()
-                        ->default(fn () => Filament::getTenant()?->currency_id)
-                        ->afterStateUpdated(function (callable $set, $state, callable $get) {
+                        ->default(function (): ?int {
+                            $tenant = Filament::getTenant();
+
+                            return $tenant instanceof \App\Models\Company ? $tenant->currency_id : null;
+                        })
+                        ->afterStateUpdated(function (callable $set, $state) {
                             if ($state) {
                                 $currency = Currency::find($state);
+                                // Ensure we have a single Currency model, not a collection
+                                if ($currency instanceof \Illuminate\Database\Eloquent\Collection) {
+                                    $currency = $currency->first();
+                                }
                                 $company = Filament::getTenant();
 
-                                if ($currency && $company && $currency->id !== $company->currency_id) {
+                                if ($currency && $company instanceof \App\Models\Company && $currency->id !== $company->currency_id) {
                                     // Get latest exchange rate for this company
                                     $latestRate = CurrencyRate::getLatestRate($currency->id, $company->id);
                                     if ($latestRate) {
@@ -189,7 +198,7 @@ class InvoiceResource extends Resource
                             $currencyId = $get('currency_id');
                             $company = Filament::getTenant();
 
-                            return $currencyId && $company && $currencyId != $company->currency_id;
+                            return $currencyId && $company instanceof \App\Models\Company && $currencyId != $company->currency_id;
                         })
                         ->helperText(__('invoice.exchange_rate_helper')),
                 ])
@@ -209,6 +218,10 @@ class InvoiceResource extends Resource
                     DatePicker::make('due_date')
                         ->label(__('invoice.due_date'))
                         ->required(),
+                    TranslatableSelect::make('payment_term_id', PaymentTerm::class, __('invoice.payment_term'))
+                        ->relationship('paymentTerm', 'name')
+                        ->searchable()
+                        ->preload(),
                 ])
                 ->columns(4)
                 ->columnSpanFull(),
@@ -242,6 +255,10 @@ class InvoiceResource extends Resource
                                 ->afterStateUpdated(function (callable $set, $state) {
                                     if ($state) {
                                         $product = Product::find($state);
+                                        // Ensure we have a single Product model, not a collection
+                                        if ($product instanceof \Illuminate\Database\Eloquent\Collection) {
+                                            $product = $product->first();
+                                        }
                                         if ($product) {
                                             $set('description', $product->description);
                                             $set('unit_price', $product->unit_price);
@@ -356,6 +373,9 @@ class InvoiceResource extends Resource
         ]);
     }
 
+    /**
+     * @return Builder<Invoice>
+     */
     public static function getEloquentQuery(): Builder
     {
         return parent::getEloquentQuery()
@@ -375,7 +395,7 @@ class InvoiceResource extends Resource
                             return $record->invoice_number;
                         }
 
-                        return 'DRAFT-'.str_pad($record->id, 5, '0', STR_PAD_LEFT);
+                        return 'DRAFT-'.str_pad((string) $record->id, 5, '0', STR_PAD_LEFT);
                     })
                     ->badge()
                     ->color(fn (Invoice $record): string => $record->invoice_number ? 'success' : 'warning')
@@ -418,6 +438,13 @@ class InvoiceResource extends Resource
                     ->label(__('invoice.due_date'))
                     ->date()
                     ->sortable(),
+
+                // Payment Terms
+                TextColumn::make('paymentTerm.name')
+                    ->label(__('invoice.payment_term'))
+                    ->searchable()
+                    ->sortable()
+                    ->toggleable(),
 
                 // Payment State (critical for collections)
                 TextColumn::make('paymentState')
@@ -504,7 +531,11 @@ class InvoiceResource extends Resource
                     ->action(function (Invoice $record) {
                         $invoiceService = app(InvoiceService::class);
                         try {
-                            $invoiceService->confirm($record, Auth::user());
+                            $user = Auth::user();
+                            if (! $user) {
+                                throw new \Exception('User must be authenticated to confirm invoice');
+                            }
+                            $invoiceService->confirm($record, $user);
                             Notification::make()
                                 ->title(__('invoice.invoice_confirmed_successfully'))
                                 ->success()
@@ -528,15 +559,26 @@ class InvoiceResource extends Resource
                     ->schema([
                         Select::make('journal_id')
                             ->label(__('payment.form.journal_id'))
-                            ->options(function () {
-                                return Journal::where('company_id', Filament::getTenant()->id)
-                                    ->pluck('name', 'id');
+                            ->options(function (): array {
+                                $tenant = Filament::getTenant();
+                                if (! $tenant instanceof \App\Models\Company) {
+                                    return [];
+                                }
+
+                                return Journal::where('company_id', $tenant->getKey())
+                                    ->pluck('name', 'id')
+                                    ->all();
                             })
                             ->required()
-                            ->default(function () {
-                                return Journal::where('company_id', Filament::getTenant()->id)
+                            ->default(function (): ?int {
+                                $tenant = Filament::getTenant();
+                                if (! $tenant instanceof \App\Models\Company) {
+                                    return null;
+                                }
+
+                                return Journal::where('company_id', $tenant->getKey())
                                     ->where('type', 'bank')
-                                    ->first()?->id;
+                                    ->value('id');
                             }),
                         DatePicker::make('payment_date')
                             ->label(__('payment.form.payment_date'))
@@ -560,28 +602,32 @@ class InvoiceResource extends Resource
                             // Create payment document link DTO
                             $documentLink = new CreatePaymentDocumentLinkDTO(
                                 document_type: 'invoice',
-                                document_id: $record->id,
+                                document_id: $record->getKey(),
                                 amount_applied: Money::of($data['amount'], $currency->code)
                             );
 
                             // Create payment DTO
                             $paymentDTO = new CreatePaymentDTO(
-                                company_id: Filament::getTenant()->id,
+                                company_id: $record->company_id,
                                 journal_id: $data['journal_id'],
                                 currency_id: $record->currency_id,
                                 payment_date: $data['payment_date'],
-                                payment_purpose: PaymentPurpose::Settlement,
+                                // settlement inferred by presence of document links
                                 payment_type: PaymentType::Inbound,
+                                payment_method: PaymentMethod::BankTransfer,
                                 partner_id: $record->customer_id,
                                 amount: Money::of($data['amount'], $currency->code),
-                                counterpart_account_id: null,
                                 document_links: [$documentLink],
                                 reference: $data['reference']
                             );
 
                             // Create and confirm payment
-                            $payment = app(CreatePaymentAction::class)->execute($paymentDTO, Auth::user());
-                            app(PaymentService::class)->confirm($payment, Auth::user());
+                            $user = Auth::user();
+                            if (! $user) {
+                                throw new \Exception('User must be authenticated to create payment');
+                            }
+                            $payment = app(CreatePaymentAction::class)->execute($paymentDTO, $user);
+                            app(PaymentService::class)->confirm($payment, $user);
 
                             Notification::make()
                                 ->title(__('Payment registered successfully'))

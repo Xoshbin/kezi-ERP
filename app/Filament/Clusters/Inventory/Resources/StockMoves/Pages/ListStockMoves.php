@@ -2,6 +2,7 @@
 
 namespace App\Filament\Clusters\Inventory\Resources\StockMoves\Pages;
 
+use App\Filament\Actions\DocsAction;
 use App\Filament\Clusters\Inventory\Resources\StockMoves\StockMoveResource;
 use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
@@ -15,6 +16,7 @@ class ListStockMoves extends ListRecords
         return [
             CreateAction::make()
                 ->icon('heroicon-o-plus'),
+            DocsAction::make('stock-management'),
         ];
     }
 

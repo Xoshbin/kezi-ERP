@@ -19,7 +19,7 @@ use Spatie\Translatable\HasTranslations;
 /**
  * @property int $id
  * @property int $company_id
- * @property string $name
+ * @property string|array<string, string> $name
  * @property string $type
  * @property string $short_code
  * @property int|null $currency_id
@@ -53,6 +53,7 @@ class Journal extends Model
     use HasFactory, HasTranslations;
     use TranslatableSearch;
 
+    /** @var array<int, string> */
     public array $translatable = ['name'];
 
     /**
@@ -65,7 +66,7 @@ class Journal extends Model
     /**
      * The attributes that are mass assignable.
      *
-     * @var array<int, string>
+     * @var list<string>
      */
     protected $fillable = [
         'company_id',
@@ -87,6 +88,9 @@ class Journal extends Model
     /**
      * Get the default debit account for this journal.
      */
+    /**
+     * @return BelongsTo<Account, static>
+     */
     public function defaultDebitAccount(): BelongsTo
     {
         return $this->belongsTo(Account::class, 'default_debit_account_id');
@@ -94,6 +98,9 @@ class Journal extends Model
 
     /**
      * Get the default credit account for this journal.
+     */
+    /**
+     * @return BelongsTo<Account, static>
      */
     public function defaultCreditAccount(): BelongsTo
     {
@@ -110,6 +117,9 @@ class Journal extends Model
      *     ref="#/components/schemas/Company"
      * )
      */
+    /**
+     * @return BelongsTo<Company, static>
+     */
     public function company(): BelongsTo
     {
         return $this->belongsTo(Company::class);
@@ -124,6 +134,9 @@ class Journal extends Model
      *     type="object",
      *     ref="#/components/schemas/Currency"
      * )
+     */
+    /**
+     * @return BelongsTo<Currency, static>
      */
     public function currency(): BelongsTo
     {
@@ -141,6 +154,9 @@ class Journal extends Model
      *     @OA\Items(ref="#/components/schemas/JournalEntry")
      * )
      */
+    /**
+     * @return HasMany<JournalEntry, static>
+     */
     public function journalEntries(): HasMany
     {
         return $this->hasMany(JournalEntry::class);
@@ -148,6 +164,9 @@ class Journal extends Model
 
     /**
      * Get the exchange gain account for this journal.
+     */
+    /**
+     * @return BelongsTo<Account, static>
      */
     public function exchangeGainAccount(): BelongsTo
     {
@@ -157,6 +176,9 @@ class Journal extends Model
     /**
      * Get the exchange loss account for this journal.
      */
+    /**
+     * @return BelongsTo<Account, static>
+     */
     public function exchangeLossAccount(): BelongsTo
     {
         return $this->belongsTo(Account::class, 'exchange_loss_account_id');
@@ -164,6 +186,9 @@ class Journal extends Model
 
     /**
      * Get the journal where exchange differences are posted.
+     */
+    /**
+     * @return BelongsTo<Journal, static>
      */
     public function exchangeDifferenceJournal(): BelongsTo
     {

@@ -15,11 +15,12 @@ class CreateProduct extends CreateRecord
     protected function handleRecordCreation(array $data): Model
     {
         // Add company_id from tenant context
+        /** @var \App\Models\Company|null $tenant */
         $tenant = Filament::getTenant();
         if (! $tenant) {
             throw new Exception('No tenant set when creating Product');
         }
-        $data['company_id'] = $tenant->id;
+        $data['company_id'] = $tenant->getKey();
 
         return static::getModel()::create($data);
     }

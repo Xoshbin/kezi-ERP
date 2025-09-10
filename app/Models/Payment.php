@@ -4,7 +4,7 @@ namespace App\Models;
 
 use App\Casts\BaseCurrencyMoneyCast;
 use App\Casts\DocumentCurrencyMoneyCast;
-use App\Enums\Payments\PaymentPurpose;
+use App\Enums\Payments\PaymentMethod;
 use App\Enums\Payments\PaymentStatus;
 use App\Enums\Payments\PaymentType;
 use App\Observers\AuditLogObserver;
@@ -33,10 +33,10 @@ use Illuminate\Support\Carbon;
  * @property int $paid_to_from_partner_id
  * @property int|null $journal_entry_id
  * @property Carbon $payment_date
- * @property float $amount
- * @property string $payment_type
+ * @property \Brick\Money\Money $amount
+ * @property PaymentType $payment_type
  * @property string|null $reference
- * @property string $status
+ * @property PaymentStatus $status
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property-read Company $company
@@ -74,13 +74,14 @@ use Illuminate\Support\Carbon;
 #[ObservedBy([AuditLogObserver::class, PaymentObserver::class])]
 class Payment extends Model
 {
+    /** @use HasFactory<\Database\Factories\PaymentFactory> */
     use HasFactory;
 
     /**
      * The attributes that are mass assignable.
      * These fields are explicitly allowed for mass assignment for secure data entry [9].
      *
-     * @var array<int, string>
+     * @var list<string>
      */
     protected $fillable = [
         'company_id',
@@ -91,8 +92,7 @@ class Payment extends Model
         'currency_id',
         'exchange_rate_at_payment',
         'payment_type',
-        'payment_purpose',
-        'counterpart_account_id',
+        'payment_method',
         'reference',
         'status',
         'paid_to_from_partner_id',
@@ -111,7 +111,8 @@ class Payment extends Model
         'amount_company_currency' => BaseCurrencyMoneyCast::class, // Payment amount in company base currency
         'exchange_rate_at_payment' => 'decimal:10',
         'payment_type' => PaymentType::class,
-        'payment_purpose' => PaymentPurpose::class,
+        'payment_method' => PaymentMethod::class,
+
         'status' => PaymentStatus::class,
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
@@ -125,7 +126,8 @@ class Payment extends Model
      */
     protected $attributes = [
         'status' => 'draft',
-        'payment_purpose' => 'settlement',
+        'payment_method' => 'manual',
+
     ];
 
     /**
@@ -181,17 +183,6 @@ class Payment extends Model
     public function journalEntry()
     {
         return $this->belongsTo(JournalEntry::class);
-    }
-
-    /**
-     * Get the counterpart Account for non-settlement payments.
-     * This is used for direct payments like loans, capital injections, etc.
-     *
-     * @return BelongsTo
-     */
-    public function counterpartAccount()
-    {
-        return $this->belongsTo(Account::class, 'counterpart_account_id');
     }
 
     /**

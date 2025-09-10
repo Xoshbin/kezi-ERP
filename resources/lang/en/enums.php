@@ -135,14 +135,17 @@ return [
         'paid' => 'Paid',
     ],
 
-    'payment_purpose' => [
-        'settlement' => 'Settlement',
-        'loan' => 'Loan',
-        'capital_injection' => 'Capital Injection',
-        'expense_claim' => 'Expense Claim',
-        'tax_payment' => 'Tax Payment',
-        'asset_purchase' => 'Asset Purchase',
-        'payroll' => 'Payroll',
+    'payment_method' => [
+        'manual' => 'Manual',
+        'check' => 'Check',
+        'bank_transfer' => 'Bank Transfer',
+        'credit_card' => 'Credit Card',
+        'debit_card' => 'Debit Card',
+        'cash' => 'Cash',
+        'wire_transfer' => 'Wire Transfer',
+        'ach' => 'ACH',
+        'sepa' => 'SEPA',
+        'online_payment' => 'Online Payment',
     ],
 
     'payroll_status' => [

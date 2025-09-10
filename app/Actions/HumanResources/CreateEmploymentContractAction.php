@@ -14,8 +14,11 @@ class CreateEmploymentContractAction
 {
     public function execute(CreateEmploymentContractDTO $createContractDTO): EmploymentContract
     {
-        return DB::transaction(function () use ($createContractDTO) {
+        return DB::transaction(function () use ($createContractDTO): EmploymentContract {
             $currency = Currency::find($createContractDTO->currency_id);
+            if (! $currency) {
+                throw new \InvalidArgumentException('Currency not found');
+            }
 
             // Convert Money fields if they're strings
             $baseSalary = $createContractDTO->base_salary instanceof Money
@@ -49,6 +52,9 @@ class CreateEmploymentContractAction
             $contractNumber = $createContractDTO->contract_number;
             if (empty($contractNumber)) {
                 $company = Company::find($createContractDTO->company_id);
+                if (! $company) {
+                    throw new \InvalidArgumentException('Company not found');
+                }
                 $contractNumber = EmploymentContract::generateContractNumber($company);
             }
 
@@ -88,7 +94,12 @@ class CreateEmploymentContractAction
                 'job_description' => $createContractDTO->job_description,
             ]);
 
-            return $contract->fresh();
+            $fresh = $contract->fresh();
+            if (! $fresh) {
+                throw new \RuntimeException('Failed to refresh contract after creation');
+            }
+
+            return $fresh;
         });
     }
 }

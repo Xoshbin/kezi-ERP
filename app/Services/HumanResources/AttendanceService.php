@@ -50,7 +50,7 @@ class AttendanceService
             notes: null,
             is_manual_entry: $user !== null,
             leave_request_id: null,
-            created_by_user_id: $user?->id ?? $employee->user_id ?? 1,
+            created_by_user_id: $user->id ?? $employee->user_id ?? 1,
         );
 
         return $this->createAttendanceAction->execute($createAttendanceDTO);
@@ -101,7 +101,12 @@ class AttendanceService
             'overtime_hours' => $overtimeHours,
         ]);
 
-        return $attendance->fresh();
+        $freshAttendance = $attendance->fresh();
+        if (! $freshAttendance) {
+            throw new \Exception('Failed to refresh attendance after clock out');
+        }
+
+        return $freshAttendance;
     }
 
     /**
@@ -122,7 +127,12 @@ class AttendanceService
             'break_start_time' => now()->format('H:i:s'),
         ]);
 
-        return $attendance->fresh();
+        $freshAttendance = $attendance->fresh();
+        if (! $freshAttendance) {
+            throw new \Exception('Failed to refresh attendance after starting break');
+        }
+
+        return $freshAttendance;
     }
 
     /**
@@ -151,7 +161,12 @@ class AttendanceService
             'break_hours' => $breakHours,
         ]);
 
-        return $attendance->fresh();
+        $freshAttendance = $attendance->fresh();
+        if (! $freshAttendance) {
+            throw new \Exception('Failed to refresh attendance after ending break');
+        }
+
+        return $freshAttendance;
     }
 
     /**
@@ -189,6 +204,8 @@ class AttendanceService
 
     /**
      * Get attendance summary for an employee.
+     *
+     * @return array<string, mixed>
      */
     public function getAttendanceSummary(Employee $employee, string $startDate, string $endDate): array
     {

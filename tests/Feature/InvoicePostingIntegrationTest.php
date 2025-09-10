@@ -158,7 +158,7 @@ class InvoicePostingIntegrationTest extends TestCase
         $this->assertCount(5, array_unique($invoiceNumbers));
 
         // Verify the sequence is correct
-        // Verify all numbers follow the new Odoo-style format
+        // Verify all numbers follow the new format
         foreach ($invoiceNumbers as $number) {
             $this->assertMatchesRegularExpression('/^INV\/\d{4}\/\d{2}\/\d{7}$/', $number);
         }

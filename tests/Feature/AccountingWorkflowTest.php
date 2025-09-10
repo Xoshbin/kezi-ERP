@@ -15,7 +15,7 @@ use App\DataTransferObjects\Sales\CreateInvoiceLineDTO;
 use App\Enums\Adjustments\AdjustmentDocumentStatus;
 use App\Enums\Adjustments\AdjustmentDocumentType;
 use App\Enums\Partners\PartnerType;
-use App\Enums\Payments\PaymentPurpose;
+use App\Enums\Payments\PaymentMethod;
 use App\Enums\Payments\PaymentType;
 use App\Enums\Sales\InvoiceStatus;
 use App\Models\Account;
@@ -180,11 +180,11 @@ test('the entire accounting workflow from setup to credit note', function () {
         journal_id: $bankJournal->id,
         currency_id: $currency->id,
         payment_date: now()->toDateString(),
-        payment_purpose: PaymentPurpose::Settlement,
+        // settlement inferred by presence of document links
         payment_type: PaymentType::Inbound,
+        payment_method: PaymentMethod::BankTransfer,
         partner_id: null,
         amount: null,
-        counterpart_account_id: null,
         document_links: [$documentLinkDto],
         reference: null
     );
@@ -217,11 +217,11 @@ test('the entire accounting workflow from setup to credit note', function () {
         journal_id: $bankJournal->id,
         currency_id: $currency->id,
         payment_date: now()->toDateString(),
-        payment_purpose: PaymentPurpose::Settlement,
+        // settlement inferred by presence of document links
         payment_type: PaymentType::Outbound,
+        payment_method: PaymentMethod::BankTransfer,
         partner_id: null,
         amount: null,
-        counterpart_account_id: null,
         document_links: [$vendorDocumentLinkDto],
         reference: 'Payment for Laptop'
     );

@@ -31,9 +31,9 @@ use Illuminate\Support\Carbon;
  * @property string|null $invoice_number
  * @property Carbon $invoice_date
  * @property Carbon $due_date
- * @property string $status
- * @property float $total_amount
- * @property float $total_tax
+ * @property InvoiceStatus $status
+ * @property \Brick\Money\Money $total_amount
+ * @property \Brick\Money\Money $total_tax
  * @property Carbon|null $posted_at
  * @property array<array-key, mixed>|null $reset_to_draft_log
  * @property Carbon|null $created_at
@@ -92,7 +92,7 @@ class Invoice extends Model
      * typically managed internally by the application's logic upon confirmation
      * or posting, rather than being directly mass-assigned from user input. [1, 6]
      *
-     * @var array<int, string>
+     * @var list<string>
      */
     protected $fillable = [
         'company_id',
@@ -104,6 +104,7 @@ class Invoice extends Model
         'invoice_number',
         'invoice_date',
         'due_date',
+        'payment_term_id',
         'status',
         'total_amount',
         'total_tax',
@@ -145,6 +146,9 @@ class Invoice extends Model
      * Get the company that owns this invoice.
      * An invoice is always issued by a specific company. [1]
      */
+    /**
+     * @return BelongsTo<Company, static>
+     */
     public function company(): BelongsTo
     {
         return $this->belongsTo(Company::class);
@@ -153,6 +157,9 @@ class Invoice extends Model
     /**
      * Get the customer (partner) associated with this invoice.
      * The customer is the entity to whom the invoice is issued. [1]
+     */
+    /**
+     * @return BelongsTo<Partner, static>
      */
     public function customer(): BelongsTo
     {
@@ -163,6 +170,9 @@ class Invoice extends Model
      * Get the currency of this invoice.
      * Every invoice operates in a specific currency. [1]
      */
+    /**
+     * @return BelongsTo<Currency, static>
+     */
     public function currency(): BelongsTo
     {
         return $this->belongsTo(Currency::class);
@@ -171,6 +181,9 @@ class Invoice extends Model
     /**
      * Get the journal entry associated with this invoice once it is posted.
      * This link is vital for the immutability of financial records. [1]
+     */
+    /**
+     * @return BelongsTo<JournalEntry, static>
      */
     public function journalEntry(): BelongsTo
     {
@@ -181,6 +194,9 @@ class Invoice extends Model
      * Get the line items for this invoice.
      * An invoice typically consists of multiple product or service lines. [1]
      */
+    /**
+     * @return HasMany<InvoiceLine, static>
+     */
     public function invoiceLines(): HasMany
     {
         return $this->hasMany(InvoiceLine::class);
@@ -189,6 +205,9 @@ class Invoice extends Model
     /**
      * Get the fiscal position applied to this invoice.
      * Fiscal positions can automatically adapt taxes and accounts based on specific rules. [4, 7]
+     */
+    /**
+     * @return BelongsTo<FiscalPosition, static>
      */
     public function fiscalPosition(): BelongsTo
     {
@@ -200,6 +219,9 @@ class Invoice extends Model
      * An invoice can be paid by multiple payments, and a single payment
      * can potentially pay multiple invoices, creating a many-to-many relationship.
      */
+    /**
+     * @return BelongsToMany<Payment, static>
+     */
     public function payments(): BelongsToMany
     {
         return $this->belongsToMany(Payment::class, 'payment_document_links', 'invoice_id', 'payment_id')
@@ -210,14 +232,38 @@ class Invoice extends Model
      * Get the direct PaymentDocumentLink records for this invoice.
      * This provides access to the raw pivot data for multi-currency payment calculations.
      */
+    /**
+     * @return HasMany<PaymentDocumentLink, static>
+     */
     public function paymentDocumentLinks(): HasMany
     {
         return $this->hasMany(PaymentDocumentLink::class, 'invoice_id');
     }
 
     /**
+     * Get the PaymentTerm for this invoice.
+     */
+    public function paymentTerm(): BelongsTo
+    {
+        return $this->belongsTo(PaymentTerm::class);
+    }
+
+    /**
+     * Get the PaymentInstallments for this invoice.
+     */
+    public function paymentInstallments(): HasMany
+    {
+        return $this->hasMany(PaymentInstallment::class, 'installment_id')
+            ->where('installment_type', self::class)
+            ->orderBy('sequence');
+    }
+
+    /**
      * Get the Adjustment Documents (credit notes, etc.) that relate to this Invoice.
      * These are used for corrections, reversals, and adjustments to posted invoices.
+     */
+    /**
+     * @return HasMany<AdjustmentDocument, static>
      */
     public function adjustmentDocuments(): HasMany
     {
@@ -263,6 +309,47 @@ class Invoice extends Model
     public function getFullReferenceAttribute(): string
     {
         return $this->invoice_number.' - '.$this->invoice_date->format('Y-m-d');
+    }
+
+    /**
+     * Generate payment installments based on payment terms.
+     * This should be called when the invoice is posted.
+     */
+    public function generatePaymentInstallments(): void
+    {
+        // Clear existing installments
+        $this->paymentInstallments()->delete();
+
+        $this->loadMissing('paymentTerm');
+
+        if (! $this->paymentTerm instanceof PaymentTerm) {
+            // No payment terms, create single installment with due date
+            PaymentInstallment::create([
+                'company_id' => $this->company_id,
+                'installment_type' => self::class,
+                'installment_id' => $this->id,
+                'sequence' => 1,
+                'due_date' => $this->due_date,
+                'amount' => $this->total_amount,
+                'status' => \App\Enums\PaymentInstallments\InstallmentStatus::Pending,
+            ]);
+
+            return;
+        }
+
+        $installments = $this->paymentTerm->calculateInstallments($this->invoice_date, $this->total_amount);
+
+        foreach ($installments as $index => $installment) {
+            PaymentInstallment::create([
+                'company_id' => $this->company_id,
+                'installment_type' => self::class,
+                'installment_id' => $this->id,
+                'sequence' => $index + 1,
+                'due_date' => $installment['due_date'],
+                'amount' => $installment['amount'],
+                'status' => \App\Enums\PaymentInstallments\InstallmentStatus::Pending,
+            ]);
+        }
     }
 
     public function calculateTotalsFromLines(): void

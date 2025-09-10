@@ -65,7 +65,12 @@ class EmployeeService
                 $this->createEmploymentContractAction->execute($contractDTOWithEmployee);
             }
 
-            return $employee->fresh(['currentContract', 'department', 'position', 'manager']);
+            $freshEmployee = $employee->fresh(['currentContract', 'department', 'position', 'manager']);
+            if (! $freshEmployee) {
+                throw new \Exception('Failed to refresh employee after creation');
+            }
+
+            return $freshEmployee;
         });
     }
 
@@ -143,6 +148,8 @@ class EmployeeService
 
     /**
      * Get employee statistics for a company.
+     *
+     * @return array<string, mixed>
      */
     public function getEmployeeStatistics(Company $company): array
     {

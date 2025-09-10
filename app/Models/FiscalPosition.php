@@ -18,7 +18,7 @@ use Spatie\Translatable\HasTranslations;
  *
  * @property int $id
  * @property int $company_id
- * @property string $name
+ * @property string|array<string, string> $name
  * @property string|null $country
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
@@ -46,6 +46,7 @@ class FiscalPosition extends Model
     use HasFactory, HasTranslations;
     use TranslatableSearch;
 
+    /** @var array<int, string> */
     public array $translatable = ['name'];
 
     /**
@@ -58,7 +59,7 @@ class FiscalPosition extends Model
     /**
      * The attributes that are mass assignable.
      *
-     * @var array<int, string>
+     * @var list<string>
      */
     protected $fillable = [
         'company_id',
@@ -88,6 +89,9 @@ class FiscalPosition extends Model
      * Get the company that this fiscal position belongs to.
      * A fiscal position is typically defined within the context of a specific company.
      */
+    /**
+     * @return BelongsTo<Company, static>
+     */
     public function company(): BelongsTo
     {
         return $this->belongsTo(Company::class);
@@ -96,6 +100,9 @@ class FiscalPosition extends Model
     /**
      * Get the tax mappings for the fiscal position.
      * These mappings define how original taxes are replaced or adjusted based on this fiscal position.
+     */
+    /**
+     * @return HasMany<FiscalPositionTaxMapping, static>
      */
     public function taxMappings(): HasMany
     {
@@ -108,6 +115,9 @@ class FiscalPosition extends Model
     /**
      * Get the account mappings for the fiscal position.
      * These mappings define how original accounts are replaced or adjusted based on this fiscal position.
+     */
+    /**
+     * @return HasMany<FiscalPositionAccountMapping, static>
      */
     public function accountMappings(): HasMany
     {

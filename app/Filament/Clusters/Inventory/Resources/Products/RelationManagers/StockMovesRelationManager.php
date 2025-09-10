@@ -116,7 +116,6 @@ class StockMovesRelationManager extends RelationManager
                         StockMoveType::Outgoing => 'danger',
                         StockMoveType::InternalTransfer => 'info',
                         StockMoveType::Adjustment => 'warning',
-                        default => 'gray',
                     }),
                 TextColumn::make('status')
                     ->label(__('stock_move.status'))
@@ -127,7 +126,6 @@ class StockMovesRelationManager extends RelationManager
                         StockMoveStatus::Confirmed => 'warning',
                         StockMoveStatus::Done => 'success',
                         StockMoveStatus::Cancelled => 'danger',
-                        default => 'gray',
                     }),
                 TextColumn::make('source_type')
                     ->label(__('stock_move.source'))
@@ -158,8 +156,10 @@ class StockMovesRelationManager extends RelationManager
                 CreateAction::make()
                     ->icon('heroicon-o-plus')
                     ->mutateDataUsing(function (array $data): array {
-                        $data['company_id'] = $this->getOwnerRecord()->company_id;
-                        $data['product_id'] = $this->getOwnerRecord()->id;
+                        /** @var \App\Models\Product $owner */
+                        $owner = $this->getOwnerRecord();
+                        $data['company_id'] = $owner->getAttribute('company_id');
+                        $data['product_id'] = $owner->getKey();
                         $data['created_by_user_id'] = Filament::auth()->id();
 
                         return $data;

@@ -38,9 +38,9 @@ class AssetService
         return $this->updateAssetAction->execute($asset, $dto);
     }
 
-    public function disposeAsset(Asset $asset, DisposeAssetDTO $dto): Asset
+    public function disposeAsset(Asset $asset, DisposeAssetDTO $dto, User $user): Asset
     {
-        return $this->disposeAssetAction->execute($asset, $dto);
+        return $this->disposeAssetAction->execute($asset, $dto, $user);
     }
 
     public function postDepreciation(DepreciationEntry $depreciationEntry, User $user): DepreciationEntry
@@ -81,9 +81,14 @@ class AssetService
         }
 
         // If all guards pass, proceed with the deletion.
-        return $asset->delete();
+        $result = $asset->delete();
+
+        return $result !== null ? $result : false;
     }
 
+    /**
+     * @return Collection<int, array<string, mixed>>
+     */
     public function computeDepreciation(Asset $asset): Collection
     {
         $asset->load('currency');

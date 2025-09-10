@@ -32,8 +32,8 @@ use Illuminate\Support\Carbon;
  * @property Money $purchase_value
  * @property Money $salvage_value
  * @property int $useful_life_years
- * @property string $depreciation_method
- * @property string $status
+ * @property DepreciationMethod $depreciation_method
+ * @property AssetStatus $status
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property-read Account $accumulatedDepreciationAccount
@@ -67,6 +67,7 @@ use Illuminate\Support\Carbon;
 #[ObservedBy([AssetObserver::class])]
 class Asset extends Model
 {
+    /** @use HasFactory<\Database\Factories\AssetFactory> */
     use HasFactory;
 
     /**
@@ -81,7 +82,7 @@ class Asset extends Model
      * The attributes that are mass assignable.
      * These fields are essential for defining an asset's core characteristics.
      *
-     * @var array<int, string>
+     * @var list<string>
      */
     protected $fillable = [
         'company_id',
@@ -124,7 +125,7 @@ class Asset extends Model
      * Without this, any retrieval of an `Asset` would fail when casting monetary values
      * due to the missing currency information, leading to a "currency_id on null" error.
      *
-     * @var array
+     * @var list<string>
      */
     protected $with = ['company.currency'];
 
@@ -140,6 +141,9 @@ class Asset extends Model
      * Get the company that owns this asset.
      * An asset is always associated with a specific company in a multi-company setup. [1]
      */
+    /**
+     * @return BelongsTo<Company, static>
+     */
     public function company(): BelongsTo
     {
         return $this->belongsTo(Company::class);
@@ -148,6 +152,9 @@ class Asset extends Model
     /**
      * Get the general ledger account (balance sheet) for this asset.
      * This links the asset to its representation on the company's balance sheet. [1]
+     */
+    /**
+     * @return BelongsTo<Account, static>
      */
     public function assetAccount(): BelongsTo
     {
@@ -158,6 +165,9 @@ class Asset extends Model
      * Get the depreciation expense account (profit & loss) for this asset.
      * This account records the periodic expense of the asset's wear and tear. [1]
      */
+    /**
+     * @return BelongsTo<Account, static>
+     */
     public function depreciationExpenseAccount(): BelongsTo
     {
         return $this->belongsTo(Account::class, 'depreciation_expense_account_id');
@@ -166,6 +176,9 @@ class Asset extends Model
     /**
      * Get the accumulated depreciation account (contra-asset) for this asset.
      * This account accumulates the total depreciation charged against the asset over its life. [1]
+     */
+    /**
+     * @return BelongsTo<Account, static>
      */
     public function accumulatedDepreciationAccount(): BelongsTo
     {
@@ -176,11 +189,17 @@ class Asset extends Model
      * Get the depreciation entries associated with this asset.
      * Each asset generates multiple depreciation entries over its useful life. [1]
      */
+    /**
+     * @return HasMany<DepreciationEntry, static>
+     */
     public function depreciationEntries(): HasMany
     {
         return $this->hasMany(DepreciationEntry::class);
     }
 
+    /**
+     * @return BelongsTo<Currency, static>
+     */
     public function currency(): BelongsTo
     {
         return $this->belongsTo(Currency::class);
@@ -190,6 +209,9 @@ class Asset extends Model
      * Get the parent source model (e.g., VendorBill).
      * This relationship links the asset to its acquisition document.
      */
+    /**
+     * @return MorphTo<\Illuminate\Database\Eloquent\Model, static>
+     */
     public function source(): MorphTo
     {
         return $this->morphTo();
@@ -198,6 +220,9 @@ class Asset extends Model
     /**
      * Get all of the asset's journal entries.
      * An asset can have multiple journal entries (e.g., for acquisition, disposal).
+     */
+    /**
+     * @return MorphMany<JournalEntry, static>
      */
     public function journalEntries(): MorphMany
     {

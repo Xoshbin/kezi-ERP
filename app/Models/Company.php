@@ -45,6 +45,10 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property-read Collection<int, Company> $childrenCompanies
  * @property-read int|null $children_companies_count
  * @property-read Currency $currency
+ * @property-read Account|null $defaultAccountsReceivable
+ * @property-read Account|null $defaultSalesDiscountAccount
+ * @property-read Account|null $defaultTaxAccount
+ * @property-read Journal|null $defaultSalesJournal
  * @property-read Collection<int, FiscalPosition> $fiscalPositions
  * @property-read int|null $fiscal_positions_count
  * @property-read Collection<int, Invoice> $invoices
@@ -88,6 +92,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 #[ObservedBy([CompanyObserver::class])]
 class Company extends Model
 {
+    /** @use HasFactory<\Database\Factories\CompanyFactory> */
     use HasFactory;
 
     /**
@@ -96,7 +101,7 @@ class Company extends Model
      * to prevent unauthorized mass assignment vulnerabilities and maintain
      * data integrity [1].
      *
-     * @var array<int, string>
+     * @var list<string>
      */
     protected $fillable = [
         'name',
@@ -164,6 +169,9 @@ class Company extends Model
      * Get the default operating currency for the company.
      * A company operates within a specific default currency for its financial records [1, 4].
      */
+    /**
+     * @return BelongsTo<Currency, static>
+     */
     public function currency(): BelongsTo
     {
         return $this->belongsTo(Currency::class);
@@ -172,6 +180,9 @@ class Company extends Model
     /**
      * Get the parent company if this company is a branch or subsidiary.
      * Supports multi-branch/multi-company structures [1, 3].
+     */
+    /**
+     * @return BelongsTo<Company, static>
      */
     public function parentCompany(): BelongsTo
     {
@@ -182,6 +193,9 @@ class Company extends Model
      * Get the child companies if this company is a parent.
      * This defines the hierarchical structure within the business group [1, 3].
      */
+    /**
+     * @return HasMany<Company, static>
+     */
     public function childrenCompanies(): HasMany
     {
         return $this->hasMany(Company::class, 'parent_company_id');
@@ -190,8 +204,9 @@ class Company extends Model
     /**
      * Get the users associated with this company.
      * In a multi-company setup, users typically belong to a specific company [1].
-     *
-     * @return BelongToMany
+     */
+    /**
+     * @return BelongsToMany<User, static>
      */
     public function users(): BelongsToMany
     {
@@ -202,6 +217,9 @@ class Company extends Model
      * Get the audit logs associated with actions performed within this company.
      * Comprehensive auditability is a non-negotiable principle for accounting software [1].
      */
+    /**
+     * @return HasMany<AuditLog, static>
+     */
     public function auditLogs(): HasMany
     {
         return $this->hasMany(AuditLog::class);
@@ -210,6 +228,9 @@ class Company extends Model
     /**
      * Get the lock dates configured for this company.
      * Lock dates are crucial for preventing modifications to historical financial periods [1].
+     */
+    /**
+     * @return HasMany<LockDate, static>
      */
     public function lockDates(): HasMany
     {
@@ -220,6 +241,9 @@ class Company extends Model
      * Get the chart of accounts (accounts) belonging to this company.
      * Each company maintains its own unique chart of accounts [1, 5].
      */
+    /**
+     * @return HasMany<Account, static>
+     */
     public function accounts(): HasMany
     {
         return $this->hasMany(Account::class);
@@ -228,6 +252,9 @@ class Company extends Model
     /**
      * Get the journals belonging to this company.
      * Journals categorize and sequence financial transactions [1, 6-8].
+     */
+    /**
+     * @return HasMany<Journal, static>
      */
     public function journals(): HasMany
     {
@@ -238,6 +265,9 @@ class Company extends Model
      * Get the journal entries posted by this company.
      * Journal entries are the immutable records of all financial transactions [1].
      */
+    /**
+     * @return HasMany<JournalEntry, static>
+     */
     public function journalEntries(): HasMany
     {
         return $this->hasMany(JournalEntry::class);
@@ -245,6 +275,9 @@ class Company extends Model
 
     /**
      * Get the customer invoices issued by this company.
+     */
+    /**
+     * @return HasMany<Invoice, static>
      */
     public function invoices(): HasMany
     {
@@ -254,6 +287,9 @@ class Company extends Model
     /**
      * Get the vendor bills received by this company.
      */
+    /**
+     * @return HasMany<VendorBill, static>
+     */
     public function vendorBills(): HasMany
     {
         return $this->hasMany(VendorBill::class);
@@ -262,6 +298,9 @@ class Company extends Model
     /**
      * Get the payments (inbound/outbound) processed by this company.
      */
+    /**
+     * @return HasMany<Payment, static>
+     */
     public function payments(): HasMany
     {
         return $this->hasMany(Payment::class);
@@ -269,6 +308,9 @@ class Company extends Model
 
     /**
      * Get the adjustment documents (e.g., credit/debit notes) created by this company.
+     */
+    /**
+     * @return HasMany<AdjustmentDocument, static>
      */
     public function adjustmentDocuments(): HasMany
     {
@@ -279,6 +321,9 @@ class Company extends Model
      * Get the partners (customers/vendors) associated with this company.
      * Partners can be defined per internal company [2].
      */
+    /**
+     * @return HasMany<Partner, static>
+     */
     public function partners(): HasMany
     {
         return $this->hasMany(Partner::class);
@@ -287,6 +332,9 @@ class Company extends Model
     /**
      * Get the products managed by this company.
      * Products can be company-specific [2].
+     */
+    /**
+     * @return HasMany<Product, static>
      */
     public function products(): HasMany
     {
@@ -297,6 +345,9 @@ class Company extends Model
      * Get the tax definitions for this company.
      * Taxes are configured per company [2].
      */
+    /**
+     * @return HasMany<Tax, static>
+     */
     public function taxes(): HasMany
     {
         return $this->hasMany(Tax::class);
@@ -306,6 +357,9 @@ class Company extends Model
      * Get the fiscal positions defined for this company.
      * Fiscal positions handle tax and account mapping based on partner location/type [2].
      */
+    /**
+     * @return HasMany<FiscalPosition, static>
+     */
     public function fiscalPositions(): HasMany
     {
         return $this->hasMany(FiscalPosition::class);
@@ -313,6 +367,9 @@ class Company extends Model
 
     /**
      * Get the fixed assets owned by this company.
+     */
+    /**
+     * @return HasMany<Asset, static>
      */
     public function assets(): HasMany
     {
@@ -323,6 +380,9 @@ class Company extends Model
      * Get the analytic accounts defined for this company.
      * Used for management/cost accounting, separate from general ledger accounts [2, 9].
      */
+    /**
+     * @return HasMany<AnalyticAccount, static>
+     */
     public function analyticAccounts(): HasMany
     {
         return $this->hasMany(AnalyticAccount::class);
@@ -332,6 +392,9 @@ class Company extends Model
      * Get the analytic plans defined for this company.
      * Used to group analytic accounts or define budget structures [2].
      */
+    /**
+     * @return HasMany<AnalyticPlan, static>
+     */
     public function analyticPlans(): HasMany
     {
         return $this->hasMany(AnalyticPlan::class);
@@ -340,61 +403,97 @@ class Company extends Model
     /**
      * Get the budgets created for this company.
      */
+    /**
+     * @return HasMany<Budget, static>
+     */
     public function budgets(): HasMany
     {
         return $this->hasMany(Budget::class);
     }
 
+    /**
+     * @return BelongsTo<Account, static>
+     */
     public function defaultAccountsPayable(): BelongsTo
     {
         return $this->belongsTo(Account::class, 'default_accounts_payable_id');
     }
 
+    /**
+     * @return BelongsTo<Account, static>
+     */
     public function defaultTaxReceivable(): BelongsTo
     {
         return $this->belongsTo(Account::class, 'default_tax_receivable_id');
     }
 
+    /**
+     * @return BelongsTo<Journal, static>
+     */
     public function defaultPurchaseJournal(): BelongsTo
     {
         return $this->belongsTo(Journal::class, 'default_purchase_journal_id');
     }
 
+    /**
+     * @return BelongsTo<Account, static>
+     */
     public function defaultAccountsReceivable(): BelongsTo
     {
         return $this->belongsTo(Account::class, 'default_accounts_receivable_id');
     }
 
+    /**
+     * @return BelongsTo<Account, static>
+     */
     public function defaultSalesDiscountAccount(): BelongsTo
     {
         return $this->belongsTo(Account::class, 'default_sales_discount_account_id');
     }
 
+    /**
+     * @return BelongsTo<Account, static>
+     */
     public function defaultTaxAccount(): BelongsTo
     {
         return $this->belongsTo(Account::class, 'default_tax_account_id');
     }
 
+    /**
+     * @return BelongsTo<Journal, static>
+     */
     public function defaultSalesJournal(): BelongsTo
     {
         return $this->belongsTo(Journal::class, 'default_sales_journal_id');
     }
 
+    /**
+     * @return BelongsTo<Journal, static>
+     */
     public function defaultDepreciationJournal(): BelongsTo
     {
         return $this->belongsTo(Journal::class, 'default_depreciation_journal_id');
     }
 
+    /**
+     * @return BelongsTo<Journal, static>
+     */
     public function defaultBankJournal(): BelongsTo
     {
         return $this->belongsTo(Journal::class, 'default_bank_journal_id');
     }
 
+    /**
+     * @return BelongsTo<Account, static>
+     */
     public function defaultBankAccount(): BelongsTo
     {
         return $this->belongsTo(Account::class, 'default_bank_account_id');
     }
 
+    /**
+     * @return BelongsTo<Account, static>
+     */
     public function defaultOutstandingReceiptsAccount(): BelongsTo
     {
         return $this->belongsTo(Account::class, 'default_outstanding_receipts_account_id');
@@ -403,11 +502,17 @@ class Company extends Model
     /**
      * Get the default account for recording gains or losses on asset disposal.
      */
+    /**
+     * @return BelongsTo<Account, static>
+     */
     public function defaultGainLossAccount(): BelongsTo
     {
         return $this->belongsTo(Account::class, 'default_gain_loss_account_id');
     }
 
+    /**
+     * @return BelongsTo<Account, static>
+     */
     public function inventoryAdjustmentAccount(): BelongsTo
     {
         return $this->belongsTo(Account::class, 'inventory_adjustment_account_id');
@@ -419,36 +524,57 @@ class Company extends Model
     |--------------------------------------------------------------------------
     */
 
+    /**
+     * @return BelongsTo<Account, static>
+     */
     public function defaultSalaryPayableAccount(): BelongsTo
     {
         return $this->belongsTo(Account::class, 'default_salary_payable_account_id');
     }
 
+    /**
+     * @return BelongsTo<Account, static>
+     */
     public function defaultSalaryExpenseAccount(): BelongsTo
     {
         return $this->belongsTo(Account::class, 'default_salary_expense_account_id');
     }
 
+    /**
+     * @return BelongsTo<Journal, static>
+     */
     public function defaultPayrollJournal(): BelongsTo
     {
         return $this->belongsTo(Journal::class, 'default_payroll_journal_id');
     }
 
+    /**
+     * @return BelongsTo<Account, static>
+     */
     public function defaultIncomeTaxPayableAccount(): BelongsTo
     {
         return $this->belongsTo(Account::class, 'default_income_tax_payable_account_id');
     }
 
+    /**
+     * @return BelongsTo<Account, static>
+     */
     public function defaultSocialSecurityPayableAccount(): BelongsTo
     {
         return $this->belongsTo(Account::class, 'default_social_security_payable_account_id');
     }
 
+    /**
+     * @return BelongsTo<Account, static>
+     */
     public function defaultHealthInsurancePayableAccount(): BelongsTo
     {
         return $this->belongsTo(Account::class, 'default_health_insurance_payable_account_id');
     }
 
+    /**
+     * @return BelongsTo<Account, static>
+     */
     public function defaultPensionPayableAccount(): BelongsTo
     {
         return $this->belongsTo(Account::class, 'default_pension_payable_account_id');
@@ -476,6 +602,9 @@ class Company extends Model
     /**
      * The company's default stock location for internal operations.
      */
+    /**
+     * @return BelongsTo<StockLocation, static>
+     */
     public function defaultStockLocation(): BelongsTo
     {
         // CORRECTED: This is a BelongsTo relationship because the
@@ -485,6 +614,9 @@ class Company extends Model
 
     /**
      * The company's default location representing external vendors.
+     */
+    /**
+     * @return BelongsTo<StockLocation, static>
      */
     public function vendorLocation(): BelongsTo
     {
@@ -505,6 +637,8 @@ class Company extends Model
 
     /**
      * Get the default numbering settings structure.
+     *
+     * @return array<string, array<string, mixed>>
      */
     public function getDefaultNumberingSettings(): array
     {
@@ -524,6 +658,8 @@ class Company extends Model
 
     /**
      * Get the numbering settings with defaults if not set.
+     *
+     * @return array<string, array<string, mixed>>
      */
     public function getNumberingSettings(): array
     {
@@ -532,6 +668,8 @@ class Company extends Model
 
     /**
      * Get invoice numbering configuration.
+     *
+     * @return array<string, mixed>
      */
     public function getInvoiceNumberingConfig(): array
     {
@@ -542,6 +680,8 @@ class Company extends Model
 
     /**
      * Get vendor bill numbering configuration.
+     *
+     * @return array<string, mixed>
      */
     public function getVendorBillNumberingConfig(): array
     {
@@ -572,6 +712,8 @@ class Company extends Model
 
     /**
      * Get validation errors for numbering settings changes.
+     *
+     * @return array<int, string>
      */
     public function getNumberingChangeValidationErrors(): array
     {

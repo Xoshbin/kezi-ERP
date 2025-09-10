@@ -11,6 +11,9 @@ namespace App\Exceptions\Reconciliation;
  */
 class PartnerMismatchException extends ReconciliationException
 {
+    /**
+     * @param  array<int, string>  $partnerNames
+     */
     public function __construct(array $partnerNames = [], ?string $message = null)
     {
         $message = $message ?? sprintf(

@@ -21,9 +21,9 @@ use Illuminate\Support\Carbon;
  * @property int $income_account_id
  * @property string $description
  * @property numeric $quantity
- * @property float $unit_price
- * @property float $subtotal
- * @property float $total_line_tax
+ * @property \Brick\Money\Money $unit_price
+ * @property \Brick\Money\Money $subtotal
+ * @property \Brick\Money\Money $total_line_tax
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property-read AnalyticAccount|null $analyticAccount
@@ -55,6 +55,7 @@ use Illuminate\Support\Carbon;
 class InvoiceLine extends Model
 {
     // Leveraging Laravel's HasFactory trait for simplified model factory creation in testing/seeding [5, 6].
+    /** @use HasFactory<\Database\Factories\InvoiceLineFactory> */
     use HasFactory;
 
     /**
@@ -70,7 +71,7 @@ class InvoiceLine extends Model
      * This array specifies which attributes can be filled via mass assignment,
      * protecting against the mass assignment vulnerability [8-10].
      *
-     * @var array<int, string>
+     * @var list<string>
      */
     protected $fillable = [
         'company_id',          // Foreign key to the parent company [3, 4]
@@ -114,12 +115,15 @@ class InvoiceLine extends Model
      * Without this, any retrieval of an `InvoiceLine` would fail when casting monetary values
      * due to the missing currency information, leading to a "currency_id on null" error.
      *
-     * @var array
+     * @var list<string>
      */
     protected $with = ['invoice.currency'];
 
     /**
      * Get the company that this rate belongs to.
+     */
+    /**
+     * @return BelongsTo<Company, static>
      */
     public function company(): BelongsTo
     {
@@ -131,6 +135,9 @@ class InvoiceLine extends Model
      * Defines a one-to-many (inverse) or "belongs to" relationship [14, 15].
      * This connects an invoice line back to its header invoice.
      */
+    /**
+     * @return BelongsTo<Invoice, static>
+     */
     public function invoice(): BelongsTo
     {
         return $this->belongsTo(Invoice::class);
@@ -141,6 +148,9 @@ class InvoiceLine extends Model
      * Defines a "belongs to" relationship for the product linked to this line item [14, 15].
      * The product_id is nullable in the schema [4], allowing for descriptive lines without a specific product.
      */
+    /**
+     * @return BelongsTo<Product, static>
+     */
     public function product(): BelongsTo
     {
         return $this->belongsTo(Product::class);
@@ -150,6 +160,9 @@ class InvoiceLine extends Model
      * Get the **Tax** applied to the InvoiceLine.
      * Defines a "belongs to" relationship for the tax [14, 15].
      * The tax_id is nullable in the schema [4].
+     */
+    /**
+     * @return BelongsTo<Tax, static>
      */
     public function tax(): BelongsTo
     {
@@ -162,11 +175,17 @@ class InvoiceLine extends Model
      * The foreign key is explicitly provided as 'income_account_id' because it deviates from Eloquent's default convention
      * (which would assume 'account_id' if the method name were just 'account') [16].
      */
+    /**
+     * @return BelongsTo<Account, static>
+     */
     public function incomeAccount(): BelongsTo
     {
         return $this->belongsTo(Account::class, 'income_account_id');
     }
 
+    /**
+     * @return BelongsTo<AnalyticAccount, static>
+     */
     public function analyticAccount(): BelongsTo
     {
         return $this->belongsTo(AnalyticAccount::class);

@@ -221,6 +221,9 @@ class PaymentService
     /**
      * Apply a payment to documents with exchange gain/loss calculation.
      * This method handles payment application with multi-currency support.
+     *
+     * @param  array<int, array{document_type: string, document_id: int, amount_applied: string}>  $applications
+     * @return array<int, \App\Models\PaymentDocumentLink>
      */
     public function applyToDocuments(Payment $payment, array $applications, User $user): array
     {
@@ -233,7 +236,7 @@ class PaymentService
         return DB::transaction(function () use ($payment, $applications, &$links) {
             foreach ($applications as $application) {
                 $document = $this->getDocument($application['document_type'], $application['document_id']);
-                $amountApplied = $application['amount'];
+                $amountApplied = Money::of($application['amount_applied'], $payment->currency->code);
 
                 // Create payment document link
                 $link = $this->createPaymentDocumentLink($payment, $document, $amountApplied);
@@ -254,7 +257,7 @@ class PaymentService
     /**
      * Get document by type and ID.
      */
-    protected function getDocument(string $documentType, int $documentId)
+    protected function getDocument(string $documentType, int $documentId): Invoice|VendorBill
     {
         return match ($documentType) {
             'invoice' => Invoice::findOrFail($documentId),
@@ -266,7 +269,7 @@ class PaymentService
     /**
      * Create payment document link.
      */
-    protected function createPaymentDocumentLink(Payment $payment, $document, Money $amountApplied)
+    protected function createPaymentDocumentLink(Payment $payment, \Illuminate\Database\Eloquent\Model $document, Money $amountApplied): \App\Models\PaymentDocumentLink
     {
         $linkData = [
             'company_id' => $payment->company_id,

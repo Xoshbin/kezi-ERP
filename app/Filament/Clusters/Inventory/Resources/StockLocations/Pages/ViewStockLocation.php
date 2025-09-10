@@ -23,6 +23,9 @@ class ViewStockLocation extends ViewRecord
 
     public function getTitle(): string
     {
-        return __('stock_location.view_title', ['name' => $this->record->name]);
+        $record = $this->getRecord();
+        $name = (string) $record->getAttribute('name');
+
+        return __('stock_location.view_title', ['name' => $name]);
     }
 }

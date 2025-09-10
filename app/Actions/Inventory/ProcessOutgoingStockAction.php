@@ -13,11 +13,21 @@ class ProcessOutgoingStockAction
     public function execute(StockMove $stockMove): void
     {
         DB::transaction(function () use ($stockMove) {
+            $product = $stockMove->product;
+            if (! $product instanceof \App\Models\Product) {
+                throw new \Exception('Product not found for stock move');
+            }
+
+            $sourceDocument = $stockMove->source;
+            if (! $sourceDocument) {
+                throw new \Exception('Stock move must have a source document');
+            }
+
             $this->inventoryValuationService->processOutgoingStock(
-                $stockMove->product,
+                $product,
                 $stockMove->quantity,
                 $stockMove->move_date,
-                $stockMove->source
+                $sourceDocument
             );
         });
     }

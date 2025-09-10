@@ -32,6 +32,7 @@ class BankTransactionsTable extends Component implements HasActions, HasForms, H
 
     public BankStatement $bankStatement;
 
+    /** @var array<int, int> */
     public array $selectedBankLines = [];
 
     public function mount(BankStatement $bankStatement): void
@@ -85,11 +86,22 @@ class BankTransactionsTable extends Component implements HasActions, HasForms, H
                     ])
                     ->action(function (array $data, BankStatementLine $record) {
                         $writeOffAccount = Account::findOrFail($data['account_id']);
+                        // Ensure we have a single Account model, not a collection
+                        if ($writeOffAccount instanceof \Illuminate\Database\Eloquent\Collection) {
+                            $writeOffAccount = $writeOffAccount->first();
+                            if (! $writeOffAccount) {
+                                throw new \Exception('Write-off account not found');
+                            }
+                        }
 
+                        $user = Auth::user();
+                        if (! $user) {
+                            throw new \Exception('User must be authenticated to create write-off');
+                        }
                         app(BankReconciliationService::class)->createWriteOff(
                             $record,
                             $writeOffAccount,
-                            Auth::user(),
+                            $user,
                             $data['reason']
                         );
 
@@ -137,7 +149,7 @@ class BankTransactionsTable extends Component implements HasActions, HasForms, H
         return null;
     }
 
-    public function render()
+    public function render(): \Illuminate\Contracts\View\View
     {
         return view('livewire.accounting.bank-transactions-table');
     }

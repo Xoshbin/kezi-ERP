@@ -17,5 +17,6 @@ readonly class CreateVendorBillDTO
         public ?string $due_date,
         public array $lines,
         public int $created_by_user_id,
+        public ?int $payment_term_id = null,
     ) {}
 }

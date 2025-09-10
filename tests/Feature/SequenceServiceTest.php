@@ -52,7 +52,7 @@ class SequenceServiceTest extends TestCase
         // All numbers should be unique
         $this->assertCount(5, array_unique($generatedNumbers));
 
-        // Numbers should follow the new Odoo-style format
+        // Numbers should follow the new format
         foreach ($generatedNumbers as $number) {
             $this->assertMatchesRegularExpression('/^INV\/\d{4}\/\d{2}\/\d{7}$/', $number);
         }

@@ -45,6 +45,7 @@ use Illuminate\Support\Carbon;
  */
 class AnalyticAccount extends Model
 {
+    /** @use HasFactory<\Database\Factories\AnalyticAccountFactory> */
     use HasFactory;
 
     /**
@@ -60,7 +61,7 @@ class AnalyticAccount extends Model
      * The attributes that are mass assignable.
      * These fields directly map to the 'analytic_accounts' table schema.
      *
-     * @var array<int, string>
+     * @var list<string>
      */
     protected $fillable = [
         'company_id',   // Essential for multi-company environments [3]
@@ -93,7 +94,10 @@ class AnalyticAccount extends Model
     /**
      * Get the company that owns the analytic account.
      * In a multi-company setup, analytic accounts are typically tied to a specific company,
-     * though they can be accessible to all if company_id is null, similar to Odoo's approach [5].
+     * though they can be accessible to all if company_id is null.
+     */
+    /**
+     * @return BelongsTo<Company, static>
      */
     public function company(): BelongsTo
     {
@@ -103,6 +107,9 @@ class AnalyticAccount extends Model
     /**
      * Get the currency associated with the analytic account.
      * This is a nullable relationship, allowing for flexibility in multi-currency tracking [3].
+     */
+    /**
+     * @return BelongsTo<Currency, static>
      */
     public function currency(): BelongsTo
     {
@@ -114,6 +121,9 @@ class AnalyticAccount extends Model
      * This demonstrates how analytic accounts provide a distinct layer for tagging
      * financial movements recorded in the general ledger for management analysis [2, 3].
      */
+    /**
+     * @return HasMany<JournalEntryLine, static>
+     */
     public function journalEntryLines(): HasMany
     {
         return $this->hasMany(JournalEntryLine::class, 'analytic_account_id');
@@ -123,6 +133,9 @@ class AnalyticAccount extends Model
      * The analytic plans that belong to this analytic account.
      * Analytic accounts can be grouped by analytic plans, enabling higher-level
      * reporting or budget structures [1, 3, 8-10].
+     */
+    /**
+     * @return BelongsToMany<AnalyticPlan, static>
      */
     public function analyticPlans(): BelongsToMany
     {

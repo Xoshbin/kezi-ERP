@@ -13,9 +13,13 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
+/**
+ * @property-read \App\Models\AdjustmentDocument $adjustmentDocument
+ */
 #[ObservedBy([AdjustmentDocumentLineObserver::class])]
 class AdjustmentDocumentLine extends Model
 {
+    /** @use HasFactory<\Database\Factories\AdjustmentDocumentLineFactory> */
     use HasFactory;
 
     protected $table = 'adjustment_document_lines';
@@ -53,7 +57,7 @@ class AdjustmentDocumentLine extends Model
      * Without this, any retrieval of an `AdjustmentDocumentLine` would fail when casting monetary values
      * due to the missing currency information, leading to a "currency_id on null" error.
      *
-     * @var array
+     * @var list<string>
      */
     protected $with = ['adjustmentDocument.currency'];
 
@@ -66,13 +70,14 @@ class AdjustmentDocumentLine extends Model
 
     public function calculateLineTotals(): void
     {
+        /** @var \App\Models\Currency $currency */
         $currency = $this->adjustmentDocument->currency;
         $quantity = $this->quantity;
 
         // If unit_price is already a Money object, use it. Otherwise, create it from the numeric value.
         $unitPrice = $this->unit_price instanceof Money
             ? $this->unit_price
-            : Money::of($this->unit_price, $currency->code);
+            : Money::of($this->unit_price ?? 0, $currency->code);
 
         $subtotal = $unitPrice->multipliedBy($quantity, RoundingMode::HALF_UP);
         $this->subtotal = $subtotal;
@@ -91,39 +96,52 @@ class AdjustmentDocumentLine extends Model
     /**
      * Get the company that this rate belongs to.
      */
+    /**
+     * @return BelongsTo<Company, static>
+     */
     public function company(): BelongsTo
     {
         return $this->belongsTo(Company::class);
     }
 
+    /**
+     * @return BelongsTo<AdjustmentDocument, static>
+     */
     public function adjustmentDocument(): BelongsTo
     {
         return $this->belongsTo(AdjustmentDocument::class);
     }
 
+    /**
+     * @return BelongsTo<Product, static>
+     */
     public function product(): BelongsTo
     {
         return $this->belongsTo(Product::class);
     }
 
+    /**
+     * @return BelongsTo<Tax, static>
+     */
     public function tax(): BelongsTo
     {
         return $this->belongsTo(Tax::class);
     }
 
+    /**
+     * @return BelongsTo<Account, static>
+     */
     public function account(): BelongsTo
     {
         return $this->belongsTo(Account::class);
     }
 
-    public function currency(): BelongsTo
-    {
-        return $this->adjustmentDocument->currency();
-    }
-
     /**
      * Get the line items for this adjustment document.
      * An adjustment document consists of multiple detail lines.
+     */
+    /**
+     * @return HasMany<AdjustmentDocumentLine, static>
      */
     public function lines(): HasMany
     {

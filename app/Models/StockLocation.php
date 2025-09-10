@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class StockLocation extends Model
 {
+    /** @use HasFactory<\Database\Factories\StockLocationFactory> */
     use HasFactory;
 
     protected $fillable = [
@@ -26,16 +27,25 @@ class StockLocation extends Model
         'type' => StockLocationType::class,
     ];
 
+    /**
+     * @return BelongsTo<Company, static>
+     */
     public function company(): BelongsTo
     {
         return $this->belongsTo(Company::class);
     }
 
+    /**
+     * @return BelongsTo<StockLocation, static>
+     */
     public function parent(): BelongsTo
     {
         return $this->belongsTo(StockLocation::class, 'parent_id');
     }
 
+    /**
+     * @return HasMany<StockLocation, static>
+     */
     public function children(): HasMany
     {
         return $this->hasMany(StockLocation::class, 'parent_id');

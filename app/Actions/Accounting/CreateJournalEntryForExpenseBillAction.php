@@ -56,6 +56,9 @@ class CreateJournalEntryForExpenseBillAction
 
                     if ($line->tax_id && $line->total_line_tax->isPositive()) {
                         $taxAccountId = $company->default_tax_receivable_id ?? $company->default_tax_account_id;
+                        if (! $taxAccountId) {
+                            throw new \InvalidArgumentException('Company default tax account is not configured');
+                        }
                         $lineDTOs[] = new CreateJournalEntryLineDTO(
                             account_id: $taxAccountId,
                             debit: $line->total_line_tax,
@@ -81,6 +84,9 @@ class CreateJournalEntryForExpenseBillAction
                     // Handle tax if applicable
                     if ($line->tax_id && $line->total_line_tax->isPositive()) {
                         $taxAccountId = $company->default_tax_receivable_id ?? $company->default_tax_account_id; // Or a more specific tax account if needed
+                        if (! $taxAccountId) {
+                            throw new \InvalidArgumentException('Company default tax account is not configured');
+                        }
                         $lineDTOs[] = new CreateJournalEntryLineDTO(
                             account_id: $taxAccountId,
                             debit: $line->total_line_tax,
@@ -100,9 +106,13 @@ class CreateJournalEntryForExpenseBillAction
                 debit: Money::of(0, $currency->code),
                 credit: $totalDebit,
                 description: 'Accounts Payable',
-                partner_id: $vendorBill->partner_id,
+                partner_id: $vendorBill->vendor_id,
                 analytic_account_id: null,
             );
+
+            if (! $company->default_purchase_journal_id) {
+                throw new \InvalidArgumentException('Company default purchase journal is not configured');
+            }
 
             $journalEntryDTO = new CreateJournalEntryDTO(
                 company_id: $company->id,
