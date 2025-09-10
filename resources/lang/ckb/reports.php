@@ -7,19 +7,19 @@ return [
     'select_report_description' => 'لە کۆمەڵە تەواوی ڕاپۆرتە داراییەکانمان هەڵبژێرە بۆ شیکردنەوەی کارکردنی بازرگانییەکەت.',
 
     // Report Categories
-    'financial_statements' => 'کیشە داراییەکان',
-    'financial_statements_description' => 'ڕاپۆرتە دارایی بنەڕەتییەکان لەوانە قازانج و زیان، تەرازوونامە، و تەرازووی تاقیکردنەوە.',
+    'financial_statements' => 'ڕاپۆرتەکانی دارایی',
+    'financial_statements_description' => 'ڕاپۆرتە دارایی بنەڕەتییەکان لەوانە قازانج و زیان، پەڕەی هاوسەنگی، و پێداچونەوەی هاوسەنگی.',
     'detailed_reports' => 'ڕاپۆرتە ورد',
-    'detailed_reports_description' => 'شیکردنەوەی قووڵ لەگەڵ ڕاپۆرتەکانی دەفتەری گشتی و دەفتەری هاوبەش.',
+    'detailed_reports_description' => 'شیکردنەوەی قووڵ لەگەڵ ڕاپۆرتەکانی پەرتووکی گشتی و پەرتووکی هاوبەش.',
     'aging_reports' => 'ڕاپۆرتەکانی کۆنبوون',
     'aging_reports_description' => 'بەدواداچوونی وەرگرتن و پارەدانی ماوە بەپێی ماوەکانی کۆنبوون.',
     'tax_reports' => 'ڕاپۆرتەکانی باج',
     'tax_reports_description' => 'ڕاپۆرتی باجی تەواو بۆ پەیڕەوکردن و شیکردنەوە.',
 
     // Report Descriptions
-    'profit_and_loss_description' => 'بینینی داهات، خەرجی، و داهاتی پاک بۆ ماوەیەکی دیاریکراو.',
-    'balance_sheet_description' => 'وێنەیەک لە سامان، قەرز، و سەرمایە لە بەرواری دیاریکراو.',
-    'trial_balance_description' => 'پشتڕاستکردنەوە کە قەرزدار یەکسانە لەگەڵ قەرزدەر لە هەموو هەژمارەکان.',
+    'profit_and_loss_description' => 'بینینی داهات، خەرجی، و قازانجی پاک بۆ ماوەیەکی دیاریکراو.',
+    'balance_sheet_description' => 'وێنەیەک لە سامان، قەرز، و خاوەندارێتی لە بەرواری دیاریکراو.',
+    'trial_balance_description' => 'پشتڕاستکردنەوە کە قەرزدار یەکسانە لەگەڵ قەرزخواز لە هەموو هەژمارەکان.',
     'general_ledger_description' => 'مێژووی ورد مامەڵەکان بۆ هەژمارە هەڵبژێردراوەکان.',
     'partner_ledger_description' => 'مێژووی تەواوی مامەڵەکان لەگەڵ کڕیار یان فرۆشیاری دیاریکراو.',
     'aged_receivables_description' => 'پسوولەکانی کڕیارانی ماوە کۆکراوەتەوە بەپێی ماوەکانی کۆنبوون.',
@@ -45,10 +45,10 @@ return [
 
     // Button texts
     'view_profit_loss' => 'بینینی قازانج و زیان',
-    'view_balance_sheet' => 'بینینی تەرازووی گشتی',
-    'view_trial_balance' => 'بینینی تەرازووی تاقیکردنەوە',
-    'view_general_ledger' => 'بینینی دەفتەری گشتی',
-    'view_partner_ledger' => 'بینینی دەفتەری هاوبەش',
+    'view_balance_sheet' => 'بینینی پەڕەی هاوسەنگی',
+    'view_trial_balance' => 'بینینی پێداچونەوەی هاوسەنگی',
+    'view_general_ledger' => 'بینینی پەرتووکی گشتی',
+    'view_partner_ledger' => 'بینینی پەرتووکی هاوبەش',
     'view_aged_receivables' => 'بینینی وەرگرتنەکان بە تەمەن',
     'view_aged_payables' => 'بینینی پارەدانەکان بە تەمەن',
     'view_tax_report' => 'بینینی ڕاپۆرتی باج',
@@ -64,8 +64,8 @@ return [
     'no_report_generated' => 'هیچ ڕاپۆرتێک دروست نەکراوە',
     'select_date_range_and_generate' => 'ماوەی بەروار هەڵبژێرە و کلیک لە "دروستکردنی ڕاپۆرت" بکە بۆ بینینی ڕاپۆرتی قازانج و زیان.',
 
-    // Balance Sheet - تەرازوونامە
-    'balance_sheet' => 'تەرازوونامە',
+    // Balance Sheet - پەڕەی هاوسەنگی
+    'balance_sheet' => 'پەڕەی هاوسەنگی',
     'as_of_date' => 'تا بەرواری',
     'as_of' => 'تا',
     'assets' => 'سامان',
@@ -80,11 +80,11 @@ return [
     'no_asset_accounts' => 'هیچ هەژماری سامانێک نەدۆزرایەوە.',
     'no_liability_accounts' => 'هیچ هەژماری قەرزێک نەدۆزرایەوە.',
     'no_equity_accounts' => 'هیچ هەژماری سەرمایەیەک نەدۆزرایەوە.',
-    'balance_sheet_balanced' => 'تەرازوونامە هاوسەنگە',
+    'balance_sheet_balanced' => 'پەڕەی هاوسەنگی هاوسەنگە',
     'assets_equal_liabilities_equity' => 'سامان یەکسانە لەگەڵ قەرز و سەرمایە',
 
     // General Ledger - دەفتری گشتی
-    'general_ledger' => 'دەفتەری گشتی',
+    'general_ledger' => 'پەرتووکی گشتی',
     'account_filter' => 'فلتەری هەژمار',
     'accounts' => 'هەژمارەکان',
     'all_accounts' => 'هەموو هەژمارەکان (بەتاڵ بهێڵەرەوە بۆ هەموو)',
@@ -96,26 +96,26 @@ return [
     'description' => 'وەسف',
     'contra_account' => 'هەژماری بەرامبەر',
     'debit' => 'قەرزدار',
-    'credit' => 'قەرزدەر',
+    'credit' => 'قەرزخواز',
     'balance' => 'بالانس',
     'to' => 'تا',
     'no_data' => 'هیچ زانیارییەک بەردەست نییە',
     'no_transactions_found' => 'هیچ مامەڵەیەک نەدۆزرایەوە بۆ ئەم پێوەرانە.',
-    'select_date_and_generate' => 'بەرواری "تا" هەڵبژێرە و کلیک لە "دروستکردنی ڕاپۆرت" بکە بۆ بینینی تەرازوونامە.',
+    'select_date_and_generate' => 'بەرواری "تا" هەڵبژێرە و کلیک لە "دروستکردنی ڕاپۆرت" بکە بۆ بینینی پەڕەی هاوسەنگی.',
 
     // Partner Ledger
-    'partner_ledger' => 'دەفتەری هاوبەش',
+    'partner_ledger' => 'پەرتووکی هاوبەش',
     'partner' => 'هاوبەش',
     'select_partner' => 'هاوبەشێک هەڵبژێرە',
     'filter_options' => 'هەڵبژاردەکانی فلتەر',
     'type' => 'جۆر',
     'no_transactions' => 'هیچ مامەڵەیەک نییە',
     'no_transactions_found_for_period' => 'هیچ مامەڵەیەک نەدۆزرایەوە بۆ ئەم هاوبەش و ماوەیە.',
-    'select_partner_and_generate' => 'هاوبەش و ماوەی بەروار هەڵبژێرە، پاشان کلیک لە "دروستکردنی ڕاپۆرت" بکە بۆ بینینی دەفتەری هاوبەش.',
+    'select_partner_and_generate' => 'هاوبەش و ماوەی بەروار هەڵبژێرە، پاشان کلیک لە "دروستکردنی ڕاپۆرت" بکە بۆ بینینی پەرتووکی هاوبەش.',
     'customer_owes_us' => 'ئەم کڕیارە قەرزاری ئێمەیە.',
     'we_owe_vendor' => 'ئێمە قەرزاری ئەم فرۆشیارەین.',
     'account_balanced' => 'هەژمارەکە هاوسەنگە.',
-    'partner_accounts_required' => 'هاوبەشەکان دەبێت هەژماری وەرگرتن و پارەدان بۆیان دیاری کرابێت بۆ دروستکردنی ڕاپۆرتی دەفتەر.',
+    'partner_accounts_required' => 'هاوبەشەکان دەبێت هەژماری وەرگرتن و پارەدان بۆیان دیاری کرابێت بۆ دروستکردنی ڕاپۆرتی پەرتووک.',
 
     // Aged Receivables
     'aged_receivables' => 'وەرگرتنی کۆن',
@@ -136,18 +136,18 @@ return [
     'no_outstanding_payables' => 'هیچ پارەدانێکی ماوە نەدۆزرایەوە بۆ بەرواری دیاریکراو.',
 
     // Trial Balance
-    'trial_balance' => 'تەرازووی تاقیکردنەوە',
-    'trial_balance_report' => 'ڕاپۆرتی تەرازووی تاقیکردنەوە',
-    'trial_balance_balanced' => 'تەرازووی تاقیکردنەوە هاوسەنگە',
-    'trial_balance_not_balanced' => 'تەرازووی تاقیکردنەوە هاوسەنگ نییە',
+    'trial_balance' => 'پێداچونەوەی هاوسەنگی',
+    'trial_balance_report' => 'ڕاپۆرتی پێداچونەوەی هاوسەنگی',
+    'trial_balance_balanced' => 'پێداچونەوەی هاوسەنگی هاوسەنگە',
+    'trial_balance_not_balanced' => 'پێداچونەوەی هاوسەنگی هاوسەنگ نییە',
     'account' => 'هەژمار',
     'balance_verification' => 'پشتڕاستکردنەوەی هاوسەنگی',
     'total_debits' => 'کۆی قەرزدارەکان',
-    'total_credits' => 'کۆی قەرزدەرەکان',
+    'total_credits' => 'کۆی قەرزخوازەکان',
     'difference' => 'جیاوازی',
     'balanced' => 'هاوسەنگ',
     'no_account_balances_found' => 'هیچ هاوسەنگییەکی هەژمار نەدۆزرایەوە بۆ بەرواری دیاریکراو.',
-    'select_date_and_generate' => 'بەرواری هەڵبژێرە و کلیک لە "دروستکردنی ڕاپۆرت" بکە بۆ بینینی تەرازووی تاقیکردنەوە.',
+    'select_date_and_generate' => 'بەرواری هەڵبژێرە و کلیک لە "دروستکردنی ڕاپۆرت" بکە بۆ بینینی پێداچونەوەی هاوسەنگی.',
 
     // Tax Report
     'tax_report' => 'ڕاپۆرتی باج',

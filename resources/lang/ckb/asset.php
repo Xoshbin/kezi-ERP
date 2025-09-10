@@ -1,10 +1,10 @@
 <?php
 
 return [
-    'label' => 'سەرمایە',
-    'plural_label' => 'سەرمایەکان',
+    'label' => 'سامان',
+    'plural_label' => 'سامانەکان',
     'company' => 'کۆمپانیا',
-    'asset_account' => 'هەژماری سەرمایە',
+    'asset_account' => 'هەژماری سامان',
     'depreciation_expense_account' => 'هەژماری خەرجی کەمبوونەوە',
     'accumulated_depreciation_account' => 'هەژماری کەمبوونەوەی کۆکراوە',
     'name' => 'ناو',
@@ -17,11 +17,11 @@ return [
     'depreciation_method' => 'شێوازی کەمبوونەوە',
     'status' => 'دۆخ',
     'currency' => 'دراو',
-    'current_exchange_rate' => 'ڕێژەی گۆڕینی نیوەڕاست',
-    'exchange_rate_helper' => 'کاتێک دراوی سەرمایە جیاوازە لە دراوی بنەڕەتی کۆمپانیاوە دەردەکەوێت.',
-    'asset_currency_info' => 'سەرمایە و دراو',
-    'asset_currency_info_description' => 'ناوی سەرمایە و دراوی بەڵگەنامە دیاری بکە. ڕێژەی گۆڕین کاتێک جیاوازە لە دراوی کۆمپانیا دەردەکەوێت.',
-    'asset_details' => 'وردەکارییەکانی سەرمایە',
+    'current_exchange_rate' => 'نرخی ئاڵوگۆڕی ئێستا',
+    'exchange_rate_helper' => 'کاتێک دراوی سامان جیاوازە لە دراوی بنەڕەتی کۆمپانیاوە دەردەکەوێت.',
+    'asset_currency_info' => 'سامان و دراو',
+    'asset_currency_info_description' => 'ناوی سامان و دراوی بەڵگەنامە دیاری بکە. نرخی ئاڵوگۆڕ کاتێک جیاوازە لە دراوی کۆمپانیا دەردەکەوێت.',
+    'asset_details' => 'وردەکارییەکانی سامان',
     'asset_details_description' => 'بەهای کڕین، شێوازی کەمبوونەوە، و هەژمارە گرنگەکان.',
     'created_at' => 'کاتی دروستبوون',
     'updated_at' => 'کاتی نوێکردنەوە',
@@ -30,6 +30,6 @@ return [
     'amount' => 'بڕ',
 
     // Actions
-    'post' => 'پۆست',
-    'post_depreciation_success' => 'کەمبوونەوە بە سەرکەوتوویی پۆست کرا.',
+    'post' => 'ناردن',
+    'post_depreciation_success' => 'کەمبوونەوە بە سەرکەوتوویی نێردرا.',
 ];

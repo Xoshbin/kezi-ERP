@@ -9,12 +9,14 @@ use App\DataTransferObjects\Payments\CreatePaymentDocumentLinkDTO;
 use App\DataTransferObjects\Payments\CreatePaymentDTO;
 use App\DataTransferObjects\Sales\UpdateInvoiceDTO;
 use App\DataTransferObjects\Sales\UpdateInvoiceLineDTO;
-use App\Enums\Payments\PaymentPurpose;
+use App\Enums\Payments\PaymentMethod;
 use App\Enums\Payments\PaymentType;
 use App\Enums\Sales\InvoiceStatus;
+use App\Filament\Actions\DocsAction;
 use App\Filament\Clusters\Accounting\Resources\Invoices\InvoiceResource;
 use App\Filament\Clusters\Accounting\Resources\Invoices\Widgets\SettlementSummaryWidget;
 use App\Filament\Forms\Components\MoneyInput;
+use App\Models\Company;
 use App\Models\Invoice;
 use App\Models\Journal;
 use App\Services\InvoiceService;
@@ -86,26 +88,26 @@ class EditInvoice extends EditRecord
                 ->icon('heroicon-o-arrow-down-tray')
                 ->color('gray')
                 ->visible(fn (Invoice $record): bool => $record->status === InvoiceStatus::Draft && config('app.debug') && ! app()->environment('production'))
-                ->action(function (Invoice $record) {
+                ->action(function (Invoice $record): \Symfony\Component\HttpFoundation\StreamedResponse {
                     $preview = app(BuildInvoicePostingPreviewAction::class)->execute($record);
                     $rows = [];
                     $rows[] = ['Account Code', 'Account Name', 'Description', 'Debit', 'Credit'];
                     foreach ($preview['lines'] as $l) {
                         $rows[] = [
-                            is_array($l['account_code'] ?? null) ? (string) (reset($l['account_code']) ?: '') : (string) ($l['account_code'] ?? ''),
-                            is_array($l['account_name'] ?? null) ? (string) (reset($l['account_name']) ?: '') : (string) ($l['account_name'] ?? ''),
-                            is_array($l['description'] ?? null) ? (string) (reset($l['description']) ?: '') : (string) ($l['description'] ?? ''),
-                            number_format(($l['debit_minor'] ?? 0) / 100, 2, '.', ''),
-                            number_format(($l['credit_minor'] ?? 0) / 100, 2, '.', ''),
+                            (string) ($l['account_code'] ?: ''),
+                            (string) $l['account_name'],
+                            (string) $l['description'],
+                            number_format($l['debit_minor'] / 100, 2, '.', ''),
+                            number_format($l['credit_minor'] / 100, 2, '.', ''),
                         ];
                     }
                     $csv = '';
                     foreach ($rows as $row) {
                         $csv .= implode(',', array_map(fn ($v) => '"'.str_replace('"', '""', (string) $v).'"', $row))."\n";
                     }
-                    $filename = 'invoice-'.($record->invoice_number ?: ('DRAFT-'.str_pad($record->id, 5, '0', STR_PAD_LEFT))).'-preview.csv';
+                    $filename = 'invoice-'.($record->invoice_number ?: ('DRAFT-'.str_pad((string) $record->id, 5, '0', STR_PAD_LEFT))).'-preview.csv';
 
-                    return response()->streamDownload(function () use ($csv) {
+                    return response()->streamDownload(function () use ($csv): void {
                         echo $csv;
                     }, $filename, [
                         'Content-Type' => 'text/csv',
@@ -117,15 +119,15 @@ class EditInvoice extends EditRecord
                 ->icon('heroicon-o-document-arrow-down')
                 ->color('gray')
                 ->visible(fn (Invoice $record): bool => $record->status === InvoiceStatus::Draft && config('app.debug') && ! app()->environment('production'))
-                ->action(function (Invoice $record) {
+                ->action(function (Invoice $record): \Symfony\Component\HttpFoundation\StreamedResponse {
                     $preview = app(BuildInvoicePostingPreviewAction::class)->execute($record);
                     $pdf = Pdf::loadView('filament/accounting/invoices/preview-posting-pdf', [
                         'preview' => $preview,
                         'invoice' => $record,
                     ]);
-                    $filename = 'invoice-'.($record->invoice_number ?: ('DRAFT-'.str_pad($record->id, 5, '0', STR_PAD_LEFT))).'-preview.pdf';
+                    $filename = 'invoice-'.($record->invoice_number ?: ('DRAFT-'.str_pad((string) $record->id, 5, '0', STR_PAD_LEFT))).'-preview.pdf';
 
-                    return response()->streamDownload(function () use ($pdf) {
+                    return response()->streamDownload(function () use ($pdf): void {
                         echo $pdf->output();
                     }, $filename, [
                         'Content-Type' => 'application/pdf',
@@ -141,7 +143,11 @@ class EditInvoice extends EditRecord
                     $this->save();
                     $service = app(InvoiceService::class);
                     try {
-                        $service->confirm($record, Auth::user());
+                        $user = Auth::user();
+                        if (! $user) {
+                            throw new \Exception('User must be authenticated to confirm invoice');
+                        }
+                        $service->confirm($record, $user);
                         Notification::make()->title(__('invoice.invoice_confirmed_successfully'))->success()->send();
                     } catch (Exception $e) {
                         Notification::make()->title(__('invoice.error_confirming_invoice'))->body($e->getMessage())->danger()->send();
@@ -157,15 +163,26 @@ class EditInvoice extends EditRecord
                 ->schema([
                     Select::make('journal_id')
                         ->label(__('payment.form.journal_id'))
-                        ->options(function () {
-                            return Journal::where('company_id', Filament::getTenant()->id)
-                                ->pluck('name', 'id');
+                        ->options(function (): array {
+                            $tenant = Filament::getTenant();
+                            if (! $tenant instanceof Company) {
+                                return [];
+                            }
+
+                            return Journal::where('company_id', $tenant->getKey())
+                                ->pluck('name', 'id')
+                                ->all();
                         })
                         ->required()
-                        ->default(function () {
-                            return Journal::where('company_id', Filament::getTenant()->id)
+                        ->default(function (): ?int {
+                            $tenant = Filament::getTenant();
+                            if (! $tenant instanceof Company) {
+                                return null;
+                            }
+
+                            return Journal::where('company_id', $tenant->getKey())
                                 ->where('type', 'bank')
-                                ->first()?->id;
+                                ->value('id');
                         }),
                     DatePicker::make('payment_date')
                         ->label(__('payment.form.payment_date'))
@@ -195,22 +212,26 @@ class EditInvoice extends EditRecord
 
                         // Create payment DTO
                         $paymentDTO = new CreatePaymentDTO(
-                            company_id: Filament::getTenant()->id,
+                            company_id: $record->company_id,
                             journal_id: $data['journal_id'],
                             currency_id: $record->currency_id,
                             payment_date: $data['payment_date'],
-                            payment_purpose: PaymentPurpose::Settlement,
+                            // settlement inferred by presence of document links
                             payment_type: PaymentType::Inbound,
+                            payment_method: PaymentMethod::BankTransfer,
                             partner_id: $record->customer_id,
                             amount: Money::of($data['amount'], $currency->code),
-                            counterpart_account_id: null,
                             document_links: [$documentLink],
                             reference: $data['reference']
                         );
 
                         // Create and confirm payment
-                        $payment = app(CreatePaymentAction::class)->execute($paymentDTO, Auth::user());
-                        app(PaymentService::class)->confirm($payment, Auth::user());
+                        $user = Auth::user();
+                        if (! $user) {
+                            throw new \Exception('User must be authenticated to create payment');
+                        }
+                        $payment = app(CreatePaymentAction::class)->execute($paymentDTO, $user);
+                        app(PaymentService::class)->confirm($payment, $user);
 
                         Notification::make()
                             ->title(__('Payment registered successfully'))
@@ -248,16 +269,25 @@ class EditInvoice extends EditRecord
 
             DeleteAction::make()
                 ->action(function (Model $record) {
+                    if (! $record instanceof \App\Models\Invoice) {
+                        throw new \Exception('Invalid record type');
+                    }
                     app(InvoiceService::class)->delete($record);
                     $this->redirect(InvoiceResource::getUrl('index'));
                 }),
+
+            DocsAction::make('customer-invoices'),
         ];
     }
 
     protected function mutateFormDataBeforeFill(array $data): array
     {
-        $this->record->loadMissing('invoiceLines', 'currency');
-        $linesData = $this->record->invoiceLines->map(function ($line) {
+        $record = $this->getRecord();
+        if (! $record instanceof Invoice) {
+            return $data;
+        }
+        $record->loadMissing('invoiceLines', 'currency');
+        $linesData = $record->invoiceLines->map(function ($line) {
             return [
                 'product_id' => $line->product_id,
                 'description' => $line->description,
@@ -274,6 +304,11 @@ class EditInvoice extends EditRecord
 
     protected function handleRecordUpdate(Model $record, array $data): Model
     {
+        if (! $record instanceof Invoice) {
+            // Filament guarantees the record is an Invoice, but add guard for Larastan
+            $record = Invoice::findOrFail((int) $record->getKey());
+        }
+
         $lineDTOs = [];
         foreach ($data['invoiceLines'] as $line) {
             $lineDTOs[] = new UpdateInvoiceLineDTO(

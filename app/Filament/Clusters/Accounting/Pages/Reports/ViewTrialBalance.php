@@ -29,6 +29,7 @@ class ViewTrialBalance extends Page
 
     public ?string $asOfDate = null;
 
+    /** @var array<string, mixed>|null */
     public ?array $reportData = null;
 
     public static function getNavigationLabel(): string
@@ -48,7 +49,8 @@ class ViewTrialBalance extends Page
 
     public function mount(): void
     {
-        $this->form->fill([
+        // Use explicit schema getter to satisfy static analysis
+        $this->getSchema('form')?->fill([
             'asOfDate' => Carbon::now()->toDateString(),
         ]);
     }
@@ -81,10 +83,13 @@ class ViewTrialBalance extends Page
     public function generateReport(): void
     {
         $this->validate([
-            'asOfDate' => 'required|date',
+            'asOfDate' => ['required', 'date'],
         ]);
 
         $company = Filament::getTenant();
+        if (! $company instanceof \App\Models\Company) {
+            return;
+        }
         $service = app(TrialBalanceService::class);
 
         $report = $service->generate(

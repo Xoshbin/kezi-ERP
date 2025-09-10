@@ -8,7 +8,7 @@ use App\DataTransferObjects\Payments\CreatePaymentDTO;
 use App\Enums\Accounting\TaxType;
 use App\Enums\Assets\DepreciationMethod;
 use App\Enums\Partners\PartnerType;
-use App\Enums\Payments\PaymentPurpose;
+use App\Enums\Payments\PaymentMethod;
 use App\Enums\Payments\PaymentType;
 use App\Enums\Products\ProductType;
 use App\Enums\Purchases\VendorBillStatus;
@@ -28,6 +28,7 @@ use App\Models\Currency;
 use App\Models\CurrencyRate;
 use App\Models\Journal;
 use App\Models\Partner;
+use App\Models\PaymentTerm;
 use App\Models\Product;
 use App\Models\Tax;
 use App\Models\VendorBill;
@@ -135,13 +136,21 @@ class VendorBillResource extends Resource
                         ->required()
                         ->live()
                         ->columnSpan(1)
-                        ->default(fn () => Filament::getTenant()?->currency_id)
-                        ->afterStateUpdated(function (callable $set, $state, callable $get) {
+                        ->default(function (): ?int {
+                            $tenant = Filament::getTenant();
+
+                            return $tenant instanceof \App\Models\Company ? $tenant->currency_id : null;
+                        })
+                        ->afterStateUpdated(function (callable $set, $state) {
                             if ($state) {
                                 $currency = Currency::find($state);
+                                // Ensure we have a single Currency model, not a collection
+                                if ($currency instanceof \Illuminate\Database\Eloquent\Collection) {
+                                    $currency = $currency->first();
+                                }
                                 $company = Filament::getTenant();
 
-                                if ($currency && $company && $currency->id !== $company->currency_id) {
+                                if ($currency && $company instanceof \App\Models\Company && $currency->id !== $company->currency_id) {
                                     // Get latest exchange rate for this company
                                     $latestRate = CurrencyRate::getLatestRate($currency->id, $company->id);
                                     if ($latestRate) {
@@ -190,7 +199,7 @@ class VendorBillResource extends Resource
                             $currencyId = $get('currency_id');
                             $company = Filament::getTenant();
 
-                            return $currencyId && $company && $currencyId != $company->currency_id;
+                            return $currencyId && $company instanceof \App\Models\Company && $currencyId != $company->currency_id;
                         })
                         ->helperText(__('vendor_bill.exchange_rate_helper')),
                 ])
@@ -219,6 +228,11 @@ class VendorBillResource extends Resource
                         ->columnSpan(1),
                     DatePicker::make('due_date')
                         ->label(__('vendor_bill.due_date'))
+                        ->columnSpan(1),
+                    TranslatableSelect::make('payment_term_id', PaymentTerm::class, __('vendor_bill.payment_term'))
+                        ->relationship('paymentTerm', 'name')
+                        ->searchable()
+                        ->preload()
                         ->columnSpan(1),
                 ])
                 ->columns(4)
@@ -253,6 +267,10 @@ class VendorBillResource extends Resource
                                 ->afterStateUpdated(function (callable $set, $state) {
                                     if ($state) {
                                         $product = Product::find($state);
+                                        // Ensure we have a single Product model, not a collection
+                                        if ($product instanceof \Illuminate\Database\Eloquent\Collection) {
+                                            $product = $product->first();
+                                        }
                                         if ($product) {
                                             $set('description', $product->name);
                                             $set('unit_price', $product->unit_price);
@@ -315,7 +333,10 @@ class VendorBillResource extends Resource
                                 ['name', 'code'],
                                 __('vendor_bill.expense_account'),
                                 'name',
-                                fn ($query) => $query->where('company_id', Filament::getTenant()->id)
+                                fn ($query) => $query->when(
+                                    ($tenant = Filament::getTenant()) instanceof \App\Models\Company,
+                                    fn ($q) => $q->where('company_id', $tenant?->getKey())
+                                )
                             )
                                 ->required()
                                 ->columnSpan(3),
@@ -468,7 +489,7 @@ class VendorBillResource extends Resource
                             return $record->bill_reference;
                         }
 
-                        return 'DRAFT-'.str_pad($record->id, 5, '0', STR_PAD_LEFT);
+                        return 'DRAFT-'.str_pad((string) $record->id, 5, '0', STR_PAD_LEFT);
                     })
                     ->badge()
                     ->color(fn (VendorBill $record): string => $record->bill_reference ? 'success' : 'warning')
@@ -503,6 +524,20 @@ class VendorBillResource extends Resource
                 TextColumn::make('bill_date')
                     ->label(__('vendor_bill.date'))
                     ->date()
+                    ->sortable()
+                    ->toggleable(),
+
+                // Due Date (critical for cash flow management)
+                TextColumn::make('due_date')
+                    ->label(__('vendor_bill.due_date'))
+                    ->date()
+                    ->sortable()
+                    ->toggleable(),
+
+                // Payment Terms
+                TextColumn::make('paymentTerm.name')
+                    ->label(__('vendor_bill.payment_term'))
+                    ->searchable()
                     ->sortable()
                     ->toggleable(),
 
@@ -584,15 +619,26 @@ class VendorBillResource extends Resource
                     ->schema([
                         Select::make('journal_id')
                             ->label(__('payment.form.journal_id'))
-                            ->options(function () {
-                                return Journal::where('company_id', Filament::getTenant()->id)
-                                    ->pluck('name', 'id');
+                            ->options(function (): array {
+                                $tenant = Filament::getTenant();
+                                if (! $tenant instanceof \App\Models\Company) {
+                                    return [];
+                                }
+
+                                return Journal::where('company_id', $tenant->getKey())
+                                    ->pluck('name', 'id')
+                                    ->all();
                             })
                             ->required()
-                            ->default(function () {
-                                return Journal::where('company_id', Filament::getTenant()->id)
+                            ->default(function (): ?int {
+                                $tenant = Filament::getTenant();
+                                if (! $tenant instanceof \App\Models\Company) {
+                                    return null;
+                                }
+
+                                return Journal::where('company_id', $tenant->getKey())
                                     ->where('type', 'bank')
-                                    ->first()?->id;
+                                    ->value('id');
                             }),
                         DatePicker::make('payment_date')
                             ->label(__('payment.form.payment_date'))
@@ -616,28 +662,32 @@ class VendorBillResource extends Resource
                             // Create payment document link DTO
                             $documentLink = new CreatePaymentDocumentLinkDTO(
                                 document_type: 'vendor_bill',
-                                document_id: $record->id,
+                                document_id: $record->getKey(),
                                 amount_applied: Money::of($data['amount'], $currency->code)
                             );
 
                             // Create payment DTO
                             $paymentDTO = new CreatePaymentDTO(
-                                company_id: Filament::getTenant()->id,
+                                company_id: $record->company_id,
                                 journal_id: $data['journal_id'],
                                 currency_id: $record->currency_id,
                                 payment_date: $data['payment_date'],
-                                payment_purpose: PaymentPurpose::Settlement,
+                                // settlement inferred by presence of document links
                                 payment_type: PaymentType::Outbound,
+                                payment_method: PaymentMethod::BankTransfer,
                                 partner_id: $record->vendor_id,
                                 amount: Money::of($data['amount'], $currency->code),
-                                counterpart_account_id: null,
                                 document_links: [$documentLink],
                                 reference: $data['reference']
                             );
 
                             // Create and confirm payment
-                            $payment = app(CreatePaymentAction::class)->execute($paymentDTO, Auth::user());
-                            app(PaymentService::class)->confirm($payment, Auth::user());
+                            $user = Auth::user();
+                            if (! $user) {
+                                throw new \Exception('User must be authenticated to create payment');
+                            }
+                            $payment = app(CreatePaymentAction::class)->execute($paymentDTO, $user);
+                            app(PaymentService::class)->confirm($payment, $user);
 
                             Notification::make()
                                 ->title(__('Payment registered successfully'))

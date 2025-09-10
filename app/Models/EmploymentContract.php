@@ -55,12 +55,13 @@ use Illuminate\Support\Carbon;
 #[ObservedBy([AuditLogObserver::class])]
 class EmploymentContract extends Model
 {
+    /** @use HasFactory<\Database\Factories\EmploymentContractFactory> */
     use HasFactory;
 
     /**
      * The attributes that are mass assignable.
      *
-     * @var array<int, string>
+     * @var list<string>
      */
     protected $fillable = [
         'company_id',
@@ -146,6 +147,9 @@ class EmploymentContract extends Model
     /**
      * Get the company that owns the EmploymentContract.
      */
+    /**
+     * @return BelongsTo<Company, static>
+     */
     public function company(): BelongsTo
     {
         return $this->belongsTo(Company::class);
@@ -153,6 +157,9 @@ class EmploymentContract extends Model
 
     /**
      * Get the employee this contract belongs to.
+     */
+    /**
+     * @return BelongsTo<Employee, static>
      */
     public function employee(): BelongsTo
     {
@@ -162,6 +169,9 @@ class EmploymentContract extends Model
     /**
      * Get the currency for this contract.
      */
+    /**
+     * @return BelongsTo<Currency, static>
+     */
     public function currency(): BelongsTo
     {
         return $this->belongsTo(Currency::class);
@@ -169,6 +179,9 @@ class EmploymentContract extends Model
 
     /**
      * Get the user who approved this contract.
+     */
+    /**
+     * @return BelongsTo<User, static>
      */
     public function approvedBy(): BelongsTo
     {
@@ -204,7 +217,7 @@ class EmploymentContract extends Model
             'monthly' => $monthlyTotal->multipliedBy(12),
             'bi_weekly' => $monthlyTotal->multipliedBy(26),
             'weekly' => $monthlyTotal->multipliedBy(52),
-            'hourly' => $this->hourly_rate->multipliedBy($this->working_hours_per_week * 52),
+            'hourly' => $this->hourly_rate?->multipliedBy($this->working_hours_per_week * 52) ?? $monthlyTotal->multipliedBy(12),
             default => $monthlyTotal->multipliedBy(12),
         };
     }
@@ -246,7 +259,7 @@ class EmploymentContract extends Model
             return null; // Permanent contract
         }
 
-        return $this->start_date->diffInMonths($this->end_date);
+        return (int) $this->start_date->diffInMonths($this->end_date);
     }
 
     /**
@@ -286,6 +299,6 @@ class EmploymentContract extends Model
             $nextNumber = 1;
         }
 
-        return $prefix.$year.str_pad($nextNumber, 4, '0', STR_PAD_LEFT);
+        return $prefix.$year.str_pad((string) $nextNumber, 4, '0', STR_PAD_LEFT);
     }
 }

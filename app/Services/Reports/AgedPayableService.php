@@ -69,6 +69,7 @@ class AgedPayableService
                     'bucket31_60' => Money::zero($currency),
                     'bucket61_90' => Money::zero($currency),
                     'bucket90_plus' => Money::zero($currency),
+                    'totalDue' => Money::zero($currency),
                 ];
             }
 
@@ -137,6 +138,9 @@ class AgedPayableService
         return $this->calculateTotals($reportLines, $currency);
     }
 
+    /**
+     * @param  Collection<int, AgedPayableLineDTO>  $reportLines
+     */
     private function calculateTotals(Collection $reportLines, string $currency): AgedPayableDTO
     {
         $zero = Money::zero($currency);

@@ -9,12 +9,14 @@ use App\DataTransferObjects\Payments\CreatePaymentDocumentLinkDTO;
 use App\DataTransferObjects\Payments\CreatePaymentDTO;
 use App\DataTransferObjects\Purchases\UpdateVendorBillDTO;
 use App\DataTransferObjects\Purchases\VendorBillLineDTO;
-use App\Enums\Payments\PaymentPurpose;
+use App\Enums\Payments\PaymentMethod;
 use App\Enums\Payments\PaymentType;
 use App\Enums\Purchases\VendorBillStatus;
+use App\Filament\Actions\DocsAction;
 use App\Filament\Clusters\Accounting\Resources\VendorBills\VendorBillResource;
 use App\Filament\Clusters\Accounting\Resources\VendorBills\Widgets\SettlementSummaryWidget;
 use App\Filament\Forms\Components\MoneyInput;
+use App\Models\Company;
 use App\Models\Journal;
 use App\Models\VendorBill;
 use App\Models\VendorBillAttachment;
@@ -40,6 +42,7 @@ class EditVendorBill extends EditRecord
 {
     protected static string $resource = VendorBillResource::class;
 
+    /** @var array<string, mixed> */
     protected array $newAttachments = [];
 
     protected function getHeaderActions(): array
@@ -69,17 +72,17 @@ class EditVendorBill extends EditRecord
                 ->icon('heroicon-o-arrow-down-tray')
                 ->color('gray')
                 ->visible(fn (VendorBill $record): bool => $record->status === VendorBillStatus::Draft && config('app.debug') && ! app()->environment('production'))
-                ->action(function (VendorBill $record) {
+                ->action(function (VendorBill $record): \Symfony\Component\HttpFoundation\StreamedResponse {
                     $preview = app(BuildVendorBillPostingPreviewAction::class)->execute($record);
                     $rows = [];
                     $rows[] = ['Account Code', 'Account Name', 'Description', 'Debit', 'Credit'];
                     foreach ($preview['lines'] as $l) {
                         $rows[] = [
-                            is_array($l['account_code'] ?? null) ? (string) (reset($l['account_code']) ?: '') : (string) ($l['account_code'] ?? ''),
-                            is_array($l['account_name'] ?? null) ? (string) (reset($l['account_name']) ?: '') : (string) ($l['account_name'] ?? ''),
-                            is_array($l['description'] ?? null) ? (string) (reset($l['description']) ?: '') : (string) ($l['description'] ?? ''),
-                            number_format(($l['debit_minor'] ?? 0) / 100, 2, '.', ''),
-                            number_format(($l['credit_minor'] ?? 0) / 100, 2, '.', ''),
+                            (string) ($l['account_code'] ?: ''),
+                            (string) $l['account_name'],
+                            (string) $l['description'],
+                            number_format($l['debit_minor'] / 100, 2, '.', ''),
+                            number_format($l['credit_minor'] / 100, 2, '.', ''),
                         ];
                     }
                     $csv = '';
@@ -99,7 +102,7 @@ class EditVendorBill extends EditRecord
                 ->icon('heroicon-o-document-arrow-down')
                 ->color('gray')
                 ->visible(fn (VendorBill $record): bool => $record->status === VendorBillStatus::Draft && config('app.debug') && ! app()->environment('production'))
-                ->action(function (VendorBill $record) {
+                ->action(function (VendorBill $record): \Symfony\Component\HttpFoundation\StreamedResponse {
                     $preview = app(BuildVendorBillPostingPreviewAction::class)->execute($record);
                     $pdf = Pdf::loadView('filament/accounting/vendor-bills/preview-posting-pdf', [
                         'preview' => $preview,
@@ -122,7 +125,11 @@ class EditVendorBill extends EditRecord
                 ->action(function (VendorBill $record): void {
                     $vendorBillService = app(VendorBillService::class);
                     try {
-                        $vendorBillService->confirm($record, Auth::user());
+                        $user = Auth::user();
+                        if (! $user) {
+                            throw new \Exception('User must be authenticated to confirm vendor bill');
+                        }
+                        $vendorBillService->confirm($record, $user);
                         Notification::make()->title(__('vendor_bill.notification_bill_confirmed_success'))->success()->send();
                     } catch (Exception $e) {
                         Notification::make()->title(__('vendor_bill.notification_confirm_bill_error'))->body($e->getMessage())->danger()->send();
@@ -156,15 +163,26 @@ class EditVendorBill extends EditRecord
                 ->schema([
                     Select::make('journal_id')
                         ->label('Journal')
-                        ->options(function () {
-                            return Journal::where('company_id', Filament::getTenant()->id)
-                                ->pluck('name', 'id');
+                        ->options(function (): array {
+                            $tenant = Filament::getTenant();
+                            if (! $tenant instanceof Company) {
+                                return [];
+                            }
+
+                            return Journal::where('company_id', $tenant->getKey())
+                                ->pluck('name', 'id')
+                                ->all();
                         })
                         ->required()
-                        ->default(function () {
-                            return Journal::where('company_id', Filament::getTenant()->id)
+                        ->default(function (): ?int {
+                            $tenant = Filament::getTenant();
+                            if (! $tenant instanceof Company) {
+                                return null;
+                            }
+
+                            return Journal::where('company_id', $tenant->getKey())
                                 ->where('type', 'bank')
-                                ->first()?->id;
+                                ->value('id');
                         }),
                     DatePicker::make('payment_date')
                         ->label('Payment Date')
@@ -181,7 +199,7 @@ class EditVendorBill extends EditRecord
                     Hidden::make('currency_id')
                         ->default(fn (VendorBill $record) => $record->currency_id),
                 ])
-                ->action(function (VendorBill $record, array $data) {
+                ->action(function (VendorBill $record, array $data): void {
                     try {
                         $currency = $record->currency;
 
@@ -194,22 +212,26 @@ class EditVendorBill extends EditRecord
 
                         // Create payment DTO
                         $paymentDTO = new CreatePaymentDTO(
-                            company_id: Filament::getTenant()->id,
+                            company_id: $record->company_id,
                             journal_id: $data['journal_id'],
                             currency_id: $record->currency_id,
                             payment_date: $data['payment_date'],
-                            payment_purpose: PaymentPurpose::Settlement,
+                            // settlement inferred by presence of document links
                             payment_type: PaymentType::Outbound,
+                            payment_method: PaymentMethod::BankTransfer,
                             partner_id: $record->vendor_id,
                             amount: Money::of($data['amount'], $currency->code),
-                            counterpart_account_id: null,
                             document_links: [$documentLink],
                             reference: $data['reference']
                         );
 
                         // Create and confirm payment
-                        $payment = app(CreatePaymentAction::class)->execute($paymentDTO, Auth::user());
-                        app(PaymentService::class)->confirm($payment, Auth::user());
+                        $user = Auth::user();
+                        if (! $user) {
+                            throw new \Exception('User must be authenticated to create payment');
+                        }
+                        $payment = app(CreatePaymentAction::class)->execute($paymentDTO, $user);
+                        app(PaymentService::class)->confirm($payment, $user);
 
                         Notification::make()
                             ->title(__('Payment registered successfully'))
@@ -229,14 +251,23 @@ class EditVendorBill extends EditRecord
 
             DeleteAction::make()
                 ->action(function (Model $record) {
+                    if (! $record instanceof \App\Models\VendorBill) {
+                        throw new \Exception('Invalid record type');
+                    }
                     app(VendorBillService::class)->delete($record);
                     $this->redirect(VendorBillResource::getUrl('index'));
                 }),
+
+            DocsAction::make('vendor-bills'),
         ];
     }
 
     protected function handleRecordUpdate(Model $record, array $data): Model
     {
+        if (! $record instanceof VendorBill) {
+            throw new \InvalidArgumentException('Expected VendorBill record');
+        }
+
         // Store new attachments separately and remove from data for DTO
         $this->newAttachments = $data['attachments'] ?? [];
         unset($data['attachments']);
@@ -256,7 +287,7 @@ class EditVendorBill extends EditRecord
 
         $vendorBillDTO = new UpdateVendorBillDTO(
             vendorBill: $record,
-            company_id: Filament::getTenant()->id,
+            company_id: $record->company_id,
             vendor_id: $data['vendor_id'],
             currency_id: $data['currency_id'],
             bill_reference: $data['bill_reference'],
@@ -264,7 +295,7 @@ class EditVendorBill extends EditRecord
             accounting_date: $data['accounting_date'],
             due_date: $data['due_date'] ?? null,
             lines: $lineDTOs,
-            updated_by_user_id: Auth::id()
+            updated_by_user_id: (int) Auth::id()
         );
 
         return app(UpdateVendorBillAction::class)->execute($vendorBillDTO);
@@ -281,23 +312,29 @@ class EditVendorBill extends EditRecord
             return;
         }
 
+        $record = $this->getRecord();
+        if (! $record instanceof VendorBill) {
+            return;
+        }
+
         // Get existing attachment file paths to avoid duplicates
-        $existingPaths = $this->record->attachments()->pluck('file_path')->toArray();
+        $existingPaths = $record->attachments()->pluck('file_path')->toArray();
 
         foreach ($this->newAttachments as $filePath) {
             // Skip if this file is already attached
-            if (in_array($filePath, $existingPaths)) {
+            if (in_array($filePath, $existingPaths, true)) {
                 continue;
             }
 
             if (Storage::disk('local')->exists($filePath)) {
                 $fileInfo = pathinfo($filePath);
-                $mimeType = Storage::disk('local')->mimeType($filePath);
+                $absolutePath = Storage::disk('local')->path($filePath);
+                $mimeType = \Illuminate\Support\Facades\File::mimeType($absolutePath);
                 $fileSize = Storage::disk('local')->size($filePath);
 
                 VendorBillAttachment::create([
-                    'company_id' => $this->record->company_id,
-                    'vendor_bill_id' => $this->record->id,
+                    'company_id' => $record->company_id,
+                    'vendor_bill_id' => $record->id,
                     'file_name' => $fileInfo['basename'],
                     'file_path' => $filePath,
                     'file_size' => $fileSize,
@@ -310,9 +347,14 @@ class EditVendorBill extends EditRecord
 
     protected function mutateFormDataBeforeFill(array $data): array
     {
-        $this->record->loadMissing('lines', 'currency', 'attachments');
+        $record = $this->getRecord();
+        if (! $record instanceof VendorBill) {
+            return $data;
+        }
 
-        $linesData = $this->record->lines->map(function ($line) {
+        $record->loadMissing('lines', 'currency', 'attachments');
+
+        $linesData = $record->lines->map(function ($line) {
             return [
                 'product_id' => $line->product_id,
                 'description' => $line->description,
@@ -324,7 +366,7 @@ class EditVendorBill extends EditRecord
             ];
         })->toArray();
 
-        $attachmentsData = $this->record->attachments->pluck('file_path')->toArray();
+        $attachmentsData = $record->attachments->pluck('file_path')->toArray();
 
         $data['lines'] = $linesData;
         $data['attachments'] = $attachmentsData;

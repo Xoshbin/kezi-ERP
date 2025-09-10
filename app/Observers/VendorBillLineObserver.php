@@ -29,23 +29,23 @@ class VendorBillLineObserver
      */
     protected function updateParentVendorBillTotals(VendorBillLine $vendorBillLine): void
     {
+        // The vendorBill relationship is guaranteed to exist due to foreign key constraints
+        // with cascadeOnDelete, so we can safely access it without null checks
         $vendorBill = $vendorBillLine->vendorBill;
-        if ($vendorBill) {
-            $vendorBill->calculateTotalsFromLines();
+        $vendorBill->calculateTotalsFromLines();
 
-            // Also update company currency totals if exchange rate is available
-            if ($vendorBill->exchange_rate_at_creation) {
-                $this->updateCompanyCurrencyTotals($vendorBill);
-            }
-
-            $vendorBill->saveQuietly();
+        // Also update company currency totals if exchange rate is available
+        if ($vendorBill->exchange_rate_at_creation) {
+            $this->updateCompanyCurrencyTotals($vendorBill);
         }
+
+        $vendorBill->saveQuietly();
     }
 
     /**
      * Update company currency totals based on current line totals and exchange rate.
      */
-    protected function updateCompanyCurrencyTotals($vendorBill): void
+    protected function updateCompanyCurrencyTotals(\App\Models\VendorBill $vendorBill): void
     {
         if (! $vendorBill->exchange_rate_at_creation || $vendorBill->currency_id === $vendorBill->company->currency_id) {
             return; // No conversion needed

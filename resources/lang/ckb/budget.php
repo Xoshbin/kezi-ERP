@@ -9,8 +9,8 @@ return [
     'form' => [
         'company_id' => 'کۆمپانیا',
         'name' => 'ناو',
-        'period_start_date' => 'ڕێکەوتی دەستپێکی ماوە',
-        'period_end_date' => 'ڕێکەوتی کۆتایی ماوە',
+        'period_start_date' => 'سەرەتای ماوەی ژمێریاری',
+        'period_end_date' => 'کۆتایی ماوەی ژمێریاری',
         'budget_type' => 'جۆری بودجە',
         'status' => 'دۆخ',
         'default_status' => 'ڕەشنووس',
@@ -18,8 +18,8 @@ return [
     'table' => [
         'company_name' => 'ناوی کۆمپانیا',
         'name' => 'ناو',
-        'period_start_date' => 'ڕێکەوتی دەستپێکی ماوە',
-        'period_end_date' => 'ڕێکەوتی کۆتایی ماوە',
+        'period_start_date' => 'سەرەتای ماوەی ژمێریاری',
+        'period_end_date' => 'کۆتایی ماوەی ژمێریاری',
         'budget_type' => 'جۆری بودجە',
         'status' => 'دۆخ',
         'created_at' => 'کاتی دروستبوون',

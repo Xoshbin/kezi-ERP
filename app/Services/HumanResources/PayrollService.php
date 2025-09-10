@@ -128,6 +128,8 @@ class PayrollService
 
     /**
      * Calculate attendance-based amounts for the period.
+     *
+     * @return array<string, mixed>
      */
     private function calculateAttendanceAmounts(Employee $employee, string $periodStartDate, string $periodEndDate): array
     {
@@ -149,7 +151,7 @@ class PayrollService
     /**
      * Calculate base salary for the period.
      */
-    private function calculateBaseSalary($contract, string $periodStartDate, string $periodEndDate): Money
+    private function calculateBaseSalary(\App\Models\EmploymentContract $contract, string $periodStartDate, string $periodEndDate): Money
     {
         $baseSalary = $contract->base_salary;
 
@@ -173,7 +175,7 @@ class PayrollService
     /**
      * Calculate overtime amount.
      */
-    private function calculateOvertimeAmount($contract, float $overtimeHours): Money
+    private function calculateOvertimeAmount(\App\Models\EmploymentContract $contract, float $overtimeHours): Money
     {
         if ($overtimeHours <= 0) {
             return Money::of(0, $contract->currency->code);
@@ -196,7 +198,10 @@ class PayrollService
     /**
      * Calculate deductions.
      */
-    private function calculateDeductions(Money $grossSalary, $contract): array
+    /**
+     * @return array<string, Money>
+     */
+    private function calculateDeductions(Money $grossSalary, \App\Models\EmploymentContract $contract): array
     {
         $currency = $contract->currency->code;
 
@@ -217,6 +222,10 @@ class PayrollService
 
     /**
      * Create payroll lines for accounting integration.
+     *
+     * @param  array<string, mixed>  $attendanceData
+     * @param  array<string, mixed>  $deductions
+     * @return list<PayrollLineDTO>
      */
     private function createPayrollLines(Employee $employee, Money $baseSalary, array $attendanceData, array $deductions): array
     {

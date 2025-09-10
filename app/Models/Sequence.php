@@ -30,7 +30,7 @@ class Sequence extends Model
     /**
      * The attributes that are mass assignable.
      *
-     * @var array<int, string>
+     * @var list<string>
      */
     protected $fillable = [
         'company_id',
@@ -53,6 +53,9 @@ class Sequence extends Model
     /**
      * Get the company that owns the sequence.
      */
+    /**
+     * @return BelongsTo<Company, static>
+     */
     public function company(): BelongsTo
     {
         return $this->belongsTo(Company::class);
@@ -74,7 +77,7 @@ class Sequence extends Model
         $this->refresh();
 
         // Format the number with prefix and padding
-        return $this->prefix.'-'.str_pad($this->current_number, $this->padding, '0', STR_PAD_LEFT);
+        return $this->prefix.'-'.str_pad((string) $this->current_number, $this->padding, '0', STR_PAD_LEFT);
     }
 
     /**
@@ -86,7 +89,8 @@ class Sequence extends Model
         string $prefix,
         int $padding = 5
     ): static {
-        return static::firstOrCreate(
+        /** @var static $sequence */
+        $sequence = static::firstOrCreate(
             [
                 'company_id' => $companyId,
                 'document_type' => $documentType,
@@ -97,5 +101,7 @@ class Sequence extends Model
                 'padding' => $padding,
             ]
         );
+
+        return $sequence;
     }
 }

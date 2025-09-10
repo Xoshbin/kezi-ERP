@@ -57,4 +57,5 @@ Route::middleware(['auth'])->group(function () {
 
         return app(GenerateInvoicePdfAction::class)->execute($invoice, $template);
     })->name('pdf.preview');
+
 });

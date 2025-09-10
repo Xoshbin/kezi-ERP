@@ -26,21 +26,31 @@ class ProcessInventoryForConfirmedBill
         }
     }
 
-    private function processStorableProductLine($vendorBill, $line, $user): void
+    private function processStorableProductLine(\App\Models\VendorBill $vendorBill, \App\Models\VendorBillLine $line, \App\Models\User $user): void
     {
         $product = $line->product;
         $company = $vendorBill->company;
+
+        // Ensure product exists (should not be null since we check for storable products)
+        if ($product === null) {
+            throw new RuntimeException('Product is required for storable product lines.');
+        }
 
         if (! $company->vendorLocation || ! $company->defaultStockLocation) {
             throw new RuntimeException("Default Vendor or Stock Location is not configured for Company ID: {$company->id}.");
         }
 
+        /** @var \App\Models\StockLocation $vendorLocation */
+        $vendorLocation = $company->vendorLocation;
+        /** @var \App\Models\StockLocation $defaultStockLocation */
+        $defaultStockLocation = $company->defaultStockLocation;
+
         StockMove::create([
             'company_id' => $company->id,
             'product_id' => $product->id,
             'quantity' => $line->quantity,
-            'from_location_id' => $company->vendorLocation->id,
-            'to_location_id' => $company->defaultStockLocation->id,
+            'from_location_id' => $vendorLocation->id,
+            'to_location_id' => $defaultStockLocation->id,
             'source_type' => get_class($vendorBill),
             'source_id' => $vendorBill->id,
             'move_date' => $vendorBill->accounting_date,
@@ -55,7 +65,7 @@ class ProcessInventoryForConfirmedBill
 
         $this->updateProductInventoryStatsAction->execute(
             $product,
-            $line->quantity,
+            (int) $line->quantity,
             $unitPriceInCompanyCurrency
         );
     }

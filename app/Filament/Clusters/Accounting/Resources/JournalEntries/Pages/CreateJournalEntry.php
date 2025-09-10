@@ -5,6 +5,7 @@ namespace App\Filament\Clusters\Accounting\Resources\JournalEntries\Pages;
 use App\Actions\Accounting\CreateJournalEntryAction;
 use App\DataTransferObjects\Accounting\CreateJournalEntryDTO;
 use App\DataTransferObjects\Accounting\CreateJournalEntryLineDTO;
+use App\Filament\Actions\DocsAction;
 use App\Filament\Clusters\Accounting\Resources\JournalEntries\JournalEntryResource;
 use App\Models\Currency;
 use Brick\Money\Money;
@@ -24,18 +25,23 @@ class CreateJournalEntry extends CreateRecord
     {
         $lineDTOs = [];
         if (isset($data['lines']) && is_array($data['lines'])) {
-            $currency = Currency::find($data['currency_id']);
-            if ($currency) {
-                foreach ($data['lines'] as $line) {
-                    $lineDTOs[] = new CreateJournalEntryLineDTO(
-                        account_id: $line['account_id'],
-                        debit: Money::of($line['debit'] ?? 0, $currency->code),
-                        credit: Money::of($line['credit'] ?? 0, $currency->code),
-                        description: $line['description'] ?? null,
-                        partner_id: $line['partner_id'] ?? null,
-                        analytic_account_id: $line['analytic_account_id'] ?? null
-                    );
+            $currency = Currency::findOrFail($data['currency_id']);
+            // Ensure we have a single Currency model, not a collection
+            if ($currency instanceof \Illuminate\Database\Eloquent\Collection) {
+                $currency = $currency->first();
+                if (! $currency) {
+                    throw new \InvalidArgumentException('Currency not found');
                 }
+            }
+            foreach ($data['lines'] as $line) {
+                $lineDTOs[] = new CreateJournalEntryLineDTO(
+                    account_id: $line['account_id'],
+                    debit: Money::of($line['debit'] ?? 0, $currency->code),
+                    credit: Money::of($line['credit'] ?? 0, $currency->code),
+                    description: $line['description'] ?? null,
+                    partner_id: $line['partner_id'] ?? null,
+                    analytic_account_id: $line['analytic_account_id'] ?? null
+                );
             }
         }
         $data['lines'] = $lineDTOs;
@@ -47,7 +53,7 @@ class CreateJournalEntry extends CreateRecord
     protected function handleRecordCreation(array $data): Model
     {
         $journalEntryDTO = new CreateJournalEntryDTO(
-            company_id: Filament::getTenant()->id,
+            company_id: (int) (Filament::getTenant()?->getKey() ?? 0),
             journal_id: $data['journal_id'],
             currency_id: $data['currency_id'],
             entry_date: $data['entry_date'],
@@ -64,8 +70,9 @@ class CreateJournalEntry extends CreateRecord
             // Check if it's a database constraint violation for duplicate reference
             // MySQL error code 1062 for duplicate entry
             // SQLite error code 19 for UNIQUE constraint failed
-            $isDuplicateEntry = ($e->errorInfo[1] === 1062 && str_contains($e->getMessage(), 'reference_unique')) ||
-                               ($e->errorInfo[1] === 19 && str_contains($e->getMessage(), 'UNIQUE constraint failed') && str_contains($e->getMessage(), 'reference'));
+            $errorCode = $e->errorInfo[1] ?? null;
+            $isDuplicateEntry = ($errorCode === 1062 && str_contains($e->getMessage(), 'reference_unique')) ||
+                               ($errorCode === 19 && str_contains($e->getMessage(), 'UNIQUE constraint failed') && str_contains($e->getMessage(), 'reference'));
 
             if ($isDuplicateEntry) {
                 throw ValidationException::withMessages([
@@ -86,5 +93,12 @@ class CreateJournalEntry extends CreateRecord
             // Re-throw other PDO exceptions
             throw $e;
         }
+    }
+
+    protected function getHeaderActions(): array
+    {
+        return [
+            DocsAction::make('opening-balances'),
+        ];
     }
 }

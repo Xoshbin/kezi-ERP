@@ -8,6 +8,9 @@ use Illuminate\Validation\Rule;
 
 class CompanyService
 {
+    /**
+     * @param  array<string, mixed>  $data
+     */
     public function create(array $data): Company
     {
         // Use Laravel's built-in Validator to check the data first.

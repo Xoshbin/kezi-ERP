@@ -31,6 +31,7 @@ class SystemPaymentsTable extends Component implements HasActions, HasForms, Has
 
     public BankStatement $bankStatement;
 
+    /** @var array<int, int> */
     public array $selectedPayments = [];
 
     public function mount(BankStatement $bankStatement): void
@@ -176,7 +177,7 @@ class SystemPaymentsTable extends Component implements HasActions, HasForms, Has
         return null;
     }
 
-    public function render()
+    public function render(): \Illuminate\Contracts\View\View
     {
         return view('livewire.accounting.system-payments-table');
     }

@@ -115,6 +115,9 @@ class JournalEntryService
      * Create a multi-currency journal entry with proper currency conversion.
      * This method handles journal entries where the transaction currency differs from the company base currency.
      * Now uses the CreateJournalEntryAction for consistency.
+     *
+     * @param  array<string, mixed>  $entryData
+     * @param  array<string, mixed>  $lines
      */
     public function createMultiCurrencyEntry(array $entryData, array $lines, Currency $transactionCurrency, User $user): JournalEntry
     {

@@ -50,7 +50,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property int|null $approved_by_user_id
  * @property Carbon|null $approved_at
  * @property string|null $notes
- * @property array|null $adjustments
+ * @property array<string, mixed>|null $adjustments
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property-read Company $company
@@ -70,7 +70,7 @@ class Payroll extends Model
     /**
      * The attributes that are mass assignable.
      *
-     * @var array<int, string>
+     * @var list<string>
      */
     protected $fillable = [
         'company_id',
@@ -152,6 +152,9 @@ class Payroll extends Model
     /**
      * Get the company that owns the Payroll.
      */
+    /**
+     * @return BelongsTo<Company, static>
+     */
     public function company(): BelongsTo
     {
         return $this->belongsTo(Company::class);
@@ -159,6 +162,9 @@ class Payroll extends Model
 
     /**
      * Get the employee this payroll belongs to.
+     */
+    /**
+     * @return BelongsTo<Employee, static>
      */
     public function employee(): BelongsTo
     {
@@ -168,6 +174,9 @@ class Payroll extends Model
     /**
      * Get the currency for this payroll.
      */
+    /**
+     * @return BelongsTo<Currency, static>
+     */
     public function currency(): BelongsTo
     {
         return $this->belongsTo(Currency::class);
@@ -175,6 +184,9 @@ class Payroll extends Model
 
     /**
      * Get the journal entry created for this payroll.
+     */
+    /**
+     * @return BelongsTo<JournalEntry, static>
      */
     public function journalEntry(): BelongsTo
     {
@@ -184,6 +196,9 @@ class Payroll extends Model
     /**
      * Get the payment created for this payroll.
      */
+    /**
+     * @return BelongsTo<Payment, static>
+     */
     public function payment(): BelongsTo
     {
         return $this->belongsTo(Payment::class);
@@ -191,6 +206,9 @@ class Payroll extends Model
 
     /**
      * Get the user who processed this payroll.
+     */
+    /**
+     * @return BelongsTo<User, static>
      */
     public function processedByUser(): BelongsTo
     {
@@ -200,6 +218,9 @@ class Payroll extends Model
     /**
      * Get the user who approved this payroll.
      */
+    /**
+     * @return BelongsTo<User, static>
+     */
     public function approvedByUser(): BelongsTo
     {
         return $this->belongsTo(User::class, 'approved_by_user_id');
@@ -207,6 +228,9 @@ class Payroll extends Model
 
     /**
      * Get the payroll lines for this payroll.
+     */
+    /**
+     * @return HasMany<PayrollLine, static>
      */
     public function payrollLines(): HasMany
     {

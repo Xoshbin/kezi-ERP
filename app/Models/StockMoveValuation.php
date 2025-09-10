@@ -38,30 +38,45 @@ class StockMoveValuation extends Model
      * Without this, any retrieval of a `StockMoveValuation` would fail when casting monetary values
      * due to the missing currency information, leading to a "currency_id on null" error.
      *
-     * @var array
+     * @var list<string>
      */
     protected $with = ['company.currency'];
 
+    /**
+     * @return BelongsTo<Company, static>
+     */
     public function company(): BelongsTo
     {
         return $this->belongsTo(Company::class);
     }
 
+    /**
+     * @return BelongsTo<Product, static>
+     */
     public function product(): BelongsTo
     {
         return $this->belongsTo(Product::class);
     }
 
+    /**
+     * @return BelongsTo<StockMove, static>
+     */
     public function stockMove(): BelongsTo
     {
         return $this->belongsTo(StockMove::class);
     }
 
+    /**
+     * @return BelongsTo<JournalEntry, static>
+     */
     public function journalEntry(): BelongsTo
     {
         return $this->belongsTo(JournalEntry::class);
     }
 
+    /**
+     * @return MorphTo<\Illuminate\Database\Eloquent\Model, static>
+     */
     public function source(): MorphTo
     {
         return $this->morphTo();

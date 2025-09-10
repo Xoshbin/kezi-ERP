@@ -2,7 +2,7 @@
 
 namespace App\Filament\Clusters\Accounting\Resources\Payments;
 
-use App\Enums\Payments\PaymentPurpose;
+use App\Enums\Payments\PaymentMethod;
 use App\Enums\Payments\PaymentStatus;
 use App\Enums\Payments\PaymentType;
 use App\Filament\Clusters\Accounting\AccountingCluster;
@@ -16,7 +16,6 @@ use App\Filament\Clusters\Accounting\Resources\Payments\RelationManagers\VendorB
 use App\Filament\Forms\Components\MoneyInput;
 use App\Filament\Support\TranslatableSelect;
 use App\Filament\Tables\Columns\MoneyColumn;
-use App\Models\Account;
 use App\Models\Currency;
 use App\Models\Journal;
 use App\Models\Partner;
@@ -30,7 +29,9 @@ use Filament\Facades\Filament;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\ToggleButtons;
 use Filament\Resources\Resource;
+use Filament\Schemas\Components\Group;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
@@ -70,60 +71,80 @@ class PaymentResource extends Resource
     {
         return $schema->components([
             Section::make(__('payment.form.payment_information'))
-                ->description(__('payment.form.standalone_payment_description'))
+                ->description(__('payment.form.direct_payment_description'))
+                ->compact()
                 ->schema([
-                    TranslatableSelect::make('journal_id', Journal::class, __('payment.form.journal_id'))
-                        ->required()
-                        ->columnSpan(2),
-                    TranslatableSelect::make('currency_id', Currency::class, __('payment.form.currency_id'))
-                        ->required()
-                        ->columnSpan(2)
-                        ->default(fn () => Filament::getTenant()?->currency_id),
-                    DatePicker::make('payment_date')
-                        ->default(now())
-                        ->label(__('payment.form.payment_date'))
-                        ->required()
-                        ->columnSpan(2),
-                    TextInput::make('reference')
-                        ->label(__('payment.form.reference'))
-                        ->maxLength(255)
-                        ->columnSpan(2),
-                ])
-                ->columns(4)
-                ->columnSpanFull(),
+                    Group::make()
+                        ->schema([
+                            ToggleButtons::make('payment_type')
+                                ->label(__('payment.form.payment_type'))
+                                ->options([
+                                    PaymentType::Inbound->value => __('payment.form.receive') ?: PaymentType::Inbound->label(),
+                                    PaymentType::Outbound->value => __('payment.form.send') ?: PaymentType::Outbound->label(),
+                                ])
+                                ->colors([
+                                    PaymentType::Inbound->value => 'success',
+                                    PaymentType::Outbound->value => 'danger',
+                                ])
+                                ->icons([
+                                    PaymentType::Inbound->value => 'heroicon-m-arrow-down-circle',
+                                    PaymentType::Outbound->value => 'heroicon-m-arrow-up-circle',
+                                ])
+                                ->inline()
+                                ->required()
+                                ->columnSpanFull(),
 
-            Section::make(__('payment.form.payment_details'))
-                ->description(__('payment.form.payment_details_description'))
-                ->schema([
-                    Select::make('payment_type')
-                        ->label(__('payment.form.payment_type'))
-                        ->options(collect(PaymentType::cases())->mapWithKeys(fn ($case) => [$case->value => $case->label()]))
-                        ->required()
-                        ->columnSpan(2),
-                    Select::make('payment_purpose')
-                        ->label(__('payment.form.payment_purpose'))
-                        ->options(function () {
-                            // Exclude Settlement since it's handled by context-specific actions
-                            $purposes = collect(PaymentPurpose::cases())
-                                ->filter(fn ($purpose) => $purpose !== PaymentPurpose::Settlement);
+                            TranslatableSelect::make('partner_id', Partner::class, __('payment.form.partner'))
+                                ->required()
+                                ->columnSpanFull(),
 
-                            return $purposes->mapWithKeys(fn ($purpose) => [$purpose->value => $purpose->label()]);
-                        })
-                        ->required()
-                        ->columnSpan(2),
-                    TranslatableSelect::make('partner_id', Partner::class, __('payment.form.partner'))
-                        ->required()
-                        ->columnSpan(2),
-                    MoneyInput::make('amount')
-                        ->label(__('payment.form.amount'))
-                        ->currencyField('currency_id')
-                        ->required()
-                        ->columnSpan(2),
-                    TranslatableSelect::make('counterpart_account_id', Account::class, __('payment.form.counterpart_account'))
-                        ->required()
+                            MoneyInput::make('amount')
+                                ->label(__('payment.form.amount'))
+                                ->currencyField('currency_id')
+                                ->required()
+                                ->columnSpanFull(),
+
+                            Group::make()
+                                ->schema([
+                                    DatePicker::make('payment_date')
+                                        ->default(now())
+                                        ->label(__('payment.form.payment_date'))
+                                        ->required()
+                                        ->columnSpan(6),
+                                    TextInput::make('reference')
+                                        ->label(__('payment.form.reference'))
+                                        ->maxLength(255)
+                                        ->columnSpan(6),
+                                ])
+                                ->columns(12)
+                                ->columnSpanFull(),
+                        ])
+                        ->columns(12)
+                        ->columnSpan(8),
+
+                    Group::make()
+                        ->schema([
+                            TranslatableSelect::make('journal_id', Journal::class, __('payment.form.journal_id'))
+                                ->required()
+                                ->columnSpanFull(),
+                            Select::make('payment_method')
+                                ->label(__('payment.form.payment_method'))
+                                ->options(collect(PaymentMethod::cases())->mapWithKeys(fn ($case) => [$case->value => $case->label()]))
+                                ->required()
+                                ->columnSpanFull(),
+                            TranslatableSelect::make('currency_id', Currency::class, __('payment.form.currency_id'))
+                                ->required()
+                                ->default(function (): ?int {
+                                    $tenant = Filament::getTenant();
+
+                                    return $tenant instanceof \App\Models\Company ? $tenant->currency_id : null;
+                                })
+                                ->columnSpanFull(),
+                        ])
+                        ->columns(12)
                         ->columnSpan(4),
                 ])
-                ->columns(4)
+                ->columns(12)
                 ->columnSpanFull(),
         ]);
     }
@@ -143,7 +164,7 @@ class PaymentResource extends Resource
                             return $record->reference;
                         }
 
-                        return 'DRAFT-'.str_pad($record->id, 5, '0', STR_PAD_LEFT);
+                        return 'DRAFT-'.str_pad((string) $record->id, 5, '0', STR_PAD_LEFT);
                     })
                     ->badge()
                     ->color(fn (Payment $record): string => $record->reference ? 'success' : 'warning')
@@ -170,6 +191,16 @@ class PaymentResource extends Resource
                         'heroicon-m-arrow-up-circle' => PaymentType::Outbound,
                     ])
                     ->searchable(),
+
+                // Payment Method (important for categorization)
+                TextColumn::make('payment_method')
+                    ->label(__('payment.method'))
+                    ->formatStateUsing(fn (PaymentMethod $state): string => $state->label())
+                    ->badge()
+                    ->color(fn (PaymentMethod $state): string => $state->color())
+                    ->icon(fn (PaymentMethod $state): string => $state->icon())
+                    ->searchable()
+                    ->toggleable(),
 
                 // Status (critical for workflow)
                 TextColumn::make('status')

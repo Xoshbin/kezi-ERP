@@ -28,6 +28,14 @@ class EmployeeResource extends Resource
 
     protected static ?string $recordTitleAttribute = 'full_name';
 
+    /**
+     * @return array<string>
+     */
+    public static function getGloballySearchableAttributes(): array
+    {
+        return ['first_name', 'last_name', 'email', 'employee_number'];
+    }
+
     public static function getNavigationLabel(): string
     {
         return __('employee.navigation_label');
@@ -69,6 +77,9 @@ class EmployeeResource extends Resource
         ];
     }
 
+    /**
+     * @return Builder<Employee>
+     */
     public static function getRecordRouteBindingEloquentQuery(): Builder
     {
         return parent::getRecordRouteBindingEloquentQuery()

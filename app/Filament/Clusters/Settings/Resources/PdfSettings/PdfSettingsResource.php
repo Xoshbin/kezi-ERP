@@ -153,12 +153,15 @@ class PdfSettingsResource extends Resource
             ]);
     }
 
+    /**
+     * @return Builder<Company>
+     */
     public static function getEloquentQuery(): Builder
     {
         // Only show the current tenant company
         $tenant = Filament::getTenant();
 
-        return parent::getEloquentQuery()->where('id', $tenant?->id);
+        return parent::getEloquentQuery()->where('id', $tenant instanceof \App\Models\Company ? $tenant->getKey() : null);
     }
 
     public static function getPages(): array
@@ -174,7 +177,7 @@ class PdfSettingsResource extends Resource
         return false; // PDF settings are edited, not created
     }
 
-    public static function canDelete($record): bool
+    public static function canDelete(mixed $record): bool
     {
         return false; // PDF settings cannot be deleted
     }

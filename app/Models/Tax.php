@@ -22,9 +22,10 @@ use Spatie\Translatable\HasTranslations;
  * @property int $id
  * @property int $company_id
  * @property int $tax_account_id
- * @property string $name
+ * @property string|array<string, string> $name
+ * @property string|array<string, string>|null $label_on_invoices
  * @property float $rate
- * @property string $type
+ * @property TaxType $type
  * @property bool $is_active
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
@@ -56,10 +57,13 @@ class Tax extends Model
     use HasFactory, HasTranslations;
     use TranslatableSearch;
 
+    /** @var array<int, string> */
     public array $translatable = ['name', 'label_on_invoices'];
 
     /**
      * Get the translatable fields that should be searched.
+     *
+     * @return array<int, string>
      */
     public function getTranslatableSearchFields(): array
     {
@@ -77,7 +81,7 @@ class Tax extends Model
      * The attributes that are mass assignable.
      * These fields are intended for direct assignment, often from user input.
      *
-     * @var array<int, string>
+     * @var list<string>
      */
     protected $fillable = [
         'company_id',
@@ -148,7 +152,7 @@ class Tax extends Model
         return (float) $this->rate * 100; // 1500 → 15.00%
     }
 
-    public function getRateFractionAttribute()
+    public function getRateFractionAttribute(): float
     {
         return $this->rate / 100; // 1500 → 15.00%
     }
@@ -169,11 +173,17 @@ class Tax extends Model
         return in_array($this->type, [TaxType::Purchase, TaxType::Both]);
     }
 
+    /**
+     * @return HasMany<InvoiceLine, static>
+     */
     public function invoiceLines(): HasMany
     {
         return $this->hasMany(InvoiceLine::class);
     }
 
+    /**
+     * @return HasMany<VendorBillLine, static>
+     */
     public function vendorBillLines(): HasMany
     {
         return $this->hasMany(VendorBillLine::class);

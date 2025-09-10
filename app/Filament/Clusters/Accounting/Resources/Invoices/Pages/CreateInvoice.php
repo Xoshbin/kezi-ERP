@@ -5,6 +5,7 @@ namespace App\Filament\Clusters\Accounting\Resources\Invoices\Pages;
 use App\Actions\Sales\CreateInvoiceAction;
 use App\DataTransferObjects\Sales\CreateInvoiceDTO;
 use App\DataTransferObjects\Sales\CreateInvoiceLineDTO;
+use App\Filament\Actions\DocsAction;
 use App\Filament\Clusters\Accounting\Resources\Invoices\InvoiceResource;
 use App\Models\Currency;
 use Brick\Money\Money;
@@ -19,7 +20,14 @@ class CreateInvoice extends CreateRecord
 
     protected function mutateFormDataBeforeCreate(array $data): array
     {
-        $currency = Currency::find($data['currency_id']);
+        $currency = Currency::findOrFail($data['currency_id']);
+        // Ensure we have a single Currency model, not a collection
+        if ($currency instanceof \Illuminate\Database\Eloquent\Collection) {
+            $currency = $currency->first();
+            if (! $currency) {
+                throw new \InvalidArgumentException('Currency not found');
+            }
+        }
         $lineDTOs = [];
         foreach ($data['invoiceLines'] as $line) {
             $lineDTOs[] = new CreateInvoiceLineDTO(
@@ -40,7 +48,7 @@ class CreateInvoice extends CreateRecord
     protected function handleRecordCreation(array $data): Model
     {
         $invoiceDTO = new CreateInvoiceDTO(
-            company_id: Filament::getTenant()->id,
+            company_id: (int) (Filament::getTenant()->id ?? 0),
             customer_id: $data['customer_id'],
             currency_id: $data['currency_id'],
             invoice_date: $data['invoice_date'],
@@ -50,5 +58,12 @@ class CreateInvoice extends CreateRecord
         );
 
         return app(CreateInvoiceAction::class)->execute($invoiceDTO);
+    }
+
+    protected function getHeaderActions(): array
+    {
+        return [
+            DocsAction::make('customer-invoices'),
+        ];
     }
 }

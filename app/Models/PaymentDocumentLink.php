@@ -17,7 +17,7 @@ use InvalidArgumentException;
  * @property int $payment_id
  * @property int|null $invoice_id
  * @property int|null $vendor_bill_id
- * @property float $amount_applied
+ * @property \Brick\Money\Money $amount_applied
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property-read Invoice|null $invoice
@@ -40,6 +40,7 @@ use InvalidArgumentException;
  */
 class PaymentDocumentLink extends Model
 {
+    /** @use HasFactory<\Database\Factories\PaymentDocumentLinkFactory> */
     use HasFactory;
 
     /**
@@ -54,7 +55,7 @@ class PaymentDocumentLink extends Model
      * The attributes that are mass assignable.
      * These fields can be safely filled via mass assignment operations.
      *
-     * @var array<int, string>
+     * @var list<string>
      */
     protected $fillable = [
         'company_id', // Foreign key to the parent company, ensuring data integrity [2, 3].
@@ -83,12 +84,15 @@ class PaymentDocumentLink extends Model
      * Without this, any retrieval of a `PaymentDocumentLink` would fail when casting monetary values
      * due to the missing currency information, leading to a "currency_id on null" error.
      *
-     * @var array
+     * @var list<string>
      */
     protected $with = ['payment.currency'];
 
     /**
      * Get the company that this rate belongs to.
+     */
+    /**
+     * @return BelongsTo<Company, static>
      */
     public function company(): BelongsTo
     {
@@ -99,6 +103,9 @@ class PaymentDocumentLink extends Model
      * Get the payment that owns this document link.
      * This defines a one-to-many (inverse) relationship, where a PaymentDocumentLink belongs to a Payment.
      */
+    /**
+     * @return BelongsTo<Payment, static>
+     */
     public function payment(): BelongsTo
     {
         return $this->belongsTo(Payment::class);
@@ -107,6 +114,9 @@ class PaymentDocumentLink extends Model
     /**
      * Get the customer invoice that this document link is associated with.
      * This is a conditional relationship, as a link will be to either an invoice or a vendor bill.
+     */
+    /**
+     * @return BelongsTo<Invoice, static>
      */
     public function invoice(): BelongsTo
     {
@@ -117,6 +127,9 @@ class PaymentDocumentLink extends Model
      * Get the vendor bill that this document link is associated with.
      * This is a conditional relationship, as a link will be to either a vendor bill or an invoice.
      */
+    /**
+     * @return BelongsTo<VendorBill, static>
+     */
     public function vendorBill(): BelongsTo
     {
         return $this->belongsTo(VendorBill::class);
@@ -126,7 +139,7 @@ class PaymentDocumentLink extends Model
      * Get the currency for this payment document link through the payment.
      * This is needed for the MoneyCast to work properly.
      *
-     * @return HasOneThrough
+     * @return HasOneThrough<Currency, Payment, $this>
      */
     public function currency()
     {
@@ -159,7 +172,7 @@ class PaymentDocumentLink extends Model
             }
 
             // Set company_id from parent payment to maintain tenancy
-            if (! $link->company_id && $link->payment) {
+            if (! $link->company_id) {
                 $link->company_id = $link->payment->company_id;
             }
         });

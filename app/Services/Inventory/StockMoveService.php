@@ -49,7 +49,7 @@ class StockMoveService
     public function confirmMove(ConfirmStockMoveDTO $dto): StockMove
     {
         $move = StockMove::findOrFail($dto->stock_move_id);
-        $move->status = StockMoveStatus::DONE;
+        $move->status = StockMoveStatus::Done;
         $move->save();
 
         StockMoveConfirmed::dispatch($move);
@@ -59,7 +59,7 @@ class StockMoveService
 
     public function cancelMove(StockMove $move): StockMove
     {
-        $move->status = StockMoveStatus::CANCELLED;
+        $move->status = StockMoveStatus::Cancelled;
         $move->save();
 
         return $move;

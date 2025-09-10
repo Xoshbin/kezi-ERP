@@ -29,23 +29,23 @@ class InvoiceLineObserver
      */
     protected function updateParentInvoiceTotals(InvoiceLine $invoiceLine): void
     {
+        // The invoice relationship is guaranteed to exist due to foreign key constraints
+        // with cascadeOnDelete, so we can safely access it without null checks
         $invoice = $invoiceLine->invoice;
-        if ($invoice) {
-            $invoice->calculateTotalsFromLines();
+        $invoice->calculateTotalsFromLines();
 
-            // Also update company currency totals if exchange rate is available
-            if ($invoice->exchange_rate_at_creation) {
-                $this->updateCompanyCurrencyTotals($invoice);
-            }
-
-            $invoice->saveQuietly();
+        // Also update company currency totals if exchange rate is available
+        if ($invoice->exchange_rate_at_creation) {
+            $this->updateCompanyCurrencyTotals($invoice);
         }
+
+        $invoice->saveQuietly();
     }
 
     /**
      * Update company currency totals based on current line totals and exchange rate.
      */
-    protected function updateCompanyCurrencyTotals($invoice): void
+    protected function updateCompanyCurrencyTotals(\App\Models\Invoice $invoice): void
     {
         if (! $invoice->exchange_rate_at_creation || $invoice->currency_id === $invoice->company->currency_id) {
             return; // No conversion needed

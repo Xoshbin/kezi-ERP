@@ -14,7 +14,7 @@ class PostDepreciationEntryAction
 
     public function execute(DepreciationEntry $depreciationEntry, User $user): DepreciationEntry
     {
-        return DB::transaction(function () use ($depreciationEntry, $user) {
+        return DB::transaction(function () use ($depreciationEntry, $user): DepreciationEntry {
             $journalEntry = $this->createJournalEntry->execute($depreciationEntry, $user);
 
             $depreciationEntry->update([
@@ -22,7 +22,12 @@ class PostDepreciationEntryAction
                 'journal_entry_id' => $journalEntry->id,
             ]);
 
-            return $depreciationEntry->fresh();
+            $fresh = $depreciationEntry->fresh();
+            if (! $fresh) {
+                throw new \RuntimeException('Failed to refresh depreciation entry after update');
+            }
+
+            return $fresh;
         });
     }
 }

@@ -9,7 +9,7 @@ return [
     'company' => 'کۆمپانیا',
     'currency' => 'دراو',
     'name' => 'ناو',
-    'reference' => 'سەرچاوە',
+    'reference' => 'ژمارەی بەڵگە',
     'is_active' => 'چالاکە',
     'created_at' => 'کاتی دروستبوون',
     'updated_at' => 'کاتی نوێکردنەوە',

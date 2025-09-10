@@ -66,18 +66,18 @@ class EditAdjustmentDocument extends EditRecord
                     $rows[] = ['Account Code', 'Account Name', 'Description', 'Debit', 'Credit'];
                     foreach ($preview['lines'] as $l) {
                         $rows[] = [
-                            is_array($l['account_code'] ?? null) ? (string) (reset($l['account_code']) ?: '') : (string) ($l['account_code'] ?? ''),
-                            is_array($l['account_name'] ?? null) ? (string) (reset($l['account_name']) ?: '') : (string) ($l['account_name'] ?? ''),
-                            is_array($l['description'] ?? null) ? (string) (reset($l['description']) ?: '') : (string) ($l['description'] ?? ''),
-                            number_format(($l['debit_minor'] ?? 0) / 100, 2, '.', ''),
-                            number_format(($l['credit_minor'] ?? 0) / 100, 2, '.', ''),
+                            (string) ($l['account_code'] ?: ''),
+                            (string) $l['account_name'],
+                            (string) $l['description'],
+                            number_format($l['debit_minor'] / 100, 2, '.', ''),
+                            number_format($l['credit_minor'] / 100, 2, '.', ''),
                         ];
                     }
                     $csv = '';
                     foreach ($rows as $row) {
                         $csv .= implode(',', array_map(fn ($v) => '"'.str_replace('"', '""', (string) $v).'"', $row))."\n";
                     }
-                    $filename = 'adjustment-'.($record->reference_number ?: ('ADJ-'.str_pad($record->id, 5, '0', STR_PAD_LEFT))).'-preview.csv';
+                    $filename = 'adjustment-'.($record->reference_number ?: ('ADJ-'.str_pad((string) $record->id, 5, '0', STR_PAD_LEFT))).'-preview.csv';
 
                     return response()->streamDownload(function () use ($csv) {
                         echo $csv;
@@ -96,7 +96,7 @@ class EditAdjustmentDocument extends EditRecord
                         'preview' => $preview,
                         'adjustment' => $record,
                     ]);
-                    $filename = 'adjustment-'.($record->reference_number ?: ('ADJ-'.str_pad($record->id, 5, '0', STR_PAD_LEFT))).'-preview.pdf';
+                    $filename = 'adjustment-'.($record->reference_number ?: ('ADJ-'.str_pad((string) $record->id, 5, '0', STR_PAD_LEFT))).'-preview.pdf';
 
                     return response()->streamDownload(function () use ($pdf) {
                         echo $pdf->output();
@@ -113,7 +113,11 @@ class EditAdjustmentDocument extends EditRecord
                     $this->save(); // This triggers mutateFormDataBeforeSave -> handleRecordUpdate
                     $service = app(AdjustmentDocumentService::class);
                     try {
-                        $service->post($record, auth()->user());
+                        $user = auth()->user();
+                        if (! $user) {
+                            throw new \Exception('User must be authenticated to post adjustment document');
+                        }
+                        $service->post($record, $user);
                         Notification::make()->title(__('adjustment_document.notification_document_posted_successfully'))->success()->send();
                     } catch (Exception $e) {
                         Notification::make()->title(__('adjustment_document.notification_document_post_error'))->body($e->getMessage())->danger()->send();
@@ -129,15 +133,25 @@ class EditAdjustmentDocument extends EditRecord
         // 1. Forcefully derive currency_id if it's missing from the form submission.
         if (empty($data['currency_id'])) {
             if (! empty($data['original_invoice_id'])) {
-                $data['currency_id'] = Invoice::find($data['original_invoice_id'])?->currency_id;
+                $invoice = Invoice::find($data['original_invoice_id']);
+                if ($invoice instanceof \Illuminate\Database\Eloquent\Collection) {
+                    $invoice = $invoice->first();
+                }
+                $data['currency_id'] = $invoice?->currency_id;
             } elseif (! empty($data['original_vendor_bill_id'])) {
-                $data['currency_id'] = VendorBill::find($data['original_vendor_bill_id'])?->currency_id;
+                $bill = VendorBill::find($data['original_vendor_bill_id']);
+                if ($bill instanceof \Illuminate\Database\Eloquent\Collection) {
+                    $bill = $bill->first();
+                }
+                $data['currency_id'] = $bill?->currency_id;
             }
         }
 
         // 2. As a final fallback, get it from the original record being edited.
         if (empty($data['currency_id'])) {
-            $data['currency_id'] = $this->record->currency_id;
+            /** @var AdjustmentDocument $rec */
+            $rec = $this->record;
+            $data['currency_id'] = $rec->getAttribute('currency_id');
         }
 
         // 3. If it's *still* missing, stop with a clean validation error.
@@ -164,10 +178,14 @@ class EditAdjustmentDocument extends EditRecord
 
     protected function mutateFormDataBeforeFill(array $data): array
     {
-        $this->record->loadMissing('lines');
+        /** @var AdjustmentDocument $rec */
+        $rec = $this->record;
+        $rec->loadMissing('lines');
 
         // Keep Money objects for MoneyInput components
-        $linesData = $this->record->lines->map(function ($line) {
+        /** @var \Illuminate\Database\Eloquent\Collection<int, \App\Models\AdjustmentDocumentLine> $lines */
+        $lines = $rec->lines;
+        $linesData = $lines->map(function (\App\Models\AdjustmentDocumentLine $line) {
             return [
                 'product_id' => $line->product_id,
                 'description' => $line->description,
@@ -186,7 +204,14 @@ class EditAdjustmentDocument extends EditRecord
     protected function handleRecordUpdate(Model $record, array $data): Model
     {
         // This method will now always receive a valid $data['currency_id']
-        $currency = Currency::find($data['currency_id']);
+        $currency = Currency::findOrFail($data['currency_id']);
+        // Ensure we have a single Currency model, not a collection
+        if ($currency instanceof \Illuminate\Database\Eloquent\Collection) {
+            $currency = $currency->first();
+            if (! $currency) {
+                throw new \InvalidArgumentException('Currency not found');
+            }
+        }
         $lineDTOs = [];
         foreach ($data['lines'] as $line) {
             $lineDTOs[] = new UpdateAdjustmentDocumentLineDTO(
@@ -197,6 +222,10 @@ class EditAdjustmentDocument extends EditRecord
                 product_id: $line['product_id'] ?? null,
                 tax_id: $line['tax_id'] ?? null
             );
+        }
+
+        if (! $record instanceof \App\Models\AdjustmentDocument) {
+            throw new \Exception('Invalid record type');
         }
 
         $dto = new UpdateAdjustmentDocumentDTO(

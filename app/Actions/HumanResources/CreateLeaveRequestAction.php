@@ -10,7 +10,7 @@ class CreateLeaveRequestAction
 {
     public function execute(CreateLeaveRequestDTO $createLeaveRequestDTO): LeaveRequest
     {
-        return DB::transaction(function () use ($createLeaveRequestDTO) {
+        return DB::transaction(function () use ($createLeaveRequestDTO): LeaveRequest {
             // Generate request number if not provided
             $requestNumber = $createLeaveRequestDTO->request_number;
             if (empty($requestNumber)) {
@@ -35,7 +35,12 @@ class CreateLeaveRequestAction
                 'status' => 'pending',
             ]);
 
-            return $leaveRequest->fresh();
+            $fresh = $leaveRequest->fresh();
+            if (! $fresh) {
+                throw new \RuntimeException('Failed to refresh leave request after creation');
+            }
+
+            return $fresh;
         });
     }
 
@@ -57,6 +62,6 @@ class CreateLeaveRequestAction
             $nextNumber = 1;
         }
 
-        return $prefix.$year.str_pad($nextNumber, 4, '0', STR_PAD_LEFT);
+        return $prefix.$year.str_pad((string) $nextNumber, 4, '0', STR_PAD_LEFT);
     }
 }

@@ -37,31 +37,49 @@ class StockMove extends Model
         'move_date' => 'date',
     ];
 
+    /**
+     * @return BelongsTo<Company, static>
+     */
     public function company(): BelongsTo
     {
         return $this->belongsTo(Company::class);
     }
 
+    /**
+     * @return BelongsTo<Product, static>
+     */
     public function product(): BelongsTo
     {
         return $this->belongsTo(Product::class);
     }
 
+    /**
+     * @return BelongsTo<StockLocation, static>
+     */
     public function fromLocation(): BelongsTo
     {
         return $this->belongsTo(StockLocation::class, 'from_location_id');
     }
 
+    /**
+     * @return BelongsTo<StockLocation, static>
+     */
     public function toLocation(): BelongsTo
     {
         return $this->belongsTo(StockLocation::class, 'to_location_id');
     }
 
+    /**
+     * @return MorphTo<\Illuminate\Database\Eloquent\Model, static>
+     */
     public function source(): MorphTo
     {
         return $this->morphTo();
     }
 
+    /**
+     * @return BelongsTo<User, static>
+     */
     public function createdByUser(): BelongsTo
     {
         return $this->belongsTo(User::class, 'created_by_user_id');

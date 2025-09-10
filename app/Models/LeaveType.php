@@ -16,7 +16,7 @@ use Spatie\Translatable\HasTranslations;
  *
  * @property int $id
  * @property int $company_id
- * @property array $name
+ * @property array<string, string> $name
  * @property string $code
  * @property string|null $description
  * @property int $default_days_per_year
@@ -43,7 +43,7 @@ class LeaveType extends Model
     /**
      * The attributes that are mass assignable.
      *
-     * @var array<int, string>
+     * @var list<string>
      */
     protected $fillable = [
         'company_id',
@@ -108,6 +108,8 @@ class LeaveType extends Model
 
     /**
      * Get the translatable fields that should be searched.
+     *
+     * @return array<int, string>
      */
     public function getTranslatableSearchFields(): array
     {
@@ -116,6 +118,8 @@ class LeaveType extends Model
 
     /**
      * Get the non-translatable fields that should be searched.
+     *
+     * @return array<int, string>
      */
     public function getNonTranslatableSearchFields(): array
     {
@@ -125,6 +129,9 @@ class LeaveType extends Model
     /**
      * Get the company that owns the LeaveType.
      */
+    /**
+     * @return BelongsTo<Company, static>
+     */
     public function company(): BelongsTo
     {
         return $this->belongsTo(Company::class);
@@ -132,6 +139,9 @@ class LeaveType extends Model
 
     /**
      * Get the leave requests for this leave type.
+     */
+    /**
+     * @return HasMany<LeaveRequest, static>
      */
     public function leaveRequests(): HasMany
     {
@@ -220,7 +230,7 @@ class LeaveType extends Model
      */
     public function getTotalDaysRequestedThisYear(): float
     {
-        return $this->leaveRequests()
+        return (float) $this->leaveRequests()
             ->whereYear('start_date', now()->year)
             ->where('status', 'approved')
             ->sum('days_requested');

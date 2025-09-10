@@ -19,10 +19,10 @@ use Spatie\Translatable\HasTranslations;
  * @property int $id
  * @property int $company_id
  * @property int|null $department_id
- * @property array $title
+ * @property array<string, string> $title
  * @property string|null $description
- * @property array|null $requirements
- * @property array|null $responsibilities
+ * @property array<string, mixed>|null $requirements
+ * @property array<string, mixed>|null $responsibilities
  * @property string $employment_type
  * @property string $level
  * @property Money|null $min_salary
@@ -47,7 +47,7 @@ class Position extends Model
     /**
      * The attributes that are mass assignable.
      *
-     * @var array<int, string>
+     * @var list<string>
      */
     protected $fillable = [
         'company_id',
@@ -100,6 +100,8 @@ class Position extends Model
 
     /**
      * Get the translatable fields that should be searched.
+     *
+     * @return array<int, string>
      */
     public function getTranslatableSearchFields(): array
     {
@@ -108,6 +110,8 @@ class Position extends Model
 
     /**
      * Get the non-translatable fields that should be searched.
+     *
+     * @return array<int, string>
      */
     public function getNonTranslatableSearchFields(): array
     {
@@ -117,6 +121,9 @@ class Position extends Model
     /**
      * Get the company that owns the Position.
      */
+    /**
+     * @return BelongsTo<Company, static>
+     */
     public function company(): BelongsTo
     {
         return $this->belongsTo(Company::class);
@@ -124,6 +131,9 @@ class Position extends Model
 
     /**
      * Get the department this position belongs to.
+     */
+    /**
+     * @return BelongsTo<Department, static>
      */
     public function department(): BelongsTo
     {
@@ -133,6 +143,9 @@ class Position extends Model
     /**
      * Get the salary currency for this position.
      */
+    /**
+     * @return BelongsTo<Currency, static>
+     */
     public function salaryCurrency(): BelongsTo
     {
         return $this->belongsTo(Currency::class, 'salary_currency_id');
@@ -141,6 +154,9 @@ class Position extends Model
     /**
      * Get the employees in this position.
      */
+    /**
+     * @return HasMany<Employee, static>
+     */
     public function employees(): HasMany
     {
         return $this->hasMany(Employee::class);
@@ -148,6 +164,9 @@ class Position extends Model
 
     /**
      * Get the employment contracts for this position.
+     */
+    /**
+     * @return HasMany<EmploymentContract, static>
      */
     public function employmentContracts(): HasMany
     {
@@ -163,6 +182,10 @@ class Position extends Model
             return null;
         }
 
+        if (! $this->salaryCurrency) {
+            throw new \RuntimeException('Position salary currency not found');
+        }
+
         if ($this->min_salary && $this->max_salary) {
             return $this->min_salary->formatTo($this->salaryCurrency->code).' - '.
                    $this->max_salary->formatTo($this->salaryCurrency->code);
@@ -170,6 +193,10 @@ class Position extends Model
 
         if ($this->min_salary) {
             return 'From '.$this->min_salary->formatTo($this->salaryCurrency->code);
+        }
+
+        if (! $this->max_salary) {
+            throw new \RuntimeException('Position max salary not found');
         }
 
         return 'Up to '.$this->max_salary->formatTo($this->salaryCurrency->code);

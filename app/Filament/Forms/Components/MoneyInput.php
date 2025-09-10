@@ -7,8 +7,8 @@ use Brick\Math\Exception\RoundingNecessaryException;
 use Brick\Math\RoundingMode;
 use Brick\Money\Money;
 use Filament\Facades\Filament;
-use Filament\Forms\Components\TextInput; // Import the Get helper
-use Filament\Schemas\Components\Utilities\Get; // Make sure to import your Currency model
+use Filament\Forms\Components\TextInput;
+use Filament\Schemas\Components\Utilities\Get;
 
 class MoneyInput extends TextInput
 {
@@ -50,22 +50,37 @@ class MoneyInput extends TextInput
 
                 // New fallback logic for the Create page before a value is entered.
                 if ($this->currencyFieldName) {
+                    /** @var int|null $currencyId */
                     $currencyId = $get($this->currencyFieldName);
                     if ($currencyId) {
-                        return Currency::find($currencyId)?->code;
+                        $currency = Currency::find($currencyId);
+                        if ($currency) {
+                            return $currency->code;
+                        }
                     }
                 }
 
                 // Original fallback for the Edit page.
-                $mainRecord = $component->getLivewire()->getRecord();
-                if ($mainRecord && $mainRecord->currency) {
-                    return $mainRecord->currency->code;
+                $livewire = $component->getLivewire();
+                if (method_exists($livewire, 'getRecord')) {
+                    $mainRecord = $livewire->getRecord();
+                    if ($mainRecord instanceof \Illuminate\Database\Eloquent\Model && method_exists($mainRecord, 'currency')) {
+                        $currency = $mainRecord->relationLoaded('currency') ? $mainRecord->getRelation('currency') : $mainRecord->currency()->first();
+                        /** @var \App\Models\Currency|null $currency */
+                        if ($currency) {
+                            return $currency->code;
+                        }
+                    }
                 }
 
                 // Try to get the tenant's default currency as final fallback
                 $tenant = Filament::getTenant();
-                if ($tenant && $tenant->currency) {
-                    return $tenant->currency->code;
+                if ($tenant instanceof \Illuminate\Database\Eloquent\Model && method_exists($tenant, 'currency')) {
+                    /** @var \App\Models\Currency|null $tCurrency */
+                    $tCurrency = $tenant->relationLoaded('currency') ? $tenant->getRelation('currency') : $tenant->currency()->first();
+                    if ($tCurrency) {
+                        return $tCurrency->code;
+                    }
                 }
 
                 return '$'; // Default fallback
@@ -76,6 +91,7 @@ class MoneyInput extends TextInput
                 $money = $this->getMoneyObject($component, $get);
 
                 if ($money instanceof Money) {
+                    /** @var \Brick\Money\Money $money */
                     return $money->formatTo('EN_us');
                 }
 
@@ -130,8 +146,12 @@ class MoneyInput extends TextInput
             $livewire = $component->getLivewire();
             if (method_exists($livewire, 'getRecord')) {
                 $mainRecord = $livewire->getRecord();
-                if ($mainRecord && $mainRecord->currency) {
-                    $currencyCode = $mainRecord->currency->code;
+                if ($mainRecord instanceof \Illuminate\Database\Eloquent\Model && method_exists($mainRecord, 'currency')) {
+                    $currency = $mainRecord->relationLoaded('currency') ? $mainRecord->getRelation('currency') : $mainRecord->currency()->first();
+                    /** @var \App\Models\Currency|null $currency */
+                    if ($currency) {
+                        $currencyCode = $currency->code;
+                    }
                 }
             }
         }

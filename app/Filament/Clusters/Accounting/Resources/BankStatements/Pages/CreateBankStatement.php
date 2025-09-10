@@ -5,6 +5,7 @@ namespace App\Filament\Clusters\Accounting\Resources\BankStatements\Pages;
 use App\Actions\Accounting\CreateBankStatementAction;
 use App\DataTransferObjects\Accounting\CreateBankStatementDTO;
 use App\DataTransferObjects\Accounting\CreateBankStatementLineDTO;
+use App\Filament\Actions\DocsAction;
 use App\Filament\Clusters\Accounting\Resources\BankStatements\BankStatementResource;
 use App\Models\Currency;
 use Brick\Money\Money;
@@ -24,14 +25,28 @@ class CreateBankStatement extends CreateRecord
 
     protected function mutateFormDataBeforeCreate(array $data): array
     {
-        $currency = Currency::find($data['currency_id']);
+        $currency = Currency::findOrFail($data['currency_id']);
+        // Ensure we have a single Currency model, not a collection
+        if ($currency instanceof \Illuminate\Database\Eloquent\Collection) {
+            $currency = $currency->first();
+            if (! $currency) {
+                throw new \InvalidArgumentException('Currency not found');
+            }
+        }
         $lineDTOs = [];
         foreach ($data['bankStatementLines'] as $line) {
             $foreignCurrency = null;
             $amountInForeignCurrency = null;
 
             if (! empty($line['foreign_currency_id']) && ! empty($line['amount_in_foreign_currency'])) {
-                $foreignCurrency = Currency::find($line['foreign_currency_id']);
+                $foreignCurrency = Currency::findOrFail($line['foreign_currency_id']);
+                // Ensure we have a single Currency model, not a collection
+                if ($foreignCurrency instanceof \Illuminate\Database\Eloquent\Collection) {
+                    $foreignCurrency = $foreignCurrency->first();
+                    if (! $foreignCurrency) {
+                        throw new \InvalidArgumentException('Foreign currency not found');
+                    }
+                }
                 $amountInForeignCurrency = Money::of($line['amount_in_foreign_currency'], $foreignCurrency->code);
             }
 
@@ -52,17 +67,33 @@ class CreateBankStatement extends CreateRecord
 
     protected function handleRecordCreation(array $data): Model
     {
+        $currency = Currency::findOrFail($data['currency_id']);
+        // Ensure we have a single Currency model, not a collection
+        if ($currency instanceof \Illuminate\Database\Eloquent\Collection) {
+            $currency = $currency->first();
+            if (! $currency) {
+                throw new \InvalidArgumentException('Currency not found');
+            }
+        }
+
         $bankStatementDTO = new CreateBankStatementDTO(
-            company_id: Filament::getTenant()->id,
+            company_id: (int) (Filament::getTenant()->id ?? 0),
             currency_id: $data['currency_id'],
             journal_id: $data['journal_id'],
             reference: $data['reference'],
             date: $data['date'],
-            starting_balance: Money::of($data['starting_balance'], Currency::find($data['currency_id'])->code),
-            ending_balance: Money::of($data['ending_balance'], Currency::find($data['currency_id'])->code),
+            starting_balance: Money::of($data['starting_balance'], $currency->code),
+            ending_balance: Money::of($data['ending_balance'], $currency->code),
             lines: $data['bankStatementLines']
         );
 
         return app(CreateBankStatementAction::class)->execute($bankStatementDTO);
+    }
+
+    protected function getHeaderActions(): array
+    {
+        return [
+            DocsAction::make('bank-statements'),
+        ];
     }
 }

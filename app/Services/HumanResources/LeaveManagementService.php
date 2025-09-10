@@ -87,13 +87,15 @@ class LeaveManagementService
         }
 
         DB::transaction(function () use ($leaveRequest, $reason) {
+            $wasApproved = $leaveRequest->status === 'approved';
+
             $leaveRequest->update([
                 'status' => 'cancelled',
                 'rejection_reason' => $reason,
             ]);
 
             // Remove attendance records if leave was already approved
-            if ($leaveRequest->status === 'approved') {
+            if ($wasApproved) {
                 $this->removeLeaveAttendanceRecords($leaveRequest);
             }
         });
@@ -101,6 +103,8 @@ class LeaveManagementService
 
     /**
      * Get leave balance for an employee.
+     *
+     * @return array<string, mixed>
      */
     public function getLeaveBalance(Employee $employee, LeaveType $leaveType, ?int $year = null): array
     {
@@ -163,8 +167,8 @@ class LeaveManagementService
      */
     private function validateLeaveRequest(CreateLeaveRequestDTO $dto): void
     {
-        $employee = Employee::find($dto->employee_id);
-        $leaveType = LeaveType::find($dto->leave_type_id);
+        $employee = Employee::findOrFail($dto->employee_id);
+        $leaveType = LeaveType::findOrFail($dto->leave_type_id);
 
         // Check if employee has sufficient leave balance
         $balance = $this->getLeaveBalance($employee, $leaveType);
@@ -180,7 +184,7 @@ class LeaveManagementService
         }
 
         // Check maximum consecutive days
-        if ($leaveType->exceedsMaxConsecutiveDays($dto->days_requested)) {
+        if ($leaveType->exceedsMaxConsecutiveDays((int) $dto->days_requested)) {
             throw new Exception('Maximum consecutive days allowed: '.$leaveType->max_consecutive_days);
         }
 
@@ -215,7 +219,9 @@ class LeaveManagementService
         while ($currentDate->lte($endDate)) {
             // Skip weekends (assuming 5-day work week)
             if (! $currentDate->isWeekend()) {
-                $leaveRequest->employee->attendances()->updateOrCreate(
+                /** @var \App\Models\Employee $employee */
+                $employee = $leaveRequest->employee;
+                $employee->attendances()->updateOrCreate(
                     [
                         'attendance_date' => $currentDate->format('Y-m-d'),
                     ],
@@ -223,8 +229,8 @@ class LeaveManagementService
                         'company_id' => $leaveRequest->company_id,
                         'status' => 'on_leave',
                         'attendance_type' => 'regular',
-                        'leave_request_id' => $leaveRequest->id,
-                        'notes' => 'On leave: '.$leaveRequest->leaveType->name,
+                        'leave_request_id' => $leaveRequest->getKey(),
+                        'notes' => 'On leave: '.$leaveRequest->leaveType->getTranslation('name', app()->getLocale()),
                     ]
                 );
             }
@@ -237,8 +243,10 @@ class LeaveManagementService
      */
     private function removeLeaveAttendanceRecords(LeaveRequest $leaveRequest): void
     {
-        $leaveRequest->employee->attendances()
-            ->where('leave_request_id', $leaveRequest->id)
+        /** @var \App\Models\Employee $employee */
+        $employee = $leaveRequest->employee;
+        $employee->attendances()
+            ->where('leave_request_id', $leaveRequest->getKey())
             ->delete();
     }
 

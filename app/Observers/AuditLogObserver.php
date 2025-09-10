@@ -62,17 +62,20 @@ class AuditLogObserver
         // Determine company_id from Filament tenant or model
         $companyId = null;
         if (class_exists(Filament::class)) {
+            /** @var \App\Models\Company|null $tenant */
             $tenant = Filament::getTenant();
             if ($tenant) {
-                $companyId = $tenant->id;
+                $companyId = $tenant->getKey();
             }
         }
 
         // If no tenant, try to get company from the model being audited
-        if (! $companyId && method_exists($model, 'company') && $model->company) {
-            $companyId = $model->company->id;
+        if (! $companyId && method_exists($model, 'company') && $model->relationLoaded('company') && $model->getAttribute('company')) {
+            /** @var \App\Models\Company $company */
+            $company = $model->getAttribute('company');
+            $companyId = $company->getKey();
         } elseif (! $companyId && isset($model->company_id)) {
-            $companyId = $model->company_id;
+            $companyId = $model->getAttribute('company_id');
         }
 
         AuditLog::create([

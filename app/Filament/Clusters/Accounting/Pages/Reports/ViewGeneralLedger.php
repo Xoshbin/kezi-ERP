@@ -33,8 +33,10 @@ class ViewGeneralLedger extends Page
 
     public ?string $endDate = null;
 
+    /** @var array<int, int>|null */
     public ?array $accountIds = null;
 
+    /** @var array<string, mixed>|null */
     public ?array $reportData = null;
 
     public static function getNavigationLabel(): string
@@ -82,10 +84,10 @@ class ViewGeneralLedger extends Page
                             ->multiple()
                             ->searchable()
                             ->getSearchResultsUsing(function (string $search): array {
-                                $company = Filament::getTenant();
+                                $tenant = Filament::getTenant();
 
                                 return Account::searchTranslatable($search)
-                                    ->where('company_id', $company->id)
+                                    ->where('company_id', $tenant?->getKey())
                                     ->limit(50)
                                     ->get()
                                     ->mapWithKeys(fn ($account) => [$account->id => $account->code.' - '.$account->getTranslatedLabel('name')])
@@ -94,7 +96,11 @@ class ViewGeneralLedger extends Page
                             ->getOptionLabelsUsing(function (array $values): array {
                                 return Account::whereIn('id', $values)
                                     ->get()
-                                    ->mapWithKeys(fn ($account) => [$account->id => "{$account->code} - {$account->name}"])
+                                    ->mapWithKeys(function (Account $account) {
+                                        $accountName = is_array($account->name) ? ($account->name['en'] ?? (empty($account->name) ? '' : (string) array_values($account->name)[0])) : (string) $account->name;
+
+                                        return [$account->id => "{$account->code} - {$accountName}"];
+                                    })
                                     ->toArray();
                             })
                             ->placeholder(__('reports.all_accounts'))
@@ -117,11 +123,14 @@ class ViewGeneralLedger extends Page
     public function generateReport(): void
     {
         $this->validate([
-            'startDate' => 'required|date',
-            'endDate' => 'required|date|after_or_equal:startDate',
+            'startDate' => ['required', 'date'],
+            'endDate' => ['required', 'date', 'after_or_equal:startDate'],
         ]);
 
         $company = Filament::getTenant();
+        if (! $company instanceof \App\Models\Company) {
+            return;
+        }
         $service = app(GeneralLedgerService::class);
 
         $report = $service->generate(

@@ -9,6 +9,9 @@ use Livewire\Livewire;
 
 class AppServiceProvider extends ServiceProvider
 {
+    /**
+     * @var array<int, class-string>
+     */
     protected $subscribe = [
         PostJournalEntry::class,
     ];

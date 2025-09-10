@@ -4,9 +4,10 @@ namespace App\Filament\Clusters\Accounting\Resources\Payments\Pages;
 
 use App\Actions\Payments\UpdatePaymentAction;
 use App\DataTransferObjects\Payments\UpdatePaymentDTO;
-use App\Enums\Payments\PaymentPurpose;
+use App\Enums\Payments\PaymentMethod;
 use App\Enums\Payments\PaymentStatus;
 use App\Enums\Payments\PaymentType;
+use App\Filament\Actions\DocsAction;
 use App\Filament\Clusters\Accounting\Resources\Payments\PaymentResource;
 use App\Models\Currency;
 use App\Models\Payment;
@@ -15,7 +16,6 @@ use Brick\Money\Money;
 use Exception;
 use Filament\Actions\Action;
 use Filament\Actions\DeleteAction;
-use Filament\Facades\Filament;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
 use Illuminate\Database\Eloquent\Model;
@@ -28,6 +28,7 @@ class EditPayment extends EditRecord
     protected function getHeaderActions(): array
     {
         return [
+            DocsAction::make('payments'),
             Action::make('confirm')
                 ->label(__('payment.edit.action.confirm.label'))
                 ->color('success')
@@ -37,7 +38,11 @@ class EditPayment extends EditRecord
                     $this->save();
                     $service = app(PaymentService::class);
                     try {
-                        $service->confirm($record, Auth::user());
+                        $user = Auth::user();
+                        if (! $user) {
+                            throw new \Exception('User must be authenticated to confirm payment');
+                        }
+                        $service->confirm($record, $user);
                         Notification::make()->title(__('payment.action.confirm.notification.success'))->success()->send();
                     } catch (Exception $e) {
                         Notification::make()->title(__('payment.action.confirm.notification.error'))->body($e->getMessage())->danger()->send();
@@ -75,32 +80,45 @@ class EditPayment extends EditRecord
     protected function mutateFormDataBeforeFill(array $data): array
     {
         // Set the 'amount' field from the record's Money object for standalone payments
-        $data['amount'] = $this->record->amount?->getAmount()->toFloat();
+        $record = $this->getRecord();
+        if ($record instanceof Payment) {
+            $data['amount'] = $record->amount->getAmount()->toFloat();
+        }
 
         return $data;
     }
 
     protected function handleRecordUpdate(Model $record, array $data): Model
     {
-        $currency = Currency::find($data['currency_id']);
+        if (! $record instanceof Payment) {
+            throw new \InvalidArgumentException('Expected Payment record');
+        }
+
+        $currency = Currency::findOrFail($data['currency_id']);
+        // Ensure we have a single Currency model, not a collection
+        if ($currency instanceof \Illuminate\Database\Eloquent\Collection) {
+            $currency = $currency->first();
+            if (! $currency) {
+                throw new \InvalidArgumentException('Currency not found');
+            }
+        }
 
         // Prepare amount for standalone payments
         $amount = Money::of($data['amount'], $currency->code);
 
         $paymentDTO = new UpdatePaymentDTO(
             payment: $record,
-            company_id: Filament::getTenant()->id,
+            company_id: $record->company_id,
             journal_id: $data['journal_id'],
             currency_id: $data['currency_id'],
             payment_date: $data['payment_date'],
-            payment_purpose: PaymentPurpose::from($data['payment_purpose']),
             payment_type: PaymentType::from($data['payment_type']),
+            payment_method: PaymentMethod::from($data['payment_method']),
             partner_id: $data['partner_id'],
             amount: $amount,
-            counterpart_account_id: $data['counterpart_account_id'],
             document_links: [], // No document links for standalone payments
             reference: $data['reference'],
-            updated_by_user_id: Auth::id()
+            updated_by_user_id: (int) Auth::id()
         );
 
         return app(UpdatePaymentAction::class)->execute($paymentDTO);

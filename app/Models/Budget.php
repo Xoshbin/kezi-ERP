@@ -47,6 +47,7 @@ use Illuminate\Support\Carbon;
  */
 class Budget extends Model
 {
+    /** @use HasFactory<\Database\Factories\BudgetFactory> */
     use HasFactory;
 
     /**
@@ -61,7 +62,7 @@ class Budget extends Model
      * The attributes that are mass assignable.
      * These fields are crucial for creating and managing a budget's core properties.
      *
-     * @var array<int, string>
+     * @var list<string>
      */
     protected $fillable = [
         'company_id',
@@ -98,6 +99,9 @@ class Budget extends Model
      * Get the company that owns this budget.
      * Essential for multi-company accounting setups [3].
      */
+    /**
+     * @return BelongsTo<Company, static>
+     */
     public function company(): BelongsTo
     {
         return $this->belongsTo(Company::class);
@@ -107,11 +111,17 @@ class Budget extends Model
      * Get the budget lines for this budget.
      * Each budget is composed of one or more detailed lines [3].
      */
+    /**
+     * @return HasMany<BudgetLine, static>
+     */
     public function budgetLines(): HasMany
     {
         return $this->hasMany(BudgetLine::class);
     }
 
+    /**
+     * @return BelongsTo<Currency, static>
+     */
     public function currency(): BelongsTo
     {
         return $this->belongsTo(Currency::class);

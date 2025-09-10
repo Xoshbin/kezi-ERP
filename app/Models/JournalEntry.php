@@ -74,6 +74,7 @@ use RuntimeException;
 #[ObservedBy([JournalEntryObserver::class])]
 class JournalEntry extends Model
 {
+    /** @use HasFactory<\Database\Factories\JournalEntryFactory> */
     use HasFactory;
 
     /**
@@ -94,7 +95,7 @@ class JournalEntry extends Model
      * are managed programmatically and are excluded from mass assignment to prevent vulnerabilities
      * and enforce strict data integrity rules [3].
      *
-     * @var array<int, string>
+     * @var list<string>
      */
     protected $fillable = [
         'company_id',
@@ -140,7 +141,7 @@ class JournalEntry extends Model
      * Without this, any retrieval of a `JournalEntry` would fail when casting monetary values
      * due to the missing currency information, leading to a "currency_id on null" error.
      *
-     * @var array
+     * @var list<string>
      */
     protected $with = ['company.currency'];
 
@@ -156,7 +157,7 @@ class JournalEntry extends Model
         // vital for maintaining an accurate audit trail [3, 4, 8].
         static::creating(function (JournalEntry $journalEntry) {
             if (Auth::check()) {
-                $journalEntry->created_by_user_id = Auth::id();
+                $journalEntry->created_by_user_id = (int) Auth::id();
             }
             // `is_posted` is typically initialized to `false` in the migration,
             // and transitions to `true` via a dedicated posting mechanism in the application's
@@ -213,6 +214,9 @@ class JournalEntry extends Model
      *
      * @return BelongsTo An Eloquent relationship instance for the Company model [3, 22].
      */
+    /**
+     * @return BelongsTo<Company, static>
+     */
     public function company(): BelongsTo
     {
         return $this->belongsTo(Company::class);
@@ -222,6 +226,9 @@ class JournalEntry extends Model
      * Get the Journal model to which this entry belongs.
      *
      * @return BelongsTo An Eloquent relationship instance for the Journal model [3, 22].
+     */
+    /**
+     * @return BelongsTo<Journal, static>
      */
     public function journal(): BelongsTo
     {
@@ -233,6 +240,9 @@ class JournalEntry extends Model
      *
      * @return BelongsTo An Eloquent relationship instance for the Currency model [3, 22].
      */
+    /**
+     * @return BelongsTo<Currency, static>
+     */
     public function currency(): BelongsTo
     {
         return $this->belongsTo(Currency::class);
@@ -242,6 +252,9 @@ class JournalEntry extends Model
      * Get the User model who created this journal entry.
      *
      * @return BelongsTo An Eloquent relationship instance for the User model, specifying the foreign key [3, 22].
+     */
+    /**
+     * @return BelongsTo<User, static>
      */
     public function createdBy(): BelongsTo
     {
@@ -254,6 +267,9 @@ class JournalEntry extends Model
      * A single journal entry is composed of multiple individual debit and credit lines [3].
      *
      * @return HasMany An Eloquent relationship instance for the JournalEntryLine model [3, 23].
+     */
+    /**
+     * @return HasMany<JournalEntryLine, static>
      */
     public function lines(): HasMany
     {
@@ -269,6 +285,9 @@ class JournalEntry extends Model
      *
      * @return MorphTo An Eloquent polymorphic relationship instance [3, 24].
      */
+    /**
+     * @return MorphTo<\Illuminate\Database\Eloquent\Model, static>
+     */
     public function source(): MorphTo
     {
         return $this->morphTo();
@@ -282,6 +301,9 @@ class JournalEntry extends Model
      * original entry being reversed.
      *
      * @return BelongsTo An Eloquent relationship instance for the JournalEntry model.
+     */
+    /**
+     * @return BelongsTo<JournalEntry, static>
      */
     public function reversingEntry(): BelongsTo
     {

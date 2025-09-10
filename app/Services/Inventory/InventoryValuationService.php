@@ -28,9 +28,9 @@ class InventoryValuationService
 {
     public function __construct(protected LockDateService $lockDateService) {}
 
-    public function processIncomingStock(Product $product, float $quantity, Money $costPerUnit, Carbon $date, $sourceDocument): void
+    public function processIncomingStock(Product $product, float $quantity, Money $costPerUnit, Carbon $date, \Illuminate\Database\Eloquent\Model $sourceDocument): void
     {
-        $this->lockDateService->enforce(Company::find($product->company_id), Carbon::parse($date));
+        $this->lockDateService->enforce(Company::findOrFail($product->company_id), Carbon::parse($date));
 
         // Calculate total cost for this incoming stock
         $totalCost = $costPerUnit->multipliedBy($quantity);
@@ -51,9 +51,9 @@ class InventoryValuationService
         Log::info("Successfully processed incoming stock for product {$product->id}, Total cost: {$totalCost->getAmount()}");
     }
 
-    public function processOutgoingStock(Product $product, float $quantity, Carbon $date, $sourceDocument): void
+    public function processOutgoingStock(Product $product, float $quantity, Carbon $date, \Illuminate\Database\Eloquent\Model $sourceDocument): void
     {
-        $this->lockDateService->enforce(Company::find($product->company_id), Carbon::parse($date));
+        $this->lockDateService->enforce(Company::findOrFail($product->company_id), Carbon::parse($date));
 
         // Calculate COGS based on valuation method
         $cogsAmount = $this->calculateCOGS($product, $quantity);
@@ -76,15 +76,18 @@ class InventoryValuationService
     public function adjustInventoryValue(AdjustInventoryDTO $dto): void
     {
         $product = Product::findOrFail($dto->product_id);
-        $this->lockDateService->enforce(Company::find($product->company_id), Carbon::parse($dto->adjustment_date));
+        $this->lockDateService->enforce(Company::findOrFail($product->company_id), Carbon::parse($dto->adjustment_date));
 
         // This is a simplified example. A real implementation would need to calculate the value of the adjustment.
         // For now, we will assume the value is the quantity * the product's average cost.
+        if (! $product->average_cost) {
+            throw new \Exception('Product must have an average cost for inventory adjustment');
+        }
         $adjustmentValue = $product->average_cost->multipliedBy($dto->quantity);
 
         $journal = JournalEntry::create([
             'company_id' => $product->company_id,
-            'journal_id' => $product->company->default_inventory_journal_id,
+            'journal_id' => $product->company->default_purchase_journal_id,
             'date' => $dto->adjustment_date,
             'state' => JournalEntryState::Posted,
             'reference' => $dto->reference ?? "Inventory Adjustment for product {$product->name}",
@@ -93,7 +96,7 @@ class InventoryValuationService
         // Debit the inventory adjustment account
         JournalEntryLine::create([
             'journal_entry_id' => $journal->id,
-            'account_id' => $product->company->inventoryAdjustmentAccount->id,
+            'account_id' => $product->company->inventory_adjustment_account_id,
             'partner_id' => null,
             'label' => "Inventory Adjustment for product {$product->name}",
             'debit' => $adjustmentValue,
@@ -103,7 +106,7 @@ class InventoryValuationService
         // Credit the stock valuation account
         JournalEntryLine::create([
             'journal_entry_id' => $journal->id,
-            'account_id' => $product->stock_valuation_account_id,
+            'account_id' => $product->default_inventory_account_id,
             'partner_id' => null,
             'label' => "Inventory Adjustment for product {$product->name}",
             'debit' => Money::of(0, $product->company->currency->code),
@@ -158,7 +161,10 @@ class InventoryValuationService
             }
 
             $quantityToConsume = min($remainingQuantity, $layer->remaining_quantity);
-            $layerCOGS = $layer->unit_cost->multipliedBy($quantityToConsume);
+            if (! $layer->cost_per_unit) {
+                throw new \Exception('Cost layer must have a cost per unit');
+            }
+            $layerCOGS = $layer->cost_per_unit->multipliedBy($quantityToConsume);
             $totalCOGS = $totalCOGS->plus($layerCOGS);
 
             // Update the cost layer
@@ -178,7 +184,7 @@ class InventoryValuationService
     /**
      * Create a journal entry for Cost of Goods Sold
      */
-    private function createCOGSJournalEntry(Product $product, Money $cogsAmount, Carbon $date, $sourceDocument): JournalEntry
+    private function createCOGSJournalEntry(Product $product, Money $cogsAmount, Carbon $date, \Illuminate\Database\Eloquent\Model $sourceDocument): JournalEntry
     {
         $company = $product->company;
         $currencyCode = $company->currency->code;
@@ -222,7 +228,7 @@ class InventoryValuationService
             entry_date: $date->toDateString(),
             reference: $reference,
             description: "Cost of Goods Sold for {$product->name}",
-            created_by_user_id: Auth::id() ?? 1, // Fallback to system user if no auth context
+            created_by_user_id: (int) (Auth::id() ?? 1), // Fallback to system user if no auth context
             is_posted: true, // COGS entries are posted immediately
             lines: [
                 // Debit: COGS Account (expense increases)
@@ -254,6 +260,8 @@ class InventoryValuationService
 
     /**
      * Create a StockMoveValuation record to link the stock move with its accounting impact
+     *
+     * @param  \Illuminate\Database\Eloquent\Model  $sourceDocument
      */
     private function createStockMoveValuation(Product $product, float $quantity, Money $cogsAmount, JournalEntry $journalEntry, $sourceDocument): StockMoveValuation
     {
@@ -318,13 +326,11 @@ class InventoryValuationService
     {
         // Create a new cost layer for FIFO/LIFO tracking
         InventoryCostLayer::create([
-            'company_id' => $product->company_id,
             'product_id' => $product->id,
             'quantity' => $quantity,
             'remaining_quantity' => $quantity,
-            'unit_cost' => $costPerUnit,
-            'total_cost' => $costPerUnit->multipliedBy($quantity),
-            'layer_date' => $date,
+            'cost_per_unit' => $costPerUnit,
+            'purchase_date' => $date,
         ]);
 
         // Update product quantity
@@ -337,6 +343,8 @@ class InventoryValuationService
 
     /**
      * Create a journal entry for incoming stock
+     *
+     * @param  \Illuminate\Database\Eloquent\Model  $sourceDocument
      */
     private function createIncomingStockJournalEntry(Product $product, Money $totalCost, Carbon $date, $sourceDocument): JournalEntry
     {
@@ -371,7 +379,7 @@ class InventoryValuationService
             entry_date: $date->toDateString(),
             reference: $reference,
             description: "Stock receipt for {$product->name}",
-            created_by_user_id: Auth::id() ?? 1, // Fallback to system user if no auth context
+            created_by_user_id: (int) (Auth::id() ?? 1), // Fallback to system user if no auth context
             is_posted: true, // Stock entries are posted immediately
             lines: [
                 // Debit: Inventory Account (asset increases)
@@ -403,6 +411,8 @@ class InventoryValuationService
 
     /**
      * Create a StockMoveValuation record for incoming stock
+     *
+     * @param  \Illuminate\Database\Eloquent\Model  $sourceDocument
      */
     private function createIncomingStockMoveValuation(Product $product, float $quantity, Money $totalCost, JournalEntry $journalEntry, $sourceDocument): StockMoveValuation
     {
