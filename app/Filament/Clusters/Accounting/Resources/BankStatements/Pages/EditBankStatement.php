@@ -5,6 +5,7 @@ namespace App\Filament\Clusters\Accounting\Resources\BankStatements\Pages;
 use App\Actions\Accounting\UpdateBankStatementAction;
 use App\DataTransferObjects\Accounting\UpdateBankStatementDTO;
 use App\DataTransferObjects\Accounting\UpdateBankStatementLineDTO;
+use App\Filament\Actions\DocsAction;
 use App\Filament\Clusters\Accounting\Resources\BankStatements\BankStatementResource;
 use App\Models\Currency;
 use App\Models\BankStatement;
@@ -27,6 +28,7 @@ class EditBankStatement extends EditRecord
     {
         return [
             DeleteAction::make(),
+            DocsAction::make('bank-statements'),
         ];
     }
 

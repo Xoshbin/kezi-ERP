@@ -3,6 +3,7 @@
 namespace App\Filament\Clusters\Settings\Resources\PaymentTermResource\Pages;
 
 use App\Filament\Clusters\Settings\Resources\PaymentTermResource;
+use App\Filament\Actions\DocsAction;
 use Filament\Actions;
 use Filament\Resources\Pages\ListRecords;
 
@@ -14,6 +15,7 @@ class ListPaymentTerms extends ListRecords
     {
         return [
             Actions\CreateAction::make(),
+            DocsAction::make('payment-terms-guide'),
         ];
     }
 }
