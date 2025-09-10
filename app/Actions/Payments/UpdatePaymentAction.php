@@ -34,7 +34,7 @@ class UpdatePaymentAction
         if ($isSettlement && empty($dto->document_links)) {
             throw new InvalidArgumentException('Settlement payments must be linked to at least one document.');
         }
-        if (! $isSettlement && empty($dto->partner_id)) {
+        if (! $isSettlement && empty($dto->paid_to_from_partner_id)) {
             throw new InvalidArgumentException('Payments without document links must specify a partner.');
         }
 
@@ -70,7 +70,7 @@ class UpdatePaymentAction
             } else {
                 // For direct payments, use provided values
                 $totalAmount = $dto->amount;
-                $partnerId = $dto->partner_id;
+                $partnerId = $dto->paid_to_from_partner_id;
                 $paymentType = $dto->payment_type;
             }
 
