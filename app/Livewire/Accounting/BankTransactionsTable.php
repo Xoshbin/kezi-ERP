@@ -89,13 +89,13 @@ class BankTransactionsTable extends Component implements HasActions, HasForms, H
                         // Ensure we have a single Account model, not a collection
                         if ($writeOffAccount instanceof \Illuminate\Database\Eloquent\Collection) {
                             $writeOffAccount = $writeOffAccount->first();
-                            if (!$writeOffAccount) {
+                            if (! $writeOffAccount) {
                                 throw new \Exception('Write-off account not found');
                             }
                         }
 
                         $user = Auth::user();
-                        if (!$user) {
+                        if (! $user) {
                             throw new \Exception('User must be authenticated to create write-off');
                         }
                         app(BankReconciliationService::class)->createWriteOff(

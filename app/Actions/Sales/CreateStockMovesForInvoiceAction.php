@@ -101,7 +101,7 @@ class CreateStockMovesForInvoiceAction
         StockLocation $warehouseLocation,
         StockLocation $vendorLocation
     ): \App\Models\StockMove {
-        if (!$line->product_id) {
+        if (! $line->product_id) {
             throw new \Exception('Invoice line must have a product to create stock move');
         }
 

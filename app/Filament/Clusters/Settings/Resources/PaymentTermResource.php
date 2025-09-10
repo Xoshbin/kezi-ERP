@@ -3,20 +3,20 @@
 namespace App\Filament\Clusters\Settings\Resources;
 
 use App\Enums\PaymentTerms\PaymentTermType;
-use App\Filament\Clusters\Settings\SettingsCluster;
 use App\Filament\Clusters\Settings\Resources\PaymentTermResource\Pages;
+use App\Filament\Clusters\Settings\SettingsCluster;
 use App\Models\PaymentTerm;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
-use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\Textarea;
-use Filament\Forms\Components\Toggle;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Toggle;
+use Filament\Resources\Resource;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
-use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
@@ -141,6 +141,7 @@ class PaymentTermResource extends Resource
                     ->limit(50)
                     ->tooltip(function (Tables\Columns\TextColumn $column): ?string {
                         $state = $column->getState();
+
                         return strlen($state) > 50 ? $state : null;
                     }),
 

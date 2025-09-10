@@ -14,12 +14,12 @@ class ProcessOutgoingStockAction
     {
         DB::transaction(function () use ($stockMove) {
             $product = $stockMove->product;
-            if (!$product instanceof \App\Models\Product) {
+            if (! $product instanceof \App\Models\Product) {
                 throw new \Exception('Product not found for stock move');
             }
 
             $sourceDocument = $stockMove->source;
-            if (!$sourceDocument) {
+            if (! $sourceDocument) {
                 throw new \Exception('Stock move must have a source document');
             }
 

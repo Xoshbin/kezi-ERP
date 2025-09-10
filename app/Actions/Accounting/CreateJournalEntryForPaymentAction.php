@@ -4,7 +4,6 @@ namespace App\Actions\Accounting;
 
 use App\DataTransferObjects\Accounting\CreateJournalEntryDTO;
 use App\DataTransferObjects\Accounting\CreateJournalEntryLineDTO;
-
 use App\Enums\Payments\PaymentType;
 use App\Models\JournalEntry;
 use App\Models\Payment;

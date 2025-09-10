@@ -48,6 +48,7 @@ class AnalyticPlan extends Model
 {
     /** @use HasFactory<\Database\Factories\AnalyticPlanFactory> */
     use HasFactory, HasTranslations;
+
     use TranslatableSearch;
 
     /** @var array<int, string> */
@@ -99,11 +100,8 @@ class AnalyticPlan extends Model
      * An analytic plan can optionally belong to a specific company, or be shared across all [4-6].
      */
     /**
-
      * @return BelongsTo<Company, static>
-
      */
-
     public function company(): BelongsTo
     {
         return $this->belongsTo(Company::class);
@@ -134,11 +132,8 @@ class AnalyticPlan extends Model
      * Allows for building complex, nested analytic plan organizations [3, 8].
      */
     /**
-
      * @return BelongsTo<AnalyticPlan, static>
-
      */
-
     public function parent(): BelongsTo
     {
         return $this->belongsTo(AnalyticPlan::class, 'parent_id');
@@ -149,11 +144,8 @@ class AnalyticPlan extends Model
      * Defines the "subplans" mentioned in the sources, allowing for recursive plan definitions [8].
      */
     /**
-
      * @return HasMany<AnalyticPlan, static>
-
      */
-
     public function children(): HasMany
     {
         return $this->hasMany(AnalyticPlan::class, 'parent_id');
@@ -164,11 +156,8 @@ class AnalyticPlan extends Model
      * Analytic plans are crucial for defining and tracking budgets related to projects or departments [1, 4, 11].
      */
     /**
-
      * @return HasMany<Budget, static>
-
      */
-
     public function budgets(): HasMany
     {
         return $this->hasMany(Budget::class);

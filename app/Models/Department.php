@@ -104,11 +104,8 @@ class Department extends Model
      * Get the company that owns the Department.
      */
     /**
-
      * @return BelongsTo<Company, static>
-
      */
-
     public function company(): BelongsTo
     {
         return $this->belongsTo(Company::class);
@@ -118,11 +115,8 @@ class Department extends Model
      * Get the parent department.
      */
     /**
-
      * @return BelongsTo<Department, static>
-
      */
-
     public function parentDepartment(): BelongsTo
     {
         return $this->belongsTo(Department::class, 'parent_department_id');
@@ -132,11 +126,8 @@ class Department extends Model
      * Get the child departments.
      */
     /**
-
      * @return HasMany<Department, static>
-
      */
-
     public function childDepartments(): HasMany
     {
         return $this->hasMany(Department::class, 'parent_department_id');
@@ -146,11 +137,8 @@ class Department extends Model
      * Get the manager of this department.
      */
     /**
-
      * @return BelongsTo<User, static>
-
      */
-
     public function manager(): BelongsTo
     {
         return $this->belongsTo(User::class, 'manager_id');
@@ -160,11 +148,8 @@ class Department extends Model
      * Get the employees in this department.
      */
     /**
-
      * @return HasMany<Employee, static>
-
      */
-
     public function employees(): HasMany
     {
         return $this->hasMany(Employee::class);
@@ -174,11 +159,8 @@ class Department extends Model
      * Get the positions in this department.
      */
     /**
-
      * @return HasMany<Position, static>
-
      */
-
     public function positions(): HasMany
     {
         return $this->hasMany(Position::class);
@@ -191,7 +173,7 @@ class Department extends Model
      */
     public function getAllDescendants(): Collection
     {
-        $descendants = new \Illuminate\Database\Eloquent\Collection();
+        $descendants = new \Illuminate\Database\Eloquent\Collection;
 
         foreach ($this->childDepartments as $child) {
             $descendants->push($child);
@@ -208,7 +190,7 @@ class Department extends Model
      */
     public function getAllAncestors(): Collection
     {
-        $ancestors = new \Illuminate\Database\Eloquent\Collection();
+        $ancestors = new \Illuminate\Database\Eloquent\Collection;
         $current = $this->parentDepartment;
 
         while ($current) {

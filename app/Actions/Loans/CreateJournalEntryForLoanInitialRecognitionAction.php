@@ -21,9 +21,13 @@ class CreateJournalEntryForLoanInitialRecognitionAction
         return DB::transaction(function () use ($loan, $user, $journalId, $bankAccountId, $loanAccountId) {
             $loan->loadMissing('company', 'currency');
             $company = $loan->company;
-            if (! $company) { throw new \RuntimeException('Loan company missing'); }
+            if (! $company) {
+                throw new \RuntimeException('Loan company missing');
+            }
             $currencyModel = $loan->currency;
-            if (! $currencyModel) { throw new \RuntimeException('Loan currency missing'); }
+            if (! $currencyModel) {
+                throw new \RuntimeException('Loan currency missing');
+            }
             $currencyCode = (string) data_get($currencyModel, 'code');
 
             /** @var \Brick\Money\Money $amount */
@@ -89,4 +93,3 @@ class CreateJournalEntryForLoanInitialRecognitionAction
         });
     }
 }
-

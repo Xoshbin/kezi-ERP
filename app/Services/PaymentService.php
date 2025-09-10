@@ -222,7 +222,7 @@ class PaymentService
      * Apply a payment to documents with exchange gain/loss calculation.
      * This method handles payment application with multi-currency support.
      *
-     * @param array<int, array{document_type: string, document_id: int, amount_applied: string}> $applications
+     * @param  array<int, array{document_type: string, document_id: int, amount_applied: string}>  $applications
      * @return array<int, \App\Models\PaymentDocumentLink>
      */
     public function applyToDocuments(Payment $payment, array $applications, User $user): array

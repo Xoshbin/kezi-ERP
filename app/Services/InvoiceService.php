@@ -40,6 +40,7 @@ class InvoiceService
 
         // If the guard passes, proceed with the deletion.
         $result = $invoice->delete();
+
         return $result !== null ? $result : false;
     }
 

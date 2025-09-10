@@ -135,8 +135,6 @@ return [
         'paid' => 'مدفوع',
     ],
 
-
-
     'payment_method' => [
         'manual' => 'يدوي',
         'check' => 'شيك',

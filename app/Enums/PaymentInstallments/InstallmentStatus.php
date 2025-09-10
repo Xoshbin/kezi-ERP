@@ -15,7 +15,7 @@ use Filament\Support\Contracts\HasLabel;
  * - Paid: Fully paid
  * - Cancelled: Installment cancelled (e.g., invoice cancelled)
  */
-enum InstallmentStatus: string implements HasLabel, HasColor, HasIcon
+enum InstallmentStatus: string implements HasColor, HasIcon, HasLabel
 {
     case Pending = 'pending';
     case PartiallyPaid = 'partially_paid';

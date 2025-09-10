@@ -74,4 +74,3 @@ it('persists fee lines on a loan', function () {
     $amt = $loan->feeLines->first()->amount->getAmount()->toFloat();
     expect(abs($amt - 100.00))->toBeLessThan(0.001);
 });
-

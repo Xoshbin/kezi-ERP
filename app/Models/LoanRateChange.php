@@ -11,7 +11,7 @@ class LoanRateChange extends Model
     use HasFactory;
 
     protected $fillable = [
-        'loan_id','effective_date','annual_rate',
+        'loan_id', 'effective_date', 'annual_rate',
     ];
 
     protected $casts = [
@@ -19,6 +19,8 @@ class LoanRateChange extends Model
         'annual_rate' => 'float',
     ];
 
-    public function loan(): BelongsTo { return $this->belongsTo(LoanAgreement::class, 'loan_id'); }
+    public function loan(): BelongsTo
+    {
+        return $this->belongsTo(LoanAgreement::class, 'loan_id');
+    }
 }
-

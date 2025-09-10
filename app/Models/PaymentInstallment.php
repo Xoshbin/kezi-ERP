@@ -183,7 +183,7 @@ class PaymentInstallment extends Model
      */
     public function isOverdue(): bool
     {
-        return $this->due_date->isPast() && !$this->isFullyPaid();
+        return $this->due_date->isPast() && ! $this->isFullyPaid();
     }
 
     /**
@@ -201,7 +201,7 @@ class PaymentInstallment extends Model
      */
     public function calculateDiscountAmount(): Money
     {
-        if (!$this->hasEarlyPaymentDiscount()) {
+        if (! $this->hasEarlyPaymentDiscount()) {
             return Money::of(0, $this->amount->getCurrency());
         }
 
@@ -250,6 +250,7 @@ class PaymentInstallment extends Model
     {
         if ($this->isOverdue()) {
             $daysOverdue = abs($this->getDaysUntilDue());
+
             return __('payment_installments.overdue_by_days', ['days' => $daysOverdue]);
         }
 

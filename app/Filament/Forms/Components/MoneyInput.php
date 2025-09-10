@@ -67,7 +67,7 @@ class MoneyInput extends TextInput
                     if ($mainRecord instanceof \Illuminate\Database\Eloquent\Model && method_exists($mainRecord, 'currency')) {
                         $currency = $mainRecord->relationLoaded('currency') ? $mainRecord->getRelation('currency') : $mainRecord->currency()->first();
                         /** @var \App\Models\Currency|null $currency */
-                    if ($currency) {
+                        if ($currency) {
                             return $currency->code;
                         }
                     }

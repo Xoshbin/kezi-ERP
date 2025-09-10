@@ -13,7 +13,7 @@ class LoanFeeLine extends Model
     use HasFactory;
 
     protected $fillable = [
-        'loan_id','date','type','amount','capitalize',
+        'loan_id', 'date', 'type', 'amount', 'capitalize',
     ];
 
     protected $casts = [
@@ -23,6 +23,8 @@ class LoanFeeLine extends Model
         'type' => FeeType::class,
     ];
 
-    public function loan(): BelongsTo { return $this->belongsTo(LoanAgreement::class, 'loan_id'); }
+    public function loan(): BelongsTo
+    {
+        return $this->belongsTo(LoanAgreement::class, 'loan_id');
+    }
 }
-

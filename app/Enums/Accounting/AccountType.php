@@ -5,7 +5,6 @@ namespace App\Enums\Accounting;
 /**
  * Defines the specific type of an account, driving automated accounting logic
  * and the structure of financial reports.
- *
  */
 enum AccountType: string
 {

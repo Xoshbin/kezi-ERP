@@ -123,11 +123,8 @@ class InvoiceLine extends Model
      * Get the company that this rate belongs to.
      */
     /**
-
      * @return BelongsTo<Company, static>
-
      */
-
     public function company(): BelongsTo
     {
         return $this->belongsTo(Company::class);
@@ -139,11 +136,8 @@ class InvoiceLine extends Model
      * This connects an invoice line back to its header invoice.
      */
     /**
-
      * @return BelongsTo<Invoice, static>
-
      */
-
     public function invoice(): BelongsTo
     {
         return $this->belongsTo(Invoice::class);
@@ -155,11 +149,8 @@ class InvoiceLine extends Model
      * The product_id is nullable in the schema [4], allowing for descriptive lines without a specific product.
      */
     /**
-
      * @return BelongsTo<Product, static>
-
      */
-
     public function product(): BelongsTo
     {
         return $this->belongsTo(Product::class);
@@ -171,11 +162,8 @@ class InvoiceLine extends Model
      * The tax_id is nullable in the schema [4].
      */
     /**
-
      * @return BelongsTo<Tax, static>
-
      */
-
     public function tax(): BelongsTo
     {
         return $this->belongsTo(Tax::class);
@@ -188,25 +176,16 @@ class InvoiceLine extends Model
      * (which would assume 'account_id' if the method name were just 'account') [16].
      */
     /**
-
      * @return BelongsTo<Account, static>
-
      */
-
     public function incomeAccount(): BelongsTo
     {
         return $this->belongsTo(Account::class, 'income_account_id');
     }
 
     /**
-
-
      * @return BelongsTo<AnalyticAccount, static>
-
-
      */
-
-
     public function analyticAccount(): BelongsTo
     {
         return $this->belongsTo(AnalyticAccount::class);

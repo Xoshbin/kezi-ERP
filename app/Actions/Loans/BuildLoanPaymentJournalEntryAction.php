@@ -28,7 +28,10 @@ class BuildLoanPaymentJournalEntryAction
     ): JournalEntry {
         return DB::transaction(function () use ($loan, $user, $journalId, $bankAccountId, $loanAccountId, $accruedInterestAccountId, $forMonthSequence) {
             $loan->loadMissing('currency', 'company', 'scheduleEntries');
-            $currencyModel = $loan->currency; if (! $currencyModel) { throw new \RuntimeException('Loan currency missing'); }
+            $currencyModel = $loan->currency;
+            if (! $currencyModel) {
+                throw new \RuntimeException('Loan currency missing');
+            }
             $code = (string) data_get($currencyModel, 'code');
 
             /** @var LoanScheduleEntry $entry */
@@ -111,4 +114,3 @@ class BuildLoanPaymentJournalEntryAction
         });
     }
 }
-

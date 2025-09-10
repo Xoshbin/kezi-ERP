@@ -1,12 +1,9 @@
 <?php
 
 use App\Enums\Payments\PaymentStatus;
-use App\Filament\Clusters\Accounting\Resources\Invoices\Pages\EditInvoice;
 use App\Filament\Clusters\Accounting\Resources\Payments\Pages\CreatePayment;
 use App\Filament\Clusters\Accounting\Resources\Payments\Pages\EditPayment;
-use App\Filament\Clusters\Accounting\Resources\Payments\Pages\ListPayments;
 use App\Filament\Clusters\Accounting\Resources\Payments\PaymentResource;
-use App\Filament\Clusters\Accounting\Resources\VendorBills\Pages\EditVendorBill;
 use App\Models\Payment;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\Traits\WithConfiguredCompany;
@@ -62,4 +59,3 @@ it('shows Register Payment action on posted vendor bill with balance', function 
     $this->get(\App\Filament\Clusters\Accounting\Resources\VendorBills\VendorBillResource::getUrl('edit', ['record' => $bill]))
         ->assertSee('Register Payment');
 });
-

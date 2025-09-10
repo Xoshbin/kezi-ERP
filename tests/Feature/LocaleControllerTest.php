@@ -27,7 +27,7 @@ class LocaleControllerTest extends TestCase
 
         $response->assertStatus(200)
             ->assertJson(['status' => 'success']);
-        
+
         $this->assertEquals('ar', Session::get('locale'));
         $this->assertEquals('ar', app()->getLocale());
     }
@@ -36,13 +36,13 @@ class LocaleControllerTest extends TestCase
     public function it_provides_redirect_url_for_docs_pages()
     {
         $response = $this->postJson('/locale/ckb', [], [
-            'referer' => 'http://localhost/docs/User Guide/payments'
+            'referer' => 'http://localhost/docs/User Guide/payments',
         ]);
 
         $response->assertStatus(200)
             ->assertJson([
                 'status' => 'success',
-                'redirect_url' => 'http://localhost/docs/User Guide/payments.ckb'
+                'redirect_url' => 'http://localhost/docs/User Guide/payments.ckb',
             ]);
     }
 
@@ -51,21 +51,21 @@ class LocaleControllerTest extends TestCase
     {
         // Test converting from English to Kurdish
         $response = $this->postJson('/locale/ckb', [], [
-            'referer' => 'http://localhost/docs/User Guide/payments'
+            'referer' => 'http://localhost/docs/User Guide/payments',
         ]);
 
         $response->assertJsonPath('redirect_url', 'http://localhost/docs/User Guide/payments.ckb');
 
         // Test converting from Arabic to English
         $response = $this->postJson('/locale/en', [], [
-            'referer' => 'http://localhost/docs/User Guide/payments.ar'
+            'referer' => 'http://localhost/docs/User Guide/payments.ar',
         ]);
 
         $response->assertJsonPath('redirect_url', 'http://localhost/docs/User Guide/payments');
 
         // Test converting from Kurdish to Arabic
         $response = $this->postJson('/locale/ar', [], [
-            'referer' => 'http://localhost/docs/User Guide/payments.ckb'
+            'referer' => 'http://localhost/docs/User Guide/payments.ckb',
         ]);
 
         $response->assertJsonPath('redirect_url', 'http://localhost/docs/User Guide/payments.ar');
@@ -84,9 +84,9 @@ class LocaleControllerTest extends TestCase
     public function it_only_accepts_supported_locales()
     {
         $supportedLocales = ['en', 'ckb', 'ar'];
-        
+
         foreach ($supportedLocales as $locale) {
-            $response = $this->post('/locale/' . $locale);
+            $response = $this->post('/locale/'.$locale);
             $response->assertStatus(200);
             $this->assertEquals($locale, Session::get('locale'));
         }

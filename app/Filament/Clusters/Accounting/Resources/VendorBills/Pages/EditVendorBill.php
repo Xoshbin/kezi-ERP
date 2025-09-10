@@ -10,15 +10,14 @@ use App\DataTransferObjects\Payments\CreatePaymentDTO;
 use App\DataTransferObjects\Purchases\UpdateVendorBillDTO;
 use App\DataTransferObjects\Purchases\VendorBillLineDTO;
 use App\Enums\Payments\PaymentMethod;
-
 use App\Enums\Payments\PaymentType;
 use App\Enums\Purchases\VendorBillStatus;
 use App\Filament\Actions\DocsAction;
 use App\Filament\Clusters\Accounting\Resources\VendorBills\VendorBillResource;
 use App\Filament\Clusters\Accounting\Resources\VendorBills\Widgets\SettlementSummaryWidget;
 use App\Filament\Forms\Components\MoneyInput;
-use App\Models\Journal;
 use App\Models\Company;
+use App\Models\Journal;
 use App\Models\VendorBill;
 use App\Models\VendorBillAttachment;
 use App\Services\PaymentService;
@@ -127,7 +126,7 @@ class EditVendorBill extends EditRecord
                     $vendorBillService = app(VendorBillService::class);
                     try {
                         $user = Auth::user();
-                        if (!$user) {
+                        if (! $user) {
                             throw new \Exception('User must be authenticated to confirm vendor bill');
                         }
                         $vendorBillService->confirm($record, $user);
@@ -228,7 +227,7 @@ class EditVendorBill extends EditRecord
 
                         // Create and confirm payment
                         $user = Auth::user();
-                        if (!$user) {
+                        if (! $user) {
                             throw new \Exception('User must be authenticated to create payment');
                         }
                         $payment = app(CreatePaymentAction::class)->execute($paymentDTO, $user);
@@ -252,7 +251,7 @@ class EditVendorBill extends EditRecord
 
             DeleteAction::make()
                 ->action(function (Model $record) {
-                    if (!$record instanceof \App\Models\VendorBill) {
+                    if (! $record instanceof \App\Models\VendorBill) {
                         throw new \Exception('Invalid record type');
                     }
                     app(VendorBillService::class)->delete($record);

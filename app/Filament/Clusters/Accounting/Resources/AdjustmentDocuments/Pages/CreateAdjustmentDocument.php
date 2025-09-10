@@ -74,7 +74,7 @@ class CreateAdjustmentDocument extends CreateRecord
         // Ensure we have a single Currency model, not a collection
         if ($currency instanceof \Illuminate\Database\Eloquent\Collection) {
             $currency = $currency->first();
-            if (!$currency) {
+            if (! $currency) {
                 throw new \InvalidArgumentException('Currency not found');
             }
         }

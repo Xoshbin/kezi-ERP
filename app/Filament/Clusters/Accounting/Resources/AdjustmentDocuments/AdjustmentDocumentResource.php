@@ -83,6 +83,7 @@ class AdjustmentDocumentResource extends Resource
                         ->columnSpan(2)
                         ->default(function (): ?int {
                             $tenant = Filament::getTenant();
+
                             return $tenant instanceof \App\Models\Company ? $tenant->currency_id : null;
                         })
                         ->disabled(fn (Get $get): bool => ! empty($get('original_invoice_id')) || ! empty($get('original_vendor_bill_id')))
@@ -191,7 +192,7 @@ class AdjustmentDocumentResource extends Resource
                             if ($invoice instanceof \Illuminate\Database\Eloquent\Collection) {
                                 $invoice = $invoice->first();
                             }
-                            if (!$invoice) {
+                            if (! $invoice) {
                                 return null;
                             }
 

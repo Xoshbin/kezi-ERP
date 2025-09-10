@@ -20,12 +20,12 @@ class ProcessIncomingStockAction
             $costPerUnit = $this->extractCostFromSource($stockMove);
 
             $product = $stockMove->product;
-            if (!$product instanceof \App\Models\Product) {
+            if (! $product instanceof \App\Models\Product) {
                 throw new \Exception('Product not found for stock move');
             }
 
             $sourceDocument = $stockMove->source;
-            if (!$sourceDocument) {
+            if (! $sourceDocument) {
                 throw new \Exception('Stock move must have a source document');
             }
 
@@ -53,7 +53,7 @@ class ProcessIncomingStockAction
         // For other source types (future: inventory adjustments, transfers, etc.)
         // we can add more extraction logic here
 
-        if (!$sourceDocument) {
+        if (! $sourceDocument) {
             throw new Exception('Source document is null');
         }
 

@@ -8,7 +8,9 @@ it('solves IRR for simple cashflows', function () {
 
     // Cashflows at period ends: t0 outflow -1000, then 12 inflows of 90
     $cashflows = [-1000.0];
-    for ($i = 0; $i < 12; $i++) $cashflows[] = 90.0;
+    for ($i = 0; $i < 12; $i++) {
+        $cashflows[] = 90.0;
+    }
 
     $irr = $svc->solvePeriodicIRR($cashflows);
 
@@ -16,4 +18,3 @@ it('solves IRR for simple cashflows', function () {
     expect($irr)->toBeFloat()->toBeGreaterThan(0)->toBeLessThan(0.02);
     expect(round($irr, 4))->toBe(0.0120);
 });
-

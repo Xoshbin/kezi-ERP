@@ -153,6 +153,7 @@ class PartnerLedgerService
         // Derive a business-friendly name from the journal's type.
         /** @var JournalType $type */
         $type = $line->journalEntry->journal->type;
+
         return match ($type) {
             JournalType::Sale => 'Invoice',
             JournalType::Purchase => 'Vendor Bill',

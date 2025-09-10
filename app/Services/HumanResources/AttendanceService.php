@@ -102,7 +102,7 @@ class AttendanceService
         ]);
 
         $freshAttendance = $attendance->fresh();
-        if (!$freshAttendance) {
+        if (! $freshAttendance) {
             throw new \Exception('Failed to refresh attendance after clock out');
         }
 
@@ -128,7 +128,7 @@ class AttendanceService
         ]);
 
         $freshAttendance = $attendance->fresh();
-        if (!$freshAttendance) {
+        if (! $freshAttendance) {
             throw new \Exception('Failed to refresh attendance after starting break');
         }
 
@@ -162,7 +162,7 @@ class AttendanceService
         ]);
 
         $freshAttendance = $attendance->fresh();
-        if (!$freshAttendance) {
+        if (! $freshAttendance) {
             throw new \Exception('Failed to refresh attendance after ending break');
         }
 

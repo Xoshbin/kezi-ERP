@@ -1,7 +1,7 @@
 <?php
 
-use App\Actions\Loans\ReclassifyLoanCurrentPortionAction;
 use App\Actions\Loans\ComputeLoanScheduleAction;
+use App\Actions\Loans\ReclassifyLoanCurrentPortionAction;
 use App\Enums\Loans\LoanType;
 use App\Enums\Loans\ScheduleMethod;
 use App\Models\Account;
@@ -52,4 +52,3 @@ it('moves next-12-month principal from LT to ST for payable loan', function () {
     expect((int) round($drST->getAmount()->toFloat()))->toBe(6000);
     expect((int) round($crLT->getAmount()->toFloat()))->toBe(6000);
 });
-

@@ -1,7 +1,6 @@
 <?php
 
 use App\Actions\Loans\CreateJournalEntryForLoanInitialRecognitionAction;
-use App\Actions\Loans\ComputeLoanScheduleAction;
 use App\Enums\Loans\LoanType;
 use App\Enums\Loans\ScheduleMethod;
 use App\Models\Account;
@@ -47,4 +46,3 @@ it('creates initial recognition journal entry for a payable loan', function () {
     expect($debit->isEqualTo(Money::of('10000', $code)))->toBeTrue();
     expect($credit->isEqualTo(Money::of('10000', $code)))->toBeTrue();
 });
-

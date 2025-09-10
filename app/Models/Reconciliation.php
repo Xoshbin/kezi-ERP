@@ -100,11 +100,8 @@ class Reconciliation extends Model
      * Get the company that owns this reconciliation.
      */
     /**
-
      * @return BelongsTo<Company, static>
-
      */
-
     public function company(): BelongsTo
     {
         return $this->belongsTo(Company::class);
@@ -114,11 +111,8 @@ class Reconciliation extends Model
      * Get the user who performed this reconciliation.
      */
     /**
-
      * @return BelongsTo<User, static>
-
      */
-
     public function reconciledBy(): BelongsTo
     {
         return $this->belongsTo(User::class, 'reconciled_by_user_id');
@@ -128,11 +122,8 @@ class Reconciliation extends Model
      * Get the journal entry lines that are part of this reconciliation.
      */
     /**
-
      * @return BelongsToMany<JournalEntryLine, static>
-
      */
-
     public function journalEntryLines(): BelongsToMany
     {
         return $this->belongsToMany(JournalEntryLine::class, 'journal_entry_line_reconciliation')

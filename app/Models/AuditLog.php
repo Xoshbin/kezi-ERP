@@ -110,11 +110,8 @@ class AuditLog extends Model
      * This establishes a `belongsTo` relationship to the `User` model [10].
      */
     /**
-
      * @return BelongsTo<User, static>
-
      */
-
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
@@ -125,11 +122,8 @@ class AuditLog extends Model
      * Audit logs should be company-specific for proper accounting audit trails.
      */
     /**
-
      * @return BelongsTo<Company, static>
-
      */
-
     public function company(): BelongsTo
     {
         return $this->belongsTo(Company::class);
@@ -143,11 +137,8 @@ class AuditLog extends Model
      * This is critical for flexible and comprehensive logging across various entities.
      */
     /**
-
      * @return MorphTo<\Illuminate\Database\Eloquent\Model, static>
-
      */
-
     public function auditable(): MorphTo
     {
         return $this->morphTo();

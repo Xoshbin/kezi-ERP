@@ -9,8 +9,8 @@ use App\Actions\Loans\ComputeLoanScheduleAction;
 use App\Actions\Loans\ReclassifyLoanCurrentPortionAction;
 use App\Enums\Accounting\AccountType;
 use App\Enums\Accounting\JournalType;
-use App\Filament\Clusters\Accounting\Resources\LoanAgreements\LoanAgreementResource;
 use App\Filament\Actions\DocsAction;
+use App\Filament\Clusters\Accounting\Resources\LoanAgreements\LoanAgreementResource;
 use App\Models\Account;
 use App\Models\Journal;
 use App\Models\LoanAgreement;
@@ -36,7 +36,9 @@ class ViewLoanAgreement extends ViewRecord
                 ->action(function () {
                     $record = $this->getRecord();
                     $loan = $record instanceof LoanAgreement ? $record : null;
-                    if (! $loan) { return; }
+                    if (! $loan) {
+                        return;
+                    }
                     app(ComputeLoanScheduleAction::class)->execute($loan);
                     $loan->refresh();
                 }),
@@ -45,7 +47,9 @@ class ViewLoanAgreement extends ViewRecord
                 ->action(function () {
                     $record = $this->getRecord();
                     $loan = $record instanceof LoanAgreement ? $record : null;
-                    if (! $loan) { return; }
+                    if (! $loan) {
+                        return;
+                    }
                     app(CalculateEIRAction::class)->execute($loan);
                     $loan->refresh();
                 }),
@@ -62,6 +66,7 @@ class ViewLoanAgreement extends ViewRecord
                             if ($tenant instanceof \App\Models\Company) {
                                 $q->where('company_id', $tenant->getKey());
                             }
+
                             return $q->pluck('name', 'id');
                         })
                         ->createOptionForm([
@@ -74,7 +79,9 @@ class ViewLoanAgreement extends ViewRecord
                         ])
                         ->createOptionUsing(fn (array $data) => Journal::query()->create($data)->getKey())
                         ->createOptionModalHeading(__('common.modal_title_create_journal'))
-                        ->createOptionAction(function ($action) { return $action->modalWidth('lg'); })
+                        ->createOptionAction(function ($action) {
+                            return $action->modalWidth('lg');
+                        })
                         ->required(),
                     Select::make('interest_account_id')
                         ->label('Interest Expense / Income')
@@ -86,6 +93,7 @@ class ViewLoanAgreement extends ViewRecord
                             if ($tenant instanceof \App\Models\Company) {
                                 $q->where('company_id', $tenant->getKey());
                             }
+
                             return $q->pluck('name', 'id');
                         })
                         ->createOptionForm([
@@ -98,7 +106,9 @@ class ViewLoanAgreement extends ViewRecord
                         ])
                         ->createOptionUsing(fn (array $data) => Account::query()->create($data)->getKey())
                         ->createOptionModalHeading(__('common.modal_title_create_account'))
-                        ->createOptionAction(function ($action) { return $action->modalWidth('lg'); })
+                        ->createOptionAction(function ($action) {
+                            return $action->modalWidth('lg');
+                        })
                         ->required(),
                     Select::make('accrued_interest_account_id')
                         ->label('Accrued Interest')
@@ -110,6 +120,7 @@ class ViewLoanAgreement extends ViewRecord
                             if ($tenant instanceof \App\Models\Company) {
                                 $q->where('company_id', $tenant->getKey());
                             }
+
                             return $q->pluck('name', 'id');
                         })
                         ->createOptionForm([
@@ -122,7 +133,9 @@ class ViewLoanAgreement extends ViewRecord
                         ])
                         ->createOptionUsing(fn (array $data) => Account::query()->create($data)->getKey())
                         ->createOptionModalHeading(__('common.modal_title_create_account'))
-                        ->createOptionAction(function ($action) { return $action->modalWidth('lg'); })
+                        ->createOptionAction(function ($action) {
+                            return $action->modalWidth('lg');
+                        })
                         ->required(),
                     TextInput::make('for_month_sequence')
                         ->label('Installment #')
@@ -132,9 +145,13 @@ class ViewLoanAgreement extends ViewRecord
                 ->action(function (array $data) {
                     $record = $this->getRecord();
                     $loan = $record instanceof LoanAgreement ? $record : null;
-                    if (! $loan) { return; }
+                    if (! $loan) {
+                        return;
+                    }
                     $user = auth()->user();
-                    if (! $user instanceof \App\Models\User) { return; }
+                    if (! $user instanceof \App\Models\User) {
+                        return;
+                    }
                     app(AccrueLoanInterestAction::class)->execute(
                         loan: $loan,
                         user: $user,
@@ -157,6 +174,7 @@ class ViewLoanAgreement extends ViewRecord
                             if ($tenant instanceof \App\Models\Company) {
                                 $q->where('company_id', $tenant->getKey());
                             }
+
                             return $q->pluck('name', 'id');
                         })
                         ->createOptionForm([
@@ -169,7 +187,9 @@ class ViewLoanAgreement extends ViewRecord
                         ])
                         ->createOptionUsing(fn (array $data) => Journal::query()->create($data)->getKey())
                         ->createOptionModalHeading(__('common.modal_title_create_journal'))
-                        ->createOptionAction(function ($action) { return $action->modalWidth('lg'); })
+                        ->createOptionAction(function ($action) {
+                            return $action->modalWidth('lg');
+                        })
                         ->required(),
                     Select::make('bank_account_id')
                         ->label('Bank Account')
@@ -181,6 +201,7 @@ class ViewLoanAgreement extends ViewRecord
                             if ($tenant instanceof \App\Models\Company) {
                                 $q->where('company_id', $tenant->getKey());
                             }
+
                             return $q->pluck('name', 'id');
                         })
                         ->createOptionForm([
@@ -193,7 +214,9 @@ class ViewLoanAgreement extends ViewRecord
                         ])
                         ->createOptionUsing(fn (array $data) => Account::query()->create($data)->getKey())
                         ->createOptionModalHeading(__('common.modal_title_create_account'))
-                        ->createOptionAction(function ($action) { return $action->modalWidth('lg'); })
+                        ->createOptionAction(function ($action) {
+                            return $action->modalWidth('lg');
+                        })
                         ->required(),
                     Select::make('loan_account_id')
                         ->label('Loan Account')
@@ -205,6 +228,7 @@ class ViewLoanAgreement extends ViewRecord
                             if ($tenant instanceof \App\Models\Company) {
                                 $q->where('company_id', $tenant->getKey());
                             }
+
                             return $q->pluck('name', 'id');
                         })
                         ->createOptionForm([
@@ -217,7 +241,9 @@ class ViewLoanAgreement extends ViewRecord
                         ])
                         ->createOptionUsing(fn (array $data) => Account::query()->create($data)->getKey())
                         ->createOptionModalHeading(__('common.modal_title_create_account'))
-                        ->createOptionAction(function ($action) { return $action->modalWidth('lg'); })
+                        ->createOptionAction(function ($action) {
+                            return $action->modalWidth('lg');
+                        })
                         ->required(),
                     Select::make('accrued_interest_account_id')
                         ->label('Accrued Interest')
@@ -229,6 +255,7 @@ class ViewLoanAgreement extends ViewRecord
                             if ($tenant instanceof \App\Models\Company) {
                                 $q->where('company_id', $tenant->getKey());
                             }
+
                             return $q->pluck('name', 'id');
                         })
                         ->createOptionForm([
@@ -241,7 +268,9 @@ class ViewLoanAgreement extends ViewRecord
                         ])
                         ->createOptionUsing(fn (array $data) => Account::query()->create($data)->getKey())
                         ->createOptionModalHeading(__('common.modal_title_create_account'))
-                        ->createOptionAction(function ($action) { return $action->modalWidth('lg'); })
+                        ->createOptionAction(function ($action) {
+                            return $action->modalWidth('lg');
+                        })
                         ->required(),
                     TextInput::make('for_month_sequence')
                         ->label('Installment #')
@@ -251,9 +280,13 @@ class ViewLoanAgreement extends ViewRecord
                 ->action(function (array $data) {
                     $record = $this->getRecord();
                     $loan = $record instanceof LoanAgreement ? $record : null;
-                    if (! $loan) { return; }
+                    if (! $loan) {
+                        return;
+                    }
                     $user = auth()->user();
-                    if (! $user instanceof \App\Models\User) { return; }
+                    if (! $user instanceof \App\Models\User) {
+                        return;
+                    }
                     app(BuildLoanPaymentJournalEntryAction::class)->execute(
                         loan: $loan,
                         user: $user,
@@ -277,6 +310,7 @@ class ViewLoanAgreement extends ViewRecord
                             if ($tenant instanceof \App\Models\Company) {
                                 $q->where('company_id', $tenant->getKey());
                             }
+
                             return $q->pluck('name', 'id');
                         })
                         ->createOptionForm([
@@ -289,7 +323,9 @@ class ViewLoanAgreement extends ViewRecord
                         ])
                         ->createOptionUsing(fn (array $data) => Journal::query()->create($data)->getKey())
                         ->createOptionModalHeading(__('common.modal_title_create_journal'))
-                        ->createOptionAction(function ($action) { return $action->modalWidth('lg'); })
+                        ->createOptionAction(function ($action) {
+                            return $action->modalWidth('lg');
+                        })
                         ->required(),
                     Select::make('long_term_account_id')
                         ->label('Long-term Account')
@@ -301,6 +337,7 @@ class ViewLoanAgreement extends ViewRecord
                             if ($tenant instanceof \App\Models\Company) {
                                 $q->where('company_id', $tenant->getKey());
                             }
+
                             return $q->pluck('name', 'id');
                         })
                         ->createOptionForm([
@@ -313,7 +350,9 @@ class ViewLoanAgreement extends ViewRecord
                         ])
                         ->createOptionUsing(fn (array $data) => Account::query()->create($data)->getKey())
                         ->createOptionModalHeading(__('common.modal_title_create_account'))
-                        ->createOptionAction(function ($action) { return $action->modalWidth('lg'); })
+                        ->createOptionAction(function ($action) {
+                            return $action->modalWidth('lg');
+                        })
                         ->required(),
                     Select::make('short_term_account_id')
                         ->label('Short-term Account')
@@ -325,6 +364,7 @@ class ViewLoanAgreement extends ViewRecord
                             if ($tenant instanceof \App\Models\Company) {
                                 $q->where('company_id', $tenant->getKey());
                             }
+
                             return $q->pluck('name', 'id');
                         })
                         ->createOptionForm([
@@ -337,7 +377,9 @@ class ViewLoanAgreement extends ViewRecord
                         ])
                         ->createOptionUsing(fn (array $data) => Account::query()->create($data)->getKey())
                         ->createOptionModalHeading(__('common.modal_title_create_account'))
-                        ->createOptionAction(function ($action) { return $action->modalWidth('lg'); })
+                        ->createOptionAction(function ($action) {
+                            return $action->modalWidth('lg');
+                        })
                         ->required(),
                     TextInput::make('months')
                         ->label('Months')
@@ -352,9 +394,13 @@ class ViewLoanAgreement extends ViewRecord
                 ->action(function (array $data) {
                     $record = $this->getRecord();
                     $loan = $record instanceof LoanAgreement ? $record : null;
-                    if (! $loan) { return; }
+                    if (! $loan) {
+                        return;
+                    }
                     $user = auth()->user();
-                    if (! $user instanceof \App\Models\User) { return; }
+                    if (! $user instanceof \App\Models\User) {
+                        return;
+                    }
                     app(ReclassifyLoanCurrentPortionAction::class)->execute(
                         loan: $loan,
                         user: $user,

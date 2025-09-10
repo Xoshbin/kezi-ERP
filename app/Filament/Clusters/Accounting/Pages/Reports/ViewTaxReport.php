@@ -89,7 +89,7 @@ class ViewTaxReport extends Page
         ]);
 
         $user = Filament::auth()->user();
-        if (!$user) {
+        if (! $user) {
             throw new \Exception('User must be authenticated to view tax report');
         }
 

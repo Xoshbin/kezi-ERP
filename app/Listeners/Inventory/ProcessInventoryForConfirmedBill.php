@@ -33,7 +33,7 @@ class ProcessInventoryForConfirmedBill
 
         // Ensure product exists (should not be null since we check for storable products)
         if ($product === null) {
-            throw new RuntimeException("Product is required for storable product lines.");
+            throw new RuntimeException('Product is required for storable product lines.');
         }
 
         if (! $company->vendorLocation || ! $company->defaultStockLocation) {

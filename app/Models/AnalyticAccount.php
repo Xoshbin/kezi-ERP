@@ -97,11 +97,8 @@ class AnalyticAccount extends Model
      * though they can be accessible to all if company_id is null.
      */
     /**
-
      * @return BelongsTo<Company, static>
-
      */
-
     public function company(): BelongsTo
     {
         return $this->belongsTo(Company::class);
@@ -112,11 +109,8 @@ class AnalyticAccount extends Model
      * This is a nullable relationship, allowing for flexibility in multi-currency tracking [3].
      */
     /**
-
      * @return BelongsTo<Currency, static>
-
      */
-
     public function currency(): BelongsTo
     {
         return $this->belongsTo(Currency::class);
@@ -128,11 +122,8 @@ class AnalyticAccount extends Model
      * financial movements recorded in the general ledger for management analysis [2, 3].
      */
     /**
-
      * @return HasMany<JournalEntryLine, static>
-
      */
-
     public function journalEntryLines(): HasMany
     {
         return $this->hasMany(JournalEntryLine::class, 'analytic_account_id');
@@ -144,11 +135,8 @@ class AnalyticAccount extends Model
      * reporting or budget structures [1, 3, 8-10].
      */
     /**
-
      * @return BelongsToMany<AnalyticPlan, static>
-
      */
-
     public function analyticPlans(): BelongsToMany
     {
         // The pivot table 'analytic_account_plan_pivot' connects analytic accounts to analytic plans [3, 8]

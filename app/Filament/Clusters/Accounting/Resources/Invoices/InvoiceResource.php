@@ -7,7 +7,6 @@ use App\DataTransferObjects\Payments\CreatePaymentDocumentLinkDTO;
 use App\DataTransferObjects\Payments\CreatePaymentDTO;
 use App\Enums\Partners\PartnerType;
 use App\Enums\Payments\PaymentMethod;
-
 use App\Enums\Payments\PaymentType;
 use App\Enums\Sales\InvoiceStatus;
 use App\Enums\Shared\PaymentState;
@@ -138,6 +137,7 @@ class InvoiceResource extends Resource
                         ->live()
                         ->default(function (): ?int {
                             $tenant = Filament::getTenant();
+
                             return $tenant instanceof \App\Models\Company ? $tenant->currency_id : null;
                         })
                         ->afterStateUpdated(function (callable $set, $state) {
@@ -532,7 +532,7 @@ class InvoiceResource extends Resource
                         $invoiceService = app(InvoiceService::class);
                         try {
                             $user = Auth::user();
-                            if (!$user) {
+                            if (! $user) {
                                 throw new \Exception('User must be authenticated to confirm invoice');
                             }
                             $invoiceService->confirm($record, $user);
@@ -623,7 +623,7 @@ class InvoiceResource extends Resource
 
                             // Create and confirm payment
                             $user = Auth::user();
-                            if (!$user) {
+                            if (! $user) {
                                 throw new \Exception('User must be authenticated to create payment');
                             }
                             $payment = app(CreatePaymentAction::class)->execute($paymentDTO, $user);

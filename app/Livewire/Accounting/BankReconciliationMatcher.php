@@ -61,7 +61,7 @@ class BankReconciliationMatcher extends Component
     }
 
     /**
-     * @param array{selectedIds: array<int, int>, total: int, currency: string} $data
+     * @param  array{selectedIds: array<int, int>, total: int, currency: string}  $data
      */
     #[On('bank-selection-changed')]
     public function updateBankSelection(array $data): void
@@ -71,7 +71,7 @@ class BankReconciliationMatcher extends Component
     }
 
     /**
-     * @param array{selectedIds: array<int, int>, total: int, currency: string} $data
+     * @param  array{selectedIds: array<int, int>, total: int, currency: string}  $data
      */
     #[On('payment-selection-changed')]
     public function updatePaymentSelection(array $data): void
@@ -121,7 +121,7 @@ class BankReconciliationMatcher extends Component
 
         // Use the service to reconcile
         $user = Auth::user();
-        if (!$user) {
+        if (! $user) {
             throw new \Exception('User must be authenticated to reconcile transactions');
         }
         app(BankReconciliationService::class)->reconcileMultiple(

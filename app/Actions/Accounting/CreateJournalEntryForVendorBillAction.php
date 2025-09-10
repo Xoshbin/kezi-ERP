@@ -107,7 +107,7 @@ class CreateJournalEntryForVendorBillAction
                 analytic_account_id: null,
             );
 
-            if (!$company->default_purchase_journal_id) {
+            if (! $company->default_purchase_journal_id) {
                 throw new \InvalidArgumentException('Company default purchase journal is not configured');
             }
 

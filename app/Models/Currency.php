@@ -112,11 +112,8 @@ class Currency extends Model
      * A single currency can be the base currency for multiple companies.
      */
     /**
-
      * @return HasMany<Company, static>
-
      */
-
     public function companies(): HasMany
     {
         return $this->hasMany(Company::class); // [1]
@@ -127,11 +124,8 @@ class Currency extends Model
      * Some journals may be configured to handle transactions in a single currency only.
      */
     /**
-
      * @return HasMany<Journal, static>
-
      */
-
     public function journals(): HasMany
     {
         return $this->hasMany(Journal::class); // [1]
@@ -142,11 +136,8 @@ class Currency extends Model
      * Transactions like invoices can be in a currency different from the company's default.
      */
     /**
-
      * @return HasMany<Invoice, static>
-
      */
-
     public function invoices(): HasMany
     {
         return $this->hasMany(Invoice::class); // [1]
@@ -157,11 +148,8 @@ class Currency extends Model
      * Vendor bills, similar to invoices, can be in various currencies.
      */
     /**
-
      * @return HasMany<VendorBill, static>
-
      */
-
     public function vendorBills(): HasMany
     {
         return $this->hasMany(VendorBill::class); // [1]
@@ -172,11 +160,8 @@ class Currency extends Model
      * Payments track the actual cash movement in a specific currency.
      */
     /**
-
      * @return HasMany<Payment, static>
-
      */
-
     public function payments(): HasMany
     {
         return $this->hasMany(Payment::class); // [1]
@@ -187,25 +172,16 @@ class Currency extends Model
      * While not all analytic accounts require a specific currency, some might for project-specific budgeting.
      */
     /**
-
      * @return HasMany<AnalyticAccount, static>
-
      */
-
     public function analyticAccounts(): HasMany
     {
         return $this->hasMany(AnalyticAccount::class); // [1]
     }
 
     /**
-
-
      * @return HasMany<JournalEntry, static>
-
-
      */
-
-
     public function journalEntries(): HasMany
     {
         return $this->hasMany(JournalEntry::class);
@@ -216,11 +192,8 @@ class Currency extends Model
      * This relationship provides access to all historical exchange rate data.
      */
     /**
-
      * @return HasMany<CurrencyRate, static>
-
      */
-
     public function rates(): HasMany
     {
         return $this->hasMany(CurrencyRate::class);
@@ -230,11 +203,8 @@ class Currency extends Model
      * Get the latest exchange rate for this currency.
      */
     /**
-
      * @return HasOne<CurrencyRate, static>
-
      */
-
     public function latestRate(): HasOne
     {
         return $this->hasOne(CurrencyRate::class)->latestOfMany('effective_date');

@@ -21,8 +21,8 @@ class InterestCalculatorService
         $r = ($annualRatePct / 100.0) / $paymentsPerYear;
         $p = $principal->getAmount()->toFloat();
         $payment = $p * $r / (1 - pow(1 + $r, -$numberOfPayments));
+
         // Ensure currency-scale rounding (e.g., 2dp for USD, 3dp for IQD)
         return Money::of($payment, $currency, null, RoundingMode::HALF_UP);
     }
 }
-

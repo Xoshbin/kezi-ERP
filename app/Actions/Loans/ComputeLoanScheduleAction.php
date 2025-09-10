@@ -68,7 +68,7 @@ class ComputeLoanScheduleAction
 
                 $balance = $balance->minus($principalComponent);
 
-                $entry = new LoanScheduleEntry();
+                $entry = new LoanScheduleEntry;
                 $entry->loan()->associate($loan);
                 $entry->sequence = $i;
                 $entry->due_date = $date->copy()->addMonths($i);
@@ -81,4 +81,3 @@ class ComputeLoanScheduleAction
         });
     }
 }
-

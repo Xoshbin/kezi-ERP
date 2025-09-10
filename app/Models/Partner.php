@@ -245,7 +245,7 @@ class Partner extends Model
         if (! in_array($this->type, [PartnerType::Customer, PartnerType::Both])) {
             $this->loadMissing('company.currency');
 
-            if (!$this->company?->currency) {
+            if (! $this->company?->currency) {
                 throw new \RuntimeException('Partner company or currency not found');
             }
 
@@ -254,7 +254,7 @@ class Partner extends Model
 
         $this->loadMissing('company.currency');
 
-        if (!$this->company?->currency) {
+        if (! $this->company?->currency) {
             throw new \RuntimeException('Partner company or currency not found');
         }
 
@@ -279,7 +279,7 @@ class Partner extends Model
         if (! in_array($this->type, [PartnerType::Vendor, PartnerType::Both])) {
             $this->loadMissing('company.currency');
 
-            if (!$this->company?->currency) {
+            if (! $this->company?->currency) {
                 throw new \RuntimeException('Partner company or currency not found');
             }
 
@@ -288,7 +288,7 @@ class Partner extends Model
 
         $this->loadMissing('company.currency');
 
-        if (!$this->company?->currency) {
+        if (! $this->company?->currency) {
             throw new \RuntimeException('Partner company or currency not found');
         }
 
@@ -313,7 +313,7 @@ class Partner extends Model
         if (! in_array($this->type, [PartnerType::Customer, PartnerType::Both])) {
             $this->loadMissing('company.currency');
 
-            if (!$this->company?->currency) {
+            if (! $this->company?->currency) {
                 throw new \RuntimeException('Partner company or currency not found');
             }
 
@@ -322,7 +322,7 @@ class Partner extends Model
 
         $this->loadMissing('company.currency');
 
-        if (!$this->company?->currency) {
+        if (! $this->company?->currency) {
             throw new \RuntimeException('Partner company or currency not found');
         }
 
@@ -348,7 +348,7 @@ class Partner extends Model
         if (! in_array($this->type, [PartnerType::Vendor, PartnerType::Both])) {
             $this->loadMissing('company.currency');
 
-            if (!$this->company?->currency) {
+            if (! $this->company?->currency) {
                 throw new \RuntimeException('Partner company or currency not found');
             }
 
@@ -357,7 +357,7 @@ class Partner extends Model
 
         $this->loadMissing('company.currency');
 
-        if (!$this->company?->currency) {
+        if (! $this->company?->currency) {
             throw new \RuntimeException('Partner company or currency not found');
         }
 
@@ -410,7 +410,7 @@ class Partner extends Model
     {
         $this->loadMissing('company.currency');
 
-        if (!$this->company?->currency) {
+        if (! $this->company?->currency) {
             throw new \RuntimeException('Partner company or currency not found');
         }
 
@@ -442,7 +442,7 @@ class Partner extends Model
         if (! in_array($this->type, [PartnerType::Customer, PartnerType::Both])) {
             $this->loadMissing('company.currency');
 
-            if (!$this->company?->currency) {
+            if (! $this->company?->currency) {
                 throw new \RuntimeException('Partner company or currency not found');
             }
 
@@ -451,7 +451,7 @@ class Partner extends Model
 
         $this->loadMissing('company.currency');
 
-        if (!$this->company?->currency) {
+        if (! $this->company?->currency) {
             throw new \RuntimeException('Partner company or currency not found');
         }
 
@@ -480,7 +480,7 @@ class Partner extends Model
         if (! in_array($this->type, [PartnerType::Vendor, PartnerType::Both])) {
             $this->loadMissing('company.currency');
 
-            if (!$this->company?->currency) {
+            if (! $this->company?->currency) {
                 throw new \RuntimeException('Partner company or currency not found');
             }
 
@@ -489,7 +489,7 @@ class Partner extends Model
 
         $this->loadMissing('company.currency');
 
-        if (!$this->company?->currency) {
+        if (! $this->company?->currency) {
             throw new \RuntimeException('Partner company or currency not found');
         }
 
@@ -534,7 +534,7 @@ class Partner extends Model
     {
         $this->loadMissing('company.currency');
 
-        if (!$this->company?->currency) {
+        if (! $this->company?->currency) {
             throw new \RuntimeException('Partner company or currency not found');
         }
 

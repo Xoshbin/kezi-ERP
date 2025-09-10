@@ -34,6 +34,7 @@ class EditStockMove extends EditRecord
     {
         $record = $this->getRecord();
         $reference = $record->reference ?? $record->id ?? '';
+
         return __('stock_move.edit_title', ['reference' => $reference]);
     }
 

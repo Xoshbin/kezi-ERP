@@ -7,16 +7,15 @@ use App\DataTransferObjects\Payments\UpdatePaymentDTO;
 use App\Enums\Payments\PaymentMethod;
 use App\Enums\Payments\PaymentStatus;
 use App\Enums\Payments\PaymentType;
+use App\Filament\Actions\DocsAction;
 use App\Filament\Clusters\Accounting\Resources\Payments\PaymentResource;
 use App\Models\Currency;
 use App\Models\Payment;
 use App\Services\PaymentService;
 use Brick\Money\Money;
 use Exception;
-use App\Filament\Actions\DocsAction;
 use Filament\Actions\Action;
 use Filament\Actions\DeleteAction;
-
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
 use Illuminate\Database\Eloquent\Model;
@@ -40,7 +39,7 @@ class EditPayment extends EditRecord
                     $service = app(PaymentService::class);
                     try {
                         $user = Auth::user();
-                        if (!$user) {
+                        if (! $user) {
                             throw new \Exception('User must be authenticated to confirm payment');
                         }
                         $service->confirm($record, $user);
@@ -86,7 +85,6 @@ class EditPayment extends EditRecord
             $data['amount'] = $record->amount->getAmount()->toFloat();
         }
 
-
         return $data;
     }
 
@@ -100,7 +98,7 @@ class EditPayment extends EditRecord
         // Ensure we have a single Currency model, not a collection
         if ($currency instanceof \Illuminate\Database\Eloquent\Collection) {
             $currency = $currency->first();
-            if (!$currency) {
+            if (! $currency) {
                 throw new \InvalidArgumentException('Currency not found');
             }
         }

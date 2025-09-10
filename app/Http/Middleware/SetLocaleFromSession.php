@@ -19,10 +19,10 @@ class SetLocaleFromSession
     {
         // Get locale from session, fallback to config default
         $locale = Session::get('locale', config('app.locale', 'en'));
-        
+
         // Validate locale against supported locales
         $supportedLocales = ['en', 'ckb', 'ar'];
-        
+
         if (in_array($locale, $supportedLocales)) {
             App::setLocale($locale);
         }

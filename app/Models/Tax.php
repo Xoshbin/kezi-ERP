@@ -174,28 +174,16 @@ class Tax extends Model
     }
 
     /**
-
-
      * @return HasMany<InvoiceLine, static>
-
-
      */
-
-
     public function invoiceLines(): HasMany
     {
         return $this->hasMany(InvoiceLine::class);
     }
 
     /**
-
-
      * @return HasMany<VendorBillLine, static>
-
-
      */
-
-
     public function vendorBillLines(): HasMany
     {
         return $this->hasMany(VendorBillLine::class);

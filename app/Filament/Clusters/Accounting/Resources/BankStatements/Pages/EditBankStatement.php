@@ -7,9 +7,9 @@ use App\DataTransferObjects\Accounting\UpdateBankStatementDTO;
 use App\DataTransferObjects\Accounting\UpdateBankStatementLineDTO;
 use App\Filament\Actions\DocsAction;
 use App\Filament\Clusters\Accounting\Resources\BankStatements\BankStatementResource;
-use App\Models\Currency;
 use App\Models\BankStatement;
 use App\Models\BankStatementLine;
+use App\Models\Currency;
 use Brick\Money\Money;
 use Filament\Actions\DeleteAction;
 use Filament\Resources\Pages\EditRecord;
@@ -68,7 +68,7 @@ class EditBankStatement extends EditRecord
                 // Ensure we have a single Currency model, not a collection
                 if ($foreignCurrency instanceof \Illuminate\Database\Eloquent\Collection) {
                     $foreignCurrency = $foreignCurrency->first();
-                    if (!$foreignCurrency) {
+                    if (! $foreignCurrency) {
                         throw new \InvalidArgumentException('Foreign currency not found');
                     }
                 }

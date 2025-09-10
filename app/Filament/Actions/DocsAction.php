@@ -19,7 +19,7 @@ class DocsAction
             ->append(' Guide');
 
         // Generate the action name (slug + '_docs' to match test expectations)
-        $actionName = $slug . '_docs';
+        $actionName = $slug.'_docs';
 
         return Action::make($actionName)
             ->label($title)

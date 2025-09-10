@@ -87,7 +87,7 @@ class ViewAgedPayables extends Page
         ]);
 
         $company = Filament::getTenant();
-        if (!$company instanceof \App\Models\Company) {
+        if (! $company instanceof \App\Models\Company) {
             throw new \Exception('Company not found');
         }
 

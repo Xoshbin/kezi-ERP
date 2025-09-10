@@ -7,7 +7,8 @@ class EIRSolverService
     /**
      * Solve per-period IRR for a series of cashflows at period ends using bisection.
      * Returns rate r such that NPV = 0.
-     * @param array<int,float> $cashflows
+     *
+     * @param  array<int,float>  $cashflows
      */
     public function solvePeriodicIRR(array $cashflows, float $low = 0.0, float $high = 1.0, float $tol = 1e-8, int $maxIter = 200): float
     {
@@ -16,6 +17,7 @@ class EIRSolverService
             foreach ($cashflows as $t => $cf) {
                 $sum += $cf / pow(1 + $r, $t);
             }
+
             return $sum;
         };
 
@@ -39,12 +41,14 @@ class EIRSolverService
                 return $mid;
             }
             if ($fLow * $fMid < 0) {
-                $high = $mid; $fHigh = $fMid;
+                $high = $mid;
+                $fHigh = $fMid;
             } else {
-                $low = $mid; $fLow = $fMid;
+                $low = $mid;
+                $fLow = $fMid;
             }
         }
+
         return ($low + $high) / 2.0;
     }
 }
-

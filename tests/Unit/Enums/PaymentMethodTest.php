@@ -51,7 +51,7 @@ class PaymentMethodTest extends TestCase
     {
         $validColors = [
             'gray', 'blue', 'green', 'purple', 'yellow',
-            'indigo', 'cyan', 'emerald', 'orange', 'red'
+            'indigo', 'cyan', 'emerald', 'orange', 'red',
         ];
 
         foreach (PaymentMethod::cases() as $method) {

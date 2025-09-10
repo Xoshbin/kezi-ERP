@@ -28,6 +28,7 @@ class ViewStockMove extends ViewRecord
     {
         $record = $this->getRecord();
         $reference = $record->reference ?? $record->id ?? '';
+
         return __('stock_move.view_title', ['reference' => $reference]);
     }
 }

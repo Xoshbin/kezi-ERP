@@ -23,7 +23,7 @@ return [
     'form.payment_type_and_purpose_description' => 'Select the direction of this payment',
     'form.status' => 'Status',
     'form.partner' => 'Partner',
-        'form.document_links' => 'Document Links',
+    'form.document_links' => 'Document Links',
     'form.document_links_description' => 'Link this payment to invoices or vendor bills',
     'form.direct_payment' => 'Partner advance/credit',
     'form.direct_payment_description' => 'For non-AR/AP bank movements (fees, taxes, loans, equity, payroll) use Bank Statements/Reconciliation or a Miscellaneous Journal. Payments without document links require a partner and will post to A/R or A/P.',
