@@ -6,6 +6,7 @@ use App\Actions\Inventory\UpdateStockMoveAction;
 use App\DataTransferObjects\Inventory\UpdateStockMoveDTO;
 use App\Enums\Inventory\StockMoveStatus;
 use App\Enums\Inventory\StockMoveType;
+use App\Filament\Actions\DocsAction;
 use App\Filament\Clusters\Inventory\Resources\StockMoves\StockMoveResource;
 use Carbon\Carbon;
 use Filament\Actions\DeleteAction;
@@ -25,6 +26,7 @@ class EditStockMove extends EditRecord
             DeleteAction::make()
                 ->icon('heroicon-o-trash')
                 ->visible(fn (): bool => ($this->getRecord() instanceof \App\Models\StockMove) && $this->getRecord()->status === StockMoveStatus::Draft),
+            DocsAction::make('stock-management'),
         ];
     }
 

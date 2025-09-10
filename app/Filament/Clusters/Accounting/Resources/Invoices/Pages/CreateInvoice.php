@@ -6,6 +6,7 @@ use App\Actions\Sales\CreateInvoiceAction;
 use App\DataTransferObjects\Sales\CreateInvoiceDTO;
 use App\DataTransferObjects\Sales\CreateInvoiceLineDTO;
 use App\Filament\Clusters\Accounting\Resources\Invoices\InvoiceResource;
+use App\Filament\Actions\DocsAction;
 use App\Models\Currency;
 use Brick\Money\Money;
 use Filament\Facades\Filament;
@@ -57,5 +58,12 @@ class CreateInvoice extends CreateRecord
         );
 
         return app(CreateInvoiceAction::class)->execute($invoiceDTO);
+    }
+
+    protected function getHeaderActions(): array
+    {
+        return [
+            DocsAction::make('customer-invoices'),
+        ];
     }
 }

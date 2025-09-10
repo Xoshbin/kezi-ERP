@@ -13,6 +13,7 @@ use App\Enums\Payments\PaymentMethod;
 
 use App\Enums\Payments\PaymentType;
 use App\Enums\Purchases\VendorBillStatus;
+use App\Filament\Actions\DocsAction;
 use App\Filament\Clusters\Accounting\Resources\VendorBills\VendorBillResource;
 use App\Filament\Clusters\Accounting\Resources\VendorBills\Widgets\SettlementSummaryWidget;
 use App\Filament\Forms\Components\MoneyInput;
@@ -257,6 +258,8 @@ class EditVendorBill extends EditRecord
                     app(VendorBillService::class)->delete($record);
                     $this->redirect(VendorBillResource::getUrl('index'));
                 }),
+
+            DocsAction::make('vendor-bills'),
         ];
     }
 
