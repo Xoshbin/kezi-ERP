@@ -2,6 +2,7 @@
 
 namespace App\Filament\Clusters\Accounting\Resources\BankStatements\Pages;
 
+use App\Filament\Actions\DocsAction;
 use App\Filament\Clusters\Accounting\Resources\BankStatements\BankStatementResource;
 use App\Models\BankStatement;
 use Filament\Resources\Pages\Page;
@@ -44,5 +45,12 @@ class BankReconciliation extends Page
         $tenant = \Filament\Facades\Filament::getTenant();
 
         return $tenant instanceof \App\Models\Company && $tenant->enable_reconciliation;
+    }
+
+    protected function getHeaderActions(): array
+    {
+        return [
+            DocsAction::make('bank-reconciliation'),
+        ];
     }
 }

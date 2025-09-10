@@ -6,6 +6,7 @@ use App\Actions\Inventory\CreateStockMoveAction;
 use App\DataTransferObjects\Inventory\CreateStockMoveDTO;
 use App\Enums\Inventory\StockMoveStatus;
 use App\Enums\Inventory\StockMoveType;
+use App\Filament\Actions\DocsAction;
 use App\Filament\Clusters\Inventory\Resources\StockMoves\StockMoveResource;
 use Carbon\Carbon;
 use Filament\Facades\Filament;
@@ -42,5 +43,12 @@ class CreateStockMove extends CreateRecord
         );
 
         return app(CreateStockMoveAction::class)->execute($dto);
+    }
+
+    protected function getHeaderActions(): array
+    {
+        return [
+            DocsAction::make('stock-management'),
+        ];
     }
 }

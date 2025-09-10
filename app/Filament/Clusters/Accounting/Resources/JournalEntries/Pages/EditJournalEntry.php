@@ -5,6 +5,7 @@ namespace App\Filament\Clusters\Accounting\Resources\JournalEntries\Pages;
 use App\Actions\Accounting\UpdateJournalEntryAction;
 use App\DataTransferObjects\Accounting\UpdateJournalEntryDTO;
 use App\DataTransferObjects\Accounting\UpdateJournalEntryLineDTO;
+use App\Filament\Actions\DocsAction;
 use App\Filament\Clusters\Accounting\Resources\JournalEntries\JournalEntryResource;
 use App\Models\Currency;
 use App\Models\JournalEntry;
@@ -55,6 +56,8 @@ class EditJournalEntry extends EditRecord
                     $journalEntryService->delete($record);
                     $this->redirect(JournalEntryResource::getUrl('index'));
                 }),
+
+            DocsAction::make('opening-balances'),
         ];
     }
 
