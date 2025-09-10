@@ -1,11 +1,14 @@
 # This is the name of the workflow, which will be displayed on GitHub.
 name: CI
 
+permissions:
+  contents: write
+
 # This section defines when the workflow will be triggered.
 on:
   # The 'push' event triggers the workflow on every push to the specified branches.
   push:
-    branches: [ "main", "develop" ]
+    branches: ["main", "develop"]
   # 'workflow_dispatch' allows you to manually trigger the workflow from the GitHub UI.
   workflow_dispatch:
 
@@ -27,7 +30,7 @@ jobs:
       - name: "Setup PHP"
         uses: shivammathur/setup-php@v2
         with:
-          php-version: '8.3'
+          php-version: "8.3"
           extensions: mbstring, intl, dom, fileinfo, curl, gd, bcmath, zip, pdo_sqlite
           coverage: none
 
@@ -43,8 +46,8 @@ jobs:
       - name: "Setup Node.js"
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
-          cache: 'npm'
+          node-version: "20"
+          cache: "npm"
 
       # This step installs the project's JavaScript dependencies using npm.
       - name: "Install Node dependencies"
