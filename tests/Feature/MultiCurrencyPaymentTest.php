@@ -96,7 +96,7 @@ describe('Multi-Currency Payment Tests', function () {
             // settlement inferred by presence of document links
             payment_type: PaymentType::Inbound,
             payment_method: PaymentMethod::BankTransfer,
-            partner_id: null,
+            paid_to_from_partner_id: null,
             amount: null,
             document_links: [$documentLinkDTO],
             reference: 'USD Payment for USD Invoice'
@@ -152,7 +152,7 @@ describe('Multi-Currency Payment Tests', function () {
             // settlement inferred by presence of document links
             payment_type: PaymentType::Inbound,
             payment_method: PaymentMethod::BankTransfer,
-            partner_id: null,
+            paid_to_from_partner_id: null,
             amount: null,
             document_links: [$documentLinkDTO],
             reference: 'USD Payment with Exchange Gain'
@@ -205,7 +205,7 @@ describe('Cross-Currency Payment Tests', function () {
             // settlement inferred by presence of document links
             payment_type: PaymentType::Inbound,
             payment_method: PaymentMethod::BankTransfer,
-            partner_id: null,
+            paid_to_from_partner_id: null,
             amount: null,
             document_links: [$documentLinkDTO],
             reference: 'IQD Payment for USD Invoice'
@@ -254,7 +254,7 @@ describe('Cross-Currency Payment Tests', function () {
             // settlement inferred by presence of document links
             payment_type: PaymentType::Inbound,
             payment_method: PaymentMethod::BankTransfer,
-            partner_id: null,
+            paid_to_from_partner_id: null,
             amount: null,
             document_links: [$documentLinkDTO],
             reference: 'USD Payment for IQD Invoice'
@@ -301,7 +301,7 @@ describe('VendorBill Payment Tests', function () {
             // settlement inferred by presence of document links
             payment_type: PaymentType::Outbound,
             payment_method: PaymentMethod::BankTransfer,
-            partner_id: null,
+            paid_to_from_partner_id: null,
             amount: null,
             document_links: [$documentLinkDTO],
             reference: 'USD Payment for USD Vendor Bill'
@@ -344,7 +344,7 @@ describe('Payment Document Link Tests', function () {
             // settlement inferred by presence of document links
             payment_type: PaymentType::Inbound,
             payment_method: PaymentMethod::BankTransfer,
-            partner_id: null,
+            paid_to_from_partner_id: null,
             amount: null,
             document_links: [$documentLinkDTO],
             reference: 'Test Payment Document Link'
@@ -389,7 +389,7 @@ describe('Payment Document Link Tests', function () {
             // settlement inferred by presence of document links
             payment_type: PaymentType::Inbound,
             payment_method: PaymentMethod::BankTransfer,
-            partner_id: null,
+            paid_to_from_partner_id: null,
             amount: null,
             document_links: [$documentLinkDTO],
             reference: 'Partial USD Payment'
@@ -438,7 +438,7 @@ describe('Payment State Bug Tests', function () {
             // settlement inferred by presence of document links
             payment_type: PaymentType::Inbound,
             payment_method: PaymentMethod::BankTransfer,
-            partner_id: null,
+            paid_to_from_partner_id: null,
             amount: null,
             document_links: [$documentLinkDTO],
             reference: 'Partial IQD Payment for USD Invoice'
@@ -485,7 +485,7 @@ describe('Payment State Bug Tests', function () {
             // settlement inferred by presence of document links
             payment_type: PaymentType::Inbound,
             payment_method: PaymentMethod::BankTransfer,
-            partner_id: null,
+            paid_to_from_partner_id: null,
             amount: null,
             document_links: [$documentLinkDTO],
             reference: 'Full USD Payment for USD Invoice'
@@ -532,7 +532,7 @@ describe('Payment State Bug Tests', function () {
             // settlement inferred by presence of document links
             payment_type: PaymentType::Inbound,
             payment_method: PaymentMethod::BankTransfer,
-            partner_id: null,
+            paid_to_from_partner_id: null,
             amount: null,
             document_links: [$documentLinkDTO],
             reference: 'Real World Scenario: 250,000 IQD for $1500 USD Invoice'
