@@ -5,6 +5,7 @@ namespace App\Filament\Clusters\Accounting\Resources\BankStatements\Pages;
 use App\Actions\Accounting\CreateBankStatementAction;
 use App\DataTransferObjects\Accounting\CreateBankStatementDTO;
 use App\DataTransferObjects\Accounting\CreateBankStatementLineDTO;
+use App\Filament\Actions\DocsAction;
 use App\Filament\Clusters\Accounting\Resources\BankStatements\BankStatementResource;
 use App\Models\Currency;
 use Brick\Money\Money;
@@ -87,5 +88,12 @@ class CreateBankStatement extends CreateRecord
         );
 
         return app(CreateBankStatementAction::class)->execute($bankStatementDTO);
+    }
+
+    protected function getHeaderActions(): array
+    {
+        return [
+            DocsAction::make('bank-statements'),
+        ];
     }
 }

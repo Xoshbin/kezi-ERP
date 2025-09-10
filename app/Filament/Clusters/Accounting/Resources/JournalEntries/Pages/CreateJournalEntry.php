@@ -5,6 +5,7 @@ namespace App\Filament\Clusters\Accounting\Resources\JournalEntries\Pages;
 use App\Actions\Accounting\CreateJournalEntryAction;
 use App\DataTransferObjects\Accounting\CreateJournalEntryDTO;
 use App\DataTransferObjects\Accounting\CreateJournalEntryLineDTO;
+use App\Filament\Actions\DocsAction;
 use App\Filament\Clusters\Accounting\Resources\JournalEntries\JournalEntryResource;
 use App\Models\Currency;
 use Brick\Money\Money;
@@ -92,5 +93,12 @@ class CreateJournalEntry extends CreateRecord
             // Re-throw other PDO exceptions
             throw $e;
         }
+    }
+
+    protected function getHeaderActions(): array
+    {
+        return [
+            DocsAction::make('opening-balances'),
+        ];
     }
 }
