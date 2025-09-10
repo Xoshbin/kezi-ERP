@@ -47,7 +47,7 @@ it('can create a standalone inbound payment', function () {
             'payment_type' => PaymentType::Inbound->value,
             'payment_method' => PaymentMethod::BankTransfer->value,
 
-            'partner_id' => $customer->id,
+            'paid_to_from_partner_id' => $customer->id,
             'amount' => 500,
             'reference' => 'Standalone Payment',
         ])
@@ -86,7 +86,7 @@ it('can create a standalone outbound payment', function () {
             'payment_type' => PaymentType::Outbound->value,
             'payment_method' => PaymentMethod::BankTransfer->value,
 
-            'partner_id' => $vendor->id,
+            'paid_to_from_partner_id' => $vendor->id,
             'amount' => 300,
             'reference' => 'Standalone Vendor Payment',
         ])
@@ -116,7 +116,7 @@ it('can validate input on create', function () {
             'payment_date' => null,
             'payment_type' => null,
 
-            'partner_id' => null,
+            'paid_to_from_partner_id' => null,
             'amount' => null,
         ])
         ->call('create')
@@ -125,7 +125,7 @@ it('can validate input on create', function () {
             'currency_id' => 'required',
             'payment_date' => 'required',
             'payment_type' => 'required',
-            'partner_id' => 'required',
+            'paid_to_from_partner_id' => 'required',
             'amount' => 'required',
         ]);
 });
@@ -165,7 +165,7 @@ it('can edit a draft standalone payment', function () {
             'payment_date' => $payment->payment_date->format('Y-m-d'),
             'payment_type' => $payment->payment_type->value,
 
-            'partner_id' => $payment->paid_to_from_partner_id,
+            'paid_to_from_partner_id' => $payment->paid_to_from_partner_id,
             'amount' => 150,
             'reference' => 'New Reference',
         ])
@@ -205,7 +205,7 @@ it('cannot edit a confirmed standalone payment', function () {
                 'payment_date' => $payment->payment_date->format('Y-m-d'),
                 'payment_type' => $payment->payment_type->value,
 
-                'partner_id' => $payment->paid_to_from_partner_id,
+                'paid_to_from_partner_id' => $payment->paid_to_from_partner_id,
                 'amount' => $payment->amount->getAmount()->toFloat(),
                 'reference' => 'Should Not Change',
             ])
@@ -260,7 +260,7 @@ it('can confirm a draft standalone payment', function () {
         'currency_id' => $payment->currency_id,
         'payment_date' => $payment->payment_date->format('Y-m-d'),
         'payment_type' => $payment->payment_type->value,
-        'partner_id' => $payment->paid_to_from_partner_id,
+        'paid_to_from_partner_id' => $payment->paid_to_from_partner_id,
         'amount' => $payment->amount->getAmount()->toFloat(),
         'reference' => $payment->reference,
     ]);
