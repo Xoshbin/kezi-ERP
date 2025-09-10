@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "d544e99c99ecdd92d12b733fb63f88bf",
+    "content-hash": "e5295e7e8110222191a8783a85e45861",
     "packages": [
         {
             "name": "anourvalar/eloquent-serialize",
@@ -8794,22 +8794,22 @@
         },
         {
             "name": "xoshbin/pertuk",
-            "version": "0.0.2",
+            "version": "0.0.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Xoshbin/pertuk.git",
-                "reference": "943a2b1134a2e956262cb98bad77ac215b0f6e1e"
+                "reference": "cd26f43225fdc86e08a1249caec3f21be3666678"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Xoshbin/pertuk/zipball/943a2b1134a2e956262cb98bad77ac215b0f6e1e",
-                "reference": "943a2b1134a2e956262cb98bad77ac215b0f6e1e",
+                "url": "https://api.github.com/repos/Xoshbin/pertuk/zipball/cd26f43225fdc86e08a1249caec3f21be3666678",
+                "reference": "cd26f43225fdc86e08a1249caec3f21be3666678",
                 "shasum": ""
             },
             "require": {
                 "illuminate/contracts": "^11.0||^12.0",
                 "league/commonmark": "^2.0",
-                "php": "^8.4",
+                "php": "^8.4 || ^8.3",
                 "spatie/laravel-package-tools": "^1.16",
                 "spatie/yaml-front-matter": "^2.0"
             },
@@ -8863,7 +8863,7 @@
             ],
             "support": {
                 "issues": "https://github.com/Xoshbin/pertuk/issues",
-                "source": "https://github.com/Xoshbin/pertuk/tree/0.0.2"
+                "source": "https://github.com/Xoshbin/pertuk/tree/0.0.4"
             },
             "funding": [
                 {
@@ -8871,7 +8871,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2025-09-09T21:28:52+00:00"
+            "time": "2025-09-10T03:21:00+00:00"
         }
     ],
     "packages-dev": [
