@@ -42,7 +42,7 @@ test('an inbound payment can be created and linked to an invoice', function () {
         // settlement inferred by presence of document links
         payment_type: PaymentType::Inbound,
         payment_method: PaymentMethod::BankTransfer,
-        partner_id: null,
+        paid_to_from_partner_id: null,
         amount: null,
         document_links: [$documentLinkDTO],
         reference: null
@@ -87,7 +87,7 @@ test('an outbound payment can be created and linked to a vendor bill', function 
         // settlement inferred by presence of document links
         payment_type: PaymentType::Outbound,
         payment_method: PaymentMethod::BankTransfer,
-        partner_id: null,
+        paid_to_from_partner_id: null,
         amount: null,
         document_links: [$documentLinkDTO],
         reference: null
@@ -141,7 +141,7 @@ test('creating a payment generates the correct journal entry', function () {
         // settlement inferred by presence of document links
         payment_type: PaymentType::Outbound,
         payment_method: PaymentMethod::BankTransfer,
-        partner_id: null,
+        paid_to_from_partner_id: null,
         amount: null,
         document_links: [$documentLinkDTO],
         reference: 'Test Payment'

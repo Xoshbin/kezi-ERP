@@ -33,7 +33,7 @@ test('a loan payment creates the correct journal entry', function () {
         // standalone partner advance inferred by absence of document links
         payment_type: PaymentType::Inbound,
         payment_method: PaymentMethod::BankTransfer,
-        partner_id: $partner->id,
+        paid_to_from_partner_id: $partner->id,
         amount: Money::of(10000, $this->company->currency->code),
         document_links: [],
         reference: 'Loan from Bank'
@@ -81,7 +81,7 @@ test('a capital injection payment creates the correct journal entry', function (
         payment_date: now()->toDateString(),
         payment_type: PaymentType::Inbound,
         payment_method: PaymentMethod::BankTransfer,
-        partner_id: $partner->id,
+        paid_to_from_partner_id: $partner->id,
         amount: Money::of(25000, $this->company->currency->code),
         document_links: [],
         reference: 'Owner Capital Investment'
@@ -117,7 +117,7 @@ test('an expense claim payment creates the correct journal entry', function () {
         payment_date: now()->toDateString(),
         payment_type: PaymentType::Outbound,
         payment_method: PaymentMethod::BankTransfer,
-        partner_id: $partner->id,
+        paid_to_from_partner_id: $partner->id,
         amount: Money::of(500, $this->company->currency->code),
         document_links: [],
         reference: 'Employee Expense Reimbursement'
@@ -157,7 +157,7 @@ test('settlement payments still work as before', function () {
         // settlement inferred by presence of document links
         payment_type: PaymentType::Inbound,
         payment_method: PaymentMethod::BankTransfer,
-        partner_id: null,
+        paid_to_from_partner_id: null,
         amount: null,
         document_links: [], // Would normally have document links, but testing the purpose assignment
         reference: 'Settlement Payment'
