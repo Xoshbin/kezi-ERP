@@ -3,7 +3,7 @@
 namespace App\Filament\Clusters\Accounting\Resources\LoanAgreements\Pages;
 
 use App\Filament\Clusters\Accounting\Resources\LoanAgreements\LoanAgreementResource;
-use Xoshbin\Pertuk\Support\DocsAction;
+use App\Filament\Actions\DocsAction;
 use Filament\Resources\Pages\CreateRecord;
 
 class CreateLoanAgreement extends CreateRecord

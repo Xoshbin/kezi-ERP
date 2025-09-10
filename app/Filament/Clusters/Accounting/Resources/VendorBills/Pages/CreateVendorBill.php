@@ -5,6 +5,7 @@ namespace App\Filament\Clusters\Accounting\Resources\VendorBills\Pages;
 use App\Actions\Purchases\CreateVendorBillAction;
 use App\DataTransferObjects\Purchases\CreateVendorBillDTO;
 use App\DataTransferObjects\Purchases\CreateVendorBillLineDTO;
+use App\Filament\Actions\DocsAction;
 use App\Filament\Clusters\Accounting\Resources\VendorBills\VendorBillResource;
 use App\Models\Currency;
 use App\Models\VendorBillAttachment;
@@ -97,5 +98,12 @@ class CreateVendorBill extends CreateRecord
                 ]);
             }
         }
+    }
+
+    protected function getHeaderActions(): array
+    {
+        return [
+            DocsAction::make('vendor-bills'),
+        ];
     }
 }

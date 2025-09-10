@@ -13,6 +13,7 @@ use App\Enums\Payments\PaymentMethod;
 
 use App\Enums\Payments\PaymentType;
 use App\Enums\Sales\InvoiceStatus;
+use App\Filament\Actions\DocsAction;
 use App\Filament\Clusters\Accounting\Resources\Invoices\InvoiceResource;
 use App\Filament\Clusters\Accounting\Resources\Invoices\Widgets\SettlementSummaryWidget;
 use App\Filament\Forms\Components\MoneyInput;
@@ -275,6 +276,8 @@ class EditInvoice extends EditRecord
                     app(InvoiceService::class)->delete($record);
                     $this->redirect(InvoiceResource::getUrl('index'));
                 }),
+
+            DocsAction::make('customer-invoices'),
         ];
     }
 
