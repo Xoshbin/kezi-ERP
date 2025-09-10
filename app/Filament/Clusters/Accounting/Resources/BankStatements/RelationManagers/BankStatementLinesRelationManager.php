@@ -89,10 +89,12 @@ class BankStatementLinesRelationManager extends RelationManager
                     ->color('danger')
                     ->visible(function (BankStatementLine $record) {
                         $je = $record->journalEntry;
+
                         return $record->is_reconciled && $je instanceof \App\Models\JournalEntry && $je->state === JournalEntryState::Posted;
                     })
                     ->authorize(function (BankStatementLine $record) {
                         $je = $record->journalEntry;
+
                         return $je instanceof \App\Models\JournalEntry && Gate::allows('reverse', $je);
                     })
                     ->requiresConfirmation()
@@ -101,12 +103,12 @@ class BankStatementLinesRelationManager extends RelationManager
                     ->action(function (BankStatementLine $record) {
                         try {
                             $journalEntry = $record->journalEntry;
-                            if (!$journalEntry instanceof \App\Models\JournalEntry) {
+                            if (! $journalEntry instanceof \App\Models\JournalEntry) {
                                 throw new \Exception('Journal entry not found');
                             }
 
                             $user = Auth::user();
-                            if (!$user) {
+                            if (! $user) {
                                 throw new \Exception('User must be authenticated to reverse journal entry');
                             }
                             $reverseAction = app(ReverseJournalEntryAction::class);

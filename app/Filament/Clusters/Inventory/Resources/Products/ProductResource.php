@@ -71,6 +71,7 @@ class ProductResource extends Resource
     {
         /** @var \App\Models\Company|null $tenant */
         $tenant = Filament::getTenant();
+
         return $schema->components([
             Section::make(__('product.basic_information'))
                 ->description(__('product.basic_information_description'))

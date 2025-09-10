@@ -72,7 +72,7 @@ class ViewPartnerLedger extends Page
                             ->searchable()
                             ->options(function () {
                                 $user = Filament::auth()->user();
-                                if (!$user) {
+                                if (! $user) {
                                     return [];
                                 }
 
@@ -124,7 +124,7 @@ class ViewPartnerLedger extends Page
         ]);
 
         $user = Filament::auth()->user();
-        if (!$user) {
+        if (! $user) {
             throw new \Exception('User must be authenticated to view partner ledger');
         }
 

@@ -48,7 +48,7 @@ class CreateInvoiceAction
         });
 
         $freshInvoice = $invoice->fresh();
-        if (!$freshInvoice) {
+        if (! $freshInvoice) {
             throw new \Exception('Failed to refresh invoice after creation');
         }
 

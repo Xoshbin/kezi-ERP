@@ -20,7 +20,6 @@ use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
-use Filament\Facades\Filament;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Repeater\TableColumn;
@@ -279,7 +278,7 @@ class JournalEntryResource extends Resource
     }
 
     /**
-     * @param array<int, array{debit?: float|string, credit?: float|string}> $state
+     * @param  array<int, array{debit?: float|string, credit?: float|string}>  $state
      */
     protected static function updateTotals(callable $set, array $state): void
     {

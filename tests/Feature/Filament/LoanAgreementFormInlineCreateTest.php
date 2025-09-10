@@ -1,6 +1,5 @@
 <?php
 
-
 use App\Filament\Clusters\Accounting\Resources\LoanAgreements\Pages\CreateLoanAgreement;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\Support\FilamentInlineCreate as Inline;
@@ -10,7 +9,10 @@ use function Pest\Livewire\livewire;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);
 
-beforeEach(function () { $this->setupWithConfiguredCompany(); $this->actingAs($this->user); });
+beforeEach(function () {
+    $this->setupWithConfiguredCompany();
+    $this->actingAs($this->user);
+});
 
 it('can fill create loan form using newly created partner and currency', function () {
     $company = $this->company;
@@ -43,4 +45,3 @@ it('can fill create loan form using newly created partner and currency', functio
         'currency_id' => $currency->id,
     ]);
 });
-

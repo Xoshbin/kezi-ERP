@@ -109,11 +109,8 @@ class DepreciationEntry extends Model
      * Get the company that this depreciation entry belongs to.
      */
     /**
-
      * @return BelongsTo<Company, static>
-
      */
-
     public function company(): BelongsTo
     {
         return $this->belongsTo(Company::class);
@@ -124,11 +121,8 @@ class DepreciationEntry extends Model
      * Each depreciation entry corresponds to a specific fixed asset.
      */
     /**
-
      * @return BelongsTo<Asset, static>
-
      */
-
     public function asset(): BelongsTo
     {
         return $this->belongsTo(Asset::class);
@@ -141,11 +135,8 @@ class DepreciationEntry extends Model
      * but becomes mandatory upon 'Posting' when the actual financial impact occurs.
      */
     /**
-
      * @return BelongsTo<JournalEntry, static>
-
      */
-
     public function journalEntry(): BelongsTo
     {
         return $this->belongsTo(JournalEntry::class);

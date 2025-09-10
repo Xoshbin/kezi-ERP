@@ -6,11 +6,10 @@ use App\Actions\Payments\CreatePaymentAction;
 use App\DataTransferObjects\Payments\CreatePaymentDTO;
 use App\Enums\Payments\PaymentMethod;
 use App\Enums\Payments\PaymentType;
+use App\Filament\Actions\DocsAction;
 use App\Filament\Clusters\Accounting\Resources\Payments\PaymentResource;
 use App\Models\Currency;
 use Brick\Money\Money;
-use App\Filament\Actions\DocsAction;
-
 use Filament\Facades\Filament;
 use Filament\Resources\Pages\CreateRecord;
 use Illuminate\Database\Eloquent\Model;

@@ -59,7 +59,6 @@ class MoneySynth extends Synth
      * This is called when data is coming FROM the browser back to the server.
      *
      * @param  array{amount: string, currency: string}  $payload  The simple array from the frontend.
-     * @return Money|null
      */
     public function hydrate(array $payload): ?Money
     {

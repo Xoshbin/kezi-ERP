@@ -6,7 +6,6 @@ use App\Enums\Payments\PaymentType;
 use App\Filament\Clusters\Accounting\Resources\Payments\Pages\CreatePayment;
 use App\Filament\Clusters\Accounting\Resources\Payments\Pages\EditPayment;
 use App\Filament\Clusters\Accounting\Resources\Payments\Pages\ListPayments;
-use App\Models\Account;
 use App\Models\Journal;
 use App\Models\Partner;
 use App\Models\Payment;
@@ -42,6 +41,7 @@ it('has correct payment method options', function () {
         if ($component instanceof \Filament\Forms\Components\Field) {
             if ($component->getName() === 'payment_method') {
                 $paymentMethodField = $component;
+
                 return;
             }
         }
@@ -74,7 +74,6 @@ it('can create payment with payment method', function () {
         'company_id' => $this->company->id,
         'currency_id' => $this->company->currency_id,
     ]);
-
 
     $paymentData = [
         'journal_id' => $journal->id,
@@ -146,7 +145,6 @@ it('can edit payment method', function () {
         'company_id' => $this->company->id,
         'currency_id' => $this->company->currency_id,
     ]);
-
 
     $payment = Payment::factory()->create([
         'company_id' => $this->company->id,

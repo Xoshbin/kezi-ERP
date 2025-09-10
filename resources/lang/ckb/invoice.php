@@ -57,7 +57,7 @@ return [
 
     // Actions
     'confirm' => 'پشتڕاستکردنەوە',
-        'confirm_invoice' => 'پشتڕاستکردنەوەی پسووڵە',
+    'confirm_invoice' => 'پشتڕاستکردنەوەی پسووڵە',
 
     // Statuses
     'statuses' => [

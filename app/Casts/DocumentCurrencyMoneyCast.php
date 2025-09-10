@@ -26,10 +26,11 @@ class DocumentCurrencyMoneyCast extends MoneyCast
             // Ensure we have a single Currency model, not a collection
             if ($currency instanceof \Illuminate\Database\Eloquent\Collection) {
                 $currency = $currency->first();
-                if (!$currency) {
+                if (! $currency) {
                     throw new InvalidArgumentException('Currency collection is empty');
                 }
             }
+
             return $currency;
         }
 
@@ -96,26 +97,32 @@ class DocumentCurrencyMoneyCast extends MoneyCast
         // This is less efficient but ensures the cast always works
         if (method_exists($model, 'invoice') && $model->getAttribute('invoice_id')) {
             $invoice = $model->invoice()->with('currency')->first();
+
             return $invoice->currency ?? throw new InvalidArgumentException('Invoice currency not found');
         }
         if (method_exists($model, 'vendorBill') && $model->getAttribute('vendor_bill_id')) {
             $vendorBill = $model->vendorBill()->with('currency')->first();
+
             return $vendorBill->currency ?? throw new InvalidArgumentException('Vendor bill currency not found');
         }
         if (method_exists($model, 'adjustmentDocument') && $model->getAttribute('adjustment_document_id')) {
             $adj = $model->adjustmentDocument()->with('currency')->first();
+
             return $adj->currency ?? throw new InvalidArgumentException('Adjustment document currency not found');
         }
         if (method_exists($model, 'payment') && $model->getAttribute('payment_id')) {
             $payment = $model->payment()->with('currency')->first();
+
             return $payment->currency ?? throw new InvalidArgumentException('Payment currency not found');
         }
         if (method_exists($model, 'bankStatement') && $model->getAttribute('bank_statement_id')) {
             $stmt = $model->bankStatement()->with('currency')->first();
+
             return $stmt->currency ?? throw new InvalidArgumentException('Bank statement currency not found');
         }
         if (method_exists($model, 'loan') && $model->getAttribute('loan_id')) {
             $loan = $model->loan()->with('currency')->first();
+
             return $loan->currency ?? throw new InvalidArgumentException('Loan currency not found');
         }
         // Some models expose a direct currency() relationship (e.g., PaymentDocumentLink)
@@ -132,7 +139,7 @@ class DocumentCurrencyMoneyCast extends MoneyCast
     /**
      * Override set to resolve currency using incoming attributes when model FKs are not yet set.
      *
-     * @param array<string, mixed> $attributes
+     * @param  array<string, mixed>  $attributes
      * @return array<string, int|null>
      */
     public function set(Model $model, string $key, mixed $value, array $attributes): array

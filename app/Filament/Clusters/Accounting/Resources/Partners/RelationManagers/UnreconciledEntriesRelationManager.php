@@ -156,7 +156,7 @@ class UnreconciledEntriesRelationManager extends RelationManager
     /**
      * Modify the query to show only unreconciled entries from reconcilable accounts.
      *
-     * @param Builder<JournalEntryLine> $query
+     * @param  Builder<JournalEntryLine>  $query
      * @return Builder<JournalEntryLine>
      */
     protected function modifyQuery(Builder $query): Builder
@@ -190,7 +190,7 @@ class UnreconciledEntriesRelationManager extends RelationManager
     /**
      * Reconcile the selected entries.
      *
-     * @param array<string, mixed> $data
+     * @param  array<string, mixed>  $data
      */
     protected function reconcileSelectedEntries(array $data): void
     {
@@ -205,8 +205,8 @@ class UnreconciledEntriesRelationManager extends RelationManager
     /**
      * Reconcile the given journal entry lines.
      *
-     * @param Collection<int, JournalEntryLine> $records
-     * @param array<string, mixed> $data
+     * @param  Collection<int, JournalEntryLine>  $records
+     * @param  array<string, mixed>  $data
      */
     protected function reconcileEntries(Collection $records, array $data): void
     {

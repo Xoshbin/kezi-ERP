@@ -24,7 +24,7 @@ class IncomeVsExpenseChart extends ChartWidget
     protected function getData(): array
     {
         $company = Filament::getTenant();
-        if (!$company instanceof \App\Models\Company) {
+        if (! $company instanceof \App\Models\Company) {
             return $this->getEmptyData();
         }
 

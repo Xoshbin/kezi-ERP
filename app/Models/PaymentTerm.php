@@ -4,7 +4,6 @@ namespace App\Models;
 
 use App\Observers\AuditLogObserver;
 use App\Traits\TranslatableSearch;
-use Spatie\Translatable\HasTranslations;
 use Database\Factories\PaymentTermFactory;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Builder;
@@ -14,6 +13,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
+use Spatie\Translatable\HasTranslations;
 
 /**
  * Class PaymentTerm
@@ -154,8 +154,6 @@ class PaymentTerm extends Model
      * Calculate due dates for a given document date and amount.
      * Returns an array of installments with due dates and amounts.
      *
-     * @param Carbon $documentDate
-     * @param \Brick\Money\Money $totalAmount
      * @return array<int, array{due_date: Carbon, amount: \Brick\Money\Money, percentage: float}>
      */
     public function calculateInstallments(Carbon $documentDate, \Brick\Money\Money $totalAmount): array
@@ -169,7 +167,7 @@ class PaymentTerm extends Model
                     'due_date' => $documentDate,
                     'amount' => $totalAmount,
                     'percentage' => 100.0,
-                ]
+                ],
             ];
         }
 
@@ -215,6 +213,7 @@ class PaymentTerm extends Model
             if ($line->percentage == 100 && $line->days == 0) {
                 return __('payment_terms.immediate_payment');
             }
+
             return __('payment_terms.net_days', ['days' => $line->days]);
         }
 
@@ -222,7 +221,7 @@ class PaymentTerm extends Model
         $descriptions = $this->lines->map(function (PaymentTermLine $line) {
             return __('payment_terms.installment_description', [
                 'percentage' => $line->percentage,
-                'days' => $line->days
+                'days' => $line->days,
             ]);
         });
 

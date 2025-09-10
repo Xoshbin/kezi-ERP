@@ -36,7 +36,7 @@ class CreateLeaveRequestAction
             ]);
 
             $fresh = $leaveRequest->fresh();
-            if (!$fresh) {
+            if (! $fresh) {
                 throw new \RuntimeException('Failed to refresh leave request after creation');
             }
 

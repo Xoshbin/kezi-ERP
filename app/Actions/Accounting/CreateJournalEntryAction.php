@@ -117,7 +117,7 @@ class CreateJournalEntryAction
 
             // This ensures the $journalEntry object is fully hydrated before we use it.
             $journalEntry = $journalEntry->fresh();
-            if (!$journalEntry) {
+            if (! $journalEntry) {
                 throw new \RuntimeException('Failed to refresh journal entry after creation');
             }
             $journalEntry->load('currency');

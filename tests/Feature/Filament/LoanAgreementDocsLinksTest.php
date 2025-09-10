@@ -3,7 +3,6 @@
 use App\Filament\Clusters\Accounting\Resources\LoanAgreements\LoanAgreementResource;
 use App\Filament\Clusters\Accounting\Resources\LoanAgreements\Pages\CreateLoanAgreement;
 use App\Filament\Clusters\Accounting\Resources\LoanAgreements\Pages\EditLoanAgreement;
-use App\Filament\Clusters\Accounting\Resources\LoanAgreements\Pages\ListLoanAgreements;
 use App\Filament\Clusters\Accounting\Resources\LoanAgreements\Pages\ViewLoanAgreement;
 use App\Models\LoanAgreement;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -41,4 +40,3 @@ it('shows docs action on view loan agreement page', function () {
     livewire(ViewLoanAgreement::class, ['record' => $loan->getRouteKey()])
         ->assertActionVisible('loan-agreements_docs');
 });
-

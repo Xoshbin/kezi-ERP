@@ -12,8 +12,8 @@ class LoanScheduleEntry extends Model
     use HasFactory;
 
     protected $fillable = [
-        'loan_id','sequence','due_date','payment_amount','principal_component','interest_component','outstanding_balance_after',
-        'is_accrual_posted','is_payment_posted','journal_entry_id_accrual','journal_entry_id_payment',
+        'loan_id', 'sequence', 'due_date', 'payment_amount', 'principal_component', 'interest_component', 'outstanding_balance_after',
+        'is_accrual_posted', 'is_payment_posted', 'journal_entry_id_accrual', 'journal_entry_id_payment',
     ];
 
     protected $casts = [
@@ -26,6 +26,8 @@ class LoanScheduleEntry extends Model
         'is_payment_posted' => 'boolean',
     ];
 
-    public function loan(): BelongsTo { return $this->belongsTo(LoanAgreement::class, 'loan_id'); }
+    public function loan(): BelongsTo
+    {
+        return $this->belongsTo(LoanAgreement::class, 'loan_id');
+    }
 }
-

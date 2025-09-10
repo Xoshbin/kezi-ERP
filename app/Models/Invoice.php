@@ -147,11 +147,8 @@ class Invoice extends Model
      * An invoice is always issued by a specific company. [1]
      */
     /**
-
      * @return BelongsTo<Company, static>
-
      */
-
     public function company(): BelongsTo
     {
         return $this->belongsTo(Company::class);
@@ -162,11 +159,8 @@ class Invoice extends Model
      * The customer is the entity to whom the invoice is issued. [1]
      */
     /**
-
      * @return BelongsTo<Partner, static>
-
      */
-
     public function customer(): BelongsTo
     {
         return $this->belongsTo(Partner::class);
@@ -177,11 +171,8 @@ class Invoice extends Model
      * Every invoice operates in a specific currency. [1]
      */
     /**
-
      * @return BelongsTo<Currency, static>
-
      */
-
     public function currency(): BelongsTo
     {
         return $this->belongsTo(Currency::class);
@@ -192,11 +183,8 @@ class Invoice extends Model
      * This link is vital for the immutability of financial records. [1]
      */
     /**
-
      * @return BelongsTo<JournalEntry, static>
-
      */
-
     public function journalEntry(): BelongsTo
     {
         return $this->belongsTo(JournalEntry::class);
@@ -207,11 +195,8 @@ class Invoice extends Model
      * An invoice typically consists of multiple product or service lines. [1]
      */
     /**
-
      * @return HasMany<InvoiceLine, static>
-
      */
-
     public function invoiceLines(): HasMany
     {
         return $this->hasMany(InvoiceLine::class);
@@ -222,11 +207,8 @@ class Invoice extends Model
      * Fiscal positions can automatically adapt taxes and accounts based on specific rules. [4, 7]
      */
     /**
-
      * @return BelongsTo<FiscalPosition, static>
-
      */
-
     public function fiscalPosition(): BelongsTo
     {
         return $this->belongsTo(FiscalPosition::class);
@@ -238,11 +220,8 @@ class Invoice extends Model
      * can potentially pay multiple invoices, creating a many-to-many relationship.
      */
     /**
-
      * @return BelongsToMany<Payment, static>
-
      */
-
     public function payments(): BelongsToMany
     {
         return $this->belongsToMany(Payment::class, 'payment_document_links', 'invoice_id', 'payment_id')
@@ -254,11 +233,8 @@ class Invoice extends Model
      * This provides access to the raw pivot data for multi-currency payment calculations.
      */
     /**
-
      * @return HasMany<PaymentDocumentLink, static>
-
      */
-
     public function paymentDocumentLinks(): HasMany
     {
         return $this->hasMany(PaymentDocumentLink::class, 'invoice_id');
@@ -287,11 +263,8 @@ class Invoice extends Model
      * These are used for corrections, reversals, and adjustments to posted invoices.
      */
     /**
-
      * @return HasMany<AdjustmentDocument, static>
-
      */
-
     public function adjustmentDocuments(): HasMany
     {
         return $this->hasMany(AdjustmentDocument::class, 'original_invoice_id');
@@ -349,7 +322,7 @@ class Invoice extends Model
 
         $this->loadMissing('paymentTerm');
 
-        if (!$this->paymentTerm instanceof PaymentTerm) {
+        if (! $this->paymentTerm instanceof PaymentTerm) {
             // No payment terms, create single installment with due date
             PaymentInstallment::create([
                 'company_id' => $this->company_id,
@@ -360,6 +333,7 @@ class Invoice extends Model
                 'amount' => $this->total_amount,
                 'status' => \App\Enums\PaymentInstallments\InstallmentStatus::Pending,
             ]);
+
             return;
         }
 

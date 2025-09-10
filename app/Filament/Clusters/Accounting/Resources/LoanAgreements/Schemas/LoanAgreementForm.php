@@ -30,6 +30,7 @@ class LoanAgreementForm
                     Hidden::make('company_id')
                         ->default(function () {
                             $tenant = Filament::getTenant();
+
                             return $tenant instanceof \App\Models\Company ? $tenant->getKey() : null;
                         }),
 
@@ -108,6 +109,7 @@ class LoanAgreementForm
                                 ->live()
                                 ->default(function (): ?int {
                                     $tenant = Filament::getTenant();
+
                                     return $tenant instanceof \App\Models\Company ? $tenant->currency_id : null;
                                 })
                                 ->createOptionForm([
@@ -130,7 +132,7 @@ class LoanAgreementForm
                                 ->currencyField('currency_id')
                                 ->disabled()
                                 ->dehydrated(false)
-                                ->visible(fn (? \App\Models\LoanAgreement $record) => $record && $record->outstanding_principal)
+                                ->visible(fn (?\App\Models\LoanAgreement $record) => $record && $record->outstanding_principal)
                                 ->columnSpanFull(),
                         ])
                         ->columns(12)

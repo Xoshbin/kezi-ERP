@@ -17,12 +17,13 @@ class PaymentTermsIntegrationTest extends TestCase
     use RefreshDatabase;
 
     private Company $company;
+
     private User $user;
 
     protected function setUp(): void
     {
         parent::setUp();
-        
+
         $this->company = Company::factory()->create();
         $this->user = User::factory()->create();
         $this->actingAs($this->user);
@@ -99,12 +100,12 @@ class PaymentTermsIntegrationTest extends TestCase
         $installments = $paymentTerm->calculateInstallments($documentDate, $amount);
 
         $this->assertCount(2, $installments);
-        
+
         // First installment: 50% in 30 days
         $this->assertEquals('2025-02-14', $installments[0]['due_date']->toDateString());
         $this->assertTrue($installments[0]['amount']->isEqualTo(Money::of(500, 'USD')));
         $this->assertEquals(50.0, $installments[0]['percentage']);
-        
+
         // Second installment: 50% in 60 days
         $this->assertEquals('2025-03-16', $installments[1]['due_date']->toDateString());
         $this->assertTrue($installments[1]['amount']->isEqualTo(Money::of(500, 'USD')));
@@ -159,7 +160,7 @@ class PaymentTermsIntegrationTest extends TestCase
         // Test with document date after 15th
         $documentDate = Carbon::parse('2025-01-20'); // After 15th
         $installments = $paymentTerm->calculateInstallments($documentDate, $amount);
-        
+
         // Should be 15th of next month
         $this->assertEquals('2025-02-15', $installments[0]['due_date']->toDateString());
     }
@@ -183,16 +184,16 @@ class PaymentTermsIntegrationTest extends TestCase
         $amount = Money::of(1000, 'USD');
 
         $line = $paymentTerm->lines->first();
-        
+
         $this->assertTrue($line->hasEarlyPaymentDiscount($documentDate, $paymentDate));
-        
+
         $discountAmount = $line->calculateDiscountAmount($amount, $documentDate, $paymentDate);
         $this->assertTrue($discountAmount->isEqualTo(Money::of(20, 'USD'))); // 2% of 1000
-        
+
         // Test payment after discount period
         $latePaymentDate = Carbon::parse('2025-01-30'); // After 10 days
         $this->assertFalse($line->hasEarlyPaymentDiscount($documentDate, $latePaymentDate));
-        
+
         $noDiscount = $line->calculateDiscountAmount($amount, $documentDate, $latePaymentDate);
         $this->assertTrue($noDiscount->isEqualTo(Money::of(0, 'USD')));
     }
@@ -229,12 +230,12 @@ class PaymentTermsIntegrationTest extends TestCase
         $installments = $paymentTerm->calculateInstallments($documentDate, $amount);
 
         $this->assertCount(3, $installments);
-        
+
         // Check that total equals original amount (no rounding errors)
         $total = $installments[0]['amount']
             ->plus($installments[1]['amount'])
             ->plus($installments[2]['amount']);
-            
+
         $this->assertTrue($total->isEqualTo($amount));
     }
 }

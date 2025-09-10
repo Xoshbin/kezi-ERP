@@ -32,4 +32,3 @@ return new class extends Migration
         Schema::dropIfExists('loan_schedule_entries');
     }
 };
-

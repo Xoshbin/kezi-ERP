@@ -68,8 +68,6 @@ class SettlementSummaryWidget extends BaseWidget
         ];
     }
 
-
-
     private function formatMoney(Money $money): string
     {
         $formatter = new NumberFormatter('en_US', NumberFormatter::CURRENCY);
@@ -79,7 +77,7 @@ class SettlementSummaryWidget extends BaseWidget
             $money->getCurrency()->getCurrencyCode()
         );
 
-        return $result ?: $money->getCurrency()->getCurrencyCode() . ' 0.00';
+        return $result ?: $money->getCurrency()->getCurrencyCode().' 0.00';
     }
 
     protected function getColumns(): int

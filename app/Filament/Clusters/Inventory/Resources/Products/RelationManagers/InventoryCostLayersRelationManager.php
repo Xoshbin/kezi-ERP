@@ -58,7 +58,7 @@ class InventoryCostLayersRelationManager extends RelationManager
                 TextColumn::make('total_cost')
                     ->label(__('inventory_cost_layer.total_cost'))
                     ->formatStateUsing(function (InventoryCostLayer $record): string {
-                        if (!$record->cost_per_unit) {
+                        if (! $record->cost_per_unit) {
                             return '0.00';
                         }
                         $totalCost = $record->cost_per_unit->multipliedBy($record->quantity);
@@ -69,7 +69,7 @@ class InventoryCostLayersRelationManager extends RelationManager
                 TextColumn::make('remaining_value')
                     ->label(__('inventory_cost_layer.remaining_value'))
                     ->formatStateUsing(function (InventoryCostLayer $record): string {
-                        if (!$record->cost_per_unit) {
+                        if (! $record->cost_per_unit) {
                             return '0.00';
                         }
                         $remainingValue = $record->cost_per_unit->multipliedBy($record->remaining_quantity);

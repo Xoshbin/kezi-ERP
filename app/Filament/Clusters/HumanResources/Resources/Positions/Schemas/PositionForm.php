@@ -20,6 +20,7 @@ class PositionForm
     {
         /** @var \App\Models\Company|null $tenant */
         $tenant = Filament::getTenant();
+
         return $schema->components([
             Section::make(__('position.basic_information'))
                 ->description(__('position.basic_information_description'))

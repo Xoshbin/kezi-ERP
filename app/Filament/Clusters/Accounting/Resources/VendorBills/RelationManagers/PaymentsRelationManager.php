@@ -49,6 +49,7 @@ class PaymentsRelationManager extends RelationManager
                             ->required()
                             ->default(function (): ?int {
                                 $owner = $this->getOwnerRecord();
+
                                 return $owner instanceof \App\Models\VendorBill ? $owner->company_id : null;
                             }),
 
@@ -63,6 +64,7 @@ class PaymentsRelationManager extends RelationManager
                             ->required()
                             ->default(function (): ?int {
                                 $owner = $this->getOwnerRecord();
+
                                 return $owner instanceof \App\Models\VendorBill ? $owner->currency_id : null;
                             }),
 

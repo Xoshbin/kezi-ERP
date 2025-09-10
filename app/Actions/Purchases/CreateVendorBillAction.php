@@ -45,7 +45,7 @@ class CreateVendorBillAction
             // The VendorBillLineObserver will handle recalculating totals.
             // We just need to reload the relationship to get the fresh data.
             $freshVendorBill = $vendorBill->fresh('lines');
-            if (!$freshVendorBill) {
+            if (! $freshVendorBill) {
                 throw new \Exception('Failed to refresh vendor bill after creation');
             }
 

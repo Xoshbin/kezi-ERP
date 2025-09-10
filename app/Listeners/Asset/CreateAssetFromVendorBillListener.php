@@ -33,12 +33,17 @@ class CreateAssetFromVendorBillListener implements ShouldQueue
                 $category = new class($company, $line)
                 {
                     public int $asset_account_id;
+
                     public int $depreciation_expense_account_id;
+
                     public int $accumulated_depreciation_account_id;
+
                     public int $useful_life_years;
+
                     public \App\Enums\Assets\DepreciationMethod $depreciation_method;
 
-                    public function __construct(public \App\Models\Company $company, public \App\Models\VendorBillLine $line) {
+                    public function __construct(public \App\Models\Company $company, public \App\Models\VendorBillLine $line)
+                    {
                         $this->asset_account_id = $this->line->expense_account_id;
                         $this->depreciation_expense_account_id = $this->company->default_depreciation_expense_account_id
                             ?? $this->company->default_sales_discount_account_id

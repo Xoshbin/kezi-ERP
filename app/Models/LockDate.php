@@ -27,14 +27,8 @@ class LockDate extends Model
     ];
 
     /**
-
-
      * @return BelongsTo<Company, static>
-
-
      */
-
-
     public function company(): BelongsTo
     {
         return $this->belongsTo(Company::class);

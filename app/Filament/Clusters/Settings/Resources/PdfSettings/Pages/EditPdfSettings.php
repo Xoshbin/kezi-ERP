@@ -21,6 +21,7 @@ class EditPdfSettings extends EditRecord
                 ->url(function (): string {
                     $record = $this->getRecord();
                     $id = $record instanceof \App\Models\Company ? (int) $record->getKey() : 0;
+
                     return route('pdf.preview', ['company' => $id]);
                 })
                 ->openUrlInNewTab(),
@@ -36,6 +37,7 @@ class EditPdfSettings extends EditRecord
     {
         $record = $this->getRecord();
         $name = $record instanceof \App\Models\Company ? (string) $record->name : '';
+
         return __('pdf_settings.edit_heading', ['company' => $name]);
     }
 

@@ -114,7 +114,7 @@ class EditAdjustmentDocument extends EditRecord
                     $service = app(AdjustmentDocumentService::class);
                     try {
                         $user = auth()->user();
-                        if (!$user) {
+                        if (! $user) {
                             throw new \Exception('User must be authenticated to post adjustment document');
                         }
                         $service->post($record, $user);
@@ -208,7 +208,7 @@ class EditAdjustmentDocument extends EditRecord
         // Ensure we have a single Currency model, not a collection
         if ($currency instanceof \Illuminate\Database\Eloquent\Collection) {
             $currency = $currency->first();
-            if (!$currency) {
+            if (! $currency) {
                 throw new \InvalidArgumentException('Currency not found');
             }
         }
@@ -224,7 +224,7 @@ class EditAdjustmentDocument extends EditRecord
             );
         }
 
-        if (!$record instanceof \App\Models\AdjustmentDocument) {
+        if (! $record instanceof \App\Models\AdjustmentDocument) {
             throw new \Exception('Invalid record type');
         }
 

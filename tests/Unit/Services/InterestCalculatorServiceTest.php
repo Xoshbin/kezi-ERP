@@ -21,4 +21,3 @@ it('computes annuity payment correctly for monthly schedule', function () {
 
     expect($payment->isEqualTo(Money::of('888.49', 'USD')))->toBeTrue();
 });
-

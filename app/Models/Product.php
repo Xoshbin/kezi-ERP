@@ -127,11 +127,8 @@ class Product extends Model
      * This relationship is fundamental in a multi-company accounting setup, ensuring products are scoped to specific entities.
      */
     /**
-
      * @return BelongsTo<Company, static>
-
      */
-
     public function company(): BelongsTo
     {
         return $this->belongsTo(Company::class, 'company_id');
@@ -142,11 +139,8 @@ class Product extends Model
      * This is crucial for automating revenue recognition when the product is sold, impacting the Income Statement.
      */
     /**
-
      * @return BelongsTo<Account, static>
-
      */
-
     public function incomeAccount(): BelongsTo
     {
         return $this->belongsTo(Account::class, 'income_account_id');
@@ -157,11 +151,8 @@ class Product extends Model
      * This enables automated cost allocation and impacts the Expense section of the Income Statement, aligning with the double-entry principle.
      */
     /**
-
      * @return BelongsTo<Account, static>
-
      */
-
     public function expenseAccount(): BelongsTo
     {
         return $this->belongsTo(Account::class, 'expense_account_id');
@@ -169,25 +160,16 @@ class Product extends Model
 
     // ADDED: Relationship to the default inventory/valuation account.
     /**
-
      * @return BelongsTo<Account, static>
-
      */
-
     public function inventoryAccount(): BelongsTo
     {
         return $this->belongsTo(Account::class, 'default_inventory_account_id');
     }
 
     /**
-
-
      * @return BelongsTo<Account, static>
-
-
      */
-
-
     public function defaultCogsAccount(): BelongsTo
     {
         return $this->belongsTo(Account::class, 'default_cogs_account_id');
@@ -195,25 +177,16 @@ class Product extends Model
 
     // ADDED: Relationship to the default stock input/accrual account.
     /**
-
      * @return BelongsTo<Account, static>
-
      */
-
     public function stockInputAccount(): BelongsTo
     {
         return $this->belongsTo(Account::class, 'default_stock_input_account_id');
     }
 
     /**
-
-
      * @return BelongsTo<Account, static>
-
-
      */
-
-
     public function defaultPriceDifferenceAccount(): BelongsTo
     {
         return $this->belongsTo(Account::class, 'default_price_difference_account_id');
@@ -246,56 +219,32 @@ class Product extends Model
     }
 
     /**
-
-
      * @return HasMany<InvoiceLine, static>
-
-
      */
-
-
     public function invoiceLines(): HasMany
     {
         return $this->hasMany(InvoiceLine::class);
     }
 
     /**
-
-
      * @return HasMany<VendorBillLine, static>
-
-
      */
-
-
     public function vendorBillLines(): HasMany
     {
         return $this->hasMany(VendorBillLine::class);
     }
 
     /**
-
-
      * @return HasMany<StockMove, static>
-
-
      */
-
-
     public function stockMoves(): HasMany
     {
         return $this->hasMany(StockMove::class);
     }
 
     /**
-
-
      * @return HasMany<InventoryCostLayer, static>
-
-
      */
-
-
     public function inventoryCostLayers(): HasMany
     {
         return $this->hasMany(InventoryCostLayer::class);

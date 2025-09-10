@@ -2,9 +2,7 @@
 
 namespace App\Filament\Clusters\Accounting\Resources\Payments;
 
-
 use App\Enums\Payments\PaymentMethod;
-
 use App\Enums\Payments\PaymentStatus;
 use App\Enums\Payments\PaymentType;
 use App\Filament\Clusters\Accounting\AccountingCluster;
@@ -18,8 +16,6 @@ use App\Filament\Clusters\Accounting\Resources\Payments\RelationManagers\VendorB
 use App\Filament\Forms\Components\MoneyInput;
 use App\Filament\Support\TranslatableSelect;
 use App\Filament\Tables\Columns\MoneyColumn;
-
-
 use App\Models\Currency;
 use App\Models\Journal;
 use App\Models\Partner;
@@ -140,6 +136,7 @@ class PaymentResource extends Resource
                                 ->required()
                                 ->default(function (): ?int {
                                     $tenant = Filament::getTenant();
+
                                     return $tenant instanceof \App\Models\Company ? $tenant->currency_id : null;
                                 })
                                 ->columnSpanFull(),

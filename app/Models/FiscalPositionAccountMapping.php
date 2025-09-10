@@ -82,11 +82,8 @@ class FiscalPositionAccountMapping extends Model
      * Get the company that this rate belongs to.
      */
     /**
-
      * @return BelongsTo<Company, static>
-
      */
-
     public function company(): BelongsTo
     {
         return $this->belongsTo(Company::class);
@@ -97,11 +94,8 @@ class FiscalPositionAccountMapping extends Model
      * This defines the context under which the account re-mapping takes place [1, 2].
      */
     /**
-
      * @return BelongsTo<FiscalPosition, static>
-
      */
-
     public function fiscalPosition(): BelongsTo
     {
         // This mapping belongs to a single FiscalPosition [6].
@@ -114,11 +108,8 @@ class FiscalPositionAccountMapping extends Model
      * replaced when the fiscal position is applied [1, 2].
      */
     /**
-
      * @return BelongsTo<Account, static>
-
      */
-
     public function originalAccount(): BelongsTo
     {
         // It belongs to an Account model. We explicitly define the foreign key
@@ -133,11 +124,8 @@ class FiscalPositionAccountMapping extends Model
      * used after the fiscal position's rule is applied [1, 2].
      */
     /**
-
      * @return BelongsTo<Account, static>
-
      */
-
     public function mappedAccount(): BelongsTo
     {
         // Similar to originalAccount, we explicitly define the foreign key as 'mapped_account_id' [6].

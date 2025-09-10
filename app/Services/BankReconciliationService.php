@@ -131,7 +131,7 @@ class BankReconciliationService
 
             // Validate that totals match using proper Money arithmetic
             $firstBankLine = $bankLines->first();
-            if (!$firstBankLine) {
+            if (! $firstBankLine) {
                 throw new \Exception('No bank lines provided for reconciliation');
             }
             $currency = $firstBankLine->bankStatement->currency;

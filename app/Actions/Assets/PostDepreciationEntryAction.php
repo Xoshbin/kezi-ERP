@@ -23,7 +23,7 @@ class PostDepreciationEntryAction
             ]);
 
             $fresh = $depreciationEntry->fresh();
-            if (!$fresh) {
+            if (! $fresh) {
                 throw new \RuntimeException('Failed to refresh depreciation entry after update');
             }
 

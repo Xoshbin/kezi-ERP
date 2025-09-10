@@ -80,6 +80,7 @@ class AssetResource extends Resource
                         ->live()
                         ->default(function (): ?int {
                             $tenant = Filament::getTenant();
+
                             return $tenant instanceof \App\Models\Company ? $tenant->currency_id : null;
                         })
                         ->afterStateUpdated(function (callable $set, $state) {

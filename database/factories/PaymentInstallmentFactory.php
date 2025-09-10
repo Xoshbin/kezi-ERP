@@ -6,7 +6,6 @@ use App\Enums\PaymentInstallments\InstallmentStatus;
 use App\Models\Company;
 use App\Models\Invoice;
 use App\Models\PaymentInstallment;
-use Brick\Money\Money;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -59,6 +58,7 @@ class PaymentInstallmentFactory extends Factory
     {
         return $this->state(function (array $attributes) use ($percentage) {
             $paidAmount = (int) ($attributes['amount'] * $percentage);
+
             return [
                 'paid_amount' => $paidAmount,
                 'status' => InstallmentStatus::PartiallyPaid,

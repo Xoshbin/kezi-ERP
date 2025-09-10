@@ -10,4 +10,3 @@ enum FeeType: string
     case Penalty = 'penalty';
     case Other = 'other';
 }
-

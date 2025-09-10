@@ -89,7 +89,7 @@ class VendorBillService
             throw new RuntimeException("Default Vendor or Stock Location is not configured for Company ID: {$company->getKey()}.");
         }
 
-        if (!$line->product_id) {
+        if (! $line->product_id) {
             throw new \Exception('Vendor bill line must have a product to create stock move');
         }
 
@@ -126,6 +126,7 @@ class VendorBillService
 
         return DB::transaction(function () use ($vendorBill) {
             $result = $vendorBill->delete();
+
             return $result !== null ? $result : false;
         });
     }

@@ -39,7 +39,6 @@ it('can create a standalone inbound payment', function () {
     /** @var \App\Models\Journal $bankJournal */
     $bankJournal = Journal::factory()->for($this->company)->create(['type' => JournalType::Bank]);
 
-
     livewire(\App\Filament\Clusters\Accounting\Resources\Payments\Pages\CreatePayment::class)
         ->fillForm([
             'journal_id' => $bankJournal->id,
@@ -78,7 +77,6 @@ it('can create a standalone outbound payment', function () {
 
     /** @var \App\Models\Journal $bankJournal */
     $bankJournal = Journal::factory()->for($this->company)->create(['type' => JournalType::Bank]);
-
 
     livewire(\App\Filament\Clusters\Accounting\Resources\Payments\Pages\CreatePayment::class)
         ->fillForm([
@@ -147,7 +145,6 @@ it('can edit a draft standalone payment', function () {
         'company_id' => $this->company->id,
     ]);
 
-
     $payment = Payment::factory()->create([
         'company_id' => $this->company->id,
         'status' => PaymentStatus::Draft,
@@ -185,7 +182,6 @@ it('cannot edit a confirmed standalone payment', function () {
     $customer = Partner::factory()->customer()->create([
         'company_id' => $this->company->id,
     ]);
-
 
     $payment = Payment::factory()->create([
         'company_id' => $this->company->id,
@@ -228,7 +224,6 @@ it('can confirm a draft standalone payment', function () {
         'company_id' => $this->company->id,
     ]);
 
-
     /** @var \App\Models\Account $bankAccount */
     $bankAccount = \App\Models\Account::factory()->create([
         'company_id' => $this->company->id,
@@ -248,7 +243,6 @@ it('can confirm a draft standalone payment', function () {
         'company_id' => $this->company->id,
         'journal_id' => $bankJournal->id,
         'status' => PaymentStatus::Draft,
-
 
         'amount' => Money::of(100, $this->company->currency->code),
         'currency_id' => $this->company->currency_id,

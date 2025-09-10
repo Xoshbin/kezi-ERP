@@ -25,7 +25,6 @@ class PayrollObserver
     private function calculatePayrollTotals(Payroll $payroll): void
     {
 
-
         // Calculate gross salary (sum of all salary components)
         $grossSalary = $payroll->base_salary
             ->plus($payroll->overtime_amount)

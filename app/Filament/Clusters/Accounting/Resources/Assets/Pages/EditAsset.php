@@ -32,7 +32,7 @@ class EditAsset extends EditRecord
     public function computeDepreciation(): void
     {
         $asset = $this->getRecord();
-        if (!$asset instanceof \App\Models\Asset) {
+        if (! $asset instanceof \App\Models\Asset) {
             throw new \Exception('Asset not found');
         }
 
@@ -45,7 +45,7 @@ class EditAsset extends EditRecord
 
     protected function handleRecordUpdate(Model $record, array $data): Model
     {
-        if (!$record instanceof \App\Models\Asset) {
+        if (! $record instanceof \App\Models\Asset) {
             throw new \Exception('Asset not found');
         }
 

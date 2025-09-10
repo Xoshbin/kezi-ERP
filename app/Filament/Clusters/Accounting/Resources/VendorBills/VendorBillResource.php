@@ -9,7 +9,6 @@ use App\Enums\Accounting\TaxType;
 use App\Enums\Assets\DepreciationMethod;
 use App\Enums\Partners\PartnerType;
 use App\Enums\Payments\PaymentMethod;
-
 use App\Enums\Payments\PaymentType;
 use App\Enums\Products\ProductType;
 use App\Enums\Purchases\VendorBillStatus;
@@ -139,6 +138,7 @@ class VendorBillResource extends Resource
                         ->columnSpan(1)
                         ->default(function (): ?int {
                             $tenant = Filament::getTenant();
+
                             return $tenant instanceof \App\Models\Company ? $tenant->currency_id : null;
                         })
                         ->afterStateUpdated(function (callable $set, $state) {
@@ -683,7 +683,7 @@ class VendorBillResource extends Resource
 
                             // Create and confirm payment
                             $user = Auth::user();
-                            if (!$user) {
+                            if (! $user) {
                                 throw new \Exception('User must be authenticated to create payment');
                             }
                             $payment = app(CreatePaymentAction::class)->execute($paymentDTO, $user);

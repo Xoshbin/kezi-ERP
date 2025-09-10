@@ -10,16 +10,15 @@ use App\DataTransferObjects\Payments\CreatePaymentDTO;
 use App\DataTransferObjects\Sales\UpdateInvoiceDTO;
 use App\DataTransferObjects\Sales\UpdateInvoiceLineDTO;
 use App\Enums\Payments\PaymentMethod;
-
 use App\Enums\Payments\PaymentType;
 use App\Enums\Sales\InvoiceStatus;
 use App\Filament\Actions\DocsAction;
 use App\Filament\Clusters\Accounting\Resources\Invoices\InvoiceResource;
 use App\Filament\Clusters\Accounting\Resources\Invoices\Widgets\SettlementSummaryWidget;
 use App\Filament\Forms\Components\MoneyInput;
+use App\Models\Company;
 use App\Models\Invoice;
 use App\Models\Journal;
-use App\Models\Company;
 use App\Services\InvoiceService;
 use App\Services\PaymentService;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -145,7 +144,7 @@ class EditInvoice extends EditRecord
                     $service = app(InvoiceService::class);
                     try {
                         $user = Auth::user();
-                        if (!$user) {
+                        if (! $user) {
                             throw new \Exception('User must be authenticated to confirm invoice');
                         }
                         $service->confirm($record, $user);
@@ -228,7 +227,7 @@ class EditInvoice extends EditRecord
 
                         // Create and confirm payment
                         $user = Auth::user();
-                        if (!$user) {
+                        if (! $user) {
                             throw new \Exception('User must be authenticated to create payment');
                         }
                         $payment = app(CreatePaymentAction::class)->execute($paymentDTO, $user);
@@ -270,7 +269,7 @@ class EditInvoice extends EditRecord
 
             DeleteAction::make()
                 ->action(function (Model $record) {
-                    if (!$record instanceof \App\Models\Invoice) {
+                    if (! $record instanceof \App\Models\Invoice) {
                         throw new \Exception('Invalid record type');
                     }
                     app(InvoiceService::class)->delete($record);

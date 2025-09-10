@@ -2,7 +2,6 @@
 
 use App\Actions\Loans\AccrueLoanInterestAction;
 use App\Actions\Loans\ComputeLoanScheduleAction;
-use App\Actions\Loans\CreateJournalEntryForLoanInitialRecognitionAction;
 use App\Enums\Loans\LoanType;
 use App\Enums\Loans\ScheduleMethod;
 use App\Models\Account;
@@ -50,4 +49,3 @@ it('accrues monthly interest for a payable loan', function () {
     expect(round($lineExpense->debit->getAmount()->toFloat(), 2))->toBe(100.00);
     expect(round($lineAccrued->credit->getAmount()->toFloat(), 2))->toBe(100.00);
 });
-

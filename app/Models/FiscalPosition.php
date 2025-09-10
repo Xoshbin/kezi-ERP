@@ -90,11 +90,8 @@ class FiscalPosition extends Model
      * A fiscal position is typically defined within the context of a specific company.
      */
     /**
-
      * @return BelongsTo<Company, static>
-
      */
-
     public function company(): BelongsTo
     {
         return $this->belongsTo(Company::class);
@@ -105,11 +102,8 @@ class FiscalPosition extends Model
      * These mappings define how original taxes are replaced or adjusted based on this fiscal position.
      */
     /**
-
      * @return HasMany<FiscalPositionTaxMapping, static>
-
      */
-
     public function taxMappings(): HasMany
     {
         // Assumes a FiscalPositionTaxMapping model exists to represent the pivot table.
@@ -123,11 +117,8 @@ class FiscalPosition extends Model
      * These mappings define how original accounts are replaced or adjusted based on this fiscal position.
      */
     /**
-
      * @return HasMany<FiscalPositionAccountMapping, static>
-
      */
-
     public function accountMappings(): HasMany
     {
         // Assumes a FiscalPositionAccountMapping model exists to represent the pivot table.

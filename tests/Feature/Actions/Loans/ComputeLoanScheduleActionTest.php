@@ -63,4 +63,3 @@ it('computes straight-line principal schedule', function () {
     expect((string) $first->interest_component->getAmount())->toBe((string) \Brick\Money\Money::of('120', $code)->getAmount());
     expect((string) $first->payment_amount->getAmount())->toBe((string) \Brick\Money\Money::of('1120', $code)->getAmount());
 });
-

@@ -3,7 +3,6 @@
 namespace App\Actions\Payments;
 
 use App\DataTransferObjects\Payments\CreatePaymentDTO;
-
 use App\Enums\Payments\PaymentStatus;
 use App\Enums\Payments\PaymentType;
 use App\Models\Company;

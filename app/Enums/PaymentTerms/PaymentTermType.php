@@ -15,7 +15,7 @@ use Filament\Support\Contracts\HasLabel;
  * - DayOfMonth: Specific day of month (e.g., 15th of next month)
  * - Immediate: Payment due immediately
  */
-enum PaymentTermType: string implements HasLabel, HasColor, HasIcon
+enum PaymentTermType: string implements HasColor, HasIcon, HasLabel
 {
     case Net = 'net';
     case EndOfMonth = 'end_of_month';

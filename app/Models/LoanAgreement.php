@@ -16,9 +16,9 @@ class LoanAgreement extends Model
     use HasFactory;
 
     protected $fillable = [
-        'company_id','partner_id','name','loan_date','start_date','maturity_date','duration_months',
-        'currency_id','principal_amount','outstanding_principal','loan_type','status','schedule_method',
-        'interest_rate','eir_enabled','eir_rate',
+        'company_id', 'partner_id', 'name', 'loan_date', 'start_date', 'maturity_date', 'duration_months',
+        'currency_id', 'principal_amount', 'outstanding_principal', 'loan_type', 'status', 'schedule_method',
+        'interest_rate', 'eir_enabled', 'eir_rate',
     ];
 
     protected $casts = [
@@ -32,12 +32,33 @@ class LoanAgreement extends Model
         'schedule_method' => ScheduleMethod::class,
     ];
 
-    public function company(): BelongsTo { return $this->belongsTo(Company::class); }
-    public function currency(): BelongsTo { return $this->belongsTo(Currency::class); }
-    public function partner(): BelongsTo { return $this->belongsTo(Partner::class); }
+    public function company(): BelongsTo
+    {
+        return $this->belongsTo(Company::class);
+    }
 
-    public function scheduleEntries(): HasMany { return $this->hasMany(LoanScheduleEntry::class, 'loan_id'); }
-    public function feeLines(): HasMany { return $this->hasMany(LoanFeeLine::class, 'loan_id'); }
-    public function rateChanges(): HasMany { return $this->hasMany(LoanRateChange::class, 'loan_id'); }
+    public function currency(): BelongsTo
+    {
+        return $this->belongsTo(Currency::class);
+    }
+
+    public function partner(): BelongsTo
+    {
+        return $this->belongsTo(Partner::class);
+    }
+
+    public function scheduleEntries(): HasMany
+    {
+        return $this->hasMany(LoanScheduleEntry::class, 'loan_id');
+    }
+
+    public function feeLines(): HasMany
+    {
+        return $this->hasMany(LoanFeeLine::class, 'loan_id');
+    }
+
+    public function rateChanges(): HasMany
+    {
+        return $this->hasMany(LoanRateChange::class, 'loan_id');
+    }
 }
-

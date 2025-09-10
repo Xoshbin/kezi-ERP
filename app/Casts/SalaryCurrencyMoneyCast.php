@@ -27,10 +27,11 @@ class SalaryCurrencyMoneyCast extends MoneyCast
             // Ensure we have a single Currency model, not a collection
             if ($currency instanceof \Illuminate\Database\Eloquent\Collection) {
                 $currency = $currency->first();
-                if (!$currency) {
+                if (! $currency) {
                     throw new InvalidArgumentException('Salary currency collection is empty');
                 }
             }
+
             return $currency;
         }
 
@@ -38,6 +39,7 @@ class SalaryCurrencyMoneyCast extends MoneyCast
         if ($model->relationLoaded('company') && $model->getRelationValue('company')) {
             /** @var \App\Models\Company $company */
             $company = $model->getRelationValue('company');
+
             return $company->currency;
         }
 

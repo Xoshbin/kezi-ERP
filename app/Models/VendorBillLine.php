@@ -135,11 +135,8 @@ class VendorBillLine extends Model
      * Get the company that this rate belongs to.
      */
     /**
-
      * @return BelongsTo<Company, static>
-
      */
-
     public function company(): BelongsTo
     {
         return $this->belongsTo(Company::class);
@@ -151,11 +148,8 @@ class VendorBillLine extends Model
      * linking each line item directly to its originating vendor bill document [2, 10-12].
      */
     /**
-
      * @return BelongsTo<VendorBill, static>
-
      */
-
     public function vendorBill(): BelongsTo
     {
         return $this->belongsTo(VendorBill::class, 'vendor_bill_id');
@@ -168,11 +162,8 @@ class VendorBillLine extends Model
      * without linking to a specific product from the catalog [2].
      */
     /**
-
      * @return BelongsTo<Product, static>
-
      */
-
     public function product(): BelongsTo
     {
         return $this->belongsTo(Product::class, 'product_id');
@@ -184,11 +175,8 @@ class VendorBillLine extends Model
      * This is crucial for correct tax calculation and reporting, and is nullable for tax-exempt items [2].
      */
     /**
-
      * @return BelongsTo<Tax, static>
-
      */
-
     public function tax(): BelongsTo
     {
         return $this->belongsTo(Tax::class, 'tax_id');
@@ -200,11 +188,8 @@ class VendorBillLine extends Model
      * directing the cost of each line item to the appropriate expense account in the Chart of Accounts [2, 10-12].
      */
     /**
-
      * @return BelongsTo<Account, static>
-
      */
-
     public function expenseAccount(): BelongsTo
     {
         return $this->belongsTo(Account::class, 'expense_account_id');
@@ -218,11 +203,8 @@ class VendorBillLine extends Model
      * It is nullable as not all expense lines may require analytic tracking.
      */
     /**
-
      * @return BelongsTo<AnalyticAccount, static>
-
      */
-
     public function analyticAccount(): BelongsTo
     {
         return $this->belongsTo(AnalyticAccount::class, 'analytic_account_id');

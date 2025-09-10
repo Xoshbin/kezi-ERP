@@ -135,8 +135,6 @@ return [
         'paid' => 'Paid',
     ],
 
-
-
     'payment_method' => [
         'manual' => 'Manual',
         'check' => 'Check',
