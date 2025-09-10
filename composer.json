@@ -16,8 +16,6 @@
         "lara-zeus/spatie-translatable": "^1.0",
         "laravel/framework": "^12.0",
         "laravel/tinker": "^2.10.1",
-        "league/commonmark": "^2",
-        "spatie/yaml-front-matter": "^2.1",
         "xoshbin/pertuk": "@dev"
     },
     "require-dev": {
