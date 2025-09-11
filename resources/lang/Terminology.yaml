@@ -820,7 +820,12 @@ categories:
         en: "Multi-Company"
         ar: ""
         ckb: "گروپی-کۆمپانیاکان"
-        notes: "Removal of an item from the books"
+        notes: "Multiple companies"
+      exchange_differences:
+        en: "Exchange Differences"
+        ar: ""
+        ckb: "جیاوازی نرخی ئاڵوگۆڕ"
+        notes: "Gain/loss from exchange rate fluctuations"
 
 # Usage Guidelines
 usage_guidelines:
