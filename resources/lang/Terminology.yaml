@@ -816,6 +816,11 @@ categories:
         ar: "شطب"
         ckb: "پاککردنەوە"
         notes: "Removal of an item from the books"
+      multi-company:
+        en: "Multi-Company"
+        ar: ""
+        ckb: "گروپی-کۆمپانیاکان"
+        notes: "Removal of an item from the books"
 
 # Usage Guidelines
 usage_guidelines:
