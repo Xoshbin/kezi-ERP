@@ -10,7 +10,7 @@ return [
     'journal_entry' => 'تۆماری ڕۆژانە',
     'type' => 'جۆر',
     'date' => 'ڕێکەوت',
-    'reference_number' => 'ژمارەی ئاماژە',
+    'reference_number' => 'ژمارەی بەڵگە',
     'total_amount' => 'کۆی گشتی بڕ',
     'total_tax' => 'کۆی گشتی باج',
     'reason' => 'هۆکار',

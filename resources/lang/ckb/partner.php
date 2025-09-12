@@ -73,7 +73,7 @@ return [
         'paid_last_month' => 'مانگی ڕابردوو دراو',
 
         // Legacy (keeping for compatibility)
-        'customer_owes_us' => 'کڕیار قەرزارمانە',
+        'customer_owes_us' => 'کڕیار قەرزدارمانە',
         'overdue_amount' => 'بڕی دواکەوتوو',
         'no_overdue_amounts' => 'هیچ بڕێکی دواکەوتوو نییە',
         'requires_attention' => 'پێویستی بە سەرنج هەیە',
@@ -86,7 +86,7 @@ return [
         'no_payments' => 'هیچ پارەدانێک نییە',
         'no_payment_received' => 'هیچ پارەیەک وەرنەگیراوە',
         'total_payable' => 'کۆی قەرزی پێدراو',
-        'we_owe_vendor' => 'ئێمە قەرزاری فرۆشیارین',
+        'we_owe_vendor' => 'ئێمە قەرزدار فرۆشیارین',
         'overdue_payable' => 'قەرزی دواکەوتووی پێدراو',
         'no_overdue_payments' => 'هیچ پارەدانێکی دواکەوتوو نییە',
         'payment_required' => 'پارەدان پێویستە',
