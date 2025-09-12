@@ -61,7 +61,7 @@ class CreatePaymentFromPayrollAction
             payment_date: $payroll->pay_date->format('Y-m-d'),
             payment_type: PaymentType::Outbound,
             payment_method: PaymentMethod::BankTransfer, // Default for payroll
-            partner_id: null, // For now, no partner relationship
+            paid_to_from_partner_id: null, // For now, no partner relationship
             amount: $payroll->net_salary,
             document_links: [], // No document links for payroll payments
             reference: $reference
