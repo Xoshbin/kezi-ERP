@@ -675,7 +675,7 @@ class VendorBillResource extends Resource
                                 // settlement inferred by presence of document links
                                 payment_type: PaymentType::Outbound,
                                 payment_method: PaymentMethod::BankTransfer,
-                                partner_id: $record->vendor_id,
+                                paid_to_from_partner_id: $record->vendor_id,
                                 amount: Money::of($data['amount'], $currency->code),
                                 document_links: [$documentLink],
                                 reference: $data['reference']

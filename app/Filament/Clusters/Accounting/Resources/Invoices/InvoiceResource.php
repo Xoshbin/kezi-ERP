@@ -615,7 +615,7 @@ class InvoiceResource extends Resource
                                 // settlement inferred by presence of document links
                                 payment_type: PaymentType::Inbound,
                                 payment_method: PaymentMethod::BankTransfer,
-                                partner_id: $record->customer_id,
+                                paid_to_from_partner_id: $record->customer_id,
                                 amount: Money::of($data['amount'], $currency->code),
                                 document_links: [$documentLink],
                                 reference: $data['reference']
