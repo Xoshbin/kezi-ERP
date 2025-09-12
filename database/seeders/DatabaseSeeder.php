@@ -32,7 +32,7 @@ class DatabaseSeeder extends Seeder
                 // Basic data for transactions (customers, vendors, products).
                 PartnerSeeder::class,
                 TaxSeeder::class,
-//                ProductSeeder::class,
+                //                ProductSeeder::class,
 
                 // 4. Fiscal positions and mappings
                 // Rules for applying taxes and mapping accounts based on partner location.
@@ -55,18 +55,18 @@ class DatabaseSeeder extends Seeder
 
                 // 7. Financial documents
                 // The primary transactional records.
-//                JournalEntrySeeder::class,
-//                VendorBillSeeder::class,
-//                InvoiceSeeder::class,
+                //                JournalEntrySeeder::class,
+                //                VendorBillSeeder::class,
+                //                InvoiceSeeder::class,
                 // InvoiceLineSeeder::class, // Removed as logic is now in InvoiceSeeder
-//                PaymentSeeder::class,
-//                PaymentDocumentLinkSeeder::class,
+                //                PaymentSeeder::class,
+                //                PaymentDocumentLinkSeeder::class,
 
                 // 8. Adjustments and statements
                 // For reconciliations and manual adjustments.
-//                AdjustmentDocumentSeeder::class,
-//                BankStatementSeeder::class,
-//                BankStatementLineSeeder::class,
+                //                AdjustmentDocumentSeeder::class,
+                //                BankStatementSeeder::class,
+                //                BankStatementLineSeeder::class,
 
                 // 9. Finally
                 // Lock dates to prevent changes to closed periods.
