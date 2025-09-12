@@ -99,8 +99,8 @@ return [
     ],
 
     'adjustment_document_type' => [
-        'credit_note' => 'پسوولەی گەڕاندنەوە',
-        'debit_note' => 'پسوولەی وەرگرتن',
+        'credit_note' => 'پسووڵەی گەڕاندنەوە',
+        'debit_note' => 'پسوولەی وەرگرتنەوە',
         'miscellaneous' => 'هەمەجۆر',
     ],
 

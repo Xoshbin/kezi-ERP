@@ -29,7 +29,7 @@ return [
     'source_id' => 'ناسنامەی سەرچاوە',
     'total_debit' => 'کۆی قەرزدار',
     'total_credit' => 'کۆی دابینکراو',
-    'balance' => 'یەکە',
+    'balance' => 'باڵانس',
     'company_currency_totals' => 'کۆی گشتی بە دراوی کۆمپانیا',
     'created_at' => 'کاتی دروستکردن',
     'updated_at' => 'کاتی نوێکردنەوە',
