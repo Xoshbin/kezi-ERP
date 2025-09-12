@@ -59,6 +59,11 @@ categories:
         ar: "القيد"
         ckb: "تۆمار"
         notes: "Record entry"
+      double-entry:
+        en: "Double-Entry"
+        ar: "القيد المزدوج"
+        ckb: "دوو-تۆمار"
+        notes: "Record entry"
 
   debit_credit:
     name:
@@ -126,7 +131,7 @@ categories:
       balance:
         en: "Balance"
         ar: "الرصيد"
-        ckb: "یەکە"
+        ckb: "هاوسەنگی"
         notes: "Account balance"
       opening_balance:
         en: "Opening Balance"
@@ -491,6 +496,11 @@ categories:
         ar: "العملة"
         ckb: "دراو"
         notes: "Monetary unit"
+      multi-currency:
+        en: "Multi-Currency"
+        ar: "العملة"
+        ckb: "فرە-دراو"
+        notes: "Monetary unit"
       exchange_rate:
         en: "Exchange Rate"
         ar: "سعر الصرف"
@@ -771,6 +781,51 @@ categories:
         ar: "السطر"
         ckb: "هێڵ"
         notes: "Individual item in a list"
+      match:
+        en: "Match"
+        ar: "المطابقة"
+        ckb: "هاوتا"
+        notes: "Find corresponding item"
+      matching:
+        en: "Matching"
+        ar: "المطابقة"
+        ckb: "هاوتاکردن"
+        notes: "Find corresponding item"
+      screen:
+        en: "Screen"
+        ar: "الشاشة"
+        ckb: "پەنجەرە"
+        notes: "Display area"
+      indicators:
+        en: "Indicators"
+        ar: "المؤشرات"
+        ckb: "هێماکان"
+        notes: "Status indicators"
+      usd:
+        en: "USD"
+        ar: "الدولار الأمريكي"
+        ckb: "دولاری ئەمریکی"
+        notes: "United States Dollar"
+      iqD:
+        en: "IQD"
+        ar: "الدينار العراقي"
+        ckb: "دیناری عێراقی"
+        notes: "Iraqi Dinar"
+      write-off:
+        en: "Write-off"
+        ar: "شطب"
+        ckb: "پاککردنەوە"
+        notes: "Removal of an item from the books"
+      multi-company:
+        en: "Multi-Company"
+        ar: ""
+        ckb: "گروپی-کۆمپانیاکان"
+        notes: "Multiple companies"
+      exchange_differences:
+        en: "Exchange Differences"
+        ar: ""
+        ckb: "جیاوازی نرخی ئاڵوگۆڕ"
+        notes: "Gain/loss from exchange rate fluctuations"
 
 # Usage Guidelines
 usage_guidelines:

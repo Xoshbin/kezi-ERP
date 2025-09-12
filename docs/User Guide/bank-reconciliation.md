@@ -8,10 +8,10 @@ This comprehensive guide explains how bank reconciliation works in your accounti
 
 Bank reconciliation is the process of comparing your company's cash records with the bank statement to identify and resolve differences between your internal payment records and the bank's transaction records.
 
-- **Verify Accuracy**: Ensure internal records match bank records
-- **Identify Discrepancies**: Find mistakes or timing differences
-- **Update Records**: Mark payments as reconciled when matched
-- **Handle Unmatched Items**: Write off small discrepancies or investigate larger ones
+-   **Verify Accuracy**: Ensure internal records match bank records
+-   **Identify Discrepancies**: Find mistakes or timing differences
+-   **Update Records**: Mark payments as reconciled when matched
+-   **Handle Unmatched Items**: Write off small discrepancies or investigate larger ones
 
 **Accounting Principle**: Your payment records should match the bank statement transactions after accounting for timing differences, ensuring accurate cash reporting.
 
@@ -20,11 +20,13 @@ Bank reconciliation is the process of comparing your company's cash records with
 ## System Requirements
 
 ### Company Configuration
-- **Enable Reconciliation**: Must be activated in company settings
-- **Default Accounts**: Bank accounts and reconciliation accounts must be configured
-- **User Permissions**: Users need appropriate access to reconciliation features
+
+-   **Enable Reconciliation**: Must be activated in company settings
+-   **Default Accounts**: Bank accounts and reconciliation accounts must be configured
+-   **User Permissions**: Users need appropriate access to reconciliation features
 
 ### Prerequisites
+
 1. **Bank Statement Created**: [Bank statement](bank-statements.md) must exist with transaction lines
 2. **Payment Records**: System payments must be confirmed and ready for matching
 3. **Currency Alignment**: Both bank statements and payments should use compatible currencies
@@ -36,8 +38,9 @@ Bank reconciliation is the process of comparing your company's cash records with
 Navigate to **Accounting → Banking & Cash → Bank Statements**
 
 Bank reconciliation also appears in:
-- **Bank Statement List**: "Reconcile" action button (green scale icon)
-- **Payment Records**: Reconciliation status indicators
+
+-   **Bank Statement List**: "Reconcile" action button (green scale icon)
+-   **Payment Records**: Reconciliation status indicators
 
 **Tip**: The reconcile action is only visible when reconciliation is enabled in company settings.
 
@@ -58,20 +61,23 @@ Navigate to **Accounting → Banking & Cash → Bank Statements**
 The reconciliation screen uses an interactive three-panel layout:
 
 **Left Panel - Bank Transactions**: Shows unreconciled bank statement lines
-- View all available bank transactions
-- Select transactions using checkboxes
-- Real-time total calculation
+
+-   View all available bank transactions
+-   Select transactions using checkboxes
+-   Real-time total calculation
 
 **Right Panel - System Payments**: Displays confirmed payments without reconciliation
-- View confirmed, unreconciled payments
-- Multi-currency support with automatic conversion
-- Select payments using checkboxes
+
+-   View confirmed, unreconciled payments
+-   Multi-currency support with automatic conversion
+-   Select payments using checkboxes
 
 **Bottom Panel - Reconciliation Summary**: Real-time balance validation
-- Bank total (sum of selected bank items)
-- System total (sum of selected payments)
-- Difference calculation
-- Balance status indicator
+
+-   Bank total (sum of selected bank items)
+-   System total (sum of selected payments)
+-   Difference calculation
+-   Balance status indicator
 
 ### Step 3: Matching Transactions
 
@@ -83,6 +89,7 @@ The reconciliation screen uses an interactive three-panel layout:
 ## Multi-Currency Reconciliation
 
 ### Automatic Currency Conversion
+
 The system handles multi-currency scenarios automatically:
 
 **Different Currency Payments**: Payments in different currencies are converted to statement currency
@@ -91,15 +98,17 @@ The system handles multi-currency scenarios automatically:
 **Balance Calculation**: All totals calculated in statement currency
 
 ### Currency Indicators
-- **Same Currency**: Green indicator for matching currencies
-- **Different Currency**: Yellow indicator showing conversion applied
-- **Conversion Details**: Hover or click for rate information
+
+-   **Same Currency**: Green indicator for matching currencies
+-   **Different Currency**: Yellow indicator showing conversion applied
+-   **Conversion Details**: Hover or click for rate information
 
 **Example**: Reconciling a USD payment against an IQD bank statement:
-- System Payment: $500 USD 
-- Exchange Rate: 1 USD = 1,310 IQD
-- Converted Amount: 655,000 IQD
-- Bank Statement Line: 655,000 IQD (matches after conversion)
+
+-   System Payment: $500 USD
+-   Exchange Rate: 1 USD = 1,310 IQD
+-   Converted Amount: 655,000 IQD
+-   Bank Statement Line: 655,000 IQD (matches after conversion)
 
 ---
 
@@ -122,20 +131,26 @@ For small discrepancies or bank fees without corresponding system payments:
 **Create Entry**: System generates journal entry and marks line as reconciled
 
 ### Write-Off Examples
-- **Bank Fees**: Monthly maintenance fees ($15-25)
-- **Interest Charges**: Overdraft fees, loan interest  
-- **Small Discrepancies**: Rounding differences under $5
+
+-   **Bank Fees**: Monthly maintenance fees ($15-25)
+-   **Interest Charges**: Overdraft fees, loan interest
+-   **Small Discrepancies**: Rounding differences under $5
 
 ---
 
 ## Journal Entry Impact
 
 ### Successful Reconciliation
+
 ```
-No journal entry created - marking existing payments as reconciled
+Dr. Bank Account                    $1,500.00
+    Cr. Outstanding Receipts/Payments      $1,500.00
 ```
 
+When payments are successfully reconciled, the system creates a journal entry that moves the amount from the Outstanding Receipts/Payments account (where it was temporarily held) to the actual Bank Account, reflecting that the payment has cleared the bank.
+
 ### Write-Off Transaction
+
 ```
 Dr. Bank Charges Expense    $25.00
     Cr. Bank Account              $25.00
@@ -148,9 +163,11 @@ The write-off creates a journal entry to record the bank fee or discrepancy whil
 ## Common Scenarios
 
 ### Scenario 1: Standard Reconciliation Process
+
 Perfect matching of bank and system records:
 
 **Steps**:
+
 1. Access reconciliation from bank statement list
 2. Select matching bank transaction ($1,500 wire transfer)
 3. Select corresponding system payment ($1,500 vendor payment)
@@ -158,14 +175,18 @@ Perfect matching of bank and system records:
 5. Click "Reconcile Selected" to complete matching
 
 **Result**:
-- Payment status updated to "Reconciled"
-- Bank statement line linked to payment record
-- Interface clears selections for next set
+
+-   Payment status updated to "Reconciled"
+-   Bank statement line linked to payment record
+-   Journal entry created: Dr. Bank Account $1,500, Cr. Outstanding Receipts/Payments $1,500
+-   Interface clears selections for next set
 
 ### Scenario 2: Write-Off Small Bank Fee
+
 Handle bank maintenance fee without corresponding payment:
 
 **Steps**:
+
 1. Identify unmatched bank statement line: -$25.00 "Monthly Service Fee"
 2. Click write-off action (X icon) on the bank transaction
 3. Select "Bank Service Charges" expense account
@@ -173,20 +194,24 @@ Handle bank maintenance fee without corresponding payment:
 5. System creates expense entry and marks line reconciled
 
 **Result**:
-- Journal entry: Dr. Bank Service Charges $25, Cr. Bank Account $25
-- Bank statement line marked as reconciled
-- No further action needed
+
+-   Journal entry: Dr. Bank Service Charges $25, Cr. Bank Account $25
+-   Bank statement line marked as reconciled
+-   No further action needed
 
 ### Scenario 3: Multi-Currency Payment Reconciliation
+
 Reconcile USD payment against IQD bank statement:
 
 **Example**:
-- Bank Statement: 655,000 IQD outgoing transfer
-- System Payment: $500 USD vendor payment  
-- Exchange Rate: 1 USD = 1,310 IQD (captured at payment time)
-- Converted Amount: 655,000 IQD
+
+-   Bank Statement: 655,000 IQD outgoing transfer
+-   System Payment: $500 USD vendor payment
+-   Exchange Rate: 1 USD = 1,310 IQD (captured at payment time)
+-   Converted Amount: 655,000 IQD
 
 **Steps**:
+
 1. Select IQD bank statement line (655,000 IQD)
 2. Select USD system payment ($500 USD)
 3. System shows conversion: $500 × 1,310 = 655,000 IQD
@@ -194,37 +219,43 @@ Reconcile USD payment against IQD bank statement:
 5. Complete reconciliation normally
 
 **Result**:
-- Multi-currency reconciliation completed
-- Exchange rate documentation preserved
-- Both records marked as reconciled
+
+-   Multi-currency reconciliation completed
+-   Exchange rate documentation preserved
+-   Both records marked as reconciled
+-   Journal entry created: Dr. Bank Account 655,000 IQD, Cr. Outstanding Receipts/Payments 655,000 IQD
 
 ---
 
 ## Best Practices
 
 ### Preparation
-- **Enable Reconciliation**: Activate company setting before starting
-- **Complete Statements**: Ensure all bank transactions are entered in [bank statements](bank-statements.md)
-- **Payment Verification**: Confirm system payments are in "Confirmed" status
-- **Currency Accuracy**: Review multi-currency transactions for proper rates
 
-### Reconciliation Process  
-- **Systematic Approach**: Work through transactions methodically by date or amount
-- **Real-time Validation**: Monitor balance indicator continuously during selection
-- **Immediate Write-offs**: Handle small discrepancies promptly using write-off feature
-- **Clear Documentation**: Provide detailed reasons for all write-off entries
+-   **Enable Reconciliation**: Activate company setting before starting
+-   **Complete Statements**: Ensure all bank transactions are entered in [bank statements](bank-statements.md)
+-   **Payment Verification**: Confirm system payments are in "Confirmed" status
+-   **Currency Accuracy**: Review multi-currency transactions for proper rates
+
+### Reconciliation Process
+
+-   **Systematic Approach**: Work through transactions methodically by date or amount
+-   **Real-time Validation**: Monitor balance indicator continuously during selection
+-   **Immediate Write-offs**: Handle small discrepancies promptly using write-off feature
+-   **Clear Documentation**: Provide detailed reasons for all write-off entries
 
 ### Quality Control
-- **Regular Reconciliation**: Perform within days of receiving bank statements
-- **Review Unmatched Items**: Investigate discrepancies over predetermined threshold
-- **Follow-up Tracking**: Monitor outstanding items across multiple periods
-- **User Training**: Ensure team understands the interactive interface features
+
+-   **Regular Reconciliation**: Perform within days of receiving bank statements
+-   **Review Unmatched Items**: Investigate discrepancies over predetermined threshold
+-   **Follow-up Tracking**: Monitor outstanding items across multiple periods
+-   **User Training**: Ensure team understands the interactive interface features
 
 ### Audit and Compliance
-- **Audit Trail**: System maintains complete reconciliation history
-- **Supporting Documentation**: Link bank statements and payment confirmations
-- **Review Process**: Implement supervisor review for large write-offs
-- **Month-end Procedures**: Complete all reconciliations before closing periods
+
+-   **Audit Trail**: System maintains complete reconciliation history
+-   **Supporting Documentation**: Link bank statements and payment confirmations
+-   **Review Process**: Implement supervisor review for large write-offs
+-   **Month-end Procedures**: Complete all reconciliations before closing periods
 
 ---
 
@@ -234,48 +265,54 @@ Reconcile USD payment against IQD bank statement:
 
 **Q: Reconcile action not visible on bank statement**
 A: Check reconciliation settings and permissions:
-- Verify "Enable Reconciliation" is activated in company settings
-- Confirm user has appropriate permissions for reconciliation
-- Ensure bank statement exists and is accessible
+
+-   Verify "Enable Reconciliation" is activated in company settings
+-   Confirm user has appropriate permissions for reconciliation
+-   Ensure bank statement exists and is accessible
 
 **Q: Totals don't balance exactly in multi-currency reconciliation**
 A: Review currency conversion handling:
-- Check exchange rates used for payment and reconciliation
-- Verify amounts are entered correctly in source documents
-- Consider minor rounding differences (typically under $1)
-- Use write-off for immaterial conversion differences
+
+-   Check exchange rates used for payment and reconciliation
+-   Verify amounts are entered correctly in source documents
+-   Consider minor rounding differences (typically under $1)
+-   Use write-off for immaterial conversion differences
 
 **Q: No payments appear in system payments panel**
 A: Verify payment status and filters:
-- Ensure payments are in "Confirmed" status (not Draft)
-- Check that payments haven't already been reconciled
-- Verify payments belong to correct company and bank account
-- Refresh browser if interface appears stale
+
+-   Ensure payments are in "Confirmed" status (not Draft)
+-   Check that payments haven't already been reconciled
+-   Verify payments belong to correct company and bank account
+-   Refresh browser if interface appears stale
 
 **Q: Cannot complete reconciliation process**
 A: Validate selection and balancing:
-- Ensure totals are balanced (difference = 0)
-- Verify at least one item is selected in each panel
-- Check for validation errors or system messages
-- Try clearing selections and starting over if needed
+
+-   Ensure totals are balanced (difference = 0)
+-   Verify at least one item is selected in each panel
+-   Check for validation errors or system messages
+-   Try clearing selections and starting over if needed
 
 ### Error Messages
 
 **"Reconciliation not enabled for this company"**
-- Contact administrator to enable reconciliation in company settings
-- Verify company configuration includes reconciliation permissions
+
+-   Contact administrator to enable reconciliation in company settings
+-   Verify company configuration includes reconciliation permissions
 
 **"Selected payments total does not match bank total"**
-- Review selected amounts carefully
-- Check for currency conversion issues
-- Consider using write-off for small differences
+
+-   Review selected amounts carefully
+-   Check for currency conversion issues
+-   Consider using write-off for small differences
 
 ---
 
 ## Frequently Asked Questions
 
 **Q: What happens to payments after they are reconciled?**
-A: Reconciled payments are marked with "Reconciled" status and linked to specific bank statement lines. They will not appear in future reconciliation interfaces but remain visible in payment records with reconciliation indicators.
+A: Reconciled payments are marked with "Reconciled" status and linked to specific bank statement lines. The system also creates a journal entry that moves the amount from the Outstanding Receipts/Payments account to the actual Bank Account. They will not appear in future reconciliation interfaces but remain visible in payment records with reconciliation indicators.
 
 **Q: Can I undo a reconciliation if I made a mistake?**
 A: The system maintains audit trails but reconciliations should be considered permanent. Contact your system administrator if you need to reverse reconciliation entries for correction.
@@ -290,8 +327,8 @@ A: Investigate thoroughly before writing off. Check for missing system payments,
 
 ## Related Documentation
 
-- [Bank Statements](bank-statements.md) - Creating and managing bank statement records
-- [Payments](payments.md) - Understanding payment creation and management
+-   [Bank Statements](bank-statements.md) - Creating and managing bank statement records
+-   [Payments](payments.md) - Understanding payment creation and management
 
 ---
 
