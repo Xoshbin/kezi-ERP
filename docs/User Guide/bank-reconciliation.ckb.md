@@ -48,7 +48,7 @@
 
 ---
 
-![reconcile-interface.jpeg](/assets/docs/bank-reconcilation/reconcile-interface.ckb.jpeg)
+![reconcile-interface.jpeg](/images/docs/bank-reconcilation/reconcile-interface.ckb.jpeg)
 
 ## دەستپێکردنی هاوتای بانکی
 
@@ -59,7 +59,7 @@
 **ڕاپۆرتی هەژماری بانک بدۆزەرەوە**: ئەو ڕاپۆرتە بدۆزەرەوە کە دەتەوێت هاوتای بکەیت لە لەگەڵ لیستەکە
 **کلیک لە کردەوەی هاوتای بکە**: دوگمەی "هاوتای" بەکاربهێنە (ئایکۆنی هاوتاکردن سەوز)
 
-![bank-statements.jpeg](/assets/docs/bank-reconcilation/bank-statements.ckb.png)
+![bank-statements.jpeg](/images/docs/bank-reconcilation/bank-statements.ckb.png)
 
 ### هەنگاوی ۲: تێگەیشتن لە ڕووکاری بەکارهێنەر
 
@@ -131,10 +131,10 @@
 ### هەنگاوی ۲: جێبەجێکردنی پاککردنەوە
 
 **کلیک لە دوگمەی پاککردنەو**: ئایکۆنی "X" لە خشتەی مامەڵەکانی بانکدا بەکاربهێنە
-![write-off.jpeg](/assets/docs/bank-reconcilation/write-off.ckb.png)
+![write-off.jpeg](/images/docs/bank-reconcilation/write-off.ckb.png)
 
 **هەژماری خەرجی هەڵبژێرە**: هەژماری گونجاو هەڵبژێرە (نموونە "کرێی بانک")
-![write-off-modal.jpeg](/assets/docs/bank-reconcilation/write-off-modal.ckb.png)
+![write-off-modal.jpeg](/images/docs/bank-reconcilation/write-off-modal.ckb.png)
 
 **هۆکار تۆماربکە**: ڕوونکردنەوەی پێویست بۆ تۆمارە نوێکە دیاریبکە
 **تۆماری نوێ دروست بکە**: سیستەم خۆکارانە تۆماری ڕۆژانە دروستدەکات و ڕیزەکە وەک هاوتاکراو نیشاندەدات.
