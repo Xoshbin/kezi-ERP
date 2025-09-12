@@ -59,14 +59,14 @@ return [
     'accounts' => [
         'total_accounts' => 'کۆی ئەکاونتەکان',
         'asset_accounts' => 'ئەکاونتی سامان',
-        'liability_accounts' => 'ئەکاونتی قەرز',
+        'liability_accounts' => 'ئەکاونتی قەرزەکان',
         'income_accounts' => 'ئەکاونتی داهات',
         'expense_accounts' => 'ئەکاونتی خەرجی',
 
         // Descriptions
         'chart_of_accounts' => 'خشتەی ئەکاونتەکان',
         'assets_and_cash' => 'سامان و نەقد',
-        'debts_and_obligations' => 'قەرز و ئەرکەکان',
+        'debts_and_obligations' => 'قەرزەکان و ئەرکەکان',
         'revenue_sources' => 'سەرچاوەی داهات',
         'cost_categories' => 'جۆرەکانی خەرجی',
     ],
