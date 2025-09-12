@@ -139,7 +139,7 @@ return [
         'manual' => 'دەستی',
         'check' => 'چێک',
         'bank_transfer' => 'گواستنەوەی بانکی',
-        'credit_card' => 'کارتی قەرز',
+        'credit_card' => 'کرێدت کارد',
         'debit_card' => 'کارتی خەرج',
         'cash' => 'پارە',
         'wire_transfer' => 'گواستنەوەی تەل',

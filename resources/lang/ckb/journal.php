@@ -18,15 +18,15 @@ return [
     'details' => 'ووردەکارییەکانی پەرتووکی ڕۆژانە',
     'details_description' => 'ناو، جۆر، کۆدی کورت و دراو بۆ ئەم پەرتووکی ڕۆژانەیە دابنێ',
     'default_accounts' => 'هەژمارەکانی بنەڕەت',
-    'default_accounts_description' => 'هەژماری قەرزدار و قەرزخوازی بنەڕەت کە لەلایەن ئەم پەرتووکی ڕۆژانەیەوە بەکاردەهێنرێن',
+    'default_accounts_description' => 'هەژماری قەرزدار و دابینکەری بنەڕەت کە لەلایەن ئەم پەرتووکی ڕۆژانەیەوە بەکاردەهێنرێن',
 
     // JournalResource.php
     'default_debit_account' => 'هەژماری قەرزداری بنەڕەت',
     'default_debit_account_helper' => 'بۆ پەرتووکی ڕۆژانەی بانک/کاش، ئەمە ئەو هەژمارە بانکییەیە کە بۆ پارەدان بەکاردێت.',
-    'default_credit_account' => 'هەژماری قەرزخوازی بنەڕەت',
+    'default_credit_account' => 'هەژماری دابینکەری بنەڕەت',
     'default_credit_account_helper' => 'بۆ پەرتووکی ڕۆژانەی بانک/کاش، ئەمە ئەو هەژمارە بانکییەیە کە بۆ پارەدان بەکاردێت.',
     'default_debit_account_short' => 'هەژماری قەرزداری بنەڕەت',
-    'default_credit_account_short' => 'هەژماری قەرزخوازی بنەڕەت',
+    'default_credit_account_short' => 'هەژماری دابینکەری بنەڕەت',
 
     // JournalEntriesRelationManager.php
     'entry_date' => 'بەرواری تۆمارکردن',

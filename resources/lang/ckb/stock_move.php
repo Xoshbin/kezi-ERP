@@ -10,11 +10,11 @@ return [
 
     // Basic Information
     'basic_information' => 'زانیاری بنەڕەتی',
-    'basic_information_description' => 'وردەکارییەکانی بنەڕەتی جووڵە بنووسە لەوانە کاڵا، شوێنەکان، و ژمارەی ئاماژە.',
+    'basic_information_description' => 'وردەکارییەکانی بنەڕەتی جووڵە بنووسە لەوانە کاڵا، شوێنەکان، و ژمارەی بەڵگە.',
     'company' => 'کۆمپانیا',
     'product' => 'کاڵا',
-    'reference' => 'ژمارەی ئاماژە',
-    'reference_placeholder' => 'ژمارەیەکی ئاماژە بنووسە (ئیختیاری)',
+    'reference' => 'ژمارەی بەڵگە',
+    'reference_placeholder' => 'ژمارەیەکی بەڵگە بنووسە (ئیختیاری)',
     'from_location' => 'لە شوێن',
     'to_location' => 'بۆ شوێن',
 
