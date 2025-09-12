@@ -382,11 +382,6 @@ categories:
         ar: "الدفع"
         ckb: "پارەدان"
         notes: "Money payment"
-      receipt:
-        en: "Receipt"
-        ar: "الاستلام"
-        ckb: "وەرگرتن"
-        notes: "Money receipt"
       transfer:
         en: "Transfer"
         ar: "التحويل"
@@ -1406,11 +1401,6 @@ categories:
         ar: "المبلغ الإجمالي"
         ckb: "کۆی گشتی"
         notes: "Complete amount"
-      unit_price:
-        en: "Unit Price"
-        ar: "سعر الوحدة"
-        ckb: "نرخی یەکە"
-        notes: "Price per individual unit"
       contact_person:
         en: "Contact Person"
         ar: "شخص الاتصال"
