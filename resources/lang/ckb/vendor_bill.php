@@ -76,7 +76,7 @@ return [
         'payment_details' => 'وردەکاریی پارەدان',
         'application_details' => 'وردەکاریی جێبەجێکردن',
         'company' => 'کۆمپانیا',
-        'journal' => 'ڕۆژنامە',
+        'journal' => 'پەرتووکی ڕۆژانە',
         'currency' => 'دراو',
         'payment_date' => 'ڕێکەوتی پارەدان',
         'amount' => 'بڕ',
@@ -97,11 +97,11 @@ return [
         'bank_statement_reference' => 'ژمارەی بەڵگەی ڕاپۆرتی بانک',
         'reconciliation_date' => 'بەرواری هاوتاکردن',
         'reconciliation_status' => 'دۆخی هاوتاکردن',
-        'not_reconciled' => 'ڕێکنەخراو',
+        'not_reconciled' => 'هاوتانەکراوە',
         'filter_reconciliation_status' => 'دۆخی هاوتاکردن',
         'filter_all_reconciliation' => 'هەموو',
-        'filter_reconciled' => 'ڕێکخراو',
-        'filter_not_reconciled' => 'ڕێکنەخراو',
+        'filter_reconciled' => 'هاوتاکراوە',
+        'filter_not_reconciled' => 'هاوتانەکراوە',
     ],
 
     // Adjustment Documents Relation Manager
