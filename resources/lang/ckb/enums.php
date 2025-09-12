@@ -18,8 +18,8 @@ return [
     ],
 
     'journal_type' => [
-        'sale' => 'پسوولەکانی فرۆشتن',
-        'purchase' => 'پسوولەکانی کڕین',
+        'sale' => 'پسووڵەکانی فرۆشتن',
+        'purchase' => 'پسووڵەکانی کڕین',
         'bank' => 'بانک',
         'cash' => 'کاش',
         'inventory' => 'کۆگا',
@@ -100,7 +100,7 @@ return [
 
     'adjustment_document_type' => [
         'credit_note' => 'پسووڵەی گەڕاندنەوە',
-        'debit_note' => 'پسوولەی وەرگرتنەوە',
+        'debit_note' => 'پسووڵەی وەرگرتنەوە',
         'miscellaneous' => 'هەمەجۆر',
     ],
 
