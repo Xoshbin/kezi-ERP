@@ -19,7 +19,7 @@ return [
     'lines' => 'هێڵەکان',
     'account' => 'هەژمار',
     'debit' => 'قەرزدار (مدين)',
-    'credit' => 'دابینکەر',
+    'credit' => 'دابینکەر (دائن)',
     'partner' => 'هاوبەش',
     'analytic_account' => 'هەژماری شیکاری',
     'is_posted' => 'نێردراوە',
