@@ -82,7 +82,7 @@ it('can create payment with payment method', function () {
         'reference' => 'TEST-001',
         'payment_type' => PaymentType::Outbound->value,
         'payment_method' => PaymentMethod::BankTransfer->value,
-        'partner_id' => $partner->id,
+        'paid_to_from_partner_id' => $partner->id,
         'amount' => '1000.00',
 
     ];
@@ -164,7 +164,7 @@ it('can edit payment method', function () {
             'payment_date' => $payment->payment_date->format('Y-m-d'),
             'payment_type' => $payment->payment_type->value,
             'payment_method' => PaymentMethod::WireTransfer->value,
-            'partner_id' => $partner->id,
+            'paid_to_from_partner_id' => $partner->id,
             'amount' => '300.00',
             'reference' => $payment->reference,
         ])

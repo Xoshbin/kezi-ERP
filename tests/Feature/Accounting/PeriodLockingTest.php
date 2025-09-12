@@ -164,7 +164,7 @@ describe('Action Integration with Locked Periods', function () {
             // settlement inferred by presence of document links
             payment_type: PaymentType::Inbound,
             payment_method: PaymentMethod::BankTransfer,
-            partner_id: null,
+            paid_to_from_partner_id: null,
             amount: null,
             document_links: [$linkDto],
             reference: null

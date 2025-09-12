@@ -19,17 +19,14 @@ A customer invoice is a commercial document that formally requests payment for g
 
 ## System Requirements
 
-### Company Configuration
-- **Customer Setup**: Customer records must be created before invoicing
-- **Product Catalog**: Products and services must be configured with pricing
-- **Tax Configuration**: Tax rates and rules must be set up for applicable jurisdictions
-- **Payment Terms**: Payment terms must be defined for customer agreements
 
 ### Prerequisites
 1. **Customer Record**: Customer must exist in the system with complete information
 2. **Product/Service Setup**: Items to be invoiced must be configured in the catalog
-3. **Currency Configuration**: Invoice currency must be active and configured
-4. **User Permissions**: Appropriate access to sales and accounting features
+3. **Tax Configuration**: Tax rates and rules must be set up for applicable jurisdictions
+4. **Payment Terms**: Payment terms must be defined for customer agreements
+5. **Currency Configuration**: Invoice currency must be active and configured
+6. **User Permissions**: Appropriate access to sales and accounting features
 
 ---
 

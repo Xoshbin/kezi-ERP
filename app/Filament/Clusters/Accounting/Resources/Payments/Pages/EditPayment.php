@@ -114,7 +114,7 @@ class EditPayment extends EditRecord
             payment_date: $data['payment_date'],
             payment_type: PaymentType::from($data['payment_type']),
             payment_method: PaymentMethod::from($data['payment_method']),
-            partner_id: $data['partner_id'],
+            paid_to_from_partner_id: $data['paid_to_from_partner_id'],
             amount: $amount,
             document_links: [], // No document links for standalone payments
             reference: $data['reference'],
