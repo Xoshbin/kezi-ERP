@@ -16,8 +16,7 @@ test('cancelling a posted vendor bill creates a reversing journal entry and an a
     // Arrange: Create a draft vendor bill to set up the test scenario.
     $vendorBill = VendorBill::factory()->for($this->company)->create(['status' => 'draft']);
 
-    // --- START OF FIX ---
-    // Act 1a: Create the vendor bill line using our robust, established pattern.
+    // Act: Create the vendor bill line using our robust, established pattern.
     $lineDto = new CreateVendorBillLineDTO(
         description: 'Test Service',
         quantity: 1,

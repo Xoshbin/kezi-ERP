@@ -27,7 +27,6 @@ class CreateAdjustmentDocument extends CreateRecord
 
     protected function mutateFormDataBeforeCreate(array $data): array
     {
-        // --- START OF THE FIX ---
         // 1. Forcefully derive currency_id if it's missing but a source document is linked.
         if (empty($data['currency_id'])) {
             if (! empty($data['original_invoice_id'])) {
