@@ -12,7 +12,7 @@ return [
         'fix_in_accounts' => 'چاكسازی لە هەژمارەکان',
         'fix_input_tax' => 'چاكسازی باجى هاوردە',
         'open_company' => 'کردنەوەی کۆمپانیا',
-        'open_product' => 'کردنەوەی کاڵا',
+        'open_product' => 'کردنەوەی بەرهەم',
         'open_assets' => 'کردنەوەی سامان',
         'open_accounts' => 'کردنەوەی هەژمارەکان',
         'open_taxes' => 'کردنەوەی باجەکان',
@@ -21,11 +21,11 @@ return [
     'table' => [
         'account' => 'هەژمار',
         'description' => 'وەسف',
-        'debit' => 'دەیبیت',
-        'credit' => 'کرێدیت',
+        'debit' => 'قەرزدار (مدين)',
+        'credit' => 'دابینکەر (دائن)',
         'totals' => 'کۆی گشتی',
-        'debits' => 'دەیبیتەکان',
-        'credits' => 'کرێدیتەکان',
+        'debits' => 'قەرزدارەکان',
+        'credits' => 'دابینکەرەکان',
         'balanced' => 'هاوتراز',
         'unbalanced' => 'ناهاوتراز',
     ],
@@ -51,7 +51,7 @@ return [
     'errors' => [
         'ap_account_missing' => 'هەژماری قەرزداری بنەڕەتی بۆ کۆمپانیا دیاری نەکراوە.',
         'purchase_journal_missing' => 'پەرتووکی ڕۆژانەی کڕین دیاری نەکراوە بۆ کۆمپانیا.',
-        'inventory_account_missing' => 'کالا بە ناسنامەی :product_id هەژماری کۆگای نییە.',
+        'inventory_account_missing' => 'بەرهەم بە ناسنامەی :product_id هەژماری کۆگای نییە.',
         'asset_category_invalid' => 'هاوپۆلی سامان هەڵەیە لە هێڵێکی قەرزنامە.',
         'input_tax_missing' => 'هەژماری باجی هاوردە بوونی نییە لەگەڵ ئەوەی هێڵەکان باج پێدان.',
 

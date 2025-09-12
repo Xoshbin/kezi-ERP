@@ -164,9 +164,9 @@ return [
 
     // Settlement Summary Widget
     'settlement_widget' => [
-        'status' => 'دۆخی تەسویە',
+        'status' => 'دۆخی یەکلاکردنەوە',
         'not_posted' => 'نەنێردراوە',
-        'not_posted_desc' => 'پوختەی تەسویە تەنها بۆ پسووڵە نێردراوەکان بەردەستە',
+        'not_posted_desc' => 'پوختەی یەکلاکردنەوە تەنها بۆ پسووڵە نێردراوەکان بەردەستە',
         'total_amount' => 'کۆی گشتی',
         'invoice_total' => 'بڕی سەرەتایی پسووڵە',
         'paid_amount' => 'بڕی پارەدراو',

@@ -124,15 +124,15 @@ return [
 
     'payment_status' => [
         'draft' => 'ڕەشنووس',
-        'confirmed' => 'پشتڕاستکراوە',
-        'reconciled' => 'ڕێکخراوە',
-        'canceled' => 'هەڵوەشاوە',
+        'confirmed' => 'پشتڕاستکراوەتەوە',
+        'reconciled' => 'هاوتاکراوە',
+        'canceled' => 'هەڵوەشاندراوەتەوە',
     ],
 
     'payment_state' => [
-        'not_paid' => 'نەدراوە',
-        'partially_paid' => 'بەشێکی پارەدراو',
-        'paid' => 'پارەدراو',
+        'not_paid' => 'پارەنەدراو',
+        'partially_paid' => 'بەشێکی پارەدراوە',
+        'paid' => 'پارەدراوە',
     ],
 
     'payment_method' => [

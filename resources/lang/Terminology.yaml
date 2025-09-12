@@ -248,12 +248,12 @@ categories:
       credit_note:
         en: "Credit Note"
         ar: "إشعار دائن"
-        ckb: "تێبینی دابینکەر"
+        ckb: "پسوڵەی گەڕاندنەوە"
         notes: "Document reducing customer debt"
       debit_note:
         en: "Debit Note"
         ar: "إشعار مدين"
-        ckb: "تێبینی قەرزدار"
+        ckb: "پسوولەی وەرگرتنەوە"
         notes: "Document increasing customer debt"
       adjustment_document:
         en: "Adjustment Document"
@@ -464,7 +464,7 @@ categories:
       cost:
         en: "Cost"
         ar: "التكلفة"
-        ckb: "تێچوون"
+        ckb: "تێچوو"
         notes: "Cost of goods/services"
       profit:
         en: "Profit"
@@ -625,7 +625,7 @@ categories:
       cost_of_goods_sold:
         en: "Cost of Goods Sold"
         ar: "تكلفة البضاعة المباعة"
-        ckb: "تێچوونی کاڵای فرۆشراو"
+        ckb: "تێچووی کاڵای فرۆشراو"
         notes: "COGS"
 
   budget_planning:
@@ -1026,7 +1026,7 @@ categories:
       avco:
         en: "AVCO"
         ar: "متوسط التكلفة"
-        ckb: "ناوەندی تێچوون"
+        ckb: "ناوەندی تێچوو"
         notes: "Average Cost"
       standard_price:
         en: "Standard Price"
@@ -1046,7 +1046,7 @@ categories:
       inventory_cost_layer:
         en: "Inventory Cost Layer"
         ar: "طبقة تكلفة المخزون"
-        ckb: "چینی تێچوونی کۆگا"
+        ckb: "چینی تێچووی کۆگا"
         notes: "Cost tracking layer for inventory"
 
   payroll_hr:
