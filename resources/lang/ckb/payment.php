@@ -95,12 +95,12 @@ return [
     'relation_manager.vendor_bills.form.total_amount' => 'کۆی گشتی',
 
     // JournalEntriesRelationManager.php
-    'journal_entries_relation_manager.title' => 'تۆمارەکانی ڕۆژنامە',
+    'journal_entries_relation_manager.title' => 'تۆمارەکانی پەرتووکی ڕۆژانە',
     'journal_entries_relation_manager.journal_entry_details' => 'وردەکاریەکانی تۆماری ڕۆژانە',
     'journal_entries_relation_manager.entry_date' => 'بەرواری تۆمار',
     'journal_entries_relation_manager.reference' => 'ژمارەی بەڵگە',
     'journal_entries_relation_manager.description' => 'پێناسە',
-    'journal_entries_relation_manager.journal' => 'ڕۆژنامە',
+    'journal_entries_relation_manager.journal' => 'پەرتووکی ڕۆژانە',
     'journal_entries_relation_manager.state' => 'دۆخ',
     'journal_entries_relation_manager.total_debit' => 'کۆی قەرزدار',
     'journal_entries_relation_manager.total_credit' => 'کۆی دابینکراو',
