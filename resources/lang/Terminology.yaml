@@ -104,7 +104,7 @@ categories:
       credit:
         en: "Credit"
         ar: "دائن"
-        ckb: "دابینکەر"
+        ckb: "دابینکەر (دائن)"
         notes: "Right side of account"
       debit_amount:
         en: "Debit Amount"
@@ -288,22 +288,22 @@ categories:
       due_date:
         en: "Due Date"
         ar: "تاريخ الاستحقاق"
-        ckb: "بەرواری پێویست"
+        ckb: "ڕێکەوتی شایستە"
         notes: "Payment due date"
       invoice_date:
         en: "Invoice Date"
         ar: "تاريخ الفاتورة"
-        ckb: "بەرواری پسووڵە"
+        ckb: "ڕێکەوتی پسووڵە"
         notes: "Date invoice was issued"
       bill_date:
         en: "Bill Date"
         ar: "تاريخ الفاتورة"
-        ckb: "بەرواری پسووڵە"
+        ckb: "ڕێکەوتی پسووڵە"
         notes: "Date bill was issued"
       accounting_date:
         en: "Accounting Date"
         ar: "التاريخ المحاسبي"
-        ckb: "بەرواری ژمێریاری"
+        ckb: "ڕێکەوتی ژمێریاری"
         notes: "Date for accounting purposes"
       outstanding:
         en: "Outstanding"
@@ -949,7 +949,7 @@ categories:
       purchase_date:
         en: "Purchase Date"
         ar: "تاريخ الشراء"
-        ckb: "بەرواری کڕین"
+        ckb: "ڕێکەوتی کڕین"
         notes: "Date asset was acquired"
       purchase_value:
         en: "Purchase Value"
@@ -1113,7 +1113,7 @@ categories:
       pay_date:
         en: "Pay Date"
         ar: "تاريخ الدفع"
-        ckb: "بەرواری پارەدان"
+        ckb: "ڕێکەوتی پارەدان"
         notes: "Date salary is paid"
 
   payment_methods:
@@ -1379,7 +1379,7 @@ categories:
       lock_date:
         en: "Lock Date"
         ar: "تاريخ القفل"
-        ckb: "بەرواری داخستن"
+        ckb: "ڕێکەوتی داخستن"
         notes: "Date after which entries cannot be modified"
       period_locked:
         en: "Period Locked"
