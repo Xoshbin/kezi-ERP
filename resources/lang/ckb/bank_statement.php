@@ -2,27 +2,27 @@
 
 return [
     // Labels
-    'bank_statement' => 'ڕاپۆرتی هەژماری بانک',
-    'bank_statements' => 'ڕاپۆرتەکانی هەژماری بانک',
-    'bank_statement_lines' => 'هێڵەکانی ڕاپۆرتی هەژماری بانک',
+    'bank_statement' => 'ڕاپۆرتی بانک',
+    'bank_statements' => 'ڕاپۆرتەکانی بانک',
+    'bank_statement_lines' => 'هێڵەکانی ڕاپۆرتی بانک',
 
     // Pages
-    'create_bank_statement' => 'دروستکردنی ڕاپۆرتی هەژماری بانک',
-    'edit_bank_statement' => 'گۆڕینی ڕاپۆرتی هەژماری بانک',
-    'list_bank_statements' => 'لیستی ڕاپۆرتەکانی هەژماری بانک',
-    'reconcile_bank_statement' => 'هاوسەنگی ڕاپۆرتی هەژماری بانک',
+    'create_bank_statement' => 'دروستکردنی ڕاپۆرتی بانک',
+    'edit_bank_statement' => 'گۆڕینی ڕاپۆرتی بانک',
+    'list_bank_statements' => 'لیستی ڕاپۆرتەکانی بانک',
+    'reconcile_bank_statement' => 'هاوتاکردنی ڕاپۆرتی بانک',
 
     // Fields
     'company_id' => 'کۆمپانیا',
     'journal_id' => 'پەرتووکی ڕۆژانە',
     'reference' => 'ژمارەی بەڵگە',
     'date' => 'رێکەوت',
-    'starting_balance' => 'یەکەی دەستپێکردن',
-    'ending_balance' => 'یەکەی کۆتایی',
+    'starting_balance' => 'باڵانسی دەستپێک',
+    'ending_balance' => 'باڵانسی کۆتایی',
     'description' => 'شرۆڤە',
     'partner_name' => 'ناوی هاوبەش',
     'amount' => 'بڕ',
-    'is_reconciled' => 'هاوسەنگکراوە',
+    'is_reconciled' => 'هاوتاکراوە',
     'created_at' => 'کاتی دروستکردن',
     'updated_at' => 'کاتی گۆڕین',
     'transactions' => 'مامەڵەکان',
@@ -51,7 +51,7 @@ return [
     'bank_total' => 'کۆی بانک',
     'system_total' => 'کۆی تۆماری پارەدانەکان',
     'difference' => 'جیاوازی',
-    'balanced' => 'هاوسەنگ',
+    'balanced' => 'هاوسەنگە',
     'not_balanced' => 'هاوسەنگ نییە',
     'refresh' => 'نوێکردنەوە',
     'reconcile_selected' => 'هاوتاکردنی هەڵبژێردراوەکان',
