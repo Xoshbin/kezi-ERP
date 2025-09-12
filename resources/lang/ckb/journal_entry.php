@@ -2,10 +2,10 @@
 
 return [
     // General
-    'label' => 'تۆماری هەژمار',
-    'plural_label' => 'تۆمارەکانی هەژمار',
-    'journal_entry' => 'تۆماری هەژمار',
-    'journal_entries' => 'تۆمارەکانی هەژمار',
+    'label' => 'تۆماری ڕۆژانە',
+    'plural_label' => 'تۆمارەکانی ڕۆژانە',
+    'journal_entry' => 'تۆماری ڕۆژانە',
+    'journal_entries' => 'تۆمارەکانی ڕۆژانە',
 
     // Fields
     'company' => 'کۆمپانیا',
@@ -38,7 +38,7 @@ return [
     'post_entry' => 'ناردنی تۆمار',
 
     // Notifications
-    'entry_posted_successfully' => 'تۆماری هەژمار نێردرا',
+    'entry_posted_successfully' => 'تۆماری ڕۆژانە نێردرا',
     'error_posting_entry' => 'هەڵە لە کاتی ناردنی تۆمار',
     'duplicate_reference_error' => 'ژمارەی بەڵگەی دووبارە',
     'creation_error' => 'هەڵە لە دروستکردن',
@@ -46,5 +46,5 @@ return [
     // Validation
     'period_locked' => 'ماوەی ژمێریاری قفڵ کراوە و ناتوانرێت دەستکاری بکرێت.',
     'debits_must_equal_credits' => 'کۆی قەرزدارەکان دەبێت یەکسان بێت بە کۆی قەرزخوازەکان.',
-    'reference_already_exists' => 'تۆماری هەژمار بە ژمارەی بەڵگەی ":reference" پێشتر هەیە لەم پەرتووکی ڕۆژانەیەدا.',
+    'reference_already_exists' => 'تۆماری ڕۆژانە بە ژمارەی بەڵگەی ":reference" پێشتر هەیە لەم پەرتووکی ڕۆژانەیەدا.',
 ];
