@@ -183,7 +183,7 @@ test('the entire accounting workflow from setup to credit note', function () {
         // settlement inferred by presence of document links
         payment_type: PaymentType::Inbound,
         payment_method: PaymentMethod::BankTransfer,
-        partner_id: null,
+        paid_to_from_partner_id: null,
         amount: null,
         document_links: [$documentLinkDto],
         reference: null
@@ -220,7 +220,7 @@ test('the entire accounting workflow from setup to credit note', function () {
         // settlement inferred by presence of document links
         payment_type: PaymentType::Outbound,
         payment_method: PaymentMethod::BankTransfer,
-        partner_id: null,
+        paid_to_from_partner_id: null,
         amount: null,
         document_links: [$vendorDocumentLinkDto],
         reference: 'Payment for Laptop'

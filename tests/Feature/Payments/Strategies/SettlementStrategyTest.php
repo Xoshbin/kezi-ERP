@@ -45,7 +45,7 @@ test('it creates payment document links for settlement payment creation', functi
         // settlement inferred by presence of document links
         payment_type: PaymentType::Inbound,
         payment_method: PaymentMethod::BankTransfer,
-        partner_id: null,
+        paid_to_from_partner_id: null,
         amount: null,
         document_links: [$linkDTO],
         reference: 'Test Settlement'
@@ -85,7 +85,7 @@ test('it creates payment document links for vendor bill settlement', function ()
         // settlement inferred by presence of document links
         payment_type: PaymentType::Outbound,
         payment_method: PaymentMethod::BankTransfer,
-        partner_id: null,
+        paid_to_from_partner_id: null,
         amount: null,
         document_links: [$linkDTO],
         reference: 'Test Settlement'
@@ -134,7 +134,7 @@ test('it updates payment document links correctly', function () {
         // settlement inferred by presence of document links
         payment_type: PaymentType::Inbound,
         payment_method: PaymentMethod::BankTransfer,
-        partner_id: null,
+        paid_to_from_partner_id: null,
         amount: null,
         document_links: [$newLinkDTO],
         reference: 'Updated Settlement',
