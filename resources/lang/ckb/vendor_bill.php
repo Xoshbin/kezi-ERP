@@ -27,7 +27,7 @@ return [
     'analytic_account' => 'هەژماری شیکاری',
     'total_amount' => 'کۆی گشتی',
     'total_tax' => 'کۆی باج',
-    'journal_entry_id' => 'ناسنامەی تۆماری هەژمار',
+    'journal_entry_id' => 'ناسنامەی تۆماری ڕۆژانە',
     'posted_at' => 'کاتی ناردن',
     'created_at' => 'کاتی دروستکردن',
     'updated_at' => 'کاتی نوێکردنەوە',

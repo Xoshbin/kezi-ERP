@@ -57,7 +57,7 @@ return [
         'processed_at' => 'پرۆسێسکراو لە',
         'approved_by' => 'پەسەندکراو لەلایەن',
         'approved_at' => 'پەسەندکراو لە',
-        'journal_entry' => 'تۆمارکردنی ڕۆژنامە',
+        'journal_entry' => 'تۆمارکردنی ڕۆژانە',
         'payment' => 'پارەدان',
         'status' => 'دۆخ',
         'notes' => 'تێبینیەکان',
@@ -96,7 +96,7 @@ return [
     // Placeholders for empty states
     'not_processed' => 'هێشتا پرۆسێس نەکراوە',
     'not_approved' => 'هێشتا پەسەند نەکراوە',
-    'no_journal_entry' => 'هیچ تۆمارکردنی ڕۆژنامەیەک دروست نەکراوە',
+    'no_journal_entry' => 'هیچ تۆمارێکی ڕۆژانە دروست نەکراوە',
     'no_payment' => 'هیچ پارەدانێک دروست نەکراوە',
     'no_notes' => 'هیچ تێبینیەک زیاد نەکراوە',
 ];
