@@ -70,18 +70,18 @@ return [
     'as_of' => 'تا',
     'assets' => 'سامان',
     'liabilities' => 'قەرزەکان',
-    'equity' => 'سەرمایە',
+    'equity' => 'خاوەندارێتی',
     'total_assets' => 'کۆی سامان',
     'total_liabilities' => 'کۆی قەرزەکان',
-    'total_equity' => 'کۆی سەرمایە',
-    'total_liabilities_and_equity' => 'کۆی قەرزەکان و سەرمایە',
+    'total_equity' => 'کۆی خاوەندارێتی',
+    'total_liabilities_and_equity' => 'کۆی قەرزەکان و خاوەندارێتی',
     'current_year_earnings' => 'قازانجی ساڵی ئێستا',
     'retained_earnings' => 'قازانجی پاشەکەوتکراو',
     'no_asset_accounts' => 'هیچ هەژماری سامانێک نەدۆزرایەوە.',
     'no_liability_accounts' => 'هیچ هەژماری قەرزێک نەدۆزرایەوە.',
-    'no_equity_accounts' => 'هیچ هەژماری سەرمایەیەک نەدۆزرایەوە.',
+    'no_equity_accounts' => 'هیچ هەژمارێکی خاوەندارێتی نەدۆزرایەوە.',
     'balance_sheet_balanced' => 'لیستەی باڵانس هاوسەنگە',
-    'assets_equal_liabilities_equity' => 'سامان یەکسانە لەگەڵ قەرزەکان و سەرمایە',
+    'assets_equal_liabilities_equity' => 'سامان یەکسانە بەرامبەر قەرزەکان لەگەڵ خاوەندارێتی',
 
     // General Ledger - پەرتووکی گشتی
     'general_ledger' => 'پەرتووکی گشتی',
@@ -101,7 +101,6 @@ return [
     'to' => 'تا',
     'no_data' => 'هیچ زانیارییەک بەردەست نییە',
     'no_transactions_found' => 'هیچ مامەڵەیەک نەدۆزرایەوە بۆ ئەم پێوەرانە.',
-    'select_date_and_generate' => 'بەرواری "تا" هەڵبژێرە و کلیک لە "دروستکردنی ڕاپۆرت" بکە بۆ بینینی پەڕەی هاوسەنگی.',
 
     // Partner Ledger
     'partner_ledger' => 'پەرتووکی هاوبەش',
@@ -165,5 +164,4 @@ return [
     'refundable' => 'گەڕاندنەوە',
     'no_output_tax_transactions' => 'هیچ مامەڵەیەکی باجی دەرچوو نەدۆزرایەوە بۆ ئەم ماوەیە.',
     'no_input_tax_transactions' => 'هیچ مامەڵەیەکی باجی هاتوو نەدۆزرایەوە بۆ ئەم ماوەیە.',
-    'select_date_range_and_generate' => 'ماوەی بەروار هەڵبژێرە و کلیک لە "دروستکردنی ڕاپۆرت" بکە بۆ بینینی ڕاپۆرتی باج.',
 ];
