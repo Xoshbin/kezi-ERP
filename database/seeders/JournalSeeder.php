@@ -112,7 +112,7 @@ class JournalSeeder extends Seeder
                     'ckb' => 'کردنەوەی سەرمایە',
                     'ar' => 'الرصيد الافتتاحي'
                 ],
-                'type' => JournalType::OpeningBalance,
+                'type' => JournalType::Miscellaneous,
                 'short_code' => 'OPEN',
                 'currency_id' => null,
                 'default_debit_account_id' => null, // Set in opening entry
