@@ -669,17 +669,17 @@ categories:
     name:
       en: "Currency and Exchange"
       ar: "العملة والصرف"
-      ckb: "دراو و ئاڵوگۆڕ"
+      ckb: "پارە و ئاڵوگۆڕ"
     terms:
       currency:
         en: "Currency"
         ar: "العملة"
-        ckb: "دراو"
+        ckb: "پارە"
         notes: "Monetary unit"
       multi-currency:
         en: "Multi-Currency"
         ar: "العملة"
-        ckb: "فرە-دراو"
+        ckb: "فرە-پارە"
         notes: "Monetary unit"
       exchange_rate:
         en: "Exchange Rate"
@@ -689,12 +689,12 @@ categories:
       foreign_currency:
         en: "Foreign Currency"
         ar: "العملة الأجنبية"
-        ckb: "دراوی بیانی"
+        ckb: "پارەی بیانی"
         notes: "Non-local currency"
       base_currency:
         en: "Base Currency"
         ar: "العملة الأساسية"
-        ckb: "دراوی بنەڕەتی"
+        ckb: "پارەی بنەڕەتی"
         notes: "Primary currency"
       conversion:
         en: "Conversion"
