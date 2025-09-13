@@ -103,7 +103,7 @@ return [
     'journal_entries_relation_manager.journal' => 'پەرتووکی ڕۆژانە',
     'journal_entries_relation_manager.state' => 'دۆخ',
     'journal_entries_relation_manager.total_debit' => 'کۆی قەرزدار',
-    'journal_entries_relation_manager.total_credit' => 'کۆی دابینکراو',
+    'journal_entries_relation_manager.total_credit' => 'کۆی دراو',
     'journal_entries_relation_manager.source_type' => 'جۆری سەرچاوە',
     'journal_entries_relation_manager.created_at' => 'دروستکراوە لە',
     'journal_entries_relation_manager.no_source' => 'هیچ سەرچاوەیەک نییە',
