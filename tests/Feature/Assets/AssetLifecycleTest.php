@@ -331,12 +331,12 @@ test('asset disposal correctly generates final journal entries', function () {
     // Get the disposal journal entry specifically by its reference pattern
     // This ensures we're testing the disposal entry, not a depreciation entry
     $journalEntry = $asset->journalEntries()
-        ->where('reference', 'DISPOSAL/' . $asset->id)
+        ->where('reference', 'DISPOSAL/'.$asset->id)
         ->first();
     $this->assertModelExists($journalEntry);
 
     // Additional assertions to ensure we have the correct journal entry
-    $this->assertEquals('DISPOSAL/' . $asset->id, $journalEntry->reference);
+    $this->assertEquals('DISPOSAL/'.$asset->id, $journalEntry->reference);
     $this->assertTrue($journalEntry->is_posted);
 
     // Verify the journal entry has exactly 4 lines (accumulated depreciation, cash, asset, gain/loss)
