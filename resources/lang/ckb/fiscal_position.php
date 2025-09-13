@@ -2,8 +2,8 @@
 
 return [
     // Labels
-    'label' => 'پێگەی دارایی',
-    'plural_label' => 'پێگە داراییەکان',
+    'label' => 'دۆخی دارایی',
+    'plural_label' => 'دۆخی دارایی',
 
     // Basic Information
     'name' => 'ناو',

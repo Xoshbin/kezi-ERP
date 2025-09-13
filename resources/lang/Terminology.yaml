@@ -4,8 +4,8 @@
 metadata:
   title: "Accounting Terminology Glossary"
   description: "Official terminology dictionary for the Jmeryar NotebookLM application"
-  version: "1.0"
-  lastUpdated: "2025-09-08"
+  version: "2.0"
+  lastUpdated: "2025-09-12"
   languages: ["en", "ar", "ckb"]
   languageNames:
     en: "English"
@@ -46,9 +46,9 @@ categories:
         notes: "Individual transaction record"
       ledger:
         en: "Ledger"
-        ar: "دفتر الأستاذ"
-        ckb: "پەرتووکی گشتی"
-        notes: "General ledger"
+        ar: "دفتر"
+        ckb: "پەرتووک"
+        notes: "ledger"
       transaction:
         en: "Transaction"
         ar: "المعاملة"
@@ -64,12 +64,37 @@ categories:
         ar: "القيد المزدوج"
         ckb: "دوو-تۆمار"
         notes: "Record entry"
+      line_item:
+        en: "Line Item"
+        ar: "بند السطر"
+        ckb: "هێڵی کاڵا"
+        notes: "Individual item in a transaction"
+      fiscal_position:
+        en: "Fiscal Position"
+        ar: "الوضع الضريبي"
+        ckb: "دۆخی دارایی"
+        notes: ""
+      fiscal_period:
+        en: "Fiscal Period"
+        ar: ""
+        ckb: "ماوەی دارایی"
+        notes: ""
+      contra_account:
+        en: "Contra Account"
+        ar: "الحساب المقابل"
+        ckb: "هەژماری بەرامبەر"
+        notes: "Offsetting account in transaction"
+      reference_number:
+        en: "Reference Number"
+        ar: "رقم المرجع"
+        ckb: "ژمارەی بەڵگە"
+        notes: "Document reference identifier"
 
   debit_credit:
     name:
       en: "Debit and Credit"
       ar: "المدين والدائن"
-      ckb: "قەرزدار و قەرزخواز"
+      ckb: "قەرزدار و قەرزدەر"
     terms:
       debit:
         en: "Debit"
@@ -79,7 +104,7 @@ categories:
       credit:
         en: "Credit"
         ar: "دائن"
-        ckb: "قەرزخواز"
+        ckb: "قەرزدەر (دائن)"
         notes: "Right side of account"
       debit_amount:
         en: "Debit Amount"
@@ -89,7 +114,7 @@ categories:
       credit_amount:
         en: "Credit Amount"
         ar: "المبلغ الدائن"
-        ckb: "بڕی قەرزخواز"
+        ckb: "بڕی دراو"
         notes: "Amount on credit side"
       total_debit:
         en: "Total Debit"
@@ -99,7 +124,7 @@ categories:
       total_credit:
         en: "Total Credit"
         ar: "إجمالي الدائن"
-        ckb: "کۆی قەرزخواز"
+        ckb: "کۆی دراو"
         notes: "Sum of all credits"
 
   financial_statements:
@@ -111,13 +136,18 @@ categories:
       balance_sheet:
         en: "Balance Sheet"
         ar: "الميزانية العمومية"
-        ckb: "پەڕەی هاوسەنگی"
+        ckb: "لیستەی باڵانس"
         notes: "Statement of financial position"
       income_statement:
         en: "Income Statement"
         ar: "قائمة الدخل"
         ckb: "لیستی داهات"
         notes: "Profit and loss statement"
+      profit_and_loss:
+        en: "Profit & Loss"
+        ar: "الأرباح والخسائر"
+        ckb: "قازانج و زیان"
+        notes: "P&L statement"
       cash_flow_statement:
         en: "Cash Flow Statement"
         ar: "قائمة التدفقات النقدية"
@@ -126,23 +156,73 @@ categories:
       trial_balance:
         en: "Trial Balance"
         ar: "ميزان المراجعة"
-        ckb: "پێداچونەوەی هاوسەنگی"
+        ckb: "پێداچونەوەی باڵانس"
         notes: "Trial balance"
+      general_ledger:
+        en: "General Ledger"
+        ar: "دفتر الأستاذ العام"
+        ckb: "پەرتووکی گشتی"
+        notes: "Complete record of all accounts"
+      partner_ledger:
+        en: "Partner Ledger"
+        ar: "دفتر الشريك"
+        ckb: "پەرتووکی هاوبەش"
+        notes: "Customer/vendor transaction history"
+      aged_receivables:
+        en: "Aged Receivables"
+        ar: "الذمم المدينة المعمرة"
+        ckb: "قەرزی کۆن کە دەبێت وەربگیرێت"
+        notes: "Outstanding customer invoices by age"
+      aged_payables:
+        en: "Aged Payables"
+        ar: "الذمم الدائنة المعمرة"
+        ckb: "قەرزی کۆن دەبێت بدرێت"
+        notes: "Outstanding vendor bills by age"
       balance:
         en: "Balance"
         ar: "الرصيد"
-        ckb: "هاوسەنگی"
+        ckb: "باڵانس"
         notes: "Account balance"
       opening_balance:
         en: "Opening Balance"
         ar: "الرصيد الافتتاحي"
-        ckb: "یەکەی دەستپێکردن"
+        ckb: "کردنەوەی باڵانس"
         notes: "Beginning balance"
       closing_balance:
         en: "Closing Balance"
         ar: "الرصيد الختامي"
-        ckb: "یەکەی کۆتایی"
+        ckb: "داخستنی باڵانس"
         notes: "Ending balance"
+      starting_balance:
+        en: "Starting Balance"
+        ar: "الرصيد الابتدائي"
+        ckb: "باڵانسی دەستپێک"
+        notes: "Initial balance"
+      ending_balance:
+        en: "Ending Balance"
+        ar: "الرصيد النهائي"
+        ckb: "باڵانسی کۆتایی"
+        notes: "Final balance"
+      net_income:
+        en: "Net Income"
+        ar: "صافي الدخل"
+        ckb: "داهاتی پاک"
+        notes: "Total income after expenses"
+      net_loss:
+        en: "Net Loss"
+        ar: "صافي الخسارة"
+        ckb: "زیانی پاک"
+        notes: "Total loss after expenses"
+      retained_earnings:
+        en: "Retained Earnings"
+        ar: "الأرباح المحتجزة"
+        ckb: "قازانجی پاشەکەوتکراو"
+        notes: "Accumulated profits retained in business"
+      current_year_earnings:
+        en: "Current Year Earnings"
+        ar: "أرباح السنة الحالية"
+        ckb: "قازانجی ساڵی ئێستا"
+        notes: "Profit/loss for current fiscal year"
 
   business_documents:
     name:
@@ -153,13 +233,33 @@ categories:
       invoice:
         en: "Invoice"
         ar: "المبیعات"
-        ckb: "پسووڵەکانی فرۆشتن"
+        ckb: "پسووڵەی فرۆشتن"
         notes: "Sales invoice"
+      vendor_bill:
+        en: "Vendor Bill"
+        ar: "فاتورة المورد"
+        ckb: "پسووڵەی کڕین"
+        notes: "Purchase bill from vendor"
       bill:
         en: "Bill"
         ar: "المشتریات"
-        ckb: "پسووڵەکانی کڕین"
+        ckb: "کڕدراوەکان"
         notes: "Purchase bill"
+      credit_note:
+        en: "Credit Note"
+        ar: "إشعار دائن"
+        ckb: "پسوڵەی گەڕاندنەوە"
+        notes: "Document reducing customer debt"
+      debit_note:
+        en: "Debit Note"
+        ar: "إشعار مدين"
+        ckb: "پسوولەی وەرگرتنەوە"
+        notes: "Document increasing customer debt"
+      adjustment_document:
+        en: "Adjustment Document"
+        ar: "مستند التسوية"
+        ckb: "بەڵگەی ڕاستکردنەوە"
+        notes: "Document for corrections and adjustments"
       receipt:
         en: "Receipt"
         ar: "الإيصال"
@@ -185,6 +285,36 @@ categories:
         ar: "المرفق"
         ckb: "پاشکۆ"
         notes: "File attachment"
+      due_date:
+        en: "Due Date"
+        ar: "تاريخ الاستحقاق"
+        ckb: "ڕێکەوتی شایستە"
+        notes: "Payment due date"
+      invoice_date:
+        en: "Invoice Date"
+        ar: "تاريخ الفاتورة"
+        ckb: "ڕێکەوتی پسووڵە"
+        notes: "Date invoice was issued"
+      bill_date:
+        en: "Bill Date"
+        ar: "تاريخ الفاتورة"
+        ckb: "ڕێکەوتی پسووڵە"
+        notes: "Date bill was issued"
+      accounting_date:
+        en: "Accounting Date"
+        ar: "التاريخ المحاسبي"
+        ckb: "ڕێکەوتی ژمێریاری"
+        notes: "Date for accounting purposes"
+      outstanding:
+        en: "Outstanding"
+        ar: "المستحق"
+        ckb: "ماوە"
+        notes: "Amount still owed"
+      overdue:
+        en: "Overdue"
+        ar: "متأخر"
+        ckb: "دواکەوتوو"
+        notes: "Past due date"
 
   banking_cash:
     name:
@@ -202,6 +332,11 @@ categories:
         ar: "كشف الحساب البنكي"
         ckb: "ڕاپۆرتی هەژماری بانک"
         notes: "Bank account statement"
+      bank_statement_lines:
+        en: "Bank Statement Lines"
+        ar: "بنود كشف الحساب البنكي"
+        ckb: "هێڵەکانی ڕاپۆرتی بانک"
+        notes: "Individual transactions on bank statement"
       cash:
         en: "Cash"
         ar: "النقد"
@@ -215,18 +350,38 @@ categories:
       reconciliation:
         en: "Reconciliation"
         ar: "التسوية"
-        ckb: "هاوسەنگی بانکی"
+        ckb: "هاوتاکردنی بانکی"
         notes: "Bank reconciliation"
+      reconcile:
+        en: "Reconcile"
+        ar: "تسوية"
+        ckb: "هاوتاکردن"
+        notes: "To perform reconciliation"
+      unreconciled:
+        en: "Unreconciled"
+        ar: "غير مسوى"
+        ckb: "هاوتانەکراو"
+        notes: "Not yet reconciled"
+      reconciled_at:
+        en: "Reconciled At"
+        ar: "تاريخ التسوية"
+        ckb: "هاوتاکراوە لە"
+        notes: "Date/time of reconciliation"
+      reconciled_by:
+        en: "Reconciled By"
+        ar: "تمت التسوية بواسطة"
+        ckb: "هاوتاکراوە لەلایەن"
+        notes: "Person who performed reconciliation"
+      write_off_account:
+        en: "Write-off Account"
+        ar: "حساب الشطب"
+        ckb: "هەژماری پاککردنەوە"
+        notes: "Account for write-off transactions"
       payment:
         en: "Payment"
         ar: "الدفع"
         ckb: "پارەدان"
         notes: "Money payment"
-      receipt:
-        en: "Receipt"
-        ar: "الاستلام"
-        ckb: "وەرگرتن"
-        notes: "Money receipt"
       transfer:
         en: "Transfer"
         ar: "التحويل"
@@ -309,7 +464,7 @@ categories:
       cost:
         en: "Cost"
         ar: "التكلفة"
-        ckb: "تێچوون"
+        ckb: "تێچوو"
         notes: "Cost of goods/services"
       profit:
         en: "Profit"
@@ -371,7 +526,7 @@ categories:
       creditor:
         en: "Creditor"
         ar: "الدائن"
-        ckb: "قەرزخواز"
+        ckb: "قەرزدەر"
         notes: "Is owed money"
 
   tax_legal:
@@ -405,6 +560,31 @@ categories:
         ar: "ضريبة الاستقطاع"
         ckb: "باجی بڕدراو"
         notes: "Tax deducted at source"
+      output_tax:
+        en: "Output Tax"
+        ar: "ضريبة المخرجات"
+        ckb: "باجی دەرچوو"
+        notes: "Tax on sales"
+      input_tax:
+        en: "Input Tax"
+        ar: "ضريبة المدخلات"
+        ckb: "باجی هاتوو"
+        notes: "Tax on purchases"
+      tax_payable:
+        en: "Tax Payable"
+        ar: "الضريبة المستحقة"
+        ckb: "باجی دراو"
+        notes: "Tax owed to government"
+      tax_refundable:
+        en: "Tax Refundable"
+        ar: "الضريبة القابلة للاسترداد"
+        ckb: "باجی گەڕاوە"
+        notes: "Tax to be refunded"
+      net_tax_payable:
+        en: "Net Tax Payable"
+        ar: "صافي الضريبة المستحقة"
+        ckb: "باجی پاکی دراو"
+        notes: "Net amount of tax owed"
 
   inventory_products:
     name:
@@ -445,7 +625,7 @@ categories:
       cost_of_goods_sold:
         en: "Cost of Goods Sold"
         ar: "تكلفة البضاعة المباعة"
-        ckb: "تێچوونی کاڵای فرۆشراو"
+        ckb: "تێچووی کاڵای فرۆشراو"
         notes: "COGS"
 
   budget_planning:
@@ -489,17 +669,17 @@ categories:
     name:
       en: "Currency and Exchange"
       ar: "العملة والصرف"
-      ckb: "دراو و ئاڵوگۆڕ"
+      ckb: "پارە و ئاڵوگۆڕ"
     terms:
       currency:
         en: "Currency"
         ar: "العملة"
-        ckb: "دراو"
+        ckb: "پارە"
         notes: "Monetary unit"
       multi-currency:
         en: "Multi-Currency"
         ar: "العملة"
-        ckb: "فرە-دراو"
+        ckb: "فرە-پارە"
         notes: "Monetary unit"
       exchange_rate:
         en: "Exchange Rate"
@@ -509,12 +689,12 @@ categories:
       foreign_currency:
         en: "Foreign Currency"
         ar: "العملة الأجنبية"
-        ckb: "دراوی بیانی"
+        ckb: "پارەی بیانی"
         notes: "Non-local currency"
       base_currency:
         en: "Base Currency"
         ar: "العملة الأساسية"
-        ckb: "دراوی بنەڕەتی"
+        ckb: "پارەی بنەڕەتی"
         notes: "Primary currency"
       conversion:
         en: "Conversion"
@@ -580,11 +760,46 @@ categories:
         ar: "مرحل"
         ckb: "نێردراوە"
         notes: "Confirmed entry"
+      confirmed:
+        en: "Confirmed"
+        ar: "مؤكد"
+        ckb: "پشتڕاستکراوەتەوە"
+        notes: "Verified and approved"
+      processed:
+        en: "Processed"
+        ar: "معالج"
+        ckb: "پرۆسێسکراوە"
+        notes: "Completed processing"
+      finalized:
+        en: "Finalized"
+        ar: "نهائي"
+        ckb: "کۆتایی هاتووە"
+        notes: "Final state, cannot be changed"
+      reversed:
+        en: "Reversed"
+        ar: "معكوس"
+        ckb: "پێچەوانەکراوەتەوە"
+        notes: "Transaction reversed"
       cancelled:
         en: "Cancelled"
         ar: "ملغي"
         ckb: "هەڵوەشێنراوەتەوە"
         notes: "Voided entry"
+      paid:
+        en: "Paid"
+        ar: "مدفوع"
+        ckb: "پارەدراوە"
+        notes: "Fully paid"
+      partially_paid:
+        en: "Partially Paid"
+        ar: "مدفوع جزئياً"
+        ckb: "بەشێکی پارەدراوە"
+        notes: "Partially settled"
+      not_paid:
+        en: "Not Paid"
+        ar: "غير مدفوع"
+        ckb: "پارەنەدراو"
+        notes: "No payment received"
       active:
         en: "Active"
         ar: "نشط"
@@ -652,6 +867,311 @@ categories:
         ar: "المجموع الفرعي"
         ckb: "کۆی لقی"
         notes: "Partial sum"
+
+  document_management:
+    name:
+      en: "Document Management & Aging"
+      ar: "إدارة المستندات والتقادم"
+      ckb: "بەڕێوەبردنی بەڵگەنامە و کۆنبوون"
+    terms:
+      aging_analysis:
+        en: "Aging Analysis"
+        ar: "تحليل التقادم"
+        ckb: "شیکردنەوەی کۆنبوون"
+        notes: "Analysis of outstanding amounts by age"
+      aging_bucket:
+        en: "Aging Bucket"
+        ar: "فئة التقادم"
+        ckb: "گرووپی کۆنبوون"
+        notes: "Age category for outstanding amounts"
+      aging_category:
+        en: "Aging Category"
+        ar: "تصنيف التقادم"
+        ckb: "پۆلی کۆنبوون"
+        notes: "Classification by age"
+      settlement_summary:
+        en: "Settlement Summary"
+        ar: "ملخص التسوية"
+        ckb: "کورتەی یەکلاکردنەوە"
+        notes: "Summary of payment settlements"
+      settlement_status:
+        en: "Settlement Status"
+        ar: "حالة التسوية"
+        ckb: "دۆخی یەکلاکردنەوە"
+        notes: "Status of payment settlement"
+      outstanding_balance:
+        en: "Outstanding Balance"
+        ar: "الرصيد المستحق"
+        ckb: "باڵانسی ماوە"
+        notes: "Amount still owed"
+      outstanding_amount:
+        en: "Outstanding Amount"
+        ar: "المبلغ المستحق"
+        ckb: "بڕی ماوە"
+        notes: "Amount still outstanding"
+      payment_progress:
+        en: "Payment Progress"
+        ar: "تقدم الدفع"
+        ckb: "بەرەوپێشچونی پارەدان"
+        notes: "Progress of payment completion"
+      payment_count:
+        en: "Payment Count"
+        ar: "عدد المدفوعات"
+        ckb: "ژمارەی پارەدان"
+        notes: "Number of payments made"
+      payment_methods:
+        en: "Payment Methods"
+        ar: "طرق الدفع"
+        ckb: "ڕێگەکانی پارەدان"
+        notes: "Methods used for payment"
+
+  asset_management:
+    name:
+      en: "Asset Management & Depreciation"
+      ar: "إدارة الأصول والاستهلاك"
+      ckb: "بەڕێوەبردنی سامان و داخوران"
+    terms:
+      depreciation:
+        en: "Depreciation"
+        ar: "الاستهلاك"
+        ckb: "داخوران"
+        notes: "Reduction in asset value over time"
+      accumulated_depreciation:
+        en: "Accumulated Depreciation"
+        ar: "الاستهلاك المتراكم"
+        ckb: "داخورانی کۆکراوە"
+        notes: "Total depreciation to date"
+      depreciation_expense:
+        en: "Depreciation Expense"
+        ar: "مصروف الاستهلاك"
+        ckb: "خەرجی داخوران"
+        notes: "Periodic depreciation cost"
+      purchase_date:
+        en: "Purchase Date"
+        ar: "تاريخ الشراء"
+        ckb: "ڕێکەوتی کڕین"
+        notes: "Date asset was acquired"
+      purchase_value:
+        en: "Purchase Value"
+        ar: "قيمة الشراء"
+        ckb: "نرخی کڕین"
+        notes: "Original cost of asset"
+      salvage_value:
+        en: "Salvage Value"
+        ar: "القيمة المتبقية"
+        ckb: "تێچوی هەڵگرتن"
+        notes: "Estimated residual value"
+      useful_life:
+        en: "Useful Life"
+        ar: "العمر الإنتاجي"
+        ckb: "تەمەنی بەکارهێنان"
+        notes: "Expected service life"
+      depreciation_method:
+        en: "Depreciation Method"
+        ar: "طريقة الاستهلاك"
+        ckb: "شێوازی داخوران"
+        notes: "Method for calculating depreciation"
+      straight_line:
+        en: "Straight Line"
+        ar: "القسط الثابت"
+        ckb: "هێڵی ڕاست"
+        notes: "Equal depreciation each period"
+      declining_balance:
+        en: "Declining Balance"
+        ar: "الرصيد المتناقص"
+        ckb: "باڵانسی کەمکراو"
+        notes: "Accelerated depreciation method"
+
+  inventory_management:
+    name:
+      en: "Inventory & Stock Management"
+      ar: "إدارة المخزون والمخزون"
+      ckb: "بەڕێوەبردنی کۆگا"
+    terms:
+      sku:
+        en: "SKU"
+        ar: "رمز المنتج"
+        ckb: "کۆدی کاڵا"
+        notes: "Stock Keeping Unit"
+      storable:
+        en: "Storable"
+        ar: "قابل للتخزين"
+        ckb: "کۆگادەکرێت"
+        notes: "Physical product that can be stored"
+      consumable:
+        en: "Consumable"
+        ar: "قابل للاستهلاك"
+        ckb: "بەکاردەهێنرێت"
+        notes: "Product consumed in use"
+      service:
+        en: "Service"
+        ar: "خدمة"
+        ckb: "خزمەتگوزاری"
+        notes: "Intangible service offering"
+      valuation_method:
+        en: "Valuation Method"
+        ar: "طريقة التقييم"
+        ckb: "شێوازی نرخاندن"
+        notes: "Method for inventory costing"
+      fifo:
+        en: "FIFO"
+        ar: "الوارد أولاً صادر أولاً"
+        ckb: "یەکەم هاتوو یەکەم ڕۆشتوو"
+        notes: "First In, First Out"
+      lifo:
+        en: "LIFO"
+        ar: "الوارد أخيراً صادر أولاً"
+        ckb: "کۆتا هاتوو یەکەم ڕۆشتوو"
+        notes: "Last In, First Out"
+      avco:
+        en: "AVCO"
+        ar: "متوسط التكلفة"
+        ckb: "ناوەندی تێچوو"
+        notes: "Average Cost"
+      standard_price:
+        en: "Standard Price"
+        ar: "السعر المعياري"
+        ckb: "نرخی ستاندارد"
+        notes: "Fixed standard cost"
+      stock_move:
+        en: "Stock Move"
+        ar: "حركة المخزون"
+        ckb: "جووڵەی کۆگا"
+        notes: "Inventory movement transaction"
+      stock_location:
+        en: "Stock Location"
+        ar: "موقع المخزون"
+        ckb: "شوێنی کۆگا"
+        notes: "Physical storage location"
+      inventory_cost_layer:
+        en: "Inventory Cost Layer"
+        ar: "طبقة تكلفة المخزون"
+        ckb: "چینی تێچووی کۆگا"
+        notes: "Cost tracking layer for inventory"
+
+  payroll_hr:
+    name:
+      en: "Payroll & Human Resources"
+      ar: "الرواتب والموارد البشرية"
+      ckb: "مووچە و سەرچاوە مرۆییەکان"
+    terms:
+      payroll:
+        en: "Payroll"
+        ar: "الرواتب"
+        ckb: "مووچە"
+        notes: "Employee compensation system"
+      gross_salary:
+        en: "Gross Salary"
+        ar: "الراتب الإجمالي"
+        ckb: "مووچەی گشتی"
+        notes: "Total salary before deductions"
+      net_salary:
+        en: "Net Salary"
+        ar: "الراتب الصافي"
+        ckb: "مووچەی پاک"
+        notes: "Salary after deductions"
+      base_salary:
+        en: "Base Salary"
+        ar: "الراتب الأساسي"
+        ckb: "مووچەی بنەڕەتی"
+        notes: "Basic salary amount"
+      overtime:
+        en: "Overtime"
+        ar: "العمل الإضافي"
+        ckb: "کاری زیادە"
+        notes: "Extra hours worked"
+      allowances:
+        en: "Allowances"
+        ar: "البدلات"
+        ckb: "پێدراوەکان"
+        notes: "Additional compensation"
+      deductions:
+        en: "Deductions"
+        ar: "الاستقطاعات"
+        ckb: "بڕدراوەکان"
+        notes: "Amounts deducted from salary"
+      income_tax:
+        en: "Income Tax"
+        ar: "ضريبة الدخل"
+        ckb: "باجی داهات"
+        notes: "Tax on employee income"
+      social_security:
+        en: "Social Security"
+        ar: "الضمان الاجتماعي"
+        ckb: "دڵنیایی کۆمەڵایەتی"
+        notes: "Social security contribution"
+      health_insurance:
+        en: "Health Insurance"
+        ar: "التأمين الصحي"
+        ckb: "بیمەی تەندروستی"
+        notes: "Medical insurance coverage"
+      pay_frequency:
+        en: "Pay Frequency"
+        ar: "تكرار الدفع"
+        ckb: "پارەدانی دووبارە"
+        notes: "How often salary is paid"
+      pay_date:
+        en: "Pay Date"
+        ar: "تاريخ الدفع"
+        ckb: "ڕێکەوتی پارەدان"
+        notes: "Date salary is paid"
+
+  payment_methods:
+    name:
+      en: "Payment Methods & Processing"
+      ar: "طرق الدفع والمعالجة"
+      ckb: "ڕێگەکانی پارەدان و پرۆسێسکردن"
+    terms:
+      check:
+        en: "Check"
+        ar: "شيك"
+        ckb: "چەک"
+        notes: "Paper check payment"
+      bank_transfer:
+        en: "Bank Transfer"
+        ar: "تحويل مصرفي"
+        ckb: "گواستنەوەی بانکی"
+        notes: "Electronic bank transfer"
+      credit_card:
+        en: "Credit Card"
+        ar: "بطاقة ائتمان"
+        ckb: "کارتی قەرز"
+        notes: "Credit card payment"
+      debit_card:
+        en: "Debit Card"
+        ar: "بطاقة خصم"
+        ckb: "کارتی بڕین"
+        notes: "Debit card payment"
+      wire_transfer:
+        en: "Wire Transfer"
+        ar: "تحويل سلكي"
+        ckb: "گواستنەوەی وایەر"
+        notes: "Wire transfer payment"
+      ach:
+        en: "ACH"
+        ar: "نظام المقاصة الآلي"
+        ckb: "سیستەمی ئۆتۆماتیکی"
+        notes: "Automated Clearing House"
+      sepa:
+        en: "SEPA"
+        ar: "منطقة المدفوعات الأوروبية الموحدة"
+        ckb: "ناوچەی یەکگرتووی پارەدانی ئەوروپی"
+        notes: "Single Euro Payments Area"
+      online_payment:
+        en: "Online Payment"
+        ar: "الدفع عبر الإنترنت"
+        ckb: "پارەدانی ئۆنلاین"
+        notes: "Internet-based payment"
+      inbound:
+        en: "Inbound"
+        ar: "وارد"
+        ckb: "هاتوو"
+        notes: "Incoming payment"
+      outbound:
+        en: "Outbound"
+        ar: "صادر"
+        ckb: "ڕۆشتوو"
+        notes: "Outgoing payment"
 
   general_business:
     name:
@@ -731,6 +1251,36 @@ categories:
         ar: "ترحيل"
         ckb: "ناردن"
         notes: "Confirm entry"
+      posting:
+        en: "Posting"
+        ar: "الترحيل"
+        ckb: "ناردن"
+        notes: "Process of confirming entries"
+      confirm:
+        en: "Confirm"
+        ar: "تأكيد"
+        ckb: "پشتڕاستکردنەوە"
+        notes: "Verify and approve"
+      confirmation:
+        en: "Confirmation"
+        ar: "التأكيد"
+        ckb: "پشتڕاستکردنەوە"
+        notes: "Act of confirming"
+      reconcile_action:
+        en: "Reconcile"
+        ar: "تسوية"
+        ckb: "هاوتاکردن"
+        notes: "Perform reconciliation process"
+      settle:
+        en: "Settle"
+        ar: "تسوية"
+        ckb: "یەکلاکردنەوە"
+        notes: "Complete payment settlement"
+      settlement:
+        en: "Settlement"
+        ar: "التسوية"
+        ckb: "یەکلاکردنەوە"
+        notes: "Payment settlement process"
       cancel:
         en: "Cancel"
         ar: "إلغاء"
@@ -823,9 +1373,49 @@ categories:
         notes: "Multiple companies"
       exchange_differences:
         en: "Exchange Differences"
-        ar: ""
+        ar: "فروقات أسعار الصرف"
         ckb: "جیاوازی نرخی ئاڵوگۆڕ"
         notes: "Gain/loss from exchange rate fluctuations"
+      lock_date:
+        en: "Lock Date"
+        ar: "تاريخ القفل"
+        ckb: "ڕێکەوتی داخستن"
+        notes: "Date after which entries cannot be modified"
+      period_locked:
+        en: "Period Locked"
+        ar: "الفترة مقفلة"
+        ckb: "ماوە داخراوە"
+        notes: "Accounting period is locked"
+      hash:
+        en: "Hash"
+        ar: "الرمز المشفر"
+        ckb: "هاش"
+        notes: "Cryptographic hash for integrity"
+      source_type:
+        en: "Source Type"
+        ar: "نوع المصدر"
+        ckb: "جۆری سەرچاوە"
+        notes: "Type of originating document"
+      total_amount:
+        en: "Total Amount"
+        ar: "المبلغ الإجمالي"
+        ckb: "کۆی گشتی"
+        notes: "Complete amount"
+      contact_person:
+        en: "Contact Person"
+        ar: "شخص الاتصال"
+        ckb: "کەسی پەیوەندی"
+        notes: "Primary contact individual"
+      receivable_account:
+        en: "Receivable Account"
+        ar: "حساب المدينين"
+        ckb: "هەژماری وەرگرتن"
+        notes: "Account for amounts owed to us"
+      payable_account:
+        en: "Payable Account"
+        ar: "حساب الدائنين"
+        ckb: "هەژماری پێدان"
+        notes: "Account for amounts we owe"
 
 # Usage Guidelines
 usage_guidelines:

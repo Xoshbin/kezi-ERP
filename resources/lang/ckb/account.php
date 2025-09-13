@@ -16,11 +16,11 @@ return [
 
     // Journal Entry Lines Relation Manager
     'journal_entry_lines' => [
-        'label' => 'هێڵی تۆماری رۆژانە',
-        'plural_label' => 'هێڵەکانی تۆماری رۆژانە',
-        'journal_entry' => 'تۆماری رۆژانە',
+        'label' => 'هێڵی تۆماری ڕۆژانە',
+        'plural_label' => 'هێڵەکانی تۆماری ڕۆژانە',
+        'journal_entry' => 'تۆماری ڕۆژانە',
         'debit' => 'قەرزدار (مدين)',
-        'credit' => 'قەرزخواز (دائن)',
+        'credit' => 'قەرزدەر (دائن)',
         'description' => 'پێناسە',
     ],
 

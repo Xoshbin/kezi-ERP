@@ -11,8 +11,8 @@ return [
     // Form Fields
     'company' => 'کۆمپانیا',
     'customer' => 'کڕیار',
-    'currency' => 'دراو',
-    'fiscal_position' => 'پێگەی دارایی',
+    'currency' => 'پارە',
+    'fiscal_position' => 'دۆخی دارایی',
     'invoice_date' => 'ڕێکەوتی پسووڵە',
     'due_date' => 'ڕێکەوتی شایستە',
     'status' => 'دۆخ',
@@ -29,27 +29,26 @@ return [
     'reason' => 'هۆکار',
 
     // Section Titles and Descriptions
-    'customer_currency_info' => 'زانیاریی کڕیار و دراو',
-    'customer_currency_info_description' => 'کڕیار و دراوەکە بۆ ئەم پسووڵەیە هەڵبژێرە',
-    'invoice_details' => 'وردەکاریی پسووڵە',
-    'invoice_details_description' => 'ڕێکەوتەکانی پسووڵە، پێگەی دارایی و زانیاریی دۆخ بنووسە',
+    'customer_currency_info' => 'زانیاریی کڕیار و پارە',
+    'customer_currency_info_description' => 'کڕیار و پارەکە بۆ ئەم پسووڵەیە هەڵبژێرە',
+    'invoice_details_description' => 'ڕێکەوتەکانی پسووڵە، دۆخی دارایی و زانیاریی دۆخ بنووسە',
     'line_items' => 'بەندەکانی پسووڵە',
     'line_items_description' => 'بەرهەم و خزمەتگوزاریەکان بۆ ئەم پسووڵەیە زیاد بکە',
-    'company_currency_totals' => 'کۆی گشتی دراوی کۆمپانیا',
+    'company_currency_totals' => 'کۆی گشتی پارەی کۆمپانیا',
 
     // Exchange Rate Fields
     'current_exchange_rate' => 'نرخی ئاڵوگۆڕی ئێستا',
-    'exchange_rate_helper' => 'ئەمە نرخی ئاڵوگۆڕی ئێستایە بۆ دراوە هەڵبژێردراوەکە',
+    'exchange_rate_helper' => 'ئەمە نرخی ئاڵوگۆڕی ئێستایە بۆ پارە هەڵبژێردراوەکە',
     'exchange_rate_at_creation' => 'نرخی ئاڵوگۆڕ لە کاتی دروستکردن',
-    'total_amount_company_currency' => 'کۆی گشتی (دراوی کۆمپانیا)',
-    'total_tax_company_currency' => 'کۆی باج (دراوی کۆمپانیا)',
+    'total_amount_company_currency' => 'کۆی گشتی (پارەی کۆمپانیا)',
+    'total_tax_company_currency' => 'کۆی باج (پارەی کۆمپانیا)',
 
     // Table Columns
     'company_name' => 'کۆمپانیا',
     'customer_name' => 'کڕیار',
-    'currency_name' => 'دراو',
+    'currency_name' => 'پارە',
     'journal_entry' => 'تۆماری ڕۆژانە',
-    'fiscal_position_name' => 'پێگەی دارایی',
+    'fiscal_position_name' => 'دۆخی دارایی',
     'invoice_number' => 'ژمارەی پسووڵە',
     'posted_at' => 'کاتی ناردن',
     'created_at' => 'کاتی دروستکردن',
@@ -63,8 +62,8 @@ return [
     'statuses' => [
         'draft' => 'ڕەشنووس',
         'open' => 'کراوە',
-        'partially_paid' => 'بەشەکانی دراوە',
-        'paid' => 'دراوە',
+        'partially_paid' => 'بەشێکی پارەدراوە',
+        'paid' => 'پارەدراوە',
     ],
 
     // Notifications
@@ -77,14 +76,6 @@ return [
     'reset_to_draft' => 'گەڕاندنەوە بۆ ڕەشنووس',
     'register_payment' => 'تۆمارکردنی پارەدان',
 
-    // Notifications
-    'invoice_confirmed_successfully' => 'پسووڵە بە سەرکەوتوویی پشتڕاستکرایەوە',
-    'error_confirming_invoice' => 'هەڵە لە پشتڕاستکردنەوەی پسووڵە',
-    'invoice_reset_to_draft_successfully' => 'پسووڵە بە سەرکەوتوویی گەڕێندرایەوە بۆ ڕەشنووس',
-    'error_resetting_invoice_to_draft' => 'هەڵە لە گەڕاندنەوەی پسووڵە بۆ ڕەشنووس',
-    'invoice_reset_to_draft' => 'گەڕاندنەوەی پسووڵە بۆ ڕەشنووس',
-    'error_resetting_invoice' => 'هەڵە لە گەڕاندنەوەی پسووڵە',
-
     // Payments Relation Manager
     'payments_relation_manager' => [
         'title' => 'پارەدانەکان',
@@ -92,13 +83,13 @@ return [
         'application_details' => 'وردەکاریی جێبەجێکردن',
         'company' => 'کۆمپانیا',
         'journal' => 'ڕۆژنامە',
-        'currency' => 'دراو',
+        'currency' => 'پارە',
         'payment_date' => 'ڕێکەوتی پارەدان',
         'amount' => 'بڕ',
         'amount_applied' => 'بڕی جێبەجێکراو',
         'amount_applied_help' => 'بڕی ئەم پارەدانە کە بۆ ئەم پسووڵەیە جێبەجێکراوە',
         'payment_type' => 'جۆری پارەدان',
-        'reference' => 'ژمارەی ئاماژە',
+        'reference' => 'ژمارەی بەڵگە',
         'no_reference' => 'هیچ ئاماژەیەک نییە',
         'status' => 'دۆخ',
         'journal_entry' => 'تۆماری ڕۆژانە',
@@ -110,13 +101,13 @@ return [
         'filter_status' => 'پاڵاوتن بەپێی دۆخ',
         'filter_payment_type' => 'پاڵاوتن بەپێی جۆر',
         'bank_statement_reference' => 'ژمارەی بەڵگەی ڕاپۆرتی بانک',
-        'reconciliation_date' => 'بەرواری ڕێکخستن',
-        'reconciliation_status' => 'دۆخی ڕێکخستن',
-        'not_reconciled' => 'ڕێکنەخراو',
-        'filter_reconciliation_status' => 'دۆخی ڕێکخستن',
+        'reconciliation_date' => 'بەرواری هاوتاکردن',
+        'reconciliation_status' => 'دۆخی هاوتاکردن',
+        'not_reconciled' => 'هاوتانەکراوە',
+        'filter_reconciliation_status' => 'دۆخی هاوتاکردن',
         'filter_all_reconciliation' => 'هەموو',
-        'filter_reconciled' => 'ڕێکخراو',
-        'filter_not_reconciled' => 'ڕێکنەخراو',
+        'filter_reconciled' => 'هاوتاکراوە',
+        'filter_not_reconciled' => 'هاوتانەکراوە',
     ],
 
     // Adjustment Documents Relation Manager
@@ -124,10 +115,10 @@ return [
         'title' => 'ڕێکخستنەکان و نۆتەکانی قەرز',
         'document_details' => 'وردەکاریی بەڵگەنامە',
         'company' => 'کۆمپانیا',
-        'currency' => 'دراو',
+        'currency' => 'پارە',
         'type' => 'جۆر',
         'date' => 'ڕێکەوت',
-        'reference_number' => 'ژمارەی ئاماژە',
+        'reference_number' => 'ژمارەی بەڵگە',
         'status' => 'دۆخ',
         'reason' => 'هۆکار',
         'reason_placeholder' => 'هۆکاری ئەم ڕێکخستنە باس بکە...',
@@ -164,9 +155,9 @@ return [
 
     // Settlement Summary Widget
     'settlement_widget' => [
-        'status' => 'دۆخی تەسویە',
+        'status' => 'دۆخی یەکلاکردنەوە',
         'not_posted' => 'نەنێردراوە',
-        'not_posted_desc' => 'پوختەی تەسویە تەنها بۆ پسووڵە نێردراوەکان بەردەستە',
+        'not_posted_desc' => 'پوختەی یەکلاکردنەوە تەنها بۆ پسووڵە نێردراوەکان بەردەستە',
         'total_amount' => 'کۆی گشتی',
         'invoice_total' => 'بڕی سەرەتایی پسووڵە',
         'paid_amount' => 'بڕی پارەدراو',
