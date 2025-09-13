@@ -18,8 +18,8 @@ return [
     ],
 
     'journal_type' => [
-        'sale' => 'پسوولەکانی فرۆشتن',
-        'purchase' => 'پسوولەکانی کڕین',
+        'sale' => 'پسووڵەکانی فرۆشتن',
+        'purchase' => 'پسووڵەکانی کڕین',
         'bank' => 'بانک',
         'cash' => 'کاش',
         'inventory' => 'کۆگا',
@@ -99,8 +99,8 @@ return [
     ],
 
     'adjustment_document_type' => [
-        'credit_note' => 'پسوولەی گەڕاندنەوە',
-        'debit_note' => 'پسوولەی وەرگرتن',
+        'credit_note' => 'پسووڵەی گەڕاندنەوە',
+        'debit_note' => 'پسووڵەی وەرگرتنەوە',
         'miscellaneous' => 'هەمەجۆر',
     ],
 
@@ -124,22 +124,22 @@ return [
 
     'payment_status' => [
         'draft' => 'ڕەشنووس',
-        'confirmed' => 'پشتڕاستکراوە',
-        'reconciled' => 'ڕێکخراوە',
-        'canceled' => 'هەڵوەشاوە',
+        'confirmed' => 'پشتڕاستکراوەتەوە',
+        'reconciled' => 'هاوتاکراوە',
+        'canceled' => 'هەڵوەشاندراوەتەوە',
     ],
 
     'payment_state' => [
-        'not_paid' => 'نەدراوە',
-        'partially_paid' => 'بەشێکی پارەدراو',
-        'paid' => 'پارەدراو',
+        'not_paid' => 'پارەنەدراو',
+        'partially_paid' => 'بەشێکی پارەدراوە',
+        'paid' => 'پارەدراوە',
     ],
 
     'payment_method' => [
         'manual' => 'دەستی',
         'check' => 'چێک',
         'bank_transfer' => 'گواستنەوەی بانکی',
-        'credit_card' => 'کارتی قەرز',
+        'credit_card' => 'کرێدت کارد',
         'debit_card' => 'کارتی خەرج',
         'cash' => 'پارە',
         'wire_transfer' => 'گواستنەوەی تەل',

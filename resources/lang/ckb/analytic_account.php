@@ -13,8 +13,8 @@ return [
     'is_active' => 'چالاکە',
     'created_at' => 'کاتی دروستبوون',
     'updated_at' => 'کاتی نوێکردنەوە',
-    'journal_entry' => 'تۆماری رۆژانە',
-    'journal_entry_lines' => 'هێڵەکانی تۆماری رۆژانە',
+    'journal_entry' => 'تۆماری ڕۆژانە',
+    'journal_entry_lines' => 'هێڵەکانی تۆماری ڕۆژانە',
     'debit' => 'قەرزدار (مدين)',
     'credit' => 'قەرزدەر (دائن)',
     'description' => 'پێناسە',
@@ -33,6 +33,6 @@ return [
     'pages.edit.title' => 'گۆڕینی هەژماری شیکاری',
 
     // Relation Managers
-    'relation_managers.journal_entry_lines.title' => 'هێڵەکانی تۆماری رۆژانە',
+    'relation_managers.journal_entry_lines.title' => 'هێڵەکانی تۆماری ڕۆژانە',
     'relation_managers.analytic_plans.title' => 'پلانە شیکارییەکان',
 ];

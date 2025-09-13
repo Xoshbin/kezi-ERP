@@ -12,7 +12,7 @@ return [
         'fix_in_accounts' => 'چاكسازی لە هەژمارەکان',
         'fix_input_tax' => 'چاكسازی باجى هاوردە',
         'open_company' => 'کردنەوەی کۆمپانیا',
-        'open_product' => 'کردنەوەی کاڵا',
+        'open_product' => 'کردنەوەی بەرهەم',
         'open_assets' => 'کردنەوەی سامان',
         'open_accounts' => 'کردنەوەی هەژمارەکان',
         'open_taxes' => 'کردنەوەی باجەکان',
@@ -21,17 +21,17 @@ return [
     'table' => [
         'account' => 'هەژمار',
         'description' => 'وەسف',
-        'debit' => 'دەیبیت',
-        'credit' => 'کرێدیت',
+        'debit' => 'قەرزدار (مدين)',
+        'credit' => 'قەرزدەر (دائن)',
         'totals' => 'کۆی گشتی',
-        'debits' => 'دەیبیتەکان',
-        'credits' => 'کرێدیتەکان',
+        'debits' => 'قەرزدارەکان',
+        'credits' => 'قەرزدەرەکان',
         'balanced' => 'هاوتراز',
         'unbalanced' => 'ناهاوتراز',
     ],
 
     'pdf' => [
-        'vendor_bill_heading' => 'پێشبینینی تۆماری قەرزی فرۆشیار',
+        'vendor_bill_heading' => 'پێشبینینی تۆماری قەرزەکانی فرۆشیار',
         'invoice_heading' => 'پێشبینینی تۆماری پسوولە',
         'adjustment_heading' => 'پێشبینینی تۆماری چاکسازی',
     ],
@@ -42,16 +42,16 @@ return [
         'input_tax' => 'باژی هاوردە: ',
         'revenue' => 'داھات: ',
         'output_tax' => 'باژی دەرچوون: ',
-        'ap' => 'قەرزداری',
+        'ap' => 'قەرزدار',
         'ar' => 'قەرزدار',
         'sales_discount' => 'داشكانی فرۆشتن/دژە-داھات',
-        'tax_payable' => 'باژی قەرزادار',
+        'tax_payable' => 'باجی دراو',
     ],
 
     'errors' => [
         'ap_account_missing' => 'هەژماری قەرزداری بنەڕەتی بۆ کۆمپانیا دیاری نەکراوە.',
         'purchase_journal_missing' => 'پەرتووکی ڕۆژانەی کڕین دیاری نەکراوە بۆ کۆمپانیا.',
-        'inventory_account_missing' => 'کالا بە ناسنامەی :product_id هەژماری کۆگای نییە.',
+        'inventory_account_missing' => 'بەرهەم بە ناسنامەی :product_id هەژماری کۆگای نییە.',
         'asset_category_invalid' => 'هاوپۆلی سامان هەڵەیە لە هێڵێکی قەرزنامە.',
         'input_tax_missing' => 'هەژماری باجی هاوردە بوونی نییە لەگەڵ ئەوەی هێڵەکان باج پێدان.',
 
@@ -61,6 +61,6 @@ return [
         'tax_account_missing' => 'باجە هەڵبژێردراو هەژماری باج نییە.',
 
         'sales_discount_missing' => 'هەژماری داشكانی فرۆشتن بنەڕەتی دیاری نەکراوە.',
-        'tax_payable_missing' => 'هەژماری باجی قەرزادار بنەڕەتی دیاری نەکراوە.',
+        'tax_payable_missing' => 'هەژماری باجی دراو بنەڕەتی دیاری نەکراوە.',
     ],
 ];

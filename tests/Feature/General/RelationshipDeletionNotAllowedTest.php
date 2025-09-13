@@ -108,7 +108,6 @@ test('a product linked to a posted vendor bill line cannot be deleted', function
         'currency_id' => $this->company->currency_id,
     ]);
 
-    // --- START OF FIX ---
     // Act: Create the vendor bill line using the dedicated Action and DTO.
     // This correctly encapsulates the creation logic and ensures all required fields are calculated.
     $lineDto = new CreateVendorBillLineDTO(

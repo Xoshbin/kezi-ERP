@@ -32,7 +32,6 @@ return new class extends Migration
             $table->string('status')->default(PaymentStatus::Draft->value)->index(); // 'draft', 'confirmed', 'reconciled'
             $table->string('payment_method')
                 ->default(PaymentMethod::Manual->value)
-                ->after('payment_type')
                 ->comment('The method used for this payment (manual, check, bank_transfer, etc.)');
             $table->timestamps();
         });

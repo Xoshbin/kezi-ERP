@@ -2,7 +2,7 @@
 
 return [
     'form' => [
-        'counterparty_currency' => 'هاوبەش و دراو',
+        'counterparty_currency' => 'هاوبەش و پارە',
         'partner' => 'هاوبەش',
         'name' => 'ناوی قەرز',
         'loan_type' => 'جۆری قەرز',
@@ -11,7 +11,7 @@ return [
         'maturity_date' => 'ڕێکەوتی پارەدان/تەواوبوون',
         'duration_months' => 'ماوە (مانگ)',
         'months' => 'مانگ',
-        'currency' => 'دراو',
+        'currency' => 'پارە',
         'principal_amount' => 'بڕی سەرەکی',
         'outstanding_principal' => 'سەرەکی ماوە',
         'schedule_rates' => 'خشتە و نرخی بەرهەمدان',
