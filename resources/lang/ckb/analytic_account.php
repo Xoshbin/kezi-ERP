@@ -16,7 +16,7 @@ return [
     'journal_entry' => 'تۆماری ڕۆژانە',
     'journal_entry_lines' => 'هێڵەکانی تۆماری ڕۆژانە',
     'debit' => 'قەرزدار (مدين)',
-    'credit' => 'دابینکەر (دائن)',
+    'credit' => 'قەرزدەر (دائن)',
     'description' => 'پێناسە',
 
     // Navigation

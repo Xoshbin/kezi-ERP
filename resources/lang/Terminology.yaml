@@ -94,7 +94,7 @@ categories:
     name:
       en: "Debit and Credit"
       ar: "المدين والدائن"
-      ckb: "قەرزدار و دابینکەر"
+      ckb: "قەرزدار و قەرزدەر"
     terms:
       debit:
         en: "Debit"
@@ -104,7 +104,7 @@ categories:
       credit:
         en: "Credit"
         ar: "دائن"
-        ckb: "دابینکەر (دائن)"
+        ckb: "قەرزدەر (دائن)"
         notes: "Right side of account"
       debit_amount:
         en: "Debit Amount"
@@ -114,7 +114,7 @@ categories:
       credit_amount:
         en: "Credit Amount"
         ar: "المبلغ الدائن"
-        ckb: "بڕی دابینکراو"
+        ckb: "بڕی دراو"
         notes: "Amount on credit side"
       total_debit:
         en: "Total Debit"
@@ -124,7 +124,7 @@ categories:
       total_credit:
         en: "Total Credit"
         ar: "إجمالي الدائن"
-        ckb: "کۆی دابینکراو"
+        ckb: "کۆی دراو"
         notes: "Sum of all credits"
 
   financial_statements:
@@ -526,7 +526,7 @@ categories:
       creditor:
         en: "Creditor"
         ar: "الدائن"
-        ckb: "دابینکەر"
+        ckb: "قەرزدەر"
         notes: "Is owed money"
 
   tax_legal:
