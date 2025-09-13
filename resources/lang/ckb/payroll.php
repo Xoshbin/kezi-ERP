@@ -9,7 +9,7 @@ return [
         'basic_information' => 'زانیاری بنەڕەتی',
         'basic_information_description' => 'وردەکاری کارمەند و زانیاری ماوەی بۆردی مووچە',
         'period_payment_info' => 'زانیاری ماوە و پارەدان',
-        'period_payment_info_description' => 'ڕێکەوتەکانی ماوەی بۆردی مووچە، خشتەی پارەدان و وردەکاری دراو',
+        'period_payment_info_description' => 'ڕێکەوتەکانی ماوەی بۆردی مووچە، خشتەی پارەدان و وردەکاری پارە',
         'salary_components' => 'پێکهاتەکانی مووچە',
         'salary_components_description' => 'مووچەی بنەڕەتی، قازانج، پاداش و کۆمیسیۆن',
         'deductions' => 'کەمکردنەوەکان',
@@ -29,7 +29,7 @@ return [
     'fields' => [
         'payroll_number' => 'ژمارەی بۆردی مووچە',
         'employee' => 'کارمەند',
-        'currency' => 'دراو',
+        'currency' => 'پارە',
         'period_start_date' => 'ڕێکەوتی دەستپێکی ماوە',
         'period_end_date' => 'ڕێکەوتی کۆتایی ماوە',
         'pay_date' => 'ڕێکەوتی پارەدان',

@@ -6,7 +6,7 @@ return [
     'name' => 'ناو',
     'address' => 'ناونیشان',
     'tax_id' => 'ژمارەی باج',
-    'currency_id' => 'دراو',
+    'currency_id' => 'پارە',
     'fiscal_country' => 'وڵاتی دارایی',
     'parent_company_id' => 'کۆمپانیای دایک',
     'default_accounts_payable' => 'هەژماری پێدانی بنەڕەت',
