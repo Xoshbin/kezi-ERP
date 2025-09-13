@@ -19,7 +19,7 @@ return [
     'lines' => 'هێڵەکان',
     'account' => 'هەژمار',
     'debit' => 'قەرزدار (مدين)',
-    'credit' => 'دابینکەر (دائن)',
+    'credit' => 'قەرزدەر (دائن)',
     'partner' => 'هاوبەش',
     'analytic_account' => 'هەژماری شیکاری',
     'is_posted' => 'نێردراوە',
@@ -28,7 +28,7 @@ return [
     'source_type' => 'جۆری سەرچاوە',
     'source_id' => 'ناسنامەی سەرچاوە',
     'total_debit' => 'کۆی قەرزدار',
-    'total_credit' => 'کۆی دابینکراو',
+    'total_credit' => 'کۆی دراو',
     'balance' => 'باڵانس',
     'company_currency_totals' => 'کۆی گشتی بە دراوی کۆمپانیا',
     'created_at' => 'کاتی دروستکردن',
@@ -45,6 +45,6 @@ return [
 
     // Validation
     'period_locked' => 'ماوەی ژمێریاری قفڵ کراوە و ناتوانرێت دەستکاری بکرێت.',
-    'debits_must_equal_credits' => 'کۆی قەرزدارەکان دەبێت یەکسان بێت بە کۆی دابینکراوەکان.',
+    'debits_must_equal_credits' => 'کۆی قەرزدارەکان دەبێت یەکسان بێت بە کۆی قەرزدەرەکان.',
     'reference_already_exists' => 'تۆماری ڕۆژانە بە ژمارەی بەڵگەی ":reference" پێشتر هەیە لەم پەرتووکی ڕۆژانەیەدا.',
 ];
