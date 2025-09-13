@@ -110,7 +110,7 @@ class JournalSeeder extends Seeder
                 'name' => [
                     'en' => 'Opening Balance',
                     'ckb' => 'کردنەوەی سەرمایە',
-                    'ar' => 'الرصيد الافتتاحي'
+                    'ar' => 'الرصيد الافتتاحي',
                 ],
                 'type' => JournalType::Miscellaneous,
                 'short_code' => 'OPEN',
