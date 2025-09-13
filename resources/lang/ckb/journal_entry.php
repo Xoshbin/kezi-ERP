@@ -10,7 +10,7 @@ return [
     // Fields
     'company' => 'کۆمپانیا',
     'journal' => 'پەرتووکی ڕۆژانە',
-    'currency' => 'دراو',
+    'currency' => 'پارە',
     'exchange_rate' => 'نرخی ئاڵوگۆڕ',
     'created_by' => 'دروستکراوە لەلایەن',
     'entry_date' => 'بەرواری تۆمار',
@@ -30,7 +30,7 @@ return [
     'total_debit' => 'کۆی قەرزدار',
     'total_credit' => 'کۆی دراو',
     'balance' => 'باڵانس',
-    'company_currency_totals' => 'کۆی گشتی بە دراوی کۆمپانیا',
+    'company_currency_totals' => 'کۆی گشتی بە پارەی کۆمپانیا',
     'created_at' => 'کاتی دروستکردن',
     'updated_at' => 'کاتی نوێکردنەوە',
 
