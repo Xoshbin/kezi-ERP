@@ -202,6 +202,7 @@ class ProductResource extends Resource
                                 collect(ValuationMethod::cases())
                                     ->mapWithKeys(fn (ValuationMethod $method) => [$method->value => $method->label()])
                             )
+                            ->default(ValuationMethod::AVCO->value)
                             ->searchable()
                             ->live()
                             ->visible(fn (Get $get) => $get('type') === ProductType::Storable->value)
