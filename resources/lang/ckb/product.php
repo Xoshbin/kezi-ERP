@@ -2,12 +2,12 @@
 
 return [
     // Labels
-    'label' => 'کاڵا',
-    'plural_label' => 'کاڵاکان',
+    'label' => 'بەرهەم',
+    'plural_label' => 'بەرهەمەکان',
 
     // Basic Information
     'basic_information' => 'زانیاری بنەڕەتی',
-    'basic_information_description' => 'وردەکارییەکانی بنەڕەتی کاڵا بنووسە لەوانە ناو، SKU، و جۆر.',
+    'basic_information_description' => 'وردەکارییەکانی بنەڕەتی بەرهەم بنووسە لەوانە ناو، SKU، و جۆر.',
     'company' => 'کۆمپانیا',
     'name' => 'ناو',
     'sku' => 'SKU',
@@ -17,18 +17,18 @@ return [
 
     // Pricing Information
     'pricing_information' => 'زانیاری نرخ',
-    'pricing_information_description' => 'نرخی بنەڕەتی یەکە بۆ ئەم کاڵایە دابنێ.',
+    'pricing_information_description' => 'نرخی بنەڕەتی یەکە بۆ ئەم بەرهەمە دابنێ.',
     'unit_price' => 'نرخی یەکە',
 
     // Accounting Configuration
     'accounting_configuration' => 'ڕێکخستنی ژمێریاری',
-    'accounting_configuration_description' => 'هەژماری بنەڕەتی داهات و خەرجی بۆ ئەم کاڵایە ڕێکبخە.',
+    'accounting_configuration_description' => 'هەژماری بنەڕەتی داهات و خەرجی بۆ ئەم بەرهەمە ڕێکبخە.',
     'income_account' => 'هەژماری داهات',
     'expense_account' => 'هەژماری خەرجی',
 
     // Inventory Management
     'inventory_management' => 'بەڕێوەبردنی کۆگا',
-    'inventory_management_description' => 'شێوازی پێوانی کۆگا و ژمێریاری بۆ کاڵا هەڵگیراوەکان ڕێکبخە.',
+    'inventory_management_description' => 'شێوازی پێوانی کۆگا و ژمێریاری بۆ بەرهەمە هەڵگیراوەکان ڕێکبخە.',
     'inventory_valuation_method' => 'شێوازی پێوانی',
     'inventory_valuation_method_help' => 'شێوازی ژمارینی تێچووی کۆگا هەڵبژێرە (FIFO، LIFO، AVCO، یان نرخی ستاندارد).',
     'average_cost' => 'تێچووی ناوەند',
@@ -44,12 +44,12 @@ return [
 
     // Status
     'status' => 'دۆخ',
-    'status_description' => 'کۆنترۆڵی ئەوە بکە کە ئایا ئەم کاڵایە چالاکە و بۆ بەکارهێنان بەردەستە.',
+    'status_description' => 'کۆنترۆڵی ئەوە بکە کە ئایا ئەم بەرهەمە چالاکە و بۆ بەکارهێنان بەردەستە.',
     'is_active' => 'چالاکە',
-    'is_active_help' => 'کاڵا ناچالاکەکان ناتوانن لە مامەڵە نوێیەکاندا بەکاربهێنرێن.',
+    'is_active_help' => 'بەرهەمە ناچالاکەکان ناتوانن لە مامەڵە نوێیەکاندا بەکاربهێنرێن.',
 
     // Filters
-    'all_products' => 'هەموو کاڵاکان',
+    'all_products' => 'هەموو بەرهەمەکان',
     'active_products' => 'تەنها چالاکەکان',
     'inactive_products' => 'تەنها ناچالاکەکان',
 
