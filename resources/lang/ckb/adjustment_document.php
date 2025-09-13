@@ -17,7 +17,7 @@ return [
     'status' => 'بارودۆخ',
     'status_draft' => 'ڕەشنووس',
     'posted_at' => 'کاتی ناردن',
-    'currency' => 'دراو',
+    'currency' => 'پارە',
 
     // Table
     'company_name' => 'ناوی کۆمپانیا',

@@ -10,7 +10,7 @@ return [
     // Fields
     'company' => 'کۆمپانیا',
     'vendor' => 'فرۆشیار',
-    'currency' => 'دراو',
+    'currency' => 'پارە',
     'bill_reference' => 'ژمارەی بەڵگە',
     'bill_date' => 'ڕێکەوتی پسووڵە',
     'accounting_date' => 'ڕێکەوتی ژمێریاری',
@@ -40,20 +40,20 @@ return [
     'attachments_helper' => 'فۆرماتە قبوولکراوەکان: PDF, DOC, DOCX, XLS, XLSX, JPG, PNG, GIF, TXT. زۆرترین ١٠ مێگابایت بۆ هەر فایلێک، تا ١٠ فایل.',
 
     // Section Titles and Descriptions
-    'vendor_currency_info' => 'زانیاریی فرۆشیار و دراو',
-    'vendor_currency_info_description' => 'فرۆشیار و دراوەکە بۆ ئەم پسووڵەیە هەڵبژێرە',
+    'vendor_currency_info' => 'زانیاریی فرۆشیار و پارە',
+    'vendor_currency_info_description' => 'فرۆشیار و پارەکە بۆ ئەم پسووڵەیە هەڵبژێرە',
     'bill_details' => 'وردەکاریی پسووڵە',
     'bill_details_description' => 'ژمارەی بەڵگە، ڕێکەوتەکان و زانیاریی دۆخ بنووسە',
     'line_items' => 'بەندەکانی پسووڵە',
     'line_items_description' => 'بەرهەم و خزمەتگوزاریەکان بۆ ئەم پسووڵەی فرۆشیارە زیاد بکە',
-    'company_currency_totals' => 'کۆی گشتی دراوی کۆمپانیا',
+    'company_currency_totals' => 'کۆی گشتی پارەی کۆمپانیا',
 
     // Exchange Rate Fields
     'current_exchange_rate' => 'نرخی ئاڵوگۆڕی ئێستا',
-    'exchange_rate_helper' => 'ئەمە نرخی ئاڵوگۆڕی ئێستایە بۆ دراوە هەڵبژێردراوەکە',
+    'exchange_rate_helper' => 'ئەمە نرخی ئاڵوگۆڕی ئێستایە بۆ پارە هەڵبژێردراوەکە',
     'exchange_rate_at_creation' => 'نرخی ئاڵوگۆڕ لە کاتی دروستکردن',
-    'total_amount_company_currency' => 'کۆی گشتی (دراوی کۆمپانیا)',
-    'total_tax_company_currency' => 'کۆی باج (دراوی کۆمپانیا)',
+    'total_amount_company_currency' => 'کۆی گشتی (پارەی کۆمپانیا)',
+    'total_tax_company_currency' => 'کۆی باج (پارەی کۆمپانیا)',
 
     // Actions
     'confirm' => 'پشتڕاستکردنەوە',
@@ -77,7 +77,7 @@ return [
         'application_details' => 'وردەکاریی جێبەجێکردن',
         'company' => 'کۆمپانیا',
         'journal' => 'پەرتووکی ڕۆژانە',
-        'currency' => 'دراو',
+        'currency' => 'پارە',
         'payment_date' => 'ڕێکەوتی پارەدان',
         'amount' => 'بڕ',
         'amount_applied' => 'بڕی جێبەجێکراو',
@@ -109,7 +109,7 @@ return [
         'title' => 'ڕێکخستنەکان و نۆتەکانی قەرزدار',
         'document_details' => 'وردەکاریی بەڵگەنامە',
         'company' => 'کۆمپانیا',
-        'currency' => 'دراو',
+        'currency' => 'پارە',
         'type' => 'جۆر',
         'date' => 'ڕێکەوت',
         'reference_number' => 'ژمارەی بەڵگە',

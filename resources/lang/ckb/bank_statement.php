@@ -29,7 +29,7 @@ return [
     'statement_lines' => 'هێڵەکانی ڕاپۆرت',
     'statement_information' => 'زانیاری ڕاپۆرت',
     'company' => 'کۆمپانیا',
-    'currency' => 'دراو',
+    'currency' => 'پارە',
     'bank_journal' => 'پەرتووکی ڕۆژانەی بانک',
     'line_date' => 'ڕێکەوت',
     'partner' => 'هاوبەش',
@@ -69,23 +69,22 @@ return [
 
     // Multi-Currency
     'all_amounts_in_currency' => 'هەموو بڕەکان بە :currency پیشان دراون',
-    'includes_currency_conversions' => 'گۆڕینی دراو لەخۆدەگرێت',
-    'same_currency_as_statement' => 'هەمان دراوی وەک ڕاپۆرتی بانک',
-    'different_currency_conversion_required' => 'دراوی جیاواز - گۆڕین جێبەجێکراوە',
-    'currency_filter' => 'فلتەری دراو',
-    'same_currency_only' => 'تەنها هەمان دراو',
-    'different_currency_only' => 'تەنها دراوی جیاواز',
-    'all_currencies' => 'هەموو دراوەکان',
+    'includes_currency_conversions' => 'گۆڕینی پارە لەخۆدەگرێت',
+    'same_currency_as_statement' => 'هەمان پارە وەک ڕاپۆرتی بانک',
+    'different_currency_conversion_required' => 'پارەی جیاواز - گۆڕین جێبەجێکراوە',
+    'currency_filter' => 'فلتەری پارە',
+    'same_currency_only' => 'تەنها هەمان پارە',
+    'different_currency_only' => 'تەنها پارەی جیاواز',
+    'all_currencies' => 'هەموو پارەکان',
 
     // Form Sections
-    'statement_information' => 'زانیاری ڕاپۆرت',
     'statement_information_description' => 'زانیاری بنەڕەتی دەربارەی ڕاپۆرتی بانک',
     'statement_lines_description' => 'مامەڵە تاکەکەسەکان لە ڕاپۆرتی بانک',
 
     // Foreign Currency
-    'foreign_currency' => 'دراوی بیانی',
-    'foreign_currency_help' => 'هەڵبژێرە ئەگەر ئەم مامەڵەیە لە سەرەتادا بە دراوێکی جیاواز بووبێت',
-    'amount_in_foreign_currency' => 'بڕ بە دراوی بیانی',
+    'foreign_currency' => 'پارەی بیانی',
+    'foreign_currency_help' => 'هەڵبژێرە ئەگەر ئەم مامەڵەیە لە سەرەتادا بە پارەیەکی جیاواز بووبێت',
+    'amount_in_foreign_currency' => 'بڕ بە پارەی بیانی',
     'amount_in_statement_currency' => 'بڕەکە کە کاریگەری لەسەر بالانسی حسابی بانک دەبێت',
     'original_transaction_amount' => 'بڕی مامەڵەی ڕەسەن پێش گۆڕین',
 ];
