@@ -83,7 +83,7 @@ return [
     'balance_sheet_balanced' => 'لیستەی باڵانس هاوسەنگە',
     'assets_equal_liabilities_equity' => 'سامان یەکسانە لەگەڵ قەرزەکان و سەرمایە',
 
-    // General Ledger - دەفتری گشتی
+    // General Ledger - پەرتووکی گشتی
     'general_ledger' => 'پەرتووکی گشتی',
     'account_filter' => 'فلتەری هەژمار',
     'accounts' => 'هەژمارەکان',

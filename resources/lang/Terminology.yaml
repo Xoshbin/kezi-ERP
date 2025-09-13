@@ -46,9 +46,9 @@ categories:
         notes: "Individual transaction record"
       ledger:
         en: "Ledger"
-        ar: "دفتر الأستاذ"
-        ckb: "پەرتووکی گشتی"
-        notes: "General ledger"
+        ar: "دفتر"
+        ckb: "پەرتووک"
+        notes: "ledger"
       transaction:
         en: "Transaction"
         ar: "المعاملة"
@@ -350,7 +350,7 @@ categories:
       reconciliation:
         en: "Reconciliation"
         ar: "التسوية"
-        ckb: "هاوسەنگی بانکی"
+        ckb: "هاوتاکردنی بانکی"
         notes: "Bank reconciliation"
       reconcile:
         en: "Reconcile"
