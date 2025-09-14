@@ -104,6 +104,20 @@ class JournalSeeder extends Seeder
                 'default_debit_account_id' => $depreciationExpenseAccount->id,
                 'default_credit_account_id' => null, // Credit account will vary per asset type
             ],
+
+            // == Opening Balance Journal ==
+            [
+                'name' => [
+                    'en' => 'Opening Balance',
+                    'ckb' => 'کردنەوەی سەرمایە',
+                    'ar' => 'الرصيد الافتتاحي',
+                ],
+                'type' => JournalType::Miscellaneous,
+                'short_code' => 'OPEN',
+                'currency_id' => null,
+                'default_debit_account_id' => null, // Set in opening entry
+                'default_credit_account_id' => null, // Set in opening entry
+            ],
         ];
 
         foreach ($journals as $journalData) {
