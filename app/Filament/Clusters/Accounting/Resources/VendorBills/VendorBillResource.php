@@ -98,6 +98,7 @@ class VendorBillResource extends Resource
                         ->relationship('vendor', 'name')
                         ->label(__('vendor_bill.vendor'))
                         ->searchableFields(['name', 'email', 'contact_person'])
+                        ->searchable()
                         ->preload()
                         ->required()
                         ->columnSpan(2)
@@ -136,6 +137,8 @@ class VendorBillResource extends Resource
                         ->label(__('vendor_bill.currency'))
                         ->required()
                         ->live()
+                        ->searchable()
+                        ->preload()
                         ->columnSpan(1)
                         ->default(function (): ?int {
                             $tenant = Filament::getTenant();
@@ -262,6 +265,7 @@ class VendorBillResource extends Resource
                             TranslatableSelect::forModel('product_id', Product::class, 'name')
                                 ->label(__('vendor_bill.product'))
                                 ->searchableFields(['name', 'sku', 'description'])
+                                ->searchable()
                                 ->preload()
                                 ->reactive()
                                 ->afterStateUpdated(function (callable $set, $state) {
@@ -330,11 +334,14 @@ class VendorBillResource extends Resource
                             TranslatableSelect::forModel('expense_account_id', Account::class, 'name')
                                 ->label(__('vendor_bill.expense_account'))
                                 ->searchableFields(['name', 'code'])
+                                ->searchable()
                                 ->preload()
                                 ->required()
                                 ->columnSpan(3),
                             TranslatableSelect::forModel('tax_id', Tax::class, 'name')
                                 ->label(__('vendor_bill.tax'))
+                                ->searchable()
+                                ->preload()
                                 ->createOptionForm([
                                     Select::make('company_id')
                                         ->relationship('company', 'name')
@@ -369,6 +376,7 @@ class VendorBillResource extends Resource
                             TranslatableSelect::forModel('asset_category_id', AssetCategory::class, 'name')
                                 ->label(__('asset.category'))
                                 ->searchableFields(['name'])
+                                ->searchable()
                                 ->preload()
                                 ->visible(fn ($get) => $get('product_id') === null) // for service/asset purchases without product
                                 ->createOptionForm([

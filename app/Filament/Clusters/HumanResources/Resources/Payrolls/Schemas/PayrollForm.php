@@ -44,9 +44,9 @@ class PayrollForm
                         ->preload()
                         ->columnSpan(2),
 
-                    TranslatableSelect::make('currency_id')
-                        ->relationship('currency', 'name')
+                    TranslatableSelect::forModel('currency_id', Currency::class)
                         ->label(__('payroll.fields.currency'))
+                        ->searchable()
                         ->searchableFields(['name', 'code'])
                         ->preload()
                         ->getOptionLabelUsing(function ($record) {

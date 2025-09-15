@@ -2,8 +2,9 @@
 
 namespace App\Filament\Clusters\HumanResources\Resources\Employees\Schemas;
 
-use App\Models\Company;
-use Filament\Facades\Filament;
+use App\Models\Department;
+use App\Models\Employee;
+use App\Models\Position;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
@@ -16,8 +17,6 @@ class EmployeeForm
 {
     public static function configure(Schema $schema): Schema
     {
-        /** @var Company|null $tenant */
-        $tenant = Filament::getTenant();
 
         return $schema->components([
             Section::make(__('employee.basic_information'))
@@ -62,34 +61,26 @@ class EmployeeForm
             Section::make(__('employee.organizational_details'))
                 ->description(__('employee.organizational_details_description'))
                 ->schema([
-                    TranslatableSelect::make('department_id')
-                        ->relationship('department', 'name')
+                    TranslatableSelect::forModel('department_id', Department::class)
                         ->label(__('employee.department'))
+                        ->searchable()
                         ->searchableFields(['name'])
                         ->preload()
                         ->columnSpan(1),
 
-                    TranslatableSelect::make('position_id')
-                        ->relationship('position', 'title')
+                    TranslatableSelect::forModel('position_id', Position::class)
                         ->label(__('employee.position'))
+                        ->searchable()
                         ->searchableFields(['title'])
                         ->preload()
                         ->columnSpan(1),
 
-                    TranslatableSelect::make('manager_id')
-                        ->relationship('manager', 'first_name')
+                    TranslatableSelect::forModel('manager_id', Employee::class)
                         ->label(__('employee.manager'))
+                        ->searchable()
                         ->searchableFields(['first_name', 'last_name', 'employee_number'])
                         ->preload()
                         ->getOptionLabelUsing(fn($record) => $record ? $record->first_name . ' ' . $record->last_name . ' (' . $record->employee_number . ')' : '')
-                        ->columnSpan(1),
-
-                    TranslatableSelect::make('user_id')
-                        ->relationship('user', 'name')
-                        ->label(__('employee.user_account'))
-                        ->searchableFields(['name', 'email'])
-                        ->preload()
-                        ->modifyQueryUsing(fn($query) => $query->whereHas('companies', fn($q) => $q->where('companies.id', $tenant?->id)))
                         ->columnSpan(1),
                 ])
                 ->columns(2)
