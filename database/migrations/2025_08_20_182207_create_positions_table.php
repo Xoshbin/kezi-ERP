@@ -23,7 +23,7 @@ return new class extends Migration
             $table->string('level')->default('entry'); // entry, junior, mid, senior, lead, manager, director
             $table->unsignedBigInteger('min_salary')->nullable(); // Money field
             $table->unsignedBigInteger('max_salary')->nullable(); // Money field
-            $table->foreignId('salary_currency_id')->nullable()->constrained('currencies');
+            $table->foreignId('currency_id')->nullable()->constrained('currencies');
             $table->boolean('is_active')->default(true);
             $table->timestamps();
 
