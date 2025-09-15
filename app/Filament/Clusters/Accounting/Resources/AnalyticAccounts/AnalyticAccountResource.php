@@ -63,7 +63,10 @@ class AnalyticAccountResource extends Resource
                     ->label(__('analytic_account.company'))
                     ->placeholder(__('analytic_account.select_company'))
                     ->required(),
-                TranslatableSelect::make('currency_id', Currency::class, __('analytic_account.currency')),
+                TranslatableSelect::forModel('currency_id', Currency::class)
+                    ->label(__('analytic_account.currency'))
+                    ->searchable()
+                    ->preload(),
                 TextInput::make('name')
                     ->label(__('analytic_account.name'))
                     ->required()

@@ -30,7 +30,7 @@ use Illuminate\Support\Carbon;
  * @property int $company_id
  * @property int $journal_id
  * @property int $currency_id
- * @property int $paid_to_from_partner_id
+ * @property int|null $paid_to_from_partner_id
  * @property int|null $journal_entry_id
  * @property Carbon $payment_date
  * @property \Brick\Money\Money $amount
