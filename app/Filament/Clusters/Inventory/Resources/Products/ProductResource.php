@@ -13,7 +13,9 @@ use App\Filament\Clusters\Inventory\Resources\Products\RelationManagers\Inventor
 use App\Filament\Clusters\Inventory\Resources\Products\RelationManagers\StockMovesRelationManager;
 use App\Filament\Forms\Components\MoneyInput;
 use App\Filament\Tables\Columns\MoneyColumn;
+use App\Models\Account;
 use App\Models\Product;
+use BackedEnum;
 use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
@@ -22,7 +24,6 @@ use Filament\Actions\EditAction;
 use Filament\Actions\ForceDeleteBulkAction;
 use Filament\Actions\RestoreBulkAction;
 use Filament\Actions\ViewAction;
-use Filament\Facades\Filament;
 use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
@@ -41,14 +42,18 @@ use Filament\Tables\Filters\TrashedFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use LaraZeus\SpatieTranslatable\Resources\Concerns\Translatable;
+use Xoshbin\TranslatableSelect\Components\TranslatableSelect;
 
 class ProductResource extends Resource
 {
+    use Translatable;
+
     protected static ?string $model = Product::class;
 
     protected static ?string $cluster = InventoryCluster::class;
 
-    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-squares-2x2';
+    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-squares-2x2';
 
     protected static ?int $navigationSort = 1;
 
@@ -69,9 +74,6 @@ class ProductResource extends Resource
 
     public static function form(Schema $schema): Schema
     {
-        /** @var \App\Models\Company|null $tenant */
-        $tenant = Filament::getTenant();
-
         return $schema->components([
             Section::make(__('product.basic_information'))
                 ->description(__('product.basic_information_description'))
@@ -120,12 +122,14 @@ class ProductResource extends Resource
                 ->icon('heroicon-o-calculator')
                 ->schema([
                     Grid::make(2)->schema([
-                        Select::make('income_account_id')
+                        TranslatableSelect::make('income_account_id')
                             ->relationship('incomeAccount', 'name')
                             ->label(__('product.income_account'))
                             ->nullable()
                             ->searchable()
                             ->preload()
+                            ->searchableFields(['name', 'code'])
+                            ->modifyQueryUsing(fn($query) => $query->whereIn('type', [AccountType::Income, AccountType::OtherIncome]))
                             ->createOptionForm([
                                 Hidden::make('company_id')
                                     ->default(fn () => $tenant?->getKey()),
@@ -154,12 +158,14 @@ class ProductResource extends Resource
                                 return $action
                                     ->modalWidth('lg');
                             }),
-                        Select::make('expense_account_id')
+                        TranslatableSelect::make('expense_account_id')
                             ->relationship('expenseAccount', 'name')
                             ->label(__('product.expense_account'))
                             ->nullable()
                             ->searchable()
                             ->preload()
+                            ->searchableFields(['name', 'code'])
+                            ->modifyQueryUsing(fn($query) => $query->whereIn('type', [AccountType::Expense, AccountType::Depreciation, AccountType::CostOfRevenue]))
                             ->createOptionForm([
                                 Hidden::make('company_id')
                                     ->default(fn () => $tenant?->getKey()),
@@ -215,11 +221,13 @@ class ProductResource extends Resource
                             ->helperText(__('product.average_cost_help')),
                     ]),
                     Grid::make(2)->schema([
-                        Select::make('default_inventory_account_id')
+                        TranslatableSelect::make('default_inventory_account_id')
                             ->relationship('inventoryAccount', 'name')
                             ->label(__('product.default_inventory_account'))
                             ->searchable()
                             ->preload()
+                            ->searchableFields(['name'])
+
                             ->visible(fn (Get $get) => $get('type') === ProductType::Storable->value)
                             ->createOptionForm([
                                 Hidden::make('company_id')
@@ -248,11 +256,14 @@ class ProductResource extends Resource
                             ->createOptionAction(function (Action $action) {
                                 return $action->modalWidth('lg');
                             }),
-                        Select::make('default_cogs_account_id')
+                        TranslatableSelect::make('default_cogs_account_id')
                             ->relationship('defaultCogsAccount', 'name')
+                            ->forModel('default_cogs_account_id', Account::class, 'name')
                             ->label(__('product.default_cogs_account'))
                             ->searchable()
                             ->preload()
+                            ->searchableFields(['name'])
+
                             ->visible(fn (Get $get) => $get('type') === ProductType::Storable->value)
                             ->createOptionForm([
                                 Hidden::make('company_id')
@@ -283,11 +294,13 @@ class ProductResource extends Resource
                             }),
                     ]),
                     Grid::make(2)->schema([
-                        Select::make('default_stock_input_account_id')
+                        TranslatableSelect::make('default_stock_input_account_id')
                             ->relationship('stockInputAccount', 'name')
                             ->label(__('product.default_stock_input_account'))
                             ->searchable()
                             ->preload()
+                            ->searchableFields(['name', 'code'])
+
                             ->visible(fn (Get $get) => $get('type') === ProductType::Storable->value)
                             ->createOptionForm([
                                 Hidden::make('company_id')
@@ -316,11 +329,13 @@ class ProductResource extends Resource
                             ->createOptionAction(function (Action $action) {
                                 return $action->modalWidth('lg');
                             }),
-                        Select::make('default_price_difference_account_id')
+                        TranslatableSelect::make('default_price_difference_account_id')
                             ->relationship('defaultPriceDifferenceAccount', 'name')
                             ->label(__('product.default_price_difference_account'))
                             ->searchable()
                             ->preload()
+                            ->searchableFields(['name', 'code'])
+
                             ->visible(fn (Get $get) => $get('type') === ProductType::Storable->value)
                             ->createOptionForm([
                                 Hidden::make('company_id')

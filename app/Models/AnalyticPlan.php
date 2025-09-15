@@ -2,8 +2,8 @@
 
 namespace App\Models;
 
-use App\Traits\TranslatableSearch;
 use Database\Factories\AnalyticPlanFactory;
+use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -42,14 +42,12 @@ use Spatie\Translatable\HasTranslations;
  * @method static Builder<static>|AnalyticPlan whereName($value)
  * @method static Builder<static>|AnalyticPlan whereUpdatedAt($value)
  *
- * @mixin \Eloquent
+ * @mixin Eloquent
  */
 class AnalyticPlan extends Model
 {
-    /** @use HasFactory<\Database\Factories\AnalyticPlanFactory> */
+    /** @use HasFactory<AnalyticPlanFactory> */
     use HasFactory, HasTranslations;
-
-    use TranslatableSearch;
 
     /** @var array<int, string> */
     public array $translatable = ['name'];

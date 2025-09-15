@@ -5,11 +5,12 @@ namespace Database\Factories;
 use App\Models\Company;
 use App\Models\Currency;
 use App\Models\Department;
+use App\Models\Position;
 use Brick\Money\Money;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Position>
+ * @extends Factory<Position>
  */
 class PositionFactory extends Factory
 {
@@ -53,7 +54,7 @@ class PositionFactory extends Factory
             'level' => $this->faker->randomElement(['entry', 'junior', 'mid', 'senior', 'lead', 'manager', 'director']),
             'min_salary' => Money::of($minSalary, $currency->code),
             'max_salary' => Money::of($maxSalary, $currency->code),
-            'salary_currency_id' => $currency->id,
+            'currency_id' => $currency->id,
             'is_active' => true,
         ];
     }

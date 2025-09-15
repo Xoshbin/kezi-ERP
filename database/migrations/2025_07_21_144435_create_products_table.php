@@ -16,9 +16,9 @@ return new class extends Migration
             $table->foreignId('company_id')->constrained('companies');
             $table->foreignId('income_account_id')->nullable()->constrained('accounts');
             $table->foreignId('expense_account_id')->nullable()->constrained('accounts');
-            $table->string('name');
+            $table->json('name');
             $table->string('sku');
-            $table->text('description')->nullable();
+            $table->json('description')->nullable();
             $table->unsignedBigInteger('unit_price')->nullable();
             $table->string('type'); // 'service', 'storable product'
             $table->boolean('is_active')->default(true);

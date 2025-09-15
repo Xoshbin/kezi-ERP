@@ -4,8 +4,8 @@ namespace App\Models;
 
 use App\Enums\Accounting\JournalType;
 use App\Observers\JournalObserver;
-use App\Traits\TranslatableSearch;
 use Database\Factories\JournalFactory;
+use Eloquent;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
@@ -44,14 +44,13 @@ use Spatie\Translatable\HasTranslations;
  * @method static Builder<static>|Journal whereType($value)
  * @method static Builder<static>|Journal whereUpdatedAt($value)
  *
- * @mixin \Eloquent
+ * @mixin Eloquent
  */
 #[ObservedBy([JournalObserver::class])]
 
 class Journal extends Model
 {
     use HasFactory, HasTranslations;
-    use TranslatableSearch;
 
     /** @var array<int, string> */
     public array $translatable = ['name'];

@@ -6,9 +6,9 @@ use App\Casts\BaseCurrencyMoneyCast;
 use App\Enums\Inventory\ValuationMethod;
 use App\Enums\Products\ProductType;
 use App\Observers\ProductObserver;
-use App\Traits\TranslatableSearch;
 use Brick\Money\Money;
 use Database\Factories\ProductFactory;
+use Eloquent;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -17,6 +17,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
+use Spatie\Translatable\HasTranslations;
 
 /**
  * @property int $id
@@ -62,15 +63,14 @@ use Illuminate\Support\Carbon;
  * @method static Builder<static>|Product withTrashed(bool $withTrashed = true)
  * @method static Builder<static>|Product withoutTrashed()
  *
- * @mixin \Eloquent
+ * @mixin Eloquent
  */
 #[ObservedBy([ProductObserver::class])]
 class Product extends Model
 {
-    use HasFactory, SoftDeletes;
-    use TranslatableSearch;
+    use HasFactory, SoftDeletes, HasTranslations;
 
-    protected $table = 'products';
+    public array $translatable = ['name', 'description'];
 
     protected $fillable = [
         'company_id',
@@ -119,7 +119,7 @@ class Product extends Model
      */
     public function getNonTranslatableSearchFields(): array
     {
-        return ['name', 'sku', 'description'];
+        return ['sku'];
     }
 
     /**
