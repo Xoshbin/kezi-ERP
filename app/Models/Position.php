@@ -27,7 +27,7 @@ use Spatie\Translatable\HasTranslations;
  * @property string $level
  * @property Money|null $min_salary
  * @property Money|null $max_salary
- * @property int|null $salary_currency_id
+ * @property int|null $currency_id
  * @property bool $is_active
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
@@ -59,7 +59,7 @@ class Position extends Model
         'level',
         'min_salary',
         'max_salary',
-        'salary_currency_id',
+        'currency_id',
         'is_active',
     ];
 
@@ -147,7 +147,7 @@ class Position extends Model
      */
     public function salaryCurrency(): BelongsTo
     {
-        return $this->belongsTo(Currency::class, 'salary_currency_id');
+        return $this->belongsTo(Currency::class, 'currency_id');
     }
 
     /**
