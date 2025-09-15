@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "4ef3b86aa9a04a39347fce5ef91ca16a",
+    "content-hash": "1e701a855203e2537a10928ed5f9f209",
     "packages": [
         {
             "name": "anourvalar/eloquent-serialize",
@@ -8876,10 +8876,16 @@
         {
             "name": "xoshbin/translatable-select",
             "version": "dev-main",
-            "dist": {
-                "type": "path",
-                "url": "/Users/khoshbinali/PhpstormProjects/packages/translatable-select",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/Xoshbin/translatable-select.git",
                 "reference": "26b16dd5d95726d84da3d39d511716847c2f9cc7"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/Xoshbin/translatable-select/zipball/26b16dd5d95726d84da3d39d511716847c2f9cc7",
+                "reference": "26b16dd5d95726d84da3d39d511716847c2f9cc7",
+                "shasum": ""
             },
             "require": {
                 "filament/filament": "^4.0",
@@ -8902,15 +8908,16 @@
                 "phpstan/phpstan-deprecation-rules": "^2.0",
                 "phpstan/phpstan-phpunit": "^2.0"
             },
+            "default-branch": true,
             "type": "library",
             "extra": {
                 "laravel": {
-                    "providers": [
-                        "Xoshbin\\TranslatableSelect\\TranslatableSelectServiceProvider"
-                    ],
                     "aliases": {
                         "TranslatableSelect": "Xoshbin\\TranslatableSelect\\Facades\\TranslatableSelect"
-                    }
+                    },
+                    "providers": [
+                        "Xoshbin\\TranslatableSelect\\TranslatableSelectServiceProvider"
+                    ]
                 }
             },
             "autoload": {
@@ -8919,28 +8926,7 @@
                     "Xoshbin\\TranslatableSelect\\Database\\Factories\\": "database/factories/"
                 }
             },
-            "autoload-dev": {
-                "psr-4": {
-                    "Xoshbin\\TranslatableSelect\\Tests\\": "tests/"
-                }
-            },
-            "scripts": {
-                "post-autoload-dump": [
-                    "@php ./vendor/bin/testbench package:discover --ansi"
-                ],
-                "analyse": [
-                    "vendor/bin/phpstan analyse"
-                ],
-                "test": [
-                    "vendor/bin/pest"
-                ],
-                "test-coverage": [
-                    "vendor/bin/pest --coverage"
-                ],
-                "format": [
-                    "vendor/bin/pint"
-                ]
-            },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
@@ -8967,9 +8953,13 @@
                 "issues": "https://github.com/xoshbin/translatable-select/issues",
                 "source": "https://github.com/xoshbin/translatable-select"
             },
-            "transport-options": {
-                "relative": false
-            }
+            "funding": [
+                {
+                    "url": "https://github.com/Xoshbin",
+                    "type": "github"
+                }
+            ],
+            "time": "2025-09-15T07:22:31+00:00"
         }
     ],
     "packages-dev": [
@@ -14381,7 +14371,9 @@
     ],
     "aliases": [],
     "minimum-stability": "dev",
-    "stability-flags": {},
+    "stability-flags": {
+        "xoshbin/translatable-select": 20
+    },
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {

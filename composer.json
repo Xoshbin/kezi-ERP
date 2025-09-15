@@ -17,7 +17,7 @@
         "laravel/framework": "^12.0",
         "laravel/tinker": "^2.10.1",
         "xoshbin/pertuk": "^0.0.4",
-        "xoshbin/translatable-select": "*"
+        "xoshbin/translatable-select": "dev-main"
     },
     "require-dev": {
         "barryvdh/laravel-ide-helper": "^3.6",
@@ -74,12 +74,6 @@
             "@php artisan test"
         ]
     },
-    "repositories": [
-        {
-            "type": "path",
-            "url": "/Users/khoshbinali/PhpstormProjects/packages/translatable-select"
-        }
-    ],
     "extra": {
         "laravel": {
             "dont-discover": []
