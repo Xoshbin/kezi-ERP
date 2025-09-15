@@ -341,7 +341,7 @@ class AdjustmentDocumentResource extends Resource
                                 ->searchable()
                                 ->searchableFields(['name', 'code'])
                                 ->preload()
-                                ->getOptionLabelFromRecordUsing(fn($record) => $record->getTranslatedLabel('name') . ' (' . $record->code . ')')
+                                ->getOptionLabelFromRecordUsing(fn ($record) => $record->getTranslatedLabel('name').' ('.$record->code.')')
                                 ->required()
                                 ->createOptionForm([
                                     Select::make('company_id')

@@ -80,7 +80,7 @@ class EmployeeForm
                         ->searchable()
                         ->searchableFields(['first_name', 'last_name', 'employee_number'])
                         ->preload()
-                        ->getOptionLabelUsing(fn($record) => $record ? $record->first_name . ' ' . $record->last_name . ' (' . $record->employee_number . ')' : '')
+                        ->getOptionLabelUsing(fn ($record) => $record ? $record->first_name.' '.$record->last_name.' ('.$record->employee_number.')' : '')
                         ->columnSpan(1),
                 ])
                 ->columns(2)

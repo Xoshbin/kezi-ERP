@@ -71,7 +71,6 @@ class Account extends Model
     /** @use HasFactory<AccountFactory> */
     use HasFactory, HasTranslations;
 
-
     /** @var array<int, string> */
     public array $translatable = ['name'];
 

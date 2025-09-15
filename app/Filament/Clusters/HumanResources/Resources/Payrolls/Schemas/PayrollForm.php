@@ -50,8 +50,11 @@ class PayrollForm
                         ->searchableFields(['name', 'code'])
                         ->preload()
                         ->getOptionLabelUsing(function ($record) {
-                            if (!$record) return '';
+                            if (! $record) {
+                                return '';
+                            }
                             $currencyName = is_array($record->name) ? ($record->name['en'] ?? (empty($record->name) ? '' : (string) array_values($record->name)[0])) : (string) $record->name;
+
                             return "{$currencyName} ({$record->code})";
                         })
                         ->required()

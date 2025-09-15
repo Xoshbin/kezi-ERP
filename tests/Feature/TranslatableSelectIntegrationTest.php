@@ -8,6 +8,7 @@ use App\Models\Company;
 use App\Models\Product;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\Traits\WithConfiguredCompany;
+
 use function Pest\Livewire\livewire;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);
@@ -34,7 +35,7 @@ test('TranslatableSelect can search accounts by name in current locale', functio
         'name' => [
             'en' => 'Sales Revenue',
             'ar' => 'إيرادات المبيعات',
-            'ckb' => 'داهاتی فرۆشتن'
+            'ckb' => 'داهاتی فرۆشتن',
         ],
         'type' => AccountType::Income,
     ]);
@@ -45,7 +46,7 @@ test('TranslatableSelect can search accounts by name in current locale', functio
         'name' => [
             'en' => 'Cost of Goods Sold',
             'ar' => 'تكلفة البضائع المباعة',
-            'ckb' => 'تێچووی کاڵای فرۆشراو'
+            'ckb' => 'تێچووی کاڵای فرۆشراو',
         ],
         'type' => AccountType::Expense,
     ]);
@@ -69,7 +70,7 @@ test('TranslatableSelect can search accounts by code', function () {
         'name' => [
             'en' => 'Test Account',
             'ar' => 'حساب تجريبي',
-            'ckb' => 'هەژماری تاقیکردنەوە'
+            'ckb' => 'هەژماری تاقیکردنەوە',
         ],
         'type' => AccountType::Income,
     ]);
@@ -93,7 +94,7 @@ test('can create product with TranslatableSelect account selections', function (
         'name' => [
             'en' => 'Product Sales',
             'ar' => 'مبيعات المنتجات',
-            'ckb' => 'فرۆشتنی بەرهەم'
+            'ckb' => 'فرۆشتنی بەرهەم',
         ],
         'type' => AccountType::Income,
     ]);
@@ -104,7 +105,7 @@ test('can create product with TranslatableSelect account selections', function (
         'name' => [
             'en' => 'Product Costs',
             'ar' => 'تكاليف المنتجات',
-            'ckb' => 'تێچووی بەرهەم'
+            'ckb' => 'تێچووی بەرهەم',
         ],
         'type' => AccountType::Expense,
     ]);
