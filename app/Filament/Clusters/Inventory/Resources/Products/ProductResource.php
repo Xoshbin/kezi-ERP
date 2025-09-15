@@ -24,6 +24,7 @@ use Filament\Actions\EditAction;
 use Filament\Actions\ForceDeleteBulkAction;
 use Filament\Actions\RestoreBulkAction;
 use Filament\Actions\ViewAction;
+use Filament\Facades\Filament;
 use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
@@ -131,8 +132,6 @@ class ProductResource extends Resource
                             ->searchableFields(['name', 'code'])
                             ->modifyQueryUsing(fn($query) => $query->whereIn('type', [AccountType::Income, AccountType::OtherIncome]))
                             ->createOptionForm([
-                                Hidden::make('company_id')
-                                    ->default(fn () => $tenant?->getKey()),
                                 TextInput::make('code')
                                     ->label(__('account.code'))
                                     ->required()
@@ -167,8 +166,6 @@ class ProductResource extends Resource
                             ->searchableFields(['name', 'code'])
                             ->modifyQueryUsing(fn($query) => $query->whereIn('type', [AccountType::Expense, AccountType::Depreciation, AccountType::CostOfRevenue]))
                             ->createOptionForm([
-                                Hidden::make('company_id')
-                                    ->default(fn () => $tenant?->getKey()),
                                 TextInput::make('code')
                                     ->label(__('account.code'))
                                     ->required()
@@ -231,7 +228,7 @@ class ProductResource extends Resource
                             ->visible(fn (Get $get) => $get('type') === ProductType::Storable->value)
                             ->createOptionForm([
                                 Hidden::make('company_id')
-                                    ->default(fn () => $tenant?->getKey()),
+                                    ->default(fn () => Filament::getTenant()?->getKey()),
                                 TextInput::make('code')
                                     ->label(__('account.code'))
                                     ->required()
@@ -267,7 +264,7 @@ class ProductResource extends Resource
                             ->visible(fn (Get $get) => $get('type') === ProductType::Storable->value)
                             ->createOptionForm([
                                 Hidden::make('company_id')
-                                    ->default(fn () => $tenant?->getKey()),
+                                    ->default(fn () => Filament::getTenant()?->getKey()),
                                 TextInput::make('code')
                                     ->label(__('account.code'))
                                     ->required()
@@ -304,7 +301,7 @@ class ProductResource extends Resource
                             ->visible(fn (Get $get) => $get('type') === ProductType::Storable->value)
                             ->createOptionForm([
                                 Hidden::make('company_id')
-                                    ->default(fn () => $tenant?->getKey()),
+                                    ->default(fn () => Filament::getTenant()?->getKey()),
                                 TextInput::make('code')
                                     ->label(__('account.code'))
                                     ->required()
@@ -339,7 +336,7 @@ class ProductResource extends Resource
                             ->visible(fn (Get $get) => $get('type') === ProductType::Storable->value)
                             ->createOptionForm([
                                 Hidden::make('company_id')
-                                    ->default(fn () => $tenant?->getKey()),
+                                    ->default(fn () => Filament::getTenant()?->getKey()),
                                 TextInput::make('code')
                                     ->label(__('account.code'))
                                     ->required()

@@ -70,6 +70,7 @@ class Product extends Model
 {
     use HasFactory, SoftDeletes, HasTranslations;
 
+    /** @var array<int, string> */
     public array $translatable = ['name', 'description'];
 
     protected $fillable = [

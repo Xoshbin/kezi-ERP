@@ -108,7 +108,7 @@ class CreateJournalEntryForPaymentAction
             }
         } else {
             // No document links: require partner and post as AR/AP advance/credit
-            if ($payment->partner !== null) {
+            if ($payment->paid_to_from_partner_id !== null) {
                 if ($payment->payment_type === PaymentType::Inbound) {
                     // Use partner's individual receivable account if available, otherwise fall back to default
                     $counterpartAccountId = $payment->partner->receivable_account_id ?? $company->default_accounts_receivable_id;
