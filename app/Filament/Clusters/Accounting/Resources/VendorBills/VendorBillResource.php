@@ -621,7 +621,7 @@ class VendorBillResource extends Resource
                             ->label(__('payment.form.journal_id'))
                             ->options(function (): array {
                                 $tenant = Filament::getTenant();
-                                if (!$tenant instanceof Company) {
+                                if (! $tenant instanceof Company) {
                                     return [];
                                 }
 
@@ -632,7 +632,7 @@ class VendorBillResource extends Resource
                             ->required()
                             ->default(function (): ?int {
                                 $tenant = Filament::getTenant();
-                                if (!$tenant instanceof Company) {
+                                if (! $tenant instanceof Company) {
                                     return null;
                                 }
 

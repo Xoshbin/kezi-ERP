@@ -63,6 +63,6 @@ class SalaryCurrencyMoneyCast extends MoneyCast
             // Ignore tenant resolution errors
         }
 
-        throw new InvalidArgumentException('Could not resolve salary currency for model ' . get_class($model) . '. Please ensure the model has a valid currency_id or company relationship.');
+        throw new InvalidArgumentException('Could not resolve salary currency for model '.get_class($model).'. Please ensure the model has a valid currency_id or company relationship.');
     }
 }

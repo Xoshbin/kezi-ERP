@@ -94,7 +94,7 @@ class ViewGeneralLedger extends Page
                                     'searchFields' => ['name', 'code'],
                                     'labelField' => 'name',
                                     'searchLocales' => $searchLocales,
-                                    'queryModifier' => fn($query) => $query->where('company_id', $tenant?->getKey()),
+                                    'queryModifier' => fn ($query) => $query->where('company_id', $tenant?->getKey()),
                                     'limit' => 50,
                                 ]);
 
@@ -103,7 +103,7 @@ class ViewGeneralLedger extends Page
                                 foreach ($results as $id => $name) {
                                     $account = Account::find($id);
                                     if ($account) {
-                                        $formattedResults[$id] = $account->code . ' - ' . $name;
+                                        $formattedResults[$id] = $account->code.' - '.$name;
                                     }
                                 }
 

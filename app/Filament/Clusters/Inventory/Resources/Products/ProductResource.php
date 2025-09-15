@@ -130,7 +130,7 @@ class ProductResource extends Resource
                             ->searchable()
                             ->preload()
                             ->searchableFields(['name', 'code'])
-                            ->modifyQueryUsing(fn($query) => $query->whereIn('type', [AccountType::Income, AccountType::OtherIncome]))
+                            ->modifyQueryUsing(fn ($query) => $query->whereIn('type', [AccountType::Income, AccountType::OtherIncome]))
                             ->createOptionForm([
                                 TextInput::make('code')
                                     ->label(__('account.code'))
@@ -164,7 +164,7 @@ class ProductResource extends Resource
                             ->searchable()
                             ->preload()
                             ->searchableFields(['name', 'code'])
-                            ->modifyQueryUsing(fn($query) => $query->whereIn('type', [AccountType::Expense, AccountType::Depreciation, AccountType::CostOfRevenue]))
+                            ->modifyQueryUsing(fn ($query) => $query->whereIn('type', [AccountType::Expense, AccountType::Depreciation, AccountType::CostOfRevenue]))
                             ->createOptionForm([
                                 TextInput::make('code')
                                     ->label(__('account.code'))

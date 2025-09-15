@@ -61,7 +61,7 @@ class LockDateResource extends Resource
                             ->dehydrated(fn (?LockDate $record) => $record === null),
                         DatePicker::make('locked_until')
                             ->label(__('lock_date.locked_until'))
-                            ->required()
+                            ->required(),
                     ])
                     ->columns(2)
                     ->columnSpanFull(),

@@ -39,10 +39,10 @@ class TranslatableSelectSearchTest extends TestCase
             'name' => [
                 'en' => 'Test Account',
                 'ckb' => 'حسابی تاقیکردنەوە',
-                'ar' => 'حساب اختبار'
+                'ar' => 'حساب اختبار',
             ],
             'type' => AccountType::CurrentAssets,
-            'is_deprecated' => false
+            'is_deprecated' => false,
         ]);
 
         $searchService = app(TranslatableSearchService::class);
@@ -55,7 +55,7 @@ class TranslatableSelectSearchTest extends TestCase
             'searchFields' => ['name', 'code'],
             'labelField' => 'name',
             'searchLocales' => $searchLocales,
-            'queryModifier' => fn($query) => $query->where('company_id', $this->company->id),
+            'queryModifier' => fn ($query) => $query->where('company_id', $this->company->id),
             'limit' => 50,
         ]);
 
@@ -67,7 +67,7 @@ class TranslatableSelectSearchTest extends TestCase
             'searchFields' => ['name', 'code'],
             'labelField' => 'name',
             'searchLocales' => $searchLocales,
-            'queryModifier' => fn($query) => $query->where('company_id', $this->company->id),
+            'queryModifier' => fn ($query) => $query->where('company_id', $this->company->id),
             'limit' => 50,
         ]);
 
@@ -79,7 +79,7 @@ class TranslatableSelectSearchTest extends TestCase
             'searchFields' => ['name', 'code'],
             'labelField' => 'name',
             'searchLocales' => $searchLocales,
-            'queryModifier' => fn($query) => $query->where('company_id', $this->company->id),
+            'queryModifier' => fn ($query) => $query->where('company_id', $this->company->id),
             'limit' => 50,
         ]);
 
@@ -91,7 +91,7 @@ class TranslatableSelectSearchTest extends TestCase
             'searchFields' => ['name', 'code'],
             'labelField' => 'name',
             'searchLocales' => $searchLocales,
-            'queryModifier' => fn($query) => $query->where('company_id', $this->company->id),
+            'queryModifier' => fn ($query) => $query->where('company_id', $this->company->id),
             'limit' => 50,
         ]);
 
@@ -109,10 +109,10 @@ class TranslatableSelectSearchTest extends TestCase
             'name' => [
                 'en' => 'Translatable Account',
                 'ckb' => 'حسابی وەرگێڕراو',
-                'ar' => 'حساب قابل للترجمة'
+                'ar' => 'حساب قابل للترجمة',
             ],
             'type' => AccountType::CurrentAssets,
-            'is_deprecated' => false
+            'is_deprecated' => false,
         ]);
 
         $codeAccount = Account::create([
@@ -121,10 +121,10 @@ class TranslatableSelectSearchTest extends TestCase
             'name' => [
                 'en' => 'Code Search Account',
                 'ckb' => 'حسابی گەڕانی کۆد',
-                'ar' => 'حساب البحث بالرمز'
+                'ar' => 'حساب البحث بالرمز',
             ],
             'type' => AccountType::CurrentAssets,
-            'is_deprecated' => false
+            'is_deprecated' => false,
         ]);
 
         $searchService = app(TranslatableSearchService::class);
@@ -136,7 +136,7 @@ class TranslatableSelectSearchTest extends TestCase
             'searchFields' => ['name', 'code'],
             'labelField' => 'name',
             'searchLocales' => $searchLocales,
-            'queryModifier' => fn($query) => $query->where('company_id', $this->company->id),
+            'queryModifier' => fn ($query) => $query->where('company_id', $this->company->id),
             'limit' => 50,
         ]);
 
@@ -148,7 +148,7 @@ class TranslatableSelectSearchTest extends TestCase
             'searchFields' => ['name', 'code'],
             'labelField' => 'name',
             'searchLocales' => $searchLocales,
-            'queryModifier' => fn($query) => $query->where('company_id', $this->company->id),
+            'queryModifier' => fn ($query) => $query->where('company_id', $this->company->id),
             'limit' => 50,
         ]);
 
@@ -167,7 +167,7 @@ class TranslatableSelectSearchTest extends TestCase
             'searchFields' => ['name', 'code'],
             'labelField' => 'name',
             'searchLocales' => $searchLocales,
-            'queryModifier' => fn($query) => $query->where('company_id', $this->company->id),
+            'queryModifier' => fn ($query) => $query->where('company_id', $this->company->id),
             'limit' => 50,
         ]);
 
@@ -183,7 +183,7 @@ class TranslatableSelectSearchTest extends TestCase
             'code' => 'INC001',
             'name' => ['en' => 'Test Income Account'],
             'type' => AccountType::Income,
-            'is_deprecated' => false
+            'is_deprecated' => false,
         ]);
 
         // Create expense account (should not appear in income dropdown)
@@ -192,7 +192,7 @@ class TranslatableSelectSearchTest extends TestCase
             'code' => 'EXP001',
             'name' => ['en' => 'Test Expense Account'],
             'type' => AccountType::Expense,
-            'is_deprecated' => false
+            'is_deprecated' => false,
         ]);
 
         $searchService = app(TranslatableSearchService::class);
@@ -204,7 +204,7 @@ class TranslatableSelectSearchTest extends TestCase
             'searchFields' => ['name', 'code'],
             'labelField' => 'name',
             'searchLocales' => $searchLocales,
-            'queryModifier' => fn($query) => $query->where('company_id', $this->company->id)
+            'queryModifier' => fn ($query) => $query->where('company_id', $this->company->id)
                 ->whereIn('type', [AccountType::Income, AccountType::OtherIncome]),
             'limit' => 50,
         ]);
@@ -223,7 +223,7 @@ class TranslatableSelectSearchTest extends TestCase
             'code' => 'EXP001',
             'name' => ['en' => 'Test Expense Account'],
             'type' => AccountType::Expense,
-            'is_deprecated' => false
+            'is_deprecated' => false,
         ]);
 
         // Create income account (should not appear in expense dropdown)
@@ -232,7 +232,7 @@ class TranslatableSelectSearchTest extends TestCase
             'code' => 'INC001',
             'name' => ['en' => 'Test Income Account'],
             'type' => AccountType::Income,
-            'is_deprecated' => false
+            'is_deprecated' => false,
         ]);
 
         $searchService = app(TranslatableSearchService::class);
@@ -244,7 +244,7 @@ class TranslatableSelectSearchTest extends TestCase
             'searchFields' => ['name', 'code'],
             'labelField' => 'name',
             'searchLocales' => $searchLocales,
-            'queryModifier' => fn($query) => $query->where('company_id', $this->company->id)
+            'queryModifier' => fn ($query) => $query->where('company_id', $this->company->id)
                 ->whereIn('type', [AccountType::Expense, AccountType::Depreciation, AccountType::CostOfRevenue]),
             'limit' => 50,
         ]);
@@ -268,13 +268,13 @@ class TranslatableSelectSearchTest extends TestCase
                     'searchFields' => ['name', 'code'],
                     'labelField' => 'name',
                     'searchLocales' => ['en', 'ckb', 'ar'],
-                    'queryModifier' => fn($query) => $query->where('company_id', $this->company->id)
+                    'queryModifier' => fn ($query) => $query->where('company_id', $this->company->id)
                         ->whereIn('type', [AccountType::Income, AccountType::OtherIncome]),
                     'limit' => 50,
                 ]
             );
 
-            echo "\nSearch term: '$term' - Results count: " . count($results) . "\n";
+            echo "\nSearch term: '$term' - Results count: ".count($results)."\n";
             foreach ($results as $id => $name) {
                 echo "  - $name\n";
             }
