@@ -8,12 +8,10 @@ use App\Filament\Clusters\Settings\Resources\Taxes\Pages\CreateTax;
 use App\Filament\Clusters\Settings\Resources\Taxes\Pages\EditTax;
 use App\Filament\Clusters\Settings\Resources\Taxes\Pages\ListTaxes;
 use App\Filament\Clusters\Settings\SettingsCluster;
-use Xoshbin\TranslatableSelect\Components\TranslatableSelect;
-use App\Models\Account;
-use App\Models\Company;
 use App\Models\Currency;
 use App\Models\Tax;
 use App\Support\NumberFormatter;
+use BackedEnum;
 use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
@@ -28,6 +26,7 @@ use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use LaraZeus\SpatieTranslatable\Resources\Concerns\Translatable;
+use Xoshbin\TranslatableSelect\Components\TranslatableSelect;
 
 class TaxResource extends Resource
 {
@@ -35,7 +34,7 @@ class TaxResource extends Resource
 
     protected static ?string $model = Tax::class;
 
-    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-calculator';
+    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-calculator';
 
     protected static ?int $navigationSort = 3;
 
@@ -63,6 +62,8 @@ class TaxResource extends Resource
                 Section::make(__('tax.basic_information'))
                     ->schema([
                         TranslatableSelect::make('company_id')
+                            ->searchable()
+                            ->preload()
                             ->relationship('company', 'name')
                             ->label(__('tax.company'))
                             ->createOptionForm([
@@ -78,6 +79,8 @@ class TaxResource extends Resource
                             ->required(),
 
                         TranslatableSelect::make('tax_account_id')
+                            ->searchable()
+                            ->preload()
                             ->relationship('taxAccount', 'name')
                             ->label(__('tax.tax_account'))
                             ->createOptionForm([

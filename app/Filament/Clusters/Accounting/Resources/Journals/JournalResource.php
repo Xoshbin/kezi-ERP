@@ -8,10 +8,10 @@ use App\Filament\Clusters\Accounting\Resources\Journals\Pages\CreateJournal;
 use App\Filament\Clusters\Accounting\Resources\Journals\Pages\EditJournal;
 use App\Filament\Clusters\Accounting\Resources\Journals\Pages\ListJournals;
 use App\Filament\Clusters\Accounting\Resources\Journals\RelationManagers\JournalEntriesRelationManager;
-use Xoshbin\TranslatableSelect\Components\TranslatableSelect;
 use App\Models\Account;
 use App\Models\Currency;
 use App\Models\Journal;
+use BackedEnum;
 use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
@@ -25,6 +25,7 @@ use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use LaraZeus\SpatieTranslatable\Resources\Concerns\Translatable;
+use Xoshbin\TranslatableSelect\Components\TranslatableSelect;
 
 class JournalResource extends Resource
 {
@@ -32,7 +33,7 @@ class JournalResource extends Resource
 
     protected static ?string $model = Journal::class;
 
-    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-book-open';
+    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-book-open';
 
     protected static ?int $navigationSort = 2;
 

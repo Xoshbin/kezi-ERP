@@ -14,7 +14,9 @@ use App\Filament\Clusters\Inventory\Resources\Products\RelationManagers\StockMov
 use App\Filament\Forms\Components\MoneyInput;
 use App\Filament\Tables\Columns\MoneyColumn;
 use App\Models\Account;
+use App\Models\Company;
 use App\Models\Product;
+use BackedEnum;
 use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
@@ -53,7 +55,7 @@ class ProductResource extends Resource
 
     protected static ?string $cluster = InventoryCluster::class;
 
-    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-squares-2x2';
+    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-squares-2x2';
 
     protected static ?int $navigationSort = 1;
 
@@ -74,7 +76,7 @@ class ProductResource extends Resource
 
     public static function form(Schema $schema): Schema
     {
-        /** @var \App\Models\Company|null $tenant */
+        /** @var Company|null $tenant */
         $tenant = Filament::getTenant();
 
         return $schema->components([
@@ -132,7 +134,7 @@ class ProductResource extends Resource
                             ->searchable()
                             ->preload()
                             ->searchableFields(['name', 'code'])
-                            ->modifyQueryUsing(fn ($query) => $query->whereIn('type', [AccountType::Income, AccountType::OtherIncome]))
+                            ->modifyQueryUsing(fn($query) => $query->whereIn('type', [AccountType::Income, AccountType::OtherIncome]))
                             ->createOptionForm([
                                 Hidden::make('company_id')
                                     ->default(fn () => $tenant?->getKey()),
@@ -168,7 +170,7 @@ class ProductResource extends Resource
                             ->searchable()
                             ->preload()
                             ->searchableFields(['name', 'code'])
-                            ->modifyQueryUsing(fn ($query) => $query->whereIn('type', [AccountType::Expense, AccountType::Depreciation, AccountType::CostOfRevenue]))
+                            ->modifyQueryUsing(fn($query) => $query->whereIn('type', [AccountType::Expense, AccountType::Depreciation, AccountType::CostOfRevenue]))
                             ->createOptionForm([
                                 Hidden::make('company_id')
                                     ->default(fn () => $tenant?->getKey()),

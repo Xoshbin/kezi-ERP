@@ -3,7 +3,6 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -171,7 +170,7 @@ class Department extends Model
      */
     public function getAllDescendants(): Collection
     {
-        $descendants = new \Illuminate\Database\Eloquent\Collection;
+        $descendants = new Collection;
 
         foreach ($this->childDepartments as $child) {
             $descendants->push($child);
@@ -188,7 +187,7 @@ class Department extends Model
      */
     public function getAllAncestors(): Collection
     {
-        $ancestors = new \Illuminate\Database\Eloquent\Collection;
+        $ancestors = new Collection;
         $current = $this->parentDepartment;
 
         while ($current) {

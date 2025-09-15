@@ -4,10 +4,10 @@ use App\Enums\Accounting\AccountType;
 use App\Enums\Products\ProductType;
 use App\Filament\Clusters\Inventory\Resources\Products\Pages\CreateProduct;
 use App\Models\Account;
+use App\Models\Company;
 use App\Models\Product;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\Traits\WithConfiguredCompany;
-
 use function Pest\Livewire\livewire;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);
@@ -135,7 +135,7 @@ test('can create product with TranslatableSelect account selections', function (
 
 test('TranslatableSelect respects company scoping', function () {
     // Create accounts for different companies
-    $otherCompany = \App\Models\Company::factory()->create();
+    $otherCompany = Company::factory()->create();
 
     $ourAccount = Account::factory()->create([
         'company_id' => $this->company->id,

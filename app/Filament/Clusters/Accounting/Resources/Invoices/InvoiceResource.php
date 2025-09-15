@@ -20,18 +20,18 @@ use App\Filament\Clusters\Accounting\Resources\Invoices\RelationManagers\Payment
 use App\Filament\Forms\Components\MoneyInput;
 use App\Filament\Tables\Columns\MoneyColumn;
 use App\Models\Account;
+use App\Models\Company;
 use App\Models\Currency;
 use App\Models\CurrencyRate;
 use App\Models\FiscalPosition;
 use App\Models\Invoice;
 use App\Models\Journal;
-use App\Models\Partner;
-use App\Models\PaymentTerm;
 use App\Models\Product;
 use App\Models\Tax;
 use App\Rules\NotInLockedPeriod;
 use App\Services\InvoiceService;
 use App\Services\PaymentService;
+use BackedEnum;
 use Brick\Money\Money;
 use Exception;
 use Filament\Actions\Action;
@@ -54,6 +54,7 @@ use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Auth;
 use Xoshbin\TranslatableSelect\Components\TranslatableSelect;
 
@@ -61,7 +62,7 @@ class InvoiceResource extends Resource
 {
     protected static ?string $model = Invoice::class;
 
-    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-document-currency-dollar';
+    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-document-currency-dollar';
 
     protected static ?int $navigationSort = 1;
 
@@ -141,18 +142,18 @@ class InvoiceResource extends Resource
                         ->default(function (): ?int {
                             $tenant = Filament::getTenant();
 
-                            return $tenant instanceof \App\Models\Company ? $tenant->currency_id : null;
+                            return $tenant instanceof Company ? $tenant->currency_id : null;
                         })
                         ->afterStateUpdated(function (callable $set, $state) {
                             if ($state) {
                                 $currency = Currency::find($state);
                                 // Ensure we have a single Currency model, not a collection
-                                if ($currency instanceof \Illuminate\Database\Eloquent\Collection) {
+                                if ($currency instanceof Collection) {
                                     $currency = $currency->first();
                                 }
                                 $company = Filament::getTenant();
 
-                                if ($currency && $company instanceof \App\Models\Company && $currency->id !== $company->currency_id) {
+                                if ($currency && $company instanceof Company && $currency->id !== $company->currency_id) {
                                     // Get latest exchange rate for this company
                                     $latestRate = CurrencyRate::getLatestRate($currency->id, $company->id);
                                     if ($latestRate) {
@@ -201,7 +202,7 @@ class InvoiceResource extends Resource
                             $currencyId = $get('currency_id');
                             $company = Filament::getTenant();
 
-                            return $currencyId && $company instanceof \App\Models\Company && $currencyId != $company->currency_id;
+                            return $currencyId && $company instanceof Company && $currencyId != $company->currency_id;
                         })
                         ->helperText(__('invoice.exchange_rate_helper')),
                 ])
@@ -262,7 +263,7 @@ class InvoiceResource extends Resource
                                     if ($state) {
                                         $product = Product::find($state);
                                         // Ensure we have a single Product model, not a collection
-                                        if ($product instanceof \Illuminate\Database\Eloquent\Collection) {
+                                        if ($product instanceof Collection) {
                                             $product = $product->first();
                                         }
                                         if ($product) {
@@ -346,7 +347,7 @@ class InvoiceResource extends Resource
                                 ->label(__('invoice.income_account'))
                                 ->searchable()
                                 ->preload()
-                                ->modifyQueryUsing(fn ($query) => $query->where('type', 'income'))
+                                ->modifyQueryUsing(fn($query) => $query->where('type', 'income'))
                                 ->required()
                                 ->columnSpan(3),
                         ])
@@ -538,7 +539,7 @@ class InvoiceResource extends Resource
                         try {
                             $user = Auth::user();
                             if (! $user) {
-                                throw new \Exception('User must be authenticated to confirm invoice');
+                                throw new Exception('User must be authenticated to confirm invoice');
                             }
                             $invoiceService->confirm($record, $user);
                             Notification::make()
@@ -566,7 +567,7 @@ class InvoiceResource extends Resource
                             ->label(__('payment.form.journal_id'))
                             ->options(function (): array {
                                 $tenant = Filament::getTenant();
-                                if (! $tenant instanceof \App\Models\Company) {
+                                if (!$tenant instanceof Company) {
                                     return [];
                                 }
 
@@ -577,7 +578,7 @@ class InvoiceResource extends Resource
                             ->required()
                             ->default(function (): ?int {
                                 $tenant = Filament::getTenant();
-                                if (! $tenant instanceof \App\Models\Company) {
+                                if (!$tenant instanceof Company) {
                                     return null;
                                 }
 
@@ -629,7 +630,7 @@ class InvoiceResource extends Resource
                             // Create and confirm payment
                             $user = Auth::user();
                             if (! $user) {
-                                throw new \Exception('User must be authenticated to create payment');
+                                throw new Exception('User must be authenticated to create payment');
                             }
                             $payment = app(CreatePaymentAction::class)->execute($paymentDTO, $user);
                             app(PaymentService::class)->confirm($payment, $user);

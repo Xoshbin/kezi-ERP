@@ -8,11 +8,11 @@ use App\Filament\Clusters\Settings\Resources\Companies\Pages\ListCompanies;
 use App\Filament\Clusters\Settings\Resources\Companies\RelationManagers\AccountsRelationManager;
 use App\Filament\Clusters\Settings\Resources\Companies\RelationManagers\UsersRelationManager;
 use App\Filament\Clusters\Settings\SettingsCluster;
-use Xoshbin\TranslatableSelect\Components\TranslatableSelect;
 use App\Models\Account;
 use App\Models\Company;
 use App\Models\Currency;
 use App\Models\Journal;
+use BackedEnum;
 use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
@@ -25,6 +25,7 @@ use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Xoshbin\TranslatableSelect\Components\TranslatableSelect;
 
 class CompanyResource extends Resource
 {
@@ -32,7 +33,7 @@ class CompanyResource extends Resource
 
     protected static ?string $model = Company::class;
 
-    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-building-office';
+    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-building-office';
 
     protected static ?int $navigationSort = 1;
 
