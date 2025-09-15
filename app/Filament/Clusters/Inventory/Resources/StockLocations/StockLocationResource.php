@@ -10,6 +10,7 @@ use App\Filament\Clusters\Inventory\Resources\StockLocations\Pages\ListStockLoca
 use App\Filament\Clusters\Inventory\Resources\StockLocations\Pages\ViewStockLocation;
 use App\Models\Company;
 use App\Models\StockLocation;
+use BackedEnum;
 use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
@@ -20,7 +21,6 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
-use Xoshbin\TranslatableSelect\Components\TranslatableSelect;
 use Filament\Resources\Resource;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
@@ -30,6 +30,7 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
+use Xoshbin\TranslatableSelect\Components\TranslatableSelect;
 
 class StockLocationResource extends Resource
 {
@@ -37,7 +38,7 @@ class StockLocationResource extends Resource
 
     protected static ?string $cluster = InventoryCluster::class;
 
-    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-building-storefront';
+    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-building-storefront';
 
     protected static ?int $navigationSort = 2;
 

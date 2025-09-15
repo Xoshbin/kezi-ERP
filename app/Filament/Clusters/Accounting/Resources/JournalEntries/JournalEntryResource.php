@@ -8,18 +8,18 @@ use App\Filament\Clusters\Accounting\Resources\JournalEntries\Pages\CreateJourna
 use App\Filament\Clusters\Accounting\Resources\JournalEntries\Pages\EditJournalEntry;
 use App\Filament\Clusters\Accounting\Resources\JournalEntries\Pages\ListJournalEntries;
 use App\Filament\Forms\Components\MoneyInput;
-use Xoshbin\TranslatableSelect\Components\TranslatableSelect;
 use App\Filament\Tables\Columns\MoneyColumn;
-use App\Models\Account;
+use App\Models\Company;
 use App\Models\Currency;
 use App\Models\Journal;
 use App\Models\JournalEntry;
-use App\Models\Partner;
 use App\Rules\ActiveAccount;
+use BackedEnum;
 use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
+use Filament\Facades\Filament;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Repeater\TableColumn;
@@ -32,6 +32,7 @@ use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Xoshbin\TranslatableSelect\Components\TranslatableSelect;
 
 // Use an alias to avoid conflict with the relationship name
 
@@ -39,7 +40,7 @@ class JournalEntryResource extends Resource
 {
     protected static ?string $model = JournalEntry::class;
 
-    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-document-text';
+    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-document-text';
 
     protected static ?int $navigationSort = 1;
 
@@ -79,7 +80,7 @@ class JournalEntryResource extends Resource
                         ->label(__('journal_entry.currency'))
                         ->required()
                         ->live()
-                        ->default(fn () => (\Filament\Facades\Filament::getTenant() instanceof \App\Models\Company) ? \Filament\Facades\Filament::getTenant()->currency_id : null)
+                        ->default(fn() => (Filament::getTenant() instanceof Company) ? Filament::getTenant()->currency_id : null)
                         ->createOptionForm([
                             TextInput::make('code')->label(__('currency.code'))->required()->maxLength(255),
                             TextInput::make('name')->label(__('currency.name'))->required()->maxLength(255),
@@ -126,7 +127,7 @@ class JournalEntryResource extends Resource
                                 ->label(__('journal_entry.account'))
                                 ->searchableFields(['name', 'code'])
                                 ->preload()
-                                ->getOptionLabelFromRecordUsing(fn ($record) => $record->getTranslatedLabel('name').' ('.$record->code.')')
+                                ->getOptionLabelFromRecordUsing(fn($record) => $record->getTranslatedLabel('name') . ' (' . $record->code . ')')
                                 ->rules([new ActiveAccount])
                                 ->required()
                                 ->columnSpan(3),

@@ -14,13 +14,11 @@ use App\Filament\Clusters\Accounting\Resources\Payments\RelationManagers\Invoice
 use App\Filament\Clusters\Accounting\Resources\Payments\RelationManagers\JournalEntriesRelationManager;
 use App\Filament\Clusters\Accounting\Resources\Payments\RelationManagers\VendorBillsRelationManager;
 use App\Filament\Forms\Components\MoneyInput;
-use Xoshbin\TranslatableSelect\Components\TranslatableSelect;
 use App\Filament\Tables\Columns\MoneyColumn;
-use App\Models\Currency;
-use App\Models\Journal;
-use App\Models\Partner;
+use App\Models\Company;
 use App\Models\Payment;
 use App\Services\PaymentService;
+use BackedEnum;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
@@ -36,12 +34,13 @@ use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Xoshbin\TranslatableSelect\Components\TranslatableSelect;
 
 class PaymentResource extends Resource
 {
     protected static ?string $model = Payment::class;
 
-    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-credit-card';
+    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-credit-card';
 
     protected static ?int $navigationSort = 1;
 
@@ -149,7 +148,7 @@ class PaymentResource extends Resource
                                 ->default(function (): ?int {
                                     $tenant = Filament::getTenant();
 
-                                    return $tenant instanceof \App\Models\Company ? $tenant->currency_id : null;
+                                    return $tenant instanceof Company ? $tenant->currency_id : null;
                                 })
                                 ->columnSpanFull(),
                         ])

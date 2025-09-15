@@ -2,14 +2,12 @@
 
 namespace App\Filament\Clusters\HumanResources\Resources\Departments\Schemas;
 
-use Xoshbin\TranslatableSelect\Components\TranslatableSelect;
-use App\Models\Department;
-use App\Models\Employee;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
+use Xoshbin\TranslatableSelect\Components\TranslatableSelect;
 
 class DepartmentForm
 {

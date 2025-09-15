@@ -10,15 +10,15 @@ use App\Filament\Clusters\Accounting\Resources\AdjustmentDocuments\Pages\CreateA
 use App\Filament\Clusters\Accounting\Resources\AdjustmentDocuments\Pages\EditAdjustmentDocument;
 use App\Filament\Clusters\Accounting\Resources\AdjustmentDocuments\Pages\ListAdjustmentDocuments;
 use App\Filament\Forms\Components\MoneyInput;
-use Xoshbin\TranslatableSelect\Components\TranslatableSelect;
-use App\Models\Account;
 use App\Models\AdjustmentDocument;
+use App\Models\Company;
 use App\Models\Currency;
 use App\Models\Invoice;
 use App\Models\Product;
 use App\Models\Tax;
 use App\Models\VendorBill;
 use App\Rules\NotInLockedPeriod;
+use BackedEnum;
 use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
@@ -40,12 +40,14 @@ use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Collection;
+use Xoshbin\TranslatableSelect\Components\TranslatableSelect;
 
 class AdjustmentDocumentResource extends Resource
 {
     protected static ?string $model = AdjustmentDocument::class;
 
-    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-document-duplicate';
+    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-document-duplicate';
 
     protected static ?int $navigationSort = 3;
 
@@ -84,7 +86,7 @@ class AdjustmentDocumentResource extends Resource
                         ->default(function (): ?int {
                             $tenant = Filament::getTenant();
 
-                            return $tenant instanceof \App\Models\Company ? $tenant->currency_id : null;
+                            return $tenant instanceof Company ? $tenant->currency_id : null;
                         })
                         ->disabled(fn (Get $get): bool => ! empty($get('original_invoice_id')) || ! empty($get('original_vendor_bill_id')))
                         ->createOptionForm([
@@ -189,7 +191,7 @@ class AdjustmentDocumentResource extends Resource
                                 return null;
                             }
                             // Ensure we have a single Invoice model, not a collection
-                            if ($invoice instanceof \Illuminate\Database\Eloquent\Collection) {
+                            if ($invoice instanceof Collection) {
                                 $invoice = $invoice->first();
                             }
                             if (! $invoice) {
@@ -204,7 +206,7 @@ class AdjustmentDocumentResource extends Resource
                             if ($state) {
                                 $invoice = Invoice::find($state);
                                 // Ensure we have a single Invoice model, not a collection
-                                if ($invoice instanceof \Illuminate\Database\Eloquent\Collection) {
+                                if ($invoice instanceof Collection) {
                                     $invoice = $invoice->first();
                                 }
                                 $set('currency_id', $invoice?->currency_id);
@@ -222,7 +224,7 @@ class AdjustmentDocumentResource extends Resource
                             if ($state) {
                                 $bill = VendorBill::find($state);
                                 // Ensure we have a single VendorBill model, not a collection
-                                if ($bill instanceof \Illuminate\Database\Eloquent\Collection) {
+                                if ($bill instanceof Collection) {
                                     $bill = $bill->first();
                                 }
                                 $set('currency_id', $bill?->currency_id);
@@ -259,7 +261,7 @@ class AdjustmentDocumentResource extends Resource
                                     if ($state) {
                                         $product = Product::find($state);
                                         // Ensure we have a single Product model, not a collection
-                                        if ($product instanceof \Illuminate\Database\Eloquent\Collection) {
+                                        if ($product instanceof Collection) {
                                             $product = $product->first();
                                         }
                                         if ($product) {
@@ -341,7 +343,7 @@ class AdjustmentDocumentResource extends Resource
                                 ->label('Account')
                                 ->searchableFields(['name', 'code'])
                                 ->preload()
-                                ->getOptionLabelFromRecordUsing(fn ($record) => $record->getTranslatedLabel('name').' ('.$record->code.')')
+                                ->getOptionLabelFromRecordUsing(fn($record) => $record->getTranslatedLabel('name') . ' (' . $record->code . ')')
                                 ->required()
                                 ->createOptionForm([
                                     Select::make('company_id')

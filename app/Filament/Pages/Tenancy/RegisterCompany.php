@@ -2,13 +2,12 @@
 
 namespace App\Filament\Pages\Tenancy;
 
-use Xoshbin\TranslatableSelect\Components\TranslatableSelect;
 use App\Models\Company;
-use App\Models\Currency;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Pages\Tenancy\RegisterTenant;
 use Filament\Schemas\Schema;
+use Xoshbin\TranslatableSelect\Components\TranslatableSelect;
 
 class RegisterCompany extends RegisterTenant
 {

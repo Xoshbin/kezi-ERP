@@ -10,12 +10,12 @@ use App\Filament\Clusters\Accounting\Resources\BankStatements\Pages\EditBankStat
 use App\Filament\Clusters\Accounting\Resources\BankStatements\Pages\ListBankStatements;
 use App\Filament\Clusters\Accounting\Resources\BankStatements\RelationManagers\BankStatementLinesRelationManager;
 use App\Filament\Forms\Components\MoneyInput;
-use Xoshbin\TranslatableSelect\Components\TranslatableSelect;
 use App\Filament\Tables\Columns\MoneyColumn;
 use App\Models\BankStatement;
+use App\Models\Company;
 use App\Models\Currency;
 use App\Models\Journal;
-use App\Models\Partner;
+use BackedEnum;
 use Closure;
 use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
@@ -34,12 +34,13 @@ use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Xoshbin\TranslatableSelect\Components\TranslatableSelect;
 
 class BankStatementResource extends Resource
 {
     protected static ?string $model = BankStatement::class;
 
-    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-banknotes';
+    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-banknotes';
 
     protected static ?int $navigationSort = 2;
 
@@ -79,7 +80,7 @@ class BankStatementResource extends Resource
                         ->default(function (): ?int {
                             $tenant = Filament::getTenant();
 
-                            return $tenant instanceof \App\Models\Company ? $tenant->currency_id : null;
+                            return $tenant instanceof Company ? $tenant->currency_id : null;
                         })
                         ->createOptionForm([
                             TextInput::make('code')

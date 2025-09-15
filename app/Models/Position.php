@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
+use RuntimeException;
 use Spatie\Translatable\HasTranslations;
 
 /**
@@ -181,7 +182,7 @@ class Position extends Model
         }
 
         if (! $this->salaryCurrency) {
-            throw new \RuntimeException('Position salary currency not found');
+            throw new RuntimeException('Position salary currency not found');
         }
 
         if ($this->min_salary && $this->max_salary) {
@@ -194,7 +195,7 @@ class Position extends Model
         }
 
         if (! $this->max_salary) {
-            throw new \RuntimeException('Position max salary not found');
+            throw new RuntimeException('Position max salary not found');
         }
 
         return 'Up to '.$this->max_salary->formatTo($this->salaryCurrency->code);

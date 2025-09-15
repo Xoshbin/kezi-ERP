@@ -3,7 +3,10 @@
 namespace App\Models;
 
 use App\Observers\AuditLogObserver;
+use Brick\Math\RoundingMode;
+use Brick\Money\Money;
 use Database\Factories\PaymentTermFactory;
+use Eloquent;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
@@ -49,12 +52,12 @@ use Spatie\Translatable\HasTranslations;
  * @method static Builder<static>|PaymentTerm whereName($value)
  * @method static Builder<static>|PaymentTerm whereUpdatedAt($value)
  *
- * @mixin \Eloquent
+ * @mixin Eloquent
  */
 #[ObservedBy([AuditLogObserver::class])]
 class PaymentTerm extends Model
 {
-    /** @use HasFactory<\Database\Factories\PaymentTermFactory> */
+    /** @use HasFactory<PaymentTermFactory> */
     use HasFactory, HasTranslations;
 
     /** @var array<int, string> */
@@ -153,9 +156,9 @@ class PaymentTerm extends Model
      * Calculate due dates for a given document date and amount.
      * Returns an array of installments with due dates and amounts.
      *
-     * @return array<int, array{due_date: Carbon, amount: \Brick\Money\Money, percentage: float}>
+     * @return array<int, array{due_date: Carbon, amount: Money, percentage: float}>
      */
-    public function calculateInstallments(Carbon $documentDate, \Brick\Money\Money $totalAmount): array
+    public function calculateInstallments(Carbon $documentDate, Money $totalAmount): array
     {
         $this->loadMissing('lines');
 
@@ -182,7 +185,7 @@ class PaymentTerm extends Model
                 $amount = $remainingAmount;
             } else {
                 $percentage = $line->percentage / $totalPercentage;
-                $amount = $totalAmount->multipliedBy($percentage, \Brick\Math\RoundingMode::HALF_UP);
+                $amount = $totalAmount->multipliedBy($percentage, RoundingMode::HALF_UP);
                 $remainingAmount = $remainingAmount->minus($amount);
             }
 

@@ -3,9 +3,7 @@
 namespace App\Filament\Clusters\HumanResources\Resources\Positions\Schemas;
 
 use App\Filament\Forms\Components\MoneyInput;
-use Xoshbin\TranslatableSelect\Components\TranslatableSelect;
-use App\Models\Currency;
-use App\Models\Department;
+use App\Models\Company;
 use Filament\Facades\Filament;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
@@ -13,12 +11,13 @@ use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
+use Xoshbin\TranslatableSelect\Components\TranslatableSelect;
 
 class PositionForm
 {
     public static function configure(Schema $schema): Schema
     {
-        /** @var \App\Models\Company|null $tenant */
+        /** @var Company|null $tenant */
         $tenant = Filament::getTenant();
 
         return $schema->components([

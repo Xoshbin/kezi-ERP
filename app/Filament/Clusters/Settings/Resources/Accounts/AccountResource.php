@@ -8,15 +8,12 @@ use App\Filament\Clusters\Settings\Resources\Accounts\Pages\EditAccount;
 use App\Filament\Clusters\Settings\Resources\Accounts\Pages\ListAccounts;
 use App\Filament\Clusters\Settings\Resources\Accounts\RelationManagers\JournalEntryLinesRelationManager;
 use App\Filament\Clusters\Settings\SettingsCluster;
-use Xoshbin\TranslatableSelect\Components\TranslatableSelect;
 use App\Models\Account;
-use App\Models\Currency;
-use Filament\Actions\Action;
+use BackedEnum;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Resources\Resource;
@@ -33,7 +30,7 @@ class AccountResource extends Resource
 
     protected static ?string $model = Account::class;
 
-    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-list-bullet';
+    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-list-bullet';
 
     protected static ?int $navigationSort = 3;
 

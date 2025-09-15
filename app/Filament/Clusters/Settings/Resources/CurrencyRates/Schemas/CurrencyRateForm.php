@@ -2,13 +2,12 @@
 
 namespace App\Filament\Clusters\Settings\Resources\CurrencyRates\Schemas;
 
-use App\Models\Currency;
 use Carbon\Carbon;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
-use Xoshbin\TranslatableSelect\Components\TranslatableSelect;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Schema;
+use Xoshbin\TranslatableSelect\Components\TranslatableSelect;
 
 class CurrencyRateForm
 {

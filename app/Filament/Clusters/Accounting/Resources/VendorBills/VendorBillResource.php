@@ -20,20 +20,19 @@ use App\Filament\Clusters\Accounting\Resources\VendorBills\Pages\ListVendorBills
 use App\Filament\Clusters\Accounting\Resources\VendorBills\RelationManagers\AdjustmentDocumentsRelationManager;
 use App\Filament\Clusters\Accounting\Resources\VendorBills\RelationManagers\PaymentsRelationManager;
 use App\Filament\Forms\Components\MoneyInput;
-use Xoshbin\TranslatableSelect\Components\TranslatableSelect;
 use App\Filament\Tables\Columns\MoneyColumn;
 use App\Models\Account;
 use App\Models\AssetCategory;
+use App\Models\Company;
 use App\Models\Currency;
 use App\Models\CurrencyRate;
 use App\Models\Journal;
-use App\Models\Partner;
-use App\Models\PaymentTerm;
 use App\Models\Product;
 use App\Models\Tax;
 use App\Models\VendorBill;
 use App\Rules\NotInLockedPeriod;
 use App\Services\PaymentService;
+use BackedEnum;
 use Brick\Money\Money;
 use Exception;
 use Filament\Actions\Action;
@@ -55,13 +54,15 @@ use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Auth;
+use Xoshbin\TranslatableSelect\Components\TranslatableSelect;
 
 class VendorBillResource extends Resource
 {
     protected static ?string $model = VendorBill::class;
 
-    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-receipt-percent';
+    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-receipt-percent';
 
     protected static ?int $navigationSort = 1;
 
@@ -139,18 +140,18 @@ class VendorBillResource extends Resource
                         ->default(function (): ?int {
                             $tenant = Filament::getTenant();
 
-                            return $tenant instanceof \App\Models\Company ? $tenant->currency_id : null;
+                            return $tenant instanceof Company ? $tenant->currency_id : null;
                         })
                         ->afterStateUpdated(function (callable $set, $state) {
                             if ($state) {
                                 $currency = Currency::find($state);
                                 // Ensure we have a single Currency model, not a collection
-                                if ($currency instanceof \Illuminate\Database\Eloquent\Collection) {
+                                if ($currency instanceof Collection) {
                                     $currency = $currency->first();
                                 }
                                 $company = Filament::getTenant();
 
-                                if ($currency && $company instanceof \App\Models\Company && $currency->id !== $company->currency_id) {
+                                if ($currency && $company instanceof Company && $currency->id !== $company->currency_id) {
                                     // Get latest exchange rate for this company
                                     $latestRate = CurrencyRate::getLatestRate($currency->id, $company->id);
                                     if ($latestRate) {
@@ -199,7 +200,7 @@ class VendorBillResource extends Resource
                             $currencyId = $get('currency_id');
                             $company = Filament::getTenant();
 
-                            return $currencyId && $company instanceof \App\Models\Company && $currencyId != $company->currency_id;
+                            return $currencyId && $company instanceof Company && $currencyId != $company->currency_id;
                         })
                         ->helperText(__('vendor_bill.exchange_rate_helper')),
                 ])
@@ -267,7 +268,7 @@ class VendorBillResource extends Resource
                                     if ($state) {
                                         $product = Product::find($state);
                                         // Ensure we have a single Product model, not a collection
-                                        if ($product instanceof \Illuminate\Database\Eloquent\Collection) {
+                                        if ($product instanceof Collection) {
                                             $product = $product->first();
                                         }
                                         if ($product) {
@@ -612,7 +613,7 @@ class VendorBillResource extends Resource
                             ->label(__('payment.form.journal_id'))
                             ->options(function (): array {
                                 $tenant = Filament::getTenant();
-                                if (! $tenant instanceof \App\Models\Company) {
+                                if (!$tenant instanceof Company) {
                                     return [];
                                 }
 
@@ -623,7 +624,7 @@ class VendorBillResource extends Resource
                             ->required()
                             ->default(function (): ?int {
                                 $tenant = Filament::getTenant();
-                                if (! $tenant instanceof \App\Models\Company) {
+                                if (!$tenant instanceof Company) {
                                     return null;
                                 }
 
@@ -675,7 +676,7 @@ class VendorBillResource extends Resource
                             // Create and confirm payment
                             $user = Auth::user();
                             if (! $user) {
-                                throw new \Exception('User must be authenticated to create payment');
+                                throw new Exception('User must be authenticated to create payment');
                             }
                             $payment = app(CreatePaymentAction::class)->execute($paymentDTO, $user);
                             app(PaymentService::class)->confirm($payment, $user);
