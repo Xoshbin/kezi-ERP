@@ -4,7 +4,6 @@ namespace App\Models;
 
 use App\Enums\Accounting\JournalType;
 use App\Observers\JournalObserver;
-use App\Traits\TranslatableSearch;
 use Database\Factories\JournalFactory;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Builder;
@@ -51,7 +50,6 @@ use Spatie\Translatable\HasTranslations;
 class Journal extends Model
 {
     use HasFactory, HasTranslations;
-    use TranslatableSearch;
 
     /** @var array<int, string> */
     public array $translatable = ['name'];

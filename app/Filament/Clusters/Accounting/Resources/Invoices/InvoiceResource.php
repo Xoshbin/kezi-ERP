@@ -18,7 +18,6 @@ use App\Filament\Clusters\Accounting\Resources\Invoices\RelationManagers\Adjustm
 use App\Filament\Clusters\Accounting\Resources\Invoices\RelationManagers\InvoiceLinesRelationManager;
 use App\Filament\Clusters\Accounting\Resources\Invoices\RelationManagers\PaymentsRelationManager;
 use App\Filament\Forms\Components\MoneyInput;
-use App\Filament\Support\TranslatableSelect;
 use App\Filament\Tables\Columns\MoneyColumn;
 use App\Models\Account;
 use App\Models\Currency;
@@ -56,6 +55,7 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Auth;
+use Xoshbin\TranslatableSelect\Components\TranslatableSelect;
 
 class InvoiceResource extends Resource
 {
@@ -93,12 +93,12 @@ class InvoiceResource extends Resource
             Section::make(__('invoice.customer_currency_info'))
                 ->description(__('invoice.customer_currency_info_description'))
                 ->schema([
-                    TranslatableSelect::standard(
-                        'customer_id',
-                        Partner::class,
-                        ['name', 'email', 'contact_person'],
-                        __('invoice.customer')
-                    )
+                    TranslatableSelect::make('customer_id')
+                        ->relationship('customer', 'name')
+                        ->label(__('invoice.customer'))
+                        ->searchableFields(['name', 'email', 'contact_person'])
+                        ->searchable()
+                        ->preload()
                         ->required()
                         ->columnSpan(2)
                         ->createOptionForm([
@@ -132,9 +132,12 @@ class InvoiceResource extends Resource
                             return $action
                                 ->modalWidth('lg');
                         }),
-                    TranslatableSelect::make('currency_id', Currency::class, __('invoice.currency'))
+                    TranslatableSelect::forModel('currency_id', Currency::class, 'name')
+                        ->label(__('invoice.currency'))
                         ->required()
                         ->live()
+                        ->preload()
+                        ->searchable()
                         ->default(function (): ?int {
                             $tenant = Filament::getTenant();
 
@@ -208,7 +211,10 @@ class InvoiceResource extends Resource
             Section::make(__('invoice.invoice_details'))
                 ->description(__('invoice.invoice_details_description'))
                 ->schema([
-                    TranslatableSelect::make('fiscal_position_id', FiscalPosition::class, __('invoice.fiscal_position'))
+                    TranslatableSelect::forModel('fiscal_position_id', FiscalPosition::class, 'name')
+                        ->label(__('invoice.fiscal_position'))
+                        ->searchable()
+                        ->preload()
                         ->columnSpan(2),
                     DatePicker::make('invoice_date')
                         ->label(__('invoice.invoice_date'))
@@ -218,8 +224,9 @@ class InvoiceResource extends Resource
                     DatePicker::make('due_date')
                         ->label(__('invoice.due_date'))
                         ->required(),
-                    TranslatableSelect::make('payment_term_id', PaymentTerm::class, __('invoice.payment_term'))
+                    TranslatableSelect::make('payment_term_id')
                         ->relationship('paymentTerm', 'name')
+                        ->label(__('invoice.payment_term'))
                         ->searchable()
                         ->preload(),
                 ])
@@ -245,12 +252,11 @@ class InvoiceResource extends Resource
                         ->disabled(fn (?Invoice $record) => $record && $record->status !== InvoiceStatus::Draft)
                         ->minItems(1)
                         ->schema([
-                            TranslatableSelect::standard(
-                                'product_id',
-                                Product::class,
-                                ['name', 'sku', 'description'],
-                                __('invoice.product')
-                            )
+                            TranslatableSelect::forModel('product_id', Product::class, 'name')
+                                ->label(__('invoice.product'))
+                                ->searchableFields(['name', 'sku', 'description'])
+                                ->searchable()
+                                ->preload()
                                 ->reactive()
                                 ->afterStateUpdated(function (callable $set, $state) {
                                     if ($state) {
@@ -307,7 +313,10 @@ class InvoiceResource extends Resource
                                 ->currencyField('../../currency_id')
                                 ->required()
                                 ->columnSpan(3),
-                            TranslatableSelect::make('tax_id', Tax::class, __('invoice.tax'))
+                            TranslatableSelect::forModel('tax_id', Tax::class, 'name')
+                                ->label(__('invoice.tax'))
+                                ->searchable()
+                                ->preload()
                                 ->createOptionForm([
                                     Select::make('company_id')
                                         ->relationship('company', 'name')
@@ -333,15 +342,11 @@ class InvoiceResource extends Resource
                                         ->modalWidth('lg');
                                 })
                                 ->columnSpan(3),
-                            TranslatableSelect::relationship(
-                                'income_account_id',
-                                'incomeAccount',
-                                Account::class,
-                                __('invoice.income_account'),
-                                'name',
-                                null,
-                                fn ($query) => $query->where('type', 'income')
-                            )
+                            TranslatableSelect::forModel('income_account_id', Account::class, 'name')
+                                ->label(__('invoice.income_account'))
+                                ->searchable()
+                                ->preload()
+                                ->modifyQueryUsing(fn ($query) => $query->where('type', 'income'))
                                 ->required()
                                 ->columnSpan(3),
                         ])

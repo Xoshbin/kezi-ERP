@@ -8,7 +8,7 @@ use App\Filament\Clusters\Accounting\Resources\Journals\Pages\CreateJournal;
 use App\Filament\Clusters\Accounting\Resources\Journals\Pages\EditJournal;
 use App\Filament\Clusters\Accounting\Resources\Journals\Pages\ListJournals;
 use App\Filament\Clusters\Accounting\Resources\Journals\RelationManagers\JournalEntriesRelationManager;
-use App\Filament\Support\TranslatableSelect;
+use Xoshbin\TranslatableSelect\Components\TranslatableSelect;
 use App\Models\Account;
 use App\Models\Currency;
 use App\Models\Journal;

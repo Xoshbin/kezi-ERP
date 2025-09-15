@@ -5,7 +5,6 @@ namespace App\Models;
 use App\Enums\Accounting\AccountType;
 use App\Observers\AccountObserver;
 use App\Observers\AuditLogObserver;
-use App\Traits\TranslatableSearch;
 use Database\Factories\AccountFactory;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Builder;
@@ -71,7 +70,6 @@ class Account extends Model
     /** @use HasFactory<AccountFactory> */
     use HasFactory, HasTranslations;
 
-    use TranslatableSearch;
 
     /** @var array<int, string> */
     public array $translatable = ['name'];

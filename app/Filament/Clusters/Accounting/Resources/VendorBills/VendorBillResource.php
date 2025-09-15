@@ -20,7 +20,7 @@ use App\Filament\Clusters\Accounting\Resources\VendorBills\Pages\ListVendorBills
 use App\Filament\Clusters\Accounting\Resources\VendorBills\RelationManagers\AdjustmentDocumentsRelationManager;
 use App\Filament\Clusters\Accounting\Resources\VendorBills\RelationManagers\PaymentsRelationManager;
 use App\Filament\Forms\Components\MoneyInput;
-use App\Filament\Support\TranslatableSelect;
+use Xoshbin\TranslatableSelect\Components\TranslatableSelect;
 use App\Filament\Tables\Columns\MoneyColumn;
 use App\Models\Account;
 use App\Models\AssetCategory;
@@ -93,12 +93,11 @@ class VendorBillResource extends Resource
             Section::make(__('vendor_bill.vendor_currency_info'))
                 ->description(__('vendor_bill.vendor_currency_info_description'))
                 ->schema([
-                    TranslatableSelect::standard(
-                        'vendor_id',
-                        Partner::class,
-                        ['name', 'email', 'contact_person'],
-                        __('vendor_bill.vendor')
-                    )
+                    TranslatableSelect::make('vendor_id')
+                        ->relationship('vendor', 'name')
+                        ->label(__('vendor_bill.vendor'))
+                        ->searchableFields(['name', 'email', 'contact_person'])
+                        ->preload()
                         ->required()
                         ->columnSpan(2)
                         ->createOptionForm([
@@ -132,7 +131,8 @@ class VendorBillResource extends Resource
                             return $action
                                 ->modalWidth('lg');
                         }),
-                    TranslatableSelect::make('currency_id', Currency::class, __('vendor_bill.currency'))
+                    TranslatableSelect::forModel('currency_id', Currency::class, 'name')
+                        ->label(__('vendor_bill.currency'))
                         ->required()
                         ->live()
                         ->columnSpan(1)
@@ -229,8 +229,9 @@ class VendorBillResource extends Resource
                     DatePicker::make('due_date')
                         ->label(__('vendor_bill.due_date'))
                         ->columnSpan(1),
-                    TranslatableSelect::make('payment_term_id', PaymentTerm::class, __('vendor_bill.payment_term'))
+                    TranslatableSelect::make('payment_term_id')
                         ->relationship('paymentTerm', 'name')
+                        ->label(__('vendor_bill.payment_term'))
                         ->searchable()
                         ->preload()
                         ->columnSpan(1),
@@ -257,12 +258,10 @@ class VendorBillResource extends Resource
                         ->disabled(fn (?VendorBill $record) => $record ? $record->status !== VendorBillStatus::Draft : false)
                         ->deletable(fn (?VendorBill $record) => $record === null || $record->status === VendorBillStatus::Draft)
                         ->schema([
-                            TranslatableSelect::standard(
-                                'product_id',
-                                Product::class,
-                                ['name', 'sku', 'description'],
-                                __('vendor_bill.product')
-                            )
+                            TranslatableSelect::forModel('product_id', Product::class, 'name')
+                                ->label(__('vendor_bill.product'))
+                                ->searchableFields(['name', 'sku', 'description'])
+                                ->preload()
                                 ->reactive()
                                 ->afterStateUpdated(function (callable $set, $state) {
                                     if ($state) {
@@ -327,20 +326,14 @@ class VendorBillResource extends Resource
                                 ->currencyField('../../currency_id')
                                 ->required()
                                 ->columnSpan(3),
-                            TranslatableSelect::standard(
-                                'expense_account_id',
-                                Account::class,
-                                ['name', 'code'],
-                                __('vendor_bill.expense_account'),
-                                'name',
-                                fn ($query) => $query->when(
-                                    ($tenant = Filament::getTenant()) instanceof \App\Models\Company,
-                                    fn ($q) => $q->where('company_id', $tenant?->getKey())
-                                )
-                            )
+                            TranslatableSelect::forModel('expense_account_id', Account::class, 'name')
+                                ->label(__('vendor_bill.expense_account'))
+                                ->searchableFields(['name', 'code'])
+                                ->preload()
                                 ->required()
                                 ->columnSpan(3),
-                            TranslatableSelect::make('tax_id', Tax::class, __('vendor_bill.tax'))
+                            TranslatableSelect::forModel('tax_id', Tax::class, 'name')
+                                ->label(__('vendor_bill.tax'))
                                 ->createOptionForm([
                                     Select::make('company_id')
                                         ->relationship('company', 'name')
@@ -372,12 +365,10 @@ class VendorBillResource extends Resource
                                         ->modalWidth('lg');
                                 })
                                 ->columnSpan(3),
-                            TranslatableSelect::standard(
-                                'asset_category_id',
-                                AssetCategory::class,
-                                ['name'],
-                                __('asset.category')
-                            )
+                            TranslatableSelect::forModel('asset_category_id', AssetCategory::class, 'name')
+                                ->label(__('asset.category'))
+                                ->searchableFields(['name'])
+                                ->preload()
                                 ->visible(fn ($get) => $get('product_id') === null) // for service/asset purchases without product
                                 ->createOptionForm([
                                     Select::make('company_id')

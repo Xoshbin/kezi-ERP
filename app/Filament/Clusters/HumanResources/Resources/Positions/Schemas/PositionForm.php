@@ -3,7 +3,7 @@
 namespace App\Filament\Clusters\HumanResources\Resources\Positions\Schemas;
 
 use App\Filament\Forms\Components\MoneyInput;
-use App\Filament\Support\TranslatableSelect;
+use Xoshbin\TranslatableSelect\Components\TranslatableSelect;
 use App\Models\Currency;
 use App\Models\Department;
 use Filament\Facades\Filament;
@@ -31,7 +31,11 @@ class PositionForm
                         ->maxLength(255)
                         ->columnSpan(2),
 
-                    TranslatableSelect::make('department_id', Department::class, __('position.department'))
+                    TranslatableSelect::make('department_id')
+                        ->relationship('department', 'name')
+                        ->label(__('position.department'))
+                        ->searchableFields(['name'])
+                        ->preload()
                         ->columnSpan(1),
 
                     Textarea::make('description')
@@ -96,7 +100,11 @@ class PositionForm
             Section::make(__('position.salary_range'))
                 ->description(__('position.salary_range_description'))
                 ->schema([
-                    TranslatableSelect::make('salary_currency_id', Currency::class, __('position.salary_currency'))
+                    TranslatableSelect::make('salary_currency_id')
+                        ->relationship('salaryCurrency', 'name')
+                        ->label(__('position.salary_currency'))
+                        ->searchableFields(['name', 'code'])
+                        ->preload()
                         ->live()
                         ->default(fn () => $tenant?->currency_id)
                         ->columnSpan(3),

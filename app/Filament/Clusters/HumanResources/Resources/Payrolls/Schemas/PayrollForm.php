@@ -7,6 +7,7 @@ use App\Models\Currency;
 use App\Models\Employee;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
+use Xoshbin\TranslatableSelect\Components\TranslatableSelect;
 use Filament\Forms\Components\Textarea;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
@@ -43,17 +44,17 @@ class PayrollForm
                         ->preload()
                         ->columnSpan(2),
 
-                    Select::make('currency_id')
-                        ->label(__('payroll.fields.currency'))
+                    TranslatableSelect::make('currency_id')
                         ->relationship('currency', 'name')
-                        ->getOptionLabelFromRecordUsing(function (Currency $record): string {
+                        ->label(__('payroll.fields.currency'))
+                        ->searchableFields(['name', 'code'])
+                        ->preload()
+                        ->getOptionLabelUsing(function ($record) {
+                            if (!$record) return '';
                             $currencyName = is_array($record->name) ? ($record->name['en'] ?? (empty($record->name) ? '' : (string) array_values($record->name)[0])) : (string) $record->name;
-
                             return "{$currencyName} ({$record->code})";
                         })
                         ->required()
-                        ->searchable()
-                        ->preload()
                         ->default(fn () => Currency::where('code', 'IQD')->first()?->id)
                         ->columnSpan(1),
 

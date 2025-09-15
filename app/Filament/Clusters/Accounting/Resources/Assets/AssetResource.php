@@ -11,7 +11,7 @@ use App\Filament\Clusters\Accounting\Resources\Assets\Pages\EditAsset;
 use App\Filament\Clusters\Accounting\Resources\Assets\Pages\ListAssets;
 use App\Filament\Clusters\Accounting\Resources\Assets\RelationManagers\DepreciationEntryRelationManager;
 use App\Filament\Forms\Components\MoneyInput;
-use App\Filament\Support\TranslatableSelect;
+use Xoshbin\TranslatableSelect\Components\TranslatableSelect;
 use App\Filament\Tables\Columns\MoneyColumn;
 use App\Models\Account;
 use App\Models\Asset;

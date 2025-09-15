@@ -8,7 +8,7 @@ use App\Filament\Clusters\Accounting\Resources\AnalyticAccounts\Pages\EditAnalyt
 use App\Filament\Clusters\Accounting\Resources\AnalyticAccounts\Pages\ListAnalyticAccounts;
 use App\Filament\Clusters\Accounting\Resources\AnalyticAccounts\RelationManagers\AnalyticPlansRelationManager;
 use App\Filament\Clusters\Accounting\Resources\AnalyticAccounts\RelationManagers\JournalEntryLinesRelationManager;
-use App\Filament\Support\TranslatableSelect;
+use Xoshbin\TranslatableSelect\Components\TranslatableSelect;
 use App\Models\AnalyticAccount;
 use App\Models\Currency;
 use Filament\Actions\BulkActionGroup;

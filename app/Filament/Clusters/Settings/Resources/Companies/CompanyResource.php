@@ -8,7 +8,7 @@ use App\Filament\Clusters\Settings\Resources\Companies\Pages\ListCompanies;
 use App\Filament\Clusters\Settings\Resources\Companies\RelationManagers\AccountsRelationManager;
 use App\Filament\Clusters\Settings\Resources\Companies\RelationManagers\UsersRelationManager;
 use App\Filament\Clusters\Settings\SettingsCluster;
-use App\Filament\Support\TranslatableSelect;
+use Xoshbin\TranslatableSelect\Components\TranslatableSelect;
 use App\Models\Account;
 use App\Models\Company;
 use App\Models\Currency;
@@ -99,12 +99,11 @@ class CompanyResource extends Resource
                             ->label(__('company.enable_reconciliation'))
                             ->helperText(__('company.enable_reconciliation_help'))
                             ->default(false),
-                        TranslatableSelect::standard(
-                            'parent_company_id',
-                            Company::class,
-                            ['name'],
-                            __('company.parent_company_id')
-                        )
+                        TranslatableSelect::make('parent_company_id')
+                            ->relationship('parentCompany', 'name')
+                            ->label(__('company.parent_company_id'))
+                            ->searchableFields(['name'])
+                            ->preload()
                             ->createOptionForm([
                                 TextInput::make('name')
                                     ->label(__('company.name'))

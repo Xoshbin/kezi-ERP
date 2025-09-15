@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use App\Traits\TranslatableSearch;
 use Database\Factories\FiscalPositionFactory;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
@@ -44,7 +43,6 @@ use Spatie\Translatable\HasTranslations;
 class FiscalPosition extends Model
 {
     use HasFactory, HasTranslations;
-    use TranslatableSearch;
 
     /** @var array<int, string> */
     public array $translatable = ['name'];

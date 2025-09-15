@@ -6,7 +6,7 @@ use App\Enums\Loans\LoanStatus;
 use App\Enums\Loans\LoanType;
 use App\Enums\Loans\ScheduleMethod;
 use App\Filament\Forms\Components\MoneyInput;
-use App\Filament\Support\TranslatableSelect;
+use Xoshbin\TranslatableSelect\Components\TranslatableSelect;
 use App\Rules\NotInLockedPeriod;
 use Filament\Facades\Filament;
 use Filament\Forms\Components\DatePicker;
@@ -34,12 +34,11 @@ class LoanAgreementForm
                             return $tenant instanceof \App\Models\Company ? $tenant->getKey() : null;
                         }),
 
-                    TranslatableSelect::standard(
-                        'partner_id',
-                        \App\Models\Partner::class,
-                        ['name', 'email', 'contact_person'],
-                        __('loan.form.partner') ?: 'Partner'
-                    )
+                    TranslatableSelect::make('partner_id')
+                        ->relationship('partner', 'name')
+                        ->label(__('loan.form.partner') ?: 'Partner')
+                        ->searchableFields(['name', 'email', 'contact_person'])
+                        ->preload()
                         ->columnSpanFull()
                         ->createOptionForm([
                             Hidden::make('company_id')->default(fn () => Filament::getTenant()?->getKey()),

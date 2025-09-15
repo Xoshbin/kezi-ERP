@@ -3,7 +3,6 @@
 namespace App\Models;
 
 use App\Observers\AuditLogObserver;
-use App\Traits\TranslatableSearch;
 use Database\Factories\PaymentTermFactory;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Builder;
@@ -56,7 +55,7 @@ use Spatie\Translatable\HasTranslations;
 class PaymentTerm extends Model
 {
     /** @use HasFactory<\Database\Factories\PaymentTermFactory> */
-    use HasFactory, HasTranslations, TranslatableSearch;
+    use HasFactory, HasTranslations;
 
     /** @var array<int, string> */
     public array $translatable = ['name', 'description'];

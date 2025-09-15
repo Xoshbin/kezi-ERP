@@ -8,7 +8,7 @@ use App\Filament\Clusters\Settings\Resources\Taxes\Pages\CreateTax;
 use App\Filament\Clusters\Settings\Resources\Taxes\Pages\EditTax;
 use App\Filament\Clusters\Settings\Resources\Taxes\Pages\ListTaxes;
 use App\Filament\Clusters\Settings\SettingsCluster;
-use App\Filament\Support\TranslatableSelect;
+use Xoshbin\TranslatableSelect\Components\TranslatableSelect;
 use App\Models\Account;
 use App\Models\Company;
 use App\Models\Currency;
@@ -62,18 +62,24 @@ class TaxResource extends Resource
             ->components([
                 Section::make(__('tax.basic_information'))
                     ->schema([
-                        TranslatableSelect::relationship('company_id', 'company', Company::class, __('tax.company'))
+                        TranslatableSelect::make('company_id')
+                            ->relationship('company', 'name')
+                            ->label(__('tax.company'))
                             ->createOptionForm([
                                 TextInput::make('name')->label(__('company.name'))->required(),
                                 TextInput::make('tax_id')->label(__('company.tax_id')),
                                 TextInput::make('fiscal_country')->label(__('company.fiscal_country'))->required(),
-                                TranslatableSelect::make('currency_id', Currency::class, __('company.currency_id'))->required(),
+                                TranslatableSelect::forModel('currency_id', Currency::class, 'name')
+                                    ->label(__('company.currency_id'))
+                                    ->required(),
                             ])
                             ->createOptionModalHeading(__('common.modal_title_create_company'))
                             ->createOptionAction(fn (Action $a) => $a->name('create-company-option')->modalWidth('lg'))
                             ->required(),
 
-                        TranslatableSelect::relationship('tax_account_id', 'taxAccount', Account::class, __('tax.tax_account'))
+                        TranslatableSelect::make('tax_account_id')
+                            ->relationship('taxAccount', 'name')
+                            ->label(__('tax.tax_account'))
                             ->createOptionForm([
                                 Select::make('company_id')->relationship('company', 'name')->label(__('company.name'))->required(),
                                 TextInput::make('code')->label(__('account.code'))->required(),

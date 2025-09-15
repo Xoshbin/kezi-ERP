@@ -3,7 +3,6 @@
 namespace App\Models;
 
 use App\Observers\CurrencyObserver;
-use App\Traits\TranslatableSearch;
 use Database\Factories\CurrencyFactory;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Builder;
@@ -59,7 +58,7 @@ use Spatie\Translatable\HasTranslations;
 #[ObservedBy([CurrencyObserver::class])]
 class Currency extends Model
 {
-    use HasFactory, HasTranslations, TranslatableSearch;
+    use HasFactory, HasTranslations;
 
     /** @var array<int, string> */
     public array $translatable = ['name'];
