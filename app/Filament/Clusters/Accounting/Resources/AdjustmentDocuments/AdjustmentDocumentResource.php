@@ -10,7 +10,7 @@ use App\Filament\Clusters\Accounting\Resources\AdjustmentDocuments\Pages\CreateA
 use App\Filament\Clusters\Accounting\Resources\AdjustmentDocuments\Pages\EditAdjustmentDocument;
 use App\Filament\Clusters\Accounting\Resources\AdjustmentDocuments\Pages\ListAdjustmentDocuments;
 use App\Filament\Forms\Components\MoneyInput;
-use App\Filament\Support\TranslatableSelect;
+use Xoshbin\TranslatableSelect\Components\TranslatableSelect;
 use App\Models\Account;
 use App\Models\AdjustmentDocument;
 use App\Models\Currency;
@@ -249,12 +249,11 @@ class AdjustmentDocumentResource extends Resource
                         ->reorderable(false)
                         ->minItems(1)
                         ->schema([
-                            TranslatableSelect::standard(
-                                'product_id',
-                                Product::class,
-                                ['name', 'sku', 'description'],
-                                __('adjustment_document.product')
-                            )
+                            TranslatableSelect::make('product_id')
+                                ->relationship('product', 'name')
+                                ->label(__('adjustment_document.product'))
+                                ->searchableFields(['name', 'sku', 'description'])
+                                ->preload()
                                 ->reactive()
                                 ->afterStateUpdated(function (callable $set, $state) {
                                     if ($state) {
@@ -337,12 +336,12 @@ class AdjustmentDocumentResource extends Resource
                                         ->modalWidth('lg');
                                 })
                                 ->columnSpan(3),
-                            TranslatableSelect::withFormatter(
-                                'account_id',
-                                Account::class,
-                                fn ($account) => [$account->id => $account->getTranslatedLabel('name').' ('.$account->code.')'],
-                                'Account'
-                            )
+                            TranslatableSelect::make('account_id')
+                                ->relationship('account', 'name')
+                                ->label('Account')
+                                ->searchableFields(['name', 'code'])
+                                ->preload()
+                                ->getOptionLabelFromRecordUsing(fn ($record) => $record->getTranslatedLabel('name').' ('.$record->code.')')
                                 ->required()
                                 ->createOptionForm([
                                     Select::make('company_id')

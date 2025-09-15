@@ -10,7 +10,7 @@ use App\Filament\Clusters\Accounting\Resources\BankStatements\Pages\EditBankStat
 use App\Filament\Clusters\Accounting\Resources\BankStatements\Pages\ListBankStatements;
 use App\Filament\Clusters\Accounting\Resources\BankStatements\RelationManagers\BankStatementLinesRelationManager;
 use App\Filament\Forms\Components\MoneyInput;
-use App\Filament\Support\TranslatableSelect;
+use Xoshbin\TranslatableSelect\Components\TranslatableSelect;
 use App\Filament\Tables\Columns\MoneyColumn;
 use App\Models\BankStatement;
 use App\Models\Currency;
@@ -71,7 +71,8 @@ class BankStatementResource extends Resource
             Section::make(__('bank_statement.statement_information'))
                 ->description(__('bank_statement.statement_information_description'))
                 ->schema([
-                    TranslatableSelect::make('currency_id', Currency::class, __('bank_statement.currency'))
+                    TranslatableSelect::forModel('currency_id', Currency::class, 'name')
+                        ->label(__('bank_statement.currency'))
                         ->required()
                         ->live()
                         ->columnSpan(2)
@@ -199,12 +200,11 @@ class BankStatementResource extends Resource
                                 ->required()
                                 ->maxLength(255)
                                 ->columnSpan(4),
-                            TranslatableSelect::standard(
-                                'partner_id',
-                                Partner::class,
-                                ['name', 'email', 'contact_person'],
-                                __('bank_statement.partner')
-                            )
+                            TranslatableSelect::make('partner_id')
+                                ->relationship('partner', 'name')
+                                ->label(__('bank_statement.partner'))
+                                ->searchableFields(['name', 'email', 'contact_person'])
+                                ->preload()
                                 ->columnSpan(3),
                             MoneyInput::make('amount')
                                 ->label(__('bank_statement.amount'))
@@ -231,7 +231,8 @@ class BankStatementResource extends Resource
                                 ->required()
                                 ->helperText(__('bank_statement.amount_in_statement_currency'))
                                 ->columnSpan(3),
-                            TranslatableSelect::make('foreign_currency_id', Currency::class, __('bank_statement.foreign_currency'))
+                            TranslatableSelect::forModel('foreign_currency_id', Currency::class, 'name')
+                                ->label(__('bank_statement.foreign_currency'))
                                 ->live()
                                 ->options(function ($get) {
                                     $statementCurrencyId = $get('../../../currency_id');

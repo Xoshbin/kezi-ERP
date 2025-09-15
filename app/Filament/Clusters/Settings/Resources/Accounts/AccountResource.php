@@ -8,7 +8,7 @@ use App\Filament\Clusters\Settings\Resources\Accounts\Pages\EditAccount;
 use App\Filament\Clusters\Settings\Resources\Accounts\Pages\ListAccounts;
 use App\Filament\Clusters\Settings\Resources\Accounts\RelationManagers\JournalEntryLinesRelationManager;
 use App\Filament\Clusters\Settings\SettingsCluster;
-use App\Filament\Support\TranslatableSelect;
+use Xoshbin\TranslatableSelect\Components\TranslatableSelect;
 use App\Models\Account;
 use App\Models\Currency;
 use Filament\Actions\Action;
@@ -56,31 +56,6 @@ class AccountResource extends Resource
                 Section::make(__('account.basic_information'))
                     ->description(__('account.basic_information_description'))
                     ->schema([
-                        Select::make('company_id')
-                            ->label(__('account.company'))
-                            ->relationship('company', 'name')
-                            ->required()
-                            ->searchable()
-                            ->createOptionForm([
-                                TextInput::make('name')
-                                    ->label(__('company.name'))
-                                    ->required()
-                                    ->maxLength(255),
-                                Textarea::make('address')
-                                    ->label(__('company.address'))
-                                    ->columnSpanFull(),
-                                TextInput::make('tax_id')
-                                    ->label(__('company.tax_id'))
-                                    ->maxLength(255),
-                                TranslatableSelect::make('currency_id', Currency::class, __('company.currency_id'))
-                                    ->required(),
-                                TextInput::make('fiscal_country')
-                                    ->label(__('company.fiscal_country'))
-                                    ->required()
-                                    ->maxLength(255),
-                            ])
-                            ->createOptionModalHeading(__('common.modal_title_create_company'))
-                            ->createOptionAction(fn (Action $action) => $action->name('create-company-option')->modalWidth('lg')),
                         TextInput::make('code')
                             ->label(__('account.code'))
                             ->required()
@@ -114,10 +89,6 @@ class AccountResource extends Resource
     {
         return $table
             ->columns([
-                TextColumn::make('company.name')
-                    ->label(__('account.company'))
-                    ->numeric()
-                    ->sortable(),
                 TextColumn::make('code')
                     ->label(__('account.code'))
                     ->searchable(),

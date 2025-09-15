@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use App\Traits\TranslatableSearch;
 use Database\Factories\AnalyticPlanFactory;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
@@ -48,8 +47,6 @@ class AnalyticPlan extends Model
 {
     /** @use HasFactory<\Database\Factories\AnalyticPlanFactory> */
     use HasFactory, HasTranslations;
-
-    use TranslatableSearch;
 
     /** @var array<int, string> */
     public array $translatable = ['name'];

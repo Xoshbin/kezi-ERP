@@ -14,7 +14,7 @@ use App\Filament\Clusters\Accounting\Resources\Payments\RelationManagers\Invoice
 use App\Filament\Clusters\Accounting\Resources\Payments\RelationManagers\JournalEntriesRelationManager;
 use App\Filament\Clusters\Accounting\Resources\Payments\RelationManagers\VendorBillsRelationManager;
 use App\Filament\Forms\Components\MoneyInput;
-use App\Filament\Support\TranslatableSelect;
+use Xoshbin\TranslatableSelect\Components\TranslatableSelect;
 use App\Filament\Tables\Columns\MoneyColumn;
 use App\Models\Currency;
 use App\Models\Journal;
@@ -94,7 +94,11 @@ class PaymentResource extends Resource
                                 ->required()
                                 ->columnSpanFull(),
 
-                            TranslatableSelect::make('paid_to_from_partner_id', Partner::class, __('payment.form.partner'))
+                            TranslatableSelect::make('paid_to_from_partner_id')
+                                ->relationship('partner', 'name')
+                                ->label(__('payment.form.partner'))
+                                ->searchableFields(['name', 'tax_id'])
+                                ->preload()
                                 ->required()
                                 ->columnSpanFull(),
 
@@ -124,7 +128,11 @@ class PaymentResource extends Resource
 
                     Group::make()
                         ->schema([
-                            TranslatableSelect::make('journal_id', Journal::class, __('payment.form.journal_id'))
+                            TranslatableSelect::make('journal_id')
+                                ->relationship('journal', 'name')
+                                ->label(__('payment.form.journal_id'))
+                                ->searchableFields(['name', 'code'])
+                                ->preload()
                                 ->required()
                                 ->columnSpanFull(),
                             Select::make('payment_method')
@@ -132,7 +140,11 @@ class PaymentResource extends Resource
                                 ->options(collect(PaymentMethod::cases())->mapWithKeys(fn ($case) => [$case->value => $case->label()]))
                                 ->required()
                                 ->columnSpanFull(),
-                            TranslatableSelect::make('currency_id', Currency::class, __('payment.form.currency_id'))
+                            TranslatableSelect::make('currency_id')
+                                ->relationship('currency', 'name')
+                                ->label(__('payment.form.currency_id'))
+                                ->searchableFields(['name', 'code'])
+                                ->preload()
                                 ->required()
                                 ->default(function (): ?int {
                                     $tenant = Filament::getTenant();

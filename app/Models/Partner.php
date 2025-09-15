@@ -6,7 +6,6 @@ use App\Enums\Partners\PartnerType;
 use App\Enums\Purchases\VendorBillStatus;
 use App\Enums\Sales\InvoiceStatus;
 use App\Observers\PartnerObserver;
-use App\Traits\TranslatableSearch;
 use Brick\Money\Money;
 use Database\Factories\PartnerFactory;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
@@ -82,7 +81,6 @@ use Illuminate\Support\Carbon;
 class Partner extends Model
 {
     use HasFactory, SoftDeletes;
-    use TranslatableSearch;
 
     /**
      * The attributes that are mass assignable.
