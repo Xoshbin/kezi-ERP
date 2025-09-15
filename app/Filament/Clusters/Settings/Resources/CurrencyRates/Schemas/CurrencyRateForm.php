@@ -2,6 +2,7 @@
 
 namespace App\Filament\Clusters\Settings\Resources\CurrencyRates\Schemas;
 
+use App\Models\Currency;
 use Carbon\Carbon;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
@@ -15,12 +16,11 @@ class CurrencyRateForm
     {
         return $schema
             ->components([
-                TranslatableSelect::make('currency_id')
-                    ->relationship('currency', 'name')
+                TranslatableSelect::forModel('currency_id', Currency::class)
                     ->label(__('currency.exchange_rates.currency'))
-                    ->searchableFields(['name', 'code'])
+                    ->searchable()
                     ->preload()
-                    ->getOptionLabelUsing(function ($record) {
+                    ->getOptionLabelFromRecordUsing(function ($record) {
                         if (!$record) return '';
                         $currencyName = is_array($record->name) ? ($record->name['en'] ?? (empty($record->name) ? '' : (string) array_values($record->name)[0])) : (string) $record->name;
                         return "{$currencyName} ({$record->code})";
