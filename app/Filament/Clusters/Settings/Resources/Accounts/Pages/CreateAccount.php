@@ -4,6 +4,7 @@ namespace App\Filament\Clusters\Settings\Resources\Accounts\Pages;
 
 use App\Filament\Clusters\Settings\Resources\Accounts\AccountResource;
 use App\Services\AccountService;
+use Filament\Facades\Filament;
 use Filament\Resources\Pages\CreateRecord;
 use Illuminate\Database\Eloquent\Model;
 use LaraZeus\SpatieTranslatable\Actions\LocaleSwitcher;
@@ -25,6 +26,14 @@ class CreateAccount extends CreateRecord
     public function getTitle(): string
     {
         return __('filament.actions.create').' '.__('account.label');
+    }
+
+    protected function mutateFormDataBeforeCreate(array $data): array
+    {
+        $tenant = Filament::getTenant();
+        $data['company_id'] = $tenant?->getKey() ?? 0;
+
+        return $data;
     }
 
     protected function handleRecordCreation(array $data): Model
