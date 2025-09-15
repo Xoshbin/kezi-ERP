@@ -8,6 +8,7 @@ use App\Enums\Products\ProductType;
 use App\Observers\ProductObserver;
 use Brick\Money\Money;
 use Database\Factories\ProductFactory;
+use Eloquent;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -62,7 +63,7 @@ use Spatie\Translatable\HasTranslations;
  * @method static Builder<static>|Product withTrashed(bool $withTrashed = true)
  * @method static Builder<static>|Product withoutTrashed()
  *
- * @mixin \Eloquent
+ * @mixin Eloquent
  */
 #[ObservedBy([ProductObserver::class])]
 class Product extends Model

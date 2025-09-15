@@ -2,11 +2,7 @@
 
 namespace App\Filament\Clusters\HumanResources\Resources\Employees\Schemas;
 
-use Xoshbin\TranslatableSelect\Components\TranslatableSelect;
-use App\Models\Department;
-use App\Models\Employee;
-use App\Models\Position;
-use App\Models\User;
+use App\Models\Company;
 use Filament\Facades\Filament;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
@@ -14,12 +10,13 @@ use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
+use Xoshbin\TranslatableSelect\Components\TranslatableSelect;
 
 class EmployeeForm
 {
     public static function configure(Schema $schema): Schema
     {
-        /** @var \App\Models\Company|null $tenant */
+        /** @var Company|null $tenant */
         $tenant = Filament::getTenant();
 
         return $schema->components([
@@ -84,7 +81,7 @@ class EmployeeForm
                         ->label(__('employee.manager'))
                         ->searchableFields(['first_name', 'last_name', 'employee_number'])
                         ->preload()
-                        ->getOptionLabelUsing(fn ($record) => $record ? $record->first_name . ' ' . $record->last_name . ' (' . $record->employee_number . ')' : '')
+                        ->getOptionLabelUsing(fn($record) => $record ? $record->first_name . ' ' . $record->last_name . ' (' . $record->employee_number . ')' : '')
                         ->columnSpan(1),
 
                     TranslatableSelect::make('user_id')
@@ -92,7 +89,7 @@ class EmployeeForm
                         ->label(__('employee.user_account'))
                         ->searchableFields(['name', 'email'])
                         ->preload()
-                        ->modifyQueryUsing(fn ($query) => $query->whereHas('companies', fn ($q) => $q->where('companies.id', $tenant?->id)))
+                        ->modifyQueryUsing(fn($query) => $query->whereHas('companies', fn($q) => $q->where('companies.id', $tenant?->id)))
                         ->columnSpan(1),
                 ])
                 ->columns(2)

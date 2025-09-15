@@ -3,6 +3,7 @@
 namespace App\Filament\Clusters\Inventory\Resources\Products\Pages;
 
 use App\Filament\Clusters\Inventory\Resources\Products\ProductResource;
+use App\Models\Company;
 use Exception;
 use Filament\Facades\Filament;
 use Filament\Resources\Pages\CreateRecord;
@@ -26,7 +27,7 @@ class CreateProduct extends CreateRecord
     protected function handleRecordCreation(array $data): Model
     {
         // Add company_id from tenant context
-        /** @var \App\Models\Company|null $tenant */
+        /** @var Company|null $tenant */
         $tenant = Filament::getTenant();
         if (! $tenant) {
             throw new Exception('No tenant set when creating Product');

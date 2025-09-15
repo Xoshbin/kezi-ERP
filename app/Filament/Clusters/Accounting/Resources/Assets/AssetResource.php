@@ -11,13 +11,14 @@ use App\Filament\Clusters\Accounting\Resources\Assets\Pages\EditAsset;
 use App\Filament\Clusters\Accounting\Resources\Assets\Pages\ListAssets;
 use App\Filament\Clusters\Accounting\Resources\Assets\RelationManagers\DepreciationEntryRelationManager;
 use App\Filament\Forms\Components\MoneyInput;
-use Xoshbin\TranslatableSelect\Components\TranslatableSelect;
 use App\Filament\Tables\Columns\MoneyColumn;
 use App\Models\Account;
 use App\Models\Asset;
+use App\Models\Company;
 use App\Models\Currency;
 use App\Models\CurrencyRate;
 use App\Rules\NotInLockedPeriod;
+use BackedEnum;
 use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
@@ -32,12 +33,14 @@ use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
+use Xoshbin\TranslatableSelect\Components\TranslatableSelect;
 
 class AssetResource extends Resource
 {
     protected static ?string $model = Asset::class;
 
-    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-archive-box';
+    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-archive-box';
 
     protected static ?int $navigationSort = 2;
 
@@ -81,18 +84,18 @@ class AssetResource extends Resource
                         ->default(function (): ?int {
                             $tenant = Filament::getTenant();
 
-                            return $tenant instanceof \App\Models\Company ? $tenant->currency_id : null;
+                            return $tenant instanceof Company ? $tenant->currency_id : null;
                         })
                         ->afterStateUpdated(function (callable $set, $state) {
                             if ($state) {
                                 $currency = Currency::find($state);
                                 // Ensure we have a single Currency model, not a collection
-                                if ($currency instanceof \Illuminate\Database\Eloquent\Collection) {
+                                if ($currency instanceof Collection) {
                                     $currency = $currency->first();
                                 }
                                 $company = Filament::getTenant();
 
-                                if ($currency && $company instanceof \App\Models\Company && $currency->id !== $company->currency_id) {
+                                if ($currency && $company instanceof Company && $currency->id !== $company->currency_id) {
                                     $latestRate = CurrencyRate::getLatestRate($currency->id, $company->id);
                                     if ($latestRate) {
                                         $set('current_exchange_rate', $latestRate);
@@ -133,7 +136,7 @@ class AssetResource extends Resource
                             $currencyId = $get('currency_id');
                             $company = Filament::getTenant();
 
-                            return $currencyId && $company instanceof \App\Models\Company && $currencyId != $company->currency_id;
+                            return $currencyId && $company instanceof Company && $currencyId != $company->currency_id;
                         })
                         ->helperText(__('asset.exchange_rate_helper')),
                 ])

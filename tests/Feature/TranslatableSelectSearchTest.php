@@ -16,13 +16,6 @@ class TranslatableSelectSearchTest extends TestCase
 
     protected Company $company;
 
-    protected function setUp(): void
-    {
-        parent::setUp();
-
-        $this->company = Company::factory()->create();
-    }
-
     /** @test */
     public function test_locale_resolver_detects_available_locales_correctly()
     {
@@ -202,8 +195,8 @@ class TranslatableSelectSearchTest extends TestCase
             'is_deprecated' => false
         ]);
 
-        $searchService = app(\Xoshbin\TranslatableSelect\Services\TranslatableSearchService::class);
-        $localeResolver = app(\Xoshbin\TranslatableSelect\Services\LocaleResolver::class);
+        $searchService = app(TranslatableSearchService::class);
+        $localeResolver = app(LocaleResolver::class);
         $searchLocales = $localeResolver->getModelLocales(Account::class);
 
         // Test income account filtering (as used in ProductResource)
@@ -242,8 +235,8 @@ class TranslatableSelectSearchTest extends TestCase
             'is_deprecated' => false
         ]);
 
-        $searchService = app(\Xoshbin\TranslatableSelect\Services\TranslatableSearchService::class);
-        $localeResolver = app(\Xoshbin\TranslatableSelect\Services\LocaleResolver::class);
+        $searchService = app(TranslatableSearchService::class);
+        $localeResolver = app(LocaleResolver::class);
         $searchLocales = $localeResolver->getModelLocales(Account::class);
 
         // Test expense account filtering (as used in ProductResource)
@@ -275,7 +268,7 @@ class TranslatableSelectSearchTest extends TestCase
                     'searchFields' => ['name', 'code'],
                     'labelField' => 'name',
                     'searchLocales' => ['en', 'ckb', 'ar'],
-                    'queryModifier' => fn ($query) => $query->where('company_id', $this->company->id)
+                    'queryModifier' => fn($query) => $query->where('company_id', $this->company->id)
                         ->whereIn('type', [AccountType::Income, AccountType::OtherIncome]),
                     'limit' => 50,
                 ]
@@ -289,5 +282,12 @@ class TranslatableSelectSearchTest extends TestCase
 
         // This test is for debugging, so we'll just assert it runs
         $this->assertTrue(true);
+    }
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $this->company = Company::factory()->create();
     }
 }

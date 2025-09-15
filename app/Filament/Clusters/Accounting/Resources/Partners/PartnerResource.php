@@ -13,10 +13,10 @@ use App\Filament\Clusters\Accounting\Resources\Partners\RelationManagers\Invoice
 use App\Filament\Clusters\Accounting\Resources\Partners\RelationManagers\PaymentsRelationManager;
 use App\Filament\Clusters\Accounting\Resources\Partners\RelationManagers\UnreconciledEntriesRelationManager;
 use App\Filament\Clusters\Accounting\Resources\Partners\RelationManagers\VendorBillsRelationManager;
-use Xoshbin\TranslatableSelect\Components\TranslatableSelect;
 use App\Filament\Tables\Columns\MoneyColumn;
 use App\Models\Account;
 use App\Models\Partner;
+use BackedEnum;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
@@ -37,12 +37,13 @@ use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Xoshbin\TranslatableSelect\Components\TranslatableSelect;
 
 class PartnerResource extends Resource
 {
     protected static ?string $model = Partner::class;
 
-    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-user-group';
+    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-user-group';
 
     protected static ?int $navigationSort = 6;
 

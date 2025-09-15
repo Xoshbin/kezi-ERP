@@ -5,9 +5,14 @@ namespace App\Filament\Clusters\Accounting\Resources\LoanAgreements\Schemas;
 use App\Enums\Loans\LoanStatus;
 use App\Enums\Loans\LoanType;
 use App\Enums\Loans\ScheduleMethod;
+use App\Enums\Partners\PartnerType;
 use App\Filament\Forms\Components\MoneyInput;
-use Xoshbin\TranslatableSelect\Components\TranslatableSelect;
+use App\Models\Company;
+use App\Models\Currency;
+use App\Models\LoanAgreement;
+use App\Models\Partner;
 use App\Rules\NotInLockedPeriod;
+use Filament\Actions\Action;
 use Filament\Facades\Filament;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Hidden;
@@ -18,6 +23,7 @@ use Filament\Forms\Components\ToggleButtons;
 use Filament\Schemas\Components\Group;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
+use Xoshbin\TranslatableSelect\Components\TranslatableSelect;
 
 class LoanAgreementForm
 {
@@ -31,7 +37,7 @@ class LoanAgreementForm
                         ->default(function () {
                             $tenant = Filament::getTenant();
 
-                            return $tenant instanceof \App\Models\Company ? $tenant->getKey() : null;
+                            return $tenant instanceof Company ? $tenant->getKey() : null;
                         }),
 
                     TranslatableSelect::make('partner_id')
@@ -43,13 +49,13 @@ class LoanAgreementForm
                         ->createOptionForm([
                             Hidden::make('company_id')->default(fn () => Filament::getTenant()?->getKey()),
                             TextInput::make('name')->label(__('partner.name') ?: 'Name')->required(),
-                            Select::make('type')->label(__('partner.type') ?: 'Type')->options(\App\Enums\Partners\PartnerType::class)->required(),
+                            Select::make('type')->label(__('partner.type') ?: 'Type')->options(PartnerType::class)->required(),
                             TextInput::make('email')->label(__('partner.email') ?: 'Email')->email(),
                             TextInput::make('contact_person')->label(__('partner.contact_person') ?: 'Contact Person'),
                         ])
-                        ->createOptionUsing(fn (array $data) => \App\Models\Partner::create($data)->getKey())
+                        ->createOptionUsing(fn(array $data) => Partner::create($data)->getKey())
                         ->createOptionModalHeading(__('common.modal_title_create_partner') ?: 'Create Partner')
-                        ->createOptionAction(fn (\Filament\Actions\Action $action) => $action->modalWidth('lg')),
+                        ->createOptionAction(fn(Action $action) => $action->modalWidth('lg')),
 
                     Group::make()
                         ->schema([
@@ -62,12 +68,12 @@ class LoanAgreementForm
                                 ->label(__('loan.form.loan_type') ?: 'Loan Type')
                                 ->options(collect(LoanType::cases())->mapWithKeys(fn (LoanType $t) => [$t->value => ucfirst($t->value)])->toArray())
                                 ->colors([
-                                    \App\Enums\Loans\LoanType::Receivable->value => 'success',
-                                    \App\Enums\Loans\LoanType::Payable->value => 'danger',
+                                    LoanType::Receivable->value => 'success',
+                                    LoanType::Payable->value => 'danger',
                                 ])
                                 ->icons([
-                                    'heroicon-m-arrow-down-circle' => \App\Enums\Loans\LoanType::Receivable->value,
-                                    'heroicon-m-arrow-up-circle' => \App\Enums\Loans\LoanType::Payable->value,
+                                    'heroicon-m-arrow-down-circle' => LoanType::Receivable->value,
+                                    'heroicon-m-arrow-up-circle' => LoanType::Payable->value,
                                 ])
                                 ->inline()
                                 ->required()
@@ -103,13 +109,13 @@ class LoanAgreementForm
 
                     Group::make()
                         ->schema([
-                            TranslatableSelect::make('currency_id', \App\Models\Currency::class, __('loan.form.currency') ?: 'Currency')
+                            TranslatableSelect::make('currency_id', Currency::class, __('loan.form.currency') ?: 'Currency')
                                 ->required()
                                 ->live()
                                 ->default(function (): ?int {
                                     $tenant = Filament::getTenant();
 
-                                    return $tenant instanceof \App\Models\Company ? $tenant->currency_id : null;
+                                    return $tenant instanceof Company ? $tenant->currency_id : null;
                                 })
                                 ->createOptionForm([
                                     TextInput::make('code')->label(__('currency.code') ?: 'Code')->required()->maxLength(3),
@@ -117,7 +123,7 @@ class LoanAgreementForm
                                     TextInput::make('symbol')->label(__('currency.symbol') ?: 'Symbol')->maxLength(5),
                                 ])
                                 ->createOptionModalHeading(__('common.modal_title_create_currency') ?: 'Create Currency')
-                                ->createOptionAction(fn (\Filament\Actions\Action $action) => $action->modalWidth('lg'))
+                                ->createOptionAction(fn(Action $action) => $action->modalWidth('lg'))
                                 ->columnSpanFull(),
 
                             MoneyInput::make('principal_amount')
@@ -131,7 +137,7 @@ class LoanAgreementForm
                                 ->currencyField('currency_id')
                                 ->disabled()
                                 ->dehydrated(false)
-                                ->visible(fn (?\App\Models\LoanAgreement $record) => $record && $record->outstanding_principal)
+                                ->visible(fn(?LoanAgreement $record) => $record && $record->outstanding_principal)
                                 ->columnSpanFull(),
                         ])
                         ->columns(12)

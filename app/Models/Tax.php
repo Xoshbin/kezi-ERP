@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Enums\Accounting\TaxType;
 use App\Observers\TaxObserver;
 use Database\Factories\TaxFactory;
+use Eloquent;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -47,7 +48,7 @@ use Spatie\Translatable\HasTranslations;
  * @method static Builder<static>|Tax whereType($value)
  * @method static Builder<static>|Tax whereUpdatedAt($value)
  *
- * @mixin \Eloquent
+ * @mixin Eloquent
  */
 #[ObservedBy([TaxObserver::class])]
 
