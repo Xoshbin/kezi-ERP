@@ -16,6 +16,9 @@ use App\Filament\Clusters\Accounting\Resources\Payments\RelationManagers\VendorB
 use App\Filament\Forms\Components\MoneyInput;
 use App\Filament\Tables\Columns\MoneyColumn;
 use App\Models\Company;
+use App\Models\Currency;
+use App\Models\Journal;
+use App\Models\Partner;
 use App\Models\Payment;
 use App\Services\PaymentService;
 use BackedEnum;
@@ -93,8 +96,8 @@ class PaymentResource extends Resource
                                 ->required()
                                 ->columnSpanFull(),
 
-                            TranslatableSelect::make('paid_to_from_partner_id')
-                                ->relationship('partner', 'name')
+                            TranslatableSelect::forModel('paid_to_from_partner_id', Partner::class, 'name')
+                                ->searchable()
                                 ->label(__('payment.form.partner'))
                                 ->searchableFields(['name', 'tax_id'])
                                 ->preload()
@@ -127,7 +130,9 @@ class PaymentResource extends Resource
 
                     Group::make()
                         ->schema([
-                            TranslatableSelect::make('journal_id')
+                            TranslatableSelect::forModel('journal_id', Journal::class, 'name')
+                                ->label(__('payment.form.journal_id'))
+                                ->searchable()
                                 ->relationship('journal', 'name')
                                 ->label(__('payment.form.journal_id'))
                                 ->searchableFields(['name', 'code'])
@@ -137,12 +142,13 @@ class PaymentResource extends Resource
                             Select::make('payment_method')
                                 ->label(__('payment.form.payment_method'))
                                 ->options(collect(PaymentMethod::cases())->mapWithKeys(fn ($case) => [$case->value => $case->label()]))
+                                ->searchable()
                                 ->required()
                                 ->columnSpanFull(),
-                            TranslatableSelect::make('currency_id')
-                                ->relationship('currency', 'name')
+                            TranslatableSelect::forModel('currency_id', Currency::class, 'name')
                                 ->label(__('payment.form.currency_id'))
                                 ->searchableFields(['name', 'code'])
+                                ->searchable()
                                 ->preload()
                                 ->required()
                                 ->default(function (): ?int {

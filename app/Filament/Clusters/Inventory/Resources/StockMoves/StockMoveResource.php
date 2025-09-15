@@ -9,8 +9,10 @@ use App\Filament\Clusters\Inventory\Resources\StockMoves\Pages\CreateStockMove;
 use App\Filament\Clusters\Inventory\Resources\StockMoves\Pages\EditStockMove;
 use App\Filament\Clusters\Inventory\Resources\StockMoves\Pages\ListStockMoves;
 use App\Filament\Clusters\Inventory\Resources\StockMoves\Pages\ViewStockMove;
-use App\Models\Company;
+use App\Models\Product;
+use App\Models\StockLocation;
 use App\Models\StockMove;
+use BackedEnum;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
@@ -28,6 +30,7 @@ use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Xoshbin\TranslatableSelect\Components\TranslatableSelect;
 
 class StockMoveResource extends Resource
 {
@@ -35,7 +38,7 @@ class StockMoveResource extends Resource
 
     protected static ?string $cluster = InventoryCluster::class;
 
-    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-arrow-path';
+    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-arrow-path';
 
     protected static ?int $navigationSort = 3;
 
@@ -56,22 +59,13 @@ class StockMoveResource extends Resource
 
     public static function form(Schema $schema): Schema
     {
-        $company = Company::first();
-
         return $schema->components([
             Section::make(__('stock_move.basic_information'))
                 ->description(__('stock_move.basic_information_description'))
                 ->icon('heroicon-o-arrow-path')
                 ->schema([
                     Grid::make(3)->schema([
-                        Select::make('company_id')
-                            ->relationship('company', 'name')
-                            ->label(__('stock_move.company'))
-                            ->required()
-                            ->searchable()
-                            ->default($company?->id),
-                        Select::make('product_id')
-                            ->relationship('product', 'name')
+                        TranslatableSelect::forModel('product_id', Product::class)
                             ->label(__('stock_move.product'))
                             ->required()
                             ->searchable()
@@ -82,14 +76,12 @@ class StockMoveResource extends Resource
                             ->placeholder(__('stock_move.reference_placeholder')),
                     ]),
                     Grid::make(2)->schema([
-                        Select::make('from_location_id')
-                            ->relationship('fromLocation', 'name')
+                        TranslatableSelect::forModel('from_location_id', StockLocation::class)
                             ->label(__('stock_move.from_location'))
                             ->required()
                             ->searchable()
                             ->preload(),
-                        Select::make('to_location_id')
-                            ->relationship('toLocation', 'name')
+                        TranslatableSelect::forModel('to_location_id', StockLocation::class)
                             ->label(__('stock_move.to_location'))
                             ->required()
                             ->searchable()

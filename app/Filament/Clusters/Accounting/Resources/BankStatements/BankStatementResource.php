@@ -15,6 +15,7 @@ use App\Models\BankStatement;
 use App\Models\Company;
 use App\Models\Currency;
 use App\Models\Journal;
+use App\Models\Partner;
 use BackedEnum;
 use Closure;
 use Filament\Actions\Action;
@@ -74,6 +75,8 @@ class BankStatementResource extends Resource
                 ->schema([
                     TranslatableSelect::forModel('currency_id', Currency::class, 'name')
                         ->label(__('bank_statement.currency'))
+                        ->searchable()
+                        ->preload()
                         ->required()
                         ->live()
                         ->columnSpan(2)
@@ -201,9 +204,9 @@ class BankStatementResource extends Resource
                                 ->required()
                                 ->maxLength(255)
                                 ->columnSpan(4),
-                            TranslatableSelect::make('partner_id')
-                                ->relationship('partner', 'name')
+                            TranslatableSelect::forModel('partner_id', Partner::class, 'name')
                                 ->label(__('bank_statement.partner'))
+                                ->searchable()
                                 ->searchableFields(['name', 'email', 'contact_person'])
                                 ->preload()
                                 ->columnSpan(3),
@@ -234,6 +237,8 @@ class BankStatementResource extends Resource
                                 ->columnSpan(3),
                             TranslatableSelect::forModel('foreign_currency_id', Currency::class, 'name')
                                 ->label(__('bank_statement.foreign_currency'))
+                                ->searchable()
+                                ->preload()
                                 ->live()
                                 ->options(function ($get) {
                                     $statementCurrencyId = $get('../../../currency_id');

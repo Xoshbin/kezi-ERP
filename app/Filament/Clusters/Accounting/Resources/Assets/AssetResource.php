@@ -78,8 +78,11 @@ class AssetResource extends Resource
                         ->maxLength(255)
                         ->columnSpan(2),
 
-                    TranslatableSelect::make('currency_id', Currency::class, __('asset.currency'))
+                    TranslatableSelect::forModel('currency_id', Currency::class)
+                        ->label(__('asset.currency'))
                         ->required()
+                        ->searchable()
+                        ->preload()
                         ->live()
                         ->default(function (): ?int {
                             $tenant = Filament::getTenant();
@@ -174,6 +177,7 @@ class AssetResource extends Resource
 
                     Select::make('depreciation_method')
                         ->label(__('asset.depreciation_method'))
+                        ->searchable()
                         ->options(
                             collect(DepreciationMethod::cases())
                                 ->mapWithKeys(fn (DepreciationMethod $method) => [$method->value => $method->label()])
@@ -181,15 +185,11 @@ class AssetResource extends Resource
                         ->required()
                         ->columnSpan(1),
 
-                    TranslatableSelect::relationship(
-                        'asset_account_id',
-                        'assetAccount',
-                        Account::class,
-                        __('asset.asset_account'),
-                        'name',
-                        null,
-                        fn ($query) => $query->where('type', AccountType::FixedAssets->value)
-                    )
+                    TranslatableSelect::forModel('asset_account_id', Account::class)
+                        ->label(__('asset.asset_account'))
+                        ->searchableFields(['name', 'code'])
+                        ->searchable()
+                        ->preload()
                         ->createOptionForm([
                             Select::make('company_id')
                                 ->relationship('company', 'name')
@@ -212,15 +212,11 @@ class AssetResource extends Resource
                         ->required()
                         ->columnSpan(1),
 
-                    TranslatableSelect::relationship(
-                        'depreciation_expense_account_id',
-                        'depreciationExpenseAccount',
-                        Account::class,
-                        __('asset.depreciation_expense_account'),
-                        'name',
-                        null,
-                        fn ($query) => $query->where('type', AccountType::Depreciation->value)
-                    )
+                    TranslatableSelect::forModel('depreciation_expense_account_id', Account::class)
+                        ->label(__('asset.depreciation_expense_account'))
+                        ->searchableFields(['name', 'code'])
+                        ->searchable()
+                        ->preload()
                         ->createOptionForm([
                             Select::make('company_id')
                                 ->relationship('company', 'name')
@@ -243,15 +239,11 @@ class AssetResource extends Resource
                         ->required()
                         ->columnSpan(1),
 
-                    TranslatableSelect::relationship(
-                        'accumulated_depreciation_account_id',
-                        'accumulatedDepreciationAccount',
-                        Account::class,
-                        __('asset.accumulated_depreciation_account'),
-                        'name',
-                        null,
-                        fn ($query) => $query->where('type', AccountType::FixedAssets->value)
-                    )
+                    TranslatableSelect::forModel('accumulated_depreciation_account_id', Account::class)
+                        ->label(__('asset.accumulated_depreciation_account'))
+                        ->searchableFields(['name', 'code'])
+                        ->searchable()
+                        ->preload()
                         ->createOptionForm([
                             Select::make('company_id')
                                 ->relationship('company', 'name')

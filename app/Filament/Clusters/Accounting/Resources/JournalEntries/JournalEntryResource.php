@@ -9,10 +9,12 @@ use App\Filament\Clusters\Accounting\Resources\JournalEntries\Pages\EditJournalE
 use App\Filament\Clusters\Accounting\Resources\JournalEntries\Pages\ListJournalEntries;
 use App\Filament\Forms\Components\MoneyInput;
 use App\Filament\Tables\Columns\MoneyColumn;
+use App\Models\Account;
 use App\Models\Company;
 use App\Models\Currency;
 use App\Models\Journal;
 use App\Models\JournalEntry;
+use App\Models\Partner;
 use App\Rules\ActiveAccount;
 use BackedEnum;
 use Filament\Actions\Action;
@@ -73,12 +75,16 @@ class JournalEntryResource extends Resource
                 ->schema([
                     TranslatableSelect::forModel('journal_id', Journal::class, 'name')
                         ->label(__('journal_entry.journal'))
+                        ->searchable()
+                        ->preload()
                         ->required()
                         ->default(Journal::where('type', JournalType::Miscellaneous)->first()?->id)
                         ->columnSpan(2),
                     TranslatableSelect::forModel('currency_id', Currency::class, 'name')
                         ->label(__('journal_entry.currency'))
                         ->required()
+                        ->searchable()
+                        ->preload()
                         ->live()
                         ->default(fn() => (Filament::getTenant() instanceof Company) ? Filament::getTenant()->currency_id : null)
                         ->createOptionForm([
@@ -122,10 +128,10 @@ class JournalEntryResource extends Resource
                             TableColumn::make(__('journal_entry.description'))->width('30%'),
                         ])
                         ->schema([
-                            TranslatableSelect::make('account_id')
-                                ->relationship('account', 'name')
+                            TranslatableSelect::forModel('account_id', Account::class)
                                 ->label(__('journal_entry.account'))
                                 ->searchableFields(['name', 'code'])
+                                ->searchable()
                                 ->preload()
                                 ->getOptionLabelFromRecordUsing(fn($record) => $record->getTranslatedLabel('name') . ' (' . $record->code . ')')
                                 ->rules([new ActiveAccount])
@@ -143,10 +149,11 @@ class JournalEntryResource extends Resource
                                 ->currencyField('../../company.currency_id')
                                 ->live(onBlur: true)
                                 ->columnSpan(3),
-                            TranslatableSelect::make('partner_id')
-                                ->relationship('partner', 'name')
+                            TranslatableSelect::
+                            forModel('partner_id', Partner::class, 'name')
                                 ->label(__('journal_entry.partner'))
                                 ->searchableFields(['name', 'email', 'contact_person'])
+                                ->searchable()
                                 ->preload()
                                 ->columnSpan(3),
                             TextInput::make('description')

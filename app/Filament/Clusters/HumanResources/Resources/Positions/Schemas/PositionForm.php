@@ -3,8 +3,8 @@
 namespace App\Filament\Clusters\HumanResources\Resources\Positions\Schemas;
 
 use App\Filament\Forms\Components\MoneyInput;
-use App\Models\Company;
-use Filament\Facades\Filament;
+use App\Models\Currency;
+use App\Models\Department;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
@@ -17,9 +17,6 @@ class PositionForm
 {
     public static function configure(Schema $schema): Schema
     {
-        /** @var Company|null $tenant */
-        $tenant = Filament::getTenant();
-
         return $schema->components([
             Section::make(__('position.basic_information'))
                 ->description(__('position.basic_information_description'))
@@ -30,9 +27,9 @@ class PositionForm
                         ->maxLength(255)
                         ->columnSpan(2),
 
-                    TranslatableSelect::make('department_id')
-                        ->relationship('department', 'name')
+                    TranslatableSelect::forModel('department_id', Department::class)
                         ->label(__('position.department'))
+                        ->searchable()
                         ->searchableFields(['name'])
                         ->preload()
                         ->columnSpan(1),
@@ -99,23 +96,22 @@ class PositionForm
             Section::make(__('position.salary_range'))
                 ->description(__('position.salary_range_description'))
                 ->schema([
-                    TranslatableSelect::make('salary_currency_id')
-                        ->relationship('salaryCurrency', 'name')
+                    TranslatableSelect::forModel('currency_id', Currency::class)
+                        ->searchable()
                         ->label(__('position.salary_currency'))
                         ->searchableFields(['name', 'code'])
                         ->preload()
                         ->live()
-                        ->default(fn () => $tenant?->currency_id)
                         ->columnSpan(3),
 
                     MoneyInput::make('min_salary')
                         ->label(__('position.min_salary'))
-                        ->currencyField('salary_currency_id')
+                        ->currencyField('currency_id')
                         ->columnSpan(1),
 
                     MoneyInput::make('max_salary')
                         ->label(__('position.max_salary'))
-                        ->currencyField('salary_currency_id')
+                        ->currencyField('currency_id')
                         ->columnSpan(1),
                 ])
                 ->columns(3)
