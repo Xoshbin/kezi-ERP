@@ -2,7 +2,7 @@
 
 namespace App\Filament\Clusters\HumanResources\Resources\Departments\Schemas;
 
-use App\Filament\Support\TranslatableSelect;
+use Xoshbin\TranslatableSelect\Components\TranslatableSelect;
 use App\Models\Department;
 use App\Models\Employee;
 use Filament\Forms\Components\Textarea;
@@ -25,12 +25,11 @@ class DepartmentForm
                         ->maxLength(255)
                         ->columnSpan(2),
 
-                    TranslatableSelect::standard(
-                        'parent_department_id',
-                        Department::class,
-                        ['name'],
-                        __('department.parent_department')
-                    )
+                    TranslatableSelect::make('parent_department_id')
+                        ->relationship('parentDepartment', 'name')
+                        ->label(__('department.parent_department'))
+                        ->searchableFields(['name'])
+                        ->preload()
                         ->columnSpan(1),
 
                     Textarea::make('description')
@@ -45,12 +44,11 @@ class DepartmentForm
             Section::make(__('department.management'))
                 ->description(__('department.management_description'))
                 ->schema([
-                    TranslatableSelect::standard(
-                        'manager_id',
-                        Employee::class,
-                        ['first_name', 'last_name', 'employee_number'],
-                        __('department.manager')
-                    )
+                    TranslatableSelect::make('manager_id')
+                        ->relationship('manager', 'first_name')
+                        ->label(__('department.manager'))
+                        ->searchableFields(['first_name', 'last_name', 'employee_number'])
+                        ->preload()
                         ->columnSpan(1),
 
                     Toggle::make('is_active')

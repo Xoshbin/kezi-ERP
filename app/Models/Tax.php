@@ -4,7 +4,6 @@ namespace App\Models;
 
 use App\Enums\Accounting\TaxType;
 use App\Observers\TaxObserver;
-use App\Traits\TranslatableSearch;
 use Database\Factories\TaxFactory;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Builder;
@@ -55,7 +54,6 @@ use Spatie\Translatable\HasTranslations;
 class Tax extends Model
 {
     use HasFactory, HasTranslations;
-    use TranslatableSearch;
 
     /** @var array<int, string> */
     public array $translatable = ['name', 'label_on_invoices'];

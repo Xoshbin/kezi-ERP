@@ -3,7 +3,6 @@
 namespace App\Models;
 
 use App\Casts\SalaryCurrencyMoneyCast;
-use App\Traits\TranslatableSearch;
 use Brick\Money\Money;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -42,7 +41,6 @@ use Spatie\Translatable\HasTranslations;
 class Position extends Model
 {
     use HasFactory, HasTranslations;
-    use TranslatableSearch;
 
     /**
      * The attributes that are mass assignable.

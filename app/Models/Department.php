@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use App\Traits\TranslatableSearch;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -35,8 +34,7 @@ use Spatie\Translatable\HasTranslations;
  */
 class Department extends Model
 {
-    use HasFactory, HasTranslations;
-    use TranslatableSearch;
+    use HasTranslations;
 
     /**
      * The attributes that are mass assignable.

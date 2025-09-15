@@ -6,6 +6,7 @@ use App\Models\Currency;
 use Carbon\Carbon;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
+use Xoshbin\TranslatableSelect\Components\TranslatableSelect;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Schema;
 
@@ -15,16 +16,16 @@ class CurrencyRateForm
     {
         return $schema
             ->components([
-                Select::make('currency_id')
-                    ->label(__('currency.exchange_rates.currency'))
+                TranslatableSelect::make('currency_id')
                     ->relationship('currency', 'name')
-                    ->getOptionLabelFromRecordUsing(function (Currency $record): string {
+                    ->label(__('currency.exchange_rates.currency'))
+                    ->searchableFields(['name', 'code'])
+                    ->preload()
+                    ->getOptionLabelUsing(function ($record) {
+                        if (!$record) return '';
                         $currencyName = is_array($record->name) ? ($record->name['en'] ?? (empty($record->name) ? '' : (string) array_values($record->name)[0])) : (string) $record->name;
-
                         return "{$currencyName} ({$record->code})";
                     })
-                    ->searchable()
-                    ->preload()
                     ->required(),
 
                 TextInput::make('rate')

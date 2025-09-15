@@ -13,7 +13,7 @@ use App\Filament\Clusters\Accounting\Resources\Partners\RelationManagers\Invoice
 use App\Filament\Clusters\Accounting\Resources\Partners\RelationManagers\PaymentsRelationManager;
 use App\Filament\Clusters\Accounting\Resources\Partners\RelationManagers\UnreconciledEntriesRelationManager;
 use App\Filament\Clusters\Accounting\Resources\Partners\RelationManagers\VendorBillsRelationManager;
-use App\Filament\Support\TranslatableSelect;
+use Xoshbin\TranslatableSelect\Components\TranslatableSelect;
 use App\Filament\Tables\Columns\MoneyColumn;
 use App\Models\Account;
 use App\Models\Partner;

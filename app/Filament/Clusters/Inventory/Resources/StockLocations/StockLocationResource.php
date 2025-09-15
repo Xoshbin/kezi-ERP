@@ -20,6 +20,7 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
+use Xoshbin\TranslatableSelect\Components\TranslatableSelect;
 use Filament\Resources\Resource;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
@@ -65,11 +66,12 @@ class StockLocationResource extends Resource
                 ->icon('heroicon-o-building-storefront')
                 ->schema([
                     Grid::make(2)->schema([
-                        Select::make('company_id')
+                        TranslatableSelect::make('company_id')
                             ->relationship('company', 'name')
                             ->label(__('stock_location.company'))
                             ->required()
-                            ->searchable()
+                            ->searchableFields(['name'])
+                            ->preload()
                             ->default($company?->id)
                             ->createOptionForm([
                                 TextInput::make('name')
@@ -82,10 +84,12 @@ class StockLocationResource extends Resource
                                 TextInput::make('tax_id')
                                     ->label(__('company.tax_id'))
                                     ->maxLength(255),
-                                Select::make('currency_id')
-                                    ->label(__('company.currency_id'))
+                                TranslatableSelect::make('currency_id')
                                     ->relationship('currency', 'name')
-                                    ->required(),
+                                    ->label(__('company.currency_id'))
+                                    ->required()
+                                    ->searchableFields(['name', 'code'])
+                                    ->preload(),
                                 TextInput::make('fiscal_country')
                                     ->label(__('company.fiscal_country'))
                                     ->required()

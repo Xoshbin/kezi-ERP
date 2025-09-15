@@ -2,7 +2,7 @@
 
 namespace App\Filament\Clusters\HumanResources\Resources\Employees\Schemas;
 
-use App\Filament\Support\TranslatableSelect;
+use Xoshbin\TranslatableSelect\Components\TranslatableSelect;
 use App\Models\Department;
 use App\Models\Employee;
 use App\Models\Position;
@@ -65,46 +65,34 @@ class EmployeeForm
             Section::make(__('employee.organizational_details'))
                 ->description(__('employee.organizational_details_description'))
                 ->schema([
-                    TranslatableSelect::relationship(
-                        'department_id',
-                        'department',
-                        Department::class,
-                        __('employee.department'),
-                        'name',
-                        null,
-                        fn ($query) => $query->where('company_id', $tenant?->id)
-                    )
+                    TranslatableSelect::make('department_id')
+                        ->relationship('department', 'name')
+                        ->label(__('employee.department'))
+                        ->searchableFields(['name'])
+                        ->preload()
                         ->columnSpan(1),
 
-                    TranslatableSelect::relationship(
-                        'position_id',
-                        'position',
-                        Position::class,
-                        __('employee.position'),
-                        'title',
-                        null,
-                        fn ($query) => $query->where('company_id', $tenant?->id)
-                    )
+                    TranslatableSelect::make('position_id')
+                        ->relationship('position', 'title')
+                        ->label(__('employee.position'))
+                        ->searchableFields(['title'])
+                        ->preload()
                         ->columnSpan(1),
 
-                    TranslatableSelect::standard(
-                        'manager_id',
-                        Employee::class,
-                        ['first_name', 'last_name', 'employee_number'],
-                        __('employee.manager'),
-                        'first_name',
-                        fn ($query) => $query->where('company_id', $tenant?->id)
-                    )
+                    TranslatableSelect::make('manager_id')
+                        ->relationship('manager', 'first_name')
+                        ->label(__('employee.manager'))
+                        ->searchableFields(['first_name', 'last_name', 'employee_number'])
+                        ->preload()
+                        ->getOptionLabelUsing(fn ($record) => $record ? $record->first_name . ' ' . $record->last_name . ' (' . $record->employee_number . ')' : '')
                         ->columnSpan(1),
 
-                    TranslatableSelect::standard(
-                        'user_id',
-                        User::class,
-                        ['name', 'email'],
-                        __('employee.user_account'),
-                        'name',
-                        fn ($query) => $query->whereHas('companies', fn ($q) => $q->where('companies.id', $tenant?->id))
-                    )
+                    TranslatableSelect::make('user_id')
+                        ->relationship('user', 'name')
+                        ->label(__('employee.user_account'))
+                        ->searchableFields(['name', 'email'])
+                        ->preload()
+                        ->modifyQueryUsing(fn ($query) => $query->whereHas('companies', fn ($q) => $q->where('companies.id', $tenant?->id)))
                         ->columnSpan(1),
                 ])
                 ->columns(2)

@@ -8,7 +8,7 @@ use App\Filament\Clusters\Accounting\Resources\JournalEntries\Pages\CreateJourna
 use App\Filament\Clusters\Accounting\Resources\JournalEntries\Pages\EditJournalEntry;
 use App\Filament\Clusters\Accounting\Resources\JournalEntries\Pages\ListJournalEntries;
 use App\Filament\Forms\Components\MoneyInput;
-use App\Filament\Support\TranslatableSelect;
+use Xoshbin\TranslatableSelect\Components\TranslatableSelect;
 use App\Filament\Tables\Columns\MoneyColumn;
 use App\Models\Account;
 use App\Models\Currency;
@@ -70,11 +70,13 @@ class JournalEntryResource extends Resource
         return $schema->components([
             Section::make(__('journal_entry.journal_entry'))
                 ->schema([
-                    TranslatableSelect::make('journal_id', Journal::class, __('journal_entry.journal'))
+                    TranslatableSelect::forModel('journal_id', Journal::class, 'name')
+                        ->label(__('journal_entry.journal'))
                         ->required()
                         ->default(Journal::where('type', JournalType::Miscellaneous)->first()?->id)
                         ->columnSpan(2),
-                    TranslatableSelect::make('currency_id', Currency::class, __('journal_entry.currency'))
+                    TranslatableSelect::forModel('currency_id', Currency::class, 'name')
+                        ->label(__('journal_entry.currency'))
                         ->required()
                         ->live()
                         ->default(fn () => (\Filament\Facades\Filament::getTenant() instanceof \App\Models\Company) ? \Filament\Facades\Filament::getTenant()->currency_id : null)
@@ -119,12 +121,12 @@ class JournalEntryResource extends Resource
                             TableColumn::make(__('journal_entry.description'))->width('30%'),
                         ])
                         ->schema([
-                            TranslatableSelect::withFormatter(
-                                'account_id',
-                                Account::class,
-                                fn ($account) => [$account->id => $account->getTranslatedLabel('name').' ('.$account->code.')'],
-                                __('journal_entry.account')
-                            )
+                            TranslatableSelect::make('account_id')
+                                ->relationship('account', 'name')
+                                ->label(__('journal_entry.account'))
+                                ->searchableFields(['name', 'code'])
+                                ->preload()
+                                ->getOptionLabelFromRecordUsing(fn ($record) => $record->getTranslatedLabel('name').' ('.$record->code.')')
                                 ->rules([new ActiveAccount])
                                 ->required()
                                 ->columnSpan(3),
@@ -140,12 +142,11 @@ class JournalEntryResource extends Resource
                                 ->currencyField('../../company.currency_id')
                                 ->live(onBlur: true)
                                 ->columnSpan(3),
-                            TranslatableSelect::standard(
-                                'partner_id',
-                                Partner::class,
-                                ['name', 'email', 'contact_person'],
-                                __('journal_entry.partner')
-                            )
+                            TranslatableSelect::make('partner_id')
+                                ->relationship('partner', 'name')
+                                ->label(__('journal_entry.partner'))
+                                ->searchableFields(['name', 'email', 'contact_person'])
+                                ->preload()
                                 ->columnSpan(3),
                             TextInput::make('description')
                                 ->label(__('journal_entry.description'))
