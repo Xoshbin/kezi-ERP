@@ -9,6 +9,7 @@ use Brick\Money\Money;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 use Tests\Traits\WithConfiguredCompany;
+
 use function Pest\Livewire\livewire;
 
 class PositionResourceTest extends TestCase

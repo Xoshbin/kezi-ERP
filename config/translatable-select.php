@@ -58,7 +58,7 @@ return [
         'app.supported_locales',
         'app.locales',
         'translatable.locales',
-        'filament-spatie-translatable.default_locales'
+        'filament-spatie-translatable.default_locales',
     ],
 
     /*

@@ -68,7 +68,7 @@ use Spatie\Translatable\HasTranslations;
 #[ObservedBy([ProductObserver::class])]
 class Product extends Model
 {
-    use HasFactory, SoftDeletes, HasTranslations;
+    use HasFactory, HasTranslations, SoftDeletes;
 
     /** @var array<int, string> */
     public array $translatable = ['name', 'description'];

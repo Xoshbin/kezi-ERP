@@ -49,9 +49,9 @@ class LoanAgreementForm
                             TextInput::make('email')->label(__('partner.email') ?: 'Email')->email(),
                             TextInput::make('contact_person')->label(__('partner.contact_person') ?: 'Contact Person'),
                         ])
-                        ->createOptionUsing(fn(array $data) => Partner::create($data)->getKey())
+                        ->createOptionUsing(fn (array $data) => Partner::create($data)->getKey())
                         ->createOptionModalHeading(__('common.modal_title_create_partner') ?: 'Create Partner')
-                        ->createOptionAction(fn(Action $action) => $action->modalWidth('lg')),
+                        ->createOptionAction(fn (Action $action) => $action->modalWidth('lg')),
 
                     Group::make()
                         ->schema([
@@ -177,7 +177,7 @@ class LoanAgreementForm
                                 ->currencyField('currency_id')
                                 ->disabled()
                                 ->dehydrated(false)
-                                ->visible(fn(?LoanAgreement $record) => $record && $record->outstanding_principal)
+                                ->visible(fn (?LoanAgreement $record) => $record && $record->outstanding_principal)
                                 ->columnSpanFull(),
                         ])
                         ->columns(12)

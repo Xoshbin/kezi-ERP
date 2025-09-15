@@ -86,7 +86,7 @@ class JournalEntryResource extends Resource
                         ->searchable()
                         ->preload()
                         ->live()
-                        ->default(fn() => (Filament::getTenant() instanceof Company) ? Filament::getTenant()->currency_id : null)
+                        ->default(fn () => (Filament::getTenant() instanceof Company) ? Filament::getTenant()->currency_id : null)
                         ->createOptionForm([
                             TextInput::make('code')->label(__('currency.code'))->required()->maxLength(255),
                             TextInput::make('name')->label(__('currency.name'))->required()->maxLength(255),
@@ -133,7 +133,7 @@ class JournalEntryResource extends Resource
                                 ->searchableFields(['name', 'code'])
                                 ->searchable()
                                 ->preload()
-                                ->getOptionLabelFromRecordUsing(fn($record) => $record->getTranslatedLabel('name') . ' (' . $record->code . ')')
+                                ->getOptionLabelFromRecordUsing(fn ($record) => $record->getTranslatedLabel('name').' ('.$record->code.')')
                                 ->rules([new ActiveAccount])
                                 ->required()
                                 ->columnSpan(3),
@@ -149,8 +149,7 @@ class JournalEntryResource extends Resource
                                 ->currencyField('../../company.currency_id')
                                 ->live(onBlur: true)
                                 ->columnSpan(3),
-                            TranslatableSelect::
-                            forModel('partner_id', Partner::class, 'name')
+                            TranslatableSelect::forModel('partner_id', Partner::class, 'name')
                                 ->label(__('journal_entry.partner'))
                                 ->searchableFields(['name', 'email', 'contact_person'])
                                 ->searchable()

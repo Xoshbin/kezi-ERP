@@ -10,6 +10,7 @@ use App\Models\CurrencyRate;
 use Filament\Actions\DeleteAction;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\Traits\WithConfiguredCompany;
+
 use function Pest\Livewire\livewire;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);
@@ -35,7 +36,7 @@ it('can create a currency rate', function () {
         'name' => [
             'en' => 'Test Currency',
             'ar' => 'عملة اختبار',
-            'ckb' => 'دراوی تاقیکردنەوە'
+            'ckb' => 'دراوی تاقیکردنەوە',
         ],
         'symbol' => 'TST',
         'is_active' => true,
@@ -144,7 +145,7 @@ it('validates rate is numeric and positive', function () {
         'name' => [
             'en' => 'Test Currency 2',
             'ar' => 'عملة اختبار ٢',
-            'ckb' => 'دراوی تاقیکردنەوە ٢'
+            'ckb' => 'دراوی تاقیکردنەوە ٢',
         ],
         'symbol' => 'TST2',
         'is_active' => true,

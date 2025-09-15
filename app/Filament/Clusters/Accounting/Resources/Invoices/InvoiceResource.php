@@ -347,7 +347,7 @@ class InvoiceResource extends Resource
                                 ->label(__('invoice.income_account'))
                                 ->searchable()
                                 ->preload()
-                                ->modifyQueryUsing(fn($query) => $query->where('type', 'income'))
+                                ->modifyQueryUsing(fn ($query) => $query->where('type', 'income'))
                                 ->required()
                                 ->columnSpan(3),
                         ])
@@ -567,7 +567,7 @@ class InvoiceResource extends Resource
                             ->label(__('payment.form.journal_id'))
                             ->options(function (): array {
                                 $tenant = Filament::getTenant();
-                                if (!$tenant instanceof Company) {
+                                if (! $tenant instanceof Company) {
                                     return [];
                                 }
 
@@ -578,7 +578,7 @@ class InvoiceResource extends Resource
                             ->required()
                             ->default(function (): ?int {
                                 $tenant = Filament::getTenant();
-                                if (!$tenant instanceof Company) {
+                                if (! $tenant instanceof Company) {
                                     return null;
                                 }
 
