@@ -2,13 +2,13 @@
 
 namespace Tests\Feature\HumanResources;
 
+use App\Filament\Clusters\HumanResources\Resources\Positions\Pages\CreatePosition;
 use App\Filament\Clusters\HumanResources\Resources\Positions\PositionResource;
 use App\Models\Position;
 use Brick\Money\Money;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 use Tests\Traits\WithConfiguredCompany;
-
 use function Pest\Livewire\livewire;
 
 class PositionResourceTest extends TestCase
@@ -47,7 +47,7 @@ class PositionResourceTest extends TestCase
             'description' => 'A software developer position',
             'employment_type' => 'full_time',
             'level' => 'mid',
-            'salary_currency_id' => $this->company->currency->id,
+            'currency_id' => $this->company->currency->id,
             'min_salary' => 800000,
             'max_salary' => 1200000,
             'is_active' => true,
@@ -63,7 +63,7 @@ class PositionResourceTest extends TestCase
             'description' => 'A software developer position',
             'employment_type' => 'full_time',
             'level' => 'mid',
-            'salary_currency_id' => $this->company->currency->id,
+            'currency_id' => $this->company->currency->id,
             'is_active' => true,
         ]);
 
@@ -79,7 +79,7 @@ class PositionResourceTest extends TestCase
     {
         $position = Position::factory()->create([
             'company_id' => $this->company->id,
-            'salary_currency_id' => $this->company->currency->id,
+            'currency_id' => $this->company->currency->id,
         ]);
 
         $this->get(PositionResource::getUrl('edit', ['record' => $position]))
@@ -89,7 +89,7 @@ class PositionResourceTest extends TestCase
     /** @test */
     public function it_validates_required_fields()
     {
-        livewire(\App\Filament\Clusters\HumanResources\Resources\Positions\Pages\CreatePosition::class)
+        livewire(CreatePosition::class)
             ->fillForm([
                 'title' => null,
                 'employment_type' => null,
