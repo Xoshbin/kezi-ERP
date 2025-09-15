@@ -3,7 +3,6 @@
 namespace App\Models;
 
 use App\Casts\SalaryCurrencyMoneyCast;
-use App\Traits\TranslatableSearch;
 use Brick\Money\Money;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -11,6 +10,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
+use RuntimeException;
 use Spatie\Translatable\HasTranslations;
 
 /**
@@ -27,7 +27,7 @@ use Spatie\Translatable\HasTranslations;
  * @property string $level
  * @property Money|null $min_salary
  * @property Money|null $max_salary
- * @property int|null $salary_currency_id
+ * @property int|null $currency_id
  * @property bool $is_active
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
@@ -42,7 +42,6 @@ use Spatie\Translatable\HasTranslations;
 class Position extends Model
 {
     use HasFactory, HasTranslations;
-    use TranslatableSearch;
 
     /**
      * The attributes that are mass assignable.
@@ -60,7 +59,7 @@ class Position extends Model
         'level',
         'min_salary',
         'max_salary',
-        'salary_currency_id',
+        'currency_id',
         'is_active',
     ];
 
@@ -148,7 +147,7 @@ class Position extends Model
      */
     public function salaryCurrency(): BelongsTo
     {
-        return $this->belongsTo(Currency::class, 'salary_currency_id');
+        return $this->belongsTo(Currency::class, 'currency_id');
     }
 
     /**
@@ -183,7 +182,7 @@ class Position extends Model
         }
 
         if (! $this->salaryCurrency) {
-            throw new \RuntimeException('Position salary currency not found');
+            throw new RuntimeException('Position salary currency not found');
         }
 
         if ($this->min_salary && $this->max_salary) {
@@ -196,7 +195,7 @@ class Position extends Model
         }
 
         if (! $this->max_salary) {
-            throw new \RuntimeException('Position max salary not found');
+            throw new RuntimeException('Position max salary not found');
         }
 
         return 'Up to '.$this->max_salary->formatTo($this->salaryCurrency->code);

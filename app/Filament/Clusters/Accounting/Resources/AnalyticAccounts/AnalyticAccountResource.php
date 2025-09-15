@@ -8,9 +8,9 @@ use App\Filament\Clusters\Accounting\Resources\AnalyticAccounts\Pages\EditAnalyt
 use App\Filament\Clusters\Accounting\Resources\AnalyticAccounts\Pages\ListAnalyticAccounts;
 use App\Filament\Clusters\Accounting\Resources\AnalyticAccounts\RelationManagers\AnalyticPlansRelationManager;
 use App\Filament\Clusters\Accounting\Resources\AnalyticAccounts\RelationManagers\JournalEntryLinesRelationManager;
-use App\Filament\Support\TranslatableSelect;
 use App\Models\AnalyticAccount;
 use App\Models\Currency;
+use BackedEnum;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
@@ -22,12 +22,13 @@ use Filament\Schemas\Schema;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Xoshbin\TranslatableSelect\Components\TranslatableSelect;
 
 class AnalyticAccountResource extends Resource
 {
     protected static ?string $model = AnalyticAccount::class;
 
-    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-chart-pie';
+    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-chart-pie';
 
     protected static ?int $navigationSort = 4;
 

@@ -2,30 +2,32 @@
 
 namespace App\Casts;
 
+use App\Models\Company;
 use App\Models\Currency;
 use Exception;
 use Filament\Facades\Filament;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use InvalidArgumentException;
 
 /**
- * SalaryCurrencyMoneyCast - Uses the salary_currency_id field.
+ * SalaryCurrencyMoneyCast - Uses the currency_id field.
  *
  * This cast is used for salary fields in Position model that should be stored
- * and retrieved in the currency specified by the salary_currency_id field.
+ * and retrieved in the currency specified by the currency_id field.
  */
 class SalaryCurrencyMoneyCast extends MoneyCast
 {
     /**
-     * Resolve the currency from the 'salary_currency_id' field.
+     * Resolve the currency from the 'currency_id' field.
      */
     protected function resolveCurrency(Model $model): Currency
     {
-        // Check for salary_currency_id field
-        if (isset($model->salary_currency_id)) {
-            $currency = Currency::findOrFail($model->salary_currency_id);
+        // Check for currency_id field
+        if (isset($model->currency_id)) {
+            $currency = Currency::findOrFail($model->currency_id);
             // Ensure we have a single Currency model, not a collection
-            if ($currency instanceof \Illuminate\Database\Eloquent\Collection) {
+            if ($currency instanceof Collection) {
                 $currency = $currency->first();
                 if (! $currency) {
                     throw new InvalidArgumentException('Salary currency collection is empty');
@@ -35,9 +37,9 @@ class SalaryCurrencyMoneyCast extends MoneyCast
             return $currency;
         }
 
-        // If no salary_currency_id is set, fall back to company's base currency
+        // If no currency_id is set, fall back to company's base currency
         if ($model->relationLoaded('company') && $model->getRelationValue('company')) {
-            /** @var \App\Models\Company $company */
+            /** @var Company $company */
             $company = $model->getRelationValue('company');
 
             return $company->currency;
@@ -54,13 +56,13 @@ class SalaryCurrencyMoneyCast extends MoneyCast
         // Last resort: Try to get currency from Filament tenant context
         try {
             $tenant = Filament::getTenant();
-            if ($tenant instanceof \App\Models\Company) {
+            if ($tenant instanceof Company) {
                 return $tenant->currency;
             }
         } catch (Exception) {
             // Ignore tenant resolution errors
         }
 
-        throw new InvalidArgumentException('Could not resolve salary currency for model '.get_class($model).'. Please ensure the model has a valid salary_currency_id or company relationship.');
+        throw new InvalidArgumentException('Could not resolve salary currency for model ' . get_class($model) . '. Please ensure the model has a valid currency_id or company relationship.');
     }
 }

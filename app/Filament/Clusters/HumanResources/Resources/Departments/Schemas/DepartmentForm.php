@@ -2,7 +2,6 @@
 
 namespace App\Filament\Clusters\HumanResources\Resources\Departments\Schemas;
 
-use App\Filament\Support\TranslatableSelect;
 use App\Models\Department;
 use App\Models\Employee;
 use Filament\Forms\Components\Textarea;
@@ -10,6 +9,7 @@ use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
+use Xoshbin\TranslatableSelect\Components\TranslatableSelect;
 
 class DepartmentForm
 {
@@ -25,12 +25,12 @@ class DepartmentForm
                         ->maxLength(255)
                         ->columnSpan(2),
 
-                    TranslatableSelect::standard(
-                        'parent_department_id',
-                        Department::class,
-                        ['name'],
-                        __('department.parent_department')
-                    )
+                    TranslatableSelect::forModel('parent_department_id', Department::class)
+                        ->searchable()
+                        ->preload()
+                        ->label(__('department.parent_department'))
+                        ->searchableFields(['name'])
+                        ->preload()
                         ->columnSpan(1),
 
                     Textarea::make('description')
@@ -45,12 +45,11 @@ class DepartmentForm
             Section::make(__('department.management'))
                 ->description(__('department.management_description'))
                 ->schema([
-                    TranslatableSelect::standard(
-                        'manager_id',
-                        Employee::class,
-                        ['first_name', 'last_name', 'employee_number'],
-                        __('department.manager')
-                    )
+                    TranslatableSelect::forModel('manager_id', Employee::class)
+                        ->label(__('department.manager'))
+                        ->searchable()
+                        ->searchableFields(['first_name', 'last_name', 'employee_number'])
+                        ->preload()
                         ->columnSpan(1),
 
                     Toggle::make('is_active')

@@ -2,9 +2,7 @@
 
 namespace App\Models;
 
-use App\Traits\TranslatableSearch;
 use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -35,8 +33,7 @@ use Spatie\Translatable\HasTranslations;
  */
 class Department extends Model
 {
-    use HasFactory, HasTranslations;
-    use TranslatableSearch;
+    use HasTranslations;
 
     /**
      * The attributes that are mass assignable.
@@ -173,7 +170,7 @@ class Department extends Model
      */
     public function getAllDescendants(): Collection
     {
-        $descendants = new \Illuminate\Database\Eloquent\Collection;
+        $descendants = new Collection;
 
         foreach ($this->childDepartments as $child) {
             $descendants->push($child);
@@ -190,7 +187,7 @@ class Department extends Model
      */
     public function getAllAncestors(): Collection
     {
-        $ancestors = new \Illuminate\Database\Eloquent\Collection;
+        $ancestors = new Collection;
         $current = $this->parentDepartment;
 
         while ($current) {
