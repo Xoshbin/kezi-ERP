@@ -16,7 +16,9 @@ use App\Filament\Clusters\Accounting\Resources\Partners\RelationManagers\VendorB
 use App\Filament\Tables\Columns\MoneyColumn;
 use App\Models\Account;
 use App\Models\Partner;
+use App\Models\Tax;
 use BackedEnum;
+use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
@@ -90,14 +92,40 @@ class PartnerResource extends Resource
                                 Select::make('type')
                                     ->label(__('partner.type'))
                                     ->required()
+                                    ->searchable()
                                     ->options(
                                         collect(PartnerType::cases())
                                             ->mapWithKeys(fn (PartnerType $type) => [$type->value => $type->label()])
                                     )
                                     ->prefixIcon('heroicon-m-tag'),
-                                TextInput::make('tax_id')
-                                    ->label(__('partner.tax_id'))
-                                    ->maxLength(255)
+                                TranslatableSelect::forModel('tax_id', Tax::class, 'name')
+                                    ->label(__('invoice.tax'))
+                                    ->searchable()
+                                    ->preload()
+                                    ->createOptionForm([
+                                        Select::make('company_id')
+                                            ->relationship('company', 'name')
+                                            ->label(__('tax.company'))
+                                            ->required(),
+                                        Select::make('tax_account_id')
+                                            ->relationship('taxAccount', 'name')
+                                            ->label(__('tax.tax_account'))
+                                            ->required(),
+                                        TextInput::make('name')
+                                            ->label(__('tax.name'))
+                                            ->required()
+                                            ->maxLength(255),
+                                        TextInput::make('rate')
+                                            ->label(__('tax.rate'))
+                                            ->required()
+                                            ->numeric()
+                                            ->suffix('%'),
+                                    ])
+                                    ->createOptionModalHeading(__('common.modal_title_create_tax'))
+                                    ->createOptionAction(function (Action $action) {
+                                        return $action
+                                            ->modalWidth('lg');
+                                    })
                                     ->prefixIcon('heroicon-m-document-text'),
                                 Toggle::make('is_active')
                                     ->label(__('partner.is_active'))
@@ -182,15 +210,8 @@ class PartnerResource extends Resource
                     ->schema([
                         Grid::make(2)
                             ->schema([
-                                TranslatableSelect::relationship(
-                                    'receivable_account_id',
-                                    'receivableAccount',
-                                    Account::class,
-                                    __('partner.receivable_account'),
-                                    'name',
-                                    null,
-                                    fn ($query) => $query->where('type', AccountType::Receivable)
-                                )
+                                TranslatableSelect::forModel('receivable_account_id', Account::class)
+                                    ->searchable()
                                     ->preload()
                                     ->createOptionForm([
                                         Hidden::make('company_id')
@@ -217,15 +238,8 @@ class PartnerResource extends Resource
                                     ->helperText(__('partner.receivable_account_help'))
                                     ->prefixIcon('heroicon-m-arrow-trending-up'),
 
-                                TranslatableSelect::relationship(
-                                    'payable_account_id',
-                                    'payableAccount',
-                                    Account::class,
-                                    __('partner.payable_account'),
-                                    'name',
-                                    null,
-                                    fn ($query) => $query->where('type', AccountType::Payable)
-                                )
+                                TranslatableSelect::forModel('payable_account_id', Account::class)
+                                    ->searchable()
                                     ->preload()
                                     ->createOptionForm([
                                         Hidden::make('company_id')
@@ -244,6 +258,7 @@ class PartnerResource extends Resource
                                             ->maxLength(255),
                                         Select::make('type')
                                             ->label(__('account.type'))
+                                            ->searchable()
                                             ->options([AccountType::Payable->value => AccountType::Payable->label()])
                                             ->default(AccountType::Payable->value)
                                             ->required(),

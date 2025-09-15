@@ -2,6 +2,8 @@
 
 namespace App\Filament\Clusters\HumanResources\Resources\Departments\Schemas;
 
+use App\Models\Department;
+use App\Models\Employee;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
@@ -23,8 +25,9 @@ class DepartmentForm
                         ->maxLength(255)
                         ->columnSpan(2),
 
-                    TranslatableSelect::make('parent_department_id')
-                        ->relationship('parentDepartment', 'name')
+                    TranslatableSelect::forModel('parent_department_id', Department::class)
+                        ->searchable()
+                        ->preload()
                         ->label(__('department.parent_department'))
                         ->searchableFields(['name'])
                         ->preload()
@@ -42,9 +45,9 @@ class DepartmentForm
             Section::make(__('department.management'))
                 ->description(__('department.management_description'))
                 ->schema([
-                    TranslatableSelect::make('manager_id')
-                        ->relationship('manager', 'first_name')
+                    TranslatableSelect::forModel('manager_id', Employee::class)
                         ->label(__('department.manager'))
+                        ->searchable()
                         ->searchableFields(['first_name', 'last_name', 'employee_number'])
                         ->preload()
                         ->columnSpan(1),

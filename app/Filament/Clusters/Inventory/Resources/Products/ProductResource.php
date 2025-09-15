@@ -14,7 +14,6 @@ use App\Filament\Clusters\Inventory\Resources\Products\RelationManagers\StockMov
 use App\Filament\Forms\Components\MoneyInput;
 use App\Filament\Tables\Columns\MoneyColumn;
 use App\Models\Account;
-use App\Models\Company;
 use App\Models\Product;
 use BackedEnum;
 use Filament\Actions\Action;
@@ -25,7 +24,6 @@ use Filament\Actions\EditAction;
 use Filament\Actions\ForceDeleteBulkAction;
 use Filament\Actions\RestoreBulkAction;
 use Filament\Actions\ViewAction;
-use Filament\Facades\Filament;
 use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
@@ -76,9 +74,6 @@ class ProductResource extends Resource
 
     public static function form(Schema $schema): Schema
     {
-        /** @var Company|null $tenant */
-        $tenant = Filament::getTenant();
-
         return $schema->components([
             Section::make(__('product.basic_information'))
                 ->description(__('product.basic_information_description'))

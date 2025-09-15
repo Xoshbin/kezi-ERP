@@ -8,7 +8,6 @@ use App\Filament\Clusters\Settings\Resources\Taxes\Pages\CreateTax;
 use App\Filament\Clusters\Settings\Resources\Taxes\Pages\EditTax;
 use App\Filament\Clusters\Settings\Resources\Taxes\Pages\ListTaxes;
 use App\Filament\Clusters\Settings\SettingsCluster;
-use App\Models\Currency;
 use App\Models\Tax;
 use App\Support\NumberFormatter;
 use BackedEnum;
@@ -61,23 +60,6 @@ class TaxResource extends Resource
             ->components([
                 Section::make(__('tax.basic_information'))
                     ->schema([
-                        TranslatableSelect::make('company_id')
-                            ->searchable()
-                            ->preload()
-                            ->relationship('company', 'name')
-                            ->label(__('tax.company'))
-                            ->createOptionForm([
-                                TextInput::make('name')->label(__('company.name'))->required(),
-                                TextInput::make('tax_id')->label(__('company.tax_id')),
-                                TextInput::make('fiscal_country')->label(__('company.fiscal_country'))->required(),
-                                TranslatableSelect::forModel('currency_id', Currency::class, 'name')
-                                    ->label(__('company.currency_id'))
-                                    ->required(),
-                            ])
-                            ->createOptionModalHeading(__('common.modal_title_create_company'))
-                            ->createOptionAction(fn (Action $a) => $a->name('create-company-option')->modalWidth('lg'))
-                            ->required(),
-
                         TranslatableSelect::make('tax_account_id')
                             ->searchable()
                             ->preload()
@@ -122,9 +104,6 @@ class TaxResource extends Resource
     {
         return $table
             ->columns([
-                TextColumn::make('company.name')
-                    ->label(__('tax.company'))
-                    ->sortable(),
                 TextColumn::make('taxAccount.name')
                     ->label(__('tax.tax_account'))
                     ->sortable(),

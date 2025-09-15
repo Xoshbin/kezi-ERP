@@ -10,8 +10,8 @@ use App\Filament\Clusters\Accounting\Resources\AdjustmentDocuments\Pages\CreateA
 use App\Filament\Clusters\Accounting\Resources\AdjustmentDocuments\Pages\EditAdjustmentDocument;
 use App\Filament\Clusters\Accounting\Resources\AdjustmentDocuments\Pages\ListAdjustmentDocuments;
 use App\Filament\Forms\Components\MoneyInput;
+use App\Models\Account;
 use App\Models\AdjustmentDocument;
-use App\Models\Company;
 use App\Models\Currency;
 use App\Models\Invoice;
 use App\Models\Product;
@@ -24,7 +24,6 @@ use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
-use Filament\Facades\Filament;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Repeater\TableColumn;
@@ -79,15 +78,12 @@ class AdjustmentDocumentResource extends Resource
             Section::make(__('adjustment_document.document_information'))
                 ->description(__('adjustment_document.document_information_description'))
                 ->schema([
-                    TranslatableSelect::make('currency_id', Currency::class, __('adjustment_document.currency'))
+                    TranslatableSelect::forModel('currency_id', Currency::class, 'name')
                         ->required()
+                        ->searchable()
+                        ->preload()
                         ->live()
                         ->columnSpan(2)
-                        ->default(function (): ?int {
-                            $tenant = Filament::getTenant();
-
-                            return $tenant instanceof Company ? $tenant->currency_id : null;
-                        })
                         ->disabled(fn (Get $get): bool => ! empty($get('original_invoice_id')) || ! empty($get('original_vendor_bill_id')))
                         ->createOptionForm([
                             TextInput::make('code')
@@ -251,9 +247,9 @@ class AdjustmentDocumentResource extends Resource
                         ->reorderable(false)
                         ->minItems(1)
                         ->schema([
-                            TranslatableSelect::make('product_id')
-                                ->relationship('product', 'name')
+                            TranslatableSelect::forModel('product_id', Product::class, 'name')
                                 ->label(__('adjustment_document.product'))
+                                ->searchable()
                                 ->searchableFields(['name', 'sku', 'description'])
                                 ->preload()
                                 ->reactive()
@@ -312,7 +308,9 @@ class AdjustmentDocumentResource extends Resource
                                 ->currencyField('../../currency_id')
                                 ->required()
                                 ->columnSpan(3),
-                            TranslatableSelect::make('tax_id', Tax::class, 'Tax')
+                            TranslatableSelect::forModel('tax_id', Tax::class, 'name')
+                                ->searchable()
+                                ->preload()
                                 ->createOptionForm([
                                     Select::make('company_id')
                                         ->relationship('company', 'name')
@@ -338,9 +336,9 @@ class AdjustmentDocumentResource extends Resource
                                         ->modalWidth('lg');
                                 })
                                 ->columnSpan(3),
-                            TranslatableSelect::make('account_id')
-                                ->relationship('account', 'name')
+                            TranslatableSelect::forModel('account_id', Account::class)
                                 ->label('Account')
+                                ->searchable()
                                 ->searchableFields(['name', 'code'])
                                 ->preload()
                                 ->getOptionLabelFromRecordUsing(fn($record) => $record->getTranslatedLabel('name') . ' (' . $record->code . ')')
