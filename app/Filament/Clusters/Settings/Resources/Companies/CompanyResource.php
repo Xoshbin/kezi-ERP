@@ -8,11 +8,11 @@ use App\Filament\Clusters\Settings\Resources\Companies\Pages\ListCompanies;
 use App\Filament\Clusters\Settings\Resources\Companies\RelationManagers\AccountsRelationManager;
 use App\Filament\Clusters\Settings\Resources\Companies\RelationManagers\UsersRelationManager;
 use App\Filament\Clusters\Settings\SettingsCluster;
-use App\Filament\Support\TranslatableSelect;
 use App\Models\Account;
 use App\Models\Company;
 use App\Models\Currency;
 use App\Models\Journal;
+use BackedEnum;
 use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
@@ -25,6 +25,7 @@ use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Xoshbin\TranslatableSelect\Components\TranslatableSelect;
 
 class CompanyResource extends Resource
 {
@@ -32,7 +33,7 @@ class CompanyResource extends Resource
 
     protected static ?string $model = Company::class;
 
-    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-building-office';
+    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-building-office';
 
     protected static ?int $navigationSort = 1;
 
@@ -99,12 +100,11 @@ class CompanyResource extends Resource
                             ->label(__('company.enable_reconciliation'))
                             ->helperText(__('company.enable_reconciliation_help'))
                             ->default(false),
-                        TranslatableSelect::standard(
-                            'parent_company_id',
-                            Company::class,
-                            ['name'],
-                            __('company.parent_company_id')
-                        )
+                        TranslatableSelect::make('parent_company_id')
+                            ->relationship('parentCompany', 'name')
+                            ->label(__('company.parent_company_id'))
+                            ->searchableFields(['name'])
+                            ->preload()
                             ->createOptionForm([
                                 TextInput::make('name')
                                     ->label(__('company.name'))

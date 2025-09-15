@@ -11,13 +11,14 @@ use App\Filament\Clusters\Accounting\Resources\Assets\Pages\EditAsset;
 use App\Filament\Clusters\Accounting\Resources\Assets\Pages\ListAssets;
 use App\Filament\Clusters\Accounting\Resources\Assets\RelationManagers\DepreciationEntryRelationManager;
 use App\Filament\Forms\Components\MoneyInput;
-use App\Filament\Support\TranslatableSelect;
 use App\Filament\Tables\Columns\MoneyColumn;
 use App\Models\Account;
 use App\Models\Asset;
+use App\Models\Company;
 use App\Models\Currency;
 use App\Models\CurrencyRate;
 use App\Rules\NotInLockedPeriod;
+use BackedEnum;
 use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
@@ -32,12 +33,14 @@ use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
+use Xoshbin\TranslatableSelect\Components\TranslatableSelect;
 
 class AssetResource extends Resource
 {
     protected static ?string $model = Asset::class;
 
-    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-archive-box';
+    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-archive-box';
 
     protected static ?int $navigationSort = 2;
 
@@ -75,24 +78,27 @@ class AssetResource extends Resource
                         ->maxLength(255)
                         ->columnSpan(2),
 
-                    TranslatableSelect::make('currency_id', Currency::class, __('asset.currency'))
+                    TranslatableSelect::forModel('currency_id', Currency::class)
+                        ->label(__('asset.currency'))
                         ->required()
+                        ->searchable()
+                        ->preload()
                         ->live()
                         ->default(function (): ?int {
                             $tenant = Filament::getTenant();
 
-                            return $tenant instanceof \App\Models\Company ? $tenant->currency_id : null;
+                            return $tenant instanceof Company ? $tenant->currency_id : null;
                         })
                         ->afterStateUpdated(function (callable $set, $state) {
                             if ($state) {
                                 $currency = Currency::find($state);
                                 // Ensure we have a single Currency model, not a collection
-                                if ($currency instanceof \Illuminate\Database\Eloquent\Collection) {
+                                if ($currency instanceof Collection) {
                                     $currency = $currency->first();
                                 }
                                 $company = Filament::getTenant();
 
-                                if ($currency && $company instanceof \App\Models\Company && $currency->id !== $company->currency_id) {
+                                if ($currency && $company instanceof Company && $currency->id !== $company->currency_id) {
                                     $latestRate = CurrencyRate::getLatestRate($currency->id, $company->id);
                                     if ($latestRate) {
                                         $set('current_exchange_rate', $latestRate);
@@ -133,7 +139,7 @@ class AssetResource extends Resource
                             $currencyId = $get('currency_id');
                             $company = Filament::getTenant();
 
-                            return $currencyId && $company instanceof \App\Models\Company && $currencyId != $company->currency_id;
+                            return $currencyId && $company instanceof Company && $currencyId != $company->currency_id;
                         })
                         ->helperText(__('asset.exchange_rate_helper')),
                 ])
@@ -171,6 +177,7 @@ class AssetResource extends Resource
 
                     Select::make('depreciation_method')
                         ->label(__('asset.depreciation_method'))
+                        ->searchable()
                         ->options(
                             collect(DepreciationMethod::cases())
                                 ->mapWithKeys(fn (DepreciationMethod $method) => [$method->value => $method->label()])
@@ -178,15 +185,11 @@ class AssetResource extends Resource
                         ->required()
                         ->columnSpan(1),
 
-                    TranslatableSelect::relationship(
-                        'asset_account_id',
-                        'assetAccount',
-                        Account::class,
-                        __('asset.asset_account'),
-                        'name',
-                        null,
-                        fn ($query) => $query->where('type', AccountType::FixedAssets->value)
-                    )
+                    TranslatableSelect::forModel('asset_account_id', Account::class)
+                        ->label(__('asset.asset_account'))
+                        ->searchableFields(['name', 'code'])
+                        ->searchable()
+                        ->preload()
                         ->createOptionForm([
                             Select::make('company_id')
                                 ->relationship('company', 'name')
@@ -209,15 +212,11 @@ class AssetResource extends Resource
                         ->required()
                         ->columnSpan(1),
 
-                    TranslatableSelect::relationship(
-                        'depreciation_expense_account_id',
-                        'depreciationExpenseAccount',
-                        Account::class,
-                        __('asset.depreciation_expense_account'),
-                        'name',
-                        null,
-                        fn ($query) => $query->where('type', AccountType::Depreciation->value)
-                    )
+                    TranslatableSelect::forModel('depreciation_expense_account_id', Account::class)
+                        ->label(__('asset.depreciation_expense_account'))
+                        ->searchableFields(['name', 'code'])
+                        ->searchable()
+                        ->preload()
                         ->createOptionForm([
                             Select::make('company_id')
                                 ->relationship('company', 'name')
@@ -240,15 +239,11 @@ class AssetResource extends Resource
                         ->required()
                         ->columnSpan(1),
 
-                    TranslatableSelect::relationship(
-                        'accumulated_depreciation_account_id',
-                        'accumulatedDepreciationAccount',
-                        Account::class,
-                        __('asset.accumulated_depreciation_account'),
-                        'name',
-                        null,
-                        fn ($query) => $query->where('type', AccountType::FixedAssets->value)
-                    )
+                    TranslatableSelect::forModel('accumulated_depreciation_account_id', Account::class)
+                        ->label(__('asset.accumulated_depreciation_account'))
+                        ->searchableFields(['name', 'code'])
+                        ->searchable()
+                        ->preload()
                         ->createOptionForm([
                             Select::make('company_id')
                                 ->relationship('company', 'name')

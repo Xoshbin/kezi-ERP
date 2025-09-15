@@ -5,8 +5,8 @@ namespace App\Models;
 use App\Enums\Accounting\AccountType;
 use App\Observers\AccountObserver;
 use App\Observers\AuditLogObserver;
-use App\Traits\TranslatableSearch;
 use Database\Factories\AccountFactory;
+use Eloquent;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
@@ -63,7 +63,7 @@ use Spatie\Translatable\HasTranslations;
  * @method static Builder<static>|Account whereType($value)
  * @method static Builder<static>|Account whereUpdatedAt($value)
  *
- * @mixin \Eloquent
+ * @mixin Eloquent
  */
 #[ObservedBy([AccountObserver::class, AuditLogObserver::class])] // (to log when accounts are created or deprecated)
 class Account extends Model
@@ -71,7 +71,6 @@ class Account extends Model
     /** @use HasFactory<AccountFactory> */
     use HasFactory, HasTranslations;
 
-    use TranslatableSearch;
 
     /** @var array<int, string> */
     public array $translatable = ['name'];
