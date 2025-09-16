@@ -176,4 +176,13 @@ return [
         'draft' => 'Draft',
         'finalized' => 'Finalized',
     ],
+
+    'custom_field_type' => [
+        'text' => 'Text',
+        'textarea' => 'Textarea',
+        'number' => 'Number',
+        'boolean' => 'Boolean',
+        'date' => 'Date',
+        'select' => 'Select',
+    ],
 ];

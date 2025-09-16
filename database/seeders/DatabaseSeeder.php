@@ -31,8 +31,9 @@ class DatabaseSeeder extends Seeder
                 // 3. Operational data
                 // Basic data for transactions (customers, vendors, products).
                 PartnerSeeder::class,
+                PartnerCustomFieldSeeder::class,
                 TaxSeeder::class,
-                // ProductSeeder::class,
+                 ProductSeeder::class,
 
                 // 4. Fiscal positions and mappings
                 // Rules for applying taxes and mapping accounts based on partner location.
@@ -55,7 +56,7 @@ class DatabaseSeeder extends Seeder
 
                 // 7. Financial documents
                 // The primary transactional records.
-                // JournalEntrySeeder::class,
+                 JournalEntrySeeder::class,
                 // VendorBillSeeder::class,
                 // InvoiceSeeder::class,
                 // InvoiceLineSeeder::class, // Removed as logic is now in InvoiceSeeder
