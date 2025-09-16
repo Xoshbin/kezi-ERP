@@ -11,8 +11,6 @@ use Brick\Money\Money;
 use Filament\Actions\DeleteAction;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\Traits\WithConfiguredCompany;
-use function Pest\Laravel\assertDatabaseHas;
-use function Pest\Laravel\assertSoftDeleted;
 use function Pest\Livewire\livewire;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);
