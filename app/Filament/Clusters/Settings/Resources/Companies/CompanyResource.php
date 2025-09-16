@@ -8,11 +8,9 @@ use App\Filament\Clusters\Settings\Resources\Companies\Pages\ListCompanies;
 use App\Filament\Clusters\Settings\Resources\Companies\RelationManagers\AccountsRelationManager;
 use App\Filament\Clusters\Settings\Resources\Companies\RelationManagers\UsersRelationManager;
 use App\Filament\Clusters\Settings\SettingsCluster;
-use App\Filament\Support\TranslatableSelect;
-use App\Models\Account;
 use App\Models\Company;
 use App\Models\Currency;
-use App\Models\Journal;
+use BackedEnum;
 use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
@@ -25,6 +23,7 @@ use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Xoshbin\TranslatableSelect\Components\TranslatableSelect;
 
 class CompanyResource extends Resource
 {
@@ -32,7 +31,7 @@ class CompanyResource extends Resource
 
     protected static ?string $model = Company::class;
 
-    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-building-office';
+    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-building-office';
 
     protected static ?int $navigationSort = 1;
 
@@ -68,7 +67,10 @@ class CompanyResource extends Resource
                         Textarea::make('address')
                             ->label(__('company.address'))
                             ->columnSpanFull(),
-                        TranslatableSelect::make('currency_id', Currency::class, __('company.currency_id'))
+                        TranslatableSelect::forModel('currency_id', Currency::class)
+                            ->label(__('company.currency_id'))
+                            ->searchable()
+                            ->preload()
                             ->required()
                             ->createOptionForm([
                                 TextInput::make('code')
@@ -99,12 +101,11 @@ class CompanyResource extends Resource
                             ->label(__('company.enable_reconciliation'))
                             ->helperText(__('company.enable_reconciliation_help'))
                             ->default(false),
-                        TranslatableSelect::standard(
-                            'parent_company_id',
-                            Company::class,
-                            ['name'],
-                            __('company.parent_company_id')
-                        )
+                        TranslatableSelect::make('parent_company_id')
+                            ->relationship('parentCompany', 'name')
+                            ->label(__('company.parent_company_id'))
+                            ->searchableFields(['name'])
+                            ->preload()
                             ->createOptionForm([
                                 TextInput::make('name')
                                     ->label(__('company.name'))
@@ -116,7 +117,11 @@ class CompanyResource extends Resource
                                 TextInput::make('tax_id')
                                     ->label(__('company.tax_id'))
                                     ->maxLength(255),
-                                TranslatableSelect::make('currency_id', Currency::class, __('company.currency_id'))
+                                TranslatableSelect::make('currency_id')
+                                    ->relationship('currency', 'name')
+                                    ->label(__('company.currency_id'))
+                                    ->searchable()
+                                    ->preload()
                                     ->required(),
                                 TextInput::make('fiscal_country')
                                     ->label(__('company.fiscal_country'))
@@ -131,86 +136,56 @@ class CompanyResource extends Resource
 
                 Section::make(__('company.section.defaults'))
                     ->schema([
-                        TranslatableSelect::relationship(
-                            'default_accounts_payable_id',
-                            'defaultAccountsPayable',
-                            Account::class,
-                            __('company.default_accounts_payable'),
-                            'name'
-                        )
-                            ->searchable(),
-                        TranslatableSelect::relationship(
-                            'default_tax_receivable_id',
-                            'defaultTaxReceivable',
-                            Account::class,
-                            __('company.default_tax_receivable'),
-                            'name'
-                        )
-                            ->searchable(),
-                        TranslatableSelect::relationship(
-                            'default_purchase_journal_id',
-                            'defaultPurchaseJournal',
-                            Journal::class,
-                            __('company.default_purchase_journal'),
-                            'name'
-                        )
-                            ->searchable(),
-                        TranslatableSelect::relationship(
-                            'default_accounts_receivable_id',
-                            'defaultAccountsReceivable',
-                            Account::class,
-                            __('company.default_accounts_receivable'),
-                            'name'
-                        )
-                            ->searchable(),
-                        TranslatableSelect::relationship(
-                            'default_sales_discount_account_id',
-                            'defaultSalesDiscountAccount',
-                            Account::class,
-                            __('company.default_sales_discount_account'),
-                            'name'
-                        )
-                            ->searchable(),
-                        TranslatableSelect::relationship(
-                            'default_tax_account_id',
-                            'defaultTaxAccount',
-                            Account::class,
-                            __('company.default_tax_account'),
-                            'name'
-                        )
-                            ->searchable(),
-                        TranslatableSelect::relationship(
-                            'default_sales_journal_id',
-                            'defaultSalesJournal',
-                            Journal::class,
-                            __('company.default_sales_journal'),
-                            'name'
-                        )
-                            ->searchable(),
-                        TranslatableSelect::relationship(
-                            'default_depreciation_journal_id',
-                            'defaultDepreciationJournal',
-                            Journal::class,
-                            __('company.default_depreciation_journal'),
-                            'name'
-                        )
-                            ->searchable(),
-                        TranslatableSelect::relationship(
-                            'default_bank_account_id',
-                            'defaultBankAccount',
-                            Account::class,
-                            __('company.default_bank_account'),
-                            'name'
-                        )
-                            ->searchable(),
-                        TranslatableSelect::relationship(
-                            'default_outstanding_receipts_account_id',
-                            'defaultOutstandingReceiptsAccount',
-                            Account::class,
-                            __('company.default_outstanding_receipts_account'),
-                            'name'
-                        )
-                            ->searchable(),
+                        TranslatableSelect::make('default_accounts_payable_id')
+                            ->relationship('defaultAccountsPayable', 'name')
+                            ->label(__('company.default_accounts_payable'))
+                            ->searchable()
+                            ->preload(),
+                        TranslatableSelect::make('default_tax_receivable_id')
+                            ->relationship('defaultTaxReceivable', 'name')
+                            ->label(__('company.default_tax_receivable'))
+                            ->searchable()
+                            ->preload(),
+                        TranslatableSelect::make('default_purchase_journal_id')
+                            ->relationship('defaultPurchaseJournal', 'name')
+                            ->label(__('company.default_purchase_journal'))
+                            ->searchable()
+                            ->preload(),
+                        TranslatableSelect::make('default_accounts_receivable_id')
+                            ->relationship('defaultAccountsReceivable', 'name')
+                            ->label(__('company.default_accounts_receivable'))
+                            ->searchable()
+                            ->preload(),
+                        TranslatableSelect::make('default_sales_discount_account_id')
+                            ->relationship('defaultSalesDiscountAccount', 'name')
+                            ->label(__('company.default_sales_discount_account'))
+                            ->searchable()
+                            ->preload(),
+                        TranslatableSelect::make('default_tax_account_id')
+                            ->relationship('defaultTaxAccount', 'name')
+                            ->label(__('company.default_tax_account'))
+                            ->searchable()
+                            ->preload(),
+                        TranslatableSelect::make('default_sales_journal_id')
+                            ->relationship('defaultSalesJournal', 'name')
+                            ->label(__('company.default_sales_journal'))
+                            ->searchable()
+                            ->preload(),
+                        TranslatableSelect::make('default_depreciation_journal_id')
+                            ->relationship('defaultDepreciationJournal', 'name')
+                            ->label(__('company.default_depreciation_journal'))
+                            ->searchable()
+                            ->preload(),
+                        TranslatableSelect::make('default_bank_account_id')
+                            ->relationship('defaultBankAccount', 'name')
+                            ->label(__('company.default_bank_account'))
+                            ->searchable()
+                            ->preload(),
+                        TranslatableSelect::make('default_outstanding_receipts_account_id')
+                            ->relationship('defaultOutstandingReceiptsAccount', 'name')
+                            ->label(__('company.default_outstanding_receipts_account'))
+                            ->searchable()
+                            ->preload(),
                     ])
                     ->columns(2)
                     ->columnSpanFull(),

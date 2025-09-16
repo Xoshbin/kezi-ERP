@@ -10,12 +10,13 @@ use App\Filament\Clusters\Accounting\Resources\BankStatements\Pages\EditBankStat
 use App\Filament\Clusters\Accounting\Resources\BankStatements\Pages\ListBankStatements;
 use App\Filament\Clusters\Accounting\Resources\BankStatements\RelationManagers\BankStatementLinesRelationManager;
 use App\Filament\Forms\Components\MoneyInput;
-use App\Filament\Support\TranslatableSelect;
 use App\Filament\Tables\Columns\MoneyColumn;
 use App\Models\BankStatement;
+use App\Models\Company;
 use App\Models\Currency;
 use App\Models\Journal;
 use App\Models\Partner;
+use BackedEnum;
 use Closure;
 use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
@@ -34,12 +35,13 @@ use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Xoshbin\TranslatableSelect\Components\TranslatableSelect;
 
 class BankStatementResource extends Resource
 {
     protected static ?string $model = BankStatement::class;
 
-    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-banknotes';
+    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-banknotes';
 
     protected static ?int $navigationSort = 2;
 
@@ -71,14 +73,17 @@ class BankStatementResource extends Resource
             Section::make(__('bank_statement.statement_information'))
                 ->description(__('bank_statement.statement_information_description'))
                 ->schema([
-                    TranslatableSelect::make('currency_id', Currency::class, __('bank_statement.currency'))
+                    TranslatableSelect::forModel('currency_id', Currency::class, 'name')
+                        ->label(__('bank_statement.currency'))
+                        ->searchable()
+                        ->preload()
                         ->required()
                         ->live()
                         ->columnSpan(2)
                         ->default(function (): ?int {
                             $tenant = Filament::getTenant();
 
-                            return $tenant instanceof \App\Models\Company ? $tenant->currency_id : null;
+                            return $tenant instanceof Company ? $tenant->currency_id : null;
                         })
                         ->createOptionForm([
                             TextInput::make('code')
@@ -199,12 +204,11 @@ class BankStatementResource extends Resource
                                 ->required()
                                 ->maxLength(255)
                                 ->columnSpan(4),
-                            TranslatableSelect::standard(
-                                'partner_id',
-                                Partner::class,
-                                ['name', 'email', 'contact_person'],
-                                __('bank_statement.partner')
-                            )
+                            TranslatableSelect::forModel('partner_id', Partner::class, 'name')
+                                ->label(__('bank_statement.partner'))
+                                ->searchable()
+                                ->searchableFields(['name', 'email', 'contact_person'])
+                                ->preload()
                                 ->columnSpan(3),
                             MoneyInput::make('amount')
                                 ->label(__('bank_statement.amount'))
@@ -231,7 +235,10 @@ class BankStatementResource extends Resource
                                 ->required()
                                 ->helperText(__('bank_statement.amount_in_statement_currency'))
                                 ->columnSpan(3),
-                            TranslatableSelect::make('foreign_currency_id', Currency::class, __('bank_statement.foreign_currency'))
+                            TranslatableSelect::forModel('foreign_currency_id', Currency::class, 'name')
+                                ->label(__('bank_statement.foreign_currency'))
+                                ->searchable()
+                                ->preload()
                                 ->live()
                                 ->options(function ($get) {
                                     $statementCurrencyId = $get('../../../currency_id');

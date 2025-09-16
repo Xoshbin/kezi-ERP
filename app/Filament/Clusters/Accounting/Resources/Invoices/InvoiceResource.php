@@ -18,21 +18,20 @@ use App\Filament\Clusters\Accounting\Resources\Invoices\RelationManagers\Adjustm
 use App\Filament\Clusters\Accounting\Resources\Invoices\RelationManagers\InvoiceLinesRelationManager;
 use App\Filament\Clusters\Accounting\Resources\Invoices\RelationManagers\PaymentsRelationManager;
 use App\Filament\Forms\Components\MoneyInput;
-use App\Filament\Support\TranslatableSelect;
 use App\Filament\Tables\Columns\MoneyColumn;
 use App\Models\Account;
+use App\Models\Company;
 use App\Models\Currency;
 use App\Models\CurrencyRate;
 use App\Models\FiscalPosition;
 use App\Models\Invoice;
 use App\Models\Journal;
-use App\Models\Partner;
-use App\Models\PaymentTerm;
 use App\Models\Product;
 use App\Models\Tax;
 use App\Rules\NotInLockedPeriod;
 use App\Services\InvoiceService;
 use App\Services\PaymentService;
+use BackedEnum;
 use Brick\Money\Money;
 use Exception;
 use Filament\Actions\Action;
@@ -55,13 +54,15 @@ use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Auth;
+use Xoshbin\TranslatableSelect\Components\TranslatableSelect;
 
 class InvoiceResource extends Resource
 {
     protected static ?string $model = Invoice::class;
 
-    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-document-currency-dollar';
+    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-document-currency-dollar';
 
     protected static ?int $navigationSort = 1;
 
@@ -93,12 +94,12 @@ class InvoiceResource extends Resource
             Section::make(__('invoice.customer_currency_info'))
                 ->description(__('invoice.customer_currency_info_description'))
                 ->schema([
-                    TranslatableSelect::standard(
-                        'customer_id',
-                        Partner::class,
-                        ['name', 'email', 'contact_person'],
-                        __('invoice.customer')
-                    )
+                    TranslatableSelect::make('customer_id')
+                        ->relationship('customer', 'name')
+                        ->label(__('invoice.customer'))
+                        ->searchableFields(['name', 'email', 'contact_person'])
+                        ->searchable()
+                        ->preload()
                         ->required()
                         ->columnSpan(2)
                         ->createOptionForm([
@@ -132,24 +133,27 @@ class InvoiceResource extends Resource
                             return $action
                                 ->modalWidth('lg');
                         }),
-                    TranslatableSelect::make('currency_id', Currency::class, __('invoice.currency'))
+                    TranslatableSelect::forModel('currency_id', Currency::class, 'name')
+                        ->label(__('invoice.currency'))
                         ->required()
                         ->live()
+                        ->preload()
+                        ->searchable()
                         ->default(function (): ?int {
                             $tenant = Filament::getTenant();
 
-                            return $tenant instanceof \App\Models\Company ? $tenant->currency_id : null;
+                            return $tenant instanceof Company ? $tenant->currency_id : null;
                         })
                         ->afterStateUpdated(function (callable $set, $state) {
                             if ($state) {
                                 $currency = Currency::find($state);
                                 // Ensure we have a single Currency model, not a collection
-                                if ($currency instanceof \Illuminate\Database\Eloquent\Collection) {
+                                if ($currency instanceof Collection) {
                                     $currency = $currency->first();
                                 }
                                 $company = Filament::getTenant();
 
-                                if ($currency && $company instanceof \App\Models\Company && $currency->id !== $company->currency_id) {
+                                if ($currency && $company instanceof Company && $currency->id !== $company->currency_id) {
                                     // Get latest exchange rate for this company
                                     $latestRate = CurrencyRate::getLatestRate($currency->id, $company->id);
                                     if ($latestRate) {
@@ -198,7 +202,7 @@ class InvoiceResource extends Resource
                             $currencyId = $get('currency_id');
                             $company = Filament::getTenant();
 
-                            return $currencyId && $company instanceof \App\Models\Company && $currencyId != $company->currency_id;
+                            return $currencyId && $company instanceof Company && $currencyId != $company->currency_id;
                         })
                         ->helperText(__('invoice.exchange_rate_helper')),
                 ])
@@ -208,7 +212,10 @@ class InvoiceResource extends Resource
             Section::make(__('invoice.invoice_details'))
                 ->description(__('invoice.invoice_details_description'))
                 ->schema([
-                    TranslatableSelect::make('fiscal_position_id', FiscalPosition::class, __('invoice.fiscal_position'))
+                    TranslatableSelect::forModel('fiscal_position_id', FiscalPosition::class, 'name')
+                        ->label(__('invoice.fiscal_position'))
+                        ->searchable()
+                        ->preload()
                         ->columnSpan(2),
                     DatePicker::make('invoice_date')
                         ->label(__('invoice.invoice_date'))
@@ -218,8 +225,9 @@ class InvoiceResource extends Resource
                     DatePicker::make('due_date')
                         ->label(__('invoice.due_date'))
                         ->required(),
-                    TranslatableSelect::make('payment_term_id', PaymentTerm::class, __('invoice.payment_term'))
+                    TranslatableSelect::make('payment_term_id')
                         ->relationship('paymentTerm', 'name')
+                        ->label(__('invoice.payment_term'))
                         ->searchable()
                         ->preload(),
                 ])
@@ -245,18 +253,17 @@ class InvoiceResource extends Resource
                         ->disabled(fn (?Invoice $record) => $record && $record->status !== InvoiceStatus::Draft)
                         ->minItems(1)
                         ->schema([
-                            TranslatableSelect::standard(
-                                'product_id',
-                                Product::class,
-                                ['name', 'sku', 'description'],
-                                __('invoice.product')
-                            )
+                            TranslatableSelect::forModel('product_id', Product::class, 'name')
+                                ->label(__('invoice.product'))
+                                ->searchableFields(['name', 'sku', 'description'])
+                                ->searchable()
+                                ->preload()
                                 ->reactive()
                                 ->afterStateUpdated(function (callable $set, $state) {
                                     if ($state) {
                                         $product = Product::find($state);
                                         // Ensure we have a single Product model, not a collection
-                                        if ($product instanceof \Illuminate\Database\Eloquent\Collection) {
+                                        if ($product instanceof Collection) {
                                             $product = $product->first();
                                         }
                                         if ($product) {
@@ -307,7 +314,10 @@ class InvoiceResource extends Resource
                                 ->currencyField('../../currency_id')
                                 ->required()
                                 ->columnSpan(3),
-                            TranslatableSelect::make('tax_id', Tax::class, __('invoice.tax'))
+                            TranslatableSelect::forModel('tax_id', Tax::class, 'name')
+                                ->label(__('invoice.tax'))
+                                ->searchable()
+                                ->preload()
                                 ->createOptionForm([
                                     Select::make('company_id')
                                         ->relationship('company', 'name')
@@ -333,15 +343,11 @@ class InvoiceResource extends Resource
                                         ->modalWidth('lg');
                                 })
                                 ->columnSpan(3),
-                            TranslatableSelect::relationship(
-                                'income_account_id',
-                                'incomeAccount',
-                                Account::class,
-                                __('invoice.income_account'),
-                                'name',
-                                null,
-                                fn ($query) => $query->where('type', 'income')
-                            )
+                            TranslatableSelect::forModel('income_account_id', Account::class, 'name')
+                                ->label(__('invoice.income_account'))
+                                ->searchable()
+                                ->preload()
+                                ->modifyQueryUsing(fn ($query) => $query->where('type', 'income'))
                                 ->required()
                                 ->columnSpan(3),
                         ])
@@ -533,7 +539,7 @@ class InvoiceResource extends Resource
                         try {
                             $user = Auth::user();
                             if (! $user) {
-                                throw new \Exception('User must be authenticated to confirm invoice');
+                                throw new Exception('User must be authenticated to confirm invoice');
                             }
                             $invoiceService->confirm($record, $user);
                             Notification::make()
@@ -561,7 +567,7 @@ class InvoiceResource extends Resource
                             ->label(__('payment.form.journal_id'))
                             ->options(function (): array {
                                 $tenant = Filament::getTenant();
-                                if (! $tenant instanceof \App\Models\Company) {
+                                if (! $tenant instanceof Company) {
                                     return [];
                                 }
 
@@ -572,7 +578,7 @@ class InvoiceResource extends Resource
                             ->required()
                             ->default(function (): ?int {
                                 $tenant = Filament::getTenant();
-                                if (! $tenant instanceof \App\Models\Company) {
+                                if (! $tenant instanceof Company) {
                                     return null;
                                 }
 
@@ -624,7 +630,7 @@ class InvoiceResource extends Resource
                             // Create and confirm payment
                             $user = Auth::user();
                             if (! $user) {
-                                throw new \Exception('User must be authenticated to create payment');
+                                throw new Exception('User must be authenticated to create payment');
                             }
                             $payment = app(CreatePaymentAction::class)->execute($paymentDTO, $user);
                             app(PaymentService::class)->confirm($payment, $user);

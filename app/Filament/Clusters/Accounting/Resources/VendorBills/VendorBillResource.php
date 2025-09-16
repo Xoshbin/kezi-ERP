@@ -20,20 +20,19 @@ use App\Filament\Clusters\Accounting\Resources\VendorBills\Pages\ListVendorBills
 use App\Filament\Clusters\Accounting\Resources\VendorBills\RelationManagers\AdjustmentDocumentsRelationManager;
 use App\Filament\Clusters\Accounting\Resources\VendorBills\RelationManagers\PaymentsRelationManager;
 use App\Filament\Forms\Components\MoneyInput;
-use App\Filament\Support\TranslatableSelect;
 use App\Filament\Tables\Columns\MoneyColumn;
 use App\Models\Account;
 use App\Models\AssetCategory;
+use App\Models\Company;
 use App\Models\Currency;
 use App\Models\CurrencyRate;
 use App\Models\Journal;
-use App\Models\Partner;
-use App\Models\PaymentTerm;
 use App\Models\Product;
 use App\Models\Tax;
 use App\Models\VendorBill;
 use App\Rules\NotInLockedPeriod;
 use App\Services\PaymentService;
+use BackedEnum;
 use Brick\Money\Money;
 use Exception;
 use Filament\Actions\Action;
@@ -55,13 +54,15 @@ use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Auth;
+use Xoshbin\TranslatableSelect\Components\TranslatableSelect;
 
 class VendorBillResource extends Resource
 {
     protected static ?string $model = VendorBill::class;
 
-    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-receipt-percent';
+    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-receipt-percent';
 
     protected static ?int $navigationSort = 1;
 
@@ -93,12 +94,12 @@ class VendorBillResource extends Resource
             Section::make(__('vendor_bill.vendor_currency_info'))
                 ->description(__('vendor_bill.vendor_currency_info_description'))
                 ->schema([
-                    TranslatableSelect::standard(
-                        'vendor_id',
-                        Partner::class,
-                        ['name', 'email', 'contact_person'],
-                        __('vendor_bill.vendor')
-                    )
+                    TranslatableSelect::make('vendor_id')
+                        ->relationship('vendor', 'name')
+                        ->label(__('vendor_bill.vendor'))
+                        ->searchableFields(['name', 'email', 'contact_person'])
+                        ->searchable()
+                        ->preload()
                         ->required()
                         ->columnSpan(2)
                         ->createOptionForm([
@@ -132,25 +133,28 @@ class VendorBillResource extends Resource
                             return $action
                                 ->modalWidth('lg');
                         }),
-                    TranslatableSelect::make('currency_id', Currency::class, __('vendor_bill.currency'))
+                    TranslatableSelect::forModel('currency_id', Currency::class, 'name')
+                        ->label(__('vendor_bill.currency'))
                         ->required()
                         ->live()
+                        ->searchable()
+                        ->preload()
                         ->columnSpan(1)
                         ->default(function (): ?int {
                             $tenant = Filament::getTenant();
 
-                            return $tenant instanceof \App\Models\Company ? $tenant->currency_id : null;
+                            return $tenant instanceof Company ? $tenant->currency_id : null;
                         })
                         ->afterStateUpdated(function (callable $set, $state) {
                             if ($state) {
                                 $currency = Currency::find($state);
                                 // Ensure we have a single Currency model, not a collection
-                                if ($currency instanceof \Illuminate\Database\Eloquent\Collection) {
+                                if ($currency instanceof Collection) {
                                     $currency = $currency->first();
                                 }
                                 $company = Filament::getTenant();
 
-                                if ($currency && $company instanceof \App\Models\Company && $currency->id !== $company->currency_id) {
+                                if ($currency && $company instanceof Company && $currency->id !== $company->currency_id) {
                                     // Get latest exchange rate for this company
                                     $latestRate = CurrencyRate::getLatestRate($currency->id, $company->id);
                                     if ($latestRate) {
@@ -199,7 +203,7 @@ class VendorBillResource extends Resource
                             $currencyId = $get('currency_id');
                             $company = Filament::getTenant();
 
-                            return $currencyId && $company instanceof \App\Models\Company && $currencyId != $company->currency_id;
+                            return $currencyId && $company instanceof Company && $currencyId != $company->currency_id;
                         })
                         ->helperText(__('vendor_bill.exchange_rate_helper')),
                 ])
@@ -229,8 +233,9 @@ class VendorBillResource extends Resource
                     DatePicker::make('due_date')
                         ->label(__('vendor_bill.due_date'))
                         ->columnSpan(1),
-                    TranslatableSelect::make('payment_term_id', PaymentTerm::class, __('vendor_bill.payment_term'))
+                    TranslatableSelect::make('payment_term_id')
                         ->relationship('paymentTerm', 'name')
+                        ->label(__('vendor_bill.payment_term'))
                         ->searchable()
                         ->preload()
                         ->columnSpan(1),
@@ -257,18 +262,17 @@ class VendorBillResource extends Resource
                         ->disabled(fn (?VendorBill $record) => $record ? $record->status !== VendorBillStatus::Draft : false)
                         ->deletable(fn (?VendorBill $record) => $record === null || $record->status === VendorBillStatus::Draft)
                         ->schema([
-                            TranslatableSelect::standard(
-                                'product_id',
-                                Product::class,
-                                ['name', 'sku', 'description'],
-                                __('vendor_bill.product')
-                            )
+                            TranslatableSelect::forModel('product_id', Product::class, 'name')
+                                ->label(__('vendor_bill.product'))
+                                ->searchableFields(['name', 'sku', 'description'])
+                                ->searchable()
+                                ->preload()
                                 ->reactive()
                                 ->afterStateUpdated(function (callable $set, $state) {
                                     if ($state) {
                                         $product = Product::find($state);
                                         // Ensure we have a single Product model, not a collection
-                                        if ($product instanceof \Illuminate\Database\Eloquent\Collection) {
+                                        if ($product instanceof Collection) {
                                             $product = $product->first();
                                         }
                                         if ($product) {
@@ -327,20 +331,17 @@ class VendorBillResource extends Resource
                                 ->currencyField('../../currency_id')
                                 ->required()
                                 ->columnSpan(3),
-                            TranslatableSelect::standard(
-                                'expense_account_id',
-                                Account::class,
-                                ['name', 'code'],
-                                __('vendor_bill.expense_account'),
-                                'name',
-                                fn ($query) => $query->when(
-                                    ($tenant = Filament::getTenant()) instanceof \App\Models\Company,
-                                    fn ($q) => $q->where('company_id', $tenant?->getKey())
-                                )
-                            )
+                            TranslatableSelect::forModel('expense_account_id', Account::class, 'name')
+                                ->label(__('vendor_bill.expense_account'))
+                                ->searchableFields(['name', 'code'])
+                                ->searchable()
+                                ->preload()
                                 ->required()
                                 ->columnSpan(3),
-                            TranslatableSelect::make('tax_id', Tax::class, __('vendor_bill.tax'))
+                            TranslatableSelect::forModel('tax_id', Tax::class, 'name')
+                                ->label(__('vendor_bill.tax'))
+                                ->searchable()
+                                ->preload()
                                 ->createOptionForm([
                                     Select::make('company_id')
                                         ->relationship('company', 'name')
@@ -372,12 +373,11 @@ class VendorBillResource extends Resource
                                         ->modalWidth('lg');
                                 })
                                 ->columnSpan(3),
-                            TranslatableSelect::standard(
-                                'asset_category_id',
-                                AssetCategory::class,
-                                ['name'],
-                                __('asset.category')
-                            )
+                            TranslatableSelect::forModel('asset_category_id', AssetCategory::class, 'name')
+                                ->label(__('asset.category'))
+                                ->searchableFields(['name'])
+                                ->searchable()
+                                ->preload()
                                 ->visible(fn ($get) => $get('product_id') === null) // for service/asset purchases without product
                                 ->createOptionForm([
                                     Select::make('company_id')
@@ -621,7 +621,7 @@ class VendorBillResource extends Resource
                             ->label(__('payment.form.journal_id'))
                             ->options(function (): array {
                                 $tenant = Filament::getTenant();
-                                if (! $tenant instanceof \App\Models\Company) {
+                                if (! $tenant instanceof Company) {
                                     return [];
                                 }
 
@@ -632,7 +632,7 @@ class VendorBillResource extends Resource
                             ->required()
                             ->default(function (): ?int {
                                 $tenant = Filament::getTenant();
-                                if (! $tenant instanceof \App\Models\Company) {
+                                if (! $tenant instanceof Company) {
                                     return null;
                                 }
 
@@ -684,7 +684,7 @@ class VendorBillResource extends Resource
                             // Create and confirm payment
                             $user = Auth::user();
                             if (! $user) {
-                                throw new \Exception('User must be authenticated to create payment');
+                                throw new Exception('User must be authenticated to create payment');
                             }
                             $payment = app(CreatePaymentAction::class)->execute($paymentDTO, $user);
                             app(PaymentService::class)->confirm($payment, $user);

@@ -1,5 +1,5 @@
 {
-    "$schema": "https://getcomposer.org/schema.json",
+    "schema": "https://getcomposer.org/schema.json",
     "name": "laravel/laravel",
     "type": "project",
     "description": "The skeleton application for the Laravel framework.",
@@ -16,7 +16,8 @@
         "lara-zeus/spatie-translatable": "^1.0",
         "laravel/framework": "^12.0",
         "laravel/tinker": "^2.10.1",
-        "xoshbin/pertuk": "^0.0.4"
+        "xoshbin/pertuk": "^0.0.4",
+        "xoshbin/translatable-select": "dev-main"
     },
     "require-dev": {
         "barryvdh/laravel-ide-helper": "^3.6",

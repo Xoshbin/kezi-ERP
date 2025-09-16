@@ -3,24 +3,20 @@
 namespace App\Filament\Clusters\HumanResources\Resources\Positions\Schemas;
 
 use App\Filament\Forms\Components\MoneyInput;
-use App\Filament\Support\TranslatableSelect;
 use App\Models\Currency;
 use App\Models\Department;
-use Filament\Facades\Filament;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
+use Xoshbin\TranslatableSelect\Components\TranslatableSelect;
 
 class PositionForm
 {
     public static function configure(Schema $schema): Schema
     {
-        /** @var \App\Models\Company|null $tenant */
-        $tenant = Filament::getTenant();
-
         return $schema->components([
             Section::make(__('position.basic_information'))
                 ->description(__('position.basic_information_description'))
@@ -31,7 +27,11 @@ class PositionForm
                         ->maxLength(255)
                         ->columnSpan(2),
 
-                    TranslatableSelect::make('department_id', Department::class, __('position.department'))
+                    TranslatableSelect::forModel('department_id', Department::class)
+                        ->label(__('position.department'))
+                        ->searchable()
+                        ->searchableFields(['name'])
+                        ->preload()
                         ->columnSpan(1),
 
                     Textarea::make('description')
@@ -96,19 +96,22 @@ class PositionForm
             Section::make(__('position.salary_range'))
                 ->description(__('position.salary_range_description'))
                 ->schema([
-                    TranslatableSelect::make('salary_currency_id', Currency::class, __('position.salary_currency'))
+                    TranslatableSelect::forModel('currency_id', Currency::class)
+                        ->searchable()
+                        ->label(__('position.salary_currency'))
+                        ->searchableFields(['name', 'code'])
+                        ->preload()
                         ->live()
-                        ->default(fn () => $tenant?->currency_id)
                         ->columnSpan(3),
 
                     MoneyInput::make('min_salary')
                         ->label(__('position.min_salary'))
-                        ->currencyField('salary_currency_id')
+                        ->currencyField('currency_id')
                         ->columnSpan(1),
 
                     MoneyInput::make('max_salary')
                         ->label(__('position.max_salary'))
-                        ->currencyField('salary_currency_id')
+                        ->currencyField('currency_id')
                         ->columnSpan(1),
                 ])
                 ->columns(3)

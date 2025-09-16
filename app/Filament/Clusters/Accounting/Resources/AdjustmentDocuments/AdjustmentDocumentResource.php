@@ -10,7 +10,6 @@ use App\Filament\Clusters\Accounting\Resources\AdjustmentDocuments\Pages\CreateA
 use App\Filament\Clusters\Accounting\Resources\AdjustmentDocuments\Pages\EditAdjustmentDocument;
 use App\Filament\Clusters\Accounting\Resources\AdjustmentDocuments\Pages\ListAdjustmentDocuments;
 use App\Filament\Forms\Components\MoneyInput;
-use App\Filament\Support\TranslatableSelect;
 use App\Models\Account;
 use App\Models\AdjustmentDocument;
 use App\Models\Currency;
@@ -19,12 +18,12 @@ use App\Models\Product;
 use App\Models\Tax;
 use App\Models\VendorBill;
 use App\Rules\NotInLockedPeriod;
+use BackedEnum;
 use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
-use Filament\Facades\Filament;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Repeater\TableColumn;
@@ -40,12 +39,14 @@ use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Collection;
+use Xoshbin\TranslatableSelect\Components\TranslatableSelect;
 
 class AdjustmentDocumentResource extends Resource
 {
     protected static ?string $model = AdjustmentDocument::class;
 
-    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-document-duplicate';
+    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-document-duplicate';
 
     protected static ?int $navigationSort = 3;
 
@@ -77,15 +78,12 @@ class AdjustmentDocumentResource extends Resource
             Section::make(__('adjustment_document.document_information'))
                 ->description(__('adjustment_document.document_information_description'))
                 ->schema([
-                    TranslatableSelect::make('currency_id', Currency::class, __('adjustment_document.currency'))
+                    TranslatableSelect::forModel('currency_id', Currency::class, 'name')
                         ->required()
+                        ->searchable()
+                        ->preload()
                         ->live()
                         ->columnSpan(2)
-                        ->default(function (): ?int {
-                            $tenant = Filament::getTenant();
-
-                            return $tenant instanceof \App\Models\Company ? $tenant->currency_id : null;
-                        })
                         ->disabled(fn (Get $get): bool => ! empty($get('original_invoice_id')) || ! empty($get('original_vendor_bill_id')))
                         ->createOptionForm([
                             TextInput::make('code')
@@ -189,7 +187,7 @@ class AdjustmentDocumentResource extends Resource
                                 return null;
                             }
                             // Ensure we have a single Invoice model, not a collection
-                            if ($invoice instanceof \Illuminate\Database\Eloquent\Collection) {
+                            if ($invoice instanceof Collection) {
                                 $invoice = $invoice->first();
                             }
                             if (! $invoice) {
@@ -204,7 +202,7 @@ class AdjustmentDocumentResource extends Resource
                             if ($state) {
                                 $invoice = Invoice::find($state);
                                 // Ensure we have a single Invoice model, not a collection
-                                if ($invoice instanceof \Illuminate\Database\Eloquent\Collection) {
+                                if ($invoice instanceof Collection) {
                                     $invoice = $invoice->first();
                                 }
                                 $set('currency_id', $invoice?->currency_id);
@@ -222,7 +220,7 @@ class AdjustmentDocumentResource extends Resource
                             if ($state) {
                                 $bill = VendorBill::find($state);
                                 // Ensure we have a single VendorBill model, not a collection
-                                if ($bill instanceof \Illuminate\Database\Eloquent\Collection) {
+                                if ($bill instanceof Collection) {
                                     $bill = $bill->first();
                                 }
                                 $set('currency_id', $bill?->currency_id);
@@ -249,18 +247,17 @@ class AdjustmentDocumentResource extends Resource
                         ->reorderable(false)
                         ->minItems(1)
                         ->schema([
-                            TranslatableSelect::standard(
-                                'product_id',
-                                Product::class,
-                                ['name', 'sku', 'description'],
-                                __('adjustment_document.product')
-                            )
+                            TranslatableSelect::forModel('product_id', Product::class, 'name')
+                                ->label(__('adjustment_document.product'))
+                                ->searchable()
+                                ->searchableFields(['name', 'sku', 'description'])
+                                ->preload()
                                 ->reactive()
                                 ->afterStateUpdated(function (callable $set, $state) {
                                     if ($state) {
                                         $product = Product::find($state);
                                         // Ensure we have a single Product model, not a collection
-                                        if ($product instanceof \Illuminate\Database\Eloquent\Collection) {
+                                        if ($product instanceof Collection) {
                                             $product = $product->first();
                                         }
                                         if ($product) {
@@ -311,7 +308,9 @@ class AdjustmentDocumentResource extends Resource
                                 ->currencyField('../../currency_id')
                                 ->required()
                                 ->columnSpan(3),
-                            TranslatableSelect::make('tax_id', Tax::class, 'Tax')
+                            TranslatableSelect::forModel('tax_id', Tax::class, 'name')
+                                ->searchable()
+                                ->preload()
                                 ->createOptionForm([
                                     Select::make('company_id')
                                         ->relationship('company', 'name')
@@ -337,12 +336,12 @@ class AdjustmentDocumentResource extends Resource
                                         ->modalWidth('lg');
                                 })
                                 ->columnSpan(3),
-                            TranslatableSelect::withFormatter(
-                                'account_id',
-                                Account::class,
-                                fn ($account) => [$account->id => $account->getTranslatedLabel('name').' ('.$account->code.')'],
-                                'Account'
-                            )
+                            TranslatableSelect::forModel('account_id', Account::class)
+                                ->label('Account')
+                                ->searchable()
+                                ->searchableFields(['name', 'code'])
+                                ->preload()
+                                ->getOptionLabelFromRecordUsing(fn ($record) => $record->getTranslatedLabel('name').' ('.$record->code.')')
                                 ->required()
                                 ->createOptionForm([
                                     Select::make('company_id')

@@ -2,9 +2,7 @@
 
 namespace App\Models;
 
-use App\Traits\TranslatableSearch;
 use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -37,8 +35,7 @@ use Spatie\Translatable\HasTranslations;
  */
 class LeaveType extends Model
 {
-    use HasFactory, HasTranslations;
-    use TranslatableSearch;
+    use HasTranslations;
 
     /**
      * The attributes that are mass assignable.
