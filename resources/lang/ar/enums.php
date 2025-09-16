@@ -176,4 +176,13 @@ return [
         'draft' => 'مسودة',
         'finalized' => 'نهائي',
     ],
+
+    'custom_field_type' => [
+        'text' => 'نص',
+        'textarea' => 'منطقة نص',
+        'number' => 'رقم',
+        'boolean' => 'نعم/لا',
+        'date' => 'تاريخ',
+        'select' => 'اختيار',
+    ],
 ];
