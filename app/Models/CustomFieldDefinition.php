@@ -58,6 +58,27 @@ class CustomFieldDefinition extends Model
     ];
 
     /**
+     * Mutator for field_definitions to ensure show_in_table has default values and proper type casting.
+     */
+    public function setFieldDefinitionsAttribute($value): void
+    {
+        if (is_array($value)) {
+            $value = array_map(function ($field) {
+                // Ensure show_in_table has a default value and convert to boolean
+                if (!isset($field['show_in_table'])) {
+                    $field['show_in_table'] = false;
+                } else {
+                    // Convert string values from Filament forms to boolean
+                    $field['show_in_table'] = filter_var($field['show_in_table'], FILTER_VALIDATE_BOOLEAN);
+                }
+                return $field;
+            }, $value);
+        }
+
+        $this->attributes['field_definitions'] = json_encode($value);
+    }
+
+    /**
      * The attributes that are translatable.
      *
      * @var array<int, string>

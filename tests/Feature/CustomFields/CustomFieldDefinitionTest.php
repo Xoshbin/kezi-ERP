@@ -33,6 +33,7 @@ class CustomFieldDefinitionTest extends TestCase
                     'label' => ['en' => 'Industry', 'ar' => 'الصناعة'],
                     'type' => CustomFieldType::Text->value,
                     'required' => false,
+                    'show_in_table' => true,
                     'order' => 1,
                 ],
                 [
@@ -40,6 +41,7 @@ class CustomFieldDefinitionTest extends TestCase
                     'label' => ['en' => 'Priority', 'ar' => 'الأولوية'],
                     'type' => CustomFieldType::Select->value,
                     'required' => true,
+                    'show_in_table' => false,
                     'order' => 2,
                     'options' => [
                         ['value' => 'high', 'label' => ['en' => 'High', 'ar' => 'عالي']],
@@ -203,5 +205,70 @@ class CustomFieldDefinitionTest extends TestCase
         $fieldDef = $definition->getFieldDefinition('non_existent');
 
         $this->assertNull($fieldDef);
+    }
+
+    public function test_can_filter_fields_by_show_in_table(): void
+    {
+        $definition = CustomFieldDefinition::create([
+            'model_type' => Partner::class,
+            'name' => ['en' => 'Test Fields'],
+            'field_definitions' => [
+                [
+                    'key' => 'visible_field',
+                    'label' => ['en' => 'Visible Field'],
+                    'type' => CustomFieldType::Text->value,
+                    'required' => false,
+                    'show_in_table' => true,
+                    'order' => 1,
+                ],
+                [
+                    'key' => 'hidden_field',
+                    'label' => ['en' => 'Hidden Field'],
+                    'type' => CustomFieldType::Text->value,
+                    'required' => false,
+                    'show_in_table' => false,
+                    'order' => 2,
+                ],
+                [
+                    'key' => 'default_field',
+                    'label' => ['en' => 'Default Field'],
+                    'type' => CustomFieldType::Text->value,
+                    'required' => false,
+                    'order' => 3,
+                    // No show_in_table property (should default to false)
+                ],
+            ],
+            'is_active' => true,
+        ]);
+
+        $fieldDefinitions = $definition->getFieldDefinitionsCollection();
+        $visibleFields = $fieldDefinitions->filter(fn ($field) => $field['show_in_table'] ?? false);
+
+        $this->assertCount(1, $visibleFields);
+        $this->assertEquals('visible_field', $visibleFields->first()['key']);
+    }
+
+    public function test_show_in_table_defaults_to_false(): void
+    {
+        $definition = CustomFieldDefinition::create([
+            'model_type' => Partner::class,
+            'name' => ['en' => 'Test Fields'],
+            'field_definitions' => [
+                [
+                    'key' => 'test_field',
+                    'label' => ['en' => 'Test Field'],
+                    'type' => CustomFieldType::Text->value,
+                    'required' => false,
+                    'order' => 1,
+                    // No show_in_table property
+                ],
+            ],
+            'is_active' => true,
+        ]);
+
+        $fieldDefinitions = $definition->getFieldDefinitionsCollection();
+        $field = $fieldDefinitions->first();
+
+        $this->assertFalse($field['show_in_table'] ?? false);
     }
 }
