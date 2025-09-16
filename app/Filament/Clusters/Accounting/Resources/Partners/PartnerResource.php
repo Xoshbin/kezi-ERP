@@ -13,6 +13,7 @@ use App\Filament\Clusters\Accounting\Resources\Partners\RelationManagers\Invoice
 use App\Filament\Clusters\Accounting\Resources\Partners\RelationManagers\PaymentsRelationManager;
 use App\Filament\Clusters\Accounting\Resources\Partners\RelationManagers\UnreconciledEntriesRelationManager;
 use App\Filament\Clusters\Accounting\Resources\Partners\RelationManagers\VendorBillsRelationManager;
+use App\Filament\Components\CustomFieldsComponent;
 use App\Filament\Tables\Columns\MoneyColumn;
 use App\Models\Account;
 use App\Models\Partner;
@@ -270,6 +271,9 @@ class PartnerResource extends Resource
                     ])
                     ->columnSpanFull()
                     ->collapsible(),
+
+                // Custom Fields Section
+                CustomFieldsComponent::make(Partner::class),
             ]);
     }
 
