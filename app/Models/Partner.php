@@ -6,6 +6,7 @@ use App\Enums\Partners\PartnerType;
 use App\Enums\Purchases\VendorBillStatus;
 use App\Enums\Sales\InvoiceStatus;
 use App\Observers\PartnerObserver;
+use App\Traits\HasCustomFields;
 use Brick\Money\Money;
 use Database\Factories\PartnerFactory;
 use Eloquent;
@@ -82,7 +83,7 @@ use RuntimeException;
 #[ObservedBy([PartnerObserver::class])]
 class Partner extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory, SoftDeletes, HasCustomFields;
 
     /**
      * The attributes that are mass assignable.

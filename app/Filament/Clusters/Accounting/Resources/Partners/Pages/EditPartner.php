@@ -27,4 +27,26 @@ class EditPartner extends EditRecord
             VendorFinancialWidget::class,
         ];
     }
+
+    protected function mutateFormDataBeforeFill(array $data): array
+    {
+        // Load custom field values
+        $data['custom_fields'] = $this->record->getCustomFieldValues();
+
+        return $data;
+    }
+
+    protected function mutateFormDataBeforeSave(array $data): array
+    {
+        // Extract custom fields data
+        $customFieldsData = $data['custom_fields'] ?? [];
+        unset($data['custom_fields']);
+
+        // Save custom fields
+        if (!empty($customFieldsData)) {
+            $this->record->setCustomFieldValues($customFieldsData);
+        }
+
+        return $data;
+    }
 }
