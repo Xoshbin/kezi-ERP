@@ -2,13 +2,12 @@
 
 namespace App\Filament\Pages\Tenancy;
 
-use App\Filament\Support\TranslatableSelect;
 use App\Models\Company;
-use App\Models\Currency;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Pages\Tenancy\RegisterTenant;
 use Filament\Schemas\Schema;
+use Xoshbin\TranslatableSelect\Components\TranslatableSelect;
 
 class RegisterCompany extends RegisterTenant
 {
@@ -26,7 +25,11 @@ class RegisterCompany extends RegisterTenant
                     ->required()
                     ->maxLength(255),
 
-                TranslatableSelect::make('currency_id', Currency::class, __('company.currency_id'))
+                TranslatableSelect::make('currency_id')
+                    ->relationship('currency', 'name')
+                    ->label(__('company.currency_id'))
+                    ->searchableFields(['name', 'code'])
+                    ->preload()
                     ->required()
                     ->createOptionForm([
                         TextInput::make('code')

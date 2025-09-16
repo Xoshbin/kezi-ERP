@@ -3,8 +3,8 @@
 namespace App\Models;
 
 use App\Observers\CurrencyObserver;
-use App\Traits\TranslatableSearch;
 use Database\Factories\CurrencyFactory;
+use Eloquent;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
@@ -54,12 +54,12 @@ use Spatie\Translatable\HasTranslations;
  * @method static Builder<static>|Currency whereSymbol($value)
  * @method static Builder<static>|Currency whereUpdatedAt($value)
  *
- * @mixin \Eloquent
+ * @mixin Eloquent
  */
 #[ObservedBy([CurrencyObserver::class])]
 class Currency extends Model
 {
-    use HasFactory, HasTranslations, TranslatableSearch;
+    use HasFactory, HasTranslations;
 
     /** @var array<int, string> */
     public array $translatable = ['name'];

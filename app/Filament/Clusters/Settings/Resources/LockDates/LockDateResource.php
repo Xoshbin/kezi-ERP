@@ -8,6 +8,7 @@ use App\Filament\Clusters\Settings\Resources\LockDates\Pages\EditLockDate;
 use App\Filament\Clusters\Settings\Resources\LockDates\Pages\ListLockDates;
 use App\Filament\Clusters\Settings\SettingsCluster;
 use App\Models\LockDate;
+use BackedEnum;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\EditAction;
 use Filament\Forms\Components\DatePicker;
@@ -24,7 +25,7 @@ class LockDateResource extends Resource
 
     protected static ?int $navigationSort = 7;
 
-    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-lock-closed';
+    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-lock-closed';
 
     protected static ?string $cluster = SettingsCluster::class;
 
@@ -61,11 +62,6 @@ class LockDateResource extends Resource
                         DatePicker::make('locked_until')
                             ->label(__('lock_date.locked_until'))
                             ->required(),
-                        Select::make('company_id')
-                            ->label(__('lock_date.company'))
-                            ->relationship('company', 'name')
-                            ->required()
-                            ->disabled(),
                     ])
                     ->columns(2)
                     ->columnSpanFull(),
@@ -78,7 +74,6 @@ class LockDateResource extends Resource
             ->columns([
                 TextColumn::make('lock_type')->badge(),
                 TextColumn::make('locked_until')->date(),
-                TextColumn::make('company.name')->sortable(),
             ])
             ->recordActions([
                 EditAction::make()

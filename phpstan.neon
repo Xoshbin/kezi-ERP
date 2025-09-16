@@ -21,10 +21,5 @@ parameters:
         - '#return type with generic class.*?does not specify its types#'
         - '#has parameter.*?with generic class.*?does not specify its types#'
 
-        # Collection template type resolution issues - PHPStan limitations with mapWithKeys
-        - '#Unable to resolve the template type TMapWithKeysKey in call to method#'
-        - '#Unable to resolve the template type TMapWithKeysValue in call to method#'
-        - '#Method App\\Models\\.*?::searchWithTranslatedLabels\(\) should return.*?but returns#'
-
 #    excludePaths:
 #        - ./*/*/FileToBeExcluded.php
