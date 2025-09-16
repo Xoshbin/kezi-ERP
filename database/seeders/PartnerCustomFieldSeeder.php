@@ -2,8 +2,8 @@
 
 namespace Database\Seeders;
 
-use App\Enums\CustomFields\CustomFieldType;
-use App\Models\CustomFieldDefinition;
+use Xoshbin\CustomFields\Enums\CustomFieldType;
+use Xoshbin\CustomFields\Models\CustomFieldDefinition;
 use App\Models\Partner;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
