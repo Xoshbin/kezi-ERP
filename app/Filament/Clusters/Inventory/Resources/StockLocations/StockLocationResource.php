@@ -8,16 +8,14 @@ use App\Filament\Clusters\Inventory\Resources\StockLocations\Pages\CreateStockLo
 use App\Filament\Clusters\Inventory\Resources\StockLocations\Pages\EditStockLocation;
 use App\Filament\Clusters\Inventory\Resources\StockLocations\Pages\ListStockLocations;
 use App\Filament\Clusters\Inventory\Resources\StockLocations\Pages\ViewStockLocation;
-use App\Models\Company;
 use App\Models\StockLocation;
-use Filament\Actions\Action;
+use BackedEnum;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Resources\Resource;
@@ -36,7 +34,7 @@ class StockLocationResource extends Resource
 
     protected static ?string $cluster = InventoryCluster::class;
 
-    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-building-storefront';
+    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-building-storefront';
 
     protected static ?int $navigationSort = 2;
 
@@ -57,7 +55,6 @@ class StockLocationResource extends Resource
 
     public static function form(Schema $schema): Schema
     {
-        $company = Company::first();
 
         return $schema->components([
             Section::make(__('stock_location.basic_information'))
@@ -65,36 +62,6 @@ class StockLocationResource extends Resource
                 ->icon('heroicon-o-building-storefront')
                 ->schema([
                     Grid::make(2)->schema([
-                        Select::make('company_id')
-                            ->relationship('company', 'name')
-                            ->label(__('stock_location.company'))
-                            ->required()
-                            ->searchable()
-                            ->default($company?->id)
-                            ->createOptionForm([
-                                TextInput::make('name')
-                                    ->label(__('company.name'))
-                                    ->required()
-                                    ->maxLength(255),
-                                Textarea::make('address')
-                                    ->label(__('company.address'))
-                                    ->columnSpanFull(),
-                                TextInput::make('tax_id')
-                                    ->label(__('company.tax_id'))
-                                    ->maxLength(255),
-                                Select::make('currency_id')
-                                    ->label(__('company.currency_id'))
-                                    ->relationship('currency', 'name')
-                                    ->required(),
-                                TextInput::make('fiscal_country')
-                                    ->label(__('company.fiscal_country'))
-                                    ->required()
-                                    ->maxLength(255),
-                            ])
-                            ->createOptionModalHeading(__('common.modal_title_create_company'))
-                            ->createOptionAction(function (Action $action) {
-                                return $action->modalWidth('lg');
-                            }),
                         TextInput::make('name')
                             ->label(__('stock_location.name'))
                             ->required()

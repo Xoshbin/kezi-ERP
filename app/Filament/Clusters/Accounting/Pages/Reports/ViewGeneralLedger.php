@@ -86,12 +86,28 @@ class ViewGeneralLedger extends Page
                             ->getSearchResultsUsing(function (string $search): array {
                                 $tenant = Filament::getTenant();
 
-                                return Account::searchTranslatable($search)
-                                    ->where('company_id', $tenant?->getKey())
-                                    ->limit(50)
-                                    ->get()
-                                    ->mapWithKeys(fn ($account) => [$account->id => $account->code.' - '.$account->getTranslatedLabel('name')])
-                                    ->toArray();
+                                $searchService = app(\Xoshbin\TranslatableSelect\Services\TranslatableSearchService::class);
+                                $localeResolver = app(\Xoshbin\TranslatableSelect\Services\LocaleResolver::class);
+                                $searchLocales = $localeResolver->getModelLocales(Account::class);
+
+                                $results = $searchService->getFilamentSearchResults(Account::class, $search, [
+                                    'searchFields' => ['name', 'code'],
+                                    'labelField' => 'name',
+                                    'searchLocales' => $searchLocales,
+                                    'queryModifier' => fn ($query) => $query->where('company_id', $tenant?->getKey()),
+                                    'limit' => 50,
+                                ]);
+
+                                // Format results to include code
+                                $formattedResults = [];
+                                foreach ($results as $id => $name) {
+                                    $account = Account::find($id);
+                                    if ($account) {
+                                        $formattedResults[$id] = $account->code.' - '.$name;
+                                    }
+                                }
+
+                                return $formattedResults;
                             })
                             ->getOptionLabelsUsing(function (array $values): array {
                                 return Account::whereIn('id', $values)

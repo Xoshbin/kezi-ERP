@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Enums\Inventory\ValuationMethod;
 use App\Enums\Products\ProductType;
+use App\Filament\Clusters\Inventory\Resources\Products\Pages\CreateProduct;
 use App\Models\Account;
 use App\Models\Product;
 use Brick\Money\Money;
@@ -46,7 +47,7 @@ it('can create a product with explicit inventory valuation method', function () 
 
     // Verify it's saved in the database
     $this->assertDatabaseHas('products', [
-        'name' => 'iphone',
+        'name' => json_encode(['en' => 'iphone']),
         'sku' => 'iphone17',
         'type' => ProductType::Storable->value,
         'inventory_valuation_method' => ValuationMethod::AVCO->value,
@@ -71,7 +72,7 @@ it('can create a product through Filament interface with default valuation metho
     $incomeAccount = Account::factory()->for($this->company)->create();
     $expenseAccount = Account::factory()->for($this->company)->create();
 
-    livewire(\App\Filament\Clusters\Inventory\Resources\Products\Pages\CreateProduct::class)
+    livewire(CreateProduct::class)
         ->fillForm([
             'name' => 'Test Product',
             'sku' => 'TEST-001',
@@ -87,7 +88,7 @@ it('can create a product through Filament interface with default valuation metho
 
     // Verify the product was created with the correct default valuation method
     $this->assertDatabaseHas('products', [
-        'name' => 'Test Product',
+        'name' => json_encode(['en' => 'Test Product']),
         'sku' => 'TEST-001',
         'type' => ProductType::Storable->value,
         'inventory_valuation_method' => ValuationMethod::AVCO->value,

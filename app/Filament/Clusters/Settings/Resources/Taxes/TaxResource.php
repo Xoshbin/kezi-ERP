@@ -8,12 +8,9 @@ use App\Filament\Clusters\Settings\Resources\Taxes\Pages\CreateTax;
 use App\Filament\Clusters\Settings\Resources\Taxes\Pages\EditTax;
 use App\Filament\Clusters\Settings\Resources\Taxes\Pages\ListTaxes;
 use App\Filament\Clusters\Settings\SettingsCluster;
-use App\Filament\Support\TranslatableSelect;
-use App\Models\Account;
-use App\Models\Company;
-use App\Models\Currency;
 use App\Models\Tax;
 use App\Support\NumberFormatter;
+use BackedEnum;
 use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
@@ -28,6 +25,7 @@ use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use LaraZeus\SpatieTranslatable\Resources\Concerns\Translatable;
+use Xoshbin\TranslatableSelect\Components\TranslatableSelect;
 
 class TaxResource extends Resource
 {
@@ -35,7 +33,7 @@ class TaxResource extends Resource
 
     protected static ?string $model = Tax::class;
 
-    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-calculator';
+    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-calculator';
 
     protected static ?int $navigationSort = 3;
 
@@ -62,18 +60,11 @@ class TaxResource extends Resource
             ->components([
                 Section::make(__('tax.basic_information'))
                     ->schema([
-                        TranslatableSelect::relationship('company_id', 'company', Company::class, __('tax.company'))
-                            ->createOptionForm([
-                                TextInput::make('name')->label(__('company.name'))->required(),
-                                TextInput::make('tax_id')->label(__('company.tax_id')),
-                                TextInput::make('fiscal_country')->label(__('company.fiscal_country'))->required(),
-                                TranslatableSelect::make('currency_id', Currency::class, __('company.currency_id'))->required(),
-                            ])
-                            ->createOptionModalHeading(__('common.modal_title_create_company'))
-                            ->createOptionAction(fn (Action $a) => $a->name('create-company-option')->modalWidth('lg'))
-                            ->required(),
-
-                        TranslatableSelect::relationship('tax_account_id', 'taxAccount', Account::class, __('tax.tax_account'))
+                        TranslatableSelect::make('tax_account_id')
+                            ->searchable()
+                            ->preload()
+                            ->relationship('taxAccount', 'name')
+                            ->label(__('tax.tax_account'))
                             ->createOptionForm([
                                 Select::make('company_id')->relationship('company', 'name')->label(__('company.name'))->required(),
                                 TextInput::make('code')->label(__('account.code'))->required(),
@@ -113,9 +104,6 @@ class TaxResource extends Resource
     {
         return $table
             ->columns([
-                TextColumn::make('company.name')
-                    ->label(__('tax.company'))
-                    ->sortable(),
                 TextColumn::make('taxAccount.name')
                     ->label(__('tax.tax_account'))
                     ->sortable(),

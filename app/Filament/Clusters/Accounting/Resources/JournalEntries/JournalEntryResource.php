@@ -8,18 +8,20 @@ use App\Filament\Clusters\Accounting\Resources\JournalEntries\Pages\CreateJourna
 use App\Filament\Clusters\Accounting\Resources\JournalEntries\Pages\EditJournalEntry;
 use App\Filament\Clusters\Accounting\Resources\JournalEntries\Pages\ListJournalEntries;
 use App\Filament\Forms\Components\MoneyInput;
-use App\Filament\Support\TranslatableSelect;
 use App\Filament\Tables\Columns\MoneyColumn;
 use App\Models\Account;
+use App\Models\Company;
 use App\Models\Currency;
 use App\Models\Journal;
 use App\Models\JournalEntry;
 use App\Models\Partner;
 use App\Rules\ActiveAccount;
+use BackedEnum;
 use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
+use Filament\Facades\Filament;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Repeater\TableColumn;
@@ -32,6 +34,7 @@ use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Xoshbin\TranslatableSelect\Components\TranslatableSelect;
 
 // Use an alias to avoid conflict with the relationship name
 
@@ -39,7 +42,7 @@ class JournalEntryResource extends Resource
 {
     protected static ?string $model = JournalEntry::class;
 
-    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-document-text';
+    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-document-text';
 
     protected static ?int $navigationSort = 1;
 
@@ -70,14 +73,20 @@ class JournalEntryResource extends Resource
         return $schema->components([
             Section::make(__('journal_entry.journal_entry'))
                 ->schema([
-                    TranslatableSelect::make('journal_id', Journal::class, __('journal_entry.journal'))
+                    TranslatableSelect::forModel('journal_id', Journal::class, 'name')
+                        ->label(__('journal_entry.journal'))
+                        ->searchable()
+                        ->preload()
                         ->required()
                         ->default(Journal::where('type', JournalType::Miscellaneous)->first()?->id)
                         ->columnSpan(2),
-                    TranslatableSelect::make('currency_id', Currency::class, __('journal_entry.currency'))
+                    TranslatableSelect::forModel('currency_id', Currency::class, 'name')
+                        ->label(__('journal_entry.currency'))
                         ->required()
+                        ->searchable()
+                        ->preload()
                         ->live()
-                        ->default(fn () => (\Filament\Facades\Filament::getTenant() instanceof \App\Models\Company) ? \Filament\Facades\Filament::getTenant()->currency_id : null)
+                        ->default(fn () => (Filament::getTenant() instanceof Company) ? Filament::getTenant()->currency_id : null)
                         ->createOptionForm([
                             TextInput::make('code')->label(__('currency.code'))->required()->maxLength(255),
                             TextInput::make('name')->label(__('currency.name'))->required()->maxLength(255),
@@ -119,12 +128,12 @@ class JournalEntryResource extends Resource
                             TableColumn::make(__('journal_entry.description'))->width('30%'),
                         ])
                         ->schema([
-                            TranslatableSelect::withFormatter(
-                                'account_id',
-                                Account::class,
-                                fn ($account) => [$account->id => $account->getTranslatedLabel('name').' ('.$account->code.')'],
-                                __('journal_entry.account')
-                            )
+                            TranslatableSelect::forModel('account_id', Account::class)
+                                ->label(__('journal_entry.account'))
+                                ->searchableFields(['name', 'code'])
+                                ->searchable()
+                                ->preload()
+                                ->getOptionLabelFromRecordUsing(fn ($record) => $record->getTranslatedLabel('name').' ('.$record->code.')')
                                 ->rules([new ActiveAccount])
                                 ->required()
                                 ->columnSpan(3),
@@ -140,12 +149,11 @@ class JournalEntryResource extends Resource
                                 ->currencyField('../../company.currency_id')
                                 ->live(onBlur: true)
                                 ->columnSpan(3),
-                            TranslatableSelect::standard(
-                                'partner_id',
-                                Partner::class,
-                                ['name', 'email', 'contact_person'],
-                                __('journal_entry.partner')
-                            )
+                            TranslatableSelect::forModel('partner_id', Partner::class, 'name')
+                                ->label(__('journal_entry.partner'))
+                                ->searchableFields(['name', 'email', 'contact_person'])
+                                ->searchable()
+                                ->preload()
                                 ->columnSpan(3),
                             TextInput::make('description')
                                 ->label(__('journal_entry.description'))

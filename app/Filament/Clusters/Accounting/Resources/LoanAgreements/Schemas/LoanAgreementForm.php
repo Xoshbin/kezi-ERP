@@ -5,9 +5,15 @@ namespace App\Filament\Clusters\Accounting\Resources\LoanAgreements\Schemas;
 use App\Enums\Loans\LoanStatus;
 use App\Enums\Loans\LoanType;
 use App\Enums\Loans\ScheduleMethod;
+use App\Enums\Partners\PartnerType;
 use App\Filament\Forms\Components\MoneyInput;
-use App\Filament\Support\TranslatableSelect;
+use App\Models\Company;
+use App\Models\Currency;
+use App\Models\CurrencyRate;
+use App\Models\LoanAgreement;
+use App\Models\Partner;
 use App\Rules\NotInLockedPeriod;
+use Filament\Actions\Action;
 use Filament\Facades\Filament;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Hidden;
@@ -18,6 +24,8 @@ use Filament\Forms\Components\ToggleButtons;
 use Filament\Schemas\Components\Group;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
+use Illuminate\Database\Eloquent\Collection;
+use Xoshbin\TranslatableSelect\Components\TranslatableSelect;
 
 class LoanAgreementForm
 {
@@ -27,30 +35,23 @@ class LoanAgreementForm
             Section::make(__('loan.form.counterparty_currency') ?: 'Counterparty & Currency')
                 ->compact()
                 ->schema([
-                    Hidden::make('company_id')
-                        ->default(function () {
-                            $tenant = Filament::getTenant();
-
-                            return $tenant instanceof \App\Models\Company ? $tenant->getKey() : null;
-                        }),
-
-                    TranslatableSelect::standard(
-                        'partner_id',
-                        \App\Models\Partner::class,
-                        ['name', 'email', 'contact_person'],
-                        __('loan.form.partner') ?: 'Partner'
-                    )
+                    TranslatableSelect::make('partner_id')
+                        ->relationship('partner', 'name')
+                        ->label(__('loan.form.partner') ?: 'Partner')
+                        ->searchableFields(['name', 'email', 'contact_person'])
+                        ->searchable()
+                        ->preload()
                         ->columnSpanFull()
                         ->createOptionForm([
                             Hidden::make('company_id')->default(fn () => Filament::getTenant()?->getKey()),
                             TextInput::make('name')->label(__('partner.name') ?: 'Name')->required(),
-                            Select::make('type')->label(__('partner.type') ?: 'Type')->options(\App\Enums\Partners\PartnerType::class)->required(),
+                            Select::make('type')->label(__('partner.type') ?: 'Type')->options(PartnerType::class)->required(),
                             TextInput::make('email')->label(__('partner.email') ?: 'Email')->email(),
                             TextInput::make('contact_person')->label(__('partner.contact_person') ?: 'Contact Person'),
                         ])
-                        ->createOptionUsing(fn (array $data) => \App\Models\Partner::create($data)->getKey())
+                        ->createOptionUsing(fn (array $data) => Partner::create($data)->getKey())
                         ->createOptionModalHeading(__('common.modal_title_create_partner') ?: 'Create Partner')
-                        ->createOptionAction(fn (\Filament\Actions\Action $action) => $action->modalWidth('lg')),
+                        ->createOptionAction(fn (Action $action) => $action->modalWidth('lg')),
 
                     Group::make()
                         ->schema([
@@ -63,12 +64,12 @@ class LoanAgreementForm
                                 ->label(__('loan.form.loan_type') ?: 'Loan Type')
                                 ->options(collect(LoanType::cases())->mapWithKeys(fn (LoanType $t) => [$t->value => ucfirst($t->value)])->toArray())
                                 ->colors([
-                                    \App\Enums\Loans\LoanType::Receivable->value => 'success',
-                                    \App\Enums\Loans\LoanType::Payable->value => 'danger',
+                                    LoanType::Receivable->value => 'success',
+                                    LoanType::Payable->value => 'danger',
                                 ])
                                 ->icons([
-                                    'heroicon-m-arrow-down-circle' => \App\Enums\Loans\LoanType::Receivable->value,
-                                    'heroicon-m-arrow-up-circle' => \App\Enums\Loans\LoanType::Payable->value,
+                                    'heroicon-m-arrow-down-circle' => LoanType::Receivable->value,
+                                    'heroicon-m-arrow-up-circle' => LoanType::Payable->value,
                                 ])
                                 ->inline()
                                 ->required()
@@ -104,21 +105,65 @@ class LoanAgreementForm
 
                     Group::make()
                         ->schema([
-                            TranslatableSelect::make('currency_id', \App\Models\Currency::class, __('loan.form.currency') ?: 'Currency')
+                            TranslatableSelect::forModel('currency_id', Currency::class, 'name')
+                                ->label(__('invoice.currency'))
                                 ->required()
                                 ->live()
+                                ->preload()
+                                ->searchable()
                                 ->default(function (): ?int {
                                     $tenant = Filament::getTenant();
 
-                                    return $tenant instanceof \App\Models\Company ? $tenant->currency_id : null;
+                                    return $tenant instanceof Company ? $tenant->currency_id : null;
+                                })
+                                ->afterStateUpdated(function (callable $set, $state) {
+                                    if ($state) {
+                                        $currency = Currency::find($state);
+                                        // Ensure we have a single Currency model, not a collection
+                                        if ($currency instanceof Collection) {
+                                            $currency = $currency->first();
+                                        }
+                                        $company = Filament::getTenant();
+
+                                        if ($currency && $company instanceof Company && $currency->id !== $company->currency_id) {
+                                            // Get latest exchange rate for this company
+                                            $latestRate = CurrencyRate::getLatestRate($currency->id, $company->id);
+                                            if ($latestRate) {
+                                                $set('current_exchange_rate', $latestRate);
+                                            }
+                                        } else {
+                                            $set('current_exchange_rate', 1.0);
+                                        }
+                                    }
                                 })
                                 ->createOptionForm([
-                                    TextInput::make('code')->label(__('currency.code') ?: 'Code')->required()->maxLength(3),
-                                    TextInput::make('name')->label(__('currency.name') ?: 'Name')->required()->maxLength(255),
-                                    TextInput::make('symbol')->label(__('currency.symbol') ?: 'Symbol')->maxLength(5),
+                                    TextInput::make('code')
+                                        ->label(__('currency.code'))
+                                        ->required()
+                                        ->maxLength(255),
+                                    TextInput::make('name')
+                                        ->label(__('currency.name'))
+                                        ->required()
+                                        ->maxLength(255),
+                                    TextInput::make('symbol')
+                                        ->label(__('currency.symbol'))
+                                        ->required()
+                                        ->maxLength(5),
+                                    TextInput::make('exchange_rate')
+                                        ->label(__('currency.exchange_rate'))
+                                        ->required()
+                                        ->numeric()
+                                        ->default(1),
+                                    Toggle::make('is_active')
+                                        ->label(__('currency.is_active'))
+                                        ->required()
+                                        ->default(true),
                                 ])
-                                ->createOptionModalHeading(__('common.modal_title_create_currency') ?: 'Create Currency')
-                                ->createOptionAction(fn (\Filament\Actions\Action $action) => $action->modalWidth('lg'))
+                                ->createOptionModalHeading(__('common.modal_title_create_currency'))
+                                ->createOptionAction(function (Action $action) {
+                                    return $action
+                                        ->modalWidth('lg');
+                                })
                                 ->columnSpanFull(),
 
                             MoneyInput::make('principal_amount')
@@ -132,7 +177,7 @@ class LoanAgreementForm
                                 ->currencyField('currency_id')
                                 ->disabled()
                                 ->dehydrated(false)
-                                ->visible(fn (?\App\Models\LoanAgreement $record) => $record && $record->outstanding_principal)
+                                ->visible(fn (?LoanAgreement $record) => $record && $record->outstanding_principal)
                                 ->columnSpanFull(),
                         ])
                         ->columns(12)
