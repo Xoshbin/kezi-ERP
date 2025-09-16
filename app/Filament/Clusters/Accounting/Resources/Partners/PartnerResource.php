@@ -14,6 +14,7 @@ use App\Filament\Clusters\Accounting\Resources\Partners\RelationManagers\Payment
 use App\Filament\Clusters\Accounting\Resources\Partners\RelationManagers\UnreconciledEntriesRelationManager;
 use App\Filament\Clusters\Accounting\Resources\Partners\RelationManagers\VendorBillsRelationManager;
 use App\Filament\Components\CustomFieldsComponent;
+use App\Filament\Components\CustomFieldTableColumns;
 use App\Filament\Tables\Columns\MoneyColumn;
 use App\Models\Account;
 use App\Models\Partner;
@@ -401,6 +402,9 @@ class PartnerResource extends Resource
                     )
                     ->sortable(false)
                     ->toggleable(),
+
+                // Custom Fields (dynamic columns)
+                ...CustomFieldTableColumns::make(Partner::class),
 
                 // Contact Information (toggleable)
                 TextColumn::make('contact_person')

@@ -5,7 +5,7 @@ return [
     'plural_label' => 'Custom Field Definitions',
     'navigation_label' => 'Custom Fields',
     'section_title' => 'Custom Fields',
-    
+
     'fields' => [
         'model_type' => 'Model Type',
         'name' => 'Name',
@@ -16,14 +16,14 @@ return [
         'field_label' => 'Field Label',
         'field_type' => 'Field Type',
         'field_required' => 'Required',
+        'show_in_table' => 'Show in Table',
         'field_options' => 'Options',
         'field_validation_rules' => 'Validation Rules',
         'field_help_text' => 'Help Text',
-        'field_order' => 'Order',
         'option_value' => 'Value',
         'option_label' => 'Label',
     ],
-    
+
     'sections' => [
         'basic_information' => 'Basic Information',
         'basic_information_description' => 'Configure the basic settings for this custom field definition.',
@@ -33,7 +33,7 @@ return [
         'field_options' => 'Field Options',
         'field_validation' => 'Validation & Help',
     ],
-    
+
     'actions' => [
         'add_field' => 'Add Field',
         'remove_field' => 'Remove Field',
@@ -42,7 +42,7 @@ return [
         'move_up' => 'Move Up',
         'move_down' => 'Move Down',
     ],
-    
+
     'placeholders' => [
         'field_key' => 'e.g., emergency_contact',
         'field_label' => 'e.g., Emergency Contact',
@@ -51,17 +51,17 @@ return [
         'option_value' => 'e.g., option1',
         'option_label' => 'e.g., Option 1',
     ],
-    
+
     'help' => [
         'model_type' => 'Select the model type that will use these custom fields.',
         'field_key' => 'A unique identifier for this field. Use lowercase letters, numbers, and underscores only.',
         'field_type' => 'The type of input field that will be displayed to users.',
         'field_required' => 'Whether this field must be filled by users.',
+        'show_in_table' => 'Whether this field should be displayed as a column in resource table lists.',
         'field_options' => 'For select fields, define the available options.',
         'validation_rules' => 'Additional Laravel validation rules (comma-separated).',
-        'field_order' => 'The order in which this field will appear in forms.',
     ],
-    
+
     'validation' => [
         'field_key_required' => 'Field key is required.',
         'field_key_unique' => 'Field key must be unique within this definition.',
@@ -72,7 +72,7 @@ return [
         'option_value_required' => 'Option value is required.',
         'option_label_required' => 'Option label is required.',
     ],
-    
+
     'messages' => [
         'no_fields_defined' => 'No custom fields have been defined for this model yet.',
         'definition_saved' => 'Custom field definition saved successfully.',
@@ -81,7 +81,7 @@ return [
         'field_removed' => 'Field removed successfully.',
         'invalid_model_type' => 'Invalid model type selected.',
     ],
-    
+
     'model_types' => [
         'App\\Models\\Partner' => 'Partners',
         'App\\Models\\Product' => 'Products',

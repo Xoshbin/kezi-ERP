@@ -48,20 +48,23 @@ class EditCustomFieldDefinition extends EditRecord
     protected function validateAndCleanFieldDefinitions(array $fieldDefinitions): array
     {
         $cleanedDefinitions = [];
-        $usedKeys = [];
+        $keyedDefinitions = [];
 
+
+
+        // First pass: collect all definitions by key (later ones override earlier ones)
         foreach ($fieldDefinitions as $definition) {
             // Skip empty definitions
             if (empty($definition['key']) || empty($definition['label']) || empty($definition['type'])) {
                 continue;
             }
 
-            // Ensure unique keys
             $key = strtolower(trim($definition['key']));
-            if (in_array($key, $usedKeys)) {
-                continue;
-            }
-            $usedKeys[] = $key;
+            $keyedDefinitions[$key] = $definition; // Later definitions override earlier ones
+        }
+
+        // Second pass: process the final definitions
+        foreach ($keyedDefinitions as $key => $definition) {
 
             // Clean and validate the definition
             $cleanedDefinition = [
@@ -69,8 +72,11 @@ class EditCustomFieldDefinition extends EditRecord
                 'label' => $definition['label'],
                 'type' => $definition['type'],
                 'required' => (bool) ($definition['required'] ?? false),
+                'show_in_table' => (bool) ($definition['show_in_table'] ?? false),
                 'order' => (int) ($definition['order'] ?? 1),
             ];
+
+
 
             // Add optional fields if present
             if (!empty($definition['help_text'])) {
@@ -99,9 +105,6 @@ class EditCustomFieldDefinition extends EditRecord
 
             $cleanedDefinitions[] = $cleanedDefinition;
         }
-
-        // Sort by order
-        usort($cleanedDefinitions, fn($a, $b) => $a['order'] <=> $b['order']);
 
         return $cleanedDefinitions;
     }

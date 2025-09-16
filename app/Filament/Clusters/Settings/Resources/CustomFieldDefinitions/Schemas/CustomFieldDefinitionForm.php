@@ -101,12 +101,11 @@ class CustomFieldDefinitionForm
                                         ->label(__('custom_fields.fields.field_required'))
                                         ->helperText(__('custom_fields.help.field_required')),
 
-                                    TextInput::make('order')
-                                        ->label(__('custom_fields.fields.field_order'))
-                                        ->numeric()
-                                        ->default(1)
-                                        ->minValue(1)
-                                        ->helperText(__('custom_fields.help.field_order')),
+                                    Checkbox::make('show_in_table')
+                                        ->label(__('custom_fields.fields.show_in_table'))
+                                        ->helperText(__('custom_fields.help.show_in_table'))
+                                        ->default(false)
+                                        ->dehydrated(),
                                 ]),
 
                             Repeater::make('options')

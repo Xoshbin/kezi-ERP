@@ -20,13 +20,17 @@ return new class extends Migration
             // JSON field containing multiple field definitions for this model
             // Structure: [
             //   {
-            //     "key": "emergency_contact",
-            //     "label": {"en": "Emergency Contact", "ckb": "پەیوەندی لەکاتی فریاکەوتن"},
-            //     "type": "text",
-            //     "required": true,
-            //     "options": null,
-            //     "validation_rules": ["max:255"],
-            //     "order": 1
+            //     "key": "emergency_contact",                                    // Unique field identifier
+            //     "label": {"en": "Emergency Contact", "ckb": "پەیوەندی لەکاتی فریاکەوتن"}, // Translatable field label
+            //     "type": "text",                                               // Field type: text, textarea, number, boolean, date, select
+            //     "required": false,                                            // Whether field is required
+            //     "show_in_table": false,                                       // Whether to display as table column in Filament resources
+            //     "options": [                                                  // For select fields only
+            //       {"value": "option1", "label": {"en": "Option 1"}},
+            //       {"value": "option2", "label": {"en": "Option 2"}}
+            //     ],
+            //     "validation_rules": ["max:255"],                              // Additional Laravel validation rules
+            //     "help_text": {"en": "Enter emergency contact information"}   // Optional help text
             //   },
             //   ...
             // ]
