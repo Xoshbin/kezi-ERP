@@ -100,5 +100,5 @@ it('can delete a product', function () {
 
     assertSoftDeleted($product);
 
-//    assertDatabaseMissing($product);
+    //    assertDatabaseMissing($product);
 });
