@@ -1,6 +1,8 @@
 <?php
 
-use App\Filament\Clusters\Accounting\Resources\JournalEntries\JournalEntryResource;
+use App\Filament\Clusters\Accounting\Resources\JournalEntries\Pages\CreateJournalEntry;
+use App\Filament\Clusters\Accounting\Resources\JournalEntries\Pages\EditJournalEntry;
+use App\Filament\Clusters\Accounting\Resources\JournalEntries\Pages\ListJournalEntries;
 use App\Models\Account;
 use App\Models\Currency;
 use App\Models\Journal;
@@ -9,25 +11,35 @@ use Brick\Money\Money;
 use Filament\Actions\DeleteAction;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\Traits\WithConfiguredCompany;
-
+use function Pest\Laravel\assertDatabaseHas;
+use function Pest\Laravel\assertSoftDeleted;
 use function Pest\Livewire\livewire;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);
 
 beforeEach(function () {
     $this->setupWithConfiguredCompany();
+    // Acting as the authenticated user
+    $this->actingAs($this->user);
 });
 
 it('can render the list page', function () {
-    $this->get(JournalEntryResource::getUrl('index'))->assertSuccessful();
+    $journalEntries = JournalEntry::factory()->count(5)->create();
+
+    livewire(ListJournalEntries::class)
+        ->assertOk()
+        ->assertCanSeeTableRecords($journalEntries);
 });
 
 it('can render the create page', function () {
-    $this->get(JournalEntryResource::getUrl('create'))->assertSuccessful();
+    livewire(CreateJournalEntry::class)
+        ->assertOk();
 });
 
-it('can create a journal entry', function () {
-    livewire(\App\Filament\Clusters\Accounting\Resources\JournalEntries\Pages\CreateJournalEntry::class)
+it('can create a journalEntry', function () {
+    $newJournalEntryData = JournalEntry::factory()->make();
+
+    livewire(CreateJournalEntry::class)
         ->fillForm([
             'company_id' => $this->company->id,
             'journal_id' => $this->company->default_bank_journal_id,
@@ -55,7 +67,8 @@ it('can create a journal entry', function () {
             ],
         ])
         ->call('create')
-        ->assertHasNoFormErrors();
+        ->assertNotified()
+        ->assertRedirect();
 
     $this->assertDatabaseHas('journal_entries', [
         'reference' => 'Test Reference',
@@ -93,11 +106,19 @@ it('can validate input', function () {
 });
 
 it('can render the edit page', function () {
-    $journalEntry = JournalEntry::factory()->for($this->company)->create();
-    $this->get(JournalEntryResource::getUrl('edit', ['record' => $journalEntry]))->assertSuccessful();
+    $journalEntry = JournalEntry::factory()->create();
+
+    livewire(EditJournalEntry::class, [
+        'record' => $journalEntry->id,
+    ])
+        ->assertOk()
+        ->assertSchemaStateSet([
+            'name' => $journalEntry->name,
+            'email' => $journalEntry->email,
+        ]);
 });
 
-it('can edit a journal entry', function () {
+it('can update a journalEntry', function () {
     $journalEntry = JournalEntry::factory()->for($this->company)->create();
 
     livewire(\App\Filament\Clusters\Accounting\Resources\JournalEntries\Pages\EditJournalEntry::class, [
@@ -132,6 +153,7 @@ it('can edit a journal entry', function () {
         'reference' => 'Updated Reference',
     ]);
 });
+
 
 it('can delete a journal entry', function () {
     $journalEntry = JournalEntry::factory()->for($this->company)->create(['is_posted' => false]);
