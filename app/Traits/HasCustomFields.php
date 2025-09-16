@@ -61,6 +61,16 @@ trait HasCustomFields
     }
 
     /**
+     * Accessor for custom_fields attribute to enable dot notation access in table columns.
+     *
+     * @return array<string, mixed>
+     */
+    public function getCustomFieldsAttribute(): array
+    {
+        return $this->getCustomFieldValues();
+    }
+
+    /**
      * Get a specific custom field value.
      */
     public function getCustomFieldValue(string $fieldKey, ?string $locale = null): mixed

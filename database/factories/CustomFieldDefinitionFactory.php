@@ -43,7 +43,7 @@ class CustomFieldDefinitionFactory extends Factory
                     ],
                     'type' => CustomFieldType::Text->value,
                     'required' => false,
-                    'order' => 1,
+                    'show_in_table' => false,
                 ],
                 [
                     'key' => 'sample_select',
@@ -54,7 +54,7 @@ class CustomFieldDefinitionFactory extends Factory
                     ],
                     'type' => CustomFieldType::Select->value,
                     'required' => false,
-                    'order' => 2,
+                    'show_in_table' => false,
                     'options' => [
                         [
                             'value' => 'option1',
@@ -111,7 +111,7 @@ class CustomFieldDefinitionFactory extends Factory
                     'label' => ['en' => 'Simple Text'],
                     'type' => CustomFieldType::Text->value,
                     'required' => false,
-                    'order' => 1,
+                    'show_in_table' => false,
                 ],
             ],
         ]);
@@ -133,7 +133,7 @@ class CustomFieldDefinitionFactory extends Factory
                     ],
                     'type' => CustomFieldType::Text->value,
                     'required' => false,
-                    'order' => 1,
+                    'show_in_table' => false,
                     'help_text' => [
                         'en' => 'Enter the industry type',
                         'ar' => 'أدخل نوع الصناعة',
@@ -149,7 +149,7 @@ class CustomFieldDefinitionFactory extends Factory
                     ],
                     'type' => CustomFieldType::Select->value,
                     'required' => true,
-                    'order' => 2,
+                    'show_in_table' => false,
                     'options' => [
                         [
                             'value' => 'high',
@@ -186,7 +186,7 @@ class CustomFieldDefinitionFactory extends Factory
                     ],
                     'type' => CustomFieldType::Date->value,
                     'required' => false,
-                    'order' => 3,
+                    'show_in_table' => false,
                 ],
                 [
                     'key' => 'is_preferred',
@@ -197,7 +197,7 @@ class CustomFieldDefinitionFactory extends Factory
                     ],
                     'type' => CustomFieldType::Boolean->value,
                     'required' => false,
-                    'order' => 4,
+                    'show_in_table' => false,
                 ],
                 [
                     'key' => 'annual_revenue',
@@ -208,7 +208,7 @@ class CustomFieldDefinitionFactory extends Factory
                     ],
                     'type' => CustomFieldType::Number->value,
                     'required' => false,
-                    'order' => 5,
+                    'show_in_table' => false,
                     'validation_rules' => ['min:0'],
                 ],
                 [
@@ -220,7 +220,7 @@ class CustomFieldDefinitionFactory extends Factory
                     ],
                     'type' => CustomFieldType::Textarea->value,
                     'required' => false,
-                    'order' => 6,
+                    'show_in_table' => false,
                 ],
             ],
         ]);

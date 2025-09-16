@@ -59,7 +59,7 @@ class CustomFieldsComponent
     {
         $fields = [];
 
-        foreach ($fieldDefinitions->sortBy('order') as $fieldDefinition) {
+        foreach ($fieldDefinitions as $fieldDefinition) {
             $field = static::generateField($fieldDefinition);
 
             if ($field) {
