@@ -1,7 +1,7 @@
 <?php
 
 use App\Filament\Clusters\Accounting\Resources\Partners\Pages\CreatePartner;
-use Xoshbin\CustomFields\Filament\Tables\CustomFieldTableColumns;
+use Xoshbin\CustomFields\Filament\Tables\Components\CustomFieldTableColumns;
 use Xoshbin\CustomFields\Models\CustomFieldDefinition;
 use App\Models\Partner;
 use Database\Seeders\PartnerCustomFieldSeeder;
