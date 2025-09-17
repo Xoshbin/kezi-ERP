@@ -27,6 +27,8 @@ use App\Models\FiscalPosition;
 use App\Models\Invoice;
 use App\Models\Journal;
 use App\Models\Product;
+use App\Enums\Products\ProductType;
+use App\Enums\Accounting\AccountType;
 use App\Models\Tax;
 use App\Rules\NotInLockedPeriod;
 use App\Services\InvoiceService;
@@ -274,6 +276,8 @@ class InvoiceResource extends Resource
                                     }
                                 })
                                 ->createOptionForm([
+                                    Hidden::make('company_id')
+                                        ->default(fn () => Filament::getTenant()?->getKey()),
                                     TextInput::make('name')
                                         ->label(__('product.name'))
                                         ->required()
@@ -281,9 +285,53 @@ class InvoiceResource extends Resource
                                     TextInput::make('sku')
                                         ->label(__('product.sku'))
                                         ->maxLength(255),
+                                    Select::make('type')
+                                        ->label(__('product.type'))
+                                        ->required()
+                                        ->live()
+                                        ->options(
+                                            collect(ProductType::cases())
+                                                ->mapWithKeys(fn (ProductType $type) => [$type->value => $type->label()])
+                                        ),
                                     Textarea::make('description')
                                         ->label(__('product.description'))
                                         ->columnSpanFull(),
+                                    TranslatableSelect::make('default_inventory_account_id')
+                                        ->relationship('inventoryAccount', 'name')
+                                        ->label(__('product.default_inventory_account'))
+                                        ->searchable()
+                                        ->preload()
+                                        ->searchableFields(['name'])
+                                        ->visible(fn ($get) => $get('type') === ProductType::Storable->value)
+                                        ->required(fn ($get) => $get('type') === ProductType::Storable->value)
+                                        ->rules(['required_if:type,'.ProductType::Storable->value])
+                                        ->createOptionForm([
+                                            Hidden::make('company_id')
+                                                ->default(fn () => Filament::getTenant()?->getKey()),
+                                            TextInput::make('code')
+                                                ->label(__('account.code'))
+                                                ->required()
+                                                ->maxLength(255),
+                                            TextInput::make('name')
+                                                ->label(__('account.name'))
+                                                ->required()
+                                                ->maxLength(255),
+                                            Select::make('type')
+                                                ->label(__('account.type'))
+                                                ->required()
+                                                ->options(
+                                                    collect(AccountType::cases())
+                                                        ->mapWithKeys(fn (AccountType $type) => [$type->value => $type->label()])
+                                                )
+                                                ->searchable(),
+                                            Toggle::make('is_deprecated')
+                                                ->label(__('account.is_deprecated'))
+                                                ->default(false),
+                                        ])
+                                        ->createOptionModalHeading(__('common.modal_title_create_account'))
+                                        ->createOptionAction(function (Action $action) {
+                                            return $action->modalWidth('lg');
+                                        }),
                                     MoneyInput::make('unit_price')
                                         ->label(__('product.unit_price'))
                                         ->currencyField('../../currency_id'),

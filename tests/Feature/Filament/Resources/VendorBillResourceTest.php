@@ -498,11 +498,12 @@ it('shows error and keeps draft when storable product lacks inventory account', 
     ]);
 
     // Create a storable product WITHOUT inventory account on purpose
-    $product = Product::factory()->create([
+    // Bypass model-level validation to simulate legacy/bad data
+    $product = Product::withoutEvents(fn () => Product::factory()->create([
         'company_id' => $this->company->id,
         'type' => \App\Enums\Products\ProductType::Storable,
         'default_inventory_account_id' => null, // This is the key - no inventory account
-    ]);
+    ]));
 
     // Create vendor bill manually to ensure proper currency handling
     $vendorBill = VendorBill::factory()->for($this->company)->create([
