@@ -139,6 +139,7 @@ class EditInvoice extends EditRecord
                 ->color('success')
                 ->requiresConfirmation()
                 ->visible(fn (Invoice $record): bool => $record->status === InvoiceStatus::Draft)
+                ->disabled(fn (Invoice $record): bool => $record->invoiceLines->isEmpty() || $record->total_amount->isZero())
                 ->action(function (Invoice $record): void {
                     $this->save();
                     $service = app(InvoiceService::class);

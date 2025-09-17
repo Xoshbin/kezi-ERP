@@ -24,7 +24,7 @@ test('payment confirmation properly posts draft invoice before marking as paid',
         'company_id' => $this->company->id,
     ]);
 
-    $invoice = Invoice::factory()->create([
+    $invoice = Invoice::factory()->withLines(1)->create([
         'company_id' => $this->company->id,
         'customer_id' => $customer->id,
         'currency_id' => $this->company->currency_id,

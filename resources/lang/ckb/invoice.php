@@ -76,6 +76,11 @@ return [
     'reset_to_draft' => 'گەڕاندنەوە بۆ ڕەشنووس',
     'register_payment' => 'تۆمارکردنی پارەدان',
 
+
+    // Validation Messages
+    'validation_no_line_items' => 'ناتوانرێت پسووڵەی فرۆشتن بەبێ بڕگەکان پشتڕاست بکرێتەوە',
+    'validation_zero_total_amount' => 'ناتوانرێت پسووڵەی فرۆشتن بە کۆی گشتی سفر پشتڕاست بکرێتەوە',
+
     // Payments Relation Manager
     'payments_relation_manager' => [
         'title' => 'پارەدانەکان',

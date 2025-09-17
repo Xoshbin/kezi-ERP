@@ -30,14 +30,11 @@ test('a draft invoice can be confirmed, which posts it and dispatches an event',
     // Arrange: Ensure events are being listened for.
     Event::fake();
 
-    // Arrange: Create a draft invoice with all required data.
-    $currencyCode = $this->company->currency->code;
-    $invoice = Invoice::factory()->create([
+    // Arrange: Create a draft invoice with at least one line to satisfy business rules.
+    $invoice = Invoice::factory()->withLines(1)->create([
         'company_id' => $this->company->id,
         'currency_id' => $this->company->currency_id,
-        'status' => 'draft',
-        'total_amount' => Money::of(0, $currencyCode),
-        'total_tax' => Money::of(0, $currencyCode),
+        'status' => InvoiceStatus::Draft,
     ]);
 
     // Act: Call the confirm method on the service.
@@ -46,7 +43,7 @@ test('a draft invoice can be confirmed, which posts it and dispatches an event',
     // Assert: The invoice's status is now 'posted'.
     $this->assertDatabaseHas('invoices', [
         'id' => $invoice->id,
-        'status' => 'posted',
+        'status' => InvoiceStatus::Posted,
     ]);
 
     // Assert: An event was dispatched to notify other parts of the system.
