@@ -70,6 +70,10 @@ return [
     'notification_bill_reset_success' => 'Bill reset to draft',
     'notification_reset_bill_error' => 'Error resetting bill',
 
+    // Validation Messages
+    'validation_no_line_items' => 'Cannot confirm vendor bill without line items',
+    'validation_zero_total_amount' => 'Cannot confirm vendor bill with zero total amount',
+
     // Payments Relation Manager
     'payments_relation_manager' => [
         'title' => 'Payments',

@@ -18,7 +18,7 @@ describe('VendorBill Numbering Integration', function () {
 
     it('auto-generates bill numbers when posting vendor bills', function () {
         // Create a draft vendor bill without bill_reference
-        $vendorBill = VendorBill::factory()->create([
+        $vendorBill = VendorBill::factory()->withLines(1)->create([
             'company_id' => $this->company->id,
             'status' => VendorBillStatus::Draft,
             'bill_reference' => '', // Empty reference
@@ -38,7 +38,7 @@ describe('VendorBill Numbering Integration', function () {
 
     it('does not overwrite existing bill references', function () {
         // Create a vendor bill with existing reference
-        $vendorBill = VendorBill::factory()->create([
+        $vendorBill = VendorBill::factory()->withLines(1)->create([
             'company_id' => $this->company->id,
             'status' => VendorBillStatus::Draft,
             'bill_reference' => 'MANUAL-001',
@@ -66,7 +66,7 @@ describe('VendorBill Numbering Integration', function () {
         $this->company->save();
 
         // Create a draft vendor bill
-        $vendorBill = VendorBill::factory()->create([
+        $vendorBill = VendorBill::factory()->withLines(1)->create([
             'company_id' => $this->company->id,
             'status' => VendorBillStatus::Draft,
             'bill_reference' => '',
@@ -87,7 +87,7 @@ describe('VendorBill Numbering Integration', function () {
         $bills = [];
 
         for ($i = 0; $i < 3; $i++) {
-            $bill = VendorBill::factory()->create([
+            $bill = VendorBill::factory()->withLines(1)->create([
                 'company_id' => $this->company->id,
                 'status' => VendorBillStatus::Draft,
                 'bill_reference' => '',
@@ -115,7 +115,7 @@ describe('VendorBill Numbering Integration', function () {
         $this->company->save();
 
         // Create vendor bill with specific date
-        $vendorBill = VendorBill::factory()->create([
+        $vendorBill = VendorBill::factory()->withLines(1)->create([
             'company_id' => $this->company->id,
             'status' => VendorBillStatus::Draft,
             'bill_reference' => '',
