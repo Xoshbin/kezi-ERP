@@ -490,3 +490,54 @@ it('can create and confirm vendor bill following complete workflow', function ()
     ]);
     $editWire->assertActionHidden('confirm');
 });
+
+it('shows error and keeps draft when storable product lacks inventory account', function () {
+    // Arrange: Create vendor and storable product WITHOUT inventory account
+    $vendor = Partner::factory()->vendor()->create([
+        'company_id' => $this->company->id,
+    ]);
+
+    // Create a storable product WITHOUT inventory account on purpose
+    $product = Product::factory()->create([
+        'company_id' => $this->company->id,
+        'type' => \App\Enums\Products\ProductType::Storable,
+        'default_inventory_account_id' => null, // This is the key - no inventory account
+    ]);
+
+    // Create vendor bill manually to ensure proper currency handling
+    $vendorBill = VendorBill::factory()->for($this->company)->create([
+        'vendor_id' => $vendor->id,
+        'currency_id' => $this->company->currency_id,
+        'status' => VendorBillStatus::Draft,
+        'posted_at' => null,
+        'bill_date' => now()->format('Y-m-d'),
+        'accounting_date' => now()->format('Y-m-d'),
+        'total_amount' => Money::of(200, $this->company->currency->code),
+        'total_tax' => Money::of(0, $this->company->currency->code),
+    ]);
+
+    // Create a line with the storable product that lacks inventory account
+    $vendorBill->lines()->create([
+        'company_id' => $this->company->id,
+        'product_id' => $product->id,
+        'description' => 'Line without inventory account',
+        'quantity' => 2,
+        'unit_price' => Money::of(100, $this->company->currency->code),
+        'subtotal' => Money::of(200, $this->company->currency->code),
+        'total_line_tax' => Money::of(0, $this->company->currency->code),
+        'expense_account_id' => $product->expense_account_id,
+    ]);
+
+    // Act: Attempt to confirm via Filament; should gracefully notify and keep Draft
+    livewire(EditVendorBill::class, [
+        'record' => $vendorBill->getRouteKey(),
+    ])
+        ->callAction('confirm')
+        ->assertNotified(); // Should show error notification
+
+    // Assert: Verify the bill was NOT confirmed and remains in draft status
+    $vendorBill->refresh();
+    expect($vendorBill->status)->toBe(VendorBillStatus::Draft);
+    expect($vendorBill->posted_at)->toBeNull();
+    expect($vendorBill->journalEntry)->toBeNull();
+});
