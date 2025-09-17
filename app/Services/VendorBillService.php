@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Actions\Accounting\BuildVendorBillPostingPreviewAction;
 use App\Actions\Accounting\CreateJournalEntryForVendorBillAction;
 use App\Actions\Inventory\CreateStockMoveAction;
 use App\DataTransferObjects\Inventory\CreateStockMoveDTO;
@@ -44,6 +45,9 @@ class VendorBillService
         $this->lockDateService->enforce(Company::findOrFail($vendorBill->company_id), Carbon::parse($vendorBill->bill_date));
 
         Gate::forUser($user)->authorize('post', $vendorBill);
+
+        // Validate the vendor bill before posting
+        $this->validateVendorBillForPosting($vendorBill);
 
         DB::transaction(function () use ($vendorBill, $user) {
             // Process multi-currency amounts before posting
@@ -309,5 +313,27 @@ class VendorBillService
                 'reset_to_draft_log' => array_merge($vendorBill->reset_to_draft_log ?? [], [$logEntry]),
             ]);
         });
+    }
+
+    /**
+     * Validate vendor bill before posting to ensure all required data is present.
+     *
+     * @throws RuntimeException if validation fails
+     */
+    private function validateVendorBillForPosting(VendorBill $vendorBill): void
+    {
+        $preview = app(BuildVendorBillPostingPreviewAction::class)->execute($vendorBill);
+
+        if (!empty($preview['errors'])) {
+            // Find the first error related to missing inventory account
+            foreach ($preview['issues'] as $issue) {
+                if ($issue['type'] === 'inventory_account_missing') {
+                    throw new RuntimeException($issue['message']);
+                }
+            }
+
+            // If no inventory account error found, throw the first error
+            throw new RuntimeException($preview['errors'][0]);
+        }
     }
 }
