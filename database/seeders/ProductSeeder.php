@@ -22,11 +22,21 @@ class ProductSeeder extends Seeder
         // --- Storable Products ---
         Product::updateOrCreate(
             ['company_id' => $company->id, 'sku' => 'TV-001'],
-            ['name' => 'تى فى 32', 'type' => ProductType::Storable, 'expense_account_id' => $cogsAccount->id]
+            [
+                'name' => 'تى فى 32',
+                'type' => ProductType::Storable,
+                'expense_account_id' => $cogsAccount->id,
+                'default_inventory_account_id' => $cogsAccount->id,
+            ]
         );
         Product::updateOrCreate(
             ['company_id' => $company->id, 'sku' => 'REFRIGERATOR-001'],
-            ['name' => 'سەلاچە', 'type' => ProductType::Storable, 'expense_account_id' => $cogsAccount->id]
+            [
+                'name' => 'سەلاچە',
+                'type' => ProductType::Storable,
+                'expense_account_id' => $cogsAccount->id,
+                'default_inventory_account_id' => $cogsAccount->id,
+            ]
         );
     }
 }

@@ -4,6 +4,7 @@ use App\Filament\Clusters\Inventory\Resources\Products\Pages\CreateProduct;
 use App\Filament\Clusters\Inventory\Resources\Products\Pages\EditProduct;
 use App\Filament\Clusters\Inventory\Resources\Products\Pages\ListProducts;
 use App\Models\Product;
+use App\Models\Account;
 use Filament\Actions\DeleteAction;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\Traits\WithConfiguredCompany;
@@ -36,12 +37,19 @@ it('can render the create page', function () {
 it('can create a product', function () {
     $newProductData = Product::factory()->make();
 
+    // Required accounts for storable products
+    $incomeAccount = Account::factory()->for($this->company)->create();
+    $expenseAccount = Account::factory()->for($this->company)->create();
+
     livewire(CreateProduct::class)
         ->fillForm([
             'name' => $newProductData->name,
             'sku' => $newProductData->sku,
             'type' => $newProductData->type,
             'description' => $newProductData->description,
+            'income_account_id' => $incomeAccount->id,
+            'expense_account_id' => $expenseAccount->id,
+            'default_inventory_account_id' => $expenseAccount->id,
         ])
         ->call('create')
         ->assertNotified()

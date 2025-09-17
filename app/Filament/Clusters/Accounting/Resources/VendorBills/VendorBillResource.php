@@ -6,6 +6,7 @@ use App\Actions\Payments\CreatePaymentAction;
 use App\DataTransferObjects\Payments\CreatePaymentDocumentLinkDTO;
 use App\DataTransferObjects\Payments\CreatePaymentDTO;
 use App\Enums\Accounting\TaxType;
+use App\Enums\Accounting\AccountType;
 use App\Enums\Assets\DepreciationMethod;
 use App\Enums\Partners\PartnerType;
 use App\Enums\Payments\PaymentMethod;
@@ -283,10 +284,8 @@ class VendorBillResource extends Resource
                                     }
                                 })
                                 ->createOptionForm([
-                                    Select::make('company_id')
-                                        ->relationship('company', 'name')
-                                        ->label(__('product.company'))
-                                        ->required(),
+                                    Hidden::make('company_id')
+                                        ->default(fn () => Filament::getTenant()?->getKey()),
                                     TextInput::make('name')
                                         ->label(__('product.name'))
                                         ->required()
@@ -298,6 +297,7 @@ class VendorBillResource extends Resource
                                     Select::make('type')
                                         ->label(__('product.type'))
                                         ->required()
+                                        ->live()
                                         ->options(
                                             collect(ProductType::cases())
                                                 ->mapWithKeys(fn (ProductType $type) => [$type->value => $type->label()])
@@ -305,6 +305,42 @@ class VendorBillResource extends Resource
                                     Textarea::make('description')
                                         ->label(__('product.description'))
                                         ->rows(3),
+                                    TranslatableSelect::make('default_inventory_account_id')
+                                        ->relationship('inventoryAccount', 'name')
+                                        ->label(__('product.default_inventory_account'))
+                                        ->searchable()
+                                        ->preload()
+                                        ->searchableFields(['name'])
+                                        ->visible(fn ($get) => $get('type') === ProductType::Storable->value)
+                                        ->required(fn ($get) => $get('type') === ProductType::Storable->value)
+                                        ->rules(['required_if:type,'.ProductType::Storable->value])
+                                        ->createOptionForm([
+                                            Hidden::make('company_id')
+                                                ->default(fn () => Filament::getTenant()?->getKey()),
+                                            TextInput::make('code')
+                                                ->label(__('account.code'))
+                                                ->required()
+                                                ->maxLength(255),
+                                            TextInput::make('name')
+                                                ->label(__('account.name'))
+                                                ->required()
+                                                ->maxLength(255),
+                                            Select::make('type')
+                                                ->label(__('account.type'))
+                                                ->required()
+                                                ->options(
+                                                    collect(AccountType::cases())
+                                                        ->mapWithKeys(fn (AccountType $type) => [$type->value => $type->label()])
+                                                )
+                                                ->searchable(),
+                                            Toggle::make('is_deprecated')
+                                                ->label(__('account.is_deprecated'))
+                                                ->default(false),
+                                        ])
+                                        ->createOptionModalHeading(__('common.modal_title_create_account'))
+                                        ->createOptionAction(function (Action $action) {
+                                            return $action->modalWidth('lg');
+                                        }),
                                     Toggle::make('is_active')
                                         ->label(__('product.is_active'))
                                         ->default(true),
