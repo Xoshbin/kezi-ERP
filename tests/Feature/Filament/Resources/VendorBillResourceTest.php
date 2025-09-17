@@ -12,6 +12,12 @@ use Brick\Money\Money;
 use Filament\Actions\DeleteAction;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\Traits\WithConfiguredCompany;
+use App\Enums\Inventory\StockMoveStatus;
+use App\Enums\Inventory\StockMoveType;
+use App\Enums\Inventory\ValuationMethod;
+use App\Models\Account;
+use App\Models\InventoryCostLayer;
+
 
 use function Pest\Livewire\livewire;
 
@@ -397,7 +403,7 @@ it('can create and confirm vendor bill following complete workflow', function ()
     ]);
 
     // Act: Create the vendor bill using Filament form
-    $uniqueReference = 'BILL-'.now()->timestamp;
+    $uniqueReference = 'BILL-' . now()->timestamp;
 
     livewire(CreateVendorBill::class)
         ->fillForm([
@@ -499,7 +505,7 @@ it('shows error and keeps draft when storable product lacks inventory account', 
 
     // Create a storable product WITHOUT inventory account on purpose
     // Bypass model-level validation to simulate legacy/bad data
-    $product = Product::withoutEvents(fn () => Product::factory()->create([
+    $product = Product::withoutEvents(fn() => Product::factory()->create([
         'company_id' => $this->company->id,
         'type' => \App\Enums\Products\ProductType::Storable,
         'default_inventory_account_id' => null, // This is the key - no inventory account
@@ -537,8 +543,103 @@ it('shows error and keeps draft when storable product lacks inventory account', 
         ->assertNotified(); // Should show error notification
 
     // Assert: Verify the bill was NOT confirmed and remains in draft status
+
     $vendorBill->refresh();
     expect($vendorBill->status)->toBe(VendorBillStatus::Draft);
     expect($vendorBill->posted_at)->toBeNull();
     expect($vendorBill->journalEntry)->toBeNull();
+});
+
+
+it('records stock moves and inventory/AP postings for storable products and updates AVCO', function () {
+    // Arrange: vendor and accounts
+    $vendor = Partner::factory()->vendor()->create([
+        'company_id' => $this->company->id,
+    ]);
+
+    $inventoryAccount = Account::factory()->create([
+        'company_id' => $this->company->id,
+        'type' => 'current_assets',
+    ]);
+    $expenseAccount = Account::factory()->create([
+        'company_id' => $this->company->id,
+        'type' => 'expense',
+    ]);
+
+    // Storable product using AVCO and inventory account
+    $product = Product::factory()->create([
+        'company_id' => $this->company->id,
+        'type' => \App\Enums\Products\ProductType::Storable,
+        'inventory_valuation_method' => ValuationMethod::AVCO,
+        'default_inventory_account_id' => $inventoryAccount->id,
+        'expense_account_id' => $expenseAccount->id,
+    ]);
+
+    // Create bill + line
+    $qty = 10;
+    $unit = Money::of(150, $this->company->currency->code);
+    $subtotal = $unit->multipliedBy($qty);
+
+    /** @var VendorBill $vendorBill */
+    $vendorBill = VendorBill::factory()->for($this->company)->create([
+        'vendor_id' => $vendor->id,
+        'currency_id' => $this->company->currency_id,
+        'status' => VendorBillStatus::Draft,
+        'bill_date' => now()->format('Y-m-d'),
+        'accounting_date' => now()->format('Y-m-d'),
+        'total_amount' => $subtotal,
+        'total_tax' => Money::of(0, $this->company->currency->code),
+    ]);
+
+    $vendorBill->lines()->create([
+        'company_id' => $this->company->id,
+        'product_id' => $product->id,
+        'description' => 'AVCO inventory purchase',
+        'quantity' => $qty,
+        'unit_price' => $unit,
+        'subtotal' => $subtotal,
+        'total_line_tax' => Money::of(0, $this->company->currency->code),
+        'expense_account_id' => $expenseAccount->id,
+    ]);
+
+    $vendorBill->refresh();
+
+    // Act: confirm via service
+    app(\App\Services\VendorBillService::class)->confirm($vendorBill, $this->user);
+
+    // Assert: Stock move created (Incoming, Done) from Vendor to Stock locations
+    $this->assertDatabaseHas('stock_moves', [
+        'company_id' => $this->company->id,
+        'product_id' => $product->id,
+        'quantity' => $qty,
+        'from_location_id' => $this->company->vendorLocation->id,
+        'to_location_id' => $this->company->defaultStockLocation->id,
+        'move_type' => StockMoveType::Incoming->value,
+        'status' => StockMoveStatus::Done->value,
+        'source_type' => VendorBill::class,
+        'source_id' => $vendorBill->id,
+    ]);
+
+    // Assert: Journal entry debits Inventory and credits AP for subtotal
+    $journalEntry = $vendorBill->refresh()->journalEntry;
+    expect($journalEntry)->not->toBeNull();
+    $amountMinor = $subtotal->getMinorAmount()->toInt();
+
+    $this->assertDatabaseHas('journal_entry_lines', [
+        'journal_entry_id' => $journalEntry->id,
+        'account_id' => $inventoryAccount->id,
+        'debit' => $amountMinor,
+        'credit' => 0,
+    ]);
+    $this->assertDatabaseHas('journal_entry_lines', [
+        'journal_entry_id' => $journalEntry->id,
+        'account_id' => $this->company->default_accounts_payable_id,
+        'debit' => 0,
+        'credit' => $amountMinor,
+    ]);
+
+    // Assert: AVCO valuation updated product average cost and quantity on hand
+    $product->refresh();
+    expect($product->average_cost->isEqualTo($unit))->toBeTrue();
+    expect($product->quantity_on_hand)->toBeGreaterThanOrEqual($qty);
 });
