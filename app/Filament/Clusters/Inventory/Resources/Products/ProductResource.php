@@ -224,7 +224,8 @@ class ProductResource extends Resource
                             ->searchable()
                             ->preload()
                             ->searchableFields(['name'])
-
+                            ->required(fn (Get $get) => $get('type') === ProductType::Storable->value)
+                            ->rules(['required_if:type,'.ProductType::Storable->value])
                             ->visible(fn (Get $get) => $get('type') === ProductType::Storable->value)
                             ->createOptionForm([
                                 Hidden::make('company_id')

@@ -16,6 +16,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Carbon;
 use Spatie\Translatable\HasTranslations;
 
@@ -101,6 +102,17 @@ class Product extends Model
         'deleted_at' => 'datetime',
         'type' => ProductType::class,
     ];
+
+    protected static function booted(): void
+    {
+        static::saving(function (Product $product) {
+            if ($product->type === ProductType::Storable && empty($product->default_inventory_account_id)) {
+                throw ValidationException::withMessages([
+                    'default_inventory_account_id' => __('validation.required', ['attribute' => __('product.default_inventory_account')]),
+                ]);
+            }
+        });
+    }
 
     /**
      * The relationships that should always be loaded.

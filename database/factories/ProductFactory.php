@@ -36,6 +36,10 @@ class ProductFactory extends Factory
             'expense_account_id' => function (array $attributes) {
                 return Account::factory()->create(['company_id' => $attributes['company_id']])->id;
             },
+            'default_inventory_account_id' => function (array $attributes) {
+                // Ensure storable products have an inventory account by default
+                return Account::factory()->create(['company_id' => $attributes['company_id']])->id;
+            },
             'is_active' => $this->faker->boolean(),
         ];
     }
