@@ -13,8 +13,8 @@ use App\Filament\Clusters\Accounting\Resources\Partners\RelationManagers\Invoice
 use App\Filament\Clusters\Accounting\Resources\Partners\RelationManagers\PaymentsRelationManager;
 use App\Filament\Clusters\Accounting\Resources\Partners\RelationManagers\UnreconciledEntriesRelationManager;
 use App\Filament\Clusters\Accounting\Resources\Partners\RelationManagers\VendorBillsRelationManager;
-use App\Filament\Components\CustomFieldsComponent;
-use App\Filament\Components\CustomFieldTableColumns;
+use Xoshbin\CustomFields\Filament\Forms\Components\CustomFieldsComponent;
+use Xoshbin\CustomFields\Filament\Tables\CustomFieldTableColumns;
 use App\Filament\Tables\Columns\MoneyColumn;
 use App\Models\Account;
 use App\Models\Partner;
