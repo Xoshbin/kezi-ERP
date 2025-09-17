@@ -8870,12 +8870,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/Xoshbin/filament-custom-fields.git",
-                "reference": "03e9324f21980b9e2d02edd49f9bb2ae7b74a90d"
+                "reference": "35f51a492063681abbc9b2919f4e5e3734cd5156"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Xoshbin/filament-custom-fields/zipball/03e9324f21980b9e2d02edd49f9bb2ae7b74a90d",
-                "reference": "03e9324f21980b9e2d02edd49f9bb2ae7b74a90d",
+                "url": "https://api.github.com/repos/Xoshbin/filament-custom-fields/zipball/35f51a492063681abbc9b2919f4e5e3734cd5156",
+                "reference": "35f51a492063681abbc9b2919f4e5e3734cd5156",
                 "shasum": ""
             },
             "require": {
@@ -8943,7 +8943,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2025-09-17T13:26:01+00:00"
+            "time": "2025-09-17T14:49:27+00:00"
         },
         {
             "name": "xoshbin/filament-translatable-select",
