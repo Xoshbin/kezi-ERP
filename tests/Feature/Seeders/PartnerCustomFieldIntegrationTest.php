@@ -1,8 +1,8 @@
 <?php
 
 use App\Filament\Clusters\Accounting\Resources\Partners\Pages\CreatePartner;
-use App\Filament\Components\CustomFieldTableColumns;
-use App\Models\CustomFieldDefinition;
+use Xoshbin\CustomFields\Filament\Tables\CustomFieldTableColumns;
+use Xoshbin\CustomFields\Models\CustomFieldDefinition;
 use App\Models\Partner;
 use Database\Seeders\PartnerCustomFieldSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;

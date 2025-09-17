@@ -1,7 +1,7 @@
 <?php
 
-use App\Enums\CustomFields\CustomFieldType;
-use App\Models\CustomFieldDefinition;
+use Xoshbin\CustomFields\Enums\CustomFieldType;
+use Xoshbin\CustomFields\Models\CustomFieldDefinition;
 use App\Models\Partner;
 use Database\Seeders\PartnerCustomFieldSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -18,9 +18,9 @@ it('creates partner custom field definition with company field', function () {
     expect($definition)->not->toBeNull();
     expect($definition->is_active)->toBeTrue();
 
-    // Check the name and description (using translatable methods)
-    expect($definition->getTranslation('name', 'en'))->toBe('Partner Classification');
-    expect($definition->getTranslation('description', 'en'))->toContain('Additional classification fields');
+    // Check the name and description (stored as arrays)
+    expect($definition->name)->toBe('Partner Classification');
+    expect($definition->description)->toContain('Additional classification fields');
 
     // Check the field definitions
     $fieldDefinitions = $definition->getFieldDefinitionsCollection();
@@ -33,17 +33,11 @@ it('creates partner custom field definition with company field', function () {
     expect($companyField['show_in_table'])->toBeTrue();
     expect($companyField['order'])->toBe(1);
 
-    // Check translatable labels
-    expect($companyField['label'])->toHaveKey('en');
-    expect($companyField['label']['en'])->toBe('Company');
-    expect($companyField['label'])->toHaveKey('ar');
-    expect($companyField['label']['ar'])->toBe('شركة');
-    expect($companyField['label'])->toHaveKey('ckb');
-    expect($companyField['label']['ckb'])->toBe('کۆمپانیا');
+    // Check label (stored as simple string in seeder)
+    expect($companyField['label'])->toBe('Company');
 
-    // Check help text
-    expect($companyField['help_text'])->toHaveKey('en');
-    expect($companyField['help_text']['en'])->toContain('company/organization');
+    // Check help text (stored as simple string in seeder)
+    expect($companyField['help_text'])->toContain('company/organization');
 });
 
 it('is idempotent and can be run multiple times', function () {
@@ -86,7 +80,7 @@ it('updates existing definition if it already exists', function () {
     expect($definitions)->toHaveCount(1);
 
     $definition = $definitions->first();
-    expect($definition->getTranslation('name', 'en'))->toBe('Partner Classification');
+    expect($definition->name)->toBe('Partner Classification');
     expect($definition->is_active)->toBeTrue();
 
     // Should have the new field definition
