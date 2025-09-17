@@ -163,13 +163,4 @@ return [
         'draft' => 'ڕەشنووس',
         'finalized' => 'کۆتایی هاتووە',
     ],
-
-    'custom_field_type' => [
-        'text' => 'دەق',
-        'textarea' => 'ناوچەی دەق',
-        'number' => 'ژمارە',
-        'boolean' => 'بەڵێ/نەخێر',
-        'date' => 'بەروار',
-        'select' => 'هەڵبژاردن',
-    ],
 ];

@@ -21,6 +21,7 @@ use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 use LaraZeus\SpatieTranslatable\SpatieTranslatablePlugin;
+use Xoshbin\CustomFields\CustomFieldsPlugin;
 use Xoshbin\FilamentAiHelper\FilamentAiHelperPlugin;
 use Xoshbin\JmeryarTheme\JmeryarTheme;
 
@@ -68,6 +69,7 @@ class JmeryarPanelProvider extends PanelProvider
             ->tenantProfile(EditCompanyProfile::class)
             ->plugins([
                 // JmeryarTheme::make(),
+                CustomFieldsPlugin::make(),
                 SpatieTranslatablePlugin::make()
                     ->defaultLocales(['en', 'ckb', 'ar']),
                 // FilamentAiHelperPlugin::make()
