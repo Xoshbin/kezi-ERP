@@ -122,6 +122,7 @@ class EditVendorBill extends EditRecord
                 ->color('success')
                 ->requiresConfirmation()
                 ->visible(fn (VendorBill $record): bool => $record->status === VendorBillStatus::Draft)
+                ->disabled(fn (VendorBill $record): bool => $record->lines->isEmpty() || $record->total_amount->isZero())
                 ->action(function (VendorBill $record): void {
                     $vendorBillService = app(VendorBillService::class);
                     try {

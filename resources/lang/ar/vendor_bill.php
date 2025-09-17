@@ -70,6 +70,10 @@ return [
     'notification_bill_reset_success' => 'تم إعادة الفاتورة إلى المسودة',
     'notification_reset_bill_error' => 'خطأ في إعادة الفاتورة',
 
+    // Validation Messages
+    'validation_no_line_items' => 'لا يمكن تأكيد فاتورة المورد بدون بنود',
+    'validation_zero_total_amount' => 'لا يمكن تأكيد فاتورة المورد بمبلغ إجمالي صفر',
+
     // Payments Relation Manager
     'payments_relation_manager' => [
         'title' => 'المدفوعات',
