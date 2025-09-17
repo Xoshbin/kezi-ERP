@@ -84,7 +84,7 @@ test('payment confirmation properly posts draft vendor bill before marking as pa
         'company_id' => $this->company->id,
     ]);
 
-    $vendorBill = VendorBill::factory()->create([
+    $vendorBill = VendorBill::factory()->withLines(1)->create([
         'company_id' => $this->company->id,
         'vendor_id' => $vendor->id,
         'currency_id' => $this->company->currency_id,

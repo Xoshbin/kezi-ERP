@@ -39,6 +39,20 @@ class BuildVendorBillPostingPreviewAction
         $company = $vendorBill->company;
         $currencyCode = $vendorBill->currency->code;
 
+        // Validate that vendor bill has line items
+        if ($vendorBill->lines->isEmpty()) {
+            $msg = __('vendor_bill.validation_no_line_items');
+            $errors[] = $msg;
+            $issues[] = ['type' => 'no_line_items', 'message' => $msg];
+        }
+
+        // Validate that vendor bill has non-zero total amount
+        if ($vendorBill->total_amount->isZero()) {
+            $msg = __('vendor_bill.validation_zero_total_amount');
+            $errors[] = $msg;
+            $issues[] = ['type' => 'zero_total_amount', 'message' => $msg];
+        }
+
         $apAccountId = $vendorBill->vendor->payable_account_id ?? $company->default_accounts_payable_id;
         if (! $apAccountId) {
             $msg = 'Company default Accounts Payable account is not configured.';

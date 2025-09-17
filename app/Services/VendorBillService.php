@@ -325,14 +325,23 @@ class VendorBillService
         $preview = app(BuildVendorBillPostingPreviewAction::class)->execute($vendorBill);
 
         if (!empty($preview['errors'])) {
-            // Find the first error related to missing inventory account
-            foreach ($preview['issues'] as $issue) {
-                if ($issue['type'] === 'inventory_account_missing') {
-                    throw new RuntimeException($issue['message']);
+            // Priority order for error handling
+            $errorPriority = [
+                'no_line_items',
+                'zero_total_amount',
+                'inventory_account_missing',
+            ];
+
+            // Find the highest priority error
+            foreach ($errorPriority as $errorType) {
+                foreach ($preview['issues'] as $issue) {
+                    if ($issue['type'] === $errorType) {
+                        throw new RuntimeException($issue['message']);
+                    }
                 }
             }
 
-            // If no inventory account error found, throw the first error
+            // If no priority error found, throw the first error
             throw new RuntimeException($preview['errors'][0]);
         }
     }
