@@ -203,3 +203,123 @@ it('can confirm an invoice', function () {
 //     $invoice->refresh();
 //     expect($invoice->status)->toBe(InvoiceStatus::Draft);
 // });
+
+
+
+describe('Invoice Confirmation Business Rules', function () {
+    it('prevents confirming invoice without line items via UI', function () {
+        $invoice = Invoice::factory()->create([
+            'company_id' => $this->company->id,
+            'status' => InvoiceStatus::Draft,
+        ]);
+
+        expect($invoice->invoiceLines)->toHaveCount(0);
+
+        $editWire = livewire(\App\Filament\Clusters\Accounting\Resources\Invoices\Pages\EditInvoice::class, [
+            'record' => $invoice->getRouteKey(),
+        ]);
+
+        $editWire->assertActionVisible('confirm');
+        $editWire->assertActionDisabled('confirm');
+
+        $editWire->callAction('confirm')->assertNotified();
+
+        $invoice->refresh();
+        expect($invoice->status)->toBe(InvoiceStatus::Draft);
+        expect($invoice->posted_at)->toBeNull();
+        expect($invoice->journalEntry)->toBeNull();
+    });
+
+    it('prevents confirming invoice without line items via backend service', function () {
+        $invoice = Invoice::factory()->create([
+            'company_id' => $this->company->id,
+            'status' => InvoiceStatus::Draft,
+        ]);
+
+        expect($invoice->invoiceLines)->toHaveCount(0);
+
+        $service = app(\App\Services\InvoiceService::class);
+
+        expect(function () use ($service, $invoice) {
+            $service->confirm($invoice, $this->user);
+        })->toThrow(RuntimeException::class, __('invoice.validation_no_line_items'));
+
+        $invoice->refresh();
+        expect($invoice->status)->toBe(InvoiceStatus::Draft);
+        expect($invoice->posted_at)->toBeNull();
+        expect($invoice->journalEntry)->toBeNull();
+    });
+
+    it('prevents confirmation when invoice has zero total amount', function () {
+        $incomeAccount = \App\Models\Account::factory()->for($this->company)->create([
+            'type' => 'income',
+            'name' => 'Test Income Account',
+        ]);
+
+        $invoice = Invoice::factory()->create([
+            'company_id' => $this->company->id,
+            'status' => InvoiceStatus::Draft,
+            'total_amount' => \Brick\Money\Money::of(0, $this->company->currency->code),
+        ]);
+
+        // Create a line with zero amount
+        $invoice->invoiceLines()->create([
+            'company_id' => $this->company->id,
+            'description' => 'Zero amount line',
+            'quantity' => 0,
+            'unit_price' => \Brick\Money\Money::of(0, $this->company->currency->code),
+            'subtotal' => \Brick\Money\Money::of(0, $this->company->currency->code),
+            'total_line_tax' => \Brick\Money\Money::of(0, $this->company->currency->code),
+            'income_account_id' => $incomeAccount->id,
+        ]);
+
+        $invoice->refresh();
+        expect($invoice->invoiceLines)->toHaveCount(1);
+        expect($invoice->total_amount->isZero())->toBeTrue();
+
+        $service = app(\App\Services\InvoiceService::class);
+
+        expect(function () use ($service, $invoice) {
+            $service->confirm($invoice, $this->user);
+        })->toThrow(RuntimeException::class, __('invoice.validation_zero_total_amount'));
+    });
+
+    it('enables confirm action when invoice has valid line items', function () {
+        $product = \App\Models\Product::factory()->create([
+            'company_id' => $this->company->id,
+            'unit_price' => \Brick\Money\Money::of(100, $this->company->currency->code),
+            'type' => \App\Enums\Products\ProductType::Service,
+        ]);
+
+        $invoice = Invoice::factory()->create([
+            'company_id' => $this->company->id,
+            'customer_id' => Partner::factory()->customer()->create(['company_id' => $this->company->id])->id,
+            'currency_id' => $this->company->currency_id,
+            'status' => InvoiceStatus::Draft,
+            'invoice_date' => now()->format('Y-m-d'),
+            'due_date' => now()->addDays(30)->format('Y-m-d'),
+            'total_amount' => \Brick\Money\Money::of(100, $this->company->currency->code),
+            'total_tax' => \Brick\Money\Money::of(0, $this->company->currency->code),
+        ]);
+
+        $invoice->invoiceLines()->create([
+            'company_id' => $this->company->id,
+            'product_id' => $product->id,
+            'description' => 'Valid service line',
+            'quantity' => 1,
+            'unit_price' => \Brick\Money\Money::of(100, $this->company->currency->code),
+            'subtotal' => \Brick\Money\Money::of(100, $this->company->currency->code),
+            'total_line_tax' => \Brick\Money\Money::of(0, $this->company->currency->code),
+            'income_account_id' => $product->income_account_id,
+        ]);
+
+        $invoice->refresh();
+
+        $editWire = livewire(\App\Filament\Clusters\Accounting\Resources\Invoices\Pages\EditInvoice::class, [
+            'record' => $invoice->getRouteKey(),
+        ]);
+
+        $editWire->assertActionVisible('confirm');
+        $editWire->assertActionEnabled('confirm');
+    });
+});

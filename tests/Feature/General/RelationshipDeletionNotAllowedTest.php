@@ -2,22 +2,23 @@
 
 namespace Tests\Feature\General;
 
-use App\Actions\Purchases\CreateVendorBillLineAction;
-use App\DataTransferObjects\Purchases\CreateVendorBillLineDTO;
-use App\Exceptions\DeletionNotAllowedException;
+use App\Models\User;
+use RuntimeException;
+use Brick\Money\Money;
 use App\Models\Account;
 use App\Models\Invoice;
-use App\Models\InvoiceLine;
-use App\Models\JournalEntry;
 use App\Models\Partner;
 use App\Models\Product;
-use App\Models\User;
 use App\Models\VendorBill;
-use Brick\Money\Money;
+use App\Models\InvoiceLine;
+use App\Models\JournalEntry;
+use App\Enums\Sales\InvoiceStatus;
 use Illuminate\Database\QueryException;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use RuntimeException;
 use Tests\Traits\WithConfiguredCompany;
+use App\Exceptions\DeletionNotAllowedException;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use App\Actions\Purchases\CreateVendorBillLineAction;
+use App\DataTransferObjects\Purchases\CreateVendorBillLineDTO;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);
 
@@ -166,21 +167,10 @@ test('a posted invoice with lines cannot be deleted', function () {
      * Principle: A posted invoice is an immutable financial document. It cannot be deleted.
      */
 
-    // Arrange: Create a draft invoice, ensuring its currency is explicitly set.
-    $invoice = Invoice::factory()->for($this->company)->create([
-        'status' => 'draft',
-        'currency_id' => $this->company->currency_id, // Explicitly set currency for clarity
-        'total_amount' => 0, // Will be recalculated by observers
-        'total_tax' => 0,    // Will be recalculated by observers
-    ]);
-
-    // Arrange: Create an invoice line.
-    // THIS IS THE KEY FIX: We now explicitly pass a Money object for the 'unit_price'.
-    // This tells the factory exactly what value to use, so the MoneyCast's 'set' method
-    // receives a Money object directly and doesn't need to resolve the currency itself during creation.
-    InvoiceLine::factory()->for($invoice)->create([
-        'unit_price' => Money::of(100, $this->company->currency->code),
-        'quantity' => 1,
+    // Arrange: Create a draft invoice with at least one line to satisfy business rules.
+    $invoice = Invoice::factory()->for($this->company)->withLines(1)->create([
+        'status' => InvoiceStatus::Draft,
+        'currency_id' => $this->company->currency_id,
     ]);
 
     // Act: Confirm the invoice using the service.

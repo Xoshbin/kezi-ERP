@@ -69,6 +69,11 @@ return [
     'invoice_reset_to_draft' => 'تم إعادة الفاتورة إلى المسودة',
     'error_resetting_invoice' => 'خطأ في إعادة الفاتورة',
 
+
+    // Validation Messages
+    'validation_no_line_items' => 'لا يمكن تأكيد الفاتورة بدون بنود',
+    'validation_zero_total_amount' => 'لا يمكن تأكيد الفاتورة بمبلغ إجمالي صفر',
+
     // Payments Relation Manager
     'payments_relation_manager' => [
         'title' => 'المدفوعات',

@@ -14,10 +14,12 @@ use App\Models\Currency;
 use App\Models\Invoice;
 use App\Models\User; // Add this import
 use App\Services\Accounting\LockDateService;
+use App\Actions\Accounting\BuildInvoicePostingPreviewAction;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
+use RuntimeException;
 
 class InvoiceService
 {
@@ -53,6 +55,9 @@ class InvoiceService
         }
 
         $this->lockDateService->enforce(Company::findOrFail($invoice->company_id), Carbon::parse($invoice->invoice_date));
+
+        // Validate business rules before posting
+        $this->validateInvoiceForPosting($invoice);
 
         DB::transaction(function () use ($invoice, $user) {
             // Process multi-currency amounts before posting
@@ -275,5 +280,36 @@ class InvoiceService
             'subtotal_company_currency' => $subtotalCompanyCurrency,
             'total_line_tax_company_currency' => $totalLineTaxCompanyCurrency,
         ]);
+    }
+
+    /**
+     * Validate invoice before posting to ensure all required data is present.
+     *
+     * @throws RuntimeException if validation fails
+     */
+    private function validateInvoiceForPosting(Invoice $invoice): void
+    {
+        $preview = app(BuildInvoicePostingPreviewAction::class)->execute($invoice);
+
+        if (! empty($preview['errors'])) {
+            // Priority order for error handling
+            $errorPriority = [
+                'no_line_items',
+                'zero_total_amount',
+                'income_account_missing',
+                'tax_account_missing',
+            ];
+
+            foreach ($errorPriority as $errorType) {
+                foreach ($preview['issues'] as $issue) {
+                    if (($issue['type'] ?? null) === $errorType) {
+                        throw new RuntimeException($issue['message']);
+                    }
+                }
+            }
+
+            // Fallback to first error message if none matched priority
+            throw new RuntimeException($preview['errors'][0]);
+        }
     }
 }
