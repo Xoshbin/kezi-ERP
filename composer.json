@@ -8,12 +8,6 @@
         "framework"
     ],
     "license": "MIT",
-    "repositories": [
-        {
-            "type": "path",
-            "url": "./packages/xoshbin/custom-fields"
-        }
-    ],
     "require": {
         "php": "^8.3",
         "barryvdh/laravel-dompdf": "^3.1",
@@ -22,9 +16,9 @@
         "lara-zeus/spatie-translatable": "^1.0",
         "laravel/framework": "^12.0",
         "laravel/tinker": "^2.10.1",
-        "xoshbin/custom-fields": "dev-main",
+        "xoshbin/filament-custom-fields": "dev-main",
         "xoshbin/pertuk": "^0.0.4",
-        "xoshbin/translatable-select": "dev-main"
+        "xoshbin/filament-translatable-select": "dev-main"
     },
     "require-dev": {
         "barryvdh/laravel-ide-helper": "^3.6",
