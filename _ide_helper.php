@@ -5,7 +5,7 @@
 
 /**
  * A helper file for Laravel, to provide autocomplete information to your IDE
- * Generated for Laravel 12.28.1.
+ * Generated for Laravel 12.29.0.
  *
  * This file should not be included in your code, only analyzed by your IDE!
  *
@@ -7598,7 +7598,7 @@ namespace Illuminate\Support\Facades {
          * Register a callback to be invoked when the connection queries for longer than a given amount of time.
          *
          * @param \DateTimeInterface|\Carbon\CarbonInterval|float|int $threshold
-         * @param (callable(\Illuminate\Database\Connection, class-string<\Illuminate\Database\Events\QueryExecuted>): mixed) $handler
+         * @param (callable(\Illuminate\Database\Connection, \Illuminate\Database\Events\QueryExecuted): mixed) $handler
          * @return void
          * @static
          */
@@ -18819,7 +18819,7 @@ namespace Illuminate\Support\Facades {
         /**
          * Get the default session driver name.
          *
-         * @return string
+         * @return string|null
          * @static
          */
         public static function getDefaultDriver()
@@ -19252,6 +19252,18 @@ namespace Illuminate\Support\Facades {
         {
             /** @var \Illuminate\Session\Store $instance */
             $instance->flashInput($value);
+        }
+
+        /**
+         * Get the session cache instance.
+         *
+         * @return \Illuminate\Contracts\Cache\Repository
+         * @static
+         */
+        public static function cache()
+        {
+            /** @var \Illuminate\Session\Store $instance */
+            return $instance->cache();
         }
 
         /**
@@ -23761,6 +23773,14 @@ namespace Livewire {
             }
     }
 
+namespace Xoshbin\CustomFields\Facades {
+    /**
+     * @see \Xoshbin\CustomFields\CustomFields
+     */
+    class CustomFields {
+            }
+    }
+
 namespace Illuminate\Support {
     /**
      */
@@ -26962,6 +26982,19 @@ namespace  {
         }
 
         /**
+         * Remove all global scopes except the given scopes.
+         *
+         * @param array $scopes
+         * @return \Illuminate\Database\Eloquent\Builder<static>
+         * @static
+         */
+        public static function withoutGlobalScopesExcept($scopes = [])
+        {
+            /** @var \Illuminate\Database\Eloquent\Builder $instance */
+            return $instance->withoutGlobalScopesExcept($scopes);
+        }
+
+        /**
          * Get an array of global scopes that were removed from the query.
          *
          * @return array
@@ -28777,7 +28810,7 @@ namespace  {
          *
          * @param mixed $relations
          * @param \Illuminate\Contracts\Database\Query\Expression|string $column
-         * @param string $function
+         * @param string|null $function
          * @return \Illuminate\Database\Eloquent\Builder<static>
          * @static
          */
@@ -32172,6 +32205,7 @@ namespace  {
     class Pdf extends \Barryvdh\DomPDF\Facade\Pdf {}
     class Mcp extends \Laravel\Mcp\Server\Facades\Mcp {}
     class Livewire extends \Livewire\Livewire {}
+    class CustomFields extends \Xoshbin\CustomFields\Facades\CustomFields {}
 }
 
 
