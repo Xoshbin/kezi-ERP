@@ -18,52 +18,62 @@ class VendorBillSeeder extends Seeder
     {
         $company = Company::where('name', 'Jmeryar Solutions')->firstOrFail();
 
-        $currencyCode = $company->currency->code;
+        $currencyCode = $company->currency->code; // Expecting IQD
 
-        // --- Fetch Products ---
-        $routerProduct = Product::where('sku', 'PROD-ROUTER-01')->firstOrFail();
-        $cableProduct = Product::where('sku', 'PROD-CABLE-01')->firstOrFail();
-        $switchProduct = Product::where('sku', 'PROD-SWITCH-01')->firstOrFail();
+        // --- Fetch Products created by ProductSeeder ---
+        $tvProduct = Product::where('company_id', $company->id)->where('sku', 'TV-001')->firstOrFail();
+        $refrigeratorProduct = Product::where('company_id', $company->id)->where('sku', 'REFRIGERATOR-001')->firstOrFail();
 
-        // --- Fetch Vendors ---
-        $vendor1 = Partner::firstOrCreate(['name' => 'Paykar Tech Supplies', 'company_id' => $company->id], ['type' => PartnerType::Vendor]);
-        $vendor2 = Partner::firstOrCreate(['name' => 'Hiwa Computer Center', 'company_id' => $company->id], ['type' => PartnerType::Vendor]);
+        // --- Fetch/Create Vendor ---
+        $vendor = Partner::firstOrCreate(
+            ['name' => 'Home Appliance Distributor', 'company_id' => $company->id],
+            ['type' => PartnerType::Vendor]
+        );
 
         $createLineAction = resolve(CreateVendorBillLineAction::class);
 
-        // === BILL 1: From Paykar Tech (Total: 10,800,000) ===
-        $bill1 = VendorBill::updateOrCreate(
-            ['company_id' => $company->id, 'vendor_id' => $vendor1->id, 'bill_reference' => 'PK-INV-2025-001'],
+        // === Single BILL: Two line items (TV and Refrigerator) ===
+        $bill = VendorBill::updateOrCreate(
+            ['company_id' => $company->id, 'vendor_id' => $vendor->id, 'bill_reference' => 'APPL-INV-2025-001'],
             [
-                'bill_date' => now()->subDays(10),
-                'accounting_date' => now()->subDays(10),
-                'due_date' => now()->addDays(20),
+                'bill_date' => now()->subDays(2),
+                'accounting_date' => now()->subDays(2),
+                'due_date' => now()->addDays(28),
                 'status' => 'draft',
                 'currency_id' => $company->currency_id,
-                'total_amount' => Money::of(0, $currencyCode), // Will be updated by observer
+                'total_amount' => Money::of(0, $currencyCode), // Observer will update after lines
                 'total_tax' => Money::of(0, $currencyCode),
             ]
         );
-        if ($bill1->wasRecentlyCreated) {
-            $createLineAction->execute($bill1, new CreateVendorBillLineDTO(product_id: $routerProduct->id, description: $routerProduct->name, quantity: 10, unit_price: '1000000', expense_account_id: $routerProduct->expense_account_id, tax_id: null, analytic_account_id: null));
-            $createLineAction->execute($bill1, new CreateVendorBillLineDTO(product_id: $cableProduct->id, description: $cableProduct->name, quantity: 20, unit_price: '40000', expense_account_id: $cableProduct->expense_account_id, tax_id: null, analytic_account_id: null));
-        }
 
-        // === BILL 2: From Hiwa Computer (Total: 16,000,000) ===
-        $bill2 = VendorBill::updateOrCreate(
-            ['company_id' => $company->id, 'vendor_id' => $vendor2->id, 'bill_reference' => 'HC-INV-2025-002'],
-            [
-                'bill_date' => now()->subDays(5),
-                'accounting_date' => now()->subDays(5),
-                'due_date' => now()->addDays(25),
-                'status' => 'draft',
-                'currency_id' => $company->currency_id,
-                'total_amount' => Money::of(0, $currencyCode), // Will be updated by observer
-                'total_tax' => Money::of(0, $currencyCode),
-            ]
-        );
-        if ($bill2->wasRecentlyCreated) {
-            $createLineAction->execute($bill2, new CreateVendorBillLineDTO(product_id: $switchProduct->id, description: $switchProduct->name, quantity: 5, unit_price: '3200000', expense_account_id: $switchProduct->expense_account_id, tax_id: null, analytic_account_id: null));
+        if ($bill->wasRecentlyCreated) {
+            // 1) TV: 10 units @ 500,000 IQD
+            $createLineAction->execute(
+                $bill,
+                new CreateVendorBillLineDTO(
+                    product_id: $tvProduct->id,
+                    description: $tvProduct->name,
+                    quantity: 10,
+                    unit_price: Money::of('500000', $currencyCode),
+                    expense_account_id: $tvProduct->expense_account_id,
+                    tax_id: null,
+                    analytic_account_id: null
+                )
+            );
+
+            // 2) Refrigerator: 5 units @ 700,000 IQD
+            $createLineAction->execute(
+                $bill,
+                new CreateVendorBillLineDTO(
+                    product_id: $refrigeratorProduct->id,
+                    description: $refrigeratorProduct->name,
+                    quantity: 5,
+                    unit_price: Money::of('700000', $currencyCode),
+                    expense_account_id: $refrigeratorProduct->expense_account_id,
+                    tax_id: null,
+                    analytic_account_id: null
+                )
+            );
         }
     }
 }
