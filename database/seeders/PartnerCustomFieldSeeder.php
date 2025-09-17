@@ -23,33 +23,17 @@ class PartnerCustomFieldSeeder extends Seeder
                     'model_type' => Partner::class,
                 ],
                 [
-                    'name' => [
-                        'en' => 'Partner Classification',
-                        'ar' => 'تصنيف الشريك',
-                        'ckb' => 'پۆلێنکردنی هاوبەش',
-                    ],
-                    'description' => [
-                        'en' => 'Additional classification fields for partners to distinguish between companies and individuals',
-                        'ar' => 'حقول تصنيف إضافية للشركاء للتمييز بين الشركات والأفراد',
-                        'ckb' => 'خانەی پۆلێنکردنی زیادە بۆ هاوبەشان بۆ جیاکردنەوەی نێوان کۆمپانیا و تاکەکان',
-                    ],
+                    'name' => 'Partner Classification',
+                    'description' => 'Additional classification fields for partners to distinguish between companies and individuals',
                     'field_definitions' => [
                         [
                             'key' => 'company',
-                            'label' => [
-                                'en' => 'Company',
-                                'ar' => 'شركة',
-                                'ckb' => 'کۆمپانیا',
-                            ],
+                            'label' => 'Company',
                             'type' => CustomFieldType::Boolean->value,
                             'required' => false,
                             'show_in_table' => true,
                             'order' => 1,
-                            'help_text' => [
-                                'en' => 'Check this box if the partner is a company/organization rather than an individual',
-                                'ar' => 'حدد هذا المربع إذا كان الشريك شركة/منظمة وليس فردًا',
-                                'ckb' => 'ئەم سندوقە نیشان بکە ئەگەر هاوبەشەکە کۆمپانیا/ڕێکخراوە نەک تاکەکەس',
-                            ],
+                            'help_text' => 'Check this box if the partner is a company/organization rather than an individual',
                         ],
                     ],
                     'is_active' => true,
