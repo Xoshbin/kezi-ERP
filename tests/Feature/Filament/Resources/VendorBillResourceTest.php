@@ -173,6 +173,10 @@ it('can confirm a vendor bill using service directly', function () {
             'company_id' => $this->company->id,
             'type' => 'current_assets',
         ])->id,
+        'default_stock_input_account_id' => \App\Models\Account::factory()->create([
+            'company_id' => $this->company->id,
+            'type' => 'current_liabilities',
+        ])->id,
     ]);
 
     // Create vendor bill manually to ensure proper currency handling
@@ -236,6 +240,14 @@ it('can confirm a vendor bill via Filament action', function () {
         'company_id' => $this->company->id,
         'unit_price' => Money::of(100, $this->company->currency->code),
         'type' => \App\Enums\Products\ProductType::Storable,
+        'default_inventory_account_id' => \App\Models\Account::factory()->create([
+            'company_id' => $this->company->id,
+            'type' => 'current_assets',
+        ])->id,
+        'default_stock_input_account_id' => \App\Models\Account::factory()->create([
+            'company_id' => $this->company->id,
+            'type' => 'current_liabilities',
+        ])->id,
         'default_inventory_account_id' => \App\Models\Account::factory()->create([
             'company_id' => $this->company->id,
             'type' => 'current_assets',
@@ -395,10 +407,10 @@ it('can create and confirm vendor bill following complete workflow', function ()
         'company_id' => $this->company->id,
         'name' => 'Office Supplies',
         'unit_price' => Money::of(50, $this->company->currency->code),
-        'type' => \App\Enums\Products\ProductType::Storable,
-        'default_inventory_account_id' => \App\Models\Account::factory()->create([
+        'type' => \App\Enums\Products\ProductType::Service,
+        'expense_account_id' => \App\Models\Account::factory()->create([
             'company_id' => $this->company->id,
-            'type' => 'current_assets',
+            'type' => 'expense',
         ])->id,
     ]);
 
@@ -572,6 +584,10 @@ it('records stock moves and inventory/AP postings for storable products and upda
         'type' => \App\Enums\Products\ProductType::Storable,
         'inventory_valuation_method' => ValuationMethod::AVCO,
         'default_inventory_account_id' => $inventoryAccount->id,
+        'default_stock_input_account_id' => Account::factory()->create([
+            'company_id' => $this->company->id,
+            'type' => 'current_liabilities',
+        ])->id,
         'expense_account_id' => $expenseAccount->id,
     ]);
 
@@ -620,20 +636,32 @@ it('records stock moves and inventory/AP postings for storable products and upda
         'source_id' => $vendorBill->id,
     ]);
 
-    // Assert: Journal entry debits Inventory and credits AP for subtotal
+    // Assert: Bill JE debits Stock Input and credits AP for subtotal
     $journalEntry = $vendorBill->refresh()->journalEntry;
     expect($journalEntry)->not->toBeNull();
     $amountMinor = $subtotal->getMinorAmount()->toInt();
 
     $this->assertDatabaseHas('journal_entry_lines', [
         'journal_entry_id' => $journalEntry->id,
-        'account_id' => $inventoryAccount->id,
+        'account_id' => $product->default_stock_input_account_id,
         'debit' => $amountMinor,
         'credit' => 0,
     ]);
     $this->assertDatabaseHas('journal_entry_lines', [
         'journal_entry_id' => $journalEntry->id,
         'account_id' => $this->company->default_accounts_payable_id,
+        'debit' => 0,
+        'credit' => $amountMinor,
+    ]);
+
+    // Assert: Valuation JE debits Inventory and credits Stock Input (separate entry)
+    $this->assertDatabaseHas('journal_entry_lines', [
+        'account_id' => $inventoryAccount->id,
+        'debit' => $amountMinor,
+        'credit' => 0,
+    ]);
+    $this->assertDatabaseHas('journal_entry_lines', [
+        'account_id' => $product->default_stock_input_account_id,
         'debit' => 0,
         'credit' => $amountMinor,
     ]);

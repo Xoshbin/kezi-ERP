@@ -35,7 +35,7 @@ beforeEach(function () {
         'type' => \App\Enums\Partners\PartnerType::Customer,
     ]);
 
-    // Create stock locations with the specific names that InvoiceService expects
+    // Create stock locations with the specific names that services expect
     $this->warehouseLocation = \App\Models\StockLocation::factory()->for($this->company)->create([
         'name' => 'Warehouse',
         'type' => \App\Enums\Inventory\StockLocationType::Internal,
@@ -43,6 +43,10 @@ beforeEach(function () {
     $this->vendorsLocation = \App\Models\StockLocation::factory()->for($this->company)->create([
         'name' => 'Vendors',
         'type' => \App\Enums\Inventory\StockLocationType::Vendor,
+    ]);
+    $this->customersLocation = \App\Models\StockLocation::factory()->for($this->company)->create([
+        'name' => 'Customers',
+        'type' => \App\Enums\Inventory\StockLocationType::Customer,
     ]);
 
     // Create a storable product with inventory settings
@@ -109,6 +113,10 @@ it('correctly processes outgoing storable product when invoice is posted, creati
         ->where('source_id', $invoice->id)
         ->first();
     expect($stockMove)->not->toBeNull();
+
+    // Destination must be Customer (not Vendor)
+    $stockMove->load('toLocation');
+    expect($stockMove->toLocation->type)->toBe(\App\Enums\Inventory\StockLocationType::Customer);
 
     // Assert 3: Sales journal entry was created correctly
     $salesJournalEntry = $invoice->journalEntry;

@@ -111,6 +111,13 @@ class Product extends Model
                     'default_inventory_account_id' => __('validation.required', ['attribute' => __('product.default_inventory_account')]),
                 ]);
             }
+
+            // Phase 1: Standard costing is not supported
+            if ($product->inventory_valuation_method === ValuationMethod::STANDARD) {
+                throw ValidationException::withMessages([
+                    'inventory_valuation_method' => __('This project does not support Standard costing in Phase 1.'),
+                ]);
+            }
         });
     }
 
