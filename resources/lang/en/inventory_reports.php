@@ -194,6 +194,15 @@ return [
             'total_value' => 'Total Value',
         ],
 
+        'summary' => [
+            'title' => 'Lot Summary',
+            'lot_code' => 'Lot Code',
+            'product' => 'Product',
+            'expiration_date' => 'Expiration Date',
+            'current_quantity' => 'Current Quantity',
+            'total_value' => 'Total Value',
+        ],
+
         'movements' => [
             'title' => 'Movement History',
             'date' => 'Date',
@@ -204,10 +213,26 @@ return [
             'reference' => 'Reference',
             'journal_entry' => 'Journal Entry',
             'valuation_amount' => 'Valuation Amount',
+            'incoming' => 'Incoming Movements',
+            'outgoing' => 'Outgoing Movements',
+            'internal' => 'Internal Movements',
+            'count' => 'movements',
         ],
+
+        'actions' => [
+            'export' => 'Export',
+            'refresh' => 'Refresh',
+        ],
+
+        'no_expiration' => 'No Expiration',
+        'export_started' => 'Export started successfully.',
+        'no_selection' => 'Select Product and Lot',
+        'no_selection_description' => 'Please select a product and lot to view traceability information.',
+        'no_movements' => 'No movements found',
+        'no_movements_description' => 'This lot has no recorded movements in the system.',
     ],
 
-    'reorder_status' => [
+    'reorder' => [
         'navigation_label' => 'Reorder Status',
         'title' => 'Reorder Status Report',
         'heading' => 'Reorder Status Report',
@@ -216,32 +241,42 @@ return [
             'title' => 'Report Filters',
             'products' => 'Products',
             'locations' => 'Locations',
-            'priority' => 'Priority Level',
+            'include_suggested_orders' => 'Include Suggested Orders',
+            'include_overstock' => 'Include Overstock Items',
         ],
 
         'summary' => [
-            'total_on_hand' => 'Total On Hand',
-            'total_reserved' => 'Total Reserved',
-            'total_available' => 'Total Available',
-            'reorder_warnings' => 'Reorder Warnings',
+            'critical' => 'Critical Items',
+            'low_stock' => 'Low Stock',
+            'suggested' => 'Suggested Orders',
+            'overstock' => 'Overstock',
+            'suggested_value' => 'Suggested Value',
         ],
 
-        'suggestions' => [
-            'title' => 'Reorder Suggestions',
+        'alerts' => [
+            'critical_title' => 'Critical Stock Alert',
+            'critical_description' => ':count products are critically low and need immediate attention.',
+        ],
+
+        'table' => [
+            'title' => 'Reorder Status',
             'product' => 'Product',
             'location' => 'Location',
-            'current_stock' => 'Current Stock',
-            'min_qty' => 'Min Qty',
-            'max_qty' => 'Max Qty',
-            'suggested_qty' => 'Suggested Qty',
-            'priority' => 'Priority',
-            'route' => 'Route',
+            'current_quantity' => 'Current Qty',
+            'min_quantity' => 'Min Qty',
+            'max_quantity' => 'Max Qty',
+            'suggested_quantity' => 'Suggested Qty',
+            'status' => 'Status',
+            'estimated_cost' => 'Estimated Cost',
         ],
 
-        'priority' => [
-            'urgent' => 'Urgent',
-            'high' => 'High',
-            'normal' => 'Normal',
+        'actions' => [
+            'export' => 'Export',
+            'refresh' => 'Refresh',
         ],
+
+        'export_started' => 'Export started successfully.',
+        'no_data' => 'No reorder data found',
+        'no_data_description' => 'No products with reordering rules found for the selected criteria.',
     ],
 ];
