@@ -4,7 +4,6 @@ namespace App\Observers;
 
 use App\Enums\Inventory\StockMoveStatus;
 use App\Enums\Inventory\StockMoveType;
-use App\Enums\Products\ProductType;
 use App\Enums\Purchases\VendorBillStatus;
 use App\Models\StockMove;
 use App\Models\VendorBill;
@@ -21,14 +20,10 @@ class VendorBillObserver
     public function updated(VendorBill $vendorBill): void
     {
         // Only trigger when the status is first changed to 'posted'.
+        // Business logic for creating stock moves now lives in VendorBillService::post().
+        // Observers must not create moves or update valuation; keep side effects only.
         if ($vendorBill->wasChanged('status') && $vendorBill->status === VendorBillStatus::Posted) {
-
-            foreach ($vendorBill->lines as $line) {
-                // Only process lines with storable products.
-                if ($line->product?->type === ProductType::Storable) {
-                    $this->processStorableProductLine($vendorBill, $line);
-                }
-            }
+            // No-op by design
         }
     }
 

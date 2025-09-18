@@ -18,6 +18,8 @@ use App\Models\Currency;
 use App\Models\User;
 use App\Models\VendorBill;
 use App\Models\VendorBillLine;
+use App\Models\StockMove;
+
 use App\Services\Accounting\LockDateService;
 use Carbon\Carbon;
 use Exception;
@@ -97,6 +99,20 @@ class VendorBillService
             throw new \Exception('Vendor bill line must have a product to create stock move');
         }
 
+        // Idempotency guard: avoid duplicate moves for the same bill line
+        $exists = StockMove::query()
+            ->where('company_id', $company->getKey())
+            ->where('product_id', $line->product_id)
+            ->where('from_location_id', $company->vendorLocation->getKey())
+            ->where('to_location_id', $company->defaultStockLocation->getKey())
+            ->where('source_type', VendorBill::class)
+            ->where('source_id', $vendorBill->getKey())
+            ->exists();
+
+        if ($exists) {
+            return;
+        }
+
         $dto = new CreateStockMoveDTO(
             company_id: $company->getKey(),
             product_id: $line->product_id,
@@ -159,7 +175,7 @@ class VendorBillService
                 'event_type' => 'cancellation', // A more specific event type
                 'auditable_type' => get_class($vendorBill),
                 'auditable_id' => $vendorBill->id,
-                'description' => 'Vendor Bill Cancelled: '.$reason,
+                'description' => 'Vendor Bill Cancelled: ' . $reason,
                 'old_values' => ['status' => $vendorBill->status],
                 'new_values' => ['status' => VendorBillStatus::Cancelled],
                 'ip_address' => request()->ip(),
@@ -169,7 +185,7 @@ class VendorBillService
             // The "reason" is passed to the reversal for the entry's description.
             $this->journalEntryService->createReversal(
                 $originalEntry,
-                'Cancellation of Bill '.$vendorBill->bill_reference.': '.$reason,
+                'Cancellation of Bill ' . $vendorBill->bill_reference . ': ' . $reason,
                 $user
             );
 
@@ -295,7 +311,7 @@ class VendorBillService
         DB::transaction(function () use ($vendorBill, $user, $reason) {
             $originalEntry = $vendorBill->journalEntry;
             if ($originalEntry) {
-                $this->journalEntryService->createReversal($originalEntry, 'Reset of Bill '.$vendorBill->bill_reference.': '.$reason, $user);
+                $this->journalEntryService->createReversal($originalEntry, 'Reset of Bill ' . $vendorBill->bill_reference . ': ' . $reason, $user);
             }
 
             $logEntry = [
