@@ -19,6 +19,9 @@ use App\Models\User;
 use App\Models\VendorBill;
 use App\Models\VendorBillLine;
 use App\Models\StockMove;
+use App\Models\StockPicking;
+use App\Enums\Inventory\StockPickingType;
+use App\Enums\Inventory\StockPickingState;
 
 use App\Services\Accounting\LockDateService;
 use App\Events\Inventory\StockMoveConfirmed;
@@ -66,11 +69,28 @@ class VendorBillService
             $vendorBill->posted_at = now();
             $vendorBill->save();
 
-            // Always create stock moves for storable product lines
-            /** @var VendorBillLine $line */
-            foreach ($vendorBill->lines()->with('product')->get() as $line) {
-                if ($line->product?->type === ProductType::Storable) {
-                    $this->createStockMoveForLine($vendorBill, $line, $user);
+            // Create a receipt picking grouping all storable product moves
+            $storableLines = $vendorBill->lines()->with('product')->get()
+                ->filter(fn(VendorBillLine $l) => $l->product?->type === ProductType::Storable);
+
+            if ($storableLines->isNotEmpty()) {
+                $picking = StockPicking::create([
+                    'company_id' => $vendorBill->company_id,
+                    'type' => StockPickingType::Receipt,
+                    'state' => StockPickingState::Done,
+                    'partner_id' => $vendorBill->vendor_id,
+                    'scheduled_date' => $vendorBill->bill_date,
+                    'completed_at' => now(),
+                    'reference' => $vendorBill->bill_reference,
+                    'origin' => 'VendorBill#' . $vendorBill->getKey(),
+                    'created_by_user_id' => $user->id,
+                ]);
+
+                /** @var VendorBillLine $line */
+                foreach ($storableLines as $line) {
+                    $stockMove = $this->createStockMoveForLine($vendorBill, $line, $user);
+                    // Attach move to the picking
+                    $stockMove->update(['picking_id' => $picking->getKey()]);
                 }
             }
 
@@ -88,7 +108,7 @@ class VendorBillService
     /**
      * Creates a stock move for a given vendor bill line.
      */
-    private function createStockMoveForLine(VendorBill $vendorBill, VendorBillLine $line, User $user): void
+    private function createStockMoveForLine(VendorBill $vendorBill, VendorBillLine $line, User $user): StockMove
     {
         $company = $vendorBill->company;
 
@@ -101,17 +121,17 @@ class VendorBillService
         }
 
         // Idempotency guard: avoid duplicate moves for the same bill line
-        $exists = StockMove::query()
+        $existing = StockMove::query()
             ->where('company_id', $company->getKey())
             ->where('product_id', $line->product_id)
             ->where('from_location_id', $company->vendorLocation->getKey())
             ->where('to_location_id', $company->defaultStockLocation->getKey())
             ->where('source_type', VendorBill::class)
             ->where('source_id', $vendorBill->getKey())
-            ->exists();
+            ->first();
 
-        if ($exists) {
-            return;
+        if ($existing) {
+            return $existing;
         }
 
         $dto = new CreateStockMoveDTO(
@@ -133,6 +153,8 @@ class VendorBillService
 
         // Immediately dispatch confirmation to trigger valuation processing
         StockMoveConfirmed::dispatch($stockMove);
+
+        return $stockMove;
     }
 
     /**
