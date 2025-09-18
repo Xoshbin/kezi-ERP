@@ -96,7 +96,7 @@ class ViewStockPicking extends ViewRecord
 
                                 return "{$move->product->name}: " . number_format($move->quantity, 2) .
                                     " from {$move->fromLocation?->name} to {$move->toLocation?->name}" .
-                                    " (Status: {$move->status->getLabel()}){$lotDisplay}";
+                                    " (Status: {$move->status->label()}){$lotDisplay}";
                             })->toArray();
                         }),
                 ])

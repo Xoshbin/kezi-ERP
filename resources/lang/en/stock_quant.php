@@ -30,4 +30,9 @@ return [
     ],
 
     'no_lot' => 'No Lot',
+
+    'empty_state' => [
+        'heading' => 'No stock quants found',
+        'description' => 'Stock quants will appear here when products have inventory in locations.',
+    ],
 ];
