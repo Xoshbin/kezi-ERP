@@ -80,9 +80,10 @@ it('correctly processes an incoming storable product, creating a stock move and 
     expect($journalEntry->is_posted)->toBeTrue();
 
     // 4. Assert Journal Entry Lines
+    // Vendor Bill JE: Dr Stock Input, Cr Accounts Payable (Anglo-Saxon)
     $this->assertDatabaseHas('journal_entry_lines', [
         'journal_entry_id' => $journalEntry->id,
-        'account_id' => $this->product->default_inventory_account_id,
+        'account_id' => $this->product->default_stock_input_account_id,
         'debit' => $totalValue->getMinorAmount()->toInt(),
         'credit' => 0,
     ]);
@@ -92,5 +93,31 @@ it('correctly processes an incoming storable product, creating a stock move and 
         'account_id' => $this->company->default_accounts_payable_id,
         'debit' => 0,
         'credit' => $totalValue->getMinorAmount()->toInt(),
+    ]);
+
+    // Separate Valuation JE: Dr Inventory, Cr Stock Input
+    $valuationReference = 'STOCK-IN-VendorBill-' . $vendorBill->id;
+    $valuationEntry = \App\Models\JournalEntry::where('reference', $valuationReference)->first();
+    expect($valuationEntry)->not->toBeNull();
+
+    $this->assertDatabaseHas('journal_entry_lines', [
+        'journal_entry_id' => $valuationEntry->id,
+        'account_id' => $this->product->default_inventory_account_id,
+        'debit' => $totalValue->getMinorAmount()->toInt(),
+        'credit' => 0,
+    ]);
+
+    $this->assertDatabaseHas('journal_entry_lines', [
+        'journal_entry_id' => $valuationEntry->id,
+        'account_id' => $this->product->default_stock_input_account_id,
+        'debit' => 0,
+        'credit' => $totalValue->getMinorAmount()->toInt(),
+    ]);
+
+    // Valuation link exists
+    $this->assertDatabaseHas('stock_move_valuations', [
+        'product_id' => $this->product->id,
+        'move_type' => \App\Enums\Inventory\StockMoveType::Incoming->value,
+        'journal_entry_id' => $valuationEntry->id,
     ]);
 });
