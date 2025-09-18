@@ -6,6 +6,7 @@ use App\Models\StockMove;
 use App\Models\VendorBill;
 use App\Services\CurrencyConverterService;
 use App\Services\Inventory\InventoryValuationService;
+use App\Services\Inventory\StockQuantService;
 use Brick\Money\Money;
 use Exception;
 use Illuminate\Support\Facades\DB;
@@ -15,6 +16,7 @@ class ProcessIncomingStockAction
     public function __construct(
         protected InventoryValuationService $inventoryValuationService,
         protected CurrencyConverterService $currencyConverter,
+        protected StockQuantService $stockQuantService,
     ) {}
 
     public function execute(StockMove $stockMove): void
@@ -53,6 +55,9 @@ class ProcessIncomingStockAction
                 $stockMove->move_date,
                 $sourceDocument
             );
+
+            // Update quants for destination location
+            $this->stockQuantService->applyForIncoming($stockMove);
         });
     }
 
