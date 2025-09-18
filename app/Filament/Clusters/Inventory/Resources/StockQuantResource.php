@@ -7,6 +7,7 @@ use App\Filament\Clusters\Inventory\Resources\StockQuantResource\Pages;
 use App\Models\StockQuant;
 use BackedEnum;
 use Filament\Forms;
+use Filament\Infolists\Components\TextEntry;
 use Filament\Resources\Resource;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
@@ -99,6 +100,49 @@ class StockQuantResource extends Resource
                                 $reserved = (float) ($get('reserved_quantity') ?? 0);
                                 $available = $quantity - $reserved;
                                 return number_format($available, 4);
+                            }),
+                    ]),
+                ]),
+        ]);
+    }
+
+    public static function infolist(Schema $schema): Schema
+    {
+        return $schema->components([
+            Section::make(__('stock_quant.sections.basic_info'))
+                ->schema([
+                    Grid::make(3)->schema([
+                        TextEntry::make('product.name')
+                            ->label(__('stock_quant.fields.product')),
+
+                        TextEntry::make('location.name')
+                            ->label(__('stock_quant.fields.location')),
+
+                        TextEntry::make('lot.lot_code')
+                            ->label(__('stock_quant.fields.lot'))
+                            ->placeholder(__('stock_quant.no_lot')),
+                    ]),
+                ]),
+
+            Section::make(__('stock_quant.sections.quantities'))
+                ->schema([
+                    Grid::make(3)->schema([
+                        TextEntry::make('quantity')
+                            ->label(__('stock_quant.fields.quantity'))
+                            ->numeric(decimalPlaces: 4),
+
+                        TextEntry::make('reserved_quantity')
+                            ->label(__('stock_quant.fields.reserved_quantity'))
+                            ->numeric(decimalPlaces: 4),
+
+                        TextEntry::make('available_quantity')
+                            ->label(__('stock_quant.fields.available_quantity'))
+                            ->getStateUsing(fn(StockQuant $record): float => $record->available_quantity)
+                            ->numeric(decimalPlaces: 4)
+                            ->color(fn(float $state): string => match (true) {
+                                $state <= 0 => 'danger',
+                                $state <= 10 => 'warning',
+                                default => 'success',
                             }),
                     ]),
                 ]),
@@ -208,7 +252,10 @@ class StockQuantResource extends Resource
                     \Filament\Actions\DeleteBulkAction::make(),
                 ]),
             ])
-            ->defaultSort('updated_at', 'desc');
+            ->defaultSort('updated_at', 'desc')
+            ->emptyStateHeading(__('stock_quant.empty_state.heading'))
+            ->emptyStateDescription(__('stock_quant.empty_state.description'))
+            ->emptyStateIcon('heroicon-o-cube');
     }
 
     public static function getRelations(): array
