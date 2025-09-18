@@ -7,13 +7,18 @@ use App\Services\Inventory\InventoryReportingService;
 use Carbon\Carbon;
 
 use Filament\Forms\Components\DatePicker;
-use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Toggle;
-use Filament\Pages\Page;
+use Filament\Schemas\Components\Section;
+use Filament\Forms\Concerns\InteractsWithForms;
+use Filament\Forms\Contracts\HasForms;
 
-class InventoryValuationReport extends Page
+use Filament\Pages\Page;
+use Filament\Schemas\Schema;
+
+class InventoryValuationReport extends Page implements HasForms
 {
+    use InteractsWithForms;
 
     protected static ?string $cluster = InventoryCluster::class;
 
@@ -59,42 +64,42 @@ class InventoryValuationReport extends Page
         $this->generateReport();
     }
 
-    protected function getForms(): array
+    public function form(Schema $schema): Schema
     {
-        return [
-            'form' => $this->form(
-                $this->makeForm()
+        return $schema
+            ->components([
+                Section::make(__('inventory_reports.valuation.filters.title'))
                     ->schema([
-                        Section::make(__('inventory_reports.valuation.filters.title'))
-                            ->schema([
-                                DatePicker::make('as_of_date')
-                                    ->label(__('inventory_reports.valuation.filters.as_of_date'))
-                                    ->required()
-                                    ->default(now())
-                                    ->maxDate(now())
-                                    ->live()
-                                    ->afterStateUpdated(fn() => $this->generateReport()),
+                        DatePicker::make('as_of_date')
+                            ->label(__('inventory_reports.valuation.filters.as_of_date'))
+                            ->required()
+                            ->default(now())
+                            ->maxDate(now())
+                            ->live()
+                            ->afterStateUpdated(fn() => $this->generateReport()),
 
-                                Select::make('product_ids')
-                                    ->label(__('inventory_reports.valuation.filters.products'))
-                                    ->relationship('products', 'name')
-                                    ->multiple()
-                                    ->searchable()
-                                    ->preload()
-                                    ->live()
-                                    ->afterStateUpdated(fn() => $this->generateReport()),
+                        Select::make('product_ids')
+                            ->label(__('inventory_reports.valuation.filters.products'))
+                            ->options(function () {
+                                return \App\Models\Product::query()
+                                    ->where('company_id', \Filament\Facades\Filament::getTenant()?->getKey())
+                                    ->pluck('name', 'id');
+                            })
+                            ->multiple()
+                            ->searchable()
+                            ->preload()
+                            ->live()
+                            ->afterStateUpdated(fn() => $this->generateReport()),
 
-                                Toggle::make('include_reconciliation')
-                                    ->label(__('inventory_reports.valuation.filters.include_reconciliation'))
-                                    ->default(true)
-                                    ->live()
-                                    ->afterStateUpdated(fn() => $this->generateReport()),
-                            ])
-                            ->columns(3),
+                        Toggle::make('include_reconciliation')
+                            ->label(__('inventory_reports.valuation.filters.include_reconciliation'))
+                            ->default(true)
+                            ->live()
+                            ->afterStateUpdated(fn() => $this->generateReport()),
                     ])
-                    ->statePath('data')
-            ),
-        ];
+                    ->columns(3),
+            ])
+            ->statePath('data');
     }
 
     public function generateReport(): void
