@@ -32,6 +32,10 @@ class InventoryValuationService
     {
         $this->lockDateService->enforce(Company::findOrFail($product->company_id), Carbon::parse($date));
 
+        if ($product->inventory_valuation_method === ValuationMethod::STANDARD) {
+            throw new Exception('Standard costing is not supported in Phase 1');
+        }
+
         // Calculate total cost for this incoming stock
         $totalCost = $costPerUnit->multipliedBy($quantity);
 
@@ -54,6 +58,10 @@ class InventoryValuationService
     public function processOutgoingStock(Product $product, float $quantity, Carbon $date, \Illuminate\Database\Eloquent\Model $sourceDocument): void
     {
         $this->lockDateService->enforce(Company::findOrFail($product->company_id), Carbon::parse($date));
+
+        if ($product->inventory_valuation_method === ValuationMethod::STANDARD) {
+            throw new Exception('Standard costing is not supported in Phase 1');
+        }
 
         // Calculate COGS based on valuation method
         $cogsAmount = $this->calculateCOGS($product, $quantity);
@@ -310,11 +318,11 @@ class InventoryValuationService
             ? $totalValue->dividedBy($totalQuantity, RoundingMode::HALF_UP)
             : Money::of(0, $currencyCode);
 
-        // Update product's average cost and quantity
-        $product->update([
+        // Update product's average cost and quantity (bypass fillable)
+        $product->forceFill([
             'average_cost' => $newAverageCost,
             'quantity_on_hand' => $totalQuantity,
-        ]);
+        ])->save();
 
         Log::info("Updated AVCO for product {$product->id}: new average cost {$newAverageCost->getAmount()}, quantity {$totalQuantity}");
     }
@@ -333,10 +341,10 @@ class InventoryValuationService
             'purchase_date' => $date,
         ]);
 
-        // Update product quantity
-        $product->update([
+        // Update product quantity (bypass fillable)
+        $product->forceFill([
             'quantity_on_hand' => $product->quantity_on_hand + $quantity,
-        ]);
+        ])->save();
 
         Log::info("Created cost layer for product {$product->id}: quantity {$quantity}, unit cost {$costPerUnit->getAmount()}");
     }

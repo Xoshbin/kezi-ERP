@@ -21,6 +21,7 @@ use App\Models\VendorBillLine;
 use App\Models\StockMove;
 
 use App\Services\Accounting\LockDateService;
+use App\Events\Inventory\StockMoveConfirmed;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Support\Facades\DB;
@@ -128,7 +129,10 @@ class VendorBillService
             created_by_user_id: $user->id
         );
 
-        $this->createStockMoveAction->execute($dto);
+        $stockMove = $this->createStockMoveAction->execute($dto);
+
+        // Immediately dispatch confirmation to trigger valuation processing
+        StockMoveConfirmed::dispatch($stockMove);
     }
 
     /**

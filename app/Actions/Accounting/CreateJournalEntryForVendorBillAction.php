@@ -20,7 +20,7 @@ class CreateJournalEntryForVendorBillAction
     public function execute(VendorBill $vendorBill, User $user): JournalEntry
     {
         return DB::transaction(function () use ($vendorBill, $user) {
-            $vendorBill->load('company', 'currency', 'vendor', 'lines.product.inventoryAccount');
+            $vendorBill->load('company', 'currency', 'vendor', 'lines.product.stockInputAccount');
 
             $company = $vendorBill->company;
             $currency = $vendorBill->currency;
@@ -37,16 +37,16 @@ class CreateJournalEntryForVendorBillAction
                 $isAsset = (bool) $line->asset_category_id;
 
                 if ($isStorable && $line->product) {
-                    $inventoryAccount = $line->product->inventoryAccount;
-                    if (! $inventoryAccount) {
-                        throw new RuntimeException("Product ID {$line->product_id} missing inventory account");
+                    $stockInputAccount = $line->product->stockInputAccount;
+                    if (! $stockInputAccount) {
+                        throw new RuntimeException("Product ID {$line->product_id} missing stock input account");
                     }
-                    // Dr Inventory (subtotal)
+                    // Dr Stock Input (subtotal) for Anglo-Saxon; receipt valuation handles Inventory Dr
                     $lineDTOs[] = new CreateJournalEntryLineDTO(
-                        account_id: (int) $inventoryAccount->getKey(),
+                        account_id: (int) $stockInputAccount->getKey(),
                         debit: $line->subtotal,
                         credit: Money::of(0, $currency->code),
-                        description: "Inventory: {$line->description}",
+                        description: "Stock Input: {$line->description}",
                         partner_id: null,
                         analytic_account_id: null,
                     );
@@ -61,7 +61,7 @@ class CreateJournalEntryForVendorBillAction
                         account_id: $category->asset_account_id,
                         debit: $line->subtotal,
                         credit: Money::of(0, $currency->code),
-                        description: 'Asset: '.$line->description,
+                        description: 'Asset: ' . $line->description,
                         partner_id: null,
                         analytic_account_id: null,
                     );
@@ -89,7 +89,7 @@ class CreateJournalEntryForVendorBillAction
                         account_id: $taxAccountId,
                         debit: $line->total_line_tax,
                         credit: Money::of(0, $currency->code),
-                        description: 'Input tax: '.$line->description,
+                        description: 'Input tax: ' . $line->description,
                         partner_id: null,
                         analytic_account_id: null,
                     );
@@ -117,7 +117,7 @@ class CreateJournalEntryForVendorBillAction
                 currency_id: $currency->id,
                 entry_date: $vendorBill->accounting_date,
                 reference: $vendorBill->bill_reference,
-                description: 'Vendor Bill '.$vendorBill->bill_reference,
+                description: 'Vendor Bill ' . $vendorBill->bill_reference,
                 source_type: VendorBill::class,
                 source_id: $vendorBill->id,
                 created_by_user_id: $user->id,

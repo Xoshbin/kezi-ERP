@@ -4,6 +4,7 @@ namespace App\Actions\Inventory;
 
 use App\Models\StockMove;
 use App\Models\VendorBill;
+use App\Services\CurrencyConverterService;
 use App\Services\Inventory\InventoryValuationService;
 use Brick\Money\Money;
 use Exception;
@@ -11,7 +12,10 @@ use Illuminate\Support\Facades\DB;
 
 class ProcessIncomingStockAction
 {
-    public function __construct(protected InventoryValuationService $inventoryValuationService) {}
+    public function __construct(
+        protected InventoryValuationService $inventoryValuationService,
+        protected CurrencyConverterService $currencyConverter,
+    ) {}
 
     public function execute(StockMove $stockMove): void
     {
@@ -29,10 +33,23 @@ class ProcessIncomingStockAction
                 throw new \Exception('Stock move must have a source document');
             }
 
+            // Ensure cost is in company base currency
+            $costPerUnitCompany = $costPerUnit;
+            $companyCurrency = $product->company->currency;
+            if ($sourceDocument instanceof VendorBill) {
+                $costPerUnitCompany = $this->currencyConverter->convertToBaseCurrency(
+                    $costPerUnit,
+                    $sourceDocument->currency,
+                    $companyCurrency,
+                    $sourceDocument->bill_date,
+                    $product->company,
+                );
+            }
+
             $this->inventoryValuationService->processIncomingStock(
                 $product,
                 $stockMove->quantity,
-                $costPerUnit,
+                $costPerUnitCompany,
                 $stockMove->move_date,
                 $sourceDocument
             );
@@ -57,7 +74,7 @@ class ProcessIncomingStockAction
             throw new Exception('Source document is null');
         }
 
-        throw new Exception('Unable to extract cost from source document type: '.get_class($sourceDocument));
+        throw new Exception('Unable to extract cost from source document type: ' . get_class($sourceDocument));
     }
 
     /**
