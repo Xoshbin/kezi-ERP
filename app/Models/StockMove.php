@@ -29,6 +29,7 @@ class StockMove extends Model
         'source_type',
         'source_id',
         'created_by_user_id',
+        'picking_id',
     ];
 
     protected $casts = [
@@ -83,5 +84,13 @@ class StockMove extends Model
     public function createdByUser(): BelongsTo
     {
         return $this->belongsTo(User::class, 'created_by_user_id');
+    }
+
+    /**
+     * @return BelongsTo<StockPicking, static>
+     */
+    public function picking(): BelongsTo
+    {
+        return $this->belongsTo(StockPicking::class, 'picking_id');
     }
 }
