@@ -90,6 +90,16 @@ return [
             'percentage' => 'Percentage',
         ],
 
+        'buckets' => [
+            'title' => 'Age Distribution',
+            'age_range' => 'Age Range',
+            'quantity' => 'Quantity',
+            'value' => 'Value',
+            'percentage' => 'Percentage',
+            'products' => 'Products',
+            'total' => 'Total',
+        ],
+
         'expiration' => [
             'title' => 'Expiring Lots',
             'lot_code' => 'Lot Code',
@@ -98,6 +108,18 @@ return [
             'days_until_expiration' => 'Days Until Expiration',
             'quantity_on_hand' => 'Quantity on Hand',
         ],
+
+        'days' => 'days',
+        'days_ago' => 'days ago',
+        'expired' => 'Expired',
+        'export_started' => 'Export started successfully.',
+        'actions' => [
+            'export' => 'Export',
+            'refresh' => 'Refresh',
+        ],
+
+        'no_data' => 'No aging data found',
+        'no_data_description' => 'No inventory found for the selected criteria.',
     ],
 
     'turnover' => [
@@ -125,7 +147,32 @@ return [
             'good' => 'Good (6-12x)',
             'average' => 'Average (3-6x)',
             'poor' => 'Poor (<3x)',
+            'ratio_explanation' => 'Your inventory turns over :ratio times during this period.',
         ],
+
+        'benchmarks' => [
+            'excellent' => 'Inventory turns over more than 12 times per year',
+            'good' => 'Inventory turns over 6-12 times per year',
+            'average' => 'Inventory turns over 3-6 times per year',
+            'poor' => 'Inventory turns over less than 3 times per year',
+        ],
+
+        'period_info' => [
+            'title' => 'Period Information',
+            'start_date' => 'Start Date',
+            'end_date' => 'End Date',
+            'period_length' => 'Period Length',
+        ],
+
+        'days' => 'days',
+        'annualized' => 'Annualized',
+        'actions' => [
+            'export' => 'Export',
+            'refresh' => 'Refresh',
+        ],
+        'export_started' => 'Export started successfully.',
+        'no_data' => 'No turnover data found',
+        'no_data_description' => 'No COGS or inventory movements found for the selected period.',
     ],
 
     'lot_trace' => [
