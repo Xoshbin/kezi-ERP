@@ -395,13 +395,13 @@ class InventoryReportingService
             if ($quantity > 0 && $runningQuantity > 0) {
                 // Calculate average cost from total value and quantity
                 $averageCost = $runningValue->dividedBy($incomingValuations->sum('quantity'), RoundingMode::HALF_UP);
-                $value = $averageCost->multipliedBy($quantity);
+                $value = $averageCost->multipliedBy($quantity, RoundingMode::HALF_UP);
             }
         } else {
             // For FIFO/LIFO, use cost layers
             foreach ($productCostLayers as $layer) {
                 if ($layer->remaining_quantity > 0) {
-                    $layerValue = $layer->cost_per_unit->multipliedBy($layer->remaining_quantity);
+                    $layerValue = $layer->cost_per_unit->multipliedBy($layer->remaining_quantity, RoundingMode::HALF_UP);
                     $quantity += $layer->remaining_quantity;
                     $value = $value->plus($layerValue);
 
