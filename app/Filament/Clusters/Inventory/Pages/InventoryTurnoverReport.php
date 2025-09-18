@@ -102,12 +102,20 @@ class InventoryTurnoverReport extends Page implements HasForms
     {
         $filters = $this->form->getState();
 
+        // Skip report generation if required fields are missing
+        if (empty($filters['start_date']) || empty($filters['end_date'])) {
+            return;
+        }
+
+        $startDate = Carbon::parse($filters['start_date']);
+        $endDate = Carbon::parse($filters['end_date']);
+
         $reportingService = $this->getReportingService();
 
         // Generate turnover report
         $this->reportData = $reportingService->turnover([
-            'start_date' => Carbon::parse($filters['start_date']),
-            'end_date' => Carbon::parse($filters['end_date']),
+            'start_date' => $startDate,
+            'end_date' => $endDate,
             'product_ids' => $filters['product_ids'] ?? null,
         ]);
     }

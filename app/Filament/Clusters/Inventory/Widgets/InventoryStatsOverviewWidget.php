@@ -41,7 +41,7 @@ class InventoryStatsOverviewWidget extends BaseWidget
 
             // Get reorder status
             $reorderStatus = $reportingService->reorderStatus($filters);
-            $lowStockCount = count($reorderStatus['suggestions'] ?? []);
+            $lowStockCount = count($reorderStatus['below_minimum'] ?? []);
 
             // Get aging data for expiring lots
             $aging = $reportingService->ageing([
