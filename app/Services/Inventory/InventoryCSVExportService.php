@@ -198,6 +198,52 @@ class InventoryCSVExportService
     }
 
     /**
+     * Export lot traceability report to CSV format
+     */
+    public function exportLotTraceabilityReport(array $data, array $options = []): string
+    {
+        $includeMetadata = $options['include_metadata'] ?? false;
+        $csv = '';
+
+        // Add metadata if requested
+        if ($includeMetadata) {
+            $csv .= $this->generateMetadata('Lot Traceability Report', $data);
+        }
+
+        // Add lot summary
+        $csv .= "Lot Information\n";
+        $csv .= "Field,Value\n";
+        $csv .= sprintf('"Lot Code","%s"' . "\n", $this->escapeCsvValue($data['lot_code'] ?? ''));
+        $csv .= sprintf('"Product","%s"' . "\n", $this->escapeCsvValue($data['product_name'] ?? ''));
+        $csv .= sprintf(
+            '"Expiration Date","%s"' . "\n",
+            isset($data['expiration_date']) ? $data['expiration_date']->format('Y-m-d') : 'N/A'
+        );
+        $csv .= sprintf('"Current Quantity",%s' . "\n", number_format($data['current_quantity'] ?? 0, 4));
+        $csv .= sprintf('"Total Value",%s' . "\n", $this->formatMoney($data['total_value'] ?? Money::of(0, 'IQD')));
+
+        // Add movements section
+        $csv .= "\nMovement History\n";
+        $csv .= "Date,Type,Quantity,From Location,To Location,Reference\n";
+
+        if (isset($data['movements']) && is_array($data['movements'])) {
+            foreach ($data['movements'] as $movement) {
+                $csv .= sprintf(
+                    '"%s","%s",%s,"%s","%s","%s"' . "\n",
+                    $movement['move_date']->format('Y-m-d'),
+                    $this->escapeCsvValue($movement['move_type'] ?? ''),
+                    number_format($movement['quantity'] ?? 0, 4),
+                    $this->escapeCsvValue($movement['from_location'] ?? ''),
+                    $this->escapeCsvValue($movement['to_location'] ?? ''),
+                    $this->escapeCsvValue($movement['reference'] ?? '')
+                );
+            }
+        }
+
+        return $csv;
+    }
+
+    /**
      * Generate metadata section for CSV exports
      */
     private function generateMetadata(string $reportTitle, array $data): string

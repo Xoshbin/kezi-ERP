@@ -196,19 +196,52 @@ class InventoryAgingReport extends Page implements HasForms
             \Filament\Actions\Action::make('export')
                 ->label(__('inventory_reports.aging.actions.export'))
                 ->icon('heroicon-o-arrow-down-tray')
-                ->action('exportReport'),
+                ->disabled(fn() => !$this->reportData)
+                ->requiresConfirmation()
+                ->modalHeading(__('inventory_reports.aging.export_confirmation'))
+                ->modalDescription(__('inventory_reports.aging.export_description'))
+                ->modalSubmitActionLabel(__('inventory_reports.aging.actions.export'))
+                ->action(function () {
+                    if (!$this->reportData) {
+                        \Filament\Notifications\Notification::make()
+                            ->title(__('inventory_reports.aging.no_data_to_export'))
+                            ->danger()
+                            ->send();
+                        return;
+                    }
+
+                    try {
+                        $csvService = app(\App\Services\Inventory\InventoryCSVExportService::class);
+                        $csvContent = $csvService->exportAgingReport($this->reportData, [
+                            'include_metadata' => true
+                        ]);
+
+                        $filename = 'inventory-aging-' . now()->format('Y-m-d-H-i-s') . '.csv';
+
+                        \Filament\Notifications\Notification::make()
+                            ->title(__('inventory_reports.aging.export_started'))
+                            ->success()
+                            ->send();
+
+                        return response()->streamDownload(function () use ($csvContent) {
+                            echo $csvContent;
+                        }, $filename, [
+                            'Content-Type' => 'text/csv; charset=UTF-8',
+                        ]);
+                    } catch (\Exception $e) {
+                        \Filament\Notifications\Notification::make()
+                            ->title(__('inventory_reports.aging.export_failed'))
+                            ->body($e->getMessage())
+                            ->danger()
+                            ->send();
+                    }
+                }),
 
             \Filament\Actions\Action::make('refresh')
                 ->label(__('inventory_reports.aging.actions.refresh'))
                 ->icon('heroicon-o-arrow-path')
                 ->action('generateReport'),
         ];
-    }
-
-    public function exportReport(): void
-    {
-        // TODO: Implement CSV export functionality
-        $this->notify('success', __('inventory_reports.aging.export_started'));
     }
 
     protected function getViewData(): array
