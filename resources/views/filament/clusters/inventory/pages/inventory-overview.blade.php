@@ -32,7 +32,7 @@
                         </p>
                         <x-filament::button
                             tag="a"
-                            href="{{ route('filament.admin.clusters.inventory.resources.stock-moves.create', ['type' => 'incoming']) }}"
+                            href="{{ route('filament.jmeryar.inventory.resources.stock-moves.create', ['tenant' => filament()->getTenant(), 'type' => 'incoming']) }}"
                             size="sm"
                             class="mt-2"
                         >
@@ -56,7 +56,7 @@
                         </p>
                         <x-filament::button
                             tag="a"
-                            href="{{ route('filament.admin.clusters.inventory.resources.stock-moves.create', ['type' => 'outgoing']) }}"
+                            href="{{ route('filament.jmeryar.inventory.resources.stock-moves.create', ['tenant' => filament()->getTenant(), 'type' => 'outgoing']) }}"
                             size="sm"
                             class="mt-2"
                             color="warning"
@@ -81,7 +81,7 @@
                         </p>
                         <x-filament::button
                             tag="a"
-                            href="{{ route('filament.admin.clusters.inventory.pages.inventory-reports') }}"
+                            href="{{ route('filament.jmeryar.inventory.pages.inventory-valuation-report', ['tenant' => filament()->getTenant()]) }}"
                             size="sm"
                             class="mt-2"
                             color="success"
