@@ -28,6 +28,15 @@ class InventoryCostLayer extends Model
     ];
 
     /**
+     * The relationships that should always be loaded.
+     * Eager-loading the `product.company.currency` relationship is critical because the `BaseCurrencyMoneyCast`
+     * for monetary fields on this model depends on the currency context provided by the product's company.
+     *
+     * @var list<string>
+     */
+    protected $with = ['product.company.currency'];
+
+    /**
      * @return BelongsTo<Product, static>
      */
     public function product(): BelongsTo
