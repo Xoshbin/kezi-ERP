@@ -88,9 +88,10 @@ it('correctly processes an incoming storable product using AVCO, creating a stoc
     $this->assertNotNull($vendorBill->journal_entry_id);
     $journalEntry = $vendorBill->journalEntry;
 
+    // Phase 1: Vendor Bill JE debits Stock Input (valuation JE handles Inventory Dr)
     $this->assertDatabaseHas('journal_entry_lines', [
         'journal_entry_id' => $journalEntry->id,
-        'account_id' => $this->inventoryAccount->id,
+        'account_id' => $this->stockInputAccount->id,
         'debit' => $totalValue->getMinorAmount()->toInt(),
         'credit' => 0,
     ]);
