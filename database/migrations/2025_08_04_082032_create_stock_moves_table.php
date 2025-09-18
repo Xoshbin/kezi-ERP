@@ -24,6 +24,7 @@ return new class extends Migration
             $table->string('reference')->nullable();
             $table->morphs('source');
             $table->foreignId('created_by_user_id')->constrained('users');
+            $table->foreignId('picking_id')->nullable()->constrained('stock_pickings');
             $table->timestamps();
         });
     }
