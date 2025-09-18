@@ -4,19 +4,15 @@ namespace App\Filament\Clusters\Inventory\Resources;
 
 use App\Filament\Clusters\Inventory\InventoryCluster;
 use App\Filament\Clusters\Inventory\Resources\StockQuantResource\Pages;
-use App\Models\Product;
-use App\Models\StockLocation;
 use App\Models\StockQuant;
-use App\Models\Lot;
 use BackedEnum;
 use Filament\Forms;
-use Filament\Forms\Get;
 use Filament\Resources\Resource;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Schema;
 use Filament\Tables;
-
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 
@@ -93,9 +89,12 @@ class StockQuantResource extends Resource
                             ->required()
                             ->default(0),
 
-                        Forms\Components\Placeholder::make('available_quantity')
+                        Forms\Components\TextInput::make('available_quantity')
                             ->label(__('stock_quant.fields.available_quantity'))
-                            ->content(function (Get $get): string {
+                            ->disabled()
+                            ->dehydrated(false)
+                            ->live()
+                            ->default(function (Get $get): string {
                                 $quantity = (float) ($get('quantity') ?? 0);
                                 $reserved = (float) ($get('reserved_quantity') ?? 0);
                                 $available = $quantity - $reserved;
@@ -161,13 +160,13 @@ class StockQuantResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                Tables\Filters\SelectFilter::make('product_id')
+                Tables\Filters\SelectFilter::make('product')
                     ->label(__('stock_quant.filters.product'))
                     ->relationship('product', 'name')
                     ->searchable()
                     ->preload(),
 
-                Tables\Filters\SelectFilter::make('location_id')
+                Tables\Filters\SelectFilter::make('location')
                     ->label(__('stock_quant.filters.location'))
                     ->relationship('location', 'name')
                     ->searchable()

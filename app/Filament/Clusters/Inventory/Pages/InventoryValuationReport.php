@@ -39,6 +39,16 @@ class InventoryValuationReport extends Page implements HasForms
         return app(InventoryReportingService::class);
     }
 
+    protected function isValidDate($date): bool
+    {
+        try {
+            Carbon::parse($date);
+            return true;
+        } catch (\Exception) {
+            return false;
+        }
+    }
+
     public static function getNavigationLabel(): string
     {
         return __('inventory_reports.valuation.navigation_label');
@@ -76,7 +86,12 @@ class InventoryValuationReport extends Page implements HasForms
                             ->default(now())
                             ->maxDate(now())
                             ->live()
-                            ->afterStateUpdated(fn() => $this->generateReport()),
+                            ->afterStateUpdated(function ($state) {
+                                // Only generate report if the date is valid
+                                if ($state && $this->isValidDate($state)) {
+                                    $this->generateReport();
+                                }
+                            }),
 
                         Select::make('product_ids')
                             ->label(__('inventory_reports.valuation.filters.products'))
@@ -105,6 +120,12 @@ class InventoryValuationReport extends Page implements HasForms
     public function generateReport(): void
     {
         $filters = $this->form->getState();
+
+        // Skip report generation if required fields are missing
+        if (empty($filters['as_of_date'])) {
+            return;
+        }
+
         $asOfDate = Carbon::parse($filters['as_of_date']);
 
         $reportingService = $this->getReportingService();
