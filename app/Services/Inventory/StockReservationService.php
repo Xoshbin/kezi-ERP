@@ -212,4 +212,13 @@ class StockReservationService
             ]);
         }
     }
+
+    /**
+     * Release reservations for a move (used when cancelling)
+     */
+    public function releaseForMove(StockMove $move): void
+    {
+        // Delete all reservations for this move
+        StockReservation::where('move_id', $move->id)->delete();
+    }
 }
