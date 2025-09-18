@@ -5,7 +5,7 @@ namespace Tests\Feature\Filament;
 use App\Enums\Inventory\ValuationMethod;
 use App\Enums\Products\ProductType;
 use App\Filament\Clusters\Inventory\Pages\InventoryAgingReport;
-use App\Filament\Clusters\Inventory\Pages\InventoryDashboard;
+use App\Filament\Clusters\Inventory\Pages\InventoryOverview;
 use App\Filament\Clusters\Inventory\Pages\InventoryLotTraceabilityReport;
 use App\Filament\Clusters\Inventory\Pages\InventoryReorderStatusReport;
 use App\Filament\Clusters\Inventory\Pages\InventoryTurnoverReport;
@@ -40,7 +40,7 @@ beforeEach(function () {
 
 describe('Filament Inventory UI Verification', function () {
     it('can render inventory dashboard with widgets', function () {
-        Livewire::test(InventoryDashboard::class)
+        Livewire::test(InventoryOverview::class)
             ->assertSuccessful()
             ->assertSee('Inventory Dashboard')
             ->assertSee('Total Inventory Value')
