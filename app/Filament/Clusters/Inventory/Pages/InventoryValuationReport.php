@@ -177,7 +177,46 @@ class InventoryValuationReport extends Page implements HasForms
             \Filament\Actions\Action::make('export')
                 ->label(__('inventory_reports.valuation.actions.export'))
                 ->icon('heroicon-o-arrow-down-tray')
-                ->action('exportReport'),
+                ->disabled(fn() => !$this->reportData)
+                ->requiresConfirmation()
+                ->modalHeading(__('inventory_reports.valuation.export_confirmation'))
+                ->modalDescription(__('inventory_reports.valuation.export_description'))
+                ->modalSubmitActionLabel(__('inventory_reports.valuation.actions.export'))
+                ->action(function () {
+                    if (!$this->reportData) {
+                        \Filament\Notifications\Notification::make()
+                            ->title(__('inventory_reports.valuation.no_data_to_export'))
+                            ->danger()
+                            ->send();
+                        return;
+                    }
+
+                    try {
+                        $csvService = app(\App\Services\Inventory\InventoryCSVExportService::class);
+                        $csvContent = $csvService->exportValuationReport($this->reportData, [
+                            'include_metadata' => true
+                        ]);
+
+                        $filename = 'inventory-valuation-' . now()->format('Y-m-d-H-i-s') . '.csv';
+
+                        \Filament\Notifications\Notification::make()
+                            ->title(__('inventory_reports.valuation.export_started'))
+                            ->success()
+                            ->send();
+
+                        return response()->streamDownload(function () use ($csvContent) {
+                            echo $csvContent;
+                        }, $filename, [
+                            'Content-Type' => 'text/csv; charset=UTF-8',
+                        ]);
+                    } catch (\Exception $e) {
+                        \Filament\Notifications\Notification::make()
+                            ->title(__('inventory_reports.valuation.export_failed'))
+                            ->body($e->getMessage())
+                            ->danger()
+                            ->send();
+                    }
+                }),
 
             \Filament\Actions\Action::make('refresh')
                 ->label(__('inventory_reports.valuation.actions.refresh'))
@@ -186,11 +225,7 @@ class InventoryValuationReport extends Page implements HasForms
         ];
     }
 
-    public function exportReport(): void
-    {
-        // TODO: Implement CSV export functionality
-        $this->notify('success', __('inventory_reports.valuation.export_started'));
-    }
+
 
     protected function getViewData(): array
     {
