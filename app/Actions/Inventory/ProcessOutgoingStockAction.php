@@ -5,6 +5,7 @@ namespace App\Actions\Inventory;
 use App\Models\StockMove;
 use App\Services\Inventory\InventoryValuationService;
 use App\Services\Inventory\StockQuantService;
+use App\Services\Inventory\StockReservationService;
 use Illuminate\Support\Facades\DB;
 
 class ProcessOutgoingStockAction
@@ -12,6 +13,7 @@ class ProcessOutgoingStockAction
     public function __construct(
         protected InventoryValuationService $inventoryValuationService,
         protected StockQuantService $stockQuantService,
+        protected StockReservationService $stockReservationService,
     ) {}
 
     public function execute(StockMove $stockMove): void
@@ -33,9 +35,9 @@ class ProcessOutgoingStockAction
                 $stockMove->move_date,
                 $sourceDocument
             );
-            // Phase 2A: Quants are updated only on incoming moves for now.
-            // Outgoing quants will be handled when reservation/allocation is implemented.
 
+            // Phase 2B: Deduct quants by consuming reservations only (no oversell)
+            $this->stockReservationService->consumeForMove($stockMove);
         });
     }
 }
