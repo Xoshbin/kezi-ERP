@@ -39,6 +39,7 @@ trait WithConfiguredCompany
         // 1. Create inventory-specific GL accounts
         $this->inventoryAccount = Account::factory()->for($this->company)->create(['name' => 'Stock Valuation', 'type' => 'current_assets']);
         $this->stockInputAccount = Account::factory()->for($this->company)->create(['name' => 'Stock Input', 'type' => 'current_liabilities']);
+        $this->cogsAccount = Account::factory()->for($this->company)->create(['name' => 'Cost of Goods Sold', 'type' => 'expense']);
 
         // 2. Create the necessary physical locations
         $this->vendorLocation = StockLocation::factory()->for($this->company)->create(['type' => StockLocationType::Vendor]);

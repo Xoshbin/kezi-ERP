@@ -24,6 +24,9 @@ beforeEach(function () {
     // Create sample data for export testing
     $this->setupWithConfiguredCompany();
     $this->setupInventoryTestEnvironment();
+
+    // Set up test data for CSV exports
+    setupExportTestData();
 });
 
 describe('Inventory CSV Export Verification', function () {
@@ -32,7 +35,7 @@ describe('Inventory CSV Export Verification', function () {
         $valuation = $this->reportingService->valuationAt($date);
 
         // Generate CSV content
-        $csvContent = $this->generateValuationCSV($valuation);
+        $csvContent = generateValuationCSV($valuation);
 
         // Verify CSV structure
         $lines = explode("\n", trim($csvContent));
@@ -54,7 +57,7 @@ describe('Inventory CSV Export Verification', function () {
         $aging = $this->reportingService->ageing([30, 60, 90]);
 
         // Generate CSV content
-        $csvContent = $this->generateAgingCSV($aging);
+        $csvContent = generateAgingCSV($aging);
 
         // Verify CSV structure
         $lines = explode("\n", trim($csvContent));
@@ -66,13 +69,13 @@ describe('Inventory CSV Export Verification', function () {
     });
 
     it('can export inventory turnover report to CSV', function () {
-        $turnover = $this->reportingService->turnover(
-            Carbon::now()->subDays(30),
-            Carbon::now()
-        );
+        $turnover = $this->reportingService->turnover([
+            'start_date' => Carbon::now()->subDays(30),
+            'end_date' => Carbon::now()
+        ]);
 
         // Generate CSV content
-        $csvContent = $this->generateTurnoverCSV($turnover);
+        $csvContent = generateTurnoverCSV($turnover);
 
         // Verify CSV structure
         $lines = explode("\n", trim($csvContent));
@@ -84,13 +87,13 @@ describe('Inventory CSV Export Verification', function () {
     });
 
     it('can export lot traceability report to CSV', function () {
-        $product = $this->products->first();
-        $lot = $this->lots->first();
+        $product = test()->products->first();
+        $lot = test()->lots->first();
 
         $traceability = $this->reportingService->lotTrace($product, $lot);
 
         // Generate CSV content
-        $csvContent = $this->generateLotTraceabilityCSV($traceability);
+        $csvContent = generateLotTraceabilityCSV($traceability);
 
         // Verify CSV structure
         $lines = explode("\n", trim($csvContent));
@@ -105,7 +108,7 @@ describe('Inventory CSV Export Verification', function () {
         $reorderStatus = $this->reportingService->reorderStatus();
 
         // Generate CSV content
-        $csvContent = $this->generateReorderStatusCSV($reorderStatus);
+        $csvContent = generateReorderStatusCSV($reorderStatus);
 
         // Verify CSV structure
         $lines = explode("\n", trim($csvContent));
@@ -118,18 +121,18 @@ describe('Inventory CSV Export Verification', function () {
 
     it('handles special characters in CSV export', function () {
         // Create product with special characters
-        $specialProduct = Product::factory()->for($this->company)->create([
+        $specialProduct = Product::factory()->for(test()->company)->create([
             'name' => 'Product with "Quotes" & Commas, Special chars',
             'sku' => 'SPECIAL-001',
             'type' => ProductType::Storable,
             'inventory_valuation_method' => ValuationMethod::FIFO,
-            'default_inventory_account_id' => $this->inventoryAccount->id,
+            'default_inventory_account_id' => test()->inventoryAccount->id,
         ]);
 
         StockQuant::factory()->create([
-            'company_id' => $this->company->id,
+            'company_id' => test()->company->id,
             'product_id' => $specialProduct->id,
-            'location_id' => $this->warehouseLocation->id,
+            'location_id' => test()->warehouseLocation->id,
             'quantity' => 10,
         ]);
 
@@ -142,24 +145,24 @@ describe('Inventory CSV Export Verification', function () {
 
     it('exports large datasets efficiently', function () {
         // Create many products and stock quants
-        $products = Product::factory()->count(100)->for($this->company)->create([
+        $products = Product::factory()->count(100)->for(test()->company)->create([
             'type' => ProductType::Storable,
             'inventory_valuation_method' => ValuationMethod::AVCO,
-            'default_inventory_account_id' => $this->inventoryAccount->id,
+            'default_inventory_account_id' => test()->inventoryAccount->id,
         ]);
 
         foreach ($products as $product) {
             StockQuant::factory()->create([
-                'company_id' => $this->company->id,
+                'company_id' => test()->company->id,
                 'product_id' => $product->id,
-                'location_id' => $this->warehouseLocation->id,
+                'location_id' => test()->warehouseLocation->id,
                 'quantity' => rand(1, 100),
             ]);
         }
 
         $startTime = microtime(true);
         $valuation = $this->reportingService->valuationAt(Carbon::now());
-        $csvContent = $this->generateValuationCSV($valuation);
+        $csvContent = generateValuationCSV($valuation);
         $endTime = microtime(true);
 
         // Should complete within reasonable time (5 seconds)
@@ -172,7 +175,7 @@ describe('Inventory CSV Export Verification', function () {
 
     it('exports with proper number formatting', function () {
         $valuation = $this->reportingService->valuationAt(Carbon::now());
-        $csvContent = $this->generateValuationCSV($valuation);
+        $csvContent = generateValuationCSV($valuation);
 
         $lines = explode("\n", trim($csvContent));
         $dataRow = str_getcsv($lines[1]);
@@ -185,7 +188,7 @@ describe('Inventory CSV Export Verification', function () {
 
     it('includes proper metadata in CSV exports', function () {
         $valuation = $this->reportingService->valuationAt(Carbon::now());
-        $csvContent = $this->generateValuationCSV($valuation, true); // Include metadata
+        $csvContent = generateValuationCSV($valuation, true); // Include metadata
 
         $lines = explode("\n", $csvContent);
 
@@ -365,14 +368,13 @@ function setupExportTestData(): void
         StockQuant::factory()->create([
             'company_id' => test()->company->id,
             'product_id' => $product->id,
-            'location_id' => test()->warehouseLocation->id,
+            'location_id' => test()->stockLocation->id,
             'quantity' => 100 + ($index * 50),
             'reserved_quantity' => 10 + ($index * 5),
         ]);
 
         // Create cost layers
         InventoryCostLayer::factory()->create([
-            'company_id' => test()->company->id,
             'product_id' => $product->id,
             'remaining_quantity' => 100 + ($index * 50),
             'cost_per_unit' => Money::of(10000000 + ($index * 1000000), 'IQD'),
