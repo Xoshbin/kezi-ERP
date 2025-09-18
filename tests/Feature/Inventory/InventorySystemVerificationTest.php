@@ -58,7 +58,7 @@ describe('Inventory System Verification with Sample Figures', function () {
         $receiptDate = Carbon::now();
         Carbon::setTestNow($receiptDate);
 
-        createStockReceipt($this, $product, 10, Money::of(50000, 'IQD'), $receiptDate);
+        createStockReceiptForTest(test(), $product, 10, Money::of(50000, 'IQD'), $receiptDate);
 
         // Verify stock was received
         $stockQuantity = StockQuant::where('product_id', $product->id)->sum('quantity');
@@ -86,3 +86,48 @@ describe('Inventory System Verification with Sample Figures', function () {
         Carbon::setTestNow(); // Reset time
     });
 });
+
+/**
+ * Helper function to create a stock receipt with proper valuation and quant updates
+ */
+function createStockReceiptForTest($testCase, Product $product, float $quantity, Money $costPerUnit, Carbon $date): void
+{
+    $valuationService = app(\App\Services\Inventory\InventoryValuationService::class);
+    $quantService = app(\App\Services\Inventory\StockQuantService::class);
+
+    // Create a mock VendorBill for testing
+    $vendorBill = \App\Models\VendorBill::factory()->for($product->company)->create([
+        'bill_date' => $date,
+        'accounting_date' => $date,
+        'total_amount' => $costPerUnit->multipliedBy($quantity),
+    ]);
+
+    // Create a stock move for the incoming stock
+    $stockMove = \App\Models\StockMove::create([
+        'company_id' => $product->company_id,
+        'product_id' => $product->id,
+        'quantity' => $quantity,
+        'from_location_id' => $product->company->vendorLocation->id,
+        'to_location_id' => $product->company->defaultStockLocation->id,
+        'move_type' => \App\Enums\Inventory\StockMoveType::Incoming,
+        'status' => \App\Enums\Inventory\StockMoveStatus::Done,
+        'move_date' => $date,
+        'reference' => 'TEST-RECEIPT-' . $date->format('Ymd'),
+        'source_type' => \App\Models\VendorBill::class,
+        'source_id' => $vendorBill->id,
+        'created_by_user_id' => $testCase->user->id,
+    ]);
+
+    // Process incoming stock through valuation service
+    $valuationService->processIncomingStock($product, $quantity, $costPerUnit, $date, $vendorBill);
+
+    // Update stock quants for the warehouse location
+    $quantService->adjust(
+        $product->company_id,
+        $product->id,
+        $testCase->warehouseLocation->id,
+        $quantity,
+        0, // no reserved quantity
+        null // no lot
+    );
+}

@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
@@ -10,15 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        // Helper function to add index only if it doesn't exist
+        // Helper function to add index only if it doesn't exist (database agnostic)
         $addIndexSafely = function ($table, $columns, $indexName) {
-            $exists = \DB::select("SHOW INDEX FROM {$table} WHERE Key_name = ?", [$indexName]);
-            if (empty($exists)) {
-                try {
-                    \DB::statement("ALTER TABLE {$table} ADD INDEX {$indexName} (" . implode(', ', $columns) . ")");
-                } catch (\Exception) {
-                    // Ignore errors
-                }
+            try {
+                Schema::table($table, function (Blueprint $table) use ($columns, $indexName) {
+                    $table->index($columns, $indexName);
+                });
+            } catch (\Exception) {
+                // Index might already exist, ignore errors
             }
         };
 
@@ -44,35 +44,14 @@ return new class extends Migration
      */
     public function down(): void
     {
-        // Helper function to check if index exists and is not used by foreign key
+        // Helper function to drop index safely (database agnostic)
         $dropIndexSafely = function ($table, $indexName) {
-            $exists = \DB::select("SHOW INDEX FROM {$table} WHERE Key_name = ?", [$indexName]);
-            if (empty($exists)) {
-                return; // Index doesn't exist
-            }
-
-            // Check if index is used by foreign key constraint
-            $foreignKeys = \DB::select("
-                SELECT CONSTRAINT_NAME
-                FROM information_schema.KEY_COLUMN_USAGE
-                WHERE TABLE_NAME = ?
-                AND CONSTRAINT_NAME != 'PRIMARY'
-                AND REFERENCED_TABLE_NAME IS NOT NULL
-                AND COLUMN_NAME IN (
-                    SELECT COLUMN_NAME
-                    FROM information_schema.STATISTICS
-                    WHERE TABLE_NAME = ? AND INDEX_NAME = ?
-                )
-            ", [$table, $table, $indexName]);
-
-            if (!empty($foreignKeys)) {
-                return; // Index is used by foreign key, skip dropping
-            }
-
             try {
-                \DB::statement("ALTER TABLE {$table} DROP INDEX {$indexName}");
+                Schema::table($table, function (Blueprint $table) use ($indexName) {
+                    $table->dropIndex($indexName);
+                });
             } catch (\Exception) {
-                // Ignore errors
+                // Index might not exist or be used by foreign key, ignore errors
             }
         };
 
