@@ -322,7 +322,10 @@ class InventoryValuationService
         $currencyCode = $company->currency->code;
 
         // Calculate new average cost using weighted average
-        $currentQuantity = $product->quantity_on_hand;
+        // Get current quantity from stock quants
+        $stockQuantService = app(StockQuantService::class);
+        $currentQuantity = $stockQuantService->getTotalQuantity($company->id, $product->id);
+
         $currentValue = ($product->average_cost ?? Money::of(0, $currencyCode))->multipliedBy($currentQuantity);
 
         $incomingValue = $costPerUnit->multipliedBy($quantity);
@@ -333,10 +336,9 @@ class InventoryValuationService
             ? $totalValue->dividedBy($totalQuantity, RoundingMode::HALF_UP)
             : Money::of(0, $currencyCode);
 
-        // Update product's average cost and quantity (bypass fillable)
+        // Update product's average cost (bypass fillable)
         $product->forceFill([
             'average_cost' => $newAverageCost,
-            'quantity_on_hand' => $totalQuantity,
         ])->save();
 
         Log::info("Updated AVCO for product {$product->id}: new average cost {$newAverageCost->getAmount()}, quantity {$totalQuantity}");
