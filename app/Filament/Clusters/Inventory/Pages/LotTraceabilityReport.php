@@ -182,8 +182,42 @@ class LotTraceabilityReport extends Page implements HasForms
             \Filament\Actions\Action::make('export')
                 ->label(__('inventory_reports.lot_trace.actions.export'))
                 ->icon('heroicon-o-arrow-down-tray')
-                ->action('exportReport')
-                ->disabled(fn() => !$this->reportData),
+                ->disabled(fn() => !$this->reportData)
+                ->action(function () {
+                    if (!$this->reportData) {
+                        \Filament\Notifications\Notification::make()
+                            ->title(__('inventory_reports.lot_trace.no_data_to_export'))
+                            ->danger()
+                            ->send();
+                        return;
+                    }
+
+                    try {
+                        $csvService = app(\App\Services\Inventory\InventoryCSVExportService::class);
+                        $csvContent = $csvService->exportLotTraceabilityReport($this->reportData, [
+                            'include_metadata' => true
+                        ]);
+
+                        $filename = 'lot-traceability-' . ($this->reportData['lot_code'] ?? 'report') . '-' . now()->format('Y-m-d-H-i-s') . '.csv';
+
+                        \Filament\Notifications\Notification::make()
+                            ->title(__('inventory_reports.lot_trace.export_started'))
+                            ->success()
+                            ->send();
+
+                        return response()->streamDownload(function () use ($csvContent) {
+                            echo $csvContent;
+                        }, $filename, [
+                            'Content-Type' => 'text/csv; charset=UTF-8',
+                        ]);
+                    } catch (\Exception $e) {
+                        \Filament\Notifications\Notification::make()
+                            ->title(__('inventory_reports.lot_trace.export_failed'))
+                            ->body($e->getMessage())
+                            ->danger()
+                            ->send();
+                    }
+                }),
 
             \Filament\Actions\Action::make('refresh')
                 ->label(__('inventory_reports.lot_trace.actions.refresh'))
@@ -191,12 +225,6 @@ class LotTraceabilityReport extends Page implements HasForms
                 ->action('generateReport')
                 ->disabled(fn() => !$this->selectedProduct || !$this->selectedLot),
         ];
-    }
-
-    public function exportReport(): void
-    {
-        // TODO: Implement CSV export functionality
-        $this->notify('success', __('inventory_reports.lot_trace.export_started'));
     }
 
     protected function getViewData(): array
