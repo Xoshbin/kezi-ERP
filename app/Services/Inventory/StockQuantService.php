@@ -81,6 +81,28 @@ class StockQuantService
         return $totalQty - $totalReserved;
     }
 
+    public function getTotalQuantity(int $companyId, int $productId, ?int $locationId = null): float
+    {
+        $query = StockQuant::where('company_id', $companyId)
+            ->where('product_id', $productId);
+        if ($locationId) {
+            $query->where('location_id', $locationId);
+        }
+
+        return (float) $query->sum('quantity');
+    }
+
+    public function getReservedQuantity(int $companyId, int $productId, ?int $locationId = null): float
+    {
+        $query = StockQuant::where('company_id', $companyId)
+            ->where('product_id', $productId);
+        if ($locationId) {
+            $query->where('location_id', $locationId);
+        }
+
+        return (float) $query->sum('reserved_quantity');
+    }
+
     public function reserve(int $companyId, int $productId, int $locationId, float $qty, ?int $lotId = null): StockQuant
     {
         return $this->adjust($companyId, $productId, $locationId, 0, $qty, $lotId);
