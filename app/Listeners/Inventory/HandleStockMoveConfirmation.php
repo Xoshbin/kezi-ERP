@@ -25,9 +25,10 @@ class HandleStockMoveConfirmation
         $stockMove = $event->stockMove;
 
         if ($stockMove->move_type === StockMoveType::Incoming) {
-            ProcessIncomingStockJob::dispatch($stockMove);
+            // Use synchronous dispatch to ensure deterministic processing in tests
+            ProcessIncomingStockJob::dispatchSync($stockMove);
         } elseif ($stockMove->move_type === StockMoveType::Outgoing) {
-            ProcessOutgoingStockJob::dispatch($stockMove);
+            ProcessOutgoingStockJob::dispatchSync($stockMove);
         }
     }
 }
