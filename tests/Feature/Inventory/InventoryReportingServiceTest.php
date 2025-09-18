@@ -504,6 +504,7 @@ it('identifies products below minimum stock levels', function () {
         'min_qty' => 100,
         'max_qty' => 500,
         'safety_stock' => 50,
+        'multiple' => 1, // Explicitly set to 1 to ensure predictable calculation
         'route' => ReorderingRoute::MinMax,
         'active' => true,
     ]);

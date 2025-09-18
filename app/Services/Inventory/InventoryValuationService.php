@@ -81,6 +81,11 @@ class InventoryValuationService
             : StockMoveType::Outgoing;
         $this->createStockMoveValuation($product, $quantity, $cogsAmount, $journalEntry, $sourceDocument, $moveType);
 
+        // Update product quantity on hand for outgoing stock
+        $product->forceFill([
+            'quantity_on_hand' => max(0, $product->quantity_on_hand - $quantity),
+        ])->save();
+
         Log::info("Successfully processed outgoing stock for product {$product->id}, COGS: {$cogsAmount->getAmount()}");
     }
 
@@ -336,9 +341,10 @@ class InventoryValuationService
             ? $totalValue->dividedBy($totalQuantity, RoundingMode::HALF_UP)
             : Money::of(0, $currencyCode);
 
-        // Update product's average cost (bypass fillable)
+        // Update product's average cost and quantity on hand (bypass fillable)
         $product->forceFill([
             'average_cost' => $newAverageCost,
+            'quantity_on_hand' => $totalQuantity,
         ])->save();
 
         Log::info("Updated AVCO for product {$product->id}: new average cost {$newAverageCost->getAmount()}, quantity {$totalQuantity}");
