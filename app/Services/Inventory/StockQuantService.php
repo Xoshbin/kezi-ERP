@@ -12,13 +12,14 @@ use RuntimeException;
 
 class StockQuantService
 {
-    public function upsertQuant(int $companyId, int $productId, int $locationId): StockQuant
+    public function upsertQuant(int $companyId, int $productId, int $locationId, ?int $lotId = null): StockQuant
     {
         return StockQuant::firstOrCreate(
             [
                 'company_id' => $companyId,
                 'product_id' => $productId,
                 'location_id' => $locationId,
+                'lot_id' => $lotId,
             ],
             [
                 'quantity' => 0,
@@ -27,18 +28,19 @@ class StockQuantService
         );
     }
 
-    public function adjust(int $companyId, int $productId, int $locationId, float $deltaQty, float $deltaReserved = 0): StockQuant
+    public function adjust(int $companyId, int $productId, int $locationId, float $deltaQty, float $deltaReserved = 0, ?int $lotId = null): StockQuant
     {
-        return DB::transaction(function () use ($companyId, $productId, $locationId, $deltaQty, $deltaReserved) {
+        return DB::transaction(function () use ($companyId, $productId, $locationId, $deltaQty, $deltaReserved, $lotId) {
             // Lock quant row for update to ensure atomicity
             $quant = StockQuant::where('company_id', $companyId)
                 ->where('product_id', $productId)
                 ->where('location_id', $locationId)
+                ->where('lot_id', $lotId)
                 ->lockForUpdate()
                 ->first();
 
             if (! $quant) {
-                $quant = $this->upsertQuant($companyId, $productId, $locationId);
+                $quant = $this->upsertQuant($companyId, $productId, $locationId, $lotId);
                 $quant->refresh();
                 $quant->lockForUpdate();
             }
@@ -79,14 +81,14 @@ class StockQuantService
         return $totalQty - $totalReserved;
     }
 
-    public function reserve(int $companyId, int $productId, int $locationId, float $qty): StockQuant
+    public function reserve(int $companyId, int $productId, int $locationId, float $qty, ?int $lotId = null): StockQuant
     {
-        return $this->adjust($companyId, $productId, $locationId, 0, $qty);
+        return $this->adjust($companyId, $productId, $locationId, 0, $qty, $lotId);
     }
 
-    public function unreserve(int $companyId, int $productId, int $locationId, float $qty): StockQuant
+    public function unreserve(int $companyId, int $productId, int $locationId, float $qty, ?int $lotId = null): StockQuant
     {
-        return $this->adjust($companyId, $productId, $locationId, 0, -$qty);
+        return $this->adjust($companyId, $productId, $locationId, 0, -$qty, $lotId);
     }
 
     public function applyForIncoming(StockMove $move): void
@@ -98,5 +100,73 @@ class StockQuantService
     {
         $this->adjust($move->company_id, $move->product_id, $move->from_location_id, -$move->quantity, 0);
     }
-}
 
+    /**
+     * Get available quantity for a product at a location, optionally filtered by lot
+     */
+    public function getAvailableQuantityByLot(int $companyId, int $productId, int $locationId, ?int $lotId = null): float
+    {
+        $query = StockQuant::where('company_id', $companyId)
+            ->where('product_id', $productId)
+            ->where('location_id', $locationId);
+
+        if ($lotId !== null) {
+            $query->where('lot_id', $lotId);
+        }
+
+        $quant = $query->first();
+
+        if (!$quant) {
+            return 0.0;
+        }
+
+        return $quant->quantity - $quant->reserved_quantity;
+    }
+
+    /**
+     * Get all lots with available quantity for a product at a location, ordered by expiration (FEFO)
+     */
+    public function getAvailableLotsByFEFO(int $companyId, int $productId, int $locationId): array
+    {
+        $quants = StockQuant::where('company_id', $companyId)
+            ->where('product_id', $productId)
+            ->where('location_id', $locationId)
+            ->whereNotNull('lot_id')
+            ->whereRaw('quantity > reserved_quantity')
+            ->with(['lot' => function ($query) {
+                $query->notExpired()->orderByExpiration();
+            }])
+            ->get()
+            ->filter(function ($quant) {
+                return $quant->lot && !$quant->lot->isExpired();
+            })
+            ->sortBy(function ($quant) {
+                return $quant->lot->expiration_date ?? '9999-12-31';
+            });
+
+        return $quants->map(function ($quant) {
+            return [
+                'lot_id' => $quant->lot_id,
+                'lot_code' => $quant->lot->lot_code,
+                'expiration_date' => $quant->lot->expiration_date,
+                'available_quantity' => $quant->quantity - $quant->reserved_quantity,
+            ];
+        })->toArray();
+    }
+
+    /**
+     * Apply lot-aware incoming stock update
+     */
+    public function applyForIncomingWithLot(StockMove $move, ?int $lotId = null): void
+    {
+        $this->adjust($move->company_id, $move->product_id, $move->to_location_id, $move->quantity, 0, $lotId);
+    }
+
+    /**
+     * Apply lot-aware outgoing stock update
+     */
+    public function applyForOutgoingWithLot(StockMove $move, ?int $lotId = null): void
+    {
+        $this->adjust($move->company_id, $move->product_id, $move->from_location_id, -$move->quantity, 0, $lotId);
+    }
+}
