@@ -8,11 +8,15 @@ use App\DataTransferObjects\Sales\CreateStockMovesForInvoiceDTO;
 use App\Enums\Inventory\StockLocationType;
 use App\Enums\Inventory\StockMoveStatus;
 use App\Enums\Inventory\StockMoveType;
+use App\Enums\Inventory\StockPickingState;
+use App\Enums\Inventory\StockPickingType;
 use App\Enums\Products\ProductType;
 use App\Events\Inventory\StockMoveConfirmed;
 use App\Models\Invoice;
 use App\Models\StockLocation;
+use App\Models\StockPicking;
 use App\Models\User;
+use App\Services\Inventory\StockReservationService;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
@@ -42,6 +46,21 @@ class CreateStockMovesForInvoiceAction
                 return $stockMoves;
             }
 
+            // Create a Delivery picking to group all moves for this invoice
+            $picking = StockPicking::create([
+                'company_id' => $invoice->company_id,
+                'type' => StockPickingType::Delivery,
+                'state' => StockPickingState::Done,
+                'partner_id' => $invoice->customer_id,
+                'scheduled_date' => $invoice->posted_at ?? now(),
+                'completed_at' => now(),
+                'reference' => $invoice->invoice_number,
+                'origin' => 'Invoice#' . $invoice->getKey(),
+                'created_by_user_id' => $user->id,
+            ]);
+
+            $reservationService = app(StockReservationService::class);
+
             foreach ($invoice->invoiceLines as $line) {
                 if ($line->product && $line->product->type === ProductType::Storable) {
                     $stockMove = $this->createStockMoveForLine(
@@ -52,9 +71,15 @@ class CreateStockMovesForInvoiceAction
                         $locations['customer']
                     );
 
+                    // Attach to picking
+                    $stockMove->update(['picking_id' => $picking->getKey()]);
+
+                    // Reserve as much as possible from warehouse before processing the move
+                    $reservationService->reserveForMove($stockMove, $locations['warehouse']->id);
+
                     $stockMoves->push($stockMove);
 
-                    // Dispatch the StockMoveConfirmed event to trigger COGS calculation
+                    // Dispatch the StockMoveConfirmed event to trigger valuation and outgoing processing
                     StockMoveConfirmed::dispatch($stockMove);
                 }
             }
