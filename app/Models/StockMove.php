@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 
 #[ObservedBy([StockMoveObserver::class])]
@@ -89,5 +90,13 @@ class StockMove extends Model
     public function picking(): BelongsTo
     {
         return $this->belongsTo(StockPicking::class, 'picking_id');
+    }
+
+    /**
+     * @return HasMany<StockMoveLine, static>
+     */
+    public function stockMoveLines(): HasMany
+    {
+        return $this->hasMany(StockMoveLine::class);
     }
 }
