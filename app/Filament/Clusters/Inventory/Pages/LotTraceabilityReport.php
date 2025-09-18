@@ -6,12 +6,16 @@ use App\Filament\Clusters\Inventory\InventoryCluster;
 use App\Models\Lot;
 use App\Models\Product;
 use App\Services\Inventory\InventoryReportingService;
-use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
+use Filament\Forms\Concerns\InteractsWithForms;
+use Filament\Forms\Contracts\HasForms;
 use Filament\Pages\Page;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Schema;
 
-class LotTraceabilityReport extends Page
+class LotTraceabilityReport extends Page implements HasForms
 {
+    use InteractsWithForms;
     protected static ?string $cluster = InventoryCluster::class;
 
     protected string $view = 'filament.clusters.inventory.pages.lot-traceability-report';
@@ -53,53 +57,53 @@ class LotTraceabilityReport extends Page
         $this->form->fill([]);
     }
 
-    protected function getForms(): array
+    public function form(Schema $schema): Schema
     {
-        return [
-            'form' => $this->form(
-                $this->makeForm()
+        return $schema
+            ->components([
+                Section::make(__('inventory_reports.lot_trace.filters.title'))
                     ->schema([
-                        Section::make(__('inventory_reports.lot_trace.filters.title'))
-                            ->schema([
-                                Select::make('product_id')
-                                    ->label(__('inventory_reports.lot_trace.filters.product'))
-                                    ->relationship('product', 'name')
-                                    ->searchable()
-                                    ->preload()
-                                    ->live()
-                                    ->afterStateUpdated(function ($state) {
-                                        $this->selectedProduct = $state ? Product::find($state) : null;
-                                        $this->data['lot_id'] = null;
-                                        $this->selectedLot = null;
-                                        $this->reportData = null;
-                                    }),
+                        Select::make('product_id')
+                            ->label(__('inventory_reports.lot_trace.filters.product'))
+                            ->options(function () {
+                                return \App\Models\Product::query()
+                                    ->where('company_id', \Filament\Facades\Filament::getTenant()?->getKey())
+                                    ->pluck('name', 'id');
+                            })
+                            ->searchable()
+                            ->preload()
+                            ->live()
+                            ->afterStateUpdated(function ($state) {
+                                $this->selectedProduct = $state ? Product::find($state) : null;
+                                $this->data['lot_id'] = null;
+                                $this->selectedLot = null;
+                                $this->reportData = null;
+                            }),
 
-                                Select::make('lot_id')
-                                    ->label(__('inventory_reports.lot_trace.filters.lot'))
-                                    ->options(function ($get) {
-                                        $productId = $get('product_id');
-                                        if (!$productId) {
-                                            return [];
-                                        }
-                                        
-                                        return Lot::where('product_id', $productId)
-                                            ->where('active', true)
-                                            ->pluck('lot_code', 'id')
-                                            ->toArray();
-                                    })
-                                    ->searchable()
-                                    ->live()
-                                    ->afterStateUpdated(function ($state) {
-                                        $this->selectedLot = $state ? Lot::find($state) : null;
-                                        $this->generateReport();
-                                    })
-                                    ->disabled(fn ($get) => !$get('product_id')),
-                            ])
-                            ->columns(2),
+                        Select::make('lot_id')
+                            ->label(__('inventory_reports.lot_trace.filters.lot'))
+                            ->options(function ($get) {
+                                $productId = $get('product_id');
+                                if (!$productId) {
+                                    return [];
+                                }
+
+                                return Lot::where('product_id', $productId)
+                                    ->where('active', true)
+                                    ->pluck('lot_code', 'id')
+                                    ->toArray();
+                            })
+                            ->searchable()
+                            ->live()
+                            ->afterStateUpdated(function ($state) {
+                                $this->selectedLot = $state ? Lot::find($state) : null;
+                                $this->generateReport();
+                            })
+                            ->disabled(fn($get) => !$get('product_id')),
                     ])
-                    ->statePath('data')
-            ),
-        ];
+                    ->columns(2),
+            ])
+            ->statePath('data');
     }
 
     public function generateReport(): void
@@ -118,11 +122,15 @@ class LotTraceabilityReport extends Page
     public function getMovementsByType(): array
     {
         if (!$this->reportData || empty($this->reportData['movements'])) {
-            return [];
+            return [
+                'incoming' => [],
+                'outgoing' => [],
+                'internal' => [],
+            ];
         }
 
         $movements = collect($this->reportData['movements']);
-        
+
         return [
             'incoming' => $movements->where('move_type.value', 'incoming')->values()->toArray(),
             'outgoing' => $movements->where('move_type.value', 'outgoing')->values()->toArray(),
@@ -175,13 +183,13 @@ class LotTraceabilityReport extends Page
                 ->label(__('inventory_reports.lot_trace.actions.export'))
                 ->icon('heroicon-o-arrow-down-tray')
                 ->action('exportReport')
-                ->disabled(fn () => !$this->reportData),
+                ->disabled(fn() => !$this->reportData),
 
             \Filament\Actions\Action::make('refresh')
                 ->label(__('inventory_reports.lot_trace.actions.refresh'))
                 ->icon('heroicon-o-arrow-path')
                 ->action('generateReport')
-                ->disabled(fn () => !$this->selectedProduct || !$this->selectedLot),
+                ->disabled(fn() => !$this->selectedProduct || !$this->selectedLot),
         ];
     }
 

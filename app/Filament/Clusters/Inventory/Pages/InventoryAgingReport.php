@@ -4,14 +4,18 @@ namespace App\Filament\Clusters\Inventory\Pages;
 
 use App\Filament\Clusters\Inventory\InventoryCluster;
 use App\Services\Inventory\InventoryReportingService;
-use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
+use Filament\Forms\Concerns\InteractsWithForms;
+use Filament\Forms\Contracts\HasForms;
 use Filament\Pages\Page;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Schema;
 
-class InventoryAgingReport extends Page
+class InventoryAgingReport extends Page implements HasForms
 {
+    use InteractsWithForms;
     protected static ?string $cluster = InventoryCluster::class;
 
     protected string $view = 'filament.clusters.inventory.pages.inventory-aging-report';
@@ -54,53 +58,57 @@ class InventoryAgingReport extends Page
         $this->generateReport();
     }
 
-    protected function getForms(): array
+    public function form(Schema $schema): Schema
     {
-        return [
-            'form' => $this->form(
-                $this->makeForm()
+        return $schema
+            ->components([
+                Section::make(__('inventory_reports.aging.filters.title'))
                     ->schema([
-                        Section::make(__('inventory_reports.aging.filters.title'))
-                            ->schema([
-                                Select::make('product_ids')
-                                    ->label(__('inventory_reports.aging.filters.products'))
-                                    ->relationship('products', 'name')
-                                    ->multiple()
-                                    ->searchable()
-                                    ->preload()
-                                    ->live()
-                                    ->afterStateUpdated(fn() => $this->generateReport()),
+                        Select::make('product_ids')
+                            ->label(__('inventory_reports.aging.filters.products'))
+                            ->options(function () {
+                                return \App\Models\Product::query()
+                                    ->where('company_id', \Filament\Facades\Filament::getTenant()?->getKey())
+                                    ->pluck('name', 'id');
+                            })
+                            ->multiple()
+                            ->searchable()
+                            ->preload()
+                            ->live()
+                            ->afterStateUpdated(fn() => $this->generateReport()),
 
-                                Select::make('location_ids')
-                                    ->label(__('inventory_reports.aging.filters.locations'))
-                                    ->relationship('locations', 'name')
-                                    ->multiple()
-                                    ->searchable()
-                                    ->preload()
-                                    ->live()
-                                    ->afterStateUpdated(fn() => $this->generateReport()),
+                        Select::make('location_ids')
+                            ->label(__('inventory_reports.aging.filters.locations'))
+                            ->options(function () {
+                                return \App\Models\StockLocation::query()
+                                    ->where('company_id', \Filament\Facades\Filament::getTenant()?->getKey())
+                                    ->pluck('name', 'id');
+                            })
+                            ->multiple()
+                            ->searchable()
+                            ->preload()
+                            ->live()
+                            ->afterStateUpdated(fn() => $this->generateReport()),
 
-                                Toggle::make('include_expiration')
-                                    ->label(__('inventory_reports.aging.filters.include_expiration'))
-                                    ->default(true)
-                                    ->live()
-                                    ->afterStateUpdated(fn() => $this->generateReport()),
+                        Toggle::make('include_expiration')
+                            ->label(__('inventory_reports.aging.filters.include_expiration'))
+                            ->default(true)
+                            ->live()
+                            ->afterStateUpdated(fn() => $this->generateReport()),
 
-                                TextInput::make('expiration_warning_days')
-                                    ->label(__('inventory_reports.aging.filters.expiration_warning_days'))
-                                    ->numeric()
-                                    ->default(30)
-                                    ->minValue(1)
-                                    ->maxValue(365)
-                                    ->live()
-                                    ->afterStateUpdated(fn() => $this->generateReport())
-                                    ->visible(fn($get) => $get('include_expiration')),
-                            ])
-                            ->columns(2),
+                        TextInput::make('expiration_warning_days')
+                            ->label(__('inventory_reports.aging.filters.expiration_warning_days'))
+                            ->numeric()
+                            ->default(30)
+                            ->minValue(1)
+                            ->maxValue(365)
+                            ->live()
+                            ->afterStateUpdated(fn() => $this->generateReport())
+                            ->visible(fn($get) => $get('include_expiration')),
                     ])
-                    ->statePath('data')
-            ),
-        ];
+                    ->columns(2),
+            ])
+            ->statePath('data');
     }
 
     public function generateReport(): void
@@ -129,11 +137,9 @@ class InventoryAgingReport extends Page
         $totalQuantity = $this->reportData['total_quantity'];
 
         foreach ($this->reportData['buckets'] as $label => $bucket) {
-            $valuePercentage = $totalValue->isZero() ? 0 : 
-                ($bucket['value']->getAmount()->toFloat() / $totalValue->getAmount()->toFloat()) * 100;
-            
-            $quantityPercentage = $totalQuantity == 0 ? 0 : 
-                ($bucket['quantity'] / $totalQuantity) * 100;
+            $valuePercentage = $totalValue->isZero() ? 0 : ($bucket['value']->getAmount()->toFloat() / $totalValue->getAmount()->toFloat()) * 100;
+
+            $quantityPercentage = $totalQuantity == 0 ? 0 : ($bucket['quantity'] / $totalQuantity) * 100;
 
             $buckets[] = [
                 'label' => $label,

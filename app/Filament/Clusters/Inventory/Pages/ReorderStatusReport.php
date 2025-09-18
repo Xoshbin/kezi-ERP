@@ -4,13 +4,17 @@ namespace App\Filament\Clusters\Inventory\Pages;
 
 use App\Filament\Clusters\Inventory\InventoryCluster;
 use App\Services\Inventory\InventoryReportingService;
-use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Toggle;
+use Filament\Forms\Concerns\InteractsWithForms;
+use Filament\Forms\Contracts\HasForms;
 use Filament\Pages\Page;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Schema;
 
-class ReorderStatusReport extends Page
+class ReorderStatusReport extends Page implements HasForms
 {
+    use InteractsWithForms;
     protected static ?string $cluster = InventoryCluster::class;
 
     protected string $view = 'filament.clusters.inventory.pages.reorder-status-report';
@@ -53,49 +57,53 @@ class ReorderStatusReport extends Page
         $this->generateReport();
     }
 
-    protected function getForms(): array
+    public function form(Schema $schema): Schema
     {
-        return [
-            'form' => $this->form(
-                $this->makeForm()
+        return $schema
+            ->components([
+                Section::make(__('inventory_reports.reorder.filters.title'))
                     ->schema([
-                        Section::make(__('inventory_reports.reorder.filters.title'))
-                            ->schema([
-                                Select::make('product_ids')
-                                    ->label(__('inventory_reports.reorder.filters.products'))
-                                    ->relationship('products', 'name')
-                                    ->multiple()
-                                    ->searchable()
-                                    ->preload()
-                                    ->live()
-                                    ->afterStateUpdated(fn() => $this->generateReport()),
+                        Select::make('product_ids')
+                            ->label(__('inventory_reports.reorder.filters.products'))
+                            ->options(function () {
+                                return \App\Models\Product::query()
+                                    ->where('company_id', \Filament\Facades\Filament::getTenant()?->getKey())
+                                    ->pluck('name', 'id');
+                            })
+                            ->multiple()
+                            ->searchable()
+                            ->preload()
+                            ->live()
+                            ->afterStateUpdated(fn() => $this->generateReport()),
 
-                                Select::make('location_ids')
-                                    ->label(__('inventory_reports.reorder.filters.locations'))
-                                    ->relationship('locations', 'name')
-                                    ->multiple()
-                                    ->searchable()
-                                    ->preload()
-                                    ->live()
-                                    ->afterStateUpdated(fn() => $this->generateReport()),
+                        Select::make('location_ids')
+                            ->label(__('inventory_reports.reorder.filters.locations'))
+                            ->options(function () {
+                                return \App\Models\StockLocation::query()
+                                    ->where('company_id', \Filament\Facades\Filament::getTenant()?->getKey())
+                                    ->pluck('name', 'id');
+                            })
+                            ->multiple()
+                            ->searchable()
+                            ->preload()
+                            ->live()
+                            ->afterStateUpdated(fn() => $this->generateReport()),
 
-                                Toggle::make('include_suggested_orders')
-                                    ->label(__('inventory_reports.reorder.filters.include_suggested_orders'))
-                                    ->default(true)
-                                    ->live()
-                                    ->afterStateUpdated(fn() => $this->generateReport()),
+                        Toggle::make('include_suggested_orders')
+                            ->label(__('inventory_reports.reorder.filters.include_suggested_orders'))
+                            ->default(true)
+                            ->live()
+                            ->afterStateUpdated(fn() => $this->generateReport()),
 
-                                Toggle::make('include_overstock')
-                                    ->label(__('inventory_reports.reorder.filters.include_overstock'))
-                                    ->default(true)
-                                    ->live()
-                                    ->afterStateUpdated(fn() => $this->generateReport()),
-                            ])
-                            ->columns(2),
+                        Toggle::make('include_overstock')
+                            ->label(__('inventory_reports.reorder.filters.include_overstock'))
+                            ->default(true)
+                            ->live()
+                            ->afterStateUpdated(fn() => $this->generateReport()),
                     ])
-                    ->statePath('data')
-            ),
-        ];
+                    ->columns(2),
+            ])
+            ->statePath('data');
     }
 
     public function generateReport(): void
@@ -116,7 +124,13 @@ class ReorderStatusReport extends Page
     public function getReordersByStatus(): array
     {
         if (!$this->reportData || empty($this->reportData['products'])) {
-            return [];
+            return [
+                'critical' => [],
+                'low' => [],
+                'suggested' => [],
+                'overstock' => [],
+                'normal' => [],
+            ];
         }
 
         $products = collect($this->reportData['products']);
