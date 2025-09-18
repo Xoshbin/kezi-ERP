@@ -418,6 +418,7 @@ class InventoryReportingService
         return [
             'product_id' => $product->id,
             'product_name' => $product->name,
+            'product_sku' => $product->sku,
             'quantity' => $quantity,
             'value' => $value,
             'valuation_method' => $product->inventory_valuation_method,
