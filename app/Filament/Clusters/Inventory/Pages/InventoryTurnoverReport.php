@@ -6,12 +6,16 @@ use App\Filament\Clusters\Inventory\InventoryCluster;
 use App\Services\Inventory\InventoryReportingService;
 use Carbon\Carbon;
 use Filament\Forms\Components\DatePicker;
-use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
+use Filament\Forms\Concerns\InteractsWithForms;
+use Filament\Forms\Contracts\HasForms;
 use Filament\Pages\Page;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Schema;
 
-class InventoryTurnoverReport extends Page
+class InventoryTurnoverReport extends Page implements HasForms
 {
+    use InteractsWithForms;
     protected static ?string $cluster = InventoryCluster::class;
 
     protected string $view = 'filament.clusters.inventory.pages.inventory-turnover-report';
@@ -54,44 +58,44 @@ class InventoryTurnoverReport extends Page
         $this->generateReport();
     }
 
-    protected function getForms(): array
+    public function form(Schema $schema): Schema
     {
-        return [
-            'form' => $this->form(
-                $this->makeForm()
+        return $schema
+            ->components([
+                Section::make(__('inventory_reports.turnover.filters.title'))
                     ->schema([
-                        Section::make(__('inventory_reports.turnover.filters.title'))
-                            ->schema([
-                                DatePicker::make('start_date')
-                                    ->label(__('inventory_reports.turnover.filters.start_date'))
-                                    ->required()
-                                    ->default(now()->startOfYear())
-                                    ->maxDate(now())
-                                    ->live()
-                                    ->afterStateUpdated(fn() => $this->generateReport()),
+                        DatePicker::make('start_date')
+                            ->label(__('inventory_reports.turnover.filters.start_date'))
+                            ->required()
+                            ->default(now()->startOfYear())
+                            ->maxDate(now())
+                            ->live()
+                            ->afterStateUpdated(fn() => $this->generateReport()),
 
-                                DatePicker::make('end_date')
-                                    ->label(__('inventory_reports.turnover.filters.end_date'))
-                                    ->required()
-                                    ->default(now())
-                                    ->maxDate(now())
-                                    ->live()
-                                    ->afterStateUpdated(fn() => $this->generateReport()),
+                        DatePicker::make('end_date')
+                            ->label(__('inventory_reports.turnover.filters.end_date'))
+                            ->required()
+                            ->default(now())
+                            ->maxDate(now())
+                            ->live()
+                            ->afterStateUpdated(fn() => $this->generateReport()),
 
-                                Select::make('product_ids')
-                                    ->label(__('inventory_reports.turnover.filters.products'))
-                                    ->relationship('products', 'name')
-                                    ->multiple()
-                                    ->searchable()
-                                    ->preload()
-                                    ->live()
-                                    ->afterStateUpdated(fn() => $this->generateReport()),
-                            ])
-                            ->columns(3),
+                        Select::make('product_ids')
+                            ->label(__('inventory_reports.turnover.filters.products'))
+                            ->options(function () {
+                                return \App\Models\Product::query()
+                                    ->where('company_id', \Filament\Facades\Filament::getTenant()?->getKey())
+                                    ->pluck('name', 'id');
+                            })
+                            ->multiple()
+                            ->searchable()
+                            ->preload()
+                            ->live()
+                            ->afterStateUpdated(fn() => $this->generateReport()),
                     ])
-                    ->statePath('data')
-            ),
-        ];
+                    ->columns(3),
+            ])
+            ->statePath('data');
     }
 
     public function generateReport(): void
