@@ -43,7 +43,7 @@ class InventoryValuationService
         if ($product->inventory_valuation_method === ValuationMethod::AVCO) {
             $this->processIncomingStockAVCO($product, $quantity, $costPerUnit);
         } else {
-            $this->processIncomingStockFIFOLIFO($product, $quantity, $costPerUnit, $date);
+            $this->processIncomingStockFIFOLIFO($product, $quantity, $costPerUnit, $date, $sourceDocument);
         }
 
         // Create journal entry for incoming stock
@@ -76,7 +76,10 @@ class InventoryValuationService
         $journalEntry = $this->createCOGSJournalEntry($product, $cogsAmount, $date, $sourceDocument);
 
         // Create StockMoveValuation record
-        $this->createStockMoveValuation($product, $quantity, $cogsAmount, $journalEntry, $sourceDocument);
+        $moveType = ($sourceDocument instanceof StockMove && $sourceDocument->move_type === StockMoveType::Adjustment)
+            ? StockMoveType::Adjustment
+            : StockMoveType::Outgoing;
+        $this->createStockMoveValuation($product, $quantity, $cogsAmount, $journalEntry, $sourceDocument, $moveType);
 
         Log::info("Successfully processed outgoing stock for product {$product->id}, COGS: {$cogsAmount->getAmount()}");
     }
@@ -271,17 +274,29 @@ class InventoryValuationService
      *
      * @param  \Illuminate\Database\Eloquent\Model  $sourceDocument
      */
-    private function createStockMoveValuation(Product $product, float $quantity, Money $cogsAmount, JournalEntry $journalEntry, $sourceDocument): StockMoveValuation
+    private function createStockMoveValuation(Product $product, float $quantity, Money $cogsAmount, JournalEntry $journalEntry, $sourceDocument, ?StockMoveType $moveType = null): StockMoveValuation
     {
-        // Find the related stock move
-        $stockMove = StockMove::where('product_id', $product->id)
-            ->where('source_type', get_class($sourceDocument))
-            ->where('source_id', $sourceDocument->id ?? null)
-            ->where('move_type', StockMoveType::Outgoing)
-            ->first();
+        // If the source document is already a StockMove, use it directly
+        if ($sourceDocument instanceof StockMove) {
+            $stockMove = $sourceDocument;
+        } else {
+            // Find the related stock move
+            $query = StockMove::where('product_id', $product->id)
+                ->where('source_type', get_class($sourceDocument))
+                ->where('source_id', $sourceDocument->id ?? null);
 
-        if (! $stockMove) {
-            throw new Exception("No outgoing stock move found for product {$product->id} and source document");
+            if ($moveType) {
+                $query->where('move_type', $moveType);
+            } else {
+                $query->where('move_type', StockMoveType::Outgoing);
+            }
+
+            $stockMove = $query->first();
+
+            if (! $stockMove) {
+                $moveTypeStr = $moveType ? $moveType->value : 'outgoing';
+                throw new Exception("No {$moveTypeStr} stock move found for product {$product->id} and source document");
+            }
         }
 
         return StockMoveValuation::create([
@@ -330,7 +345,7 @@ class InventoryValuationService
     /**
      * Process incoming stock for FIFO/LIFO valuation methods
      */
-    private function processIncomingStockFIFOLIFO(Product $product, float $quantity, Money $costPerUnit, Carbon $date): void
+    private function processIncomingStockFIFOLIFO(Product $product, float $quantity, Money $costPerUnit, Carbon $date, \Illuminate\Database\Eloquent\Model $sourceDocument): void
     {
         // Create a new cost layer for FIFO/LIFO tracking
         InventoryCostLayer::create([
@@ -339,6 +354,8 @@ class InventoryValuationService
             'remaining_quantity' => $quantity,
             'cost_per_unit' => $costPerUnit,
             'purchase_date' => $date,
+            'source_type' => get_class($sourceDocument),
+            'source_id' => $sourceDocument->id ?? null,
         ]);
 
         // Update product quantity (bypass fillable)
@@ -424,15 +441,20 @@ class InventoryValuationService
      */
     private function createIncomingStockMoveValuation(Product $product, float $quantity, Money $totalCost, JournalEntry $journalEntry, $sourceDocument): StockMoveValuation
     {
-        // Find the related stock move
-        $stockMove = StockMove::where('product_id', $product->id)
-            ->where('source_type', get_class($sourceDocument))
-            ->where('source_id', $sourceDocument->id ?? null)
-            ->where('move_type', StockMoveType::Incoming)
-            ->first();
+        // If the source document is already a StockMove, use it directly
+        if ($sourceDocument instanceof StockMove) {
+            $stockMove = $sourceDocument;
+        } else {
+            // Find the related stock move
+            $stockMove = StockMove::where('product_id', $product->id)
+                ->where('source_type', get_class($sourceDocument))
+                ->where('source_id', $sourceDocument->id ?? null)
+                ->where('move_type', StockMoveType::Incoming)
+                ->first();
 
-        if (! $stockMove) {
-            throw new Exception("No incoming stock move found for product {$product->id} and source document");
+            if (! $stockMove) {
+                throw new Exception("No incoming stock move found for product {$product->id} and source document");
+            }
         }
 
         return StockMoveValuation::create([
