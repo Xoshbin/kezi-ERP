@@ -126,6 +126,7 @@ class Company extends Model
         'inventory_adjustment_account_id',
         'default_stock_location_id',
         'default_vendor_location_id',
+        'default_adjustment_location_id',
         // HR-related default accounts
         'default_salary_payable_account_id',
         'default_salary_expense_account_id',
@@ -623,6 +624,17 @@ class Company extends Model
         // CORRECTED: The foreign key in the database is 'default_vendor_location_id',
         // not 'vendor_location_id'. We align the model with the schema.
         return $this->belongsTo(StockLocation::class, 'default_vendor_location_id');
+    }
+
+    /**
+     * The company's default location for inventory adjustments.
+     */
+    /**
+     * @return BelongsTo<StockLocation, static>
+     */
+    public function adjustmentLocation(): BelongsTo
+    {
+        return $this->belongsTo(StockLocation::class, 'default_adjustment_location_id');
     }
 
     /*

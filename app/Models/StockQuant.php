@@ -14,6 +14,7 @@ class StockQuant extends Model
         'company_id',
         'product_id',
         'location_id',
+        'lot_id',
         'quantity',
         'reserved_quantity',
     ];
@@ -46,5 +47,40 @@ class StockQuant extends Model
     {
         return $this->belongsTo(StockLocation::class, 'location_id');
     }
-}
 
+    /**
+     * @return BelongsTo<Lot, static>
+     */
+    public function lot(): BelongsTo
+    {
+        return $this->belongsTo(Lot::class);
+    }
+
+    /**
+     * Get available quantity (quantity - reserved_quantity)
+     */
+    public function getAvailableQuantityAttribute(): float
+    {
+        return $this->quantity - $this->reserved_quantity;
+    }
+
+    /**
+     * Scope to get quants for a specific lot
+     */
+    public function scopeForLot($query, ?int $lotId)
+    {
+        if ($lotId === null) {
+            return $query->whereNull('lot_id');
+        }
+
+        return $query->where('lot_id', $lotId);
+    }
+
+    /**
+     * Scope to get quants with available quantity
+     */
+    public function scopeWithAvailableQuantity($query)
+    {
+        return $query->whereRaw('quantity > reserved_quantity');
+    }
+}
