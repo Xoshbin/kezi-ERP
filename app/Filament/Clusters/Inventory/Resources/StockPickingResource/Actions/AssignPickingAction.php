@@ -48,7 +48,7 @@ class AssignPickingAction extends Action
                         ->label(__('Stock Moves'))
                         ->schema([
                             Placeholder::make('product_info')
-                                ->label(__('Product'))
+                                ->label(__('product.label'))
                                 ->content(function ($get, $state) {
                                     if (!$state || !isset($state['product_name'])) {
                                         return '—';
