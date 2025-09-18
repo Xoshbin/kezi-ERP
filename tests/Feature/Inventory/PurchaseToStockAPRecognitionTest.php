@@ -55,10 +55,10 @@ it('posts AP for storable product bills and posts inventory + input tax correctl
     expect($journalEntry)->not->toBeNull();
     expect($journalEntry->is_posted)->toBeTrue();
 
-    // Inventory debit equals subtotal (no tax capitalized)
+    // Phase 1: Stock Input debit equals subtotal (Inventory Dr is in valuation JE)
     $this->assertDatabaseHas('journal_entry_lines', [
         'journal_entry_id' => $journalEntry->id,
-        'account_id' => $this->product->default_inventory_account_id,
+        'account_id' => $this->product->default_stock_input_account_id,
         'debit' => $total->getMinorAmount()->toInt(),
         'credit' => 0,
     ]);

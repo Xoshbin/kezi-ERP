@@ -37,7 +37,7 @@ class CreateStockMovesForInvoiceAction
             // Get stock locations with fallback strategy
             $locations = $this->getStockLocations($invoice);
 
-            if (! $locations['warehouse'] || ! $locations['vendor']) {
+            if (! $locations['warehouse'] || ! $locations['customer']) {
                 // Skip stock move creation if locations are not available
                 return $stockMoves;
             }
@@ -49,7 +49,7 @@ class CreateStockMovesForInvoiceAction
                         $line,
                         $user,
                         $locations['warehouse'],
-                        $locations['vendor']
+                        $locations['customer']
                     );
 
                     $stockMoves->push($stockMove);
@@ -74,20 +74,19 @@ class CreateStockMovesForInvoiceAction
         /** @var \App\Models\StockLocation|null $warehouseLocation */
         $warehouseLocation = $invoice->company->defaultStockLocation
             ?? StockLocation::where('company_id', $invoice->company_id)
-                ->where('type', StockLocationType::Internal)
-                ->first()
+            ->where('type', StockLocationType::Internal)
+            ->first()
             ?? StockLocation::where('name', 'Warehouse')->first();
 
-        /** @var \App\Models\StockLocation|null $vendorLocation */
-        $vendorLocation = $invoice->company->vendorLocation
-            ?? StockLocation::where('company_id', $invoice->company_id)
-                ->where('type', StockLocationType::Vendor)
-                ->first()
-            ?? StockLocation::where('name', 'Vendors')->first();
+        /** @var \App\Models\StockLocation|null $customerLocation */
+        $customerLocation = StockLocation::where('company_id', $invoice->company_id)
+            ->where('type', StockLocationType::Customer)
+            ->first()
+            ?? StockLocation::where('name', 'Customers')->first();
 
         return [
             'warehouse' => $warehouseLocation,
-            'vendor' => $vendorLocation,
+            'customer' => $customerLocation,
         ];
     }
 
@@ -99,7 +98,7 @@ class CreateStockMovesForInvoiceAction
         \App\Models\InvoiceLine $line,
         User $user,
         StockLocation $warehouseLocation,
-        StockLocation $vendorLocation
+        StockLocation $customerLocation
     ): \App\Models\StockMove {
         if (! $line->product_id) {
             throw new \Exception('Invoice line must have a product to create stock move');
@@ -110,7 +109,7 @@ class CreateStockMovesForInvoiceAction
             product_id: $line->product_id,
             quantity: (float) $line->quantity,
             from_location_id: $warehouseLocation->id,
-            to_location_id: $vendorLocation->id,
+            to_location_id: $customerLocation->id,
             move_type: StockMoveType::Outgoing,
             status: StockMoveStatus::Done,
             move_date: $invoice->posted_at ?? now(),
