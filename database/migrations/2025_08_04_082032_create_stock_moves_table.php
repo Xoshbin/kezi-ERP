@@ -23,8 +23,8 @@ return new class extends Migration
             $table->date('move_date');
             $table->string('reference')->nullable();
             $table->morphs('source');
-            $table->foreignId('created_by_user_id')->constrained('users');
             $table->foreignId('picking_id')->nullable()->constrained('stock_pickings');
+            $table->foreignId('created_by_user_id')->constrained('users');
             $table->timestamps();
         });
     }
