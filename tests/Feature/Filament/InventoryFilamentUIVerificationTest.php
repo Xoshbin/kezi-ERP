@@ -32,10 +32,12 @@ use Tests\Traits\WithConfiguredCompany;
 uses(RefreshDatabase::class, WithConfiguredCompany::class);
 
 beforeEach(function () {
+    $this->setupWithConfiguredCompany();
+    $this->setupInventoryTestEnvironment();
     $this->actingAs($this->user);
 
     // Create sample inventory data for UI testing
-    $this->setupSampleInventoryData();
+    setupSampleInventoryData();
 });
 
 describe('Filament Inventory UI Verification', function () {
@@ -105,9 +107,9 @@ describe('Filament Inventory UI Verification', function () {
 
     it('can filter stock quants by location', function () {
         Livewire::test(ListStockQuants::class)
-            ->filterTable('location', $this->warehouseLocation->id)
+            ->filterTable('location', $this->stockLocation->id)
             ->assertCanSeeTableRecords(
-                $this->stockQuants->where('location_id', $this->warehouseLocation->id)
+                $this->stockQuants->where('location_id', $this->stockLocation->id)
             );
     });
 
@@ -326,7 +328,7 @@ function setupSampleInventoryData(): void
         StockQuant::factory()->create([
             'company_id' => test()->company->id,
             'product_id' => test()->products->first()->id,
-            'location_id' => test()->warehouseLocation->id,
+            'location_id' => test()->stockLocation->id,
             'lot_id' => test()->lots->first()->id,
             'quantity' => 50,
             'reserved_quantity' => 10,
@@ -334,7 +336,7 @@ function setupSampleInventoryData(): void
         StockQuant::factory()->create([
             'company_id' => test()->company->id,
             'product_id' => test()->products->last()->id,
-            'location_id' => test()->warehouseLocation->id,
+            'location_id' => test()->stockLocation->id,
             'lot_id' => test()->lots->last()->id,
             'quantity' => 30,
             'reserved_quantity' => 5,
@@ -342,7 +344,7 @@ function setupSampleInventoryData(): void
         StockQuant::factory()->create([
             'company_id' => test()->company->id,
             'product_id' => test()->products->first()->id,
-            'location_id' => test()->warehouseLocation->id,
+            'location_id' => test()->stockLocation->id,
             'lot_id' => null,
             'quantity' => 25,
             'reserved_quantity' => 0,
