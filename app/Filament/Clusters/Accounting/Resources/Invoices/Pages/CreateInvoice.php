@@ -47,6 +47,9 @@ class CreateInvoice extends CreateRecord
 
     protected function handleRecordCreation(array $data): Model
     {
+        // Store exchange_rate_at_creation separately since it's not in the DTO
+        $exchangeRate = $data['exchange_rate_at_creation'] ?? null;
+
         $invoiceDTO = new CreateInvoiceDTO(
             company_id: (int) (Filament::getTenant()->id ?? 0),
             customer_id: $data['customer_id'],
@@ -57,7 +60,16 @@ class CreateInvoice extends CreateRecord
             fiscal_position_id: $data['fiscal_position_id'] ?? null
         );
 
-        return app(CreateInvoiceAction::class)->execute($invoiceDTO);
+        $invoice = app(CreateInvoiceAction::class)->execute($invoiceDTO);
+
+        // Set exchange_rate_at_creation if provided
+        if ($exchangeRate) {
+            $invoice->update([
+                'exchange_rate_at_creation' => $exchangeRate
+            ]);
+        }
+
+        return $invoice;
     }
 
     protected function getHeaderActions(): array
