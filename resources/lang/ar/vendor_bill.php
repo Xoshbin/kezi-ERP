@@ -51,7 +51,11 @@ return [
     // Exchange Rate Fields
     'current_exchange_rate' => 'سعر الصرف الحالي',
     'exchange_rate_helper' => 'هذا هو سعر الصرف الحالي للعملة المحددة',
+    'exchange_rate_helper_with_current' => 'السعر الحالي: :rate. اتركه فارغاً لاستخدام السعر الحالي، أو أدخل سعراً مخصصاً.',
+    'exchange_rate' => 'سعر الصرف',
     'exchange_rate_at_creation' => 'سعر الصرف عند الإنشاء',
+    'exchange_rate_locked_helper' => 'سعر الصرف مقفل لفواتير الموردين غير المسودة',
+    'exchange_rate_manual_helper' => 'حدد سعر صرف مخصص أو اتركه فارغاً لاستخدام السعر الحالي عند الترحيل',
     'total_amount_company_currency' => 'المبلغ الإجمالي (عملة الشركة)',
     'total_tax_company_currency' => 'إجمالي الضريبة (عملة الشركة)',
 

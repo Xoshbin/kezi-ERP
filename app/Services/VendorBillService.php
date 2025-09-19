@@ -244,16 +244,21 @@ class VendorBillService
             return;
         }
 
-        // Get exchange rate for the bill date
-        $exchangeRate = $this->currencyConverter->getExchangeRate($vendorBill->currency, $vendorBill->bill_date, $vendorBill->company);
+        // Use manually set exchange rate if available, otherwise get from currency converter
+        $exchangeRate = $vendorBill->exchange_rate_at_creation;
 
-        // If no exchange rate is found, skip multi-currency processing for backward compatibility
         if (! $exchangeRate) {
-            $vendorBill->exchange_rate_at_creation = 1.0;
-            $vendorBill->total_amount_company_currency = $vendorBill->total_amount;
-            $vendorBill->total_tax_company_currency = $vendorBill->total_tax;
+            // Get exchange rate for the bill date
+            $exchangeRate = $this->currencyConverter->getExchangeRate($vendorBill->currency, $vendorBill->bill_date, $vendorBill->company);
 
-            return;
+            // If no exchange rate is found, skip multi-currency processing for backward compatibility
+            if (! $exchangeRate) {
+                $vendorBill->exchange_rate_at_creation = 1.0;
+                $vendorBill->total_amount_company_currency = $vendorBill->total_amount;
+                $vendorBill->total_tax_company_currency = $vendorBill->total_tax;
+
+                return;
+            }
         }
 
         // Convert amounts to company currency

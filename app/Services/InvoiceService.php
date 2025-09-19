@@ -200,6 +200,10 @@ class InvoiceService
             return;
         }
 
+        // Use manually set exchange rate if available, otherwise get from currency converter
+        $exchangeRate = $invoice->exchange_rate_at_creation;
+
+        if (! $exchangeRate) {
         // Get exchange rate for the invoice date
         $exchangeRate = $this->currencyConverter->getExchangeRate($invoice->currency, $invoice->invoice_date, $invoice->company);
 
@@ -210,6 +214,7 @@ class InvoiceService
             $invoice->total_tax_company_currency = $invoice->total_tax;
 
             return;
+            }
         }
 
         // Convert amounts to company currency

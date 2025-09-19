@@ -51,7 +51,11 @@ return [
     // Exchange Rate Fields
     'current_exchange_rate' => 'Current Exchange Rate',
     'exchange_rate_helper' => 'This is the current exchange rate for the selected currency',
+    'exchange_rate_helper_with_current' => 'Current rate: :rate. Leave empty to use current rate, or enter a custom rate.',
+    'exchange_rate' => 'Exchange Rate',
     'exchange_rate_at_creation' => 'Exchange Rate at Creation',
+    'exchange_rate_locked_helper' => 'Exchange rate is locked for non-draft vendor bills',
+    'exchange_rate_manual_helper' => 'Set a custom exchange rate or leave empty to use the current rate when posting',
     'total_amount_company_currency' => 'Total Amount (Company Currency)',
     'total_tax_company_currency' => 'Total Tax (Company Currency)',
 
