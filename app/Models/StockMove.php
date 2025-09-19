@@ -99,4 +99,12 @@ class StockMove extends Model
     {
         return $this->hasMany(StockMoveLine::class);
     }
+
+    /**
+     * @return HasMany<StockMoveValuation, static>
+     */
+    public function stockMoveValuations(): HasMany
+    {
+        return $this->hasMany(StockMoveValuation::class);
+    }
 }

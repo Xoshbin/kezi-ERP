@@ -24,10 +24,70 @@ use Exception;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 
+/**
+ * Inventory Valuation Service
+ *
+ * This service handles all inventory valuation operations including incoming and outgoing stock processing,
+ * cost layer management for FIFO/LIFO methods, average cost calculations for AVCO, and automatic journal
+ * entry creation following Anglo-Saxon accounting principles.
+ *
+ * Key Features:
+ * - Multi-method valuation support (FIFO, LIFO, AVCO)
+ * - Automatic journal entry generation
+ * - Cost layer management for detailed traceability
+ * - Lock date enforcement for data integrity
+ * - Multi-currency support with proper conversion
+ *
+ * Accounting Integration:
+ * - Incoming stock: Debit Inventory Asset, Credit Stock Input Liability
+ * - Outgoing stock: Debit COGS Expense, Credit Inventory Asset
+ * - Inventory adjustments: Debit/Credit Inventory and Adjustment accounts
+ *
+ * @package App\Services\Inventory
+ * @author Laravel/Filament Inventory System
+ * @version 1.0.0
+ */
 class InventoryValuationService
 {
+    /**
+     * Create a new inventory valuation service instance
+     *
+     * @param LockDateService $lockDateService Service for enforcing accounting lock dates
+     */
     public function __construct(protected LockDateService $lockDateService) {}
 
+    /**
+     * Process incoming stock and update inventory valuation
+     *
+     * This method handles the complete incoming stock workflow including:
+     * - AVCO/FIFO/LIFO valuation calculation
+     * - Journal entry creation (Inventory Dr / Stock Input Cr)
+     * - Cost layer management for FIFO/LIFO
+     * - Product quantity and average cost updates
+     *
+     * The method enforces lock date restrictions and validates that Standard costing
+     * is not used (not supported in current implementation).
+     *
+     * @param Product $product The product receiving stock (must be storable type)
+     * @param float $quantity Quantity being received (must be positive)
+     * @param Money $costPerUnit Cost per unit in company base currency
+     * @param Carbon $date Transaction date for valuation (must be after lock date)
+     * @param \Illuminate\Database\Eloquent\Model $sourceDocument Source document (VendorBill, etc.)
+     *
+     * @throws Exception When Standard costing is used (not supported)
+     * @throws \App\Exceptions\LockDateException When transaction date is before lock date
+     *
+     * @example
+     * $service->processIncomingStock(
+     *     $product,
+     *     100.0,
+     *     Money::of(1500, 'USD'),
+     *     Carbon::now(),
+     *     $vendorBill
+     * );
+     *
+     * @return void
+     */
     public function processIncomingStock(Product $product, float $quantity, Money $costPerUnit, Carbon $date, \Illuminate\Database\Eloquent\Model $sourceDocument): void
     {
         $this->lockDateService->enforce(Company::findOrFail($product->company_id), Carbon::parse($date));
@@ -55,6 +115,37 @@ class InventoryValuationService
         Log::info("Successfully processed incoming stock for product {$product->id}, Total cost: {$totalCost->getAmount()}");
     }
 
+    /**
+     * Process outgoing stock and calculate cost of goods sold (COGS)
+     *
+     * This method handles the complete outgoing stock workflow including:
+     * - COGS calculation based on product valuation method
+     * - Cost layer consumption for FIFO/LIFO products
+     * - Journal entry creation (COGS Dr / Inventory Cr)
+     * - Product quantity updates
+     * - Stock move valuation tracking
+     *
+     * The method automatically determines the appropriate cost based on the product's
+     * valuation method and creates the necessary accounting entries.
+     *
+     * @param Product $product The product being consumed (must be storable type)
+     * @param float $quantity Quantity being consumed (must be positive)
+     * @param Carbon $date Transaction date for COGS calculation (must be after lock date)
+     * @param \Illuminate\Database\Eloquent\Model $sourceDocument Source document (CustomerInvoice, StockMove, etc.)
+     *
+     * @throws Exception When Standard costing is used (not supported)
+     * @throws \App\Exceptions\LockDateException When transaction date is before lock date
+     *
+     * @example
+     * $service->processOutgoingStock(
+     *     $product,
+     *     50.0,
+     *     Carbon::now(),
+     *     $customerInvoice
+     * );
+     *
+     * @return void
+     */
     public function processOutgoingStock(Product $product, float $quantity, Carbon $date, \Illuminate\Database\Eloquent\Model $sourceDocument): void
     {
         $this->lockDateService->enforce(Company::findOrFail($product->company_id), Carbon::parse($date));
@@ -81,9 +172,42 @@ class InventoryValuationService
             : StockMoveType::Outgoing;
         $this->createStockMoveValuation($product, $quantity, $cogsAmount, $journalEntry, $sourceDocument, $moveType);
 
+        // Update product quantity on hand for outgoing stock
+        $product->forceFill([
+            'quantity_on_hand' => max(0, $product->quantity_on_hand - $quantity),
+        ])->save();
+
         Log::info("Successfully processed outgoing stock for product {$product->id}, COGS: {$cogsAmount->getAmount()}");
     }
 
+    /**
+     * Adjust inventory value for quantity discrepancies or write-offs
+     *
+     * This method handles inventory adjustments by creating appropriate journal entries
+     * to reflect changes in inventory value due to:
+     * - Physical count discrepancies
+     * - Damaged or obsolete inventory write-offs
+     * - Inventory revaluations
+     *
+     * The adjustment uses the product's current average cost to calculate the value impact
+     * and creates journal entries following standard inventory adjustment accounting.
+     *
+     * @param AdjustInventoryDTO $dto Data transfer object containing adjustment details
+     *
+     * @throws \Exception When product doesn't have an average cost
+     * @throws \App\Exceptions\LockDateException When adjustment date is before lock date
+     *
+     * @example
+     * $dto = new AdjustInventoryDTO(
+     *     product_id: 123,
+     *     quantity: -10.0,  // Negative for write-offs
+     *     adjustment_date: Carbon::now(),
+     *     reference: 'Physical count adjustment'
+     * );
+     * $service->adjustInventoryValue($dto);
+     *
+     * @return void
+     */
     public function adjustInventoryValue(AdjustInventoryDTO $dto): void
     {
         $product = Product::findOrFail($dto->product_id);
@@ -322,7 +446,10 @@ class InventoryValuationService
         $currencyCode = $company->currency->code;
 
         // Calculate new average cost using weighted average
-        $currentQuantity = $product->quantity_on_hand;
+        // Get current quantity from stock quants
+        $stockQuantService = app(StockQuantService::class);
+        $currentQuantity = $stockQuantService->getTotalQuantity($company->id, $product->id);
+
         $currentValue = ($product->average_cost ?? Money::of(0, $currencyCode))->multipliedBy($currentQuantity);
 
         $incomingValue = $costPerUnit->multipliedBy($quantity);
@@ -333,7 +460,7 @@ class InventoryValuationService
             ? $totalValue->dividedBy($totalQuantity, RoundingMode::HALF_UP)
             : Money::of(0, $currencyCode);
 
-        // Update product's average cost and quantity (bypass fillable)
+        // Update product's average cost and quantity on hand (bypass fillable)
         $product->forceFill([
             'average_cost' => $newAverageCost,
             'quantity_on_hand' => $totalQuantity,
