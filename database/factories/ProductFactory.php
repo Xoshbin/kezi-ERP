@@ -23,9 +23,9 @@ class ProductFactory extends Factory
     public function definition(): array
     {
         return [
-            'company_id' => fn () => Company::factory()->create()->id,
+            'company_id' => fn() => Company::factory()->create()->id,
             'name' => $this->faker->word(),
-            'sku' => strtoupper($this->faker->bothify('SKU-####')),
+            'sku' => strtoupper($this->faker->unique()->bothify('SKU-####')),
             'description' => $this->faker->sentence(),
             'unit_price' => Money::of($this->faker->randomFloat(2, 100, 10000), 'USD'),
             'type' => ProductType::Storable,
