@@ -57,6 +57,20 @@ class BaseCurrencyMoneyCast extends MoneyCast
                 }
             }
         }
+        // Handle InventoryCostLayer through product.company relationship
+        if (method_exists($model, 'product') && $model->relationLoaded('product')) {
+            $product = $model->getRelation('product');
+            if ($product instanceof \Illuminate\Database\Eloquent\Model && method_exists($product, 'company')) {
+                $company = $product->relationLoaded('company') ? $product->getRelation('company') : $product->company()->first();
+                if ($company instanceof \Illuminate\Database\Eloquent\Model && method_exists($company, 'currency')) {
+                    $currency = $company->relationLoaded('currency') ? $company->getRelation('currency') : $company->currency()->first();
+                    if ($currency instanceof \App\Models\Currency) {
+                        return $currency;
+                    }
+                }
+            }
+        }
+
         // Add other common parent relationships here as needed (e.g., vendorBill)
 
         // Fallback: If relationships are not loaded, perform database queries
@@ -101,6 +115,6 @@ class BaseCurrencyMoneyCast extends MoneyCast
         }
 
         // If we still can't resolve the currency, throw an exception
-        throw new InvalidArgumentException('Could not resolve base currency for model '.get_class($model).'. Please ensure the model has a valid company relationship.');
+        throw new InvalidArgumentException('Could not resolve base currency for model ' . get_class($model) . '. Please ensure the model has a valid company relationship.');
     }
 }

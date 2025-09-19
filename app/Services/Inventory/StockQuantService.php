@@ -10,8 +10,50 @@ use App\Models\StockQuant;
 use Illuminate\Support\Facades\DB;
 use RuntimeException;
 
+/**
+ * Stock Quantity Service
+ *
+ * This service manages stock quantities (quants) across all locations and lots, providing
+ * atomic operations for quantity updates, availability checks, and FEFO (First Expired, First Out)
+ * allocation for lot-tracked products.
+ *
+ * Key Features:
+ * - Atomic quantity updates with database locking
+ * - Reservation management for order fulfillment
+ * - FEFO allocation for lot-tracked products
+ * - Availability calculations considering reservations
+ * - Multi-location and multi-lot support
+ *
+ * Business Rules:
+ * - Quantities cannot go negative (enforced with validation)
+ * - Reserved quantities cannot exceed available quantities
+ * - FEFO allocation prioritizes lots by expiration date
+ * - All operations are atomic and thread-safe
+ *
+ * @package App\Services\Inventory
+ * @author Laravel/Filament Inventory System
+ * @version 1.0.0
+ */
 class StockQuantService
 {
+    /**
+     * Create or retrieve a stock quant for the given parameters
+     *
+     * This method ensures a StockQuant record exists for the specified combination
+     * of company, product, location, and lot. If the record doesn't exist, it creates
+     * one with zero quantities.
+     *
+     * @param int $companyId Company identifier
+     * @param int $productId Product identifier
+     * @param int $locationId Location identifier
+     * @param int|null $lotId Lot identifier (null for non-lot-tracked products)
+     *
+     * @return StockQuant The existing or newly created stock quant
+     *
+     * @example
+     * $quant = $service->upsertQuant(1, 123, 456, 789);
+     * // Returns StockQuant with quantity=0, reserved_quantity=0 if new
+     */
     public function upsertQuant(int $companyId, int $productId, int $locationId, ?int $lotId = null): StockQuant
     {
         return StockQuant::firstOrCreate(
@@ -28,6 +70,36 @@ class StockQuantService
         );
     }
 
+    /**
+     * Atomically adjust stock quantities with validation
+     *
+     * This method performs atomic updates to stock quantities using database locking
+     * to prevent race conditions. It validates business rules and ensures data integrity
+     * by checking that quantities don't go negative and reservations don't exceed available stock.
+     *
+     * The operation is wrapped in a database transaction with row-level locking to ensure
+     * thread safety in high-concurrency environments.
+     *
+     * @param int $companyId Company identifier
+     * @param int $productId Product identifier
+     * @param int $locationId Location identifier
+     * @param float $deltaQty Change in quantity (positive for increases, negative for decreases)
+     * @param float $deltaReserved Change in reserved quantity (default: 0)
+     * @param int|null $lotId Lot identifier (null for non-lot-tracked products)
+     *
+     * @return StockQuant The updated stock quant
+     *
+     * @throws RuntimeException When insufficient quantity for adjustment
+     * @throws RuntimeException When reserved quantity would become negative
+     * @throws RuntimeException When reserved quantity would exceed available quantity
+     *
+     * @example
+     * // Increase stock by 100 units
+     * $quant = $service->adjust(1, 123, 456, 100.0);
+     *
+     * // Decrease stock by 50 units and reserve 25
+     * $quant = $service->adjust(1, 123, 456, -50.0, 25.0);
+     */
     public function adjust(int $companyId, int $productId, int $locationId, float $deltaQty, float $deltaReserved = 0, ?int $lotId = null): StockQuant
     {
         return DB::transaction(function () use ($companyId, $productId, $locationId, $deltaQty, $deltaReserved, $lotId) {
@@ -79,6 +151,28 @@ class StockQuantService
         $totalReserved = (float) $query->sum('reserved_quantity');
 
         return $totalQty - $totalReserved;
+    }
+
+    public function getTotalQuantity(int $companyId, int $productId, ?int $locationId = null): float
+    {
+        $query = StockQuant::where('company_id', $companyId)
+            ->where('product_id', $productId);
+        if ($locationId) {
+            $query->where('location_id', $locationId);
+        }
+
+        return (float) $query->sum('quantity');
+    }
+
+    public function getReservedQuantity(int $companyId, int $productId, ?int $locationId = null): float
+    {
+        $query = StockQuant::where('company_id', $companyId)
+            ->where('product_id', $productId);
+        if ($locationId) {
+            $query->where('location_id', $locationId);
+        }
+
+        return (float) $query->sum('reserved_quantity');
     }
 
     public function reserve(int $companyId, int $productId, int $locationId, float $qty, ?int $lotId = null): StockQuant
