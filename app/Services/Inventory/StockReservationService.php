@@ -9,13 +9,62 @@ use App\Models\StockQuant;
 use App\Models\StockReservation;
 use Illuminate\Support\Facades\DB;
 
+/**
+ * Stock Reservation Service
+ *
+ * This service manages stock reservations for order fulfillment, implementing FEFO (First Expired, First Out)
+ * allocation for lot-tracked products and ensuring proper inventory allocation to prevent overselling.
+ *
+ * Key Features:
+ * - FEFO allocation for lot-tracked products
+ * - Atomic reservation operations with database locking
+ * - Partial reservation support for insufficient stock
+ * - Reservation consumption for order fulfillment
+ * - Idempotent operations to prevent double reservations
+ *
+ * Business Rules:
+ * - Reservations cannot exceed available quantities
+ * - FEFO allocation prioritizes lots by expiration date
+ * - Reservations are automatically consumed during stock moves
+ * - All operations are atomic and thread-safe
+ *
+ * Lot Allocation Strategy:
+ * - For lot-tracked products: FEFO (First Expired, First Out)
+ * - For non-lot-tracked products: Simple quantity allocation
+ * - Partial allocations supported when insufficient stock
+ *
+ * @package App\Services\Inventory
+ * @author Laravel/Filament Inventory System
+ * @version 1.0.0
+ */
 class StockReservationService
 {
+    /**
+     * Create a new stock reservation service instance
+     *
+     * @param StockQuantService $stockQuantService Service for managing stock quantities
+     */
     public function __construct(private readonly StockQuantService $stockQuantService) {}
 
     /**
-     * Reserve as much as possible for the given move from the given location using FEFO allocation.
-     * Returns the reserved quantity (may be partial). Idempotent per move+location.
+     * Reserve stock for a move using FEFO allocation strategy
+     *
+     * This method reserves as much stock as possible for the given move from the specified
+     * location using FEFO (First Expired, First Out) allocation for lot-tracked products.
+     * The operation is idempotent - calling it multiple times for the same move and location
+     * will return the same result without creating duplicate reservations.
+     *
+     * For lot-tracked products, the method prioritizes lots by expiration date (earliest first).
+     * For non-lot-tracked products, it performs simple quantity allocation.
+     *
+     * @param StockMove $move The stock move requiring reservation
+     * @param int $locationId Location to reserve stock from
+     *
+     * @return float The total quantity reserved (may be partial if insufficient stock)
+     *
+     * @example
+     * $reservedQty = $service->reserveForMove($stockMove, $warehouseLocationId);
+     * // Returns actual reserved quantity (e.g., 80.0 if only 80 available out of 100 requested)
      */
     public function reserveForMove(StockMove $move, int $locationId): float
     {
@@ -211,5 +260,14 @@ class StockReservationService
                 'quantity' => $allocation['quantity'],
             ]);
         }
+    }
+
+    /**
+     * Release reservations for a move (used when cancelling)
+     */
+    public function releaseForMove(StockMove $move): void
+    {
+        // Delete all reservations for this move
+        StockReservation::where('move_id', $move->id)->delete();
     }
 }
