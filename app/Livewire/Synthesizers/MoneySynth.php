@@ -58,14 +58,21 @@ class MoneySynth extends Synth
      * "Hydrates" the simple payload from the frontend back into a Money object.
      * This is called when data is coming FROM the browser back to the server.
      *
-     * @param  array{amount: string, currency: string}  $payload  The simple array from the frontend.
+     * @param  mixed  $payload  The payload from the frontend - can be an array (from dehydrated Money) or string (from form input).
      */
-    public function hydrate(array $payload): ?Money
+    public function hydrate(mixed $payload): ?Money
     {
-        if (empty($payload['amount']) || empty($payload['currency'])) {
-            return null;
+        // Handle array payloads (from dehydrated Money objects)
+        if (is_array($payload)) {
+            if (empty($payload['amount']) || empty($payload['currency'])) {
+                return null;
+            }
+
+            return Money::of($payload['amount'], $payload['currency']);
         }
 
-        return Money::of($payload['amount'], $payload['currency']);
+        // For non-array payloads (like strings from form inputs), return null
+        // and let the MoneyInput component handle the conversion using its getMoneyObject() method
+        return null;
     }
 }
