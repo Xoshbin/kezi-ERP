@@ -18,16 +18,84 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
 
-
+/**
+ * Inventory Reporting Service
+ *
+ * This service provides comprehensive inventory reporting capabilities including valuation reports,
+ * aging analysis, turnover calculations, lot traceability, and reorder status reporting.
+ *
+ * Key Features:
+ * - Point-in-time inventory valuation using multiple methods
+ * - Inventory aging analysis with configurable buckets
+ * - Turnover ratio calculations and trend analysis
+ * - Complete lot traceability (forward and backward)
+ * - Reorder status and replenishment suggestions
+ * - GL reconciliation for inventory accounts
+ *
+ * Reporting Capabilities:
+ * - Valuation reports with cost layer details
+ * - Aging reports with expiration tracking
+ * - Turnover analysis with performance metrics
+ * - Lot traceability with complete movement history
+ * - Reorder status with priority ranking
+ *
+ * Data Sources:
+ * - StockMoveValuation for historical valuations
+ * - InventoryCostLayer for FIFO/LIFO cost tracking
+ * - StockQuant for current quantities
+ * - ReorderingRule for replenishment logic
+ *
+ * @package App\Services\Inventory
+ * @author Laravel/Filament Inventory System
+ * @version 1.0.0
+ */
 class InventoryReportingService
 {
+    /**
+     * Create a new inventory reporting service instance
+     *
+     * @param StockQuantService $stockQuantService Service for stock quantity operations
+     * @param ReorderingRuleService $reorderingRuleService Service for reordering logic
+     */
     public function __construct(
         private readonly StockQuantService $stockQuantService,
         private readonly ReorderingRuleService $reorderingRuleService
     ) {}
 
     /**
-     * Get inventory valuation as of a specific date
+     * Generate inventory valuation report as of a specific date
+     *
+     * This method calculates the total inventory value as of a specific date using
+     * the appropriate valuation method for each product. It considers all stock movements
+     * up to the specified date and provides detailed valuation information.
+     *
+     * The report includes:
+     * - Product-level valuation details
+     * - Quantity on hand and reserved quantities
+     * - Unit costs based on valuation method
+     * - Total values and summary statistics
+     * - Cost layer details for FIFO/LIFO products
+     *
+     * @param Carbon $asOfDate The date for valuation calculation
+     * @param array $filters Optional filters for products, locations, etc.
+     *                      - company_id: Specific company (required)
+     *                      - product_ids: Array of specific product IDs
+     *                      - location_ids: Array of specific location IDs
+     *                      - include_zero_qty: Include products with zero quantity
+     *
+     * @return array Valuation report data structure containing:
+     *               - products: Array of product valuation details
+     *               - total_value: Total inventory value
+     *               - total_quantity: Total quantity across all products
+     *               - summary_by_method: Summary grouped by valuation method
+     *               - as_of_date: Report date
+     *
+     * @example
+     * $valuation = $service->valuationAt(Carbon::now(), [
+     *     'company_id' => 1,
+     *     'product_ids' => [123, 456],
+     *     'include_zero_qty' => false
+     * ]);
      */
     public function valuationAt(Carbon $asOfDate, array $filters = []): array
     {
