@@ -270,7 +270,13 @@ class InvoiceResource extends Resource
                                         }
                                         if ($product) {
                                             $set('description', $product->description);
-                                            $set('unit_price', $product->unit_price);
+                                            // Convert Money object to string for MoneyInput component
+                                            $unitPrice = $product->unit_price;
+                                            if ($unitPrice instanceof \Brick\Money\Money) {
+                                                $set('unit_price', $unitPrice->getAmount()->__toString());
+                                            } else {
+                                                $set('unit_price', $unitPrice);
+                                            }
                                             $set('income_account_id', $product->income_account_id);
                                         }
                                     }
