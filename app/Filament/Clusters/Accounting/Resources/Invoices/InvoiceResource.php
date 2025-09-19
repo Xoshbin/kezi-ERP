@@ -5,6 +5,7 @@ namespace App\Filament\Clusters\Accounting\Resources\Invoices;
 use App\Actions\Payments\CreatePaymentAction;
 use App\DataTransferObjects\Payments\CreatePaymentDocumentLinkDTO;
 use App\DataTransferObjects\Payments\CreatePaymentDTO;
+use App\Enums\Accounting\TaxType;
 use App\Enums\Partners\PartnerType;
 use App\Enums\Payments\PaymentMethod;
 use App\Enums\Payments\PaymentType;
@@ -370,16 +371,24 @@ class InvoiceResource extends Resource
                                 ->columnSpan(3),
                             TranslatableSelect::forModel('tax_id', Tax::class, 'name')
                                 ->label(__('invoice.tax'))
+                                ->options(function () {
+                                    return Tax::where('company_id', Filament::getTenant()?->getKey())
+                                        ->where('is_active', true)
+                                        ->pluck('name', 'id');
+                                })
                                 ->searchable()
                                 ->preload()
                                 ->createOptionForm([
-                                    Select::make('company_id')
-                                        ->relationship('company', 'name')
-                                        ->label(__('tax.company'))
-                                        ->required(),
+                                    Hidden::make('company_id')
+                                        ->default(fn() => Filament::getTenant()?->getKey()),
                                     Select::make('tax_account_id')
-                                        ->relationship('taxAccount', 'name')
+                                        ->options(function () {
+                                            return Account::where('company_id', Filament::getTenant()?->getKey())
+                                                ->where('is_deprecated', false)
+                                                ->pluck('name', 'id');
+                                        })
                                         ->label(__('tax.tax_account'))
+                                        ->searchable()
                                         ->required(),
                                     TextInput::make('name')
                                         ->label(__('tax.name'))
@@ -388,9 +397,19 @@ class InvoiceResource extends Resource
                                     TextInput::make('rate')
                                         ->label(__('tax.rate'))
                                         ->required()
-                                        ->numeric()
-                                        ->suffix('%'),
+                                        ->numeric(),
+                                    Select::make('type')
+                                        ->label(__('tax.type'))
+                                        ->options(collect(TaxType::cases())->mapWithKeys(fn($case) => [$case->value => $case->label()]))
+                                        ->required(),
+                                    Toggle::make('is_active')
+                                        ->label(__('tax.is_active'))
+                                        ->default(true),
                                 ])
+                                ->createOptionUsing(function (array $data): int {
+                                    $tax = Tax::create($data);
+                                    return $tax->getKey();
+                                })
                                 ->createOptionModalHeading(__('common.modal_title_create_tax'))
                                 ->createOptionAction(function (Action $action) {
                                     return $action
