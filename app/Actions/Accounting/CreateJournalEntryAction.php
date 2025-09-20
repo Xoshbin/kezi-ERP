@@ -58,19 +58,30 @@ class CreateJournalEntryAction
 
             // Convert line amounts to company base currency for totals calculation
             if ($currency->id !== $company->currency_id) {
-                $debitBaseCurrency = $this->currencyConverter->convertToBaseCurrency(
+                // Get exchange rate with fallback logic
+                $exchangeRate = $this->currencyConverter->getExchangeRate($currency, $dto->entry_date, $company);
+
+                // If no exchange rate found for the specific date, try latest available rate
+                if (! $exchangeRate) {
+                    $exchangeRate = $this->currencyConverter->getLatestExchangeRate($currency, $company);
+                }
+
+                // If still no rate found, use rate 1.0 as fallback
+                if (! $exchangeRate) {
+                    $exchangeRate = 1.0;
+                }
+
+                $debitBaseCurrency = $this->currencyConverter->convertWithRate(
                     $line->debit,
-                    $currency,
-                    $company->currency,
-                    $dto->entry_date,
-                    $company
+                    $exchangeRate,
+                    $company->currency->code,
+                    false
                 );
-                $creditBaseCurrency = $this->currencyConverter->convertToBaseCurrency(
+                $creditBaseCurrency = $this->currencyConverter->convertWithRate(
                     $line->credit,
-                    $currency,
-                    $company->currency,
-                    $dto->entry_date,
-                    $company
+                    $exchangeRate,
+                    $company->currency->code,
+                    false
                 );
             } else {
                 // Same currency, no conversion needed
