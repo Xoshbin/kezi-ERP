@@ -39,13 +39,16 @@ class ProcessIncomingStockAction
             $costPerUnitCompany = $costPerUnit;
             $companyCurrency = $product->company->currency;
             if ($sourceDocument instanceof VendorBill) {
-                $costPerUnitCompany = $this->currencyConverter->convertToBaseCurrency(
-                    $costPerUnit,
-                    $sourceDocument->currency,
-                    $companyCurrency,
-                    $sourceDocument->bill_date,
-                    $product->company,
-                );
+                // Use the vendor bill's stored exchange rate for consistency
+                $exchangeRate = $sourceDocument->exchange_rate_at_creation ?? 1.0;
+                if ($sourceDocument->currency_id !== $companyCurrency->id) {
+                    $costPerUnitCompany = $this->currencyConverter->convertWithRate(
+                        $costPerUnit,
+                        $exchangeRate,
+                        $companyCurrency->code,
+                        false
+                    );
+                }
             }
 
             $this->inventoryValuationService->processIncomingStock(
@@ -89,6 +92,7 @@ class ProcessIncomingStockAction
     {
         // Find the vendor bill line that corresponds to this product
         $line = $vendorBill->lines()
+            ->with('tax') // Load tax relationship to check if it should be capitalized
             ->where('product_id', $stockMove->product_id)
             ->first();
 
@@ -96,6 +100,14 @@ class ProcessIncomingStockAction
             throw new Exception("No vendor bill line found for product {$stockMove->product_id} in vendor bill {$vendorBill->getKey()}");
         }
 
-        return $line->unit_price;
+        $unitPrice = $line->unit_price;
+
+        // If tax is non-recoverable, include it in the unit cost
+        if ($line->tax_id && $line->total_line_tax->isPositive() && $line->tax && !$line->tax->is_recoverable) {
+            $taxPerUnit = $line->total_line_tax->dividedBy($line->quantity);
+            $unitPrice = $unitPrice->plus($taxPerUnit);
+        }
+
+        return $unitPrice;
     }
 }
