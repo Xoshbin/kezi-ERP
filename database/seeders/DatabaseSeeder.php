@@ -33,7 +33,7 @@ class DatabaseSeeder extends Seeder
                 // PartnerSeeder::class,
                 PartnerCustomFieldSeeder::class,
                 TaxSeeder::class,
-                //  ProductSeeder::class,
+                ProductSeeder::class,
 
                 // 4. Fiscal positions and mappings
                 // Rules for applying taxes and mapping accounts based on partner location.
