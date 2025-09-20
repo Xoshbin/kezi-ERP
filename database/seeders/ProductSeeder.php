@@ -18,7 +18,7 @@ class ProductSeeder extends Seeder
         // --- Commented out old products for later use ---
         /*
         // Resolve a valid expense account (COGS)
-        $cogsAccount = Account::where('company_id', $company->id)
+        $costOfRevenue = Account::where('company_id', $company->id)
             ->where('code', '510101') // Cost of Goods Sold (COGS)
             ->firstOrFail();
 
@@ -28,8 +28,9 @@ class ProductSeeder extends Seeder
             [
                 'name' => 'تى فى 32',
                 'type' => ProductType::Storable,
-                'expense_account_id' => $cogsAccount->id,
-                'default_inventory_account_id' => $cogsAccount->id,
+                'income_account_id' => $incomeAccount->id,
+                'expense_account_id' => $costOfRevenue->id,
+                'default_inventory_account_id' => $costOfRevenue->id,
             ]
         );
         Product::updateOrCreate(
@@ -37,8 +38,9 @@ class ProductSeeder extends Seeder
             [
                 'name' => 'سەلاچە',
                 'type' => ProductType::Storable,
-                'expense_account_id' => $cogsAccount->id,
-                'default_inventory_account_id' => $cogsAccount->id,
+                'income_account_id' => $incomeAccount->id,
+                'expense_account_id' => $costOfRevenue->id,
+                'default_inventory_account_id' => $costOfRevenue->id,
             ]
         );
         */
@@ -48,7 +50,8 @@ class ProductSeeder extends Seeder
         // Resolve accounts by code
         $inventoryAccount = Account::where('company_id', $company->id)->where('code', '130102')->firstOrFail(); // Inventory Asset (IQD)
         $stockInputAccount = Account::where('company_id', $company->id)->where('code', '210202')->firstOrFail(); // Stock Input Account (IQD)
-        $cogsAccount = Account::where('company_id', $company->id)->where('code', '510102')->firstOrFail(); // Cost of Goods Sold (IQD)
+        $costOfRevenue = Account::where('company_id', $company->id)->where('code', '500100')->firstOrFail(); // Cost of Goods Sold (IQD)
+        $incomeAccount = Account::where('company_id', $company->id)->where('code', '410102')->firstOrFail(); // Cost of Goods Sold (IQD)
 
         // Product A: High-End Graphics Cards (FIFO Valuation)
         $productA = Product::updateOrCreate(
@@ -60,7 +63,8 @@ class ProductSeeder extends Seeder
                 'unit_price' => 2500000,
                 'default_inventory_account_id' => $inventoryAccount->id,
                 'default_stock_input_account_id' => $stockInputAccount->id,
-                'expense_account_id' => $cogsAccount->id,
+                'income_account_id' => $incomeAccount->id,
+                'expense_account_id' => $costOfRevenue->id,
                 'lot_tracking_enabled' => true, // Serial number tracking
             ]
         );
@@ -75,7 +79,8 @@ class ProductSeeder extends Seeder
                 'unit_price' => 400000,
                 'default_inventory_account_id' => $inventoryAccount->id,
                 'default_stock_input_account_id' => $stockInputAccount->id,
-                'expense_account_id' => $cogsAccount->id,
+                'income_account_id' => $incomeAccount->id,
+                'expense_account_id' => $costOfRevenue->id,
                 'lot_tracking_enabled' => true, // Batch tracking
             ]
         );
@@ -90,7 +95,8 @@ class ProductSeeder extends Seeder
                 'unit_price' => 300000,
                 'default_inventory_account_id' => $inventoryAccount->id,
                 'default_stock_input_account_id' => $stockInputAccount->id,
-                'expense_account_id' => $cogsAccount->id,
+                'income_account_id' => $incomeAccount->id,
+                'expense_account_id' => $costOfRevenue->id,
                 'lot_tracking_enabled' => true, // Batch tracking with expiration dates
             ]
         );
