@@ -48,7 +48,7 @@ class CreateJournalEntryForExpenseBillAction
                         account_id: $category->asset_account_id,
                         debit: $line->subtotal,
                         credit: Money::of(0, $currency->code),
-                        description: 'Asset: '.$line->description,
+                        description: 'Asset: ' . $line->description,
                         partner_id: null,
                         analytic_account_id: null,
                     );
@@ -63,7 +63,7 @@ class CreateJournalEntryForExpenseBillAction
                             account_id: $taxAccountId,
                             debit: $line->total_line_tax,
                             credit: Money::of(0, $currency->code),
-                            description: 'Input tax for asset: '.$line->description,
+                            description: 'Input tax for asset: ' . $line->description,
                             partner_id: null,
                             analytic_account_id: null,
                         );
@@ -120,12 +120,13 @@ class CreateJournalEntryForExpenseBillAction
                 currency_id: $currency->id,
                 entry_date: $vendorBill->accounting_date,
                 reference: $vendorBill->bill_reference,
-                description: 'Vendor Bill '.$vendorBill->bill_reference,
+                description: 'Vendor Bill ' . $vendorBill->bill_reference,
                 source_type: VendorBill::class,
                 source_id: $vendorBill->id,
                 created_by_user_id: $user->id,
                 is_posted: true,
                 lines: $lineDTOs,
+                exchange_rate: $vendorBill->exchange_rate_at_creation,
             );
 
             return $this->createJournalEntryAction->execute($journalEntryDTO);
