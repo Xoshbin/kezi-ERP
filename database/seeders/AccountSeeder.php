@@ -84,6 +84,8 @@ class AccountSeeder extends Seeder
             ['code' => '620101', 'name' => ['en' => 'Interest Income', 'ckb' => 'داهاتی سوو', 'ar' => 'إيراد الفوائد'], 'type' => AccountType::OtherIncome],
 
             // === EXPENSES ===
+            // Cost of Revenue
+            ['code' => '500100', 'name' => ['en' => 'Cost of Revenue', 'ckb' => 'تێچووی داهات', 'ar' => 'تكلفة الإيرادات'], 'type' => AccountType::CostOfRevenue],
             ['code' => '510101', 'name' => ['en' => 'Cost of Goods Sold (COGS)', 'ckb' => 'تێچووی کاڵای فرۆشراو', 'ar' => 'تكلفة البضاعة المباعة'], 'type' => AccountType::CostOfRevenue],
             ['code' => '510102', 'name' => ['en' => 'Cost of Goods Sold (IQD)', 'ckb' => 'تێچووی کاڵای فرۆشراو (دینار)', 'ar' => 'تكلفة البضاعة المباعة (دينار عراقي)'], 'type' => AccountType::CostOfRevenue],
             ['code' => '510201', 'name' => ['en' => 'Inventory Adjustment Expense', 'ckb' => 'خەرجی گۆڕینی کەڵەکەبوو', 'ar' => 'مصروف تسوية المخزون'], 'type' => AccountType::Expense],
