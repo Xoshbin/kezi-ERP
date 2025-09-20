@@ -237,6 +237,91 @@ describe('Service Behavior with Manual Exchange Rates', function () {
         expect((float) $vendorBill->exchange_rate_at_creation)->toBe($customRate);
     });
 
+    test('journal entries use custom exchange rate from vendor bill', function () {
+        $customRate = 1310.0; // Custom rate different from stored rate
+        $storedRate = 1500.0; // Rate in currency_rates table (different from setup)
+
+        // Clear existing currency rates to avoid conflicts
+        \App\Models\CurrencyRate::where('company_id', $this->company->id)
+            ->where('currency_id', $this->foreignCurrency->id)
+            ->delete();
+
+        // Create a stored exchange rate that should NOT be used
+        \App\Models\CurrencyRate::factory()->create([
+            'company_id' => $this->company->id,
+            'currency_id' => $this->foreignCurrency->id,
+            'rate' => $storedRate,
+            'effective_date' => Carbon::today(),
+        ]);
+
+        // Create vendor bill using the proper action to ensure consistency
+        $expenseAccount = \App\Models\Account::factory()->create([
+            'company_id' => $this->company->id,
+            'type' => 'expense'
+        ]);
+
+        $vendorBillDto = new \App\DataTransferObjects\Purchases\CreateVendorBillDTO(
+            company_id: $this->company->id,
+            vendor_id: $this->vendor->id,
+            currency_id: $this->foreignCurrency->id,
+            bill_reference: 'TEST-001',
+            bill_date: Carbon::today()->toDateString(),
+            accounting_date: Carbon::today()->toDateString(),
+            due_date: Carbon::today()->addDays(30)->toDateString(),
+            lines: [
+                new \App\DataTransferObjects\Purchases\CreateVendorBillLineDTO(
+                    product_id: null,
+                    description: 'Test expense',
+                    quantity: 1,
+                    unit_price: Money::of(100, 'USD'),
+                    expense_account_id: $expenseAccount->id,
+                    tax_id: null,
+                    analytic_account_id: null,
+                ),
+            ],
+            created_by_user_id: $this->user->id
+        );
+
+        $vendorBill = app(\App\Actions\Purchases\CreateVendorBillAction::class)->execute($vendorBillDto);
+
+        // Set the custom exchange rate
+        $vendorBill->update(['exchange_rate_at_creation' => $customRate]);
+
+        $vendorBillService = app(\App\Services\VendorBillService::class);
+        $vendorBillService->post($vendorBill, $this->user);
+
+        $vendorBill->refresh();
+
+        // Verify the journal entry was created
+        expect($vendorBill->journal_entry_id)->not->toBeNull();
+        $journalEntry = $vendorBill->journalEntry;
+
+        // Calculate expected amounts using custom rate (1310) not stored rate (1500)
+        // $100 USD * 1310 = 131,000 IQD = 131,000,000 fils (IQD has 3 decimal places)
+        $expectedAmountWithCustomRate = (int)(100 * $customRate * 1000); // 131,000,000 fils
+        $expectedAmountWithStoredRate = (int)(100 * $storedRate * 1000); // 150,000,000 fils
+
+        // Verify journal entry totals use the CUSTOM rate, not the stored rate
+        expect($journalEntry->total_debit->getMinorAmount()->toInt())->toBe($expectedAmountWithCustomRate);
+        expect($journalEntry->total_credit->getMinorAmount()->toInt())->toBe($expectedAmountWithCustomRate);
+
+        // Verify it's NOT using the stored rate
+        expect($journalEntry->total_debit->getMinorAmount()->toInt())->not->toBe($expectedAmountWithStoredRate);
+
+        // Verify individual line amounts also use custom rate
+        $lines = $journalEntry->lines;
+        foreach ($lines as $line) {
+            if ($line->debit->isGreaterThan(Money::of(0, 'IQD'))) {
+                expect($line->debit->getMinorAmount()->toInt())->toBe($expectedAmountWithCustomRate);
+                expect($line->exchange_rate_at_transaction)->toBe($customRate);
+            }
+            if ($line->credit->isGreaterThan(Money::of(0, 'IQD'))) {
+                expect($line->credit->getMinorAmount()->toInt())->toBe($expectedAmountWithCustomRate);
+                expect($line->exchange_rate_at_transaction)->toBe($customRate);
+            }
+        }
+    });
+
     test('invoice service respects manually set exchange rate when posting', function () {
         $customRate = 1500.0;
 

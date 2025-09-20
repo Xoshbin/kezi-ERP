@@ -123,6 +123,7 @@ class CreateJournalEntryForVendorBillAction
                 created_by_user_id: $user->id,
                 is_posted: true,
                 lines: $lineDTOs,
+                exchange_rate: $vendorBill->exchange_rate_at_creation,
             );
 
             return $this->createJournalEntryAction->execute($journalEntryDTO);
