@@ -58,18 +58,25 @@ class CreateJournalEntryAction
 
             // Convert line amounts to company base currency for totals calculation
             if ($currency->id !== $company->currency_id) {
-                // Get exchange rate with fallback logic
-                $exchangeRate = $this->currencyConverter->getExchangeRate($currency, $dto->entry_date, $company);
+                // Use provided exchange rate if available, otherwise get from currency converter
+                $exchangeRate = $dto->exchange_rate;
 
-                // If no exchange rate found for the specific date, try latest available rate
                 if (! $exchangeRate) {
-                    $exchangeRate = $this->currencyConverter->getLatestExchangeRate($currency, $company);
+                    // Get exchange rate with fallback logic
+                    $exchangeRate = $this->currencyConverter->getExchangeRate($currency, $dto->entry_date, $company);
+
+                    // If no exchange rate found for the specific date, try latest available rate
+                    if (! $exchangeRate) {
+                        $exchangeRate = $this->currencyConverter->getLatestExchangeRate($currency, $company);
+                    }
+
+                    // If still no rate found, use rate 1.0 as fallback
+                    if (! $exchangeRate) {
+                        $exchangeRate = 1.0;
+                    }
                 }
 
-                // If still no rate found, use rate 1.0 as fallback
-                if (! $exchangeRate) {
-                    $exchangeRate = 1.0;
-                }
+
 
                 $debitBaseCurrency = $this->currencyConverter->convertWithRate(
                     $line->debit,
@@ -143,20 +150,35 @@ class CreateJournalEntryAction
 
                 // Convert line amounts to company base currency
                 if ($currency->id !== $company->currency_id) {
-                    $debitBaseCurrency = $this->currencyConverter->convertToBaseCurrency(
-                        $lineDto->debit,
-                        $currency,
-                        $company->currency,
-                        $dto->entry_date,
-                        $company
-                    );
+                    // Use the same exchange rate logic as the first loop
+                    $lineExchangeRate = $dto->exchange_rate;
 
-                    $creditBaseCurrency = $this->currencyConverter->convertToBaseCurrency(
+                    if (! $lineExchangeRate) {
+                        // Get exchange rate with fallback logic
+                        $lineExchangeRate = $this->currencyConverter->getExchangeRate($currency, $dto->entry_date, $company);
+
+                        // If no exchange rate found for the specific date, try latest available rate
+                        if (! $lineExchangeRate) {
+                            $lineExchangeRate = $this->currencyConverter->getLatestExchangeRate($currency, $company);
+                        }
+
+                        // If still no rate found, use rate 1.0 as fallback
+                        if (! $lineExchangeRate) {
+                            $lineExchangeRate = 1.0;
+                        }
+                    }
+
+                    $debitBaseCurrency = $this->currencyConverter->convertWithRate(
+                        $lineDto->debit,
+                        $lineExchangeRate,
+                        $company->currency->code,
+                        false
+                    );
+                    $creditBaseCurrency = $this->currencyConverter->convertWithRate(
                         $lineDto->credit,
-                        $currency,
-                        $company->currency,
-                        $dto->entry_date,
-                        $company
+                        $lineExchangeRate,
+                        $company->currency->code,
+                        false
                     );
                 } else {
                     // Same currency, no conversion needed
@@ -177,7 +199,8 @@ class CreateJournalEntryAction
                 if ($exchangeRateAtTransaction === null) {
                     // Get exchange rate if converting between currencies
                     if ($currency->id !== $company->currency_id) {
-                        $exchangeRateAtTransaction = $this->currencyConverter->getExchangeRate($currency, $dto->entry_date, $company);
+                        // Use provided exchange rate if available, otherwise get from currency converter
+                        $exchangeRateAtTransaction = $dto->exchange_rate ?? $this->currencyConverter->getExchangeRate($currency, $dto->entry_date, $company);
                     } else {
                         $exchangeRateAtTransaction = 1.0;
                     }

@@ -34,8 +34,9 @@ TechFlow Electronics imports computer components from international suppliers an
 ```
 1200 - Inventory Asset (IQD)
 1210 - Stock Input Account (IQD)
-5000 - Cost of Goods Sold (IQD)
+5000 - Cost of Revenue (IQD)
 5100 - Inventory Adjustments (IQD)
+5200 - Foreign Exchange Gain/Loss (IQD)
 2000 - Accounts Payable (IQD)
 4000 - Sales Revenue (IQD)
 ```
@@ -62,6 +63,8 @@ Unit Price: 2,500,000 IQD
 Inventory Account: 1200
 Stock Input Account: 1210
 COGS Account: 5000
+Income Account: 4000 Sales Revenue
+Expense Account: 5000 Cost of Revenue
 Lot Tracking: Enabled (Serial numbers)
 Reorder Rule: Min: 5, Max: 20, Safety Stock: 2
 ```
@@ -77,6 +80,8 @@ Unit Price: 400,000 IQD
 Inventory Account: 1200
 Stock Input Account: 1210
 COGS Account: 5000
+Income Account: 4000 Sales Revenue
+Expense Account: 5000 Cost of Revenue
 Lot Tracking: Enabled (Batch tracking)
 Reorder Rule: Min: 20, Max: 100, Safety Stock: 10
 ```
@@ -92,6 +97,8 @@ Unit Price: 300,000 IQD
 Inventory Account: 1200
 Stock Input Account: 1210
 COGS Account: 5000
+Income Account: 4000 Sales Revenue
+Expense Account: 5000 Cost of Revenue
 Lot Tracking: Enabled (Expiration dates)
 Reorder Rule: Min: 15, Max: 50, Safety Stock: 5
 ```
