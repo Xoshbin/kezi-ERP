@@ -37,6 +37,8 @@ return [
     'default_cogs_account' => 'Cost of Goods Sold Account',
     'default_stock_input_account' => 'Stock Input Account',
     'default_price_difference_account' => 'Price Difference Account',
+    'lot_tracking_enabled' => 'Enable Lot Tracking',
+    'lot_tracking_enabled_help' => 'Enable lot/batch tracking for this product to track serial numbers, batches, or expiration dates.',
 
     // Stock Information
     'stock_moves' => 'Stock Movements',
