@@ -237,47 +237,57 @@ class VendorBillService
 
         // If vendor bill is in company base currency, set rate to 1.0
         if ($vendorBill->currency_id === $vendorBill->company->currency_id) {
-            $vendorBill->exchange_rate_at_creation = 1.0;
-            $vendorBill->total_amount_company_currency = $vendorBill->total_amount;
-            $vendorBill->total_tax_company_currency = $vendorBill->total_tax;
+            $vendorBill->update([
+                'exchange_rate_at_creation' => 1.0,
+                'total_amount_company_currency' => $vendorBill->total_amount,
+                'total_tax_company_currency' => $vendorBill->total_tax,
+            ]);
 
             return;
         }
 
-        // Get exchange rate for the bill date
-        $exchangeRate = $this->currencyConverter->getExchangeRate($vendorBill->currency, $vendorBill->bill_date, $vendorBill->company);
+        // Use manually set exchange rate if available, otherwise get from currency converter
+        $exchangeRate = $vendorBill->exchange_rate_at_creation;
 
-        // If no exchange rate is found, skip multi-currency processing for backward compatibility
         if (! $exchangeRate) {
-            $vendorBill->exchange_rate_at_creation = 1.0;
-            $vendorBill->total_amount_company_currency = $vendorBill->total_amount;
-            $vendorBill->total_tax_company_currency = $vendorBill->total_tax;
+            // Get exchange rate for the bill date
+            $exchangeRate = $this->currencyConverter->getExchangeRate($vendorBill->currency, $vendorBill->bill_date, $vendorBill->company);
 
-            return;
+            // If no exchange rate is found, try to get the latest available rate as fallback
+            if (! $exchangeRate) {
+                $exchangeRate = $this->currencyConverter->getLatestExchangeRate($vendorBill->currency, $vendorBill->company);
+
+                // If still no rate found, skip multi-currency processing for backward compatibility
+                if (! $exchangeRate) {
+                    $vendorBill->exchange_rate_at_creation = 1.0;
+                    $vendorBill->total_amount_company_currency = $vendorBill->total_amount;
+                    $vendorBill->total_tax_company_currency = $vendorBill->total_tax;
+
+                    return;
+                }
+            }
         }
 
-        // Convert amounts to company currency
+        // Convert amounts to company currency using the exchange rate
         $companyCurrency = $vendorBill->company->currency;
 
-        $totalAmountCompanyCurrency = $this->currencyConverter->convertToBaseCurrency(
+        $totalAmountCompanyCurrency = $this->currencyConverter->convertWithRate(
             $vendorBill->total_amount,
-            $vendorBill->currency,
-            $companyCurrency,
-            $vendorBill->bill_date,
-            $vendorBill->company
+            $exchangeRate,
+            $companyCurrency->code,
+            false
         );
 
-        $totalTaxCompanyCurrency = $this->currencyConverter->convertToBaseCurrency(
+        $totalTaxCompanyCurrency = $this->currencyConverter->convertWithRate(
             $vendorBill->total_tax,
-            $vendorBill->currency,
-            $companyCurrency,
-            $vendorBill->bill_date,
-            $vendorBill->company
+            $exchangeRate,
+            $companyCurrency->code,
+            false
         );
 
         // Convert vendor bill line amounts
         foreach ($vendorBill->lines as $line) {
-            $this->convertVendorBillLineAmounts($line, $companyCurrency, $vendorBill->company);
+            $this->convertVendorBillLineAmounts($line, $companyCurrency, $exchangeRate);
         }
 
         // Update vendor bill with converted amounts
@@ -293,30 +303,27 @@ class VendorBillService
      *
      * @param  \App\Models\VendorBillLine  $line
      */
-    protected function convertVendorBillLineAmounts($line, Currency $companyCurrency, Company $company): void
+    protected function convertVendorBillLineAmounts($line, Currency $companyCurrency, float $exchangeRate): void
     {
-        $unitPriceCompanyCurrency = $this->currencyConverter->convertToBaseCurrency(
+        $unitPriceCompanyCurrency = $this->currencyConverter->convertWithRate(
             $line->unit_price,
-            $line->vendorBill->currency,
-            $companyCurrency,
-            $line->vendorBill->bill_date,
-            $company
+            $exchangeRate,
+            $companyCurrency->code,
+            false
         );
 
-        $subtotalCompanyCurrency = $this->currencyConverter->convertToBaseCurrency(
+        $subtotalCompanyCurrency = $this->currencyConverter->convertWithRate(
             $line->subtotal,
-            $line->vendorBill->currency,
-            $companyCurrency,
-            $line->vendorBill->bill_date,
-            $company
+            $exchangeRate,
+            $companyCurrency->code,
+            false
         );
 
-        $totalLineTaxCompanyCurrency = $this->currencyConverter->convertToBaseCurrency(
+        $totalLineTaxCompanyCurrency = $this->currencyConverter->convertWithRate(
             $line->total_line_tax,
-            $line->vendorBill->currency,
-            $companyCurrency,
-            $line->vendorBill->bill_date,
-            $company
+            $exchangeRate,
+            $companyCurrency->code,
+            false
         );
 
         $line->update([

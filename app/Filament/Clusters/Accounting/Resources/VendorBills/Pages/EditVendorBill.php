@@ -299,7 +299,16 @@ class EditVendorBill extends EditRecord
             updated_by_user_id: (int) Auth::id()
         );
 
-        return app(UpdateVendorBillAction::class)->execute($vendorBillDTO);
+        $updatedVendorBill = app(UpdateVendorBillAction::class)->execute($vendorBillDTO);
+
+        // Handle exchange_rate_at_creation separately since it's not in the DTO
+        if (isset($data['exchange_rate_at_creation'])) {
+            $updatedVendorBill->update([
+                'exchange_rate_at_creation' => $data['exchange_rate_at_creation']
+            ]);
+        }
+
+        return $updatedVendorBill;
     }
 
     protected function afterSave(): void

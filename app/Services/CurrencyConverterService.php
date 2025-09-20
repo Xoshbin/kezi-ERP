@@ -71,6 +71,12 @@ class CurrencyConverterService
 
         $rate = $this->getExchangeRate($fromCurrency, $date, $company);
 
+        // If no exchange rate found for the specific date, try latest available rate
+        if ($rate === null) {
+            $rate = $this->getLatestExchangeRate($fromCurrency, $company);
+        }
+
+        // If still no rate found, throw exception
         if ($rate === null) {
             throw new InvalidArgumentException("No exchange rate found for {$fromCurrency->code} on {$date}");
         }
@@ -96,6 +102,12 @@ class CurrencyConverterService
     {
         $rate = $this->getExchangeRate($toCurrency, $date, $company);
 
+        // If no exchange rate found for the specific date, try latest available rate
+        if ($rate === null) {
+            $rate = $this->getLatestExchangeRate($toCurrency, $company);
+        }
+
+        // If still no rate found, throw exception
         if ($rate === null) {
             throw new InvalidArgumentException("No exchange rate found for {$toCurrency->code} on {$date}");
         }

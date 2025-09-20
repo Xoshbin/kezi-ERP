@@ -6,27 +6,31 @@
 **Business**: Electronics distributor specializing in computer components  
 **Location**: Baghdad, Iraq  
 **Base Currency**: Iraqi Dinar (IQD)  
-**Fiscal Year**: 2025  
+**Fiscal Year**: 2025
 
 ### Business Context
+
 TechFlow Electronics imports computer components from international suppliers and distributes them to local retailers. The company needs comprehensive inventory management to handle:
-- Multi-currency purchasing (USD suppliers, IQD sales)
-- Lot tracking for warranty and compliance
-- FEFO allocation for components with shelf life
-- Automated reordering for fast-moving items
-- Accurate COGS calculation for profitability analysis
+
+-   Multi-currency purchasing (USD suppliers, IQD sales)
+-   Lot tracking for warranty and compliance
+-   FEFO allocation for components with shelf life
+-   Automated reordering for fast-moving items
+-   Accurate COGS calculation for profitability analysis
 
 ## Initial System Setup
 
 ### 1. Company Configuration
 
 **Company Details:**
-- Name: TechFlow Electronics Ltd.
-- Currency: Iraqi Dinar (IQD)
-- Fiscal Year Start: January 1, 2025
-- Inventory Valuation: Mixed methods by product category
+
+-   Name: TechFlow Electronics Ltd.
+-   Currency: Iraqi Dinar (IQD)
+-   Fiscal Year Start: January 1, 2025
+-   Inventory Valuation: Mixed methods by product category
 
 **Chart of Accounts:**
+
 ```
 1200 - Inventory Asset (IQD)
 1210 - Stock Input Account (IQD)
@@ -37,18 +41,20 @@ TechFlow Electronics imports computer components from international suppliers an
 ```
 
 **Stock Locations:**
-- Main Warehouse (Baghdad)
-- Retail Showroom (Baghdad)
-- Quality Control Area
-- Damaged Goods Area
-- Customer Location (virtual)
-- Vendor Location (virtual)
+
+-   Main Warehouse (Baghdad)
+-   Retail Showroom (Baghdad)
+-   Quality Control Area
+-   Damaged Goods Area
+-   Customer Location (virtual)
+-   Vendor Location (virtual)
 
 ### 2. Product Catalog Setup
 
 #### Product A: High-End Graphics Cards (FIFO Valuation)
+
 ```
-Product Code: GPU-RTX4090
+sku: GPU-RTX4090
 Name: NVIDIA RTX 4090 Graphics Card
 Type: Storable
 Valuation Method: FIFO
@@ -61,8 +67,9 @@ Reorder Rule: Min: 5, Max: 20, Safety Stock: 2
 ```
 
 #### Product B: Memory Modules (AVCO Valuation)
+
 ```
-Product Code: RAM-DDR5-32GB
+sku: RAM-DDR5-32GB
 Name: DDR5 32GB Memory Module
 Type: Storable
 Valuation Method: AVCO
@@ -75,8 +82,9 @@ Reorder Rule: Min: 20, Max: 100, Safety Stock: 10
 ```
 
 #### Product C: Storage Drives (LIFO Valuation)
+
 ```
-Product Code: SSD-2TB-NVME
+sku: SSD-2TB-NVME
 Name: 2TB NVMe SSD Drive
 Type: Storable
 Valuation Method: LIFO
@@ -95,9 +103,10 @@ Reorder Rule: Min: 15, Max: 50, Safety Stock: 5
 **Date**: January 15, 2025  
 **Vendor**: TechGlobal Suppliers (USA)  
 **Currency**: USD  
-**Exchange Rate**: 1 USD = 1,310 IQD  
+**Exchange Rate**: 1 USD = 1,310 IQD
 
 **Vendor Bill Details:**
+
 ```
 Bill Number: VB-2025-001
 Bill Date: January 15, 2025
@@ -116,6 +125,7 @@ Converted to IQD: 56,560,560 IQD
 ```
 
 **Expected Journal Entry (VB-2025-001):**
+
 ```
 Dr. Stock Input Account (1210)     56,560,560 IQD
     Cr. Accounts Payable (2000)                56,560,560 IQD
@@ -126,6 +136,7 @@ Dr. Stock Input Account (1210)     56,560,560 IQD
 **System Action**: Vendor bill confirmation automatically creates Receipt Picking
 
 **Receipt Picking Details:**
+
 ```
 Picking Number: RCP-2025-001
 Type: Receipt
@@ -136,13 +147,14 @@ Origin: VB-2025-001
 
 Stock Moves Created:
 1. GPU-RTX4090: Vendor → Main Warehouse (10 units)
-2. RAM-DDR5-32GB: Vendor → Main Warehouse (50 units)  
+2. RAM-DDR5-32GB: Vendor → Main Warehouse (50 units)
 3. SSD-2TB-NVME: Vendor → Main Warehouse (30 units)
 ```
 
 ### Step 3: Lot Creation and Assignment
 
 **Lot Details:**
+
 ```
 Lot 1: GPU-RTX4090
 - Lot Code: GPU-LOT-2025-001
@@ -168,6 +180,7 @@ Lot 3: SSD-2TB-NVME
 **Processing Date**: January 15, 2025
 
 #### GPU-RTX4090 (FIFO Method):
+
 ```
 Incoming Stock Processing:
 - Quantity: 10 units
@@ -188,6 +201,7 @@ Dr. Inventory Asset (1200)        24,890,000 IQD
 ```
 
 #### RAM-DDR5-32GB (AVCO Method):
+
 ```
 Incoming Stock Processing:
 - Quantity: 50 units
@@ -210,6 +224,7 @@ Dr. Inventory Asset (1200)        19,977,500 IQD
 ```
 
 #### SSD-2TB-NVME (LIFO Method):
+
 ```
 Incoming Stock Processing:
 - Quantity: 30 units
@@ -232,6 +247,7 @@ Dr. Inventory Asset (1200)         9,002,700 IQD
 ### Step 5: Stock Quant Updates
 
 **Stock Quantities After Receipt:**
+
 ```
 Main Warehouse Stock Quants:
 
@@ -261,9 +277,10 @@ SSD-2TB-NVME:
 **Date**: February 1, 2025  
 **Vendor**: EuroTech Components (Germany)  
 **Currency**: USD  
-**Exchange Rate**: 1 USD = 1,315 IQD  
+**Exchange Rate**: 1 USD = 1,315 IQD
 
 **Vendor Bill VB-2025-002:**
+
 ```
 Line Items:
 1. RAM-DDR5-32GB × 30 units @ $310 USD = $9,300 USD
@@ -273,6 +290,7 @@ Total: $15,175 USD = 19,955,125 IQD
 ```
 
 **New Lots Created:**
+
 ```
 Lot 4: RAM-DDR5-32GB
 - Lot Code: RAM-LOT-2025-002
@@ -288,6 +306,7 @@ Lot 5: SSD-2TB-NVME
 ### Step 7: AVCO Recalculation (RAM-DDR5-32GB)
 
 **AVCO Update After Second Purchase:**
+
 ```
 Previous State:
 - Quantity: 50 units @ 399,550 IQD = 19,977,500 IQD
@@ -311,9 +330,10 @@ Product Updated:
 
 **Date**: February 10, 2025  
 **Customer**: Baghdad Computer Center  
-**Currency**: IQD  
+**Currency**: IQD
 
 **Sales Invoice INV-2025-001:**
+
 ```
 Line Items:
 1. GPU-RTX4090 × 3 units @ 2,500,000 IQD = 7,500,000 IQD
@@ -330,6 +350,7 @@ Total: 16,695,000 IQD
 **System Action**: Invoice posting creates Delivery Picking
 
 **Delivery Picking DEL-2025-001:**
+
 ```
 Type: Delivery
 State: Confirmed
@@ -347,6 +368,7 @@ Stock Moves Created:
 **Reservation Logic Applied:**
 
 #### GPU-RTX4090 Reservation:
+
 ```
 Available Lots:
 - GPU-LOT-2025-001: 10 units (No expiration)
@@ -357,6 +379,7 @@ Reservation:
 ```
 
 #### RAM-DDR5-32GB Reservation (FEFO):
+
 ```
 Available Lots (ordered by expiration):
 1. RAM-LOT-2025-001: 50 units (Exp: Dec 31, 2027)
@@ -369,6 +392,7 @@ FEFO Allocation:
 ```
 
 #### SSD-2TB-NVME Reservation (FEFO):
+
 ```
 Available Lots (ordered by expiration):
 1. SSD-LOT-2025-001: 30 units (Exp: Jun 30, 2026)
@@ -383,6 +407,7 @@ FEFO Allocation:
 ### Step 11: Stock Quant Updates After Reservation
 
 **Updated Stock Quants:**
+
 ```
 Main Warehouse After Reservations:
 
@@ -412,6 +437,7 @@ SSD-2TB-NVME:
 ### Step 13: COGS Calculation by Valuation Method
 
 #### GPU-RTX4090 (FIFO Method):
+
 ```
 COGS Calculation:
 - Method: FIFO (First In, First Out)
@@ -429,6 +455,7 @@ Dr. Cost of Goods Sold (5000)      7,467,000 IQD
 ```
 
 #### RAM-DDR5-32GB (AVCO Method):
+
 ```
 COGS Calculation:
 - Method: AVCO (Average Cost)
@@ -447,6 +474,7 @@ Dr. Cost of Goods Sold (5000)      6,038,813 IQD
 ```
 
 #### SSD-2TB-NVME (LIFO Method):
+
 ```
 COGS Calculation:
 - Method: LIFO (Last In, First Out)
@@ -466,6 +494,7 @@ Dr. Cost of Goods Sold (5000)      2,472,200 IQD
 ### Step 14: Final Stock Quant Updates
 
 **Stock Quantities After Delivery:**
+
 ```
 Main Warehouse Final State:
 
@@ -493,6 +522,7 @@ SSD-2TB-NVME:
 **Action**: Physical count reveals discrepancies
 
 **Count Results:**
+
 ```
 Physical Count vs System:
 
@@ -515,6 +545,7 @@ SSD-2TB-NVME:
 ### Step 16: Inventory Adjustment Processing
 
 **Adjustment Document ADJ-2025-001:**
+
 ```
 Date: February 20, 2025
 Reason: Physical inventory count adjustment
@@ -525,6 +556,7 @@ Adjustment Lines:
 ```
 
 #### GPU-RTX4090 Adjustment (Negative):
+
 ```
 Adjustment Processing:
 - Product: GPU-RTX4090
@@ -544,6 +576,7 @@ Dr. Inventory Adjustments (5100)    2,489,000 IQD
 ```
 
 #### RAM-DDR5-32GB Adjustment (Positive):
+
 ```
 Adjustment Processing:
 - Product: RAM-DDR5-32GB
@@ -568,6 +601,7 @@ Dr. Inventory Asset (1200)           805,175 IQD
 **Action**: Transfer items to retail showroom
 
 **Internal Transfer INT-2025-001:**
+
 ```
 Transfer Details:
 - From: Main Warehouse
@@ -584,6 +618,7 @@ only location of stock quants.
 ```
 
 **Stock Quant Updates:**
+
 ```
 After Internal Transfer:
 
@@ -606,6 +641,7 @@ Retail Showroom:
 **System Action**: Automated reordering rule evaluation
 
 **Rule Evaluation Results:**
+
 ```
 GPU-RTX4090 Analysis:
 - Current Stock: 6 units (4 warehouse + 2 showroom)
@@ -635,6 +671,7 @@ SSD-2TB-NVME Analysis:
 **Action**: Additional sales reduce GPU stock below minimum
 
 **Sales Transaction (Simulated):**
+
 ```
 Customer: Tech Solutions Ltd.
 Items Sold:
@@ -651,6 +688,7 @@ Resulting Stock Levels:
 **System Action**: Automatic replenishment suggestion
 
 **Replenishment Suggestion REP-2025-001:**
+
 ```
 Product: GPU-RTX4090
 Current Quantity: 3 units
@@ -672,6 +710,7 @@ Reason: Stock below minimum level
 **Report Type**: Inventory Valuation as of Date
 
 **Valuation Report Results:**
+
 ```
 Inventory Valuation Report
 As of: March 31, 2025
@@ -709,6 +748,7 @@ GL Reconciliation:
 ### Step 22: Inventory Aging Report
 
 **Aging Report (30/60/90 days):**
+
 ```
 Inventory Aging Report
 As of: March 31, 2025
@@ -739,6 +779,7 @@ Lot Expiration Analysis:
 ### Step 23: Inventory Turnover Analysis
 
 **Turnover Report (Q1 2025):**
+
 ```
 Inventory Turnover Analysis
 Period: January 1 - March 31, 2025
@@ -763,6 +804,7 @@ Analysis:
 ### Step 24: Lot Traceability Report
 
 **Lot Trace for GPU-RTX4090 Serial RTX005:**
+
 ```
 Lot Traceability Report
 Product: GPU-RTX4090
@@ -792,6 +834,7 @@ Current Location: Customer (Tech Solutions Ltd.)
 ## Summary and Business Impact
 
 ### Financial Summary (Q1 2025)
+
 ```
 Revenue Performance:
 - Total Sales Revenue: 16,695,000 IQD
@@ -811,6 +854,7 @@ Currency Impact:
 ```
 
 ### Operational Achievements
+
 ```
 ✓ Multi-currency purchasing and conversion
 ✓ Automated lot tracking and FEFO allocation
@@ -825,6 +869,7 @@ Currency Impact:
 ```
 
 ### System Validation
+
 ```
 All inventory transactions properly recorded ✓
 Journal entries balanced and accurate ✓
