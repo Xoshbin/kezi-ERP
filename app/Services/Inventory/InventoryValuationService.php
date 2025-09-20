@@ -523,6 +523,17 @@ class InventoryValuationService
         $sourceId = $sourceDocument->id ?? 'unknown';
         $reference = "STOCK-IN-{$sourceType}-{$sourceId}";
 
+        // Check if a journal entry with this reference already exists to prevent duplicates
+        $existingEntry = \App\Models\JournalEntry::where('company_id', $company->id)
+            ->where('journal_id', $journalId)
+            ->where('reference', $reference)
+            ->first();
+
+        if ($existingEntry) {
+            // Journal entry already exists for this stock receipt, return it instead of creating a duplicate
+            return $existingEntry;
+        }
+
         // Create journal entry DTO
         $journalEntryDTO = new CreateJournalEntryDTO(
             company_id: $company->id,
@@ -582,6 +593,16 @@ class InventoryValuationService
             if (! $stockMove) {
                 throw new Exception("No incoming stock move found for product {$product->id} and source document");
             }
+        }
+
+        // Check if a valuation record already exists for this stock move to prevent duplicates
+        $existingValuation = StockMoveValuation::where('stock_move_id', $stockMove->id)
+            ->where('journal_entry_id', $journalEntry->id)
+            ->first();
+
+        if ($existingValuation) {
+            // Valuation record already exists, return it instead of creating a duplicate
+            return $existingValuation;
         }
 
         return StockMoveValuation::create([
