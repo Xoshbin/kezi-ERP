@@ -51,7 +51,7 @@ class ProductSeeder extends Seeder
         $cogsAccount = Account::where('company_id', $company->id)->where('code', '510102')->firstOrFail(); // Cost of Goods Sold (IQD)
 
         // Product A: High-End Graphics Cards (FIFO Valuation)
-        Product::updateOrCreate(
+        $productA = Product::updateOrCreate(
             ['company_id' => $company->id, 'sku' => 'GPU-RTX4090'],
             [
                 'name' => 'NVIDIA RTX 4090 Graphics Card',
@@ -66,7 +66,7 @@ class ProductSeeder extends Seeder
         );
 
         // Product B: Memory Modules (AVCO Valuation)
-        Product::updateOrCreate(
+        $productB = Product::updateOrCreate(
             ['company_id' => $company->id, 'sku' => 'RAM-DDR5-32GB'],
             [
                 'name' => 'DDR5 32GB Memory Module',
@@ -81,7 +81,7 @@ class ProductSeeder extends Seeder
         );
 
         // Product C: Storage Drives (LIFO Valuation)
-        Product::updateOrCreate(
+        $productC = Product::updateOrCreate(
             ['company_id' => $company->id, 'sku' => 'SSD-2TB-NVME'],
             [
                 'name' => '2TB NVMe SSD Drive',
@@ -94,5 +94,66 @@ class ProductSeeder extends Seeder
                 'lot_tracking_enabled' => true, // Batch tracking with expiration dates
             ]
         );
+
+        // Create reordering rules as per end-to-end scenario documentation
+        $warehouseLocation = \App\Models\StockLocation::where('company_id', $company->id)
+            ->where('name', 'Warehouse')
+            ->first();
+
+        if ($warehouseLocation) {
+            // GPU-RTX4090 Reorder Rule: Min: 5, Max: 20, Safety Stock: 2
+            \App\Models\ReorderingRule::updateOrCreate(
+                [
+                    'company_id' => $company->id,
+                    'product_id' => $productA->id,
+                    'location_id' => $warehouseLocation->id,
+                ],
+                [
+                    'min_qty' => 5,
+                    'max_qty' => 20,
+                    'safety_stock' => 2,
+                    'multiple' => 1,
+                    'route' => \App\Enums\Inventory\ReorderingRoute::MinMax,
+                    'lead_time_days' => 7,
+                    'active' => true,
+                ]
+            );
+
+            // RAM-DDR5-32GB Reorder Rule: Min: 20, Max: 100, Safety Stock: 10
+            \App\Models\ReorderingRule::updateOrCreate(
+                [
+                    'company_id' => $company->id,
+                    'product_id' => $productB->id,
+                    'location_id' => $warehouseLocation->id,
+                ],
+                [
+                    'min_qty' => 20,
+                    'max_qty' => 100,
+                    'safety_stock' => 10,
+                    'multiple' => 5,
+                    'route' => \App\Enums\Inventory\ReorderingRoute::MinMax,
+                    'lead_time_days' => 5,
+                    'active' => true,
+                ]
+            );
+
+            // SSD-2TB-NVME Reorder Rule: Min: 15, Max: 50, Safety Stock: 5
+            \App\Models\ReorderingRule::updateOrCreate(
+                [
+                    'company_id' => $company->id,
+                    'product_id' => $productC->id,
+                    'location_id' => $warehouseLocation->id,
+                ],
+                [
+                    'min_qty' => 15,
+                    'max_qty' => 50,
+                    'safety_stock' => 5,
+                    'multiple' => 5,
+                    'route' => \App\Enums\Inventory\ReorderingRoute::MinMax,
+                    'lead_time_days' => 10,
+                    'active' => true,
+                ]
+            );
+        }
     }
 }
