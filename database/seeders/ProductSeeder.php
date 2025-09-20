@@ -2,9 +2,8 @@
 
 namespace Database\Seeders;
 
+use App\Enums\Inventory\ValuationMethod;
 use App\Enums\Products\ProductType;
-use App\Enums\Products\ProductValuation;
-use App\Enums\Products\TrackingType;
 use App\Models\Account;
 use App\Models\Company;
 use App\Models\Product;
@@ -47,9 +46,9 @@ class ProductSeeder extends Seeder
         // --- New Products ---
 
         // Resolve accounts by code
-        $inventoryAccount = Account::where('company_id', $company->id)->where('code', '1200')->firstOrFail();
-        $stockInputAccount = Account::where('company_id', $company->id)->where('code', '1210')->firstOrFail();
-        $cogsAccount = Account::where('company_id', $company->id)->where('code', '5000')->firstOrFail();
+        $inventoryAccount = Account::where('company_id', $company->id)->where('code', '130102')->firstOrFail(); // Inventory Asset (IQD)
+        $stockInputAccount = Account::where('company_id', $company->id)->where('code', '210202')->firstOrFail(); // Stock Input Account (IQD)
+        $cogsAccount = Account::where('company_id', $company->id)->where('code', '510102')->firstOrFail(); // Cost of Goods Sold (IQD)
 
         // Product A: High-End Graphics Cards (FIFO Valuation)
         Product::updateOrCreate(
@@ -57,15 +56,12 @@ class ProductSeeder extends Seeder
             [
                 'name' => 'NVIDIA RTX 4090 Graphics Card',
                 'type' => ProductType::Storable,
-                'valuation' => ProductValuation::Fifo,
+                'inventory_valuation_method' => ValuationMethod::FIFO,
                 'unit_price' => 2500000,
                 'default_inventory_account_id' => $inventoryAccount->id,
-                'stock_input_account_id' => $stockInputAccount->id,
+                'default_stock_input_account_id' => $stockInputAccount->id,
                 'expense_account_id' => $cogsAccount->id,
-                'tracking' => TrackingType::SerialNumber,
-                'min_stock' => 5,
-                'max_stock' => 20,
-                'safety_stock' => 2,
+                'lot_tracking_enabled' => true, // Serial number tracking
             ]
         );
 
@@ -75,15 +71,12 @@ class ProductSeeder extends Seeder
             [
                 'name' => 'DDR5 32GB Memory Module',
                 'type' => ProductType::Storable,
-                'valuation' => ProductValuation::Avco,
+                'inventory_valuation_method' => ValuationMethod::AVCO,
                 'unit_price' => 400000,
                 'default_inventory_account_id' => $inventoryAccount->id,
-                'stock_input_account_id' => $stockInputAccount->id,
+                'default_stock_input_account_id' => $stockInputAccount->id,
                 'expense_account_id' => $cogsAccount->id,
-                'tracking' => TrackingType::Batch,
-                'min_stock' => 20,
-                'max_stock' => 100,
-                'safety_stock' => 10,
+                'lot_tracking_enabled' => true, // Batch tracking
             ]
         );
 
@@ -93,15 +86,12 @@ class ProductSeeder extends Seeder
             [
                 'name' => '2TB NVMe SSD Drive',
                 'type' => ProductType::Storable,
-                'valuation' => ProductValuation::Lifo,
+                'inventory_valuation_method' => ValuationMethod::LIFO,
                 'unit_price' => 300000,
                 'default_inventory_account_id' => $inventoryAccount->id,
-                'stock_input_account_id' => $stockInputAccount->id,
+                'default_stock_input_account_id' => $stockInputAccount->id,
                 'expense_account_id' => $cogsAccount->id,
-                'tracking' => TrackingType::Batch, // Assuming expiration dates are part of batch tracking
-                'min_stock' => 15,
-                'max_stock' => 50,
-                'safety_stock' => 5,
+                'lot_tracking_enabled' => true, // Batch tracking with expiration dates
             ]
         );
     }

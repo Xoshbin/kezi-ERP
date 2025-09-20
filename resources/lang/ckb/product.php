@@ -37,6 +37,8 @@ return [
     'default_cogs_account' => 'هەژماری تێچووی کاڵا فرۆشراوەکان',
     'default_stock_input_account' => 'هەژماری هاتنەژوورەوەی کۆگا',
     'default_price_difference_account' => 'هەژماری جیاوازی نرخ',
+    'lot_tracking_enabled' => 'چالاککردنی شوێنکەوتنی دەستە',
+    'lot_tracking_enabled_help' => 'چالاککردنی شوێنکەوتنی دەستە/کۆمەڵ بۆ ئەم بەرهەمە بۆ شوێنکەوتنی ژمارە زنجیرەییەکان، دەستەکان، یان بەرواری بەسەرچوون.',
 
     // Stock Information
     'stock_moves' => 'جووڵەی کۆگا',

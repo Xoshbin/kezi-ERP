@@ -37,6 +37,8 @@ return [
     'default_cogs_account' => 'حساب تكلفة البضاعة المباعة',
     'default_stock_input_account' => 'حساب إدخال المخزون',
     'default_price_difference_account' => 'حساب فرق السعر',
+    'lot_tracking_enabled' => 'تفعيل تتبع الدفعات',
+    'lot_tracking_enabled_help' => 'تفعيل تتبع الدفعات/المجموعات لهذا المنتج لتتبع الأرقام التسلسلية أو الدفعات أو تواريخ انتهاء الصلاحية.',
 
     // Stock Information
     'stock_moves' => 'حركات المخزون',
