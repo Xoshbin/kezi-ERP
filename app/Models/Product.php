@@ -91,6 +91,7 @@ class Product extends Model
         'default_price_difference_account_id',
         'average_cost',
         'quantity_on_hand',
+        'lot_tracking_enabled',
     ];
 
     protected $casts = [
@@ -103,6 +104,7 @@ class Product extends Model
         'deleted_at' => 'datetime',
         'type' => ProductType::class,
         'quantity_on_hand' => 'float',
+        'lot_tracking_enabled' => 'boolean',
     ];
 
     protected static function booted(): void
@@ -270,5 +272,13 @@ class Product extends Model
     public function inventoryCostLayers(): HasMany
     {
         return $this->hasMany(InventoryCostLayer::class);
+    }
+
+    /**
+     * @return HasMany<ReorderingRule, static>
+     */
+    public function reorderingRules(): HasMany
+    {
+        return $this->hasMany(ReorderingRule::class);
     }
 }

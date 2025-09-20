@@ -148,23 +148,9 @@ class InvoiceResource extends Resource
                             return $tenant instanceof Company ? $tenant->currency_id : null;
                         })
                         ->afterStateUpdated(function (callable $set, $state) {
+                            // Clear any manually set exchange rate when currency changes
                             if ($state) {
-                                $currency = Currency::find($state);
-                                // Ensure we have a single Currency model, not a collection
-                                if ($currency instanceof Collection) {
-                                    $currency = $currency->first();
-                                }
-                                $company = Filament::getTenant();
-
-                                if ($currency && $company instanceof Company && $currency->id !== $company->currency_id) {
-                                    // Get latest exchange rate for this company
-                                    $latestRate = CurrencyRate::getLatestRate($currency->id, $company->id);
-                                    if ($latestRate) {
-                                        $set('current_exchange_rate', $latestRate);
-                                    }
-                                } else {
-                                    $set('current_exchange_rate', 1.0);
-                                }
+                                $set('exchange_rate_at_creation', null);
                             }
                         })
                         ->createOptionForm([
@@ -196,18 +182,60 @@ class InvoiceResource extends Resource
                                 ->modalWidth('lg');
                         }),
 
-                    TextInput::make('current_exchange_rate')
-                        ->label(__('invoice.current_exchange_rate'))
+                    TextInput::make('exchange_rate_at_creation')
+                        ->label(__('invoice.exchange_rate'))
                         ->numeric()
-                        ->disabled()
-                        ->dehydrated(false)
+                        ->step(0.000001)
+                        ->minValue(0.000001)
+                        ->columnSpan(1)
                         ->visible(function (callable $get) {
                             $currencyId = $get('currency_id');
                             $company = Filament::getTenant();
 
                             return $currencyId && $company instanceof Company && $currencyId != $company->currency_id;
                         })
-                        ->helperText(__('invoice.exchange_rate_helper')),
+                        ->disabled(function (?Invoice $record) {
+                            return $record && $record->status !== InvoiceStatus::Draft;
+                        })
+                        ->helperText(function (callable $get, ?Invoice $record) {
+                            // If document is not draft, show locked message
+                            if ($record && $record->status !== InvoiceStatus::Draft) {
+                                return __('invoice.exchange_rate_locked_helper');
+                            }
+
+                            // Show current exchange rate as helper text
+                            $currencyId = $get('currency_id');
+                            $company = Filament::getTenant();
+
+                            if ($currencyId && $company instanceof Company && $currencyId != $company->currency_id) {
+                                $currency = \App\Models\Currency::find($currencyId);
+                                if ($currency) {
+                                    $latestRate = \App\Models\CurrencyRate::getLatestRate($currency->id, $company->id);
+                                    if ($latestRate) {
+                                        return __('invoice.exchange_rate_helper_with_current', ['rate' => number_format($latestRate, 6)]);
+                                    }
+                                }
+                            }
+
+                            return __('invoice.exchange_rate_manual_helper');
+                        })
+                        ->placeholder(function (callable $get) {
+                            // Show current rate as placeholder when creating new records
+                            $currencyId = $get('currency_id');
+                            $company = Filament::getTenant();
+
+                            if ($currencyId && $company instanceof Company && $currencyId != $company->currency_id) {
+                                $currency = \App\Models\Currency::find($currencyId);
+                                if ($currency) {
+                                    $latestRate = \App\Models\CurrencyRate::getLatestRate($currency->id, $company->id);
+                                    if ($latestRate) {
+                                        return number_format($latestRate, 6);
+                                    }
+                                }
+                            }
+
+                            return null;
+                        }),
                 ])
                 ->columns(4)
                 ->columnSpanFull(),
