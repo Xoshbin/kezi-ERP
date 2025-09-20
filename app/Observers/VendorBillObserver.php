@@ -33,6 +33,9 @@ class VendorBillObserver
             return;
         }
 
+        // Load tax relationship to check if it should be capitalized
+        $line->load('tax');
+
         $product = $line->product;
         $company = $vendorBill->company->fresh();
         if (! $company) {
@@ -79,6 +82,24 @@ class VendorBillObserver
                     $costCurrency
                 );
             }
+        }
+
+        // Include capitalized tax in the unit cost if tax is non-recoverable
+        if ($line->tax_id && $line->total_line_tax->isPositive() && $line->tax && !$line->tax->is_recoverable) {
+            // Convert tax to company currency if needed
+            $taxInCompanyCurrency = $line->total_line_tax_company_currency ?? $line->total_line_tax;
+            if (!$line->total_line_tax_company_currency && $vendorBill->currency_id !== $company->currency_id) {
+                $exchangeRate = $vendorBill->exchange_rate_at_creation ?? 1.0;
+                $taxInCompanyCurrency = Money::of(
+                    $line->total_line_tax->getAmount()->toFloat() * $exchangeRate,
+                    $costCurrency
+                );
+            }
+
+            // Add tax to unit price for cost calculation
+            $unitPriceInCompanyCurrency = $unitPriceInCompanyCurrency->plus(
+                $taxInCompanyCurrency->dividedBy($line->quantity)
+            );
         }
 
         $purchaseValue = $unitPriceInCompanyCurrency->multipliedBy($line->quantity);
