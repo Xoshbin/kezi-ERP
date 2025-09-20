@@ -234,4 +234,239 @@ describe('Vendor Bill Confirmation Business Rules', function () {
         $editWire->assertActionVisible('confirm');
         $editWire->assertActionEnabled('confirm');
     });
+
+    it('successfully confirms vendor bill with storable products via Filament UI', function () {
+        // Create vendor and storable product
+        $vendor = \App\Models\Partner::factory()->vendor()->create([
+            'company_id' => $this->company->id,
+        ]);
+
+        // Create required accounts for storable product
+        $inventoryAccount = \App\Models\Account::factory()->create([
+            'company_id' => $this->company->id,
+            'name' => ['en' => 'Inventory Asset'],
+            'code' => '1300',
+            'type' => \App\Enums\Accounting\AccountType::CurrentAssets,
+        ]);
+
+        $stockInputAccount = \App\Models\Account::factory()->create([
+            'company_id' => $this->company->id,
+            'name' => ['en' => 'Stock Input'],
+            'code' => '2100',
+            'type' => \App\Enums\Accounting\AccountType::CurrentLiabilities,
+        ]);
+
+        $expenseAccount = \App\Models\Account::factory()->create([
+            'company_id' => $this->company->id,
+            'name' => ['en' => 'Product Expense'],
+            'code' => '5000',
+            'type' => \App\Enums\Accounting\AccountType::Expense,
+        ]);
+
+        $product = \App\Models\Product::factory()->create([
+            'company_id' => $this->company->id,
+            'unit_price' => \Brick\Money\Money::of(100, $this->company->currency->code),
+            'type' => \App\Enums\Products\ProductType::Storable, // Use storable to test inventory workflow
+            'default_inventory_account_id' => $inventoryAccount->id,
+            'default_stock_input_account_id' => $stockInputAccount->id,
+            'expense_account_id' => $expenseAccount->id,
+        ]);
+
+        // Create vendor bill with storable product
+        $vendorBill = VendorBill::factory()->for($this->company)->create([
+            'vendor_id' => $vendor->id,
+            'currency_id' => $this->company->currency_id,
+            'status' => VendorBillStatus::Draft,
+            'bill_date' => now()->format('Y-m-d'),
+            'accounting_date' => now()->format('Y-m-d'),
+            'total_amount' => \Brick\Money\Money::of(100, $this->company->currency->code),
+            'total_tax' => \Brick\Money\Money::of(0, $this->company->currency->code),
+        ]);
+
+        // Create line with storable product
+        $vendorBill->lines()->create([
+            'company_id' => $this->company->id,
+            'product_id' => $product->id,
+            'description' => 'Test storable product line',
+            'quantity' => 1,
+            'unit_price' => \Brick\Money\Money::of(100, $this->company->currency->code),
+            'subtotal' => \Brick\Money\Money::of(100, $this->company->currency->code),
+            'total_line_tax' => \Brick\Money\Money::of(0, $this->company->currency->code),
+            'expense_account_id' => $product->expense_account_id,
+        ]);
+
+        $vendorBill->refresh();
+
+        // Ensure lines exist and bill is ready for confirmation
+        expect($vendorBill->lines)->toHaveCount(1);
+        expect($vendorBill->status)->toBe(VendorBillStatus::Draft);
+
+        // Test Filament UI confirmation
+        $editWire = livewire(EditVendorBill::class, [
+            'record' => $vendorBill->getRouteKey(),
+        ]);
+
+        // Verify confirm action is available and enabled
+        $editWire->assertActionVisible('confirm');
+        $editWire->assertActionEnabled('confirm');
+
+        // First test: Try confirming via service layer directly to ensure it works
+        $vendorBillService = app(\App\Services\VendorBillService::class);
+        try {
+            $vendorBillService->confirm($vendorBill, $this->user);
+            $vendorBill->refresh();
+            expect($vendorBill->status)->toBe(VendorBillStatus::Posted);
+            expect($vendorBill->posted_at)->not->toBeNull();
+            expect($vendorBill->journalEntry)->not->toBeNull();
+        } catch (\Exception $e) {
+            // If service layer fails, we need to understand why
+            throw new \Exception("Service layer confirmation failed: " . $e->getMessage());
+        }
+
+        // Create a fresh vendor bill for UI test (can't reset posted bills due to constraints)
+        $uiTestVendorBill = VendorBill::factory()->for($this->company)->create([
+            'vendor_id' => $vendor->id,
+            'currency_id' => $this->company->currency_id,
+            'status' => VendorBillStatus::Draft,
+            'bill_date' => now()->format('Y-m-d'),
+            'accounting_date' => now()->format('Y-m-d'),
+            'total_amount' => \Brick\Money\Money::of(100, $this->company->currency->code),
+            'total_tax' => \Brick\Money\Money::of(0, $this->company->currency->code),
+        ]);
+
+        // Create line with storable product for UI test
+        $uiTestVendorBill->lines()->create([
+            'company_id' => $this->company->id,
+            'product_id' => $product->id,
+            'description' => 'Test storable product line for UI',
+            'quantity' => 1,
+            'unit_price' => \Brick\Money\Money::of(100, $this->company->currency->code),
+            'subtotal' => \Brick\Money\Money::of(100, $this->company->currency->code),
+            'total_line_tax' => \Brick\Money\Money::of(0, $this->company->currency->code),
+            'expense_account_id' => $product->expense_account_id,
+        ]);
+
+        $uiTestVendorBill->refresh();
+
+        // Now test the Filament UI confirmation
+        $editWire = livewire(EditVendorBill::class, [
+            'record' => $uiTestVendorBill->getRouteKey(),
+        ]);
+
+        // Perform the confirmation action
+        $editWire->callAction('confirm');
+
+        // Check if there were any error notifications
+        // The action should succeed without errors
+        $editWire->assertNotified();
+
+        // Verify the bill was confirmed successfully
+        $uiTestVendorBill->refresh();
+        expect($uiTestVendorBill->status)->toBe(VendorBillStatus::Posted);
+        expect($uiTestVendorBill->posted_at)->not->toBeNull();
+        expect($uiTestVendorBill->journalEntry)->not->toBeNull();
+
+        // Verify journal entry was created with correct reference
+        $journalEntry = $uiTestVendorBill->journalEntry;
+        expect($journalEntry->reference)->toBe($uiTestVendorBill->bill_reference);
+        expect($journalEntry->is_posted)->toBeTrue();
+
+        // Verify stock move was created for storable product
+        $stockMove = \App\Models\StockMove::where('source_type', VendorBill::class)
+            ->where('source_id', $uiTestVendorBill->id)
+            ->first();
+        expect($stockMove)->not->toBeNull();
+        expect($stockMove->product_id)->toBe($product->id);
+        expect((float) $stockMove->quantity)->toBe(1.0);
+
+        // Verify no duplicate journal entry constraint violations occurred
+        // This test specifically addresses the issue where multiple journal entries
+        // with the same reference were being created, causing constraint violations
+        $journalEntries = \App\Models\JournalEntry::where('source_type', VendorBill::class)
+            ->where('source_id', $uiTestVendorBill->id)
+            ->get();
+
+        // Should have exactly TWO journal entries for a storable product vendor bill:
+        // 1. Main vendor bill entry (Dr Expense, Cr AP)
+        // 2. Stock valuation entry (Dr Inventory, Cr Stock Input)
+        expect($journalEntries)->toHaveCount(2);
+
+        // Verify the main journal entry has the expected reference format (not STOCK-IN)
+        expect($journalEntry->reference)->not->toContain('STOCK-IN');
+
+        // Verify there's a separate stock valuation journal entry
+        $stockValuationEntry = $journalEntries->first(function ($entry) use ($journalEntry) {
+            return $entry->id !== $journalEntry->id;
+        });
+        expect($stockValuationEntry)->not->toBeNull();
+        expect($stockValuationEntry->reference)->toContain('STOCK-IN');
+        expect($stockValuationEntry->reference)->toContain('VendorBill-' . $uiTestVendorBill->id);
+    });
+
+    it('handles exchange rate fallback during vendor bill confirmation via UI', function () {
+        // Create foreign currency
+        $usd = \App\Models\Currency::factory()->create(['code' => 'USD']);
+
+        // Create current exchange rate (not for historical date)
+        \App\Models\CurrencyRate::factory()->create([
+            'company_id' => $this->company->id,
+            'currency_id' => $usd->id,
+            'rate' => 1460.0,
+            'effective_date' => now(),
+        ]);
+
+        // Create vendor and product
+        $vendor = \App\Models\Partner::factory()->vendor()->create([
+            'company_id' => $this->company->id,
+        ]);
+
+        $product = \App\Models\Product::factory()->create([
+            'company_id' => $this->company->id,
+            'unit_price' => \Brick\Money\Money::of(100, 'USD'),
+            'type' => \App\Enums\Products\ProductType::Service,
+        ]);
+
+        // Create vendor bill with historical date (no rate available for this date)
+        $vendorBill = VendorBill::factory()->for($this->company)->create([
+            'vendor_id' => $vendor->id,
+            'currency_id' => $usd->id,
+            'status' => VendorBillStatus::Draft,
+            'bill_date' => '2025-05-15', // Historical date
+            'accounting_date' => '2025-05-15',
+            'total_amount' => \Brick\Money\Money::of(100, 'USD'),
+            'total_tax' => \Brick\Money\Money::of(0, 'USD'),
+        ]);
+
+        // Create line item
+        $vendorBill->lines()->create([
+            'company_id' => $this->company->id,
+            'product_id' => $product->id,
+            'description' => 'Test service line',
+            'quantity' => 1,
+            'unit_price' => \Brick\Money\Money::of(100, 'USD'),
+            'subtotal' => \Brick\Money\Money::of(100, 'USD'),
+            'total_line_tax' => \Brick\Money\Money::of(0, 'USD'),
+            'expense_account_id' => $product->expense_account_id,
+        ]);
+
+        $vendorBill->refresh();
+
+        // Test Filament UI confirmation with exchange rate fallback
+        $editWire = livewire(EditVendorBill::class, [
+            'record' => $vendorBill->getRouteKey(),
+        ]);
+
+        // Perform the confirmation action - should use fallback exchange rate
+        $editWire->callAction('confirm');
+
+        // Verify success notification (no exchange rate error)
+        $editWire->assertNotified();
+
+        // Verify the bill was confirmed successfully with fallback rate
+        $vendorBill->refresh();
+        expect($vendorBill->status)->toBe(VendorBillStatus::Posted);
+        expect((float) $vendorBill->exchange_rate_at_creation)->toBe(1460.0);
+        expect($vendorBill->total_amount_company_currency->__toString())->toContain('146000.000');
+        expect($vendorBill->journalEntry)->not->toBeNull();
+    });
 });
