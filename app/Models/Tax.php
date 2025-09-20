@@ -27,6 +27,7 @@ use Spatie\Translatable\HasTranslations;
  * @property float $rate
  * @property TaxType $type
  * @property bool $is_active
+ * @property bool $is_recoverable
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property-read Company $company
@@ -88,6 +89,7 @@ class Tax extends Model
         'rate',
         'type', // e.g., 'Sales', 'Purchase', 'Both' [1]
         'is_active',
+        'is_recoverable', // Whether tax can be deducted as input tax or should be capitalized
         'tax_account_id', // Foreign key to the Account model for ledger posting [1]
     ];
 
@@ -100,6 +102,7 @@ class Tax extends Model
     protected $casts = [
         'rate' => 'float', // Crucial for monetary precision in tax calculations [1]
         'is_active' => 'boolean', // Ensures boolean behavior for the active status [1]
+        'is_recoverable' => 'boolean', // Whether tax can be deducted as input tax or should be capitalized
         'type' => TaxType::class,
         'created_at' => 'datetime', // Laravel automatically casts these, but explicit declaration is good practice.
         'updated_at' => 'datetime',
