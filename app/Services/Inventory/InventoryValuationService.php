@@ -412,8 +412,10 @@ class InventoryValuationService
         if ($sourceDocument instanceof StockMove) {
             $stockMove = $sourceDocument;
         } else {
-            // Find the related stock move
-            $query = StockMove::where('product_id', $product->id)
+            // Find the related stock move through product lines
+            $query = StockMove::whereHas('productLines', function ($q) use ($product) {
+                $q->where('product_id', $product->id);
+            })
                 ->where('source_type', get_class($sourceDocument))
                 ->where('source_id', $sourceDocument->id ?? null);
 
@@ -591,8 +593,10 @@ class InventoryValuationService
         if ($sourceDocument instanceof StockMove) {
             $stockMove = $sourceDocument;
         } else {
-            // Find the related stock move
-            $stockMove = StockMove::where('product_id', $product->id)
+            // Find the related stock move through product lines
+            $stockMove = StockMove::whereHas('productLines', function ($query) use ($product) {
+                $query->where('product_id', $product->id);
+            })
                 ->where('source_type', get_class($sourceDocument))
                 ->where('source_id', $sourceDocument->id ?? null)
                 ->where('move_type', StockMoveType::Incoming)
@@ -603,8 +607,9 @@ class InventoryValuationService
             }
         }
 
-        // Check if a valuation record already exists for this stock move to prevent duplicates
+        // Check if a valuation record already exists for this stock move and product to prevent duplicates
         $existingValuation = StockMoveValuation::where('stock_move_id', $stockMove->id)
+            ->where('product_id', $product->id)
             ->where('journal_entry_id', $journalEntry->id)
             ->first();
 
@@ -641,7 +646,7 @@ class InventoryValuationService
         }
 
         $firstStockMove = $stockMoves[0];
-        $company = $firstStockMove->product->company;
+        $company = $firstStockMove->company;
         $currencyCode = $company->currency->code;
         $zero = Money::of(0, $currencyCode);
 
@@ -673,45 +678,48 @@ class InventoryValuationService
         $productNames = [];
 
         foreach ($stockMoves as $stockMove) {
-            $product = $stockMove->product;
-            $quantity = (float) $stockMove->quantity;
+            // Process each product line in the stock move
+            foreach ($stockMove->productLines as $productLine) {
+                $product = $productLine->product;
+                $quantity = (float) $productLine->quantity;
 
-            // Validate required accounts
-            if (!$product->default_inventory_account_id) {
-                throw new Exception("Product {$product->id} does not have an inventory account configured");
+                // Validate required accounts
+                if (!$product->default_inventory_account_id) {
+                    throw new Exception("Product {$product->id} does not have an inventory account configured");
+                }
+                if (!$product->default_stock_input_account_id) {
+                    throw new Exception("Product {$product->id} does not have a stock input account configured");
+                }
+
+                // Calculate cost for this product
+                $costPerUnit = $this->calculateIncomingCostPerUnit($product, $stockMove);
+                $productTotalCost = $costPerUnit->multipliedBy($quantity, RoundingMode::HALF_UP);
+                $totalCost = $totalCost->plus($productTotalCost);
+                $productNames[] = $product->name;
+
+                // Add debit line for inventory account
+                $journalEntryLines[] = new CreateJournalEntryLineDTO(
+                    account_id: $product->default_inventory_account_id,
+                    debit: $productTotalCost,
+                    credit: $zero,
+                    description: "Stock receipt for {$product->name} (Qty: {$quantity})",
+                    analytic_account_id: null,
+                    partner_id: $sourceDocument->vendor_id ?? null,
+                );
+
+                // Add credit line for stock input account
+                $journalEntryLines[] = new CreateJournalEntryLineDTO(
+                    account_id: $product->default_stock_input_account_id,
+                    debit: $zero,
+                    credit: $productTotalCost,
+                    description: "Stock input for {$product->name} (Qty: {$quantity})",
+                    analytic_account_id: null,
+                    partner_id: $sourceDocument->vendor_id ?? null,
+                );
+
+                // Process inventory valuation for this product (without creating journal entry)
+                $this->processIncomingStockWithoutJournalEntry($product, $quantity, $costPerUnit, Carbon::parse($stockMove->move_date), $sourceDocument);
             }
-            if (!$product->default_stock_input_account_id) {
-                throw new Exception("Product {$product->id} does not have a stock input account configured");
-            }
-
-            // Calculate cost for this product
-            $costPerUnit = $this->calculateIncomingCostPerUnit($product, $stockMove);
-            $productTotalCost = $costPerUnit->multipliedBy($quantity, RoundingMode::HALF_UP);
-            $totalCost = $totalCost->plus($productTotalCost);
-            $productNames[] = $product->name;
-
-            // Add debit line for inventory account
-            $journalEntryLines[] = new CreateJournalEntryLineDTO(
-                account_id: $product->default_inventory_account_id,
-                debit: $productTotalCost,
-                credit: $zero,
-                description: "Stock receipt for {$product->name} (Qty: {$quantity})",
-                analytic_account_id: null,
-                partner_id: $sourceDocument->vendor_id ?? null,
-            );
-
-            // Add credit line for stock input account
-            $journalEntryLines[] = new CreateJournalEntryLineDTO(
-                account_id: $product->default_stock_input_account_id,
-                debit: $zero,
-                credit: $productTotalCost,
-                description: "Stock input for {$product->name} (Qty: {$quantity})",
-                analytic_account_id: null,
-                partner_id: $sourceDocument->vendor_id ?? null,
-            );
-
-            // Process inventory valuation for this product (without creating journal entry)
-            $this->processIncomingStockWithoutJournalEntry($product, $quantity, $costPerUnit, Carbon::parse($stockMove->move_date), $sourceDocument);
         }
 
         // Create consolidated journal entry DTO
@@ -734,15 +742,17 @@ class InventoryValuationService
 
         // Create StockMoveValuation records and update stock quants for each stock move
         foreach ($stockMoves as $stockMove) {
-            $product = $stockMove->product;
-            $quantity = (float) $stockMove->quantity;
-            $costPerUnit = $this->calculateIncomingCostPerUnit($product, $stockMove);
-            $productTotalCost = $costPerUnit->multipliedBy($quantity, RoundingMode::HALF_UP);
+            foreach ($stockMove->productLines as $productLine) {
+                $product = $productLine->product;
+                $quantity = (float) $productLine->quantity;
+                $costPerUnit = $this->calculateIncomingCostPerUnit($product, $stockMove);
+                $productTotalCost = $costPerUnit->multipliedBy($quantity, RoundingMode::HALF_UP);
 
-            $this->createIncomingStockMoveValuation($product, $quantity, $productTotalCost, $journalEntry, $sourceDocument);
+                $this->createIncomingStockMoveValuation($product, $quantity, $productTotalCost, $journalEntry, $sourceDocument);
 
-            // Update stock quants for the incoming stock
-            $this->stockQuantService->applyForIncoming($stockMove);
+                // Update stock quants for the incoming stock - need to pass product line instead of stock move
+                $this->stockQuantService->applyForIncomingProductLine($productLine);
+            }
         }
 
         Log::info("Successfully created consolidated inventory journal entry for " . count($stockMoves) . " products, Total cost: {$totalCost->getAmount()}");

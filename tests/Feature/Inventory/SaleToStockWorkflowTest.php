@@ -101,12 +101,16 @@ it('correctly processes outgoing storable product when invoice is posted, creati
 
     // Assert 2: Stock move was created for outgoing inventory
     $this->assertDatabaseHas('stock_moves', [
-        'product_id' => $this->product->id,
-        'quantity' => $quantity,
         'move_type' => StockMoveType::Outgoing->value,
         'status' => StockMoveStatus::Done->value,
         'source_type' => Invoice::class,
         'source_id' => $invoice->id,
+    ]);
+
+    // Assert 2b: Product line was created with correct details
+    $this->assertDatabaseHas('stock_move_product_lines', [
+        'product_id' => $this->product->id,
+        'quantity' => $quantity,
     ]);
 
     $stockMove = StockMove::where('source_type', Invoice::class)
@@ -115,8 +119,9 @@ it('correctly processes outgoing storable product when invoice is posted, creati
     expect($stockMove)->not->toBeNull();
 
     // Destination must be Customer (not Vendor)
-    $stockMove->load('toLocation');
-    expect($stockMove->toLocation->type)->toBe(\App\Enums\Inventory\StockLocationType::Customer);
+    $productLine = $stockMove->productLines()->first();
+    $productLine->load('toLocation');
+    expect($productLine->toLocation->type)->toBe(\App\Enums\Inventory\StockLocationType::Customer);
 
     // Assert 3: Sales journal entry was created correctly
     $salesJournalEntry = $invoice->journalEntry;
@@ -176,7 +181,11 @@ it('dispatches stock move confirmed event when invoice with storable products is
     expect($stockMove)->not->toBeNull();
     expect($stockMove->move_type)->toBe(StockMoveType::Outgoing);
     expect($stockMove->status)->toBe(StockMoveStatus::Done);
-    expect($stockMove->quantity)->toBe($quantity);
+
+    // Check product line for quantity
+    $productLine = $stockMove->productLines()->first();
+    expect($productLine)->not->toBeNull();
+    expect((float) $productLine->quantity)->toBe((float) $quantity);
 });
 
 it('uses correct product type field when checking for storable products', function () {
@@ -231,10 +240,16 @@ it('uses correct product type field when checking for storable products', functi
         ->get();
 
     expect($stockMoves)->toHaveCount(1);
-    expect($stockMoves->first()->product_id)->toBe($storableProduct->id);
+
+    // Check that the stock move has a product line for the storable product
+    $stockMove = $stockMoves->first();
+    $productLine = $stockMove->productLines()->where('product_id', $storableProduct->id)->first();
+    expect($productLine)->not->toBeNull();
 
     // No stock move should be created for the service product
-    $serviceStockMove = StockMove::where('product_id', $serviceProduct->id)->first();
+    $serviceStockMove = StockMove::whereHas('productLines', function ($query) use ($serviceProduct) {
+        $query->where('product_id', $serviceProduct->id);
+    })->first();
     expect($serviceStockMove)->toBeNull();
 });
 

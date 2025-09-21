@@ -626,14 +626,18 @@ it('records stock moves and inventory/AP postings for storable products and upda
     // Assert: Stock move created (Incoming, Done) from Vendor to Stock locations
     $this->assertDatabaseHas('stock_moves', [
         'company_id' => $this->company->id,
-        'product_id' => $product->id,
-        'quantity' => $qty,
-        'from_location_id' => $this->company->vendorLocation->id,
-        'to_location_id' => $this->company->defaultStockLocation->id,
         'move_type' => StockMoveType::Incoming->value,
         'status' => StockMoveStatus::Done->value,
         'source_type' => VendorBill::class,
         'source_id' => $vendorBill->id,
+    ]);
+
+    // Assert: Product line was created with correct details
+    $this->assertDatabaseHas('stock_move_product_lines', [
+        'product_id' => $product->id,
+        'quantity' => $qty,
+        'from_location_id' => $this->company->vendorLocation->id,
+        'to_location_id' => $this->company->defaultStockLocation->id,
     ]);
 
     // Assert: Bill JE debits Stock Input and credits AP for subtotal

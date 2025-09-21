@@ -96,8 +96,11 @@ it('creates inventory journal entries when company uses AUTO_RECORD_ON_BILL mode
         ->first();
 
     expect($stockMove)->not->toBeNull();
-    expect($stockMove->product_id)->toBe($this->product->id);
-    expect((float) $stockMove->quantity)->toBe(5.0);
+
+    // Check product line
+    $productLine = $stockMove->productLines()->where('product_id', $this->product->id)->first();
+    expect($productLine)->not->toBeNull();
+    expect((float) $productLine->quantity)->toBe(5.0);
 
     // Assert: Inventory journal entry was created (consolidated)
     $inventoryJournalEntry = JournalEntry::where('source_type', VendorBill::class)
@@ -234,20 +237,24 @@ it('creates inventory journal entries for ALL storable products in AUTO_RECORD_O
     // Act: Post the vendor bill
     app(VendorBillService::class)->post($vendorBill, $this->user);
 
-    // Assert: Stock moves were created for BOTH products
-    $stockMoves = StockMove::where('source_type', VendorBill::class)
+    // Assert: One stock move was created with BOTH product lines
+    $stockMove = StockMove::where('source_type', VendorBill::class)
         ->where('source_id', $vendorBill->id)
-        ->get();
+        ->first();
 
-    expect($stockMoves)->toHaveCount(2);
+    expect($stockMove)->not->toBeNull();
 
-    $stockMove1 = $stockMoves->where('product_id', $this->product->id)->first();
-    $stockMove2 = $stockMoves->where('product_id', $product2->id)->first();
+    // Check product lines
+    $productLines = $stockMove->productLines;
+    expect($productLines)->toHaveCount(2);
 
-    expect($stockMove1)->not->toBeNull();
-    expect($stockMove2)->not->toBeNull();
-    expect((float) $stockMove1->quantity)->toBe(3.0);
-    expect((float) $stockMove2->quantity)->toBe(2.0);
+    $productLine1 = $productLines->where('product_id', $this->product->id)->first();
+    $productLine2 = $productLines->where('product_id', $product2->id)->first();
+
+    expect($productLine1)->not->toBeNull();
+    expect($productLine2)->not->toBeNull();
+    expect((float) $productLine1->quantity)->toBe(3.0);
+    expect((float) $productLine2->quantity)->toBe(2.0);
 
     // Assert: One consolidated inventory journal entry was created for BOTH products
     $inventoryJournalEntry = JournalEntry::where('source_type', VendorBill::class)
@@ -257,7 +264,7 @@ it('creates inventory journal entries for ALL storable products in AUTO_RECORD_O
     expect($inventoryJournalEntry)->not->toBeNull();
 
     // Assert: StockMoveValuation records were created for BOTH products
-    $stockMoveValuations = StockMoveValuation::whereIn('stock_move_id', $stockMoves->pluck('id'))->get();
+    $stockMoveValuations = StockMoveValuation::where('stock_move_id', $stockMove->id)->get();
     expect($stockMoveValuations)->toHaveCount(2);
 
     $valuation1 = $stockMoveValuations->where('product_id', $this->product->id)->first();

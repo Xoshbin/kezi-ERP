@@ -6,17 +6,16 @@ use App\Enums\Inventory\StockMoveStatus;
 use App\Enums\Inventory\StockMoveType;
 use Carbon\Carbon;
 
-readonly class CreateStockMoveDTO
+readonly class UpdateStockMoveWithProductLinesDTO
 {
     /**
      * @param array<CreateStockMoveProductLineDTO> $product_lines
      */
     public function __construct(
-        public int $company_id,
+        public int $id,
         public StockMoveType $move_type,
         public StockMoveStatus $status,
         public Carbon $move_date,
-        public int $created_by_user_id,
         public array $product_lines,
         public ?string $reference = null,
         public ?string $description = null,
