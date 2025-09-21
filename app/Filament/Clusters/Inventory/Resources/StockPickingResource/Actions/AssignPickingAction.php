@@ -130,17 +130,21 @@ class AssignPickingAction extends Action
                         continue;
                     }
 
-                    // Reserve stock for the move
-                    $reservationService->reserveForMove($move, $move->from_location_id);
+                    // Reserve stock for the move - use first product line's from_location_id
+                    $firstProductLine = $move->productLines()->first();
+                    if ($firstProductLine) {
+                        $reservationService->reserveForMove($move, $firstProductLine->from_location_id);
 
-                    // Create lot lines if specified
-                    if (!empty($moveData['lot_lines'])) {
-                        foreach ($moveData['lot_lines'] as $lotLineData) {
-                            $move->stockMoveLines()->create([
-                                'company_id' => $move->company_id,
-                                'lot_id' => $lotLineData['lot_id'],
-                                'quantity' => $lotLineData['quantity'],
-                            ]);
+                        // Create lot lines if specified
+                        if (!empty($moveData['lot_lines'])) {
+                            foreach ($moveData['lot_lines'] as $lotLineData) {
+                                $move->stockMoveLines()->create([
+                                    'company_id' => $move->company_id,
+                                    'stock_move_product_line_id' => $firstProductLine->id,
+                                    'lot_id' => $lotLineData['lot_id'],
+                                    'quantity' => $lotLineData['quantity'],
+                                ]);
+                            }
                         }
                     }
                 }

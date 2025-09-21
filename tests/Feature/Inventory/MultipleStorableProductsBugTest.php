@@ -127,20 +127,24 @@ it('reproduces the bug: creates inventory journal entries for ALL storable produ
     // Act: Post the vendor bill
     app(VendorBillService::class)->post($vendorBill, $this->user);
 
-    // Assert: Verify stock moves were created for BOTH products
+    // Assert: Verify stock move was created with product lines for BOTH products
     $stockMoves = StockMove::where('source_type', VendorBill::class)
         ->where('source_id', $vendorBill->id)
         ->get();
 
-    expect($stockMoves)->toHaveCount(2);
+    expect($stockMoves)->toHaveCount(1); // One stock move with multiple product lines
 
-    $stockMove1 = $stockMoves->where('product_id', $this->product1->id)->first();
-    $stockMove2 = $stockMoves->where('product_id', $this->product2->id)->first();
+    $stockMove = $stockMoves->first();
+    $productLines = $stockMove->productLines;
+    expect($productLines)->toHaveCount(2);
 
-    expect($stockMove1)->not->toBeNull();
-    expect($stockMove2)->not->toBeNull();
-    expect((float) $stockMove1->quantity)->toBe((float) $quantity1);
-    expect((float) $stockMove2->quantity)->toBe((float) $quantity2);
+    $productLine1 = $productLines->where('product_id', $this->product1->id)->first();
+    $productLine2 = $productLines->where('product_id', $this->product2->id)->first();
+
+    expect($productLine1)->not->toBeNull();
+    expect($productLine2)->not->toBeNull();
+    expect((float) $productLine1->quantity)->toBe((float) $quantity1);
+    expect((float) $productLine2->quantity)->toBe((float) $quantity2);
 
     // Assert: Verify inventory journal entries were created for BOTH products
     $stockMoveValuations = StockMoveValuation::whereIn('stock_move_id', $stockMoves->pluck('id'))->get();

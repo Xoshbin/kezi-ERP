@@ -27,25 +27,26 @@ class InventoryQueryOptimizationService
         $cacheKey = "stock_quantities_{$company->id}_" . implode(',', $productIds) . "_{$locationId}";
 
         return Cache::remember($cacheKey, self::CACHE_TTL, function () use ($company, $productIds, $locationId) {
-            // Simplified version using stock_moves to calculate current quantities
+            // Updated to use stock_move_product_lines structure
             $query = DB::table('stock_moves as sm')
-                ->join('products as p', 'sm.product_id', '=', 'p.id')
+                ->join('stock_move_product_lines as smpl', 'sm.id', '=', 'smpl.stock_move_id')
+                ->join('products as p', 'smpl.product_id', '=', 'p.id')
                 ->select([
-                    'sm.product_id',
+                    'smpl.product_id',
                     'p.name as product_name',
-                    DB::raw('SUM(CASE WHEN sm.move_type = "incoming" THEN sm.quantity ELSE -sm.quantity END) as total_quantity'),
+                    DB::raw('SUM(CASE WHEN sm.move_type = "incoming" THEN smpl.quantity ELSE -smpl.quantity END) as total_quantity'),
                     DB::raw('0 as total_reserved'), // Simplified - no reservations in current schema
-                    DB::raw('SUM(CASE WHEN sm.move_type = "incoming" THEN sm.quantity ELSE -sm.quantity END) as available_quantity')
+                    DB::raw('SUM(CASE WHEN sm.move_type = "incoming" THEN smpl.quantity ELSE -smpl.quantity END) as available_quantity')
                 ])
                 ->where('sm.company_id', $company->id)
                 ->where('sm.status', 'done')
-                ->whereIn('sm.product_id', $productIds);
+                ->whereIn('smpl.product_id', $productIds);
 
             if ($locationId) {
-                $query->where('sm.to_location_id', $locationId);
+                $query->where('smpl.to_location_id', $locationId);
             }
 
-            return $query->groupBy(['sm.product_id', 'p.name'])->get();
+            return $query->groupBy(['smpl.product_id', 'p.name'])->get();
         });
     }
 
@@ -90,34 +91,35 @@ class InventoryQueryOptimizationService
 
         return Cache::remember($cacheKey, self::CACHE_TTL, function () use ($company, $filters) {
             $query = DB::table('stock_moves as sm')
-                ->join('products as p', 'sm.product_id', '=', 'p.id')
-                ->join('stock_locations as fl', 'sm.from_location_id', '=', 'fl.id')
-                ->join('stock_locations as tl', 'sm.to_location_id', '=', 'tl.id')
+                ->join('stock_move_product_lines as smpl', 'sm.id', '=', 'smpl.stock_move_id')
+                ->join('products as p', 'smpl.product_id', '=', 'p.id')
+                ->leftJoin('stock_locations as fl', 'smpl.from_location_id', '=', 'fl.id')
+                ->leftJoin('stock_locations as tl', 'smpl.to_location_id', '=', 'tl.id')
                 ->select([
                     'sm.id',
-                    'sm.product_id',
+                    'smpl.product_id',
                     'p.name as product_name',
-                    'sm.quantity',
+                    'smpl.quantity',
                     'sm.move_type',
                     'sm.status',
                     'sm.move_date',
                     'sm.reference',
                     'fl.name as from_location_name',
                     'tl.name as to_location_name',
-                    'sm.source_type',
-                    'sm.source_id'
+                    'smpl.source_type',
+                    'smpl.source_id'
                 ])
                 ->where('sm.company_id', $company->id);
 
             // Apply filters
             if (isset($filters['product_ids'])) {
-                $query->whereIn('sm.product_id', $filters['product_ids']);
+                $query->whereIn('smpl.product_id', $filters['product_ids']);
             }
 
             if (isset($filters['location_ids'])) {
                 $query->where(function ($q) use ($filters) {
-                    $q->whereIn('sm.from_location_id', $filters['location_ids'])
-                        ->orWhereIn('sm.to_location_id', $filters['location_ids']);
+                    $q->whereIn('smpl.from_location_id', $filters['location_ids'])
+                        ->orWhereIn('smpl.to_location_id', $filters['location_ids']);
                 });
             }
 
@@ -149,9 +151,9 @@ class InventoryQueryOptimizationService
         return Cache::remember($cacheKey, self::CACHE_TTL, function () use ($company, $asOfDate, $productIds) {
             $query = DB::table('stock_move_valuations as smv')
                 ->join('stock_moves as sm', 'smv.stock_move_id', '=', 'sm.id')
-                ->join('products as p', 'sm.product_id', '=', 'p.id')
+                ->join('products as p', 'smv.product_id', '=', 'p.id')
                 ->select([
-                    'sm.product_id',
+                    'smv.product_id',
                     'p.name as product_name',
                     'p.inventory_valuation_method',
                     DB::raw('SUM(smv.quantity) as total_quantity'),
@@ -163,10 +165,10 @@ class InventoryQueryOptimizationService
                 ->where('sm.status', 'done');
 
             if (!empty($productIds)) {
-                $query->whereIn('sm.product_id', $productIds);
+                $query->whereIn('smv.product_id', $productIds);
             }
 
-            return $query->groupBy(['sm.product_id', 'p.name', 'p.inventory_valuation_method'])
+            return $query->groupBy(['smv.product_id', 'p.name', 'p.inventory_valuation_method'])
                 ->get();
         });
     }
@@ -207,9 +209,9 @@ class InventoryQueryOptimizationService
         return Cache::remember($cacheKey, self::CACHE_TTL, function () use ($company, $dateFrom, $dateTo) {
             return DB::table('stock_move_valuations as smv')
                 ->join('stock_moves as sm', 'smv.stock_move_id', '=', 'sm.id')
-                ->join('products as p', 'sm.product_id', '=', 'p.id')
+                ->join('products as p', 'smv.product_id', '=', 'p.id')
                 ->select([
-                    'sm.product_id',
+                    'smv.product_id',
                     'p.name as product_name',
                     DB::raw('SUM(CASE WHEN sm.move_type = "outgoing" THEN smv.cost_impact ELSE 0 END) as cogs'),
                     DB::raw('AVG(CASE WHEN sm.move_type = "incoming" THEN smv.cost_impact ELSE NULL END) as avg_inventory_value'),
@@ -220,7 +222,7 @@ class InventoryQueryOptimizationService
                 ->where('sm.move_date', '>=', $dateFrom)
                 ->where('sm.move_date', '<=', $dateTo)
                 ->where('sm.status', 'done')
-                ->groupBy(['sm.product_id', 'p.name'])
+                ->groupBy(['smv.product_id', 'p.name'])
                 ->having('cogs', '>', 0)
                 ->get();
         });

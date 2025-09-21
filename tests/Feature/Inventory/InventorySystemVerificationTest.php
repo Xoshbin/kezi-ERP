@@ -102,13 +102,13 @@ function createStockReceiptForTest($testCase, Product $product, float $quantity,
         'total_amount' => $costPerUnit->multipliedBy($quantity),
     ]);
 
-    // Create a stock move for the incoming stock
-    $stockMove = \App\Models\StockMove::create([
+    // Create a stock move for the incoming stock using the factory for proper structure
+    $stockMove = \App\Models\StockMove::factory()->create([
         'company_id' => $product->company_id,
-        'product_id' => $product->id,
-        'quantity' => $quantity,
-        'from_location_id' => $product->company->vendorLocation->id,
-        'to_location_id' => $product->company->defaultStockLocation->id,
+        'product_id' => $product->id,  // This will be handled by the factory
+        'quantity' => $quantity,       // This will be handled by the factory
+        'from_location_id' => $product->company->vendorLocation->id,  // This will be handled by the factory
+        'to_location_id' => $product->company->defaultStockLocation->id, // This will be handled by the factory
         'move_type' => \App\Enums\Inventory\StockMoveType::Incoming,
         'status' => \App\Enums\Inventory\StockMoveStatus::Done,
         'move_date' => $date,

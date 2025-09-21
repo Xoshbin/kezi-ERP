@@ -2,8 +2,11 @@
 
 namespace App\Observers;
 
+use App\Actions\Inventory\CreateJournalEntryForStockMoveAction;
+use App\Enums\Inventory\StockMoveStatus;
 use App\Models\AuditLog;
 use App\Models\StockMove;
+use Illuminate\Support\Facades\Auth;
 
 class StockMoveObserver
 {
@@ -14,6 +17,17 @@ class StockMoveObserver
 
     public function updated(StockMove $stockMove): void
     {
+        // Check if the status was just changed to 'Done'
+        if ($stockMove->wasChanged('status') && $stockMove->status === StockMoveStatus::Done) {
+            // Ensure a journal entry doesn't already exist to prevent duplicates
+            if ($stockMove->stockMoveValuations()->doesntExist()) {
+                $user = Auth::user();
+                if ($user) {
+                    app(CreateJournalEntryForStockMoveAction::class)->execute($stockMove, $user);
+                }
+            }
+        }
+
         $this->logAction('updated', $stockMove, $stockMove->getDirty());
     }
 
@@ -27,7 +41,7 @@ class StockMoveObserver
      */
     protected function logAction(string $action, StockMove $stockMove, ?array $dirty = null): void
     {
-        $user = auth()->user();
+        $user = Auth::user();
 
         // Skip audit logging if no authenticated user (e.g., in console/tinker context)
         if (! $user) {
