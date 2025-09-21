@@ -6,10 +6,12 @@ use App\Actions\Accounting\BuildVendorBillPostingPreviewAction;
 use App\Actions\Accounting\CreateJournalEntryForVendorBillAction;
 use App\Actions\Inventory\CreateStockMoveAction;
 use App\DataTransferObjects\Inventory\CreateStockMoveDTO;
+use App\Enums\Inventory\InventoryAccountingMode;
 use App\Enums\Inventory\StockMoveStatus;
 use App\Enums\Inventory\StockMoveType;
 use App\Enums\Products\ProductType;
 use App\Enums\Purchases\VendorBillStatus;
+use App\Services\Inventory\InventoryValuationService;
 use App\Events\VendorBillConfirmed;
 use App\Exceptions\DeletionNotAllowedException;
 use App\Models\AuditLog;
@@ -69,28 +71,45 @@ class VendorBillService
             $vendorBill->posted_at = now();
             $vendorBill->save();
 
-            // Create a receipt picking grouping all storable product moves
+            // Create stock moves and inventory journal entries based on company's inventory accounting mode
+            $company = $vendorBill->company;
             $storableLines = $vendorBill->lines()->with('product')->get()
                 ->filter(fn(VendorBillLine $l) => $l->product?->type === ProductType::Storable);
 
             if ($storableLines->isNotEmpty()) {
-                $picking = StockPicking::create([
-                    'company_id' => $vendorBill->company_id,
-                    'type' => StockPickingType::Receipt,
-                    'state' => StockPickingState::Done,
-                    'partner_id' => $vendorBill->vendor_id,
-                    'scheduled_date' => $vendorBill->bill_date,
-                    'completed_at' => now(),
-                    'reference' => $vendorBill->bill_reference,
-                    'origin' => 'VendorBill#' . $vendorBill->getKey(),
-                    'created_by_user_id' => $user->id,
-                ]);
+                // Check the company's inventory accounting mode
+                if ($company->inventory_accounting_mode === InventoryAccountingMode::AUTO_RECORD_ON_BILL) {
+                    // Mode 1: Auto-record all inventory on bill confirmation
+                    $picking = StockPicking::create([
+                        'company_id' => $vendorBill->company_id,
+                        'type' => StockPickingType::Receipt,
+                        'state' => StockPickingState::Done,
+                        'partner_id' => $vendorBill->vendor_id,
+                        'scheduled_date' => $vendorBill->bill_date,
+                        'completed_at' => now(),
+                        'reference' => $vendorBill->bill_reference,
+                        'origin' => 'VendorBill#' . $vendorBill->getKey(),
+                        'created_by_user_id' => $user->id,
+                    ]);
 
-                /** @var VendorBillLine $line */
-                foreach ($storableLines as $line) {
-                    $stockMove = $this->createStockMoveForLine($vendorBill, $line, $user);
-                    // Attach move to the picking
-                    $stockMove->update(['picking_id' => $picking->getKey()]);
+                    $stockMoves = [];
+                    /** @var VendorBillLine $line */
+                    foreach ($storableLines as $line) {
+                        $stockMove = $this->createStockMoveForLine($vendorBill, $line, $user, false); // Don't dispatch events yet
+                        // Attach move to the picking
+                        $stockMove->update(['picking_id' => $picking->getKey()]);
+                        $stockMoves[] = $stockMove;
+                    }
+
+                    // Create consolidated inventory journal entry for all storable products
+                    if (!empty($stockMoves)) {
+                        app(InventoryValuationService::class)->createConsolidatedIncomingStockJournalEntry($stockMoves, $vendorBill);
+                    }
+                } else {
+                    // Mode 2: Manual inventory recording
+                    // Stock moves and inventory journal entries will be created separately
+                    // through the inventory module when goods are actually received
+                    // No stock moves or inventory valuation entries are created here
                 }
             }
 
@@ -108,7 +127,7 @@ class VendorBillService
     /**
      * Creates a stock move for a given vendor bill line.
      */
-    private function createStockMoveForLine(VendorBill $vendorBill, VendorBillLine $line, User $user): StockMove
+    private function createStockMoveForLine(VendorBill $vendorBill, VendorBillLine $line, User $user, bool $dispatchEvents = true): StockMove
     {
         $company = $vendorBill->company;
 
@@ -151,8 +170,11 @@ class VendorBillService
 
         $stockMove = $this->createStockMoveAction->execute($dto);
 
-        // Immediately dispatch confirmation to trigger valuation processing
-        StockMoveConfirmed::dispatch($stockMove);
+        // Conditionally dispatch confirmation to trigger valuation processing
+        if ($dispatchEvents) {
+            // This will create inventory journal entries for the stock move
+            StockMoveConfirmed::dispatch($stockMove);
+        }
 
         return $stockMove;
     }

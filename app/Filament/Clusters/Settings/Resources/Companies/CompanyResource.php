@@ -2,6 +2,7 @@
 
 namespace App\Filament\Clusters\Settings\Resources\Companies;
 
+use App\Enums\Inventory\InventoryAccountingMode;
 use App\Filament\Clusters\Settings\Resources\Companies\Pages\CreateCompany;
 use App\Filament\Clusters\Settings\Resources\Companies\Pages\EditCompany;
 use App\Filament\Clusters\Settings\Resources\Companies\Pages\ListCompanies;
@@ -15,6 +16,7 @@ use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
@@ -96,7 +98,7 @@ class CompanyResource extends Resource
                                     ->default(true),
                             ])
                             ->createOptionModalHeading(__('common.modal_title_create_currency'))
-                            ->createOptionAction(fn (Action $action) => $action->name('create-currency-option')->modalWidth('lg')),
+                            ->createOptionAction(fn(Action $action) => $action->name('create-currency-option')->modalWidth('lg')),
                         Toggle::make('enable_reconciliation')
                             ->label(__('company.enable_reconciliation'))
                             ->helperText(__('company.enable_reconciliation_help'))
@@ -129,7 +131,7 @@ class CompanyResource extends Resource
                                     ->maxLength(255),
                             ])
                             ->createOptionModalHeading(__('common.modal_title_create_company'))
-                            ->createOptionAction(fn (Action $action) => $action->name('create-company-option')->modalWidth('lg')),
+                            ->createOptionAction(fn(Action $action) => $action->name('create-company-option')->modalWidth('lg')),
                     ])
                     ->columns(2)
                     ->columnSpanFull(),
@@ -188,6 +190,19 @@ class CompanyResource extends Resource
                             ->preload(),
                     ])
                     ->columns(2)
+                    ->columnSpanFull(),
+
+                Section::make(__('inventory_accounting.section_labels.inventory_settings'))
+                    ->schema([
+                        Select::make('inventory_accounting_mode')
+                            ->label(__('inventory_accounting.field_labels.inventory_accounting_mode'))
+                            ->helperText(__('inventory_accounting.field_labels.inventory_accounting_mode_help'))
+                            ->options(InventoryAccountingMode::getFilamentOptions())
+                            ->default(InventoryAccountingMode::getDefault()->value)
+                            ->required()
+                            ->selectablePlaceholder(false),
+                    ])
+                    ->columns(1)
                     ->columnSpanFull(),
             ]);
     }
