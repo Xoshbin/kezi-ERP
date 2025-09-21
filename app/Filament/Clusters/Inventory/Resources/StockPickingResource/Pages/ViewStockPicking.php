@@ -87,16 +87,20 @@ class ViewStockPicking extends ViewRecord
                         ->listWithLineBreaks()
                         ->bulleted()
                         ->getStateUsing(function (StockPicking $record) {
-                            return $record->stockMoves->map(function ($move) {
-                                $lotInfo = $move->stockMoveLines->map(function ($line) {
-                                    return "Lot: {$line->lot->lot_code} (Qty: " . number_format($line->quantity, 2) . ")";
-                                })->join(', ');
+                            return $record->stockMoves->flatMap(function ($move) {
+                                return $move->productLines->map(function ($productLine) use ($move) {
+                                    $lotInfo = $move->stockMoveLines
+                                        ->where('stock_move_product_line_id', $productLine->id)
+                                        ->map(function ($line) {
+                                            return "Lot: {$line->lot->lot_code} (Qty: " . number_format($line->quantity, 2) . ")";
+                                        })->join(', ');
 
-                                $lotDisplay = $lotInfo ? " - {$lotInfo}" : '';
+                                    $lotDisplay = $lotInfo ? " - {$lotInfo}" : '';
 
-                                return "{$move->product->name}: " . number_format($move->quantity, 2) .
-                                    " from {$move->fromLocation?->name} to {$move->toLocation?->name}" .
-                                    " (Status: {$move->status->label()}){$lotDisplay}";
+                                    return "{$productLine->product->name}: " . number_format($productLine->quantity, 2) .
+                                        " from {$productLine->fromLocation?->name} to {$productLine->toLocation?->name}" .
+                                        " (Status: {$move->status->label()}){$lotDisplay}";
+                                });
                             })->toArray();
                         }),
                 ])

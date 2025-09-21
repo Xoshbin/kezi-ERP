@@ -22,57 +22,65 @@ class ProcessIncomingStockAction
     public function execute(StockMove $stockMove): void
     {
         DB::transaction(function () use ($stockMove) {
-            // Extract the cost per unit from the source document
-            $costPerUnit = $this->extractCostFromSource($stockMove);
-
-            $product = $stockMove->product;
-            if (! $product instanceof \App\Models\Product) {
-                throw new \Exception('Product not found for stock move');
+            // Process each product line
+            foreach ($stockMove->productLines as $productLine) {
+                $this->processProductLine($stockMove, $productLine);
             }
-
-            $sourceDocument = $stockMove->source;
-            if (! $sourceDocument) {
-                throw new \Exception('Stock move must have a source document');
-            }
-
-            // Ensure cost is in company base currency
-            $costPerUnitCompany = $costPerUnit;
-            $companyCurrency = $product->company->currency;
-            if ($sourceDocument instanceof VendorBill) {
-                // Use the vendor bill's stored exchange rate for consistency
-                $exchangeRate = $sourceDocument->exchange_rate_at_creation ?? 1.0;
-                if ($sourceDocument->currency_id !== $companyCurrency->id) {
-                    $costPerUnitCompany = $this->currencyConverter->convertWithRate(
-                        $costPerUnit,
-                        $exchangeRate,
-                        $companyCurrency->code,
-                        false
-                    );
-                }
-            }
-
-            $this->inventoryValuationService->processIncomingStock(
-                $product,
-                $stockMove->quantity,
-                $costPerUnitCompany,
-                $stockMove->move_date,
-                $sourceDocument
-            );
-
-            // Update quants for destination location
-            $this->stockQuantService->applyForIncoming($stockMove);
         });
+    }
+
+    private function processProductLine(StockMove $stockMove, \App\Models\StockMoveProductLine $productLine): void
+    {
+        // Extract the cost per unit from the source document
+        $costPerUnit = $this->extractCostFromSource($stockMove, $productLine);
+
+        $product = $productLine->product;
+        if (! $product instanceof \App\Models\Product) {
+            throw new \Exception('Product not found for product line');
+        }
+
+        $sourceDocument = $stockMove->source;
+        if (! $sourceDocument) {
+            throw new \Exception('Stock move must have a source document');
+        }
+
+        // Ensure cost is in company base currency
+        $costPerUnitCompany = $costPerUnit;
+        $companyCurrency = $product->company->currency;
+        if ($sourceDocument instanceof VendorBill) {
+            // Use the vendor bill's stored exchange rate for consistency
+            $exchangeRate = $sourceDocument->exchange_rate_at_creation ?? 1.0;
+            if ($sourceDocument->currency_id !== $companyCurrency->id) {
+                $costPerUnitCompany = $this->currencyConverter->convertWithRate(
+                    $costPerUnit,
+                    $exchangeRate,
+                    $companyCurrency->code,
+                    false
+                );
+            }
+        }
+
+        $this->inventoryValuationService->processIncomingStock(
+            $product,
+            $productLine->quantity,
+            $costPerUnitCompany,
+            $stockMove->move_date,
+            $sourceDocument
+        );
+
+        // Update quants for destination location
+        $this->stockQuantService->applyForIncomingProductLine($productLine);
     }
 
     /**
      * Extract the cost per unit from the source document
      */
-    private function extractCostFromSource(StockMove $stockMove): Money
+    private function extractCostFromSource(StockMove $stockMove, \App\Models\StockMoveProductLine $productLine): Money
     {
         $sourceDocument = $stockMove->source;
 
         if ($sourceDocument instanceof VendorBill) {
-            return $this->extractCostFromVendorBill($stockMove, $sourceDocument);
+            return $this->extractCostFromVendorBill($productLine, $sourceDocument);
         }
 
         // For other source types (future: inventory adjustments, transfers, etc.)
@@ -88,16 +96,16 @@ class ProcessIncomingStockAction
     /**
      * Extract cost from vendor bill line
      */
-    private function extractCostFromVendorBill(StockMove $stockMove, VendorBill $vendorBill): Money
+    private function extractCostFromVendorBill(\App\Models\StockMoveProductLine $productLine, VendorBill $vendorBill): Money
     {
         // Find the vendor bill line that corresponds to this product
         $line = $vendorBill->lines()
             ->with('tax') // Load tax relationship to check if it should be capitalized
-            ->where('product_id', $stockMove->product_id)
+            ->where('product_id', $productLine->product_id)
             ->first();
 
         if (! ($line instanceof \App\Models\VendorBillLine)) {
-            throw new Exception("No vendor bill line found for product {$stockMove->product_id} in vendor bill {$vendorBill->getKey()}");
+            throw new Exception("No vendor bill line found for product {$productLine->product_id} in vendor bill {$vendorBill->getKey()}");
         }
 
         $unitPrice = $line->unit_price;

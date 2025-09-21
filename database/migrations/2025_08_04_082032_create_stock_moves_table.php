@@ -14,15 +14,12 @@ return new class extends Migration
         Schema::create('stock_moves', function (Blueprint $table) {
             $table->id();
             $table->foreignId('company_id')->constrained('companies');
-            $table->foreignId('product_id')->constrained('products');
-            $table->decimal('quantity', 15, 4);
-            $table->foreignId('from_location_id')->constrained('stock_locations');
-            $table->foreignId('to_location_id')->constrained('stock_locations');
             $table->string('move_type');
             $table->string('status');
             $table->date('move_date');
             $table->string('reference')->nullable();
-            $table->morphs('source');
+            $table->text('description')->nullable();
+            $table->nullableMorphs('source');
             $table->foreignId('picking_id')->nullable()->constrained('stock_pickings');
             $table->foreignId('created_by_user_id')->constrained('users');
             $table->timestamps();

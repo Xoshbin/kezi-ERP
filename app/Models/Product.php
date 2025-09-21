@@ -259,11 +259,20 @@ class Product extends Model
     }
 
     /**
-     * @return HasMany<StockMove, static>
+     * @return HasMany<StockMoveProductLine, static>
      */
-    public function stockMoves(): HasMany
+    public function stockMoveProductLines(): HasMany
     {
-        return $this->hasMany(StockMove::class);
+        return $this->hasMany(StockMoveProductLine::class);
+    }
+
+    /**
+     * Get stock moves that contain this product through product lines
+     * @return \Illuminate\Database\Eloquent\Relations\HasManyThrough<StockMove, StockMoveProductLine, static>
+     */
+    public function stockMoves(): \Illuminate\Database\Eloquent\Relations\HasManyThrough
+    {
+        return $this->hasManyThrough(StockMove::class, StockMoveProductLine::class);
     }
 
     /**

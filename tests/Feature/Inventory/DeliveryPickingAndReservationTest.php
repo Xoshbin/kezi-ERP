@@ -102,7 +102,10 @@ it('creates a delivery picking for posted invoice and reserves then consumes ava
     // Assert move attached to picking
     $move = $picking->stockMoves()->first();
     expect($move)->not->toBeNull();
-    expect($move->product_id)->toBe($this->product->id);
+
+    // Check product line for product
+    $productLine = $move->productLines()->where('product_id', $this->product->id)->first();
+    expect($productLine)->not->toBeNull();
 
     // Quant should now be decreased by 3, reserved back to 0
     $quantAfter = StockQuant::where('company_id', $this->company->id)

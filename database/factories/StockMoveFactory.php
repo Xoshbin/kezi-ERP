@@ -5,12 +5,10 @@ namespace Database\Factories;
 use App\Enums\Inventory\StockMoveStatus;
 use App\Enums\Inventory\StockMoveType;
 use App\Models\Company;
-use App\Models\Product;
-use App\Models\StockLocation;
 use App\Models\StockMove;
-use App\Models\StockPicking;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Database\Eloquent\Model;
 
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\StockMove>
@@ -28,14 +26,11 @@ class StockMoveFactory extends Factory
     {
         return [
             'company_id' => Company::factory(),
-            'product_id' => Product::factory(),
-            'quantity' => $this->faker->numberBetween(1, 100),
-            'from_location_id' => StockLocation::factory(),
-            'to_location_id' => StockLocation::factory(),
             'move_type' => $this->faker->randomElement(StockMoveType::cases()),
             'status' => $this->faker->randomElement(StockMoveStatus::cases()),
             'move_date' => $this->faker->dateTimeBetween('-1 month', 'now'),
             'reference' => 'SM-' . $this->faker->unique()->numerify('####'),
+            'description' => $this->faker->sentence(),
             'source_type' => 'Test',
             'source_id' => 1,
             'picking_id' => null,
@@ -101,5 +96,49 @@ class StockMoveFactory extends Factory
         return $this->state(fn(array $attributes) => [
             'quantity' => $quantity,
         ]);
+    }
+
+    /**
+     * Create a model instance with backward compatibility for old-style parameters
+     */
+    public function create($attributes = [], ?Model $parent = null)
+    {
+        // Extract old-style parameters if present
+        $oldStyleParams = null;
+        if (is_array($attributes) && isset($attributes['product_id'])) {
+            $oldStyleParams = [
+                'product_id' => $attributes['product_id'],
+                'quantity' => $attributes['quantity'] ?? 1,
+                'from_location_id' => $attributes['from_location_id'] ?? null,
+                'to_location_id' => $attributes['to_location_id'] ?? null,
+            ];
+
+            // Remove old-style parameters from attributes to avoid database errors
+            unset($attributes['product_id'], $attributes['quantity'], $attributes['from_location_id'], $attributes['to_location_id']);
+        }
+
+        // Create the stock move without old-style parameters
+        $stockMove = parent::create($attributes, $parent);
+
+        // If we had old-style parameters, create a product line
+        if ($oldStyleParams) {
+            // Ensure we have valid location IDs
+            $company = $stockMove->company;
+            $fromLocationId = $oldStyleParams['from_location_id'] ?? $company->vendorLocation?->id ?? \App\Models\StockLocation::factory()->create(['company_id' => $company->id])->id;
+            $toLocationId = $oldStyleParams['to_location_id'] ?? $company->defaultStockLocation?->id ?? \App\Models\StockLocation::factory()->create(['company_id' => $company->id])->id;
+
+            $stockMove->productLines()->create([
+                'company_id' => $stockMove->company_id,
+                'product_id' => $oldStyleParams['product_id'],
+                'quantity' => $oldStyleParams['quantity'],
+                'from_location_id' => $fromLocationId,
+                'to_location_id' => $toLocationId,
+                'description' => null,
+                'source_type' => $stockMove->source_type,
+                'source_id' => $stockMove->source_id,
+            ]);
+        }
+
+        return $stockMove;
     }
 }
