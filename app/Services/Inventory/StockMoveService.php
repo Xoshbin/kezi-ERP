@@ -66,10 +66,14 @@ class StockMoveService
      */
     public function createMove(CreateStockMoveDTO $dto): StockMove
     {
+        // If the move is being created already "done", defer the status change until after lines exist.
+        $desiredStatus = $dto->status;
+        $initialStatus = $desiredStatus === StockMoveStatus::Done ? StockMoveStatus::Draft : $desiredStatus;
+
         $stockMove = StockMove::create([
             'company_id' => $dto->company_id,
             'move_type' => $dto->move_type,
-            'status' => $dto->status,
+            'status' => $initialStatus,
             'move_date' => $dto->move_date,
             'reference' => $dto->reference,
             'description' => $dto->description,
@@ -90,6 +94,12 @@ class StockMoveService
                 'source_type' => $productLineDTO->source_type,
                 'source_id' => $productLineDTO->source_id,
             ]);
+        }
+
+        // Now, if the desired status was done, update it to trigger observers and posting logic.
+        if ($desiredStatus === StockMoveStatus::Done) {
+            $stockMove->status = StockMoveStatus::Done;
+            $stockMove->save(); // Triggers 'updated' observer after lines exist
         }
 
         return $stockMove->load('productLines');
