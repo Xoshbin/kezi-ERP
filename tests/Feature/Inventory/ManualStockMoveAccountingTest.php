@@ -100,3 +100,79 @@ it('creates non-zero inventory journal amounts for manual incoming stock moves',
     ]);
 });
 
+it('throws exception for manual stock moves when product has no cost information', function () {
+    // Arrange: Create a product with zero average cost and no cost layers
+    $productWithoutCost = Product::factory()->for($this->company)->create([
+        'type' => ProductType::Storable,
+        'inventory_valuation_method' => ValuationMethod::AVCO,
+        'default_inventory_account_id' => $this->inventoryAccount->id,
+        'default_stock_input_account_id' => $this->stockInputAccount->id,
+        'average_cost' => Money::of(0, $this->company->currency->code), // Zero average cost
+    ]);
+
+    $lineDto = new CreateStockMoveProductLineDTO(
+        product_id: $productWithoutCost->id,
+        quantity: 1.0,
+        from_location_id: $this->vendorLocation->id,
+        to_location_id: $this->stockLocation->id,
+        description: 'Manual receipt without cost',
+        source_type: 'Test',
+        source_id: 999,
+    );
+
+    $dto = new CreateStockMoveDTO(
+        company_id: $this->company->id,
+        move_type: StockMoveType::Incoming,
+        status: StockMoveStatus::Done,
+        move_date: now(),
+        created_by_user_id: $this->user->id,
+        product_lines: [$lineDto],
+        reference: 'SM-NO-COST',
+        description: 'Manual stock receipt without cost info',
+        source_type: 'Test',
+        source_id: 999,
+    );
+
+    // Act & Assert: Should throw RuntimeException
+    expect(fn() => app(CreateStockMoveAction::class)->execute($dto))
+        ->toThrow(RuntimeException::class, 'Cannot determine cost per unit for manual stock move');
+});
+
+it('throws exception for manual outgoing stock moves when product has no cost information', function () {
+    // Arrange: Create a product with zero average cost and no cost layers
+    $productWithoutCost = Product::factory()->for($this->company)->create([
+        'type' => ProductType::Storable,
+        'inventory_valuation_method' => ValuationMethod::AVCO,
+        'default_inventory_account_id' => $this->inventoryAccount->id,
+        'default_stock_input_account_id' => $this->stockInputAccount->id,
+        'average_cost' => Money::of(0, $this->company->currency->code), // Zero average cost
+        'quantity_on_hand' => 5.0, // Some stock available
+    ]);
+
+    $lineDto = new CreateStockMoveProductLineDTO(
+        product_id: $productWithoutCost->id,
+        quantity: 1.0,
+        from_location_id: $this->stockLocation->id,
+        to_location_id: $this->vendorLocation->id,
+        description: 'Manual outgoing without cost',
+        source_type: 'Test',
+        source_id: 999,
+    );
+
+    $dto = new CreateStockMoveDTO(
+        company_id: $this->company->id,
+        move_type: StockMoveType::Outgoing,
+        status: StockMoveStatus::Done,
+        move_date: now(),
+        created_by_user_id: $this->user->id,
+        product_lines: [$lineDto],
+        reference: 'SM-OUT-NO-COST',
+        description: 'Manual outgoing stock without cost info',
+        source_type: 'Test',
+        source_id: 999,
+    );
+
+    // Act & Assert: Should throw RuntimeException for COGS calculation
+    expect(fn() => app(CreateStockMoveAction::class)->execute($dto))
+        ->toThrow(RuntimeException::class, 'Cannot calculate COGS for product');
+});

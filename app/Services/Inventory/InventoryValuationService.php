@@ -262,15 +262,12 @@ class InventoryValuationService
      */
     private function calculateCOGS(Product $product, float $quantity): Money
     {
-        $company = $product->company;
-        $currencyCode = $company->currency->code;
 
         if ($product->inventory_valuation_method === ValuationMethod::AVCO) {
             // For AVCO, use the product's average cost
-            if (! $product->average_cost) {
-                Log::warning("Product {$product->id} has no average cost set, returning zero COGS");
-
-                return Money::of(0, $currencyCode);
+            if (! $product->average_cost || ! $product->average_cost->isPositive()) {
+                Log::warning("Product {$product->id} has no positive average cost set, cannot calculate COGS");
+                throw new \RuntimeException("Cannot calculate COGS for product {$product->id}: no positive average cost available");
             }
 
             return $product->average_cost->multipliedBy($quantity);
@@ -822,15 +819,15 @@ class InventoryValuationService
         }
 
         // Fallbacks for manual/other sources:
-        // 1) Use product average cost if available
-        if ($product->average_cost) {
+        // 1) Use product average cost if available and positive
+        if ($product->average_cost && $product->average_cost->isPositive()) {
             return $product->average_cost;
         }
-        // 2) Use last known cost layer cost per unit if exists
+        // 2) Use last known cost layer cost per unit if exists and positive
         $lastLayer = InventoryCostLayer::where('product_id', $product->id)
             ->orderByDesc('created_at')
             ->first();
-        if ($lastLayer && $lastLayer->cost_per_unit) {
+        if ($lastLayer && $lastLayer->cost_per_unit && $lastLayer->cost_per_unit->isPositive()) {
             return $lastLayer->cost_per_unit;
         }
         // 3) As a safeguard, throw to avoid silent zero amounts

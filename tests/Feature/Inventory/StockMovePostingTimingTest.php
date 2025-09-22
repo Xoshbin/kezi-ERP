@@ -18,13 +18,13 @@ beforeEach(function () {
     $this->setupWithConfiguredCompany();
     $this->setupInventoryTestEnvironment();
 
-    // Create a storable product with required inventory accounts
+    // Create a storable product with required inventory accounts and valid average cost
     $this->product = Product::factory()->for($this->company)->create([
         'type' => \App\Enums\Products\ProductType::Storable,
         'inventory_valuation_method' => \App\Enums\Inventory\ValuationMethod::AVCO,
         'default_inventory_account_id' => $this->inventoryAccount->id,
         'default_stock_input_account_id' => $this->stockInputAccount->id,
-        'average_cost' => \Brick\Money\Money::of(0, $this->company->currency->code),
+        'average_cost' => \Brick\Money\Money::of(100, $this->company->currency->code), // Valid cost for testing
     ]);
 });
 
@@ -110,4 +110,3 @@ it('creates journal entries when updating a draft stock move to done', function 
     expect($move->status)->toBe(StockMoveStatus::Done);
     expect($move->stockMoveValuations()->exists())->toBeTrue();
 });
-
