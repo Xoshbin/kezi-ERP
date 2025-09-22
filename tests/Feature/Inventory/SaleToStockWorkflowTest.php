@@ -197,6 +197,7 @@ it('uses correct product type field when checking for storable products', functi
         'inventory_valuation_method' => ValuationMethod::AVCO,
         'default_inventory_account_id' => $this->inventoryAccount->id,
         'default_cogs_account_id' => $this->cogsAccount->id,
+        'average_cost' => Money::of(250, $this->company->currency->code), // Valid cost for COGS calculation
     ]);
 
     $serviceProduct = Product::factory()->for($this->company)->create([
