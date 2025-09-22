@@ -19,6 +19,11 @@ class StockMoveObserver
     {
         // Check if the status was just changed to 'Done'
         if ($stockMove->wasChanged('status') && $stockMove->status === StockMoveStatus::Done) {
+            // Skip auto-created moves linked to Vendor Bills (handled via consolidated JE)
+            if ($stockMove->source_type === \App\Models\VendorBill::class) {
+                return;
+            }
+
             // Ensure a journal entry doesn't already exist to prevent duplicates
             if ($stockMove->stockMoveValuations()->doesntExist()) {
                 $user = Auth::user();
