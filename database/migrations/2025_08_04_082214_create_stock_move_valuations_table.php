@@ -22,7 +22,16 @@ return new class extends Migration
             $table->string('move_type');
             $table->foreignId('journal_entry_id')->nullable()->constrained('journal_entries');
             $table->morphs('source');
+
+            // Cost source tracking fields
+            $table->string('cost_source')->nullable()->comment('Source of cost determination: vendor_bill, average_cost, cost_layer, unit_price, manual, company_default');
+            $table->text('cost_source_reference')->nullable()->comment('Additional context about cost source (e.g., VendorBill:123, CostLayer:456)');
+            $table->json('cost_warnings')->nullable()->comment('Warnings generated during cost determination');
+
             $table->timestamps();
+
+            // Add index for cost source queries
+            $table->index(['cost_source', 'company_id']);
         });
     }
 

@@ -208,6 +208,8 @@ class Product extends Model
         return $this->belongsTo(Account::class, 'default_stock_input_account_id');
     }
 
+
+
     /**
      * @return BelongsTo<Account, static>
      */

@@ -6,7 +6,6 @@ use App\Enums\Inventory\StockMoveType;
 use App\Models\StockMove;
 use App\Models\User;
 use App\Services\Inventory\InventoryValuationService;
-use Brick\Money\Money;
 use Illuminate\Support\Facades\DB;
 
 class CreateJournalEntryForStockMoveAction
@@ -55,14 +54,14 @@ class CreateJournalEntryForStockMoveAction
     {
         $product = $productLine->product;
 
-        // Determine cost per unit using valuation rules (non-zero, throws if unknown)
-        $costPerUnit = $this->inventoryValuationService->calculateIncomingCostPerUnit($product, $stockMove);
+        // Determine cost per unit using enhanced valuation rules (includes cost source tracking)
+        $costResult = $this->inventoryValuationService->calculateIncomingCostPerUnitEnhanced($product, $stockMove, false);
 
         // Use the existing inventory valuation service for incoming stock
         $this->inventoryValuationService->processIncomingStock(
             $product,
             $productLine->quantity,
-            $costPerUnit,
+            $costResult->cost,
             $stockMove->move_date,
             $stockMove // Use the stock move as the source document
         );

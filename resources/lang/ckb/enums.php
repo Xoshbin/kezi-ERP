@@ -78,6 +78,15 @@ return [
         'standard_price' => 'نرخی ستاندارد',
     ],
 
+    'cost_source' => [
+        'vendor_bill' => 'پسوڵەی فرۆشیار',
+        'average_cost' => 'ناوەندی تێچوون',
+        'cost_layer' => 'چینی تێچوون',
+        'unit_price' => 'نرخی یەکە',
+        'manual' => 'تۆمارکردنی دەستی',
+        'company_default' => 'بنەڕەتی کۆمپانیا',
+    ],
+
     'partner_type' => [
         'customer' => 'کڕیار',
         'vendor' => 'فرۆشیار',
