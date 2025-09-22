@@ -764,7 +764,7 @@ class InventoryValuationService
      * Calculate the incoming cost per unit for a stock move in company base currency
      * Includes non-recoverable taxes as part of the inventory cost
      */
-    private function calculateIncomingCostPerUnit(Product $product, StockMove $stockMove): Money
+    public function calculateIncomingCostPerUnit(Product $product, StockMove $stockMove): Money
     {
         $companyCurrency = $product->company->currency;
 
@@ -821,8 +821,20 @@ class InventoryValuationService
             }
         }
 
-        // Fallback to product's standard cost if available
-        return $product->standard_cost ?? Money::of(0, $companyCurrency->code);
+        // Fallbacks for manual/other sources:
+        // 1) Use product average cost if available
+        if ($product->average_cost) {
+            return $product->average_cost;
+        }
+        // 2) Use last known cost layer cost per unit if exists
+        $lastLayer = InventoryCostLayer::where('product_id', $product->id)
+            ->orderByDesc('created_at')
+            ->first();
+        if ($lastLayer && $lastLayer->cost_per_unit) {
+            return $lastLayer->cost_per_unit;
+        }
+        // 3) As a safeguard, throw to avoid silent zero amounts
+        throw new \RuntimeException("Cannot determine cost per unit for manual stock move (product {$product->id}). Set average_cost or create a prior priced receipt.");
     }
 
     /**
@@ -836,7 +848,7 @@ class InventoryValuationService
 
         // Process inventory based on valuation method
         if ($product->inventory_valuation_method === ValuationMethod::AVCO) {
-            $this->processIncomingStockAVCO($product, $quantity, $costPerUnit, $date, $sourceDocument);
+            $this->processIncomingStockAVCO($product, $quantity, $costPerUnit);
         } else {
             $this->processIncomingStockFIFOLIFO($product, $quantity, $costPerUnit, $date, $sourceDocument);
         }

@@ -55,8 +55,8 @@ class CreateJournalEntryForStockMoveAction
     {
         $product = $productLine->product;
 
-        // For manual stock moves, use the product's average cost or a default cost
-        $costPerUnit = $product->average_cost ?? Money::of(0, $product->company->currency->code);
+        // Determine cost per unit using valuation rules (non-zero, throws if unknown)
+        $costPerUnit = $this->inventoryValuationService->calculateIncomingCostPerUnit($product, $stockMove);
 
         // Use the existing inventory valuation service for incoming stock
         $this->inventoryValuationService->processIncomingStock(
