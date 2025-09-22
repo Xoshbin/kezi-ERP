@@ -6,9 +6,13 @@ use App\Actions\Accounting\CreateJournalEntryAction;
 use App\DataTransferObjects\Accounting\CreateJournalEntryDTO;
 use App\DataTransferObjects\Accounting\CreateJournalEntryLineDTO;
 use App\DataTransferObjects\Inventory\AdjustInventoryDTO;
+use App\DataTransferObjects\Inventory\CostDeterminationResult;
 use App\Enums\Accounting\JournalEntryState;
+use App\Enums\Inventory\CostSource;
 use App\Enums\Inventory\StockMoveType;
 use App\Enums\Inventory\ValuationMethod;
+use App\Exceptions\Inventory\InsufficientCostInformationException;
+use App\Exceptions\Inventory\InvalidCostDataException;
 use App\Models\Company;
 use App\Models\InventoryCostLayer;
 use App\Models\JournalEntry;
@@ -117,8 +121,19 @@ class InventoryValuationService
         // Create journal entry for incoming stock
         $journalEntry = $this->createIncomingStockJournalEntry($product, $totalCost, $date, $sourceDocument);
 
-        // Create StockMoveValuation record
-        $this->createIncomingStockMoveValuation($product, $quantity, $totalCost, $journalEntry, $sourceDocument);
+        // Try to get cost determination result for tracking
+        $costResult = null;
+        if ($sourceDocument instanceof StockMove) {
+            try {
+                $costResult = $this->calculateIncomingCostPerUnitEnhanced($product, $sourceDocument, false);
+            } catch (\Exception $e) {
+                // If cost determination fails, continue without tracking (backward compatibility)
+                Log::warning("Could not determine cost source for stock move {$sourceDocument->id}: " . $e->getMessage());
+            }
+        }
+
+        // Create StockMoveValuation record with cost source tracking if available
+        $this->createIncomingStockMoveValuation($product, $quantity, $totalCost, $journalEntry, $sourceDocument, $costResult);
 
         Log::info("Successfully processed incoming stock for product {$product->id}, Total cost: {$totalCost->getAmount()}");
     }
@@ -583,8 +598,9 @@ class InventoryValuationService
      * Create a StockMoveValuation record for incoming stock
      *
      * @param  \Illuminate\Database\Eloquent\Model  $sourceDocument
+     * @param  CostDeterminationResult|null  $costResult
      */
-    private function createIncomingStockMoveValuation(Product $product, float $quantity, Money $totalCost, JournalEntry $journalEntry, $sourceDocument): StockMoveValuation
+    private function createIncomingStockMoveValuation(Product $product, float $quantity, Money $totalCost, JournalEntry $journalEntry, $sourceDocument, ?CostDeterminationResult $costResult = null): StockMoveValuation
     {
         // If the source document is already a StockMove, use it directly
         if ($sourceDocument instanceof StockMove) {
@@ -615,7 +631,7 @@ class InventoryValuationService
             return $existingValuation;
         }
 
-        return StockMoveValuation::create([
+        $valuationData = [
             'company_id' => $product->company_id,
             'product_id' => $product->id,
             'stock_move_id' => $stockMove->id,
@@ -626,7 +642,16 @@ class InventoryValuationService
             'journal_entry_id' => $journalEntry->id,
             'source_type' => get_class($sourceDocument),
             'source_id' => $sourceDocument->id ?? null,
-        ]);
+        ];
+
+        // Add cost source information if available
+        if ($costResult) {
+            $valuationData['cost_source'] = $costResult->source;
+            $valuationData['cost_source_reference'] = $costResult->reference;
+            $valuationData['cost_warnings'] = $costResult->warnings;
+        }
+
+        return StockMoveValuation::create($valuationData);
     }
 
     /**
@@ -688,11 +713,16 @@ class InventoryValuationService
                     throw new Exception("Product {$product->id} does not have a stock input account configured");
                 }
 
-                // Calculate cost for this product
-                $costPerUnit = $this->calculateIncomingCostPerUnit($product, $stockMove);
-                $productTotalCost = $costPerUnit->multipliedBy($quantity, RoundingMode::HALF_UP);
+                // Calculate cost for this product using enhanced method
+                $costResult = $this->calculateIncomingCostPerUnitEnhanced($product, $stockMove, false);
+                $productTotalCost = $costResult->cost->multipliedBy($quantity, RoundingMode::HALF_UP);
                 $totalCost = $totalCost->plus($productTotalCost);
                 $productNames[] = $product->name;
+
+                // Log any cost determination warnings
+                if ($costResult->hasWarnings()) {
+                    Log::warning("Cost determination warnings for product {$product->id} in stock move {$stockMove->id}: " . $costResult->getWarningsText());
+                }
 
                 // Add debit line for inventory account
                 $journalEntryLines[] = new CreateJournalEntryLineDTO(
@@ -715,7 +745,7 @@ class InventoryValuationService
                 );
 
                 // Process inventory valuation for this product (without creating journal entry)
-                $this->processIncomingStockWithoutJournalEntry($product, $quantity, $costPerUnit, Carbon::parse($stockMove->move_date), $sourceDocument);
+                $this->processIncomingStockWithoutJournalEntry($product, $quantity, $costResult->cost, Carbon::parse($stockMove->move_date), $sourceDocument);
             }
         }
 
@@ -742,10 +772,12 @@ class InventoryValuationService
             foreach ($stockMove->productLines as $productLine) {
                 $product = $productLine->product;
                 $quantity = (float) $productLine->quantity;
-                $costPerUnit = $this->calculateIncomingCostPerUnit($product, $stockMove);
-                $productTotalCost = $costPerUnit->multipliedBy($quantity, RoundingMode::HALF_UP);
 
-                $this->createIncomingStockMoveValuation($product, $quantity, $productTotalCost, $journalEntry, $sourceDocument);
+                // Get enhanced cost determination result
+                $costResult = $this->calculateIncomingCostPerUnitEnhanced($product, $stockMove, false);
+                $productTotalCost = $costResult->cost->multipliedBy($quantity, RoundingMode::HALF_UP);
+
+                $this->createIncomingStockMoveValuation($product, $quantity, $productTotalCost, $journalEntry, $sourceDocument, $costResult);
 
                 // Update stock quants for the incoming stock - need to pass product line instead of stock move
                 $this->stockQuantService->applyForIncomingProductLine($productLine);
@@ -760,17 +792,29 @@ class InventoryValuationService
     /**
      * Calculate the incoming cost per unit for a stock move in company base currency
      * Includes non-recoverable taxes as part of the inventory cost
+     *
+     * @param Product $product The product for cost determination
+     * @param StockMove $stockMove The stock move requiring cost
+     * @param bool $allowFallbacks Whether to allow fallback cost sources (default: false for strict accounting)
+     * @return CostDeterminationResult Result containing cost, source, and any warnings
+     * @throws InsufficientCostInformationException When no cost can be determined
      */
-    public function calculateIncomingCostPerUnit(Product $product, StockMove $stockMove): Money
-    {
+    public function calculateIncomingCostPerUnitEnhanced(
+        Product $product,
+        StockMove $stockMove,
+        bool $allowFallbacks = false
+    ): CostDeterminationResult {
         $companyCurrency = $product->company->currency;
+        $attemptedSources = [];
+        $warnings = [];
 
-        // For vendor bill stock moves, we need to get the cost from the vendor bill line
+        // 1. Try vendor bill cost (highest priority)
         if ($stockMove->source_type === 'App\Models\VendorBill') {
+            $attemptedSources[] = 'vendor_bill';
             $vendorBill = \App\Models\VendorBill::find($stockMove->source_id);
             if ($vendorBill) {
                 $vendorBillLine = $vendorBill->lines()
-                    ->with('tax') // Load tax relationship to check if it should be capitalized
+                    ->with('tax')
                     ->where('product_id', $product->id)
                     ->first();
 
@@ -784,7 +828,7 @@ class InventoryValuationService
                             $unitPrice,
                             $exchangeRate,
                             $companyCurrency->code,
-                            false // Converting from foreign currency to base currency
+                            false
                         );
                     }
 
@@ -793,45 +837,116 @@ class InventoryValuationService
                         $vendorBillLine->tax_id && $vendorBillLine->total_line_tax->isPositive() &&
                         $vendorBillLine->tax && !$vendorBillLine->tax->is_recoverable
                     ) {
-
-                        // Get tax amount in company currency
                         $taxInCompanyCurrency = $vendorBillLine->total_line_tax_company_currency ?? $vendorBillLine->total_line_tax;
 
-                        // Convert tax to company currency if needed and not already converted
                         if (!$vendorBillLine->total_line_tax_company_currency && $vendorBill->currency_id !== $companyCurrency->id) {
                             $taxInCompanyCurrency = $this->currencyConverter->convertWithRate(
                                 $vendorBillLine->total_line_tax,
                                 $exchangeRate,
                                 $companyCurrency->code,
-                                false // Converting from foreign currency to base currency
+                                false
                             );
                         }
 
-                        // Add per-unit tax to unit price for cost calculation
                         $unitPrice = $unitPrice->plus(
                             $taxInCompanyCurrency->dividedBy($vendorBillLine->quantity)
                         );
                     }
 
-                    return $unitPrice;
+                    if ($unitPrice->isPositive()) {
+                        return CostDeterminationResult::success(
+                            $unitPrice,
+                            CostSource::VendorBill,
+                            "VendorBill:{$vendorBill->id}",
+                            [],
+                            $attemptedSources
+                        );
+                    }
                 }
             }
         }
 
-        // Fallbacks for manual/other sources:
-        // 1) Use product average cost if available and positive
+        // 2. Try product average cost
+        $attemptedSources[] = 'average_cost';
         if ($product->average_cost && $product->average_cost->isPositive()) {
-            return $product->average_cost;
+            return CostDeterminationResult::success(
+                $product->average_cost,
+                CostSource::AverageCost,
+                "Product:{$product->id}",
+                [],
+                $attemptedSources
+            );
         }
-        // 2) Use last known cost layer cost per unit if exists and positive
+
+        // 3. Try last cost layer (for FIFO/LIFO)
+        $attemptedSources[] = 'cost_layer';
         $lastLayer = InventoryCostLayer::where('product_id', $product->id)
             ->orderByDesc('created_at')
             ->first();
         if ($lastLayer && $lastLayer->cost_per_unit && $lastLayer->cost_per_unit->isPositive()) {
-            return $lastLayer->cost_per_unit;
+            return CostDeterminationResult::success(
+                $lastLayer->cost_per_unit,
+                CostSource::CostLayer,
+                "CostLayer:{$lastLayer->id}",
+                [],
+                $attemptedSources
+            );
         }
-        // 3) As a safeguard, throw to avoid silent zero amounts
-        throw new \RuntimeException("Cannot determine cost per unit for manual stock move (product {$product->id}). Set average_cost or create a prior priced receipt.");
+
+        // 4. Fallback to unit price (if allowed)
+        if ($allowFallbacks) {
+            $attemptedSources[] = 'unit_price';
+            if ($product->unit_price && $product->unit_price->isPositive()) {
+                $warnings[] = 'Using product unit price as cost - this may not reflect actual purchase cost';
+                return CostDeterminationResult::withWarnings(
+                    $product->unit_price,
+                    CostSource::UnitPrice,
+                    $warnings,
+                    "Product:{$product->id}",
+                    $attemptedSources
+                );
+            }
+        }
+
+        // No cost sources available - throw detailed exception
+        $suggestedActions = [
+            'Post a vendor bill for this product to establish cost',
+            'Set a positive average cost on the product',
+        ];
+
+        if ($product->inventory_valuation_method !== ValuationMethod::AVCO) {
+            $suggestedActions[] = 'Create cost layers by receiving stock from vendor bills';
+        }
+
+        if ($product->unit_price && $product->unit_price->isPositive()) {
+            $suggestedActions[] = 'Enable unit price fallback in system settings';
+        }
+
+        throw new InsufficientCostInformationException(
+            $product,
+            $suggestedActions,
+            $attemptedSources
+        );
+    }
+
+    /**
+     * Backward-compatible wrapper for calculateIncomingCostPerUnitEnhanced
+     *
+     * @param Product $product
+     * @param StockMove $stockMove
+     * @return Money
+     * @throws InsufficientCostInformationException
+     */
+    public function calculateIncomingCostPerUnit(Product $product, StockMove $stockMove): Money
+    {
+        $result = $this->calculateIncomingCostPerUnitEnhanced($product, $stockMove, false);
+
+        // Log warnings if any
+        if ($result->hasWarnings()) {
+            Log::warning("Cost determination warnings for product {$product->id}: " . $result->getWarningsText());
+        }
+
+        return $result->cost;
     }
 
     /**

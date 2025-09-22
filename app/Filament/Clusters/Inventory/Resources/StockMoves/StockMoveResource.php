@@ -5,6 +5,7 @@ namespace App\Filament\Clusters\Inventory\Resources\StockMoves;
 use App\Enums\Inventory\StockMoveStatus;
 use App\Enums\Inventory\StockMoveType;
 use App\Filament\Clusters\Inventory\InventoryCluster;
+use App\Filament\Components\CostPreviewComponent;
 use App\Filament\Clusters\Inventory\Resources\StockMoves\Pages\CreateStockMove;
 use App\Filament\Clusters\Inventory\Resources\StockMoves\Pages\EditStockMove;
 use App\Filament\Clusters\Inventory\Resources\StockMoves\Pages\ListStockMoves;
@@ -102,6 +103,9 @@ class StockMoveResource extends Resource
                                     ->minValue(0.0001)
                                     ->step(0.0001),
                             ]),
+
+                            // Cost Preview Component
+                            CostPreviewComponent::forProductLine('product_id', 'quantity'),
                             Grid::make(2)->schema([
                                 TranslatableSelect::forModel('from_location_id', StockLocation::class)
                                     ->label(__('stock_move.from_location'))
@@ -165,6 +169,15 @@ class StockMoveResource extends Resource
                                 : __('stock_move.new_product_line')
                         ),
                 ]),
+
+            // Cost Summary Section
+            Section::make(__('Cost Summary'))
+                ->description(__('Estimated cost impact of this stock movement'))
+                ->icon('heroicon-o-currency-dollar')
+                ->schema([
+                    CostPreviewComponent::forStockMove(),
+                ])
+                ->visible(fn(callable $get) => $get('move_type') === StockMoveType::Incoming->value),
 
             Section::make(__('stock_move.movement_details'))
                 ->description(__('stock_move.movement_details_description'))

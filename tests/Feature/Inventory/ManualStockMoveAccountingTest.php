@@ -7,6 +7,7 @@ use App\Enums\Inventory\StockMoveStatus;
 use App\Enums\Inventory\StockMoveType;
 use App\Enums\Inventory\ValuationMethod;
 use App\Enums\Products\ProductType;
+use App\Exceptions\Inventory\InsufficientCostInformationException;
 use App\Models\Account;
 use App\Models\JournalEntry;
 use App\Models\Product;
@@ -133,9 +134,9 @@ it('throws exception for manual stock moves when product has no cost information
         source_id: 999,
     );
 
-    // Act & Assert: Should throw RuntimeException
+    // Act & Assert: Should throw InsufficientCostInformationException
     expect(fn() => app(CreateStockMoveAction::class)->execute($dto))
-        ->toThrow(RuntimeException::class, 'Cannot determine cost per unit for manual stock move');
+        ->toThrow(InsufficientCostInformationException::class, 'Cannot determine cost per unit for product');
 });
 
 it('throws exception for manual outgoing stock moves when product has no cost information', function () {
@@ -172,7 +173,7 @@ it('throws exception for manual outgoing stock moves when product has no cost in
         source_id: 999,
     );
 
-    // Act & Assert: Should throw RuntimeException for COGS calculation
+    // Act & Assert: Should throw RuntimeException for COGS calculation (outgoing moves still use old logic)
     expect(fn() => app(CreateStockMoveAction::class)->execute($dto))
         ->toThrow(RuntimeException::class, 'Cannot calculate COGS for product');
 });
