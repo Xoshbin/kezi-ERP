@@ -81,6 +81,15 @@ class DocumentCurrencyMoneyCast extends MoneyCast
                 }
             }
         }
+        if (method_exists($model, 'purchaseOrder') && $model->relationLoaded('purchaseOrder')) {
+            $purchaseOrder = $model->getRelation('purchaseOrder');
+            if ($purchaseOrder instanceof \Illuminate\Database\Eloquent\Model && method_exists($purchaseOrder, 'currency')) {
+                $currency = $purchaseOrder->relationLoaded('currency') ? $purchaseOrder->getRelation('currency') : $purchaseOrder->currency()->first();
+                if ($currency instanceof \App\Models\Currency) {
+                    return $currency;
+                }
+            }
+        }
         // Loan schedule: resolve via parent loan
         if (method_exists($model, 'loan') && $model->relationLoaded('loan')) {
             $loan = $model->getRelation('loan');
@@ -125,6 +134,11 @@ class DocumentCurrencyMoneyCast extends MoneyCast
 
             return $loan->currency ?? throw new InvalidArgumentException('Loan currency not found');
         }
+        if (method_exists($model, 'purchaseOrder') && $model->getAttribute('purchase_order_id')) {
+            $purchaseOrder = $model->purchaseOrder()->with('currency')->first();
+
+            return $purchaseOrder->currency ?? throw new InvalidArgumentException('Purchase order currency not found');
+        }
         // Some models expose a direct currency() relationship (e.g., PaymentDocumentLink)
         if (method_exists($model, 'currency')) {
             $currency = $model->relationLoaded('currency') ? $model->getRelation('currency') : $model->currency()->first();
@@ -133,7 +147,7 @@ class DocumentCurrencyMoneyCast extends MoneyCast
             }
         }
 
-        throw new InvalidArgumentException('Could not resolve document currency for model '.get_class($model).'. Please ensure the model has a valid parent document relationship.');
+        throw new InvalidArgumentException('Could not resolve document currency for model ' . get_class($model) . '. Please ensure the model has a valid parent document relationship.');
     }
 
     /**
@@ -172,6 +186,9 @@ class DocumentCurrencyMoneyCast extends MoneyCast
             }
             if (! $currency && isset($attributes['bank_statement_id'])) {
                 $currency = optional(\App\Models\BankStatement::find($attributes['bank_statement_id']))->currency;
+            }
+            if (! $currency && isset($attributes['purchase_order_id'])) {
+                $currency = optional(\App\Models\PurchaseOrder::find($attributes['purchase_order_id']))->currency;
             }
 
             if (! $currency) {

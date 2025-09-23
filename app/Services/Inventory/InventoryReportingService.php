@@ -271,15 +271,20 @@ class InventoryReportingService
      */
     public function lotTrace(Product $product, Lot $lot): array
     {
-        // Get all stock moves for this lot
+        // Get all stock moves for this lot through product lines
         $movements = StockMove::query()
-            ->where('product_id', $product->id)
+            ->whereHas('productLines', function (Builder $query) use ($product) {
+                $query->where('product_id', $product->id);
+            })
             ->whereHas('stockMoveLines', function (Builder $query) use ($lot) {
                 $query->where('lot_id', $lot->id);
             })
             ->with(['stockMoveLines' => function ($query) use ($lot) {
                 $query->where('lot_id', $lot->id);
-            }, 'fromLocation', 'toLocation', 'stockMoveValuations'])
+            }, 'productLines' => function ($query) use ($product) {
+                $query->where('product_id', $product->id)
+                    ->with(['fromLocation', 'toLocation']);
+            }, 'stockMoveValuations'])
             ->orderBy('move_date')
             ->get();
 
@@ -296,12 +301,15 @@ class InventoryReportingService
                 $currentQuantity -= $moveQuantity;
             }
 
+            // Get location names from the product line for this product
+            $productLine = $move->productLines->first();
+
             $movementHistory[] = [
                 'move_date' => $move->move_date,
                 'move_type' => $move->move_type,
                 'quantity' => $moveQuantity,
-                'from_location' => $move->fromLocation?->name,
-                'to_location' => $move->toLocation?->name,
+                'from_location' => $productLine?->fromLocation?->name,
+                'to_location' => $productLine?->toLocation?->name,
                 'reference' => $move->reference,
                 'journal_entry_id' => $move->stockMoveValuations->first()?->journal_entry_id,
                 'valuation_amount' => $move->stockMoveValuations->first()?->cost_impact,

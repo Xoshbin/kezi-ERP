@@ -376,8 +376,11 @@ describe('Vendor Bill Confirmation Business Rules', function () {
             ->where('source_id', $uiTestVendorBill->id)
             ->first();
         expect($stockMove)->not->toBeNull();
-        expect($stockMove->product_id)->toBe($product->id);
-        expect((float) $stockMove->quantity)->toBe(1.0);
+
+        // Check product line for product and quantity
+        $productLine = $stockMove->productLines()->where('product_id', $product->id)->first();
+        expect($productLine)->not->toBeNull();
+        expect((float) $productLine->quantity)->toBe(1.0);
 
         // Verify no duplicate journal entry constraint violations occurred
         // This test specifically addresses the issue where multiple journal entries

@@ -64,14 +64,18 @@ it('correctly processes an incoming storable product, creating a stock move and 
 
     // 2. Assert Physical Stock Move
     $this->assertDatabaseHas('stock_moves', [
-        'product_id' => $this->product->id,
-        'quantity' => $quantity,
-        'from_location_id' => $this->company->vendorLocation->id,
-        'to_location_id' => $this->company->defaultStockLocation->id,
         'move_type' => StockMoveType::Incoming->value,
         'status' => StockMoveStatus::Done->value,
         'source_type' => VendorBill::class,
         'source_id' => $vendorBill->id,
+    ]);
+
+    // 3. Assert Product Line was created with correct details
+    $this->assertDatabaseHas('stock_move_product_lines', [
+        'product_id' => $this->product->id,
+        'quantity' => $quantity,
+        'from_location_id' => $this->company->vendorLocation->id,
+        'to_location_id' => $this->company->defaultStockLocation->id,
     ]);
 
     // 3. Assert Accounting Impact (Journal Entry)

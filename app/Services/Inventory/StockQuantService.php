@@ -187,12 +187,40 @@ class StockQuantService
 
     public function applyForIncoming(StockMove $move): void
     {
-        $this->adjust($move->company_id, $move->product_id, $move->to_location_id, $move->quantity, 0);
+        // Handle both old structure (direct product_id) and new structure (product lines)
+        if (isset($move->product_id) && $move->product_id) {
+            // Old structure
+            $this->adjust($move->company_id, $move->product_id, $move->to_location_id, $move->quantity, 0);
+        } else {
+            // New structure - apply for all product lines
+            foreach ($move->productLines as $productLine) {
+                $this->applyForIncomingProductLine($productLine);
+            }
+        }
     }
 
     public function applyForOutgoing(StockMove $move): void
     {
-        $this->adjust($move->company_id, $move->product_id, $move->from_location_id, -$move->quantity, 0);
+        // Handle both old structure (direct product_id) and new structure (product lines)
+        if (isset($move->product_id) && $move->product_id) {
+            // Old structure
+            $this->adjust($move->company_id, $move->product_id, $move->from_location_id, -$move->quantity, 0);
+        } else {
+            // New structure - apply for all product lines
+            foreach ($move->productLines as $productLine) {
+                $this->applyForOutgoingProductLine($productLine);
+            }
+        }
+    }
+
+    public function applyForIncomingProductLine(\App\Models\StockMoveProductLine $productLine): void
+    {
+        $this->adjust($productLine->company_id, $productLine->product_id, $productLine->to_location_id, $productLine->quantity, 0);
+    }
+
+    public function applyForOutgoingProductLine(\App\Models\StockMoveProductLine $productLine): void
+    {
+        $this->adjust($productLine->company_id, $productLine->product_id, $productLine->from_location_id, -$productLine->quantity, 0);
     }
 
     /**
@@ -253,7 +281,17 @@ class StockQuantService
      */
     public function applyForIncomingWithLot(StockMove $move, ?int $lotId = null): void
     {
-        $this->adjust($move->company_id, $move->product_id, $move->to_location_id, $move->quantity, 0, $lotId);
+        // Handle both old structure (direct product_id) and new structure (product lines)
+        if (isset($move->product_id) && $move->product_id) {
+            // Old structure
+            $this->adjust($move->company_id, $move->product_id, $move->to_location_id, $move->quantity, 0, $lotId);
+        } else {
+            // New structure - apply for first product line
+            $firstProductLine = $move->productLines()->first();
+            if ($firstProductLine) {
+                $this->adjust($move->company_id, $firstProductLine->product_id, $firstProductLine->to_location_id, $firstProductLine->quantity, 0, $lotId);
+            }
+        }
     }
 
     /**
@@ -261,6 +299,16 @@ class StockQuantService
      */
     public function applyForOutgoingWithLot(StockMove $move, ?int $lotId = null): void
     {
-        $this->adjust($move->company_id, $move->product_id, $move->from_location_id, -$move->quantity, 0, $lotId);
+        // Handle both old structure (direct product_id) and new structure (product lines)
+        if (isset($move->product_id) && $move->product_id) {
+            // Old structure
+            $this->adjust($move->company_id, $move->product_id, $move->from_location_id, -$move->quantity, 0, $lotId);
+        } else {
+            // New structure - apply for first product line
+            $firstProductLine = $move->productLines()->first();
+            if ($firstProductLine) {
+                $this->adjust($move->company_id, $firstProductLine->product_id, $firstProductLine->from_location_id, -$firstProductLine->quantity, 0, $lotId);
+            }
+        }
     }
 }

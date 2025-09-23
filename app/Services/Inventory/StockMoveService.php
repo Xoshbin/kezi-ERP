@@ -5,6 +5,7 @@ namespace App\Services\Inventory;
 use App\DataTransferObjects\Inventory\ConfirmStockMoveDTO;
 use App\DataTransferObjects\Inventory\CreateStockMoveDTO;
 use App\DataTransferObjects\Inventory\UpdateStockMoveDTO;
+use App\DataTransferObjects\Inventory\UpdateStockMoveWithProductLinesDTO;
 use App\Enums\Inventory\StockMoveStatus;
 use App\Events\Inventory\StockMoveConfirmed;
 use App\Models\StockMove;
@@ -65,20 +66,43 @@ class StockMoveService
      */
     public function createMove(CreateStockMoveDTO $dto): StockMove
     {
-        return StockMove::create([
+        // If the move is being created already "done", defer the status change until after lines exist.
+        $desiredStatus = $dto->status;
+        $initialStatus = $desiredStatus === StockMoveStatus::Done ? StockMoveStatus::Draft : $desiredStatus;
+
+        $stockMove = StockMove::create([
             'company_id' => $dto->company_id,
-            'product_id' => $dto->product_id,
-            'quantity' => $dto->quantity,
-            'from_location_id' => $dto->from_location_id,
-            'to_location_id' => $dto->to_location_id,
             'move_type' => $dto->move_type,
-            'status' => $dto->status,
+            'status' => $initialStatus,
             'move_date' => $dto->move_date,
             'reference' => $dto->reference,
+            'description' => $dto->description,
             'source_type' => $dto->source_type,
             'source_id' => $dto->source_id,
             'created_by_user_id' => $dto->created_by_user_id,
         ]);
+
+        // Create product lines
+        foreach ($dto->product_lines as $productLineDTO) {
+            $stockMove->productLines()->create([
+                'company_id' => $dto->company_id,
+                'product_id' => $productLineDTO->product_id,
+                'quantity' => $productLineDTO->quantity,
+                'from_location_id' => $productLineDTO->from_location_id,
+                'to_location_id' => $productLineDTO->to_location_id,
+                'description' => $productLineDTO->description,
+                'source_type' => $productLineDTO->source_type,
+                'source_id' => $productLineDTO->source_id,
+            ]);
+        }
+
+        // Now, if the desired status was done, update it to trigger observers and posting logic.
+        if ($desiredStatus === StockMoveStatus::Done) {
+            $stockMove->status = StockMoveStatus::Done;
+            $stockMove->save(); // Triggers 'updated' observer after lines exist
+        }
+
+        return $stockMove->load('productLines');
     }
 
     public function updateMove(StockMove $move, UpdateStockMoveDTO $dto): StockMove
@@ -96,6 +120,38 @@ class StockMoveService
         ]);
 
         return $move;
+    }
+
+    public function updateMoveWithProductLines(StockMove $move, UpdateStockMoveWithProductLinesDTO $dto): StockMove
+    {
+        $move->update([
+            'move_type' => $dto->move_type,
+            'status' => $dto->status,
+            'move_date' => $dto->move_date,
+            'reference' => $dto->reference,
+            'description' => $dto->description,
+            'source_type' => $dto->source_type,
+            'source_id' => $dto->source_id,
+        ]);
+
+        // Delete existing product lines
+        $move->productLines()->delete();
+
+        // Create new product lines
+        foreach ($dto->product_lines as $productLineDTO) {
+            $move->productLines()->create([
+                'company_id' => $move->company_id,
+                'product_id' => $productLineDTO->product_id,
+                'quantity' => $productLineDTO->quantity,
+                'from_location_id' => $productLineDTO->from_location_id,
+                'to_location_id' => $productLineDTO->to_location_id,
+                'description' => $productLineDTO->description,
+                'source_type' => $productLineDTO->source_type,
+                'source_id' => $productLineDTO->source_id,
+            ]);
+        }
+
+        return $move->load('productLines');
     }
 
     public function confirmMove(ConfirmStockMoveDTO $dto): StockMove

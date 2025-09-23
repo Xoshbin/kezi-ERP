@@ -584,6 +584,27 @@ class VendorBillResource extends Resource
                     ->sortable()
                     ->weight('medium'),
 
+                // Purchase Order Reference (important for audit trail)
+                TextColumn::make('purchaseOrder.po_number')
+                    ->label(__('vendor_bill.purchase_order'))
+                    ->searchable()
+                    ->sortable()
+                    ->badge()
+                    ->color('info')
+                    ->icon('heroicon-m-document-text')
+                    ->url(
+                        fn(?VendorBill $record): ?string =>
+                        $record?->purchaseOrder
+                            ? route('filament.jmeryar.purchases.resources.purchase-orders.view', [
+                                'record' => $record->purchaseOrder,
+                                'tenant' => Filament::getTenant(),
+                            ])
+                            : null
+                    )
+                    ->openUrlInNewTab()
+                    ->placeholder(__('vendor_bill.no_purchase_order'))
+                    ->toggleable(),
+
                 // Status (critical for workflow)
                 TextColumn::make('status')
                     ->badge()

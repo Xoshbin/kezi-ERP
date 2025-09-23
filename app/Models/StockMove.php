@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 
 #[ObservedBy([StockMoveObserver::class])]
@@ -19,14 +20,11 @@ class StockMove extends Model
 
     protected $fillable = [
         'company_id',
-        'product_id',
-        'quantity',
-        'from_location_id',
-        'to_location_id',
         'move_type',
         'status',
         'move_date',
         'reference',
+        'description',
         'source_type',
         'source_id',
         'picking_id',
@@ -48,28 +46,14 @@ class StockMove extends Model
     }
 
     /**
-     * @return BelongsTo<Product, static>
+     * @return HasMany<StockMoveProductLine, static>
      */
-    public function product(): BelongsTo
+    public function productLines(): HasMany
     {
-        return $this->belongsTo(Product::class);
+        return $this->hasMany(StockMoveProductLine::class);
     }
 
-    /**
-     * @return BelongsTo<StockLocation, static>
-     */
-    public function fromLocation(): BelongsTo
-    {
-        return $this->belongsTo(StockLocation::class, 'from_location_id');
-    }
 
-    /**
-     * @return BelongsTo<StockLocation, static>
-     */
-    public function toLocation(): BelongsTo
-    {
-        return $this->belongsTo(StockLocation::class, 'to_location_id');
-    }
 
     /**
      * @return MorphTo<\Illuminate\Database\Eloquent\Model, static>
@@ -93,11 +77,12 @@ class StockMove extends Model
     }
 
     /**
-     * @return HasMany<StockMoveLine, static>
+     * Get all stock move lines through product lines
+     * @return HasManyThrough<StockMoveLine, StockMoveProductLine, static>
      */
-    public function stockMoveLines(): HasMany
+    public function stockMoveLines(): HasManyThrough
     {
-        return $this->hasMany(StockMoveLine::class);
+        return $this->hasManyThrough(StockMoveLine::class, StockMoveProductLine::class);
     }
 
     /**

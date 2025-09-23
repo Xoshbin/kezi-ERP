@@ -12,7 +12,7 @@ class StockMoveLine extends Model
 
     protected $fillable = [
         'company_id',
-        'stock_move_id',
+        'stock_move_product_line_id',
         'lot_id',
         'quantity',
     ];
@@ -30,11 +30,11 @@ class StockMoveLine extends Model
     }
 
     /**
-     * @return BelongsTo<StockMove, static>
+     * @return BelongsTo<StockMoveProductLine, static>
      */
-    public function stockMove(): BelongsTo
+    public function stockMoveProductLine(): BelongsTo
     {
-        return $this->belongsTo(StockMove::class);
+        return $this->belongsTo(StockMoveProductLine::class);
     }
 
     /**
@@ -43,5 +43,21 @@ class StockMoveLine extends Model
     public function lot(): BelongsTo
     {
         return $this->belongsTo(Lot::class);
+    }
+
+    /**
+     * Get the stock move through the product line
+     */
+    public function stockMove(): StockMove
+    {
+        return $this->stockMoveProductLine->stockMove;
+    }
+
+    /**
+     * Get the product through the product line
+     */
+    public function product(): Product
+    {
+        return $this->stockMoveProductLine->product;
     }
 }
