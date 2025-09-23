@@ -595,7 +595,7 @@ class VendorBillResource extends Resource
                     ->url(
                         fn(?VendorBill $record): ?string =>
                         $record?->purchaseOrder
-                            ? route('filament.admin.purchases.resources.purchase-orders.view', [
+                            ? route('filament.jmeryar.purchases.resources.purchase-orders.view', [
                                 'record' => $record->purchaseOrder,
                                 'tenant' => Filament::getTenant(),
                             ])
