@@ -217,6 +217,7 @@ class VendorBillResource extends Resource
                             }
                             return __('vendor_bill.exchange_rate_helper');
                         }),
+                    Hidden::make('purchase_order_id'),
                 ])
                 ->columns(4)
                 ->columnSpanFull(),
