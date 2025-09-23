@@ -212,8 +212,14 @@ class CreateVendorBill extends CreateRecord
             })
             ->visible(function (): bool {
                 // Only show if vendor is selected and no PO is already loaded
-                $formState = $this->form->getState();
-                return !empty($formState['vendor_id']) && empty($formState['purchase_order_id']);
+                // Use getRawState() to avoid triggering validation
+                try {
+                    $formState = $this->form->getRawState();
+                    return !empty($formState['vendor_id']) && empty($formState['purchase_order_id']);
+                } catch (\Exception $e) {
+                    // If form state can't be retrieved, hide the action
+                    return false;
+                }
             });
     }
 }

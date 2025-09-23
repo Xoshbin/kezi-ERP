@@ -32,17 +32,29 @@ test('can render purchase order create page', function () {
 });
 
 test('can create purchase order through filament', function () {
-    $newData = [
-        'vendor_id' => $this->vendor->id,
-        'currency_id' => $this->company->currency_id,
-        'po_date' => now()->format('Y-m-d'),
-        'reference' => 'TEST-REF-001',
-        'notes' => 'Test purchase order notes',
-    ];
+    $product = Product::factory()->create(['company_id' => $this->company->id]);
 
-    Livewire::test(CreatePurchaseOrder::class, ['tenant' => $this->company])
-        ->fillForm($newData)
-        ->call('create')
+    $livewire = Livewire::test(CreatePurchaseOrder::class, ['tenant' => $this->company])
+        ->fillForm([
+            'vendor_id' => $this->vendor->id,
+            'currency_id' => $this->company->currency_id,
+            'po_date' => now()->format('Y-m-d'),
+            'reference' => 'TEST-REF-001',
+            'notes' => 'Test purchase order notes',
+        ]);
+
+    // Add a line item since it's now required
+    $livewire->set('data.lines', [
+        [
+            'product_id' => $product->id,
+            'description' => 'Test Product Line',
+            'quantity' => 1,
+            'unit_price' => '10.00',
+            'tax_id' => null,
+        ],
+    ]);
+
+    $livewire->call('create')
         ->assertHasNoFormErrors();
 
     $this->assertDatabaseHas('purchase_orders', [
@@ -98,7 +110,7 @@ test('can confirm purchase order through filament action', function () {
         ->assertHasNoActionErrors();
 
     $purchaseOrder->refresh();
-    expect($purchaseOrder->status)->toBe(PurchaseOrderStatus::ToReceive);
+    expect($purchaseOrder->status)->toBe(PurchaseOrderStatus::Confirmed);
     expect($purchaseOrder->confirmed_at)->not->toBeNull();
 });
 

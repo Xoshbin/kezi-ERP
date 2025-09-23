@@ -34,9 +34,17 @@ readonly class CreatePurchaseOrderLineDTO
      */
     public static function fromArray(array $data): self
     {
-        $unitPrice = $data['unit_price'] instanceof Money 
-            ? $data['unit_price'] 
-            : Money::of($data['unit_price'], $data['currency'] ?? 'USD');
+        // Handle unit_price conversion to Money object
+        if ($data['unit_price'] instanceof Money) {
+            $unitPrice = $data['unit_price'];
+        } elseif (is_numeric($data['unit_price']) && $data['unit_price'] > 0) {
+            $currencyCode = $data['currency'] ?? 'USD';
+            $unitPrice = Money::of($data['unit_price'], $currencyCode);
+        } else {
+            // Default to zero if no valid price provided
+            $currencyCode = $data['currency'] ?? 'USD';
+            $unitPrice = Money::of(0, $currencyCode);
+        }
 
         return new self(
             product_id: $data['product_id'],

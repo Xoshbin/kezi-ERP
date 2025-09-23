@@ -98,7 +98,7 @@ class PurchaseOrderService
             }
 
             // Update status and confirmation timestamp
-            $purchaseOrder->status = PurchaseOrderStatus::ToReceive;
+            $purchaseOrder->status = PurchaseOrderStatus::Confirmed;
             $purchaseOrder->confirmed_at = now();
             $purchaseOrder->save();
 

@@ -95,7 +95,7 @@ class VendorBillsRelationManager extends RelationManager
                     ->icon('heroicon-o-document-plus')
                     ->url(
                         fn(): string =>
-                        route('filament.admin.accounting.resources.vendor-bills.create', [
+                        route('filament.jmeryar.accounting.resources.vendor-bills.create', [
                             'purchase_order_id' => $this->getOwnerRecord()->id,
                             'tenant' => Filament::getTenant(),
                         ])
