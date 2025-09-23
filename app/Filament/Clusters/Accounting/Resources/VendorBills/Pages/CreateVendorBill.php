@@ -192,7 +192,8 @@ class CreateVendorBill extends CreateRecord
                 Select::make('purchase_order_id')
                     ->label(__('vendor_bill.purchase_order'))
                     ->options(function (): array {
-                        $vendorId = $this->form->getState()['vendor_id'] ?? null;
+                        // Use getRawState() to avoid triggering validation
+                        $vendorId = $this->form->getRawState()['vendor_id'] ?? null;
 
                         if (!$vendorId) {
                             return [];
