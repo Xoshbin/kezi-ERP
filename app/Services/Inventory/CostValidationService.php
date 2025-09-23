@@ -149,26 +149,8 @@ class CostValidationService
      */
     public function getSuggestedActions(Product $product): array
     {
-        $suggestions = [];
-
-        if (!$product->average_cost || !$product->average_cost->isPositive()) {
-            $suggestions[] = 'Set a positive average cost on the product';
-            $suggestions[] = 'Post a vendor bill for this product to establish cost';
-        }
-
-        if ($product->inventory_valuation_method->value !== 'avco') {
-            $costLayersCount = $product->inventoryCostLayers()->where('remaining_quantity', '>', 0)->count();
-            if ($costLayersCount === 0) {
-                $suggestions[] = 'Create cost layers by receiving stock from vendor bills';
-            }
-        }
-
-        if ($product->unit_price && $product->unit_price->isPositive()) {
-            $suggestions[] = 'Enable unit price fallback in system settings (less reliable)';
-        } else {
-            $suggestions[] = 'Set a unit price on the product as emergency fallback';
-        }
-
-        return $suggestions;
+        // Use the new analysis service for context-aware suggestions
+        $analysisService = app(\App\Services\Inventory\ProductCostAnalysisService::class);
+        return $analysisService->getContextualCostSuggestions($product);
     }
 }

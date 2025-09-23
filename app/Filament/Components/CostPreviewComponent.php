@@ -44,8 +44,30 @@ class CostPreviewComponent
                     }
 
                     $costValidationService = app(CostValidationService::class);
+                    $movementValidationService = app(\App\Services\Inventory\InventoryMovementValidationService::class);
                     $moveTypeEnum = StockMoveType::from($moveType);
 
+                    // First validate the movement itself
+                    $movementValidation = $movementValidationService->validateMovement(
+                        $product,
+                        $moveTypeEnum,
+                        (float) $quantity
+                    );
+
+                    if (!$movementValidation->isValid()) {
+                        $guidance = $movementValidationService->getResolutionGuidance($product);
+
+                        return [
+                            'status' => 'invalid',
+                            'message' => $movementValidation->getSummary(),
+                            'errors' => $movementValidation->getErrors(),
+                            'requirements' => $movementValidation->getRequirements(),
+                            'suggestedActions' => $guidance['contextual_suggestions'],
+                            'establishmentSteps' => $guidance['establishment_steps'],
+                        ];
+                    }
+
+                    // If movement is valid, get cost preview
                     $costPreview = $costValidationService->getCostPreview(
                         $product,
                         (float) $quantity,
@@ -55,13 +77,23 @@ class CostPreviewComponent
                     );
 
                     if ($costPreview->isValid()) {
-                        return [
+                        $result = [
                             'status' => 'valid',
                             'unitCost' => $costPreview->getUnitCost(),
                             'totalCost' => $costPreview->getTotalCost(),
                             'costSource' => $costPreview->getCostSource(),
                             'warnings' => $costPreview->hasWarnings() ? $costPreview->getWarnings() : [],
                         ];
+
+                        // Add movement validation warnings if any
+                        if ($movementValidation->hasWarnings()) {
+                            $result['warnings'] = array_merge(
+                                $result['warnings'],
+                                $movementValidation->getWarnings()
+                            );
+                        }
+
+                        return $result;
                     } else {
                         return [
                             'status' => 'invalid',

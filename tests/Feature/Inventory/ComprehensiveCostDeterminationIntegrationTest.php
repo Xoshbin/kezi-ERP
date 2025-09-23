@@ -107,7 +107,7 @@ it('demonstrates complete cost determination workflow from vendor bill to manual
     $product->refresh();
     expect($product->average_cost)->toEqual(Money::of(50000, 'IQD'));
 
-    // Step 3: Create manual stock move (should use average cost)
+    // Step 3: Create manual stock move (should use vendor bill cost due to enhanced cost determination)
     $dto = new CreateStockMoveDTO(
         company_id: $this->company->id,
         move_type: StockMoveType::Incoming,
@@ -124,16 +124,16 @@ it('demonstrates complete cost determination workflow from vendor bill to manual
             ),
         ],
         reference: 'SM-MANUAL-001',
-        description: 'Manual stock receipt using average cost',
+        description: 'Manual stock receipt using enhanced cost determination',
     );
 
     $manualStockMove = app(CreateStockMoveAction::class)->execute($dto);
 
-    // Verify manual stock move used average cost and tracked source
+    // Verify manual stock move used vendor bill cost (enhanced behavior)
     $manualValuation = StockMoveValuation::where('stock_move_id', $manualStockMove->id)->first();
     expect($manualValuation)->not->toBeNull();
-    expect($manualValuation->cost_source)->toBe(CostSource::AverageCost);
-    expect($manualValuation->cost_source_reference)->toBe("Product:{$product->id}");
+    expect($manualValuation->cost_source)->toBe(CostSource::VendorBill);
+    expect($manualValuation->cost_source_reference)->toBe("VendorBill:{$vendorBill->id}");
     expect($manualValuation->cost_warnings)->toBeArray();
 
     // Step 4: Test cost validation service
@@ -146,7 +146,7 @@ it('demonstrates complete cost determination workflow from vendor bill to manual
     expect($previewResult->isValid())->toBeTrue();
     expect($previewResult->getUnitCost())->toEqual(Money::of(50000, 'IQD'));
     expect($previewResult->getTotalCost())->toEqual(Money::of(1250000, 'IQD')); // 25 * 50000
-    expect($previewResult->getCostSource())->toBe(CostSource::AverageCost);
+    expect($previewResult->getCostSource())->toBe(CostSource::VendorBill);
 });
 
 it('demonstrates fallback cost determination with warnings', function () {
@@ -180,7 +180,7 @@ it('demonstrates fallback cost determination with warnings', function () {
     // Test validation service recognizes the warning
     $validationResult = $this->costValidationService->validateCostAvailability($product, StockMoveType::Incoming);
     expect($validationResult->isValid())->toBeFalse();
-    expect($validationResult->getSuggestedActions())->toContain('Post a vendor bill for this product to establish cost');
+    expect($validationResult->getSuggestedActions())->toContain('Create and post a vendor bill for this product to establish purchase cost');
 });
 
 it('demonstrates complete failure scenario with actionable suggestions', function () {
@@ -210,8 +210,8 @@ it('demonstrates complete failure scenario with actionable suggestions', functio
     // Test validation service provides actionable suggestions
     $validationResult = $this->costValidationService->validateCostAvailability($product, StockMoveType::Incoming);
     expect($validationResult->isValid())->toBeFalse();
-    expect($validationResult->getSuggestedActions())->toContain('Post a vendor bill for this product to establish cost');
-    expect($validationResult->getSuggestedActions())->toContain('Set a positive average cost on the product');
+    expect($validationResult->getSuggestedActions())->toContain('Create and post a vendor bill for this product to establish purchase cost');
+    expect($validationResult->getSuggestedActions())->toContain('Average cost is calculated automatically from posted vendor bills - no manual entry needed');
 
     // Test that creating a stock move with this product fails gracefully
     $dto = new CreateStockMoveDTO(
