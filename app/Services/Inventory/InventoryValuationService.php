@@ -866,7 +866,68 @@ class InventoryValuationService
             }
         }
 
-        // 2. Try product average cost
+        // 2. Try posted vendor bills for this product (for manual inventory recording mode)
+        $attemptedSources[] = 'posted_vendor_bills';
+        $latestVendorBillLine = \App\Models\VendorBillLine::whereHas('vendorBill', function ($query) use ($product) {
+            $query->where('status', \App\Enums\Purchases\VendorBillStatus::Posted)
+                ->where('company_id', $product->company_id);
+        })
+            ->where('product_id', $product->id)
+            ->with(['vendorBill', 'tax'])
+            ->join('vendor_bills', 'vendor_bill_lines.vendor_bill_id', '=', 'vendor_bills.id')
+            ->orderByDesc('vendor_bills.posted_at')
+            ->orderByDesc('vendor_bills.created_at')
+            ->select('vendor_bill_lines.*')
+            ->first();
+
+        if ($latestVendorBillLine) {
+            $vendorBill = $latestVendorBillLine->vendorBill;
+            $unitPrice = $latestVendorBillLine->unit_price;
+            $exchangeRate = $vendorBill->exchange_rate_at_creation ?? 1.0;
+
+            // Convert unit price to company currency if needed
+            if ($vendorBill->currency_id !== $companyCurrency->id) {
+                $unitPrice = $this->currencyConverter->convertWithRate(
+                    $unitPrice,
+                    $exchangeRate,
+                    $companyCurrency->code,
+                    false
+                );
+            }
+
+            // Include capitalized tax in the unit cost if tax is non-recoverable
+            if (
+                $latestVendorBillLine->tax_id && $latestVendorBillLine->total_line_tax->isPositive() &&
+                $latestVendorBillLine->tax && !$latestVendorBillLine->tax->is_recoverable
+            ) {
+                $taxInCompanyCurrency = $latestVendorBillLine->total_line_tax_company_currency ?? $latestVendorBillLine->total_line_tax;
+
+                if (!$latestVendorBillLine->total_line_tax_company_currency && $vendorBill->currency_id !== $companyCurrency->id) {
+                    $taxInCompanyCurrency = $this->currencyConverter->convertWithRate(
+                        $latestVendorBillLine->total_line_tax,
+                        $exchangeRate,
+                        $companyCurrency->code,
+                        false
+                    );
+                }
+
+                $unitPrice = $unitPrice->plus(
+                    $taxInCompanyCurrency->dividedBy($latestVendorBillLine->quantity)
+                );
+            }
+
+            if ($unitPrice->isPositive()) {
+                return CostDeterminationResult::success(
+                    $unitPrice,
+                    CostSource::VendorBill,
+                    "VendorBill:{$vendorBill->id}",
+                    ["Using latest posted vendor bill for cost determination"],
+                    $attemptedSources
+                );
+            }
+        }
+
+        // 3. Try product average cost
         $attemptedSources[] = 'average_cost';
         if ($product->average_cost && $product->average_cost->isPositive()) {
             return CostDeterminationResult::success(
@@ -878,7 +939,7 @@ class InventoryValuationService
             );
         }
 
-        // 3. Try last cost layer (for FIFO/LIFO)
+        // 4. Try last cost layer (for FIFO/LIFO)
         $attemptedSources[] = 'cost_layer';
         $lastLayer = InventoryCostLayer::where('product_id', $product->id)
             ->orderByDesc('created_at')
@@ -893,7 +954,7 @@ class InventoryValuationService
             );
         }
 
-        // 4. Fallback to unit price (if allowed)
+        // 5. Fallback to unit price (if allowed)
         if ($allowFallbacks) {
             $attemptedSources[] = 'unit_price';
             if ($product->unit_price && $product->unit_price->isPositive()) {
@@ -908,23 +969,11 @@ class InventoryValuationService
             }
         }
 
-        // No cost sources available - throw detailed exception
-        $suggestedActions = [
-            'Post a vendor bill for this product to establish cost',
-            'Set a positive average cost on the product',
-        ];
-
-        if ($product->inventory_valuation_method !== ValuationMethod::AVCO) {
-            $suggestedActions[] = 'Create cost layers by receiving stock from vendor bills';
-        }
-
-        if ($product->unit_price && $product->unit_price->isPositive()) {
-            $suggestedActions[] = 'Enable unit price fallback in system settings';
-        }
-
+        // No cost sources available - throw detailed exception with context-aware suggestions
+        // The exception will use ProductCostAnalysisService to generate appropriate suggestions
         throw new InsufficientCostInformationException(
             $product,
-            $suggestedActions,
+            [], // Let the exception generate context-aware suggestions
             $attemptedSources
         );
     }

@@ -156,7 +156,7 @@ it('provides appropriate suggested actions', function () {
     $suggestions = $this->costValidationService->getSuggestedActions($product);
 
     // Assert: Should include relevant suggestions
-    expect($suggestions)->toContain('Set a positive average cost on the product');
-    expect($suggestions)->toContain('Post a vendor bill for this product to establish cost');
-    expect($suggestions)->toContain('Enable unit price fallback in system settings (less reliable)');
+    expect($suggestions)->toContain('Average cost is calculated automatically from posted vendor bills - no manual entry needed');
+    expect($suggestions)->toContain('Create and post a vendor bill for this product to establish purchase cost');
+    expect($suggestions)->toContain('Cost information is required before processing inventory movements');
 });

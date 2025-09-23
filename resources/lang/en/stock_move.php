@@ -50,5 +50,6 @@ return [
     'Add product lines to see cost summary' => 'Add product lines to see cost summary',
     'Error calculating cost summary' => 'Error calculating cost summary',
     'Total Estimated Cost' => 'Total Estimated Cost',
+    'Cost Issues Detected' => 'Cost Issues Detected',
     'Some products have cost determination issues. Please review individual product lines.' => 'Some products have cost determination issues. Please review individual product lines.',
 ];

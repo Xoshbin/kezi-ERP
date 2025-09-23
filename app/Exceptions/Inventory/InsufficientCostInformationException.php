@@ -3,11 +3,12 @@
 namespace App\Exceptions\Inventory;
 
 use App\Models\Product;
+use App\Services\Inventory\ProductCostAnalysisService;
 use Exception;
 
 /**
  * Exception thrown when insufficient cost information is available for inventory operations
- * 
+ *
  * This exception provides detailed context about why cost determination failed
  * and suggests actionable steps for resolution.
  */
@@ -17,21 +18,23 @@ class InsufficientCostInformationException extends Exception
         public readonly Product $product,
         public readonly array $suggestedActions = [],
         public readonly array $attemptedSources = [],
-        string $message = null
+        ?string $message = null
     ) {
-        $defaultMessage = "Cannot determine cost per unit for product '{$product->name}' (ID: {$product->id}).";
-        
+        // Use the new analysis service for better error messages
+        $analysisService = app(ProductCostAnalysisService::class);
+        $defaultMessage = $analysisService->getCostStatusExplanation($product);
+
         if (!empty($this->attemptedSources)) {
             $defaultMessage .= " Attempted sources: " . implode(', ', $this->attemptedSources) . ".";
         }
-        
+
         if (!empty($this->suggestedActions)) {
             $defaultMessage .= " Suggested actions: " . implode(', ', $this->suggestedActions) . ".";
         }
-        
+
         parent::__construct($message ?? $defaultMessage);
     }
-    
+
     /**
      * Get suggested actions for resolving the cost information issue
      */
@@ -40,26 +43,12 @@ class InsufficientCostInformationException extends Exception
         if (!empty($this->suggestedActions)) {
             return $this->suggestedActions;
         }
-        
-        // Default suggestions based on product configuration
-        $suggestions = [];
-        
-        if ($this->product->type->value === 'storable') {
-            $suggestions[] = 'Post a vendor bill for this product to establish average cost';
-            $suggestions[] = 'Set a positive average cost on the product manually';
-            
-            if ($this->product->inventory_valuation_method->value !== 'avco') {
-                $suggestions[] = 'Create a cost layer by receiving stock from a vendor bill';
-            }
-            
-            if ($this->product->unit_price && $this->product->unit_price->isPositive()) {
-                $suggestions[] = 'Enable unit price fallback in company settings';
-            }
-        }
-        
-        return $suggestions;
+
+        // Use the new analysis service for context-aware suggestions
+        $analysisService = app(ProductCostAnalysisService::class);
+        return $analysisService->getContextualCostSuggestions($this->product);
     }
-    
+
     /**
      * Get attempted cost sources that failed
      */
@@ -67,7 +56,7 @@ class InsufficientCostInformationException extends Exception
     {
         return $this->attemptedSources;
     }
-    
+
     /**
      * Get the product that caused the exception
      */
