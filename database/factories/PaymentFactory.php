@@ -18,7 +18,7 @@ class PaymentFactory extends Factory
         return [
             'company_id' => Company::factory(),
             'journal_id' => Journal::factory(),
-            'currency_id' => Currency::factory(),
+            'currency_id' => Currency::factory()->createSafely(),
             'paid_to_from_partner_id' => Partner::factory(),
             'payment_date' => $this->faker->date(),
             'amount' => Money::of($this->faker->randomFloat(2, 100, 10000), 'USD'),
