@@ -119,15 +119,6 @@ function createStockReceiptForTest($testCase, Product $product, float $quantity,
     ]);
 
     // Process incoming stock through valuation service
+    // This will handle both journal entries and stock quant updates
     $valuationService->processIncomingStock($product, $quantity, $costPerUnit, $date, $vendorBill);
-
-    // Update stock quants for the warehouse location
-    $quantService->adjust(
-        $product->company_id,
-        $product->id,
-        $testCase->warehouseLocation->id,
-        $quantity,
-        0, // no reserved quantity
-        null // no lot
-    );
 }

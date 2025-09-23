@@ -119,7 +119,12 @@ class InventoryValuationService
         }
 
         // Create journal entry for incoming stock
-        $journalEntry = $this->createIncomingStockJournalEntry($product, $totalCost, $date, $sourceDocument);
+        // For vendor bill stock moves, use consolidated approach
+        if ($sourceDocument instanceof \App\Models\VendorBill) {
+            $journalEntry = $this->getOrCreateConsolidatedVendorBillJournalEntry($sourceDocument, $product, $totalCost, $date);
+        } else {
+            $journalEntry = $this->createIncomingStockJournalEntry($product, $totalCost, $date, $sourceDocument);
+        }
 
         // Try to get cost determination result for tracking
         $costResult = null;
@@ -540,10 +545,10 @@ class InventoryValuationService
             throw new Exception("Company {$company->id} does not have a default purchase journal configured");
         }
 
-        // Generate reference
+        // Generate reference including product ID to avoid duplicates when processing multiple products
         $sourceType = class_basename($sourceDocument);
         $sourceId = $sourceDocument->id ?? 'unknown';
-        $reference = "STOCK-IN-{$sourceType}-{$sourceId}";
+        $reference = "STOCK-IN-{$sourceType}-{$sourceId}-P{$product->id}";
 
         // Check if a journal entry with this reference already exists to prevent duplicates
         $existingEntry = \App\Models\JournalEntry::where('company_id', $company->id)
@@ -575,6 +580,8 @@ class InventoryValuationService
                     description: "Stock receipt for {$product->name}",
                     partner_id: null,
                     analytic_account_id: null,
+                    original_currency_amount: $this->getOriginalCurrencyAmount($sourceDocument, $totalCost),
+                    exchange_rate_at_transaction: $this->getExchangeRateFromSource($sourceDocument),
                 ),
                 // Credit: Stock Input Account (liability/expense decreases or payable increases)
                 new CreateJournalEntryLineDTO(
@@ -584,6 +591,8 @@ class InventoryValuationService
                     description: "Stock input for {$product->name}",
                     partner_id: null,
                     analytic_account_id: null,
+                    original_currency_amount: $this->getOriginalCurrencyAmount($sourceDocument, $totalCost),
+                    exchange_rate_at_transaction: $this->getExchangeRateFromSource($sourceDocument),
                 ),
             ],
             source_type: get_class($sourceDocument),
@@ -592,6 +601,79 @@ class InventoryValuationService
 
         // Create the journal entry using the action
         return app(CreateJournalEntryAction::class)->execute($journalEntryDTO);
+    }
+
+    /**
+     * Get the original currency amount for journal entry tracking
+     */
+    private function getOriginalCurrencyAmount($sourceDocument, Money $totalCostInCompanyCurrency): ?Money
+    {
+        // If the source is a stock move, try to find the related vendor bill
+        if ($sourceDocument instanceof \App\Models\StockMove) {
+            // Try to find the latest vendor bill for cost determination
+            $product = $sourceDocument->productLines->first()?->product;
+            if (!$product) {
+                return null;
+            }
+
+            $latestVendorBillLine = \App\Models\VendorBillLine::whereHas('vendorBill', function ($query) use ($product) {
+                $query->where('status', \App\Enums\Purchases\VendorBillStatus::Posted)
+                    ->where('company_id', $product->company_id);
+            })
+                ->where('product_id', $product->id)
+                ->with(['vendorBill'])
+                ->join('vendor_bills', 'vendor_bill_lines.vendor_bill_id', '=', 'vendor_bills.id')
+                ->orderByDesc('vendor_bills.posted_at')
+                ->orderByDesc('vendor_bills.created_at')
+                ->select('vendor_bill_lines.*')
+                ->first();
+
+            if ($latestVendorBillLine && $latestVendorBillLine->vendorBill) {
+                $vendorBill = $latestVendorBillLine->vendorBill;
+                $exchangeRate = $vendorBill->exchange_rate_at_creation ?? 1.0;
+
+                // Convert the company currency amount back to original currency
+                if ($vendorBill->currency_id !== $product->company->currency_id && $exchangeRate > 0) {
+                    $originalAmount = $totalCostInCompanyCurrency->getAmount()->toFloat() / $exchangeRate;
+                    return Money::of($originalAmount, $vendorBill->currency->code);
+                }
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Get the exchange rate from the source document
+     */
+    private function getExchangeRateFromSource($sourceDocument): ?float
+    {
+        // If the source is a stock move, try to find the related vendor bill
+        if ($sourceDocument instanceof \App\Models\StockMove) {
+            // Try to find the latest vendor bill for cost determination
+            $product = $sourceDocument->productLines->first()?->product;
+            if (!$product) {
+                return null;
+            }
+
+            $latestVendorBillLine = \App\Models\VendorBillLine::whereHas('vendorBill', function ($query) use ($product) {
+                $query->where('status', \App\Enums\Purchases\VendorBillStatus::Posted)
+                    ->where('company_id', $product->company_id);
+            })
+                ->where('product_id', $product->id)
+                ->with(['vendorBill'])
+                ->join('vendor_bills', 'vendor_bill_lines.vendor_bill_id', '=', 'vendor_bills.id')
+                ->orderByDesc('vendor_bills.posted_at')
+                ->orderByDesc('vendor_bills.created_at')
+                ->select('vendor_bill_lines.*')
+                ->first();
+
+            if ($latestVendorBillLine && $latestVendorBillLine->vendorBill) {
+                return $latestVendorBillLine->vendorBill->exchange_rate_at_creation;
+            }
+        }
+
+        return null;
     }
 
     /**
@@ -652,6 +734,145 @@ class InventoryValuationService
         }
 
         return StockMoveValuation::create($valuationData);
+    }
+
+    /**
+     * Get or create a consolidated journal entry for vendor bill stock moves
+     *
+     * @param \App\Models\VendorBill $vendorBill The vendor bill
+     * @param Product $product The product being processed
+     * @param Money $totalCost The total cost for this product
+     * @param Carbon $date The transaction date
+     * @return JournalEntry
+     */
+    private function getOrCreateConsolidatedVendorBillJournalEntry(\App\Models\VendorBill $vendorBill, Product $product, Money $totalCost, Carbon $date): JournalEntry
+    {
+        // Check if a consolidated journal entry already exists for this vendor bill
+        $existingJournalEntry = JournalEntry::where('source_type', \App\Models\VendorBill::class)
+            ->where('source_id', $vendorBill->id)
+            ->where('reference', 'LIKE', 'STOCK-IN-%')
+            ->first();
+
+        if ($existingJournalEntry) {
+            return $existingJournalEntry;
+        }
+
+        // Get all stock moves for this vendor bill
+        $stockMoves = \App\Models\StockMove::where('source_type', \App\Models\VendorBill::class)
+            ->where('source_id', $vendorBill->id)
+            ->get();
+
+        // Create consolidated journal entry for all stock moves
+        return $this->createConsolidatedIncomingStockJournalEntry($stockMoves->all(), $vendorBill);
+    }
+
+    /**
+     * Create a consolidated journal entry for a single manual stock move with multiple products
+     *
+     * @param StockMove $stockMove The manual stock move
+     * @return JournalEntry
+     */
+    public function createConsolidatedManualStockMoveJournalEntry(StockMove $stockMove): JournalEntry
+    {
+        $company = $stockMove->company;
+        $currencyCode = $company->currency->code;
+        $zero = Money::of(0, $currencyCode);
+        $totalCost = $zero;
+        $journalEntryLines = [];
+        $productNames = [];
+
+        // Process each product line in the stock move
+        foreach ($stockMove->productLines as $productLine) {
+            $product = $productLine->product;
+            $quantity = $productLine->quantity;
+
+            if (!$product) {
+                throw new Exception("Product not found for product line ID {$productLine->id}");
+            }
+
+            // Validate required accounts
+            if (!$product->default_inventory_account_id) {
+                throw new Exception("Product {$product->id} does not have an inventory account configured");
+            }
+            if (!$product->default_stock_input_account_id) {
+                throw new Exception("Product {$product->id} does not have a stock input account configured");
+            }
+
+            // Calculate cost for this product using enhanced method
+            $costResult = $this->calculateIncomingCostPerUnitEnhanced($product, $stockMove, false);
+            $productTotalCost = $costResult->cost->multipliedBy($quantity, RoundingMode::HALF_UP);
+            $totalCost = $totalCost->plus($productTotalCost);
+            $productNames[] = $product->name;
+
+            // Log any cost determination warnings
+            if ($costResult->hasWarnings()) {
+                Log::warning("Cost determination warnings for product {$product->id} in stock move {$stockMove->id}: " . $costResult->getWarningsText());
+            }
+
+            // Add debit line for inventory account
+            $journalEntryLines[] = new CreateJournalEntryLineDTO(
+                account_id: $product->default_inventory_account_id,
+                debit: $productTotalCost,
+                credit: $zero,
+                description: "Stock receipt for {$product->name} (Qty: {$quantity})",
+                analytic_account_id: null,
+                partner_id: null,
+                original_currency_amount: $this->getOriginalCurrencyAmount($stockMove, $productTotalCost),
+                exchange_rate_at_transaction: $this->getExchangeRateFromSource($stockMove),
+            );
+
+            // Add credit line for stock input account
+            $journalEntryLines[] = new CreateJournalEntryLineDTO(
+                account_id: $product->default_stock_input_account_id,
+                debit: $zero,
+                credit: $productTotalCost,
+                description: "Stock input for {$product->name} (Qty: {$quantity})",
+                analytic_account_id: null,
+                partner_id: null,
+                original_currency_amount: $this->getOriginalCurrencyAmount($stockMove, $productTotalCost),
+                exchange_rate_at_transaction: $this->getExchangeRateFromSource($stockMove),
+            );
+
+            // Process inventory valuation for this product (without creating journal entry)
+            $this->processIncomingStockWithoutJournalEntry($product, $quantity, $costResult->cost, Carbon::parse($stockMove->move_date), $stockMove);
+        }
+
+        // Create consolidated journal entry DTO
+        $journalEntryDTO = new CreateJournalEntryDTO(
+            company_id: $company->id,
+            journal_id: $company->default_purchase_journal_id,
+            currency_id: $company->currency_id,
+            entry_date: Carbon::parse($stockMove->move_date)->toDateString(),
+            reference: "STOCK-IN-{$stockMove->reference}",
+            description: "Stock receipt for " . implode(', ', $productNames),
+            created_by_user_id: (int) (Auth::id() ?? 1),
+            is_posted: true,
+            lines: $journalEntryLines,
+            source_type: get_class($stockMove),
+            source_id: $stockMove->id,
+        );
+
+        // Create the journal entry
+        $journalEntry = app(CreateJournalEntryAction::class)->execute($journalEntryDTO);
+
+        // Create stock move valuations linking to the consolidated journal entry
+        foreach ($stockMove->productLines as $productLine) {
+            $product = $productLine->product;
+            $quantity = $productLine->quantity;
+            $costResult = $this->calculateIncomingCostPerUnitEnhanced($product, $stockMove, false);
+            $productTotalCost = $costResult->cost->multipliedBy($quantity, RoundingMode::HALF_UP);
+
+            $this->createIncomingStockMoveValuation(
+                $product,
+                $quantity,
+                $productTotalCost,
+                $journalEntry,
+                $stockMove,
+                $costResult
+            );
+        }
+
+        return $journalEntry;
     }
 
     /**
