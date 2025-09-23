@@ -10,6 +10,7 @@ use Brick\Money\Money;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\VendorBill;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
@@ -50,6 +51,8 @@ use Illuminate\Support\Carbon;
  * @property-read StockLocation|null $deliveryLocation
  * @property-read \Illuminate\Database\Eloquent\Collection<int, PurchaseOrderLine> $lines
  * @property-read int|null $lines_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, VendorBill> $vendorBills
+ * @property-read int|null $vendor_bills_count
  */
 #[ObservedBy([AuditLogObserver::class])]
 class PurchaseOrder extends Model
@@ -157,6 +160,14 @@ class PurchaseOrder extends Model
     public function lines(): HasMany
     {
         return $this->hasMany(PurchaseOrderLine::class);
+    }
+
+    /**
+     * Get the Vendor Bills associated with this Purchase Order.
+     */
+    public function vendorBills(): HasMany
+    {
+        return $this->hasMany(VendorBill::class);
     }
 
     /**

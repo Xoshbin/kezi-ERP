@@ -106,6 +106,7 @@ return [
         'created_by_user' => 'Created By',
         'created_at' => 'Created At',
         'updated_at' => 'Updated At',
+        'billing_status' => 'Billing Status',
     ],
 
     'line_fields' => [
@@ -164,5 +165,11 @@ return [
         'exchange_rate' => 'Exchange rate used for currency conversion when the PO was created.',
         'delivery_location' => 'Default location where goods will be received.',
         'terms_and_conditions' => 'Terms and conditions for this purchase order.',
+    ],
+
+    'billing_status' => [
+        'not_billed' => 'Not Billed',
+        'billed' => 'Billed',
+        'multiple_bills' => ':count Bills',
     ],
 ];
