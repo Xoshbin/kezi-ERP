@@ -289,8 +289,11 @@ class PurchaseOrder extends Model
 
     /**
      * Update the status based on received quantities.
+     * This method should only be called from inventory/warehouse operations.
+     *
+     * @param bool $fromInventoryOperation Whether this is called from a legitimate inventory operation
      */
-    public function updateStatusBasedOnReceipts(): void
+    public function updateStatusBasedOnReceipts(bool $fromInventoryOperation = false): void
     {
         if (
             $this->status === PurchaseOrderStatus::Cancelled ||
@@ -299,6 +302,17 @@ class PurchaseOrder extends Model
             return; // Don't change final statuses
         }
 
+        // Only allow receive status updates from inventory operations
+        if (!$fromInventoryOperation) {
+            // If not from inventory operation, only allow transition to ToReceive
+            // but not to PartiallyReceived or FullyReceived
+            if ($this->status->isCommitted() && $this->getTotalQuantityReceived() === 0.0) {
+                $this->status = PurchaseOrderStatus::ToReceive;
+            }
+            return;
+        }
+
+        // Full logic only for inventory operations
         if ($this->isFullyReceived()) {
             // If fully received, move to billing phase
             $this->status = PurchaseOrderStatus::ToBill;
