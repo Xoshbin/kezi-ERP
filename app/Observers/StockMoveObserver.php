@@ -31,6 +31,19 @@ class StockMoveObserver
                     app(CreateJournalEntryForStockMoveAction::class)->execute($stockMove, $user);
                 }
             }
+
+            // Update stock quants for the movement
+            $stockQuantService = app(\App\Services\Inventory\StockQuantService::class);
+
+            if ($stockMove->move_type === \App\Enums\Inventory\StockMoveType::Incoming) {
+                // For incoming moves, update stock quants for each product line
+                foreach ($stockMove->productLines as $productLine) {
+                    $stockQuantService->applyForIncomingProductLine($productLine);
+                }
+            } elseif ($stockMove->move_type === \App\Enums\Inventory\StockMoveType::Outgoing) {
+                // For outgoing moves, update stock quants
+                $stockQuantService->applyForOutgoing($stockMove);
+            }
         }
 
         $this->logAction('updated', $stockMove, $stockMove->getDirty());

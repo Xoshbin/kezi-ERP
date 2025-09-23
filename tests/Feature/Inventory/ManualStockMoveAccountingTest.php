@@ -136,7 +136,7 @@ it('throws exception for manual stock moves when product has no cost information
 
     // Act & Assert: Should throw InsufficientCostInformationException
     expect(fn() => app(CreateStockMoveAction::class)->execute($dto))
-        ->toThrow(InsufficientCostInformationException::class, 'Cannot determine cost per unit for product');
+        ->toThrow(InsufficientCostInformationException::class, 'Cannot determine cost for product');
 });
 
 it('throws exception for manual outgoing stock moves when product has no cost information', function () {
