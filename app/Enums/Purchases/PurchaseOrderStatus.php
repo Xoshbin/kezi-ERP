@@ -160,14 +160,17 @@ enum PurchaseOrderStatus: string
 
     /**
      * Check if vendor bills can be created against this purchase order.
+     * Bills can be created once the PO is confirmed and committed to the vendor.
      */
     public function canCreateBill(): bool
     {
         return in_array($this, [
-            self::PartiallyReceived,
-            self::FullyReceived,
-            self::ToBill,
-            self::PartiallyBilled
+            self::Confirmed,           // PO confirmed by vendor - can create bill
+            self::ToReceive,           // Waiting for delivery - can create bill
+            self::PartiallyReceived,   // Some goods received - can create bill
+            self::FullyReceived,       // All goods received - can create bill
+            self::ToBill,              // Ready to bill - can create bill
+            self::PartiallyBilled      // Some bills created - can create more bills
         ]);
     }
 
@@ -267,5 +270,83 @@ enum PurchaseOrderStatus: string
     public function allowsBilling(): bool
     {
         return $this->canCreateBill();
+    }
+
+    /**
+     * Get the numeric order/priority of this status for progression validation.
+     * Lower numbers come before higher numbers in the workflow.
+     */
+    public function getOrder(): int
+    {
+        return match ($this) {
+            // Pre-commitment phase (0-9)
+            self::RFQ => 0,
+            self::RFQSent => 1,
+
+            // Commitment phase (10-19)
+            self::Draft => 10,
+            self::Sent => 11,
+            self::Confirmed => 12,
+
+            // Fulfillment phase (20-29)
+            self::ToReceive => 20,
+            self::PartiallyReceived => 21,
+            self::FullyReceived => 22,
+
+            // Billing phase (30-39)
+            self::ToBill => 30,
+            self::PartiallyBilled => 31,
+            self::FullyBilled => 32,
+
+            // Final states (40+)
+            self::Done => 40,
+            self::Cancelled => 99, // Special case - can be reached from many states
+        };
+    }
+
+    /**
+     * Check if transition to another status is allowed (forward progression only).
+     *
+     * @param PurchaseOrderStatus $newStatus The target status to transition to
+     * @return bool True if the transition is allowed
+     */
+    public function canTransitionTo(PurchaseOrderStatus $newStatus): bool
+    {
+        // Allow staying in the same status
+        if ($this === $newStatus) {
+            return true;
+        }
+
+        // Special case: Cancelled can be reached from most active statuses
+        if ($newStatus === self::Cancelled) {
+            return $this->canBeCancelled();
+        }
+
+        // Special case: Can't transition from final states
+        if (in_array($this, [self::Done, self::Cancelled])) {
+            return false;
+        }
+
+        // General rule: Can only move forward (higher order numbers)
+        return $newStatus->getOrder() > $this->getOrder();
+    }
+
+    /**
+     * Get all valid statuses that this status can transition to.
+     *
+     * @return array<PurchaseOrderStatus>
+     */
+    public function getValidTransitions(): array
+    {
+        $allStatuses = self::cases();
+        $validTransitions = [];
+
+        foreach ($allStatuses as $status) {
+            if ($this->canTransitionTo($status)) {
+                $validTransitions[] = $status;
+            }
+        }
+
+        return $validTransitions;
     }
 }

@@ -46,7 +46,16 @@ readonly class CreatePurchaseOrderDTO
     {
         $lines = [];
         if (isset($data['lines']) && is_array($data['lines'])) {
+            // Get currency for line items
+            $currency = null;
+            if (isset($data['currency_id'])) {
+                $currency = \App\Models\Currency::find($data['currency_id']);
+            }
+            $currencyCode = $currency?->code ?? 'USD';
+
             foreach ($data['lines'] as $lineData) {
+                // Pass currency code to line DTO
+                $lineData['currency'] = $currencyCode;
                 $lines[] = CreatePurchaseOrderLineDTO::fromArray($lineData);
             }
         }

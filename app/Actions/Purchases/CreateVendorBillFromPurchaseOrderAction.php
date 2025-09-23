@@ -23,7 +23,13 @@ class CreateVendorBillFromPurchaseOrderAction
         $vendorBillDTO = $this->transformPurchaseOrderToVendorBillDTO($purchaseOrder, $dto);
 
         // Create the vendor bill using the existing action
-        return $this->createVendorBillAction->execute($vendorBillDTO);
+        $vendorBill = $this->createVendorBillAction->execute($vendorBillDTO);
+
+        // Update the purchase order status based on billing progress
+        $purchaseOrder->refresh(); // Refresh to get latest data
+        $purchaseOrder->updateStatusBasedOnBilling();
+
+        return $vendorBill;
     }
 
     private function validateAndGetPurchaseOrder(int $purchaseOrderId): PurchaseOrder

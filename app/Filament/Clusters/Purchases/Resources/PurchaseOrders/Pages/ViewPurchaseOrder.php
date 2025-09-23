@@ -2,17 +2,28 @@
 
 namespace App\Filament\Clusters\Purchases\Resources\PurchaseOrders\Pages;
 
-use App\Filament\Clusters\Accounting\Resources\VendorBills\VendorBillResource;
+use App\Actions\Purchases\CreateVendorBillFromPurchaseOrderAction;
+use App\DataTransferObjects\Purchases\CreateVendorBillFromPurchaseOrderDTO;
 use App\Filament\Clusters\Purchases\Resources\PurchaseOrders\PurchaseOrderResource;
+use App\Filament\Clusters\Purchases\Resources\PurchaseOrders\Schemas\PurchaseOrderInfolist;
 use App\Models\PurchaseOrder;
+use App\Services\SequenceService;
+use Carbon\Carbon;
 use Filament\Actions\Action;
 use Filament\Actions\EditAction;
-use Filament\Facades\Filament;
+use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ViewRecord;
+use Filament\Schemas\Schema;
+use Illuminate\Support\Facades\Auth;
 
 class ViewPurchaseOrder extends ViewRecord
 {
     protected static string $resource = PurchaseOrderResource::class;
+
+    public function infolist(Schema $schema): Schema
+    {
+        return PurchaseOrderInfolist::configure($schema);
+    }
 
     protected function getHeaderActions(): array
     {
@@ -24,25 +35,54 @@ class ViewPurchaseOrder extends ViewRecord
 
     protected function getCreateBillAction(): Action
     {
-        return Action::make('createBill')
+        return Action::make('create_bill')
             ->label(__('purchase_orders.actions.create_bill'))
             ->icon('heroicon-o-document-plus')
             ->color('success')
-            ->visible(function (): bool {
-                /** @var PurchaseOrder $record */
-                $record = $this->getRecord();
-                return $record->status->canCreateBill();
-            })
-            ->action(function (): void {
-                /** @var PurchaseOrder $record */
-                $record = $this->getRecord();
+            ->visible(fn() => $this->record->status->canCreateBill())
+            ->requiresConfirmation()
+            ->modalHeading(__('purchase_orders.actions.create_bill_confirmation_title'))
+            ->modalDescription(__('purchase_orders.actions.create_bill_confirmation_description'))
+            ->action(function () {
+                try {
+                    // Generate unique bill reference
+                    $billReference = app(SequenceService::class)->getNextVendorBillNumber(
+                        $this->record->company,
+                        Carbon::today()
+                    );
 
-                // Redirect to VendorBill creation with PO ID parameter
-                $this->redirect(
-                    VendorBillResource::getUrl('create', [
-                        'purchase_order_id' => $record->id,
-                    ], tenant: Filament::getTenant())
-                );
+                    // Create DTO and execute action
+                    $dto = new CreateVendorBillFromPurchaseOrderDTO(
+                        purchase_order_id: $this->record->id,
+                        bill_reference: $billReference,
+                        bill_date: Carbon::today()->format('Y-m-d'),
+                        accounting_date: Carbon::today()->format('Y-m-d'),
+                        due_date: null,
+                        created_by_user_id: Auth::id(),
+                        payment_term_id: null,
+                        copy_all_lines: true
+                    );
+
+                    $vendorBill = app(CreateVendorBillFromPurchaseOrderAction::class)->execute($dto);
+
+                    // Show success notification and redirect
+                    Notification::make()
+                        ->title(__('purchase_orders.notifications.bill_created_successfully'))
+                        ->body(__('purchase_orders.notifications.bill_created_body', ['reference' => $vendorBill->bill_reference]))
+                        ->success()
+                        ->send();
+
+                    $this->redirect(route('filament.jmeryar.accounting.resources.vendor-bills.edit', [
+                        'tenant' => \Filament\Facades\Filament::getTenant(),
+                        'record' => $vendorBill->id
+                    ]));
+                } catch (\Exception $e) {
+                    Notification::make()
+                        ->title(__('purchase_orders.notifications.bill_creation_failed'))
+                        ->body($e->getMessage())
+                        ->danger()
+                        ->send();
+                }
             });
     }
 }

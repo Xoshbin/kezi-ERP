@@ -229,7 +229,29 @@ class PurchaseOrder extends Model
      */
     public function canCreateBill(): bool
     {
-        return $this->status->canCreateBill();
+        // First check if status allows bill creation
+        if (!$this->status->canCreateBill()) {
+            return false;
+        }
+
+        // Then check if bills already exist for this PO
+        return !$this->hasBills();
+    }
+
+    /**
+     * Check if this purchase order has any vendor bills.
+     */
+    public function hasBills(): bool
+    {
+        return $this->vendorBills()->exists();
+    }
+
+    /**
+     * Get the count of vendor bills for this purchase order.
+     */
+    public function getBillsCount(): int
+    {
+        return $this->vendorBills()->count();
     }
 
     /**
@@ -300,9 +322,23 @@ class PurchaseOrder extends Model
             return; // Don't change final statuses
         }
 
-        // This method would be called when vendor bills are processed
-        // Implementation depends on integration with VendorBill model
-        // For now, this is a placeholder for future billing integration
+        $billsCount = $this->getBillsCount();
+
+        if ($billsCount === 0) {
+            // No bills exist - status should remain as is
+            return;
+        } elseif ($billsCount === 1) {
+            // First bill created - move to PartiallyBilled
+            $this->status = PurchaseOrderStatus::PartiallyBilled;
+        } else {
+            // Multiple bills exist - could be PartiallyBilled or FullyBilled
+            // For now, we'll keep it as PartiallyBilled
+            // In the future, this could be enhanced to check if total billed amount
+            // equals total PO amount to determine FullyBilled status
+            $this->status = PurchaseOrderStatus::PartiallyBilled;
+        }
+
+        $this->save();
     }
 
     /**
