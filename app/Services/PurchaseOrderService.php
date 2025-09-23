@@ -102,6 +102,11 @@ class PurchaseOrderService
             $purchaseOrder->confirmed_at = now();
             $purchaseOrder->save();
 
+            // Automatically transition to ToReceive status after confirmation
+            // This follows the business logic: Confirmed → ToReceive
+            $purchaseOrder->updateStatusBasedOnReceipts(fromInventoryOperation: false);
+            $purchaseOrder->save();
+
             return $purchaseOrder;
         });
     }
