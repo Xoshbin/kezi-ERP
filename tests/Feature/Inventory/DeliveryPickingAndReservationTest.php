@@ -27,6 +27,11 @@ beforeEach(function () {
     $this->setupWithConfiguredCompany();
     $this->setupInventoryTestEnvironment();
 
+    // Ensure company uses AUTO_RECORD_ON_BILL mode for these tests
+    $this->company->update([
+        'inventory_accounting_mode' => \App\Enums\Inventory\InventoryAccountingMode::AUTO_RECORD_ON_BILL,
+    ]);
+
     $this->product = Product::factory()->for($this->company)->create([
         'type' => ProductType::Storable,
         'inventory_valuation_method' => \App\Enums\Inventory\ValuationMethod::AVCO,
