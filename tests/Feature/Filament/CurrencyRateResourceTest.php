@@ -78,9 +78,16 @@ it('can render the edit page', function () {
 });
 
 it('can retrieve data', function () {
-    $currencyRates = CurrencyRate::factory()->count(10)->create([
-        'company_id' => $this->company->id,
-    ]);
+    // Create currency rates with unique dates to avoid constraint violations
+    $currencyRates = collect();
+    for ($i = 0; $i < 10; $i++) {
+        $currencyRates->push(
+            CurrencyRate::factory()->create([
+                'company_id' => $this->company->id,
+                'effective_date' => now()->subDays($i)->format('Y-m-d'),
+            ])
+        );
+    }
 
     livewire(ListCurrencyRates::class)
         ->assertCanSeeTableRecords($currencyRates);

@@ -29,7 +29,7 @@ class PurchaseOrderFactory extends Factory
         return [
             'company_id' => Company::factory(),
             'vendor_id' => Partner::factory()->vendor(),
-            'currency_id' => Currency::factory(),
+            'currency_id' => Currency::factory()->createSafely(),
             'created_by_user_id' => User::factory(),
             'po_number' => null,
             'status' => PurchaseOrderStatus::Draft,
