@@ -35,7 +35,7 @@ class ViewPurchaseOrder extends ViewRecord
 
     protected function getCreateBillAction(): Action
     {
-        return Action::make('create_bill')
+        return Action::make('createBill')
             ->label(__('purchase_orders.actions.create_bill'))
             ->icon('heroicon-o-document-plus')
             ->color('success')

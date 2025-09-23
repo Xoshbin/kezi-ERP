@@ -110,7 +110,7 @@ test('can confirm purchase order through filament action', function () {
         ->assertHasNoActionErrors();
 
     $purchaseOrder->refresh();
-    expect($purchaseOrder->status)->toBe(PurchaseOrderStatus::Confirmed);
+    expect($purchaseOrder->status)->toBe(PurchaseOrderStatus::ToReceive); // Auto-transitions to ToReceive after confirmation
     expect($purchaseOrder->confirmed_at)->not->toBeNull();
 });
 
@@ -132,7 +132,7 @@ test('can cancel purchase order through filament action', function () {
     expect($purchaseOrder->cancelled_at)->not->toBeNull();
 });
 
-test('confirm action does not change status to receive statuses', function () {
+test('confirm action transitions to ToReceive status', function () {
     $purchaseOrder = PurchaseOrder::factory()->create([
         'company_id' => $this->company->id,
         'vendor_id' => $this->vendor->id,
@@ -153,8 +153,8 @@ test('confirm action does not change status to receive statuses', function () {
 
     $purchaseOrder->refresh();
 
-    // Status should be Confirmed, not any receive status
-    expect($purchaseOrder->status)->toBe(PurchaseOrderStatus::Confirmed);
+    // Status should be ToReceive after confirmation (automatic transition)
+    expect($purchaseOrder->status)->toBe(PurchaseOrderStatus::ToReceive);
     expect($purchaseOrder->status)->not->toBe(PurchaseOrderStatus::PartiallyReceived);
     expect($purchaseOrder->status)->not->toBe(PurchaseOrderStatus::FullyReceived);
     expect($purchaseOrder->confirmed_at)->not->toBeNull();
