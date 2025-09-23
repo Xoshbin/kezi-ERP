@@ -44,8 +44,9 @@ class StockMoveObserver
                 // Update Purchase Order status if this stock move is related to a PO
                 $this->updatePurchaseOrderStatusFromStockMove($stockMove);
             } elseif ($stockMove->move_type === \App\Enums\Inventory\StockMoveType::Outgoing) {
-                // For outgoing moves, update stock quants
-                $stockQuantService->applyForOutgoing($stockMove);
+                // For outgoing moves, stock consumption is handled by the reservation system
+                // via StockMoveConfirmed event → ProcessOutgoingStockJob → ProcessOutgoingStockAction
+                // Do not consume stock here to avoid double consumption
             }
         }
 
