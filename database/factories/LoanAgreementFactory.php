@@ -28,7 +28,7 @@ class LoanAgreementFactory extends Factory
             'start_date' => now()->addMonth()->startOfMonth()->toDateString(),
             'maturity_date' => now()->addMonths(12)->toDateString(),
             'duration_months' => 12,
-            'currency_id' => Currency::factory(),
+            'currency_id' => Currency::factory()->createSafely(),
             'principal_amount' => Money::of('10000', 'USD'),
             'outstanding_principal' => Money::of('10000', 'USD'),
             'loan_type' => LoanType::Payable,
