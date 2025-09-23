@@ -22,8 +22,16 @@ beforeEach(function () {
     $this->setupWithConfiguredCompany();
     $this->actingAs($this->user);
 
-    // Create foreign currency (USD)
-    $this->usd = Currency::factory()->create(['code' => 'USD']);
+    // Create foreign currency (USD) - use firstOrCreate to avoid conflicts in parallel tests
+    $this->usd = Currency::firstOrCreate(
+        ['code' => 'USD'],
+        [
+            'name' => 'USD Currency',
+            'symbol' => '$',
+            'decimal_places' => 2,
+            'is_active' => true,
+        ]
+    );
 
     // Create test data
     $this->vendor = Partner::factory()->vendor()->create(['company_id' => $this->company->id]);
