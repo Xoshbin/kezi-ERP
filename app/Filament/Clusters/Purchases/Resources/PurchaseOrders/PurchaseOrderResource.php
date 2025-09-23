@@ -7,6 +7,7 @@ use App\Filament\Clusters\Purchases\Resources\PurchaseOrders\Pages\CreatePurchas
 use App\Filament\Clusters\Purchases\Resources\PurchaseOrders\Pages\EditPurchaseOrder;
 use App\Filament\Clusters\Purchases\Resources\PurchaseOrders\Pages\ListPurchaseOrders;
 use App\Filament\Clusters\Purchases\Resources\PurchaseOrders\Pages\ViewPurchaseOrder;
+use App\Filament\Clusters\Purchases\Resources\PurchaseOrders\RelationManagers\VendorBillsRelationManager;
 use App\Filament\Clusters\Purchases\Resources\PurchaseOrders\Schemas\PurchaseOrderForm;
 use App\Filament\Clusters\Purchases\Resources\PurchaseOrders\Tables\PurchaseOrdersTable;
 use App\Models\PurchaseOrder;
@@ -46,7 +47,7 @@ class PurchaseOrderResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            VendorBillsRelationManager::class,
         ];
     }
 

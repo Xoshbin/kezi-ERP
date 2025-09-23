@@ -32,6 +32,37 @@ class PurchaseOrdersTable
                     ->badge()
                     ->sortable(),
 
+                TextColumn::make('billing_status')
+                    ->label(__('purchase_orders.fields.billing_status'))
+                    ->getStateUsing(function ($record): string {
+                        $billsCount = $record->vendorBills()->count();
+                        if ($billsCount === 0) {
+                            return __('purchase_orders.billing_status.not_billed');
+                        } elseif ($billsCount === 1) {
+                            return __('purchase_orders.billing_status.billed');
+                        } else {
+                            return __('purchase_orders.billing_status.multiple_bills', ['count' => $billsCount]);
+                        }
+                    })
+                    ->badge()
+                    ->color(function ($record): string {
+                        $billsCount = $record->vendorBills()->count();
+                        return match ($billsCount) {
+                            0 => 'warning',
+                            1 => 'success',
+                            default => 'info',
+                        };
+                    })
+                    ->icon(function ($record): string {
+                        $billsCount = $record->vendorBills()->count();
+                        return match ($billsCount) {
+                            0 => 'heroicon-m-exclamation-triangle',
+                            1 => 'heroicon-m-check-circle',
+                            default => 'heroicon-m-document-duplicate',
+                        };
+                    })
+                    ->toggleable(),
+
                 TextColumn::make('po_date')
                     ->label(__('purchase_orders.fields.po_date'))
                     ->date()
