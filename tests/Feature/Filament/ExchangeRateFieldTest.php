@@ -19,6 +19,7 @@ uses(RefreshDatabase::class, WithConfiguredCompany::class);
 
 beforeEach(function () {
     $this->setupWithConfiguredCompany();
+    $this->setupInventoryTestEnvironment(); // Add inventory setup for storable products
     $this->actingAs($this->user);
 
     // Create foreign currency (USD)

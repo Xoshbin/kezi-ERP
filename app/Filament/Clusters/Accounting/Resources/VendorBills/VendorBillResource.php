@@ -6,7 +6,6 @@ use App\Actions\Payments\CreatePaymentAction;
 use App\DataTransferObjects\Payments\CreatePaymentDocumentLinkDTO;
 use App\DataTransferObjects\Payments\CreatePaymentDTO;
 use App\Enums\Accounting\TaxType;
-use App\Enums\Accounting\AccountType;
 use App\Enums\Assets\DepreciationMethod;
 use App\Enums\Partners\PartnerType;
 use App\Enums\Payments\PaymentMethod;
@@ -147,9 +146,23 @@ class VendorBillResource extends Resource
                             return $tenant instanceof Company ? $tenant->currency_id : null;
                         })
                         ->afterStateUpdated(function (callable $set, $state) {
-                            // Clear any manually set exchange rate when currency changes
                             if ($state) {
-                                $set('exchange_rate_at_creation', null);
+                                $currency = Currency::find($state);
+                                // Ensure we have a single Currency model, not a collection
+                                if ($currency instanceof Collection) {
+                                    $currency = $currency->first();
+                                }
+                                $company = Filament::getTenant();
+
+                                if ($currency && $company instanceof Company && $currency->id !== $company->currency_id) {
+                                    // Get latest exchange rate for this company
+                                    $latestRate = CurrencyRate::getLatestRate($currency->id, $company->id);
+                                    if ($latestRate) {
+                                        $set('exchange_rate_at_creation', $latestRate);
+                                    }
+                                } else {
+                                    $set('exchange_rate_at_creation', 1.0);
+                                }
                             }
                         })
                         ->createOptionForm([
@@ -181,58 +194,28 @@ class VendorBillResource extends Resource
                                 ->modalWidth('lg');
                         }),
                     TextInput::make('exchange_rate_at_creation')
-                        ->label(__('vendor_bill.exchange_rate'))
+                        ->label(__('vendor_bill.exchange_rate_at_creation'))
                         ->numeric()
-                        ->step(0.000001)
-                        ->minValue(0.000001)
                         ->columnSpan(1)
                         ->visible(function (callable $get) {
                             $currencyId = $get('currency_id');
                             $company = Filament::getTenant();
-
                             return $currencyId && $company instanceof Company && $currencyId != $company->currency_id;
                         })
-                        ->disabled(function (?VendorBill $record) {
-                            return $record && $record->status !== VendorBillStatus::Draft;
-                        })
-                        ->helperText(function (callable $get, ?VendorBill $record) {
-                            // If document is not draft, show locked message
-                            if ($record && $record->status !== VendorBillStatus::Draft) {
-                                return __('vendor_bill.exchange_rate_locked_helper');
-                            }
-
-                            // Show current exchange rate as helper text
+                        ->disabled(fn(?VendorBill $record) => $record && $record->status !== VendorBillStatus::Draft)
+                        ->helperText(function (callable $get) {
                             $currencyId = $get('currency_id');
                             $company = Filament::getTenant();
-
-                            if ($currencyId && $company instanceof Company && $currencyId != $company->currency_id) {
-                                $currency = \App\Models\Currency::find($currencyId);
+                            if ($currencyId && $company instanceof Company && $currencyId !== $company->currency_id) {
+                                $currency = Currency::find($currencyId);
                                 if ($currency) {
-                                    $latestRate = \App\Models\CurrencyRate::getLatestRate($currency->id, $company->id);
+                                    $latestRate = CurrencyRate::getLatestRate($currency->id, $company->id);
                                     if ($latestRate) {
-                                        return __('vendor_bill.exchange_rate_helper_with_current', ['rate' => number_format($latestRate, 6)]);
+                                        return __('vendor_bill.exchange_rate_helper') . ' ' . __('vendor_bill.current_rate', ['rate' => $latestRate]);
                                     }
                                 }
                             }
-
-                            return __('vendor_bill.exchange_rate_manual_helper');
-                        })
-                        ->placeholder(function (callable $get) {
-                            // Show current rate as placeholder when creating new records
-                            $currencyId = $get('currency_id');
-                            $company = Filament::getTenant();
-
-                            if ($currencyId && $company instanceof Company && $currencyId != $company->currency_id) {
-                                $currency = \App\Models\Currency::find($currencyId);
-                                if ($currency) {
-                                    $latestRate = \App\Models\CurrencyRate::getLatestRate($currency->id, $company->id);
-                                    if ($latestRate) {
-                                        return number_format($latestRate, 6);
-                                    }
-                                }
-                            }
-
-                            return null;
+                            return __('vendor_bill.exchange_rate_helper');
                         }),
                 ])
                 ->columns(4)
@@ -317,8 +300,10 @@ class VendorBillResource extends Resource
                                     }
                                 })
                                 ->createOptionForm([
-                                    Hidden::make('company_id')
-                                        ->default(fn() => Filament::getTenant()?->getKey()),
+                                    Select::make('company_id')
+                                        ->relationship('company', 'name')
+                                        ->label(__('product.company'))
+                                        ->required(),
                                     TextInput::make('name')
                                         ->label(__('product.name'))
                                         ->required()
@@ -338,42 +323,6 @@ class VendorBillResource extends Resource
                                     Textarea::make('description')
                                         ->label(__('product.description'))
                                         ->rows(3),
-                                    TranslatableSelect::make('default_inventory_account_id')
-                                        ->relationship('inventoryAccount', 'name')
-                                        ->label(__('product.default_inventory_account'))
-                                        ->searchable()
-                                        ->preload()
-                                        ->searchableFields(['name'])
-                                        ->visible(fn($get) => $get('type') === ProductType::Storable->value)
-                                        ->required(fn($get) => $get('type') === ProductType::Storable->value)
-                                        ->rules(['required_if:type,' . ProductType::Storable->value])
-                                        ->createOptionForm([
-                                            Hidden::make('company_id')
-                                                ->default(fn() => Filament::getTenant()?->getKey()),
-                                            TextInput::make('code')
-                                                ->label(__('account.code'))
-                                                ->required()
-                                                ->maxLength(255),
-                                            TextInput::make('name')
-                                                ->label(__('account.name'))
-                                                ->required()
-                                                ->maxLength(255),
-                                            Select::make('type')
-                                                ->label(__('account.type'))
-                                                ->required()
-                                                ->options(
-                                                    collect(AccountType::cases())
-                                                        ->mapWithKeys(fn(AccountType $type) => [$type->value => $type->label()])
-                                                )
-                                                ->searchable(),
-                                            Toggle::make('is_deprecated')
-                                                ->label(__('account.is_deprecated'))
-                                                ->default(false),
-                                        ])
-                                        ->createOptionModalHeading(__('common.modal_title_create_account'))
-                                        ->createOptionAction(function (Action $action) {
-                                            return $action->modalWidth('lg');
-                                        }),
                                     Toggle::make('is_active')
                                         ->label(__('product.is_active'))
                                         ->default(true),
