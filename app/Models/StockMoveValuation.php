@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Casts\BaseCurrencyMoneyCast;
+use App\Enums\Inventory\CostSource;
 use App\Enums\Inventory\ValuationMethod;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -24,11 +25,16 @@ class StockMoveValuation extends Model
         'journal_entry_id',
         'source_type',
         'source_id',
+        'cost_source',
+        'cost_source_reference',
+        'cost_warnings',
     ];
 
     protected $casts = [
         'cost_impact' => BaseCurrencyMoneyCast::class,
         'valuation_method' => ValuationMethod::class,
+        'cost_source' => CostSource::class,
+        'cost_warnings' => 'array',
     ];
 
     /**

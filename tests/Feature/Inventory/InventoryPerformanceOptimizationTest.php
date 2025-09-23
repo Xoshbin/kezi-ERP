@@ -107,23 +107,33 @@ class InventoryPerformanceOptimizationTest extends TestCase
             'type' => \App\Enums\Products\ProductType::Storable,
         ]);
 
-        // Create incoming stock moves
-        StockMove::factory()->create([
+        // Create incoming stock moves with product lines
+        $move1 = StockMove::factory()->create([
             'company_id' => $this->company->id,
-            'product_id' => $this->product->id,
-            'to_location_id' => $this->location->id,
-            'quantity' => 100,
             'move_type' => 'incoming',
             'status' => 'done',
         ]);
 
-        StockMove::factory()->create([
+        \App\Models\StockMoveProductLine::factory()->create([
             'company_id' => $this->company->id,
+            'stock_move_id' => $move1->id,
+            'product_id' => $this->product->id,
+            'to_location_id' => $this->location->id,
+            'quantity' => 100,
+        ]);
+
+        $move2 = StockMove::factory()->create([
+            'company_id' => $this->company->id,
+            'move_type' => 'incoming',
+            'status' => 'done',
+        ]);
+
+        \App\Models\StockMoveProductLine::factory()->create([
+            'company_id' => $this->company->id,
+            'stock_move_id' => $move2->id,
             'product_id' => $product2->id,
             'to_location_id' => $this->location->id,
             'quantity' => 200,
-            'move_type' => 'incoming',
-            'status' => 'done',
         ]);
 
         $productIds = [$this->product->id, $product2->id];

@@ -97,9 +97,13 @@ it('creates positive adjustment with proper stock moves and journal entries', fu
     $move = $picking->stockMoves()->first();
     expect($move)->not->toBeNull();
     expect($move->move_type)->toBe(StockMoveType::Adjustment);
-    expect((float) $move->quantity)->toBe(5.0);
-    expect($move->from_location_id)->toBe($this->company->adjustmentLocation->id);
-    expect($move->to_location_id)->toBe($this->stockLocation->id);
+
+    // Check product line
+    $productLine = $move->productLines()->first();
+    expect($productLine)->not->toBeNull();
+    expect((float) $productLine->quantity)->toBe(5.0);
+    expect($productLine->from_location_id)->toBe($this->company->adjustmentLocation->id);
+    expect($productLine->to_location_id)->toBe($this->stockLocation->id);
 
     // Assert quant was updated
     $quant = StockQuant::where('company_id', $this->company->id)
@@ -186,9 +190,12 @@ it('creates negative adjustment with proper accounting', function () {
     $picking = StockPicking::where('origin', 'ADJ-002')->first();
     $move = $picking->stockMoves()->first();
 
-    expect((float) $move->quantity)->toBe(3.0);
-    expect($move->from_location_id)->toBe($this->stockLocation->id);
-    expect($move->to_location_id)->toBe($this->company->adjustmentLocation->id);
+    // Check product line
+    $productLine = $move->productLines()->first();
+    expect($productLine)->not->toBeNull();
+    expect((float) $productLine->quantity)->toBe(3.0);
+    expect($productLine->from_location_id)->toBe($this->stockLocation->id);
+    expect($productLine->to_location_id)->toBe($this->company->adjustmentLocation->id);
 
     // Assert quant was reduced
     $quant = StockQuant::where('company_id', $this->company->id)
@@ -284,7 +291,8 @@ it('handles lot-specific adjustments correctly', function () {
     $picking = StockPicking::where('origin', 'ADJ-LOT-001')->first();
     $move = $picking->stockMoves()->first();
 
-    $moveLine = StockMoveLine::where('stock_move_id', $move->id)
+    $productLine = $move->productLines()->first();
+    $moveLine = StockMoveLine::where('stock_move_product_line_id', $productLine->id)
         ->where('lot_id', $lot1->id)
         ->first();
 

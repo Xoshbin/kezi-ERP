@@ -63,6 +63,12 @@ return [
     'confirm' => 'تأكيد',
     'reset_to_draft' => 'إعادة إلى المسودة',
     'confirm_bill' => 'تأكيد الفاتورة',
+    'load_from_purchase_order' => 'تحميل من أمر الشراء',
+    'create_from_purchase_order' => 'إنشاء فاتورة من أمر الشراء',
+
+    // Fields
+    'purchase_order' => 'أمر الشراء',
+    'no_purchase_order' => 'لا يوجد أمر شراء',
 
     // Notifications
     'notification_confirm_success' => 'تم تأكيد فاتورة المورد بنجاح',

@@ -69,9 +69,34 @@ class StockReservationService
     public function reserveForMove(StockMove $move, int $locationId): float
     {
         return DB::transaction(function () use ($move, $locationId) {
+            // Handle both old structure (direct product_id) and new structure (product lines)
+            // For now, if this is a multi-product move, we'll reserve for the first product line
+            // TODO: This service needs to be refactored to handle multi-product moves properly
+
+            $productId = null;
+            $quantity = 0;
+
+            // Check if this is an old-style stock move with direct product_id
+            if (isset($move->product_id) && $move->product_id) {
+                $productId = $move->product_id;
+                $quantity = $move->quantity;
+            } else {
+                // New structure - use first product line
+                $firstProductLine = $move->productLines()->first();
+                if ($firstProductLine) {
+                    $productId = $firstProductLine->product_id;
+                    $quantity = $firstProductLine->quantity;
+                }
+            }
+
+            // If we couldn't determine product_id, return 0
+            if (!$productId) {
+                return 0.0;
+            }
+
             // Check if we already reserved for this move+location
             $existingReservations = StockReservation::where('stock_move_id', $move->id)
-                ->where('product_id', $move->product_id)
+                ->where('product_id', $productId)
                 ->where('location_id', $locationId)
                 ->get();
 
@@ -82,12 +107,12 @@ class StockReservationService
             // Get available lots ordered by FEFO
             $availableLots = $this->stockQuantService->getAvailableLotsByFEFO(
                 $move->company_id,
-                $move->product_id,
+                $productId,
                 $locationId
             );
 
             $totalReserved = 0.0;
-            $remainingToReserve = (float) $move->quantity;
+            $remainingToReserve = (float) $quantity;
 
             // Reserve from lots using FEFO
             foreach ($availableLots as $lotInfo) {
@@ -102,7 +127,7 @@ class StockReservationService
                     // Reserve from this specific lot
                     $this->stockQuantService->reserve(
                         $move->company_id,
-                        $move->product_id,
+                        $productId,
                         $locationId,
                         $toReserveFromLot,
                         $lotInfo['lot_id']
@@ -117,7 +142,7 @@ class StockReservationService
             if ($totalReserved == 0) {
                 $available = $this->stockQuantService->getAvailableQuantityByLot(
                     $move->company_id,
-                    $move->product_id,
+                    $productId,
                     $locationId,
                     null // No lot
                 );
@@ -126,7 +151,7 @@ class StockReservationService
                 if ($toReserve > 0) {
                     $this->stockQuantService->reserve(
                         $move->company_id,
-                        $move->product_id,
+                        $productId,
                         $locationId,
                         $toReserve,
                         null
@@ -140,7 +165,7 @@ class StockReservationService
             if ($totalReserved > 0) {
                 StockReservation::create([
                     'company_id' => $move->company_id,
-                    'product_id' => $move->product_id,
+                    'product_id' => $productId,
                     'stock_move_id' => $move->id,
                     'location_id' => $locationId,
                     'quantity' => $totalReserved,
@@ -162,9 +187,15 @@ class StockReservationService
             $total = 0.0;
 
             foreach ($reservations as $res) {
+                // Find the product line for this reservation
+                $productLine = $move->productLines()->where('product_id', $res->product_id)->first();
+                if (!$productLine) {
+                    continue; // Skip if no matching product line
+                }
+
                 // Get all quants with reserved quantity for this product/location
                 $quants = StockQuant::where('company_id', $move->company_id)
-                    ->where('product_id', $move->product_id)
+                    ->where('product_id', $res->product_id)
                     ->where('location_id', $res->location_id)
                     ->where('reserved_quantity', '>', 0)
                     ->orderBy('lot_id') // Consistent ordering
@@ -184,7 +215,7 @@ class StockReservationService
                         // Adjust the quant (decrease both quantity and reserved)
                         $this->stockQuantService->adjust(
                             $move->company_id,
-                            $move->product_id,
+                            $res->product_id,
                             $res->location_id,
                             -$toConsumeFromQuant,
                             -$toConsumeFromQuant,
@@ -194,7 +225,7 @@ class StockReservationService
                         // Create stock move line for traceability
                         StockMoveLine::create([
                             'company_id' => $move->company_id,
-                            'stock_move_id' => $move->id,
+                            'stock_move_product_line_id' => $productLine->id,
                             'lot_id' => $quant->lot_id,
                             'quantity' => $toConsumeFromQuant,
                         ]);

@@ -14,6 +14,7 @@ use App\Models\StockMoveLine;
 use App\Models\StockPicking;
 use App\Services\Inventory\InventoryValuationService;
 use App\Services\Inventory\StockQuantService;
+use App\Services\Inventory\StockMoveService;
 use Illuminate\Support\Facades\DB;
 use InvalidArgumentException;
 
@@ -22,6 +23,7 @@ class CreateInventoryAdjustmentAction
     public function __construct(
         private readonly InventoryValuationService $valuationService,
         private readonly StockQuantService $stockQuantService,
+        private readonly StockMoveService $stockMoveService,
     ) {}
 
     /**
@@ -128,12 +130,20 @@ class CreateInventoryAdjustmentAction
         int $adjustmentLocationId,
         float $quantity
     ): void {
-        $moveDto = new CreateStockMoveDTO(
-            company_id: $dto->company_id,
+        $product = \App\Models\Product::find($line->product_id);
+        $productLineDto = new \App\DataTransferObjects\Inventory\CreateStockMoveProductLineDTO(
             product_id: $line->product_id,
             quantity: $quantity,
             from_location_id: $adjustmentLocationId,
             to_location_id: $line->location_id,
+            description: "Adjustment for {$product->name}",
+            source_type: 'InventoryAdjustment',
+            source_id: 1,
+        );
+
+        $moveDto = new CreateStockMoveDTO(
+            company_id: $dto->company_id,
+            product_lines: [$productLineDto],
             move_type: StockMoveType::Adjustment,
             status: StockMoveStatus::Done,
             move_date: $dto->adjustment_date,
@@ -147,12 +157,15 @@ class CreateInventoryAdjustmentAction
 
         // Create move line if lot is specified
         if ($line->lot_id) {
-            StockMoveLine::create([
-                'company_id' => $dto->company_id,
-                'stock_move_id' => $move->id,
-                'lot_id' => $line->lot_id,
-                'quantity' => $quantity,
-            ]);
+            $productLine = $move->productLines()->first();
+            if ($productLine) {
+                StockMoveLine::create([
+                    'company_id' => $dto->company_id,
+                    'stock_move_product_line_id' => $productLine->id,
+                    'lot_id' => $line->lot_id,
+                    'quantity' => $quantity,
+                ]);
+            }
         }
 
         // Update quants
@@ -179,12 +192,20 @@ class CreateInventoryAdjustmentAction
         int $adjustmentLocationId,
         float $quantity
     ): void {
-        $moveDto = new CreateStockMoveDTO(
-            company_id: $dto->company_id,
+        $product = \App\Models\Product::find($line->product_id);
+        $productLineDto = new \App\DataTransferObjects\Inventory\CreateStockMoveProductLineDTO(
             product_id: $line->product_id,
             quantity: $quantity,
             from_location_id: $line->location_id,
             to_location_id: $adjustmentLocationId,
+            description: "Adjustment for {$product->name}",
+            source_type: 'InventoryAdjustment',
+            source_id: 1,
+        );
+
+        $moveDto = new CreateStockMoveDTO(
+            company_id: $dto->company_id,
+            product_lines: [$productLineDto],
             move_type: StockMoveType::Adjustment,
             status: StockMoveStatus::Done,
             move_date: $dto->adjustment_date,
@@ -198,12 +219,15 @@ class CreateInventoryAdjustmentAction
 
         // Create move line if lot is specified
         if ($line->lot_id) {
-            StockMoveLine::create([
-                'company_id' => $dto->company_id,
-                'stock_move_id' => $move->id,
-                'lot_id' => $line->lot_id,
-                'quantity' => $quantity,
-            ]);
+            $productLine = $move->productLines()->first();
+            if ($productLine) {
+                StockMoveLine::create([
+                    'company_id' => $dto->company_id,
+                    'stock_move_product_line_id' => $productLine->id,
+                    'lot_id' => $line->lot_id,
+                    'quantity' => $quantity,
+                ]);
+            }
         }
 
         // Update quants
@@ -225,21 +249,12 @@ class CreateInventoryAdjustmentAction
      */
     private function createStockMove(CreateStockMoveDTO $dto, StockPicking $picking): StockMove
     {
-        return StockMove::create([
-            'company_id' => $dto->company_id,
-            'product_id' => $dto->product_id,
-            'quantity' => $dto->quantity,
-            'from_location_id' => $dto->from_location_id,
-            'to_location_id' => $dto->to_location_id,
-            'move_type' => $dto->move_type,
-            'status' => $dto->status,
-            'move_date' => $dto->move_date,
-            'reference' => $dto->reference,
-            'source_type' => $dto->source_type,
-            'source_id' => $dto->source_id,
-            'picking_id' => $picking->id,
-            'created_by_user_id' => $dto->created_by_user_id,
-        ]);
+        $stockMove = $this->stockMoveService->createMove($dto);
+
+        // Associate with picking
+        $stockMove->update(['picking_id' => $picking->id]);
+
+        return $stockMove;
     }
 
     /**
@@ -247,11 +262,15 @@ class CreateInventoryAdjustmentAction
      */
     private function processAdjustmentValuation(StockMove $move, float $quantity): void
     {
-        $product = $move->product;
-
         if ($move->move_type === StockMoveType::Adjustment) {
+            // Get the first product line to determine adjustment direction
+            $productLine = $move->productLines()->first();
+            if (!$productLine) {
+                return;
+            }
+
             // Use the adjustment as source document for valuation
-            if ($move->from_location_id === $move->company->adjustmentLocation->id) {
+            if ($productLine->from_location_id === $move->company->adjustmentLocation->id) {
                 // Positive adjustment - create adjustment-specific journal entry
                 $this->processPositiveAdjustmentValuation($move, $quantity);
             } else {
@@ -266,7 +285,12 @@ class CreateInventoryAdjustmentAction
      */
     private function processPositiveAdjustmentValuation(StockMove $move, float $quantity): void
     {
-        $product = $move->product;
+        $productLine = $move->productLines()->first();
+        if (!$productLine) {
+            return;
+        }
+
+        $product = $productLine->product;
         $company = $move->company;
 
         // Calculate cost based on product's average cost
@@ -345,7 +369,12 @@ class CreateInventoryAdjustmentAction
      */
     private function processNegativeAdjustmentValuation(StockMove $move, float $quantity): void
     {
-        $product = $move->product;
+        $productLine = $move->productLines()->first();
+        if (!$productLine) {
+            return;
+        }
+
+        $product = $productLine->product;
         $company = $move->company;
 
         // Calculate cost based on product's average cost

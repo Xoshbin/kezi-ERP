@@ -58,7 +58,9 @@ test('confirming an invoice generates the correct journal entry', function () {
     $currencyCode = $this->company->currency->code;
 
     // THE FIX: Ensure the product is created with a default income account.
+    // Use Service type to avoid inventory complexity in this test
     $product = Product::factory()->for($this->company)->create([
+        'type' => \App\Enums\Products\ProductType::Service,
         'income_account_id' => $productSalesAccount->id,
         'unit_price' => Money::of(100, $currencyCode),
     ]);
@@ -110,7 +112,7 @@ test('a posted invoice cannot be updated', function () {
     );
 
     // Assert: Expect the Action to throw the exception because the invoice is posted.
-    expect(fn () => app(\App\Actions\Sales\UpdateInvoiceAction::class)->execute($updateDto))
+    expect(fn() => app(\App\Actions\Sales\UpdateInvoiceAction::class)->execute($updateDto))
         ->toThrow(UpdateNotAllowedException::class, 'Cannot modify a non-draft invoice.');
 
     // Assert: Double-check that the customer_id was not changed in the database.
@@ -132,7 +134,7 @@ test('a posted invoice cannot be deleted', function () {
     ]);
 
     // Assert: Expect the service's delete method to throw our specific exception.
-    expect(fn () => (app(InvoiceService::class))->delete($invoice))
+    expect(fn() => (app(InvoiceService::class))->delete($invoice))
         ->toThrow(DeletionNotAllowedException::class, 'Cannot delete a posted invoice.');
 
     // Assert: As a final check, confirm the model still exists.
@@ -206,7 +208,7 @@ test('an invoice cannot be created or posted in a locked period', function () {
     }
     */
     // With the above (assumed) change to CreateInvoiceAction, this test will pass.
-    expect(fn () => (app(CreateInvoiceAction::class))->execute($invoiceDto))
+    expect(fn() => (app(CreateInvoiceAction::class))->execute($invoiceDto))
         ->toThrow(PeriodIsLockedException::class);
 
     // Arrange: Create a draft invoice with a date in the future (not locked).
@@ -220,6 +222,6 @@ test('an invoice cannot be created or posted in a locked period', function () {
     $draftInvoice->invoice_date = now()->subMonth()->toDateString();
 
     // Assert: Expect that trying to CONFIRM an invoice in a locked period also fails.
-    expect(fn () => (app(InvoiceService::class))->confirm($draftInvoice, $this->user))
+    expect(fn() => (app(InvoiceService::class))->confirm($draftInvoice, $this->user))
         ->toThrow(PeriodIsLockedException::class);
 });

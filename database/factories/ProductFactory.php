@@ -40,6 +40,15 @@ class ProductFactory extends Factory
                 // Ensure storable products have an inventory account by default
                 return Account::factory()->create(['company_id' => $attributes['company_id']])->id;
             },
+            'default_cogs_account_id' => function (array $attributes) {
+                // Ensure storable products have a COGS account by default
+                return Account::factory()->create(['company_id' => $attributes['company_id']])->id;
+            },
+            'default_stock_input_account_id' => function (array $attributes) {
+                // Ensure storable products have a stock input account by default
+                return Account::factory()->create(['company_id' => $attributes['company_id']])->id;
+            },
+            'average_cost' => Money::of($this->faker->randomFloat(2, 50, 500), 'USD'), // Default positive average cost
             'is_active' => $this->faker->boolean(),
         ];
     }

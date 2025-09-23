@@ -141,6 +141,8 @@ class Company extends Model
         'pdf_settings',
         // Numbering Settings
         'numbering_settings',
+        // Inventory Settings
+        'inventory_accounting_mode',
     ];
 
     /**
@@ -154,6 +156,7 @@ class Company extends Model
         'enable_reconciliation' => 'boolean',
         'pdf_settings' => 'json',
         'numbering_settings' => 'json',
+        'inventory_accounting_mode' => \App\Enums\Inventory\InventoryAccountingMode::class,
     ];
 
     /*

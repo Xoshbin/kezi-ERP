@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Enums\Inventory\InventoryAccountingMode;
 use App\Models\Currency;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -26,6 +27,7 @@ class CompanyFactory extends Factory
             'fiscal_country' => 'IQ', // Default to Iraq as per project spec
             'parent_company_id' => null,
             'enable_reconciliation' => false, // Default to disabled for security
+            'inventory_accounting_mode' => InventoryAccountingMode::getDefault()->value,
         ];
     }
 
@@ -34,7 +36,7 @@ class CompanyFactory extends Factory
      */
     public function withReconciliationEnabled(): static
     {
-        return $this->state(fn (array $attributes) => [
+        return $this->state(fn() => [
             'enable_reconciliation' => true,
         ]);
     }

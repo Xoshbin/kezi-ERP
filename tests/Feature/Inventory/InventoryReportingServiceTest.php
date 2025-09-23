@@ -298,12 +298,12 @@ function createStockReceipt($testCase, Product $product, float $quantity, Money 
     // Ensure product has proper relationships loaded
     $product = $product->fresh(['company.currency']);
 
-    $stockMove = StockMove::create([
+    $stockMove = \App\Models\StockMove::factory()->create([
         'company_id' => $product->company_id,
-        'product_id' => $product->id,
-        'quantity' => $quantity,
-        'from_location_id' => $testCase->vendorLocation->id,
-        'to_location_id' => $testCase->warehouseLocation->id,
+        'product_id' => $product->id,  // This will be handled by the factory
+        'quantity' => $quantity,       // This will be handled by the factory
+        'from_location_id' => $testCase->vendorLocation->id,  // This will be handled by the factory
+        'to_location_id' => $testCase->warehouseLocation->id, // This will be handled by the factory
         'move_type' => StockMoveType::Incoming,
         'status' => StockMoveStatus::Done,
         'move_date' => $date,
@@ -352,12 +352,12 @@ function createStockReceiptWithLot($testCase, Product $product, Lot $lot, float 
     // Ensure product has proper relationships loaded
     $product = $product->fresh(['company.currency']);
 
-    $stockMove = StockMove::create([
+    $stockMove = StockMove::factory()->create([
         'company_id' => $product->company_id,
-        'product_id' => $product->id,
-        'quantity' => $quantity,
-        'from_location_id' => $testCase->vendorLocation->id,
-        'to_location_id' => $testCase->warehouseLocation->id,
+        'product_id' => $product->id,  // This will be handled by the factory
+        'quantity' => $quantity,       // This will be handled by the factory
+        'from_location_id' => $testCase->vendorLocation->id,  // This will be handled by the factory
+        'to_location_id' => $testCase->warehouseLocation->id, // This will be handled by the factory
         'move_type' => StockMoveType::Incoming,
         'status' => StockMoveStatus::Done,
         'move_date' => $date,
@@ -371,8 +371,25 @@ function createStockReceiptWithLot($testCase, Product $product, Lot $lot, float 
     $quantService->applyForIncomingWithLot($stockMove, $lot->id);
 
     // Create stock move line for lot tracking
+    // The factory should have created a product line, but let's ensure it exists
+    $productLine = $stockMove->productLines()->first();
+    if (!$productLine) {
+        // Fallback: create product line manually
+        $productLine = $stockMove->productLines()->create([
+            'company_id' => $product->company_id,
+            'product_id' => $product->id,
+            'quantity' => $quantity,
+            'from_location_id' => $testCase->vendorLocation->id,
+            'to_location_id' => $testCase->warehouseLocation->id,
+            'description' => 'Test product line',
+            'source_type' => 'Test',
+            'source_id' => 1,
+        ]);
+    }
+
     $stockMove->stockMoveLines()->create([
         'company_id' => $product->company_id,
+        'stock_move_product_line_id' => $productLine->id,
         'lot_id' => $lot->id,
         'quantity' => $quantity,
     ]);
@@ -382,12 +399,12 @@ function createStockDeliveryWithLot($testCase, Product $product, Lot $lot, float
 {
     $valuationService = app(InventoryValuationService::class);
 
-    $stockMove = StockMove::create([
+    $stockMove = StockMove::factory()->create([
         'company_id' => $product->company_id,
-        'product_id' => $product->id,
-        'quantity' => $quantity,
-        'from_location_id' => $testCase->warehouseLocation->id,
-        'to_location_id' => $testCase->customerLocation->id,
+        'product_id' => $product->id,  // This will be handled by the factory
+        'quantity' => $quantity,       // This will be handled by the factory
+        'from_location_id' => $testCase->warehouseLocation->id,  // This will be handled by the factory
+        'to_location_id' => $testCase->customerLocation->id,     // This will be handled by the factory
         'move_type' => StockMoveType::Outgoing,
         'status' => StockMoveStatus::Done,
         'move_date' => $date,
@@ -400,8 +417,12 @@ function createStockDeliveryWithLot($testCase, Product $product, Lot $lot, float
     $valuationService->processOutgoingStock($product, $quantity, $date, $stockMove);
 
     // Create stock move line for lot tracking
+    // The factory should have created a product line
+    $productLine = $stockMove->productLines()->first();
+
     $stockMove->stockMoveLines()->create([
         'company_id' => $product->company_id,
+        'stock_move_product_line_id' => $productLine->id,
         'lot_id' => $lot->id,
         'quantity' => $quantity,
     ]);

@@ -78,6 +78,15 @@ return [
         'standard_price' => 'السعر المعياري',
     ],
 
+    'cost_source' => [
+        'vendor_bill' => 'فاتورة المورد',
+        'average_cost' => 'متوسط التكلفة',
+        'cost_layer' => 'طبقة التكلفة',
+        'unit_price' => 'سعر الوحدة',
+        'manual' => 'إدخال يدوي',
+        'company_default' => 'افتراضي الشركة',
+    ],
+
     'partner_type' => [
         'customer' => 'عميل',
         'vendor' => 'مورد',

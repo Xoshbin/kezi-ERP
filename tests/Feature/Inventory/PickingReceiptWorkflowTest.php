@@ -65,7 +65,10 @@ it('creates a receipt picking and updates quants when posting a vendor bill', fu
     // The stock move created for this bill must belong to the picking
     $move = $picking->stockMoves()->first();
     expect($move)->not->toBeNull();
-    expect($move->product_id)->toBe($this->product->id);
+
+    // Check product line for product
+    $productLine = $move->productLines()->where('product_id', $this->product->id)->first();
+    expect($productLine)->not->toBeNull();
 
     // Quant updated at company's default stock location
     $quant = \App\Models\StockQuant::where('company_id', $this->company->id)
@@ -77,4 +80,3 @@ it('creates a receipt picking and updates quants when posting a vendor bill', fu
     expect($quant->quantity)->toBe((float) $qty);
     expect($quant->reserved_quantity)->toBe(0.0);
 });
-
