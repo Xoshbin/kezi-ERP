@@ -63,6 +63,12 @@ return [
     'confirm' => 'Confirm',
     'reset_to_draft' => 'Reset to Draft',
     'confirm_bill' => 'Confirm Bill',
+    'load_from_purchase_order' => 'Load from Purchase Order',
+    'create_from_purchase_order' => 'Create Bill from PO',
+
+    // Fields
+    'purchase_order' => 'Purchase Order',
+    'no_purchase_order' => 'No PO',
 
     // Notifications
     'notification_confirm_success' => 'Vendor bill confirmed successfully',

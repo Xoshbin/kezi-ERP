@@ -78,6 +78,15 @@ return [
         'standard_price' => 'Standard Price',
     ],
 
+    'cost_source' => [
+        'vendor_bill' => 'Vendor Bill',
+        'average_cost' => 'Average Cost',
+        'cost_layer' => 'Cost Layer',
+        'unit_price' => 'Unit Price',
+        'manual' => 'Manual Entry',
+        'company_default' => 'Company Default',
+    ],
+
     'reordering_route' => [
         'min_max' => 'Min/Max Reordering',
         'mto' => 'Make-to-Order',

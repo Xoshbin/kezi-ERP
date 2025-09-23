@@ -11,7 +11,7 @@ use App\Filament\Clusters\Inventory\Resources\Products\Pages\EditProduct;
 use App\Filament\Clusters\Inventory\Resources\Products\Pages\ListProducts;
 use App\Filament\Clusters\Inventory\Resources\Products\RelationManagers\InventoryCostLayersRelationManager;
 use App\Filament\Clusters\Inventory\Resources\Products\RelationManagers\ReorderingRulesRelationManager;
-use App\Filament\Clusters\Inventory\Resources\Products\RelationManagers\StockMovesRelationManager;
+// use App\Filament\Clusters\Inventory\Resources\Products\RelationManagers\StockMovesRelationManager;
 use App\Filament\Forms\Components\MoneyInput;
 use App\Filament\Tables\Columns\MoneyColumn;
 use App\Models\Account;
@@ -518,7 +518,8 @@ class ProductResource extends Resource
     public static function getRelations(): array
     {
         return [
-            StockMovesRelationManager::class,
+            // TODO: Update StockMovesRelationManager to work with new multi-product architecture
+            // StockMovesRelationManager::class,
             InventoryCostLayersRelationManager::class,
             ReorderingRulesRelationManager::class,
         ];

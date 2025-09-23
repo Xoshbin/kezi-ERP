@@ -74,14 +74,18 @@ it('correctly processes an incoming storable product using AVCO, creating a stoc
 
     // 2. Assert Physical Stock Move
     $this->assertDatabaseHas('stock_moves', [
-        'product_id' => $product->id,
-        'quantity' => $quantity,
-        'from_location_id' => $this->vendorLocation->id,
-        'to_location_id' => $this->stockLocation->id,
         'move_type' => StockMoveType::Incoming->value,
         'status' => StockMoveStatus::Done->value,
         'source_type' => VendorBill::class,
         'source_id' => $vendorBill->id,
+    ]);
+
+    // 3. Assert Product Line was created with correct details
+    $this->assertDatabaseHas('stock_move_product_lines', [
+        'product_id' => $product->id,
+        'quantity' => $quantity,
+        'from_location_id' => $this->vendorLocation->id,
+        'to_location_id' => $this->stockLocation->id,
     ]);
 
     // 3. Assert Journal Entry and Lines

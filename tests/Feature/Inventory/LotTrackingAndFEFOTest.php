@@ -87,9 +87,10 @@ it('creates lots on receipt and tracks them in quants', function () {
     ]);
 
     // Create stock move line for lot tracking
+    $productLine = $move->productLines()->first();
     StockMoveLine::create([
         'company_id' => $this->company->id,
-        'stock_move_id' => $move->id,
+        'stock_move_product_line_id' => $productLine->id,
         'lot_id' => $lot->id,
         'quantity' => 10.0,
     ]);
@@ -113,7 +114,8 @@ it('creates lots on receipt and tracks them in quants', function () {
     expect($quant->reserved_quantity)->toBe(0.0);
 
     // Assert stock move line was created
-    $moveLine = StockMoveLine::where('stock_move_id', $move->id)
+    $productLine = $move->productLines()->first();
+    $moveLine = StockMoveLine::where('stock_move_product_line_id', $productLine->id)
         ->where('lot_id', $lot->id)
         ->first();
 
@@ -184,7 +186,8 @@ it('applies FEFO allocation when multiple lots exist with different expiration d
     expect($deliveryPicking->state)->toBe(StockPickingState::Done);
 
     $move = $deliveryPicking->stockMoves()->first();
-    $moveLines = StockMoveLine::where('stock_move_id', $move->id)->get();
+    $productLine = $move->productLines()->first();
+    $moveLines = StockMoveLine::where('stock_move_product_line_id', $productLine->id)->get();
 
     expect($moveLines->count())->toBe(2);
 
@@ -319,10 +322,12 @@ it('handles partial reservations and backorders correctly', function () {
 
     // Move should have full requested quantity (10 units) but only 3 reserved/consumed
     $move = $deliveryPicking->stockMoves()->first();
-    expect((float) $move->quantity)->toBe(10.0); // Full requested quantity
+    $productLine = $move->productLines()->first();
+    expect((float) $productLine->quantity)->toBe(10.0); // Full requested quantity
 
     // Only 3 units should be consumed from available stock
-    $moveLine = StockMoveLine::where('stock_move_id', $move->id)->first();
+    $productLine = $move->productLines()->first();
+    $moveLine = StockMoveLine::where('stock_move_product_line_id', $productLine->id)->first();
     expect($moveLine)->not->toBeNull();
     expect($moveLine->quantity)->toBe(3.0); // Only available quantity consumed
 

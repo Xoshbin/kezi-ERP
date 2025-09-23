@@ -129,16 +129,24 @@ class CreateStockMovesForInvoiceAction
             throw new \Exception('Invoice line must have a product to create stock move');
         }
 
-        $dto = new CreateStockMoveDTO(
-            company_id: $invoice->company_id,
+        $productLineDto = new \App\DataTransferObjects\Inventory\CreateStockMoveProductLineDTO(
             product_id: $line->product_id,
             quantity: (float) $line->quantity,
             from_location_id: $warehouseLocation->id,
             to_location_id: $customerLocation->id,
+            description: $line->description,
+            source_type: Invoice::class,
+            source_id: $invoice->id
+        );
+
+        $dto = new CreateStockMoveDTO(
+            company_id: $invoice->company_id,
+            product_lines: [$productLineDto],
             move_type: StockMoveType::Outgoing,
             status: StockMoveStatus::Done,
             move_date: $invoice->posted_at ?? now(),
             reference: $invoice->invoice_number,
+            description: "Stock delivery for invoice {$invoice->invoice_number}",
             source_id: $invoice->id,
             source_type: Invoice::class,
             created_by_user_id: $user->id,
