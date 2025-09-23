@@ -2,7 +2,6 @@
 
 namespace App\Observers;
 
-use App\Actions\Inventory\CreateJournalEntryForStockMoveAction;
 use App\Enums\Inventory\StockMoveStatus;
 use App\Models\AuditLog;
 use App\Models\StockMove;
@@ -19,7 +18,7 @@ class StockMoveObserver
     {
         // Check if the status was just changed to 'Done'
         if ($stockMove->wasChanged('status') && $stockMove->status === StockMoveStatus::Done) {
-            // Skip auto-created moves linked to Vendor Bills (handled via consolidated JE)
+            // Skip auto-created moves linked to Vendor Bills (handled via ProcessIncomingStockAction)
             if ($stockMove->source_type === \App\Models\VendorBill::class) {
                 return;
             }
@@ -28,7 +27,39 @@ class StockMoveObserver
             if ($stockMove->stockMoveValuations()->doesntExist()) {
                 $user = Auth::user();
                 if ($user) {
-                    app(CreateJournalEntryForStockMoveAction::class)->execute($stockMove, $user);
+                    // Check if this is a truly manual stock move (not linked to any source document)
+                    if (!$stockMove->source_type || !$stockMove->source_id) {
+                        // Use consolidated approach for manual stock moves to create a single journal entry
+                        $inventoryValuationService = app(\App\Services\Inventory\InventoryValuationService::class);
+                        $inventoryValuationService->createConsolidatedManualStockMoveJournalEntry($stockMove);
+                    } else if ($stockMove->source_type === \App\Models\VendorBill::class) {
+                        // For stock moves linked to vendor bills, use consolidated approach
+                        $inventoryValuationService = app(\App\Services\Inventory\InventoryValuationService::class);
+
+                        // Check if a consolidated journal entry already exists for this vendor bill
+                        $existingJournalEntry = \App\Models\JournalEntry::where('source_type', \App\Models\VendorBill::class)
+                            ->where('source_id', $stockMove->source_id)
+                            ->where('reference', 'LIKE', 'STOCK-IN-%')
+                            ->first();
+
+
+
+                        if (!$existingJournalEntry) {
+                            // Get all stock moves for the same vendor bill
+                            $allStockMoves = \App\Models\StockMove::where('source_type', \App\Models\VendorBill::class)
+                                ->where('source_id', $stockMove->source_id)
+                                ->where('status', \App\Enums\Inventory\StockMoveStatus::Done)
+                                ->get();
+
+                            // Use the existing consolidated method for vendor bill stock moves
+                            $vendorBill = $stockMove->source;
+                            $inventoryValuationService->createConsolidatedIncomingStockJournalEntry($allStockMoves->toArray(), $vendorBill);
+                        }
+                    } else {
+                        // Use individual processing for other source document types
+                        $createJournalEntryAction = app(\App\Actions\Inventory\CreateJournalEntryForStockMoveAction::class);
+                        $createJournalEntryAction->execute($stockMove, $user);
+                    }
                 }
             }
 
