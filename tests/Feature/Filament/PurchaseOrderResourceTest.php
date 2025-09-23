@@ -131,3 +131,31 @@ test('can cancel purchase order through filament action', function () {
     expect($purchaseOrder->status)->toBe(PurchaseOrderStatus::Cancelled);
     expect($purchaseOrder->cancelled_at)->not->toBeNull();
 });
+
+test('confirm action does not change status to receive statuses', function () {
+    $purchaseOrder = PurchaseOrder::factory()->create([
+        'company_id' => $this->company->id,
+        'vendor_id' => $this->vendor->id,
+        'currency_id' => $this->company->currency_id,
+        'created_by_user_id' => $this->user->id,
+        'status' => PurchaseOrderStatus::Draft,
+    ]);
+
+    // Add a line to the purchase order so it can be confirmed
+    PurchaseOrderLine::factory()->create([
+        'purchase_order_id' => $purchaseOrder->id,
+        'product_id' => Product::factory()->create(['company_id' => $this->company->id])->id,
+    ]);
+
+    Livewire::test(EditPurchaseOrder::class, ['record' => $purchaseOrder->getRouteKey(), 'tenant' => $this->company])
+        ->callAction('confirm')
+        ->assertHasNoActionErrors();
+
+    $purchaseOrder->refresh();
+
+    // Status should be Confirmed, not any receive status
+    expect($purchaseOrder->status)->toBe(PurchaseOrderStatus::Confirmed);
+    expect($purchaseOrder->status)->not->toBe(PurchaseOrderStatus::PartiallyReceived);
+    expect($purchaseOrder->status)->not->toBe(PurchaseOrderStatus::FullyReceived);
+    expect($purchaseOrder->confirmed_at)->not->toBeNull();
+});

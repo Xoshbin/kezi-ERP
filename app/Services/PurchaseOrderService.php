@@ -151,7 +151,8 @@ class PurchaseOrderService
             $purchaseOrder->load('lines');
 
             // Update purchase order status based on received quantities
-            $purchaseOrder->updateStatusBasedOnReceipts();
+            // This is a legitimate inventory operation
+            $purchaseOrder->updateStatusBasedOnReceipts(fromInventoryOperation: true);
             $purchaseOrder->save();
 
             return $purchaseOrder->fresh(['lines']);

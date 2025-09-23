@@ -40,6 +40,9 @@ class StockMoveObserver
                 foreach ($stockMove->productLines as $productLine) {
                     $stockQuantService->applyForIncomingProductLine($productLine);
                 }
+
+                // Update Purchase Order status if this stock move is related to a PO
+                $this->updatePurchaseOrderStatusFromStockMove($stockMove);
             } elseif ($stockMove->move_type === \App\Enums\Inventory\StockMoveType::Outgoing) {
                 // For outgoing moves, update stock quants
                 $stockQuantService->applyForOutgoing($stockMove);
@@ -52,6 +55,45 @@ class StockMoveObserver
     public function deleted(StockMove $stockMove): void
     {
         $this->logAction('deleted', $stockMove);
+    }
+
+    /**
+     * Update Purchase Order status when stock moves are completed.
+     * This ensures that PO receive statuses are only updated through inventory operations.
+     */
+    protected function updatePurchaseOrderStatusFromStockMove(StockMove $stockMove): void
+    {
+        // Check if this stock move is related to a Purchase Order
+        if ($stockMove->source_type === \App\Models\PurchaseOrder::class && $stockMove->source_id) {
+            $purchaseOrder = \App\Models\PurchaseOrder::find($stockMove->source_id);
+            if ($purchaseOrder) {
+                // Update received quantities on PO lines based on stock move
+                $this->updatePurchaseOrderLineQuantities($purchaseOrder, $stockMove);
+
+                // Update PO status based on received quantities (from inventory operation)
+                $purchaseOrder->updateStatusBasedOnReceipts(fromInventoryOperation: true);
+                $purchaseOrder->save();
+            }
+        }
+    }
+
+    /**
+     * Update Purchase Order line quantities based on completed stock move.
+     */
+    protected function updatePurchaseOrderLineQuantities(\App\Models\PurchaseOrder $purchaseOrder, StockMove $stockMove): void
+    {
+        foreach ($stockMove->productLines as $stockMoveProductLine) {
+            // Find the corresponding PO line for this product
+            $poLine = $purchaseOrder->lines()
+                ->where('product_id', $stockMoveProductLine->product_id)
+                ->first();
+
+            if ($poLine) {
+                // Add the received quantity from this stock move
+                $poLine->quantity_received += $stockMoveProductLine->quantity;
+                $poLine->save();
+            }
+        }
     }
 
     /**
