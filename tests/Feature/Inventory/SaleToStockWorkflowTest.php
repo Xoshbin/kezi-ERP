@@ -68,6 +68,15 @@ it('correctly processes outgoing storable product when invoice is posted, creati
     $expectedCogs = $this->product->average_cost->multipliedBy($quantity); // 500 * 5 = 2500
     $totalSalesValue = $sellingPrice->multipliedBy($quantity); // 1000 * 5 = 5000
 
+    // First, create initial inventory (you can't sell what you don't have)
+    \App\Models\StockQuant::factory()->create([
+        'company_id' => $this->company->id,
+        'product_id' => $this->product->id,
+        'location_id' => $this->stockLocation->id, // Use the default stock location
+        'quantity' => 10.0, // More than we're selling
+        'reserved_quantity' => 0.0,
+    ]);
+
     // Create a draft invoice for the storable product
     $invoice = Invoice::factory()->for($this->company)->create([
         'customer_id' => $this->customer->id,
@@ -153,6 +162,15 @@ it('dispatches stock move confirmed event when invoice with storable products is
     $quantity = 3;
     $sellingPrice = Money::of(800, $this->company->currency->code);
 
+    // Create initial inventory
+    \App\Models\StockQuant::factory()->create([
+        'company_id' => $this->company->id,
+        'product_id' => $this->product->id,
+        'location_id' => $this->stockLocation->id, // Use the default stock location
+        'quantity' => 10.0,
+        'reserved_quantity' => 0.0,
+    ]);
+
     $invoice = Invoice::factory()->for($this->company)->create([
         'customer_id' => $this->customer->id,
         'status' => 'draft',
@@ -202,6 +220,15 @@ it('uses correct product type field when checking for storable products', functi
 
     $serviceProduct = Product::factory()->for($this->company)->create([
         'type' => ProductType::Service,
+    ]);
+
+    // Create initial inventory for the storable product
+    \App\Models\StockQuant::factory()->create([
+        'company_id' => $this->company->id,
+        'product_id' => $storableProduct->id,
+        'location_id' => $this->stockLocation->id, // Use the default stock location
+        'quantity' => 10.0,
+        'reserved_quantity' => 0.0,
     ]);
 
     $invoice = Invoice::factory()->for($this->company)->create([
@@ -265,6 +292,15 @@ it('creates COGS journal entry when ProcessOutgoingStockJob is processed', funct
 
     // Set the product's average cost
     $this->product->update(['average_cost' => $costPerUnit]);
+
+    // Create initial inventory
+    \App\Models\StockQuant::factory()->create([
+        'company_id' => $this->company->id,
+        'product_id' => $this->product->id,
+        'location_id' => $this->stockLocation->id, // Use the default stock location
+        'quantity' => 10.0,
+        'reserved_quantity' => 0.0,
+    ]);
 
     $invoice = Invoice::factory()->for($this->company)->create([
         'customer_id' => $this->customer->id,

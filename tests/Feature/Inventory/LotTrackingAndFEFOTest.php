@@ -27,6 +27,11 @@ beforeEach(function () {
     $this->setupWithConfiguredCompany();
     $this->setupInventoryTestEnvironment();
 
+    // Set inventory accounting mode to manual for lot tracking tests
+    $this->company->update([
+        'inventory_accounting_mode' => \App\Enums\Inventory\InventoryAccountingMode::MANUAL_INVENTORY_RECORDING,
+    ]);
+
     // Create COGS account first
     $this->cogsAccount = \App\Models\Account::factory()->for($this->company)->create([
         'type' => 'cost_of_revenue',
@@ -157,6 +162,27 @@ it('applies FEFO allocation when multiple lots exist with different expiration d
         'lot_id' => $lot2->id,
         'quantity' => 8.0,
         'reserved_quantity' => 0.0,
+    ]);
+
+    // Create cost layers for both lots
+    \App\Models\InventoryCostLayer::factory()->create([
+        'product_id' => $this->product->id,
+        'quantity' => 5.0,
+        'remaining_quantity' => 5.0,
+        'cost_per_unit' => \Brick\Money\Money::of(100, $this->company->currency->code),
+        'purchase_date' => $receiptDate,
+        'source_type' => 'Test',
+        'source_id' => 1,
+    ]);
+
+    \App\Models\InventoryCostLayer::factory()->create([
+        'product_id' => $this->product->id,
+        'quantity' => 8.0,
+        'remaining_quantity' => 8.0,
+        'cost_per_unit' => \Brick\Money\Money::of(100, $this->company->currency->code),
+        'purchase_date' => $receiptDate,
+        'source_type' => 'Test',
+        'source_id' => 2,
     ]);
 
     // Create a sales order for 7 units

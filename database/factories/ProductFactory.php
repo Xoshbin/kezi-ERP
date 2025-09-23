@@ -28,7 +28,7 @@ class ProductFactory extends Factory
             'sku' => strtoupper($this->faker->unique()->bothify('SKU-####')),
             'description' => $this->faker->sentence(),
             'unit_price' => Money::of($this->faker->randomFloat(2, 100, 10000), 'USD'),
-            'type' => ProductType::Storable,
+            'type' => ProductType::Service, // Default to Service to avoid inventory complications in tests
             'inventory_valuation_method' => ValuationMethod::AVCO,
             'income_account_id' => function (array $attributes) {
                 return Account::factory()->create(['company_id' => $attributes['company_id']])->id;
