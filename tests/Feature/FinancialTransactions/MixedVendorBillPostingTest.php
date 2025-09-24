@@ -22,13 +22,16 @@ it('posts a single JE for mixed vendor bills (storable + asset + expense)', func
 
     // Set up accounts and product
     $inventoryAccount = Account::factory()->for($this->company)->create([
-        'name' => ['en' => 'Inventory'], 'type' => 'current_assets',
+        'name' => ['en' => 'Inventory'],
+        'type' => 'current_assets',
     ]);
     $stockInputAccount = Account::factory()->for($this->company)->create([
-        'name' => ['en' => 'Stock Input'], 'type' => 'current_liabilities',
+        'name' => ['en' => 'Stock Input'],
+        'type' => 'current_liabilities',
     ]);
     $expenseAccount = Account::factory()->for($this->company)->create([
-        'name' => ['en' => 'Office Supplies'], 'type' => 'expense',
+        'name' => ['en' => 'Office Supplies'],
+        'type' => 'expense',
     ]);
 
     $product = Product::factory()->for($this->company)->create([
@@ -39,13 +42,16 @@ it('posts a single JE for mixed vendor bills (storable + asset + expense)', func
     ]);
 
     $assetAccount = Account::factory()->for($this->company)->create([
-        'name' => ['en' => 'IT Equipment'], 'type' => 'fixed_assets',
+        'name' => ['en' => 'IT Equipment'],
+        'type' => 'fixed_assets',
     ]);
     $accumDepAccount = Account::factory()->for($this->company)->create([
-        'name' => ['en' => 'Accum Dep'], 'type' => 'non_current_assets',
+        'name' => ['en' => 'Accum Dep'],
+        'type' => 'non_current_assets',
     ]);
     $depExpenseAccount = Account::factory()->for($this->company)->create([
-        'name' => ['en' => 'Depr Expense'], 'type' => 'depreciation',
+        'name' => ['en' => 'Depr Expense'],
+        'type' => 'depreciation',
     ]);
 
     $category = AssetCategory::create([
@@ -113,10 +119,10 @@ it('posts a single JE for mixed vendor bills (storable + asset + expense)', func
     $expenseAmount = Money::of(10, $this->company->currency->code)->multipliedBy(5);
     $apTotal = $subtotalStorable->plus($assetAmount)->plus($expenseAmount)->getMinorAmount()->toInt();
 
-    // Inventory debit exists
+    // Phase 1: Stock Input debit exists (Inventory Dr is in valuation JE)
     $this->assertDatabaseHas('journal_entry_lines', [
         'journal_entry_id' => $entry->id,
-        'account_id' => $inventoryAccount->id,
+        'account_id' => $stockInputAccount->id,
         'debit' => $subtotalStorable->getMinorAmount()->toInt(),
         'credit' => 0,
     ]);

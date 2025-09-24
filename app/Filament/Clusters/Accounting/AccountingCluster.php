@@ -12,9 +12,4 @@ class AccountingCluster extends Cluster
     {
         return __('navigation.clusters.accounting');
     }
-
-    public static function getClusterBreadcrumb(): string
-    {
-        return __('navigation.clusters.accounting');
-    }
 }

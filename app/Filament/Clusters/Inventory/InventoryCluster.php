@@ -14,9 +14,4 @@ class InventoryCluster extends Cluster
     {
         return __('navigation.clusters.inventory');
     }
-
-    public static function getClusterBreadcrumb(): string
-    {
-        return __('navigation.clusters.inventory');
-    }
 }
