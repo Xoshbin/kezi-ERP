@@ -73,9 +73,10 @@ class InvoiceService
             $invoice->save();
 
             // Create stock moves for storable products only if:
-            // 1. Company is in automatic inventory mode, AND
-            // 2. Invoice is not linked to a sales order (sales orders handle their own deliveries)
-            if ($invoice->company->inventory_accounting_mode->autoRecordsInventory() && !$invoice->sales_order_id) {
+            // Invoice is not linked to a sales order (sales orders handle their own deliveries)
+            // Note: Unlike vendor bills, invoices always create stock moves regardless of inventory mode
+            // for proper lot tracking, FEFO allocation, and inventory management
+            if (!$invoice->sales_order_id) {
                 $this->createStockMovesForInvoiceAction->execute(
                     new CreateStockMovesForInvoiceDTO($invoice, $user)
                 );
