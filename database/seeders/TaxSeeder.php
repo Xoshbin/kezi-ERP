@@ -34,8 +34,17 @@ class TaxSeeder extends Seeder
                 [
                     'name' => ['en' => 'VAT 10%', 'ckb' => 'باجی بەھای زیادکراو ١٠٪', 'ar' => 'ضريبة القيمة المضافة 10%'],
                     'label_on_invoices' => ['en' => 'VAT (10%)', 'ckb' => 'باجی بەھای زیادکراو (١٠٪)', 'ar' => 'ضريبة القيمة المضافة (10%)'],
-                    'rate' => 0.10,
+                    'rate' => 10,
                     'type' => TaxType::Both,
+                    'is_recoverable' => true,
+                    'tax_account_id' => $vatPayableAccount->id,
+                ],
+                [
+                    'name' => ['en' => 'VAT 5% Non-Recoverable', 'ckb' => 'باجی بەھای زیادکراو ٥٪ ناگەڕێتەوە', 'ar' => 'ضريبة القيمة المضافة 5% غير قابلة للاسترداد'],
+                    'label_on_invoices' => ['en' => 'VAT (5%)', 'ckb' => 'باجی بەھای زیادکراو (٥٪)', 'ar' => 'ضريبة القيمة المضافة (5%)'],
+                    'rate' => 5,
+                    'type' => TaxType::Purchase,
+                    'is_recoverable' => false,
                     'tax_account_id' => $vatPayableAccount->id,
                 ],
                 [
@@ -43,6 +52,7 @@ class TaxSeeder extends Seeder
                     'label_on_invoices' => ['en' => 'Tax Exempt', 'ckb' => 'ئازادکراو لە باج', 'ar' => 'معفي من الضريبة'],
                     'rate' => 0.00,
                     'type' => TaxType::Both,
+                    'is_recoverable' => false,
                     'tax_account_id' => $vatPayableAccount->id,
                 ],
             ];
@@ -58,6 +68,7 @@ class TaxSeeder extends Seeder
                         'label_on_invoices' => $taxData['label_on_invoices'],
                         'rate' => $taxData['rate'],
                         'type' => $taxData['type'],
+                        'is_recoverable' => $taxData['is_recoverable'],
                         'tax_account_id' => $taxData['tax_account_id'],
                     ]
                 );

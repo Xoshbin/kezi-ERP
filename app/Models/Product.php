@@ -90,6 +90,8 @@ class Product extends Model
         'default_stock_input_account_id',
         'default_price_difference_account_id',
         'average_cost',
+        'quantity_on_hand',
+        'lot_tracking_enabled',
     ];
 
     protected $casts = [
@@ -101,6 +103,8 @@ class Product extends Model
         'updated_at' => 'datetime',
         'deleted_at' => 'datetime',
         'type' => ProductType::class,
+        'quantity_on_hand' => 'float',
+        'lot_tracking_enabled' => 'boolean',
     ];
 
     protected static function booted(): void
@@ -109,6 +113,13 @@ class Product extends Model
             if ($product->type === ProductType::Storable && empty($product->default_inventory_account_id)) {
                 throw ValidationException::withMessages([
                     'default_inventory_account_id' => __('validation.required', ['attribute' => __('product.default_inventory_account')]),
+                ]);
+            }
+
+            // Phase 1: Standard costing is not supported
+            if ($product->inventory_valuation_method === ValuationMethod::STANDARD) {
+                throw ValidationException::withMessages([
+                    'inventory_valuation_method' => __('This project does not support Standard costing in Phase 1.'),
                 ]);
             }
         });
@@ -197,6 +208,8 @@ class Product extends Model
         return $this->belongsTo(Account::class, 'default_stock_input_account_id');
     }
 
+
+
     /**
      * @return BelongsTo<Account, static>
      */
@@ -248,11 +261,20 @@ class Product extends Model
     }
 
     /**
-     * @return HasMany<StockMove, static>
+     * @return HasMany<StockMoveProductLine, static>
      */
-    public function stockMoves(): HasMany
+    public function stockMoveProductLines(): HasMany
     {
-        return $this->hasMany(StockMove::class);
+        return $this->hasMany(StockMoveProductLine::class);
+    }
+
+    /**
+     * Get stock moves that contain this product through product lines
+     * @return \Illuminate\Database\Eloquent\Relations\HasManyThrough<StockMove, StockMoveProductLine, static>
+     */
+    public function stockMoves(): \Illuminate\Database\Eloquent\Relations\HasManyThrough
+    {
+        return $this->hasManyThrough(StockMove::class, StockMoveProductLine::class);
     }
 
     /**
@@ -261,5 +283,13 @@ class Product extends Model
     public function inventoryCostLayers(): HasMany
     {
         return $this->hasMany(InventoryCostLayer::class);
+    }
+
+    /**
+     * @return HasMany<ReorderingRule, static>
+     */
+    public function reorderingRules(): HasMany
+    {
+        return $this->hasMany(ReorderingRule::class);
     }
 }

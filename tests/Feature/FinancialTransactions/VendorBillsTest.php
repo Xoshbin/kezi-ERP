@@ -57,7 +57,7 @@ test('a draft vendor bill can be confirmed, which posts it and dispatches an eve
 
     $vendorBill->refresh();
     expect($vendorBill->status)->toBe(VendorBillStatus::Posted);
-    Event::assertDispatched(VendorBillConfirmed::class, fn ($event) => $event->vendorBill->id === $vendorBill->id);
+    Event::assertDispatched(VendorBillConfirmed::class, fn($event) => $event->vendorBill->id === $vendorBill->id);
 });
 
 test('confirming a vendor bill generates the correct journal entry', function () {
@@ -84,16 +84,19 @@ test('confirming a vendor bill generates the correct journal entry', function ()
     // The service call remains the same
     app(VendorBillService::class)->post($vendorBill, $this->user);
 
-    $this->assertDatabaseCount('journal_entries', 1);
-    $journalEntry = JournalEntry::first();
+    // Phase 1: Anglo-Saxon separation creates 2 entries (valuation + AP recognition)
+    $this->assertDatabaseCount('journal_entries', 2);
+    // Use the AP recognition journal entry attached to the bill
+    $journalEntry = $vendorBill->refresh()->journalEntry;
 
     $expectedTotal = Money::of(15000, $this->company->currency->code);
     expect($journalEntry->journal_id)->toBe($this->company->default_purchase_journal_id)
         ->and($journalEntry->total_debit)->toEqual($expectedTotal)
         ->and($journalEntry->total_credit)->toEqual($expectedTotal);
 
-    expect($journalEntry->lines()->where('account_id', $this->inventoryAccount->id)->first()->debit)->toEqual($expectedTotal);
-    expect($journalEntry->lines()->where('account_id', $this->company->default_accounts_payable_id)->first()->credit)->toEqual($expectedTotal);
+    // Phase 1: Debit Stock Input on the bill JE; AP credited
+    expect(optional($journalEntry->lines()->where('account_id', $this->stockInputAccount->id)->first())->debit)->toEqual($expectedTotal);
+    expect(optional($journalEntry->lines()->where('account_id', $this->company->default_accounts_payable_id)->first())->credit)->toEqual($expectedTotal);
 });
 
 test('a posted vendor bill cannot be updated', function () {
@@ -113,13 +116,13 @@ test('a posted vendor bill cannot be updated', function () {
         updated_by_user_id: $this->user->id
     );
 
-    expect(fn () => app(UpdateVendorBillAction::class)->execute($updateDto))
+    expect(fn() => app(UpdateVendorBillAction::class)->execute($updateDto))
         ->toThrow(UpdateNotAllowedException::class);
 });
 
 test('a posted vendor bill cannot be deleted', function () {
     $vendorBill = VendorBill::factory()->for($this->company)->create(['status' => 'posted']);
-    expect(fn () => app(VendorBillService::class)->delete($vendorBill))
+    expect(fn() => app(VendorBillService::class)->delete($vendorBill))
         ->toThrow(DeletionNotAllowedException::class);
 });
 
@@ -149,7 +152,7 @@ test('a vendor bill cannot be created in a locked period', function () {
         created_by_user_id: $this->user->id
     );
 
-    expect(fn () => app(CreateVendorBillAction::class)->execute($vendorBillDto))
+    expect(fn() => app(CreateVendorBillAction::class)->execute($vendorBillDto))
         ->toThrow(PeriodIsLockedException::class);
 });
 
@@ -177,7 +180,6 @@ test('it correctly computes its payment state via a many-to-many relationship', 
 
     // Assert: Refresh the model to ensure the computed attribute is re-evaluated.
     expect($vendorBill->refresh()->paymentState)->toBe($expectedState);
-
 })->with([
     'not paid' => [Money::of(0, 'IQD'), Money::of(150000, 'IQD'), PaymentState::NotPaid],
     'partially paid' => [Money::of(75000, 'IQD'), Money::of(150000, 'IQD'), PaymentState::PartiallyPaid],

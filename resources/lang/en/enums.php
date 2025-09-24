@@ -78,6 +78,34 @@ return [
         'standard_price' => 'Standard Price',
     ],
 
+    'cost_source' => [
+        'vendor_bill' => 'Vendor Bill',
+        'average_cost' => 'Average Cost',
+        'cost_layer' => 'Cost Layer',
+        'unit_price' => 'Unit Price',
+        'manual' => 'Manual Entry',
+        'company_default' => 'Company Default',
+    ],
+
+    'reordering_route' => [
+        'min_max' => 'Min/Max Reordering',
+        'mto' => 'Make-to-Order',
+    ],
+
+    'stock_picking_state' => [
+        'draft' => 'Draft',
+        'confirmed' => 'Confirmed',
+        'assigned' => 'Assigned',
+        'done' => 'Done',
+        'cancelled' => 'Cancelled',
+    ],
+
+    'stock_picking_type' => [
+        'receipt' => 'Receipt',
+        'delivery' => 'Delivery',
+        'internal' => 'Internal Transfer',
+    ],
+
     'partner_type' => [
         'customer' => 'Customer',
         'vendor' => 'Vendor',

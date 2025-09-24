@@ -6,10 +6,12 @@ use App\Actions\Accounting\BuildVendorBillPostingPreviewAction;
 use App\Actions\Accounting\CreateJournalEntryForVendorBillAction;
 use App\Actions\Inventory\CreateStockMoveAction;
 use App\DataTransferObjects\Inventory\CreateStockMoveDTO;
+use App\Enums\Inventory\InventoryAccountingMode;
 use App\Enums\Inventory\StockMoveStatus;
 use App\Enums\Inventory\StockMoveType;
 use App\Enums\Products\ProductType;
 use App\Enums\Purchases\VendorBillStatus;
+use App\Services\Inventory\InventoryValuationService;
 use App\Events\VendorBillConfirmed;
 use App\Exceptions\DeletionNotAllowedException;
 use App\Models\AuditLog;
@@ -19,8 +21,12 @@ use App\Models\User;
 use App\Models\VendorBill;
 use App\Models\VendorBillLine;
 use App\Models\StockMove;
+use App\Models\StockPicking;
+use App\Enums\Inventory\StockPickingType;
+use App\Enums\Inventory\StockPickingState;
 
 use App\Services\Accounting\LockDateService;
+
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Support\Facades\DB;
@@ -65,11 +71,39 @@ class VendorBillService
             $vendorBill->posted_at = now();
             $vendorBill->save();
 
-            // Always create stock moves for storable product lines
-            /** @var VendorBillLine $line */
-            foreach ($vendorBill->lines()->with('product')->get() as $line) {
-                if ($line->product?->type === ProductType::Storable) {
-                    $this->createStockMoveForLine($vendorBill, $line, $user);
+            // Create stock moves and inventory journal entries based on company's inventory accounting mode
+            $company = $vendorBill->company;
+            $storableLines = $vendorBill->lines()->with('product')->get()
+                ->filter(fn(VendorBillLine $l) => $l->product?->type === ProductType::Storable);
+
+            if ($storableLines->isNotEmpty()) {
+                // Check the company's inventory accounting mode
+                if ($company->inventory_accounting_mode === InventoryAccountingMode::AUTO_RECORD_ON_BILL) {
+                    // Mode 1: Auto-record all inventory on bill confirmation
+                    $picking = StockPicking::create([
+                        'company_id' => $vendorBill->company_id,
+                        'type' => StockPickingType::Receipt,
+                        'state' => StockPickingState::Done,
+                        'partner_id' => $vendorBill->vendor_id,
+                        'scheduled_date' => $vendorBill->bill_date,
+                        'completed_at' => now(),
+                        'reference' => $vendorBill->bill_reference,
+                        'origin' => 'VendorBill#' . $vendorBill->getKey(),
+                        'created_by_user_id' => $user->id,
+                    ]);
+
+                    // Create one stock move with multiple product lines
+                    if (!empty($storableLines)) {
+                        $stockMove = $this->createStockMoveForLines($vendorBill, $storableLines, $user, $picking);
+
+                        // Create consolidated inventory journal entry for all storable products
+                        app(InventoryValuationService::class)->createConsolidatedIncomingStockJournalEntry([$stockMove], $vendorBill);
+                    }
+                } else {
+                    // Mode 2: Manual inventory recording
+                    // Stock moves and inventory journal entries will be created separately
+                    // through the inventory module when goods are actually received
+                    // No stock moves or inventory valuation entries are created here
                 }
             }
 
@@ -85,9 +119,9 @@ class VendorBillService
     }
 
     /**
-     * Creates a stock move for a given vendor bill line.
+     * Creates a stock move with multiple product lines for vendor bill lines.
      */
-    private function createStockMoveForLine(VendorBill $vendorBill, VendorBillLine $line, User $user): void
+    private function createStockMoveForLines(VendorBill $vendorBill, $storableLines, User $user, StockPicking $picking): StockMove
     {
         $company = $vendorBill->company;
 
@@ -95,41 +129,42 @@ class VendorBillService
             throw new RuntimeException("Default Vendor or Stock Location is not configured for Company ID: {$company->getKey()}.");
         }
 
-        if (! $line->product_id) {
-            throw new \Exception('Vendor bill line must have a product to create stock move');
-        }
-
-        // Idempotency guard: avoid duplicate moves for the same bill line
-        $exists = StockMove::query()
-            ->where('company_id', $company->getKey())
-            ->where('product_id', $line->product_id)
-            ->where('from_location_id', $company->vendorLocation->getKey())
-            ->where('to_location_id', $company->defaultStockLocation->getKey())
-            ->where('source_type', VendorBill::class)
-            ->where('source_id', $vendorBill->getKey())
-            ->exists();
-
-        if ($exists) {
-            return;
+        // Create product line DTOs for all storable lines
+        $productLineDtos = [];
+        foreach ($storableLines as $line) {
+            $productLineDtos[] = new \App\DataTransferObjects\Inventory\CreateStockMoveProductLineDTO(
+                product_id: $line->product_id,
+                quantity: (float) $line->quantity,
+                from_location_id: $company->vendorLocation->getKey(),
+                to_location_id: $company->defaultStockLocation->getKey(),
+                description: $line->description,
+                source_type: VendorBill::class,
+                source_id: $vendorBill->getKey()
+            );
         }
 
         $dto = new CreateStockMoveDTO(
             company_id: $company->getKey(),
-            product_id: $line->product_id,
-            quantity: (float) $line->quantity,
-            from_location_id: $company->vendorLocation->getKey(),
-            to_location_id: $company->defaultStockLocation->getKey(),
+            product_lines: $productLineDtos,
             move_type: StockMoveType::Incoming,
             status: StockMoveStatus::Done, // Moves from bills are immediately 'done'
             move_date: $vendorBill->bill_date,
             reference: $vendorBill->bill_reference,
+            description: "Stock receipt from vendor bill {$vendorBill->bill_reference}",
             source_type: VendorBill::class,
             source_id: $vendorBill->getKey(),
             created_by_user_id: $user->id
         );
 
-        $this->createStockMoveAction->execute($dto);
+        $stockMove = $this->createStockMoveAction->execute($dto);
+
+        // Attach move to the picking
+        $stockMove->update(['picking_id' => $picking->getKey()]);
+
+        return $stockMove;
     }
+
+
 
     /**
      * Delete a draft vendor bill.
@@ -211,47 +246,57 @@ class VendorBillService
 
         // If vendor bill is in company base currency, set rate to 1.0
         if ($vendorBill->currency_id === $vendorBill->company->currency_id) {
-            $vendorBill->exchange_rate_at_creation = 1.0;
-            $vendorBill->total_amount_company_currency = $vendorBill->total_amount;
-            $vendorBill->total_tax_company_currency = $vendorBill->total_tax;
+            $vendorBill->update([
+                'exchange_rate_at_creation' => 1.0,
+                'total_amount_company_currency' => $vendorBill->total_amount,
+                'total_tax_company_currency' => $vendorBill->total_tax,
+            ]);
 
             return;
         }
 
-        // Get exchange rate for the bill date
-        $exchangeRate = $this->currencyConverter->getExchangeRate($vendorBill->currency, $vendorBill->bill_date, $vendorBill->company);
+        // Use manually set exchange rate if available, otherwise get from currency converter
+        $exchangeRate = $vendorBill->exchange_rate_at_creation;
 
-        // If no exchange rate is found, skip multi-currency processing for backward compatibility
         if (! $exchangeRate) {
-            $vendorBill->exchange_rate_at_creation = 1.0;
-            $vendorBill->total_amount_company_currency = $vendorBill->total_amount;
-            $vendorBill->total_tax_company_currency = $vendorBill->total_tax;
+            // Get exchange rate for the bill date
+            $exchangeRate = $this->currencyConverter->getExchangeRate($vendorBill->currency, $vendorBill->bill_date, $vendorBill->company);
 
-            return;
+            // If no exchange rate is found, try to get the latest available rate as fallback
+            if (! $exchangeRate) {
+                $exchangeRate = $this->currencyConverter->getLatestExchangeRate($vendorBill->currency, $vendorBill->company);
+
+                // If still no rate found, skip multi-currency processing for backward compatibility
+                if (! $exchangeRate) {
+                    $vendorBill->exchange_rate_at_creation = 1.0;
+                    $vendorBill->total_amount_company_currency = $vendorBill->total_amount;
+                    $vendorBill->total_tax_company_currency = $vendorBill->total_tax;
+
+                    return;
+                }
+            }
         }
 
-        // Convert amounts to company currency
+        // Convert amounts to company currency using the exchange rate
         $companyCurrency = $vendorBill->company->currency;
 
-        $totalAmountCompanyCurrency = $this->currencyConverter->convertToBaseCurrency(
+        $totalAmountCompanyCurrency = $this->currencyConverter->convertWithRate(
             $vendorBill->total_amount,
-            $vendorBill->currency,
-            $companyCurrency,
-            $vendorBill->bill_date,
-            $vendorBill->company
+            $exchangeRate,
+            $companyCurrency->code,
+            false
         );
 
-        $totalTaxCompanyCurrency = $this->currencyConverter->convertToBaseCurrency(
+        $totalTaxCompanyCurrency = $this->currencyConverter->convertWithRate(
             $vendorBill->total_tax,
-            $vendorBill->currency,
-            $companyCurrency,
-            $vendorBill->bill_date,
-            $vendorBill->company
+            $exchangeRate,
+            $companyCurrency->code,
+            false
         );
 
         // Convert vendor bill line amounts
         foreach ($vendorBill->lines as $line) {
-            $this->convertVendorBillLineAmounts($line, $companyCurrency, $vendorBill->company);
+            $this->convertVendorBillLineAmounts($line, $companyCurrency, $exchangeRate);
         }
 
         // Update vendor bill with converted amounts
@@ -267,30 +312,27 @@ class VendorBillService
      *
      * @param  \App\Models\VendorBillLine  $line
      */
-    protected function convertVendorBillLineAmounts($line, Currency $companyCurrency, Company $company): void
+    protected function convertVendorBillLineAmounts($line, Currency $companyCurrency, float $exchangeRate): void
     {
-        $unitPriceCompanyCurrency = $this->currencyConverter->convertToBaseCurrency(
+        $unitPriceCompanyCurrency = $this->currencyConverter->convertWithRate(
             $line->unit_price,
-            $line->vendorBill->currency,
-            $companyCurrency,
-            $line->vendorBill->bill_date,
-            $company
+            $exchangeRate,
+            $companyCurrency->code,
+            false
         );
 
-        $subtotalCompanyCurrency = $this->currencyConverter->convertToBaseCurrency(
+        $subtotalCompanyCurrency = $this->currencyConverter->convertWithRate(
             $line->subtotal,
-            $line->vendorBill->currency,
-            $companyCurrency,
-            $line->vendorBill->bill_date,
-            $company
+            $exchangeRate,
+            $companyCurrency->code,
+            false
         );
 
-        $totalLineTaxCompanyCurrency = $this->currencyConverter->convertToBaseCurrency(
+        $totalLineTaxCompanyCurrency = $this->currencyConverter->convertWithRate(
             $line->total_line_tax,
-            $line->vendorBill->currency,
-            $companyCurrency,
-            $line->vendorBill->bill_date,
-            $company
+            $exchangeRate,
+            $companyCurrency->code,
+            false
         );
 
         $line->update([

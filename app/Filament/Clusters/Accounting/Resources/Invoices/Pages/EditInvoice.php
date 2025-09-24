@@ -332,7 +332,16 @@ class EditInvoice extends EditRecord
             fiscal_position_id: $data['fiscal_position_id'] ?? null
         );
 
-        return app(UpdateInvoiceAction::class)->execute($invoiceDTO);
+        $updatedInvoice = app(UpdateInvoiceAction::class)->execute($invoiceDTO);
+
+        // Handle exchange_rate_at_creation separately since it's not in the DTO
+        if (isset($data['exchange_rate_at_creation'])) {
+            $updatedInvoice->update([
+                'exchange_rate_at_creation' => $data['exchange_rate_at_creation']
+            ]);
+        }
+
+        return $updatedInvoice;
     }
 
     protected function getHeaderWidgets(): array
