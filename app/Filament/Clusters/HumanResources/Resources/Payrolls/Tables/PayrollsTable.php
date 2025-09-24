@@ -66,7 +66,7 @@ class PayrollsTable
                         'success' => 'paid',
                         'danger' => 'cancelled',
                     ])
-                    ->formatStateUsing(fn (string $state): string => __("payroll.status.{$state}"))
+                    ->formatStateUsing(fn(string $state): string => __("payroll.status.{$state}"))
                     ->sortable(),
 
                 TextColumn::make('created_at')
@@ -86,7 +86,7 @@ class PayrollsTable
                     ->label(__('payroll.actions.approve'))
                     ->icon('heroicon-o-check-circle')
                     ->color(Color::Green)
-                    ->visible(fn (Payroll $record): bool => $record->status === 'draft')
+                    ->visible(fn(Payroll $record): bool => $record->status === 'draft')
                     ->requiresConfirmation()
                     ->modalHeading(__('payroll.actions.approve_payroll'))
                     ->modalDescription(__('payroll.actions.approve_payroll_description'))
@@ -106,13 +106,14 @@ class PayrollsTable
                     ->label(__('payroll.actions.pay'))
                     ->icon('heroicon-o-currency-dollar')
                     ->color(Color::Blue)
-                    ->visible(fn (Payroll $record): bool => $record->status === 'processed' && ! $record->payment_id)
+                    ->visible(fn(Payroll $record): bool => $record->status === 'processed' && ! $record->payment_id)
                     ->requiresConfirmation()
                     ->modalHeading(__('payroll.actions.pay_employee'))
-                    ->modalDescription(fn (Payroll $record): string => __('payroll.actions.pay_employee_description', [
-                        'employee' => $record->employee->full_name,
-                        'amount' => $record->net_salary->formatTo('en_US'),
-                    ])
+                    ->modalDescription(
+                        fn(Payroll $record): string => __('payroll.actions.pay_employee_description', [
+                            'employee' => $record->employee->full_name,
+                            'amount' => $record->net_salary->formatTo('en_US'),
+                        ])
                     )
                     ->action(function (Payroll $record) {
                         $user = auth()->user();
@@ -130,8 +131,8 @@ class PayrollsTable
                     ->label(__('payroll.actions.view_payment'))
                     ->icon('heroicon-o-eye')
                     ->color(Color::Gray)
-                    ->visible(fn (Payroll $record): bool => $record->payment_id !== null)
-                    ->url(fn (Payroll $record): string => route('filament.admin.resources.payments.edit', $record->payment_id))
+                    ->visible(fn(Payroll $record): bool => $record->payment_id !== null)
+                    ->url(fn(Payroll $record): string => route('filament.jmeryar.resources.payments.edit', $record->payment_id))
                     ->openUrlInNewTab(),
             ])
             ->toolbarActions([
