@@ -72,10 +72,15 @@ class InvoiceService
 
             $invoice->save();
 
-            // Create stock moves for storable products
-            $this->createStockMovesForInvoiceAction->execute(
-                new CreateStockMovesForInvoiceDTO($invoice, $user)
-            );
+            // Create stock moves for storable products only if:
+            // Invoice is not linked to a sales order (sales orders handle their own deliveries)
+            // Note: Unlike vendor bills, invoices always create stock moves regardless of inventory mode
+            // for proper lot tracking, FEFO allocation, and inventory management
+            if (!$invoice->sales_order_id) {
+                $this->createStockMovesForInvoiceAction->execute(
+                    new CreateStockMovesForInvoiceDTO($invoice, $user)
+                );
+            }
 
             InvoiceConfirmed::dispatch($invoice);
         });

@@ -90,6 +90,15 @@ class DocumentCurrencyMoneyCast extends MoneyCast
                 }
             }
         }
+        if (method_exists($model, 'salesOrder') && $model->relationLoaded('salesOrder')) {
+            $salesOrder = $model->getRelation('salesOrder');
+            if ($salesOrder instanceof \Illuminate\Database\Eloquent\Model && method_exists($salesOrder, 'currency')) {
+                $currency = $salesOrder->relationLoaded('currency') ? $salesOrder->getRelation('currency') : $salesOrder->currency()->first();
+                if ($currency instanceof \App\Models\Currency) {
+                    return $currency;
+                }
+            }
+        }
         // Loan schedule: resolve via parent loan
         if (method_exists($model, 'loan') && $model->relationLoaded('loan')) {
             $loan = $model->getRelation('loan');
@@ -138,6 +147,11 @@ class DocumentCurrencyMoneyCast extends MoneyCast
             $purchaseOrder = $model->purchaseOrder()->with('currency')->first();
 
             return $purchaseOrder->currency ?? throw new InvalidArgumentException('Purchase order currency not found');
+        }
+        if (method_exists($model, 'salesOrder') && $model->getAttribute('sales_order_id')) {
+            $salesOrder = $model->salesOrder()->with('currency')->first();
+
+            return $salesOrder->currency ?? throw new InvalidArgumentException('Sales order currency not found');
         }
         // Some models expose a direct currency() relationship (e.g., PaymentDocumentLink)
         if (method_exists($model, 'currency')) {
