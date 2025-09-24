@@ -6,6 +6,7 @@ use App\Enums\Inventory\StockMoveStatus;
 use App\Enums\Inventory\StockMoveType;
 use App\Filament\Clusters\Inventory\InventoryCluster;
 use App\Filament\Components\CostPreviewComponent;
+use App\Filament\Clusters\Inventory\Resources\StockMoves\Actions\ConfirmStockMoveAction;
 use App\Filament\Clusters\Inventory\Resources\StockMoves\Pages\CreateStockMove;
 use App\Filament\Clusters\Inventory\Resources\StockMoves\Pages\EditStockMove;
 use App\Filament\Clusters\Inventory\Resources\StockMoves\Pages\ListStockMoves;
@@ -354,6 +355,8 @@ class StockMoveResource extends Resource
                     ->icon('heroicon-o-eye'),
                 EditAction::make()
                     ->icon('heroicon-o-pencil-square')
+                    ->visible(fn(StockMove $record): bool => $record->status === StockMoveStatus::Draft),
+                ConfirmStockMoveAction::make()
                     ->visible(fn(StockMove $record): bool => $record->status === StockMoveStatus::Draft),
                 DeleteAction::make()
                     ->icon('heroicon-o-trash')
