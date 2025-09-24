@@ -42,7 +42,7 @@ class VendorBillsRelationManager extends RelationManager
                     ->icon(fn(VendorBill $record): string => $record->bill_reference ? 'heroicon-m-check-circle' : 'heroicon-m-pencil-square')
                     ->url(
                         fn(VendorBill $record): string =>
-                        route('filament.admin.accounting.resources.vendor-bills.view', [
+                        route('filament.jmeryar.accounting.resources.vendor-bills.view', [
                             'record' => $record,
                             'tenant' => Filament::getTenant(),
                         ])

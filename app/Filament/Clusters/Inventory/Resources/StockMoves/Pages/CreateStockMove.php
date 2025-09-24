@@ -7,10 +7,13 @@ use App\DataTransferObjects\Inventory\CreateStockMoveDTO;
 use App\DataTransferObjects\Inventory\CreateStockMoveProductLineDTO;
 use App\Enums\Inventory\StockMoveStatus;
 use App\Enums\Inventory\StockMoveType;
+use App\Exceptions\Inventory\InsufficientCostInformationException;
 use App\Filament\Actions\DocsAction;
 use App\Filament\Clusters\Inventory\Resources\StockMoves\StockMoveResource;
 use Carbon\Carbon;
 use Filament\Facades\Filament;
+use Filament\Notifications\Notification;
+use Filament\Notifications\Actions\Action as NotificationAction;
 use Filament\Resources\Pages\CreateRecord;
 use Illuminate\Database\Eloquent\Model;
 
@@ -63,7 +66,30 @@ class CreateStockMove extends CreateRecord
             source_id: isset($data['source_id']) ? (int) $data['source_id'] : null,
         );
 
-        return app(CreateStockMoveAction::class)->execute($dto);
+        try {
+            return app(CreateStockMoveAction::class)->execute($dto);
+        } catch (InsufficientCostInformationException $e) {
+            // Show user-friendly error notification
+            Notification::make()
+                ->title(__('inventory_accounting.cost_validation_errors.title'))
+                ->body($e->getUserFriendlyMessage())
+                ->danger()
+                ->persistent()
+                ->actions([
+                    \Filament\Actions\Action::make('create_vendor_bill')
+                        ->label(__('Create Vendor Bill'))
+                        ->button()
+                        ->url(route('filament.jmeryar.accounting.resources.vendor-bills.create', ['tenant' => \Filament\Facades\Filament::getTenant()]))
+                        ->openUrlInNewTab(),
+                ])
+                ->send();
+
+            // Halt the creation process and return a dummy model to satisfy return type
+            $this->halt();
+
+            // This line will never be reached due to halt(), but satisfies the return type
+            throw $e;
+        }
     }
 
     protected function getHeaderActions(): array

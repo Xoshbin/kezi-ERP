@@ -4,6 +4,7 @@ namespace App\Exceptions\Inventory;
 
 use App\Models\Product;
 use App\Services\Inventory\ProductCostAnalysisService;
+use App\Services\Inventory\UserFriendlyErrorService;
 use Exception;
 
 /**
@@ -63,5 +64,32 @@ class InsufficientCostInformationException extends Exception
     public function getProduct(): Product
     {
         return $this->product;
+    }
+
+    /**
+     * Get user-friendly error message for notifications
+     */
+    public function getUserFriendlyMessage(): string
+    {
+        $errorService = app(UserFriendlyErrorService::class);
+        return $errorService->getNotificationMessage($this);
+    }
+
+    /**
+     * Get detailed user-friendly error information
+     */
+    public function getUserFriendlyDetails(): array
+    {
+        $errorService = app(UserFriendlyErrorService::class);
+        return $errorService->getDetailedErrorInfo($this);
+    }
+
+    /**
+     * Get converted user-friendly error data
+     */
+    public function getUserFriendlyErrorData(): array
+    {
+        $errorService = app(UserFriendlyErrorService::class);
+        return $errorService->convertCostInformationException($this);
     }
 }
