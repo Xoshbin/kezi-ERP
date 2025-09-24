@@ -116,7 +116,7 @@ test('can create invoice from sales order', function () {
     expect($invoice->total_amount->getAmount()->toInt())->toBe(200); // 2 * 100 = 200
 });
 
-test('invoice posting respects inventory accounting mode', function () {
+test('direct invoices always create stock moves regardless of inventory mode', function () {
     // Test automatic mode
     $this->company->update(['inventory_accounting_mode' => InventoryAccountingMode::AUTO_RECORD_ON_BILL]);
 
@@ -174,12 +174,13 @@ test('invoice posting respects inventory accounting mode', function () {
         'unit_price' => Money::of(100, $this->company->currency->code),
     ]);
 
-    // In manual mode, no stock moves should be created for direct invoices
+    // Even in manual mode, stock moves should be created for direct invoices
+    // (inventory mode only affects vendor bills, not customer invoices)
     $stockMovesCountBefore = \App\Models\StockMove::count();
     $invoiceService->confirm($invoice2, $this->user);
     $stockMovesCountAfter = \App\Models\StockMove::count();
 
-    expect($stockMovesCountAfter)->toBe($stockMovesCountBefore);
+    expect($stockMovesCountAfter)->toBeGreaterThan($stockMovesCountBefore);
 });
 
 test('invoice from sales order does not create stock moves regardless of mode', function () {
