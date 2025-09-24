@@ -58,7 +58,7 @@ class CreateJournalEntryForInvoiceAction
                         account_id: $line->tax->tax_account_id,
                         debit: Money::of(0, $currency->code),
                         credit: $line->total_line_tax,
-                        description: 'Tax for '.$invoice->invoice_number,
+                        description: 'Tax for ' . $invoice->invoice_number,
                         partner_id: null,
                         analytic_account_id: null,
                     );
@@ -72,7 +72,7 @@ class CreateJournalEntryForInvoiceAction
                 account_id: $arAccountId,
                 debit: $totalDebit,
                 credit: Money::of(0, $currency->code),
-                description: 'A/R for '.$invoice->invoice_number,
+                description: 'A/R for ' . $invoice->invoice_number,
                 partner_id: $invoice->customer_id,
                 analytic_account_id: null,
             );
@@ -84,12 +84,13 @@ class CreateJournalEntryForInvoiceAction
                 currency_id: $currency->id,
                 entry_date: $invoice->invoice_date,
                 reference: $invoice->invoice_number,
-                description: 'Invoice '.$invoice->invoice_number,
+                description: 'Invoice ' . $invoice->invoice_number,
                 source_type: Invoice::class,
                 source_id: $invoice->id,
                 created_by_user_id: $user->id,
                 is_posted: true,
                 lines: $lineDTOs,
+                exchange_rate: $invoice->exchange_rate_at_creation,
             );
 
             return $this->createJournalEntryAction->execute($journalEntryDTO);

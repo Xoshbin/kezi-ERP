@@ -25,6 +25,7 @@ use Illuminate\Support\Carbon;
  * @property int $id
  * @property int $company_id
  * @property int $customer_id
+ * @property int|null $sales_order_id
  * @property int $currency_id
  * @property int|null $journal_entry_id
  * @property int|null $fiscal_position_id
@@ -41,6 +42,7 @@ use Illuminate\Support\Carbon;
  * @property-read Company $company
  * @property-read Currency $currency
  * @property-read Partner $customer
+ * @property-read SalesOrder|null $salesOrder
  * @property-read FiscalPosition|null $fiscalPosition
  * @property-read string $full_reference
  * @property-read Collection<int, InvoiceLine> $invoiceLines
@@ -97,6 +99,7 @@ class Invoice extends Model
     protected $fillable = [
         'company_id',
         'customer_id',
+        'sales_order_id',
         'currency_id',
         'exchange_rate_at_creation',
         'journal_entry_id',
@@ -164,6 +167,14 @@ class Invoice extends Model
     public function customer(): BelongsTo
     {
         return $this->belongsTo(Partner::class);
+    }
+
+    /**
+     * @return BelongsTo<SalesOrder, static>
+     */
+    public function salesOrder(): BelongsTo
+    {
+        return $this->belongsTo(SalesOrder::class);
     }
 
     /**
@@ -308,7 +319,7 @@ class Invoice extends Model
      */
     public function getFullReferenceAttribute(): string
     {
-        return $this->invoice_number.' - '.$this->invoice_date->format('Y-m-d');
+        return $this->invoice_number . ' - ' . $this->invoice_date->format('Y-m-d');
     }
 
     /**
@@ -360,12 +371,12 @@ class Invoice extends Model
         $zero = Money::of(0, $currencyCode);
 
         $totalTax = $this->invoiceLines->reduce(
-            fn (Money $carry, InvoiceLine $line) => $carry->plus($line->total_line_tax ?? Money::of(0, $currencyCode)),
+            fn(Money $carry, InvoiceLine $line) => $carry->plus($line->total_line_tax ?? Money::of(0, $currencyCode)),
             Money::of(0, $currencyCode)
         );
 
         $subtotal = $this->invoiceLines->reduce(
-            fn (Money $carry, InvoiceLine $line) => $carry->plus($line->subtotal ?? Money::of(0, $currencyCode)),
+            fn(Money $carry, InvoiceLine $line) => $carry->plus($line->subtotal ?? Money::of(0, $currencyCode)),
             Money::of(0, $currencyCode)
         );
 

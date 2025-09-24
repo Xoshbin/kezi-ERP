@@ -8,11 +8,15 @@ use App\DataTransferObjects\Sales\CreateStockMovesForInvoiceDTO;
 use App\Enums\Inventory\StockLocationType;
 use App\Enums\Inventory\StockMoveStatus;
 use App\Enums\Inventory\StockMoveType;
+use App\Enums\Inventory\StockPickingState;
+use App\Enums\Inventory\StockPickingType;
 use App\Enums\Products\ProductType;
 use App\Events\Inventory\StockMoveConfirmed;
 use App\Models\Invoice;
 use App\Models\StockLocation;
+use App\Models\StockPicking;
 use App\Models\User;
+use App\Services\Inventory\StockReservationService;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
@@ -37,10 +41,25 @@ class CreateStockMovesForInvoiceAction
             // Get stock locations with fallback strategy
             $locations = $this->getStockLocations($invoice);
 
-            if (! $locations['warehouse'] || ! $locations['vendor']) {
+            if (! $locations['warehouse'] || ! $locations['customer']) {
                 // Skip stock move creation if locations are not available
                 return $stockMoves;
             }
+
+            // Create a Delivery picking to group all moves for this invoice
+            $picking = StockPicking::create([
+                'company_id' => $invoice->company_id,
+                'type' => StockPickingType::Delivery,
+                'state' => StockPickingState::Done,
+                'partner_id' => $invoice->customer_id,
+                'scheduled_date' => $invoice->posted_at ?? now(),
+                'completed_at' => now(),
+                'reference' => $invoice->invoice_number,
+                'origin' => 'Invoice#' . $invoice->getKey(),
+                'created_by_user_id' => $user->id,
+            ]);
+
+            $reservationService = app(StockReservationService::class);
 
             foreach ($invoice->invoiceLines as $line) {
                 if ($line->product && $line->product->type === ProductType::Storable) {
@@ -49,12 +68,18 @@ class CreateStockMovesForInvoiceAction
                         $line,
                         $user,
                         $locations['warehouse'],
-                        $locations['vendor']
+                        $locations['customer']
                     );
+
+                    // Attach to picking
+                    $stockMove->update(['picking_id' => $picking->getKey()]);
+
+                    // Reserve as much as possible from warehouse before processing the move
+                    $reservationService->reserveForMove($stockMove, $locations['warehouse']->id);
 
                     $stockMoves->push($stockMove);
 
-                    // Dispatch the StockMoveConfirmed event to trigger COGS calculation
+                    // Dispatch the StockMoveConfirmed event to trigger valuation and outgoing processing
                     StockMoveConfirmed::dispatch($stockMove);
                 }
             }
@@ -74,20 +99,19 @@ class CreateStockMovesForInvoiceAction
         /** @var \App\Models\StockLocation|null $warehouseLocation */
         $warehouseLocation = $invoice->company->defaultStockLocation
             ?? StockLocation::where('company_id', $invoice->company_id)
-                ->where('type', StockLocationType::Internal)
-                ->first()
+            ->where('type', StockLocationType::Internal)
+            ->first()
             ?? StockLocation::where('name', 'Warehouse')->first();
 
-        /** @var \App\Models\StockLocation|null $vendorLocation */
-        $vendorLocation = $invoice->company->vendorLocation
-            ?? StockLocation::where('company_id', $invoice->company_id)
-                ->where('type', StockLocationType::Vendor)
-                ->first()
-            ?? StockLocation::where('name', 'Vendors')->first();
+        /** @var \App\Models\StockLocation|null $customerLocation */
+        $customerLocation = StockLocation::where('company_id', $invoice->company_id)
+            ->where('type', StockLocationType::Customer)
+            ->first()
+            ?? StockLocation::where('name', 'Customers')->first();
 
         return [
             'warehouse' => $warehouseLocation,
-            'vendor' => $vendorLocation,
+            'customer' => $customerLocation,
         ];
     }
 
@@ -99,22 +123,30 @@ class CreateStockMovesForInvoiceAction
         \App\Models\InvoiceLine $line,
         User $user,
         StockLocation $warehouseLocation,
-        StockLocation $vendorLocation
+        StockLocation $customerLocation
     ): \App\Models\StockMove {
         if (! $line->product_id) {
             throw new \Exception('Invoice line must have a product to create stock move');
         }
 
-        $dto = new CreateStockMoveDTO(
-            company_id: $invoice->company_id,
+        $productLineDto = new \App\DataTransferObjects\Inventory\CreateStockMoveProductLineDTO(
             product_id: $line->product_id,
             quantity: (float) $line->quantity,
             from_location_id: $warehouseLocation->id,
-            to_location_id: $vendorLocation->id,
+            to_location_id: $customerLocation->id,
+            description: $line->description,
+            source_type: Invoice::class,
+            source_id: $invoice->id
+        );
+
+        $dto = new CreateStockMoveDTO(
+            company_id: $invoice->company_id,
+            product_lines: [$productLineDto],
             move_type: StockMoveType::Outgoing,
             status: StockMoveStatus::Done,
             move_date: $invoice->posted_at ?? now(),
             reference: $invoice->invoice_number,
+            description: "Stock delivery for invoice {$invoice->invoice_number}",
             source_id: $invoice->id,
             source_type: Invoice::class,
             created_by_user_id: $user->id,

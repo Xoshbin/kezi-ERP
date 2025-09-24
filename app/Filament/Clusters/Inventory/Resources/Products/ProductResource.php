@@ -10,7 +10,8 @@ use App\Filament\Clusters\Inventory\Resources\Products\Pages\CreateProduct;
 use App\Filament\Clusters\Inventory\Resources\Products\Pages\EditProduct;
 use App\Filament\Clusters\Inventory\Resources\Products\Pages\ListProducts;
 use App\Filament\Clusters\Inventory\Resources\Products\RelationManagers\InventoryCostLayersRelationManager;
-use App\Filament\Clusters\Inventory\Resources\Products\RelationManagers\StockMovesRelationManager;
+use App\Filament\Clusters\Inventory\Resources\Products\RelationManagers\ReorderingRulesRelationManager;
+// use App\Filament\Clusters\Inventory\Resources\Products\RelationManagers\StockMovesRelationManager;
 use App\Filament\Forms\Components\MoneyInput;
 use App\Filament\Tables\Columns\MoneyColumn;
 use App\Models\Account;
@@ -97,7 +98,7 @@ class ProductResource extends Resource
                             ->required()
                             ->options(
                                 collect(ProductType::cases())
-                                    ->mapWithKeys(fn (ProductType $type) => [$type->value => $type->label()])
+                                    ->mapWithKeys(fn(ProductType $type) => [$type->value => $type->label()])
                             )
                             ->searchable(),
                     ]),
@@ -130,7 +131,7 @@ class ProductResource extends Resource
                             ->searchable()
                             ->preload()
                             ->searchableFields(['name', 'code'])
-                            ->modifyQueryUsing(fn ($query) => $query->whereIn('type', [AccountType::Income, AccountType::OtherIncome]))
+                            ->modifyQueryUsing(fn($query) => $query->whereIn('type', [AccountType::Income, AccountType::OtherIncome]))
                             ->createOptionForm([
                                 TextInput::make('code')
                                     ->label(__('account.code'))
@@ -145,7 +146,7 @@ class ProductResource extends Resource
                                     ->required()
                                     ->options(
                                         collect(AccountType::cases())
-                                            ->mapWithKeys(fn (AccountType $type) => [$type->value => $type->label()])
+                                            ->mapWithKeys(fn(AccountType $type) => [$type->value => $type->label()])
                                     )
                                     ->searchable(),
                                 Toggle::make('is_deprecated')
@@ -164,7 +165,7 @@ class ProductResource extends Resource
                             ->searchable()
                             ->preload()
                             ->searchableFields(['name', 'code'])
-                            ->modifyQueryUsing(fn ($query) => $query->whereIn('type', [AccountType::Expense, AccountType::Depreciation, AccountType::CostOfRevenue]))
+                            ->modifyQueryUsing(fn($query) => $query->whereIn('type', [AccountType::Expense, AccountType::Depreciation, AccountType::CostOfRevenue]))
                             ->createOptionForm([
                                 TextInput::make('code')
                                     ->label(__('account.code'))
@@ -179,7 +180,7 @@ class ProductResource extends Resource
                                     ->required()
                                     ->options(
                                         collect(AccountType::cases())
-                                            ->mapWithKeys(fn (AccountType $type) => [$type->value => $type->label()])
+                                            ->mapWithKeys(fn(AccountType $type) => [$type->value => $type->label()])
                                     )
                                     ->searchable(),
                                 Toggle::make('is_deprecated')
@@ -203,18 +204,18 @@ class ProductResource extends Resource
                             ->label(__('product.inventory_valuation_method'))
                             ->options(
                                 collect(ValuationMethod::cases())
-                                    ->mapWithKeys(fn (ValuationMethod $method) => [$method->value => $method->label()])
+                                    ->mapWithKeys(fn(ValuationMethod $method) => [$method->value => $method->label()])
                             )
                             ->default(ValuationMethod::AVCO->value)
                             ->searchable()
                             ->live()
-                            ->visible(fn (Get $get) => $get('type') === ProductType::Storable->value)
+                            ->visible(fn(Get $get) => $get('type') === ProductType::Storable->value)
                             ->helperText(__('product.inventory_valuation_method_help')),
                         MoneyInput::make('average_cost')
                             ->label(__('product.average_cost'))
                             ->currencyField('currency_id')
                             ->disabled()
-                            ->visible(fn (Get $get) => $get('type') === ProductType::Storable->value)
+                            ->visible(fn(Get $get) => $get('type') === ProductType::Storable->value)
                             ->helperText(__('product.average_cost_help')),
                     ]),
                     Grid::make(2)->schema([
@@ -224,12 +225,12 @@ class ProductResource extends Resource
                             ->searchable()
                             ->preload()
                             ->searchableFields(['name'])
-                            ->required(fn (Get $get) => $get('type') === ProductType::Storable->value)
-                            ->rules(['required_if:type,'.ProductType::Storable->value])
-                            ->visible(fn (Get $get) => $get('type') === ProductType::Storable->value)
+                            ->required(fn(Get $get) => $get('type') === ProductType::Storable->value)
+                            ->rules(['required_if:type,' . ProductType::Storable->value])
+                            ->visible(fn(Get $get) => $get('type') === ProductType::Storable->value)
                             ->createOptionForm([
                                 Hidden::make('company_id')
-                                    ->default(fn () => Filament::getTenant()?->getKey()),
+                                    ->default(fn() => Filament::getTenant()?->getKey()),
                                 TextInput::make('code')
                                     ->label(__('account.code'))
                                     ->required()
@@ -243,7 +244,7 @@ class ProductResource extends Resource
                                     ->required()
                                     ->options(
                                         collect(AccountType::cases())
-                                            ->mapWithKeys(fn (AccountType $type) => [$type->value => $type->label()])
+                                            ->mapWithKeys(fn(AccountType $type) => [$type->value => $type->label()])
                                     )
                                     ->searchable(),
                                 Toggle::make('is_deprecated')
@@ -262,10 +263,10 @@ class ProductResource extends Resource
                             ->preload()
                             ->searchableFields(['name'])
 
-                            ->visible(fn (Get $get) => $get('type') === ProductType::Storable->value)
+                            ->visible(fn(Get $get) => $get('type') === ProductType::Storable->value)
                             ->createOptionForm([
                                 Hidden::make('company_id')
-                                    ->default(fn () => Filament::getTenant()?->getKey()),
+                                    ->default(fn() => Filament::getTenant()?->getKey()),
                                 TextInput::make('code')
                                     ->label(__('account.code'))
                                     ->required()
@@ -279,7 +280,7 @@ class ProductResource extends Resource
                                     ->required()
                                     ->options(
                                         collect(AccountType::cases())
-                                            ->mapWithKeys(fn (AccountType $type) => [$type->value => $type->label()])
+                                            ->mapWithKeys(fn(AccountType $type) => [$type->value => $type->label()])
                                     )
                                     ->searchable(),
                                 Toggle::make('is_deprecated')
@@ -299,10 +300,10 @@ class ProductResource extends Resource
                             ->preload()
                             ->searchableFields(['name', 'code'])
 
-                            ->visible(fn (Get $get) => $get('type') === ProductType::Storable->value)
+                            ->visible(fn(Get $get) => $get('type') === ProductType::Storable->value)
                             ->createOptionForm([
                                 Hidden::make('company_id')
-                                    ->default(fn () => Filament::getTenant()?->getKey()),
+                                    ->default(fn() => Filament::getTenant()?->getKey()),
                                 TextInput::make('code')
                                     ->label(__('account.code'))
                                     ->required()
@@ -316,7 +317,7 @@ class ProductResource extends Resource
                                     ->required()
                                     ->options(
                                         collect(AccountType::cases())
-                                            ->mapWithKeys(fn (AccountType $type) => [$type->value => $type->label()])
+                                            ->mapWithKeys(fn(AccountType $type) => [$type->value => $type->label()])
                                     )
                                     ->searchable(),
                                 Toggle::make('is_deprecated')
@@ -334,10 +335,10 @@ class ProductResource extends Resource
                             ->preload()
                             ->searchableFields(['name', 'code'])
 
-                            ->visible(fn (Get $get) => $get('type') === ProductType::Storable->value)
+                            ->visible(fn(Get $get) => $get('type') === ProductType::Storable->value)
                             ->createOptionForm([
                                 Hidden::make('company_id')
-                                    ->default(fn () => Filament::getTenant()?->getKey()),
+                                    ->default(fn() => Filament::getTenant()?->getKey()),
                                 TextInput::make('code')
                                     ->label(__('account.code'))
                                     ->required()
@@ -351,7 +352,7 @@ class ProductResource extends Resource
                                     ->required()
                                     ->options(
                                         collect(AccountType::cases())
-                                            ->mapWithKeys(fn (AccountType $type) => [$type->value => $type->label()])
+                                            ->mapWithKeys(fn(AccountType $type) => [$type->value => $type->label()])
                                     )
                                     ->searchable(),
                                 Toggle::make('is_deprecated')
@@ -363,8 +364,14 @@ class ProductResource extends Resource
                                 return $action->modalWidth('lg');
                             }),
                     ]),
+                    Grid::make(1)->schema([
+                        Toggle::make('lot_tracking_enabled')
+                            ->label(__('product.lot_tracking_enabled'))
+                            ->helperText(__('product.lot_tracking_enabled_help'))
+                            ->visible(fn(Get $get) => $get('type') === ProductType::Storable->value),
+                    ]),
                 ])
-                ->visible(fn (Get $get) => $get('type') === ProductType::Storable->value),
+                ->visible(fn(Get $get) => $get('type') === ProductType::Storable->value),
 
             Section::make(__('product.status'))
                 ->description(__('product.status_description'))
@@ -403,8 +410,8 @@ class ProductResource extends Resource
                 TextColumn::make('type')
                     ->label(__('product.type'))
                     ->badge()
-                    ->formatStateUsing(fn (ProductType $state): string => $state->label())
-                    ->color(fn (ProductType $state): string => match ($state) {
+                    ->formatStateUsing(fn(ProductType $state): string => $state->label())
+                    ->color(fn(ProductType $state): string => match ($state) {
                         ProductType::Product => 'primary',
                         ProductType::Service => 'success',
                         ProductType::Storable => 'warning',
@@ -416,20 +423,20 @@ class ProductResource extends Resource
                 TextColumn::make('inventory_valuation_method')
                     ->label(__('product.inventory_valuation_method'))
                     ->badge()
-                    ->formatStateUsing(fn (?ValuationMethod $state): string => $state?->label() ?? '-')
-                    ->color(fn (?ValuationMethod $state): string => match ($state) {
+                    ->formatStateUsing(fn(?ValuationMethod $state): string => $state?->label() ?? '-')
+                    ->color(fn(?ValuationMethod $state): string => match ($state) {
                         ValuationMethod::AVCO => 'primary',
                         ValuationMethod::FIFO => 'success',
                         ValuationMethod::LIFO => 'warning',
                         ValuationMethod::STANDARD => 'info',
                         default => 'gray',
                     })
-                    ->visible(fn () => request()->has('inventory_view'))
+                    ->visible(fn() => request()->has('inventory_view'))
                     ->toggleable(isToggledHiddenByDefault: true),
                 MoneyColumn::make('average_cost')
                     ->label(__('product.average_cost'))
                     ->sortable()
-                    ->visible(fn () => request()->has('inventory_view'))
+                    ->visible(fn() => request()->has('inventory_view'))
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('incomeAccount.name')
                     ->label(__('product.income_account'))
@@ -468,7 +475,7 @@ class ProductResource extends Resource
                     ->label(__('product.type'))
                     ->options(
                         collect(ProductType::cases())
-                            ->mapWithKeys(fn (ProductType $type) => [$type->value => $type->label()])
+                            ->mapWithKeys(fn(ProductType $type) => [$type->value => $type->label()])
                     )
                     ->multiple(),
                 TernaryFilter::make('is_active')
@@ -511,8 +518,10 @@ class ProductResource extends Resource
     public static function getRelations(): array
     {
         return [
-            StockMovesRelationManager::class,
+            // TODO: Update StockMovesRelationManager to work with new multi-product architecture
+            // StockMovesRelationManager::class,
             InventoryCostLayersRelationManager::class,
+            ReorderingRulesRelationManager::class,
         ];
     }
 

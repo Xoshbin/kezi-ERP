@@ -39,10 +39,13 @@ trait WithConfiguredCompany
         // 1. Create inventory-specific GL accounts
         $this->inventoryAccount = Account::factory()->for($this->company)->create(['name' => 'Stock Valuation', 'type' => 'current_assets']);
         $this->stockInputAccount = Account::factory()->for($this->company)->create(['name' => 'Stock Input', 'type' => 'current_liabilities']);
+        $this->cogsAccount = Account::factory()->for($this->company)->create(['name' => 'Cost of Goods Sold', 'type' => 'expense']);
 
         // 2. Create the necessary physical locations
         $this->vendorLocation = StockLocation::factory()->for($this->company)->create(['type' => StockLocationType::Vendor]);
         $this->stockLocation = StockLocation::factory()->for($this->company)->create(['type' => StockLocationType::Internal]);
+        $this->adjustmentLocation = StockLocation::factory()->for($this->company)->create(['type' => StockLocationType::InventoryAdjustment]);
+        $this->customerLocation = StockLocation::factory()->for($this->company)->create(['type' => StockLocationType::Customer]);
 
         // 3. Associate accounts and locations with company defaults
         $this->company->update([
@@ -50,6 +53,7 @@ trait WithConfiguredCompany
             'default_stock_input_account_id' => $this->stockInputAccount->id,
             'default_vendor_location_id' => $this->vendorLocation->id,
             'default_stock_location_id' => $this->stockLocation->id,
+            'default_adjustment_location_id' => $this->adjustmentLocation->id,
         ]);
 
         // 4. Create a default vendor for the tests

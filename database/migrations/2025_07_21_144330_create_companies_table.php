@@ -1,8 +1,9 @@
 <?php
 
-use Illuminate\Database\Migrations\Migration;
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Database\Migrations\Migration;
+use App\Enums\Inventory\InventoryAccountingMode;
 
 return new class extends Migration
 {
@@ -34,6 +35,9 @@ return new class extends Migration
             $table->foreignId('default_stock_location_id')->nullable();
             $table->foreignId('default_vendor_location_id')->nullable();
             $table->foreignId('inventory_adjustment_account_id')->nullable()->constrained('accounts');
+            $table->string('inventory_accounting_mode')
+                ->default(InventoryAccountingMode::AUTO_RECORD_ON_BILL->value)
+                ->comment('Controls how inventory journal entries are created when vendor bills are confirmed');
             $table->json('numbering_settings')->nullable();
             // PDF Template Settings
             $table->string('pdf_template', 50)->default('classic');
@@ -49,7 +53,6 @@ return new class extends Migration
 
             $table->timestamps();
         });
-
     }
 
     /**

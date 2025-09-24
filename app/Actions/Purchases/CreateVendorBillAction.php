@@ -4,10 +4,12 @@ namespace App\Actions\Purchases;
 
 use App\DataTransferObjects\Purchases\CreateVendorBillDTO;
 use App\Models\Company;
+use App\Models\PurchaseOrder;
 use App\Models\VendorBill;
 use App\Services\Accounting\LockDateService;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\ValidationException;
 
 class CreateVendorBillAction
 {
@@ -20,11 +22,17 @@ class CreateVendorBillAction
     {
         $this->lockDateService->enforce(Company::findOrFail($createVendorBillDTO->company_id), Carbon::parse($createVendorBillDTO->bill_date));
 
+        // Validate purchase order if provided
+        if ($createVendorBillDTO->purchase_order_id) {
+            $this->validatePurchaseOrder($createVendorBillDTO);
+        }
+
         return DB::transaction(function () use ($createVendorBillDTO) {
             $vendorBill = VendorBill::create([
                 'company_id' => $createVendorBillDTO->company_id,
                 'vendor_id' => $createVendorBillDTO->vendor_id,
                 'currency_id' => $createVendorBillDTO->currency_id,
+                'purchase_order_id' => $createVendorBillDTO->purchase_order_id,
                 'bill_reference' => $createVendorBillDTO->bill_reference,
                 'bill_date' => $createVendorBillDTO->bill_date,
                 'accounting_date' => $createVendorBillDTO->accounting_date,
@@ -51,5 +59,47 @@ class CreateVendorBillAction
 
             return $freshVendorBill;
         });
+    }
+
+    /**
+     * Validate that the purchase order is compatible with the vendor bill.
+     */
+    private function validatePurchaseOrder(CreateVendorBillDTO $createVendorBillDTO): void
+    {
+        $purchaseOrder = PurchaseOrder::find($createVendorBillDTO->purchase_order_id);
+
+        if (!$purchaseOrder) {
+            throw ValidationException::withMessages([
+                'purchase_order_id' => 'The selected purchase order does not exist.',
+            ]);
+        }
+
+        // Validate that the purchase order belongs to the same company
+        if ($purchaseOrder->company_id !== $createVendorBillDTO->company_id) {
+            throw ValidationException::withMessages([
+                'purchase_order_id' => 'The purchase order does not belong to the same company.',
+            ]);
+        }
+
+        // Validate that the vendor matches
+        if ($purchaseOrder->vendor_id !== $createVendorBillDTO->vendor_id) {
+            throw ValidationException::withMessages([
+                'purchase_order_id' => 'The purchase order vendor does not match the bill vendor.',
+            ]);
+        }
+
+        // Validate that the currency matches
+        if ($purchaseOrder->currency_id !== $createVendorBillDTO->currency_id) {
+            throw ValidationException::withMessages([
+                'purchase_order_id' => 'The purchase order currency does not match the bill currency.',
+            ]);
+        }
+
+        // Validate that the purchase order status allows billing
+        if (!$purchaseOrder->status->canCreateBill()) {
+            throw ValidationException::withMessages([
+                'purchase_order_id' => 'The purchase order status does not allow creating bills.',
+            ]);
+        }
     }
 }

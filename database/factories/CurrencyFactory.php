@@ -17,14 +17,13 @@ class CurrencyFactory extends Factory
      */
     public function definition(): array
     {
-        static $currencies = ['USD', 'EUR', 'GBP', 'JPY', 'CAD', 'AUD', 'CHF', 'CNY', 'SEK', 'NZD'];
-        static $counter = 0;
+        $currencies = ['USD', 'EUR', 'GBP', 'JPY', 'CAD', 'AUD', 'CHF', 'CNY', 'SEK', 'NZD'];
 
-        $currencyCode = $currencies[$counter % count($currencies)];
-        $counter++;
+        // Use random selection instead of static counter to avoid parallel execution conflicts
+        $currencyCode = $this->faker->randomElement($currencies);
 
         return [
-            'name' => $currencyCode.' Currency',
+            'name' => $currencyCode . ' Currency',
             'code' => $currencyCode,
             'symbol' => '$',
             'decimal_places' => 2,
@@ -42,5 +41,19 @@ class CurrencyFactory extends Factory
                 $currency->save();
             }
         });
+    }
+
+    /**
+     * Create a currency with firstOrCreate to avoid duplicates in parallel tests
+     */
+    public function createSafely(array $attributes = []): Currency
+    {
+        $definition = $this->definition();
+        $mergedAttributes = array_merge($definition, $attributes);
+
+        return Currency::firstOrCreate(
+            ['code' => $mergedAttributes['code']],
+            $mergedAttributes
+        );
     }
 }
