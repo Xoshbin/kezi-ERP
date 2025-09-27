@@ -3,7 +3,6 @@
 namespace Modules\Foundation\Database\Factories;
 
 use App\Models\Company;
-use App\Models\Currency;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\Factory;
 

@@ -2,8 +2,6 @@
 
 namespace Modules\Accounting\Observers;
 
-use App\Models\Account;
-
 class AccountObserver
 {
     /**

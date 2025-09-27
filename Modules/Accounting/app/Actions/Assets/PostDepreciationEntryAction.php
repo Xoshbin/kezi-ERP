@@ -4,7 +4,6 @@ namespace Modules\Accounting\Actions\Assets;
 
 use App\Actions\Accounting\CreateJournalEntryForDepreciationAction;
 use App\Enums\Assets\DepreciationEntryStatus;
-use App\Models\DepreciationEntry;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
 

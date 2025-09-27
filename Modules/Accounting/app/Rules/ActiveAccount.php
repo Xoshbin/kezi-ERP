@@ -2,7 +2,6 @@
 
 namespace Modules\Accounting\Rules;
 
-use App\Models\Account;
 use Closure;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Translation\PotentiallyTranslatedString;

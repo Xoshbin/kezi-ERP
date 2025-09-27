@@ -3,7 +3,6 @@
 namespace Modules\Inventory\Listeners\Inventory;
 
 use App\Enums\Inventory\StockMoveType;
-use App\Events\Inventory\StockMoveConfirmed;
 use App\Jobs\Inventory\ProcessIncomingStockJob;
 use App\Jobs\Inventory\ProcessOutgoingStockJob;
 

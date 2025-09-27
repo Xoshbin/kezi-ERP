@@ -5,7 +5,6 @@ namespace Modules\Accounting\Filament\Clusters\Accounting\Resources\Invoices\Rel
 use App\Enums\Adjustments\AdjustmentDocumentStatus;
 use App\Enums\Adjustments\AdjustmentDocumentType;
 use App\Filament\Tables\Columns\MoneyColumn;
-use App\Models\AdjustmentDocument;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\CreateAction;
 use Filament\Actions\DeleteAction;
@@ -127,11 +126,11 @@ class AdjustmentDocumentsRelationManager extends RelationManager
                     ->date()
                     ->sortable(),
 
-                MoneyColumn::make('total_amount')
+                \Modules\Foundation\App\Filament\Tables\Columns\MoneyColumn::make('total_amount')
                     ->label(__('invoice.adjustment_documents_relation_manager.total_amount'))
                     ->sortable(),
 
-                MoneyColumn::make('total_tax')
+                \Modules\Foundation\App\Filament\Tables\Columns\MoneyColumn::make('total_tax')
                     ->label(__('invoice.adjustment_documents_relation_manager.total_tax'))
                     ->sortable(),
 

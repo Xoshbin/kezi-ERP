@@ -2,15 +2,14 @@
 
 namespace Modules\Inventory\Services\Inventory;
 
-use App\Models\Product;
-use App\Models\StockMove;
+use App\DataTransferObjects\Inventory\InventoryMovementValidationResult;
 use App\Enums\Inventory\StockMoveType;
 use App\Exceptions\Inventory\InsufficientCostInformationException;
-use App\DataTransferObjects\Inventory\InventoryMovementValidationResult;
+use App\Models\StockMove;
 
 /**
  * Service for validating inventory movements before execution
- * 
+ *
  * Ensures all business rules and cost requirements are met before
  * allowing inventory movements to proceed.
  */
@@ -33,7 +32,7 @@ class InventoryMovementValidationService
         StockMoveType $moveType,
         float $quantity
     ): InventoryMovementValidationResult {
-        
+
         $errors = [];
         $warnings = [];
         $requirements = [];
@@ -49,7 +48,7 @@ class InventoryMovementValidationService
             if (!$this->costAnalysisService->isReadyForInventoryMovements($product)) {
                 $errors[] = 'Product lacks sufficient cost information for inventory movements';
                 $requirements = $this->costAnalysisService->getMinimumRequirements($product);
-                
+
                 return InventoryMovementValidationResult::failed($errors, $warnings, $requirements);
             }
         }
@@ -59,7 +58,7 @@ class InventoryMovementValidationService
             if ($product->quantity_on_hand < $quantity) {
                 $errors[] = "Insufficient stock: Available {$product->quantity_on_hand}, Requested {$quantity}";
             }
-            
+
             if (!$this->costAnalysisService->isReadyForInventoryMovements($product)) {
                 $errors[] = 'Product lacks cost information required for COGS calculation';
                 $requirements = $this->costAnalysisService->getMinimumRequirements($product);

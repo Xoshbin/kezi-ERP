@@ -18,7 +18,6 @@ use App\Filament\Clusters\Accounting\Resources\VendorBills\Widgets\SettlementSum
 use App\Filament\Forms\Components\MoneyInput;
 use App\Models\Company;
 use App\Models\Journal;
-use App\Models\VendorBill;
 use App\Models\VendorBillAttachment;
 use App\Services\PaymentService;
 use App\Services\VendorBillService;
@@ -189,7 +188,7 @@ class EditVendorBill extends EditRecord
                         ->label('Payment Date')
                         ->default(now())
                         ->required(),
-                    MoneyInput::make('amount')
+                    \Modules\Foundation\App\Filament\Forms\Components\MoneyInput::make('amount')
                         ->label('Amount')
                         ->currencyField('currency_id')
                         ->default(fn (\Modules\Purchase\Models\VendorBill $record) => $record->getRemainingAmount())
@@ -259,7 +258,7 @@ class EditVendorBill extends EditRecord
                     $this->redirect(VendorBillResource::getUrl('index'));
                 }),
 
-            DocsAction::make('vendor-bills'),
+            \Modules\Foundation\App\Filament\Actions\DocsAction::make('vendor-bills'),
         ];
     }
 

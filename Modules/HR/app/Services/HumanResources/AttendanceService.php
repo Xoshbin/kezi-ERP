@@ -5,7 +5,6 @@ namespace Modules\HR\Services\HumanResources;
 use App\Actions\HumanResources\CreateAttendanceAction;
 use App\DataTransferObjects\HumanResources\CreateAttendanceDTO;
 use App\Models\Attendance;
-use App\Models\Employee;
 use App\Models\User;
 use Carbon\Carbon;
 use Exception;

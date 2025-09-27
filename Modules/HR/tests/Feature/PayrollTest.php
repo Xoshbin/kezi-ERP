@@ -1,9 +1,6 @@
 <?php
 
 use App\Models\Company;
-use App\Models\Currency;
-use App\Models\Employee;
-use App\Models\Payroll;
 use Brick\Money\Money;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 

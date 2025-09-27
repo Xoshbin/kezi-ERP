@@ -4,8 +4,6 @@ namespace Modules\Accounting\Actions\Assets;
 
 use App\Enums\Assets\DepreciationEntryStatus;
 use App\Enums\Assets\DepreciationMethod;
-use App\Models\Asset;
-use App\Models\DepreciationEntry;
 use Brick\Math\RoundingMode;
 use Illuminate\Support\Facades\DB;
 

@@ -13,7 +13,6 @@ use App\Filament\Clusters\Accounting\Resources\LoanAgreements\RelationManagers\S
 use App\Filament\Clusters\Accounting\Resources\LoanAgreements\Schemas\LoanAgreementForm;
 use App\Filament\Clusters\Accounting\Resources\LoanAgreements\Schemas\LoanAgreementInfolist;
 use App\Filament\Clusters\Accounting\Resources\LoanAgreements\Tables\LoanAgreementsTable;
-use App\Models\LoanAgreement;
 use BackedEnum;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;

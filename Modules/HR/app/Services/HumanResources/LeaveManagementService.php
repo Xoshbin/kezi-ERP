@@ -4,7 +4,6 @@ namespace Modules\HR\Services\HumanResources;
 
 use App\Actions\HumanResources\CreateLeaveRequestAction;
 use App\DataTransferObjects\HumanResources\CreateLeaveRequestDTO;
-use App\Models\Employee;
 use App\Models\LeaveRequest;
 use App\Models\LeaveType;
 use App\Models\User;

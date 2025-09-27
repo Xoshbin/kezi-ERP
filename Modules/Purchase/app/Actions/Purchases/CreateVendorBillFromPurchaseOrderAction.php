@@ -6,7 +6,6 @@ use App\DataTransferObjects\Purchases\CreateVendorBillDTO;
 use App\DataTransferObjects\Purchases\CreateVendorBillFromPurchaseOrderDTO;
 use App\DataTransferObjects\Purchases\CreateVendorBillLineDTO;
 use App\Models\PurchaseOrder;
-use App\Models\VendorBill;
 use Illuminate\Validation\ValidationException;
 
 class CreateVendorBillFromPurchaseOrderAction

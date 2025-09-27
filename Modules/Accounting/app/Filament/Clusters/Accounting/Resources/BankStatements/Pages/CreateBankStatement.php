@@ -7,7 +7,6 @@ use App\DataTransferObjects\Accounting\CreateBankStatementDTO;
 use App\DataTransferObjects\Accounting\CreateBankStatementLineDTO;
 use App\Filament\Actions\DocsAction;
 use App\Filament\Clusters\Accounting\Resources\BankStatements\BankStatementResource;
-use App\Models\Currency;
 use Brick\Money\Money;
 use Filament\Facades\Filament;
 use Filament\Resources\Pages\CreateRecord;
@@ -93,7 +92,7 @@ class CreateBankStatement extends CreateRecord
     protected function getHeaderActions(): array
     {
         return [
-            DocsAction::make('bank-statements'),
+            \Modules\Foundation\App\Filament\Actions\DocsAction::make('bank-statements'),
         ];
     }
 }

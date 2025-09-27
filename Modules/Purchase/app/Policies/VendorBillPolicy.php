@@ -3,7 +3,6 @@
 namespace Modules\Purchase\Policies;
 
 use App\Models\User;
-use App\Models\VendorBill;
 
 class VendorBillPolicy
 {

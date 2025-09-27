@@ -12,8 +12,6 @@ use App\Enums\Partners\PartnerType;
 use App\Enums\Products\ProductType;
 use App\Enums\Sales\InvoiceStatus;
 use App\Enums\Sales\SalesOrderStatus;
-use App\Models\Account;
-use App\Models\Product;
 use App\Models\SalesOrder;
 use App\Services\InvoiceService;
 use Brick\Money\Money;

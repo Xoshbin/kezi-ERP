@@ -4,7 +4,6 @@ namespace Modules\Purchase\Database\Factories;
 
 use App\Models\Company;
 use App\Models\JournalEntry;
-use App\Models\Partner;
 use App\Models\VendorBill;
 use App\Models\VendorBillLine;
 use Brick\Money\Money;

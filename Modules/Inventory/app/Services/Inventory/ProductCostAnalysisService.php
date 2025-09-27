@@ -2,10 +2,9 @@
 
 namespace Modules\Inventory\Services\Inventory;
 
-use App\Models\Product;
-use App\Models\VendorBillLine;
 use App\Enums\Inventory\ValuationMethod;
 use App\Enums\Purchases\VendorBillStatus;
+use App\Models\VendorBillLine;
 
 /**
  * Service for analyzing product cost information and providing contextual guidance

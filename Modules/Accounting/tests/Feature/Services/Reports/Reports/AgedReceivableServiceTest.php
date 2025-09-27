@@ -4,9 +4,6 @@ namespace Modules\Accounting\Tests\Feature\Services\Reports;
 
 use App\Enums\Payments\PaymentStatus;
 use App\Enums\Sales\InvoiceStatus;
-use App\Models\Invoice;
-use App\Models\Partner;
-use App\Models\Payment;
 use App\Models\PaymentDocumentLink;
 use App\Services\Reports\AgedReceivableService;
 use Brick\Money\Money;

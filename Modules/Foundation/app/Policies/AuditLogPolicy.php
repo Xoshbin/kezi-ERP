@@ -2,7 +2,6 @@
 
 namespace Modules\Foundation\Policies;
 
-use App\Models\AuditLog;
 use App\Models\User;
 
 class AuditLogPolicy

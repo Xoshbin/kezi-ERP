@@ -3,7 +3,6 @@
 namespace Modules\Inventory\Database\Factories;
 
 use App\Models\InventoryCostLayer;
-use App\Models\Product;
 use Brick\Money\Money;
 use Illuminate\Database\Eloquent\Factories\Factory;
 

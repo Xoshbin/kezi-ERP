@@ -3,7 +3,6 @@
 namespace Modules\Foundation\Tests\Feature;
 
 use App\Enums\Accounting\TaxType;
-use App\Models\Account;
 use App\Models\Company;
 use App\Models\Tax;
 use Filament\Facades\Filament;

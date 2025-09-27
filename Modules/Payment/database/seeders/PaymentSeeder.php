@@ -3,11 +3,8 @@
 namespace Modules\Payment\Database\Seeders;
 
 use App\Models\Company;
-use App\Models\Invoice;
 use App\Models\Journal;
-use App\Models\Payment;
 use App\Models\PaymentDocumentLink;
-use App\Models\VendorBill;
 use Brick\Money\Money;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Date;

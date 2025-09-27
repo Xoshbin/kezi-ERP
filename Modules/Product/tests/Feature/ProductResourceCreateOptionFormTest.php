@@ -2,7 +2,6 @@
 
 use App\Enums\Accounting\AccountType;
 use App\Filament\Clusters\Inventory\Resources\Products\Pages\CreateProduct;
-use App\Models\Account;
 use App\Models\Company;
 use App\Models\User;
 use Livewire\Livewire;

@@ -3,8 +3,6 @@
 namespace Modules\HR\Actions\HumanResources;
 
 use App\DataTransferObjects\HumanResources\PayrollLineDTO;
-use App\Models\Currency;
-use App\Models\Payroll;
 use App\Models\PayrollLine;
 use Brick\Money\Money;
 

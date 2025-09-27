@@ -4,7 +4,6 @@ namespace Modules\HR\Actions\HumanResources;
 
 use App\DataTransferObjects\HumanResources\CreateEmployeeDTO;
 use App\Models\Company;
-use App\Models\Employee;
 use Illuminate\Support\Facades\DB;
 
 class CreateEmployeeAction

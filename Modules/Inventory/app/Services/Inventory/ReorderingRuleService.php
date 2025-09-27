@@ -7,7 +7,6 @@ use App\Models\ReorderingRule;
 use App\Models\ReplenishmentSuggestion;
 use App\Models\StockQuant;
 use Carbon\Carbon;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 /**

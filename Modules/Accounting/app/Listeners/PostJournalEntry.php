@@ -2,10 +2,6 @@
 
 namespace Modules\Accounting\Listeners;
 
-use App\Events\AdjustmentDocumentPosted;
-use App\Events\InvoiceConfirmed;
-use App\Events\PaymentConfirmed;
-use App\Events\VendorBillConfirmed;
 use App\Services\JournalEntryService;
 use Illuminate\Events\Dispatcher;
 

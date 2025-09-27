@@ -1,8 +1,6 @@
 <?php
 
 use App\Enums\Purchases\PurchaseOrderStatus;
-use App\Models\Partner;
-use App\Models\Product;
 use App\Models\PurchaseOrder;
 use App\Models\PurchaseOrderLine;
 use Tests\Traits\WithConfiguredCompany;

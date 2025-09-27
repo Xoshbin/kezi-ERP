@@ -16,8 +16,10 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\Auth; // For explicit exception handling for immutability violations
+use Illuminate\Support\Facades\Auth;
 use RuntimeException;
+
+// For explicit exception handling for immutability violations
 
 /**
  * Class JournalEntry

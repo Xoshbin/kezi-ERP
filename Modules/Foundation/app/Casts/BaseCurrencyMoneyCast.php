@@ -2,7 +2,6 @@
 
 namespace Modules\Foundation\Casts;
 
-use App\Models\Currency;
 use Exception;
 use Filament\Facades\Filament;
 use Illuminate\Database\Eloquent\Model;

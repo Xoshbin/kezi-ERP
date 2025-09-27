@@ -2,7 +2,6 @@
 
 namespace Modules\Foundation\Filament\Clusters\Settings\Resources\CurrencyRates\Tables;
 
-use App\Models\Currency;
 use Carbon\Carbon;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;

@@ -2,8 +2,6 @@
 
 use App\Enums\Purchases\VendorBillStatus;
 use App\Enums\Settings\NumberingType;
-use App\Models\User;
-use App\Models\VendorBill;
 use App\Services\VendorBillService;
 use Tests\Traits\WithConfiguredCompany;
 

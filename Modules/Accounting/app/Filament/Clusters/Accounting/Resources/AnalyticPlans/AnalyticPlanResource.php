@@ -8,7 +8,6 @@ use App\Filament\Clusters\Accounting\Resources\AnalyticPlans\Pages\EditAnalyticP
 use App\Filament\Clusters\Accounting\Resources\AnalyticPlans\Pages\ListAnalyticPlans;
 use App\Filament\Clusters\Accounting\Resources\AnalyticPlans\RelationManagers\AnalyticAccountsRelationManager;
 use App\Filament\Clusters\Accounting\Resources\AnalyticPlans\RelationManagers\BudgetsRelationManager;
-use App\Models\AnalyticPlan;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;

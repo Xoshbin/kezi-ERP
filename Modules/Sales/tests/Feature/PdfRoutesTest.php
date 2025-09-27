@@ -2,12 +2,7 @@
 
 use App\Enums\Partners\PartnerType;
 use App\Enums\Sales\InvoiceStatus;
-use App\Models\Account;
 use App\Models\Company;
-use App\Models\Currency;
-use App\Models\Invoice;
-use App\Models\InvoiceLine;
-use App\Models\Partner;
 use App\Models\User;
 
 beforeEach(function () {

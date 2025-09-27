@@ -4,7 +4,6 @@ namespace Modules\Inventory\Filament\Clusters\Inventory\Resources\Products\Relat
 
 use App\Enums\Inventory\ReorderingRoute;
 use App\Models\ReorderingRule;
-use App\Models\StockLocation;
 use Filament\Actions\CreateAction;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\EditAction;

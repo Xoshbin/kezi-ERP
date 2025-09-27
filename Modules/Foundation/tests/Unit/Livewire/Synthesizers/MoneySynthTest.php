@@ -8,12 +8,12 @@ use PHPUnit\Framework\TestCase;
 
 class MoneySynthTest extends TestCase
 {
-    private MoneySynth $synthesizer;
+    private \Modules\Foundation\App\Livewire\Synthesizers\MoneySynth $synthesizer;
 
     protected function setUp(): void
     {
         parent::setUp();
-        $this->synthesizer = new MoneySynth();
+        $this->synthesizer = new \Modules\Foundation\App\Livewire\Synthesizers\MoneySynth();
     }
 
     /** @test */
@@ -21,10 +21,10 @@ class MoneySynthTest extends TestCase
     {
         $money = Money::of(100, 'USD');
         
-        $this->assertTrue(MoneySynth::match($money));
-        $this->assertFalse(MoneySynth::match('100'));
-        $this->assertFalse(MoneySynth::match(100));
-        $this->assertFalse(MoneySynth::match([]));
+        $this->assertTrue(\Modules\Foundation\App\Livewire\Synthesizers\MoneySynth::match($money));
+        $this->assertFalse(\Modules\Foundation\App\Livewire\Synthesizers\MoneySynth::match('100'));
+        $this->assertFalse(\Modules\Foundation\App\Livewire\Synthesizers\MoneySynth::match(100));
+        $this->assertFalse(\Modules\Foundation\App\Livewire\Synthesizers\MoneySynth::match([]));
     }
 
     /** @test */

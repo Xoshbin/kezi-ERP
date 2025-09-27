@@ -4,7 +4,6 @@ namespace Modules\Payment\Database\Factories;
 
 use App\Enums\PaymentInstallments\InstallmentStatus;
 use App\Models\Company;
-use App\Models\Invoice;
 use App\Models\PaymentInstallment;
 use Illuminate\Database\Eloquent\Factories\Factory;
 

@@ -1,8 +1,5 @@
 <?php
 
-use App\Models\Currency;
-use App\Models\Invoice;
-use App\Models\InvoiceLine;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 uses(RefreshDatabase::class);

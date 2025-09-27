@@ -3,7 +3,6 @@
 namespace Modules\Purchase\Database\Factories;
 
 use App\Models\User;
-use App\Models\VendorBill;
 use App\Models\VendorBillAttachment;
 use Illuminate\Database\Eloquent\Factories\Factory;
 

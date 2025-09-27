@@ -5,12 +5,9 @@ use App\Filament\Clusters\Settings\Resources\CurrencyRates\Pages\CreateCurrencyR
 use App\Filament\Clusters\Settings\Resources\CurrencyRates\Pages\EditCurrencyRate;
 use App\Filament\Clusters\Settings\Resources\CurrencyRates\Pages\ListCurrencyRates;
 use App\Filament\Clusters\Settings\SettingsCluster;
-use App\Models\Currency;
-use App\Models\CurrencyRate;
 use Filament\Actions\DeleteAction;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\Traits\WithConfiguredCompany;
-
 use function Pest\Livewire\livewire;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);

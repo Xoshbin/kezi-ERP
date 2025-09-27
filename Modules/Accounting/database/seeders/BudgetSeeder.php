@@ -2,9 +2,6 @@
 
 namespace Modules\Accounting\Database\Seeders;
 
-use App\Models\Account;
-use App\Models\AnalyticPlan;
-use App\Models\Budget;
 use App\Models\Company;
 use Exception;
 use Illuminate\Database\Seeder;

@@ -6,8 +6,6 @@ use App\Enums\Accounting\TaxType;
 use App\Enums\Products\ProductType;
 use App\Enums\Sales\SalesOrderStatus;
 use App\Filament\Forms\Components\MoneyInput;
-use App\Models\Account;
-use App\Models\Product;
 use App\Models\SalesOrder;
 use App\Models\Tax;
 use Filament\Actions\Action;
@@ -15,11 +13,9 @@ use Filament\Facades\Filament;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Repeater;
-use Filament\Forms\Components\Repeater\TableColumn;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
-use Filament\Forms\Components\Toggle;
+use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
@@ -202,7 +198,7 @@ class SalesOrderForm
                                     ->minValue(0.01)
                                     ->step(0.01),
 
-                                MoneyInput::make('unit_price')
+                                \Modules\Foundation\App\Filament\Forms\Components\MoneyInput::make('unit_price')
                                     ->label(__('sales_orders.fields.unit_price'))
                                     ->required(),
 

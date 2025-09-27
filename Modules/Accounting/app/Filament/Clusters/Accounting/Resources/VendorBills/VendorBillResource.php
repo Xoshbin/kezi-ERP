@@ -21,15 +21,9 @@ use App\Filament\Clusters\Accounting\Resources\VendorBills\RelationManagers\Adju
 use App\Filament\Clusters\Accounting\Resources\VendorBills\RelationManagers\PaymentsRelationManager;
 use App\Filament\Forms\Components\MoneyInput;
 use App\Filament\Tables\Columns\MoneyColumn;
-use App\Models\Account;
-use App\Models\AssetCategory;
 use App\Models\Company;
-use App\Models\Currency;
-use App\Models\CurrencyRate;
 use App\Models\Journal;
-use App\Models\Product;
 use App\Models\Tax;
-use App\Models\VendorBill;
 use App\Rules\NotInLockedPeriod;
 use App\Services\PaymentService;
 use BackedEnum;
@@ -345,7 +339,7 @@ class VendorBillResource extends Resource
                                 ->numeric()
                                 ->default(1)
                                 ->columnSpan(2),
-                            MoneyInput::make('unit_price')
+                            \Modules\Foundation\App\Filament\Forms\Components\MoneyInput::make('unit_price')
                                 ->label(__('vendor_bill.unit_price'))
                                 ->currencyField('../../currency_id')
                                 ->required()
@@ -490,13 +484,13 @@ class VendorBillResource extends Resource
                         ->disabled()
                         ->visible(fn(?\Modules\Purchase\Models\VendorBill $record) => $record && $record->exchange_rate_at_creation),
 
-                    MoneyInput::make('total_amount_company_currency')
+                    \Modules\Foundation\App\Filament\Forms\Components\MoneyInput::make('total_amount_company_currency')
                         ->label(__('vendor_bill.total_amount_company_currency'))
                         ->currencyField('../../company.currency_id')
                         ->disabled()
                         ->visible(fn(?\Modules\Purchase\Models\VendorBill $record) => $record && $record->total_amount_company_currency),
 
-                    MoneyInput::make('total_tax_company_currency')
+                    \Modules\Foundation\App\Filament\Forms\Components\MoneyInput::make('total_tax_company_currency')
                         ->label(__('vendor_bill.total_tax_company_currency'))
                         ->currencyField('../../company.currency_id')
                         ->disabled()
@@ -601,7 +595,7 @@ class VendorBillResource extends Resource
                     ->color(fn(\Modules\Foundation\Enums\Shared\PaymentState $state): string => $state->color()),
 
                 // Total Amount (critical financial information)
-                MoneyColumn::make('total_amount')
+                \Modules\Foundation\App\Filament\Tables\Columns\MoneyColumn::make('total_amount')
                     ->label(__('vendor_bill.total'))
                     ->sortable()
                     ->weight('bold')
@@ -626,7 +620,7 @@ class VendorBillResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->visible(fn($record) => $record && $record->exchange_rate_at_creation),
 
-                MoneyColumn::make('total_amount_company_currency')
+                \Modules\Foundation\App\Filament\Tables\Columns\MoneyColumn::make('total_amount_company_currency')
                     ->label(__('vendor_bill.total_amount_company_currency'))
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true)
@@ -640,7 +634,7 @@ class VendorBillResource extends Resource
                     ->toggleable(),
 
                 // Additional columns (hidden by default for cleaner view)
-                MoneyColumn::make('total_tax')
+                \Modules\Foundation\App\Filament\Tables\Columns\MoneyColumn::make('total_tax')
                     ->label(__('vendor_bill.tax'))
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
@@ -696,7 +690,7 @@ class VendorBillResource extends Resource
                             ->label(__('payment.form.payment_date'))
                             ->default(now())
                             ->required(),
-                        MoneyInput::make('amount')
+                        \Modules\Foundation\App\Filament\Forms\Components\MoneyInput::make('amount')
                             ->label(__('payment.form.amount'))
                             ->currencyField('currency_id')
                             ->default(fn(\Modules\Purchase\Models\VendorBill $record) => $record->getRemainingAmount())

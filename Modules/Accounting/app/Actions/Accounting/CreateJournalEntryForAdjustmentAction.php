@@ -4,7 +4,6 @@ namespace Modules\Accounting\Actions\Accounting;
 
 use App\DataTransferObjects\Accounting\CreateJournalEntryDTO;
 use App\DataTransferObjects\Accounting\CreateJournalEntryLineDTO;
-use App\Models\AdjustmentDocument;
 use App\Models\JournalEntry;
 use App\Models\User;
 use Brick\Money\Money;

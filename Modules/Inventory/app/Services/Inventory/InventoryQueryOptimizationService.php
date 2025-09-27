@@ -3,11 +3,7 @@
 namespace Modules\Inventory\Services\Inventory;
 
 use App\Models\Company;
-use App\Models\Product;
-use App\Models\StockLocation;
-use App\Models\StockMove;
 use App\Models\StockQuant;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;

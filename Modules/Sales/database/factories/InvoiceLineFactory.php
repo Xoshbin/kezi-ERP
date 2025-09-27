@@ -2,9 +2,6 @@
 
 namespace Modules\Sales\Database\Factories;
 
-use App\Models\Account;
-use App\Models\Invoice;
-use App\Models\Product;
 use Brick\Money\Money;
 use Illuminate\Database\Eloquent\Factories\Factory;
 

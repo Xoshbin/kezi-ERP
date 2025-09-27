@@ -3,7 +3,6 @@
 namespace Modules\Accounting\Filament\Clusters\Accounting\Resources\Invoices\Widgets;
 
 use App\Enums\Sales\InvoiceStatus;
-use App\Models\Invoice;
 use Brick\Money\Money;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;

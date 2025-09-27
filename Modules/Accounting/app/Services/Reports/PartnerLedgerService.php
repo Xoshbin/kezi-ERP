@@ -7,7 +7,6 @@ use App\DataTransferObjects\Reports\PartnerLedgerTransactionLineDTO;
 use App\Enums\Accounting\JournalType;
 use App\Models\Company;
 use App\Models\JournalEntryLine;
-use App\Models\Partner;
 use Brick\Money\Money;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;

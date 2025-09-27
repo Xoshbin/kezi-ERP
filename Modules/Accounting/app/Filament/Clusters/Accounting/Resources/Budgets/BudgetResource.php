@@ -7,7 +7,6 @@ use App\Filament\Clusters\Accounting\Resources\Budgets\Pages\CreateBudget;
 use App\Filament\Clusters\Accounting\Resources\Budgets\Pages\EditBudget;
 use App\Filament\Clusters\Accounting\Resources\Budgets\Pages\ListBudgets;
 use App\Filament\Clusters\Accounting\Resources\Budgets\RelationManagers\BudgetLinesRelationManager;
-use App\Models\Budget;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;

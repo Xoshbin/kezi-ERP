@@ -8,10 +8,6 @@ use App\Enums\Loans\ScheduleMethod;
 use App\Enums\Partners\PartnerType;
 use App\Filament\Forms\Components\MoneyInput;
 use App\Models\Company;
-use App\Models\Currency;
-use App\Models\CurrencyRate;
-use App\Models\LoanAgreement;
-use App\Models\Partner;
 use App\Rules\NotInLockedPeriod;
 use Filament\Actions\Action;
 use Filament\Facades\Filament;
@@ -166,13 +162,13 @@ class LoanAgreementForm
                                 })
                                 ->columnSpanFull(),
 
-                            MoneyInput::make('principal_amount')
+                            \Modules\Foundation\App\Filament\Forms\Components\MoneyInput::make('principal_amount')
                                 ->label(__('loan.form.principal_amount') ?: 'Principal Amount')
                                 ->currencyField('currency_id')
                                 ->required()
                                 ->columnSpanFull(),
 
-                            MoneyInput::make('outstanding_principal')
+                            \Modules\Foundation\App\Filament\Forms\Components\MoneyInput::make('outstanding_principal')
                                 ->label(__('loan.form.outstanding_principal') ?: 'Outstanding Principal')
                                 ->currencyField('currency_id')
                                 ->disabled()

@@ -2,23 +2,16 @@
 
 namespace Modules\Foundation\Tests\Feature\General;
 
-use App\Models\User;
-use RuntimeException;
-use Brick\Money\Money;
-use App\Models\Account;
-use App\Models\Invoice;
-use App\Models\Partner;
-use App\Models\Product;
-use App\Models\VendorBill;
-use App\Models\InvoiceLine;
-use App\Models\JournalEntry;
-use App\Enums\Sales\InvoiceStatus;
-use Illuminate\Database\QueryException;
-use Tests\Traits\WithConfiguredCompany;
-use App\Exceptions\DeletionNotAllowedException;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use App\Actions\Purchases\CreateVendorBillLineAction;
 use App\DataTransferObjects\Purchases\CreateVendorBillLineDTO;
+use App\Enums\Sales\InvoiceStatus;
+use App\Exceptions\DeletionNotAllowedException;
+use App\Models\JournalEntry;
+use Brick\Money\Money;
+use Illuminate\Database\QueryException;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use RuntimeException;
+use Tests\Traits\WithConfiguredCompany;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);
 

@@ -6,7 +6,6 @@ use App\DataTransferObjects\Purchases\UpdateVendorBillDTO;
 use App\Enums\Purchases\VendorBillStatus;
 use App\Exceptions\UpdateNotAllowedException;
 use App\Models\Tax;
-use App\Models\VendorBill;
 use App\Models\VendorBillLine;
 use App\Services\Accounting\LockDateService;
 use Brick\Math\RoundingMode;

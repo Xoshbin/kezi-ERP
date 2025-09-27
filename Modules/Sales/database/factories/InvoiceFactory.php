@@ -4,9 +4,6 @@ namespace Modules\Sales\Database\Factories;
 
 use App\Enums\Sales\InvoiceStatus;
 use App\Models\Company;
-use App\Models\Invoice;
-use App\Models\InvoiceLine;
-use App\Models\Partner;
 use Brick\Money\Money;
 use Illuminate\Database\Eloquent\Factories\Factory;
 

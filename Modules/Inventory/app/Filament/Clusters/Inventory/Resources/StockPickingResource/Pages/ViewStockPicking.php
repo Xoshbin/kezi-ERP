@@ -12,10 +12,10 @@ use App\Filament\Clusters\Inventory\Resources\StockPickingResource\Actions\Valid
 use App\Models\StockPicking;
 use Filament\Actions\EditAction;
 use Filament\Infolists\Components\TextEntry;
+use Filament\Resources\Pages\ViewRecord;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
-use Filament\Resources\Pages\ViewRecord;
 
 class ViewStockPicking extends ViewRecord
 {

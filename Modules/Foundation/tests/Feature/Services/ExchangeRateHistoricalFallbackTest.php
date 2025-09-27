@@ -2,12 +2,6 @@
 
 use App\Enums\Purchases\VendorBillStatus;
 use App\Enums\Sales\InvoiceStatus;
-use App\Models\Currency;
-use App\Models\CurrencyRate;
-use App\Models\Invoice;
-use App\Models\Partner;
-use App\Models\Product;
-use App\Models\VendorBill;
 use App\Services\InvoiceService;
 use App\Services\VendorBillService;
 use Brick\Money\Money;
@@ -167,7 +161,7 @@ describe('Exchange Rate Historical Fallback', function () {
 
         // Should use rate of 1.0 for base currency
         expect((float) $vendorBill->exchange_rate_at_creation)->toBe(1.0);
-        
+
         // Amounts should remain the same
         expect($vendorBill->total_amount_company_currency->getAmount()->toFloat())->toBe(100000.0);
         expect($vendorBill->total_tax_company_currency->getAmount()->toFloat())->toBe(10000.0);

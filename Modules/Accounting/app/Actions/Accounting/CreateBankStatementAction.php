@@ -3,7 +3,6 @@
 namespace Modules\Accounting\Actions\Accounting;
 
 use App\DataTransferObjects\Accounting\CreateBankStatementDTO;
-use App\Models\BankStatement;
 use Illuminate\Support\Facades\DB;
 
 class CreateBankStatementAction

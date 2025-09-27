@@ -3,7 +3,6 @@
 namespace Modules\Accounting\Services;
 
 use App\Exceptions\DeletionNotAllowedException;
-use App\Models\Account;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 

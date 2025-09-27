@@ -7,9 +7,6 @@ use App\DataTransferObjects\Accounting\UpdateBankStatementDTO;
 use App\DataTransferObjects\Accounting\UpdateBankStatementLineDTO;
 use App\Filament\Actions\DocsAction;
 use App\Filament\Clusters\Accounting\Resources\BankStatements\BankStatementResource;
-use App\Models\BankStatement;
-use App\Models\BankStatementLine;
-use App\Models\Currency;
 use Brick\Money\Money;
 use Filament\Actions\DeleteAction;
 use Filament\Resources\Pages\EditRecord;
@@ -28,7 +25,7 @@ class EditBankStatement extends EditRecord
     {
         return [
             DeleteAction::make(),
-            DocsAction::make('bank-statements'),
+            \Modules\Foundation\App\Filament\Actions\DocsAction::make('bank-statements'),
         ];
     }
 

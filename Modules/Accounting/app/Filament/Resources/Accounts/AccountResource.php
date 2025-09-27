@@ -8,7 +8,6 @@ use App\Filament\Clusters\Settings\Resources\Accounts\Pages\EditAccount;
 use App\Filament\Clusters\Settings\Resources\Accounts\Pages\ListAccounts;
 use App\Filament\Clusters\Settings\Resources\Accounts\RelationManagers\JournalEntryLinesRelationManager;
 use App\Filament\Clusters\Settings\SettingsCluster;
-use App\Models\Account;
 use BackedEnum;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;

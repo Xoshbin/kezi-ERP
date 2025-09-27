@@ -6,7 +6,6 @@ use App\DataTransferObjects\Accounting\CreateJournalEntryDTO;
 use App\DataTransferObjects\Accounting\CreateJournalEntryLineDTO;
 use App\Enums\Payments\PaymentType;
 use App\Models\JournalEntry;
-use App\Models\Payment;
 use App\Models\User;
 use Brick\Math\RoundingMode;
 use Brick\Money\Money;

@@ -3,7 +3,6 @@
 namespace Modules\Accounting\Database\Seeders;
 
 use App\Enums\Accounting\AccountType;
-use App\Models\Account;
 use App\Models\Company;
 use Exception;
 use Illuminate\Database\Seeder;

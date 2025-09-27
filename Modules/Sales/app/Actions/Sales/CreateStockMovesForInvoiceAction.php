@@ -11,8 +11,6 @@ use App\Enums\Inventory\StockMoveType;
 use App\Enums\Inventory\StockPickingState;
 use App\Enums\Inventory\StockPickingType;
 use App\Enums\Products\ProductType;
-use App\Events\Inventory\StockMoveConfirmed;
-use App\Models\Invoice;
 use App\Models\StockLocation;
 use App\Models\StockPicking;
 use App\Models\User;

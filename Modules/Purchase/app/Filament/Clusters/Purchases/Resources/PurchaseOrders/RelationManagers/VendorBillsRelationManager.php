@@ -5,7 +5,6 @@ namespace Modules\Purchase\Filament\Clusters\Purchases\Resources\PurchaseOrders\
 use App\Enums\Purchases\VendorBillStatus;
 use App\Enums\Shared\PaymentState;
 use App\Filament\Tables\Columns\MoneyColumn;
-use App\Models\VendorBill;
 use Filament\Actions\CreateAction;
 use Filament\Facades\Filament;
 use Filament\Resources\RelationManagers\RelationManager;
@@ -79,7 +78,7 @@ class VendorBillsRelationManager extends RelationManager
                     ->badge()
                     ->color(fn(\Modules\Foundation\Enums\Shared\PaymentState $state): string => $state->color()),
 
-                MoneyColumn::make('total_amount')
+                \Modules\Foundation\App\Filament\Tables\Columns\MoneyColumn::make('total_amount')
                     ->label(__('vendor_bill.total_amount'))
                     ->sortable(),
 

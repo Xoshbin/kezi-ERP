@@ -2,12 +2,8 @@
 
 use App\Enums\Sales\InvoiceStatus;
 use App\Filament\Clusters\Accounting\Resources\Invoices\InvoiceResource;
-use App\Models\Invoice;
-use App\Models\Partner;
-use App\Models\Product;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\Traits\WithConfiguredCompany;
-
 use function Pest\Livewire\livewire;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);

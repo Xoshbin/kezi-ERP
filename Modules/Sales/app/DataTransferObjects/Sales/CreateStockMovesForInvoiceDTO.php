@@ -2,7 +2,6 @@
 
 namespace Modules\Sales\DataTransferObjects\Sales;
 
-use App\Models\Invoice;
 use App\Models\User;
 
 readonly class CreateStockMovesForInvoiceDTO

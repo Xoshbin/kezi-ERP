@@ -3,9 +3,7 @@
 namespace Modules\Accounting\Actions\Accounting;
 
 use App\DataTransferObjects\Accounting\CreateJournalEntryDTO;
-use App\Models\Account;
 use App\Models\Company;
-use App\Models\Currency;
 use App\Models\JournalEntry;
 use App\Models\JournalEntryLine;
 use App\Services\Accounting\LockDateService;

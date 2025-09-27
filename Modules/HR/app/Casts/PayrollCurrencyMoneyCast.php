@@ -2,7 +2,6 @@
 
 namespace Modules\HR\Casts;
 
-use App\Models\Currency;
 use Illuminate\Database\Eloquent\Model;
 use InvalidArgumentException;
 

@@ -16,10 +16,7 @@ use App\Filament\Clusters\Accounting\Resources\Payments\RelationManagers\VendorB
 use App\Filament\Forms\Components\MoneyInput;
 use App\Filament\Tables\Columns\MoneyColumn;
 use App\Models\Company;
-use App\Models\Currency;
 use App\Models\Journal;
-use App\Models\Partner;
-use App\Models\Payment;
 use App\Services\PaymentService;
 use BackedEnum;
 use Filament\Actions\BulkActionGroup;
@@ -104,7 +101,7 @@ class PaymentResource extends Resource
                                 ->required()
                                 ->columnSpanFull(),
 
-                            MoneyInput::make('amount')
+                            \Modules\Foundation\App\Filament\Forms\Components\MoneyInput::make('amount')
                                 ->label(__('payment.form.amount'))
                                 ->currencyField('currency_id')
                                 ->required()
@@ -245,7 +242,7 @@ class PaymentResource extends Resource
                     ->sortable(),
 
                 // Amount (critical financial information)
-                MoneyColumn::make('amount')
+                \Modules\Foundation\App\Filament\Tables\Columns\MoneyColumn::make('amount')
                     ->label(__('payment.amount'))
                     ->sortable()
                     ->weight('bold')

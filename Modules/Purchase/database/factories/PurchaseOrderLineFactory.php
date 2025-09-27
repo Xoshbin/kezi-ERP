@@ -2,10 +2,8 @@
 
 namespace Modules\Purchase\Database\Factories;
 
-use App\Models\Product;
 use App\Models\PurchaseOrder;
 use App\Models\PurchaseOrderLine;
-use Brick\Money\Money;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**

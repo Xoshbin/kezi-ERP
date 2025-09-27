@@ -2,7 +2,6 @@
 
 namespace Modules\Purchase\DataTransferObjects\Purchases;
 
-use Brick\Money\Money;
 use Carbon\Carbon;
 
 /**

@@ -5,7 +5,6 @@ namespace Modules\Sales\Actions\Sales;
 use App\DataTransferObjects\Sales\CreateInvoiceFromSalesOrderDTO;
 use App\DataTransferObjects\Sales\CreateInvoiceLineDTO;
 use App\Enums\Sales\InvoiceStatus;
-use App\Models\Invoice;
 use App\Models\SalesOrder;
 use App\Services\Accounting\LockDateService;
 use Brick\Money\Money;

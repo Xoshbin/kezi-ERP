@@ -3,7 +3,6 @@
 namespace Modules\Product\Observers;
 
 use App\Exceptions\DeletionNotAllowedException;
-use App\Models\Product;
 
 class ProductObserver
 {

@@ -11,11 +11,8 @@ use App\Filament\Clusters\Inventory\Resources\Products\Pages\EditProduct;
 use App\Filament\Clusters\Inventory\Resources\Products\Pages\ListProducts;
 use App\Filament\Clusters\Inventory\Resources\Products\RelationManagers\InventoryCostLayersRelationManager;
 use App\Filament\Clusters\Inventory\Resources\Products\RelationManagers\ReorderingRulesRelationManager;
-// use App\Filament\Clusters\Inventory\Resources\Products\RelationManagers\StockMovesRelationManager;
 use App\Filament\Forms\Components\MoneyInput;
 use App\Filament\Tables\Columns\MoneyColumn;
-use App\Models\Account;
-use App\Models\Product;
 use BackedEnum;
 use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
@@ -46,6 +43,8 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use LaraZeus\SpatieTranslatable\Resources\Concerns\Translatable;
 use Xoshbin\TranslatableSelect\Components\TranslatableSelect;
+
+// use App\Filament\Clusters\Inventory\Resources\Products\RelationManagers\StockMovesRelationManager;
 
 class ProductResource extends Resource
 {
@@ -113,7 +112,7 @@ class ProductResource extends Resource
                 ->icon('heroicon-o-currency-dollar')
                 ->schema([
                     Hidden::make('currency_id'),
-                    MoneyInput::make('unit_price')
+                    \Modules\Foundation\App\Filament\Forms\Components\MoneyInput::make('unit_price')
                         ->nullable()
                         ->label(__('product.unit_price'))
                         ->currencyField('currency_id'),
@@ -211,7 +210,7 @@ class ProductResource extends Resource
                             ->live()
                             ->visible(fn(Get $get) => $get('type') === \Modules\Product\Enums\Products\ProductType::Storable->value)
                             ->helperText(__('product.inventory_valuation_method_help')),
-                        MoneyInput::make('average_cost')
+                        \Modules\Foundation\App\Filament\Forms\Components\MoneyInput::make('average_cost')
                             ->label(__('product.average_cost'))
                             ->currencyField('currency_id')
                             ->disabled()
@@ -417,7 +416,7 @@ class ProductResource extends Resource
                         \Modules\Product\Enums\Products\ProductType::Storable => 'warning',
                         \Modules\Product\Enums\Products\ProductType::Consumable => 'info',
                     }),
-                MoneyColumn::make('unit_price')
+                \Modules\Foundation\App\Filament\Tables\Columns\MoneyColumn::make('unit_price')
                     ->label(__('product.unit_price'))
                     ->sortable(),
                 TextColumn::make('inventory_valuation_method')
@@ -433,7 +432,7 @@ class ProductResource extends Resource
                     })
                     ->visible(fn() => request()->has('inventory_view'))
                     ->toggleable(isToggledHiddenByDefault: true),
-                MoneyColumn::make('average_cost')
+                \Modules\Foundation\App\Filament\Tables\Columns\MoneyColumn::make('average_cost')
                     ->label(__('product.average_cost'))
                     ->sortable()
                     ->visible(fn() => request()->has('inventory_view'))

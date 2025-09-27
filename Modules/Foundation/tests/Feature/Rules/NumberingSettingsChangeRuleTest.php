@@ -2,8 +2,6 @@
 
 use App\Enums\Purchases\VendorBillStatus;
 use App\Enums\Sales\InvoiceStatus;
-use App\Models\Invoice;
-use App\Models\VendorBill;
 use App\Rules\NumberingSettingsChangeRule;
 use Tests\Traits\WithConfiguredCompany;
 

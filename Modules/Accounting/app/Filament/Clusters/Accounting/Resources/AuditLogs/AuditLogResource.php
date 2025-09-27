@@ -6,7 +6,6 @@ use App\Filament\Clusters\Accounting\AccountingCluster;
 use App\Filament\Clusters\Accounting\Resources\AuditLogs\Pages\CreateAuditLog;
 use App\Filament\Clusters\Accounting\Resources\AuditLogs\Pages\EditAuditLog;
 use App\Filament\Clusters\Accounting\Resources\AuditLogs\Pages\ListAuditLogs;
-use App\Models\AuditLog;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;

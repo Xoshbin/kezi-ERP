@@ -4,7 +4,6 @@ namespace Modules\Payment\Services\Payments\Strategies;
 
 use App\DataTransferObjects\Payments\CreatePaymentDTO;
 use App\DataTransferObjects\Payments\UpdatePaymentDTO;
-use App\Models\Payment;
 
 interface PaymentStrategy
 {

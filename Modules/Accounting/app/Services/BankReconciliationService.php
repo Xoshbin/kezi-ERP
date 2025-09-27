@@ -8,16 +8,15 @@ use App\DataTransferObjects\Accounting\CreateJournalEntryForStatementLineDTO;
 use App\Enums\Payments\PaymentStatus;
 use App\Enums\Payments\PaymentType;
 use App\Exceptions\Reconciliation\ReconciliationDisabledException;
-use App\Models\Account;
-use App\Models\BankStatementLine;
 use App\Models\Company;
-use App\Models\Payment;
 use App\Models\User;
 use Brick\Money\Money;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\DB;
 use InvalidArgumentException;
-use RuntimeException; // 1. Import the new action
+use RuntimeException;
+
+// 1. Import the new action
 
 class BankReconciliationService
 {

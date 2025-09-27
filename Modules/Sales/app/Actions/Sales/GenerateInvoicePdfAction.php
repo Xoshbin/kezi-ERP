@@ -2,7 +2,6 @@
 
 namespace Modules\Sales\Actions\Sales;
 
-use App\Models\Invoice;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\View;

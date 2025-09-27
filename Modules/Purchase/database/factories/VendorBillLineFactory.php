@@ -2,11 +2,7 @@
 
 namespace Modules\Purchase\Database\Factories;
 
-use App\Models\Account;
-use App\Models\AnalyticAccount;
-use App\Models\Product;
 use App\Models\Tax;
-use App\Models\VendorBill;
 use App\Models\VendorBillLine;
 use Brick\Money\Money;
 use Illuminate\Database\Eloquent\Factories\Factory;

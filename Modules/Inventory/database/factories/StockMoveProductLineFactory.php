@@ -3,7 +3,6 @@
 namespace Modules\Inventory\Database\Factories;
 
 use App\Models\Company;
-use App\Models\Product;
 use App\Models\StockLocation;
 use App\Models\StockMove;
 use App\Models\StockMoveProductLine;

@@ -7,7 +7,6 @@ use App\DataTransferObjects\Inventory\CostPreviewResult;
 use App\DataTransferObjects\Inventory\CostValidationResult;
 use App\Enums\Inventory\StockMoveType;
 use App\Exceptions\Inventory\InsufficientCostInformationException;
-use App\Models\Product;
 use App\Models\StockMove;
 
 /**

@@ -3,8 +3,6 @@
 namespace Modules\HR\Database\Factories;
 
 use App\Models\Company;
-use App\Models\Currency;
-use App\Models\Employee;
 use Brick\Money\Money;
 use Illuminate\Database\Eloquent\Factories\Factory;
 

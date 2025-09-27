@@ -3,12 +3,9 @@
 use App\Filament\Clusters\Inventory\Resources\Products\Pages\CreateProduct;
 use App\Filament\Clusters\Inventory\Resources\Products\Pages\EditProduct;
 use App\Filament\Clusters\Inventory\Resources\Products\Pages\ListProducts;
-use App\Models\Product;
-use App\Models\Account;
 use Filament\Actions\DeleteAction;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\Traits\WithConfiguredCompany;
-
 use function Pest\Laravel\assertDatabaseHas;
 use function Pest\Laravel\assertSoftDeleted;
 use function Pest\Livewire\livewire;

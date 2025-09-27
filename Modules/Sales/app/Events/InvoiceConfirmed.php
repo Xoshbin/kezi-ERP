@@ -2,7 +2,6 @@
 
 namespace Modules\Sales\Events;
 
-use App\Models\Invoice;
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Broadcasting\PrivateChannel;

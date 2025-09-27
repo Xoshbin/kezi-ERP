@@ -2,15 +2,9 @@
 
 namespace Modules\Foundation\Tests\Feature\Casts;
 
-use App\Models\Asset;
 use App\Models\Company;
-use App\Models\Currency;
-use App\Models\DepreciationEntry;
-use App\Models\Invoice;
-use App\Models\InvoiceLine;
 use App\Models\JournalEntry;
 use App\Models\JournalEntryLine;
-use App\Models\VendorBill;
 use App\Models\VendorBillLine;
 use Brick\Money\Money;
 use Illuminate\Foundation\Testing\RefreshDatabase;

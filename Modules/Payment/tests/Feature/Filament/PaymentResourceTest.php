@@ -6,12 +6,9 @@ use App\Enums\Payments\PaymentStatus;
 use App\Enums\Payments\PaymentType;
 use App\Filament\Clusters\Accounting\Resources\Payments\PaymentResource;
 use App\Models\Journal;
-use App\Models\Partner;
-use App\Models\Payment;
 use Brick\Money\Money;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\Traits\WithConfiguredCompany;
-
 use function Pest\Livewire\livewire;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);

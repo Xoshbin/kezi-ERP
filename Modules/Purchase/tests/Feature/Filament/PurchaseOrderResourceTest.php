@@ -4,8 +4,6 @@ use App\Enums\Purchases\PurchaseOrderStatus;
 use App\Filament\Clusters\Purchases\Resources\PurchaseOrders\Pages\CreatePurchaseOrder;
 use App\Filament\Clusters\Purchases\Resources\PurchaseOrders\Pages\EditPurchaseOrder;
 use App\Filament\Clusters\Purchases\Resources\PurchaseOrders\PurchaseOrderResource;
-use App\Models\Partner;
-use App\Models\Product;
 use App\Models\PurchaseOrder;
 use App\Models\PurchaseOrderLine;
 use Illuminate\Foundation\Testing\RefreshDatabase;

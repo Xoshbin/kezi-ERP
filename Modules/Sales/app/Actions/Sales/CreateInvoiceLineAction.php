@@ -3,8 +3,6 @@
 namespace Modules\Sales\Actions\Sales;
 
 use App\DataTransferObjects\Sales\CreateInvoiceLineDTO;
-use App\Models\Invoice;
-use App\Models\InvoiceLine;
 use App\Models\Tax;
 use Brick\Math\RoundingMode;
 use Brick\Money\Money;

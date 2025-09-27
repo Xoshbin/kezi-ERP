@@ -4,10 +4,7 @@ namespace Modules\Inventory\Database\Seeders;
 
 use App\Enums\Adjustments\AdjustmentDocumentStatus;
 use App\Enums\Adjustments\AdjustmentDocumentType;
-use App\Models\Account;
-use App\Models\AdjustmentDocument;
 use App\Models\Company;
-use App\Models\Invoice;
 use Brick\Money\Money;
 use Illuminate\Database\Seeder;
 

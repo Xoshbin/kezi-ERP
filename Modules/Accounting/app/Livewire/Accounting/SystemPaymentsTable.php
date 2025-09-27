@@ -5,8 +5,6 @@ namespace Modules\Accounting\Livewire\Accounting;
 use App\Enums\Payments\PaymentStatus;
 use App\Enums\Payments\PaymentType;
 use App\Filament\Tables\Columns\MoneyColumn;
-use App\Models\BankStatement;
-use App\Models\Payment;
 use App\Services\CurrencyConverterService;
 use Brick\Money\Money;
 use Exception;
@@ -74,7 +72,7 @@ class SystemPaymentsTable extends Component implements HasActions, HasForms, Has
                         'outbound' => 'danger',
                         default => 'gray',
                     }),
-                MoneyColumn::make('amount')
+                \Modules\Foundation\App\Filament\Tables\Columns\MoneyColumn::make('amount')
                     ->label(__('bank_statement.amount'))
                     ->sortable(),
                 TextColumn::make('currency.code')

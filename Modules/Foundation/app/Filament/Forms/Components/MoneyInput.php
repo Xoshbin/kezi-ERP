@@ -2,7 +2,6 @@
 
 namespace Modules\Foundation\Filament\Forms\Components;
 
-use App\Models\Currency;
 use Brick\Math\Exception\RoundingNecessaryException;
 use Brick\Math\RoundingMode;
 use Brick\Money\Money;

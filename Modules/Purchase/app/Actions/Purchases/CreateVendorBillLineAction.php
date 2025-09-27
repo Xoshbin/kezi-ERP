@@ -4,7 +4,6 @@ namespace Modules\Purchase\Actions\Purchases;
 
 use App\DataTransferObjects\Purchases\CreateVendorBillLineDTO;
 use App\Models\Tax;
-use App\Models\VendorBill;
 use App\Models\VendorBillLine;
 use Brick\Math\RoundingMode;
 use Brick\Money\Money;

@@ -2,7 +2,6 @@
 
 namespace Modules\Payment\Events;
 
-use App\Models\Payment;
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Broadcasting\PrivateChannel;

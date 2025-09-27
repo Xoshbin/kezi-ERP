@@ -19,8 +19,6 @@ use App\Enums\Payments\PaymentMethod;
 use App\Enums\Payments\PaymentType;
 use App\Exceptions\PeriodIsLockedException;
 use App\Exceptions\UpdateNotAllowedException;
-use App\Models\Invoice;
-use App\Models\LockDate;
 use App\Rules\NotInLockedPeriod;
 use App\Services\Accounting\LockDateService;
 use Carbon\Carbon;

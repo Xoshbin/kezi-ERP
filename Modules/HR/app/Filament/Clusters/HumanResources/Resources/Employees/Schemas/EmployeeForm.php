@@ -3,7 +3,6 @@
 namespace Modules\HR\Filament\Clusters\HumanResources\Resources\Employees\Schemas;
 
 use App\Models\Department;
-use App\Models\Employee;
 use App\Models\Position;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;

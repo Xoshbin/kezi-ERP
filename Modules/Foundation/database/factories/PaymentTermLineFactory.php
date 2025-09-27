@@ -3,8 +3,6 @@
 namespace Modules\Foundation\Database\Factories;
 
 use App\Enums\PaymentTerms\PaymentTermType;
-use App\Models\PaymentTerm;
-use App\Models\PaymentTermLine;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**

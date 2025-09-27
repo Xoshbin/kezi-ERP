@@ -5,10 +5,12 @@ namespace Modules\Accounting\Filament\Clusters\Accounting\Resources\Invoices;
 use App\Actions\Payments\CreatePaymentAction;
 use App\DataTransferObjects\Payments\CreatePaymentDocumentLinkDTO;
 use App\DataTransferObjects\Payments\CreatePaymentDTO;
+use App\Enums\Accounting\AccountType;
 use App\Enums\Accounting\TaxType;
 use App\Enums\Partners\PartnerType;
 use App\Enums\Payments\PaymentMethod;
 use App\Enums\Payments\PaymentType;
+use App\Enums\Products\ProductType;
 use App\Enums\Sales\InvoiceStatus;
 use App\Enums\Shared\PaymentState;
 use App\Filament\Clusters\Accounting\AccountingCluster;
@@ -20,16 +22,8 @@ use App\Filament\Clusters\Accounting\Resources\Invoices\RelationManagers\Invoice
 use App\Filament\Clusters\Accounting\Resources\Invoices\RelationManagers\PaymentsRelationManager;
 use App\Filament\Forms\Components\MoneyInput;
 use App\Filament\Tables\Columns\MoneyColumn;
-use App\Models\Account;
 use App\Models\Company;
-use App\Models\Currency;
-use App\Models\CurrencyRate;
-use App\Models\FiscalPosition;
-use App\Models\Invoice;
 use App\Models\Journal;
-use App\Models\Product;
-use App\Enums\Products\ProductType;
-use App\Enums\Accounting\AccountType;
 use App\Models\Tax;
 use App\Rules\NotInLockedPeriod;
 use App\Services\InvoiceService;
@@ -367,7 +361,7 @@ class InvoiceResource extends Resource
                                         ->createOptionAction(function (Action $action) {
                                             return $action->modalWidth('lg');
                                         }),
-                                    MoneyInput::make('unit_price')
+                                    \Modules\Foundation\App\Filament\Forms\Components\MoneyInput::make('unit_price')
                                         ->label(__('product.unit_price'))
                                         ->currencyField('../../currency_id'),
                                     Select::make('income_account_id')
@@ -392,7 +386,7 @@ class InvoiceResource extends Resource
                                 ->numeric()
                                 ->default(1)
                                 ->columnSpan(2),
-                            MoneyInput::make('unit_price')
+                            \Modules\Foundation\App\Filament\Forms\Components\MoneyInput::make('unit_price')
                                 ->label(__('invoice.unit_price'))
                                 ->currencyField('../../currency_id')
                                 ->required()
@@ -463,13 +457,13 @@ class InvoiceResource extends Resource
                         ->disabled()
                         ->visible(fn (?\Modules\Sales\Models\Invoice $record) => $record && $record->exchange_rate_at_creation),
 
-                    MoneyInput::make('total_amount_company_currency')
+                    \Modules\Foundation\App\Filament\Forms\Components\MoneyInput::make('total_amount_company_currency')
                         ->label(__('invoice.total_amount_company_currency'))
                         ->currencyField('../../company.currency_id')
                         ->disabled()
                         ->visible(fn (?\Modules\Sales\Models\Invoice $record) => $record && $record->total_amount_company_currency),
 
-                    MoneyInput::make('total_tax_company_currency')
+                    \Modules\Foundation\App\Filament\Forms\Components\MoneyInput::make('total_tax_company_currency')
                         ->label(__('invoice.total_tax_company_currency'))
                         ->currencyField('../../company.currency_id')
                         ->disabled()
@@ -560,7 +554,7 @@ class InvoiceResource extends Resource
                     ->badge()
                     ->color(fn (\Modules\Foundation\Enums\Shared\PaymentState $state): string => $state->color()),
                 // Total Amount (critical financial information)
-                MoneyColumn::make('total_amount')
+                \Modules\Foundation\App\Filament\Tables\Columns\MoneyColumn::make('total_amount')
                     ->label(__('invoice.total'))
                     ->sortable()
                     ->weight('bold')
@@ -585,7 +579,7 @@ class InvoiceResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->visible(fn ($record) => $record && $record->exchange_rate_at_creation),
 
-                MoneyColumn::make('total_amount_company_currency')
+                \Modules\Foundation\App\Filament\Tables\Columns\MoneyColumn::make('total_amount_company_currency')
                     ->label(__('invoice.total_amount_company_currency'))
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true)
@@ -691,7 +685,7 @@ class InvoiceResource extends Resource
                             ->label(__('payment.form.payment_date'))
                             ->default(now())
                             ->required(),
-                        MoneyInput::make('amount')
+                        \Modules\Foundation\App\Filament\Forms\Components\MoneyInput::make('amount')
                             ->label(__('payment.form.amount'))
                             ->currencyField('currency_id')
                             ->default(fn (\Modules\Sales\Models\Invoice $record) => $record->getRemainingAmount())

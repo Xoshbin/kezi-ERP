@@ -3,10 +3,7 @@
 namespace Modules\Inventory\Tests\Feature\Filament;
 
 use App\Filament\Clusters\Accounting\Resources\AdjustmentDocuments\Pages\CreateAdjustmentDocument;
-use App\Models\Account;
 use App\Models\Company;
-use App\Models\Currency;
-use App\Models\Product;
 use App\Models\User;
 use Brick\Money\Money;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -31,7 +28,7 @@ class MoneyInputAdjustmentDocumentProductSelectionTest extends TestCase
         $this->company = Company::factory()->create();
         $this->user = User::factory()->create();
         $this->currency = \Modules\Foundation\Models\Currency::factory()->create(['code' => 'USD']);
-        
+
         $this->company->update(['currency_id' => $this->currency->id]);
 
         $this->incomeAccount = \Modules\Accounting\Models\Account::factory()->create([
@@ -81,17 +78,17 @@ class MoneyInputAdjustmentDocumentProductSelectionTest extends TestCase
 
         // Verify that the unit_price is populated as a string, not "[object Object]"
         $formData = $livewire->get('data');
-        
+
         $this->assertIsArray($formData['lines']);
         $this->assertCount(1, $formData['lines']);
-        
+
         $lineData = $formData['lines'][0];
-        
+
         // The key assertion: unit_price should be a string representation of the amount
         $this->assertIsString($lineData['unit_price']);
         $this->assertEquals('75.50', $lineData['unit_price']);
         $this->assertNotEquals('[object Object]', $lineData['unit_price']);
-        
+
         // Also verify other fields were populated correctly
         $this->assertEquals($this->product->name, $lineData['description']);
         $this->assertEquals($this->product->income_account_id, $lineData['account_id']);
@@ -143,7 +140,7 @@ class MoneyInputAdjustmentDocumentProductSelectionTest extends TestCase
 
         // Test decimal price
         $livewire->set('data.lines.0.product_id', $decimalProduct->id);
-        
+
         $formData = $livewire->get('data');
         $this->assertEquals('33.33', $formData['lines'][0]['unit_price']);
     }
@@ -180,7 +177,7 @@ class MoneyInputAdjustmentDocumentProductSelectionTest extends TestCase
         ]);
 
         $formData = $livewire->get('data');
-        
+
         // Should handle null gracefully
         $this->assertNull($formData['lines'][0]['unit_price']);
         $this->assertNotEquals('[object Object]', $formData['lines'][0]['unit_price']);
@@ -218,7 +215,7 @@ class MoneyInputAdjustmentDocumentProductSelectionTest extends TestCase
         ]);
 
         $formData = $livewire->get('data');
-        
+
         // Should populate description field with product name, not description
         $this->assertEquals('Specific Product Name', $formData['lines'][0]['description']);
         $this->assertNotEquals('Different description text', $formData['lines'][0]['description']);
@@ -228,7 +225,7 @@ class MoneyInputAdjustmentDocumentProductSelectionTest extends TestCase
     public function it_can_create_adjustment_document_after_product_selection(): void
     {
         // End-to-end test to ensure the fix doesn't break the creation process
-        
+
         $livewire = Livewire::test(CreateAdjustmentDocument::class)
             ->fillForm([
                 'type' => 'credit_note',

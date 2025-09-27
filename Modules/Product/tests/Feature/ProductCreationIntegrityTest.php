@@ -5,12 +5,9 @@ namespace Modules\Product\Tests\Feature;
 use App\Enums\Inventory\ValuationMethod;
 use App\Enums\Products\ProductType;
 use App\Filament\Clusters\Inventory\Resources\Products\Pages\CreateProduct;
-use App\Models\Account;
-use App\Models\Product;
 use Brick\Money\Money;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\Traits\WithConfiguredCompany;
-
 use function Pest\Livewire\livewire;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);
