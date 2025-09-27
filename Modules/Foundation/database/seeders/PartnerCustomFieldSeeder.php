@@ -4,6 +4,7 @@ namespace Modules\Foundation\Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
+use Modules\Foundation\Models\Partner;
 use Xoshbin\CustomFields\Enums\CustomFieldType;
 use Xoshbin\CustomFields\Models\CustomFieldDefinition;
 
@@ -19,7 +20,7 @@ class PartnerCustomFieldSeeder extends Seeder
             // Note: Custom field definitions are global (not company-specific) based on current schema
             CustomFieldDefinition::updateOrCreate(
                 [
-                    'model_type' => \Modules\Foundation\Models\Partner::class,
+                    'model_type' => Partner::class,
                 ],
                 [
                     'name' => 'Partner Classification',

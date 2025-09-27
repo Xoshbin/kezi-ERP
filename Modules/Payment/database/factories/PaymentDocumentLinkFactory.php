@@ -5,6 +5,9 @@ namespace Modules\Payment\Database\Factories;
 use App\Models\PaymentDocumentLink;
 use Brick\Money\Money;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Modules\Payment\Models\Payment;
+use Modules\Purchase\Models\VendorBill;
+use Modules\Sales\Models\Invoice;
 
 /**
  * @extends Factory<PaymentDocumentLink>
@@ -18,14 +21,14 @@ class PaymentDocumentLinkFactory extends Factory
      */
     public function definition(): array
     {
-        $payment = \Modules\Payment\Models\Payment::factory();
+        $payment = Payment::factory();
 
         return [
             'payment_id' => $payment,
             'company_id' => function (array $attributes) {
-                return \Modules\Payment\Models\Payment::find($attributes['payment_id'])->company_id;
+                return Payment::find($attributes['payment_id'])->company_id;
             },
-            'invoice_id' => \Modules\Sales\Models\Invoice::factory(),
+            'invoice_id' => Invoice::factory(),
             'vendor_bill_id' => null, // Either invoice_id or vendor_bill_id should be set, not both
             'amount_applied' => Money::of($this->faker->randomFloat(2, 100, 1000), 'USD'),
         ];
@@ -39,7 +42,7 @@ class PaymentDocumentLinkFactory extends Factory
         return $this->state(function (array $attributes) {
             return [
                 'invoice_id' => null,
-                'vendor_bill_id' => \Modules\Purchase\Models\VendorBill::factory(),
+                'vendor_bill_id' => VendorBill::factory(),
             ];
         });
     }

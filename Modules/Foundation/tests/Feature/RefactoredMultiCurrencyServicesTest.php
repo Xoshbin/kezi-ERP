@@ -1,16 +1,17 @@
 <?php
 
 use App\Models\Company;
-use App\Services\InvoiceService;
 use Brick\Money\Money;
 use Carbon\Carbon;
+use Modules\Foundation\Models\Currency;
+use Modules\Foundation\Services\CurrencyConverterService;
 
 test('refactored services have multi-currency dependencies', function () {
     // Test that services have the new multi-currency dependencies injected
     $invoiceService = app(InvoiceService::class);
-    $vendorBillService = app(\App\Services\VendorBillService::class);
-    $paymentService = app(\App\Services\PaymentService::class);
-    $journalEntryService = app(\App\Services\JournalEntryService::class);
+    $vendorBillService = app(VendorBillService::class);
+    $paymentService = app(PaymentService::class);
+    $journalEntryService = app(JournalEntryService::class);
 
     // Verify InvoiceService has the new dependencies
     $reflection = new ReflectionClass($invoiceService);
@@ -48,7 +49,7 @@ test('multi-currency services integration works correctly', function () {
     // This test verifies that our refactored services integrate multi-currency support
     // without breaking existing functionality
 
-    $baseCurrency = \Modules\Foundation\Models\Currency::factory()->create(['code' => 'USD']);
+    $baseCurrency = Currency::factory()->create(['code' => 'USD']);
     $company = Company::factory()->create(['currency_id' => $baseCurrency->id]);
 
     // The services should have the new multi-currency dependencies injected
@@ -63,7 +64,7 @@ test('multi-currency services integration works correctly', function () {
     expect($propertyNames)->toContain('exchangeRateService');
 
     // Test that CurrencyConverterService is working
-    $currencyConverter = app(\Modules\Foundation\Services\CurrencyConverterService::class);
+    $currencyConverter = app(CurrencyConverterService::class);
     $sameCurrencyResult = $currencyConverter->convert(
         Money::of(100, 'USD'),
         $baseCurrency,

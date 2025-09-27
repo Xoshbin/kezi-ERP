@@ -2,15 +2,15 @@
 
 namespace Modules\HR\Tests\Feature\HumanResources;
 
-use App\Enums\Payments\PaymentStatus;
-use App\Enums\Payments\PaymentType;
 use App\Models\Company;
-use App\Models\EmploymentContract;
-use App\Models\Journal;
 use App\Models\User;
-use App\Services\HumanResources\PayrollService;
 use Brick\Money\Money;
+use Exception;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use InvalidArgumentException;
+use Modules\Accounting\Models\Account;
+use Modules\HR\Models\Employee;
+use Modules\Payment\Models\Payment;
 use Tests\TestCase;
 use Tests\Traits\WithConfiguredCompany;
 
@@ -22,7 +22,7 @@ class PayrollPaymentTest extends TestCase
 
     private Company $company;
 
-    private \Modules\HR\Models\Employee $employee;
+    private Employee $employee;
 
     private EmploymentContract $contract;
 
@@ -37,7 +37,7 @@ class PayrollPaymentTest extends TestCase
         $this->payrollService = app(PayrollService::class);
 
         // Create employee with contract
-        $this->employee = \Modules\HR\Models\Employee::factory()->create([
+        $this->employee = Employee::factory()->create([
             'company_id' => $this->company->id,
         ]);
 
@@ -55,14 +55,14 @@ class PayrollPaymentTest extends TestCase
 
     private function setupHRAccounts(): void
     {
-        $salaryExpenseAccount = \Modules\Accounting\Models\Account::factory()->create([
+        $salaryExpenseAccount = Account::factory()->create([
             'company_id' => $this->company->id,
             'name' => 'Salary Expense',
             'code' => '6100',
             'type' => 'expense',
         ]);
 
-        $salaryPayableAccount = \Modules\Accounting\Models\Account::factory()->create([
+        $salaryPayableAccount = Account::factory()->create([
             'company_id' => $this->company->id,
             'name' => 'Salary Payable',
             'code' => '2100',
@@ -104,7 +104,7 @@ class PayrollPaymentTest extends TestCase
         $payment = $this->payrollService->payEmployee($payroll, $this->user);
 
         // Assert payment was created correctly
-        $this->assertInstanceOf(\Modules\Payment\Models\Payment::class, $payment);
+        $this->assertInstanceOf(Payment::class, $payment);
         $this->assertEquals($payroll->company_id, $payment->company_id);
         $this->assertEquals($payroll->currency_id, $payment->currency_id);
         $this->assertEquals($payroll->pay_date->format('Y-m-d'), $payment->payment_date->format('Y-m-d'));
@@ -142,7 +142,7 @@ class PayrollPaymentTest extends TestCase
         $this->assertEquals('draft', $payroll->status);
 
         // Attempt to create payment should fail
-        $this->expectException(\InvalidArgumentException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Only processed payrolls can be paid.');
 
         $this->payrollService->payEmployee($payroll, $this->user);
@@ -167,7 +167,7 @@ class PayrollPaymentTest extends TestCase
         $payroll->refresh(); // Refresh to get updated status and payment_id
 
         // Attempt to pay again should fail
-        $this->expectException(\Exception::class);
+        $this->expectException(Exception::class);
         $this->expectExceptionMessage('Payroll has already been paid.');
 
         $this->payrollService->payEmployee($payroll, $this->user);
@@ -193,7 +193,7 @@ class PayrollPaymentTest extends TestCase
         $this->payrollService->approvePayroll($payroll, $this->user);
 
         // Attempt to create payment should fail
-        $this->expectException(\InvalidArgumentException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('No default salary payable account configured for company.');
 
         $this->payrollService->payEmployee($payroll, $this->user);

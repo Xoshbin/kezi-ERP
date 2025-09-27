@@ -2,18 +2,14 @@
 
 namespace Modules\Accounting\Actions\Accounting;
 
-use App\DataTransferObjects\Accounting\UpdateJournalEntryDTO;
-use App\Exceptions\UpdateNotAllowedException;
-use App\Models\Company;
-use App\Models\JournalEntry;
-use App\Models\JournalEntryLine;
-use App\Services\Accounting\LockDateService;
 use Brick\Math\Exception\RoundingNecessaryException;
 use Brick\Math\RoundingMode;
 use Brick\Money\Money;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
+use InvalidArgumentException;
+use Modules\Foundation\Models\Currency;
 
 class UpdateJournalEntryAction
 {
@@ -28,7 +24,7 @@ class UpdateJournalEntryAction
         // 1. Perform all necessary validation before touching the database.
         $company = Company::find($journalEntry->company_id);
         if (! $company) {
-            throw new \InvalidArgumentException('Company not found');
+            throw new InvalidArgumentException('Company not found');
         }
         $this->lockDateService->enforce($company, Carbon::parse($journalEntry->entry_date));
 
@@ -36,9 +32,9 @@ class UpdateJournalEntryAction
             throw new \Modules\Foundation\Exceptions\UpdateNotAllowedException('Cannot modify a posted journal entry.');
         }
 
-        $currency = \Modules\Foundation\Models\Currency::find($dto->currency_id);
+        $currency = Currency::find($dto->currency_id);
         if (! $currency) {
-            throw new \InvalidArgumentException('Currency not found');
+            throw new InvalidArgumentException('Currency not found');
         }
         $totalDebit = Money::zero($currency->code);
         $totalCredit = Money::zero($currency->code);

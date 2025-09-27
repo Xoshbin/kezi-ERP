@@ -2,14 +2,13 @@
 
 namespace Modules\Purchase\Filament\Clusters\Purchases\Resources\PurchaseOrders\RelationManagers;
 
-use App\Enums\Purchases\VendorBillStatus;
-use App\Enums\Shared\PaymentState;
-use App\Filament\Tables\Columns\MoneyColumn;
 use Filament\Actions\CreateAction;
 use Filament\Facades\Filament;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Model;
+use Modules\Purchase\Models\VendorBill;
 
 class VendorBillsRelationManager extends RelationManager
 {
@@ -17,7 +16,7 @@ class VendorBillsRelationManager extends RelationManager
 
     protected static ?string $recordTitleAttribute = 'bill_reference';
 
-    public static function getTitle(\Illuminate\Database\Eloquent\Model $ownerRecord, string $pageClass): string
+    public static function getTitle(Model $ownerRecord, string $pageClass): string
     {
         return __('vendor_bill.plural_label');
     }
@@ -29,7 +28,7 @@ class VendorBillsRelationManager extends RelationManager
             ->columns([
                 TextColumn::make('reference')
                     ->label(__('vendor_bill.reference'))
-                    ->getStateUsing(function (\Modules\Purchase\Models\VendorBill $record): string {
+                    ->getStateUsing(function (VendorBill $record): string {
                         if ($record->bill_reference) {
                             return $record->bill_reference;
                         }
@@ -37,10 +36,10 @@ class VendorBillsRelationManager extends RelationManager
                         return 'DRAFT-' . str_pad((string) $record->id, 5, '0', STR_PAD_LEFT);
                     })
                     ->badge()
-                    ->color(fn(\Modules\Purchase\Models\VendorBill $record): string => $record->bill_reference ? 'success' : 'warning')
-                    ->icon(fn(\Modules\Purchase\Models\VendorBill $record): string => $record->bill_reference ? 'heroicon-m-check-circle' : 'heroicon-m-pencil-square')
+                    ->color(fn(VendorBill $record): string => $record->bill_reference ? 'success' : 'warning')
+                    ->icon(fn(VendorBill $record): string => $record->bill_reference ? 'heroicon-m-check-circle' : 'heroicon-m-pencil-square')
                     ->url(
-                        fn(\Modules\Purchase\Models\VendorBill $record): string =>
+                        fn(VendorBill $record): string =>
                         route('filament.jmeryar.accounting.resources.vendor-bills.view', [
                             'record' => $record,
                             'tenant' => Filament::getTenant(),

@@ -2,10 +2,6 @@
 
 namespace Modules\Product\Models;
 
-use App\Casts\BaseCurrencyMoneyCast;
-use App\Enums\Inventory\ValuationMethod;
-use App\Enums\Products\ProductType;
-use App\Observers\ProductObserver;
 use Brick\Money\Money;
 use Database\Factories\ProductFactory;
 use Eloquent;
@@ -15,6 +11,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
 use Illuminate\Validation\ValidationException;
@@ -270,9 +267,9 @@ class Product extends Model
 
     /**
      * Get stock moves that contain this product through product lines
-     * @return \Illuminate\Database\Eloquent\Relations\HasManyThrough<StockMove, StockMoveProductLine, static>
+     * @return HasManyThrough<StockMove, StockMoveProductLine, static>
      */
-    public function stockMoves(): \Illuminate\Database\Eloquent\Relations\HasManyThrough
+    public function stockMoves(): HasManyThrough
     {
         return $this->hasManyThrough(StockMove::class, StockMoveProductLine::class);
     }

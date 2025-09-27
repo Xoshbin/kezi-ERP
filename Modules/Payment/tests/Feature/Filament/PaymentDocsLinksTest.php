@@ -1,10 +1,9 @@
 <?php
 
-use App\Enums\Payments\PaymentStatus;
-use App\Filament\Clusters\Accounting\Resources\Payments\Pages\CreatePayment;
-use App\Filament\Clusters\Accounting\Resources\Payments\Pages\EditPayment;
-use App\Filament\Clusters\Accounting\Resources\Payments\PaymentResource;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Modules\Payment\Models\Payment;
+use Modules\Purchase\Models\VendorBill;
+use Modules\Sales\Models\Invoice;
 use Tests\Traits\WithConfiguredCompany;
 use function Pest\Livewire\livewire;
 
@@ -26,7 +25,7 @@ it('shows docs action on create payment page', function () {
 });
 
 it('shows docs action on edit payment page', function () {
-    $payment = \Modules\Payment\Models\Payment::factory()->for($this->company)->create([
+    $payment = Payment::factory()->for($this->company)->create([
         'status' => PaymentStatus::Draft,
     ]);
 
@@ -35,25 +34,25 @@ it('shows docs action on edit payment page', function () {
 });
 
 it('shows Register Payment action on posted invoice with balance', function () {
-    $invoice = \Modules\Sales\Models\Invoice::factory()
+    $invoice = Invoice::factory()
         ->for($this->company)
         ->withLines(1)
         ->create([
-            'status' => \App\Enums\Sales\InvoiceStatus::Posted,
+            'status' => InvoiceStatus::Posted,
         ]);
 
-    $this->get(\App\Filament\Clusters\Accounting\Resources\Invoices\InvoiceResource::getUrl('edit', ['record' => $invoice]))
+    $this->get(InvoiceResource::getUrl('edit', ['record' => $invoice]))
         ->assertSee('Register Payment');
 });
 
 it('shows Register Payment action on posted vendor bill with balance', function () {
-    $bill = \Modules\Purchase\Models\VendorBill::factory()
+    $bill = VendorBill::factory()
         ->for($this->company)
         ->withLines(1)
         ->create([
-            'status' => \App\Enums\Purchases\VendorBillStatus::Posted,
+            'status' => VendorBillStatus::Posted,
         ]);
 
-    $this->get(\App\Filament\Clusters\Accounting\Resources\VendorBills\VendorBillResource::getUrl('edit', ['record' => $bill]))
+    $this->get(VendorBillResource::getUrl('edit', ['record' => $bill]))
         ->assertSee('Register Payment');
 });

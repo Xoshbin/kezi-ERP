@@ -2,13 +2,13 @@
 
 namespace Modules\Sales\Actions\Sales;
 
-use App\DataTransferObjects\Sales\CreateInvoiceDTO;
-use App\Enums\Sales\InvoiceStatus;
 use App\Models\Company;
-use App\Services\Accounting\LockDateService;
 use Brick\Money\Money;
 use Carbon\Carbon;
+use Exception;
 use Illuminate\Support\Facades\DB;
+use Modules\Foundation\Models\Currency;
+use Modules\Sales\Models\Invoice;
 
 class CreateInvoiceAction
 {
@@ -17,15 +17,15 @@ class CreateInvoiceAction
         private readonly CreateInvoiceLineAction $createInvoiceLineAction
     ) {}
 
-    public function execute(CreateInvoiceDTO $dto): \Modules\Sales\Models\Invoice
+    public function execute(CreateInvoiceDTO $dto): Invoice
     {
         $company = Company::findOrFail($dto->company_id);
         $this->lockDateService->enforce($company, Carbon::parse($dto->invoice_date));
 
         $invoice = DB::transaction(function () use ($dto) {
-            $currencyCode = \Modules\Foundation\Models\Currency::findOrFail($dto->currency_id)->code;
+            $currencyCode = Currency::findOrFail($dto->currency_id)->code;
 
-            $invoice = \Modules\Sales\Models\Invoice::create([
+            $invoice = Invoice::create([
                 'company_id' => $dto->company_id,
                 'customer_id' => $dto->customer_id,
                 'currency_id' => $dto->currency_id,
@@ -47,7 +47,7 @@ class CreateInvoiceAction
 
         $freshInvoice = $invoice->fresh();
         if (! $freshInvoice) {
-            throw new \Exception('Failed to refresh invoice after creation');
+            throw new Exception('Failed to refresh invoice after creation');
         }
 
         return $freshInvoice;

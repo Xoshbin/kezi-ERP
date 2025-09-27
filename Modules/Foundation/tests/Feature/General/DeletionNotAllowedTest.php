@@ -2,11 +2,13 @@
 
 namespace Modules\Foundation\Tests\Feature;
 
-use App\Exceptions\DeletionNotAllowedException;
-use App\Models\Journal;
-use App\Models\JournalEntry;
-use App\Models\Tax;
+
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Modules\Accounting\Models\Account;
+use Modules\Accounting\Models\Asset;
+use Modules\Purchase\Models\VendorBill;
+use Modules\Sales\Models\Invoice;
+use Modules\Sales\Models\InvoiceLine;
 use Tests\Traits\WithConfiguredCompany;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);
@@ -32,11 +34,11 @@ test('a company with any financial records cannot be deleted', function (string 
     $this->assertModelExists($this->company);
 
 })->with([
-    'with an Account' => [\Modules\Accounting\Models\Account::class],
+    'with an Account' => [Account::class],
     'with a Journal Entry' => [JournalEntry::class, ['total_debit' => 0, 'total_credit' => 0]],
-    'with an Invoice' => [\Modules\Sales\Models\Invoice::class, ['total_amount' => 0, 'total_tax' => 0]],
-    'with a Vendor Bill' => [\Modules\Purchase\Models\VendorBill::class, ['total_amount' => 0, 'total_tax' => 0]],
-    'with an Asset' => [\Modules\Accounting\Models\Asset::class, ['purchase_value' => 1000, 'salvage_value' => 0]],
+    'with an Invoice' => [Invoice::class, ['total_amount' => 0, 'total_tax' => 0]],
+    'with a Vendor Bill' => [VendorBill::class, ['total_amount' => 0, 'total_tax' => 0]],
+    'with an Asset' => [Asset::class, ['purchase_value' => 1000, 'salvage_value' => 0]],
 ]);
 
 // ======================================================================
@@ -91,8 +93,8 @@ test('a tax used in a transaction is deactivated instead of deleted', function (
 
     // Arrange: Create a tax and use it in an invoice line.
     $tax = Tax::factory()->for($this->company)->create(['is_active' => true]);
-    $invoice = \Modules\Sales\Models\Invoice::factory()->for($this->company)->create(['total_amount' => 0, 'total_tax' => 0]);
-    \Modules\Sales\Models\InvoiceLine::factory()->for($invoice)->for($tax)->create(['unit_price' => 100, 'quantity' => 1]);
+    $invoice = Invoice::factory()->for($this->company)->create(['total_amount' => 0, 'total_tax' => 0]);
+    InvoiceLine::factory()->for($invoice)->for($tax)->create(['unit_price' => 100, 'quantity' => 1]);
 
     // Act: Attempt to delete the tax. The observer should intercept this.
     $deleteResult = $tax->delete();

@@ -2,24 +2,11 @@
 
 namespace Modules\Inventory\Tests\Feature\Inventory;
 
-use App\Actions\Purchases\CreateVendorBillAction;
-use App\DataTransferObjects\Purchases\CreateVendorBillDTO;
-use App\DataTransferObjects\Purchases\CreateVendorBillLineDTO;
-use App\Enums\Inventory\ReorderingRoute;
-use App\Enums\Inventory\StockMoveStatus;
-use App\Enums\Inventory\StockMoveType;
-use App\Enums\Inventory\ValuationMethod;
-use App\Enums\Products\ProductType;
-use App\Models\Lot;
-use App\Models\ReorderingRule;
-use App\Models\StockMove;
-use App\Models\StockQuant;
-use App\Services\Inventory\InventoryReportingService;
-use App\Services\Inventory\InventoryValuationService;
-use App\Services\VendorBillService;
 use Brick\Money\Money;
 use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Modules\Accounting\Models\Account;
+use Modules\Product\Models\Product;
 use Tests\Traits\WithConfiguredCompany;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);
@@ -29,7 +16,7 @@ beforeEach(function () {
     $this->setupInventoryTestEnvironment();
 
     // Create COGS account for inventory tests
-    $this->cogsAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create([
+    $this->cogsAccount = Account::factory()->for($this->company)->create([
         'type' => 'cost_of_revenue',
         'name' => 'Cost of Goods Sold',
     ]);
@@ -42,7 +29,7 @@ beforeEach(function () {
 
 it('calculates correct valuation at specific date using AVCO method', function () {
     // Arrange
-    $product = \Modules\Product\Models\Product::factory()->for($this->company)->create([
+    $product = Product::factory()->for($this->company)->create([
         'type' => \Modules\Product\Enums\Products\ProductType::Storable,
         'inventory_valuation_method' => ValuationMethod::AVCO,
         'default_inventory_account_id' => $this->inventoryAccount->id,
@@ -89,7 +76,7 @@ it('calculates correct valuation at specific date using AVCO method', function (
 
 it('calculates correct valuation using FIFO method with cost layers', function () {
     // Arrange
-    $product = \Modules\Product\Models\Product::factory()->for($this->company)->create([
+    $product = Product::factory()->for($this->company)->create([
         'type' => \Modules\Product\Enums\Products\ProductType::Storable,
         'inventory_valuation_method' => ValuationMethod::FIFO,
         'default_inventory_account_id' => $this->inventoryAccount->id,
@@ -128,7 +115,7 @@ it('calculates correct valuation using FIFO method with cost layers', function (
 
 it('reconciles valuation with GL account balances', function () {
     // Arrange
-    $product = \Modules\Product\Models\Product::factory()->for($this->company)->create([
+    $product = Product::factory()->for($this->company)->create([
         'type' => \Modules\Product\Enums\Products\ProductType::Storable,
         'inventory_valuation_method' => ValuationMethod::AVCO,
         'default_inventory_account_id' => $this->inventoryAccount->id,
@@ -154,7 +141,7 @@ it('reconciles valuation with GL account balances', function () {
 
 it('correctly ages inventory by receipt date', function () {
     // Arrange
-    $product = \Modules\Product\Models\Product::factory()->for($this->company)->create([
+    $product = Product::factory()->for($this->company)->create([
         'type' => \Modules\Product\Enums\Products\ProductType::Storable,
         'inventory_valuation_method' => ValuationMethod::FIFO,
         'default_inventory_account_id' => $this->inventoryAccount->id,
@@ -203,7 +190,7 @@ it('correctly ages inventory by receipt date', function () {
 
 it('handles lot expiration in ageing report', function () {
     // Arrange
-    $product = \Modules\Product\Models\Product::factory()->for($this->company)->create([
+    $product = Product::factory()->for($this->company)->create([
         'type' => \Modules\Product\Enums\Products\ProductType::Storable,
         'inventory_valuation_method' => ValuationMethod::FIFO,
         'default_inventory_account_id' => $this->inventoryAccount->id,
@@ -242,7 +229,7 @@ it('handles lot expiration in ageing report', function () {
 
 it('calculates inventory turnover correctly', function () {
     // Arrange
-    $product = \Modules\Product\Models\Product::factory()->for($this->company)->create([
+    $product = Product::factory()->for($this->company)->create([
         'type' => \Modules\Product\Enums\Products\ProductType::Storable,
         'inventory_valuation_method' => ValuationMethod::AVCO,
         'default_inventory_account_id' => $this->inventoryAccount->id,
@@ -286,15 +273,15 @@ it('calculates inventory turnover correctly', function () {
 });
 
 // Helper functions
-function createStockReceipt($testCase, \Modules\Product\Models\Product $product, float $quantity, Money $costPerUnit, Carbon $date): void
+function createStockReceipt($testCase, Product $product, float $quantity, Money $costPerUnit, Carbon $date): void
 {
     $valuationService = app(InventoryValuationService::class);
-    $quantService = app(\App\Services\Inventory\StockQuantService::class);
+    $quantService = app(StockQuantService::class);
 
     // Ensure product has proper relationships loaded
     $product = $product->fresh(['company.currency']);
 
-    $stockMove = \App\Models\StockMove::factory()->create([
+    $stockMove = StockMove::factory()->create([
         'company_id' => $product->company_id,
         'product_id' => $product->id,  // This will be handled by the factory
         'quantity' => $quantity,       // This will be handled by the factory
@@ -313,10 +300,10 @@ function createStockReceipt($testCase, \Modules\Product\Models\Product $product,
     $quantService->applyForIncoming($stockMove);
 }
 
-function createStockDelivery($testCase, \Modules\Product\Models\Product $product, float $quantity, Carbon $date): void
+function createStockDelivery($testCase, Product $product, float $quantity, Carbon $date): void
 {
     $valuationService = app(InventoryValuationService::class);
-    $quantService = app(\App\Services\Inventory\StockQuantService::class);
+    $quantService = app(StockQuantService::class);
 
     // Ensure product has proper relationships loaded
     $product = $product->fresh(['company.currency']);
@@ -340,10 +327,10 @@ function createStockDelivery($testCase, \Modules\Product\Models\Product $product
     $quantService->applyForOutgoing($stockMove);
 }
 
-function createStockReceiptWithLot($testCase, \Modules\Product\Models\Product $product, Lot $lot, float $quantity, Money $costPerUnit, Carbon $date): void
+function createStockReceiptWithLot($testCase, Product $product, Lot $lot, float $quantity, Money $costPerUnit, Carbon $date): void
 {
     $valuationService = app(InventoryValuationService::class);
-    $quantService = app(\App\Services\Inventory\StockQuantService::class);
+    $quantService = app(StockQuantService::class);
 
     // Ensure product has proper relationships loaded
     $product = $product->fresh(['company.currency']);
@@ -391,7 +378,7 @@ function createStockReceiptWithLot($testCase, \Modules\Product\Models\Product $p
     ]);
 }
 
-function createStockDeliveryWithLot($testCase, \Modules\Product\Models\Product $product, Lot $lot, float $quantity, Carbon $date): void
+function createStockDeliveryWithLot($testCase, Product $product, Lot $lot, float $quantity, Carbon $date): void
 {
     $valuationService = app(InventoryValuationService::class);
 
@@ -426,7 +413,7 @@ function createStockDeliveryWithLot($testCase, \Modules\Product\Models\Product $
 
 it('traces complete lot journey from receipt to delivery', function () {
     // Arrange
-    $product = \Modules\Product\Models\Product::factory()->for($this->company)->create([
+    $product = Product::factory()->for($this->company)->create([
         'type' => \Modules\Product\Enums\Products\ProductType::Storable,
         'inventory_valuation_method' => ValuationMethod::FIFO,
         'default_inventory_account_id' => $this->inventoryAccount->id,
@@ -477,7 +464,7 @@ it('traces complete lot journey from receipt to delivery', function () {
 
 it('includes journal entry links in lot trace', function () {
     // Arrange
-    $product = \Modules\Product\Models\Product::factory()->for($this->company)->create([
+    $product = Product::factory()->for($this->company)->create([
         'type' => \Modules\Product\Enums\Products\ProductType::Storable,
         'inventory_valuation_method' => ValuationMethod::FIFO,
         'default_inventory_account_id' => $this->inventoryAccount->id,
@@ -506,7 +493,7 @@ it('includes journal entry links in lot trace', function () {
 
 it('identifies products below minimum stock levels', function () {
     // Arrange
-    $product = \Modules\Product\Models\Product::factory()->for($this->company)->create([
+    $product = Product::factory()->for($this->company)->create([
         'type' => \Modules\Product\Enums\Products\ProductType::Storable,
         'inventory_valuation_method' => ValuationMethod::AVCO,
         'default_inventory_account_id' => $this->inventoryAccount->id,
@@ -547,7 +534,7 @@ it('identifies products below minimum stock levels', function () {
 
 it('calculates available to promise correctly with reservations', function () {
     // Arrange
-    $product = \Modules\Product\Models\Product::factory()->for($this->company)->create([
+    $product = Product::factory()->for($this->company)->create([
         'type' => \Modules\Product\Enums\Products\ProductType::Storable,
         'inventory_valuation_method' => ValuationMethod::AVCO,
         'default_inventory_account_id' => $this->inventoryAccount->id,

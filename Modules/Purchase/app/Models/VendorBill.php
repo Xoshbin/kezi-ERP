@@ -2,15 +2,7 @@
 
 namespace Modules\Purchase\Models;
 
-use App\Casts\BaseCurrencyMoneyCast;
-use App\Casts\DocumentCurrencyMoneyCast;
-use App\Enums\Purchases\VendorBillStatus;
-use App\Models\PurchaseOrder;
-use App\Observers\AuditLogObserver;
-use App\Observers\VendorBillObserver;
-use App\Traits\HasPaymentState;
-use Brick\Money\Money;
-use Database\Factories\VendorBillFactory;
+use Eloquent;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
@@ -76,7 +68,7 @@ use Illuminate\Support\Carbon;
  * @method static Builder<static>|VendorBill whereUpdatedAt($value)
  * @method static Builder<static>|VendorBill whereVendorId($value)
  *
- * @mixin \Eloquent
+ * @mixin Eloquent
  */
 #[ObservedBy([\Modules\Foundation\Observers\AuditLogObserver::class, VendorBillObserver::class])]
 class VendorBill extends Model
@@ -379,7 +371,7 @@ class VendorBill extends Model
                 'sequence' => 1,
                 'due_date' => $this->due_date,
                 'amount' => $this->total_amount,
-                'status' => \App\Enums\PaymentInstallments\InstallmentStatus::Pending,
+                'status' => InstallmentStatus::Pending,
             ]);
 
             return;
@@ -395,7 +387,7 @@ class VendorBill extends Model
                 'sequence' => $index + 1,
                 'due_date' => $installment['due_date'],
                 'amount' => $installment['amount'],
-                'status' => \App\Enums\PaymentInstallments\InstallmentStatus::Pending,
+                'status' => InstallmentStatus::Pending,
             ]);
         }
     }

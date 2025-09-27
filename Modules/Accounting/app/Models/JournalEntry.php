@@ -2,11 +2,9 @@
 
 namespace Modules\Accounting\Models;
 
-use App\Casts\BaseCurrencyMoneyCast;
-use App\Enums\Accounting\JournalEntryState;
-use App\Observers\JournalEntryObserver;
 use Brick\Money\Money;
 use Database\Factories\JournalEntryFactory;
+use Eloquent;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
@@ -47,7 +45,7 @@ use RuntimeException;
  * @property-read Journal $journal
  * @property-read Collection<int, JournalEntryLine> $lines
  * @property-read int|null $lines_count
- * @property-read Model|\Eloquent|null $source
+ * @property-read Model|Eloquent|null $source
  *
  * @method static JournalEntryFactory factory($count = null, $state = [])
  * @method static Builder<static>|JournalEntry newModelQuery()
@@ -71,12 +69,12 @@ use RuntimeException;
  * @method static Builder<static>|JournalEntry whereTotalDebit($value)
  * @method static Builder<static>|JournalEntry whereUpdatedAt($value)
  *
- * @mixin \Eloquent
+ * @mixin Eloquent
  */
 #[ObservedBy([JournalEntryObserver::class])]
 class JournalEntry extends Model
 {
-    /** @use HasFactory<\Database\Factories\JournalEntryFactory> */
+    /** @use HasFactory<JournalEntryFactory> */
     use HasFactory;
 
     /**
@@ -288,7 +286,7 @@ class JournalEntry extends Model
      * @return MorphTo An Eloquent polymorphic relationship instance [3, 24].
      */
     /**
-     * @return MorphTo<\Illuminate\Database\Eloquent\Model, static>
+     * @return MorphTo<Model, static>
      */
     public function source(): MorphTo
     {

@@ -2,23 +2,22 @@
 
 namespace Modules\Payment\Actions\Payments;
 
-use App\DataTransferObjects\Payments\CreatePaymentDTO;
-use App\Enums\Payments\PaymentStatus;
-use App\Enums\Payments\PaymentType;
 use App\Models\Company;
 use App\Models\User;
-use App\Services\Accounting\LockDateService;
-use App\Services\Payments\Strategies\SettlementStrategy;
 use Brick\Money\Money;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use InvalidArgumentException;
+use Modules\Foundation\Models\Currency;
+use Modules\Payment\Models\Payment;
+use Modules\Purchase\Models\VendorBill;
+use Modules\Sales\Models\Invoice;
 
 class CreatePaymentAction
 {
     public function __construct(private readonly \Modules\Accounting\Services\Accounting\LockDateService $lockDateService) {}
 
-    public function execute(CreatePaymentDTO $dto, User $user): \Modules\Payment\Models\Payment
+    public function execute(CreatePaymentDTO $dto, User $user): Payment
     {
         // Infer flow from presence of document links: if provided => settlement; else => partner advance/credit
         $isSettlement = ! empty($dto->document_links);
@@ -33,7 +32,7 @@ class CreatePaymentAction
         $this->lockDateService->enforce($company, Carbon::parse($dto->payment_date));
 
         return DB::transaction(function () use ($dto) {
-            $currencyCode = \Modules\Foundation\Models\Currency::findOrFail($dto->currency_id)->code;
+            $currencyCode = Currency::findOrFail($dto->currency_id)->code;
 
             // Determine payment details based on presence of document links
             if (! empty($dto->document_links)) {
@@ -48,9 +47,9 @@ class CreatePaymentAction
 
                     if (! $partnerId) {
                         if ($link->document_type === 'invoice') {
-                            $partnerId = \Modules\Sales\Models\Invoice::findOrFail($link->document_id)->customer_id;
+                            $partnerId = Invoice::findOrFail($link->document_id)->customer_id;
                         } elseif ($link->document_type === 'vendor_bill') {
-                            $partnerId = \Modules\Purchase\Models\VendorBill::findOrFail($link->document_id)->vendor_id;
+                            $partnerId = VendorBill::findOrFail($link->document_id)->vendor_id;
                         }
                     }
                 }
@@ -67,7 +66,7 @@ class CreatePaymentAction
             }
 
             // Create the parent Payment record
-            $payment = \Modules\Payment\Models\Payment::create([
+            $payment = Payment::create([
                 'company_id' => $dto->company_id,
                 'journal_id' => $dto->journal_id,
                 'currency_id' => $dto->currency_id,

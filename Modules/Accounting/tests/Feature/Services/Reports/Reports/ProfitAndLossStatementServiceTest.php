@@ -2,16 +2,10 @@
 
 namespace Modules\Accounting\Tests\Feature\Services\Reports;
 
-use App\DataTransferObjects\Reports\ProfitAndLossStatementDTO;
-use App\Enums\Accounting\AccountType;
-use App\Enums\Accounting\JournalEntryState;
-use App\Models\Journal;
-use App\Models\JournalEntry;
-use App\Models\JournalEntryLine;
-use App\Services\Reports\ProfitAndLossStatementService;
 use Brick\Money\Money;
 use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Modules\Accounting\Models\Account;
 use Tests\Traits\WithConfiguredCompany;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);
@@ -26,14 +20,14 @@ describe('ProfitAndLossStatementService', function () {
         $currency = $this->company->currency->code;
         $journal = Journal::factory()->for($this->company)->create();
 
-        $salesAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create(['type' => \Modules\Accounting\Enums\Accounting\AccountType::Income]);
-        $otherIncomeAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create(['type' => \Modules\Accounting\Enums\Accounting\AccountType::OtherIncome]);
-        $cogsAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create(['type' => \Modules\Accounting\Enums\Accounting\AccountType::CostOfRevenue]);
-        $rentAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create(['type' => \Modules\Accounting\Enums\Accounting\AccountType::Expense]);
-        $depreciationAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create(['type' => \Modules\Accounting\Enums\Accounting\AccountType::Depreciation]);
-        $receivableAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create(['type' => \Modules\Accounting\Enums\Accounting\AccountType::Receivable]);
-        $bankAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create(['type' => \Modules\Accounting\Enums\Accounting\AccountType::BankAndCash]);
-        $inventoryAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create(['type' => \Modules\Accounting\Enums\Accounting\AccountType::CurrentAssets]);
+        $salesAccount = Account::factory()->for($this->company)->create(['type' => \Modules\Accounting\Enums\Accounting\AccountType::Income]);
+        $otherIncomeAccount = Account::factory()->for($this->company)->create(['type' => \Modules\Accounting\Enums\Accounting\AccountType::OtherIncome]);
+        $cogsAccount = Account::factory()->for($this->company)->create(['type' => \Modules\Accounting\Enums\Accounting\AccountType::CostOfRevenue]);
+        $rentAccount = Account::factory()->for($this->company)->create(['type' => \Modules\Accounting\Enums\Accounting\AccountType::Expense]);
+        $depreciationAccount = Account::factory()->for($this->company)->create(['type' => \Modules\Accounting\Enums\Accounting\AccountType::Depreciation]);
+        $receivableAccount = Account::factory()->for($this->company)->create(['type' => \Modules\Accounting\Enums\Accounting\AccountType::Receivable]);
+        $bankAccount = Account::factory()->for($this->company)->create(['type' => \Modules\Accounting\Enums\Accounting\AccountType::BankAndCash]);
+        $inventoryAccount = Account::factory()->for($this->company)->create(['type' => \Modules\Accounting\Enums\Accounting\AccountType::CurrentAssets]);
 
         $startDate = Carbon::parse('2025-01-01');
         $endDate = Carbon::parse('2025-01-31');
@@ -149,10 +143,10 @@ describe('ProfitAndLossStatementService', function () {
         $currency = $this->company->currency->code;
         $journal = Journal::factory()->for($this->company)->create();
 
-        $salesAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create(['type' => \Modules\Accounting\Enums\Accounting\AccountType::Income]);
-        $expenseAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create(['type' => \Modules\Accounting\Enums\Accounting\AccountType::Expense]);
-        $receivableAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create(['type' => \Modules\Accounting\Enums\Accounting\AccountType::Receivable]);
-        $bankAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create(['type' => \Modules\Accounting\Enums\Accounting\AccountType::BankAndCash]);
+        $salesAccount = Account::factory()->for($this->company)->create(['type' => \Modules\Accounting\Enums\Accounting\AccountType::Income]);
+        $expenseAccount = Account::factory()->for($this->company)->create(['type' => \Modules\Accounting\Enums\Accounting\AccountType::Expense]);
+        $receivableAccount = Account::factory()->for($this->company)->create(['type' => \Modules\Accounting\Enums\Accounting\AccountType::Receivable]);
+        $bankAccount = Account::factory()->for($this->company)->create(['type' => \Modules\Accounting\Enums\Accounting\AccountType::BankAndCash]);
 
         $startDate = Carbon::parse('2025-01-01');
         $endDate = Carbon::parse('2025-01-31');
@@ -184,8 +178,8 @@ describe('ProfitAndLossStatementService', function () {
         $currency = $this->company->currency->code;
         $journal = Journal::factory()->for($this->company)->create();
 
-        $assetAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create(['type' => \Modules\Accounting\Enums\Accounting\AccountType::CurrentAssets]);
-        $liabilityAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create(['type' => \Modules\Accounting\Enums\Accounting\AccountType::CurrentLiabilities]);
+        $assetAccount = Account::factory()->for($this->company)->create(['type' => \Modules\Accounting\Enums\Accounting\AccountType::CurrentAssets]);
+        $liabilityAccount = Account::factory()->for($this->company)->create(['type' => \Modules\Accounting\Enums\Accounting\AccountType::CurrentLiabilities]);
 
         $startDate = Carbon::parse('2025-01-01');
         $endDate = Carbon::parse('2025-01-31');

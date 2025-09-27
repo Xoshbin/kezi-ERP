@@ -2,18 +2,20 @@
 
 namespace Modules\Accounting\Actions\Loans;
 
-use App\Enums\Loans\ScheduleMethod;
-use App\Services\Loans\InterestCalculatorService;
 use Brick\Math\RoundingMode;
 use Brick\Money\Money;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
+use Modules\Accounting\Models\LoanAgreement;
+use Modules\Accounting\Models\LoanRateChange;
+use Modules\Accounting\Models\LoanScheduleEntry;
+use RuntimeException;
 
 class ComputeLoanScheduleAction
 {
     public function __construct(private readonly \Modules\Accounting\Services\Loans\InterestCalculatorService $interestCalc) {}
 
-    public function execute(\Modules\Accounting\Models\LoanAgreement $loan): void
+    public function execute(LoanAgreement $loan): void
     {
         DB::transaction(function () use ($loan) {
             $loan->loadMissing('currency', 'scheduleEntries', 'rateChanges');
@@ -25,7 +27,7 @@ class ComputeLoanScheduleAction
             $n = (int) $loan->duration_months; // monthly frequency for now
             $currencyModel = $loan->currency;
             if (! $currencyModel) {
-                throw new \RuntimeException('Loan currency is missing');
+                throw new RuntimeException('Loan currency is missing');
             }
             /** @var string $currency */
             $currency = (string) data_get($currencyModel, 'code');
@@ -36,7 +38,7 @@ class ComputeLoanScheduleAction
             // Prepare rate changes lookup by month index (1-based)
             $rateByMonth = [];
             foreach ($loan->rateChanges as $rc) {
-                /** @var \Modules\Accounting\Models\LoanRateChange $rc */
+                /** @var LoanRateChange $rc */
                 $effective = Carbon::parse($rc->effective_date);
                 $monthIndex = $date->diffInMonths($effective) + 1; // apply to installment whose due date covers period starting at effective
                 $monthIndex = max(1, min($n, $monthIndex));
@@ -66,7 +68,7 @@ class ComputeLoanScheduleAction
 
                 $balance = $balance->minus($principalComponent);
 
-                $entry = new \Modules\Accounting\Models\LoanScheduleEntry;
+                $entry = new LoanScheduleEntry;
                 $entry->loan()->associate($loan);
                 $entry->sequence = $i;
                 $entry->due_date = $date->copy()->addMonths($i);

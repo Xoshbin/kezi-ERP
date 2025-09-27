@@ -2,21 +2,13 @@
 
 namespace Modules\Sales\Actions\Sales;
 
-use App\Actions\Inventory\CreateStockMoveAction;
-use App\DataTransferObjects\Inventory\CreateStockMoveDTO;
-use App\DataTransferObjects\Sales\CreateStockMovesForInvoiceDTO;
-use App\Enums\Inventory\StockLocationType;
-use App\Enums\Inventory\StockMoveStatus;
-use App\Enums\Inventory\StockMoveType;
-use App\Enums\Inventory\StockPickingState;
-use App\Enums\Inventory\StockPickingType;
-use App\Enums\Products\ProductType;
-use App\Models\StockLocation;
-use App\Models\StockPicking;
 use App\Models\User;
-use App\Services\Inventory\StockReservationService;
+use Exception;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
+use Modules\Inventory\Events\Inventory\StockMoveConfirmed;
+use Modules\Sales\Models\Invoice;
+use Modules\Sales\Models\InvoiceLine;
 
 class CreateStockMovesForInvoiceAction
 {
@@ -27,7 +19,7 @@ class CreateStockMovesForInvoiceAction
     /**
      * Create stock moves for all storable products in an invoice
      *
-     * @return Collection<int, \App\Models\StockMove> Collection of created stock moves
+     * @return Collection<int, StockMove> Collection of created stock moves
      */
     public function execute(CreateStockMovesForInvoiceDTO $dto): Collection
     {
@@ -78,7 +70,7 @@ class CreateStockMovesForInvoiceAction
                     $stockMoves->push($stockMove);
 
                     // Dispatch the StockMoveConfirmed event to trigger valuation and outgoing processing
-                    \Modules\Inventory\Events\Inventory\StockMoveConfirmed::dispatch($stockMove);
+                    StockMoveConfirmed::dispatch($stockMove);
                 }
             }
 
@@ -89,19 +81,19 @@ class CreateStockMovesForInvoiceAction
     /**
      * Get stock locations using fallback strategy
      *
-     * @return array{warehouse: \App\Models\StockLocation|null, vendor: \App\Models\StockLocation|null}
+     * @return array{warehouse: StockLocation|null, vendor: StockLocation|null}
      */
-    protected function getStockLocations(\Modules\Sales\Models\Invoice $invoice): array
+    protected function getStockLocations(Invoice $invoice): array
     {
         // Get stock locations - use company defaults or fallback to any available locations
-        /** @var \App\Models\StockLocation|null $warehouseLocation */
+        /** @var StockLocation|null $warehouseLocation */
         $warehouseLocation = $invoice->company->defaultStockLocation
             ?? StockLocation::where('company_id', $invoice->company_id)
             ->where('type', StockLocationType::Internal)
             ->first()
             ?? StockLocation::where('name', 'Warehouse')->first();
 
-        /** @var \App\Models\StockLocation|null $customerLocation */
+        /** @var StockLocation|null $customerLocation */
         $customerLocation = StockLocation::where('company_id', $invoice->company_id)
             ->where('type', StockLocationType::Customer)
             ->first()
@@ -117,23 +109,23 @@ class CreateStockMovesForInvoiceAction
      * Create a stock move for a single invoice line
      */
     protected function createStockMoveForLine(
-        \Modules\Sales\Models\Invoice $invoice,
-        \Modules\Sales\Models\InvoiceLine $line,
+        Invoice $invoice,
+        InvoiceLine $line,
         User $user,
         StockLocation $warehouseLocation,
         StockLocation $customerLocation
-    ): \App\Models\StockMove {
+    ): StockMove {
         if (! $line->product_id) {
-            throw new \Exception('Invoice line must have a product to create stock move');
+            throw new Exception('Invoice line must have a product to create stock move');
         }
 
-        $productLineDto = new \App\DataTransferObjects\Inventory\CreateStockMoveProductLineDTO(
+        $productLineDto = new CreateStockMoveProductLineDTO(
             product_id: $line->product_id,
             quantity: (float) $line->quantity,
             from_location_id: $warehouseLocation->id,
             to_location_id: $customerLocation->id,
             description: $line->description,
-            source_type: \Modules\Sales\Models\Invoice::class,
+            source_type: Invoice::class,
             source_id: $invoice->id
         );
 
@@ -146,7 +138,7 @@ class CreateStockMovesForInvoiceAction
             reference: $invoice->invoice_number,
             description: "Stock delivery for invoice {$invoice->invoice_number}",
             source_id: $invoice->id,
-            source_type: \Modules\Sales\Models\Invoice::class,
+            source_type: Invoice::class,
             created_by_user_id: $user->id,
         );
 

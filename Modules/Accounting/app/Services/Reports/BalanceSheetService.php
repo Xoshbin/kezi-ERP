@@ -12,6 +12,7 @@ use Brick\Money\Money;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
+use Modules\Accounting\Models\Account;
 
 class BalanceSheetService
 {
@@ -30,7 +31,7 @@ class BalanceSheetService
 
         // 3. Get account models to access translated names
         $accountIds = $accountBalances->pluck('account_id')->unique();
-        /** @var \Illuminate\Database\Eloquent\Collection<int, \Modules\Accounting\Models\Account> $accounts */
+        /** @var \Illuminate\Database\Eloquent\Collection<int, Account> $accounts */
         $accounts = $company->accounts()->whereIn('id', $accountIds)->get()->keyBy('id');
 
         // 4. Process and assemble the DTO
@@ -66,7 +67,7 @@ class BalanceSheetService
 
     private function getAccountBalances(Company $company, Carbon $asOfDate): Collection
     {
-        /** @var \Illuminate\Support\Collection<int, object{account_id: int, account_code: string, account_name: string, account_type: string, total_debit: string|null, total_credit: string|null}> $results */
+        /** @var Collection<int, object{account_id: int, account_code: string, account_name: string, account_type: string, total_debit: string|null, total_credit: string|null}> $results */
         $results = DB::table('journal_entry_lines')
             ->select([
                 'accounts.id as account_id',
@@ -108,7 +109,7 @@ class BalanceSheetService
 
     private function getCurrentYearEarnings(Company $company, Carbon $fiscalYearStart, Carbon $asOfDate): Money
     {
-        /** @var \Illuminate\Support\Collection<int, object{account_type: string, total_debit: string|null, total_credit: string|null}> $results */
+        /** @var Collection<int, object{account_type: string, total_debit: string|null, total_credit: string|null}> $results */
         $results = DB::table('journal_entry_lines')
             ->select([
                 'accounts.type as account_type',
@@ -159,8 +160,8 @@ class BalanceSheetService
 
     /**
      * @param array<\Modules\Accounting\Enums\Accounting\AccountType> $types
-     * @param \Illuminate\Database\Eloquent\Collection<int, \Modules\Accounting\Models\Account> $accounts
-     * @return \Illuminate\Support\Collection<int, ReportLineDTO>
+     * @param \Illuminate\Database\Eloquent\Collection<int, Account> $accounts
+     * @return Collection<int, ReportLineDTO>
      */
     private function mapBalancesToReportLines(Collection $balances, array $types, string $currency, Collection $accounts, bool $negate = false): Collection
     {
@@ -181,7 +182,7 @@ class BalanceSheetService
     }
 
     /**
-     * @param  \Illuminate\Support\Collection<int, ReportLineDTO>  $lines
+     * @param Collection<int, ReportLineDTO> $lines
      */
     private function sumLines(Collection $lines, Money $zero): Money
     {

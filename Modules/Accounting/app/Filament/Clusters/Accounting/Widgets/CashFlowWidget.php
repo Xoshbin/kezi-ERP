@@ -2,6 +2,7 @@
 
 namespace Modules\Accounting\Filament\Clusters\Accounting\Widgets;
 
+use App\Models\Company;
 use App\Services\Reports\AgedPayableService;
 use App\Services\Reports\AgedReceivableService;
 use App\Support\NumberFormatter;
@@ -18,7 +19,7 @@ class CashFlowWidget extends BaseWidget
     protected function getStats(): array
     {
         $company = Filament::getTenant();
-        if (! $company instanceof \App\Models\Company) {
+        if (! $company instanceof Company) {
             return [];
         }
 

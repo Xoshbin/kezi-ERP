@@ -1,11 +1,17 @@
 <?php
 
-use App\Models\VendorBillLine;
-use App\Services\InvoiceService;
-use App\Services\VendorBillService;
 use Brick\Money\Money;
 use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Modules\Accounting\Models\Account;
+use Modules\Foundation\Models\Currency;
+use Modules\Foundation\Models\CurrencyRate;
+use Modules\Foundation\Models\Partner;
+use Modules\Product\Enums\Products\ProductType;
+use Modules\Product\Models\Product;
+use Modules\Purchase\Models\VendorBill;
+use Modules\Sales\Models\Invoice;
+use Modules\Sales\Models\InvoiceLine;
 use Tests\Traits\WithConfiguredCompany;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);
@@ -15,7 +21,7 @@ beforeEach(function () {
     $this->actingAs($this->user);
 
     // Create foreign currency (USD) - use firstOrCreate to avoid conflicts in parallel tests
-    $this->usd = \Modules\Foundation\Models\Currency::firstOrCreate(
+    $this->usd = Currency::firstOrCreate(
         ['code' => 'USD'],
         [
             'name' => 'USD Currency',
@@ -26,20 +32,20 @@ beforeEach(function () {
     );
 
     // Create test data
-    $this->vendor = \Modules\Foundation\Models\Partner::factory()->vendor()->create(['company_id' => $this->company->id]);
-    $this->customer = \Modules\Foundation\Models\Partner::factory()->customer()->create(['company_id' => $this->company->id]);
-    $this->product = \Modules\Product\Models\Product::factory()->create([
+    $this->vendor = Partner::factory()->vendor()->create(['company_id' => $this->company->id]);
+    $this->customer = Partner::factory()->customer()->create(['company_id' => $this->company->id]);
+    $this->product = Product::factory()->create([
         'company_id' => $this->company->id,
-        'type' => \Modules\Product\Enums\Products\ProductType::Service,
+        'type' => ProductType::Service,
     ]);
 
-    $this->expenseAccount = \Modules\Accounting\Models\Account::factory()->expense()->create(['company_id' => $this->company->id]);
-    $this->incomeAccount = \Modules\Accounting\Models\Account::factory()->income()->create(['company_id' => $this->company->id]);
+    $this->expenseAccount = Account::factory()->expense()->create(['company_id' => $this->company->id]);
+    $this->incomeAccount = Account::factory()->income()->create(['company_id' => $this->company->id]);
 });
 
 it('vendor bill posting uses fallback exchange rate when historical rate not available', function () {
     // Create a current exchange rate (not for the historical date)
-    \Modules\Foundation\Models\CurrencyRate::factory()->create([
+    CurrencyRate::factory()->create([
         'company_id' => $this->company->id,
         'currency_id' => $this->usd->id,
         'rate' => 1460.0,
@@ -47,7 +53,7 @@ it('vendor bill posting uses fallback exchange rate when historical rate not ava
     ]);
 
     // Create vendor bill with historical date (no rate available for this date)
-    $vendorBill = \Modules\Purchase\Models\VendorBill::factory()->create([
+    $vendorBill = VendorBill::factory()->create([
         'company_id' => $this->company->id,
         'vendor_id' => $this->vendor->id,
         'currency_id' => $this->usd->id,
@@ -86,7 +92,7 @@ it('vendor bill posting uses fallback exchange rate when historical rate not ava
 
 it('invoice confirmation uses fallback exchange rate when historical rate not available', function () {
     // Create a current exchange rate (not for the historical date)
-    \Modules\Foundation\Models\CurrencyRate::factory()->create([
+    CurrencyRate::factory()->create([
         'company_id' => $this->company->id,
         'currency_id' => $this->usd->id,
         'rate' => 1460.0,
@@ -94,7 +100,7 @@ it('invoice confirmation uses fallback exchange rate when historical rate not av
     ]);
 
     // Create invoice with historical date (no rate available for this date)
-    $invoice = \Modules\Sales\Models\Invoice::factory()->create([
+    $invoice = Invoice::factory()->create([
         'company_id' => $this->company->id,
         'customer_id' => $this->customer->id,
         'currency_id' => $this->usd->id,
@@ -103,7 +109,7 @@ it('invoice confirmation uses fallback exchange rate when historical rate not av
         'total_tax' => Money::of(0, 'USD'),
     ]);
 
-    \Modules\Sales\Models\InvoiceLine::factory()->create([
+    InvoiceLine::factory()->create([
         'company_id' => $this->company->id,
         'invoice_id' => $invoice->id,
         'product_id' => $this->product->id,
@@ -132,7 +138,7 @@ it('invoice confirmation uses fallback exchange rate when historical rate not av
 
 it('journal entry creation handles missing exchange rates gracefully', function () {
     // Create a current exchange rate
-    \Modules\Foundation\Models\CurrencyRate::factory()->create([
+    CurrencyRate::factory()->create([
         'company_id' => $this->company->id,
         'currency_id' => $this->usd->id,
         'rate' => 1460.0,
@@ -140,7 +146,7 @@ it('journal entry creation handles missing exchange rates gracefully', function 
     ]);
 
     // Create vendor bill with historical date
-    $vendorBill = \Modules\Purchase\Models\VendorBill::factory()->create([
+    $vendorBill = VendorBill::factory()->create([
         'company_id' => $this->company->id,
         'vendor_id' => $this->vendor->id,
         'currency_id' => $this->usd->id,

@@ -2,15 +2,14 @@
 
 namespace Modules\Purchase\Database\Factories;
 
-use App\Enums\Purchases\PurchaseOrderStatus;
 use App\Models\Company;
-use App\Models\PurchaseOrder;
-use App\Models\StockLocation;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Modules\Foundation\Models\Currency;
+use Modules\Foundation\Models\Partner;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\PurchaseOrder>
+ * @extends Factory<PurchaseOrder>
  */
 class PurchaseOrderFactory extends Factory
 {
@@ -26,8 +25,8 @@ class PurchaseOrderFactory extends Factory
     {
         return [
             'company_id' => Company::factory(),
-            'vendor_id' => \Modules\Foundation\Models\Partner::factory()->vendor(),
-            'currency_id' => \Modules\Foundation\Models\Currency::factory()->createSafely(),
+            'vendor_id' => Partner::factory()->vendor(),
+            'currency_id' => Currency::factory()->createSafely(),
             'created_by_user_id' => User::factory(),
             'po_number' => null,
             'status' => PurchaseOrderStatus::Draft,

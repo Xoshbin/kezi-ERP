@@ -2,13 +2,11 @@
 
 namespace Modules\Inventory\Tests\Feature\Adjustments;
 
-use App\Actions\Adjustments\CreateAdjustmentDocumentLineAction;
-use App\DataTransferObjects\Adjustments\CreateAdjustmentDocumentDTO;
-use App\DataTransferObjects\Adjustments\CreateAdjustmentDocumentLineDTO;
-use App\Enums\Adjustments\AdjustmentDocumentType;
-use App\Models\Tax;
+
 use Brick\Money\Money;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Modules\Accounting\Models\Account;
+use Modules\Inventory\Models\AdjustmentDocument;
 use Tests\Traits\MocksTime;
 use Tests\Traits\WithConfiguredCompany;
 
@@ -17,13 +15,13 @@ uses(RefreshDatabase::class, WithConfiguredCompany::class, MocksTime::class);
 test('adjustment document totals are calculated correctly from lines', function () {
     // Arrange
     $currencyCode = $this->company->currency->code;
-    $adjustmentDoc = \Modules\Inventory\Models\AdjustmentDocument::factory()->for($this->company)->create([
+    $adjustmentDoc = AdjustmentDocument::factory()->for($this->company)->create([
         'currency_id' => $this->company->currency->id,
         'total_amount' => Money::of(0, $currencyCode),
         'total_tax' => Money::of(0, $currencyCode),
     ]);
     $tax = Tax::factory()->for($this->company)->create(['rate' => 0.10]); // 10% tax
-    $account = \Modules\Accounting\Models\Account::factory()->for($this->company)->income()->create();
+    $account = Account::factory()->for($this->company)->income()->create();
 
     // Act
     $createLineAction = app(CreateAdjustmentDocumentLineAction::class);
@@ -62,7 +60,7 @@ test('create adjustment document action correctly creates document with lines', 
     // Arrange
     $currencyCode = $this->company->currency->code;
     $tax = Tax::factory()->for($this->company)->create(['rate' => 0.10]);
-    $account = \Modules\Accounting\Models\Account::factory()->for($this->company)->income()->create();
+    $account = Account::factory()->for($this->company)->income()->create();
 
     $lineDTOs = [
         new CreateAdjustmentDocumentLineDTO(
@@ -96,7 +94,7 @@ test('create adjustment document action correctly creates document with lines', 
     );
 
     // Act
-    $action = app(\App\Actions\Adjustments\CreateAdjustmentDocumentAction::class);
+    $action = app(CreateAdjustmentDocumentAction::class);
     $adjustmentDoc = $action->execute($dto);
 
     // Assert

@@ -2,16 +2,14 @@
 
 namespace Modules\Accounting\Filament\Clusters\Accounting\Resources\Invoices\Pages;
 
-use App\Actions\Sales\CreateInvoiceAction;
-use App\DataTransferObjects\Sales\CreateInvoiceDTO;
-use App\DataTransferObjects\Sales\CreateInvoiceLineDTO;
-use App\Filament\Actions\DocsAction;
-use App\Filament\Clusters\Accounting\Resources\Invoices\InvoiceResource;
 use Brick\Money\Money;
 use Filament\Facades\Filament;
 use Filament\Resources\Pages\CreateRecord;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
+use InvalidArgumentException;
+use Modules\Foundation\Models\Currency;
 
 class CreateInvoice extends CreateRecord
 {
@@ -19,12 +17,12 @@ class CreateInvoice extends CreateRecord
 
     protected function mutateFormDataBeforeCreate(array $data): array
     {
-        $currency = \Modules\Foundation\Models\Currency::findOrFail($data['currency_id']);
+        $currency = Currency::findOrFail($data['currency_id']);
         // Ensure we have a single Currency model, not a collection
-        if ($currency instanceof \Illuminate\Database\Eloquent\Collection) {
+        if ($currency instanceof Collection) {
             $currency = $currency->first();
             if (! $currency) {
-                throw new \InvalidArgumentException('Currency not found');
+                throw new InvalidArgumentException('Currency not found');
             }
         }
         $lineDTOs = [];

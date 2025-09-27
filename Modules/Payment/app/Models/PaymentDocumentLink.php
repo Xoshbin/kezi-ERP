@@ -3,7 +3,9 @@
 namespace Modules\Payment\Models;
 
 use App\Casts\DocumentCurrencyMoneyCast;
+use Brick\Money\Money;
 use Database\Factories\PaymentDocumentLinkFactory;
+use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -17,7 +19,7 @@ use InvalidArgumentException;
  * @property int $payment_id
  * @property int|null $invoice_id
  * @property int|null $vendor_bill_id
- * @property \Brick\Money\Money $amount_applied
+ * @property Money $amount_applied
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property-read Invoice|null $invoice
@@ -36,11 +38,11 @@ use InvalidArgumentException;
  * @method static Builder<static>|PaymentDocumentLink whereUpdatedAt($value)
  * @method static Builder<static>|PaymentDocumentLink whereVendorBillId($value)
  *
- * @mixin \Eloquent
+ * @mixin Eloquent
  */
 class PaymentDocumentLink extends Model
 {
-    /** @use HasFactory<\Database\Factories\PaymentDocumentLinkFactory> */
+    /** @use HasFactory<PaymentDocumentLinkFactory> */
     use HasFactory;
 
     /**

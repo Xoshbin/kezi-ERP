@@ -2,17 +2,8 @@
 
 namespace Modules\Accounting\Filament\Clusters\Accounting\Resources\AdjustmentDocuments;
 
-use App\Enums\Accounting\AccountType;
-use App\Enums\Adjustments\AdjustmentDocumentStatus;
-use App\Enums\Adjustments\AdjustmentDocumentType;
-use App\Filament\Clusters\Accounting\AccountingCluster;
-use App\Filament\Clusters\Accounting\Resources\AdjustmentDocuments\Pages\CreateAdjustmentDocument;
-use App\Filament\Clusters\Accounting\Resources\AdjustmentDocuments\Pages\EditAdjustmentDocument;
-use App\Filament\Clusters\Accounting\Resources\AdjustmentDocuments\Pages\ListAdjustmentDocuments;
-use App\Filament\Forms\Components\MoneyInput;
-use App\Models\Tax;
-use App\Rules\NotInLockedPeriod;
 use BackedEnum;
+use Brick\Money\Money;
 use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
@@ -34,11 +25,25 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Collection;
+use Modules\Accounting\Filament\Clusters\Accounting\AccountingCluster;
+use Modules\Accounting\Filament\Clusters\Accounting\Resources\AdjustmentDocuments\Pages\CreateAdjustmentDocument;
+use Modules\Accounting\Filament\Clusters\Accounting\Resources\AdjustmentDocuments\Pages\EditAdjustmentDocument;
+use Modules\Accounting\Filament\Clusters\Accounting\Resources\AdjustmentDocuments\Pages\ListAdjustmentDocuments;
+use Modules\Accounting\Models\Account;
+use Modules\Accounting\Rules\NotInLockedPeriod;
+use Modules\Foundation\Filament\Forms\Components\MoneyInput;
+use Modules\Foundation\Models\Currency;
+use Modules\Inventory\Enums\Adjustments\AdjustmentDocumentStatus;
+use Modules\Inventory\Enums\Adjustments\AdjustmentDocumentType;
+use Modules\Inventory\Models\AdjustmentDocument;
+use Modules\Product\Models\Product;
+use Modules\Purchase\Models\VendorBill;
+use Modules\Sales\Models\Invoice;
 use Xoshbin\TranslatableSelect\Components\TranslatableSelect;
 
 class AdjustmentDocumentResource extends Resource
 {
-    protected static ?string $model = \Modules\Inventory\Models\AdjustmentDocument::class;
+    protected static ?string $model = AdjustmentDocument::class;
 
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-document-duplicate';
 
@@ -72,7 +77,7 @@ class AdjustmentDocumentResource extends Resource
             Section::make(__('adjustment_document.document_information'))
                 ->description(__('adjustment_document.document_information_description'))
                 ->schema([
-                    TranslatableSelect::forModel('currency_id', \Modules\Foundation\Models\Currency::class, 'name')
+                    TranslatableSelect::forModel('currency_id', Currency::class, 'name')
                         ->required()
                         ->searchable()
                         ->preload()
@@ -176,7 +181,7 @@ class AdjustmentDocumentResource extends Resource
                             fn($query) => $query->posted()->with('customer')
                         )
                         ->getOptionLabelUsing(function ($value): ?string {
-                            $invoice = \Modules\Sales\Models\Invoice::posted()->with('customer')->find($value);
+                            $invoice = Invoice::posted()->with('customer')->find($value);
                             if (! $invoice) {
                                 return null;
                             }
@@ -194,7 +199,7 @@ class AdjustmentDocumentResource extends Resource
                         ->reactive()
                         ->afterStateUpdated(function ($state, Set $set) {
                             if ($state) {
-                                $invoice = \Modules\Sales\Models\Invoice::find($state);
+                                $invoice = Invoice::find($state);
                                 // Ensure we have a single Invoice model, not a collection
                                 if ($invoice instanceof Collection) {
                                     $invoice = $invoice->first();
@@ -212,7 +217,7 @@ class AdjustmentDocumentResource extends Resource
                         ->reactive()
                         ->afterStateUpdated(function ($state, Set $set) {
                             if ($state) {
-                                $bill = \Modules\Purchase\Models\VendorBill::find($state);
+                                $bill = VendorBill::find($state);
                                 // Ensure we have a single VendorBill model, not a collection
                                 if ($bill instanceof Collection) {
                                     $bill = $bill->first();
@@ -241,7 +246,7 @@ class AdjustmentDocumentResource extends Resource
                         ->reorderable(false)
                         ->minItems(1)
                         ->schema([
-                            TranslatableSelect::forModel('product_id', \Modules\Product\Models\Product::class, 'name')
+                            TranslatableSelect::forModel('product_id', Product::class, 'name')
                                 ->label(__('adjustment_document.product'))
                                 ->searchable()
                                 ->searchableFields(['name', 'sku', 'description'])
@@ -249,7 +254,7 @@ class AdjustmentDocumentResource extends Resource
                                 ->reactive()
                                 ->afterStateUpdated(function (callable $set, $state) {
                                     if ($state) {
-                                        $product = \Modules\Product\Models\Product::find($state);
+                                        $product = Product::find($state);
                                         // Ensure we have a single Product model, not a collection
                                         if ($product instanceof Collection) {
                                             $product = $product->first();
@@ -258,7 +263,7 @@ class AdjustmentDocumentResource extends Resource
                                             $set('description', $product->name);
                                             // Convert Money object to string for MoneyInput component
                                             $unitPrice = $product->unit_price;
-                                            if ($unitPrice instanceof \Brick\Money\Money) {
+                                            if ($unitPrice instanceof Money) {
                                                 $set('unit_price', $unitPrice->getAmount()->__toString());
                                             } else {
                                                 $set('unit_price', $unitPrice);
@@ -303,7 +308,7 @@ class AdjustmentDocumentResource extends Resource
                                 ->numeric()
                                 ->default(1)
                                 ->columnSpan(2),
-                            \Modules\Foundation\Filament\Forms\Components\MoneyInput::make('unit_price')
+                            MoneyInput::make('unit_price')
                                 ->label('Price')
                                 ->currencyField('../../currency_id')
                                 ->required()
@@ -336,7 +341,7 @@ class AdjustmentDocumentResource extends Resource
                                         ->modalWidth('lg');
                                 })
                                 ->columnSpan(3),
-                            TranslatableSelect::forModel('account_id', \Modules\Accounting\Models\Account::class)
+                            TranslatableSelect::forModel('account_id', Account::class)
                                 ->label('Account')
                                 ->searchable()
                                 ->searchableFields(['name', 'code'])

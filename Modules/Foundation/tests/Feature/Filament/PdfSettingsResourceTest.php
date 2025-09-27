@@ -1,9 +1,12 @@
 <?php
 
-use App\Filament\Clusters\Settings\Resources\PdfSettings\PdfSettingsResource;
 use App\Models\Company;
 use App\Models\User;
+use Filament\Facades\Filament;
 use Livewire\Livewire;
+use Modules\Foundation\Filament\Clusters\Settings\Resources\PdfSettings\Pages\EditPdfSettings;
+use Modules\Foundation\Filament\Clusters\Settings\Resources\PdfSettings\Pages\ListPdfSettings;
+use Modules\Foundation\Filament\Clusters\Settings\Resources\PdfSettings\PdfSettingsResource;
 
 beforeEach(function () {
     $this->user = User::factory()->create();
@@ -19,7 +22,7 @@ beforeEach(function () {
     $this->actingAs($this->user);
 
     // Set up Filament tenant context
-    \Filament\Facades\Filament::setTenant($this->company);
+    Filament::setTenant($this->company);
 });
 
 test('user can view pdf settings list page', function () {
@@ -39,7 +42,7 @@ test('user can view pdf settings edit page', function () {
 test('user can update pdf template setting', function () {
     // Action
     Livewire::actingAs($this->user)
-        ->test(\App\Filament\Clusters\Settings\Resources\PdfSettings\Pages\EditPdfSettings::class, [
+        ->test(EditPdfSettings::class, [
             'record' => $this->company->getRouteKey(),
         ])
         ->fillForm([
@@ -58,7 +61,7 @@ test('user can update pdf logo', function () {
 
     // Action
     Livewire::actingAs($this->user)
-        ->test(\App\Filament\Clusters\Settings\Resources\PdfSettings\Pages\EditPdfSettings::class, [
+        ->test(EditPdfSettings::class, [
             'record' => $this->company->getRouteKey(),
         ])
         ->fillForm([
@@ -83,7 +86,7 @@ test('user can update custom pdf settings', function () {
 
     // Action
     Livewire::actingAs($this->user)
-        ->test(\App\Filament\Clusters\Settings\Resources\PdfSettings\Pages\EditPdfSettings::class, [
+        ->test(EditPdfSettings::class, [
             'record' => $this->company->getRouteKey(),
         ])
         ->fillForm([
@@ -100,7 +103,7 @@ test('user can update custom pdf settings', function () {
 test('pdf template field is required', function () {
     // Action & Assert
     Livewire::actingAs($this->user)
-        ->test(\App\Filament\Clusters\Settings\Resources\PdfSettings\Pages\EditPdfSettings::class, [
+        ->test(EditPdfSettings::class, [
             'record' => $this->company->getRouteKey(),
         ])
         ->fillForm([
@@ -113,7 +116,7 @@ test('pdf template field is required', function () {
 test('pdf template must be valid option', function () {
     // Action & Assert
     Livewire::actingAs($this->user)
-        ->test(\App\Filament\Clusters\Settings\Resources\PdfSettings\Pages\EditPdfSettings::class, [
+        ->test(EditPdfSettings::class, [
             'record' => $this->company->getRouteKey(),
         ])
         ->fillForm([
@@ -153,7 +156,7 @@ test('pdf settings resource cannot delete records', function () {
 test('pdf settings table shows company information', function () {
     // Action
     Livewire::actingAs($this->user)
-        ->test(\App\Filament\Clusters\Settings\Resources\PdfSettings\Pages\ListPdfSettings::class)
+        ->test(ListPdfSettings::class)
         ->assertCanSeeTableRecords([$this->company])
         ->assertTableColumnExists('name')
         ->assertTableColumnExists('pdf_template')
@@ -168,11 +171,11 @@ test('pdf settings table filters by template', function () {
     ]);
     $this->user->companies()->detach();
     $this->user->companies()->attach($modernCompany);
-    \Filament\Facades\Filament::setTenant($modernCompany);
+    Filament::setTenant($modernCompany);
 
     // Action & Assert
     Livewire::actingAs($this->user)
-        ->test(\App\Filament\Clusters\Settings\Resources\PdfSettings\Pages\ListPdfSettings::class)
+        ->test(ListPdfSettings::class)
         ->filterTable('pdf_template', 'modern')
         ->assertCanSeeTableRecords([$modernCompany]);
 });
@@ -180,7 +183,7 @@ test('pdf settings table filters by template', function () {
 test('edit page shows preview pdf action', function () {
     // Action
     $component = Livewire::actingAs($this->user)
-        ->test(\App\Filament\Clusters\Settings\Resources\PdfSettings\Pages\EditPdfSettings::class, [
+        ->test(EditPdfSettings::class, [
             'record' => $this->company->getRouteKey(),
         ]);
 
@@ -190,11 +193,11 @@ test('edit page shows preview pdf action', function () {
 
 test('pdf settings form has all required sections', function () {
     // Ensure tenant context is set
-    \Filament\Facades\Filament::setTenant($this->company);
+    Filament::setTenant($this->company);
 
     // Action
     $component = Livewire::actingAs($this->user)
-        ->test(\App\Filament\Clusters\Settings\Resources\PdfSettings\Pages\EditPdfSettings::class, [
+        ->test(EditPdfSettings::class, [
             'record' => $this->company->getRouteKey(),
         ]);
 
@@ -214,7 +217,7 @@ test('pdf settings form has all required sections', function () {
 test('pdf settings saves successfully with notification', function () {
     // Action
     Livewire::actingAs($this->user)
-        ->test(\App\Filament\Clusters\Settings\Resources\PdfSettings\Pages\EditPdfSettings::class, [
+        ->test(EditPdfSettings::class, [
             'record' => $this->company->getRouteKey(),
         ])
         ->fillForm([

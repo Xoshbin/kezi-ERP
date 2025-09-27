@@ -1,8 +1,6 @@
 <?php
 
-use App\Enums\Sales\InvoiceStatus;
-use App\Enums\Settings\NumberingType;
-use App\Services\InvoiceService;
+use Modules\Sales\Models\Invoice;
 use Tests\Traits\WithConfiguredCompany;
 
 describe('Invoice Numbering Integration', function () {
@@ -15,7 +13,7 @@ describe('Invoice Numbering Integration', function () {
 
     it('auto-generates invoice numbers when posting invoices', function () {
         // Create a draft invoice with at least one line
-        $invoice = \Modules\Sales\Models\Invoice::factory()->withLines(1)->create([
+        $invoice = Invoice::factory()->withLines(1)->create([
             'company_id' => $this->company->id,
             'status' => InvoiceStatus::Draft,
         ]);
@@ -44,7 +42,7 @@ describe('Invoice Numbering Integration', function () {
         $this->company->save();
 
         // Create a draft invoice with at least one line
-        $invoice = \Modules\Sales\Models\Invoice::factory()->withLines(1)->create([
+        $invoice = Invoice::factory()->withLines(1)->create([
             'company_id' => $this->company->id,
             'status' => InvoiceStatus::Draft,
             'invoice_date' => '2025-06-15',
@@ -64,7 +62,7 @@ describe('Invoice Numbering Integration', function () {
         $invoices = [];
 
         for ($i = 0; $i < 3; $i++) {
-            $invoice = \Modules\Sales\Models\Invoice::factory()->withLines(1)->create([
+            $invoice = Invoice::factory()->withLines(1)->create([
                 'company_id' => $this->company->id,
                 'status' => InvoiceStatus::Draft,
             ]);
@@ -91,7 +89,7 @@ describe('Invoice Numbering Integration', function () {
         $this->company->save();
 
         // Create invoice with specific date and at least one line
-        $invoice = \Modules\Sales\Models\Invoice::factory()->withLines(1)->create([
+        $invoice = Invoice::factory()->withLines(1)->create([
             'company_id' => $this->company->id,
             'status' => InvoiceStatus::Draft,
             'invoice_date' => '2025-12-25',

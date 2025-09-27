@@ -2,8 +2,10 @@
 
 namespace Modules\Foundation\Observers;
 
+use App\Models\Company;
 use Filament\Facades\Filament;
 use Illuminate\Database\Eloquent\Model;
+use Modules\Foundation\Models\AuditLog;
 
 class AuditLogObserver
 {
@@ -26,7 +28,7 @@ class AuditLogObserver
     public function deleted(Model $model): void
     {
         // Prevent logging the deletion of an audit log itself.
-        if ($model instanceof \Modules\Foundation\Models\AuditLog) {
+        if ($model instanceof AuditLog) {
             return;
         }
         $this->logAction('record_deleted', $model);
@@ -61,7 +63,7 @@ class AuditLogObserver
         // Determine company_id from Filament tenant or model
         $companyId = null;
         if (class_exists(Filament::class)) {
-            /** @var \App\Models\Company|null $tenant */
+            /** @var Company|null $tenant */
             $tenant = Filament::getTenant();
             if ($tenant) {
                 $companyId = $tenant->getKey();
@@ -70,14 +72,14 @@ class AuditLogObserver
 
         // If no tenant, try to get company from the model being audited
         if (! $companyId && method_exists($model, 'company') && $model->relationLoaded('company') && $model->getAttribute('company')) {
-            /** @var \App\Models\Company $company */
+            /** @var Company $company */
             $company = $model->getAttribute('company');
             $companyId = $company->getKey();
         } elseif (! $companyId && isset($model->company_id)) {
             $companyId = $model->getAttribute('company_id');
         }
 
-        \Modules\Foundation\Models\AuditLog::create([
+        AuditLog::create([
             'user_id' => auth()->id(),
             'company_id' => $companyId,
             'event_type' => $eventType,

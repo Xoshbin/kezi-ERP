@@ -2,13 +2,11 @@
 
 namespace Modules\HR\Services\HumanResources;
 
-use App\Actions\HumanResources\CreateAttendanceAction;
-use App\DataTransferObjects\HumanResources\CreateAttendanceDTO;
-use App\Models\Attendance;
 use App\Models\User;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Support\Facades\Gate;
+use Modules\HR\Models\Employee;
 
 class AttendanceService
 {
@@ -19,7 +17,7 @@ class AttendanceService
     /**
      * Clock in an employee.
      */
-    public function clockIn(\Modules\HR\Models\Employee $employee, ?string $location = null, ?string $device = null, ?string $ip = null, ?User $user = null): Attendance
+    public function clockIn(Employee $employee, ?string $location = null, ?string $device = null, ?string $ip = null, ?User $user = null): Attendance
     {
         $today = now()->format('Y-m-d');
         $currentTime = now()->format('H:i:s');
@@ -58,7 +56,7 @@ class AttendanceService
     /**
      * Clock out an employee.
      */
-    public function clockOut(\Modules\HR\Models\Employee $employee, ?string $location = null, ?string $device = null, ?string $ip = null): Attendance
+    public function clockOut(Employee $employee, ?string $location = null, ?string $device = null, ?string $ip = null): Attendance
     {
         $today = now()->format('Y-m-d');
         $currentTime = now()->format('H:i:s');
@@ -102,7 +100,7 @@ class AttendanceService
 
         $freshAttendance = $attendance->fresh();
         if (! $freshAttendance) {
-            throw new \Exception('Failed to refresh attendance after clock out');
+            throw new Exception('Failed to refresh attendance after clock out');
         }
 
         return $freshAttendance;
@@ -111,7 +109,7 @@ class AttendanceService
     /**
      * Start break for an employee.
      */
-    public function startBreak(\Modules\HR\Models\Employee $employee): Attendance
+    public function startBreak(Employee $employee): Attendance
     {
         $attendance = $employee->getAttendanceForDate(now());
         if (! $attendance || ! $attendance->clock_in_time) {
@@ -128,7 +126,7 @@ class AttendanceService
 
         $freshAttendance = $attendance->fresh();
         if (! $freshAttendance) {
-            throw new \Exception('Failed to refresh attendance after starting break');
+            throw new Exception('Failed to refresh attendance after starting break');
         }
 
         return $freshAttendance;
@@ -137,7 +135,7 @@ class AttendanceService
     /**
      * End break for an employee.
      */
-    public function endBreak(\Modules\HR\Models\Employee $employee): Attendance
+    public function endBreak(Employee $employee): Attendance
     {
         $attendance = $employee->getAttendanceForDate(now());
         if (! $attendance || ! $attendance->break_start_time) {
@@ -162,7 +160,7 @@ class AttendanceService
 
         $freshAttendance = $attendance->fresh();
         if (! $freshAttendance) {
-            throw new \Exception('Failed to refresh attendance after ending break');
+            throw new Exception('Failed to refresh attendance after ending break');
         }
 
         return $freshAttendance;
@@ -206,7 +204,7 @@ class AttendanceService
      *
      * @return array<string, mixed>
      */
-    public function getAttendanceSummary(\Modules\HR\Models\Employee $employee, string $startDate, string $endDate): array
+    public function getAttendanceSummary(Employee $employee, string $startDate, string $endDate): array
     {
         $attendances = $employee->attendances()
             ->whereBetween('attendance_date', [$startDate, $endDate])

@@ -5,6 +5,7 @@ namespace Modules\HR\Actions\HumanResources;
 use App\DataTransferObjects\HumanResources\CreateLeaveRequestDTO;
 use App\Models\LeaveRequest;
 use Illuminate\Support\Facades\DB;
+use RuntimeException;
 
 class CreateLeaveRequestAction
 {
@@ -37,7 +38,7 @@ class CreateLeaveRequestAction
 
             $fresh = $leaveRequest->fresh();
             if (! $fresh) {
-                throw new \RuntimeException('Failed to refresh leave request after creation');
+                throw new RuntimeException('Failed to refresh leave request after creation');
             }
 
             return $fresh;

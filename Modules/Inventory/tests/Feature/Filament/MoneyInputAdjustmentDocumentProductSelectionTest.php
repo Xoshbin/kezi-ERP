@@ -2,12 +2,15 @@
 
 namespace Modules\Inventory\Tests\Feature\Filament;
 
-use App\Filament\Clusters\Accounting\Resources\AdjustmentDocuments\Pages\CreateAdjustmentDocument;
 use App\Models\Company;
 use App\Models\User;
 use Brick\Money\Money;
+use Filament\Facades\Filament;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Livewire\Livewire;
+use Modules\Accounting\Models\Account;
+use Modules\Foundation\Models\Currency;
+use Modules\Product\Models\Product;
 use Tests\TestCase;
 
 class MoneyInputAdjustmentDocumentProductSelectionTest extends TestCase
@@ -16,9 +19,9 @@ class MoneyInputAdjustmentDocumentProductSelectionTest extends TestCase
 
     private Company $company;
     private User $user;
-    private \Modules\Foundation\Models\Currency $currency;
-    private \Modules\Product\Models\Product $product;
-    private \Modules\Accounting\Models\Account $incomeAccount;
+    private Currency $currency;
+    private Product $product;
+    private Account $incomeAccount;
 
     protected function setUp(): void
     {
@@ -27,17 +30,17 @@ class MoneyInputAdjustmentDocumentProductSelectionTest extends TestCase
         // Create test data
         $this->company = Company::factory()->create();
         $this->user = User::factory()->create();
-        $this->currency = \Modules\Foundation\Models\Currency::factory()->create(['code' => 'USD']);
+        $this->currency = Currency::factory()->create(['code' => 'USD']);
 
         $this->company->update(['currency_id' => $this->currency->id]);
 
-        $this->incomeAccount = \Modules\Accounting\Models\Account::factory()->create([
+        $this->incomeAccount = Account::factory()->create([
             'company_id' => $this->company->id,
             'type' => 'income',
         ]);
 
         // Create a product with a specific Money unit price
-        $this->product = \Modules\Product\Models\Product::factory()->create([
+        $this->product = Product::factory()->create([
             'company_id' => $this->company->id,
             'name' => 'Test Adjustment Product',
             'description' => 'Test product for adjustment document',
@@ -47,7 +50,7 @@ class MoneyInputAdjustmentDocumentProductSelectionTest extends TestCase
 
         // Set up authentication and tenant
         $this->actingAs($this->user);
-        \Filament\Facades\Filament::setTenant($this->company);
+        Filament::setTenant($this->company);
     }
 
     /** @test */
@@ -98,7 +101,7 @@ class MoneyInputAdjustmentDocumentProductSelectionTest extends TestCase
     public function it_handles_products_with_different_price_formats_in_adjustment_document(): void
     {
         // Test with integer price
-        $integerProduct = \Modules\Product\Models\Product::factory()->create([
+        $integerProduct = Product::factory()->create([
             'company_id' => $this->company->id,
             'name' => 'Integer Price Product',
             'description' => 'Product with integer price',
@@ -107,7 +110,7 @@ class MoneyInputAdjustmentDocumentProductSelectionTest extends TestCase
         ]);
 
         // Test with decimal price
-        $decimalProduct = \Modules\Product\Models\Product::factory()->create([
+        $decimalProduct = Product::factory()->create([
             'company_id' => $this->company->id,
             'name' => 'Decimal Price Product',
             'description' => 'Product with decimal price',
@@ -149,7 +152,7 @@ class MoneyInputAdjustmentDocumentProductSelectionTest extends TestCase
     public function it_handles_products_with_null_unit_price_in_adjustment_document(): void
     {
         // Create a product with null unit price
-        $nullPriceProduct = \Modules\Product\Models\Product::factory()->create([
+        $nullPriceProduct = Product::factory()->create([
             'company_id' => $this->company->id,
             'name' => 'No Price Product',
             'description' => 'Product without price',
@@ -187,7 +190,7 @@ class MoneyInputAdjustmentDocumentProductSelectionTest extends TestCase
     public function it_populates_description_from_product_name_in_adjustment_document(): void
     {
         // Verify that adjustment documents use product name for description (like vendor bills)
-        $productWithName = \Modules\Product\Models\Product::factory()->create([
+        $productWithName = Product::factory()->create([
             'company_id' => $this->company->id,
             'name' => 'Specific Product Name',
             'description' => 'Different description text',

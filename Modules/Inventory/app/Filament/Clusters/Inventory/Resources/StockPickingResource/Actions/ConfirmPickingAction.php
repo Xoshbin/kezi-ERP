@@ -5,6 +5,8 @@ namespace Modules\Inventory\Filament\Clusters\Inventory\Resources\StockPickingRe
 use App\Enums\Inventory\StockMoveStatus;
 use App\Enums\Inventory\StockPickingState;
 use App\Models\StockPicking;
+use DB;
+use Exception;
 use Filament\Actions\Action;
 use Filament\Notifications\Notification;
 use Illuminate\Database\Eloquent\Model;
@@ -36,7 +38,7 @@ class ConfirmPickingAction extends Action
     protected function confirmPicking(StockPicking $picking): void
     {
         try {
-            \DB::transaction(function () use ($picking) {
+            DB::transaction(function () use ($picking) {
                 // Update picking state
                 $picking->update([
                     'state' => StockPickingState::Confirmed,
@@ -63,7 +65,7 @@ class ConfirmPickingAction extends Action
             // Refresh the page to show updated state
             $this->getLivewire()->redirect(request()->url());
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             Notification::make()
                 ->title(__('Error'))
                 ->body(__('Failed to confirm picking: :error', ['error' => $e->getMessage()]))

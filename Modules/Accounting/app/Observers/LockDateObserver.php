@@ -2,37 +2,36 @@
 
 namespace Modules\Accounting\Observers;
 
-use App\Enums\Accounting\LockDateType;
-use App\Exceptions\UpdateNotAllowedException;
 use Illuminate\Support\Facades\Cache;
+use Modules\Accounting\Models\LockDate;
 
 class LockDateObserver
 {
-    public function updating(\Modules\Accounting\Models\LockDate $lockDate): void
+    public function updating(LockDate $lockDate): void
     {
         if ($lockDate->lock_type === LockDateType::HardLock) {
             throw new \Modules\Foundation\Exceptions\UpdateNotAllowedException('A hard lock date cannot be modified.');
         }
     }
 
-    public function deleting(\Modules\Accounting\Models\LockDate $lockDate): void
+    public function deleting(LockDate $lockDate): void
     {
         if ($lockDate->lock_type === LockDateType::HardLock) {
             throw new \Modules\Foundation\Exceptions\UpdateNotAllowedException('A hard lock date cannot be removed.');
         }
     }
 
-    public function saved(\Modules\Accounting\Models\LockDate $lockDate): void
+    public function saved(LockDate $lockDate): void
     {
         $this->clearCache($lockDate);
     }
 
-    public function deleted(\Modules\Accounting\Models\LockDate $lockDate): void
+    public function deleted(LockDate $lockDate): void
     {
         $this->clearCache($lockDate);
     }
 
-    private function clearCache(\Modules\Accounting\Models\LockDate $lockDate): void
+    private function clearCache(LockDate $lockDate): void
     {
         $typeValue = $lockDate->lock_type->value;
         Cache::forget("lock_date_{$lockDate->company_id}_{$typeValue}");

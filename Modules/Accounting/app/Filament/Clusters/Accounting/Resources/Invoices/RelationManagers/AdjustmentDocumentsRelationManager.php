@@ -2,9 +2,6 @@
 
 namespace Modules\Accounting\Filament\Clusters\Accounting\Resources\Invoices\RelationManagers;
 
-use App\Enums\Adjustments\AdjustmentDocumentStatus;
-use App\Enums\Adjustments\AdjustmentDocumentType;
-use App\Filament\Tables\Columns\MoneyColumn;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\CreateAction;
 use Filament\Actions\DeleteAction;
@@ -22,6 +19,8 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Model;
+use Modules\Inventory\Models\AdjustmentDocument;
+use Modules\Sales\Models\Invoice;
 
 class AdjustmentDocumentsRelationManager extends RelationManager
 {
@@ -47,7 +46,7 @@ class AdjustmentDocumentsRelationManager extends RelationManager
                             ->default(function (): ?int {
                                 $owner = $this->getOwnerRecord();
 
-                                return $owner instanceof \Modules\Sales\Models\Invoice ? $owner->company_id : null;
+                                return $owner instanceof Invoice ? $owner->company_id : null;
                             }),
 
                         Select::make('currency_id')
@@ -57,7 +56,7 @@ class AdjustmentDocumentsRelationManager extends RelationManager
                             ->default(function (): ?int {
                                 $owner = $this->getOwnerRecord();
 
-                                return $owner instanceof \Modules\Sales\Models\Invoice ? $owner->currency_id : null;
+                                return $owner instanceof Invoice ? $owner->currency_id : null;
                             }),
 
                         Select::make('type')
@@ -194,7 +193,7 @@ class AdjustmentDocumentsRelationManager extends RelationManager
                     ->label(__('invoice.adjustment_documents_relation_manager.create_adjustment'))
                     ->mutateDataUsing(function (array $data): array {
                         $owner = $this->getOwnerRecord();
-                        $data['original_invoice_id'] = $owner instanceof \Modules\Sales\Models\Invoice ? $owner->getKey() : null;
+                        $data['original_invoice_id'] = $owner instanceof Invoice ? $owner->getKey() : null;
 
                         return $data;
                     }),
@@ -202,9 +201,9 @@ class AdjustmentDocumentsRelationManager extends RelationManager
             ->recordActions([
                 ViewAction::make(),
                 EditAction::make()
-                    ->visible(fn (\Modules\Inventory\Models\AdjustmentDocument $record): bool => $record->status === AdjustmentDocumentStatus::Draft),
+                    ->visible(fn (AdjustmentDocument $record): bool => $record->status === AdjustmentDocumentStatus::Draft),
                 DeleteAction::make()
-                    ->visible(fn (\Modules\Inventory\Models\AdjustmentDocument $record): bool => $record->status === AdjustmentDocumentStatus::Draft),
+                    ->visible(fn (AdjustmentDocument $record): bool => $record->status === AdjustmentDocumentStatus::Draft),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([

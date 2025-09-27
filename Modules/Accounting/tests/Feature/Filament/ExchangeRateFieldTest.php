@@ -1,13 +1,17 @@
 <?php
 
-use App\Enums\Purchases\VendorBillStatus;
-use App\Enums\Sales\InvoiceStatus;
-use App\Filament\Clusters\Accounting\Resources\Invoices\Pages\EditInvoice;
-use App\Filament\Clusters\Accounting\Resources\VendorBills\Pages\EditVendorBill;
 use Brick\Money\Money;
 use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Livewire\Livewire;
+use Modules\Accounting\Models\Account;
+use Modules\Foundation\Models\Currency;
+use Modules\Foundation\Models\CurrencyRate;
+use Modules\Foundation\Models\Partner;
+use Modules\Product\Models\Product;
+use Modules\Purchase\Models\VendorBill;
+use Modules\Sales\Models\Invoice;
+use Modules\Sales\Models\InvoiceLine;
 use Tests\Traits\WithConfiguredCompany;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);
@@ -18,7 +22,7 @@ beforeEach(function () {
     $this->actingAs($this->user);
 
     // Create foreign currency (USD)
-    $this->foreignCurrency = \Modules\Foundation\Models\Currency::factory()->create([
+    $this->foreignCurrency = Currency::factory()->create([
         'code' => 'USD',
         'name' => ['en' => 'US Dollar'],
         'symbol' => '$',
@@ -27,7 +31,7 @@ beforeEach(function () {
 
     // Create exchange rate
     $this->exchangeRate = 1460.0;
-    \Modules\Foundation\Models\CurrencyRate::create([
+    CurrencyRate::create([
         'currency_id' => $this->foreignCurrency->id,
         'company_id' => $this->company->id,
         'rate' => $this->exchangeRate,
@@ -35,13 +39,13 @@ beforeEach(function () {
         'source' => 'manual',
     ]);
 
-    $this->vendor = \Modules\Foundation\Models\Partner::factory()->vendor()->create(['company_id' => $this->company->id]);
-    $this->customer = \Modules\Foundation\Models\Partner::factory()->customer()->create(['company_id' => $this->company->id]);
+    $this->vendor = Partner::factory()->vendor()->create(['company_id' => $this->company->id]);
+    $this->customer = Partner::factory()->customer()->create(['company_id' => $this->company->id]);
 });
 
 describe('VendorBill Exchange Rate Field', function () {
     test('exchange rate field is visible for foreign currency vendor bills', function () {
-        $vendorBill = \Modules\Purchase\Models\VendorBill::factory()->create([
+        $vendorBill = VendorBill::factory()->create([
             'company_id' => $this->company->id,
             'vendor_id' => $this->vendor->id,
             'currency_id' => $this->foreignCurrency->id,
@@ -55,7 +59,7 @@ describe('VendorBill Exchange Rate Field', function () {
     });
 
     test('exchange rate field is hidden for base currency vendor bills', function () {
-        $vendorBill = \Modules\Purchase\Models\VendorBill::factory()->create([
+        $vendorBill = VendorBill::factory()->create([
             'company_id' => $this->company->id,
             'vendor_id' => $this->vendor->id,
             'currency_id' => $this->company->currency_id, // Use base currency from company
@@ -69,7 +73,7 @@ describe('VendorBill Exchange Rate Field', function () {
     });
 
     test('exchange rate field exists for draft vendor bills', function () {
-        $vendorBill = \Modules\Purchase\Models\VendorBill::factory()->create([
+        $vendorBill = VendorBill::factory()->create([
             'company_id' => $this->company->id,
             'vendor_id' => $this->vendor->id,
             'currency_id' => $this->foreignCurrency->id,
@@ -83,7 +87,7 @@ describe('VendorBill Exchange Rate Field', function () {
     });
 
     test('exchange rate field exists for posted vendor bills', function () {
-        $vendorBill = \Modules\Purchase\Models\VendorBill::factory()->create([
+        $vendorBill = VendorBill::factory()->create([
             'company_id' => $this->company->id,
             'vendor_id' => $this->vendor->id,
             'currency_id' => $this->foreignCurrency->id,
@@ -100,7 +104,7 @@ describe('VendorBill Exchange Rate Field', function () {
     test('exchange rate can be set on draft vendor bill', function () {
         $customRate = 1500.0;
 
-        $vendorBill = \Modules\Purchase\Models\VendorBill::factory()->create([
+        $vendorBill = VendorBill::factory()->create([
             'company_id' => $this->company->id,
             'vendor_id' => $this->vendor->id,
             'currency_id' => $this->foreignCurrency->id,
@@ -118,7 +122,7 @@ describe('VendorBill Exchange Rate Field', function () {
 
 describe('Invoice Exchange Rate Field', function () {
     test('exchange rate field is visible for foreign currency invoices', function () {
-        $invoice = \Modules\Sales\Models\Invoice::factory()->create([
+        $invoice = Invoice::factory()->create([
             'company_id' => $this->company->id,
             'customer_id' => $this->customer->id,
             'currency_id' => $this->foreignCurrency->id,
@@ -132,7 +136,7 @@ describe('Invoice Exchange Rate Field', function () {
     });
 
     test('exchange rate field is hidden for base currency invoices', function () {
-        $invoice = \Modules\Sales\Models\Invoice::factory()->create([
+        $invoice = Invoice::factory()->create([
             'company_id' => $this->company->id,
             'customer_id' => $this->customer->id,
             'currency_id' => $this->company->currency_id, // Use base currency from company
@@ -146,7 +150,7 @@ describe('Invoice Exchange Rate Field', function () {
     });
 
     test('exchange rate field exists for draft invoices', function () {
-        $invoice = \Modules\Sales\Models\Invoice::factory()->create([
+        $invoice = Invoice::factory()->create([
             'company_id' => $this->company->id,
             'customer_id' => $this->customer->id,
             'currency_id' => $this->foreignCurrency->id,
@@ -160,7 +164,7 @@ describe('Invoice Exchange Rate Field', function () {
     });
 
     test('exchange rate field exists for posted invoices', function () {
-        $invoice = \Modules\Sales\Models\Invoice::factory()->create([
+        $invoice = Invoice::factory()->create([
             'company_id' => $this->company->id,
             'customer_id' => $this->customer->id,
             'currency_id' => $this->foreignCurrency->id,
@@ -177,7 +181,7 @@ describe('Invoice Exchange Rate Field', function () {
     test('exchange rate can be set on draft invoice', function () {
         $customRate = 1500.0;
 
-        $invoice = \Modules\Sales\Models\Invoice::factory()->create([
+        $invoice = Invoice::factory()->create([
             'company_id' => $this->company->id,
             'customer_id' => $this->customer->id,
             'currency_id' => $this->foreignCurrency->id,
@@ -197,7 +201,7 @@ describe('Service Behavior with Manual Exchange Rates', function () {
     test('vendor bill service respects manually set exchange rate when posting', function () {
         $customRate = 1500.0;
 
-        $vendorBill = \Modules\Purchase\Models\VendorBill::factory()->create([
+        $vendorBill = VendorBill::factory()->create([
             'company_id' => $this->company->id,
             'vendor_id' => $this->vendor->id,
             'currency_id' => $this->foreignCurrency->id,
@@ -210,12 +214,12 @@ describe('Service Behavior with Manual Exchange Rates', function () {
         ]);
 
         // Add a line item to make the bill valid for posting
-        $product = \Modules\Product\Models\Product::factory()->create([
+        $product = Product::factory()->create([
             'company_id' => $this->company->id,
-            'default_inventory_account_id' => \Modules\Accounting\Models\Account::factory()->create(['company_id' => $this->company->id, 'type' => 'current_assets'])->id,
-            'default_stock_input_account_id' => \Modules\Accounting\Models\Account::factory()->create(['company_id' => $this->company->id, 'type' => 'current_liabilities'])->id,
+            'default_inventory_account_id' => Account::factory()->create(['company_id' => $this->company->id, 'type' => 'current_assets'])->id,
+            'default_stock_input_account_id' => Account::factory()->create(['company_id' => $this->company->id, 'type' => 'current_liabilities'])->id,
         ]);
-        \App\Models\VendorBillLine::factory()->create([
+        VendorBillLine::factory()->create([
             'vendor_bill_id' => $vendorBill->id,
             'product_id' => $product->id,
             'quantity' => 1,
@@ -223,7 +227,7 @@ describe('Service Behavior with Manual Exchange Rates', function () {
             'subtotal' => Money::of(100, 'USD'),
         ]);
 
-        $vendorBillService = app(\App\Services\VendorBillService::class);
+        $vendorBillService = app(VendorBillService::class);
 
         $vendorBillService->post($vendorBill, $this->user);
 
@@ -238,12 +242,12 @@ describe('Service Behavior with Manual Exchange Rates', function () {
         $storedRate = 1500.0; // Rate in currency_rates table (different from setup)
 
         // Clear existing currency rates to avoid conflicts
-        \Modules\Foundation\Models\CurrencyRate::where('company_id', $this->company->id)
+        CurrencyRate::where('company_id', $this->company->id)
             ->where('currency_id', $this->foreignCurrency->id)
             ->delete();
 
         // Create a stored exchange rate that should NOT be used
-        \Modules\Foundation\Models\CurrencyRate::factory()->create([
+        CurrencyRate::factory()->create([
             'company_id' => $this->company->id,
             'currency_id' => $this->foreignCurrency->id,
             'rate' => $storedRate,
@@ -251,12 +255,12 @@ describe('Service Behavior with Manual Exchange Rates', function () {
         ]);
 
         // Create vendor bill using the proper action to ensure consistency
-        $expenseAccount = \Modules\Accounting\Models\Account::factory()->create([
+        $expenseAccount = Account::factory()->create([
             'company_id' => $this->company->id,
             'type' => 'expense'
         ]);
 
-        $vendorBillDto = new \App\DataTransferObjects\Purchases\CreateVendorBillDTO(
+        $vendorBillDto = new CreateVendorBillDTO(
             company_id: $this->company->id,
             vendor_id: $this->vendor->id,
             currency_id: $this->foreignCurrency->id,
@@ -265,7 +269,7 @@ describe('Service Behavior with Manual Exchange Rates', function () {
             accounting_date: Carbon::today()->toDateString(),
             due_date: Carbon::today()->addDays(30)->toDateString(),
             lines: [
-                new \App\DataTransferObjects\Purchases\CreateVendorBillLineDTO(
+                new CreateVendorBillLineDTO(
                     product_id: null,
                     description: 'Test expense',
                     quantity: 1,
@@ -278,12 +282,12 @@ describe('Service Behavior with Manual Exchange Rates', function () {
             created_by_user_id: $this->user->id
         );
 
-        $vendorBill = app(\App\Actions\Purchases\CreateVendorBillAction::class)->execute($vendorBillDto);
+        $vendorBill = app(CreateVendorBillAction::class)->execute($vendorBillDto);
 
         // Set the custom exchange rate
         $vendorBill->update(['exchange_rate_at_creation' => $customRate]);
 
-        $vendorBillService = app(\App\Services\VendorBillService::class);
+        $vendorBillService = app(VendorBillService::class);
         $vendorBillService->post($vendorBill, $this->user);
 
         $vendorBill->refresh();
@@ -321,7 +325,7 @@ describe('Service Behavior with Manual Exchange Rates', function () {
     test('invoice service respects manually set exchange rate when posting', function () {
         $customRate = 1500.0;
 
-        $invoice = \Modules\Sales\Models\Invoice::factory()->create([
+        $invoice = Invoice::factory()->create([
             'company_id' => $this->company->id,
             'customer_id' => $this->customer->id,
             'currency_id' => $this->foreignCurrency->id,
@@ -333,11 +337,11 @@ describe('Service Behavior with Manual Exchange Rates', function () {
         ]);
 
         // Add a line item to make the invoice valid for posting
-        $product = \Modules\Product\Models\Product::factory()->create([
+        $product = Product::factory()->create([
             'company_id' => $this->company->id,
-            'income_account_id' => \Modules\Accounting\Models\Account::factory()->create(['company_id' => $this->company->id, 'type' => 'income'])->id,
+            'income_account_id' => Account::factory()->create(['company_id' => $this->company->id, 'type' => 'income'])->id,
         ]);
-        \Modules\Sales\Models\InvoiceLine::factory()->create([
+        InvoiceLine::factory()->create([
             'invoice_id' => $invoice->id,
             'product_id' => $product->id,
             'quantity' => 1,
@@ -345,7 +349,7 @@ describe('Service Behavior with Manual Exchange Rates', function () {
             'subtotal' => Money::of(100, 'USD'),
         ]);
 
-        $invoiceService = app(\App\Services\InvoiceService::class);
+        $invoiceService = app(InvoiceService::class);
 
         $invoiceService->confirm($invoice, $this->user);
 
@@ -356,7 +360,7 @@ describe('Service Behavior with Manual Exchange Rates', function () {
     });
 
     test('vendor bill service uses automatic exchange rate when none is set manually', function () {
-        $vendorBill = \Modules\Purchase\Models\VendorBill::factory()->create([
+        $vendorBill = VendorBill::factory()->create([
             'company_id' => $this->company->id,
             'vendor_id' => $this->vendor->id,
             'currency_id' => $this->foreignCurrency->id,
@@ -369,12 +373,12 @@ describe('Service Behavior with Manual Exchange Rates', function () {
         ]);
 
         // Add a line item to make the bill valid for posting
-        $product = \Modules\Product\Models\Product::factory()->create([
+        $product = Product::factory()->create([
             'company_id' => $this->company->id,
-            'default_inventory_account_id' => \Modules\Accounting\Models\Account::factory()->create(['company_id' => $this->company->id, 'type' => 'current_assets'])->id,
-            'default_stock_input_account_id' => \Modules\Accounting\Models\Account::factory()->create(['company_id' => $this->company->id, 'type' => 'current_liabilities'])->id,
+            'default_inventory_account_id' => Account::factory()->create(['company_id' => $this->company->id, 'type' => 'current_assets'])->id,
+            'default_stock_input_account_id' => Account::factory()->create(['company_id' => $this->company->id, 'type' => 'current_liabilities'])->id,
         ]);
-        \App\Models\VendorBillLine::factory()->create([
+        VendorBillLine::factory()->create([
             'vendor_bill_id' => $vendorBill->id,
             'product_id' => $product->id,
             'quantity' => 1,
@@ -382,7 +386,7 @@ describe('Service Behavior with Manual Exchange Rates', function () {
             'subtotal' => Money::of(100, 'USD'),
         ]);
 
-        $vendorBillService = app(\App\Services\VendorBillService::class);
+        $vendorBillService = app(VendorBillService::class);
 
         $vendorBillService->post($vendorBill, $this->user);
 

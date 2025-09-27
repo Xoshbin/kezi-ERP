@@ -2,13 +2,11 @@
 
 namespace Modules\Inventory\Actions\Inventory;
 
-use App\Models\StockMove;
-use App\Services\CurrencyConverterService;
-use App\Services\Inventory\InventoryValuationService;
-use App\Services\Inventory\StockQuantService;
 use Brick\Money\Money;
 use Exception;
 use Illuminate\Support\Facades\DB;
+use Modules\Product\Models\Product;
+use Modules\Purchase\Models\VendorBill;
 
 class ProcessIncomingStockAction
 {
@@ -28,25 +26,25 @@ class ProcessIncomingStockAction
         });
     }
 
-    private function processProductLine(StockMove $stockMove, \App\Models\StockMoveProductLine $productLine): void
+    private function processProductLine(StockMove $stockMove, StockMoveProductLine $productLine): void
     {
         // Extract the cost per unit from the source document
         $costPerUnit = $this->extractCostFromSource($stockMove, $productLine);
 
         $product = $productLine->product;
-        if (! $product instanceof \Modules\Product\Models\Product) {
-            throw new \Exception('Product not found for product line');
+        if (! $product instanceof Product) {
+            throw new Exception('Product not found for product line');
         }
 
         $sourceDocument = $stockMove->source;
         if (! $sourceDocument) {
-            throw new \Exception('Stock move must have a source document');
+            throw new Exception('Stock move must have a source document');
         }
 
         // Ensure cost is in company base currency
         $costPerUnitCompany = $costPerUnit;
         $companyCurrency = $product->company->currency;
-        if ($sourceDocument instanceof \Modules\Purchase\Models\VendorBill) {
+        if ($sourceDocument instanceof VendorBill) {
             // Use the vendor bill's stored exchange rate for consistency
             $exchangeRate = $sourceDocument->exchange_rate_at_creation ?? 1.0;
             if ($sourceDocument->currency_id !== $companyCurrency->id) {
@@ -74,11 +72,11 @@ class ProcessIncomingStockAction
     /**
      * Extract the cost per unit from the source document
      */
-    private function extractCostFromSource(StockMove $stockMove, \App\Models\StockMoveProductLine $productLine): Money
+    private function extractCostFromSource(StockMove $stockMove, StockMoveProductLine $productLine): Money
     {
         $sourceDocument = $stockMove->source;
 
-        if ($sourceDocument instanceof \Modules\Purchase\Models\VendorBill) {
+        if ($sourceDocument instanceof VendorBill) {
             return $this->extractCostFromVendorBill($productLine, $sourceDocument);
         }
 
@@ -95,7 +93,7 @@ class ProcessIncomingStockAction
     /**
      * Extract cost from vendor bill line
      */
-    private function extractCostFromVendorBill(\App\Models\StockMoveProductLine $productLine, \Modules\Purchase\Models\VendorBill $vendorBill): Money
+    private function extractCostFromVendorBill(StockMoveProductLine $productLine, VendorBill $vendorBill): Money
     {
         // Find the vendor bill line that corresponds to this product
         $line = $vendorBill->lines()
@@ -103,7 +101,7 @@ class ProcessIncomingStockAction
             ->where('product_id', $productLine->product_id)
             ->first();
 
-        if (! ($line instanceof \App\Models\VendorBillLine)) {
+        if (! ($line instanceof VendorBillLine)) {
             throw new Exception("No vendor bill line found for product {$productLine->product_id} in vendor bill {$vendorBill->getKey()}");
         }
 

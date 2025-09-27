@@ -2,26 +2,19 @@
 
 namespace Modules\Accounting\Services;
 
-use App\Actions\Accounting\CreateJournalEntryAction;
-use App\Actions\Accounting\ReverseJournalEntryAction;
-use App\DataTransferObjects\Accounting\CreateJournalEntryDTO;
-use App\DataTransferObjects\Accounting\CreateJournalEntryLineDTO;
-use App\Exceptions\DeletionNotAllowedException;
-use App\Exceptions\PeriodIsLockedException;
-use App\Models\JournalEntry;
 use App\Models\User;
-use App\Services\Accounting\LockDateService;
 use Brick\Money\Money;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
+use Modules\Foundation\Models\Currency;
 
 class JournalEntryService
 {
     public function __construct(
-        protected \Modules\Accounting\Services\Accounting\LockDateService $lockDateService,
-        protected CurrencyConverterService $currencyConverter
+        protected Accounting\LockDateService $lockDateService,
+        protected CurrencyConverterService   $currencyConverter
     ) {}
 
     public function post(JournalEntry $journalEntry): bool
@@ -117,7 +110,7 @@ class JournalEntryService
      * @param  array<string, mixed>  $entryData
      * @param  array<string, mixed>  $lines
      */
-    public function createMultiCurrencyEntry(array $entryData, array $lines, \Modules\Foundation\Models\Currency $transactionCurrency, User $user): JournalEntry
+    public function createMultiCurrencyEntry(array $entryData, array $lines, Currency $transactionCurrency, User $user): JournalEntry
     {
         // Convert the array-based line data to DTOs
         $lineDTOs = [];

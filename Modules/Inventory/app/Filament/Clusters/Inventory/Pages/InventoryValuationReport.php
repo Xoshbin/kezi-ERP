@@ -2,17 +2,22 @@
 
 namespace Modules\Inventory\Filament\Clusters\Inventory\Pages;
 
-use App\Filament\Clusters\Inventory\InventoryCluster;
-use App\Services\Inventory\InventoryReportingService;
+
+use BackedEnum;
 use Carbon\Carbon;
+use Exception;
+use Filament\Actions\Action;
+use Filament\Facades\Filament;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Toggle;
 use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
+use Filament\Notifications\Notification;
 use Filament\Pages\Page;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
+use Modules\Product\Models\Product;
 
 class InventoryValuationReport extends Page implements HasForms
 {
@@ -22,7 +27,7 @@ class InventoryValuationReport extends Page implements HasForms
 
     protected string $view = 'filament.clusters.inventory.pages.inventory-valuation-report';
 
-    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-banknotes';
+    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-banknotes';
 
     protected static ?int $navigationSort = 20;
 
@@ -42,7 +47,7 @@ class InventoryValuationReport extends Page implements HasForms
         try {
             Carbon::parse($date);
             return true;
-        } catch (\Exception) {
+        } catch (Exception) {
             return false;
         }
     }
@@ -94,8 +99,8 @@ class InventoryValuationReport extends Page implements HasForms
                         Select::make('product_ids')
                             ->label(__('inventory_reports.valuation.filters.products'))
                             ->options(function () {
-                                return \Modules\Product\Models\Product::query()
-                                    ->where('company_id', \Filament\Facades\Filament::getTenant()?->getKey())
+                                return Product::query()
+                                    ->where('company_id', Filament::getTenant()?->getKey())
                                     ->pluck('name', 'id');
                             })
                             ->multiple()
@@ -172,7 +177,7 @@ class InventoryValuationReport extends Page implements HasForms
     protected function getHeaderActions(): array
     {
         return [
-            \Filament\Actions\Action::make('export')
+            Action::make('export')
                 ->label(__('inventory_reports.valuation.actions.export'))
                 ->icon('heroicon-o-arrow-down-tray')
                 ->disabled(fn() => !$this->reportData)
@@ -182,7 +187,7 @@ class InventoryValuationReport extends Page implements HasForms
                 ->modalSubmitActionLabel(__('inventory_reports.valuation.actions.export'))
                 ->action(function () {
                     if (!$this->reportData) {
-                        \Filament\Notifications\Notification::make()
+                        Notification::make()
                             ->title(__('inventory_reports.valuation.no_data_to_export'))
                             ->danger()
                             ->send();
@@ -190,14 +195,14 @@ class InventoryValuationReport extends Page implements HasForms
                     }
 
                     try {
-                        $csvService = app(\App\Services\Inventory\InventoryCSVExportService::class);
+                        $csvService = app(InventoryCSVExportService::class);
                         $csvContent = $csvService->exportValuationReport($this->reportData, [
                             'include_metadata' => true
                         ]);
 
                         $filename = 'inventory-valuation-' . now()->format('Y-m-d-H-i-s') . '.csv';
 
-                        \Filament\Notifications\Notification::make()
+                        Notification::make()
                             ->title(__('inventory_reports.valuation.export_started'))
                             ->success()
                             ->send();
@@ -207,8 +212,8 @@ class InventoryValuationReport extends Page implements HasForms
                         }, $filename, [
                             'Content-Type' => 'text/csv; charset=UTF-8',
                         ]);
-                    } catch (\Exception $e) {
-                        \Filament\Notifications\Notification::make()
+                    } catch (Exception $e) {
+                        Notification::make()
                             ->title(__('inventory_reports.valuation.export_failed'))
                             ->body($e->getMessage())
                             ->danger()
@@ -216,7 +221,7 @@ class InventoryValuationReport extends Page implements HasForms
                     }
                 }),
 
-            \Filament\Actions\Action::make('refresh')
+            Action::make('refresh')
                 ->label(__('inventory_reports.valuation.actions.refresh'))
                 ->icon('heroicon-o-arrow-path')
                 ->action('generateReport'),

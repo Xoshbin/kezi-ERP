@@ -7,19 +7,21 @@ use App\Casts\DocumentCurrencyMoneyCast;
 use App\Observers\AdjustmentDocumentLineObserver;
 use Brick\Math\RoundingMode;
 use Brick\Money\Money;
+use Database\Factories\AdjustmentDocumentLineFactory;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Modules\Foundation\Models\Currency;
 
 /**
- * @property-read \Modules\Inventory\Models\AdjustmentDocument $adjustmentDocument
+ * @property-read AdjustmentDocument $adjustmentDocument
  */
 #[ObservedBy([AdjustmentDocumentLineObserver::class])]
 class AdjustmentDocumentLine extends Model
 {
-    /** @use HasFactory<\Database\Factories\AdjustmentDocumentLineFactory> */
+    /** @use HasFactory<AdjustmentDocumentLineFactory> */
     use HasFactory;
 
     protected $table = 'adjustment_document_lines';
@@ -70,7 +72,7 @@ class AdjustmentDocumentLine extends Model
 
     public function calculateLineTotals(): void
     {
-        /** @var \Modules\Foundation\Models\Currency $currency */
+        /** @var Currency $currency */
         $currency = $this->adjustmentDocument->currency;
         $quantity = $this->quantity;
 

@@ -1,10 +1,10 @@
 <?php
 
-use App\Enums\Accounting\AccountType;
-use App\Filament\Clusters\Inventory\Resources\Products\Pages\CreateProduct;
 use App\Models\Company;
 use App\Models\User;
+use Filament\Facades\Filament;
 use Livewire\Livewire;
+use Modules\Accounting\Models\Account;
 
 beforeEach(function () {
     $this->user = User::factory()->create();
@@ -13,7 +13,7 @@ beforeEach(function () {
     $this->actingAs($this->user);
 
     // Set up Filament tenant context
-    \Filament\Facades\Filament::setTenant($this->company);
+    Filament::setTenant($this->company);
 });
 
 test('product create page loads without getRecord error', function () {
@@ -44,7 +44,7 @@ test('can create account through createOptionForm with proper company_id', funct
     $component->assertSuccessful();
 
     // Create an account manually to verify the structure works
-    $account = \Modules\Accounting\Models\Account::create([
+    $account = Account::create([
         'company_id' => $this->company->id,
         'code' => 'TEST-001',
         'name' => 'Test Account',
@@ -68,6 +68,6 @@ test('createOptionForm includes company_id from tenant context', function () {
     $component->assertSuccessful();
 
     // Verify that the tenant is properly set
-    expect(\Filament\Facades\Filament::getTenant())->not->toBeNull();
-    expect(\Filament\Facades\Filament::getTenant()->id)->toBe($this->company->id);
+    expect(Filament::getTenant())->not->toBeNull();
+    expect(Filament::getTenant()->id)->toBe($this->company->id);
 });

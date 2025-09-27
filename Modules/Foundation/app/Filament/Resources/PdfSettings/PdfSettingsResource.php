@@ -2,10 +2,9 @@
 
 namespace Modules\Foundation\Filament\Clusters\Settings\Resources\PdfSettings;
 
-use App\Filament\Clusters\Settings\Resources\PdfSettings\Pages\EditPdfSettings;
-use App\Filament\Clusters\Settings\Resources\PdfSettings\Pages\ListPdfSettings;
 use App\Filament\Clusters\Settings\SettingsCluster;
 use App\Models\Company;
+use BackedEnum;
 use Filament\Actions\EditAction;
 use Filament\Facades\Filament;
 use Filament\Forms\Components\FileUpload;
@@ -19,6 +18,8 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Modules\Foundation\Filament\Clusters\Settings\Resources\PdfSettings\Pages\EditPdfSettings;
+use Modules\Foundation\Filament\Clusters\Settings\Resources\PdfSettings\Pages\ListPdfSettings;
 
 class PdfSettingsResource extends Resource
 {
@@ -26,7 +27,7 @@ class PdfSettingsResource extends Resource
 
     protected static ?string $model = Company::class;
 
-    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-printer';
+    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-printer';
 
     protected static ?string $cluster = SettingsCluster::class;
 
@@ -161,7 +162,7 @@ class PdfSettingsResource extends Resource
         // Only show the current tenant company
         $tenant = Filament::getTenant();
 
-        return parent::getEloquentQuery()->where('id', $tenant instanceof \App\Models\Company ? $tenant->getKey() : null);
+        return parent::getEloquentQuery()->where('id', $tenant instanceof Company ? $tenant->getKey() : null);
     }
 
     public static function getPages(): array

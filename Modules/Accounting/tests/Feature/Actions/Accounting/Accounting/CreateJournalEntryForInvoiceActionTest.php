@@ -1,10 +1,10 @@
 <?php
 
-use App\Actions\Accounting\CreateJournalEntryForInvoiceAction;
-use App\Enums\Sales\InvoiceStatus;
-use App\Models\Tax;
 use Brick\Money\Money;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Modules\Accounting\Models\Account;
+use Modules\Product\Models\Product;
+use Modules\Sales\Models\Invoice;
 use Tests\Traits\WithConfiguredCompany;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);
@@ -15,11 +15,11 @@ test('it creates a correct journal entry for a posted invoice', function () {
         'rate' => 0.10, // 10% tax
         'tax_account_id' => $this->company->default_tax_account_id,
     ]);
-    $product = \Modules\Product\Models\Product::factory()->for($this->company)->create([
-        'income_account_id' => \Modules\Accounting\Models\Account::factory()->for($this->company)->create(['type' => 'income'])->id,
+    $product = Product::factory()->for($this->company)->create([
+        'income_account_id' => Account::factory()->for($this->company)->create(['type' => 'income'])->id,
     ]);
 
-    $invoice = \Modules\Sales\Models\Invoice::factory()->for($this->company)->create([
+    $invoice = Invoice::factory()->for($this->company)->create([
         'status' => InvoiceStatus::Posted,
         'posted_at' => now(),
         'invoice_number' => 'TEST-INV-001',

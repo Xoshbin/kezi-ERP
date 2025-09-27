@@ -2,18 +2,16 @@
 
 namespace Modules\Accounting\Filament\Clusters\Accounting\Resources\JournalEntries\Pages;
 
-use App\Actions\Accounting\CreateJournalEntryAction;
-use App\DataTransferObjects\Accounting\CreateJournalEntryDTO;
-use App\DataTransferObjects\Accounting\CreateJournalEntryLineDTO;
-use App\Filament\Actions\DocsAction;
-use App\Filament\Clusters\Accounting\Resources\JournalEntries\JournalEntryResource;
 use Brick\Money\Money;
 use Filament\Facades\Filament;
 use Filament\Resources\Pages\CreateRecord;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\ValidationException;
+use InvalidArgumentException;
+use Modules\Foundation\Models\Currency;
 use PDOException;
 
 class CreateJournalEntry extends CreateRecord
@@ -24,12 +22,12 @@ class CreateJournalEntry extends CreateRecord
     {
         $lineDTOs = [];
         if (isset($data['lines']) && is_array($data['lines'])) {
-            $currency = \Modules\Foundation\Models\Currency::findOrFail($data['currency_id']);
+            $currency = Currency::findOrFail($data['currency_id']);
             // Ensure we have a single Currency model, not a collection
-            if ($currency instanceof \Illuminate\Database\Eloquent\Collection) {
+            if ($currency instanceof Collection) {
                 $currency = $currency->first();
                 if (! $currency) {
-                    throw new \InvalidArgumentException('Currency not found');
+                    throw new InvalidArgumentException('Currency not found');
                 }
             }
             foreach ($data['lines'] as $line) {

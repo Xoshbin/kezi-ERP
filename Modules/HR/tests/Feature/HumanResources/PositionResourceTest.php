@@ -2,9 +2,6 @@
 
 namespace Modules\HR\Tests\Feature\HumanResources;
 
-use App\Filament\Clusters\HumanResources\Resources\Positions\Pages\CreatePosition;
-use App\Filament\Clusters\HumanResources\Resources\Positions\PositionResource;
-use App\Models\Position;
 use Brick\Money\Money;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;

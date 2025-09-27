@@ -2,9 +2,8 @@
 
 namespace Modules\Inventory\Exceptions\Inventory;
 
-use App\Services\Inventory\ProductCostAnalysisService;
-use App\Services\Inventory\UserFriendlyErrorService;
 use Exception;
+use Modules\Product\Models\Product;
 
 /**
  * Exception thrown when insufficient cost information is available for inventory operations
@@ -15,7 +14,7 @@ use Exception;
 class InsufficientCostInformationException extends Exception
 {
     public function __construct(
-        public readonly \Modules\Product\Models\Product $product,
+        public readonly Product $product,
         public readonly array $suggestedActions = [],
         public readonly array $attemptedSources = [],
         ?string $message = null
@@ -60,7 +59,7 @@ class InsufficientCostInformationException extends Exception
     /**
      * Get the product that caused the exception
      */
-    public function getProduct(): \Modules\Product\Models\Product
+    public function getProduct(): Product
     {
         return $this->product;
     }

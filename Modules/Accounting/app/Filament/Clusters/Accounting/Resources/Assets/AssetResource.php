@@ -2,18 +2,7 @@
 
 namespace Modules\Accounting\Filament\Clusters\Accounting\Resources\Assets;
 
-use App\Enums\Accounting\AccountType;
-use App\Enums\Assets\AssetStatus;
-use App\Enums\Assets\DepreciationMethod;
-use App\Filament\Clusters\Accounting\AccountingCluster;
-use App\Filament\Clusters\Accounting\Resources\Assets\Pages\CreateAsset;
-use App\Filament\Clusters\Accounting\Resources\Assets\Pages\EditAsset;
-use App\Filament\Clusters\Accounting\Resources\Assets\Pages\ListAssets;
-use App\Filament\Clusters\Accounting\Resources\Assets\RelationManagers\DepreciationEntryRelationManager;
-use App\Filament\Forms\Components\MoneyInput;
-use App\Filament\Tables\Columns\MoneyColumn;
 use App\Models\Company;
-use App\Rules\NotInLockedPeriod;
 use BackedEnum;
 use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
@@ -30,11 +19,23 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
+use Modules\Accounting\Enums\Assets\AssetStatus;
+use Modules\Accounting\Enums\Assets\DepreciationMethod;
+use Modules\Accounting\Filament\Clusters\Accounting\AccountingCluster;
+use Modules\Accounting\Filament\Clusters\Accounting\Resources\Assets\Pages\CreateAsset;
+use Modules\Accounting\Filament\Clusters\Accounting\Resources\Assets\Pages\EditAsset;
+use Modules\Accounting\Filament\Clusters\Accounting\Resources\Assets\Pages\ListAssets;
+use Modules\Accounting\Filament\Clusters\Accounting\Resources\Assets\RelationManagers\DepreciationEntryRelationManager;
+use Modules\Accounting\Models\Account;
+use Modules\Accounting\Models\Asset;
+use Modules\Accounting\Rules\NotInLockedPeriod;
+use Modules\Foundation\Models\Currency;
+use Modules\Foundation\Models\CurrencyRate;
 use Xoshbin\TranslatableSelect\Components\TranslatableSelect;
 
 class AssetResource extends Resource
 {
-    protected static ?string $model = \Modules\Accounting\Models\Asset::class;
+    protected static ?string $model = Asset::class;
 
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-archive-box';
 
@@ -74,7 +75,7 @@ class AssetResource extends Resource
                         ->maxLength(255)
                         ->columnSpan(2),
 
-                    TranslatableSelect::forModel('currency_id', \Modules\Foundation\Models\Currency::class)
+                    TranslatableSelect::forModel('currency_id', Currency::class)
                         ->label(__('asset.currency'))
                         ->required()
                         ->searchable()
@@ -87,7 +88,7 @@ class AssetResource extends Resource
                         })
                         ->afterStateUpdated(function (callable $set, $state) {
                             if ($state) {
-                                $currency = \Modules\Foundation\Models\Currency::find($state);
+                                $currency = Currency::find($state);
                                 // Ensure we have a single Currency model, not a collection
                                 if ($currency instanceof Collection) {
                                     $currency = $currency->first();
@@ -95,7 +96,7 @@ class AssetResource extends Resource
                                 $company = Filament::getTenant();
 
                                 if ($currency && $company instanceof Company && $currency->id !== $company->currency_id) {
-                                    $latestRate = \Modules\Foundation\Models\CurrencyRate::getLatestRate($currency->id, $company->id);
+                                    $latestRate = CurrencyRate::getLatestRate($currency->id, $company->id);
                                     if ($latestRate) {
                                         $set('current_exchange_rate', $latestRate);
                                     }
@@ -181,7 +182,7 @@ class AssetResource extends Resource
                         ->required()
                         ->columnSpan(1),
 
-                    TranslatableSelect::forModel('asset_account_id', \Modules\Accounting\Models\Account::class)
+                    TranslatableSelect::forModel('asset_account_id', Account::class)
                         ->label(__('asset.asset_account'))
                         ->searchableFields(['name', 'code'])
                         ->searchable()
@@ -208,7 +209,7 @@ class AssetResource extends Resource
                         ->required()
                         ->columnSpan(1),
 
-                    TranslatableSelect::forModel('depreciation_expense_account_id', \Modules\Accounting\Models\Account::class)
+                    TranslatableSelect::forModel('depreciation_expense_account_id', Account::class)
                         ->label(__('asset.depreciation_expense_account'))
                         ->searchableFields(['name', 'code'])
                         ->searchable()
@@ -235,7 +236,7 @@ class AssetResource extends Resource
                         ->required()
                         ->columnSpan(1),
 
-                    TranslatableSelect::forModel('accumulated_depreciation_account_id', \Modules\Accounting\Models\Account::class)
+                    TranslatableSelect::forModel('accumulated_depreciation_account_id', Account::class)
                         ->label(__('asset.accumulated_depreciation_account'))
                         ->searchableFields(['name', 'code'])
                         ->searchable()
@@ -268,7 +269,7 @@ class AssetResource extends Resource
     }
 
     /**
-     * @return Builder<\Modules\Accounting\Models\Asset>
+     * @return Builder<Asset>
      */
     public static function getEloquentQuery(): Builder
     {

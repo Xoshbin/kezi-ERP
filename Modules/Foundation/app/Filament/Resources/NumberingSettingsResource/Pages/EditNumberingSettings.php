@@ -3,6 +3,7 @@
 namespace Modules\Foundation\Filament\Clusters\Settings\Resources\NumberingSettingsResource\Pages;
 
 use App\Filament\Clusters\Settings\Resources\NumberingSettingsResource;
+use App\Models\Company;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
 
@@ -21,7 +22,7 @@ class EditNumberingSettings extends EditRecord
     {
         // Validate that numbering settings can be changed
         $record = $this->getRecord();
-        if (! $record instanceof \App\Models\Company || ! $record->canChangeNumberingSettings()) {
+        if (! $record instanceof Company || ! $record->canChangeNumberingSettings()) {
             $errors = method_exists($record, 'getNumberingChangeValidationErrors') ? $record->getNumberingChangeValidationErrors() : [];
 
             Notification::make()
@@ -48,7 +49,7 @@ class EditNumberingSettings extends EditRecord
         // Ensure numbering_settings has default values if not set
         if (! isset($data['numbering_settings'])) {
             $record = $this->getRecord();
-            if ($record instanceof \App\Models\Company) {
+            if ($record instanceof Company) {
                 $data['numbering_settings'] = $record->getDefaultNumberingSettings();
             }
         }

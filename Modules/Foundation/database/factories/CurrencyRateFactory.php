@@ -3,11 +3,13 @@
 namespace Modules\Foundation\Database\Factories;
 
 use App\Models\Company;
+use App\Models\CurrencyRate;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Modules\Foundation\Models\Currency;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\CurrencyRate>
+ * @extends Factory<CurrencyRate>
  */
 class CurrencyRateFactory extends Factory
 {
@@ -20,7 +22,7 @@ class CurrencyRateFactory extends Factory
     {
         return [
             'company_id' => Company::factory(),
-            'currency_id' => \Modules\Foundation\Models\Currency::factory()->createSafely(),
+            'currency_id' => Currency::factory()->createSafely(),
             'rate' => $this->faker->randomFloat(6, 0.1, 10.0),
             'effective_date' => $this->faker->dateTimeBetween('-30 days', 'now')->format('Y-m-d'),
             'source' => $this->faker->randomElement(['manual', 'api', 'bank', 'central_bank']),

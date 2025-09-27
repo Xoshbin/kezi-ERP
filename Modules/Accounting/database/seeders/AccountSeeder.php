@@ -2,10 +2,10 @@
 
 namespace Modules\Accounting\Database\Seeders;
 
-use App\Enums\Accounting\AccountType;
 use App\Models\Company;
 use Exception;
 use Illuminate\Database\Seeder;
+use Modules\Accounting\Models\Account;
 
 class AccountSeeder extends Seeder
 {
@@ -101,7 +101,7 @@ class AccountSeeder extends Seeder
         ];
 
         foreach ($accounts as $accountData) {
-            \Modules\Accounting\Models\Account::updateOrCreate(
+            Account::updateOrCreate(
                 [
                     'company_id' => $company->id,
                     'code' => $accountData['code'],

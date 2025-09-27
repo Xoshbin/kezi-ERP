@@ -7,6 +7,7 @@ use App\Casts\DocumentCurrencyMoneyCast;
 use App\Observers\VendorBillLineObserver;
 use Brick\Money\Money;
 use Database\Factories\VendorBillLineFactory;
+use Eloquent;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -59,12 +60,12 @@ use Illuminate\Support\Carbon;
  * @method static Builder<static>|VendorBillLine whereUpdatedAt($value)
  * @method static Builder<static>|VendorBillLine whereVendorBillId($value)
  *
- * @mixin \Eloquent
+ * @mixin Eloquent
  */
 #[ObservedBy([VendorBillLineObserver::class])]
 class VendorBillLine extends Model
 {
-    /** @use HasFactory<\Database\Factories\VendorBillLineFactory> */
+    /** @use HasFactory<VendorBillLineFactory> */
     use HasFactory;
 
     /**

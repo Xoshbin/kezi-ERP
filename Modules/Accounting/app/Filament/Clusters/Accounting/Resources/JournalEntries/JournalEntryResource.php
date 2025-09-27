@@ -2,17 +2,6 @@
 
 namespace Modules\Accounting\Filament\Clusters\Accounting\Resources\JournalEntries;
 
-use App\Enums\Accounting\JournalType;
-use App\Filament\Clusters\Accounting\AccountingCluster;
-use App\Filament\Clusters\Accounting\Resources\JournalEntries\Pages\CreateJournalEntry;
-use App\Filament\Clusters\Accounting\Resources\JournalEntries\Pages\EditJournalEntry;
-use App\Filament\Clusters\Accounting\Resources\JournalEntries\Pages\ListJournalEntries;
-use App\Filament\Forms\Components\MoneyInput;
-use App\Filament\Tables\Columns\MoneyColumn;
-use App\Models\Company;
-use App\Models\Journal;
-use App\Models\JournalEntry;
-use App\Rules\ActiveAccount;
 use BackedEnum;
 use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
@@ -31,6 +20,9 @@ use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Modules\Accounting\Models\Account;
+use Modules\Foundation\Models\Currency;
+use Modules\Foundation\Models\Partner;
 use Xoshbin\TranslatableSelect\Components\TranslatableSelect;
 
 // Use an alias to avoid conflict with the relationship name
@@ -77,7 +69,7 @@ class JournalEntryResource extends Resource
                         ->required()
                         ->default(Journal::where('type', JournalType::Miscellaneous)->first()?->id)
                         ->columnSpan(2),
-                    TranslatableSelect::forModel('currency_id', \Modules\Foundation\Models\Currency::class, 'name')
+                    TranslatableSelect::forModel('currency_id', Currency::class, 'name')
                         ->label(__('journal_entry.currency'))
                         ->required()
                         ->searchable()
@@ -125,7 +117,7 @@ class JournalEntryResource extends Resource
                             TableColumn::make(__('journal_entry.description'))->width('30%'),
                         ])
                         ->schema([
-                            TranslatableSelect::forModel('account_id', \Modules\Accounting\Models\Account::class)
+                            TranslatableSelect::forModel('account_id', Account::class)
                                 ->label(__('journal_entry.account'))
                                 ->searchableFields(['name', 'code'])
                                 ->searchable()
@@ -146,7 +138,7 @@ class JournalEntryResource extends Resource
                                 ->currencyField('../../company.currency_id')
                                 ->live(onBlur: true)
                                 ->columnSpan(3),
-                            TranslatableSelect::forModel('partner_id', \Modules\Foundation\Models\Partner::class, 'name')
+                            TranslatableSelect::forModel('partner_id', Partner::class, 'name')
                                 ->label(__('journal_entry.partner'))
                                 ->searchableFields(['name', 'email', 'contact_person'])
                                 ->searchable()

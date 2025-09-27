@@ -2,11 +2,7 @@
 
 namespace Modules\Accounting\Filament\Clusters\Accounting\Resources\Budgets;
 
-use App\Filament\Clusters\Accounting\AccountingCluster;
-use App\Filament\Clusters\Accounting\Resources\Budgets\Pages\CreateBudget;
-use App\Filament\Clusters\Accounting\Resources\Budgets\Pages\EditBudget;
-use App\Filament\Clusters\Accounting\Resources\Budgets\Pages\ListBudgets;
-use App\Filament\Clusters\Accounting\Resources\Budgets\RelationManagers\BudgetLinesRelationManager;
+use BackedEnum;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
@@ -17,12 +13,18 @@ use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Modules\Accounting\Filament\Clusters\Accounting\AccountingCluster;
+use Modules\Accounting\Filament\Clusters\Accounting\Resources\Budgets\Pages\CreateBudget;
+use Modules\Accounting\Filament\Clusters\Accounting\Resources\Budgets\Pages\EditBudget;
+use Modules\Accounting\Filament\Clusters\Accounting\Resources\Budgets\Pages\ListBudgets;
+use Modules\Accounting\Filament\Clusters\Accounting\Resources\Budgets\RelationManagers\BudgetLinesRelationManager;
+use Modules\Accounting\Models\Budget;
 
 class BudgetResource extends Resource
 {
-    protected static ?string $model = \Modules\Accounting\Models\Budget::class;
+    protected static ?string $model = Budget::class;
 
-    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-chart-bar';
+    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-chart-bar';
 
     protected static ?int $navigationSort = 1;
 

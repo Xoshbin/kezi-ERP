@@ -2,13 +2,7 @@
 
 namespace Modules\HR\Services\HumanResources;
 
-use App\Actions\Accounting\CreateJournalEntryForPayrollAction;
-use App\Actions\HumanResources\CreatePaymentFromPayrollAction;
-use App\Actions\HumanResources\ProcessPayrollAction;
-use App\DataTransferObjects\HumanResources\PayrollLineDTO;
-use App\DataTransferObjects\HumanResources\ProcessPayrollDTO;
 use App\Models\User;
-use App\Services\Accounting\LockDateService;
 use Brick\Math\RoundingMode;
 use Brick\Money\Money;
 use Carbon\Carbon;
@@ -16,6 +10,9 @@ use Exception;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use InvalidArgumentException;
+use Modules\HR\Models\Employee;
+use Modules\HR\Models\Payroll;
+use Modules\Payment\Models\Payment;
 
 class PayrollService
 {
@@ -29,9 +26,9 @@ class PayrollService
     /**
      * Process payroll for an employee.
      */
-    public function processPayroll(\Modules\HR\Models\Employee $employee, string $periodStartDate, string $periodEndDate, string $payDate, User $user): \Modules\HR\Models\Payroll
+    public function processPayroll(Employee $employee, string $periodStartDate, string $periodEndDate, string $payDate, User $user): Payroll
     {
-        Gate::forUser($user)->authorize('create', \Modules\HR\Models\Payroll::class);
+        Gate::forUser($user)->authorize('create', Payroll::class);
 
         $this->lockDateService->enforce($employee->company, Carbon::parse($payDate));
 
@@ -100,7 +97,7 @@ class PayrollService
     /**
      * Approve a payroll.
      */
-    public function approvePayroll(\Modules\HR\Models\Payroll $payroll, User $user): void
+    public function approvePayroll(Payroll $payroll, User $user): void
     {
         Gate::forUser($user)->authorize('approve', $payroll);
 
@@ -126,7 +123,7 @@ class PayrollService
      *
      * @return array<string, mixed>
      */
-    private function calculateAttendanceAmounts(\Modules\HR\Models\Employee $employee, string $periodStartDate, string $periodEndDate): array
+    private function calculateAttendanceAmounts(Employee $employee, string $periodStartDate, string $periodEndDate): array
     {
         $attendances = $employee->attendances()
             ->whereBetween('attendance_date', [$periodStartDate, $periodEndDate])
@@ -146,7 +143,7 @@ class PayrollService
     /**
      * Calculate base salary for the period.
      */
-    private function calculateBaseSalary(\App\Models\EmploymentContract $contract, string $periodStartDate, string $periodEndDate): Money
+    private function calculateBaseSalary(EmploymentContract $contract, string $periodStartDate, string $periodEndDate): Money
     {
         $baseSalary = $contract->base_salary;
 
@@ -170,7 +167,7 @@ class PayrollService
     /**
      * Calculate overtime amount.
      */
-    private function calculateOvertimeAmount(\App\Models\EmploymentContract $contract, float $overtimeHours): Money
+    private function calculateOvertimeAmount(EmploymentContract $contract, float $overtimeHours): Money
     {
         if ($overtimeHours <= 0) {
             return Money::of(0, $contract->currency->code);
@@ -196,7 +193,7 @@ class PayrollService
     /**
      * @return array<string, Money>
      */
-    private function calculateDeductions(Money $grossSalary, \App\Models\EmploymentContract $contract): array
+    private function calculateDeductions(Money $grossSalary, EmploymentContract $contract): array
     {
         $currency = $contract->currency->code;
 
@@ -222,7 +219,7 @@ class PayrollService
      * @param  array<string, mixed>  $deductions
      * @return list<PayrollLineDTO>
      */
-    private function createPayrollLines(\Modules\HR\Models\Employee $employee, Money $baseSalary, array $attendanceData, array $deductions): array
+    private function createPayrollLines(Employee $employee, Money $baseSalary, array $attendanceData, array $deductions): array
     {
         $lines = [];
         $company = $employee->company;
@@ -328,7 +325,7 @@ class PayrollService
     /**
      * Create payment for an approved payroll.
      */
-    public function payEmployee(\Modules\HR\Models\Payroll $payroll, User $user): \Modules\Payment\Models\Payment
+    public function payEmployee(Payroll $payroll, User $user): Payment
     {
         Gate::forUser($user)->authorize('pay', $payroll);
 

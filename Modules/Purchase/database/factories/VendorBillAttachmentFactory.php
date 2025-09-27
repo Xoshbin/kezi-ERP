@@ -5,6 +5,7 @@ namespace Modules\Purchase\Database\Factories;
 use App\Models\User;
 use App\Models\VendorBillAttachment;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Modules\Purchase\Models\VendorBill;
 
 /**
  * @extends Factory<VendorBillAttachment>
@@ -30,12 +31,12 @@ class VendorBillAttachmentFactory extends Factory
 
         $fileType = $this->faker->randomElement($fileTypes);
 
-        $vendorBill = \Modules\Purchase\Models\VendorBill::factory();
+        $vendorBill = VendorBill::factory();
 
         return [
             'vendor_bill_id' => $vendorBill,
             'company_id' => function (array $attributes) {
-                return \Modules\Purchase\Models\VendorBill::find($attributes['vendor_bill_id'])->company_id;
+                return VendorBill::find($attributes['vendor_bill_id'])->company_id;
             },
             'file_name' => $fileType['name'],
             'file_path' => 'vendor-bill-attachments/'.$this->faker->uuid().'/'.$fileType['name'],

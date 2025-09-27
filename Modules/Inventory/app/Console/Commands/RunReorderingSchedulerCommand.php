@@ -3,6 +3,7 @@
 namespace Modules\Inventory\Console\Commands;
 
 use App\Services\Inventory\ReorderingRuleService;
+use Exception;
 use Illuminate\Console\Command;
 
 class RunReorderingSchedulerCommand extends Command
@@ -10,7 +11,7 @@ class RunReorderingSchedulerCommand extends Command
     /**
      * The name and signature of the console command.
      */
-    protected $signature = 'inventory:run-reordering 
+    protected $signature = 'inventory:run-reordering
                             {--cleanup : Clean up old processed suggestions}
                             {--days-old=30 : Days old for cleanup}';
 
@@ -29,12 +30,12 @@ class RunReorderingSchedulerCommand extends Command
         try {
             // Generate new suggestions
             $suggestionsCreated = $reorderingService->generateReplenishmentSuggestions();
-            
+
             $this->info("Created {$suggestionsCreated} replenishment suggestions.");
 
             // Show pending suggestions summary
             $pendingSuggestions = $reorderingService->getPendingSuggestionsByPriority();
-            
+
             $this->table(
                 ['Priority', 'Count'],
                 [
@@ -52,12 +53,12 @@ class RunReorderingSchedulerCommand extends Command
             }
 
             $this->info('Reordering scheduler completed successfully.');
-            
+
             return Command::SUCCESS;
-            
-        } catch (\Exception $e) {
+
+        } catch (Exception $e) {
             $this->error('Reordering scheduler failed: ' . $e->getMessage());
-            
+
             return Command::FAILURE;
         }
     }

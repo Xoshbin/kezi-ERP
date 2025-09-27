@@ -1,10 +1,8 @@
 <?php
 
-use App\Actions\Accounting\CreateJournalEntryForPaymentAction;
-use App\Enums\Payments\PaymentStatus;
-use App\Enums\Payments\PaymentType;
 use Brick\Money\Money;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Modules\Payment\Models\Payment;
 use Tests\Traits\WithConfiguredCompany;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);
@@ -14,7 +12,7 @@ test('it creates a correct journal entry for an inbound payment', function () {
     $this->company->currency->update(['exchange_rate' => 1.0]);
     $this->company->refresh();
 
-    $payment = \Modules\Payment\Models\Payment::factory()->for($this->company)->create([
+    $payment = Payment::factory()->for($this->company)->create([
         'payment_type' => PaymentType::Inbound,
         'amount' => Money::of(500, $this->company->currency->code),
         'currency_id' => $this->company->currency_id,

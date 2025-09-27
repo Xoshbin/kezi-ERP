@@ -2,8 +2,6 @@
 
 namespace Modules\Accounting\Filament\Clusters\Accounting\Resources\BankStatements\RelationManagers;
 
-use App\Actions\Accounting\ReverseJournalEntryAction;
-use App\Enums\Accounting\JournalEntryState;
 use Exception;
 use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
@@ -23,6 +21,7 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
+use Modules\Accounting\Models\BankStatementLine;
 
 class BankStatementLinesRelationManager extends RelationManager
 {
@@ -86,29 +85,29 @@ class BankStatementLinesRelationManager extends RelationManager
                     ->label('Reverse Write-Off')
                     ->icon('heroicon-o-arrow-uturn-left')
                     ->color('danger')
-                    ->visible(function (\Modules\Accounting\Models\BankStatementLine $record) {
+                    ->visible(function (BankStatementLine $record) {
                         $je = $record->journalEntry;
 
-                        return $record->is_reconciled && $je instanceof \App\Models\JournalEntry && $je->state === JournalEntryState::Posted;
+                        return $record->is_reconciled && $je instanceof JournalEntry && $je->state === JournalEntryState::Posted;
                     })
-                    ->authorize(function (\Modules\Accounting\Models\BankStatementLine $record) {
+                    ->authorize(function (BankStatementLine $record) {
                         $je = $record->journalEntry;
 
-                        return $je instanceof \App\Models\JournalEntry && Gate::allows('reverse', $je);
+                        return $je instanceof JournalEntry && Gate::allows('reverse', $je);
                     })
                     ->requiresConfirmation()
                     ->modalHeading('Reverse Write-Off')
                     ->modalDescription('Are you sure you want to reverse this write-off? This will create a reversing journal entry and mark the bank statement line as unreconciled.')
-                    ->action(function (\Modules\Accounting\Models\BankStatementLine $record) {
+                    ->action(function (BankStatementLine $record) {
                         try {
                             $journalEntry = $record->journalEntry;
-                            if (! $journalEntry instanceof \App\Models\JournalEntry) {
-                                throw new \Exception('Journal entry not found');
+                            if (! $journalEntry instanceof JournalEntry) {
+                                throw new Exception('Journal entry not found');
                             }
 
                             $user = Auth::user();
                             if (! $user) {
-                                throw new \Exception('User must be authenticated to reverse journal entry');
+                                throw new Exception('User must be authenticated to reverse journal entry');
                             }
                             $reverseAction = app(ReverseJournalEntryAction::class);
                             $reverseAction->execute(

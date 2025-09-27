@@ -2,12 +2,7 @@
 
 namespace Modules\Foundation\Models;
 
-use App\Enums\Partners\PartnerType;
-use App\Enums\Purchases\VendorBillStatus;
-use App\Enums\Sales\InvoiceStatus;
-use App\Observers\PartnerObserver;
 use Brick\Money\Money;
-use Database\Factories\PartnerFactory;
 use Eloquent;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Builder;

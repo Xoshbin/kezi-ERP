@@ -2,9 +2,12 @@
 
 namespace Modules\Inventory\Services\Inventory;
 
+use BackedEnum;
 use Brick\Math\RoundingMode;
 use Brick\Money\Money;
 use Carbon\Carbon;
+use Exception;
+use Filament\Facades\Filament;
 
 class InventoryCSVExportService
 {
@@ -32,7 +35,7 @@ class InventoryCSVExportService
                     : Money::of(0, $productData['value']->getCurrency());
 
                 $valuationMethod = $productData['valuation_method'] ?? 'N/A';
-                if ($valuationMethod instanceof \BackedEnum) {
+                if ($valuationMethod instanceof BackedEnum) {
                     $valuationMethod = $valuationMethod->value;
                 } elseif (is_object($valuationMethod) && method_exists($valuationMethod, 'value')) {
                     $valuationMethod = $valuationMethod->value;
@@ -254,11 +257,11 @@ class InventoryCSVExportService
 
         // Try to get company name from current tenant
         try {
-            $company = \Filament\Facades\Filament::getTenant();
+            $company = Filament::getTenant();
             if ($company && method_exists($company, 'getAttribute')) {
                 $metadata .= "Company: " . $company->name . "\n";
             }
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             // Fallback if no tenant context
             $metadata .= "Company: " . (config('app.name') ?? 'Unknown') . "\n";
         }

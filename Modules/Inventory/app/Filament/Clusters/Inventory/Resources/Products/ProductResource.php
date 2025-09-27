@@ -2,17 +2,6 @@
 
 namespace Modules\Inventory\Filament\Clusters\Inventory\Resources\Products;
 
-use App\Enums\Accounting\AccountType;
-use App\Enums\Inventory\ValuationMethod;
-use App\Enums\Products\ProductType;
-use App\Filament\Clusters\Inventory\InventoryCluster;
-use App\Filament\Clusters\Inventory\Resources\Products\Pages\CreateProduct;
-use App\Filament\Clusters\Inventory\Resources\Products\Pages\EditProduct;
-use App\Filament\Clusters\Inventory\Resources\Products\Pages\ListProducts;
-use App\Filament\Clusters\Inventory\Resources\Products\RelationManagers\InventoryCostLayersRelationManager;
-use App\Filament\Clusters\Inventory\Resources\Products\RelationManagers\ReorderingRulesRelationManager;
-use App\Filament\Forms\Components\MoneyInput;
-use App\Filament\Tables\Columns\MoneyColumn;
 use BackedEnum;
 use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
@@ -42,6 +31,8 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use LaraZeus\SpatieTranslatable\Resources\Concerns\Translatable;
+use Modules\Accounting\Models\Account;
+use Modules\Product\Models\Product;
 use Xoshbin\TranslatableSelect\Components\TranslatableSelect;
 
 // use App\Filament\Clusters\Inventory\Resources\Products\RelationManagers\StockMovesRelationManager;
@@ -50,7 +41,7 @@ class ProductResource extends Resource
 {
     use Translatable;
 
-    protected static ?string $model = \Modules\Product\Models\Product::class;
+    protected static ?string $model = Product::class;
 
     protected static ?string $cluster = InventoryCluster::class;
 
@@ -91,7 +82,7 @@ class ProductResource extends Resource
                             ->label(__('product.sku'))
                             ->required()
                             ->maxLength(255)
-                            ->unique(\Modules\Product\Models\Product::class, 'sku', ignoreRecord: true),
+                            ->unique(Product::class, 'sku', ignoreRecord: true),
                         Select::make('type')
                             ->label(__('product.type'))
                             ->required()
@@ -256,7 +247,7 @@ class ProductResource extends Resource
                             }),
                         TranslatableSelect::make('default_cogs_account_id')
                             ->relationship('defaultCogsAccount', 'name')
-                            ->forModel('default_cogs_account_id', \Modules\Accounting\Models\Account::class, 'name')
+                            ->forModel('default_cogs_account_id', Account::class, 'name')
                             ->label(__('product.default_cogs_account'))
                             ->searchable()
                             ->preload()
@@ -504,7 +495,7 @@ class ProductResource extends Resource
     }
 
     /**
-     * @return Builder<\Modules\Product\Models\Product>
+     * @return Builder<Product>
      */
     public static function getEloquentQuery(): Builder
     {

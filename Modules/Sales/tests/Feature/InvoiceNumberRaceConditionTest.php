@@ -2,17 +2,16 @@
 
 namespace Modules\Sales\Tests\Feature;
 
-use App\Actions\Sales\CreateInvoiceAction;
-use App\DataTransferObjects\Sales\CreateInvoiceDTO;
-use App\DataTransferObjects\Sales\CreateInvoiceLineDTO;
 use App\Models\Company;
-use App\Models\Journal;
-use App\Models\Tax;
 use App\Models\User;
-use App\Services\InvoiceService;
 use Brick\Money\Money;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
+use Modules\Accounting\Models\Account;
+use Modules\Foundation\Models\Currency;
+use Modules\Foundation\Models\Partner;
+use Modules\Foundation\Services\SequenceService;
+use Modules\Sales\Models\Invoice;
 use Tests\TestCase;
 
 class InvoiceNumberRaceConditionTest extends TestCase
@@ -21,13 +20,13 @@ class InvoiceNumberRaceConditionTest extends TestCase
 
     private Company $company;
 
-    private \Modules\Foundation\Models\Partner $customer;
+    private Partner $customer;
 
-    private \Modules\Foundation\Models\Currency $currency;
+    private Currency $currency;
 
     private User $user;
 
-    private \Modules\Accounting\Models\Account $incomeAccount;
+    private Account $incomeAccount;
 
     private Journal $salesJournal;
 
@@ -38,12 +37,12 @@ class InvoiceNumberRaceConditionTest extends TestCase
         parent::setUp();
 
         // Create test data
-        $this->currency = \Modules\Foundation\Models\Currency::factory()->create(['code' => 'USD']);
+        $this->currency = Currency::factory()->create(['code' => 'USD']);
         $this->company = Company::factory()->create(['currency_id' => $this->currency->id]);
-        $this->customer = \Modules\Foundation\Models\Partner::factory()->create(['company_id' => $this->company->id]);
+        $this->customer = Partner::factory()->create(['company_id' => $this->company->id]);
         $this->user = User::factory()->create();
 
-        $this->incomeAccount = \Modules\Accounting\Models\Account::factory()->create([
+        $this->incomeAccount = Account::factory()->create([
             'company_id' => $this->company->id,
             'type' => 'income',
         ]);
@@ -93,7 +92,7 @@ class InvoiceNumberRaceConditionTest extends TestCase
             $invoices[] = app(\Modules\Sales\Actions\Sales\CreateInvoiceAction::class)->execute($invoiceDTO);
         }
 
-        $sequenceService = app(\Modules\Foundation\Services\SequenceService::class);
+        $sequenceService = app(SequenceService::class);
         $generatedNumbers = [];
 
         // Simulate concurrent posting by calling getNextInvoiceNumber multiple times
@@ -131,8 +130,8 @@ class InvoiceNumberRaceConditionTest extends TestCase
         $invoice1->refresh();
         $invoice2->refresh();
 
-        $this->assertEquals(\App\Enums\Sales\InvoiceStatus::Posted, $invoice1->status);
-        $this->assertEquals(\App\Enums\Sales\InvoiceStatus::Posted, $invoice2->status);
+        $this->assertEquals(InvoiceStatus::Posted, $invoice1->status);
+        $this->assertEquals(InvoiceStatus::Posted, $invoice2->status);
         $this->assertMatchesRegularExpression('/^INV\/\d{4}\/\d{2}\/\d{7}$/', $invoice1->invoice_number);
         $this->assertMatchesRegularExpression('/^INV\/\d{4}\/\d{2}\/\d{7}$/', $invoice2->invoice_number);
         $this->assertNotNull($invoice1->journal_entry_id);
@@ -140,7 +139,7 @@ class InvoiceNumberRaceConditionTest extends TestCase
         $this->assertNotEquals($invoice1->journal_entry_id, $invoice2->journal_entry_id);
     }
 
-    private function createTestInvoice(): \Modules\Sales\Models\Invoice
+    private function createTestInvoice(): Invoice
     {
         $invoiceDTO = new CreateInvoiceDTO(
             company_id: $this->company->id,

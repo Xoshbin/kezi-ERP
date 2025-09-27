@@ -5,9 +5,10 @@ namespace Modules\Inventory\Database\Factories;
 use App\Models\InventoryCostLayer;
 use Brick\Money\Money;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Modules\Product\Models\Product;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\InventoryCostLayer>
+ * @extends Factory<InventoryCostLayer>
  */
 class InventoryCostLayerFactory extends Factory
 {
@@ -24,7 +25,7 @@ class InventoryCostLayerFactory extends Factory
         $costPerUnit = Money::of($this->faker->numberBetween(10000, 100000), 'IQD');
 
         return [
-            'product_id' => \Modules\Product\Models\Product::factory(),
+            'product_id' => Product::factory(),
             'quantity' => $quantity,
             'remaining_quantity' => $quantity,
             'cost_per_unit' => $costPerUnit,
@@ -57,7 +58,7 @@ class InventoryCostLayerFactory extends Factory
     /**
      * Create a cost layer for a specific product
      */
-    public function forProduct(\Modules\Product\Models\Product $product): static
+    public function forProduct(Product $product): static
     {
         return $this->state(fn (array $attributes) => [
             'product_id' => $product->id,

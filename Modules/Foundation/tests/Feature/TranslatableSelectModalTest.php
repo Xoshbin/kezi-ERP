@@ -2,11 +2,10 @@
 
 namespace Modules\Foundation\Tests\Feature;
 
-use App\Enums\Accounting\TaxType;
 use App\Models\Company;
-use App\Models\Tax;
 use Filament\Facades\Filament;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Modules\Accounting\Models\Account;
 use Tests\TestCase;
 use Xoshbin\TranslatableSelect\Components\TranslatableSelect;
 
@@ -28,7 +27,7 @@ class TranslatableSelectModalTest extends TestCase
     public function translatable_select_for_model_does_not_try_to_establish_relationships()
     {
         // Create a tax account for the test
-        $taxAccount = \Modules\Accounting\Models\Account::factory()->create([
+        $taxAccount = Account::factory()->create([
             'company_id' => $this->company->id,
             'name' => ['en' => 'VAT Payable'],
             'code' => 'VAT-001',
@@ -50,7 +49,7 @@ class TranslatableSelectModalTest extends TestCase
     public function translatable_select_for_model_can_get_search_results()
     {
         // Create a tax account and some taxes
-        $taxAccount = \Modules\Accounting\Models\Account::factory()->create([
+        $taxAccount = Account::factory()->create([
             'company_id' => $this->company->id,
             'name' => ['en' => 'VAT Payable'],
             'code' => 'VAT-001',
@@ -90,7 +89,7 @@ class TranslatableSelectModalTest extends TestCase
     public function translatable_select_for_model_can_get_option_labels()
     {
         // Create a tax account and a tax
-        $taxAccount = \Modules\Accounting\Models\Account::factory()->create([
+        $taxAccount = Account::factory()->create([
             'company_id' => $this->company->id,
             'name' => ['en' => 'VAT Payable'],
             'code' => 'VAT-001',

@@ -2,7 +2,6 @@
 
 namespace Modules\Accounting\Observers;
 
-use App\Exceptions\DeletionNotAllowedException;
 use App\Models\Journal;
 
 class JournalObserver

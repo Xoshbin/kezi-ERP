@@ -7,6 +7,7 @@ use App\Casts\OriginalCurrencyMoneyCast;
 use App\Observers\BankStatementLineObserver;
 use Brick\Money\Money;
 use Database\Factories\BankStatementLineFactory;
+use Eloquent;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -44,7 +45,7 @@ use Illuminate\Support\Carbon;
  * @method static Builder<static>|BankStatementLine wherePaymentId($value)
  * @method static Builder<static>|BankStatementLine whereUpdatedAt($value)
  *
- * @mixin \Eloquent
+ * @mixin Eloquent
  */
 #[ObservedBy([BankStatementLineObserver::class])]
 class BankStatementLine extends Model

@@ -7,6 +7,7 @@ use Brick\Money\Money;
 use Illuminate\Contracts\Database\Eloquent\CastsAttributes;
 use Illuminate\Database\Eloquent\Model;
 use InvalidArgumentException;
+use Modules\Foundation\Models\Currency;
 
 /**
  * Abstract base class for all Money casting operations.
@@ -20,7 +21,7 @@ use InvalidArgumentException;
  * explicit responsibility for currency context resolution.
  */
 /**
- * @implements CastsAttributes<\Brick\Money\Money|null, \Brick\Money\Money|int|float|string|null>
+ * @implements CastsAttributes<Money|null, Money|int|float|string|null>
  */
 abstract class MoneyCast implements CastsAttributes
 {
@@ -76,5 +77,5 @@ abstract class MoneyCast implements CastsAttributes
      * for determining the currency context (e.g., company base currency,
      * document currency, etc.) to ensure predictable behavior.
      */
-    abstract protected function resolveCurrency(Model $model): \Modules\Foundation\Models\Currency;
+    abstract protected function resolveCurrency(Model $model): Currency;
 }

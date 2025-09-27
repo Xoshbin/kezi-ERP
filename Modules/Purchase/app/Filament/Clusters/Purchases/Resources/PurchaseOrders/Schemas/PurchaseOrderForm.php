@@ -2,12 +2,7 @@
 
 namespace Modules\Purchase\Filament\Clusters\Purchases\Resources\PurchaseOrders\Schemas;
 
-use App\Enums\Accounting\TaxType;
-use App\Enums\Products\ProductType;
-use App\Enums\Purchases\PurchaseOrderStatus;
-use App\Filament\Forms\Components\MoneyInput;
-use App\Models\PurchaseOrder;
-use App\Models\Tax;
+use Brick\Money\Money;
 use Filament\Actions\Action;
 use Filament\Facades\Filament;
 use Filament\Forms\Components\DatePicker;
@@ -21,6 +16,10 @@ use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
+use Illuminate\Support\Facades\Auth;
+use Modules\Accounting\Models\Account;
+use Modules\Foundation\Models\Currency;
+use Modules\Product\Models\Product;
 use Xoshbin\TranslatableSelect\Components\TranslatableSelect;
 
 class PurchaseOrderForm
@@ -32,10 +31,10 @@ class PurchaseOrderForm
                 Section::make(__('purchase_orders.sections.basic_info'))
                     ->schema([
                         Hidden::make('company_id')
-                            ->default(fn() => \Illuminate\Support\Facades\Auth::user()?->company_id),
+                            ->default(fn() => Auth::user()?->company_id),
 
                         Hidden::make('created_by_user_id')
-                            ->default(fn() => \Illuminate\Support\Facades\Auth::id()),
+                            ->default(fn() => Auth::id()),
 
                         Grid::make(2)
                             ->schema([
@@ -147,7 +146,7 @@ class PurchaseOrderForm
                                     ->relationship('currency', 'name')
                                     ->searchable()
                                     ->preload()
-                                    ->default(fn() => \Illuminate\Support\Facades\Auth::user()?->company?->currency_id)
+                                    ->default(fn() => Auth::user()?->company?->currency_id)
                                     ->required(),
                             ]),
                     ]),
@@ -188,7 +187,7 @@ class PurchaseOrderForm
                                 static::updateTotals($set, $get);
                             })
                             ->schema([
-                                TranslatableSelect::forModel('product_id', \Modules\Product\Models\Product::class, 'name')
+                                TranslatableSelect::forModel('product_id', Product::class, 'name')
                                     ->label(__('purchase_orders.fields.product'))
                                     ->searchableFields(['name', 'sku', 'description'])
                                     ->searchable()
@@ -197,12 +196,12 @@ class PurchaseOrderForm
                                     ->reactive()
                                     ->afterStateUpdated(function (callable $set, $state) {
                                         if ($state) {
-                                            $product = \Modules\Product\Models\Product::find($state);
+                                            $product = Product::find($state);
                                             if ($product) {
                                                 $set('description', $product->description ?: $product->name);
                                                 // Convert Money object to string for MoneyInput component
                                                 $unitPrice = $product->unit_price;
-                                                if ($unitPrice instanceof \Brick\Money\Money) {
+                                                if ($unitPrice instanceof Money) {
                                                     $set('unit_price', $unitPrice->getAmount()->__toString());
                                                 } else {
                                                     $set('unit_price', $unitPrice);
@@ -289,7 +288,7 @@ class PurchaseOrderForm
                                             ->default(fn() => Filament::getTenant()?->getKey()),
                                         Select::make('tax_account_id')
                                             ->options(function () {
-                                                return \Modules\Accounting\Models\Account::where('company_id', Filament::getTenant()?->getKey())
+                                                return Account::where('company_id', Filament::getTenant()?->getKey())
                                                     ->where('is_deprecated', false)
                                                     ->pluck('name', 'id');
                                             })
@@ -388,7 +387,7 @@ class PurchaseOrderForm
         }
 
         // Get currency for calculations
-        $currency = \Modules\Foundation\Models\Currency::find($currencyId);
+        $currency = Currency::find($currencyId);
         if (!$currency) {
             return;
         }
@@ -411,7 +410,7 @@ class PurchaseOrderForm
             // Calculate line tax
             $lineTax = 0;
             if ($taxId) {
-                $tax = \App\Models\Tax::find($taxId);
+                $tax = Tax::find($taxId);
                 if ($tax) {
                     $lineTax = $lineSubtotal * ($tax->rate / 100);
                 }

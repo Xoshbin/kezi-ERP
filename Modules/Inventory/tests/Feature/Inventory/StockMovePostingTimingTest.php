@@ -1,14 +1,9 @@
 <?php
 
-use App\Actions\Inventory\CreateStockMoveAction;
-use App\Actions\Inventory\UpdateStockMoveWithProductLinesAction;
-use App\DataTransferObjects\Inventory\CreateStockMoveDTO;
-use App\DataTransferObjects\Inventory\CreateStockMoveProductLineDTO;
-use App\DataTransferObjects\Inventory\UpdateStockMoveWithProductLinesDTO;
-use App\Enums\Inventory\StockMoveStatus;
-use App\Enums\Inventory\StockMoveType;
-use App\Models\StockMove;
+use Brick\Money\Money;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Modules\Product\Enums\Products\ProductType;
+use Modules\Product\Models\Product;
 use Tests\Traits\WithConfiguredCompany;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);
@@ -18,12 +13,12 @@ beforeEach(function () {
     $this->setupInventoryTestEnvironment();
 
     // Create a storable product with required inventory accounts and valid average cost
-    $this->product = \Modules\Product\Models\Product::factory()->for($this->company)->create([
-        'type' => \Modules\Product\Enums\Products\ProductType::Storable,
-        'inventory_valuation_method' => \App\Enums\Inventory\ValuationMethod::AVCO,
+    $this->product = Product::factory()->for($this->company)->create([
+        'type' => ProductType::Storable,
+        'inventory_valuation_method' => ValuationMethod::AVCO,
         'default_inventory_account_id' => $this->inventoryAccount->id,
         'default_stock_input_account_id' => $this->stockInputAccount->id,
-        'average_cost' => \Brick\Money\Money::of(100, $this->company->currency->code), // Valid cost for testing
+        'average_cost' => Money::of(100, $this->company->currency->code), // Valid cost for testing
     ]);
 });
 

@@ -3,6 +3,7 @@
 namespace Modules\Foundation\Models;
 
 use Database\Factories\AuditLogFactory;
+use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -22,7 +23,7 @@ use Illuminate\Support\Carbon;
  * @property string|null $ip_address
  * @property string|null $user_agent
  * @property Carbon $created_at
- * @property-read Model|\Eloquent $auditable
+ * @property-read Model|Eloquent $auditable
  * @property-read User $user
  *
  * @method static \Modules\Foundation\Database\Factories\AuditLogFactory factory($count = null, $state = [])
@@ -41,11 +42,11 @@ use Illuminate\Support\Carbon;
  * @method static Builder<static>|AuditLog whereUserAgent($value)
  * @method static Builder<static>|AuditLog whereUserId($value)
  *
- * @mixin \Eloquent
+ * @mixin Eloquent
  */
 class AuditLog extends Model
 {
-    /** @use HasFactory<\Database\Factories\AuditLogFactory> */
+    /** @use HasFactory<AuditLogFactory> */
     use HasFactory;
 
     /**
@@ -137,7 +138,7 @@ class AuditLog extends Model
      * This is critical for flexible and comprehensive logging across various entities.
      */
     /**
-     * @return MorphTo<\Illuminate\Database\Eloquent\Model, static>
+     * @return MorphTo<Model, static>
      */
     public function auditable(): MorphTo
     {

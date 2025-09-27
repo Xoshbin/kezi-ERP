@@ -2,16 +2,14 @@
 
 namespace Modules\HR\Tests\Feature\HumanResources;
 
-use App\DataTransferObjects\HumanResources\CreateEmployeeDTO;
-use App\DataTransferObjects\HumanResources\CreateEmploymentContractDTO;
 use App\Models\Company;
-use App\Models\EmploymentContract;
-use App\Models\Journal;
-use App\Models\JournalEntry;
 use App\Models\User;
-use App\Services\HumanResources\PayrollService;
 use Brick\Money\Money;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Modules\Accounting\Models\Account;
+use Modules\Foundation\Models\Currency;
+use Modules\HR\Models\Employee;
+use Modules\HR\Models\Payroll;
 use Tests\TestCase;
 use Tests\Traits\WithConfiguredCompany;
 
@@ -21,11 +19,11 @@ class PayrollProcessingTest extends TestCase
 
     private Company $company;
 
-    private \Modules\Foundation\Models\Currency $currency;
+    private Currency $currency;
 
     private User $user;
 
-    private \Modules\HR\Models\Employee $employee;
+    private Employee $employee;
 
     private EmploymentContract $contract;
 
@@ -113,10 +111,10 @@ class PayrollProcessingTest extends TestCase
             created_by_user_id: $this->user->id,
         );
 
-        $employeeService = app(\App\Services\HumanResources\EmployeeService::class);
+        $employeeService = app(EmployeeService::class);
         $employee = $employeeService->createEmployee($createEmployeeDTO, $createContractDTO);
 
-        $this->assertInstanceOf(\Modules\HR\Models\Employee::class, $employee);
+        $this->assertInstanceOf(Employee::class, $employee);
         $this->assertEquals('John', $employee->first_name);
         $this->assertEquals('Doe', $employee->last_name);
         $this->assertEquals('EMP002', $employee->employee_number);
@@ -141,7 +139,7 @@ class PayrollProcessingTest extends TestCase
             user: $this->user
         );
 
-        $this->assertInstanceOf(\Modules\HR\Models\Payroll::class, $payroll);
+        $this->assertInstanceOf(Payroll::class, $payroll);
         $this->assertEquals($this->employee->id, $payroll->employee_id);
         $this->assertEquals('2024-01-01', $payroll->period_start_date->format('Y-m-d'));
         $this->assertEquals('2024-01-31', $payroll->period_end_date->format('Y-m-d'));
@@ -208,7 +206,7 @@ class PayrollProcessingTest extends TestCase
         $this->assertInstanceOf(JournalEntry::class, $journalEntry);
         $this->assertEquals($this->company->id, $journalEntry->company_id);
         $this->assertEquals($payroll->payroll_number, $journalEntry->reference);
-        $this->assertEquals(\Modules\HR\Models\Payroll::class, $journalEntry->source_type);
+        $this->assertEquals(Payroll::class, $journalEntry->source_type);
         $this->assertEquals($payroll->id, $journalEntry->source_id);
         $this->assertTrue($journalEntry->is_posted);
 
@@ -224,42 +222,42 @@ class PayrollProcessingTest extends TestCase
     private function createHRAccounts(): void
     {
         // Create HR-related accounts
-        $salaryPayableAccount = \Modules\Accounting\Models\Account::factory()->create([
+        $salaryPayableAccount = Account::factory()->create([
             'company_id' => $this->company->id,
             'code' => '2100',
             'name' => 'Salary Payable',
             'type' => 'current_liabilities',
         ]);
 
-        $salaryExpenseAccount = \Modules\Accounting\Models\Account::factory()->create([
+        $salaryExpenseAccount = Account::factory()->create([
             'company_id' => $this->company->id,
             'code' => '6100',
             'name' => 'Salary Expense',
             'type' => 'expense',
         ]);
 
-        $incomeTaxPayableAccount = \Modules\Accounting\Models\Account::factory()->create([
+        $incomeTaxPayableAccount = Account::factory()->create([
             'company_id' => $this->company->id,
             'code' => '2110',
             'name' => 'Income Tax Payable',
             'type' => 'current_liabilities',
         ]);
 
-        $socialSecurityPayableAccount = \Modules\Accounting\Models\Account::factory()->create([
+        $socialSecurityPayableAccount = Account::factory()->create([
             'company_id' => $this->company->id,
             'code' => '2120',
             'name' => 'Social Security Payable',
             'type' => 'current_liabilities',
         ]);
 
-        $healthInsurancePayableAccount = \Modules\Accounting\Models\Account::factory()->create([
+        $healthInsurancePayableAccount = Account::factory()->create([
             'company_id' => $this->company->id,
             'code' => '2130',
             'name' => 'Health Insurance Payable',
             'type' => 'current_liabilities',
         ]);
 
-        $pensionPayableAccount = \Modules\Accounting\Models\Account::factory()->create([
+        $pensionPayableAccount = Account::factory()->create([
             'company_id' => $this->company->id,
             'code' => '2140',
             'name' => 'Pension Payable',
@@ -288,7 +286,7 @@ class PayrollProcessingTest extends TestCase
 
     private function createEmployeeWithContract(): void
     {
-        $this->employee = \Modules\HR\Models\Employee::factory()->create([
+        $this->employee = Employee::factory()->create([
             'company_id' => $this->company->id,
             'employee_number' => 'EMP001',
             'first_name' => 'John',

@@ -2,13 +2,10 @@
 
 namespace Modules\Purchase\Observers;
 
-use App\Enums\Inventory\StockMoveStatus;
-use App\Enums\Inventory\StockMoveType;
-use App\Enums\Purchases\VendorBillStatus;
-use App\Models\StockMove;
 use Brick\Math\RoundingMode;
 use Brick\Money\Money;
 use Illuminate\Support\Facades\DB;
+use Modules\Purchase\Models\VendorBill;
 use RuntimeException;
 
 class VendorBillObserver
@@ -16,7 +13,7 @@ class VendorBillObserver
     /**
      * Handle the VendorBill "updated" event.
      */
-    public function updated(\Modules\Purchase\Models\VendorBill $vendorBill): void
+    public function updated(VendorBill $vendorBill): void
     {
         // Only trigger when the status is first changed to 'posted'.
         // Business logic for creating stock moves now lives in VendorBillService::post().
@@ -26,7 +23,7 @@ class VendorBillObserver
         }
     }
 
-    public function processStorableProductLine(\Modules\Purchase\Models\VendorBill $vendorBill, \App\Models\VendorBillLine $line): void
+    public function processStorableProductLine(VendorBill $vendorBill, VendorBillLine $line): void
     {
         if (! $line->product) {
             return;

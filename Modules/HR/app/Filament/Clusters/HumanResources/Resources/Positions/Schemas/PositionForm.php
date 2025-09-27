@@ -2,14 +2,14 @@
 
 namespace Modules\HR\Filament\Clusters\HumanResources\Resources\Positions\Schemas;
 
-use App\Filament\Forms\Components\MoneyInput;
-use App\Models\Department;
+
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
+use Modules\Foundation\Models\Currency;
 use Xoshbin\TranslatableSelect\Components\TranslatableSelect;
 
 class PositionForm
@@ -95,7 +95,7 @@ class PositionForm
             Section::make(__('position.salary_range'))
                 ->description(__('position.salary_range_description'))
                 ->schema([
-                    TranslatableSelect::forModel('currency_id', \Modules\Foundation\Models\Currency::class)
+                    TranslatableSelect::forModel('currency_id', Currency::class)
                         ->searchable()
                         ->label(__('position.salary_currency'))
                         ->searchableFields(['name', 'code'])

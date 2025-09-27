@@ -2,19 +2,12 @@
 
 namespace Modules\Inventory\Tests\Feature\Inventory;
 
-use App\Actions\Purchases\CreateVendorBillLineAction;
-use App\DataTransferObjects\Purchases\CreateVendorBillLineDTO;
-use App\Enums\Inventory\InventoryAccountingMode;
-use App\Enums\Inventory\ValuationMethod;
-use App\Enums\Products\ProductType;
-use App\Enums\Purchases\VendorBillStatus;
-use App\Models\JournalEntry;
-use App\Models\StockMove;
-use App\Models\StockMoveValuation;
-use App\Models\StockPicking;
-use App\Services\VendorBillService;
 use Brick\Money\Money;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Modules\Accounting\Models\Account;
+use Modules\Foundation\Models\Partner;
+use Modules\Product\Models\Product;
+use Modules\Purchase\Models\VendorBill;
 use Tests\Traits\WithConfiguredCompany;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);
@@ -23,31 +16,31 @@ beforeEach(function () {
     $this->setupWithConfiguredCompany();
 
     // Create vendor
-    $this->vendor = \Modules\Foundation\Models\Partner::factory()->vendor()->create([
+    $this->vendor = Partner::factory()->vendor()->create([
         'company_id' => $this->company->id,
     ]);
 
     // Create required accounts
-    $this->inventoryAccount = \Modules\Accounting\Models\Account::factory()->create([
+    $this->inventoryAccount = Account::factory()->create([
         'company_id' => $this->company->id,
         'name' => ['en' => 'Inventory Asset'],
         'type' => 'current_assets',
     ]);
 
-    $this->stockInputAccount = \Modules\Accounting\Models\Account::factory()->create([
+    $this->stockInputAccount = Account::factory()->create([
         'company_id' => $this->company->id,
         'name' => ['en' => 'Stock Input'],
         'type' => 'current_liabilities',
     ]);
 
-    $this->expenseAccount = \Modules\Accounting\Models\Account::factory()->create([
+    $this->expenseAccount = Account::factory()->create([
         'company_id' => $this->company->id,
         'name' => ['en' => 'Expense Account'],
         'type' => 'expense',
     ]);
 
     // Create storable products
-    $this->product1 = \Modules\Product\Models\Product::factory()->create([
+    $this->product1 = Product::factory()->create([
         'company_id' => $this->company->id,
         'name' => 'Test Product 1',
         'type' => \Modules\Product\Enums\Products\ProductType::Storable,
@@ -57,7 +50,7 @@ beforeEach(function () {
         'expense_account_id' => $this->expenseAccount->id,
     ]);
 
-    $this->product2 = \Modules\Product\Models\Product::factory()->create([
+    $this->product2 = Product::factory()->create([
         'company_id' => $this->company->id,
         'name' => 'Test Product 2',
         'type' => \Modules\Product\Enums\Products\ProductType::Storable,
@@ -75,7 +68,7 @@ it('auto-records inventory when company mode is AUTO_RECORD_ON_BILL', function (
     ]);
 
     // Create vendor bill with storable products
-    $vendorBill = \Modules\Purchase\Models\VendorBill::factory()->for($this->company)->create([
+    $vendorBill = VendorBill::factory()->for($this->company)->create([
         'vendor_id' => $this->vendor->id,
         'status' => VendorBillStatus::Draft,
         'bill_date' => now()->format('Y-m-d'),
@@ -117,7 +110,7 @@ it('auto-records inventory when company mode is AUTO_RECORD_ON_BILL', function (
     expect($stockPicking->state->value)->toBe('done');
 
     // Assert: Stock moves were created for BOTH products
-    $stockMoves = StockMove::where('source_type', \Modules\Purchase\Models\VendorBill::class)
+    $stockMoves = StockMove::where('source_type', VendorBill::class)
         ->where('source_id', $vendorBill->id)
         ->get();
 
@@ -130,7 +123,7 @@ it('auto-records inventory when company mode is AUTO_RECORD_ON_BILL', function (
         ->toBe([$this->product1->id, $this->product2->id]);
 
     // Assert: Consolidated inventory journal entry was created
-    $inventoryJournalEntry = JournalEntry::where('source_type', \Modules\Purchase\Models\VendorBill::class)
+    $inventoryJournalEntry = JournalEntry::where('source_type', VendorBill::class)
         ->where('source_id', $vendorBill->id)
         ->where('reference', 'LIKE', 'STOCK-IN-%')
         ->first();
@@ -141,14 +134,14 @@ it('auto-records inventory when company mode is AUTO_RECORD_ON_BILL', function (
     expect($stockMoveValuations)->toHaveCount(2);
 
     // Assert: Main vendor bill journal entry was also created
-    $mainJournalEntry = JournalEntry::where('source_type', \Modules\Purchase\Models\VendorBill::class)
+    $mainJournalEntry = JournalEntry::where('source_type', VendorBill::class)
         ->where('source_id', $vendorBill->id)
         ->where('reference', 'NOT LIKE', 'STOCK-IN-%')
         ->first();
     expect($mainJournalEntry)->not->toBeNull();
 
     // Total should be 2 journal entries: 1 main bill + 1 consolidated inventory
-    $totalJournalEntries = JournalEntry::where('source_type', \Modules\Purchase\Models\VendorBill::class)
+    $totalJournalEntries = JournalEntry::where('source_type', VendorBill::class)
         ->where('source_id', $vendorBill->id)
         ->count();
     expect($totalJournalEntries)->toBe(2);
@@ -161,7 +154,7 @@ it('does NOT auto-record inventory when company mode is MANUAL_INVENTORY_RECORDI
     ]);
 
     // Create vendor bill with storable products
-    $vendorBill = \Modules\Purchase\Models\VendorBill::factory()->for($this->company)->create([
+    $vendorBill = VendorBill::factory()->for($this->company)->create([
         'vendor_id' => $this->vendor->id,
         'status' => VendorBillStatus::Draft,
         'bill_date' => now()->format('Y-m-d'),
@@ -202,13 +195,13 @@ it('does NOT auto-record inventory when company mode is MANUAL_INVENTORY_RECORDI
     expect($stockPicking)->toBeNull();
 
     // Assert: NO stock moves were created
-    $stockMoves = StockMove::where('source_type', \Modules\Purchase\Models\VendorBill::class)
+    $stockMoves = StockMove::where('source_type', VendorBill::class)
         ->where('source_id', $vendorBill->id)
         ->get();
     expect($stockMoves)->toHaveCount(0);
 
     // Assert: NO inventory journal entry was created
-    $inventoryJournalEntry = JournalEntry::where('source_type', \Modules\Purchase\Models\VendorBill::class)
+    $inventoryJournalEntry = JournalEntry::where('source_type', VendorBill::class)
         ->where('source_id', $vendorBill->id)
         ->where('reference', 'LIKE', 'STOCK-IN-%')
         ->first();
@@ -216,19 +209,19 @@ it('does NOT auto-record inventory when company mode is MANUAL_INVENTORY_RECORDI
 
     // Assert: NO StockMoveValuation records were created
     $stockMoveValuations = StockMoveValuation::whereHas('stockMove', function ($query) use ($vendorBill) {
-        $query->where('source_type', \Modules\Purchase\Models\VendorBill::class)
+        $query->where('source_type', VendorBill::class)
             ->where('source_id', $vendorBill->id);
     })->get();
     expect($stockMoveValuations)->toHaveCount(0);
 
     // Assert: ONLY the main vendor bill journal entry was created
-    $mainJournalEntry = JournalEntry::where('source_type', \Modules\Purchase\Models\VendorBill::class)
+    $mainJournalEntry = JournalEntry::where('source_type', VendorBill::class)
         ->where('source_id', $vendorBill->id)
         ->first();
     expect($mainJournalEntry)->not->toBeNull();
 
     // Total should be 1 journal entry: only the main bill entry
-    $totalJournalEntries = JournalEntry::where('source_type', \Modules\Purchase\Models\VendorBill::class)
+    $totalJournalEntries = JournalEntry::where('source_type', VendorBill::class)
         ->where('source_id', $vendorBill->id)
         ->count();
     expect($totalJournalEntries)->toBe(1);
@@ -241,7 +234,7 @@ it('handles mixed product types correctly in manual mode', function () {
     ]);
 
     // Create a service product (non-storable)
-    $serviceProduct = \Modules\Product\Models\Product::factory()->create([
+    $serviceProduct = Product::factory()->create([
         'company_id' => $this->company->id,
         'name' => 'Service Product',
         'type' => \Modules\Product\Enums\Products\ProductType::Service,
@@ -249,7 +242,7 @@ it('handles mixed product types correctly in manual mode', function () {
     ]);
 
     // Create vendor bill with mixed product types
-    $vendorBill = \Modules\Purchase\Models\VendorBill::factory()->for($this->company)->create([
+    $vendorBill = VendorBill::factory()->for($this->company)->create([
         'vendor_id' => $this->vendor->id,
         'status' => VendorBillStatus::Draft,
         'bill_date' => now()->format('Y-m-d'),
@@ -287,26 +280,26 @@ it('handles mixed product types correctly in manual mode', function () {
     app(VendorBillService::class)->post($vendorBill, $this->user);
 
     // Assert: NO stock moves were created (even though there are storable products)
-    $stockMoves = StockMove::where('source_type', \Modules\Purchase\Models\VendorBill::class)
+    $stockMoves = StockMove::where('source_type', VendorBill::class)
         ->where('source_id', $vendorBill->id)
         ->get();
     expect($stockMoves)->toHaveCount(0);
 
     // Assert: NO inventory journal entries were created
-    $inventoryJournalEntry = JournalEntry::where('source_type', \Modules\Purchase\Models\VendorBill::class)
+    $inventoryJournalEntry = JournalEntry::where('source_type', VendorBill::class)
         ->where('source_id', $vendorBill->id)
         ->where('reference', 'LIKE', 'STOCK-IN-%')
         ->first();
     expect($inventoryJournalEntry)->toBeNull();
 
     // Assert: ONLY the main vendor bill journal entry was created
-    $totalJournalEntries = JournalEntry::where('source_type', \Modules\Purchase\Models\VendorBill::class)
+    $totalJournalEntries = JournalEntry::where('source_type', VendorBill::class)
         ->where('source_id', $vendorBill->id)
         ->count();
     expect($totalJournalEntries)->toBe(1);
 
     // Assert: The main journal entry includes both storable and service products
-    $mainJournalEntry = JournalEntry::where('source_type', \Modules\Purchase\Models\VendorBill::class)
+    $mainJournalEntry = JournalEntry::where('source_type', VendorBill::class)
         ->where('source_id', $vendorBill->id)
         ->first();
     expect($mainJournalEntry)->not->toBeNull();
@@ -323,7 +316,7 @@ it('supports manual inventory receipt workflow after vendor bill posting', funct
     ]);
 
     // Create vendor bill with storable products
-    $vendorBill = \Modules\Purchase\Models\VendorBill::factory()->for($this->company)->create([
+    $vendorBill = VendorBill::factory()->for($this->company)->create([
         'vendor_id' => $this->vendor->id,
         'status' => VendorBillStatus::Draft,
         'bill_date' => now()->format('Y-m-d'),
@@ -360,11 +353,11 @@ it('supports manual inventory receipt workflow after vendor bill posting', funct
     app(VendorBillService::class)->post($vendorBill, $this->user);
 
     // Verify no inventory entries were created
-    expect(StockMove::where('source_type', \Modules\Purchase\Models\VendorBill::class)
+    expect(StockMove::where('source_type', VendorBill::class)
         ->where('source_id', $vendorBill->id)
         ->count())->toBe(0);
 
-    expect(JournalEntry::where('source_type', \Modules\Purchase\Models\VendorBill::class)
+    expect(JournalEntry::where('source_type', VendorBill::class)
         ->where('source_id', $vendorBill->id)
         ->where('reference', 'LIKE', 'STOCK-IN-%')
         ->count())->toBe(0);
@@ -382,10 +375,10 @@ it('supports manual inventory receipt workflow after vendor bill posting', funct
         'quantity' => 8,                      // This will be handled by the factory
         'from_location_id' => $this->company->vendorLocation->id,  // This will be handled by the factory
         'to_location_id' => $this->company->defaultStockLocation->id, // This will be handled by the factory
-        'move_type' => \App\Enums\Inventory\StockMoveType::Incoming,
-        'status' => \App\Enums\Inventory\StockMoveStatus::Done,
+        'move_type' => StockMoveType::Incoming,
+        'status' => StockMoveStatus::Done,
         'move_date' => now(),
-        'source_type' => \Modules\Purchase\Models\VendorBill::class,
+        'source_type' => VendorBill::class,
         'source_id' => $vendorBill->id,
         'reference' => 'MANUAL-RECEIPT-001',
         'created_by_user_id' => $this->user->id,
@@ -397,10 +390,10 @@ it('supports manual inventory receipt workflow after vendor bill posting', funct
         'quantity' => 5,                      // This will be handled by the factory
         'from_location_id' => $this->company->vendorLocation->id,  // This will be handled by the factory
         'to_location_id' => $this->company->defaultStockLocation->id, // This will be handled by the factory
-        'move_type' => \App\Enums\Inventory\StockMoveType::Incoming,
-        'status' => \App\Enums\Inventory\StockMoveStatus::Done,
+        'move_type' => StockMoveType::Incoming,
+        'status' => StockMoveStatus::Done,
         'move_date' => now(),
-        'source_type' => \Modules\Purchase\Models\VendorBill::class,
+        'source_type' => VendorBill::class,
         'source_id' => $vendorBill->id,
         'reference' => 'MANUAL-RECEIPT-002',
         'created_by_user_id' => $this->user->id,
@@ -408,14 +401,14 @@ it('supports manual inventory receipt workflow after vendor bill posting', funct
 
     // Step 3: Process the manual stock moves to create inventory journal entries
     // This simulates the warehouse manager confirming the received quantities
-    app(\App\Actions\Inventory\ProcessIncomingStockAction::class)->execute($stockMove1);
-    app(\App\Actions\Inventory\ProcessIncomingStockAction::class)->execute($stockMove2);
+    app(ProcessIncomingStockAction::class)->execute($stockMove1);
+    app(ProcessIncomingStockAction::class)->execute($stockMove2);
 
     // Step 4: Verify that inventory journal entries were created for the manually received items
     // Note: The current implementation creates one journal entry per source document to prevent duplicates
     // So both stock moves from the same vendor bill will share one journal entry
     $inventoryJournalEntries = JournalEntry::where('reference', 'LIKE', 'STOCK-IN-%')
-        ->where('source_type', \Modules\Purchase\Models\VendorBill::class)
+        ->where('source_type', VendorBill::class)
         ->where('source_id', $vendorBill->id)
         ->get();
 
@@ -441,7 +434,7 @@ it('supports manual inventory receipt workflow after vendor bill posting', funct
     // Should have:
     // 1. Main vendor bill journal entry (created when bill was posted)
     // 2. One inventory journal entry (created when stock moves were processed - consolidated)
-    $totalJournalEntries = JournalEntry::where('source_type', \Modules\Purchase\Models\VendorBill::class)
+    $totalJournalEntries = JournalEntry::where('source_type', VendorBill::class)
         ->where('source_id', $vendorBill->id)
         ->count();
 

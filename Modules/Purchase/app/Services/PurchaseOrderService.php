@@ -4,8 +4,10 @@ namespace Modules\Purchase\Services;
 
 use App\Enums\Purchases\PurchaseOrderStatus;
 use App\Models\PurchaseOrder;
+use App\Models\PurchaseOrderLine;
 use App\Models\User;
 use App\Services\Accounting\LockDateService;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\DB;
 use InvalidArgumentException;
 
@@ -167,7 +169,7 @@ class PurchaseOrderService
     /**
      * Get purchase orders that can be used for cost determination for a product
      */
-    public function getAvailableForCostDetermination(int $productId, int $companyId): \Illuminate\Database\Eloquent\Collection
+    public function getAvailableForCostDetermination(int $productId, int $companyId): Collection
     {
         return PurchaseOrder::whereHas('lines', function ($query) use ($productId) {
             $query->where('product_id', $productId)
@@ -186,9 +188,9 @@ class PurchaseOrderService
     /**
      * Get the latest purchase order line for cost determination
      */
-    public function getLatestLineForCostDetermination(int $productId, int $companyId): ?\App\Models\PurchaseOrderLine
+    public function getLatestLineForCostDetermination(int $productId, int $companyId): ?PurchaseOrderLine
     {
-        return \App\Models\PurchaseOrderLine::whereHas('purchaseOrder', function ($query) use ($companyId) {
+        return PurchaseOrderLine::whereHas('purchaseOrder', function ($query) use ($companyId) {
             $query->where('company_id', $companyId)
                 ->whereIn('status', PurchaseOrderStatus::activeStatuses());
         })

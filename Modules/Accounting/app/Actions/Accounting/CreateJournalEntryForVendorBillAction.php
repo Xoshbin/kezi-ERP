@@ -2,14 +2,12 @@
 
 namespace Modules\Accounting\Actions\Accounting;
 
-use App\DataTransferObjects\Accounting\CreateJournalEntryDTO;
-use App\DataTransferObjects\Accounting\CreateJournalEntryLineDTO;
-use App\Enums\Products\ProductType;
-use App\Models\JournalEntry;
 use App\Models\User;
-use App\Services\CurrencyConverterService;
 use Brick\Money\Money;
 use Illuminate\Support\Facades\DB;
+use InvalidArgumentException;
+use Modules\Accounting\Models\AssetCategory;
+use Modules\Purchase\Models\VendorBill;
 use RuntimeException;
 
 class CreateJournalEntryForVendorBillAction
@@ -19,7 +17,7 @@ class CreateJournalEntryForVendorBillAction
         private readonly \Modules\Foundation\Services\CurrencyConverterService $currencyConverter
     ) {}
 
-    public function execute(\Modules\Purchase\Models\VendorBill $vendorBill, User $user): JournalEntry
+    public function execute(VendorBill $vendorBill, User $user): JournalEntry
     {
         return DB::transaction(function () use ($vendorBill, $user) {
             $vendorBill->load('company', 'currency', 'vendor', 'lines.product.stockInputAccount', 'lines.tax');
@@ -90,7 +88,7 @@ class CreateJournalEntryForVendorBillAction
                     );
                     $totalAP = $totalAP->plus($inventoryCost);
                 } elseif ($isAsset) {
-                    $category = \Modules\Accounting\Models\AssetCategory::find($line->asset_category_id);
+                    $category = AssetCategory::find($line->asset_category_id);
                     if (! $category) {
                         throw new RuntimeException('Invalid asset category on bill line.');
                     }
@@ -177,7 +175,7 @@ class CreateJournalEntryForVendorBillAction
             );
 
             if (! $company->default_purchase_journal_id) {
-                throw new \InvalidArgumentException('Company default purchase journal is not configured');
+                throw new InvalidArgumentException('Company default purchase journal is not configured');
             }
 
             $journalEntryDTO = new CreateJournalEntryDTO(
@@ -187,7 +185,7 @@ class CreateJournalEntryForVendorBillAction
                 entry_date: $vendorBill->accounting_date,
                 reference: $vendorBill->bill_reference,
                 description: 'Vendor Bill ' . $vendorBill->bill_reference,
-                source_type: \Modules\Purchase\Models\VendorBill::class,
+                source_type: VendorBill::class,
                 source_id: $vendorBill->id,
                 created_by_user_id: $user->id,
                 is_posted: true,

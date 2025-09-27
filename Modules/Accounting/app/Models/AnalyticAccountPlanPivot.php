@@ -2,6 +2,7 @@
 
 namespace Modules\Accounting\Models;
 
+use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\Pivot;
@@ -25,7 +26,7 @@ use Illuminate\Support\Carbon;
  * @method static Builder<static>|AnalyticAccountPlanPivot whereCreatedAt($value)
  * @method static Builder<static>|AnalyticAccountPlanPivot whereUpdatedAt($value)
  *
- * @mixin \Eloquent
+ * @mixin Eloquent
  */
 class AnalyticAccountPlanPivot extends Pivot
 {

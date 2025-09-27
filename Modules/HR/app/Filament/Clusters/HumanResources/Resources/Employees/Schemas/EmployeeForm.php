@@ -10,6 +10,7 @@ use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
+use Modules\HR\Models\Employee;
 use Xoshbin\TranslatableSelect\Components\TranslatableSelect;
 
 class EmployeeForm
@@ -74,7 +75,7 @@ class EmployeeForm
                         ->preload()
                         ->columnSpan(1),
 
-                    TranslatableSelect::forModel('manager_id', \Modules\HR\Models\Employee::class)
+                    TranslatableSelect::forModel('manager_id', Employee::class)
                         ->label(__('employee.manager'))
                         ->searchable()
                         ->searchableFields(['first_name', 'last_name', 'employee_number'])

@@ -6,6 +6,7 @@ use App\Models\Account;
 use App\Models\Company;
 use App\Models\Currency;
 use App\Models\Journal;
+use Illuminate\Contracts\Console\Kernel;
 
 trait CreatesApplication
 {
@@ -13,7 +14,7 @@ trait CreatesApplication
     {
         $app = require __DIR__.'/../../bootstrap/app.php';
 
-        $app->make(\Illuminate\Contracts\Console\Kernel::class)->bootstrap();
+        $app->make(Kernel::class)->bootstrap();
 
         return $app;
     }

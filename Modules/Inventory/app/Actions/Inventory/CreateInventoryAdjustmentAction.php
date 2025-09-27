@@ -2,21 +2,12 @@
 
 namespace Modules\Inventory\Actions\Inventory;
 
-use App\DataTransferObjects\Inventory\CreateInventoryAdjustmentDTO;
-use App\DataTransferObjects\Inventory\CreateStockMoveDTO;
-use App\Enums\Inventory\StockMoveStatus;
-use App\Enums\Inventory\StockMoveType;
-use App\Enums\Inventory\StockPickingState;
-use App\Enums\Inventory\StockPickingType;
 use App\Models\Company;
-use App\Models\StockMove;
-use App\Models\StockMoveLine;
-use App\Models\StockPicking;
-use App\Services\Inventory\InventoryValuationService;
-use App\Services\Inventory\StockMoveService;
-use App\Services\Inventory\StockQuantService;
+use Brick\Money\Money;
 use Illuminate\Support\Facades\DB;
 use InvalidArgumentException;
+use Modules\Accounting\Models\Account;
+use Modules\Product\Models\Product;
 
 class CreateInventoryAdjustmentAction
 {
@@ -130,8 +121,8 @@ class CreateInventoryAdjustmentAction
         int $adjustmentLocationId,
         float $quantity
     ): void {
-        $product = \Modules\Product\Models\Product::find($line->product_id);
-        $productLineDto = new \App\DataTransferObjects\Inventory\CreateStockMoveProductLineDTO(
+        $product = Product::find($line->product_id);
+        $productLineDto = new CreateStockMoveProductLineDTO(
             product_id: $line->product_id,
             quantity: $quantity,
             from_location_id: $adjustmentLocationId,
@@ -192,8 +183,8 @@ class CreateInventoryAdjustmentAction
         int $adjustmentLocationId,
         float $quantity
     ): void {
-        $product = \Modules\Product\Models\Product::find($line->product_id);
-        $productLineDto = new \App\DataTransferObjects\Inventory\CreateStockMoveProductLineDTO(
+        $product = Product::find($line->product_id);
+        $productLineDto = new CreateStockMoveProductLineDTO(
             product_id: $line->product_id,
             quantity: $quantity,
             from_location_id: $line->location_id,
@@ -294,7 +285,7 @@ class CreateInventoryAdjustmentAction
         $company = $move->company;
 
         // Calculate cost based on product's average cost
-        $costPerUnit = $product->average_cost ?? \Brick\Money\Money::of(0, $company->currency->code);
+        $costPerUnit = $product->average_cost ?? Money::of(0, $company->currency->code);
         $totalCost = $costPerUnit->multipliedBy($quantity);
 
         if ($totalCost->isZero()) {
@@ -306,7 +297,7 @@ class CreateInventoryAdjustmentAction
 
         // Create journal entry for positive adjustment
         // Debit: Inventory Account, Credit: Inventory Adjustment Account
-        $journalEntry = \App\Models\JournalEntry::create([
+        $journalEntry = JournalEntry::create([
             'company_id' => $company->id,
             'journal_id' => $journalId,
             'currency_id' => $company->currency_id,
@@ -318,39 +309,39 @@ class CreateInventoryAdjustmentAction
         ]);
 
         // Debit inventory account
-        \App\Models\JournalEntryLine::create([
+        JournalEntryLine::create([
             'company_id' => $company->id,
             'journal_entry_id' => $journalEntry->id,
             'account_id' => $product->default_inventory_account_id,
             'debit' => $totalCost,
-            'credit' => \Brick\Money\Money::of(0, $company->currency->code),
+            'credit' => Money::of(0, $company->currency->code),
             'description' => "Inventory adjustment - {$product->name}",
         ]);
 
         // Find an adjustment account (expense type)
-        $adjustmentAccount = \Modules\Accounting\Models\Account::where('company_id', $company->id)
+        $adjustmentAccount = Account::where('company_id', $company->id)
             ->where('type', 'expense')
             ->where('name', 'LIKE', '%adjustment%')
             ->first();
 
         if (!$adjustmentAccount) {
-            $adjustmentAccount = \Modules\Accounting\Models\Account::where('company_id', $company->id)
+            $adjustmentAccount = Account::where('company_id', $company->id)
                 ->where('type', 'expense')
                 ->first();
         }
 
         // Credit adjustment account
-        \App\Models\JournalEntryLine::create([
+        JournalEntryLine::create([
             'company_id' => $company->id,
             'journal_entry_id' => $journalEntry->id,
             'account_id' => $adjustmentAccount->id,
-            'debit' => \Brick\Money\Money::of(0, $company->currency->code),
+            'debit' => Money::of(0, $company->currency->code),
             'credit' => $totalCost,
             'description' => "Inventory adjustment - {$product->name}",
         ]);
 
         // Create StockMoveValuation record to link the move with the journal entry
-        \App\Models\StockMoveValuation::create([
+        StockMoveValuation::create([
             'company_id' => $company->id,
             'product_id' => $product->id,
             'stock_move_id' => $move->id,
@@ -378,7 +369,7 @@ class CreateInventoryAdjustmentAction
         $company = $move->company;
 
         // Calculate cost based on product's average cost
-        $costPerUnit = $product->average_cost ?? \Brick\Money\Money::of(0, $company->currency->code);
+        $costPerUnit = $product->average_cost ?? Money::of(0, $company->currency->code);
         $totalCost = $costPerUnit->multipliedBy($quantity);
 
         if ($totalCost->isZero()) {
@@ -390,7 +381,7 @@ class CreateInventoryAdjustmentAction
 
         // Create journal entry for negative adjustment
         // Debit: Inventory Adjustment Account, Credit: Inventory Account
-        $journalEntry = \App\Models\JournalEntry::create([
+        $journalEntry = JournalEntry::create([
             'company_id' => $company->id,
             'journal_id' => $journalId,
             'currency_id' => $company->currency_id,
@@ -402,39 +393,39 @@ class CreateInventoryAdjustmentAction
         ]);
 
         // Find an adjustment account (expense type)
-        $adjustmentAccount = \Modules\Accounting\Models\Account::where('company_id', $company->id)
+        $adjustmentAccount = Account::where('company_id', $company->id)
             ->where('type', 'expense')
             ->where('name', 'LIKE', '%adjustment%')
             ->first();
 
         if (!$adjustmentAccount) {
-            $adjustmentAccount = \Modules\Accounting\Models\Account::where('company_id', $company->id)
+            $adjustmentAccount = Account::where('company_id', $company->id)
                 ->where('type', 'expense')
                 ->first();
         }
 
         // Debit adjustment account
-        \App\Models\JournalEntryLine::create([
+        JournalEntryLine::create([
             'company_id' => $company->id,
             'journal_entry_id' => $journalEntry->id,
             'account_id' => $adjustmentAccount->id,
             'debit' => $totalCost,
-            'credit' => \Brick\Money\Money::of(0, $company->currency->code),
+            'credit' => Money::of(0, $company->currency->code),
             'description' => "Inventory adjustment - {$product->name}",
         ]);
 
         // Credit inventory account
-        \App\Models\JournalEntryLine::create([
+        JournalEntryLine::create([
             'company_id' => $company->id,
             'journal_entry_id' => $journalEntry->id,
             'account_id' => $product->default_inventory_account_id,
-            'debit' => \Brick\Money\Money::of(0, $company->currency->code),
+            'debit' => Money::of(0, $company->currency->code),
             'credit' => $totalCost,
             'description' => "Inventory adjustment - {$product->name}",
         ]);
 
         // Create StockMoveValuation record to link the move with the journal entry
-        \App\Models\StockMoveValuation::create([
+        StockMoveValuation::create([
             'company_id' => $company->id,
             'product_id' => $product->id,
             'stock_move_id' => $move->id,

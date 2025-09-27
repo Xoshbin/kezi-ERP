@@ -9,7 +9,9 @@ use App\Enums\Accounting\JournalEntryState;
 use App\Models\Company;
 use Brick\Money\Money;
 use Carbon\Carbon;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
+use Modules\Accounting\Models\Account;
 
 class ProfitAndLossStatementService
 {
@@ -18,7 +20,7 @@ class ProfitAndLossStatementService
         $currency = $company->currency->code;
         $zero = Money::zero($currency);
 
-        /** @var \Illuminate\Support\Collection<int, object{account_id: int, account_code: string, account_name: string, account_type: string, total_debit: string|null, total_credit: string|null}> $queryResults */
+        /** @var Collection<int, object{account_id: int, account_code: string, account_name: string, account_type: string, total_debit: string|null, total_credit: string|null}> $queryResults */
         $queryResults = DB::table('journal_entry_lines')
             ->select([
                 'accounts.id as account_id',
@@ -65,7 +67,7 @@ class ProfitAndLossStatementService
 
         // Get account models to access translated names
         $accountIds = $results->pluck('account_id')->unique();
-        /** @var \Illuminate\Support\Collection<int, \Modules\Accounting\Models\Account> $accounts */
+        /** @var Collection<int, Account> $accounts */
         $accounts = $company->accounts()->whereIn('id', $accountIds)->get()->keyBy('id');
 
         $revenueLines = $results->whereIn('account_type', [
@@ -76,7 +78,7 @@ class ProfitAndLossStatementService
                 // Invert the sign for presentation, as income accounts have a natural credit balance.
                 // The balance from the query is already in minor units, so use it directly
                 $balance = Money::ofMinor(-(int) $row->balance, $currency);
-                /** @var \Modules\Accounting\Models\Account|null $account */
+                /** @var Account|null $account */
                 $account = $accounts->get($row->account_id);
                 $accountName = $account ? (is_array($account->name) ? ($account->name['en'] ?? (empty($account->name) ? '' : (string) array_values($account->name)[0])) : (string) $account->name) : (string) $row->account_name;
 
@@ -97,7 +99,7 @@ class ProfitAndLossStatementService
                 // Expense accounts have a natural debit balance, which is correct for presentation.
                 // The balance from the query is already in minor units, so use it directly
                 $balance = Money::ofMinor((int) $row->balance, $currency);
-                /** @var \Modules\Accounting\Models\Account|null $account */
+                /** @var Account|null $account */
                 $account = $accounts->get($row->account_id);
                 $accountName = $account ? (is_array($account->name) ? ($account->name['en'] ?? (empty($account->name) ? '' : (string) array_values($account->name)[0])) : (string) $account->name) : (string) $row->account_name;
 

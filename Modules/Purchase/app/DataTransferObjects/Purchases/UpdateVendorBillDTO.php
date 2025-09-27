@@ -2,13 +2,15 @@
 
 namespace Modules\Purchase\DataTransferObjects\Purchases;
 
+use Modules\Purchase\Models\VendorBill;
+
 readonly class UpdateVendorBillDTO
 {
     /**
      * @param  VendorBillLineDTO[]  $lines
      */
     public function __construct(
-        public \Modules\Purchase\Models\VendorBill $vendorBill,
+        public VendorBill $vendorBill,
         public int $company_id,
         public int $vendor_id,
         public int $currency_id,

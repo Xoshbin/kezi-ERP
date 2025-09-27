@@ -6,6 +6,7 @@ use App\DataTransferObjects\HumanResources\CreateAttendanceDTO;
 use App\Models\Attendance;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
+use RuntimeException;
 
 class CreateAttendanceAction
 {
@@ -67,7 +68,7 @@ class CreateAttendanceAction
 
             $fresh = $attendance->fresh();
             if (! $fresh) {
-                throw new \RuntimeException('Failed to refresh attendance after creation');
+                throw new RuntimeException('Failed to refresh attendance after creation');
             }
 
             return $fresh;

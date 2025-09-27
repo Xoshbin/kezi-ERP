@@ -1,21 +1,10 @@
 <?php
 
-use App\Actions\Inventory\CreateStockMoveAction;
-use App\DataTransferObjects\Inventory\CreateStockMoveDTO;
-use App\DataTransferObjects\Inventory\CreateStockMoveProductLineDTO;
-use App\Enums\Inventory\CostSource;
-use App\Enums\Inventory\StockMoveStatus;
-use App\Enums\Inventory\StockMoveType;
-use App\Enums\Inventory\ValuationMethod;
-use App\Enums\Products\ProductType;
-use App\Exceptions\Inventory\InsufficientCostInformationException;
-use App\Models\InventoryCostLayer;
-use App\Models\StockMove;
-use App\Models\StockMoveValuation;
-use App\Services\Inventory\CostValidationService;
-use App\Services\Inventory\InventoryValuationService;
 use Brick\Money\Money;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Modules\Accounting\Models\Account;
+use Modules\Product\Models\Product;
+use Modules\Purchase\Models\VendorBill;
 use Tests\Traits\WithConfiguredCompany;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);
@@ -26,39 +15,39 @@ beforeEach(function () {
     $this->inventoryValuationService = app(InventoryValuationService::class);
 
     // Create required accounts
-    $this->inventoryAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create([
+    $this->inventoryAccount = Account::factory()->for($this->company)->create([
         'name' => 'Inventory Asset',
         'type' => 'current_assets',
     ]);
-    $this->cogsAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create([
+    $this->cogsAccount = Account::factory()->for($this->company)->create([
         'name' => 'Cost of Goods Sold',
         'type' => 'expense',
     ]);
-    $this->stockInputAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create([
+    $this->stockInputAccount = Account::factory()->for($this->company)->create([
         'name' => 'Stock Input',
         'type' => 'current_liabilities',
     ]);
 
     // Create required locations
-    $this->fromLocation = \App\Models\StockLocation::factory()->for($this->company)->create([
+    $this->fromLocation = StockLocation::factory()->for($this->company)->create([
         'name' => 'Vendor Location',
-        'type' => \App\Enums\Inventory\StockLocationType::Vendor,
+        'type' => StockLocationType::Vendor,
     ]);
-    $this->toLocation = \App\Models\StockLocation::factory()->for($this->company)->create([
+    $this->toLocation = StockLocation::factory()->for($this->company)->create([
         'name' => 'Internal Location',
-        'type' => \App\Enums\Inventory\StockLocationType::Internal,
+        'type' => StockLocationType::Internal,
     ]);
 });
 
 it('uses vendor bill cost as highest priority source', function () {
     // Arrange: Create a vendor bill with product
-    $vendorBill = \Modules\Purchase\Models\VendorBill::factory()->for($this->company)->create([
-        'status' => \App\Enums\Purchases\VendorBillStatus::Posted,
+    $vendorBill = VendorBill::factory()->for($this->company)->create([
+        'status' => VendorBillStatus::Posted,
         'currency_id' => $this->company->currency->id,
         'exchange_rate_at_creation' => 1.0,
     ]);
 
-    $product = \Modules\Product\Models\Product::factory()->create([
+    $product = Product::factory()->create([
         'company_id' => $this->company->id,
         'type' => \Modules\Product\Enums\Products\ProductType::Storable,
         'inventory_valuation_method' => ValuationMethod::AVCO,
@@ -68,7 +57,7 @@ it('uses vendor bill cost as highest priority source', function () {
         'default_stock_input_account_id' => $this->stockInputAccount->id,
     ]);
 
-    \App\Models\VendorBillLine::factory()->create([
+    VendorBillLine::factory()->create([
         'vendor_bill_id' => $vendorBill->id,
         'product_id' => $product->id,
         'quantity' => 10,
@@ -80,7 +69,7 @@ it('uses vendor bill cost as highest priority source', function () {
     $stockMove = StockMove::factory()->create([
         'company_id' => $this->company->id,
         'move_type' => StockMoveType::Incoming,
-        'source_type' => \Modules\Purchase\Models\VendorBill::class,
+        'source_type' => VendorBill::class,
         'source_id' => $vendorBill->id,
     ]);
 
@@ -95,7 +84,7 @@ it('uses vendor bill cost as highest priority source', function () {
 
 it('falls back to average cost when vendor bill cost unavailable', function () {
     // Arrange: Create product with average cost but no vendor bill
-    $product = \Modules\Product\Models\Product::factory()->create([
+    $product = Product::factory()->create([
         'company_id' => $this->company->id,
         'type' => \Modules\Product\Enums\Products\ProductType::Storable,
         'inventory_valuation_method' => ValuationMethod::AVCO,
@@ -123,7 +112,7 @@ it('falls back to average cost when vendor bill cost unavailable', function () {
 
 it('falls back to cost layer for FIFO/LIFO products', function () {
     // Arrange: Create FIFO product with cost layer but no average cost
-    $product = \Modules\Product\Models\Product::factory()->create([
+    $product = Product::factory()->create([
         'company_id' => $this->company->id,
         'type' => \Modules\Product\Enums\Products\ProductType::Storable,
         'inventory_valuation_method' => ValuationMethod::FIFO,
@@ -157,7 +146,7 @@ it('falls back to cost layer for FIFO/LIFO products', function () {
 
 it('uses unit price fallback when allowed', function () {
     // Arrange: Create product with only unit price
-    $product = \Modules\Product\Models\Product::factory()->create([
+    $product = Product::factory()->create([
         'company_id' => $this->company->id,
         'type' => \Modules\Product\Enums\Products\ProductType::Storable,
         'inventory_valuation_method' => ValuationMethod::AVCO,
@@ -187,7 +176,7 @@ it('uses unit price fallback when allowed', function () {
 
 it('throws detailed exception when no cost sources available', function () {
     // Arrange: Create product without any cost information
-    $product = \Modules\Product\Models\Product::factory()->create([
+    $product = Product::factory()->create([
         'company_id' => $this->company->id,
         'type' => \Modules\Product\Enums\Products\ProductType::Storable,
         'inventory_valuation_method' => ValuationMethod::AVCO,
@@ -212,7 +201,7 @@ it('throws detailed exception when no cost sources available', function () {
 
 it('tracks cost source in stock move valuations', function () {
     // Arrange: Create product with average cost
-    $product = \Modules\Product\Models\Product::factory()->create([
+    $product = Product::factory()->create([
         'company_id' => $this->company->id,
         'type' => \Modules\Product\Enums\Products\ProductType::Storable,
         'inventory_valuation_method' => ValuationMethod::AVCO,
@@ -251,7 +240,7 @@ it('tracks cost source in stock move valuations', function () {
 
 it('validates cost availability correctly', function () {
     // Arrange: Create products with and without cost information
-    $productWithCost = \Modules\Product\Models\Product::factory()->create([
+    $productWithCost = Product::factory()->create([
         'company_id' => $this->company->id,
         'type' => \Modules\Product\Enums\Products\ProductType::Storable,
         'average_cost' => Money::of(50000, 'IQD'),
@@ -260,7 +249,7 @@ it('validates cost availability correctly', function () {
         'default_stock_input_account_id' => $this->stockInputAccount->id,
     ]);
 
-    $productWithoutCost = \Modules\Product\Models\Product::factory()->create([
+    $productWithoutCost = Product::factory()->create([
         'company_id' => $this->company->id,
         'type' => \Modules\Product\Enums\Products\ProductType::Storable,
         'average_cost' => Money::of(0, 'IQD'),

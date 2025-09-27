@@ -3,11 +3,14 @@
 use App\Models\Company;
 use Brick\Money\Money;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Modules\Foundation\Models\Currency;
+use Modules\HR\Models\Employee;
+use Modules\HR\Models\Payroll;
 
 uses(RefreshDatabase::class);
 
 beforeEach(function () {
-    $this->currency = \Modules\Foundation\Models\Currency::firstOrCreate(
+    $this->currency = Currency::firstOrCreate(
         ['code' => 'IQD'],
         [
             'name' => 'Iraqi Dinar',
@@ -17,7 +20,7 @@ beforeEach(function () {
         ]
     );
     $this->company = Company::factory()->create(['currency_id' => $this->currency->id]);
-    $this->employee = \Modules\HR\Models\Employee::factory()->create([
+    $this->employee = Employee::factory()->create([
         'company_id' => $this->company->id,
         'is_active' => true,
         'employment_status' => 'active',
@@ -49,9 +52,9 @@ test('payroll can be created with automatic number generation', function () {
         'notes' => 'Test payroll creation',
     ];
 
-    $payroll = \Modules\HR\Models\Payroll::create($payrollData);
+    $payroll = Payroll::create($payrollData);
 
-    expect($payroll)->toBeInstanceOf(\Modules\HR\Models\Payroll::class);
+    expect($payroll)->toBeInstanceOf(Payroll::class);
     expect($payroll->payroll_number)->toStartWith('PAY2025');
     expect($payroll->status)->toBe('draft');
     expect($payroll->company_id)->toBe($this->company->id);
@@ -82,7 +85,7 @@ test('payroll calculates gross salary correctly', function () {
         'other_deductions' => Money::of(0, 'IQD'),
     ];
 
-    $payroll = \Modules\HR\Models\Payroll::create($payrollData);
+    $payroll = Payroll::create($payrollData);
 
     // Expected gross salary: 5,000,000 + 500,000 + 1,000,000 + 500,000 + 300,000 + 200,000 + 1,000,000 + 300,000 = 8,800,000
     $expectedGrossSalary = Money::of(8800000, 'IQD');
@@ -114,7 +117,7 @@ test('payroll calculates total deductions correctly', function () {
         'other_deductions' => Money::of(50000, 'IQD'),
     ];
 
-    $payroll = \Modules\HR\Models\Payroll::create($payrollData);
+    $payroll = Payroll::create($payrollData);
 
     // Expected total deductions: 300,000 + 200,000 + 150,000 + 100,000 + 50,000 = 800,000
     $expectedTotalDeductions = Money::of(800000, 'IQD');
@@ -146,7 +149,7 @@ test('payroll calculates net salary correctly', function () {
         'other_deductions' => Money::of(0, 'IQD'),
     ];
 
-    $payroll = \Modules\HR\Models\Payroll::create($payrollData);
+    $payroll = Payroll::create($payrollData);
 
     // Expected gross salary: 5,000,000 + 500,000 + 1,000,000 = 6,500,000
     // Expected total deductions: 300,000 + 200,000 + 150,000 = 650,000
@@ -157,7 +160,7 @@ test('payroll calculates net salary correctly', function () {
 });
 
 test('payroll number is unique per company and month', function () {
-    $payroll1 = \Modules\HR\Models\Payroll::create([
+    $payroll1 = Payroll::create([
         'company_id' => $this->company->id,
         'employee_id' => $this->employee->id,
         'currency_id' => $this->currency->id,
@@ -180,13 +183,13 @@ test('payroll number is unique per company and month', function () {
         'other_deductions' => Money::of(0, 'IQD'),
     ]);
 
-    $employee2 = \Modules\HR\Models\Employee::factory()->create([
+    $employee2 = Employee::factory()->create([
         'company_id' => $this->company->id,
         'is_active' => true,
         'employment_status' => 'active',
     ]);
 
-    $payroll2 = \Modules\HR\Models\Payroll::create([
+    $payroll2 = Payroll::create([
         'company_id' => $this->company->id,
         'employee_id' => $employee2->id,
         'currency_id' => $this->currency->id,

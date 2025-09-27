@@ -2,11 +2,9 @@
 
 namespace Modules\Accounting\Database\Factories;
 
-use App\Enums\Budgets\BudgetStatus;
-use App\Enums\Budgets\BudgetType;
-use App\Models\Budget;
 use App\Models\Company;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Modules\Foundation\Models\Currency;
 
 /**
  * @extends Factory<Budget>
@@ -27,7 +25,7 @@ class BudgetFactory extends Factory
             'period_end_date' => $this->faker->dateTimeBetween('+1 month', '+1 year'),
             'budget_type' => $this->faker->randomElement([BudgetType::Analytic, BudgetType::Financial]),
             'status' => $this->faker->randomElement([BudgetStatus::Draft, BudgetStatus::Finalized]),
-            'currency_id' => \Modules\Foundation\Models\Currency::factory()->createSafely()->id,
+            'currency_id' => Currency::factory()->createSafely()->id,
         ];
     }
 }

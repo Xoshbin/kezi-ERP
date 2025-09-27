@@ -8,6 +8,8 @@ use Brick\Money\Money;
 use Filament\Facades\Filament;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Utilities\Get;
+use Illuminate\Database\Eloquent\Model;
+use Modules\Foundation\Models\Currency;
 
 class MoneyInput extends TextInput
 {
@@ -52,7 +54,7 @@ class MoneyInput extends TextInput
                     /** @var int|null $currencyId */
                     $currencyId = $get($this->currencyFieldName);
                     if ($currencyId) {
-                        $currency = \Modules\Foundation\Models\Currency::find($currencyId);
+                        $currency = Currency::find($currencyId);
                         if ($currency) {
                             return $currency->code;
                         }
@@ -63,9 +65,9 @@ class MoneyInput extends TextInput
                 $livewire = $component->getLivewire();
                 if (method_exists($livewire, 'getRecord')) {
                     $mainRecord = $livewire->getRecord();
-                    if ($mainRecord instanceof \Illuminate\Database\Eloquent\Model && method_exists($mainRecord, 'currency')) {
+                    if ($mainRecord instanceof Model && method_exists($mainRecord, 'currency')) {
                         $currency = $mainRecord->relationLoaded('currency') ? $mainRecord->getRelation('currency') : $mainRecord->currency()->first();
-                        /** @var \Modules\Foundation\Models\Currency|null $currency */
+                        /** @var Currency|null $currency */
                         if ($currency) {
                             return $currency->code;
                         }
@@ -74,8 +76,8 @@ class MoneyInput extends TextInput
 
                 // Try to get the tenant's default currency as final fallback
                 $tenant = Filament::getTenant();
-                if ($tenant instanceof \Illuminate\Database\Eloquent\Model && method_exists($tenant, 'currency')) {
-                    /** @var \Modules\Foundation\Models\Currency|null $tCurrency */
+                if ($tenant instanceof Model && method_exists($tenant, 'currency')) {
+                    /** @var Currency|null $tCurrency */
                     $tCurrency = $tenant->relationLoaded('currency') ? $tenant->getRelation('currency') : $tenant->currency()->first();
                     if ($tCurrency) {
                         return $tCurrency->code;
@@ -90,7 +92,7 @@ class MoneyInput extends TextInput
                 $money = $this->getMoneyObject($component, $get);
 
                 if ($money instanceof Money) {
-                    /** @var \Brick\Money\Money $money */
+                    /** @var Money $money */
                     return $money->formatTo('EN_us');
                 }
 
@@ -131,7 +133,7 @@ class MoneyInput extends TextInput
                 // To avoid too many database queries, we can cache the result.
                 static $currencyCache = [];
                 if (! isset($currencyCache[$currencyId])) {
-                    $currencyCache[$currencyId] = \Modules\Foundation\Models\Currency::find($currencyId);
+                    $currencyCache[$currencyId] = Currency::find($currencyId);
                 }
                 $currency = $currencyCache[$currencyId];
                 if ($currency) {
@@ -145,9 +147,9 @@ class MoneyInput extends TextInput
             $livewire = $component->getLivewire();
             if (method_exists($livewire, 'getRecord')) {
                 $mainRecord = $livewire->getRecord();
-                if ($mainRecord instanceof \Illuminate\Database\Eloquent\Model && method_exists($mainRecord, 'currency')) {
+                if ($mainRecord instanceof Model && method_exists($mainRecord, 'currency')) {
                     $currency = $mainRecord->relationLoaded('currency') ? $mainRecord->getRelation('currency') : $mainRecord->currency()->first();
-                    /** @var \Modules\Foundation\Models\Currency|null $currency */
+                    /** @var Currency|null $currency */
                     if ($currency) {
                         $currencyCode = $currency->code;
                     }

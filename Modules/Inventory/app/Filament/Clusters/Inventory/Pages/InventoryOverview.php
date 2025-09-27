@@ -3,13 +3,18 @@
 namespace Modules\Inventory\Filament\Clusters\Inventory\Pages;
 
 use App\Filament\Clusters\Inventory\InventoryCluster;
+use App\Filament\Clusters\Inventory\Widgets\InventoryAgingChartWidget;
+use App\Filament\Clusters\Inventory\Widgets\InventoryStatsOverviewWidget;
+use App\Filament\Clusters\Inventory\Widgets\InventoryTurnoverChartWidget;
+use App\Filament\Clusters\Inventory\Widgets\InventoryValueChartWidget;
+use BackedEnum;
 use Filament\Pages\Page;
 
 class InventoryOverview extends Page
 {
     protected static ?string $cluster = InventoryCluster::class;
 
-    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-chart-bar';
+    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-chart-bar';
 
     protected static ?int $navigationSort = 10;
 
@@ -38,26 +43,26 @@ class InventoryOverview extends Page
     protected function getHeaderWidgets(): array
     {
         return [
-            \App\Filament\Clusters\Inventory\Widgets\InventoryStatsOverviewWidget::class,
+            InventoryStatsOverviewWidget::class,
         ];
     }
 
     protected function getFooterWidgets(): array
     {
         return [
-            \App\Filament\Clusters\Inventory\Widgets\InventoryValueChartWidget::class,
-            \App\Filament\Clusters\Inventory\Widgets\InventoryTurnoverChartWidget::class,
-            \App\Filament\Clusters\Inventory\Widgets\InventoryAgingChartWidget::class,
+            InventoryValueChartWidget::class,
+            InventoryTurnoverChartWidget::class,
+            InventoryAgingChartWidget::class,
         ];
     }
 
     public function getWidgets(): array
     {
         return [
-            \App\Filament\Clusters\Inventory\Widgets\InventoryStatsOverviewWidget::class,
-            \App\Filament\Clusters\Inventory\Widgets\InventoryValueChartWidget::class,
-            \App\Filament\Clusters\Inventory\Widgets\InventoryTurnoverChartWidget::class,
-            \App\Filament\Clusters\Inventory\Widgets\InventoryAgingChartWidget::class,
+            InventoryStatsOverviewWidget::class,
+            InventoryValueChartWidget::class,
+            InventoryTurnoverChartWidget::class,
+            InventoryAgingChartWidget::class,
         ];
     }
 

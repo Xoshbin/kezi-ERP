@@ -2,21 +2,19 @@
 
 namespace Modules\Accounting\Actions\Loans;
 
-use App\Actions\Accounting\CreateJournalEntryAction;
-use App\DataTransferObjects\Accounting\CreateJournalEntryDTO;
-use App\DataTransferObjects\Accounting\CreateJournalEntryLineDTO;
-use App\Enums\Loans\LoanType;
-use App\Models\JournalEntry;
 use App\Models\User;
 use Brick\Money\Money;
 use Illuminate\Support\Facades\DB;
+use Modules\Accounting\Models\LoanAgreement;
+use Modules\Accounting\Models\LoanScheduleEntry;
+use RuntimeException;
 
 class BuildLoanPaymentJournalEntryAction
 {
     public function __construct(private readonly \Modules\Accounting\Actions\Accounting\CreateJournalEntryAction $createJE) {}
 
     public function execute(
-        \Modules\Accounting\Models\LoanAgreement $loan,
+        LoanAgreement $loan,
         User $user,
         int $journalId,
         int $bankAccountId,
@@ -28,11 +26,11 @@ class BuildLoanPaymentJournalEntryAction
             $loan->loadMissing('currency', 'company', 'scheduleEntries');
             $currencyModel = $loan->currency;
             if (! $currencyModel) {
-                throw new \RuntimeException('Loan currency missing');
+                throw new RuntimeException('Loan currency missing');
             }
             $code = (string) data_get($currencyModel, 'code');
 
-            /** @var \Modules\Accounting\Models\LoanScheduleEntry $entry */
+            /** @var LoanScheduleEntry $entry */
             $entry = $loan->scheduleEntries()->where('sequence', $forMonthSequence)->firstOrFail();
             /** @var Money $int */ $int = $entry->interest_component;
             /** @var Money $prin */ $prin = $entry->principal_component;
@@ -104,7 +102,7 @@ class BuildLoanPaymentJournalEntryAction
                 created_by_user_id: $user->id,
                 is_posted: true,
                 lines: $lines,
-                source_type: \Modules\Accounting\Models\LoanAgreement::class,
+                source_type: LoanAgreement::class,
                 source_id: $loan->id,
             );
 

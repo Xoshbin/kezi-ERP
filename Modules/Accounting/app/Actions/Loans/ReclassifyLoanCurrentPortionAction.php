@@ -2,22 +2,21 @@
 
 namespace Modules\Accounting\Actions\Loans;
 
-use App\Actions\Accounting\CreateJournalEntryAction;
-use App\DataTransferObjects\Accounting\CreateJournalEntryDTO;
-use App\DataTransferObjects\Accounting\CreateJournalEntryLineDTO;
-use App\Enums\Loans\LoanType;
-use App\Models\JournalEntry;
 use App\Models\User;
 use Brick\Money\Money;
 use Carbon\Carbon;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
+use Modules\Accounting\Models\LoanAgreement;
+use Modules\Accounting\Models\LoanScheduleEntry;
+use RuntimeException;
 
 class ReclassifyLoanCurrentPortionAction
 {
     public function __construct(private readonly \Modules\Accounting\Actions\Accounting\CreateJournalEntryAction $createJE) {}
 
     public function execute(
-        \Modules\Accounting\Models\LoanAgreement $loan,
+        LoanAgreement $loan,
         User $user,
         int $journalId,
         int $longTermAccountId,
@@ -29,7 +28,7 @@ class ReclassifyLoanCurrentPortionAction
             $loan->loadMissing('currency', 'company', 'scheduleEntries');
             $currencyModel = $loan->currency;
             if (! $currencyModel) {
-                throw new \RuntimeException('Loan currency missing');
+                throw new RuntimeException('Loan currency missing');
             }
             $code = (string) data_get($currencyModel, 'code');
 
@@ -37,7 +36,7 @@ class ReclassifyLoanCurrentPortionAction
 
             // Sum principal components due in next N months after asOf
             $sum = Money::of(0, $code);
-            /** @var \Illuminate\Support\Collection<int, \Modules\Accounting\Models\LoanScheduleEntry> $entries */
+            /** @var Collection<int, LoanScheduleEntry> $entries */
             $entries = $loan->scheduleEntries()->orderBy('sequence')->get();
             foreach ($entries as $entry) {
                 if ($entry->due_date->lessThanOrEqualTo($asOf)) {
@@ -46,7 +45,7 @@ class ReclassifyLoanCurrentPortionAction
                 if ($entry->due_date->greaterThan($asOf->copy()->addMonths($months))) {
                     break; // beyond window
                 }
-                /** @var \Brick\Money\Money $pc */
+                /** @var Money $pc */
                 $pc = $entry->principal_component;
                 $sum = $sum->plus($pc);
             }
@@ -106,7 +105,7 @@ class ReclassifyLoanCurrentPortionAction
                 created_by_user_id: $user->id,
                 is_posted: true,
                 lines: $lines,
-                source_type: \Modules\Accounting\Models\LoanAgreement::class,
+                source_type: LoanAgreement::class,
                 source_id: $loan->id,
             );
 

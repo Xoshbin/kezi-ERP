@@ -5,13 +5,14 @@ namespace Modules\Inventory\Database\Factories;
 use App\Enums\Inventory\StockMoveStatus;
 use App\Enums\Inventory\StockMoveType;
 use App\Models\Company;
+use App\Models\StockLocation;
 use App\Models\StockMove;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Database\Eloquent\Model;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\StockMove>
+ * @extends Factory<StockMove>
  */
 class StockMoveFactory extends Factory
 {
@@ -124,8 +125,8 @@ class StockMoveFactory extends Factory
         if ($oldStyleParams) {
             // Ensure we have valid location IDs
             $company = $stockMove->company;
-            $fromLocationId = $oldStyleParams['from_location_id'] ?? $company->vendorLocation?->id ?? \App\Models\StockLocation::factory()->create(['company_id' => $company->id])->id;
-            $toLocationId = $oldStyleParams['to_location_id'] ?? $company->defaultStockLocation?->id ?? \App\Models\StockLocation::factory()->create(['company_id' => $company->id])->id;
+            $fromLocationId = $oldStyleParams['from_location_id'] ?? $company->vendorLocation?->id ?? StockLocation::factory()->create(['company_id' => $company->id])->id;
+            $toLocationId = $oldStyleParams['to_location_id'] ?? $company->defaultStockLocation?->id ?? StockLocation::factory()->create(['company_id' => $company->id])->id;
 
             $stockMove->productLines()->create([
                 'company_id' => $stockMove->company_id,

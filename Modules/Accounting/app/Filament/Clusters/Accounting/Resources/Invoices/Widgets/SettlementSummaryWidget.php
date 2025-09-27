@@ -2,12 +2,11 @@
 
 namespace Modules\Accounting\Filament\Clusters\Accounting\Resources\Invoices\Widgets;
 
-use App\Enums\Sales\InvoiceStatus;
 use Brick\Money\Money;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
 use Illuminate\Database\Eloquent\Model;
-use NumberFormatter;
+use Modules\Sales\Models\Invoice;
 
 class SettlementSummaryWidget extends BaseWidget
 {
@@ -15,7 +14,7 @@ class SettlementSummaryWidget extends BaseWidget
 
     protected function getStats(): array
     {
-        if (! $this->record instanceof \Modules\Sales\Models\Invoice) {
+        if (! $this->record instanceof Invoice) {
             return [];
         }
 

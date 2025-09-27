@@ -4,6 +4,7 @@ namespace Modules\Purchase\Observers;
 
 use App\Models\VendorBillLine;
 use Brick\Money\Money;
+use Modules\Purchase\Models\VendorBill;
 
 class VendorBillLineObserver
 {
@@ -45,7 +46,7 @@ class VendorBillLineObserver
     /**
      * Update company currency totals based on current line totals and exchange rate.
      */
-    protected function updateCompanyCurrencyTotals(\Modules\Purchase\Models\VendorBill $vendorBill): void
+    protected function updateCompanyCurrencyTotals(VendorBill $vendorBill): void
     {
         if (! $vendorBill->exchange_rate_at_creation || $vendorBill->currency_id === $vendorBill->company->currency_id) {
             return; // No conversion needed

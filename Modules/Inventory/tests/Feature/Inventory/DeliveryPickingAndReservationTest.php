@@ -2,20 +2,14 @@
 
 namespace Modules\Inventory\Tests\Feature\Inventory;
 
-use App\Actions\Purchases\CreateVendorBillLineAction;
-use App\Actions\Sales\CreateInvoiceLineAction;
-use App\DataTransferObjects\Purchases\CreateVendorBillLineDTO;
-use App\DataTransferObjects\Sales\CreateInvoiceLineDTO;
-use App\Enums\Inventory\StockPickingState;
-use App\Enums\Inventory\StockPickingType;
-use App\Enums\Products\ProductType;
-use App\Enums\Sales\InvoiceStatus;
-use App\Models\StockPicking;
-use App\Models\StockQuant;
-use App\Services\InvoiceService;
-use App\Services\VendorBillService;
 use Brick\Money\Money;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Modules\Accounting\Models\Account;
+use Modules\Foundation\Enums\Partners\PartnerType;
+use Modules\Foundation\Models\Partner;
+use Modules\Product\Models\Product;
+use Modules\Purchase\Models\VendorBill;
+use Modules\Sales\Models\Invoice;
 use Tests\Traits\WithConfiguredCompany;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);
@@ -26,19 +20,19 @@ beforeEach(function () {
 
     // Ensure company uses AUTO_RECORD_ON_BILL mode for these tests
     $this->company->update([
-        'inventory_accounting_mode' => \App\Enums\Inventory\InventoryAccountingMode::AUTO_RECORD_ON_BILL,
+        'inventory_accounting_mode' => InventoryAccountingMode::AUTO_RECORD_ON_BILL,
     ]);
 
-    $this->product = \Modules\Product\Models\Product::factory()->for($this->company)->create([
+    $this->product = Product::factory()->for($this->company)->create([
         'type' => \Modules\Product\Enums\Products\ProductType::Storable,
-        'inventory_valuation_method' => \App\Enums\Inventory\ValuationMethod::AVCO,
+        'inventory_valuation_method' => ValuationMethod::AVCO,
         'default_inventory_account_id' => $this->inventoryAccount->id,
         'default_stock_input_account_id' => $this->stockInputAccount->id,
         'average_cost' => Money::of(0, $this->company->currency->code),
     ]);
 
     // Ensure product has a COGS account for outgoing valuation
-    $this->cogsAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create([
+    $this->cogsAccount = Account::factory()->for($this->company)->create([
         'type' => 'cost_of_revenue',
     ]);
     $this->product->update(['default_cogs_account_id' => $this->cogsAccount->id]);
@@ -49,7 +43,7 @@ it('creates a delivery picking for posted invoice and reserves then consumes ava
     $qtyIn = 5;
     $cost = Money::of(100, $this->company->currency->code);
 
-    $vendorBill = \Modules\Purchase\Models\VendorBill::factory()->for($this->company)->create([
+    $vendorBill = VendorBill::factory()->for($this->company)->create([
         'vendor_id' => $this->vendor->id,
         'status' => 'draft',
     ]);
@@ -75,10 +69,10 @@ it('creates a delivery picking for posted invoice and reserves then consumes ava
 
     // Create and post an invoice for 3 units
     $qtyOut = 3;
-    $customer = \Modules\Foundation\Models\Partner::factory()->for($this->company)->create([
-        'type' => \Modules\Foundation\Enums\Partners\PartnerType::Customer,
+    $customer = Partner::factory()->for($this->company)->create([
+        'type' => PartnerType::Customer,
     ]);
-    $invoice = \Modules\Sales\Models\Invoice::factory()->for($this->company)->create([
+    $invoice = Invoice::factory()->for($this->company)->create([
         'customer_id' => $customer->id,
         'status' => InvoiceStatus::Draft,
     ]);
@@ -123,7 +117,7 @@ it('partially reserves when oversold and consumes only reserved amount', functio
     $qtyIn = 5;
     $cost = Money::of(100, $this->company->currency->code);
 
-    $vendorBill = \Modules\Purchase\Models\VendorBill::factory()->for($this->company)->create([
+    $vendorBill = VendorBill::factory()->for($this->company)->create([
         'vendor_id' => $this->vendor->id,
         'status' => 'draft',
     ]);
@@ -141,10 +135,10 @@ it('partially reserves when oversold and consumes only reserved amount', functio
 
     // Oversell: try to sell 10
     $qtyOut = 10;
-    $customer = \Modules\Foundation\Models\Partner::factory()->for($this->company)->create([
-        'type' => \Modules\Foundation\Enums\Partners\PartnerType::Customer,
+    $customer = Partner::factory()->for($this->company)->create([
+        'type' => PartnerType::Customer,
     ]);
-    $invoice = \Modules\Sales\Models\Invoice::factory()->for($this->company)->create([
+    $invoice = Invoice::factory()->for($this->company)->create([
         'customer_id' => $customer->id,
         'status' => InvoiceStatus::Draft,
     ]);

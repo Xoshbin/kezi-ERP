@@ -2,10 +2,10 @@
 
 namespace Modules\Accounting\Filament\Clusters\Accounting\Resources\Partners\Widgets;
 
-use App\Enums\Partners\PartnerType;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
 use Illuminate\Database\Eloquent\Model;
+use Modules\Foundation\Models\Partner;
 
 class CustomerFinancialWidget extends BaseWidget
 {
@@ -13,11 +13,11 @@ class CustomerFinancialWidget extends BaseWidget
 
     protected function getStats(): array
     {
-        if (! $this->record instanceof \Modules\Foundation\Models\Partner) {
+        if (! $this->record instanceof Partner) {
             return [];
         }
 
-        /** @var \Modules\Foundation\Models\Partner $partner */
+        /** @var Partner $partner */
         $partner = $this->record;
 
         // Only show for customers and both types

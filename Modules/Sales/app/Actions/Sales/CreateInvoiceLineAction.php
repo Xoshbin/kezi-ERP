@@ -2,14 +2,14 @@
 
 namespace Modules\Sales\Actions\Sales;
 
-use App\DataTransferObjects\Sales\CreateInvoiceLineDTO;
-use App\Models\Tax;
 use Brick\Math\RoundingMode;
 use Brick\Money\Money;
+use Modules\Sales\Models\Invoice;
+use Modules\Sales\Models\InvoiceLine;
 
 class CreateInvoiceLineAction
 {
-    public function execute(\Modules\Sales\Models\Invoice $invoice, CreateInvoiceLineDTO $dto): \Modules\Sales\Models\InvoiceLine
+    public function execute(Invoice $invoice, CreateInvoiceLineDTO $dto): InvoiceLine
     {
         $currency = $invoice->currency;
         $unitPrice = $dto->unit_price; // Already a Money object
@@ -25,7 +25,7 @@ class CreateInvoiceLineAction
         }
 
         // 2. The create method now receives a complete, valid array of attributes.
-        /** @var \Modules\Sales\Models\InvoiceLine $invoiceLine */
+        /** @var InvoiceLine $invoiceLine */
         $invoiceLine = $invoice->invoiceLines()->create([
             'company_id' => $invoice->company_id,
             'product_id' => $dto->product_id,

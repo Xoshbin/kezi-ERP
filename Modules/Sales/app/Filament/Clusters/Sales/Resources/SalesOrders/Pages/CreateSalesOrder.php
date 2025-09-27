@@ -10,6 +10,7 @@ use Brick\Money\Money;
 use Carbon\Carbon;
 use Filament\Resources\Pages\CreateRecord;
 use Illuminate\Database\Eloquent\Model;
+use Modules\Foundation\Models\Currency;
 
 class CreateSalesOrder extends CreateRecord
 {
@@ -55,7 +56,7 @@ class CreateSalesOrder extends CreateRecord
     private function getCurrencyCode(array $data): string
     {
         $currencyId = $data['currency_id'];
-        $currency = \Modules\Foundation\Models\Currency::find($currencyId);
+        $currency = Currency::find($currencyId);
         return $currency ? $currency->code : 'USD';
     }
 }

@@ -9,8 +9,10 @@ use App\Filament\Clusters\Purchases\Resources\PurchaseOrders\Schemas\PurchaseOrd
 use App\Models\PurchaseOrder;
 use App\Services\SequenceService;
 use Carbon\Carbon;
+use Exception;
 use Filament\Actions\Action;
 use Filament\Actions\EditAction;
+use Filament\Facades\Filament;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ViewRecord;
 use Filament\Schemas\Schema;
@@ -73,10 +75,10 @@ class ViewPurchaseOrder extends ViewRecord
                         ->send();
 
                     $this->redirect(route('filament.jmeryar.accounting.resources.vendor-bills.edit', [
-                        'tenant' => \Filament\Facades\Filament::getTenant(),
+                        'tenant' => Filament::getTenant(),
                         'record' => $vendorBill->id
                     ]));
-                } catch (\Exception $e) {
+                } catch (Exception $e) {
                     Notification::make()
                         ->title(__('purchase_orders.notifications.bill_creation_failed'))
                         ->body($e->getMessage())

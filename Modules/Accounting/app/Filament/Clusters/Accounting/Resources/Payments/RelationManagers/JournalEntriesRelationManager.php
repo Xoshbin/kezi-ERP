@@ -2,9 +2,6 @@
 
 namespace Modules\Accounting\Filament\Clusters\Accounting\Resources\Payments\RelationManagers;
 
-use App\Enums\Accounting\JournalEntryState;
-use App\Filament\Tables\Columns\MoneyColumn;
-use App\Models\JournalEntry;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
@@ -17,6 +14,7 @@ use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Modules\Payment\Models\Payment;
 
 class JournalEntriesRelationManager extends RelationManager
 {
@@ -176,7 +174,7 @@ class JournalEntriesRelationManager extends RelationManager
     protected function getTableQuery(): Builder
     {
         $payment = $this->getOwnerRecord();
-        if (! $payment instanceof \Modules\Payment\Models\Payment) {
+        if (! $payment instanceof Payment) {
             return JournalEntry::query()->whereRaw('1 = 0');
         }
 
@@ -186,7 +184,7 @@ class JournalEntriesRelationManager extends RelationManager
                 $query->where('id', $payment->journal_entry_id)
                     // Polymorphic relationship (reconciliation entries, etc.)
                     ->orWhere(function (Builder $subQuery) use ($payment) {
-                        $subQuery->where('source_type', \Modules\Payment\Models\Payment::class)
+                        $subQuery->where('source_type', Payment::class)
                             ->where('source_id', $payment->getKey());
                     });
             })

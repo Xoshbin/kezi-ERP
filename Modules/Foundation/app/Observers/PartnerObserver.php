@@ -2,7 +2,7 @@
 
 namespace Modules\Foundation\Observers;
 
-use App\Exceptions\DeletionNotAllowedException;
+use Modules\Foundation\Models\Partner;
 
 class PartnerObserver
 {
@@ -11,7 +11,7 @@ class PartnerObserver
      *
      * Prevents deletion if the partner is linked to any financial transactions.
      */
-    public function deleting(\Modules\Foundation\Models\Partner $partner): void
+    public function deleting(Partner $partner): void
     {
         if ($partner->invoices()->exists()
             || $partner->vendorBills()->exists()

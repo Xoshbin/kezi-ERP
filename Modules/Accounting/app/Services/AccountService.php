@@ -2,16 +2,16 @@
 
 namespace Modules\Accounting\Services;
 
-use App\Exceptions\DeletionNotAllowedException;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
+use Modules\Accounting\Models\Account;
 
 class AccountService
 {
     /**
      * @param  array<string, mixed>  $data
      */
-    public function create(array $data): \Modules\Accounting\Models\Account
+    public function create(array $data): Account
     {
         Validator::make($data, [
             'code' => [
@@ -23,13 +23,13 @@ class AccountService
             'company_id' => ['required', 'exists:companies,id'],
         ])->validate();
 
-        return \Modules\Accounting\Models\Account::create($data);
+        return Account::create($data);
     }
 
     /**
      * @param  array<string, mixed>  $data
      */
-    public function update(\Modules\Accounting\Models\Account $account, array $data): \Modules\Accounting\Models\Account
+    public function update(Account $account, array $data): Account
     {
         Validator::make($data, [
             'code' => [
@@ -46,7 +46,7 @@ class AccountService
         return $account;
     }
 
-    public function delete(\Modules\Accounting\Models\Account $account): void
+    public function delete(Account $account): void
     {
         if ($account->journalEntryLines()->exists()) {
             throw new \Modules\Foundation\Exceptions\DeletionNotAllowedException('Cannot delete account with associated financial records.');

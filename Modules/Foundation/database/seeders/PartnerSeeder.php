@@ -2,12 +2,12 @@
 
 namespace Modules\Foundation\Database\Seeders;
 
-use App\Enums\Accounting\AccountType;
-use App\Enums\Partners\PartnerType;
 use App\Models\Company;
 use Exception;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Database\Seeder;
+use Modules\Accounting\Models\Account;
+use Modules\Foundation\Models\Partner;
 
 class PartnerSeeder extends Seeder
 {
@@ -23,11 +23,11 @@ class PartnerSeeder extends Seeder
         }
 
         // Get default accounts for partner assignment
-        $defaultReceivableAccount = \Modules\Accounting\Models\Account::where('company_id', $company->id)
+        $defaultReceivableAccount = Account::where('company_id', $company->id)
             ->where('code', '120101')
             ->first();
 
-        $defaultPayableAccount = \Modules\Accounting\Models\Account::where('company_id', $company->id)
+        $defaultPayableAccount = Account::where('company_id', $company->id)
             ->where('code', '210101')
             ->first();
 
@@ -60,7 +60,7 @@ class PartnerSeeder extends Seeder
 
         foreach ($partners as $partnerData) {
             // Create individual accounts for each partner
-            $receivableAccount = \Modules\Accounting\Models\Account::updateOrCreate(
+            $receivableAccount = Account::updateOrCreate(
                 [
                     'company_id' => $company->id,
                     'name' => ['en' => "Accounts Receivable - {$partnerData['name']}", 'ckb' => "هەژماری وەرگرتن - {$partnerData['name']}", 'ar' => "حسابات مدينة - {$partnerData['name']}"],
@@ -71,7 +71,7 @@ class PartnerSeeder extends Seeder
                 ]
             );
 
-            $payableAccount = \Modules\Accounting\Models\Account::updateOrCreate(
+            $payableAccount = Account::updateOrCreate(
                 [
                     'company_id' => $company->id,
                     'name' => ['en' => "Accounts Payable - {$partnerData['name']}", 'ckb' => "هەژماری پارەدان - {$partnerData['name']}", 'ar' => "حسابات دائنة - {$partnerData['name']}"],
@@ -82,7 +82,7 @@ class PartnerSeeder extends Seeder
                 ]
             );
 
-            \Modules\Foundation\Models\Partner::updateOrCreate(
+            Partner::updateOrCreate(
                 [
                     'company_id' => $company->id,
                     'name' => $partnerData['name'],
@@ -100,7 +100,7 @@ class PartnerSeeder extends Seeder
     private function getNextAvailableCode(int $companyId, int $baseCode): string
     {
         // Find the highest existing code within the desired range (e.g., 1200, 1201, 1202...).
-        $latestCode = \Modules\Accounting\Models\Account::where('company_id', $companyId)
+        $latestCode = Account::where('company_id', $companyId)
             ->where('code', '>=', $baseCode)
             ->where('code', '<', $baseCode + 100) // Assuming max 100 partners of one type for this range
             ->max('code');

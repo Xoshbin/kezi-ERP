@@ -2,15 +2,13 @@
 
 namespace Modules\Inventory\Database\Factories;
 
-use App\Enums\Inventory\StockPickingState;
-use App\Enums\Inventory\StockPickingType;
 use App\Models\Company;
-use App\Models\StockPicking;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Modules\Foundation\Models\Partner;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\StockPicking>
+ * @extends Factory<StockPicking>
  */
 class StockPickingFactory extends Factory
 {
@@ -94,7 +92,7 @@ class StockPickingFactory extends Factory
     public function withPartner(): static
     {
         return $this->state(fn (array $attributes) => [
-            'partner_id' => \Modules\Foundation\Models\Partner::factory(),
+            'partner_id' => Partner::factory(),
         ]);
     }
 }

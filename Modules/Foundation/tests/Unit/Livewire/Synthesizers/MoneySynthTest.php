@@ -2,7 +2,6 @@
 
 namespace Modules\Foundation\Tests\Unit\Livewire\Synthesizers;
 
-use App\Livewire\Synthesizers\MoneySynth;
 use Brick\Money\Money;
 use PHPUnit\Framework\TestCase;
 
@@ -20,7 +19,7 @@ class MoneySynthTest extends TestCase
     public function it_matches_money_objects(): void
     {
         $money = Money::of(100, 'USD');
-        
+
         $this->assertTrue(\Modules\Foundation\App\Livewire\Synthesizers\MoneySynth::match($money));
         $this->assertFalse(\Modules\Foundation\App\Livewire\Synthesizers\MoneySynth::match('100'));
         $this->assertFalse(\Modules\Foundation\App\Livewire\Synthesizers\MoneySynth::match(100));
@@ -31,9 +30,9 @@ class MoneySynthTest extends TestCase
     public function it_dehydrates_money_objects_correctly(): void
     {
         $money = Money::of('123.45', 'EUR');
-        
+
         [$payload, $meta] = $this->synthesizer->dehydrate($money);
-        
+
         $this->assertIsArray($payload);
         $this->assertIsArray($meta);
         $this->assertEquals('123.45', $payload['amount']);
@@ -48,9 +47,9 @@ class MoneySynthTest extends TestCase
             'amount' => '123.45',
             'currency' => 'EUR'
         ];
-        
+
         $money = $this->synthesizer->hydrate($payload);
-        
+
         $this->assertInstanceOf(Money::class, $money);
         $this->assertEquals('123.45', $money->getAmount()->__toString());
         $this->assertEquals('EUR', $money->getCurrency()->getCurrencyCode());
@@ -88,13 +87,13 @@ class MoneySynthTest extends TestCase
     public function it_handles_round_trip_correctly(): void
     {
         $originalMoney = Money::of('999.99', 'GBP');
-        
+
         // Dehydrate
         [$payload, $meta] = $this->synthesizer->dehydrate($originalMoney);
-        
+
         // Hydrate
         $hydratedMoney = $this->synthesizer->hydrate($payload);
-        
+
         $this->assertInstanceOf(Money::class, $hydratedMoney);
         $this->assertTrue($originalMoney->isEqualTo($hydratedMoney));
     }

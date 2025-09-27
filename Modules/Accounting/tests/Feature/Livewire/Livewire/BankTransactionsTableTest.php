@@ -1,11 +1,14 @@
 <?php
 
-use App\Livewire\Accounting\BankTransactionsTable;
-use App\Models\Journal;
 use App\Models\User;
 use Brick\Money\Money;
+use Filament\Facades\Filament;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Livewire\Livewire;
+use Modules\Accounting\Models\Account;
+use Modules\Accounting\Models\BankStatement;
+use Modules\Accounting\Models\BankStatementLine;
+use Tests\Builders\CompanyBuilder;
 
 uses(RefreshDatabase::class);
 
@@ -14,7 +17,7 @@ beforeEach(function () {
     app()->setLocale('en');
 
     // Create company with reconciliation enabled and required accounts
-    $this->company = \Tests\Builders\CompanyBuilder::new()
+    $this->company = CompanyBuilder::new()
         ->withDefaultAccounts()
         ->withReconciliationEnabled()
         ->create();
@@ -24,16 +27,16 @@ beforeEach(function () {
     $this->actingAs($this->user);
 
     // Set up Filament tenant context
-    \Filament\Facades\Filament::setTenant($this->company);
+    Filament::setTenant($this->company);
 
     $this->currency = $this->company->currency;
 
     // Get the default accounts created by CompanyBuilder
-    $this->bankAccount = \Modules\Accounting\Models\Account::where('company_id', $this->company->id)
+    $this->bankAccount = Account::where('company_id', $this->company->id)
         ->where('type', 'bank_and_cash')
         ->first();
 
-    $this->outstandingAccount = \Modules\Accounting\Models\Account::where('company_id', $this->company->id)
+    $this->outstandingAccount = Account::where('company_id', $this->company->id)
         ->where('type', 'current_assets')
         ->first();
 
@@ -41,7 +44,7 @@ beforeEach(function () {
         ->for($this->company)
         ->create(['type' => 'bank']);
 
-    $this->bankStatement = \Modules\Accounting\Models\BankStatement::factory()
+    $this->bankStatement = BankStatement::factory()
         ->for($this->company)
         ->for($this->currency)
         ->for($this->bankJournal)
@@ -56,7 +59,7 @@ describe('BankTransactionsTable Livewire Component', function () {
     });
 
     it('displays only unreconciled bank statement lines', function () {
-        $unreconciledLine = \Modules\Accounting\Models\BankStatementLine::factory()
+        $unreconciledLine = BankStatementLine::factory()
             ->for($this->bankStatement)
             ->create([
                 'description' => 'Unreconciled Transaction',
@@ -64,7 +67,7 @@ describe('BankTransactionsTable Livewire Component', function () {
                 'is_reconciled' => false,
             ]);
 
-        $reconciledLine = \Modules\Accounting\Models\BankStatementLine::factory()
+        $reconciledLine = BankStatementLine::factory()
             ->for($this->bankStatement)
             ->create([
                 'description' => 'Reconciled Transaction',
@@ -78,7 +81,7 @@ describe('BankTransactionsTable Livewire Component', function () {
     });
 
     it('can toggle bank line selection', function () {
-        $bankLine = \Modules\Accounting\Models\BankStatementLine::factory()
+        $bankLine = BankStatementLine::factory()
             ->for($this->bankStatement)
             ->create(['is_reconciled' => false]);
 
@@ -99,7 +102,7 @@ describe('BankTransactionsTable Livewire Component', function () {
     });
 
     it('emits selection changed event when toggling lines', function () {
-        $bankLine = \Modules\Accounting\Models\BankStatementLine::factory()
+        $bankLine = BankStatementLine::factory()
             ->for($this->bankStatement)
             ->create([
                 'amount' => Money::of(100, $this->currency->code),
@@ -116,7 +119,7 @@ describe('BankTransactionsTable Livewire Component', function () {
     });
 
     it('can perform write-off action', function () {
-        $bankLine = \Modules\Accounting\Models\BankStatementLine::factory()
+        $bankLine = BankStatementLine::factory()
             ->for($this->bankStatement)
             ->create([
                 'amount' => Money::of(10, $this->currency->code),
@@ -124,7 +127,7 @@ describe('BankTransactionsTable Livewire Component', function () {
                 'description' => 'Small discrepancy',
             ]);
 
-        $writeOffAccount = \Modules\Accounting\Models\Account::factory()
+        $writeOffAccount = Account::factory()
             ->for($this->company)
             ->create(['type' => 'expense', 'name' => 'Bank Charges']);
 
@@ -145,14 +148,14 @@ describe('BankTransactionsTable Livewire Component', function () {
     });
 
     it('emits write-off event after successful write-off', function () {
-        $bankLine = \Modules\Accounting\Models\BankStatementLine::factory()
+        $bankLine = BankStatementLine::factory()
             ->for($this->bankStatement)
             ->create([
                 'amount' => Money::of(5, $this->currency->code),
                 'is_reconciled' => false,
             ]);
 
-        $writeOffAccount = \Modules\Accounting\Models\Account::factory()
+        $writeOffAccount = Account::factory()
             ->for($this->company)
             ->create(['type' => 'expense']);
 
@@ -165,14 +168,14 @@ describe('BankTransactionsTable Livewire Component', function () {
     });
 
     it('calculates correct total for multiple selected lines', function () {
-        $line1 = \Modules\Accounting\Models\BankStatementLine::factory()
+        $line1 = BankStatementLine::factory()
             ->for($this->bankStatement)
             ->create([
                 'amount' => Money::of(100, $this->currency->code),
                 'is_reconciled' => false,
             ]);
 
-        $line2 = \Modules\Accounting\Models\BankStatementLine::factory()
+        $line2 = BankStatementLine::factory()
             ->for($this->bankStatement)
             ->create([
                 'amount' => Money::of(50, $this->currency->code),
@@ -194,18 +197,18 @@ describe('BankTransactionsTable Livewire Component', function () {
     });
 
     it('shows write-off account options filtered by company and expense type', function () {
-        $expenseAccount = \Modules\Accounting\Models\Account::factory()
+        $expenseAccount = Account::factory()
             ->for($this->company)
             ->create(['type' => 'expense', 'name' => 'Bank Charges']);
 
-        $assetAccount = \Modules\Accounting\Models\Account::factory()
+        $assetAccount = Account::factory()
             ->for($this->company)
             ->create(['type' => 'bank_and_cash', 'name' => 'Cash']);
 
-        $otherCompanyAccount = \Modules\Accounting\Models\Account::factory()
+        $otherCompanyAccount = Account::factory()
             ->create(['type' => 'expense', 'name' => 'Other Company Expense']);
 
-        $bankLine = \Modules\Accounting\Models\BankStatementLine::factory()
+        $bankLine = BankStatementLine::factory()
             ->for($this->bankStatement)
             ->create(['is_reconciled' => false]);
 

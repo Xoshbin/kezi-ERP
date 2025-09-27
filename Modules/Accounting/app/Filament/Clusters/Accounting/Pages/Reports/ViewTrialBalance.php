@@ -3,8 +3,10 @@
 namespace Modules\Accounting\Filament\Clusters\Accounting\Pages\Reports;
 
 use App\Filament\Clusters\Accounting\AccountingCluster;
+use App\Models\Company;
 use App\Services\Reports\TrialBalanceService;
 use App\Support\NumberFormatter;
+use BackedEnum;
 use Carbon\Carbon;
 use Filament\Actions\Action;
 use Filament\Facades\Filament;
@@ -16,7 +18,7 @@ use Illuminate\Contracts\Support\Htmlable;
 
 class ViewTrialBalance extends Page
 {
-    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-scale';
+    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-scale';
 
     protected string $view = 'filament.pages.reports.view-trial-balance';
 
@@ -87,7 +89,7 @@ class ViewTrialBalance extends Page
         ]);
 
         $company = Filament::getTenant();
-        if (! $company instanceof \App\Models\Company) {
+        if (! $company instanceof Company) {
             return;
         }
         $service = app(\Modules\Accounting\Services\Reports\TrialBalanceService::class);

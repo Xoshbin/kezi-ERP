@@ -2,13 +2,6 @@
 
 namespace Modules\Accounting\Filament\Clusters\Accounting\Resources\Journals;
 
-use App\Enums\Accounting\JournalType;
-use App\Filament\Clusters\Accounting\AccountingCluster;
-use App\Filament\Clusters\Accounting\Resources\Journals\Pages\CreateJournal;
-use App\Filament\Clusters\Accounting\Resources\Journals\Pages\EditJournal;
-use App\Filament\Clusters\Accounting\Resources\Journals\Pages\ListJournals;
-use App\Filament\Clusters\Accounting\Resources\Journals\RelationManagers\JournalEntriesRelationManager;
-use App\Models\Journal;
 use BackedEnum;
 use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
@@ -23,6 +16,8 @@ use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use LaraZeus\SpatieTranslatable\Resources\Concerns\Translatable;
+use Modules\Accounting\Models\Account;
+use Modules\Foundation\Models\Currency;
 use Xoshbin\TranslatableSelect\Components\TranslatableSelect;
 
 class JournalResource extends Resource
@@ -80,7 +75,7 @@ class JournalResource extends Resource
                         ->label(__('journal.short_code'))
                         ->required()
                         ->maxLength(255),
-                    TranslatableSelect::forModel('currency_id', \Modules\Foundation\Models\Currency::class, 'name')
+                    TranslatableSelect::forModel('currency_id', Currency::class, 'name')
                         ->label(__('journal.currency'))
                         ->required()
                         ->searchable()
@@ -119,12 +114,12 @@ class JournalResource extends Resource
             Section::make(__('journal.default_accounts'))
                 ->description(__('journal.default_accounts_description'))
                 ->schema([
-                    TranslatableSelect::forModel('default_debit_account_id', \Modules\Accounting\Models\Account::class, 'name')
+                    TranslatableSelect::forModel('default_debit_account_id', Account::class, 'name')
                         ->searchable()
                         ->preload()
                         ->helperText(__('journal.default_debit_account_helper')),
 
-                    TranslatableSelect::forModel('default_credit_account_id', \Modules\Accounting\Models\Account::class, 'name')
+                    TranslatableSelect::forModel('default_credit_account_id', Account::class, 'name')
                         ->searchable()
                         ->preload()
                         ->helperText(__('journal.default_credit_account_helper')),

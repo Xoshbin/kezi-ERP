@@ -7,9 +7,12 @@ use App\DataTransferObjects\Inventory\ConfirmStockMoveDTO;
 use App\Enums\Inventory\StockMoveStatus;
 use App\Exceptions\Inventory\InsufficientCostInformationException;
 use App\Models\StockMove;
+use Exception;
 use Filament\Actions\Action;
+use Filament\Facades\Filament;
 use Filament\Notifications\Notification;
 use Illuminate\Database\Eloquent\Model;
+use Log;
 
 class ConfirmStockMoveAction extends Action
 {
@@ -58,7 +61,7 @@ class ConfirmStockMoveAction extends Action
             $this->getLivewire()->redirect(request()->url());
         } catch (InsufficientCostInformationException $e) {
             $this->handleCostInformationError($e);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->handleGenericError($e);
         }
     }
@@ -74,16 +77,16 @@ class ConfirmStockMoveAction extends Action
             ->danger()
             ->persistent()
             ->actions([
-                \Filament\Actions\Action::make('create_vendor_bill')
+                Action::make('create_vendor_bill')
                     ->label(__('Create Vendor Bill'))
                     ->button()
-                    ->url(route('filament.jmeryar.accounting.resources.vendor-bills.create', ['tenant' => \Filament\Facades\Filament::getTenant()]))
+                    ->url(route('filament.jmeryar.accounting.resources.vendor-bills.create', ['tenant' => Filament::getTenant()]))
                     ->openUrlInNewTab(),
             ])
             ->send();
     }
 
-    protected function handleGenericError(\Exception $exception): void
+    protected function handleGenericError(Exception $exception): void
     {
         Notification::make()
             ->title(__('Error Confirming Movement'))
@@ -92,7 +95,7 @@ class ConfirmStockMoveAction extends Action
             ->send();
 
         // Log the error for debugging
-        \Log::error('Stock move confirmation failed', [
+        Log::error('Stock move confirmation failed', [
             'exception' => $exception->getMessage(),
             'trace' => $exception->getTraceAsString(),
         ]);

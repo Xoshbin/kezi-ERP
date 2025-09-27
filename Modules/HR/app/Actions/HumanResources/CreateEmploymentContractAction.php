@@ -2,21 +2,22 @@
 
 namespace Modules\HR\Actions\HumanResources;
 
-use App\DataTransferObjects\HumanResources\CreateEmploymentContractDTO;
 use App\Models\Company;
-use App\Models\EmploymentContract;
 use Brick\Money\Money;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
+use InvalidArgumentException;
+use Modules\Foundation\Models\Currency;
+use RuntimeException;
 
 class CreateEmploymentContractAction
 {
     public function execute(CreateEmploymentContractDTO $createContractDTO): EmploymentContract
     {
         return DB::transaction(function () use ($createContractDTO): EmploymentContract {
-            $currency = \Modules\Foundation\Models\Currency::find($createContractDTO->currency_id);
+            $currency = Currency::find($createContractDTO->currency_id);
             if (! $currency) {
-                throw new \InvalidArgumentException('Currency not found');
+                throw new InvalidArgumentException('Currency not found');
             }
 
             // Convert Money fields if they're strings
@@ -52,7 +53,7 @@ class CreateEmploymentContractAction
             if (empty($contractNumber)) {
                 $company = Company::find($createContractDTO->company_id);
                 if (! $company) {
-                    throw new \InvalidArgumentException('Company not found');
+                    throw new InvalidArgumentException('Company not found');
                 }
                 $contractNumber = EmploymentContract::generateContractNumber($company);
             }
@@ -95,7 +96,7 @@ class CreateEmploymentContractAction
 
             $fresh = $contract->fresh();
             if (! $fresh) {
-                throw new \RuntimeException('Failed to refresh contract after creation');
+                throw new RuntimeException('Failed to refresh contract after creation');
             }
 
             return $fresh;

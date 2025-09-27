@@ -11,6 +11,7 @@ use App\Models\Journal;
 use App\Models\Partner;
 use Filament\Facades\Filament;
 use Illuminate\Support\Arr;
+use Modules\Foundation\Enums\Partners\PartnerType;
 
 class FilamentInlineCreate
 {
@@ -29,7 +30,7 @@ class FilamentInlineCreate
         $defaults = [
             'company_id' => self::companyId(),
             'name' => 'Test Partner',
-            'type' => \Modules\Foundation\Enums\Partners\PartnerType::Vendor,
+            'type' => PartnerType::Vendor,
             'email' => 'ap@test.local',
         ];
 

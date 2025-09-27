@@ -1,25 +1,28 @@
 <?php
 
-use App\Actions\Sales\GenerateInvoicePdfAction;
-use App\Enums\Sales\InvoiceStatus;
 use App\Models\Company;
 use App\Models\User;
 use Brick\Money\Money;
+use Modules\Accounting\Models\Account;
+use Modules\Foundation\Models\Currency;
+use Modules\Foundation\Models\Partner;
+use Modules\Sales\Models\Invoice;
+use Modules\Sales\Models\InvoiceLine;
 
 beforeEach(function () {
     $this->user = User::factory()->create();
     $this->company = Company::factory()->create();
     $this->user->companies()->attach($this->company);
-    $this->currency = \Modules\Foundation\Models\Currency::factory()->create(['code' => 'USD']);
-    $this->customer = \Modules\Foundation\Models\Partner::factory()->create([
+    $this->currency = Currency::factory()->create(['code' => 'USD']);
+    $this->customer = Partner::factory()->create([
         'company_id' => $this->company->id,
         'type' => 'customer',
     ]);
-    $this->account = \Modules\Accounting\Models\Account::factory()->create([
+    $this->account = Account::factory()->create([
         'company_id' => $this->company->id,
     ]);
 
-    $this->invoice = \Modules\Sales\Models\Invoice::factory()->create([
+    $this->invoice = Invoice::factory()->create([
         'company_id' => $this->company->id,
         'customer_id' => $this->customer->id,
         'currency_id' => $this->currency->id,
@@ -29,7 +32,7 @@ beforeEach(function () {
         'total_tax' => Money::of(10, 'USD'),
     ]);
 
-    \Modules\Sales\Models\InvoiceLine::factory()->create([
+    InvoiceLine::factory()->create([
         'invoice_id' => $this->invoice->id,
         'income_account_id' => $this->account->id,
         'description' => 'Test Product',
@@ -169,7 +172,7 @@ test('pdf settings work with different locales', function () {
 
 test('draft invoices generate pdf with draft watermark', function () {
     // Arrange - Create a draft invoice
-    $draftInvoice = \Modules\Sales\Models\Invoice::factory()->create([
+    $draftInvoice = Invoice::factory()->create([
         'company_id' => $this->company->id,
         'customer_id' => $this->customer->id,
         'currency_id' => $this->currency->id,
@@ -179,7 +182,7 @@ test('draft invoices generate pdf with draft watermark', function () {
         'total_tax' => Money::of(10, 'USD'),
     ]);
 
-    \Modules\Sales\Models\InvoiceLine::factory()->create([
+    InvoiceLine::factory()->create([
         'invoice_id' => $draftInvoice->id,
         'income_account_id' => $this->account->id,
         'description' => 'Draft Product',

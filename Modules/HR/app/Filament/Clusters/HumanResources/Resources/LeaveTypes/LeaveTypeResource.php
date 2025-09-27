@@ -9,6 +9,7 @@ use App\Filament\Clusters\HumanResources\Resources\LeaveTypes\Pages\ListLeaveTyp
 use App\Filament\Clusters\HumanResources\Resources\LeaveTypes\Schemas\LeaveTypeForm;
 use App\Filament\Clusters\HumanResources\Resources\LeaveTypes\Tables\LeaveTypesTable;
 use App\Models\LeaveType;
+use BackedEnum;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Tables\Table;
@@ -20,7 +21,7 @@ class LeaveTypeResource extends Resource
 
     protected static ?string $model = LeaveType::class;
 
-    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-calendar-days';
+    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-calendar-days';
 
     protected static ?string $cluster = HumanResourcesCluster::class;
 

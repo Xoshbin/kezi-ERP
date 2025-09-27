@@ -2,26 +2,16 @@
 
 namespace Modules\Accounting\Filament\Clusters\Accounting\Resources\LoanAgreements;
 
-use App\Filament\Clusters\Accounting\AccountingCluster;
-use App\Filament\Clusters\Accounting\Resources\LoanAgreements\Pages\CreateLoanAgreement;
-use App\Filament\Clusters\Accounting\Resources\LoanAgreements\Pages\EditLoanAgreement;
-use App\Filament\Clusters\Accounting\Resources\LoanAgreements\Pages\ListLoanAgreements;
-use App\Filament\Clusters\Accounting\Resources\LoanAgreements\Pages\ViewLoanAgreement;
-use App\Filament\Clusters\Accounting\Resources\LoanAgreements\RelationManagers\FeeLinesRelationManager;
-use App\Filament\Clusters\Accounting\Resources\LoanAgreements\RelationManagers\RateChangesRelationManager;
-use App\Filament\Clusters\Accounting\Resources\LoanAgreements\RelationManagers\ScheduleEntriesRelationManager;
-use App\Filament\Clusters\Accounting\Resources\LoanAgreements\Schemas\LoanAgreementForm;
-use App\Filament\Clusters\Accounting\Resources\LoanAgreements\Schemas\LoanAgreementInfolist;
-use App\Filament\Clusters\Accounting\Resources\LoanAgreements\Tables\LoanAgreementsTable;
 use BackedEnum;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
+use Modules\Accounting\Models\LoanAgreement;
 
 class LoanAgreementResource extends Resource
 {
-    protected static ?string $model = \Modules\Accounting\Models\LoanAgreement::class;
+    protected static ?string $model = LoanAgreement::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
 

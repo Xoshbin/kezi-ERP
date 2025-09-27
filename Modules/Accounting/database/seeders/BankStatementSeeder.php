@@ -6,6 +6,9 @@ use App\Models\Company;
 use App\Models\Journal;
 use Brick\Money\Money;
 use Illuminate\Database\Seeder;
+use Modules\Accounting\Models\BankStatement;
+use Modules\Foundation\Models\Partner;
+use Modules\Payment\Models\Payment;
 
 class BankStatementSeeder extends Seeder
 {
@@ -18,13 +21,13 @@ class BankStatementSeeder extends Seeder
         $currencyCode = $company->currency->code;
 
         // 1. Get required partners
-        $hawrePartner = \Modules\Foundation\Models\Partner::where('name', 'Hawre Trading Group')->firstOrFail();
-        $paykarPartner = \Modules\Foundation\Models\Partner::where('name', 'Paykar Tech Supplies')->firstOrFail();
+        $hawrePartner = Partner::where('name', 'Hawre Trading Group')->firstOrFail();
+        $paykarPartner = Partner::where('name', 'Paykar Tech Supplies')->firstOrFail();
 
         // 2. Calculate starting balance
         $initialCapital = Money::of(15000000, $currencyCode);
 
-        $hawrePaymentRecord = \Modules\Payment\Models\Payment::where('paid_to_from_partner_id', $hawrePartner->id)->first();
+        $hawrePaymentRecord = Payment::where('paid_to_from_partner_id', $hawrePartner->id)->first();
         if (! $hawrePaymentRecord) {
             $this->command->error('Payment for Hawre Trading Group not found. Please run the PaymentSeeder first.');
 
@@ -32,7 +35,7 @@ class BankStatementSeeder extends Seeder
         }
         $hawrePayment = $hawrePaymentRecord->amount;
 
-        $paykarPaymentRecord = \Modules\Payment\Models\Payment::where('paid_to_from_partner_id', $paykarPartner->id)->first();
+        $paykarPaymentRecord = Payment::where('paid_to_from_partner_id', $paykarPartner->id)->first();
         if (! $paykarPaymentRecord) {
             $this->command->error('Payment for Paykar Tech Supplies not found. Please run the PaymentSeeder first.');
 
@@ -50,7 +53,7 @@ class BankStatementSeeder extends Seeder
         $bankJournal = Journal::where('name->en', 'Bank (IQD)')->where('company_id', $company->id)->firstOrFail();
 
         // 5. Create the Bank Statement
-        $bankStatement = \Modules\Accounting\Models\BankStatement::create([
+        $bankStatement = BankStatement::create([
             'company_id' => $company->id,
             'journal_id' => $bankJournal->id,
             'currency_id' => $company->currency_id,

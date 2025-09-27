@@ -7,6 +7,8 @@ use App\DataTransferObjects\Assets\CreateAssetDTO;
 use App\Enums\Assets\DepreciationMethod;
 use App\Events\VendorBillConfirmed;
 use App\Models\AssetCategory;
+use App\Models\Company;
+use App\Models\VendorBillLine;
 use Exception;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Support\Facades\Log;
@@ -40,9 +42,9 @@ class CreateAssetFromVendorBillListener implements ShouldQueue
 
                     public int $useful_life_years;
 
-                    public \App\Enums\Assets\DepreciationMethod $depreciation_method;
+                    public DepreciationMethod $depreciation_method;
 
-                    public function __construct(public \App\Models\Company $company, public \App\Models\VendorBillLine $line)
+                    public function __construct(public Company $company, public VendorBillLine $line)
                     {
                         $this->asset_account_id = $this->line->expense_account_id;
                         $this->depreciation_expense_account_id = $this->company->default_depreciation_expense_account_id

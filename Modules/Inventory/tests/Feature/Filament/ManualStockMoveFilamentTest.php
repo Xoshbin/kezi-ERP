@@ -2,19 +2,11 @@
 
 namespace Modules\Inventory\Tests\Feature\Filament;
 
-use App\Enums\Inventory\InventoryAccountingMode;
-use App\Enums\Inventory\StockMoveStatus;
-use App\Enums\Inventory\StockMoveType;
-use App\Enums\Inventory\ValuationMethod;
-use App\Enums\Products\ProductType;
-use App\Enums\Purchases\VendorBillStatus;
-use App\Filament\Clusters\Inventory\Resources\StockMoves\StockMoveResource;
-use App\Models\StockMove;
-use App\Models\StockMoveProductLine;
-use App\Models\VendorBillLine;
 use Brick\Money\Money;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Livewire\Livewire;
+use Modules\Product\Models\Product;
+use Modules\Purchase\Models\VendorBill;
 use Tests\TestCase;
 use Tests\Traits\WithConfiguredCompany;
 
@@ -40,8 +32,8 @@ class ManualStockMoveFilamentTest extends TestCase
     protected $cogsAccount;
 
     // Test-specific properties
-    protected \Modules\Product\Models\Product $product;
-    protected \Modules\Purchase\Models\VendorBill $vendorBill;
+    protected Product $product;
+    protected VendorBill $vendorBill;
 
     protected function setUp(): void
     {
@@ -57,7 +49,7 @@ class ManualStockMoveFilamentTest extends TestCase
         ]);
 
         // Create test product with FIFO valuation
-        $this->product = \Modules\Product\Models\Product::factory()->create([
+        $this->product = Product::factory()->create([
             'company_id' => $this->company->id,
             'type' => \Modules\Product\Enums\Products\ProductType::Storable,
             'inventory_valuation_method' => ValuationMethod::FIFO,
@@ -66,7 +58,7 @@ class ManualStockMoveFilamentTest extends TestCase
         ]);
 
         // Create and post vendor bill to establish cost
-        $this->vendorBill = \Modules\Purchase\Models\VendorBill::factory()->create([
+        $this->vendorBill = VendorBill::factory()->create([
             'company_id' => $this->company->id,
             'vendor_id' => $this->vendor->id,
             'status' => VendorBillStatus::Posted,
@@ -99,7 +91,7 @@ class ManualStockMoveFilamentTest extends TestCase
         // For now, let's test the basic form rendering and skip the complex form submission
         // The core functionality is already tested in the integration test
 
-        $livewire = Livewire::test(\App\Filament\Clusters\Inventory\Resources\StockMoves\Pages\CreateStockMove::class);
+        $livewire = Livewire::test(CreateStockMove::class);
 
         // Verify the page loads without errors
         $livewire->assertSuccessful();
@@ -141,7 +133,7 @@ class ManualStockMoveFilamentTest extends TestCase
         ]);
 
         // Test processing the stock move through the Filament edit page
-        Livewire::test(\App\Filament\Clusters\Inventory\Resources\StockMoves\Pages\EditStockMove::class, [
+        Livewire::test(EditStockMove::class, [
             'record' => $stockMove->getRouteKey(),
         ])
             ->fillForm([
@@ -170,7 +162,7 @@ class ManualStockMoveFilamentTest extends TestCase
     public function test_cost_determination_works_in_stock_move_form(): void
     {
         // Test that the cost determination service works correctly when used in forms
-        $inventoryValuationService = app(\App\Services\Inventory\InventoryValuationService::class);
+        $inventoryValuationService = app(InventoryValuationService::class);
 
         // Create a draft stock move
         $stockMove = StockMove::create([
@@ -202,7 +194,7 @@ class ManualStockMoveFilamentTest extends TestCase
     public function test_stock_move_validation_prevents_processing_without_cost(): void
     {
         // Create product without cost information
-        $productWithoutCost = \Modules\Product\Models\Product::factory()->create([
+        $productWithoutCost = Product::factory()->create([
             'company_id' => $this->company->id,
             'type' => \Modules\Product\Enums\Products\ProductType::Storable,
             'inventory_valuation_method' => ValuationMethod::FIFO,
@@ -229,9 +221,9 @@ class ManualStockMoveFilamentTest extends TestCase
         ]);
 
         // Test that the cost determination service correctly identifies the lack of cost information
-        $inventoryValuationService = app(\App\Services\Inventory\InventoryValuationService::class);
+        $inventoryValuationService = app(InventoryValuationService::class);
 
-        $this->expectException(\App\Exceptions\Inventory\InsufficientCostInformationException::class);
+        $this->expectException(InsufficientCostInformationException::class);
         $inventoryValuationService->calculateIncomingCostPerUnitEnhanced(
             $productWithoutCost,
             $stockMove,

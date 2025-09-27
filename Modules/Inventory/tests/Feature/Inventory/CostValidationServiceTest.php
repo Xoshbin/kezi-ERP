@@ -1,14 +1,9 @@
 <?php
 
-use App\DataTransferObjects\Inventory\CostPreviewResult;
-use App\DataTransferObjects\Inventory\CostValidationResult;
-use App\Enums\Inventory\CostSource;
-use App\Enums\Inventory\StockMoveType;
-use App\Enums\Inventory\ValuationMethod;
-use App\Enums\Products\ProductType;
-use App\Services\Inventory\CostValidationService;
 use Brick\Money\Money;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Modules\Accounting\Models\Account;
+use Modules\Product\Models\Product;
 use Tests\Traits\WithConfiguredCompany;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);
@@ -18,15 +13,15 @@ beforeEach(function () {
     $this->costValidationService = app(CostValidationService::class);
 
     // Create required accounts
-    $this->inventoryAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create([
+    $this->inventoryAccount = Account::factory()->for($this->company)->create([
         'name' => 'Inventory Asset',
         'type' => 'current_assets',
     ]);
-    $this->cogsAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create([
+    $this->cogsAccount = Account::factory()->for($this->company)->create([
         'name' => 'Cost of Goods Sold',
         'type' => 'expense',
     ]);
-    $this->stockInputAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create([
+    $this->stockInputAccount = Account::factory()->for($this->company)->create([
         'name' => 'Stock Input',
         'type' => 'current_liabilities',
     ]);
@@ -34,7 +29,7 @@ beforeEach(function () {
 
 it('validates cost availability for product with average cost', function () {
     // Arrange: Create a product with average cost
-    $product = \Modules\Product\Models\Product::factory()->create([
+    $product = Product::factory()->create([
         'company_id' => $this->company->id,
         'type' => \Modules\Product\Enums\Products\ProductType::Storable,
         'inventory_valuation_method' => ValuationMethod::AVCO,
@@ -59,7 +54,7 @@ it('validates cost availability for product with average cost', function () {
 
 it('validates cost unavailability for product without cost information', function () {
     // Arrange: Create a product without cost information
-    $product = \Modules\Product\Models\Product::factory()->create([
+    $product = Product::factory()->create([
         'company_id' => $this->company->id,
         'type' => \Modules\Product\Enums\Products\ProductType::Storable,
         'inventory_valuation_method' => ValuationMethod::AVCO,
@@ -84,7 +79,7 @@ it('validates cost unavailability for product without cost information', functio
 
 it('provides cost preview for valid product', function () {
     // Arrange: Create a product with average cost
-    $product = \Modules\Product\Models\Product::factory()->create([
+    $product = Product::factory()->create([
         'company_id' => $this->company->id,
         'type' => \Modules\Product\Enums\Products\ProductType::Storable,
         'inventory_valuation_method' => ValuationMethod::AVCO,
@@ -113,7 +108,7 @@ it('provides cost preview for valid product', function () {
 
 it('detects cost information availability correctly', function () {
     // Arrange: Create products with and without cost information
-    $productWithCost = \Modules\Product\Models\Product::factory()->create([
+    $productWithCost = Product::factory()->create([
         'company_id' => $this->company->id,
         'type' => \Modules\Product\Enums\Products\ProductType::Storable,
         'average_cost' => Money::of(50000, 'IQD'),
@@ -122,7 +117,7 @@ it('detects cost information availability correctly', function () {
         'default_stock_input_account_id' => $this->stockInputAccount->id,
     ]);
 
-    $productWithoutCost = \Modules\Product\Models\Product::factory()->create([
+    $productWithoutCost = Product::factory()->create([
         'company_id' => $this->company->id,
         'type' => \Modules\Product\Enums\Products\ProductType::Storable,
         'average_cost' => Money::of(0, 'IQD'), // Zero cost
@@ -139,7 +134,7 @@ it('detects cost information availability correctly', function () {
 
 it('provides appropriate suggested actions', function () {
     // Arrange: Create a product without cost information
-    $product = \Modules\Product\Models\Product::factory()->create([
+    $product = Product::factory()->create([
         'company_id' => $this->company->id,
         'type' => \Modules\Product\Enums\Products\ProductType::Storable,
         'inventory_valuation_method' => ValuationMethod::AVCO,

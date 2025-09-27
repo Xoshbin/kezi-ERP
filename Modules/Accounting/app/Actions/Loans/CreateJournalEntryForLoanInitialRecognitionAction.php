@@ -2,34 +2,31 @@
 
 namespace Modules\Accounting\Actions\Loans;
 
-use App\Actions\Accounting\CreateJournalEntryAction;
-use App\DataTransferObjects\Accounting\CreateJournalEntryDTO;
-use App\DataTransferObjects\Accounting\CreateJournalEntryLineDTO;
-use App\Enums\Loans\LoanType;
-use App\Models\JournalEntry;
 use App\Models\User;
 use Brick\Money\Money;
 use Illuminate\Support\Facades\DB;
+use Modules\Accounting\Models\LoanAgreement;
+use RuntimeException;
 
 class CreateJournalEntryForLoanInitialRecognitionAction
 {
     public function __construct(private readonly \Modules\Accounting\Actions\Accounting\CreateJournalEntryAction $createJE) {}
 
-    public function execute(\Modules\Accounting\Models\LoanAgreement $loan, User $user, int $journalId, int $bankAccountId, int $loanAccountId): JournalEntry
+    public function execute(LoanAgreement $loan, User $user, int $journalId, int $bankAccountId, int $loanAccountId): JournalEntry
     {
         return DB::transaction(function () use ($loan, $user, $journalId, $bankAccountId, $loanAccountId) {
             $loan->loadMissing('company', 'currency');
             $company = $loan->company;
             if (! $company) {
-                throw new \RuntimeException('Loan company missing');
+                throw new RuntimeException('Loan company missing');
             }
             $currencyModel = $loan->currency;
             if (! $currencyModel) {
-                throw new \RuntimeException('Loan currency missing');
+                throw new RuntimeException('Loan currency missing');
             }
             $currencyCode = (string) data_get($currencyModel, 'code');
 
-            /** @var \Brick\Money\Money $amount */
+            /** @var Money $amount */
             $amount = $loan->principal_amount; // Money in loan currency
 
             // For initial recognition we post in transaction currency; CreateJournalEntryAction converts to base
@@ -84,7 +81,7 @@ class CreateJournalEntryForLoanInitialRecognitionAction
                 created_by_user_id: (int) $user->getAttribute('id'),
                 is_posted: true,
                 lines: $lineDTOs,
-                source_type: \Modules\Accounting\Models\LoanAgreement::class,
+                source_type: LoanAgreement::class,
                 source_id: (int) $loan->getAttribute('id'),
             );
 

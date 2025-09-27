@@ -4,11 +4,13 @@ namespace Modules\Sales\Models;
 
 use App\Casts\BaseCurrencyMoneyCast;
 use App\Casts\DocumentCurrencyMoneyCast;
+use App\Enums\PaymentInstallments\InstallmentStatus;
 use App\Enums\Sales\InvoiceStatus;
 use App\Observers\AuditLogObserver;
 use App\Traits\HasPaymentState;
 use Brick\Money\Money;
 use Database\Factories\InvoiceFactory;
+use Eloquent;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
@@ -33,8 +35,8 @@ use Illuminate\Support\Carbon;
  * @property Carbon $invoice_date
  * @property Carbon $due_date
  * @property InvoiceStatus $status
- * @property \Brick\Money\Money $total_amount
- * @property \Brick\Money\Money $total_tax
+ * @property Money $total_amount
+ * @property Money $total_tax
  * @property Carbon|null $posted_at
  * @property array<array-key, mixed>|null $reset_to_draft_log
  * @property Carbon|null $created_at
@@ -72,7 +74,7 @@ use Illuminate\Support\Carbon;
  * @method static Builder<static>|Invoice whereTotalTax($value)
  * @method static Builder<static>|Invoice whereUpdatedAt($value)
  *
- * @mixin \Eloquent
+ * @mixin Eloquent
  */
 #[ObservedBy([\Modules\Foundation\Observers\AuditLogObserver::class])]
 class Invoice extends Model
@@ -342,7 +344,7 @@ class Invoice extends Model
                 'sequence' => 1,
                 'due_date' => $this->due_date,
                 'amount' => $this->total_amount,
-                'status' => \App\Enums\PaymentInstallments\InstallmentStatus::Pending,
+                'status' => InstallmentStatus::Pending,
             ]);
 
             return;
@@ -358,7 +360,7 @@ class Invoice extends Model
                 'sequence' => $index + 1,
                 'due_date' => $installment['due_date'],
                 'amount' => $installment['amount'],
-                'status' => \App\Enums\PaymentInstallments\InstallmentStatus::Pending,
+                'status' => InstallmentStatus::Pending,
             ]);
         }
     }

@@ -2,13 +2,12 @@
 
 namespace Modules\Accounting\Tests\Feature\Filament\Pages\Reports;
 
-use App\Enums\Purchases\VendorBillStatus;
-use App\Filament\Clusters\Accounting\Pages\Reports\ViewAgedPayables;
-use App\Support\NumberFormatter;
 use Brick\Money\Money;
 use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Livewire\Livewire;
+use Modules\Foundation\Models\Partner;
+use Modules\Purchase\Models\VendorBill;
 use Tests\Traits\WithConfiguredCompany;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);
@@ -27,11 +26,11 @@ test('it can render the aged payables page', function () {
 test('it can generate aged payables report', function () {
     // Arrange
     $currency = $this->company->currency->code;
-    $partner = \Modules\Foundation\Models\Partner::factory()->for($this->company)->create(['name' => 'Test Vendor']);
+    $partner = Partner::factory()->for($this->company)->create(['name' => 'Test Vendor']);
     $asOfDate = Carbon::parse('2025-08-12');
 
     // Create a past due vendor bill
-    \Modules\Purchase\Models\VendorBill::factory()->for($this->company)->create([
+    VendorBill::factory()->for($this->company)->create([
         'vendor_id' => $partner->id,
         'currency_id' => $this->company->currency_id,
         'due_date' => '2025-07-20', // 23 days past due
@@ -88,11 +87,11 @@ test('it validates date format', function () {
 test('it displays correct aging buckets', function () {
     // Arrange
     $currency = $this->company->currency->code;
-    $partner = \Modules\Foundation\Models\Partner::factory()->for($this->company)->create(['name' => 'Test Vendor']);
+    $partner = Partner::factory()->for($this->company)->create(['name' => 'Test Vendor']);
     $asOfDate = Carbon::parse('2025-08-12');
 
     // Create vendor bills in different aging buckets
-    \Modules\Purchase\Models\VendorBill::factory()->for($this->company)->create([
+    VendorBill::factory()->for($this->company)->create([
         'vendor_id' => $partner->id,
         'currency_id' => $this->company->currency_id,
         'due_date' => '2025-09-01', // Current (not due)
@@ -101,7 +100,7 @@ test('it displays correct aging buckets', function () {
         'status' => VendorBillStatus::Posted,
     ]);
 
-    \Modules\Purchase\Models\VendorBill::factory()->for($this->company)->create([
+    VendorBill::factory()->for($this->company)->create([
         'vendor_id' => $partner->id,
         'currency_id' => $this->company->currency_id,
         'due_date' => '2025-07-20', // 1-30 days past due
@@ -110,7 +109,7 @@ test('it displays correct aging buckets', function () {
         'status' => VendorBillStatus::Posted,
     ]);
 
-    \Modules\Purchase\Models\VendorBill::factory()->for($this->company)->create([
+    VendorBill::factory()->for($this->company)->create([
         'vendor_id' => $partner->id,
         'currency_id' => $this->company->currency_id,
         'due_date' => '2025-06-20', // 31-60 days past due

@@ -2,32 +2,17 @@
 
 namespace Modules\Inventory\Services\Inventory;
 
-use App\Actions\Accounting\CreateJournalEntryAction;
-use App\DataTransferObjects\Accounting\CreateJournalEntryDTO;
-use App\DataTransferObjects\Accounting\CreateJournalEntryLineDTO;
-use App\DataTransferObjects\Inventory\AdjustInventoryDTO;
-use App\DataTransferObjects\Inventory\CostDeterminationResult;
-use App\Enums\Accounting\JournalEntryState;
-use App\Enums\Inventory\CostSource;
-use App\Enums\Inventory\StockMoveType;
-use App\Enums\Inventory\ValuationMethod;
-use App\Exceptions\Inventory\InsufficientCostInformationException;
-use App\Exceptions\Inventory\InvalidCostDataException;
 use App\Models\Company;
-use App\Models\InventoryCostLayer;
-use App\Models\JournalEntry;
-use App\Models\JournalEntryLine;
-use App\Models\StockMove;
-use App\Models\StockMoveValuation;
-use App\Services\Accounting\LockDateService;
-use App\Services\CurrencyConverterService;
-use App\Services\Inventory\StockQuantService;
 use Brick\Math\RoundingMode;
 use Brick\Money\Money;
 use Carbon\Carbon;
 use Exception;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
+use Modules\Product\Models\Product;
+use Modules\Purchase\Models\VendorBill;
+use RuntimeException;
 
 /**
  * Inventory Valuation Service
@@ -79,14 +64,14 @@ class InventoryValuationService
      * The method enforces lock date restrictions and validates that Standard costing
      * is not used (not supported in current implementation).
      *
-     * @param \Modules\Product\Models\Product $product The product receiving stock (must be storable type)
+     * @param Product $product The product receiving stock (must be storable type)
      * @param float $quantity Quantity being received (must be positive)
      * @param Money $costPerUnit Cost per unit in company base currency
      * @param Carbon $date Transaction date for valuation (must be after lock date)
-     * @param \Illuminate\Database\Eloquent\Model $sourceDocument Source document (VendorBill, etc.)
+     * @param Model $sourceDocument Source document (VendorBill, etc.)
      *
      * @throws Exception When Standard costing is used (not supported)
-     * @throws \App\Exceptions\LockDateException When transaction date is before lock date
+     * @throws LockDateException When transaction date is before lock date
      *
      * @example
      * $service->processIncomingStock(
@@ -99,7 +84,7 @@ class InventoryValuationService
      *
      * @return void
      */
-    public function processIncomingStock(\Modules\Product\Models\Product $product, float $quantity, Money $costPerUnit, Carbon $date, \Illuminate\Database\Eloquent\Model $sourceDocument): void
+    public function processIncomingStock(Product $product, float $quantity, Money $costPerUnit, Carbon $date, Model $sourceDocument): void
     {
         $this->lockDateService->enforce(Company::findOrFail($product->company_id), Carbon::parse($date));
 
@@ -119,7 +104,7 @@ class InventoryValuationService
 
         // Create journal entry for incoming stock
         // For vendor bill stock moves, use consolidated approach
-        if ($sourceDocument instanceof \Modules\Purchase\Models\VendorBill) {
+        if ($sourceDocument instanceof VendorBill) {
             $journalEntry = $this->getOrCreateConsolidatedVendorBillJournalEntry($sourceDocument, $product, $totalCost, $date);
         } else {
             $journalEntry = $this->createIncomingStockJournalEntry($product, $totalCost, $date, $sourceDocument);
@@ -130,7 +115,7 @@ class InventoryValuationService
         if ($sourceDocument instanceof StockMove) {
             try {
                 $costResult = $this->calculateIncomingCostPerUnitEnhanced($product, $sourceDocument, false);
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
                 // If cost determination fails, continue without tracking (backward compatibility)
                 Log::warning("Could not determine cost source for stock move {$sourceDocument->id}: " . $e->getMessage());
             }
@@ -155,13 +140,13 @@ class InventoryValuationService
      * The method automatically determines the appropriate cost based on the product's
      * valuation method and creates the necessary accounting entries.
      *
-     * @param \Modules\Product\Models\Product $product The product being consumed (must be storable type)
+     * @param Product $product The product being consumed (must be storable type)
      * @param float $quantity Quantity being consumed (must be positive)
      * @param Carbon $date Transaction date for COGS calculation (must be after lock date)
-     * @param \Illuminate\Database\Eloquent\Model $sourceDocument Source document (CustomerInvoice, StockMove, etc.)
+     * @param Model $sourceDocument Source document (CustomerInvoice, StockMove, etc.)
      *
      * @throws Exception When Standard costing is used (not supported)
-     * @throws \App\Exceptions\LockDateException When transaction date is before lock date
+     * @throws LockDateException When transaction date is before lock date
      *
      * @example
      * $service->processOutgoingStock(
@@ -173,7 +158,7 @@ class InventoryValuationService
      *
      * @return void
      */
-    public function processOutgoingStock(\Modules\Product\Models\Product $product, float $quantity, Carbon $date, \Illuminate\Database\Eloquent\Model $sourceDocument): void
+    public function processOutgoingStock(Product $product, float $quantity, Carbon $date, Model $sourceDocument): void
     {
         $this->lockDateService->enforce(Company::findOrFail($product->company_id), Carbon::parse($date));
 
@@ -221,9 +206,10 @@ class InventoryValuationService
      *
      * @param AdjustInventoryDTO $dto Data transfer object containing adjustment details
      *
-     * @throws \Exception When product doesn't have an average cost
-     * @throws \App\Exceptions\LockDateException When adjustment date is before lock date
+     * @return void
+     *@throws LockDateException When adjustment date is before lock date
      *
+     * @throws Exception When product doesn't have an average cost
      * @example
      * $dto = new AdjustInventoryDTO(
      *     product_id: 123,
@@ -233,17 +219,16 @@ class InventoryValuationService
      * );
      * $service->adjustInventoryValue($dto);
      *
-     * @return void
      */
     public function adjustInventoryValue(AdjustInventoryDTO $dto): void
     {
-        $product = \Modules\Product\Models\Product::findOrFail($dto->product_id);
+        $product = Product::findOrFail($dto->product_id);
         $this->lockDateService->enforce(Company::findOrFail($product->company_id), Carbon::parse($dto->adjustment_date));
 
         // This is a simplified example. A real implementation would need to calculate the value of the adjustment.
         // For now, we will assume the value is the quantity * the product's average cost.
         if (! $product->average_cost) {
-            throw new \Exception('Product must have an average cost for inventory adjustment');
+            throw new Exception('Product must have an average cost for inventory adjustment');
         }
         $adjustmentValue = $product->average_cost->multipliedBy($dto->quantity);
 
@@ -279,14 +264,14 @@ class InventoryValuationService
     /**
      * Calculate the Cost of Goods Sold based on the product's valuation method
      */
-    private function calculateCOGS(\Modules\Product\Models\Product $product, float $quantity): Money
+    private function calculateCOGS(Product $product, float $quantity): Money
     {
 
         if ($product->inventory_valuation_method === ValuationMethod::AVCO) {
             // For AVCO, use the product's average cost
             if (! $product->average_cost || ! $product->average_cost->isPositive()) {
                 Log::warning("Product {$product->id} has no positive average cost set, cannot calculate COGS");
-                throw new \RuntimeException("Cannot calculate COGS for product {$product->id}: no positive average cost available");
+                throw new RuntimeException("Cannot calculate COGS for product {$product->id}: no positive average cost available");
             }
 
             return $product->average_cost->multipliedBy($quantity);
@@ -299,7 +284,7 @@ class InventoryValuationService
     /**
      * Calculate COGS by consuming inventory cost layers (FIFO/LIFO)
      */
-    private function calculateCOGSFromCostLayers(\Modules\Product\Models\Product $product, float $quantity): Money
+    private function calculateCOGSFromCostLayers(Product $product, float $quantity): Money
     {
         $company = $product->company;
         $currencyCode = $company->currency->code;
@@ -321,7 +306,7 @@ class InventoryValuationService
 
             $quantityToConsume = min($remainingQuantity, $layer->remaining_quantity);
             if (! $layer->cost_per_unit) {
-                throw new \Exception('Cost layer must have a cost per unit');
+                throw new Exception('Cost layer must have a cost per unit');
             }
             $layerCOGS = $layer->cost_per_unit->multipliedBy($quantityToConsume);
             $totalCOGS = $totalCOGS->plus($layerCOGS);
@@ -343,7 +328,7 @@ class InventoryValuationService
     /**
      * Create a journal entry for Cost of Goods Sold
      */
-    private function createCOGSJournalEntry(\Modules\Product\Models\Product $product, Money $cogsAmount, Carbon $date, \Illuminate\Database\Eloquent\Model $sourceDocument): JournalEntry
+    private function createCOGSJournalEntry(Product $product, Money $cogsAmount, Carbon $date, Model $sourceDocument): JournalEntry
     {
         $company = $product->company;
         $currencyCode = $company->currency->code;
@@ -420,9 +405,9 @@ class InventoryValuationService
     /**
      * Create a StockMoveValuation record to link the stock move with its accounting impact
      *
-     * @param  \Illuminate\Database\Eloquent\Model  $sourceDocument
+     * @param  Model  $sourceDocument
      */
-    private function createStockMoveValuation(\Modules\Product\Models\Product $product, float $quantity, Money $cogsAmount, JournalEntry $journalEntry, $sourceDocument, ?StockMoveType $moveType = null): StockMoveValuation
+    private function createStockMoveValuation(Product $product, float $quantity, Money $cogsAmount, JournalEntry $journalEntry, $sourceDocument, ?StockMoveType $moveType = null): StockMoveValuation
     {
         // If the source document is already a StockMove, use it directly
         if ($sourceDocument instanceof StockMove) {
@@ -466,7 +451,7 @@ class InventoryValuationService
     /**
      * Process incoming stock for AVCO valuation method
      */
-    private function processIncomingStockAVCO(\Modules\Product\Models\Product $product, float $quantity, Money $costPerUnit): void
+    private function processIncomingStockAVCO(Product $product, float $quantity, Money $costPerUnit): void
     {
         $company = $product->company;
         $currencyCode = $company->currency->code;
@@ -498,7 +483,7 @@ class InventoryValuationService
     /**
      * Process incoming stock for FIFO/LIFO valuation methods
      */
-    private function processIncomingStockFIFOLIFO(\Modules\Product\Models\Product $product, float $quantity, Money $costPerUnit, Carbon $date, \Illuminate\Database\Eloquent\Model $sourceDocument): void
+    private function processIncomingStockFIFOLIFO(Product $product, float $quantity, Money $costPerUnit, Carbon $date, Model $sourceDocument): void
     {
         // Create a new cost layer for FIFO/LIFO tracking
         InventoryCostLayer::create([
@@ -522,9 +507,9 @@ class InventoryValuationService
     /**
      * Create a journal entry for incoming stock
      *
-     * @param  \Illuminate\Database\Eloquent\Model  $sourceDocument
+     * @param  Model  $sourceDocument
      */
-    private function createIncomingStockJournalEntry(\Modules\Product\Models\Product $product, Money $totalCost, Carbon $date, $sourceDocument): JournalEntry
+    private function createIncomingStockJournalEntry(Product $product, Money $totalCost, Carbon $date, $sourceDocument): JournalEntry
     {
         $company = $product->company;
         $currencyCode = $company->currency->code;
@@ -550,7 +535,7 @@ class InventoryValuationService
         $reference = "STOCK-IN-{$sourceType}-{$sourceId}-P{$product->id}";
 
         // Check if a journal entry with this reference already exists to prevent duplicates
-        $existingEntry = \App\Models\JournalEntry::where('company_id', $company->id)
+        $existingEntry = JournalEntry::where('company_id', $company->id)
             ->where('journal_id', $journalId)
             ->where('reference', $reference)
             ->first();
@@ -608,15 +593,15 @@ class InventoryValuationService
     private function getOriginalCurrencyAmount($sourceDocument, Money $totalCostInCompanyCurrency): ?Money
     {
         // If the source is a stock move, try to find the related vendor bill
-        if ($sourceDocument instanceof \App\Models\StockMove) {
+        if ($sourceDocument instanceof StockMove) {
             // Try to find the latest vendor bill for cost determination
             $product = $sourceDocument->productLines->first()?->product;
             if (!$product) {
                 return null;
             }
 
-            $latestVendorBillLine = \App\Models\VendorBillLine::whereHas('vendorBill', function ($query) use ($product) {
-                $query->where('status', \App\Enums\Purchases\VendorBillStatus::Posted)
+            $latestVendorBillLine = VendorBillLine::whereHas('vendorBill', function ($query) use ($product) {
+                $query->where('status', VendorBillStatus::Posted)
                     ->where('company_id', $product->company_id);
             })
                 ->where('product_id', $product->id)
@@ -648,15 +633,15 @@ class InventoryValuationService
     private function getExchangeRateFromSource($sourceDocument): ?float
     {
         // If the source is a stock move, try to find the related vendor bill
-        if ($sourceDocument instanceof \App\Models\StockMove) {
+        if ($sourceDocument instanceof StockMove) {
             // Try to find the latest vendor bill for cost determination
             $product = $sourceDocument->productLines->first()?->product;
             if (!$product) {
                 return null;
             }
 
-            $latestVendorBillLine = \App\Models\VendorBillLine::whereHas('vendorBill', function ($query) use ($product) {
-                $query->where('status', \App\Enums\Purchases\VendorBillStatus::Posted)
+            $latestVendorBillLine = VendorBillLine::whereHas('vendorBill', function ($query) use ($product) {
+                $query->where('status', VendorBillStatus::Posted)
                     ->where('company_id', $product->company_id);
             })
                 ->where('product_id', $product->id)
@@ -678,10 +663,10 @@ class InventoryValuationService
     /**
      * Create a StockMoveValuation record for incoming stock
      *
-     * @param  \Illuminate\Database\Eloquent\Model  $sourceDocument
+     * @param  Model  $sourceDocument
      * @param  CostDeterminationResult|null  $costResult
      */
-    private function createIncomingStockMoveValuation(\Modules\Product\Models\Product $product, float $quantity, Money $totalCost, JournalEntry $journalEntry, $sourceDocument, ?CostDeterminationResult $costResult = null): StockMoveValuation
+    private function createIncomingStockMoveValuation(Product $product, float $quantity, Money $totalCost, JournalEntry $journalEntry, $sourceDocument, ?CostDeterminationResult $costResult = null): StockMoveValuation
     {
         // If the source document is already a StockMove, use it directly
         if ($sourceDocument instanceof StockMove) {
@@ -738,16 +723,16 @@ class InventoryValuationService
     /**
      * Get or create a consolidated journal entry for vendor bill stock moves
      *
-     * @param \Modules\Purchase\Models\VendorBill $vendorBill The vendor bill
-     * @param \Modules\Product\Models\Product $product The product being processed
+     * @param VendorBill $vendorBill The vendor bill
+     * @param Product $product The product being processed
      * @param Money $totalCost The total cost for this product
      * @param Carbon $date The transaction date
      * @return JournalEntry
      */
-    private function getOrCreateConsolidatedVendorBillJournalEntry(\Modules\Purchase\Models\VendorBill $vendorBill, \Modules\Product\Models\Product $product, Money $totalCost, Carbon $date): JournalEntry
+    private function getOrCreateConsolidatedVendorBillJournalEntry(VendorBill $vendorBill, Product $product, Money $totalCost, Carbon $date): JournalEntry
     {
         // Check if a consolidated journal entry already exists for this vendor bill
-        $existingJournalEntry = JournalEntry::where('source_type', \Modules\Purchase\Models\VendorBill::class)
+        $existingJournalEntry = JournalEntry::where('source_type', VendorBill::class)
             ->where('source_id', $vendorBill->id)
             ->where('reference', 'LIKE', 'STOCK-IN-%')
             ->first();
@@ -757,7 +742,7 @@ class InventoryValuationService
         }
 
         // Get all stock moves for this vendor bill
-        $stockMoves = \App\Models\StockMove::where('source_type', \Modules\Purchase\Models\VendorBill::class)
+        $stockMoves = StockMove::where('source_type', VendorBill::class)
             ->where('source_id', $vendorBill->id)
             ->get();
 
@@ -878,7 +863,7 @@ class InventoryValuationService
      * Create a consolidated journal entry for multiple incoming stock moves from the same vendor bill
      *
      * @param array $stockMoves Array of StockMove objects
-     * @param \Illuminate\Database\Eloquent\Model $sourceDocument The source document (e.g., VendorBill)
+     * @param Model $sourceDocument The source document (e.g., VendorBill)
      * @return JournalEntry
      */
     public function createConsolidatedIncomingStockJournalEntry(array $stockMoves, $sourceDocument): JournalEntry
@@ -904,7 +889,7 @@ class InventoryValuationService
         $reference = "STOCK-IN-{$sourceType}-{$sourceId}";
 
         // Check if a journal entry with this reference already exists to prevent duplicates
-        $existingEntry = \App\Models\JournalEntry::where('company_id', $company->id)
+        $existingEntry = JournalEntry::where('company_id', $company->id)
             ->where('journal_id', $journalId)
             ->where('reference', $reference)
             ->first();
@@ -1013,14 +998,14 @@ class InventoryValuationService
      * Calculate the incoming cost per unit for a stock move in company base currency
      * Includes non-recoverable taxes as part of the inventory cost
      *
-     * @param \Modules\Product\Models\Product $product The product for cost determination
+     * @param Product $product The product for cost determination
      * @param StockMove $stockMove The stock move requiring cost
      * @param bool $allowFallbacks Whether to allow fallback cost sources (default: false for strict accounting)
      * @return CostDeterminationResult Result containing cost, source, and any warnings
      * @throws InsufficientCostInformationException When no cost can be determined
      */
     public function calculateIncomingCostPerUnitEnhanced(
-        \Modules\Product\Models\Product $product,
+        Product $product,
         StockMove $stockMove,
         bool $allowFallbacks = false
     ): CostDeterminationResult {
@@ -1031,7 +1016,7 @@ class InventoryValuationService
         // 1. Try vendor bill cost (highest priority)
         if ($stockMove->source_type === 'App\Models\VendorBill') {
             $attemptedSources[] = 'vendor_bill';
-            $vendorBill = \Modules\Purchase\Models\VendorBill::find($stockMove->source_id);
+            $vendorBill = VendorBill::find($stockMove->source_id);
             if ($vendorBill) {
                 $vendorBillLine = $vendorBill->lines()
                     ->with('tax')
@@ -1088,8 +1073,8 @@ class InventoryValuationService
 
         // 2. Try posted vendor bills for this product (for manual inventory recording mode)
         $attemptedSources[] = 'posted_vendor_bills';
-        $latestVendorBillLine = \App\Models\VendorBillLine::whereHas('vendorBill', function ($query) use ($product) {
-            $query->where('status', \App\Enums\Purchases\VendorBillStatus::Posted)
+        $latestVendorBillLine = VendorBillLine::whereHas('vendorBill', function ($query) use ($product) {
+            $query->where('status', VendorBillStatus::Posted)
                 ->where('company_id', $product->company_id);
         })
             ->where('product_id', $product->id)
@@ -1201,12 +1186,12 @@ class InventoryValuationService
     /**
      * Backward-compatible wrapper for calculateIncomingCostPerUnitEnhanced
      *
-     * @param \Modules\Product\Models\Product $product
+     * @param Product $product
      * @param StockMove $stockMove
      * @return Money
      * @throws InsufficientCostInformationException
      */
-    public function calculateIncomingCostPerUnit(\Modules\Product\Models\Product $product, StockMove $stockMove): Money
+    public function calculateIncomingCostPerUnit(Product $product, StockMove $stockMove): Money
     {
         $result = $this->calculateIncomingCostPerUnitEnhanced($product, $stockMove, false);
 
@@ -1221,7 +1206,7 @@ class InventoryValuationService
     /**
      * Process incoming stock without creating journal entry (for consolidated processing)
      */
-    private function processIncomingStockWithoutJournalEntry(\Modules\Product\Models\Product $product, float $quantity, Money $costPerUnit, Carbon $date, $sourceDocument): void
+    private function processIncomingStockWithoutJournalEntry(Product $product, float $quantity, Money $costPerUnit, Carbon $date, $sourceDocument): void
     {
         $this->lockDateService->enforce($product->company, $date);
 

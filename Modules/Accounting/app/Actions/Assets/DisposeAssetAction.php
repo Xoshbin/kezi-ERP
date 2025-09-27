@@ -2,14 +2,11 @@
 
 namespace Modules\Accounting\Actions\Assets;
 
-use App\Actions\Accounting\CreateJournalEntryAction;
-use App\DataTransferObjects\Accounting\CreateJournalEntryDTO;
-use App\DataTransferObjects\Accounting\CreateJournalEntryLineDTO;
-use App\DataTransferObjects\Assets\DisposeAssetDTO;
-use App\Enums\Assets\AssetStatus;
 use App\Models\User;
 use Brick\Money\Money;
 use Illuminate\Support\Facades\DB;
+use InvalidArgumentException;
+use Modules\Accounting\Models\Asset;
 use RuntimeException;
 
 class DisposeAssetAction
@@ -18,7 +15,7 @@ class DisposeAssetAction
         private readonly \Modules\Accounting\Actions\Accounting\CreateJournalEntryAction $createJournalEntryAction
     ) {}
 
-    public function execute(\Modules\Accounting\Models\Asset $asset, DisposeAssetDTO $dto, User $user): \Modules\Accounting\Models\Asset
+    public function execute(Asset $asset, DisposeAssetDTO $dto, User $user): Asset
     {
         return DB::transaction(function () use ($asset, $dto, $user) {
             $asset->load('company.currency', 'company.defaultBankJournal');
@@ -53,7 +50,7 @@ class DisposeAssetAction
 
             // Debit Cash/Bank for the proceeds from the sale
             if (! $company->default_bank_account_id) {
-                throw new \InvalidArgumentException('Company default bank account is not configured');
+                throw new InvalidArgumentException('Company default bank account is not configured');
             }
             $lines[] = new CreateJournalEntryLineDTO(
                 account_id: $company->default_bank_account_id,
@@ -110,7 +107,7 @@ class DisposeAssetAction
                 created_by_user_id: $user->id,
                 is_posted: true,
                 lines: $lines,
-                source_type: \Modules\Accounting\Models\Asset::class,
+                source_type: Asset::class,
                 source_id: $asset->id
             );
 

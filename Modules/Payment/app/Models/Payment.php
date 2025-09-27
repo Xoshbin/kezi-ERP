@@ -9,7 +9,9 @@ use App\Enums\Payments\PaymentStatus;
 use App\Enums\Payments\PaymentType;
 use App\Observers\AuditLogObserver;
 use App\Observers\PaymentObserver;
+use Brick\Money\Money;
 use Database\Factories\PaymentFactory;
+use Eloquent;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
@@ -33,7 +35,7 @@ use Illuminate\Support\Carbon;
  * @property int|null $paid_to_from_partner_id
  * @property int|null $journal_entry_id
  * @property Carbon $payment_date
- * @property \Brick\Money\Money $amount
+ * @property Money $amount
  * @property PaymentType $payment_type
  * @property string|null $reference
  * @property PaymentStatus $status
@@ -69,12 +71,12 @@ use Illuminate\Support\Carbon;
  * @method static Builder<static>|Payment whereStatus($value)
  * @method static Builder<static>|Payment whereUpdatedAt($value)
  *
- * @mixin \Eloquent
+ * @mixin Eloquent
  */
 #[ObservedBy([\Modules\Foundation\Observers\AuditLogObserver::class, PaymentObserver::class])]
 class Payment extends Model
 {
-    /** @use HasFactory<\Database\Factories\PaymentFactory> */
+    /** @use HasFactory<PaymentFactory> */
     use HasFactory;
 
     /**

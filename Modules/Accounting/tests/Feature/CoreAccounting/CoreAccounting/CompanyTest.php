@@ -1,18 +1,17 @@
 <?php
 
-use App\Exceptions\DeletionNotAllowedException;
 use App\Models\Company;
-use App\Services\CompanyService;
-use App\Services\CurrencyService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Validation\ValidationException;
+use Modules\Accounting\Models\Account;
+use Modules\Foundation\Models\Currency;
 use Tests\Traits\WithConfiguredCompany;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);
 
 test('a company with existing financial records cannot be deleted', function () {
     // Arrange: Create a dependent financial record.
-    \Modules\Accounting\Models\Account::factory()->for($this->company)->create();
+    Account::factory()->for($this->company)->create();
 
     // Assert: Expect the exact message thrown by the CompanyObserver.
     expect(fn () => $this->company->delete())
@@ -50,7 +49,7 @@ test('duplicate tax ID for a company in the same fiscal country is prevented', f
 
 test('creating a currency with an existing code is prevented', function () {
     // Arrange: Create the initial currency.
-    \Modules\Foundation\Models\Currency::factory()->create(['code' => 'XYZ']); // Use a unique code to avoid conflicts.
+    Currency::factory()->create(['code' => 'XYZ']); // Use a unique code to avoid conflicts.
 
     // Arrange: Prepare the data for the duplicate currency.
     $duplicateData = [

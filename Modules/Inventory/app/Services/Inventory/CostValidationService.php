@@ -2,12 +2,7 @@
 
 namespace Modules\Inventory\Services\Inventory;
 
-use App\DataTransferObjects\Inventory\CostDeterminationResult;
-use App\DataTransferObjects\Inventory\CostPreviewResult;
-use App\DataTransferObjects\Inventory\CostValidationResult;
-use App\Enums\Inventory\StockMoveType;
-use App\Exceptions\Inventory\InsufficientCostInformationException;
-use App\Models\StockMove;
+use Modules\Product\Models\Product;
 
 /**
  * Service for validating cost availability and providing cost previews
@@ -24,14 +19,14 @@ class CostValidationService
     /**
      * Validate if cost can be determined for a product and stock move
      *
-     * @param \Modules\Product\Models\Product $product
+     * @param Product $product
      * @param StockMoveType $moveType
      * @param StockMove|null $stockMove
      * @param bool $allowFallbacks
      * @return CostValidationResult
      */
     public function validateCostAvailability(
-        \Modules\Product\Models\Product $product,
+        Product $product,
         StockMoveType $moveType,
         ?StockMove $stockMove = null,
         bool $allowFallbacks = false
@@ -74,7 +69,7 @@ class CostValidationService
     /**
      * Get cost preview for a product and quantity
      *
-     * @param \Modules\Product\Models\Product $product
+     * @param Product $product
      * @param float $quantity
      * @param StockMoveType $moveType
      * @param StockMove|null $stockMove
@@ -82,7 +77,7 @@ class CostValidationService
      * @return CostPreviewResult
      */
     public function getCostPreview(
-        \Modules\Product\Models\Product $product,
+        Product $product,
         float $quantity,
         StockMoveType $moveType,
         ?StockMove $stockMove = null,
@@ -117,10 +112,10 @@ class CostValidationService
     /**
      * Check if a product has any cost information available
      *
-     * @param \Modules\Product\Models\Product $product
+     * @param Product $product
      * @return bool
      */
-    public function hasAnyCostInformation(\Modules\Product\Models\Product $product): bool
+    public function hasAnyCostInformation(Product $product): bool
     {
         // Check average cost
         if ($product->average_cost && $product->average_cost->isPositive()) {
@@ -143,10 +138,10 @@ class CostValidationService
     /**
      * Get suggested actions for improving cost availability
      *
-     * @param \Modules\Product\Models\Product $product
+     * @param Product $product
      * @return array
      */
-    public function getSuggestedActions(\Modules\Product\Models\Product $product): array
+    public function getSuggestedActions(Product $product): array
     {
         // Use the new analysis service for context-aware suggestions
         $analysisService = app(\App\Services\Inventory\ProductCostAnalysisService::class);

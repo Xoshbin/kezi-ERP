@@ -2,9 +2,7 @@
 
 namespace Modules\Accounting\Filament\Clusters\Accounting\Pages\Reports;
 
-use App\Filament\Clusters\Accounting\AccountingCluster;
-use App\Services\Reports\GeneralLedgerService;
-use App\Support\NumberFormatter;
+use BackedEnum;
 use Carbon\Carbon;
 use Filament\Actions\Action;
 use Filament\Facades\Filament;
@@ -14,10 +12,13 @@ use Filament\Pages\Page;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Illuminate\Contracts\Support\Htmlable;
+use Modules\Accounting\Models\Account;
+use Xoshbin\TranslatableSelect\Services\LocaleResolver;
+use Xoshbin\TranslatableSelect\Services\TranslatableSearchService;
 
 class ViewGeneralLedger extends Page
 {
-    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-document-text';
+    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-document-text';
 
     protected string $view = 'filament.pages.reports.view-general-ledger';
 
@@ -85,11 +86,11 @@ class ViewGeneralLedger extends Page
                             ->getSearchResultsUsing(function (string $search): array {
                                 $tenant = Filament::getTenant();
 
-                                $searchService = app(\Xoshbin\TranslatableSelect\Services\TranslatableSearchService::class);
-                                $localeResolver = app(\Xoshbin\TranslatableSelect\Services\LocaleResolver::class);
-                                $searchLocales = $localeResolver->getModelLocales(\Modules\Accounting\Models\Account::class);
+                                $searchService = app(TranslatableSearchService::class);
+                                $localeResolver = app(LocaleResolver::class);
+                                $searchLocales = $localeResolver->getModelLocales(Account::class);
 
-                                $results = $searchService->getFilamentSearchResults(\Modules\Accounting\Models\Account::class, $search, [
+                                $results = $searchService->getFilamentSearchResults(Account::class, $search, [
                                     'searchFields' => ['name', 'code'],
                                     'labelField' => 'name',
                                     'searchLocales' => $searchLocales,
@@ -100,7 +101,7 @@ class ViewGeneralLedger extends Page
                                 // Format results to include code
                                 $formattedResults = [];
                                 foreach ($results as $id => $name) {
-                                    $account = \Modules\Accounting\Models\Account::find($id);
+                                    $account = Account::find($id);
                                     if ($account) {
                                         $formattedResults[$id] = $account->code.' - '.$name;
                                     }
@@ -109,9 +110,9 @@ class ViewGeneralLedger extends Page
                                 return $formattedResults;
                             })
                             ->getOptionLabelsUsing(function (array $values): array {
-                                return \Modules\Accounting\Models\Account::whereIn('id', $values)
+                                return Account::whereIn('id', $values)
                                     ->get()
-                                    ->mapWithKeys(function (\Modules\Accounting\Models\Account $account) {
+                                    ->mapWithKeys(function (Account $account) {
                                         $accountName = is_array($account->name) ? ($account->name['en'] ?? (empty($account->name) ? '' : (string) array_values($account->name)[0])) : (string) $account->name;
 
                                         return [$account->id => "{$account->code} - {$accountName}"];
@@ -143,7 +144,7 @@ class ViewGeneralLedger extends Page
         ]);
 
         $company = Filament::getTenant();
-        if (! $company instanceof \App\Models\Company) {
+        if (! $company instanceof Company) {
             return;
         }
         $service = app(\Modules\Accounting\Services\Reports\GeneralLedgerService::class);

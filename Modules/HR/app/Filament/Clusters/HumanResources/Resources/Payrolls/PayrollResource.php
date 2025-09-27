@@ -2,26 +2,20 @@
 
 namespace Modules\HR\Filament\Clusters\HumanResources\Resources\Payrolls;
 
-use App\Filament\Clusters\HumanResources\HumanResourcesCluster;
-use App\Filament\Clusters\HumanResources\Resources\Payrolls\Pages\CreatePayroll;
-use App\Filament\Clusters\HumanResources\Resources\Payrolls\Pages\EditPayroll;
-use App\Filament\Clusters\HumanResources\Resources\Payrolls\Pages\ListPayrolls;
-use App\Filament\Clusters\HumanResources\Resources\Payrolls\Pages\ViewPayroll;
-use App\Filament\Clusters\HumanResources\Resources\Payrolls\Schemas\PayrollForm;
-use App\Filament\Clusters\HumanResources\Resources\Payrolls\Schemas\PayrollInfolist;
-use App\Filament\Clusters\HumanResources\Resources\Payrolls\Tables\PayrollsTable;
+use BackedEnum;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Tables\Table;
 use LaraZeus\SpatieTranslatable\Resources\Concerns\Translatable;
+use Modules\HR\Models\Payroll;
 
 class PayrollResource extends Resource
 {
     use Translatable;
 
-    protected static ?string $model = \Modules\HR\Models\Payroll::class;
+    protected static ?string $model = Payroll::class;
 
-    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-currency-dollar';
+    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-currency-dollar';
 
     protected static ?string $cluster = HumanResourcesCluster::class;
 

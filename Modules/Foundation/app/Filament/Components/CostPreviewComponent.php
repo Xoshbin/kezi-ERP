@@ -2,9 +2,9 @@
 
 namespace Modules\Foundation\Filament\Components;
 
-use App\Enums\Inventory\StockMoveType;
-use App\Services\Inventory\CostValidationService;
+use Exception;
 use Filament\Schemas\Components\View;
+use Modules\Product\Models\Product;
 
 /**
  * Custom Filament component for displaying cost previews in stock move forms
@@ -34,7 +34,7 @@ class CostPreviewComponent
                 }
 
                 try {
-                    $product = \Modules\Product\Models\Product::find($productId);
+                    $product = Product::find($productId);
                     if (!$product) {
                         return [
                             'status' => 'error',
@@ -43,7 +43,7 @@ class CostPreviewComponent
                     }
 
                     $costValidationService = app(CostValidationService::class);
-                    $movementValidationService = app(\App\Services\Inventory\InventoryMovementValidationService::class);
+                    $movementValidationService = app(InventoryMovementValidationService::class);
                     $moveTypeEnum = StockMoveType::from($moveType);
 
                     // First validate the movement itself
@@ -100,7 +100,7 @@ class CostPreviewComponent
                             'suggestedActions' => $costPreview->getSuggestedActions(),
                         ];
                     }
-                } catch (\Exception $e) {
+                } catch (Exception $e) {
                     return [
                         'status' => 'error',
                         'message' => __('Error calculating cost preview') . ': ' . $e->getMessage(),
@@ -138,7 +138,7 @@ class CostPreviewComponent
                             continue;
                         }
 
-                        $product = \Modules\Product\Models\Product::find($line['product_id']);
+                        $product = Product::find($line['product_id']);
                         if (!$product) {
                             continue;
                         }
@@ -170,7 +170,7 @@ class CostPreviewComponent
                         'hasErrors' => $hasErrors,
                         'warnings' => array_unique($warnings),
                     ];
-                } catch (\Exception $e) {
+                } catch (Exception $e) {
                     return [
                         'status' => 'error',
                         'message' => __('Error calculating cost summary') . ': ' . $e->getMessage(),

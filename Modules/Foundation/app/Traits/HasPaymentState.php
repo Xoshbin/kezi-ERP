@@ -4,9 +4,11 @@ namespace Modules\Foundation\Traits;
 
 use App\Enums\Payments\PaymentStatus;
 use App\Enums\Shared\PaymentState;
+use App\Models\PaymentDocumentLink;
 use App\Services\CurrencyConverterService;
 use Brick\Money\Money;
 use Exception;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Log;
 
 /**
@@ -59,7 +61,7 @@ trait HasPaymentState
         $currencyConverter = app(\Modules\Foundation\Services\CurrencyConverterService::class);
 
         // Get all confirmed/reconciled payment document links for this document
-        /** @var \Illuminate\Database\Eloquent\Collection<int, \App\Models\PaymentDocumentLink> $paymentLinks */
+        /** @var Collection<int, PaymentDocumentLink> $paymentLinks */
         $paymentLinks = $this->paymentDocumentLinks()
             ->whereHas('payment', function ($query) {
                 $query->whereIn('status', [PaymentStatus::Confirmed, PaymentStatus::Reconciled]);

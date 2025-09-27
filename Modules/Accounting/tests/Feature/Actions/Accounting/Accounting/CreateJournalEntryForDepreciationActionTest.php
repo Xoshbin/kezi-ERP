@@ -1,27 +1,29 @@
 <?php
 
-use App\Actions\Accounting\CreateJournalEntryForDepreciationAction;
 use Brick\Money\Money;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Modules\Accounting\Models\Account;
+use Modules\Accounting\Models\Asset;
+use Modules\Accounting\Models\DepreciationEntry;
 use Tests\Traits\WithConfiguredCompany;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);
 
 test('it creates a correct journal entry for a depreciation entry', function () {
 
-    $asset = \Modules\Accounting\Models\Asset::factory()->for($this->company)->create([
-        'depreciation_expense_account_id' => \Modules\Accounting\Models\Account::factory()->for($this->company)->create()->id,
-        'accumulated_depreciation_account_id' => \Modules\Accounting\Models\Account::factory()->for($this->company)->create()->id,
+    $asset = Asset::factory()->for($this->company)->create([
+        'depreciation_expense_account_id' => Account::factory()->for($this->company)->create()->id,
+        'accumulated_depreciation_account_id' => Account::factory()->for($this->company)->create()->id,
     ]);
 
     // FIX: Be explicit about the state of the model before the action runs.
-    $depreciationEntry = \Modules\Accounting\Models\DepreciationEntry::factory()
+    $depreciationEntry = DepreciationEntry::factory()
         ->for($asset)
         ->create([
             'amount' => Money::of(120, $this->company->currency->code),
             'depreciation_date' => now(),
             'journal_entry_id' => null, // It should not have a journal entry yet.
-            'status' => \App\Enums\Assets\DepreciationEntryStatus::Posted,
+            'status' => DepreciationEntryStatus::Posted,
         ]);
 
     // 2. Act

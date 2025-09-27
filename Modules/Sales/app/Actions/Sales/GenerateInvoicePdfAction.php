@@ -5,10 +5,11 @@ namespace Modules\Sales\Actions\Sales;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\View;
+use Modules\Sales\Models\Invoice;
 
 class GenerateInvoicePdfAction
 {
-    public function execute(\Modules\Sales\Models\Invoice $invoice, string $template = 'classic'): Response
+    public function execute(Invoice $invoice, string $template = 'classic'): Response
     {
         // Note: We now allow printing draft invoices for quotes/offers/previews
 
@@ -52,7 +53,7 @@ class GenerateInvoicePdfAction
         return $pdf->stream($fileName);
     }
 
-    public function download(\Modules\Sales\Models\Invoice $invoice, string $template = 'classic'): Response
+    public function download(Invoice $invoice, string $template = 'classic'): Response
     {
         // Note: We now allow downloading draft invoices for quotes/offers/previews
 

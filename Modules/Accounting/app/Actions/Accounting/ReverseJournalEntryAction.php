@@ -2,13 +2,10 @@
 
 namespace Modules\Accounting\Actions\Accounting;
 
-use App\DataTransferObjects\Accounting\CreateJournalEntryDTO;
-use App\DataTransferObjects\Accounting\CreateJournalEntryLineDTO;
-use App\Enums\Accounting\JournalEntryState;
-use App\Models\JournalEntry;
 use App\Models\User;
 use Brick\Money\Money;
 use Illuminate\Support\Facades\DB;
+use Modules\Accounting\Models\BankStatementLine;
 
 class ReverseJournalEntryAction
 {
@@ -65,8 +62,8 @@ class ReverseJournalEntryAction
             $journalEntry->save();
 
             // Update source record if it's a BankStatementLine
-            if ($journalEntry->source_type === \Modules\Accounting\Models\BankStatementLine::class && $journalEntry->source_id) {
-                $bankStatementLine = \Modules\Accounting\Models\BankStatementLine::find($journalEntry->source_id);
+            if ($journalEntry->source_type === BankStatementLine::class && $journalEntry->source_id) {
+                $bankStatementLine = BankStatementLine::find($journalEntry->source_id);
                 if ($bankStatementLine) {
                     $bankStatementLine->is_reconciled = false;
                     $bankStatementLine->save();

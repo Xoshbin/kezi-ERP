@@ -2,7 +2,6 @@
 
 namespace Modules\Inventory\Filament\Clusters\Inventory\Widgets;
 
-use App\Services\Inventory\InventoryReportingService;
 use Brick\Money\Money;
 use Carbon\Carbon;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;

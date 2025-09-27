@@ -2,13 +2,12 @@
 
 namespace Modules\Inventory\Tests\Feature\Inventory;
 
-use App\Actions\Purchases\CreateVendorBillLineAction;
-use App\DataTransferObjects\Purchases\CreateVendorBillLineDTO;
-use App\Enums\Inventory\StockMoveStatus;
-use App\Enums\Inventory\StockMoveType;
-use App\Services\VendorBillService;
+
 use Brick\Money\Money;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Modules\Product\Enums\Products\ProductType;
+use Modules\Product\Models\Product;
+use Modules\Purchase\Models\VendorBill;
 use Tests\Traits\WithConfiguredCompany;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);
@@ -18,12 +17,12 @@ beforeEach(function () {
     $this->setupInventoryTestEnvironment(); // Specialized setup for inventory tests.
 
     // The test-specific product creation remains here, which is correct.
-    $this->product = \Modules\Product\Models\Product::factory()->for($this->company)->create([
-        'type' => \Modules\Product\Enums\Products\ProductType::Storable,
-        'inventory_valuation_method' => \App\Enums\Inventory\ValuationMethod::AVCO,
+    $this->product = Product::factory()->for($this->company)->create([
+        'type' => ProductType::Storable,
+        'inventory_valuation_method' => ValuationMethod::AVCO,
         'default_inventory_account_id' => $this->inventoryAccount->id,
         'default_stock_input_account_id' => $this->stockInputAccount->id,
-        'average_cost' => \Brick\Money\Money::of(0, $this->company->currency->code),
+        'average_cost' => Money::of(0, $this->company->currency->code),
     ]);
 });
 
@@ -34,7 +33,7 @@ it('correctly processes an incoming storable product, creating a stock move and 
     $totalValue = $costPerUnit->multipliedBy($quantity);
 
     // Create a draft Vendor Bill for the product.
-    $vendorBill = \Modules\Purchase\Models\VendorBill::factory()->for($this->company)->create([
+    $vendorBill = VendorBill::factory()->for($this->company)->create([
         'vendor_id' => $this->vendor->id,
         'status' => 'draft',
     ]);
@@ -64,7 +63,7 @@ it('correctly processes an incoming storable product, creating a stock move and 
     $this->assertDatabaseHas('stock_moves', [
         'move_type' => StockMoveType::Incoming->value,
         'status' => StockMoveStatus::Done->value,
-        'source_type' => \Modules\Purchase\Models\VendorBill::class,
+        'source_type' => VendorBill::class,
         'source_id' => $vendorBill->id,
     ]);
 
@@ -99,7 +98,7 @@ it('correctly processes an incoming storable product, creating a stock move and 
 
     // Separate Valuation JE: Dr Inventory, Cr Stock Input
     $valuationReference = 'STOCK-IN-VendorBill-' . $vendorBill->id;
-    $valuationEntry = \App\Models\JournalEntry::where('reference', $valuationReference)->first();
+    $valuationEntry = JournalEntry::where('reference', $valuationReference)->first();
     expect($valuationEntry)->not->toBeNull();
 
     $this->assertDatabaseHas('journal_entry_lines', [
@@ -119,7 +118,7 @@ it('correctly processes an incoming storable product, creating a stock move and 
     // Valuation link exists
     $this->assertDatabaseHas('stock_move_valuations', [
         'product_id' => $this->product->id,
-        'move_type' => \App\Enums\Inventory\StockMoveType::Incoming->value,
+        'move_type' => StockMoveType::Incoming->value,
         'journal_entry_id' => $valuationEntry->id,
     ]);
 });

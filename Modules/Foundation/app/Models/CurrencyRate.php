@@ -3,6 +3,7 @@
 namespace Modules\Foundation\Models;
 
 use Database\Factories\CurrencyRateFactory;
+use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -33,11 +34,11 @@ use Illuminate\Support\Carbon;
  * @method static Builder<static>|CurrencyRate whereCreatedAt($value)
  * @method static Builder<static>|CurrencyRate whereUpdatedAt($value)
  *
- * @mixin \Eloquent
+ * @mixin Eloquent
  */
 class CurrencyRate extends Model
 {
-    /** @use HasFactory<\Database\Factories\CurrencyRateFactory> */
+    /** @use HasFactory<CurrencyRateFactory> */
     use HasFactory;
 
     /**

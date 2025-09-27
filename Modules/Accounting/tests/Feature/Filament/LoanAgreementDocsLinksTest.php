@@ -1,10 +1,6 @@
 <?php
 
-use App\Filament\Clusters\Accounting\Resources\LoanAgreements\LoanAgreementResource;
-use App\Filament\Clusters\Accounting\Resources\LoanAgreements\Pages\CreateLoanAgreement;
-use App\Filament\Clusters\Accounting\Resources\LoanAgreements\Pages\EditLoanAgreement;
-use App\Filament\Clusters\Accounting\Resources\LoanAgreements\Pages\ViewLoanAgreement;
-use App\Models\LoanAgreement;
+
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\Traits\WithConfiguredCompany;
 use function Pest\Livewire\livewire;

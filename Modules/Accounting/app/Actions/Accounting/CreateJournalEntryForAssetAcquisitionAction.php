@@ -2,11 +2,11 @@
 
 namespace Modules\Accounting\Actions\Accounting;
 
-use App\DataTransferObjects\Accounting\CreateJournalEntryDTO;
-use App\DataTransferObjects\Accounting\CreateJournalEntryLineDTO;
-use App\Models\JournalEntry;
 use App\Models\User;
 use Brick\Money\Money;
+use InvalidArgumentException;
+use Modules\Accounting\Models\Asset;
+use Modules\Foundation\Models\Currency;
 use RuntimeException;
 
 class CreateJournalEntryForAssetAcquisitionAction
@@ -15,10 +15,10 @@ class CreateJournalEntryForAssetAcquisitionAction
         private readonly CreateJournalEntryAction $createJournalEntryAction
     ) {}
 
-    public function execute(\Modules\Accounting\Models\Asset $asset, User $user): JournalEntry
+    public function execute(Asset $asset, User $user): JournalEntry
     {
         $company = $asset->company;
-        /** @var \Modules\Foundation\Models\Currency $assetCurrency */
+        /** @var Currency $assetCurrency */
         $assetCurrency = $asset->currency;
 
         $payableAccountId = $company->default_accounts_payable_id;
@@ -48,7 +48,7 @@ class CreateJournalEntryForAssetAcquisitionAction
         ];
 
         if (! $company->default_depreciation_journal_id) {
-            throw new \InvalidArgumentException('Company default depreciation journal is not configured');
+            throw new InvalidArgumentException('Company default depreciation journal is not configured');
         }
 
         $journalEntryDTO = new CreateJournalEntryDTO(
@@ -61,7 +61,7 @@ class CreateJournalEntryForAssetAcquisitionAction
             created_by_user_id: $user->id,
             is_posted: true,
             lines: $lines,
-            source_type: \Modules\Accounting\Models\Asset::class,
+            source_type: Asset::class,
             source_id: $asset->id
         );
 

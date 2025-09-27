@@ -2,15 +2,13 @@
 
 namespace Modules\Accounting\Filament\Clusters\Accounting\Resources\Invoices\Widgets;
 
-use App\Enums\Sales\InvoiceStatus;
-use App\Enums\Shared\PaymentState;
-use App\Support\NumberFormatter;
 use Brick\Math\RoundingMode;
 use Brick\Money\Money;
 use Carbon\Carbon;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
 use Illuminate\Database\Eloquent\Model;
+use Modules\Sales\Models\Invoice;
 
 class AgingAnalysisWidget extends BaseWidget
 {
@@ -18,7 +16,7 @@ class AgingAnalysisWidget extends BaseWidget
 
     protected function getStats(): array
     {
-        if (! $this->record instanceof \Modules\Sales\Models\Invoice) {
+        if (! $this->record instanceof Invoice) {
             return [];
         }
 
@@ -60,7 +58,7 @@ class AgingAnalysisWidget extends BaseWidget
         ];
     }
 
-    private function calculateDaysOutstanding(\Modules\Sales\Models\Invoice $invoice): int
+    private function calculateDaysOutstanding(Invoice $invoice): int
     {
         // Due date is always set for posted invoices
 
@@ -70,7 +68,7 @@ class AgingAnalysisWidget extends BaseWidget
         return (int) max(0, $today->diffInDays($dueDate, false));
     }
 
-    private function calculateOutstandingAmount(\Modules\Sales\Models\Invoice $invoice): Money
+    private function calculateOutstandingAmount(Invoice $invoice): Money
     {
         $totalAmount = $invoice->total_amount;
         $paidAmount = $invoice->getPaidAmount();
@@ -127,7 +125,7 @@ class AgingAnalysisWidget extends BaseWidget
         return $this->getDaysOutstandingColor($daysOutstanding);
     }
 
-    private function getPaymentProgress(\Modules\Sales\Models\Invoice $invoice): string
+    private function getPaymentProgress(Invoice $invoice): string
     {
         $totalAmount = $invoice->total_amount;
         $paidAmount = $invoice->getPaidAmount();
@@ -141,7 +139,7 @@ class AgingAnalysisWidget extends BaseWidget
         return \Modules\Foundation\Support\NumberFormatter::formatPercentage($percentage->getAmount()->toFloat(), 1);
     }
 
-    private function getPaymentProgressColor(\Modules\Sales\Models\Invoice $invoice): string
+    private function getPaymentProgressColor(Invoice $invoice): string
     {
         return match ($invoice->paymentState) {
             \Modules\Foundation\Enums\Shared\PaymentState::NotPaid => 'gray',

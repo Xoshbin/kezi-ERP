@@ -1,13 +1,13 @@
 <?php
 
-use App\Filament\Clusters\Accounting\Resources\JournalEntries\Pages\CreateJournalEntry;
-use App\Filament\Clusters\Accounting\Resources\JournalEntries\Pages\EditJournalEntry;
-use App\Filament\Clusters\Accounting\Resources\JournalEntries\Pages\ListJournalEntries;
-use App\Models\Journal;
-use App\Models\JournalEntry;
 use Brick\Money\Money;
+use Carbon\Carbon;
 use Filament\Actions\DeleteAction;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Modules\Accounting\Models\Account;
+use Modules\Foundation\Exceptions\DeletionNotAllowedException;
+use Modules\Foundation\Models\Currency;
+use Modules\Foundation\Models\CurrencyRate;
 use Tests\Traits\WithConfiguredCompany;
 use function Pest\Livewire\livewire;
 
@@ -89,7 +89,7 @@ it('can create a journalEntry', function () {
 });
 
 it('can validate input', function () {
-    livewire(\App\Filament\Clusters\Accounting\Resources\JournalEntries\Pages\CreateJournalEntry::class)
+    livewire(CreateJournalEntry::class)
         ->fillForm([
             'company_id' => $this->company->id,
             'journal_id' => $this->company->default_bank_journal_id,
@@ -117,7 +117,7 @@ it('can render the edit page', function () {
 it('can update a journalEntry', function () {
     $journalEntry = JournalEntry::factory()->for($this->company)->create();
 
-    livewire(\App\Filament\Clusters\Accounting\Resources\JournalEntries\Pages\EditJournalEntry::class, [
+    livewire(EditJournalEntry::class, [
         'record' => $journalEntry->getRouteKey(),
     ])
         ->fillForm([
@@ -153,7 +153,7 @@ it('can update a journalEntry', function () {
 it('can delete a journal entry', function () {
     $journalEntry = JournalEntry::factory()->for($this->company)->create(['is_posted' => false]);
 
-    livewire(\App\Filament\Clusters\Accounting\Resources\JournalEntries\Pages\EditJournalEntry::class, [
+    livewire(EditJournalEntry::class, [
         'record' => $journalEntry->getRouteKey(),
     ])
         ->callAction(DeleteAction::class);
@@ -163,7 +163,7 @@ it('can delete a journal entry', function () {
 
 it('can display correct major amount in edit form', function () {
     // Arrange
-    $currency = \Modules\Foundation\Models\Currency::where('code', 'IQD')->firstOrFail();
+    $currency = Currency::where('code', 'IQD')->firstOrFail();
 
     $journalEntry = JournalEntry::factory()
         ->for($this->company)
@@ -185,7 +185,7 @@ it('can display correct major amount in edit form', function () {
     ]);
 
     // Act & Assert
-    $livewire = livewire(\App\Filament\Clusters\Accounting\Resources\JournalEntries\Pages\EditJournalEntry::class, [
+    $livewire = livewire(EditJournalEntry::class, [
         'record' => $journalEntry->getRouteKey(),
     ]);
 
@@ -200,13 +200,13 @@ it('can display correct major amount in edit form', function () {
 
 it('can create capital injection journal entry following Step 4 scenario', function () {
     // Arrange: Create the specific accounts needed for the capital injection scenario
-    $bankAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create([
+    $bankAccount = Account::factory()->for($this->company)->create([
         'code' => '1010',
         'name' => 'Bank',
         'type' => 'bank_and_cash',
     ]);
 
-    $ownersEquityAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create([
+    $ownersEquityAccount = Account::factory()->for($this->company)->create([
         'code' => '3000',
         'name' => "Owner's Equity",
         'type' => 'equity',
@@ -219,7 +219,7 @@ it('can create capital injection journal entry following Step 4 scenario', funct
     ]);
 
     // Act: Create the capital injection journal entry
-    $wire = livewire(\App\Filament\Clusters\Accounting\Resources\JournalEntries\Pages\CreateJournalEntry::class)
+    $wire = livewire(CreateJournalEntry::class)
         ->fillForm([
             'journal_id' => $bankJournal->id,
             'currency_id' => $this->company->currency_id,
@@ -299,7 +299,7 @@ it('can create and post capital injection journal entry using Filament interface
     expect($this->company->currency->code)->toBe('IQD');
 
     // Set up currency rates for the test (IQD to IQD should be 1.0)
-    \Modules\Foundation\Models\CurrencyRate::create([
+    CurrencyRate::create([
         'company_id' => $this->company->id,
         'currency_id' => $this->company->currency_id, // IQD
         'rate' => 1.0,
@@ -308,13 +308,13 @@ it('can create and post capital injection journal entry using Filament interface
     ]);
 
     // Arrange: Create the specific accounts needed for the capital injection scenario
-    $bankAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create([
+    $bankAccount = Account::factory()->for($this->company)->create([
         'code' => '1010',
         'name' => 'Bank',
         'type' => 'bank_and_cash',
     ]);
 
-    $ownersEquityAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create([
+    $ownersEquityAccount = Account::factory()->for($this->company)->create([
         'code' => '3000',
         'name' => "Owner's Equity",
         'type' => 'equity',
@@ -330,7 +330,7 @@ it('can create and post capital injection journal entry using Filament interface
     $uniqueReference = 'Capital Investment Test '.now()->timestamp;
 
     // Act: Create the capital injection journal entry using Filament form
-    livewire(\App\Filament\Clusters\Accounting\Resources\JournalEntries\Pages\CreateJournalEntry::class)
+    livewire(CreateJournalEntry::class)
         ->fillForm([
             'journal_id' => $bankJournal->id,
             'currency_id' => $this->company->currency_id,
@@ -373,7 +373,7 @@ it('can create and post capital injection journal entry using Filament interface
     expect($journalEntry->hash)->toBeNull(); // Hash should be null for draft entries
 
     // Act: Now post the journal entry using the Filament post action
-    $editWire = livewire(\App\Filament\Clusters\Accounting\Resources\JournalEntries\Pages\EditJournalEntry::class, [
+    $editWire = livewire(EditJournalEntry::class, [
         'record' => $journalEntry->getRouteKey(),
     ]);
 
@@ -400,7 +400,7 @@ it('can create and post capital injection journal entry using Filament interface
     $this->assertTrue($journalEntry->total_debit->isEqualTo($journalEntry->total_credit));
 
     // Verify the post action is no longer visible for posted entries
-    $editWire = livewire(\App\Filament\Clusters\Accounting\Resources\JournalEntries\Pages\EditJournalEntry::class, [
+    $editWire = livewire(EditJournalEntry::class, [
         'record' => $journalEntry->getRouteKey(),
     ]);
     $editWire->assertActionHidden('post');
@@ -409,7 +409,7 @@ it('can create and post capital injection journal entry using Filament interface
     $journalEntry->description = 'Attempted unauthorized update';
 
     expect(fn () => $journalEntry->save())
-        ->toThrow(\RuntimeException::class, "Attempted to modify immutable posted journal entry field: 'description'");
+        ->toThrow(RuntimeException::class, "Attempted to modify immutable posted journal entry field: 'description'");
 
     // Verify the description was not changed in the database
     $this->assertDatabaseHas('journal_entries', [
@@ -418,9 +418,9 @@ it('can create and post capital injection journal entry using Filament interface
     ]);
 
     // Verify deletion is prevented for posted entries
-    $journalEntryService = app(\App\Services\JournalEntryService::class);
+    $journalEntryService = app(JournalEntryService::class);
     expect(fn () => $journalEntryService->delete($journalEntry))
-        ->toThrow(\Modules\Foundation\Exceptions\DeletionNotAllowedException::class, 'Cannot delete a posted journal entry');
+        ->toThrow(DeletionNotAllowedException::class, 'Cannot delete a posted journal entry');
 
     // Verify the accounting equation: Assets = Liabilities + Equity
     // Bank (Asset) increased by 15,000,000 IQD
@@ -434,13 +434,13 @@ it('can create and post capital injection journal entry using Filament interface
 
 it('shows proper error when trying to create duplicate reference', function () {
     // Arrange: Create the specific accounts needed for the capital injection scenario
-    $bankAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create([
+    $bankAccount = Account::factory()->for($this->company)->create([
         'code' => '1010',
         'name' => 'Bank',
         'type' => 'bank_and_cash',
     ]);
 
-    $ownersEquityAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create([
+    $ownersEquityAccount = Account::factory()->for($this->company)->create([
         'code' => '3000',
         'name' => "Owner's Equity",
         'type' => 'equity',
@@ -453,7 +453,7 @@ it('shows proper error when trying to create duplicate reference', function () {
     ]);
 
     // First, create a journal entry successfully
-    $wire = livewire(\App\Filament\Clusters\Accounting\Resources\JournalEntries\Pages\CreateJournalEntry::class)
+    $wire = livewire(CreateJournalEntry::class)
         ->fillForm([
             'journal_id' => $bankJournal->id,
             'currency_id' => $this->company->currency_id,
@@ -493,7 +493,7 @@ it('shows proper error when trying to create duplicate reference', function () {
     expect($count)->toBe(1, 'First entry should be created');
 
     // Act: Try to create another journal entry with the same reference
-    $wire = livewire(\App\Filament\Clusters\Accounting\Resources\JournalEntries\Pages\CreateJournalEntry::class)
+    $wire = livewire(CreateJournalEntry::class)
         ->fillForm([
             'journal_id' => $bankJournal->id,
             'currency_id' => $this->company->currency_id,
@@ -539,7 +539,7 @@ it('shows proper error when trying to create duplicate reference', function () {
 });
 
 it('reactively updates totals when lines change', function () {
-    $wire = livewire(\App\Filament\Clusters\Accounting\Resources\JournalEntries\Pages\CreateJournalEntry::class)
+    $wire = livewire(CreateJournalEntry::class)
         ->fillForm([
             'company_id' => $this->company->id,
             'journal_id' => $this->company->default_bank_journal_id,
@@ -629,7 +629,7 @@ it('calculates and fills totals on edit page load', function () {
     ]);
 
     // Act & Assert
-    livewire(\App\Filament\Clusters\Accounting\Resources\JournalEntries\Pages\EditJournalEntry::class, [
+    livewire(EditJournalEntry::class, [
         'record' => $journalEntry->getRouteKey(),
     ])
         ->assertFormSet([
@@ -641,7 +641,7 @@ it('calculates and fills totals on edit page load', function () {
 
 it('can create multi-currency capital injection journal entry in USD with proper conversion to IQD base currency', function () {
     // Arrange: Create USD currency
-    $usdCurrency = \Modules\Foundation\Models\Currency::firstOrCreate(
+    $usdCurrency = Currency::firstOrCreate(
         ['code' => 'USD'],
         [
             'name' => ['en' => 'US Dollar', 'ckb' => 'دۆلاری ئەمریکی', 'ar' => 'دولار أمريكي'],
@@ -653,8 +653,8 @@ it('can create multi-currency capital injection journal entry in USD with proper
 
     // Set up exchange rate: 1 USD = 1460 IQD
     // Use updateOrCreate to handle potential existing rates
-    $transactionDate = \Carbon\Carbon::parse('2024-01-01');
-    $currencyRate = \Modules\Foundation\Models\CurrencyRate::updateOrCreate(
+    $transactionDate = Carbon::parse('2024-01-01');
+    $currencyRate = CurrencyRate::updateOrCreate(
         [
             'currency_id' => $usdCurrency->id,
             'effective_date' => $transactionDate->toDateString(),
@@ -675,14 +675,14 @@ it('can create multi-currency capital injection journal entry in USD with proper
     expect($currencyRate->rate)->toBe('1460.0000000000');
 
     // Create the specific accounts mentioned in the scenario
-    $cashUsdAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create([
+    $cashUsdAccount = Account::factory()->for($this->company)->create([
         'code' => '110201',
         'name' => 'Cash (USD)',
         'type' => 'bank_and_cash',
         'currency_id' => $usdCurrency->id, // Currency locked to USD
     ]);
 
-    $ownersEquityAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create([
+    $ownersEquityAccount = Account::factory()->for($this->company)->create([
         'code' => '320101',
         'name' => "Owner's Equity",
         'type' => 'equity',
@@ -700,7 +700,7 @@ it('can create multi-currency capital injection journal entry in USD with proper
 
     // Act: Create the capital injection journal entry using Filament form
     // User enters amounts in USD as described in the scenario
-    livewire(\App\Filament\Clusters\Accounting\Resources\JournalEntries\Pages\CreateJournalEntry::class)
+    livewire(CreateJournalEntry::class)
         ->fillForm([
             'journal_id' => $miscJournal->id,
             'currency_id' => $usdCurrency->id, // User selects USD in the currency dropdown
@@ -802,7 +802,7 @@ it('can create multi-currency capital injection journal entry in USD with proper
     ]);
 
     // Act: Post the journal entry
-    $editWire = livewire(\App\Filament\Clusters\Accounting\Resources\JournalEntries\Pages\EditJournalEntry::class, [
+    $editWire = livewire(EditJournalEntry::class, [
         'record' => $journalEntry->getRouteKey(),
     ]);
 
@@ -822,5 +822,5 @@ it('can create multi-currency capital injection journal entry in USD with proper
     // Verify immutability after posting
     $journalEntry->description = 'Attempted unauthorized update';
     expect(fn () => $journalEntry->save())
-        ->toThrow(\RuntimeException::class, "Attempted to modify immutable posted journal entry field: 'description'");
+        ->toThrow(RuntimeException::class, "Attempted to modify immutable posted journal entry field: 'description'");
 });

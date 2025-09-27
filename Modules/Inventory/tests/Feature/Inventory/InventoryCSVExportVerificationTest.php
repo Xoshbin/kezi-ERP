@@ -2,16 +2,11 @@
 
 namespace Modules\Inventory\Tests\Feature\Inventory;
 
-use App\Enums\Inventory\ValuationMethod;
-use App\Enums\Products\ProductType;
-use App\Models\InventoryCostLayer;
-use App\Models\Lot;
-use App\Models\StockQuant;
-use App\Services\Inventory\InventoryReportingService;
 use Brick\Money\Money;
 use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Storage;
+use Modules\Product\Models\Product;
 use Tests\Traits\WithConfiguredCompany;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);
@@ -131,7 +126,7 @@ describe('Inventory CSV Export Verification', function () {
 
     it('handles special characters in CSV export', function () {
         // Create product with special characters
-        $specialProduct = \Modules\Product\Models\Product::factory()->for(test()->company)->create([
+        $specialProduct = Product::factory()->for(test()->company)->create([
             'name' => 'Product with "Quotes" & Commas, Special chars',
             'sku' => 'SPECIAL-001',
             'type' => \Modules\Product\Enums\Products\ProductType::Storable,
@@ -163,7 +158,7 @@ describe('Inventory CSV Export Verification', function () {
 
     it('exports large datasets efficiently', function () {
         // Create many products and stock quants
-        $products = \Modules\Product\Models\Product::factory()->count(100)->for(test()->company)->create([
+        $products = Product::factory()->count(100)->for(test()->company)->create([
             'type' => \Modules\Product\Enums\Products\ProductType::Storable,
             'inventory_valuation_method' => ValuationMethod::FIFO,
             'default_inventory_account_id' => test()->inventoryAccount->id,
@@ -248,19 +243,19 @@ describe('Inventory CSV Export Verification', function () {
 // Helper methods for CSV generation
 function generateValuationCSV(array $valuation, bool $includeMetadata = false): string
 {
-    $csvService = app(\App\Services\Inventory\InventoryCSVExportService::class);
+    $csvService = app(InventoryCSVExportService::class);
     return $csvService->exportValuationReport($valuation, ['include_metadata' => $includeMetadata]);
 }
 
 function generateAgingCSV(array $aging): string
 {
-    $csvService = app(\App\Services\Inventory\InventoryCSVExportService::class);
+    $csvService = app(InventoryCSVExportService::class);
     return $csvService->exportAgingReport($aging);
 }
 
 function generateTurnoverCSV(array $turnover): string
 {
-    $csvService = app(\App\Services\Inventory\InventoryCSVExportService::class);
+    $csvService = app(InventoryCSVExportService::class);
     return $csvService->exportTurnoverReport($turnover);
 }
 
@@ -289,7 +284,7 @@ function generateLotTraceabilityCSV(array $traceability): string
 
 function generateReorderStatusCSV(array $reorderStatus): string
 {
-    $csvService = app(\App\Services\Inventory\InventoryCSVExportService::class);
+    $csvService = app(InventoryCSVExportService::class);
     return $csvService->exportReorderStatusReport($reorderStatus);
 }
 
@@ -297,21 +292,21 @@ function setupExportTestData(): void
 {
     // Create test products
     test()->products = collect([
-        \Modules\Product\Models\Product::factory()->for(test()->company)->create([
+        Product::factory()->for(test()->company)->create([
             'name' => 'Test Product A',
             'sku' => 'TEST-A',
             'type' => \Modules\Product\Enums\Products\ProductType::Storable,
             'inventory_valuation_method' => ValuationMethod::FIFO,
             'default_inventory_account_id' => test()->inventoryAccount->id,
         ]),
-        \Modules\Product\Models\Product::factory()->for(test()->company)->create([
+        Product::factory()->for(test()->company)->create([
             'name' => 'Test Product B',
             'sku' => 'TEST-B',
             'type' => \Modules\Product\Enums\Products\ProductType::Storable,
             'inventory_valuation_method' => ValuationMethod::AVCO,
             'default_inventory_account_id' => test()->inventoryAccount->id,
         ]),
-        \Modules\Product\Models\Product::factory()->for(test()->company)->create([
+        Product::factory()->for(test()->company)->create([
             'name' => 'Test Product C',
             'sku' => 'TEST-C',
             'type' => \Modules\Product\Enums\Products\ProductType::Storable,

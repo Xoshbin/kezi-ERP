@@ -2,12 +2,12 @@
 
 namespace Modules\Accounting\Actions\Accounting;
 
-use App\DataTransferObjects\Accounting\UpdateBankStatementDTO;
 use Illuminate\Support\Facades\DB;
+use Modules\Accounting\Models\BankStatement;
 
 class UpdateBankStatementAction
 {
-    public function execute(UpdateBankStatementDTO $dto): \Modules\Accounting\Models\BankStatement
+    public function execute(UpdateBankStatementDTO $dto): BankStatement
     {
         return DB::transaction(function () use ($dto) {
             $bankStatement = $dto->bankStatement;

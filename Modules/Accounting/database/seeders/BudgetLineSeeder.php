@@ -5,6 +5,10 @@ namespace Modules\Accounting\Database\Seeders;
 use App\Models\Company;
 use Exception;
 use Illuminate\Database\Seeder;
+use Modules\Accounting\Models\Account;
+use Modules\Accounting\Models\AnalyticAccount;
+use Modules\Accounting\Models\Budget;
+use Modules\Accounting\Models\BudgetLine;
 
 class BudgetLineSeeder extends Seeder
 {
@@ -24,39 +28,39 @@ class BudgetLineSeeder extends Seeder
         }
 
         // Fetch the budget
-        $budget = \Modules\Accounting\Models\Budget::where('name', '2025 Annual Budget')->where('company_id', $company->id)->first();
+        $budget = Budget::where('name', '2025 Annual Budget')->where('company_id', $company->id)->first();
         if (! $budget) {
             throw new Exception('Budget "2025 Annual Budget" not found. Please run BudgetSeeder.');
         }
 
         // Fetch accounts
-        $salesAccount = \Modules\Accounting\Models\Account::where('code', '4000')->where('company_id', $company->id)->first();
+        $salesAccount = Account::where('code', '4000')->where('company_id', $company->id)->first();
         if (! $salesAccount) {
             throw new Exception('Account with code 4000 (Sales) not found.');
         }
 
-        $marketingAccount = \Modules\Accounting\Models\Account::where('code', '4100')->where('company_id', $company->id)->first();
+        $marketingAccount = Account::where('code', '4100')->where('company_id', $company->id)->first();
         if (! $marketingAccount) {
             throw new Exception('Account with code 4100 (Marketing) not found.');
         }
 
-        $adminAccount = \Modules\Accounting\Models\Account::where('code', '4200')->where('company_id', $company->id)->first();
+        $adminAccount = Account::where('code', '4200')->where('company_id', $company->id)->first();
         if (! $adminAccount) {
             throw new Exception('Account with code 4200 (Administration) not found.');
         }
 
         // Fetch analytic accounts
-        $salesAnalytic = \Modules\Accounting\Models\AnalyticAccount::where('name', 'Sales Department')->where('company_id', $company->id)->first();
+        $salesAnalytic = AnalyticAccount::where('name', 'Sales Department')->where('company_id', $company->id)->first();
         if (! $salesAnalytic) {
             throw new Exception('Analytic Account "Sales Department" not found.');
         }
 
-        $marketingAnalytic = \Modules\Accounting\Models\AnalyticAccount::where('name', 'Marketing Department')->where('company_id', $company->id)->first();
+        $marketingAnalytic = AnalyticAccount::where('name', 'Marketing Department')->where('company_id', $company->id)->first();
         if (! $marketingAnalytic) {
             throw new Exception('Analytic Account "Marketing Department" not found.');
         }
 
-        $adminAnalytic = \Modules\Accounting\Models\AnalyticAccount::where('name', 'Administration Department')->where('company_id', $company->id)->first();
+        $adminAnalytic = AnalyticAccount::where('name', 'Administration Department')->where('company_id', $company->id)->first();
         if (! $adminAnalytic) {
             throw new Exception('Analytic Account "Administration Department" not found.');
         }
@@ -90,7 +94,7 @@ class BudgetLineSeeder extends Seeder
         ];
 
         foreach ($budgetLines as $line) {
-            \Modules\Accounting\Models\BudgetLine::updateOrCreate(
+            BudgetLine::updateOrCreate(
                 [
                     'budget_id' => $line['budget_id'],
                     'account_id' => $line['account_id'],

@@ -2,21 +2,14 @@
 
 namespace Modules\Inventory\Tests\Feature\Inventory;
 
-use App\Actions\Sales\CreateInvoiceLineAction;
-use App\DataTransferObjects\Sales\CreateInvoiceLineDTO;
-use App\Enums\Inventory\StockPickingState;
-use App\Enums\Inventory\StockPickingType;
-use App\Enums\Products\ProductType;
-use App\Models\Lot;
-use App\Models\StockMove;
-use App\Models\StockMoveLine;
-use App\Models\StockPicking;
-use App\Models\StockQuant;
-use App\Services\Inventory\StockReservationService;
-use App\Services\InvoiceService;
 use Brick\Money\Money;
 use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Modules\Accounting\Models\Account;
+use Modules\Foundation\Enums\Partners\PartnerType;
+use Modules\Foundation\Models\Partner;
+use Modules\Product\Models\Product;
+use Modules\Sales\Models\Invoice;
 use Tests\Traits\WithConfiguredCompany;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);
@@ -27,17 +20,17 @@ beforeEach(function () {
 
     // Set inventory accounting mode to manual for lot tracking tests
     $this->company->update([
-        'inventory_accounting_mode' => \App\Enums\Inventory\InventoryAccountingMode::MANUAL_INVENTORY_RECORDING,
+        'inventory_accounting_mode' => InventoryAccountingMode::MANUAL_INVENTORY_RECORDING,
     ]);
 
     // Create COGS account first
-    $this->cogsAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create([
+    $this->cogsAccount = Account::factory()->for($this->company)->create([
         'type' => 'cost_of_revenue',
     ]);
 
-    $this->product = \Modules\Product\Models\Product::factory()->for($this->company)->create([
+    $this->product = Product::factory()->for($this->company)->create([
         'type' => \Modules\Product\Enums\Products\ProductType::Storable,
-        'inventory_valuation_method' => \App\Enums\Inventory\ValuationMethod::FIFO,
+        'inventory_valuation_method' => ValuationMethod::FIFO,
         'default_inventory_account_id' => $this->inventoryAccount->id,
         'default_stock_input_account_id' => $this->stockInputAccount->id,
         'default_cogs_account_id' => $this->cogsAccount->id,
@@ -47,8 +40,8 @@ beforeEach(function () {
     $this->reservationService = app(StockReservationService::class);
 
     // Create a customer for invoice tests
-    $this->customer = \Modules\Foundation\Models\Partner::factory()->for($this->company)->create([
-        'type' => \Modules\Foundation\Enums\Partners\PartnerType::Customer,
+    $this->customer = Partner::factory()->for($this->company)->create([
+        'type' => PartnerType::Customer,
     ]);
 });
 
@@ -79,8 +72,8 @@ it('creates lots on receipt and tracks them in quants', function () {
         'quantity' => 10.0,
         'from_location_id' => $this->vendorLocation->id,
         'to_location_id' => $this->stockLocation->id,
-        'move_type' => \App\Enums\Inventory\StockMoveType::Incoming,
-        'status' => \App\Enums\Inventory\StockMoveStatus::Done,
+        'move_type' => StockMoveType::Incoming,
+        'status' => StockMoveStatus::Done,
         'move_date' => $receiptDate,
         'reference' => 'REC-001',
         'picking_id' => $picking->id,
@@ -99,7 +92,7 @@ it('creates lots on receipt and tracks them in quants', function () {
     ]);
 
     // Apply the stock movement with lot
-    app(\App\Services\Inventory\StockQuantService::class)->applyForIncomingWithLot($move, $lot->id);
+    app(StockQuantService::class)->applyForIncomingWithLot($move, $lot->id);
 
     // Assert lot exists
     expect($lot->fresh())->not->toBeNull();
@@ -163,28 +156,28 @@ it('applies FEFO allocation when multiple lots exist with different expiration d
     ]);
 
     // Create cost layers for both lots
-    \App\Models\InventoryCostLayer::factory()->create([
+    InventoryCostLayer::factory()->create([
         'product_id' => $this->product->id,
         'quantity' => 5.0,
         'remaining_quantity' => 5.0,
-        'cost_per_unit' => \Brick\Money\Money::of(100, $this->company->currency->code),
+        'cost_per_unit' => Money::of(100, $this->company->currency->code),
         'purchase_date' => $receiptDate,
         'source_type' => 'Test',
         'source_id' => 1,
     ]);
 
-    \App\Models\InventoryCostLayer::factory()->create([
+    InventoryCostLayer::factory()->create([
         'product_id' => $this->product->id,
         'quantity' => 8.0,
         'remaining_quantity' => 8.0,
-        'cost_per_unit' => \Brick\Money\Money::of(100, $this->company->currency->code),
+        'cost_per_unit' => Money::of(100, $this->company->currency->code),
         'purchase_date' => $receiptDate,
         'source_type' => 'Test',
         'source_id' => 2,
     ]);
 
     // Create a sales order for 7 units
-    $invoice = \Modules\Sales\Models\Invoice::factory()->for($this->company)->create([
+    $invoice = Invoice::factory()->for($this->company)->create([
         'customer_id' => $this->customer->id,
         'status' => 'draft',
     ]);
@@ -279,8 +272,8 @@ it('prevents allocation of expired lots', function () {
         'quantity' => 8.0,
         'from_location_id' => $this->stockLocation->id,
         'to_location_id' => $this->customerLocation->id,
-        'move_type' => \App\Enums\Inventory\StockMoveType::Outgoing,
-        'status' => \App\Enums\Inventory\StockMoveStatus::Confirmed,
+        'move_type' => StockMoveType::Outgoing,
+        'status' => StockMoveStatus::Confirmed,
         'move_date' => $currentDate,
         'created_by_user_id' => $this->user->id,
     ]);
@@ -319,7 +312,7 @@ it('handles partial reservations and backorders correctly', function () {
     ]);
 
     // Create sales order for more than available
-    $invoice = \Modules\Sales\Models\Invoice::factory()->for($this->company)->create([
+    $invoice = Invoice::factory()->for($this->company)->create([
         'customer_id' => $this->customer->id,
         'status' => 'draft',
     ]);

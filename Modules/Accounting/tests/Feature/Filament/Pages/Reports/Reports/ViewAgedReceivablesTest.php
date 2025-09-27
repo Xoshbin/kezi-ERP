@@ -2,12 +2,12 @@
 
 namespace Modules\Accounting\Tests\Feature\Filament\Pages\Reports;
 
-use App\Enums\Sales\InvoiceStatus;
-use App\Filament\Clusters\Accounting\Pages\Reports\ViewAgedReceivables;
 use Brick\Money\Money;
 use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Livewire\Livewire;
+use Modules\Foundation\Models\Partner;
+use Modules\Sales\Models\Invoice;
 use Tests\Traits\WithConfiguredCompany;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);
@@ -29,11 +29,11 @@ test('it can render the aged receivables page', function () {
 test('it can generate aged receivables report', function () {
     // Arrange
     $currency = $this->company->currency->code;
-    $partner = \Modules\Foundation\Models\Partner::factory()->for($this->company)->create(['name' => 'Test Partner']);
+    $partner = Partner::factory()->for($this->company)->create(['name' => 'Test Partner']);
     $asOfDate = Carbon::parse('2025-08-12');
 
     // Create a past due invoice
-    \Modules\Sales\Models\Invoice::factory()->for($this->company)->create([
+    Invoice::factory()->for($this->company)->create([
         'customer_id' => $partner->id,
         'currency_id' => $this->company->currency_id,
         'due_date' => '2025-07-20', // 23 days past due

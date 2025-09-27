@@ -5,7 +5,9 @@ namespace Modules\Sales\Models;
 use App\Casts\BaseCurrencyMoneyCast;
 use App\Casts\DocumentCurrencyMoneyCast;
 use App\Observers\InvoiceLineObserver;
+use Brick\Money\Money;
 use Database\Factories\InvoiceLineFactory;
+use Eloquent;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -21,9 +23,9 @@ use Illuminate\Support\Carbon;
  * @property int $income_account_id
  * @property string $description
  * @property numeric $quantity
- * @property \Brick\Money\Money $unit_price
- * @property \Brick\Money\Money $subtotal
- * @property \Brick\Money\Money $total_line_tax
+ * @property Money $unit_price
+ * @property Money $subtotal
+ * @property Money $total_line_tax
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property-read AnalyticAccount|null $analyticAccount
@@ -49,13 +51,13 @@ use Illuminate\Support\Carbon;
  * @method static Builder<static>|InvoiceLine whereUnitPrice($value)
  * @method static Builder<static>|InvoiceLine whereUpdatedAt($value)
  *
- * @mixin \Eloquent
+ * @mixin Eloquent
  */
 #[ObservedBy([InvoiceLineObserver::class])]
 class InvoiceLine extends Model
 {
     // Leveraging Laravel's HasFactory trait for simplified model factory creation in testing/seeding [5, 6].
-    /** @use HasFactory<\Database\Factories\InvoiceLineFactory> */
+    /** @use HasFactory<InvoiceLineFactory> */
     use HasFactory;
 
     /**

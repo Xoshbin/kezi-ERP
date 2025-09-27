@@ -33,11 +33,11 @@ it('computes annuity schedule for a 12-month loan', function () {
     // First payment interest: 10000 * 1% = 100; payment ≈ 888.49; principal ≈ 788.49
     $first = $loan->scheduleEntries()->orderBy('sequence')->first();
     $code = $this->company->currency->code;
-    expect((string) $first->interest_component->getAmount())->toBe((string) \Brick\Money\Money::of('100', $code)->getAmount());
+    expect((string) $first->interest_component->getAmount())->toBe((string) Money::of('100', $code)->getAmount());
     // Allow small rounding tolerance based on currency scale
-    $expectedPayment = \Brick\Money\Money::of('888.49', $code);
+    $expectedPayment = Money::of('888.49', $code);
     expect(abs($first->payment_amount->getAmount()->toFloat() - $expectedPayment->getAmount()->toFloat()))->toBeLessThan(0.01);
-    $expectedPrincipal = $expectedPayment->minus(\Brick\Money\Money::of('100', $code));
+    $expectedPrincipal = $expectedPayment->minus(Money::of('100', $code));
     expect(abs($first->principal_component->getAmount()->toFloat() - $expectedPrincipal->getAmount()->toFloat()))->toBeLessThan(0.01);
 });
 
@@ -59,7 +59,7 @@ it('computes straight-line principal schedule', function () {
 
     $first = $loan->scheduleEntries()->orderBy('sequence')->first();
     $code = $this->company->currency->code;
-    expect((string) $first->principal_component->getAmount())->toBe((string) \Brick\Money\Money::of('1000', $code)->getAmount());
-    expect((string) $first->interest_component->getAmount())->toBe((string) \Brick\Money\Money::of('120', $code)->getAmount());
-    expect((string) $first->payment_amount->getAmount())->toBe((string) \Brick\Money\Money::of('1120', $code)->getAmount());
+    expect((string) $first->principal_component->getAmount())->toBe((string) Money::of('1000', $code)->getAmount());
+    expect((string) $first->interest_component->getAmount())->toBe((string) Money::of('120', $code)->getAmount());
+    expect((string) $first->payment_amount->getAmount())->toBe((string) Money::of('1120', $code)->getAmount());
 });

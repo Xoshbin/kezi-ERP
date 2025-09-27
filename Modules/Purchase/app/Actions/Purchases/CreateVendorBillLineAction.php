@@ -2,15 +2,13 @@
 
 namespace Modules\Purchase\Actions\Purchases;
 
-use App\DataTransferObjects\Purchases\CreateVendorBillLineDTO;
-use App\Models\Tax;
-use App\Models\VendorBillLine;
 use Brick\Math\RoundingMode;
 use Brick\Money\Money;
+use Modules\Purchase\Models\VendorBill;
 
 class CreateVendorBillLineAction
 {
-    public function execute(\Modules\Purchase\Models\VendorBill $vendorBill, CreateVendorBillLineDTO $dto): VendorBillLine
+    public function execute(VendorBill $vendorBill, CreateVendorBillLineDTO $dto): VendorBillLine
     {
         $currency = $vendorBill->currency;
 

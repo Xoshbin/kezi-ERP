@@ -2,11 +2,7 @@
 
 namespace Modules\Foundation\Filament\Clusters\Settings\Resources\Currencies;
 
-use App\Filament\Clusters\Settings\Resources\Currencies\Pages\CreateCurrency;
-use App\Filament\Clusters\Settings\Resources\Currencies\Pages\EditCurrency;
-use App\Filament\Clusters\Settings\Resources\Currencies\Pages\ListCurrencies;
-use App\Filament\Clusters\Settings\SettingsCluster;
-use App\Support\NumberFormatter;
+use BackedEnum;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
@@ -20,6 +16,7 @@ use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use LaraZeus\SpatieTranslatable\Resources\Concerns\Translatable;
+use Modules\Foundation\Models\Currency;
 
 class CurrencyResource extends Resource
 {
@@ -27,9 +24,9 @@ class CurrencyResource extends Resource
 
     protected static bool $isScopedToTenant = false;
 
-    protected static ?string $model = \Modules\Foundation\Models\Currency::class;
+    protected static ?string $model = Currency::class;
 
-    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-currency-dollar';
+    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-currency-dollar';
 
     protected static ?int $navigationSort = 2;
 

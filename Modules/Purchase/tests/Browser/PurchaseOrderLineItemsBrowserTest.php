@@ -2,11 +2,10 @@
 
 namespace Modules\Purchase\Tests\Browser;
 
-use App\Models\Tax;
 use Brick\Money\Money;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
-use Laravel\Dusk\Browser;
-use Tests\DuskTestCase;
+use Modules\Foundation\Models\Partner;
+use Modules\Product\Models\Product;
 use Tests\Traits\WithConfiguredCompany;
 
 class PurchaseOrderLineItemsBrowserTest extends DuskTestCase
@@ -23,8 +22,8 @@ class PurchaseOrderLineItemsBrowserTest extends DuskTestCase
 
         $this->setupWithConfiguredCompany();
 
-        $this->vendor = \Modules\Foundation\Models\Partner::factory()->vendor()->create(['company_id' => $this->company->id]);
-        $this->product = \Modules\Product\Models\Product::factory()->create([
+        $this->vendor = Partner::factory()->vendor()->create(['company_id' => $this->company->id]);
+        $this->product = Product::factory()->create([
             'company_id' => $this->company->id,
             'name' => 'Test Product',
             'description' => 'Test Product Description',

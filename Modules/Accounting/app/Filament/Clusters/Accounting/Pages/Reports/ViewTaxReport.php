@@ -6,7 +6,9 @@ use App\Filament\Clusters\Accounting\AccountingCluster;
 use App\Models\Company;
 use App\Services\Reports\TaxReportService;
 use App\Support\NumberFormatter;
+use BackedEnum;
 use Carbon\Carbon;
+use Exception;
 use Filament\Actions\Action;
 use Filament\Facades\Filament;
 use Filament\Forms\Components\DatePicker;
@@ -16,7 +18,7 @@ use Filament\Schemas\Schema;
 
 class ViewTaxReport extends Page
 {
-    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-document-text';
+    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-document-text';
 
     protected string $view = 'filament.pages.reports.view-tax-report';
 
@@ -90,7 +92,7 @@ class ViewTaxReport extends Page
 
         $user = Filament::auth()->user();
         if (! $user) {
-            throw new \Exception('User must be authenticated to view tax report');
+            throw new Exception('User must be authenticated to view tax report');
         }
 
         $company = Company::findOrFail($user->company_id);

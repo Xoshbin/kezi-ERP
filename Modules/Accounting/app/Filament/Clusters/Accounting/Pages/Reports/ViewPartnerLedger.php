@@ -2,11 +2,11 @@
 
 namespace Modules\Accounting\Filament\Clusters\Accounting\Pages\Reports;
 
-use App\Filament\Clusters\Accounting\AccountingCluster;
+
 use App\Models\Company;
-use App\Services\Reports\PartnerLedgerService;
-use App\Support\NumberFormatter;
+use BackedEnum;
 use Carbon\Carbon;
+use Exception;
 use Filament\Actions\Action;
 use Filament\Facades\Filament;
 use Filament\Forms\Components\DatePicker;
@@ -15,10 +15,11 @@ use Filament\Pages\Page;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Illuminate\Contracts\Support\Htmlable;
+use Modules\Foundation\Models\Partner;
 
 class ViewPartnerLedger extends Page
 {
-    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-document-text';
+    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-document-text';
 
     protected string $view = 'filament.pages.reports.view-partner-ledger';
 
@@ -75,7 +76,7 @@ class ViewPartnerLedger extends Page
                                     return [];
                                 }
 
-                                return \Modules\Foundation\Models\Partner::where('company_id', $user->company_id)
+                                return Partner::where('company_id', $user->company_id)
                                     ->with(['receivableAccount', 'payableAccount'])
                                     ->get()
                                     ->mapWithKeys(function ($partner) {
@@ -124,11 +125,11 @@ class ViewPartnerLedger extends Page
 
         $user = Filament::auth()->user();
         if (! $user) {
-            throw new \Exception('User must be authenticated to view partner ledger');
+            throw new Exception('User must be authenticated to view partner ledger');
         }
 
         $company = Company::findOrFail($user->company_id);
-        $partner = \Modules\Foundation\Models\Partner::findOrFail($this->partnerId);
+        $partner = Partner::findOrFail($this->partnerId);
         $service = app(\Modules\Accounting\Services\Reports\PartnerLedgerService::class);
 
         $report = $service->generate(

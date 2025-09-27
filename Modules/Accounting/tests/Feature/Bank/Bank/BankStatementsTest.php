@@ -2,16 +2,10 @@
 
 namespace Modules\Accounting\Tests\Feature\Bank;
 
-use App\Actions\Accounting\CreateBankStatementAction;
-use App\Actions\Accounting\UpdateBankStatementAction;
-use App\DataTransferObjects\Accounting\CreateBankStatementDTO;
-use App\DataTransferObjects\Accounting\CreateBankStatementLineDTO;
-use App\DataTransferObjects\Accounting\UpdateBankStatementDTO;
-use App\DataTransferObjects\Accounting\UpdateBankStatementLineDTO;
-use App\Enums\Accounting\JournalType;
-use App\Models\Journal;
 use Brick\Money\Money;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Modules\Accounting\Models\BankStatement;
+use Modules\Foundation\Models\Partner;
 use Tests\Traits\WithConfiguredCompany;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);
@@ -24,7 +18,7 @@ beforeEach(function () {
 
 test('it creates a bank statement and its lines from a dto', function () {
     // Arrange: Prepare the DTOs needed for the action.
-    $partner = \Modules\Foundation\Models\Partner::factory()->for($this->company)->create();
+    $partner = Partner::factory()->for($this->company)->create();
     $currencyCode = $this->company->currency->code;
 
     $lineDTOs = [
@@ -81,7 +75,7 @@ test('it creates a bank statement and its lines from a dto', function () {
 test('it updates a bank statement and syncs its lines from a dto', function () {
     // Arrange: Create an initial bank statement with two lines.
     $currencyCode = $this->company->currency->code;
-    $statement = \Modules\Accounting\Models\BankStatement::factory()->for($this->company)->for($this->bankJournal)->create([
+    $statement = BankStatement::factory()->for($this->company)->for($this->bankJournal)->create([
         'currency_id' => $this->company->currency_id, // <-- THE FIX
     ]);
     $lineToRemove = $statement->bankStatementLines()->create([

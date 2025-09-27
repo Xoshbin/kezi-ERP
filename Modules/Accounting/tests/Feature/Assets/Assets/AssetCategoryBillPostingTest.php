@@ -2,41 +2,41 @@
 
 namespace Modules\Accounting\Tests\Feature\Assets;
 
-use App\Actions\Purchases\CreateVendorBillAction;
-use App\DataTransferObjects\Purchases\CreateVendorBillDTO;
-use App\DataTransferObjects\Purchases\CreateVendorBillLineDTO;
-use App\Services\VendorBillService;
 use Brick\Money\Money;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Modules\Accounting\Models\Account;
+use Modules\Accounting\Models\AssetCategory;
+use Modules\Foundation\Models\Partner;
+use Modules\Purchase\Models\VendorBill;
 use Tests\Traits\WithConfiguredCompany;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);
 
 it('creates asset and posts Dr Asset / Cr AP for asset category bill lines', function () {
     $this->setupWithConfiguredCompany();
-    $this->vendor = \Modules\Foundation\Models\Partner::factory()->for($this->company)->vendor()->create();
+    $this->vendor = Partner::factory()->for($this->company)->vendor()->create();
 
     // Accounts for the asset category
-    $assetAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create([
+    $assetAccount = Account::factory()->for($this->company)->create([
         'name' => ['en' => 'Office Equipment'],
         'type' => 'fixed_assets',
     ]);
-    $accumDepAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create([
+    $accumDepAccount = Account::factory()->for($this->company)->create([
         'name' => ['en' => 'Accumulated Depreciation'],
         'type' => 'non_current_assets',
     ]);
-    $depExpenseAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create([
+    $depExpenseAccount = Account::factory()->for($this->company)->create([
         'name' => ['en' => 'Depreciation Expense'],
         'type' => 'depreciation',
     ]);
 
-    $category = \Modules\Accounting\Models\AssetCategory::create([
+    $category = AssetCategory::create([
         'company_id' => $this->company->id,
         'name' => 'IT Equipment',
         'asset_account_id' => $assetAccount->id,
         'accumulated_depreciation_account_id' => $accumDepAccount->id,
         'depreciation_expense_account_id' => $depExpenseAccount->id,
-        'depreciation_method' => \App\Enums\Assets\DepreciationMethod::StraightLine,
+        'depreciation_method' => DepreciationMethod::StraightLine,
         'useful_life_years' => 5,
         'salvage_value_default' => 0,
     ]);
@@ -96,7 +96,7 @@ it('creates asset and posts Dr Asset / Cr AP for asset category bill lines', fun
         'asset_account_id' => $assetAccount->id,
         'accumulated_depreciation_account_id' => $accumDepAccount->id,
         'depreciation_expense_account_id' => $depExpenseAccount->id,
-        'source_type' => \Modules\Purchase\Models\VendorBill::class,
+        'source_type' => VendorBill::class,
         'source_id' => $vendorBill->id,
     ]);
 });
