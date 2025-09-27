@@ -5,8 +5,6 @@ namespace Modules\Sales\Actions\Sales;
 use App\DataTransferObjects\Sales\CreateInvoiceDTO;
 use App\Enums\Sales\InvoiceStatus;
 use App\Models\Company;
-use App\Models\Currency;
-use App\Models\Invoice;
 use App\Services\Accounting\LockDateService;
 use Brick\Money\Money;
 use Carbon\Carbon;

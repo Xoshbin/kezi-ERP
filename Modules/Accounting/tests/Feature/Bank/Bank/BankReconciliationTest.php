@@ -1,9 +1,6 @@
 <?php
 
 use App\Enums\Payments\PaymentStatus;
-use App\Models\Account;
-use App\Models\Journal;
-use App\Models\Payment;
 use App\Services\BankReconciliationService;
 use Brick\Money\Money;
 use Illuminate\Foundation\Testing\RefreshDatabase;

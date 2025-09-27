@@ -4,7 +4,6 @@ namespace Modules\Accounting\Observers;
 
 use App\Enums\Accounting\LockDateType;
 use App\Exceptions\UpdateNotAllowedException;
-use App\Models\LockDate;
 use Illuminate\Support\Facades\Cache;
 
 class LockDateObserver

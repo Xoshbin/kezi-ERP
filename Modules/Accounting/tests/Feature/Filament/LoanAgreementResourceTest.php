@@ -5,7 +5,6 @@ use App\Models\LoanAgreement;
 use Brick\Money\Money;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\Traits\WithConfiguredCompany;
-
 use function Pest\Livewire\livewire;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);

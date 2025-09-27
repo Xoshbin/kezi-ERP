@@ -2,9 +2,8 @@
 
 namespace Modules\Inventory\Services\Inventory;
 
-use App\Exceptions\Inventory\InsufficientCostInformationException;
-use App\Models\Product;
 use App\Enums\Inventory\ValuationMethod;
+use App\Exceptions\Inventory\InsufficientCostInformationException;
 
 /**
  * Service for converting technical inventory exceptions into user-friendly error messages
@@ -29,7 +28,7 @@ class UserFriendlyErrorService
     {
         $product = $exception->getProduct();
         $vendorBillAnalysis = $this->costAnalysisService->analyzeVendorBillStatus($product);
-        
+
         return [
             'title' => __('inventory_accounting.cost_validation_errors.title'),
             'message' => __('inventory_accounting.cost_validation_errors.message', [
@@ -48,7 +47,7 @@ class UserFriendlyErrorService
     protected function getValuationMethodExplanation(\Modules\Product\Models\Product $product): string
     {
         $method = strtolower($product->inventory_valuation_method->value);
-        
+
         return __("inventory_accounting.cost_validation_errors.explanation.{$method}");
     }
 
@@ -60,15 +59,15 @@ class UserFriendlyErrorService
         if (!$vendorBillAnalysis['has_vendor_bills']) {
             return __('inventory_accounting.cost_validation_errors.solutions.no_bills');
         }
-        
+
         if ($vendorBillAnalysis['draft_count'] > 0 && $vendorBillAnalysis['posted_count'] === 0) {
             return __('inventory_accounting.cost_validation_errors.solutions.draft_bills');
         }
-        
+
         if ($vendorBillAnalysis['posted_count'] > 0) {
             return __('inventory_accounting.cost_validation_errors.solutions.posted_bills_no_cost');
         }
-        
+
         return __('inventory_accounting.cost_validation_errors.solutions.system_issue');
     }
 
@@ -85,7 +84,7 @@ class UserFriendlyErrorService
                 __('inventory_accounting.cost_validation_errors.next_steps.retry_movement'),
             ];
         }
-        
+
         if ($vendorBillAnalysis['draft_count'] > 0 && $vendorBillAnalysis['posted_count'] === 0) {
             return [
                 __('Go to Vendor Bills and review the draft bills'),
@@ -94,7 +93,7 @@ class UserFriendlyErrorService
                 __('Return here to process the inventory movement'),
             ];
         }
-        
+
         if ($vendorBillAnalysis['posted_count'] > 0) {
             return [
                 __('Verify the confirmed vendor bills include this product'),
@@ -102,7 +101,7 @@ class UserFriendlyErrorService
                 __('Contact your system administrator if the issue persists'),
             ];
         }
-        
+
         return [
             __('Contact your system administrator for assistance'),
             __('Provide them with the product name and this error message'),
@@ -116,19 +115,19 @@ class UserFriendlyErrorService
     {
         $product = $exception->getProduct();
         $vendorBillAnalysis = $this->costAnalysisService->analyzeVendorBillStatus($product);
-        
+
         $baseMessage = __('Cannot process inventory movement for ":product_name".', [
             'product_name' => $product->name
         ]);
-        
+
         if (!$vendorBillAnalysis['has_vendor_bills']) {
             return $baseMessage . ' ' . __('Please create and confirm a vendor bill for this product first.');
         }
-        
+
         if ($vendorBillAnalysis['draft_count'] > 0 && $vendorBillAnalysis['posted_count'] === 0) {
             return $baseMessage . ' ' . __('Please confirm the existing draft vendor bills for this product.');
         }
-        
+
         return $baseMessage . ' ' . __('Cost information is not available. Please check vendor bills or contact support.');
     }
 
@@ -139,7 +138,7 @@ class UserFriendlyErrorService
     {
         $errorData = $this->convertCostInformationException($exception);
         $product = $exception->getProduct();
-        
+
         return [
             'title' => $errorData['title'],
             'product_name' => $product->name,

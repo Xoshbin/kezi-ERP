@@ -2,7 +2,6 @@
 
 namespace Modules\Accounting\Tests\Feature\Services\Reports;
 
-use App\Models\Account;
 use App\Models\Journal;
 use App\Models\JournalEntry;
 use App\Models\JournalEntryLine;

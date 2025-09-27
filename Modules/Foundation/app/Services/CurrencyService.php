@@ -2,7 +2,6 @@
 
 namespace Modules\Foundation\Services;
 
-use App\Models\Currency;
 use Illuminate\Support\Facades\Validator;
 
 class CurrencyService

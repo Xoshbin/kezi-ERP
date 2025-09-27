@@ -3,7 +3,6 @@
 namespace Modules\Accounting\Filament\Clusters\Accounting\Resources\VendorBills\Widgets;
 
 use App\Enums\Purchases\VendorBillStatus;
-use App\Models\VendorBill;
 use Brick\Money\Money;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;

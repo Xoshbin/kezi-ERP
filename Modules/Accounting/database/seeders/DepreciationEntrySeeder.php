@@ -2,9 +2,6 @@
 
 namespace Modules\Accounting\Database\Seeders;
 
-use App\Models\Account;
-use App\Models\Asset;
-use App\Models\DepreciationEntry;
 use App\Models\Journal;
 use App\Models\JournalEntry;
 use App\Models\JournalEntryLine;

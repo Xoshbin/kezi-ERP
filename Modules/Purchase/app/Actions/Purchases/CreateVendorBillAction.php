@@ -5,7 +5,6 @@ namespace Modules\Purchase\Actions\Purchases;
 use App\DataTransferObjects\Purchases\CreateVendorBillDTO;
 use App\Models\Company;
 use App\Models\PurchaseOrder;
-use App\Models\VendorBill;
 use App\Services\Accounting\LockDateService;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;

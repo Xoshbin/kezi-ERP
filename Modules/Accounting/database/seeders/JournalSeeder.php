@@ -3,9 +3,7 @@
 namespace Modules\Accounting\Database\Seeders;
 
 use App\Enums\Accounting\JournalType;
-use App\Models\Account;
 use App\Models\Company;
-use App\Models\Currency;
 use App\Models\Journal;
 use Illuminate\Database\Seeder;
 

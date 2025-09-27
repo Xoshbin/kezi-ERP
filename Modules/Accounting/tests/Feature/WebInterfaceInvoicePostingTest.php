@@ -3,7 +3,6 @@
 namespace Modules\Accounting\Tests\Feature;
 
 use App\Enums\Sales\InvoiceStatus;
-use App\Models\Invoice;
 use App\Models\JournalEntry;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;

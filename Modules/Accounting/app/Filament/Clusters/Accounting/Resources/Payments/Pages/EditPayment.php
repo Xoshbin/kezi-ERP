@@ -9,8 +9,6 @@ use App\Enums\Payments\PaymentStatus;
 use App\Enums\Payments\PaymentType;
 use App\Filament\Actions\DocsAction;
 use App\Filament\Clusters\Accounting\Resources\Payments\PaymentResource;
-use App\Models\Currency;
-use App\Models\Payment;
 use App\Services\PaymentService;
 use Brick\Money\Money;
 use Exception;
@@ -28,7 +26,7 @@ class EditPayment extends EditRecord
     protected function getHeaderActions(): array
     {
         return [
-            DocsAction::make('payments'),
+            \Modules\Foundation\App\Filament\Actions\DocsAction::make('payments'),
             Action::make('confirm')
                 ->label(__('payment.edit.action.confirm.label'))
                 ->color('success')

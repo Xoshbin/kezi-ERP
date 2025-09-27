@@ -1,10 +1,6 @@
 <?php
 
 use App\Livewire\Accounting\BankTransactionsTable;
-use App\Models\Account;
-use App\Models\BankStatement;
-use App\Models\BankStatementLine;
-use App\Models\Company;
 use App\Models\Journal;
 use App\Models\User;
 use Brick\Money\Money;

@@ -4,7 +4,6 @@ use App\Filament\Clusters\Accounting\Resources\LoanAgreements\Pages\CreateLoanAg
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\Support\FilamentInlineCreate as Inline;
 use Tests\Traits\WithConfiguredCompany;
-
 use function Pest\Livewire\livewire;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);

@@ -6,8 +6,6 @@ use App\Actions\Purchases\CreateVendorBillAction;
 use App\DataTransferObjects\Purchases\CreateVendorBillDTO;
 use App\DataTransferObjects\Purchases\CreateVendorBillLineDTO;
 use App\Enums\Purchases\VendorBillStatus;
-use App\Models\Account;
-use App\Models\Partner;
 use App\Services\VendorBillService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\Traits\WithConfiguredCompany;

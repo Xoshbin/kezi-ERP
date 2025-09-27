@@ -3,7 +3,6 @@
 namespace Modules\Accounting\Filament\Clusters\Accounting\Pages\Reports;
 
 use App\Filament\Clusters\Accounting\AccountingCluster;
-use App\Models\Account;
 use App\Services\Reports\GeneralLedgerService;
 use App\Support\NumberFormatter;
 use Carbon\Carbon;

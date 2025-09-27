@@ -3,7 +3,6 @@
 namespace Modules\Foundation\Filament\Components;
 
 use App\Enums\Inventory\StockMoveType;
-use App\Models\Product;
 use App\Services\Inventory\CostValidationService;
 use Filament\Schemas\Components\View;
 

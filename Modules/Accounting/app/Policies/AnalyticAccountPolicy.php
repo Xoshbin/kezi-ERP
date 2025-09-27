@@ -2,7 +2,6 @@
 
 namespace Modules\Accounting\Policies;
 
-use App\Models\AnalyticAccount;
 use App\Models\User;
 
 class AnalyticAccountPolicy

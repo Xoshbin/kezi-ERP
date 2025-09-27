@@ -5,7 +5,6 @@ namespace Modules\Inventory\Database\Factories;
 use App\Enums\Inventory\StockPickingState;
 use App\Enums\Inventory\StockPickingType;
 use App\Models\Company;
-use App\Models\Partner;
 use App\Models\StockPicking;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;

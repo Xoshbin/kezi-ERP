@@ -4,7 +4,6 @@ namespace Modules\Accounting\Filament\Clusters\Accounting\Resources\BankStatemen
 
 use App\Filament\Actions\DocsAction;
 use App\Filament\Clusters\Accounting\Resources\BankStatements\BankStatementResource;
-use App\Models\BankStatement;
 use Filament\Resources\Pages\Page;
 
 class BankReconciliation extends Page
@@ -50,7 +49,7 @@ class BankReconciliation extends Page
     protected function getHeaderActions(): array
     {
         return [
-            DocsAction::make('bank-reconciliation'),
+            \Modules\Foundation\App\Filament\Actions\DocsAction::make('bank-reconciliation'),
         ];
     }
 }

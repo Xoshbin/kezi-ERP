@@ -2,8 +2,6 @@
 
 use App\Actions\Accounting\CreateJournalEntryForInvoiceAction;
 use App\Enums\Sales\InvoiceStatus;
-use App\Models\Invoice;
-use App\Models\Product;
 use App\Models\Tax;
 use Brick\Money\Money;
 use Illuminate\Foundation\Testing\RefreshDatabase;

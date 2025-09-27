@@ -2,7 +2,6 @@
 
 namespace Modules\Foundation\Filament\Tables\Columns;
 
-use App\Models\Currency;
 use App\Support\NumberFormatter;
 use Brick\Money\Money;
 use Exception;

@@ -3,10 +3,7 @@
 namespace Modules\Payment\Database\Seeders;
 
 use App\Enums\Partners\PartnerType;
-use App\Models\Invoice;
-use App\Models\Payment;
 use App\Models\PaymentDocumentLink;
-use App\Models\VendorBill;
 use Illuminate\Database\Seeder;
 
 class PaymentDocumentLinkSeeder extends Seeder

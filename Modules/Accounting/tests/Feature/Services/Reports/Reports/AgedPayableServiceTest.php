@@ -4,10 +4,7 @@ namespace Modules\Accounting\Tests\Feature\Services\Reports;
 
 use App\Enums\Payments\PaymentStatus;
 use App\Enums\Purchases\VendorBillStatus;
-use App\Models\Partner;
-use App\Models\Payment;
 use App\Models\PaymentDocumentLink;
-use App\Models\VendorBill;
 use App\Services\Reports\AgedPayableService;
 use Brick\Money\Money;
 use Carbon\Carbon;

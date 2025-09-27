@@ -5,15 +5,13 @@ namespace Modules\Inventory\Filament\Clusters\Inventory\Pages;
 use App\Filament\Clusters\Inventory\InventoryCluster;
 use App\Services\Inventory\InventoryReportingService;
 use Carbon\Carbon;
-
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Toggle;
-use Filament\Schemas\Components\Section;
 use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
-
 use Filament\Pages\Page;
+use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 
 class InventoryValuationReport extends Page implements HasForms

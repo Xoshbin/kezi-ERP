@@ -3,9 +3,7 @@
 use App\Actions\Loans\CreateJournalEntryForLoanInitialRecognitionAction;
 use App\Enums\Loans\LoanType;
 use App\Enums\Loans\ScheduleMethod;
-use App\Models\Account;
 use App\Models\Journal;
-use App\Models\LoanAgreement;
 use Brick\Money\Money;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\Traits\WithConfiguredCompany;

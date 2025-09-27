@@ -2,12 +2,12 @@
 
 namespace Modules\Inventory\Services;
 
-use App\Actions\Accounting\CreateJournalEntryForAdjustmentAction; // 1. Import the new action
+use App\Actions\Accounting\CreateJournalEntryForAdjustmentAction;
 use App\Enums\Adjustments\AdjustmentDocumentStatus;
-use App\Events\AdjustmentDocumentPosted;
-use App\Models\AdjustmentDocument;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
+
+// 1. Import the new action
 
 class AdjustmentDocumentService
 {

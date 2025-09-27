@@ -3,11 +3,9 @@
 namespace Modules\Accounting\Tests\Feature\Services\Reports;
 
 use App\Enums\Accounting\JournalType;
-use App\Models\Account;
 use App\Models\Company;
 use App\Models\Journal;
 use App\Models\JournalEntry;
-use App\Models\Partner;
 use App\Services\Reports\PartnerLedgerService;
 use Brick\Money\Money;
 use Carbon\Carbon;

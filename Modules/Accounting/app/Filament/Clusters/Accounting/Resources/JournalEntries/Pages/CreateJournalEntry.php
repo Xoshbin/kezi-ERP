@@ -7,7 +7,6 @@ use App\DataTransferObjects\Accounting\CreateJournalEntryDTO;
 use App\DataTransferObjects\Accounting\CreateJournalEntryLineDTO;
 use App\Filament\Actions\DocsAction;
 use App\Filament\Clusters\Accounting\Resources\JournalEntries\JournalEntryResource;
-use App\Models\Currency;
 use Brick\Money\Money;
 use Filament\Facades\Filament;
 use Filament\Resources\Pages\CreateRecord;
@@ -98,7 +97,7 @@ class CreateJournalEntry extends CreateRecord
     protected function getHeaderActions(): array
     {
         return [
-            DocsAction::make('opening-balances'),
+            \Modules\Foundation\App\Filament\Actions\DocsAction::make('opening-balances'),
         ];
     }
 }

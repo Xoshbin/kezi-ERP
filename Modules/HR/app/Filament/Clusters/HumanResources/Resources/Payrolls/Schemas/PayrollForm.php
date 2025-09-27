@@ -3,8 +3,6 @@
 namespace Modules\HR\Filament\Clusters\HumanResources\Resources\Payrolls\Schemas;
 
 use App\Filament\Forms\Components\MoneyInput;
-use App\Models\Currency;
-use App\Models\Employee;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
@@ -97,49 +95,49 @@ class PayrollForm
                 ->description(__('payroll.sections.salary_components_description'))
                 ->icon('heroicon-o-currency-dollar')
                 ->schema([
-                    MoneyInput::make('base_salary')
+                    \Modules\Foundation\App\Filament\Forms\Components\MoneyInput::make('base_salary')
                         ->label(__('payroll.fields.base_salary'))
                         ->currencyField('currency_id')
                         ->required()
                         ->columnSpan(2),
 
-                    MoneyInput::make('overtime_amount')
+                    \Modules\Foundation\App\Filament\Forms\Components\MoneyInput::make('overtime_amount')
                         ->label(__('payroll.fields.overtime_amount'))
                         ->currencyField('currency_id')
                         ->default(0)
                         ->columnSpan(1),
 
-                    MoneyInput::make('housing_allowance')
+                    \Modules\Foundation\App\Filament\Forms\Components\MoneyInput::make('housing_allowance')
                         ->label(__('payroll.fields.housing_allowance'))
                         ->currencyField('currency_id')
                         ->default(0)
                         ->columnSpan(1),
 
-                    MoneyInput::make('transport_allowance')
+                    \Modules\Foundation\App\Filament\Forms\Components\MoneyInput::make('transport_allowance')
                         ->label(__('payroll.fields.transport_allowance'))
                         ->currencyField('currency_id')
                         ->default(0)
                         ->columnSpan(1),
 
-                    MoneyInput::make('meal_allowance')
+                    \Modules\Foundation\App\Filament\Forms\Components\MoneyInput::make('meal_allowance')
                         ->label(__('payroll.fields.meal_allowance'))
                         ->currencyField('currency_id')
                         ->default(0)
                         ->columnSpan(1),
 
-                    MoneyInput::make('other_allowances')
+                    \Modules\Foundation\App\Filament\Forms\Components\MoneyInput::make('other_allowances')
                         ->label(__('payroll.fields.other_allowances'))
                         ->currencyField('currency_id')
                         ->default(0)
                         ->columnSpan(1),
 
-                    MoneyInput::make('bonus')
+                    \Modules\Foundation\App\Filament\Forms\Components\MoneyInput::make('bonus')
                         ->label(__('payroll.fields.bonus'))
                         ->currencyField('currency_id')
                         ->default(0)
                         ->columnSpan(1),
 
-                    MoneyInput::make('commission')
+                    \Modules\Foundation\App\Filament\Forms\Components\MoneyInput::make('commission')
                         ->label(__('payroll.fields.commission'))
                         ->currencyField('currency_id')
                         ->default(0)
@@ -152,31 +150,31 @@ class PayrollForm
                 ->description(__('payroll.sections.deductions_description'))
                 ->icon('heroicon-o-minus-circle')
                 ->schema([
-                    MoneyInput::make('income_tax')
+                    \Modules\Foundation\App\Filament\Forms\Components\MoneyInput::make('income_tax')
                         ->label(__('payroll.fields.income_tax'))
                         ->currencyField('currency_id')
                         ->default(0)
                         ->columnSpan(1),
 
-                    MoneyInput::make('social_security')
+                    \Modules\Foundation\App\Filament\Forms\Components\MoneyInput::make('social_security')
                         ->label(__('payroll.fields.social_security'))
                         ->currencyField('currency_id')
                         ->default(0)
                         ->columnSpan(1),
 
-                    MoneyInput::make('health_insurance')
+                    \Modules\Foundation\App\Filament\Forms\Components\MoneyInput::make('health_insurance')
                         ->label(__('payroll.fields.health_insurance'))
                         ->currencyField('currency_id')
                         ->default(0)
                         ->columnSpan(1),
 
-                    MoneyInput::make('pension_contribution')
+                    \Modules\Foundation\App\Filament\Forms\Components\MoneyInput::make('pension_contribution')
                         ->label(__('payroll.fields.pension_contribution'))
                         ->currencyField('currency_id')
                         ->default(0)
                         ->columnSpan(1),
 
-                    MoneyInput::make('other_deductions')
+                    \Modules\Foundation\App\Filament\Forms\Components\MoneyInput::make('other_deductions')
                         ->label(__('payroll.fields.other_deductions'))
                         ->currencyField('currency_id')
                         ->default(0)

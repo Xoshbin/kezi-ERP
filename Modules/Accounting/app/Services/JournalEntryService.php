@@ -8,8 +8,6 @@ use App\DataTransferObjects\Accounting\CreateJournalEntryDTO;
 use App\DataTransferObjects\Accounting\CreateJournalEntryLineDTO;
 use App\Exceptions\DeletionNotAllowedException;
 use App\Exceptions\PeriodIsLockedException;
-use App\Models\Company;
-use App\Models\Currency;
 use App\Models\JournalEntry;
 use App\Models\User;
 use App\Services\Accounting\LockDateService;

@@ -4,7 +4,6 @@ namespace Modules\Payment\Observers;
 
 use App\Enums\Payments\PaymentStatus;
 use App\Exceptions\DeletionNotAllowedException;
-use App\Models\Payment;
 
 class PaymentObserver
 {

@@ -4,7 +4,6 @@ namespace Modules\Foundation\Services;
 
 use App\Enums\Settings\NumberingType;
 use App\Models\Company;
-use App\Models\Sequence;
 use Carbon\Carbon;
 
 /**

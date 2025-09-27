@@ -3,7 +3,6 @@
 namespace Modules\Accounting\Database\Factories;
 
 use App\Enums\Accounting\JournalType;
-use App\Models\Account;
 use App\Models\Company;
 use App\Models\Journal;
 use Illuminate\Database\Eloquent\Factories\Factory;

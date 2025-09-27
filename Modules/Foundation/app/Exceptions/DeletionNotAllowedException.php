@@ -5,10 +5,12 @@ namespace Modules\Foundation\Exceptions;
 use Exception;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
+use Throwable;
+
 // We will use the Symfony Response class as it is the foundational
 // parent for Laravel's HTTP responses (Illuminate\Http\Response, JsonResponse, RedirectResponse).
 // This makes the type hint broader and more compatible.
-use Throwable; // Alias to avoid any potential conflicts
+// Alias to avoid any potential conflicts
 
 class DeletionNotAllowedException extends Exception
 {

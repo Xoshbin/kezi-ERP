@@ -4,7 +4,6 @@ namespace Modules\Product\Database\Factories;
 
 use App\Enums\Inventory\ValuationMethod;
 use App\Enums\Products\ProductType;
-use App\Models\Account;
 use App\Models\Company;
 use App\Models\Product;
 use Brick\Money\Money;

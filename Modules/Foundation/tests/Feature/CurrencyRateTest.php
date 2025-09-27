@@ -1,8 +1,6 @@
 <?php
 
 use App\Models\Company;
-use App\Models\Currency;
-use App\Models\CurrencyRate;
 use Carbon\Carbon;
 
 test('currency rate can be created', function () {

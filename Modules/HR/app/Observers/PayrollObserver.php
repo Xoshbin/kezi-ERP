@@ -2,8 +2,6 @@
 
 namespace Modules\HR\Observers;
 
-use App\Models\Payroll;
-
 class PayrollObserver
 {
     /**

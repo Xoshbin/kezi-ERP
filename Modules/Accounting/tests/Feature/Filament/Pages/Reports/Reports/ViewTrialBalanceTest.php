@@ -4,7 +4,6 @@ namespace Modules\Accounting\Tests\Feature\Filament\Pages\Reports;
 
 use App\Enums\Accounting\AccountType;
 use App\Filament\Clusters\Accounting\Pages\Reports\ViewTrialBalance;
-use App\Models\Account;
 use App\Models\Journal;
 use App\Models\JournalEntry;
 use App\Models\JournalEntryLine;

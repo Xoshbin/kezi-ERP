@@ -1,12 +1,11 @@
 <?php
 
 use App\Filament\Clusters\Accounting\Resources\Partners\Pages\CreatePartner;
-use Xoshbin\CustomFields\Filament\Tables\Components\CustomFieldTableColumns;
-use Xoshbin\CustomFields\Models\CustomFieldDefinition;
-use App\Models\Partner;
 use Database\Seeders\PartnerCustomFieldSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\Traits\WithConfiguredCompany;
+use Xoshbin\CustomFields\Filament\Tables\Components\CustomFieldTableColumns;
+use Xoshbin\CustomFields\Models\CustomFieldDefinition;
 use function Pest\Livewire\livewire;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);

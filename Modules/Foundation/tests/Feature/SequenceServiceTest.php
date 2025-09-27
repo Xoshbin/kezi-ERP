@@ -3,8 +3,6 @@
 namespace Modules\Foundation\Tests\Feature;
 
 use App\Models\Company;
-use App\Models\Currency;
-use App\Models\Sequence;
 use App\Services\SequenceService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;

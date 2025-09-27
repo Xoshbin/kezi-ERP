@@ -7,7 +7,6 @@ use App\DataTransferObjects\Purchases\CreatePurchaseOrderDTO;
 use App\DataTransferObjects\Purchases\CreatePurchaseOrderLineDTO;
 use App\Enums\Products\ProductType;
 use App\Enums\Purchases\PurchaseOrderStatus;
-use App\Models\Product;
 use App\Models\PurchaseOrder;
 use App\Services\PurchaseOrderService;
 use Brick\Money\Money;

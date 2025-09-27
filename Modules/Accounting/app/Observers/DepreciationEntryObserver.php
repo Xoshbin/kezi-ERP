@@ -5,7 +5,6 @@ namespace Modules\Accounting\Observers;
 use App\Enums\Assets\DepreciationEntryStatus;
 use App\Exceptions\DeletionNotAllowedException;
 use App\Exceptions\UpdateNotAllowedException;
-use App\Models\DepreciationEntry;
 
 class DepreciationEntryObserver
 {

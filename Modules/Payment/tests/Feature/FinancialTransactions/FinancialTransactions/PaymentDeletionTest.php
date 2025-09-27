@@ -4,7 +4,6 @@ namespace Modules\Payment\Tests\Feature\FinancialTransactions;
 
 use App\Enums\Payments\PaymentStatus;
 use App\Exceptions\DeletionNotAllowedException;
-use App\Models\Payment;
 use App\Services\PaymentService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\Traits\WithConfiguredCompany;

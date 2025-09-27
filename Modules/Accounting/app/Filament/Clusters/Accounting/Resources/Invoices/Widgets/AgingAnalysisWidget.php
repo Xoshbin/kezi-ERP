@@ -4,7 +4,6 @@ namespace Modules\Accounting\Filament\Clusters\Accounting\Resources\Invoices\Wid
 
 use App\Enums\Sales\InvoiceStatus;
 use App\Enums\Shared\PaymentState;
-use App\Models\Invoice;
 use App\Support\NumberFormatter;
 use Brick\Math\RoundingMode;
 use Brick\Money\Money;

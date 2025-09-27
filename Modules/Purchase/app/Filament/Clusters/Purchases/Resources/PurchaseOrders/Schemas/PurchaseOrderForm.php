@@ -6,8 +6,6 @@ use App\Enums\Accounting\TaxType;
 use App\Enums\Products\ProductType;
 use App\Enums\Purchases\PurchaseOrderStatus;
 use App\Filament\Forms\Components\MoneyInput;
-use App\Models\Account;
-use App\Models\Product;
 use App\Models\PurchaseOrder;
 use App\Models\Tax;
 use Filament\Actions\Action;
@@ -17,8 +15,8 @@ use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Repeater\TableColumn;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
@@ -263,7 +261,7 @@ class PurchaseOrderForm
                                     })
                                     ->columnSpan(2),
 
-                                MoneyInput::make('unit_price')
+                                \Modules\Foundation\App\Filament\Forms\Components\MoneyInput::make('unit_price')
                                     ->label(__('purchase_orders.fields.unit_price'))
                                     ->currencyField('../../currency_id')
                                     ->required()
@@ -340,13 +338,13 @@ class PurchaseOrderForm
                     ->schema([
                         Grid::make(2)
                             ->schema([
-                                MoneyInput::make('total_tax')
+                                \Modules\Foundation\App\Filament\Forms\Components\MoneyInput::make('total_tax')
                                     ->label(__('purchase_orders.fields.total_tax'))
                                     ->currencyField('currency_id')
                                     ->disabled()
                                     ->dehydrated(false),
 
-                                MoneyInput::make('total_amount')
+                                \Modules\Foundation\App\Filament\Forms\Components\MoneyInput::make('total_amount')
                                     ->label(__('purchase_orders.fields.total_amount'))
                                     ->currencyField('currency_id')
                                     ->disabled()

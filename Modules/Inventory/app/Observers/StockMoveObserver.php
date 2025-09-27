@@ -3,7 +3,6 @@
 namespace Modules\Inventory\Observers;
 
 use App\Enums\Inventory\StockMoveStatus;
-use App\Models\AuditLog;
 use App\Models\StockMove;
 use Illuminate\Support\Facades\Auth;
 

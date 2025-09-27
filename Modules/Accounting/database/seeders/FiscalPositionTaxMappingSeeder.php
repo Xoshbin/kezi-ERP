@@ -2,8 +2,6 @@
 
 namespace Modules\Accounting\Database\Seeders;
 
-use App\Models\FiscalPosition;
-use App\Models\FiscalPositionTaxMapping;
 use App\Models\Tax;
 use Illuminate\Database\Seeder;
 use RuntimeException;

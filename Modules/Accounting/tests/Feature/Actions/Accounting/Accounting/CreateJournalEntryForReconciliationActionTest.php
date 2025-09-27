@@ -1,7 +1,6 @@
 <?php
 
 use App\Actions\Accounting\CreateJournalEntryForReconciliationAction;
-use App\Models\Payment;
 use Brick\Money\Money;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\Traits\WithConfiguredCompany;

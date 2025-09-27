@@ -1,8 +1,6 @@
 <?php
 
 use App\Models\Company;
-use App\Models\Currency;
-use App\Models\CurrencyRate;
 use App\Services\CurrencyConverterService;
 use Brick\Money\Money;
 use Carbon\Carbon;

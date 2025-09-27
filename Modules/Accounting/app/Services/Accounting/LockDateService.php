@@ -5,7 +5,6 @@ namespace Modules\Accounting\Services\Accounting;
 use App\Enums\Accounting\LockDateType;
 use App\Exceptions\PeriodIsLockedException;
 use App\Models\Company;
-use App\Models\LockDate;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Cache;
 

@@ -2,7 +2,6 @@
 
 namespace Modules\Accounting\Actions\Loans;
 
-use App\Models\LoanAgreement;
 use App\Services\Loans\EIRSolverService;
 use Brick\Money\Money;
 use Illuminate\Support\Facades\DB;

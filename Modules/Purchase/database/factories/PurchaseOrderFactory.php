@@ -4,8 +4,6 @@ namespace Modules\Purchase\Database\Factories;
 
 use App\Enums\Purchases\PurchaseOrderStatus;
 use App\Models\Company;
-use App\Models\Currency;
-use App\Models\Partner;
 use App\Models\PurchaseOrder;
 use App\Models\StockLocation;
 use App\Models\User;

@@ -6,7 +6,6 @@ use App\Enums\Inventory\StockMoveStatus;
 use App\Enums\Inventory\StockMoveType;
 use App\Enums\Purchases\VendorBillStatus;
 use App\Models\StockMove;
-use App\Models\VendorBill;
 use Brick\Math\RoundingMode;
 use Brick\Money\Money;
 use Illuminate\Support\Facades\DB;

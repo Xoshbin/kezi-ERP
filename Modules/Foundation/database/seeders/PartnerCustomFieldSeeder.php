@@ -2,11 +2,10 @@
 
 namespace Modules\Foundation\Database\Seeders;
 
-use Xoshbin\CustomFields\Enums\CustomFieldType;
-use Xoshbin\CustomFields\Models\CustomFieldDefinition;
-use App\Models\Partner;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
+use Xoshbin\CustomFields\Enums\CustomFieldType;
+use Xoshbin\CustomFields\Models\CustomFieldDefinition;
 
 class PartnerCustomFieldSeeder extends Seeder
 {

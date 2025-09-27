@@ -6,7 +6,6 @@ use App\Filament\Clusters\Settings\Resources\Currencies\Pages\CreateCurrency;
 use App\Filament\Clusters\Settings\Resources\Currencies\Pages\EditCurrency;
 use App\Filament\Clusters\Settings\Resources\Currencies\Pages\ListCurrencies;
 use App\Filament\Clusters\Settings\SettingsCluster;
-use App\Models\Currency;
 use App\Support\NumberFormatter;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;

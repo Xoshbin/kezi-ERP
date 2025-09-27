@@ -1,12 +1,11 @@
 <?php
 
-use App\Models\Account;
-use App\Models\Partner;
-use App\Models\Product;
 use App\Models\Tax;
 use Brick\Money\Money;
-use Illuminate\Foundation\Testing\RefreshDatabase; // Import the Money class
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\Traits\WithConfiguredCompany;
+
+// Import the Money class
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);
 

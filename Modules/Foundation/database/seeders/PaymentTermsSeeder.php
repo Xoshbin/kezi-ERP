@@ -4,8 +4,6 @@ namespace Modules\Foundation\Database\Seeders;
 
 use App\Enums\PaymentTerms\PaymentTermType;
 use App\Models\Company;
-use App\Models\PaymentTerm;
-use App\Models\PaymentTermLine;
 use Illuminate\Database\Seeder;
 
 class PaymentTermsSeeder extends Seeder

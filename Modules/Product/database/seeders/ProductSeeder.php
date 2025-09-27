@@ -4,9 +4,7 @@ namespace Modules\Product\Database\Seeders;
 
 use App\Enums\Inventory\ValuationMethod;
 use App\Enums\Products\ProductType;
-use App\Models\Account;
 use App\Models\Company;
-use App\Models\Product;
 use Illuminate\Database\Seeder;
 
 class ProductSeeder extends Seeder

@@ -2,9 +2,6 @@
 
 namespace Modules\Accounting\Database\Seeders;
 
-use App\Models\BankStatement;
-use App\Models\BankStatementLine;
-use App\Models\Partner;
 use Brick\Money\Money;
 use Illuminate\Database\Seeder;
 

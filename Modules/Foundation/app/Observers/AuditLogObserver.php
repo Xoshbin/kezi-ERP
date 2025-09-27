@@ -2,7 +2,6 @@
 
 namespace Modules\Foundation\Observers;
 
-use App\Models\AuditLog;
 use Filament\Facades\Filament;
 use Illuminate\Database\Eloquent\Model;
 

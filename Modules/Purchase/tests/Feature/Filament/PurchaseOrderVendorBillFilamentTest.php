@@ -6,8 +6,6 @@ use App\Enums\Products\ProductType;
 use App\Enums\Purchases\PurchaseOrderStatus;
 use App\Filament\Clusters\Accounting\Resources\VendorBills\Pages\CreateVendorBill;
 use App\Filament\Clusters\Purchases\Resources\PurchaseOrders\Pages\ViewPurchaseOrder;
-use App\Models\Account;
-use App\Models\Product;
 use App\Models\PurchaseOrder;
 use Brick\Money\Money;
 use Illuminate\Foundation\Testing\RefreshDatabase;

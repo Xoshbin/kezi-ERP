@@ -12,11 +12,7 @@ use App\Filament\Clusters\Accounting\Resources\Assets\Pages\ListAssets;
 use App\Filament\Clusters\Accounting\Resources\Assets\RelationManagers\DepreciationEntryRelationManager;
 use App\Filament\Forms\Components\MoneyInput;
 use App\Filament\Tables\Columns\MoneyColumn;
-use App\Models\Account;
-use App\Models\Asset;
 use App\Models\Company;
-use App\Models\Currency;
-use App\Models\CurrencyRate;
 use App\Rules\NotInLockedPeriod;
 use BackedEnum;
 use Filament\Actions\Action;
@@ -128,7 +124,7 @@ class AssetResource extends Resource
                                 ->default(1),
                         ])
                         ->createOptionModalHeading(__('common.modal_title_create_currency'))
-                        ->createOptionAction(fn (Action $action) => $action->modalWidth('lg')),
+                        ->createOptionAction(fn(Action $action) => $action->modalWidth('lg')),
 
                     TextInput::make('current_exchange_rate')
                         ->label(__('asset.current_exchange_rate'))
@@ -156,13 +152,13 @@ class AssetResource extends Resource
                         ->rules([new NotInLockedPeriod])
                         ->columnSpan(1),
 
-                    MoneyInput::make('purchase_value')
+                    \Modules\Foundation\Filament\Forms\Components\MoneyInput::make('purchase_value')
                         ->label(__('asset.purchase_value'))
                         ->currencyField('../../company.currency_id')
                         ->required()
                         ->columnSpan(1),
 
-                    MoneyInput::make('salvage_value')
+                    \Modules\Foundation\Filament\Forms\Components\MoneyInput::make('salvage_value')
                         ->label(__('asset.salvage_value'))
                         ->currencyField('../../company.currency_id')
                         ->default(0)
@@ -180,7 +176,7 @@ class AssetResource extends Resource
                         ->searchable()
                         ->options(
                             collect(DepreciationMethod::cases())
-                                ->mapWithKeys(fn (DepreciationMethod $method) => [$method->value => $method->label()])
+                                ->mapWithKeys(fn(DepreciationMethod $method) => [$method->value => $method->label()])
                         )
                         ->required()
                         ->columnSpan(1),
@@ -203,12 +199,12 @@ class AssetResource extends Resource
                                 ->required(),
                             Select::make('type')
                                 ->label(__('account.type'))
-                                ->options(collect(\Modules\Accounting\Enums\Accounting\AccountType::cases())->mapWithKeys(fn ($t) => [$t->value => $t->label()]))
+                                ->options(collect(\Modules\Accounting\Enums\Accounting\AccountType::cases())->mapWithKeys(fn($t) => [$t->value => $t->label()]))
                                 ->default(\Modules\Accounting\Enums\Accounting\AccountType::FixedAssets->value)
                                 ->required(),
                         ])
                         ->createOptionModalHeading(__('common.modal_title_create_account'))
-                        ->createOptionAction(fn (Action $action) => $action->modalWidth('lg'))
+                        ->createOptionAction(fn(Action $action) => $action->modalWidth('lg'))
                         ->required()
                         ->columnSpan(1),
 
@@ -230,12 +226,12 @@ class AssetResource extends Resource
                                 ->required(),
                             Select::make('type')
                                 ->label(__('account.type'))
-                                ->options(collect(\Modules\Accounting\Enums\Accounting\AccountType::cases())->mapWithKeys(fn ($t) => [$t->value => $t->label()]))
+                                ->options(collect(\Modules\Accounting\Enums\Accounting\AccountType::cases())->mapWithKeys(fn($t) => [$t->value => $t->label()]))
                                 ->default(\Modules\Accounting\Enums\Accounting\AccountType::Depreciation->value)
                                 ->required(),
                         ])
                         ->createOptionModalHeading(__('common.modal_title_create_account'))
-                        ->createOptionAction(fn (Action $action) => $action->modalWidth('lg'))
+                        ->createOptionAction(fn(Action $action) => $action->modalWidth('lg'))
                         ->required()
                         ->columnSpan(1),
 
@@ -257,12 +253,12 @@ class AssetResource extends Resource
                                 ->required(),
                             Select::make('type')
                                 ->label(__('account.type'))
-                                ->options(collect(\Modules\Accounting\Enums\Accounting\AccountType::cases())->mapWithKeys(fn ($t) => [$t->value => $t->label()]))
+                                ->options(collect(\Modules\Accounting\Enums\Accounting\AccountType::cases())->mapWithKeys(fn($t) => [$t->value => $t->label()]))
                                 ->default(\Modules\Accounting\Enums\Accounting\AccountType::FixedAssets->value)
                                 ->required(),
                         ])
                         ->createOptionModalHeading(__('common.modal_title_create_account'))
-                        ->createOptionAction(fn (Action $action) => $action->modalWidth('lg'))
+                        ->createOptionAction(fn(Action $action) => $action->modalWidth('lg'))
                         ->required()
                         ->columnSpan(1),
                 ])
@@ -294,7 +290,7 @@ class AssetResource extends Resource
                 TextColumn::make('status')
                     ->label(__('asset.status'))
                     ->badge()
-                    ->formatStateUsing(fn (AssetStatus $state): string => $state->label())
+                    ->formatStateUsing(fn(AssetStatus $state): string => $state->label())
                     ->colors([
                         'gray' => AssetStatus::Draft,
                         'info' => AssetStatus::Confirmed,
@@ -309,7 +305,7 @@ class AssetResource extends Resource
                     ->date()
                     ->sortable(),
 
-                MoneyColumn::make('purchase_value')
+                \Modules\Foundation\Filament\Tables\Columns\MoneyColumn::make('purchase_value')
                     ->label(__('asset.purchase_value'))
                     ->sortable()
                     ->weight('bold')
@@ -317,13 +313,13 @@ class AssetResource extends Resource
 
                 TextColumn::make('depreciation_method')
                     ->label(__('asset.depreciation_method'))
-                    ->formatStateUsing(fn (DepreciationMethod $state): string => $state->label())
+                    ->formatStateUsing(fn(DepreciationMethod $state): string => $state->label())
                     ->badge()
                     ->toggleable(),
 
                 TextColumn::make('useful_life_years')
                     ->label(__('asset.useful_life'))
-                    ->suffix(' '.__('asset.years'))
+                    ->suffix(' ' . __('asset.years'))
                     ->toggleable(),
 
                 TextColumn::make('currency.code')

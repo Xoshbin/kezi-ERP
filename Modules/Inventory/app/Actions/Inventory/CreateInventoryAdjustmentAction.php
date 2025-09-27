@@ -13,8 +13,8 @@ use App\Models\StockMove;
 use App\Models\StockMoveLine;
 use App\Models\StockPicking;
 use App\Services\Inventory\InventoryValuationService;
-use App\Services\Inventory\StockQuantService;
 use App\Services\Inventory\StockMoveService;
+use App\Services\Inventory\StockQuantService;
 use Illuminate\Support\Facades\DB;
 use InvalidArgumentException;
 

@@ -3,7 +3,6 @@
 namespace Modules\Foundation\Observers;
 
 use App\Exceptions\DeletionNotAllowedException;
-use App\Models\Currency;
 
 class CurrencyObserver
 {

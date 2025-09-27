@@ -8,7 +8,6 @@ use App\Filament\Clusters\Accounting\Resources\FiscalPositions\Pages\EditFiscalP
 use App\Filament\Clusters\Accounting\Resources\FiscalPositions\Pages\ListFiscalPositions;
 use App\Filament\Clusters\Accounting\Resources\FiscalPositions\RelationManagers\AccountMappingsRelationManager;
 use App\Filament\Clusters\Accounting\Resources\FiscalPositions\RelationManagers\TaxMappingsRelationManager;
-use App\Models\FiscalPosition;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;

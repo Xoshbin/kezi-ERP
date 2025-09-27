@@ -4,7 +4,6 @@ namespace Modules\Accounting\Filament\Clusters\Accounting\Pages\Reports;
 
 use App\Filament\Clusters\Accounting\AccountingCluster;
 use App\Models\Company;
-use App\Models\Partner;
 use App\Services\Reports\PartnerLedgerService;
 use App\Support\NumberFormatter;
 use Carbon\Carbon;

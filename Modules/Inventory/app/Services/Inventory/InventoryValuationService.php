@@ -17,7 +17,6 @@ use App\Models\Company;
 use App\Models\InventoryCostLayer;
 use App\Models\JournalEntry;
 use App\Models\JournalEntryLine;
-use App\Models\Product;
 use App\Models\StockMove;
 use App\Models\StockMoveValuation;
 use App\Services\Accounting\LockDateService;

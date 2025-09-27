@@ -3,11 +3,7 @@
 namespace Modules\Foundation\Tests\Feature\Filament;
 
 use App\Filament\Clusters\Accounting\Resources\VendorBills\Pages\CreateVendorBill;
-use App\Models\Account;
 use App\Models\Company;
-use App\Models\Currency;
-use App\Models\Partner;
-use App\Models\Product;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Livewire\Livewire;
@@ -32,9 +28,9 @@ class MoneySynthLivewireIntegrationTest extends TestCase
         $this->company = Company::factory()->create();
         $this->user = User::factory()->create();
         $this->currency = \Modules\Foundation\Models\Currency::factory()->create(['code' => 'USD']);
-        
+
         $this->company->update(['currency_id' => $this->currency->id]);
-        
+
         $this->vendor = \Modules\Foundation\Models\Partner::factory()->vendor()->create([
             'company_id' => $this->company->id,
         ]);
@@ -59,7 +55,7 @@ class MoneySynthLivewireIntegrationTest extends TestCase
     {
         // This test reproduces the exact scenario that was causing the TypeError
         // where MoneySynth::hydrate() was receiving a string instead of an array
-        
+
         $livewire = Livewire::test(CreateVendorBill::class)
             ->fillForm([
                 'vendor_id' => $this->vendor->id,
@@ -111,7 +107,7 @@ class MoneySynthLivewireIntegrationTest extends TestCase
     public function it_handles_multiple_line_items_with_different_amounts(): void
     {
         // Test with multiple line items to ensure the fix works for all scenarios
-        
+
         $livewire = Livewire::test(CreateVendorBill::class)
             ->fillForm([
                 'vendor_id' => $this->vendor->id,
@@ -158,7 +154,7 @@ class MoneySynthLivewireIntegrationTest extends TestCase
     public function it_handles_decimal_amounts_correctly(): void
     {
         // Test with decimal amounts to ensure precision is maintained
-        
+
         $livewire = Livewire::test(CreateVendorBill::class)
             ->fillForm([
                 'vendor_id' => $this->vendor->id,

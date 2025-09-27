@@ -7,7 +7,6 @@ use App\Actions\HumanResources\CreateEmploymentContractAction;
 use App\DataTransferObjects\HumanResources\CreateEmployeeDTO;
 use App\DataTransferObjects\HumanResources\CreateEmploymentContractDTO;
 use App\Models\Company;
-use App\Models\Employee;
 use App\Models\User;
 use Exception;
 use Illuminate\Support\Facades\DB;

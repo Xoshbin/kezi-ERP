@@ -2,7 +2,6 @@
 
 use App\Enums\Accounting\JournalEntryState;
 use App\Enums\Payments\PaymentStatus;
-use App\Models\Payment;
 use App\Services\PaymentService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\Traits\MocksTime;

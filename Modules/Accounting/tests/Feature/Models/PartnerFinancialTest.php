@@ -4,9 +4,6 @@ use App\Enums\Partners\PartnerType;
 use App\Enums\Purchases\VendorBillStatus;
 use App\Enums\Sales\InvoiceStatus;
 use App\Models\Company;
-use App\Models\Invoice;
-use App\Models\Partner;
-use App\Models\VendorBill;
 use Brick\Money\Money;
 use Illuminate\Support\Carbon;
 

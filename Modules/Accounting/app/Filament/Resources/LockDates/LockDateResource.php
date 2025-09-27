@@ -7,7 +7,6 @@ use App\Filament\Clusters\Settings\Resources\LockDates\Pages\CreateLockDate;
 use App\Filament\Clusters\Settings\Resources\LockDates\Pages\EditLockDate;
 use App\Filament\Clusters\Settings\Resources\LockDates\Pages\ListLockDates;
 use App\Filament\Clusters\Settings\SettingsCluster;
-use App\Models\LockDate;
 use BackedEnum;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\EditAction;

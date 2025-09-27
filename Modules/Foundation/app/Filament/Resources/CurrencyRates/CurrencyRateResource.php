@@ -8,7 +8,6 @@ use App\Filament\Clusters\Settings\Resources\CurrencyRates\Pages\ListCurrencyRat
 use App\Filament\Clusters\Settings\Resources\CurrencyRates\Schemas\CurrencyRateForm;
 use App\Filament\Clusters\Settings\Resources\CurrencyRates\Tables\CurrencyRatesTable;
 use App\Filament\Clusters\Settings\SettingsCluster;
-use App\Models\CurrencyRate;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;

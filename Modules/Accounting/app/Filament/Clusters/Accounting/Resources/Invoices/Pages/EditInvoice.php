@@ -17,7 +17,6 @@ use App\Filament\Clusters\Accounting\Resources\Invoices\InvoiceResource;
 use App\Filament\Clusters\Accounting\Resources\Invoices\Widgets\SettlementSummaryWidget;
 use App\Filament\Forms\Components\MoneyInput;
 use App\Models\Company;
-use App\Models\Invoice;
 use App\Models\Journal;
 use App\Services\InvoiceService;
 use App\Services\PaymentService;
@@ -189,7 +188,7 @@ class EditInvoice extends EditRecord
                         ->label(__('payment.form.payment_date'))
                         ->default(now())
                         ->required(),
-                    MoneyInput::make('amount')
+                    \Modules\Foundation\App\Filament\Forms\Components\MoneyInput::make('amount')
                         ->label(__('payment.form.amount'))
                         ->currencyField('currency_id')
                         ->default(fn (\Modules\Sales\Models\Invoice $record) => $record->getRemainingAmount())
@@ -277,7 +276,7 @@ class EditInvoice extends EditRecord
                     $this->redirect(InvoiceResource::getUrl('index'));
                 }),
 
-            DocsAction::make('customer-invoices'),
+            \Modules\Foundation\App\Filament\Actions\DocsAction::make('customer-invoices'),
         ];
     }
 

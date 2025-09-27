@@ -3,13 +3,10 @@
 use App\Enums\Accounting\AccountType;
 use App\Enums\Accounting\JournalType;
 use App\Filament\Clusters\Accounting\Resources\LoanAgreements\Pages\ViewLoanAgreement;
-use App\Models\Account;
 use App\Models\Journal;
-use App\Models\LoanAgreement;
 use Brick\Money\Money;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\Traits\WithConfiguredCompany;
-
 use function Pest\Livewire\livewire;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);

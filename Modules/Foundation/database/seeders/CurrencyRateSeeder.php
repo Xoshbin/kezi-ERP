@@ -3,8 +3,6 @@
 namespace Modules\Foundation\Database\Seeders;
 
 use App\Models\Company;
-use App\Models\Currency;
-use App\Models\CurrencyRate;
 use Carbon\Carbon;
 use Illuminate\Database\Seeder;
 

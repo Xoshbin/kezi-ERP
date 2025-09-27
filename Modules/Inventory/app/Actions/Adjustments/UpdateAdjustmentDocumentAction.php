@@ -6,7 +6,6 @@ use App\DataTransferObjects\Adjustments\CreateAdjustmentDocumentLineDTO;
 use App\DataTransferObjects\Adjustments\UpdateAdjustmentDocumentDTO;
 use App\Enums\Adjustments\AdjustmentDocumentStatus;
 use App\Exceptions\UpdateNotAllowedException;
-use App\Models\AdjustmentDocument;
 use Illuminate\Support\Facades\DB;
 
 class UpdateAdjustmentDocumentAction

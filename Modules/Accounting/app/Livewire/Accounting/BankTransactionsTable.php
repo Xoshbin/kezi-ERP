@@ -3,9 +3,6 @@
 namespace Modules\Accounting\Livewire\Accounting;
 
 use App\Filament\Tables\Columns\MoneyColumn;
-use App\Models\Account;
-use App\Models\BankStatement;
-use App\Models\BankStatementLine;
 use App\Services\BankReconciliationService;
 use Brick\Money\Money;
 use Filament\Actions\Action;
@@ -61,7 +58,7 @@ class BankTransactionsTable extends Component implements HasActions, HasForms, H
                     ->label(__('bank_statement.description'))
                     ->searchable()
                     ->limit(50),
-                MoneyColumn::make('amount')
+                \Modules\Foundation\App\Filament\Tables\Columns\MoneyColumn::make('amount')
                     ->label(__('bank_statement.amount'))
                     ->sortable(),
             ])

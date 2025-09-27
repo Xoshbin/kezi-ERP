@@ -2,24 +2,22 @@
 
 namespace Modules\Sales\Services;
 
+use App\Actions\Accounting\BuildInvoicePostingPreviewAction;
 use App\Actions\Accounting\CreateJournalEntryForInvoiceAction;
 use App\Actions\Sales\CreateStockMovesForInvoiceAction;
 use App\DataTransferObjects\Sales\CreateStockMovesForInvoiceDTO;
 use App\Enums\Sales\InvoiceStatus;
-use App\Events\InvoiceConfirmed;
 use App\Exceptions\DeletionNotAllowedException;
-use App\Models\AuditLog;
 use App\Models\Company;
-use App\Models\Currency;
-use App\Models\Invoice;
-use App\Models\User; // Add this import
+use App\Models\User;
 use App\Services\Accounting\LockDateService;
-use App\Actions\Accounting\BuildInvoicePostingPreviewAction;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use RuntimeException;
+
+// Add this import
 
 class InvoiceService
 {

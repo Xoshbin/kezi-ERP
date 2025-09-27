@@ -3,8 +3,6 @@
 namespace Modules\Accounting\Actions\Loans;
 
 use App\Enums\Loans\ScheduleMethod;
-use App\Models\LoanAgreement;
-use App\Models\LoanScheduleEntry;
 use App\Services\Loans\InterestCalculatorService;
 use Brick\Math\RoundingMode;
 use Brick\Money\Money;

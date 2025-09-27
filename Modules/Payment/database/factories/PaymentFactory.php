@@ -5,9 +5,7 @@ namespace Modules\Payment\Database\Factories;
 use App\Enums\Payments\PaymentStatus;
 use App\Enums\Payments\PaymentType;
 use App\Models\Company;
-use App\Models\Currency;
 use App\Models\Journal;
-use App\Models\Partner;
 use Brick\Money\Money;
 use Illuminate\Database\Eloquent\Factories\Factory;
 

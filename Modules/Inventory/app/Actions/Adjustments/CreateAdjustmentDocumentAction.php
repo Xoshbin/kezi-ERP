@@ -4,10 +4,8 @@ namespace Modules\Inventory\Actions\Adjustments;
 
 use App\DataTransferObjects\Adjustments\CreateAdjustmentDocumentDTO;
 use App\Enums\Adjustments\AdjustmentDocumentStatus;
-use App\Models\AdjustmentDocument;
 use App\Models\AdjustmentDocumentLine;
 use App\Models\Company;
-use App\Models\Currency;
 use App\Services\Accounting\LockDateService;
 use App\Services\CurrencyConverterService;
 use Brick\Money\Money;

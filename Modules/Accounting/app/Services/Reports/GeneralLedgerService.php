@@ -5,7 +5,6 @@ namespace Modules\Accounting\Services\Reports;
 use App\DataTransferObjects\Reports\GeneralLedgerAccountDTO;
 use App\DataTransferObjects\Reports\GeneralLedgerDTO;
 use App\DataTransferObjects\Reports\GeneralLedgerTransactionLineDTO;
-use App\Models\Account;
 use App\Models\Company;
 use App\Models\JournalEntryLine;
 use Brick\Money\Money;

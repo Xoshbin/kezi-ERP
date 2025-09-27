@@ -3,16 +3,9 @@
 namespace Modules\Foundation\Tests\Feature;
 
 use App\Exceptions\DeletionNotAllowedException;
-use App\Models\Account;
-use App\Models\Company;
-use App\Models\Currency;
-use App\Models\Invoice;
-use App\Models\InvoiceLine;
 use App\Models\Journal;
 use App\Models\JournalEntry;
 use App\Models\Tax;
-use App\Models\VendorBill;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\Traits\WithConfiguredCompany;
 

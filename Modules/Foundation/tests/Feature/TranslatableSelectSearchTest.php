@@ -3,7 +3,6 @@
 namespace Modules\Foundation\Tests\Feature;
 
 use App\Enums\Accounting\AccountType;
-use App\Models\Account;
 use App\Models\Company;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;

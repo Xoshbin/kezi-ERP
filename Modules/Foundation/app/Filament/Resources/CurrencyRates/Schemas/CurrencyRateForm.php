@@ -2,7 +2,6 @@
 
 namespace Modules\Foundation\Filament\Clusters\Settings\Resources\CurrencyRates\Schemas;
 
-use App\Models\Currency;
 use Carbon\Carbon;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
