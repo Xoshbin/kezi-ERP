@@ -12,6 +12,7 @@
         "php": "^8.3",
         "barryvdh/laravel-dompdf": "^3.1",
         "brick/money": "^0.10.1",
+        "coolsam/modules": "^5.0",
         "dutchcodingcompany/filament-developer-logins": "^2.0",
         "filament/filament": "^4.0",
         "lara-zeus/spatie-translatable": "^1.0",

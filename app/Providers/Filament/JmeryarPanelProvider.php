@@ -25,6 +25,7 @@ use Filament\Http\Middleware\DispatchServingFilamentEvent;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use DutchCodingCompany\FilamentDeveloperLogins\FilamentDeveloperLoginsPlugin;
+use Coolsam\Modules\ModulesPlugin;
 
 class JmeryarPanelProvider extends PanelProvider
 {
@@ -69,6 +70,7 @@ class JmeryarPanelProvider extends PanelProvider
             ->tenantRegistration(RegisterCompany::class)
             ->tenantProfile(EditCompanyProfile::class)
             ->plugins([
+                ModulesPlugin::make(),
                 // JmeryarTheme::make(),
                 CustomFieldsPlugin::make(),
                 SpatieTranslatablePlugin::make()
