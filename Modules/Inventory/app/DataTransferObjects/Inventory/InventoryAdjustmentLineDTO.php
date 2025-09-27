@@ -1,6 +1,6 @@
 <?php
 
-namespace App\DataTransferObjects\Inventory;
+namespace Modules\Inventory\DataTransferObjects\Inventory;
 
 readonly class InventoryAdjustmentLineDTO
 {

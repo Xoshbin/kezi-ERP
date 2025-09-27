@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Enums\Settings;
+namespace Modules\Foundation\Enums\Settings;
 
 use Carbon\Carbon;
 

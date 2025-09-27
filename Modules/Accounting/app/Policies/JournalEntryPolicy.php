@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Policies;
+namespace Modules\Accounting\Policies;
 
 use App\Enums\Accounting\JournalEntryState;
 use App\Models\JournalEntry;

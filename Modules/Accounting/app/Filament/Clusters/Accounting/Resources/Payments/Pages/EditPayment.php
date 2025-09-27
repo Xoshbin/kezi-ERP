@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Clusters\Accounting\Resources\Payments\Pages;
+namespace Modules\Accounting\Filament\Clusters\Accounting\Resources\Payments\Pages;
 
 use App\Actions\Payments\UpdatePaymentAction;
 use App\DataTransferObjects\Payments\UpdatePaymentDTO;

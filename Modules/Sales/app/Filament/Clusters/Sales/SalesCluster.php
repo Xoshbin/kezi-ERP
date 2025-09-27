@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Clusters\Sales;
+namespace Modules\Sales\Filament\Clusters\Sales;
 
 use BackedEnum;
 use Filament\Clusters\Cluster;

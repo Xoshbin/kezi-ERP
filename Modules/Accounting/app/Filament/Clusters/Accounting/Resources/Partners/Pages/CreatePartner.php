@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Clusters\Accounting\Resources\Partners\Pages;
+namespace Modules\Accounting\Filament\Clusters\Accounting\Resources\Partners\Pages;
 
 use App\Filament\Clusters\Accounting\Resources\Partners\PartnerResource;
 use Filament\Facades\Filament;

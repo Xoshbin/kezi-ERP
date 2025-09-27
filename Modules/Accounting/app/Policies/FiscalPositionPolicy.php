@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Policies;
+namespace Modules\Accounting\Policies;
 
 use App\Models\FiscalPosition;
 use App\Models\User;

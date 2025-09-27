@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Console\Commands;
+namespace Modules\Inventory\Console\Commands;
 
 use App\Services\Inventory\ReorderingRuleService;
 use Illuminate\Console\Command;

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Actions\HumanResources;
+namespace Modules\HR\Actions\HumanResources;
 
 use App\Actions\Payments\CreatePaymentAction;
 use App\DataTransferObjects\Payments\CreatePaymentDTO;

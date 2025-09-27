@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Rules;
+namespace Modules\Foundation\Rules;
 
 use App\Models\Company;
 use Closure;

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Clusters\HumanResources\Resources\Employees\Schemas;
+namespace Modules\HR\Filament\Clusters\HumanResources\Resources\Employees\Schemas;
 
 use App\Models\Department;
 use App\Models\Employee;

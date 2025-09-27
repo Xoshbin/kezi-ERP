@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Services;
+namespace Modules\Inventory\Services;
 
 use App\Actions\Accounting\CreateJournalEntryForAdjustmentAction; // 1. Import the new action
 use App\Enums\Adjustments\AdjustmentDocumentStatus;

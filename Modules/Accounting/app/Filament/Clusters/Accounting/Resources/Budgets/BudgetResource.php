@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Clusters\Accounting\Resources\Budgets;
+namespace Modules\Accounting\Filament\Clusters\Accounting\Resources\Budgets;
 
 use App\Filament\Clusters\Accounting\AccountingCluster;
 use App\Filament\Clusters\Accounting\Resources\Budgets\Pages\CreateBudget;

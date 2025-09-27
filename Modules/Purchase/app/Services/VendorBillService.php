@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Services;
+namespace Modules\Purchase\Services;
 
 use App\Actions\Accounting\BuildVendorBillPostingPreviewAction;
 use App\Actions\Accounting\CreateJournalEntryForVendorBillAction;

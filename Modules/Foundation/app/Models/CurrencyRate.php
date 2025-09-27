@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Models;
+namespace Modules\Foundation\Models;
 
 use Database\Factories\CurrencyRateFactory;
 use Illuminate\Database\Eloquent\Builder;

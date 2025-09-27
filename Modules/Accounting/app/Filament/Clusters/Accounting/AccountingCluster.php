@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Clusters\Accounting;
+namespace Modules\Accounting\Filament\Clusters\Accounting;
 
 use Filament\Clusters\Cluster;
 

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Services\Reports;
+namespace Modules\Accounting\Services\Reports;
 
 use App\DataTransferObjects\Reports\AgedReceivableDTO;
 use App\DataTransferObjects\Reports\AgedReceivableLineDTO;

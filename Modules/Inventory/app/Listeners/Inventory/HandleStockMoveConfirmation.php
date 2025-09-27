@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Listeners\Inventory;
+namespace Modules\Inventory\Listeners\Inventory;
 
 use App\Enums\Inventory\StockMoveType;
 use App\Events\Inventory\StockMoveConfirmed;

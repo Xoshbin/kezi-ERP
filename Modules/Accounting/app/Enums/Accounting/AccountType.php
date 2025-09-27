@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Enums\Accounting;
+namespace Modules\Accounting\Enums\Accounting;
 
 /**
  * Defines the specific type of an account, driving automated accounting logic

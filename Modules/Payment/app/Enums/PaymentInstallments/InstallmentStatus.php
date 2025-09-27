@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Enums\PaymentInstallments;
+namespace Modules\Payment\Enums\PaymentInstallments;
 
 use Filament\Support\Contracts\HasColor;
 use Filament\Support\Contracts\HasIcon;

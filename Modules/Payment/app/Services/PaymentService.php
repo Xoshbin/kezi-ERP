@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Services;
+namespace Modules\Payment\Services;
 
 use App\Actions\Accounting\CreateJournalEntryForPaymentAction;
 use App\Enums\Payments\PaymentStatus;

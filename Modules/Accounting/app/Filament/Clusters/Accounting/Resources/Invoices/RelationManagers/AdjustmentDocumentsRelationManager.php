@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Clusters\Accounting\Resources\Invoices\RelationManagers;
+namespace Modules\Accounting\Filament\Clusters\Accounting\Resources\Invoices\RelationManagers;
 
 use App\Enums\Adjustments\AdjustmentDocumentStatus;
 use App\Enums\Adjustments\AdjustmentDocumentType;

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Clusters\Accounting\Resources\Budgets\Pages;
+namespace Modules\Accounting\Filament\Clusters\Accounting\Resources\Budgets\Pages;
 
 use App\Filament\Clusters\Accounting\Resources\Budgets\BudgetResource;
 use Filament\Actions\CreateAction;

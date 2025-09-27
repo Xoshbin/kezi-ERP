@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Actions\Adjustments;
+namespace Modules\Inventory\Actions\Adjustments;
 
 use App\DataTransferObjects\Adjustments\CreateAdjustmentDocumentDTO;
 use App\Enums\Adjustments\AdjustmentDocumentStatus;

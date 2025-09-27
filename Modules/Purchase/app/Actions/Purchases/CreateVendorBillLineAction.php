@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Actions\Purchases;
+namespace Modules\Purchase\Actions\Purchases;
 
 use App\DataTransferObjects\Purchases\CreateVendorBillLineDTO;
 use App\Models\Tax;

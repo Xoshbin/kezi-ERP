@@ -1,6 +1,6 @@
 <?php
 
-namespace App\DataTransferObjects\Accounting;
+namespace Modules\Accounting\DataTransferObjects\Accounting;
 
 use Brick\Money\Money;
 use InvalidArgumentException;

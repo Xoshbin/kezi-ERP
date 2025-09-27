@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Events\Inventory;
+namespace Modules\Inventory\Events\Inventory;
 
 use App\Models\StockMove;
 use Illuminate\Broadcasting\InteractsWithSockets;

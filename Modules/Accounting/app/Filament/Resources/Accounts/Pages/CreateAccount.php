@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Clusters\Settings\Resources\Accounts\Pages;
+namespace Modules\Accounting\Filament\Clusters\Settings\Resources\Accounts\Pages;
 
 use App\Filament\Clusters\Settings\Resources\Accounts\AccountResource;
 use App\Services\AccountService;

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Actions\Payments;
+namespace Modules\Payment\Actions\Payments;
 
 use App\DataTransferObjects\Payments\CreatePaymentDTO;
 use App\Enums\Payments\PaymentStatus;

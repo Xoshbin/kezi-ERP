@@ -1,6 +1,6 @@
 <?php
 
-namespace App\DataTransferObjects\Sales;
+namespace Modules\Sales\DataTransferObjects\Sales;
 
 use App\Models\Invoice;
 

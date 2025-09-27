@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Enums\Loans;
+namespace Modules\Accounting\Enums\Loans;
 
 enum LoanType: string
 {

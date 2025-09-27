@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Clusters\Settings\Resources\Accounts;
+namespace Modules\Accounting\Filament\Clusters\Settings\Resources\Accounts;
 
 use App\Enums\Accounting\AccountType;
 use App\Filament\Clusters\Settings\Resources\Accounts\Pages\CreateAccount;

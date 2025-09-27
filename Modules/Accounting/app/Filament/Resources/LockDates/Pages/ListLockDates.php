@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Clusters\Settings\Resources\LockDates\Pages;
+namespace Modules\Accounting\Filament\Clusters\Settings\Resources\LockDates\Pages;
 
 use App\Filament\Clusters\Settings\Resources\LockDates\LockDateResource;
 use Filament\Actions\CreateAction;

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Clusters\Sales\Resources\SalesOrders\Schemas;
+namespace Modules\Sales\Filament\Clusters\Sales\Resources\SalesOrders\Schemas;
 
 use App\Enums\Accounting\TaxType;
 use App\Enums\Products\ProductType;

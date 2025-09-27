@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Enums\Adjustments;
+namespace Modules\Inventory\Enums\Adjustments;
 
 enum AdjustmentDocumentStatus: string
 {

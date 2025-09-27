@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Clusters\HumanResources\Resources\Payrolls\Schemas;
+namespace Modules\HR\Filament\Clusters\HumanResources\Resources\Payrolls\Schemas;
 
 use App\Filament\Forms\Components\MoneyInput;
 use App\Models\Currency;

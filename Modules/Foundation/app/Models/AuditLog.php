@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Models;
+namespace Modules\Foundation\Models;
 
 use Database\Factories\AuditLogFactory;
 use Illuminate\Database\Eloquent\Builder;

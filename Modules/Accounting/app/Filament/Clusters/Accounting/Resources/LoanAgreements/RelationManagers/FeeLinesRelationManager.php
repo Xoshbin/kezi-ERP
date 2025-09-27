@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Clusters\Accounting\Resources\LoanAgreements\RelationManagers;
+namespace Modules\Accounting\Filament\Clusters\Accounting\Resources\LoanAgreements\RelationManagers;
 
 use App\Enums\Loans\FeeType;
 use App\Filament\Forms\Components\MoneyInput;

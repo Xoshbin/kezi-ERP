@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Clusters\Accounting\Resources\Invoices\Widgets;
+namespace Modules\Accounting\Filament\Clusters\Accounting\Resources\Invoices\Widgets;
 
 use App\Enums\Sales\InvoiceStatus;
 use App\Models\Invoice;

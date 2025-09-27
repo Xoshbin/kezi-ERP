@@ -1,6 +1,6 @@
 <?php
 
-namespace App\DataTransferObjects\Reports;
+namespace Modules\Accounting\DataTransferObjects\Reports;
 
 use Brick\Money\Money;
 use Illuminate\Support\Collection;

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Clusters\Accounting\Resources\Assets\Pages;
+namespace Modules\Accounting\Filament\Clusters\Accounting\Resources\Assets\Pages;
 
 use App\Filament\Clusters\Accounting\Resources\Assets\AssetResource;
 use Filament\Actions\CreateAction;

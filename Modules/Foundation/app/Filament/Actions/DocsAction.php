@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Actions;
+namespace Modules\Foundation\Filament\Actions;
 
 use Filament\Actions\Action;
 use Illuminate\Support\Str;

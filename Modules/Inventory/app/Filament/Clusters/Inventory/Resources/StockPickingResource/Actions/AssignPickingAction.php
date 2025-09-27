@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Clusters\Inventory\Resources\StockPickingResource\Actions;
+namespace Modules\Inventory\Filament\Clusters\Inventory\Resources\StockPickingResource\Actions;
 
 use App\Enums\Inventory\StockPickingState;
 use App\Models\StockPicking;

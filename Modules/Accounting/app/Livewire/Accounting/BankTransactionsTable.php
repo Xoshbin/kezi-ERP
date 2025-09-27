@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Livewire\Accounting;
+namespace Modules\Accounting\Livewire\Accounting;
 
 use App\Filament\Tables\Columns\MoneyColumn;
 use App\Models\Account;

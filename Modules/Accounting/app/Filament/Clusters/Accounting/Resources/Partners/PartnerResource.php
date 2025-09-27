@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Clusters\Accounting\Resources\Partners;
+namespace Modules\Accounting\Filament\Clusters\Accounting\Resources\Partners;
 
 use App\Enums\Accounting\AccountType;
 use App\Enums\Partners\PartnerType;

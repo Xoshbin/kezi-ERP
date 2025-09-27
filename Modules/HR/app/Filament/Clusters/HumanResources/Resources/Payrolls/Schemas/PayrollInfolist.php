@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Clusters\HumanResources\Resources\Payrolls\Schemas;
+namespace Modules\HR\Filament\Clusters\HumanResources\Resources\Payrolls\Schemas;
 
 use Filament\Infolists\Components\TextEntry;
 use Filament\Schemas\Components\Grid;

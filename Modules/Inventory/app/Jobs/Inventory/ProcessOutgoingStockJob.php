@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Jobs\Inventory;
+namespace Modules\Inventory\Jobs\Inventory;
 
 use App\Actions\Inventory\ProcessOutgoingStockAction;
 use App\Models\StockMove;

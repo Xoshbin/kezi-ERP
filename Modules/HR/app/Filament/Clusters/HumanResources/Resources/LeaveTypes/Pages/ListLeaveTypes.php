@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Clusters\HumanResources\Resources\LeaveTypes\Pages;
+namespace Modules\HR\Filament\Clusters\HumanResources\Resources\LeaveTypes\Pages;
 
 use App\Filament\Clusters\HumanResources\Resources\LeaveTypes\LeaveTypeResource;
 use Filament\Actions\CreateAction;

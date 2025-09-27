@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Clusters\HumanResources\Resources\LeaveTypes\Tables;
+namespace Modules\HR\Filament\Clusters\HumanResources\Resources\LeaveTypes\Tables;
 
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;

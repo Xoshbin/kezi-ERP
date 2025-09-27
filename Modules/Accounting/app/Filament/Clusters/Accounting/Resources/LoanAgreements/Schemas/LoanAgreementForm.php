@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Clusters\Accounting\Resources\LoanAgreements\Schemas;
+namespace Modules\Accounting\Filament\Clusters\Accounting\Resources\LoanAgreements\Schemas;
 
 use App\Enums\Loans\LoanStatus;
 use App\Enums\Loans\LoanType;

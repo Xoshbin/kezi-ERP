@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Enums\Inventory;
+namespace Modules\Inventory\Enums\Inventory;
 
 /**
  * Enum representing the source of cost information for inventory valuation

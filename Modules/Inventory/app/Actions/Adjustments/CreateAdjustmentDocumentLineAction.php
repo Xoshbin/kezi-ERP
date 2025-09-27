@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Actions\Adjustments;
+namespace Modules\Inventory\Actions\Adjustments;
 
 use App\DataTransferObjects\Adjustments\CreateAdjustmentDocumentLineDTO;
 use App\Models\AdjustmentDocument;

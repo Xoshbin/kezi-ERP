@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Actions\Reconciliation;
+namespace Modules\Accounting\Actions\Reconciliation;
 
 use App\Enums\Reconciliation\ReconciliationType;
 use App\Exceptions\Reconciliation\AccountNotReconcilableException;

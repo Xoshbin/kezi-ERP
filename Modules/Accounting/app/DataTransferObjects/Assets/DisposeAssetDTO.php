@@ -1,6 +1,6 @@
 <?php
 
-namespace App\DataTransferObjects\Assets;
+namespace Modules\Accounting\DataTransferObjects\Assets;
 
 use Carbon\Carbon;
 

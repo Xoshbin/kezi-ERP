@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Clusters\Sales\Resources\SalesOrders;
+namespace Modules\Sales\Filament\Clusters\Sales\Resources\SalesOrders;
 
 use App\Filament\Clusters\Sales\SalesCluster;
 use App\Filament\Clusters\Sales\Resources\SalesOrders\Pages\CreateSalesOrder;

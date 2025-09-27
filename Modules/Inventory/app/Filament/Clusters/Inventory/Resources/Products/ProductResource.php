@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Clusters\Inventory\Resources\Products;
+namespace Modules\Inventory\Filament\Clusters\Inventory\Resources\Products;
 
 use App\Enums\Accounting\AccountType;
 use App\Enums\Inventory\ValuationMethod;

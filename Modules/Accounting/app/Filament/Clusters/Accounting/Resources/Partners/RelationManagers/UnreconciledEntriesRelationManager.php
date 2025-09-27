@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Clusters\Accounting\Resources\Partners\RelationManagers;
+namespace Modules\Accounting\Filament\Clusters\Accounting\Resources\Partners\RelationManagers;
 
 use App\Actions\Reconciliation\MatchJournalItemsAction;
 use App\Enums\Reconciliation\ReconciliationType;

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Actions\Accounting;
+namespace Modules\Accounting\Actions\Accounting;
 
 use App\Models\Account;
 use App\Models\AdjustmentDocument;

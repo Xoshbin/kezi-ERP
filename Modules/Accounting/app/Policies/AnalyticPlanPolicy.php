@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Policies;
+namespace Modules\Accounting\Policies;
 
 use App\Models\AnalyticPlan;
 use App\Models\User;

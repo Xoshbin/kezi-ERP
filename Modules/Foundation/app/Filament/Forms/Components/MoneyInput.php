@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Forms\Components;
+namespace Modules\Foundation\Filament\Forms\Components;
 
 use App\Models\Currency;
 use Brick\Math\Exception\RoundingNecessaryException;

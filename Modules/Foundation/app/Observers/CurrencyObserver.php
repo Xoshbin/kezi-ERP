@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Observers;
+namespace Modules\Foundation\Observers;
 
 use App\Exceptions\DeletionNotAllowedException;
 use App\Models\Currency;

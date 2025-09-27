@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Rules;
+namespace Modules\Accounting\Rules;
 
 use App\Models\Account;
 use Closure;

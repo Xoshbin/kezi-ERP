@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Clusters\Accounting\Resources\Partners\Widgets;
+namespace Modules\Accounting\Filament\Clusters\Accounting\Resources\Partners\Widgets;
 
 use App\Enums\Partners\PartnerType;
 use App\Models\Partner;

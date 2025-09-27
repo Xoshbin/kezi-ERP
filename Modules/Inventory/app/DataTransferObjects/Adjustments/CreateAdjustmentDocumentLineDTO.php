@@ -1,6 +1,6 @@
 <?php
 
-namespace App\DataTransferObjects\Adjustments;
+namespace Modules\Inventory\DataTransferObjects\Adjustments;
 
 use Brick\Money\Money;
 

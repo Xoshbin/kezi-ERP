@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Clusters\HumanResources\Resources\Payrolls\Tables;
+namespace Modules\HR\Filament\Clusters\HumanResources\Resources\Payrolls\Tables;
 
 use App\Filament\Tables\Columns\MoneyColumn;
 use App\Models\Payroll;

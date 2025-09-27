@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Services\Inventory;
+namespace Modules\Inventory\Services\Inventory;
 
 use App\Exceptions\Inventory\InsufficientCostInformationException;
 use App\Models\Product;

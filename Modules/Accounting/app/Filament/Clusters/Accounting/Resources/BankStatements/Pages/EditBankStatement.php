@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Clusters\Accounting\Resources\BankStatements\Pages;
+namespace Modules\Accounting\Filament\Clusters\Accounting\Resources\BankStatements\Pages;
 
 use App\Actions\Accounting\UpdateBankStatementAction;
 use App\DataTransferObjects\Accounting\UpdateBankStatementDTO;

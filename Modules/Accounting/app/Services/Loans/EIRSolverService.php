@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Services\Loans;
+namespace Modules\Accounting\Services\Loans;
 
 class EIRSolverService
 {

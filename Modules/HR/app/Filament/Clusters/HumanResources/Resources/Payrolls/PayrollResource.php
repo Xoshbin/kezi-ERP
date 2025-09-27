@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Clusters\HumanResources\Resources\Payrolls;
+namespace Modules\HR\Filament\Clusters\HumanResources\Resources\Payrolls;
 
 use App\Filament\Clusters\HumanResources\HumanResourcesCluster;
 use App\Filament\Clusters\HumanResources\Resources\Payrolls\Pages\CreatePayroll;

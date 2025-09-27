@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Models;
+namespace Modules\Accounting\Models;
 
 use App\Enums\Reconciliation\ReconciliationType;
 use Brick\Money\Money;

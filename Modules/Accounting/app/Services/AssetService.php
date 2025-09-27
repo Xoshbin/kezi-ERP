@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Services;
+namespace Modules\Accounting\Services;
 
 use App\Actions\Assets\CreateAssetAction;
 use App\Actions\Assets\DisposeAssetAction;
