@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Policies;
+namespace Modules\Sales\Policies;
 
 use App\Models\Invoice;
 use App\Models\User;

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Clusters\Sales\Resources\SalesOrders\Pages;
+namespace Modules\Sales\Filament\Clusters\Sales\Resources\SalesOrders\Pages;
 
 use App\Filament\Clusters\Sales\Resources\SalesOrders\SalesOrderResource;
 use Filament\Actions;

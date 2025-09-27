@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Services\Inventory;
+namespace Modules\Inventory\Services\Inventory;
 
 use Brick\Math\RoundingMode;
 use Brick\Money\Money;

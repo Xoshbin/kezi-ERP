@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Console\Commands;
+namespace Modules\Inventory\Console\Commands;
 
 use App\Services\Inventory\InventoryPerformanceMonitoringService;
 use App\Services\Inventory\InventoryQueryOptimizationService;

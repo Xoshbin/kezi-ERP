@@ -1,6 +1,6 @@
 <?php
 
-namespace App\DataTransferObjects\Payments;
+namespace Modules\Payment\DataTransferObjects\Payments;
 
 use App\Enums\Payments\PaymentMethod;
 use App\Enums\Payments\PaymentType;

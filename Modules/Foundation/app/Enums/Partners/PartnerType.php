@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Enums\Partners;
+namespace Modules\Foundation\Enums\Partners;
 
 enum PartnerType: string
 {

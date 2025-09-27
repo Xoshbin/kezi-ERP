@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Support;
+namespace Modules\Foundation\Support;
 
 use Brick\Money\Money;
 use Illuminate\Support\Number;

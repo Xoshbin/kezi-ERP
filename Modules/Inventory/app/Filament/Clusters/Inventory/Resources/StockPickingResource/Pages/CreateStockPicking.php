@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Clusters\Inventory\Resources\StockPickingResource\Pages;
+namespace Modules\Inventory\Filament\Clusters\Inventory\Resources\StockPickingResource\Pages;
 
 use App\Filament\Clusters\Inventory\Resources\StockPickingResource;
 use Filament\Resources\Pages\CreateRecord;

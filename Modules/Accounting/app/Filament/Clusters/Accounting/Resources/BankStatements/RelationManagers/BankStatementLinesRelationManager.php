@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Clusters\Accounting\Resources\BankStatements\RelationManagers;
+namespace Modules\Accounting\Filament\Clusters\Accounting\Resources\BankStatements\RelationManagers;
 
 use App\Actions\Accounting\ReverseJournalEntryAction;
 use App\Enums\Accounting\JournalEntryState;

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Actions\Accounting;
+namespace Modules\Accounting\Actions\Accounting;
 
 use App\Enums\Products\ProductType;
 use App\Models\AssetCategory;

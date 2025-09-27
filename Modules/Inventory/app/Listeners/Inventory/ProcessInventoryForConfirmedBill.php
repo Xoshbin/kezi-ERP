@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Listeners\Inventory;
+namespace Modules\Inventory\Listeners\Inventory;
 
 use App\Actions\Inventory\UpdateProductInventoryStatsAction;
 use App\Events\VendorBillConfirmed;

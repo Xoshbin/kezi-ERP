@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Clusters\Settings\Resources\Taxes\Pages;
+namespace Modules\Accounting\Filament\Clusters\Settings\Resources\Taxes\Pages;
 
 use App\Filament\Clusters\Settings\Resources\Taxes\TaxResource;
 use Filament\Actions\DeleteAction;

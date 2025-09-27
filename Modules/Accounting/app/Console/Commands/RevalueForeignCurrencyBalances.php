@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Console\Commands;
+namespace Modules\Accounting\Console\Commands;
 
 use App\Models\Company;
 use App\Services\ExchangeGainLossService;

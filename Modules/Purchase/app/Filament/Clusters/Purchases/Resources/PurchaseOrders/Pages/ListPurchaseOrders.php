@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Clusters\Purchases\Resources\PurchaseOrders\Pages;
+namespace Modules\Purchase\Filament\Clusters\Purchases\Resources\PurchaseOrders\Pages;
 
 use App\Filament\Clusters\Purchases\Resources\PurchaseOrders\PurchaseOrderResource;
 use Filament\Actions\CreateAction;

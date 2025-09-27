@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Clusters\Sales\Resources\SalesOrders\Tables;
+namespace Modules\Sales\Filament\Clusters\Sales\Resources\SalesOrders\Tables;
 
 use App\Enums\Sales\SalesOrderStatus;
 use Filament\Actions\BulkActionGroup;

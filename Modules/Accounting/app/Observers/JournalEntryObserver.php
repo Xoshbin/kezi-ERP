@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Observers;
+namespace Modules\Accounting\Observers;
 
 use App\Models\JournalEntry;
 use App\Services\Accounting\LockDateService;

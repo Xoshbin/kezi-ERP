@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Models;
+namespace Modules\HR\Models;
 
 use App\Casts\SalaryCurrencyMoneyCast;
 use Brick\Money\Money;

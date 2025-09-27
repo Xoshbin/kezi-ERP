@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Listeners\Asset;
+namespace Modules\Accounting\Listeners\Asset;
 
 use App\Actions\Assets\CreateAssetAction;
 use App\DataTransferObjects\Assets\CreateAssetDTO;

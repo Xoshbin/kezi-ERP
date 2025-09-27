@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Clusters\Accounting\Resources\Assets\RelationManagers;
+namespace Modules\Accounting\Filament\Clusters\Accounting\Resources\Assets\RelationManagers;
 
 use App\Enums\Assets\DepreciationEntryStatus;
 use App\Models\DepreciationEntry;

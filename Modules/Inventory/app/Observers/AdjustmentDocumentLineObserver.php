@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Observers;
+namespace Modules\Inventory\Observers;
 
 use App\Models\AdjustmentDocumentLine;
 use Brick\Money\Money;

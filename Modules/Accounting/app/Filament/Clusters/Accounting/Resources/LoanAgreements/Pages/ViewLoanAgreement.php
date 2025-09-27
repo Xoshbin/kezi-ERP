@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Clusters\Accounting\Resources\LoanAgreements\Pages;
+namespace Modules\Accounting\Filament\Clusters\Accounting\Resources\LoanAgreements\Pages;
 
 use App\Actions\Loans\AccrueLoanInterestAction;
 use App\Actions\Loans\BuildLoanPaymentJournalEntryAction;

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Clusters\Purchases\Resources\PurchaseOrders\RelationManagers;
+namespace Modules\Purchase\Filament\Clusters\Purchases\Resources\PurchaseOrders\RelationManagers;
 
 use App\Enums\Purchases\VendorBillStatus;
 use App\Enums\Shared\PaymentState;

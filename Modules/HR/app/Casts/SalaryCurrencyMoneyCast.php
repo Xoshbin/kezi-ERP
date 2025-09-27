@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Casts;
+namespace Modules\HR\Casts;
 
 use App\Models\Company;
 use App\Models\Currency;

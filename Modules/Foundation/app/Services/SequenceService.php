@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Services;
+namespace Modules\Foundation\Services;
 
 use App\Enums\Settings\NumberingType;
 use App\Models\Company;

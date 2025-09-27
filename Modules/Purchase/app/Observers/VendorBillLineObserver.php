@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Observers;
+namespace Modules\Purchase\Observers;
 
 use App\Models\VendorBillLine;
 use Brick\Money\Money;

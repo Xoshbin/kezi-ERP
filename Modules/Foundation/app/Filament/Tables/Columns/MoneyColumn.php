@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Tables\Columns;
+namespace Modules\Foundation\Filament\Tables\Columns;
 
 use App\Models\Currency;
 use App\Support\NumberFormatter;

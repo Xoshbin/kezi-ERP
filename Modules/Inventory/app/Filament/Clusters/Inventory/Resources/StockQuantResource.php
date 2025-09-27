@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Clusters\Inventory\Resources;
+namespace Modules\Inventory\Filament\Clusters\Inventory\Resources;
 
 use App\Filament\Clusters\Inventory\InventoryCluster;
 use App\Filament\Clusters\Inventory\Resources\StockQuantResource\Pages;

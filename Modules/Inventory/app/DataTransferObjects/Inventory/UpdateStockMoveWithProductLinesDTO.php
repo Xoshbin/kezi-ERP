@@ -1,6 +1,6 @@
 <?php
 
-namespace App\DataTransferObjects\Inventory;
+namespace Modules\Inventory\DataTransferObjects\Inventory;
 
 use App\Enums\Inventory\StockMoveStatus;
 use App\Enums\Inventory\StockMoveType;

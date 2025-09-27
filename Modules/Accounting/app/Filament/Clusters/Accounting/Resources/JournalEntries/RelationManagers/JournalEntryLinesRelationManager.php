@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Clusters\Accounting\Resources\JournalEntries\RelationManagers;
+namespace Modules\Accounting\Filament\Clusters\Accounting\Resources\JournalEntries\RelationManagers;
 
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\CreateAction;

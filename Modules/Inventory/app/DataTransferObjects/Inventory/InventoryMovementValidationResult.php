@@ -1,6 +1,6 @@
 <?php
 
-namespace App\DataTransferObjects\Inventory;
+namespace Modules\Inventory\DataTransferObjects\Inventory;
 
 /**
  * Data Transfer Object for inventory movement validation results

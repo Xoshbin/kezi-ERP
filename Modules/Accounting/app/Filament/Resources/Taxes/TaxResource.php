@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Clusters\Settings\Resources\Taxes;
+namespace Modules\Accounting\Filament\Clusters\Settings\Resources\Taxes;
 
 use App\Enums\Accounting\AccountType;
 use App\Enums\Accounting\TaxType;

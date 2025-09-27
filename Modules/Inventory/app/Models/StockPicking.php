@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Models;
+namespace Modules\Inventory\Models;
 
 use App\Enums\Inventory\StockPickingState;
 use App\Enums\Inventory\StockPickingType;

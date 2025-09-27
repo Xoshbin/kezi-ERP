@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Observers;
+namespace Modules\Accounting\Observers;
 
 use App\Actions\Accounting\CreateJournalEntryForAssetAcquisitionAction;
 use App\Enums\Assets\AssetStatus;

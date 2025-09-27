@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Clusters\Inventory\Resources\StockQuantResource\Pages;
+namespace Modules\Inventory\Filament\Clusters\Inventory\Resources\StockQuantResource\Pages;
 
 use App\Filament\Clusters\Inventory\Resources\StockQuantResource;
 use Filament\Resources\Pages\CreateRecord;

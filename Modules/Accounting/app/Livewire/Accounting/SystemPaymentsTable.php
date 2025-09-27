@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Livewire\Accounting;
+namespace Modules\Accounting\Livewire\Accounting;
 
 use App\Enums\Payments\PaymentStatus;
 use App\Enums\Payments\PaymentType;

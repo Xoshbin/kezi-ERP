@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Clusters\Purchases\Resources\PurchaseOrders\Pages;
+namespace Modules\Purchase\Filament\Clusters\Purchases\Resources\PurchaseOrders\Pages;
 
 use App\Actions\Purchases\CreateVendorBillFromPurchaseOrderAction;
 use App\DataTransferObjects\Purchases\CreateVendorBillFromPurchaseOrderDTO;

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Services\Inventory;
+namespace Modules\Inventory\Services\Inventory;
 
 use App\DataTransferObjects\Inventory\ConfirmStockMoveDTO;
 use App\DataTransferObjects\Inventory\CreateStockMoveDTO;

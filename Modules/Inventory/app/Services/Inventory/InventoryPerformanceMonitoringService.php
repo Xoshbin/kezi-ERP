@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Services\Inventory;
+namespace Modules\Inventory\Services\Inventory;
 
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Models;
+namespace Modules\Payment\Models;
 
 use App\Casts\DocumentCurrencyMoneyCast;
 use App\Enums\PaymentInstallments\InstallmentStatus;

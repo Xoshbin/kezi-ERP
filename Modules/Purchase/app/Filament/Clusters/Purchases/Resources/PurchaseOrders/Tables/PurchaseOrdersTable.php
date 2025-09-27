@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Clusters\Purchases\Resources\PurchaseOrders\Tables;
+namespace Modules\Purchase\Filament\Clusters\Purchases\Resources\PurchaseOrders\Tables;
 
 use App\Enums\Purchases\PurchaseOrderStatus;
 use Filament\Actions\BulkActionGroup;

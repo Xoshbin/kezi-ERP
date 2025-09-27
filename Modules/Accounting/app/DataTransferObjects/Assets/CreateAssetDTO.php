@@ -1,6 +1,6 @@
 <?php
 
-namespace App\DataTransferObjects\Assets;
+namespace Modules\Accounting\DataTransferObjects\Assets;
 
 use App\Enums\Assets\DepreciationMethod;
 use Carbon\Carbon;

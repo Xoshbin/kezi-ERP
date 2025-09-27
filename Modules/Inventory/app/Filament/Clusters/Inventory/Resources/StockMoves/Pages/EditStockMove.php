@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Clusters\Inventory\Resources\StockMoves\Pages;
+namespace Modules\Inventory\Filament\Clusters\Inventory\Resources\StockMoves\Pages;
 
 use App\Actions\Inventory\UpdateStockMoveWithProductLinesAction;
 use App\DataTransferObjects\Inventory\CreateStockMoveProductLineDTO;

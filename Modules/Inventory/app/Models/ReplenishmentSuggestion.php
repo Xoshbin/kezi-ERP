@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Models;
+namespace Modules\Inventory\Models;
 
 use App\Enums\Inventory\ReorderingRoute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;

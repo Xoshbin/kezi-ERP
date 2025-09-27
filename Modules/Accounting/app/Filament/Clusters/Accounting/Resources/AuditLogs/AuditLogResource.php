@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Clusters\Accounting\Resources\AuditLogs;
+namespace Modules\Accounting\Filament\Clusters\Accounting\Resources\AuditLogs;
 
 use App\Filament\Clusters\Accounting\AccountingCluster;
 use App\Filament\Clusters\Accounting\Resources\AuditLogs\Pages\CreateAuditLog;

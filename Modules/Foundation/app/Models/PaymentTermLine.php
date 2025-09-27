@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Models;
+namespace Modules\Foundation\Models;
 
 use App\Enums\PaymentTerms\PaymentTermType;
 use App\Observers\AuditLogObserver;

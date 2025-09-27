@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Clusters\Accounting\Resources\Payments;
+namespace Modules\Accounting\Filament\Clusters\Accounting\Resources\Payments;
 
 use App\Enums\Payments\PaymentMethod;
 use App\Enums\Payments\PaymentStatus;

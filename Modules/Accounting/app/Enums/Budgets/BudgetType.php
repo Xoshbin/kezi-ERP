@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Enums\Budgets;
+namespace Modules\Accounting\Enums\Budgets;
 
 enum BudgetType: string
 {

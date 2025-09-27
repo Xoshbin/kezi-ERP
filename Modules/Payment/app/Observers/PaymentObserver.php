@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Observers;
+namespace Modules\Payment\Observers;
 
 use App\Enums\Payments\PaymentStatus;
 use App\Exceptions\DeletionNotAllowedException;

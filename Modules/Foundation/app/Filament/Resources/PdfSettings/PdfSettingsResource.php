@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Clusters\Settings\Resources\PdfSettings;
+namespace Modules\Foundation\Filament\Clusters\Settings\Resources\PdfSettings;
 
 use App\Filament\Clusters\Settings\Resources\PdfSettings\Pages\EditPdfSettings;
 use App\Filament\Clusters\Settings\Resources\PdfSettings\Pages\ListPdfSettings;

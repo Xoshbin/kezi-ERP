@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Observers;
+namespace Modules\Foundation\Observers;
 
 use App\Models\AuditLog;
 use Filament\Facades\Filament;

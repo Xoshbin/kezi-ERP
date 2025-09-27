@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Clusters\Settings\Resources\CurrencyRates;
+namespace Modules\Foundation\Filament\Clusters\Settings\Resources\CurrencyRates;
 
 use App\Filament\Clusters\Settings\Resources\CurrencyRates\Pages\CreateCurrencyRate;
 use App\Filament\Clusters\Settings\Resources\CurrencyRates\Pages\EditCurrencyRate;

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Services\HumanResources;
+namespace Modules\HR\Services\HumanResources;
 
 use App\Actions\Accounting\CreateJournalEntryForPayrollAction;
 use App\Actions\HumanResources\CreatePaymentFromPayrollAction;

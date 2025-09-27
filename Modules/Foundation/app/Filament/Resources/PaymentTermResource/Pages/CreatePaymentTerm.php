@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Clusters\Settings\Resources\PaymentTermResource\Pages;
+namespace Modules\Foundation\Filament\Clusters\Settings\Resources\PaymentTermResource\Pages;
 
 use App\Filament\Actions\DocsAction;
 use App\Filament\Clusters\Settings\Resources\PaymentTermResource;

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Services\HumanResources;
+namespace Modules\HR\Services\HumanResources;
 
 use App\Actions\HumanResources\CreateEmployeeAction;
 use App\Actions\HumanResources\CreateEmploymentContractAction;

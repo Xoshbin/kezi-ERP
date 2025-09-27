@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Clusters\HumanResources\Resources\Departments;
+namespace Modules\HR\Filament\Clusters\HumanResources\Resources\Departments;
 
 use App\Filament\Clusters\HumanResources\HumanResourcesCluster;
 use App\Filament\Clusters\HumanResources\Resources\Departments\Pages\CreateDepartment;

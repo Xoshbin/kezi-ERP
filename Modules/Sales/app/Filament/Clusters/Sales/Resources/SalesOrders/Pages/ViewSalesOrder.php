@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Clusters\Sales\Resources\SalesOrders\Pages;
+namespace Modules\Sales\Filament\Clusters\Sales\Resources\SalesOrders\Pages;
 
 use App\Actions\Sales\CreateDeliveryFromSalesOrderAction;
 use App\Actions\Sales\CreateInvoiceFromSalesOrderAction;

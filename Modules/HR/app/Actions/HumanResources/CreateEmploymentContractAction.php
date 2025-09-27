@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Actions\HumanResources;
+namespace Modules\HR\Actions\HumanResources;
 
 use App\DataTransferObjects\HumanResources\CreateEmploymentContractDTO;
 use App\Models\Company;

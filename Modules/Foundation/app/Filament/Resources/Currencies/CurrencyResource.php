@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Clusters\Settings\Resources\Currencies;
+namespace Modules\Foundation\Filament\Clusters\Settings\Resources\Currencies;
 
 use App\Filament\Clusters\Settings\Resources\Currencies\Pages\CreateCurrency;
 use App\Filament\Clusters\Settings\Resources\Currencies\Pages\EditCurrency;

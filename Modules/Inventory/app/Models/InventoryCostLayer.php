@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Models;
+namespace Modules\Inventory\Models;
 
 use App\Casts\BaseCurrencyMoneyCast;
 use Illuminate\Database\Eloquent\Factories\HasFactory;

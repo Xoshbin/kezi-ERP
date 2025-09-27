@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Observers;
+namespace Modules\Sales\Observers;
 
 use App\Models\InvoiceLine;
 use Brick\Money\Money;

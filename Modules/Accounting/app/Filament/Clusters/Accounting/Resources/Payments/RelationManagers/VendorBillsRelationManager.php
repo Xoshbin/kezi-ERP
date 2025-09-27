@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Clusters\Accounting\Resources\Payments\RelationManagers;
+namespace Modules\Accounting\Filament\Clusters\Accounting\Resources\Payments\RelationManagers;
 
 use App\Enums\Purchases\VendorBillStatus;
 use App\Filament\Tables\Columns\MoneyColumn;

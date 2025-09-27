@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Exceptions\Reconciliation;
+namespace Modules\Accounting\Exceptions\Reconciliation;
 
 /**
  * Exception thrown when attempting to reconcile journal lines with different partners.

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Models;
+namespace Modules\Foundation\Models;
 
 use App\Observers\CurrencyObserver;
 use Database\Factories\CurrencyFactory;

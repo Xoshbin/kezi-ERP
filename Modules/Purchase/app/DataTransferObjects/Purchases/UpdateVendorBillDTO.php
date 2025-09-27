@@ -1,6 +1,6 @@
 <?php
 
-namespace App\DataTransferObjects\Purchases;
+namespace Modules\Purchase\DataTransferObjects\Purchases;
 
 use App\Models\VendorBill;
 

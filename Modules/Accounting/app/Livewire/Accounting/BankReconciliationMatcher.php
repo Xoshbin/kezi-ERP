@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Livewire\Accounting;
+namespace Modules\Accounting\Livewire\Accounting;
 
 use App\Models\BankStatement;
 use App\Services\BankReconciliationService;

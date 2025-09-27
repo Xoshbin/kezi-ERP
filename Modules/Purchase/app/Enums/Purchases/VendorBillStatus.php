@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Enums\Purchases;
+namespace Modules\Purchase\Enums\Purchases;
 
 enum VendorBillStatus: string
 {

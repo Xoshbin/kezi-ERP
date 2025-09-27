@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Actions\Assets;
+namespace Modules\Accounting\Actions\Assets;
 
 use App\Enums\Assets\DepreciationEntryStatus;
 use App\Enums\Assets\DepreciationMethod;

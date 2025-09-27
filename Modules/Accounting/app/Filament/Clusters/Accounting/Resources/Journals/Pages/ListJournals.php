@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Clusters\Accounting\Resources\Journals\Pages;
+namespace Modules\Accounting\Filament\Clusters\Accounting\Resources\Journals\Pages;
 
 use App\Filament\Clusters\Accounting\Resources\Journals\JournalResource;
 use Filament\Actions\CreateAction;

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Clusters\Accounting\Resources\JournalEntries;
+namespace Modules\Accounting\Filament\Clusters\Accounting\Resources\JournalEntries;
 
 use App\Enums\Accounting\JournalType;
 use App\Filament\Clusters\Accounting\AccountingCluster;

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Events;
+namespace Modules\Inventory\Events;
 
 use App\Models\AdjustmentDocument;
 use Illuminate\Broadcasting\Channel;

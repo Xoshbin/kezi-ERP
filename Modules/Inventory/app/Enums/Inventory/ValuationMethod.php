@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Enums\Inventory;
+namespace Modules\Inventory\Enums\Inventory;
 
 enum ValuationMethod: string
 {

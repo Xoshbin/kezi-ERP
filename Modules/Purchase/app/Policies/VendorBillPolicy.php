@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Policies;
+namespace Modules\Purchase\Policies;
 
 use App\Models\User;
 use App\Models\VendorBill;

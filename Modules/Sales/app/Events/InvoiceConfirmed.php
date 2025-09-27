@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Events;
+namespace Modules\Sales\Events;
 
 use App\Models\Invoice;
 use Illuminate\Broadcasting\Channel;

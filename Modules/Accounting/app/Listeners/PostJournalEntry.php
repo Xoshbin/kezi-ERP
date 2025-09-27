@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Listeners;
+namespace Modules\Accounting\Listeners;
 
 use App\Events\AdjustmentDocumentPosted;
 use App\Events\InvoiceConfirmed;

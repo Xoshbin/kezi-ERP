@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Clusters\Inventory\Resources\StockLocations;
+namespace Modules\Inventory\Filament\Clusters\Inventory\Resources\StockLocations;
 
 use App\Enums\Inventory\StockLocationType;
 use App\Filament\Clusters\Inventory\InventoryCluster;

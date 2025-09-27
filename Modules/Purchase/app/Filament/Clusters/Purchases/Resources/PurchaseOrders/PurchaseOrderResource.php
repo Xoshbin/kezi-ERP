@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Clusters\Purchases\Resources\PurchaseOrders;
+namespace Modules\Purchase\Filament\Clusters\Purchases\Resources\PurchaseOrders;
 
 use App\Filament\Clusters\Purchases\PurchasesCluster;
 use App\Filament\Clusters\Purchases\Resources\PurchaseOrders\Pages\CreatePurchaseOrder;
