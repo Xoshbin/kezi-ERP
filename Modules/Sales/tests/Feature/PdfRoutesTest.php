@@ -1,9 +1,10 @@
 <?php
 
-use App\Enums\Partners\PartnerType;
-use App\Enums\Sales\InvoiceStatus;
-use App\Models\Company;
-use App\Models\User;
+use Modules\Accounting\Models\Account;
+use Modules\Foundation\Models\Currency;
+use Modules\Foundation\Models\Partner;
+use Modules\Sales\Models\Invoice;
+use Modules\Sales\Models\InvoiceLine;
 
 beforeEach(function () {
     $this->user = User::factory()->create();
@@ -11,19 +12,19 @@ beforeEach(function () {
     // Use tenancy setup instead of company_id
     $this->user->companies()->attach($this->company);
 
-    $this->currency = \Modules\Foundation\Models\Currency::factory()->create(['code' => 'USD']);
-    $this->customer = \Modules\Foundation\Models\Partner::factory()->create([
+    $this->currency = Currency::factory()->create(['code' => 'USD']);
+    $this->customer = Partner::factory()->create([
         'company_id' => $this->company->id,
         'type' => \Modules\Foundation\Enums\Partners\PartnerType::Customer,
     ]);
-    $this->account = \Modules\Accounting\Models\Account::factory()->create([
+    $this->account = Account::factory()->create([
         'company_id' => $this->company->id,
     ]);
 });
 
 test('authenticated user can view invoice pdf', function () {
     // Arrange
-    $invoice = \Modules\Sales\Models\Invoice::factory()->create([
+    $invoice = Invoice::factory()->create([
         'company_id' => $this->company->id,
         'customer_id' => $this->customer->id,
         'currency_id' => $this->currency->id,
@@ -31,7 +32,7 @@ test('authenticated user can view invoice pdf', function () {
         'invoice_number' => 'INV-001',
     ]);
 
-    \Modules\Sales\Models\InvoiceLine::factory()->create([
+    InvoiceLine::factory()->create([
         'invoice_id' => $invoice->id,
         'income_account_id' => $this->account->id,
     ]);
@@ -47,7 +48,7 @@ test('authenticated user can view invoice pdf', function () {
 
 test('authenticated user can download invoice pdf', function () {
     // Arrange
-    $invoice = \Modules\Sales\Models\Invoice::factory()->create([
+    $invoice = Invoice::factory()->create([
         'company_id' => $this->company->id,
         'customer_id' => $this->customer->id,
         'currency_id' => $this->currency->id,
@@ -55,7 +56,7 @@ test('authenticated user can download invoice pdf', function () {
         'invoice_number' => 'INV-002',
     ]);
 
-    \Modules\Sales\Models\InvoiceLine::factory()->create([
+    InvoiceLine::factory()->create([
         'invoice_id' => $invoice->id,
         'income_account_id' => $this->account->id,
     ]);
@@ -73,12 +74,12 @@ test('authenticated user can download invoice pdf', function () {
 test('user cannot access invoice from different company', function () {
     // Arrange
     $otherCompany = Company::factory()->create();
-    $otherCustomer = \Modules\Foundation\Models\Partner::factory()->create([
+    $otherCustomer = Partner::factory()->create([
         'company_id' => $otherCompany->id,
         'type' => 'customer',
     ]);
 
-    $invoice = \Modules\Sales\Models\Invoice::factory()->create([
+    $invoice = Invoice::factory()->create([
         'company_id' => $otherCompany->id,
         'customer_id' => $otherCustomer->id,
         'currency_id' => $this->currency->id,
@@ -98,7 +99,7 @@ test('user cannot access invoice from different company', function () {
 
 test('unauthenticated user cannot access pdf routes', function () {
     // Arrange
-    $invoice = \Modules\Sales\Models\Invoice::factory()->create([
+    $invoice = Invoice::factory()->create([
         'company_id' => $this->company->id,
         'customer_id' => $this->customer->id,
         'currency_id' => $this->currency->id,
@@ -116,7 +117,7 @@ test('unauthenticated user cannot access pdf routes', function () {
 
 test('user can specify template parameter for pdf generation', function () {
     // Arrange
-    $invoice = \Modules\Sales\Models\Invoice::factory()->create([
+    $invoice = Invoice::factory()->create([
         'company_id' => $this->company->id,
         'customer_id' => $this->customer->id,
         'currency_id' => $this->currency->id,
@@ -124,7 +125,7 @@ test('user can specify template parameter for pdf generation', function () {
         'invoice_number' => 'INV-005',
     ]);
 
-    \Modules\Sales\Models\InvoiceLine::factory()->create([
+    InvoiceLine::factory()->create([
         'invoice_id' => $invoice->id,
         'income_account_id' => $this->account->id,
     ]);
@@ -140,7 +141,7 @@ test('user can specify template parameter for pdf generation', function () {
 
 test('user can preview pdf from company settings', function () {
     // Arrange
-    $invoice = \Modules\Sales\Models\Invoice::factory()->create([
+    $invoice = Invoice::factory()->create([
         'company_id' => $this->company->id,
         'customer_id' => $this->customer->id,
         'currency_id' => $this->currency->id,
@@ -148,7 +149,7 @@ test('user can preview pdf from company settings', function () {
         'invoice_number' => 'INV-006',
     ]);
 
-    \Modules\Sales\Models\InvoiceLine::factory()->create([
+    InvoiceLine::factory()->create([
         'invoice_id' => $invoice->id,
         'income_account_id' => $this->account->id,
     ]);
@@ -188,7 +189,7 @@ test('pdf preview uses company default template', function () {
     // Arrange
     $this->company->update(['pdf_template' => 'minimal']);
 
-    $invoice = \Modules\Sales\Models\Invoice::factory()->create([
+    $invoice = Invoice::factory()->create([
         'company_id' => $this->company->id,
         'customer_id' => $this->customer->id,
         'currency_id' => $this->currency->id,
@@ -196,7 +197,7 @@ test('pdf preview uses company default template', function () {
         'invoice_number' => 'INV-007',
     ]);
 
-    \Modules\Sales\Models\InvoiceLine::factory()->create([
+    InvoiceLine::factory()->create([
         'invoice_id' => $invoice->id,
         'income_account_id' => $this->account->id,
     ]);
@@ -214,7 +215,7 @@ test('pdf preview can override template with parameter', function () {
     // Arrange
     $this->company->update(['pdf_template' => 'classic']);
 
-    $invoice = \Modules\Sales\Models\Invoice::factory()->create([
+    $invoice = Invoice::factory()->create([
         'company_id' => $this->company->id,
         'customer_id' => $this->customer->id,
         'currency_id' => $this->currency->id,
@@ -222,7 +223,7 @@ test('pdf preview can override template with parameter', function () {
         'invoice_number' => 'INV-008',
     ]);
 
-    \Modules\Sales\Models\InvoiceLine::factory()->create([
+    InvoiceLine::factory()->create([
         'invoice_id' => $invoice->id,
         'income_account_id' => $this->account->id,
     ]);

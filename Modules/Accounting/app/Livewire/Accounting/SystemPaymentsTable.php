@@ -2,10 +2,6 @@
 
 namespace Modules\Accounting\Livewire\Accounting;
 
-use App\Enums\Payments\PaymentStatus;
-use App\Enums\Payments\PaymentType;
-use App\Filament\Tables\Columns\MoneyColumn;
-use App\Services\CurrencyConverterService;
 use Brick\Money\Money;
 use Exception;
 use Filament\Actions\Concerns\InteractsWithActions;
@@ -19,7 +15,10 @@ use Filament\Tables\Concerns\InteractsWithTable;
 use Filament\Tables\Contracts\HasTable;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
+use Illuminate\Contracts\View\View;
 use Livewire\Component;
+use Modules\Accounting\Models\BankStatement;
+use Modules\Payment\Models\Payment;
 
 class SystemPaymentsTable extends Component implements HasActions, HasForms, HasTable
 {
@@ -27,12 +26,12 @@ class SystemPaymentsTable extends Component implements HasActions, HasForms, Has
     use InteractsWithForms;
     use InteractsWithTable;
 
-    public \Modules\Accounting\Models\BankStatement $bankStatement;
+    public BankStatement $bankStatement;
 
     /** @var array<int, int> */
     public array $selectedPayments = [];
 
-    public function mount(\Modules\Accounting\Models\BankStatement $bankStatement): void
+    public function mount(BankStatement $bankStatement): void
     {
         $this->bankStatement = $bankStatement;
     }
@@ -41,7 +40,7 @@ class SystemPaymentsTable extends Component implements HasActions, HasForms, Has
     {
         return $table
             ->query(
-                \Modules\Payment\Models\Payment::query()
+                Payment::query()
                     ->where('company_id', $this->bankStatement->company_id)
                     ->where('status', PaymentStatus::Confirmed)
                     ->whereDoesntHave('bankStatementLines')  // Only show unreconciled payments
@@ -132,7 +131,7 @@ class SystemPaymentsTable extends Component implements HasActions, HasForms, Has
         $total = Money::of(0, $bankStatementCurrency);
 
         if (! empty($this->selectedPayments)) {
-            $payments = \Modules\Payment\Models\Payment::whereIn('id', $this->selectedPayments)->with('currency')->get();
+            $payments = Payment::whereIn('id', $this->selectedPayments)->with('currency')->get();
             foreach ($payments as $payment) {
                 $paymentAmount = $payment->amount;
 
@@ -175,7 +174,7 @@ class SystemPaymentsTable extends Component implements HasActions, HasForms, Has
         return null;
     }
 
-    public function render(): \Illuminate\Contracts\View\View
+    public function render(): View
     {
         return view('livewire.accounting.system-payments-table');
     }

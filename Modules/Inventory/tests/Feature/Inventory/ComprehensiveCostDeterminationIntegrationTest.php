@@ -1,20 +1,10 @@
 <?php
 
-use App\Actions\Inventory\CreateStockMoveAction;
-use App\DataTransferObjects\Inventory\CreateStockMoveDTO;
-use App\DataTransferObjects\Inventory\CreateStockMoveProductLineDTO;
-use App\Enums\Inventory\CostSource;
-use App\Enums\Inventory\StockMoveStatus;
-use App\Enums\Inventory\StockMoveType;
-use App\Enums\Inventory\ValuationMethod;
-use App\Enums\Products\ProductType;
-use App\Exceptions\Inventory\InsufficientCostInformationException;
-use App\Models\InventoryCostLayer;
-use App\Models\StockMoveValuation;
-use App\Services\Inventory\CostValidationService;
-use App\Services\Inventory\InventoryValuationService;
 use Brick\Money\Money;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Modules\Accounting\Models\Account;
+use Modules\Product\Models\Product;
+use Modules\Purchase\Models\VendorBill;
 use Tests\Traits\WithConfiguredCompany;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);
@@ -25,39 +15,39 @@ beforeEach(function () {
     $this->inventoryValuationService = app(InventoryValuationService::class);
 
     // Create required accounts
-    $this->inventoryAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create([
+    $this->inventoryAccount = Account::factory()->for($this->company)->create([
         'name' => 'Inventory Asset',
         'type' => 'current_assets',
     ]);
-    $this->cogsAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create([
+    $this->cogsAccount = Account::factory()->for($this->company)->create([
         'name' => 'Cost of Goods Sold',
         'type' => 'expense',
     ]);
-    $this->stockInputAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create([
+    $this->stockInputAccount = Account::factory()->for($this->company)->create([
         'name' => 'Stock Input',
         'type' => 'current_liabilities',
     ]);
 
     // Create required locations
-    $this->fromLocation = \App\Models\StockLocation::factory()->for($this->company)->create([
+    $this->fromLocation = StockLocation::factory()->for($this->company)->create([
         'name' => 'Vendor Location',
-        'type' => \App\Enums\Inventory\StockLocationType::Vendor,
+        'type' => StockLocationType::Vendor,
     ]);
-    $this->toLocation = \App\Models\StockLocation::factory()->for($this->company)->create([
+    $this->toLocation = StockLocation::factory()->for($this->company)->create([
         'name' => 'Internal Location',
-        'type' => \App\Enums\Inventory\StockLocationType::Internal,
+        'type' => StockLocationType::Internal,
     ]);
 });
 
 it('demonstrates complete cost determination workflow from vendor bill to manual stock move', function () {
     // Step 1: Create a vendor bill with product to establish cost history
-    $vendorBill = \Modules\Purchase\Models\VendorBill::factory()->for($this->company)->create([
-        'status' => \App\Enums\Purchases\VendorBillStatus::Posted,
+    $vendorBill = VendorBill::factory()->for($this->company)->create([
+        'status' => VendorBillStatus::Posted,
         'currency_id' => $this->company->currency->id,
         'exchange_rate_at_creation' => 1.0,
     ]);
 
-    $product = \Modules\Product\Models\Product::factory()->create([
+    $product = Product::factory()->create([
         'company_id' => $this->company->id,
         'type' => \Modules\Product\Enums\Products\ProductType::Storable,
         'inventory_valuation_method' => ValuationMethod::AVCO,
@@ -67,7 +57,7 @@ it('demonstrates complete cost determination workflow from vendor bill to manual
         'default_stock_input_account_id' => $this->stockInputAccount->id,
     ]);
 
-    \App\Models\VendorBillLine::factory()->create([
+    VendorBillLine::factory()->create([
         'vendor_bill_id' => $vendorBill->id,
         'product_id' => $product->id,
         'quantity' => 100,
@@ -76,15 +66,15 @@ it('demonstrates complete cost determination workflow from vendor bill to manual
     ]);
 
     // Step 2: Create stock move from vendor bill (should use vendor bill cost)
-    $vendorBillStockMove = \App\Models\StockMove::factory()->create([
+    $vendorBillStockMove = StockMove::factory()->create([
         'company_id' => $this->company->id,
         'move_type' => StockMoveType::Incoming,
         'status' => StockMoveStatus::Done,
-        'source_type' => \Modules\Purchase\Models\VendorBill::class,
+        'source_type' => VendorBill::class,
         'source_id' => $vendorBill->id,
     ]);
 
-    $vendorBillProductLine = \App\Models\StockMoveProductLine::factory()->create([
+    $vendorBillProductLine = StockMoveProductLine::factory()->create([
         'company_id' => $this->company->id,
         'stock_move_id' => $vendorBillStockMove->id,
         'product_id' => $product->id,
@@ -94,7 +84,7 @@ it('demonstrates complete cost determination workflow from vendor bill to manual
     ]);
 
     // Process the vendor bill stock move
-    app(\App\Actions\Inventory\CreateJournalEntryForStockMoveAction::class)->execute($vendorBillStockMove, $this->user);
+    app(CreateJournalEntryForStockMoveAction::class)->execute($vendorBillStockMove, $this->user);
 
     // Verify vendor bill cost was used and tracked
     $vendorBillValuation = StockMoveValuation::where('stock_move_id', $vendorBillStockMove->id)->first();
@@ -150,7 +140,7 @@ it('demonstrates complete cost determination workflow from vendor bill to manual
 
 it('demonstrates fallback cost determination with warnings', function () {
     // Create product with only unit price (no average cost or cost layers)
-    $product = \Modules\Product\Models\Product::factory()->create([
+    $product = Product::factory()->create([
         'company_id' => $this->company->id,
         'type' => \Modules\Product\Enums\Products\ProductType::Storable,
         'inventory_valuation_method' => ValuationMethod::AVCO,
@@ -162,7 +152,7 @@ it('demonstrates fallback cost determination with warnings', function () {
     ]);
 
     // Test cost determination with fallbacks allowed
-    $stockMove = \App\Models\StockMove::factory()->create([
+    $stockMove = StockMove::factory()->create([
         'company_id' => $this->company->id,
         'move_type' => StockMoveType::Incoming,
         'source_type' => null,
@@ -184,7 +174,7 @@ it('demonstrates fallback cost determination with warnings', function () {
 
 it('demonstrates complete failure scenario with actionable suggestions', function () {
     // Create product without any cost information
-    $product = \Modules\Product\Models\Product::factory()->create([
+    $product = Product::factory()->create([
         'company_id' => $this->company->id,
         'type' => \Modules\Product\Enums\Products\ProductType::Storable,
         'inventory_valuation_method' => ValuationMethod::AVCO,
@@ -195,7 +185,7 @@ it('demonstrates complete failure scenario with actionable suggestions', functio
         'default_stock_input_account_id' => $this->stockInputAccount->id,
     ]);
 
-    $stockMove = \App\Models\StockMove::factory()->create([
+    $stockMove = StockMove::factory()->create([
         'company_id' => $this->company->id,
         'move_type' => StockMoveType::Incoming,
         'source_type' => null,
@@ -235,7 +225,7 @@ it('demonstrates complete failure scenario with actionable suggestions', functio
 
 it('demonstrates FIFO cost layer fallback', function () {
     // Create FIFO product with cost layer but no average cost
-    $product = \Modules\Product\Models\Product::factory()->create([
+    $product = Product::factory()->create([
         'company_id' => $this->company->id,
         'type' => \Modules\Product\Enums\Products\ProductType::Storable,
         'inventory_valuation_method' => ValuationMethod::FIFO,
@@ -251,7 +241,7 @@ it('demonstrates FIFO cost layer fallback', function () {
         'remaining_quantity' => 20.0,
     ]);
 
-    $stockMove = \App\Models\StockMove::factory()->create([
+    $stockMove = StockMove::factory()->create([
         'company_id' => $this->company->id,
         'move_type' => StockMoveType::Incoming,
         'source_type' => null,

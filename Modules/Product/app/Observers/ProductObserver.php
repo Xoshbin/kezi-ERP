@@ -2,14 +2,14 @@
 
 namespace Modules\Product\Observers;
 
-use App\Exceptions\DeletionNotAllowedException;
+use Modules\Product\Models\Product;
 
 class ProductObserver
 {
     /**
      * Handle the Product "deleting" event.
      */
-    public function deleting(\Modules\Product\Models\Product $product): void
+    public function deleting(Product $product): void
     {
         // Check if the product is used in any financial transactions.
         if ($product->invoiceLines()->exists() || $product->vendorBillLines()->exists()) {

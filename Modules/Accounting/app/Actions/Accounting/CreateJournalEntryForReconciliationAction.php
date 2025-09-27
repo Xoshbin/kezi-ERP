@@ -2,18 +2,17 @@
 
 namespace Modules\Accounting\Actions\Accounting;
 
-use App\DataTransferObjects\Accounting\CreateJournalEntryDTO;
-use App\DataTransferObjects\Accounting\CreateJournalEntryLineDTO;
-use App\Models\JournalEntry;
 use App\Models\User;
 use Brick\Money\Money;
+use InvalidArgumentException;
+use Modules\Payment\Models\Payment;
 use RuntimeException;
 
 class CreateJournalEntryForReconciliationAction
 {
     public function __construct(private readonly CreateJournalEntryAction $createJournalEntryAction) {}
 
-    public function execute(\Modules\Payment\Models\Payment $payment, User $user): JournalEntry
+    public function execute(Payment $payment, User $user): JournalEntry
     {
         // 1. Load necessary relationships for context.
         $payment->load('company', 'journal.currency');
@@ -22,7 +21,7 @@ class CreateJournalEntryForReconciliationAction
         $currency = $journal->currency;
 
         if (! $currency) {
-            throw new \InvalidArgumentException('Journal currency is not configured');
+            throw new InvalidArgumentException('Journal currency is not configured');
         }
 
         $currencyCode = $currency->code;
@@ -70,7 +69,7 @@ class CreateJournalEntryForReconciliationAction
             entry_date: now(),
             reference: 'RECO/'.$payment->id,
             description: 'Reconciliation for Payment #'.$payment->id,
-            source_type: \Modules\Payment\Models\Payment::class,
+            source_type: Payment::class,
             source_id: $payment->id,
             created_by_user_id: $user->id,
             is_posted: true,

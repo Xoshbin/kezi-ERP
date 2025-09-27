@@ -2,6 +2,7 @@
 
 namespace Modules\Accounting\Filament\Clusters\Accounting\Widgets;
 
+use App\DataTransferObjects\Reports\BalanceSheetDTO;
 use App\Models\Company;
 use App\Services\Reports\AgedPayableService;
 use App\Services\Reports\AgedReceivableService;
@@ -111,7 +112,7 @@ class FinancialStatsOverview extends BaseWidget
         ];
     }
 
-    private function calculateCashBalance(\App\DataTransferObjects\Reports\BalanceSheetDTO $balanceSheetDto): Money
+    private function calculateCashBalance(BalanceSheetDTO $balanceSheetDto): Money
     {
         $currency = $balanceSheetDto->assetLines->first()?->balance->getCurrency() ?? 'IQD';
         $cashBalance = Money::zero($currency);

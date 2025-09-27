@@ -5,6 +5,7 @@ namespace Modules\HR\Models;
 use App\Casts\DocumentCurrencyMoneyCast;
 use App\Observers\AuditLogObserver;
 use Brick\Money\Money;
+use Database\Factories\EmploymentContractFactory;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -55,7 +56,7 @@ use Illuminate\Support\Carbon;
 #[ObservedBy([\Modules\Foundation\Observers\AuditLogObserver::class])]
 class EmploymentContract extends Model
 {
-    /** @use HasFactory<\Database\Factories\EmploymentContractFactory> */
+    /** @use HasFactory<EmploymentContractFactory> */
     use HasFactory;
 
     /**

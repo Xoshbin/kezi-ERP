@@ -1,8 +1,12 @@
 <?php
 
-use App\Enums\Sales\InvoiceStatus;
-use App\Filament\Clusters\Accounting\Resources\Invoices\InvoiceResource;
+use Brick\Money\Money;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Modules\Accounting\Models\Account;
+use Modules\Foundation\Models\Partner;
+use Modules\Product\Enums\Products\ProductType;
+use Modules\Product\Models\Product;
+use Modules\Sales\Models\Invoice;
 use Tests\Traits\WithConfiguredCompany;
 use function Pest\Livewire\livewire;
 
@@ -23,19 +27,19 @@ it('can render the create page', function () {
 });
 
 it('can create an invoice', function () {
-    /** @var \Modules\Foundation\Models\Partner $customer */
-    $customer = \Modules\Foundation\Models\Partner::factory()->customer()->create([
+    /** @var Partner $customer */
+    $customer = Partner::factory()->customer()->create([
         'company_id' => $this->company->id,
     ]);
 
-    /** @var \Modules\Product\Models\Product $product */
-    $product = \Modules\Product\Models\Product::factory()->create([
+    /** @var Product $product */
+    $product = Product::factory()->create([
         'company_id' => $this->company->id,
         'name' => 'Test Product Line', // Set a specific name to match the database assertion
-        'unit_price' => \Brick\Money\Money::of(100, $this->company->currency->code), // Set a specific price for predictable total
+        'unit_price' => Money::of(100, $this->company->currency->code), // Set a specific price for predictable total
     ]);
 
-    livewire(\App\Filament\Clusters\Accounting\Resources\Invoices\Pages\CreateInvoice::class)
+    livewire(CreateInvoice::class)
         ->fillForm([
             'company_id' => $this->company->id,
             'customer_id' => $customer->id,
@@ -67,12 +71,12 @@ it('can create an invoice', function () {
         'quantity' => 2,
     ]);
 
-    $invoice = \Modules\Sales\Models\Invoice::first();
+    $invoice = Invoice::first();
     expect($invoice->total_amount->getAmount()->toFloat())->toBe(200.0);
 });
 
 it('can validate input on create', function () {
-    livewire(\App\Filament\Clusters\Accounting\Resources\Invoices\Pages\CreateInvoice::class)
+    livewire(CreateInvoice::class)
         ->fillForm([
             'customer_id' => null,
             'invoice_date' => null,
@@ -89,7 +93,7 @@ it('can validate input on create', function () {
 });
 
 it('can render the edit page', function () {
-    $invoice = \Modules\Sales\Models\Invoice::factory()->create([
+    $invoice = Invoice::factory()->create([
         'company_id' => $this->company->id,
     ]);
 
@@ -98,18 +102,18 @@ it('can render the edit page', function () {
 });
 
 it('can edit an invoice', function () {
-    $invoice = \Modules\Sales\Models\Invoice::factory()->withLines(1)->create([
+    $invoice = Invoice::factory()->withLines(1)->create([
         'company_id' => $this->company->id,
     ]);
 
-    /** @var \Modules\Foundation\Models\Partner $newCustomer */
-    $newCustomer = \Modules\Foundation\Models\Partner::factory()->customer()->create([
+    /** @var Partner $newCustomer */
+    $newCustomer = Partner::factory()->customer()->create([
         'company_id' => $this->company->id,
     ]);
 
     // The mutateFormDataBeforeFill method in EditInvoice already handles
     // the conversion of line data with Money objects properly, so we don't need to override it
-    livewire(\App\Filament\Clusters\Accounting\Resources\Invoices\Pages\EditInvoice::class, [
+    livewire(EditInvoice::class, [
         'record' => $invoice->getRouteKey(),
     ])
         ->fillForm([
@@ -125,12 +129,12 @@ it('can edit an invoice', function () {
 });
 
 it('can confirm an invoice', function () {
-    $invoice = \Modules\Sales\Models\Invoice::factory()->withLines(1)->create([
+    $invoice = Invoice::factory()->withLines(1)->create([
         'company_id' => $this->company->id,
         'status' => InvoiceStatus::Draft,
     ]);
 
-    livewire(\App\Filament\Clusters\Accounting\Resources\Invoices\Pages\EditInvoice::class, [
+    livewire(EditInvoice::class, [
         'record' => $invoice->getRouteKey(),
     ])
         ->callAction('confirm')
@@ -204,14 +208,14 @@ it('can confirm an invoice', function () {
 
 describe('Invoice Confirmation Business Rules', function () {
     it('prevents confirming invoice without line items via UI', function () {
-        $invoice = \Modules\Sales\Models\Invoice::factory()->create([
+        $invoice = Invoice::factory()->create([
             'company_id' => $this->company->id,
             'status' => InvoiceStatus::Draft,
         ]);
 
         expect($invoice->invoiceLines)->toHaveCount(0);
 
-        $editWire = livewire(\App\Filament\Clusters\Accounting\Resources\Invoices\Pages\EditInvoice::class, [
+        $editWire = livewire(EditInvoice::class, [
             'record' => $invoice->getRouteKey(),
         ]);
 
@@ -227,14 +231,14 @@ describe('Invoice Confirmation Business Rules', function () {
     });
 
     it('prevents confirming invoice without line items via backend service', function () {
-        $invoice = \Modules\Sales\Models\Invoice::factory()->create([
+        $invoice = Invoice::factory()->create([
             'company_id' => $this->company->id,
             'status' => InvoiceStatus::Draft,
         ]);
 
         expect($invoice->invoiceLines)->toHaveCount(0);
 
-        $service = app(\App\Services\InvoiceService::class);
+        $service = app(InvoiceService::class);
 
         expect(function () use ($service, $invoice) {
             $service->confirm($invoice, $this->user);
@@ -247,15 +251,15 @@ describe('Invoice Confirmation Business Rules', function () {
     });
 
     it('prevents confirmation when invoice has zero total amount', function () {
-        $incomeAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create([
+        $incomeAccount = Account::factory()->for($this->company)->create([
             'type' => 'income',
             'name' => 'Test Income Account',
         ]);
 
-        $invoice = \Modules\Sales\Models\Invoice::factory()->create([
+        $invoice = Invoice::factory()->create([
             'company_id' => $this->company->id,
             'status' => InvoiceStatus::Draft,
-            'total_amount' => \Brick\Money\Money::of(0, $this->company->currency->code),
+            'total_amount' => Money::of(0, $this->company->currency->code),
         ]);
 
         // Create a line with zero amount
@@ -263,9 +267,9 @@ describe('Invoice Confirmation Business Rules', function () {
             'company_id' => $this->company->id,
             'description' => 'Zero amount line',
             'quantity' => 0,
-            'unit_price' => \Brick\Money\Money::of(0, $this->company->currency->code),
-            'subtotal' => \Brick\Money\Money::of(0, $this->company->currency->code),
-            'total_line_tax' => \Brick\Money\Money::of(0, $this->company->currency->code),
+            'unit_price' => Money::of(0, $this->company->currency->code),
+            'subtotal' => Money::of(0, $this->company->currency->code),
+            'total_line_tax' => Money::of(0, $this->company->currency->code),
             'income_account_id' => $incomeAccount->id,
         ]);
 
@@ -273,7 +277,7 @@ describe('Invoice Confirmation Business Rules', function () {
         expect($invoice->invoiceLines)->toHaveCount(1);
         expect($invoice->total_amount->isZero())->toBeTrue();
 
-        $service = app(\App\Services\InvoiceService::class);
+        $service = app(InvoiceService::class);
 
         expect(function () use ($service, $invoice) {
             $service->confirm($invoice, $this->user);
@@ -281,21 +285,21 @@ describe('Invoice Confirmation Business Rules', function () {
     });
 
     it('enables confirm action when invoice has valid line items', function () {
-        $product = \Modules\Product\Models\Product::factory()->create([
+        $product = Product::factory()->create([
             'company_id' => $this->company->id,
-            'unit_price' => \Brick\Money\Money::of(100, $this->company->currency->code),
-            'type' => \Modules\Product\Enums\Products\ProductType::Service,
+            'unit_price' => Money::of(100, $this->company->currency->code),
+            'type' => ProductType::Service,
         ]);
 
-        $invoice = \Modules\Sales\Models\Invoice::factory()->create([
+        $invoice = Invoice::factory()->create([
             'company_id' => $this->company->id,
-            'customer_id' => \Modules\Foundation\Models\Partner::factory()->customer()->create(['company_id' => $this->company->id])->id,
+            'customer_id' => Partner::factory()->customer()->create(['company_id' => $this->company->id])->id,
             'currency_id' => $this->company->currency_id,
             'status' => InvoiceStatus::Draft,
             'invoice_date' => now()->format('Y-m-d'),
             'due_date' => now()->addDays(30)->format('Y-m-d'),
-            'total_amount' => \Brick\Money\Money::of(100, $this->company->currency->code),
-            'total_tax' => \Brick\Money\Money::of(0, $this->company->currency->code),
+            'total_amount' => Money::of(100, $this->company->currency->code),
+            'total_tax' => Money::of(0, $this->company->currency->code),
         ]);
 
         $invoice->invoiceLines()->create([
@@ -303,15 +307,15 @@ describe('Invoice Confirmation Business Rules', function () {
             'product_id' => $product->id,
             'description' => 'Valid service line',
             'quantity' => 1,
-            'unit_price' => \Brick\Money\Money::of(100, $this->company->currency->code),
-            'subtotal' => \Brick\Money\Money::of(100, $this->company->currency->code),
-            'total_line_tax' => \Brick\Money\Money::of(0, $this->company->currency->code),
+            'unit_price' => Money::of(100, $this->company->currency->code),
+            'subtotal' => Money::of(100, $this->company->currency->code),
+            'total_line_tax' => Money::of(0, $this->company->currency->code),
             'income_account_id' => $product->income_account_id,
         ]);
 
         $invoice->refresh();
 
-        $editWire = livewire(\App\Filament\Clusters\Accounting\Resources\Invoices\Pages\EditInvoice::class, [
+        $editWire = livewire(EditInvoice::class, [
             'record' => $invoice->getRouteKey(),
         ]);
 

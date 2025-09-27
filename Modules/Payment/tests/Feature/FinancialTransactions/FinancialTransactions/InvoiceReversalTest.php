@@ -1,11 +1,9 @@
 <?php
 
-use App\Actions\Sales\CreateInvoiceLineAction;
-use App\DataTransferObjects\Sales\CreateInvoiceLineDTO;
-use App\Enums\Accounting\JournalEntryState;
-use App\Enums\Sales\InvoiceStatus;
-use App\Services\InvoiceService;
+use Brick\Money\Money;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Modules\Accounting\Models\Account;
+use Modules\Sales\Models\Invoice;
 use Tests\Traits\MocksTime;
 use Tests\Traits\WithConfiguredCompany;
 
@@ -13,12 +11,12 @@ uses(RefreshDatabase::class, WithConfiguredCompany::class, MocksTime::class);
 
 test('cancelling a posted invoice creates a reversing journal entry and an audit log', function () {
 
-    $invoice = \Modules\Sales\Models\Invoice::factory()->for($this->company)->create(['status' => 'draft']);
-    $incomeAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create(['type' => 'income']);
+    $invoice = Invoice::factory()->for($this->company)->create(['status' => 'draft']);
+    $incomeAccount = Account::factory()->for($this->company)->create(['type' => 'income']);
     $lineDto = new CreateInvoiceLineDTO(
         description: 'Consulting Services',
         quantity: 1,
-        unit_price: \Brick\Money\Money::of('2500', $this->company->currency->code),
+        unit_price: Money::of('2500', $this->company->currency->code),
         income_account_id: $incomeAccount->id,
         product_id: null,
         tax_id: null,
@@ -48,7 +46,7 @@ test('cancelling a posted invoice creates a reversing journal entry and an audit
 
     // Assert: Audit log was created with the correct details
     $this->assertDatabaseHas('audit_logs', [
-        'auditable_type' => \Modules\Sales\Models\Invoice::class,
+        'auditable_type' => Invoice::class,
         'auditable_id' => $invoice->id,
         'user_id' => $this->user->id,
         'event_type' => 'cancellation',

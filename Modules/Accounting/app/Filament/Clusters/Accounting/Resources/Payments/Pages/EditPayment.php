@@ -2,22 +2,18 @@
 
 namespace Modules\Accounting\Filament\Clusters\Accounting\Resources\Payments\Pages;
 
-use App\Actions\Payments\UpdatePaymentAction;
-use App\DataTransferObjects\Payments\UpdatePaymentDTO;
-use App\Enums\Payments\PaymentMethod;
-use App\Enums\Payments\PaymentStatus;
-use App\Enums\Payments\PaymentType;
-use App\Filament\Actions\DocsAction;
-use App\Filament\Clusters\Accounting\Resources\Payments\PaymentResource;
-use App\Services\PaymentService;
 use Brick\Money\Money;
 use Exception;
 use Filament\Actions\Action;
 use Filament\Actions\DeleteAction;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
+use InvalidArgumentException;
+use Modules\Foundation\Models\Currency;
+use Modules\Payment\Models\Payment;
 
 class EditPayment extends EditRecord
 {
@@ -31,14 +27,14 @@ class EditPayment extends EditRecord
                 ->label(__('payment.edit.action.confirm.label'))
                 ->color('success')
                 ->requiresConfirmation()
-                ->visible(fn (\Modules\Payment\Models\Payment $record): bool => $record->status === PaymentStatus::Draft)
-                ->action(function (\Modules\Payment\Models\Payment $record): void {
+                ->visible(fn (Payment $record): bool => $record->status === PaymentStatus::Draft)
+                ->action(function (Payment $record): void {
                     $this->save();
                     $service = app(PaymentService::class);
                     try {
                         $user = Auth::user();
                         if (! $user) {
-                            throw new \Exception('User must be authenticated to confirm payment');
+                            throw new Exception('User must be authenticated to confirm payment');
                         }
                         $service->confirm($record, $user);
                         Notification::make()->title(__('payment.action.confirm.notification.success'))->success()->send();
@@ -71,7 +67,7 @@ class EditPayment extends EditRecord
             //     // Only show this button for Confirmed payments
             //     ->visible(fn(Payment $record): bool => $record->status === PaymentStatus::Confirmed),
             DeleteAction::make()
-                ->visible(fn (\Modules\Payment\Models\Payment $record): bool => $record->status === PaymentStatus::Draft),
+                ->visible(fn (Payment $record): bool => $record->status === PaymentStatus::Draft),
         ];
     }
 
@@ -79,7 +75,7 @@ class EditPayment extends EditRecord
     {
         // Set the 'amount' field from the record's Money object for standalone payments
         $record = $this->getRecord();
-        if ($record instanceof \Modules\Payment\Models\Payment) {
+        if ($record instanceof Payment) {
             $data['amount'] = $record->amount->getAmount()->toFloat();
         }
 
@@ -88,16 +84,16 @@ class EditPayment extends EditRecord
 
     protected function handleRecordUpdate(Model $record, array $data): Model
     {
-        if (! $record instanceof \Modules\Payment\Models\Payment) {
-            throw new \InvalidArgumentException('Expected Payment record');
+        if (! $record instanceof Payment) {
+            throw new InvalidArgumentException('Expected Payment record');
         }
 
-        $currency = \Modules\Foundation\Models\Currency::findOrFail($data['currency_id']);
+        $currency = Currency::findOrFail($data['currency_id']);
         // Ensure we have a single Currency model, not a collection
-        if ($currency instanceof \Illuminate\Database\Eloquent\Collection) {
+        if ($currency instanceof Collection) {
             $currency = $currency->first();
             if (! $currency) {
-                throw new \InvalidArgumentException('Currency not found');
+                throw new InvalidArgumentException('Currency not found');
             }
         }
 

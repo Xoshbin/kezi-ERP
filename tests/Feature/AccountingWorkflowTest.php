@@ -17,6 +17,7 @@ use App\Enums\Adjustments\AdjustmentDocumentType;
 use App\Enums\Partners\PartnerType;
 use App\Enums\Payments\PaymentMethod;
 use App\Enums\Payments\PaymentType;
+use App\Enums\Purchases\VendorBillStatus;
 use App\Enums\Sales\InvoiceStatus;
 use App\Models\Account;
 use App\Models\Invoice;
@@ -26,6 +27,7 @@ use App\Services\InvoiceService;
 use App\Services\PaymentService;
 use App\Services\VendorBillService;
 use Brick\Money\Money;
+use Modules\Inventory\Models\AdjustmentDocument;
 use Tests\Traits\WithConfiguredCompany;
 
 uses(Illuminate\Foundation\Testing\RefreshDatabase::class, WithConfiguredCompany::class);
@@ -238,12 +240,12 @@ test('the entire accounting workflow from setup to credit note', function () {
     expect($vendorPaymentEntry->total_debit->isEqualTo($highEndLaptopCost))->toBeTrue();
     expect($vendorPaymentEntry->lines->where('account_id', $apAccount->id)->first()->debit->isEqualTo($highEndLaptopCost))->toBeTrue();
     expect($vendorPaymentEntry->lines->where('account_id', $bankAccount->id)->first()->credit->isEqualTo($highEndLaptopCost))->toBeTrue();
-    expect($vendorBill->fresh()->status)->toBe(\App\Enums\Purchases\VendorBillStatus::Paid);
+    expect($vendorBill->fresh()->status)->toBe(VendorBillStatus::Paid);
 
     // Step 8: Handling a Correction (Credit Note)
     $adjustmentService = app(AdjustmentDocumentService::class);
 
-    $creditNote = \Modules\Inventory\Models\AdjustmentDocument::factory()->create([
+    $creditNote = AdjustmentDocument::factory()->create([
         'company_id' => $this->company->id,
         'currency_id' => $this->company->currency_id,
         'reference_number' => 'CN-001',

@@ -2,15 +2,12 @@
 
 namespace Modules\Accounting\Actions\Accounting;
 
-use App\DataTransferObjects\Accounting\CreateJournalEntryDTO;
-use App\DataTransferObjects\Accounting\CreateJournalEntryLineDTO;
-use App\Enums\Payments\PaymentType;
-use App\Models\JournalEntry;
 use App\Models\User;
 use Brick\Math\RoundingMode;
 use Brick\Money\Money;
 use Illuminate\Support\Facades\Log;
 use InvalidArgumentException;
+use Modules\Payment\Models\Payment;
 use RuntimeException;
 
 class CreateJournalEntryForPaymentAction
@@ -19,7 +16,7 @@ class CreateJournalEntryForPaymentAction
         private readonly CreateJournalEntryAction $createJournalEntryAction
     ) {}
 
-    public function execute(\Modules\Payment\Models\Payment $payment, User $user): JournalEntry
+    public function execute(Payment $payment, User $user): JournalEntry
     {
         $company = $payment->company->load('currency');
         $baseCurrency = $company->currency;

@@ -3,6 +3,7 @@
 namespace Modules\Accounting\Models;
 
 use Database\Factories\FiscalPositionAccountMappingFactory;
+use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -31,11 +32,11 @@ use Illuminate\Support\Carbon;
  * @method static Builder<static>|FiscalPositionAccountMapping whereOriginalAccountId($value)
  * @method static Builder<static>|FiscalPositionAccountMapping whereUpdatedAt($value)
  *
- * @mixin \Eloquent
+ * @mixin Eloquent
  */
 class FiscalPositionAccountMapping extends Model
 {
-    /** @use HasFactory<\Database\Factories\FiscalPositionAccountMappingFactory> */
+    /** @use HasFactory<FiscalPositionAccountMappingFactory> */
     use HasFactory;
 
     /**

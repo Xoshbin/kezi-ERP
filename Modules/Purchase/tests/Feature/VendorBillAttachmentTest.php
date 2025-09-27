@@ -4,10 +4,12 @@ namespace Modules\Purchase\Tests\Feature;
 
 use App\Models\Company;
 use App\Models\User;
-use App\Models\VendorBillAttachment;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
+use Modules\Foundation\Models\Currency;
+use Modules\Foundation\Models\Partner;
+use Modules\Purchase\Models\VendorBill;
 use Tests\TestCase;
 
 class VendorBillAttachmentTest extends TestCase
@@ -18,7 +20,7 @@ class VendorBillAttachmentTest extends TestCase
 
     protected Company $company;
 
-    protected \Modules\Purchase\Models\VendorBill $vendorBill;
+    protected VendorBill $vendorBill;
 
     protected function setUp(): void
     {
@@ -29,10 +31,10 @@ class VendorBillAttachmentTest extends TestCase
         $this->user = User::factory()->create();
         $this->user->companies()->attach($this->company);
 
-        $currency = \Modules\Foundation\Models\Currency::factory()->create();
-        $vendor = \Modules\Foundation\Models\Partner::factory()->create(['company_id' => $this->company->id]);
+        $currency = Currency::factory()->create();
+        $vendor = Partner::factory()->create(['company_id' => $this->company->id]);
 
-        $this->vendorBill = \Modules\Purchase\Models\VendorBill::factory()->create([
+        $this->vendorBill = VendorBill::factory()->create([
             'company_id' => $this->company->id,
             'vendor_id' => $vendor->id,
             'currency_id' => $currency->id,

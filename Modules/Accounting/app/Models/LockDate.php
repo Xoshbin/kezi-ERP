@@ -4,6 +4,7 @@ namespace Modules\Accounting\Models;
 
 use App\Enums\Accounting\LockDateType;
 use App\Observers\LockDateObserver;
+use Database\Factories\LockDateFactory;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -12,7 +13,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 #[ObservedBy([LockDateObserver::class])]
 class LockDate extends Model
 {
-    /** @use HasFactory<\Database\Factories\LockDateFactory> */
+    /** @use HasFactory<LockDateFactory> */
     use HasFactory;
 
     protected $fillable = [

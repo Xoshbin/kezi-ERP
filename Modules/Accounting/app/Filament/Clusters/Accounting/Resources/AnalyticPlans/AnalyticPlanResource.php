@@ -2,12 +2,8 @@
 
 namespace Modules\Accounting\Filament\Clusters\Accounting\Resources\AnalyticPlans;
 
-use App\Filament\Clusters\Accounting\AccountingCluster;
-use App\Filament\Clusters\Accounting\Resources\AnalyticPlans\Pages\CreateAnalyticPlan;
-use App\Filament\Clusters\Accounting\Resources\AnalyticPlans\Pages\EditAnalyticPlan;
-use App\Filament\Clusters\Accounting\Resources\AnalyticPlans\Pages\ListAnalyticPlans;
-use App\Filament\Clusters\Accounting\Resources\AnalyticPlans\RelationManagers\AnalyticAccountsRelationManager;
-use App\Filament\Clusters\Accounting\Resources\AnalyticPlans\RelationManagers\BudgetsRelationManager;
+
+use BackedEnum;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
@@ -18,14 +14,21 @@ use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use LaraZeus\SpatieTranslatable\Resources\Concerns\Translatable;
+use Modules\Accounting\Filament\Clusters\Accounting\AccountingCluster;
+use Modules\Accounting\Filament\Clusters\Accounting\Resources\AnalyticPlans\Pages\CreateAnalyticPlan;
+use Modules\Accounting\Filament\Clusters\Accounting\Resources\AnalyticPlans\Pages\EditAnalyticPlan;
+use Modules\Accounting\Filament\Clusters\Accounting\Resources\AnalyticPlans\Pages\ListAnalyticPlans;
+use Modules\Accounting\Filament\Clusters\Accounting\Resources\AnalyticPlans\RelationManagers\AnalyticAccountsRelationManager;
+use Modules\Accounting\Filament\Clusters\Accounting\Resources\AnalyticPlans\RelationManagers\BudgetsRelationManager;
+use Modules\Accounting\Models\AnalyticPlan;
 
 class AnalyticPlanResource extends Resource
 {
     use Translatable;
 
-    protected static ?string $model = \Modules\Accounting\Models\AnalyticPlan::class;
+    protected static ?string $model = AnalyticPlan::class;
 
-    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-clipboard-document-list';
+    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-clipboard-document-list';
 
     protected static ?int $navigationSort = 5;
 

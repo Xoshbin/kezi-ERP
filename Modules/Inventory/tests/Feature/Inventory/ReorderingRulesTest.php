@@ -2,15 +2,10 @@
 
 namespace Modules\Inventory\Tests\Feature\Inventory;
 
-use App\Console\Commands\RunReorderingSchedulerCommand;
-use App\Enums\Inventory\ReorderingRoute;
-use App\Models\ReorderingRule;
-use App\Models\ReplenishmentSuggestion;
-use App\Models\StockQuant;
-use App\Services\Inventory\ReorderingRuleService;
 use Brick\Money\Money;
 use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Modules\Product\Models\Product;
 use Tests\Traits\WithConfiguredCompany;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);
@@ -19,9 +14,9 @@ beforeEach(function () {
     $this->setupWithConfiguredCompany();
     $this->setupInventoryTestEnvironment();
 
-    $this->product = \Modules\Product\Models\Product::factory()->for($this->company)->create([
-        'type' => \Modules\Product\Enums\Products\ProductType::Storable,
-        'inventory_valuation_method' => \App\Enums\Inventory\ValuationMethod::AVCO,
+    $this->product = Product::factory()->for($this->company)->create([
+        'type' => ProductType::Storable,
+        'inventory_valuation_method' => ValuationMethod::AVCO,
         'default_inventory_account_id' => $this->inventoryAccount->id,
         'default_stock_input_account_id' => $this->stockInputAccount->id,
         'average_cost' => Money::of(100, $this->company->currency->code),

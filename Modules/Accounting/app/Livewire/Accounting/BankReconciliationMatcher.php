@@ -2,21 +2,23 @@
 
 namespace Modules\Accounting\Livewire\Accounting;
 
-use App\Services\BankReconciliationService;
-use App\Support\NumberFormatter;
+use App\Models\Company;
 use Brick\Money\Money;
+use Exception;
 use Filament\Facades\Filament;
 use Filament\Notifications\Notification;
+use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\On;
 use Livewire\Component;
+use Modules\Accounting\Models\BankStatement;
 
 class BankReconciliationMatcher extends Component
 {
     public int $bankStatementId;
 
-    public \Modules\Accounting\Models\BankStatement $bankStatement;
+    public BankStatement $bankStatement;
 
     // Totals from child components
     public Money $bankTotal;
@@ -32,14 +34,14 @@ class BankReconciliationMatcher extends Component
     public function mount(int $bankStatementId): void
     {
         $this->bankStatementId = $bankStatementId;
-        /** @var \App\Models\Company|null $tenant */
+        /** @var Company|null $tenant */
         $tenant = Filament::getTenant();
 
-        $bankStatement = \Modules\Accounting\Models\BankStatement::with(['currency', 'journal'])->find($bankStatementId);
+        $bankStatement = BankStatement::with(['currency', 'journal'])->find($bankStatementId);
 
         if (! $bankStatement || ($tenant && $bankStatement->company_id !== $tenant->getKey())) {
             // Unauthorized or non-existent: render a safe, empty state without leaking data
-            $this->bankStatement = new \Modules\Accounting\Models\BankStatement([
+            $this->bankStatement = new BankStatement([
                 'id' => 0,
                 'company_id' => $tenant?->id,
                 'currency_id' => $tenant?->currency_id,
@@ -121,7 +123,7 @@ class BankReconciliationMatcher extends Component
         // Use the service to reconcile
         $user = Auth::user();
         if (! $user) {
-            throw new \Exception('User must be authenticated to reconcile transactions');
+            throw new Exception('User must be authenticated to reconcile transactions');
         }
         app(\Modules\Accounting\Services\BankReconciliationService::class)->reconcileMultiple(
             $this->selectedBankLines,
@@ -144,7 +146,7 @@ class BankReconciliationMatcher extends Component
         $this->dispatch('refresh-tables');
     }
 
-    public function render(): \Illuminate\Contracts\View\View
+    public function render(): View
     {
         return view('livewire.accounting.bank-reconciliation-matcher');
     }

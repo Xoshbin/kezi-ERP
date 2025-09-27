@@ -2,12 +2,6 @@
 
 namespace Modules\Accounting\Filament\Clusters\Accounting\Resources\AnalyticAccounts;
 
-use App\Filament\Clusters\Accounting\AccountingCluster;
-use App\Filament\Clusters\Accounting\Resources\AnalyticAccounts\Pages\CreateAnalyticAccount;
-use App\Filament\Clusters\Accounting\Resources\AnalyticAccounts\Pages\EditAnalyticAccount;
-use App\Filament\Clusters\Accounting\Resources\AnalyticAccounts\Pages\ListAnalyticAccounts;
-use App\Filament\Clusters\Accounting\Resources\AnalyticAccounts\RelationManagers\AnalyticPlansRelationManager;
-use App\Filament\Clusters\Accounting\Resources\AnalyticAccounts\RelationManagers\JournalEntryLinesRelationManager;
 use BackedEnum;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
@@ -20,11 +14,19 @@ use Filament\Schemas\Schema;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Modules\Accounting\Filament\Clusters\Accounting\AccountingCluster;
+use Modules\Accounting\Filament\Clusters\Accounting\Resources\AnalyticAccounts\Pages\CreateAnalyticAccount;
+use Modules\Accounting\Filament\Clusters\Accounting\Resources\AnalyticAccounts\Pages\EditAnalyticAccount;
+use Modules\Accounting\Filament\Clusters\Accounting\Resources\AnalyticAccounts\Pages\ListAnalyticAccounts;
+use Modules\Accounting\Filament\Clusters\Accounting\Resources\AnalyticAccounts\RelationManagers\AnalyticPlansRelationManager;
+use Modules\Accounting\Filament\Clusters\Accounting\Resources\AnalyticAccounts\RelationManagers\JournalEntryLinesRelationManager;
+use Modules\Accounting\Models\AnalyticAccount;
+use Modules\Foundation\Models\Currency;
 use Xoshbin\TranslatableSelect\Components\TranslatableSelect;
 
 class AnalyticAccountResource extends Resource
 {
-    protected static ?string $model = \Modules\Accounting\Models\AnalyticAccount::class;
+    protected static ?string $model = AnalyticAccount::class;
 
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-chart-pie';
 
@@ -61,7 +63,7 @@ class AnalyticAccountResource extends Resource
                     ->label(__('analytic_account.company'))
                     ->placeholder(__('analytic_account.select_company'))
                     ->required(),
-                TranslatableSelect::forModel('currency_id', \Modules\Foundation\Models\Currency::class)
+                TranslatableSelect::forModel('currency_id', Currency::class)
                     ->label(__('analytic_account.currency'))
                     ->searchable()
                     ->preload(),

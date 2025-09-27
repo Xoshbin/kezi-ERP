@@ -2,17 +2,15 @@
 
 namespace Modules\Accounting\Actions\Accounting;
 
-use App\DataTransferObjects\Accounting\CreateJournalEntryDTO;
 use App\Models\Company;
-use App\Models\JournalEntry;
-use App\Models\JournalEntryLine;
-use App\Services\Accounting\LockDateService;
-use App\Services\CurrencyConverterService;
 use Brick\Money\Money;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
+use Modules\Accounting\Models\Account;
+use Modules\Foundation\Models\Currency;
+use RuntimeException;
 
 class CreateJournalEntryAction
 {
@@ -26,7 +24,7 @@ class CreateJournalEntryAction
         $company = Company::findOrFail($dto->company_id);
         $this->lockDateService->enforce($company, Carbon::parse($dto->entry_date));
 
-        $currency = \Modules\Foundation\Models\Currency::find($dto->currency_id);
+        $currency = Currency::find($dto->currency_id);
         if (! $currency) {
             throw new Exception("Currency with ID {$dto->currency_id} not found.");
         }
@@ -36,7 +34,7 @@ class CreateJournalEntryAction
         $totalCreditBaseCurrency = Money::zero($company->currency->code);
 
         foreach ($dto->lines as $index => $line) {
-            $account = \Modules\Accounting\Models\Account::find($line->account_id);
+            $account = Account::find($line->account_id);
             if ($account && $account->is_deprecated) {
                 $accountName = is_array($account->name) ? ($account->name['en'] ?? (empty($account->name) ? '' : (string) array_values($account->name)[0])) : (string) $account->name;
                 throw ValidationException::withMessages([
@@ -46,7 +44,7 @@ class CreateJournalEntryAction
 
             // Enforce account currency lock
             if ($account && $account->currency_id && $account->currency_id !== $dto->currency_id) {
-                $accountCurrency = \Modules\Foundation\Models\Currency::findOrFail($account->currency_id);
+                $accountCurrency = Currency::findOrFail($account->currency_id);
                 $accountName = is_array($account->name) ? ($account->name['en'] ?? (empty($account->name) ? '' : (string) array_values($account->name)[0])) : (string) $account->name;
                 $accountCurrencyCode = $accountCurrency->code;
                 throw ValidationException::withMessages([
@@ -134,7 +132,7 @@ class CreateJournalEntryAction
             // This ensures the $journalEntry object is fully hydrated before we use it.
             $journalEntry = $journalEntry->fresh();
             if (! $journalEntry) {
-                throw new \RuntimeException('Failed to refresh journal entry after creation');
+                throw new RuntimeException('Failed to refresh journal entry after creation');
             }
             $journalEntry->load('currency');
 

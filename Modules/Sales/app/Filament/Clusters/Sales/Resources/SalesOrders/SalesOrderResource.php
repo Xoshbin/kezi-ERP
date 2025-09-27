@@ -2,15 +2,6 @@
 
 namespace Modules\Sales\Filament\Clusters\Sales\Resources\SalesOrders;
 
-use App\Filament\Clusters\Sales\Resources\SalesOrders\Pages\CreateSalesOrder;
-use App\Filament\Clusters\Sales\Resources\SalesOrders\Pages\EditSalesOrder;
-use App\Filament\Clusters\Sales\Resources\SalesOrders\Pages\ListSalesOrders;
-use App\Filament\Clusters\Sales\Resources\SalesOrders\Pages\ViewSalesOrder;
-use App\Filament\Clusters\Sales\Resources\SalesOrders\RelationManagers\InvoicesRelationManager;
-use App\Filament\Clusters\Sales\Resources\SalesOrders\Schemas\SalesOrderForm;
-use App\Filament\Clusters\Sales\Resources\SalesOrders\Tables\SalesOrdersTable;
-use App\Filament\Clusters\Sales\SalesCluster;
-use App\Models\SalesOrder;
 use BackedEnum;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;

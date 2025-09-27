@@ -3,13 +3,14 @@
 namespace Modules\Foundation\Services;
 
 use Illuminate\Support\Facades\Validator;
+use Modules\Foundation\Models\Currency;
 
 class CurrencyService
 {
     /**
      * @param  array<string, mixed>  $data
      */
-    public function create(array $data): \Modules\Foundation\Models\Currency
+    public function create(array $data): Currency
     {
         Validator::make($data, [
             'code' => ['required', 'string', 'unique:currencies,code'],
@@ -17,6 +18,6 @@ class CurrencyService
             // ... other rules
         ])->validate(); // Throws ValidationException on failure
 
-        return \Modules\Foundation\Models\Currency::create($data);
+        return Currency::create($data);
     }
 }

@@ -2,8 +2,6 @@
 
 namespace Modules\Inventory\Filament\Clusters\Inventory\Resources\Products\RelationManagers;
 
-use App\Enums\Inventory\ReorderingRoute;
-use App\Models\ReorderingRule;
 use Filament\Actions\CreateAction;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\EditAction;
@@ -18,6 +16,7 @@ use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Model;
+use Modules\Product\Models\Product;
 
 class ReorderingRulesRelationManager extends RelationManager
 {
@@ -139,7 +138,7 @@ class ReorderingRulesRelationManager extends RelationManager
                 CreateAction::make()
                     ->icon('heroicon-o-plus')
                     ->mutateDataUsing(function (array $data): array {
-                        /** @var \Modules\Product\Models\Product $owner */
+                        /** @var Product $owner */
                         $owner = $this->getOwnerRecord();
                         $data['company_id'] = $owner->getAttribute('company_id');
                         $data['product_id'] = $owner->getKey();

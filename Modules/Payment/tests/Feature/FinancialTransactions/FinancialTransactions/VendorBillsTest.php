@@ -2,23 +2,17 @@
 
 namespace Modules\Payment\Tests\Feature\FinancialTransactions;
 
-use App\Actions\Purchases\CreateVendorBillAction;
-use App\Actions\Purchases\CreateVendorBillLineAction;
-use App\Actions\Purchases\UpdateVendorBillAction;
-use App\DataTransferObjects\Purchases\CreateVendorBillDTO;
-use App\DataTransferObjects\Purchases\CreateVendorBillLineDTO;
-use App\DataTransferObjects\Purchases\UpdateVendorBillDTO;
-use App\Enums\Payments\PaymentStatus;
-use App\Enums\Purchases\VendorBillStatus;
-use App\Enums\Shared\PaymentState;
-use App\Exceptions\DeletionNotAllowedException;
-use App\Exceptions\PeriodIsLockedException;
-use App\Exceptions\UpdateNotAllowedException;
-use App\Models\PaymentDocumentLink;
-use App\Services\VendorBillService;
 use Brick\Money\Money;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Event;
+use Modules\Accounting\Models\Account;
+use Modules\Accounting\Models\LockDate;
+use Modules\Foundation\Models\Partner;
+use Modules\Payment\Models\Payment;
+use Modules\Product\Enums\Products\ProductType;
+use Modules\Product\Models\Product;
+use Modules\Purchase\Events\VendorBillConfirmed;
+use Modules\Purchase\Models\VendorBill;
 use Tests\Traits\MocksTime;
 use Tests\Traits\WithConfiguredCompany;
 
@@ -34,14 +28,14 @@ beforeEach(function () {
 
 test('a draft vendor bill can be confirmed, which posts it and dispatches an event', function () {
     Event::fake();
-    $vendorBill = \Modules\Purchase\Models\VendorBill::factory()->for($this->company)->create(['status' => 'draft']);
+    $vendorBill = VendorBill::factory()->for($this->company)->create(['status' => 'draft']);
 
     // Use the dedicated Action to create the line.
     $lineDto = new CreateVendorBillLineDTO(
         description: 'Test Service',
         quantity: 1,
         unit_price: '100.00',
-        expense_account_id: \Modules\Accounting\Models\Account::factory()->for($this->company)->create(['type' => 'expense'])->id,
+        expense_account_id: Account::factory()->for($this->company)->create(['type' => 'expense'])->id,
         product_id: null,
         tax_id: null,
         analytic_account_id: null
@@ -52,24 +46,24 @@ test('a draft vendor bill can be confirmed, which posts it and dispatches an eve
 
     $vendorBill->refresh();
     expect($vendorBill->status)->toBe(VendorBillStatus::Posted);
-    Event::assertDispatched(\Modules\Purchase\Events\VendorBillConfirmed::class, fn($event) => $event->vendorBill->id === $vendorBill->id);
+    Event::assertDispatched(VendorBillConfirmed::class, fn($event) => $event->vendorBill->id === $vendorBill->id);
 });
 
 test('confirming a vendor bill generates the correct journal entry', function () {
-    $product = \Modules\Product\Models\Product::factory()->for($this->company)->create([
-        'type' => \Modules\Product\Enums\Products\ProductType::Storable,
-        'inventory_valuation_method' => \App\Enums\Inventory\ValuationMethod::AVCO,
+    $product = Product::factory()->for($this->company)->create([
+        'type' => ProductType::Storable,
+        'inventory_valuation_method' => ValuationMethod::AVCO,
         'default_inventory_account_id' => $this->inventoryAccount->id,
         'default_stock_input_account_id' => $this->stockInputAccount->id,
     ]);
-    $vendorBill = \Modules\Purchase\Models\VendorBill::factory()->for($this->company)->create(['status' => VendorBillStatus::Draft]);
+    $vendorBill = VendorBill::factory()->for($this->company)->create(['status' => VendorBillStatus::Draft]);
 
     // Use the dedicated Action to create the line, ensuring calculations are run.
     $lineDto = new CreateVendorBillLineDTO(
         description: $product->name,
         quantity: 3,
         unit_price: Money::of(5000, $this->company->currency->code),
-        expense_account_id: \Modules\Accounting\Models\Account::factory()->for($this->company)->create(['type' => 'expense'])->id,
+        expense_account_id: Account::factory()->for($this->company)->create(['type' => 'expense'])->id,
         product_id: $product->id,
         tax_id: null,
         analytic_account_id: null
@@ -95,8 +89,8 @@ test('confirming a vendor bill generates the correct journal entry', function ()
 });
 
 test('a posted vendor bill cannot be updated', function () {
-    $vendorBill = \Modules\Purchase\Models\VendorBill::factory()->for($this->company)->create(['status' => 'posted']);
-    $newVendor = \Modules\Foundation\Models\Partner::factory()->for($this->company)->create();
+    $vendorBill = VendorBill::factory()->for($this->company)->create(['status' => 'posted']);
+    $newVendor = Partner::factory()->for($this->company)->create();
 
     $updateDto = new UpdateVendorBillDTO(
         vendorBill: $vendorBill,
@@ -116,13 +110,13 @@ test('a posted vendor bill cannot be updated', function () {
 });
 
 test('a posted vendor bill cannot be deleted', function () {
-    $vendorBill = \Modules\Purchase\Models\VendorBill::factory()->for($this->company)->create(['status' => 'posted']);
+    $vendorBill = VendorBill::factory()->for($this->company)->create(['status' => 'posted']);
     expect(fn() => app(VendorBillService::class)->delete($vendorBill))
         ->toThrow(\Modules\Foundation\Exceptions\DeletionNotAllowedException::class);
 });
 
 test('a draft vendor bill can be deleted', function () {
-    $vendorBill = \Modules\Purchase\Models\VendorBill::factory()->for($this->company)->create(['status' => 'draft']);
+    $vendorBill = VendorBill::factory()->for($this->company)->create(['status' => 'draft']);
     app(VendorBillService::class)->delete($vendorBill);
     $this->assertModelMissing($vendorBill);
 });
@@ -130,14 +124,14 @@ test('a draft vendor bill can be deleted', function () {
 test('a vendor bill cannot be created in a locked period', function () {
     $this->travelToDate('2026-02-15');
 
-    \Modules\Accounting\Models\LockDate::factory()->for($this->company)->create([
+    LockDate::factory()->for($this->company)->create([
         'locked_until' => '2026-01-31',
         'lock_type' => 'everything_date',
     ]);
 
     $vendorBillDto = new CreateVendorBillDTO(
         company_id: $this->company->id,
-        vendor_id: \Modules\Foundation\Models\Partner::factory()->for($this->company)->create()->id,
+        vendor_id: Partner::factory()->for($this->company)->create()->id,
         currency_id: $this->company->currency_id,
         bill_date: '2026-01-10',
         accounting_date: '2026-01-10',
@@ -154,13 +148,13 @@ test('a vendor bill cannot be created in a locked period', function () {
 test('it correctly computes its payment state via a many-to-many relationship', function (Money $paidAmount, Money $totalAmount, \Modules\Foundation\Enums\Shared\PaymentState $expectedState) {
     // Arrange: Create the bill and a payment.
     // Assuming $this->company->currency is available from a test setup trait.
-    $vendorBill = \Modules\Purchase\Models\VendorBill::factory()->create([
+    $vendorBill = VendorBill::factory()->create([
         'total_amount' => $totalAmount,
         'currency_id' => $this->company->currency->id,
     ]);
 
     if (! $paidAmount->isZero()) {
-        $payment = \Modules\Payment\Models\Payment::factory()->create([
+        $payment = Payment::factory()->create([
             'currency_id' => $this->company->currency->id,
             'status' => PaymentStatus::Confirmed, // Only confirmed/reconciled payments count toward payment state
         ]);

@@ -1,17 +1,10 @@
 <?php
 
-use App\Enums\Inventory\StockMoveStatus;
-use App\Enums\Inventory\StockMoveType;
-use App\Enums\Inventory\ValuationMethod;
-use App\Enums\Products\ProductType;
-use App\Filament\Clusters\Inventory\Resources\StockMoves\Actions\ConfirmStockMoveAction;
 use App\Models\Company;
-use App\Models\StockLocation;
-use App\Models\StockMove;
-use App\Models\StockMoveProductLine;
 use App\Models\User;
 use Brick\Money\Money;
 use Filament\Facades\Filament;
+use Modules\Product\Models\Product;
 
 beforeEach(function () {
     $this->company = Company::factory()->create();
@@ -21,7 +14,7 @@ beforeEach(function () {
     $this->actingAs($this->user);
     Filament::setTenant($this->company);
 
-    $this->product = \Modules\Product\Models\Product::factory()->create([
+    $this->product = Product::factory()->create([
         'company_id' => $this->company->id,
         'type' => \Modules\Product\Enums\Products\ProductType::Storable,
         'inventory_valuation_method' => ValuationMethod::FIFO,
@@ -75,7 +68,7 @@ it('shows confirm action only for draft stock moves', function () {
 
     // Should not be visible for confirmed moves
     // Disable the observer to avoid triggering inventory valuation during test
-    \App\Models\StockMove::withoutEvents(function () {
+    StockMove::withoutEvents(function () {
         $this->stockMove->update(['status' => StockMoveStatus::Done]);
     });
     $action->record($this->stockMove->fresh());

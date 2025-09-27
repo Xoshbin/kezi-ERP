@@ -2,10 +2,10 @@
 
 namespace Modules\Foundation\Filament\Clusters\Settings\Resources\Currencies\Pages;
 
-use App\Filament\Clusters\Settings\Resources\Currencies\CurrencyResource;
 use Filament\Resources\Pages\CreateRecord;
 use LaraZeus\SpatieTranslatable\Actions\LocaleSwitcher;
 use LaraZeus\SpatieTranslatable\Resources\Pages\CreateRecord\Concerns\Translatable;
+use Modules\Foundation\Filament\Clusters\Settings\Resources\Currencies\CurrencyResource;
 
 class CreateCurrency extends CreateRecord
 {

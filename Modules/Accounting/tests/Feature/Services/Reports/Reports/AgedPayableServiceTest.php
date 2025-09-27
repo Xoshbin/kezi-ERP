@@ -2,13 +2,12 @@
 
 namespace Modules\Accounting\Tests\Feature\Services\Reports;
 
-use App\Enums\Payments\PaymentStatus;
-use App\Enums\Purchases\VendorBillStatus;
-use App\Models\PaymentDocumentLink;
-use App\Services\Reports\AgedPayableService;
 use Brick\Money\Money;
 use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Modules\Foundation\Models\Partner;
+use Modules\Payment\Models\Payment;
+use Modules\Purchase\Models\VendorBill;
 use Tests\Traits\WithConfiguredCompany;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);
@@ -20,12 +19,12 @@ beforeEach(function () {
 test('it generates the aged payable report with correct bucketing', function () {
     // Arrange
     $currency = $this->company->currency->code;
-    $partner = \Modules\Foundation\Models\Partner::factory()->for($this->company)->create();
+    $partner = Partner::factory()->for($this->company)->create();
     $asOfDate = Carbon::parse('2025-08-12');
 
     // Create vendor bills with different due dates relative to the "as of" date
     // Use Money objects to ensure correct conversion to minor units
-    $vendorBill1 = \Modules\Purchase\Models\VendorBill::factory()->for($this->company)->create([
+    $vendorBill1 = VendorBill::factory()->for($this->company)->create([
         'vendor_id' => $partner->id,
         'currency_id' => $this->company->currency_id,
         'due_date' => '2025-09-01',
@@ -34,7 +33,7 @@ test('it generates the aged payable report with correct bucketing', function () 
         'status' => VendorBillStatus::Posted,
     ]);
 
-    $vendorBill2 = \Modules\Purchase\Models\VendorBill::factory()->for($this->company)->create([
+    $vendorBill2 = VendorBill::factory()->for($this->company)->create([
         'vendor_id' => $partner->id,
         'currency_id' => $this->company->currency_id,
         'due_date' => '2025-07-20',
@@ -43,7 +42,7 @@ test('it generates the aged payable report with correct bucketing', function () 
         'status' => VendorBillStatus::Posted,
     ]);
 
-    $vendorBill3 = \Modules\Purchase\Models\VendorBill::factory()->for($this->company)->create([
+    $vendorBill3 = VendorBill::factory()->for($this->company)->create([
         'vendor_id' => $partner->id,
         'currency_id' => $this->company->currency_id,
         'due_date' => '2025-06-20',
@@ -52,7 +51,7 @@ test('it generates the aged payable report with correct bucketing', function () 
         'status' => VendorBillStatus::Posted,
     ]);
 
-    $vendorBill4 = \Modules\Purchase\Models\VendorBill::factory()->for($this->company)->create([
+    $vendorBill4 = VendorBill::factory()->for($this->company)->create([
         'vendor_id' => $partner->id,
         'currency_id' => $this->company->currency_id,
         'due_date' => '2025-05-20',
@@ -61,7 +60,7 @@ test('it generates the aged payable report with correct bucketing', function () 
         'status' => VendorBillStatus::Posted,
     ]);
 
-    $vendorBill5 = \Modules\Purchase\Models\VendorBill::factory()->for($this->company)->create([
+    $vendorBill5 = VendorBill::factory()->for($this->company)->create([
         'vendor_id' => $partner->id,
         'currency_id' => $this->company->currency_id,
         'due_date' => '2025-04-20',
@@ -71,7 +70,7 @@ test('it generates the aged payable report with correct bucketing', function () 
     ]);
 
     // Ignored: Fully paid bill
-    $paidBill = \Modules\Purchase\Models\VendorBill::factory()->for($this->company)->create([
+    $paidBill = VendorBill::factory()->for($this->company)->create([
         'vendor_id' => $partner->id,
         'currency_id' => $this->company->currency_id,
         'due_date' => '2025-07-01',
@@ -80,7 +79,7 @@ test('it generates the aged payable report with correct bucketing', function () 
         'status' => VendorBillStatus::Posted,
     ]);
 
-    $payment = \Modules\Payment\Models\Payment::factory()->for($this->company)->create([
+    $payment = Payment::factory()->for($this->company)->create([
         'amount' => Money::of(1000, $currency),
         'currency_id' => $this->company->currency_id,
         'status' => PaymentStatus::Confirmed,
@@ -93,7 +92,7 @@ test('it generates the aged payable report with correct bucketing', function () 
     ]);
 
     // Ignored: Bill dated after the "as of" date
-    \Modules\Purchase\Models\VendorBill::factory()->for($this->company)->create([
+    VendorBill::factory()->for($this->company)->create([
         'vendor_id' => $partner->id,
         'currency_id' => $this->company->currency_id,
         'bill_date' => '2025-09-01',
@@ -128,11 +127,11 @@ test('it generates the aged payable report with correct bucketing', function () 
 test('it handles partially paid vendor bills correctly', function () {
     // Arrange
     $currency = $this->company->currency->code;
-    $partner = \Modules\Foundation\Models\Partner::factory()->for($this->company)->create();
+    $partner = Partner::factory()->for($this->company)->create();
     $asOfDate = Carbon::parse('2025-08-12');
 
     // Create a vendor bill that's partially paid
-    $vendorBill = \Modules\Purchase\Models\VendorBill::factory()->for($this->company)->create([
+    $vendorBill = VendorBill::factory()->for($this->company)->create([
         'vendor_id' => $partner->id,
         'currency_id' => $this->company->currency_id,
         'due_date' => '2025-07-20', // 23 days past due
@@ -142,7 +141,7 @@ test('it handles partially paid vendor bills correctly', function () {
     ]);
 
     // Create partial payment
-    $payment = \Modules\Payment\Models\Payment::factory()->for($this->company)->create([
+    $payment = Payment::factory()->for($this->company)->create([
         'amount' => Money::of(300, $currency),
         'currency_id' => $this->company->currency_id,
         'status' => PaymentStatus::Confirmed,
@@ -169,11 +168,11 @@ test('it handles partially paid vendor bills correctly', function () {
 test('it excludes draft vendor bills', function () {
     // Arrange
     $currency = $this->company->currency->code;
-    $partner = \Modules\Foundation\Models\Partner::factory()->for($this->company)->create();
+    $partner = Partner::factory()->for($this->company)->create();
     $asOfDate = Carbon::parse('2025-08-12');
 
     // Create a draft vendor bill
-    \Modules\Purchase\Models\VendorBill::factory()->for($this->company)->create([
+    VendorBill::factory()->for($this->company)->create([
         'vendor_id' => $partner->id,
         'currency_id' => $this->company->currency_id,
         'due_date' => '2025-07-20',
@@ -194,11 +193,11 @@ test('it excludes draft vendor bills', function () {
 test('it shows fully paid vendor bills with zero amounts', function () {
     // Arrange
     $currency = $this->company->currency->code;
-    $partner = \Modules\Foundation\Models\Partner::factory()->for($this->company)->create();
+    $partner = Partner::factory()->for($this->company)->create();
     $asOfDate = Carbon::parse('2025-08-12');
 
     // Create a vendor bill
-    $vendorBill = \Modules\Purchase\Models\VendorBill::factory()->for($this->company)->create([
+    $vendorBill = VendorBill::factory()->for($this->company)->create([
         'vendor_id' => $partner->id,
         'currency_id' => $this->company->currency_id,
         'due_date' => '2025-07-20',
@@ -208,7 +207,7 @@ test('it shows fully paid vendor bills with zero amounts', function () {
     ]);
 
     // Create full payment
-    $payment = \Modules\Payment\Models\Payment::factory()->for($this->company)->create([
+    $payment = Payment::factory()->for($this->company)->create([
         'amount' => Money::of(1000, $currency),
         'currency_id' => $this->company->currency_id,
         'status' => PaymentStatus::Confirmed,
@@ -235,12 +234,12 @@ test('it shows fully paid vendor bills with zero amounts', function () {
 test('it handles multiple partners correctly', function () {
     // Arrange
     $currency = $this->company->currency->code;
-    $partnerA = \Modules\Foundation\Models\Partner::factory()->for($this->company)->create(['name' => 'Partner A']);
-    $partnerB = \Modules\Foundation\Models\Partner::factory()->for($this->company)->create(['name' => 'Partner B']);
+    $partnerA = Partner::factory()->for($this->company)->create(['name' => 'Partner A']);
+    $partnerB = Partner::factory()->for($this->company)->create(['name' => 'Partner B']);
     $asOfDate = Carbon::parse('2025-08-12');
 
     // Create vendor bills for different partners
-    \Modules\Purchase\Models\VendorBill::factory()->for($this->company)->create([
+    VendorBill::factory()->for($this->company)->create([
         'vendor_id' => $partnerA->id,
         'currency_id' => $this->company->currency_id,
         'due_date' => '2025-09-01', // Current
@@ -249,7 +248,7 @@ test('it handles multiple partners correctly', function () {
         'status' => VendorBillStatus::Posted,
     ]);
 
-    \Modules\Purchase\Models\VendorBill::factory()->for($this->company)->create([
+    VendorBill::factory()->for($this->company)->create([
         'vendor_id' => $partnerB->id,
         'currency_id' => $this->company->currency_id,
         'due_date' => '2025-07-20', // 1-30 days
@@ -283,11 +282,11 @@ test('it correctly handles overpaid vendors by showing them with zero or negativ
 
     // Arrange
     $currency = $this->company->currency->code;
-    $vendor = \Modules\Foundation\Models\Partner::factory()->for($this->company)->create(['name' => 'Overpaid Vendor']);
+    $vendor = Partner::factory()->for($this->company)->create(['name' => 'Overpaid Vendor']);
     $asOfDate = Carbon::parse('2025-08-12');
 
     // Create vendor bill for 1,000,000 IQD
-    $vendorBill = \Modules\Purchase\Models\VendorBill::factory()->for($this->company)->create([
+    $vendorBill = VendorBill::factory()->for($this->company)->create([
         'vendor_id' => $vendor->id,
         'currency_id' => $this->company->currency_id,
         'due_date' => '2025-07-15', // Past due
@@ -297,7 +296,7 @@ test('it correctly handles overpaid vendors by showing them with zero or negativ
     ]);
 
     // Create overpayment of 1,500,000 IQD (500,000 more than bill)
-    $payment = \Modules\Payment\Models\Payment::factory()->for($this->company)->create([
+    $payment = Payment::factory()->for($this->company)->create([
         'amount' => Money::of(1500000, $currency),
         'currency_id' => $this->company->currency_id,
         'status' => PaymentStatus::Confirmed,
@@ -336,14 +335,14 @@ test('it reconciles with general ledger account balances', function () {
 
     // Arrange
     $currency = $this->company->currency->code;
-    $vendor1 = \Modules\Foundation\Models\Partner::factory()->for($this->company)->create(['name' => 'Vendor A']);
-    $vendor2 = \Modules\Foundation\Models\Partner::factory()->for($this->company)->create(['name' => 'Vendor B']);
+    $vendor1 = Partner::factory()->for($this->company)->create(['name' => 'Vendor A']);
+    $vendor2 = Partner::factory()->for($this->company)->create(['name' => 'Vendor B']);
     $asOfDate = Carbon::parse('2025-08-12');
 
     // Create bills and payments that should reconcile with GL
 
     // Vendor A: Bill 1,000,000, Payment 600,000 = Outstanding 400,000
-    $billA = \Modules\Purchase\Models\VendorBill::factory()->for($this->company)->create([
+    $billA = VendorBill::factory()->for($this->company)->create([
         'vendor_id' => $vendor1->id,
         'currency_id' => $this->company->currency_id,
         'due_date' => '2025-07-15',
@@ -352,7 +351,7 @@ test('it reconciles with general ledger account balances', function () {
         'status' => VendorBillStatus::Posted,
     ]);
 
-    $paymentA = \Modules\Payment\Models\Payment::factory()->for($this->company)->create([
+    $paymentA = Payment::factory()->for($this->company)->create([
         'amount' => Money::of(600000, $currency),
         'currency_id' => $this->company->currency_id,
         'status' => PaymentStatus::Confirmed,
@@ -365,7 +364,7 @@ test('it reconciles with general ledger account balances', function () {
     ]);
 
     // Vendor B: Bill 800,000, Payment 1,000,000 = Overpaid by 200,000
-    $billB = \Modules\Purchase\Models\VendorBill::factory()->for($this->company)->create([
+    $billB = VendorBill::factory()->for($this->company)->create([
         'vendor_id' => $vendor2->id,
         'currency_id' => $this->company->currency_id,
         'due_date' => '2025-07-20',
@@ -374,7 +373,7 @@ test('it reconciles with general ledger account balances', function () {
         'status' => VendorBillStatus::Posted,
     ]);
 
-    $paymentB = \Modules\Payment\Models\Payment::factory()->for($this->company)->create([
+    $paymentB = Payment::factory()->for($this->company)->create([
         'amount' => Money::of(1000000, $currency),
         'currency_id' => $this->company->currency_id,
         'status' => PaymentStatus::Confirmed,
@@ -409,11 +408,11 @@ test('it shows zero amounts for fully paid vendors instead of excluding them', f
 
     // Arrange
     $currency = $this->company->currency->code;
-    $vendor = \Modules\Foundation\Models\Partner::factory()->for($this->company)->create(['name' => 'Fully Paid Vendor']);
+    $vendor = Partner::factory()->for($this->company)->create(['name' => 'Fully Paid Vendor']);
     $asOfDate = Carbon::parse('2025-08-12');
 
     // Create bill and exact payment
-    $vendorBill = \Modules\Purchase\Models\VendorBill::factory()->for($this->company)->create([
+    $vendorBill = VendorBill::factory()->for($this->company)->create([
         'vendor_id' => $vendor->id,
         'currency_id' => $this->company->currency_id,
         'due_date' => '2025-07-15',
@@ -422,7 +421,7 @@ test('it shows zero amounts for fully paid vendors instead of excluding them', f
         'status' => VendorBillStatus::Posted,
     ]);
 
-    $payment = \Modules\Payment\Models\Payment::factory()->for($this->company)->create([
+    $payment = Payment::factory()->for($this->company)->create([
         'amount' => Money::of(1000000, $currency),
         'currency_id' => $this->company->currency_id,
         'status' => PaymentStatus::Confirmed,
@@ -449,11 +448,11 @@ test('it shows zero amounts for fully paid vendors instead of excluding them', f
 test('it excludes vendor bills dated after as of date', function () {
     // Arrange
     $currency = $this->company->currency->code;
-    $partner = \Modules\Foundation\Models\Partner::factory()->for($this->company)->create();
+    $partner = Partner::factory()->for($this->company)->create();
     $asOfDate = Carbon::parse('2025-08-12');
 
     // Create a vendor bill dated after the "as of" date
-    \Modules\Purchase\Models\VendorBill::factory()->for($this->company)->create([
+    VendorBill::factory()->for($this->company)->create([
         'vendor_id' => $partner->id,
         'currency_id' => $this->company->currency_id,
         'bill_date' => '2025-08-15', // After as of date
@@ -474,11 +473,11 @@ test('it excludes vendor bills dated after as of date', function () {
 test('it only includes confirmed and reconciled payments', function () {
     // Arrange
     $currency = $this->company->currency->code;
-    $partner = \Modules\Foundation\Models\Partner::factory()->for($this->company)->create();
+    $partner = Partner::factory()->for($this->company)->create();
     $asOfDate = Carbon::parse('2025-08-12');
 
     // Create a vendor bill
-    $vendorBill = \Modules\Purchase\Models\VendorBill::factory()->for($this->company)->create([
+    $vendorBill = VendorBill::factory()->for($this->company)->create([
         'vendor_id' => $partner->id,
         'currency_id' => $this->company->currency_id,
         'due_date' => '2025-07-20',
@@ -488,7 +487,7 @@ test('it only includes confirmed and reconciled payments', function () {
     ]);
 
     // Create draft payment (should be ignored)
-    $draftPayment = \Modules\Payment\Models\Payment::factory()->for($this->company)->create([
+    $draftPayment = Payment::factory()->for($this->company)->create([
         'amount' => Money::of(300, $currency),
         'currency_id' => $this->company->currency_id,
         'status' => PaymentStatus::Draft,
@@ -501,7 +500,7 @@ test('it only includes confirmed and reconciled payments', function () {
     ]);
 
     // Create confirmed payment (should be included)
-    $confirmedPayment = \Modules\Payment\Models\Payment::factory()->for($this->company)->create([
+    $confirmedPayment = Payment::factory()->for($this->company)->create([
         'amount' => Money::of(200, $currency),
         'currency_id' => $this->company->currency_id,
         'status' => PaymentStatus::Confirmed,

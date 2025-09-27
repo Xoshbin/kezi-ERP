@@ -1,11 +1,8 @@
 <?php
 
-use App\Actions\Purchases\CreateVendorBillLineAction;
-use App\DataTransferObjects\Purchases\CreateVendorBillLineDTO;
-use App\Enums\Accounting\JournalEntryState;
-use App\Enums\Purchases\VendorBillStatus;
-use App\Services\VendorBillService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Modules\Accounting\Models\Account;
+use Modules\Purchase\Models\VendorBill;
 use Tests\Traits\WithConfiguredCompany;
 
 // Import the Action
@@ -15,14 +12,14 @@ uses(RefreshDatabase::class, WithConfiguredCompany::class);
 
 test('cancelling a posted vendor bill creates a reversing journal entry and an audit log', function () {
     // Arrange: Create a draft vendor bill to set up the test scenario.
-    $vendorBill = \Modules\Purchase\Models\VendorBill::factory()->for($this->company)->create(['status' => 'draft']);
+    $vendorBill = VendorBill::factory()->for($this->company)->create(['status' => 'draft']);
 
     // Act: Create the vendor bill line using our robust, established pattern.
     $lineDto = new CreateVendorBillLineDTO(
         description: 'Test Service',
         quantity: 1,
         unit_price: '1000.00',
-        expense_account_id: \Modules\Accounting\Models\Account::factory()->for($this->company)->create(['type' => 'expense'])->id,
+        expense_account_id: Account::factory()->for($this->company)->create(['type' => 'expense'])->id,
         product_id: null,
         tax_id: null,
         analytic_account_id: null
@@ -51,7 +48,7 @@ test('cancelling a posted vendor bill creates a reversing journal entry and an a
 
     // Assert: A specific audit log entry was created for this cancellation.
     $this->assertDatabaseHas('audit_logs', [
-        'auditable_type' => \Modules\Purchase\Models\VendorBill::class,
+        'auditable_type' => VendorBill::class,
         'auditable_id' => $vendorBill->id,
         'user_id' => $this->user->id,
         'event_type' => 'cancellation',

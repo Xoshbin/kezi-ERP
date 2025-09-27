@@ -1,12 +1,9 @@
 <?php
 
-use App\Actions\Assets\PostDepreciationEntryAction;
-use App\Enums\Assets\AssetStatus;
-use App\Enums\Assets\DepreciationEntryStatus;
-use App\Exceptions\DeletionNotAllowedException;
-use App\Services\AssetService;
 use Brick\Money\Money;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Modules\Accounting\Models\Account;
+use Modules\Accounting\Models\Asset;
 use Tests\Traits\WithConfiguredCompany;
 
 // Import the Money class
@@ -15,14 +12,14 @@ uses(RefreshDatabase::class, WithConfiguredCompany::class);
 
 test('running depreciation for an asset creates the correct journal entries', function () {
     // Arrange: Set up the necessary accounts and journal.
-    $fixedAssetAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create(['type' => 'fixed_assets']);
-    $accumulatedDepreciationAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create(['type' => 'non_current_assets']);
-    $depreciationExpenseAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create(['type' => 'expense']);
+    $fixedAssetAccount = Account::factory()->for($this->company)->create(['type' => 'fixed_assets']);
+    $accumulatedDepreciationAccount = Account::factory()->for($this->company)->create(['type' => 'non_current_assets']);
+    $depreciationExpenseAccount = Account::factory()->for($this->company)->create(['type' => 'expense']);
     $depreciationJournal = $this->company->default_depreciation_journal_id;
 
     // Arrange: Create an asset to be depreciated.
     $currencyCode = $this->company->currency->code;
-    $asset = \Modules\Accounting\Models\Asset::factory()->for($this->company)->create([
+    $asset = Asset::factory()->for($this->company)->create([
         'purchase_value' => Money::of(1200, $currencyCode),
         'salvage_value' => Money::of(0, $currencyCode),
         'purchase_date' => now()->subYear(),
@@ -84,7 +81,7 @@ test('running depreciation for an asset creates the correct journal entries', fu
 test('a draft asset can be deleted', function () {
     // Arrange: Create a draft asset with no financial records.
     $currencyCode = $this->company->currency->code;
-    $asset = \Modules\Accounting\Models\Asset::factory()->for($this->company)->create([
+    $asset = Asset::factory()->for($this->company)->create([
         'status' => AssetStatus::Draft,
         'purchase_value' => Money::of(1000, $currencyCode),
         'salvage_value' => Money::of(0, $currencyCode),
@@ -102,7 +99,7 @@ test('a draft asset can be deleted', function () {
 test('a confirmed asset cannot be deleted', function () {
     // Arrange: Create a confirmed asset.
     $currencyCode = $this->company->currency->code;
-    $asset = \Modules\Accounting\Models\Asset::factory()->for($this->company)->create([
+    $asset = Asset::factory()->for($this->company)->create([
         'status' => AssetStatus::Confirmed,
         'purchase_value' => Money::of(1000, $currencyCode),
         'salvage_value' => Money::of(0, $currencyCode),
@@ -120,7 +117,7 @@ test('a confirmed asset cannot be deleted', function () {
 test('an asset with depreciation entries cannot be deleted', function () {
     // Arrange: Create a draft asset and add a depreciation entry.
     $currencyCode = $this->company->currency->code;
-    $asset = \Modules\Accounting\Models\Asset::factory()->for($this->company)->create([
+    $asset = Asset::factory()->for($this->company)->create([
         'status' => AssetStatus::Draft,
         'purchase_value' => Money::of(1000, $currencyCode),
         'salvage_value' => Money::of(0, $currencyCode),
@@ -146,7 +143,7 @@ test('an asset with depreciation entries cannot be deleted', function () {
 test('an asset with journal entries cannot be deleted', function () {
     // Arrange: Create a draft asset and add a journal entry.
     $currencyCode = $this->company->currency->code;
-    $asset = \Modules\Accounting\Models\Asset::factory()->for($this->company)->create([
+    $asset = Asset::factory()->for($this->company)->create([
         'status' => AssetStatus::Draft,
         'purchase_value' => Money::of(1000, $currencyCode),
         'salvage_value' => Money::of(0, $currencyCode),
@@ -178,7 +175,7 @@ test('an asset with journal entries cannot be deleted', function () {
 test('asset observer prevents deletion of confirmed assets', function () {
     // Arrange: Create a confirmed asset.
     $currencyCode = $this->company->currency->code;
-    $asset = \Modules\Accounting\Models\Asset::factory()->for($this->company)->create([
+    $asset = Asset::factory()->for($this->company)->create([
         'status' => AssetStatus::Confirmed,
         'purchase_value' => Money::of(1000, $currencyCode),
         'salvage_value' => Money::of(0, $currencyCode),
@@ -195,7 +192,7 @@ test('asset observer prevents deletion of confirmed assets', function () {
 test('asset observer prevents deletion of assets with depreciation entries', function () {
     // Arrange: Create a draft asset with depreciation entries.
     $currencyCode = $this->company->currency->code;
-    $asset = \Modules\Accounting\Models\Asset::factory()->for($this->company)->create([
+    $asset = Asset::factory()->for($this->company)->create([
         'status' => AssetStatus::Draft,
         'purchase_value' => Money::of(1000, $currencyCode),
         'salvage_value' => Money::of(0, $currencyCode),

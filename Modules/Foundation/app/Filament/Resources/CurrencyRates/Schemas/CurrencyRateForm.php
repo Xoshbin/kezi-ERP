@@ -7,6 +7,7 @@ use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Schema;
+use Modules\Foundation\Models\Currency;
 use Xoshbin\TranslatableSelect\Components\TranslatableSelect;
 
 class CurrencyRateForm
@@ -15,7 +16,7 @@ class CurrencyRateForm
     {
         return $schema
             ->components([
-                TranslatableSelect::forModel('currency_id', \Modules\Foundation\Models\Currency::class)
+                TranslatableSelect::forModel('currency_id', Currency::class)
                     ->label(__('currency.exchange_rates.currency'))
                     ->searchable()
                     ->preload()

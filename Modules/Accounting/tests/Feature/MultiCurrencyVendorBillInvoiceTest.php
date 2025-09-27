@@ -2,26 +2,21 @@
 
 namespace Modules\Accounting\Tests\Feature;
 
-use App\Actions\Purchases\CreateVendorBillAction;
-use App\Actions\Sales\CreateInvoiceAction;
-use App\DataTransferObjects\Purchases\CreateVendorBillDTO;
-use App\DataTransferObjects\Purchases\CreateVendorBillLineDTO;
-use App\DataTransferObjects\Sales\CreateInvoiceDTO;
-use App\DataTransferObjects\Sales\CreateInvoiceLineDTO;
-use App\Enums\Partners\PartnerType;
-use App\Enums\Products\ProductType;
-use App\Services\InvoiceService;
-use App\Services\VendorBillService;
 use Brick\Money\Money;
 use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Modules\Accounting\Models\Account;
+use Modules\Foundation\Models\Currency;
+use Modules\Foundation\Models\CurrencyRate;
+use Modules\Foundation\Models\Partner;
+use Modules\Product\Models\Product;
 use Tests\Traits\WithConfiguredCompany;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);
 
 beforeEach(function () {
     // Create USD currency for foreign currency tests
-    $this->usdCurrency = \Modules\Foundation\Models\Currency::firstOrCreate(
+    $this->usdCurrency = Currency::firstOrCreate(
         ['code' => 'USD'],
         [
             'name' => ['en' => 'US Dollar', 'ckb' => 'دۆلاری ئەمریکی', 'ar' => 'دولار أمريكي'],
@@ -35,7 +30,7 @@ beforeEach(function () {
     $this->exchangeRate = 1460.0;
     $this->transactionDate = Carbon::parse('2024-01-01');
 
-    \Modules\Foundation\Models\CurrencyRate::updateOrCreate(
+    CurrencyRate::updateOrCreate(
         [
             'currency_id' => $this->usdCurrency->id,
             'effective_date' => $this->transactionDate->toDateString(),
@@ -48,17 +43,17 @@ beforeEach(function () {
     );
 
     // Create test vendor and customer
-    $this->vendor = \Modules\Foundation\Models\Partner::factory()->for($this->company)->create(['type' => \Modules\Foundation\Enums\Partners\PartnerType::Vendor]);
-    $this->customer = \Modules\Foundation\Models\Partner::factory()->for($this->company)->create(['type' => \Modules\Foundation\Enums\Partners\PartnerType::Customer]);
+    $this->vendor = Partner::factory()->for($this->company)->create(['type' => \Modules\Foundation\Enums\Partners\PartnerType::Vendor]);
+    $this->customer = Partner::factory()->for($this->company)->create(['type' => \Modules\Foundation\Enums\Partners\PartnerType::Customer]);
 
     // Create test accounts first
-    $this->expenseAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create(['type' => 'expense']);
-    $this->incomeAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create(['type' => 'income']);
-    $this->inventoryAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create(['type' => 'current_assets']);
-    $this->stockInputAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create(['type' => 'current_assets']);
+    $this->expenseAccount = Account::factory()->for($this->company)->create(['type' => 'expense']);
+    $this->incomeAccount = Account::factory()->for($this->company)->create(['type' => 'income']);
+    $this->inventoryAccount = Account::factory()->for($this->company)->create(['type' => 'current_assets']);
+    $this->stockInputAccount = Account::factory()->for($this->company)->create(['type' => 'current_assets']);
 
     // Create test product as service (non-storable) to avoid inventory complications
-    $this->product = \Modules\Product\Models\Product::factory()->for($this->company)->create([
+    $this->product = Product::factory()->for($this->company)->create([
         'type' => \Modules\Product\Enums\Products\ProductType::Service, // Use service type to avoid inventory movements
         'expense_account_id' => $this->expenseAccount->id,
         'income_account_id' => $this->incomeAccount->id,

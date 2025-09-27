@@ -1,19 +1,19 @@
 <?php
 
-use App\Enums\Purchases\PurchaseOrderStatus;
-use App\Filament\Clusters\Purchases\Resources\PurchaseOrders\Pages\CreatePurchaseOrder;
-use App\Models\Tax;
 use Brick\Money\Money;
+use Filament\Facades\Filament;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Livewire\Livewire;
+use Modules\Foundation\Models\Partner;
+use Modules\Product\Models\Product;
 use Tests\Traits\WithConfiguredCompany;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);
 
 beforeEach(function () {
     $this->setupWithConfiguredCompany();
-    $this->vendor = \Modules\Foundation\Models\Partner::factory()->vendor()->create(['company_id' => $this->company->id]);
-    $this->product = \Modules\Product\Models\Product::factory()->create([
+    $this->vendor = Partner::factory()->vendor()->create(['company_id' => $this->company->id]);
+    $this->product = Product::factory()->create([
         'company_id' => $this->company->id,
         'name' => 'Test Product',
         'description' => 'Test Product Description',
@@ -26,7 +26,7 @@ beforeEach(function () {
         'is_active' => true,
     ]);
 
-    \Filament\Facades\Filament::setTenant($this->company);
+    Filament::setTenant($this->company);
 });
 
 test('can create purchase order with line items through filament form', function () {
@@ -123,7 +123,7 @@ test('product selection auto-populates description and unit price', function () 
 })->skip('Auto-population requires browser testing for reactive callbacks');
 
 test('handles products with null unit price gracefully', function () {
-    $productWithoutPrice = \Modules\Product\Models\Product::factory()->create([
+    $productWithoutPrice = Product::factory()->create([
         'company_id' => $this->company->id,
         'name' => 'Product Without Price',
         'description' => 'No price set',
@@ -255,16 +255,16 @@ test('enforces minimum quantity validation', function () {
 
 test('cannot confirm purchase order without line items', function () {
     // Create a purchase order without line items
-    $purchaseOrder = \App\Models\PurchaseOrder::factory()->create([
+    $purchaseOrder = PurchaseOrder::factory()->create([
         'company_id' => $this->company->id,
         'vendor_id' => $this->vendor->id,
         'currency_id' => $this->company->currency_id,
         'created_by_user_id' => $this->user->id,
-        'status' => \App\Enums\Purchases\PurchaseOrderStatus::Draft,
+        'status' => PurchaseOrderStatus::Draft,
     ]);
 
     // Attempt to confirm the purchase order should fail
     expect(function () use ($purchaseOrder) {
-        app(\App\Services\PurchaseOrderService::class)->confirm($purchaseOrder, $this->user);
-    })->toThrow(\InvalidArgumentException::class, 'Cannot confirm purchase order without any lines.');
+        app(PurchaseOrderService::class)->confirm($purchaseOrder, $this->user);
+    })->toThrow(InvalidArgumentException::class, 'Cannot confirm purchase order without any lines.');
 });

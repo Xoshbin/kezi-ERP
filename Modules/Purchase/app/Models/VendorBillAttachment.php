@@ -2,6 +2,7 @@
 
 namespace Modules\Purchase\Models;
 
+use Database\Factories\VendorBillAttachmentFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -23,7 +24,7 @@ use Illuminate\Support\Facades\Storage;
  */
 class VendorBillAttachment extends Model
 {
-    /** @use HasFactory<\Database\Factories\VendorBillAttachmentFactory> */
+    /** @use HasFactory<VendorBillAttachmentFactory> */
     use HasFactory;
 
     /**

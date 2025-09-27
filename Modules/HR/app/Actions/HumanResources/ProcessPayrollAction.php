@@ -2,9 +2,11 @@
 
 namespace Modules\HR\Actions\HumanResources;
 
-use App\DataTransferObjects\HumanResources\ProcessPayrollDTO;
 use Brick\Money\Money;
+use Exception;
 use Illuminate\Support\Facades\DB;
+use Modules\Foundation\Models\Currency;
+use Modules\HR\Models\Payroll;
 
 class ProcessPayrollAction
 {
@@ -12,10 +14,10 @@ class ProcessPayrollAction
         protected CreatePayrollLineAction $createPayrollLineAction
     ) {}
 
-    public function execute(ProcessPayrollDTO $processPayrollDTO): \Modules\HR\Models\Payroll
+    public function execute(ProcessPayrollDTO $processPayrollDTO): Payroll
     {
         return DB::transaction(function () use ($processPayrollDTO) {
-            $currency = \Modules\Foundation\Models\Currency::findOrFail($processPayrollDTO->currency_id);
+            $currency = Currency::findOrFail($processPayrollDTO->currency_id);
 
             // Convert Money fields if they're strings
             $baseSalary = $processPayrollDTO->base_salary instanceof Money
@@ -101,7 +103,7 @@ class ProcessPayrollAction
                 $payrollNumber = $this->generatePayrollNumber($processPayrollDTO->company_id);
             }
 
-            $payroll = \Modules\HR\Models\Payroll::create([
+            $payroll = Payroll::create([
                 'company_id' => $processPayrollDTO->company_id,
                 'employee_id' => $processPayrollDTO->employee_id,
                 'currency_id' => $processPayrollDTO->currency_id,
@@ -143,7 +145,7 @@ class ProcessPayrollAction
 
             $freshPayroll = $payroll->fresh('payrollLines');
             if (! $freshPayroll) {
-                throw new \Exception('Failed to refresh payroll after creation');
+                throw new Exception('Failed to refresh payroll after creation');
             }
 
             return $freshPayroll;
@@ -157,7 +159,7 @@ class ProcessPayrollAction
         $month = now()->format('m');
 
         // Get the next sequential number for this month
-        $lastPayroll = \Modules\HR\Models\Payroll::where('company_id', $companyId)
+        $lastPayroll = Payroll::where('company_id', $companyId)
             ->where('payroll_number', 'like', $prefix.$year.$month.'%')
             ->orderBy('payroll_number', 'desc')
             ->first();

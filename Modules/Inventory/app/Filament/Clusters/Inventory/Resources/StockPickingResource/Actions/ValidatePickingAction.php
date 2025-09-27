@@ -2,10 +2,8 @@
 
 namespace Modules\Inventory\Filament\Clusters\Inventory\Resources\StockPickingResource\Actions;
 
-use App\Enums\Inventory\StockMoveStatus;
-use App\Enums\Inventory\StockPickingState;
-use App\Models\StockPicking;
-use App\Services\Inventory\StockReservationService;
+use DB;
+use Exception;
 use Filament\Actions\Action;
 use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\Repeater;
@@ -116,7 +114,7 @@ class ValidatePickingAction extends Action
     protected function validatePicking(StockPicking $picking, array $data): void
     {
         try {
-            \DB::transaction(function () use ($picking, $data) {
+            DB::transaction(function () use ($picking, $data) {
                 $reservationService = app(StockReservationService::class);
 
                 // Process each move
@@ -157,7 +155,7 @@ class ValidatePickingAction extends Action
 
             // Refresh the page to show updated state
             $this->getLivewire()->redirect(request()->url());
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             Notification::make()
                 ->title(__('Error'))
                 ->body(__('Failed to validate picking: :error', ['error' => $e->getMessage()]))

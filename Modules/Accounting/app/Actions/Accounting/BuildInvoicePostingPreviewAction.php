@@ -3,10 +3,12 @@
 namespace Modules\Accounting\Actions\Accounting;
 
 use Brick\Money\Money;
+use Modules\Accounting\Models\Account;
+use Modules\Sales\Models\Invoice;
 
 class BuildInvoicePostingPreviewAction
 {
-    private function accountLabelName(?\Modules\Accounting\Models\Account $account): string
+    private function accountLabelName(?Account $account): string
     {
         if (! $account) {
             return '';
@@ -26,7 +28,7 @@ class BuildInvoicePostingPreviewAction
      *
      * @return array{errors: array<int, string>, issues: array<int, array{type: string, message: string, product_id?: int|null, tax_id?: int|null}>, lines: array<int, array{account_id: int|null, account_name: string, account_code: string|null, debit_minor: int, credit_minor: int, description: string}>, totals: array{debit_minor: int, credit_minor: int, balanced: bool}}
      */
-    public function execute(\Modules\Sales\Models\Invoice $invoice): array
+    public function execute(Invoice $invoice): array
     {
         $invoice->load('company', 'currency', 'customer', 'invoiceLines.tax.taxAccount', 'invoiceLines.incomeAccount');
 
@@ -73,7 +75,7 @@ class BuildInvoicePostingPreviewAction
                 $errors[] = $msg;
                 $issues[] = ['type' => 'income_account_missing', 'message' => $msg, 'product_id' => $line->product_id];
             } else {
-                /** @var \Modules\Accounting\Models\Account|null $incomeAccount */
+                /** @var Account|null $incomeAccount */
                 $incomeAccount = $line->incomeAccount;
                 $linesPreview[] = [
                     'account_id' => $incomeAccountId,
@@ -111,7 +113,7 @@ class BuildInvoicePostingPreviewAction
 
         // Debit: Accounts Receivable total
         if ($arAccountId) {
-            /** @var \Modules\Accounting\Models\Account|null $arAccount */
+            /** @var Account|null $arAccount */
             $arAccount = $invoice->customer->receivableAccount ?? $company->defaultAccountsReceivable;
             $linesPreview[] = [
                 'account_id' => $arAccountId,

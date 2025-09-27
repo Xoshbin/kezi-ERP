@@ -3,10 +3,10 @@
 namespace Modules\Inventory\Services\Inventory;
 
 use App\Models\Company;
-use App\Models\StockQuant;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
+use Modules\Product\Models\Product;
 
 class InventoryQueryOptimizationService
 {
@@ -240,7 +240,7 @@ class InventoryQueryOptimizationService
     public function warmUpCache(Company $company): void
     {
         // Get all active products for the company
-        $productIds = \Modules\Product\Models\Product::where('company_id', $company->id)
+        $productIds = Product::where('company_id', $company->id)
             ->where('type', 'storable')
             ->pluck('id')
             ->toArray();

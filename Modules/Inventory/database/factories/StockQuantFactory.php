@@ -3,13 +3,11 @@
 namespace Modules\Inventory\Database\Factories;
 
 use App\Models\Company;
-use App\Models\Lot;
-use App\Models\StockLocation;
-use App\Models\StockQuant;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Modules\Product\Models\Product;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\StockQuant>
+ * @extends Factory<StockQuant>
  */
 class StockQuantFactory extends Factory
 {
@@ -27,7 +25,7 @@ class StockQuantFactory extends Factory
 
         return [
             'company_id' => Company::factory(),
-            'product_id' => \Modules\Product\Models\Product::factory(),
+            'product_id' => Product::factory(),
             'location_id' => StockLocation::factory(),
             'lot_id' => null,
             'quantity' => $quantity,

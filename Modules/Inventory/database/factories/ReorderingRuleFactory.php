@@ -2,14 +2,12 @@
 
 namespace Modules\Inventory\Database\Factories;
 
-use App\Enums\Inventory\ReorderingRoute;
 use App\Models\Company;
-use App\Models\ReorderingRule;
-use App\Models\StockLocation;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Modules\Product\Models\Product;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\ReorderingRule>
+ * @extends Factory<ReorderingRule>
  */
 class ReorderingRuleFactory extends Factory
 {
@@ -24,7 +22,7 @@ class ReorderingRuleFactory extends Factory
     {
         return [
             'company_id' => Company::factory(),
-            'product_id' => \Modules\Product\Models\Product::factory(),
+            'product_id' => Product::factory(),
             'location_id' => StockLocation::factory(),
             'min_qty' => $this->faker->numberBetween(5, 20),
             'max_qty' => $this->faker->numberBetween(50, 100),

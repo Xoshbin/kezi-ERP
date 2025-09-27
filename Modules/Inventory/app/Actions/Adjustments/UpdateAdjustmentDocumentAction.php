@@ -2,11 +2,8 @@
 
 namespace Modules\Inventory\Actions\Adjustments;
 
-use App\DataTransferObjects\Adjustments\CreateAdjustmentDocumentLineDTO;
-use App\DataTransferObjects\Adjustments\UpdateAdjustmentDocumentDTO;
-use App\Enums\Adjustments\AdjustmentDocumentStatus;
-use App\Exceptions\UpdateNotAllowedException;
 use Illuminate\Support\Facades\DB;
+use Modules\Inventory\Models\AdjustmentDocument;
 
 class UpdateAdjustmentDocumentAction
 {
@@ -14,7 +11,7 @@ class UpdateAdjustmentDocumentAction
         private readonly CreateAdjustmentDocumentLineAction $createAdjustmentDocumentLineAction
     ) {}
 
-    public function execute(UpdateAdjustmentDocumentDTO $dto): \Modules\Inventory\Models\AdjustmentDocument
+    public function execute(UpdateAdjustmentDocumentDTO $dto): AdjustmentDocument
     {
         $adjustmentDocument = $dto->adjustmentDocument;
 

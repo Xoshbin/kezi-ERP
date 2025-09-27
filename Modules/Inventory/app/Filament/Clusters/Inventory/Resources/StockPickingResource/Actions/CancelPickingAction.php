@@ -6,6 +6,8 @@ use App\Enums\Inventory\StockMoveStatus;
 use App\Enums\Inventory\StockPickingState;
 use App\Models\StockPicking;
 use App\Services\Inventory\StockReservationService;
+use DB;
+use Exception;
 use Filament\Actions\Action;
 use Filament\Notifications\Notification;
 use Illuminate\Database\Eloquent\Model;
@@ -37,7 +39,7 @@ class CancelPickingAction extends Action
     protected function cancelPicking(StockPicking $picking): void
     {
         try {
-            \DB::transaction(function () use ($picking) {
+            DB::transaction(function () use ($picking) {
                 $reservationService = app(StockReservationService::class);
 
                 // Release reservations for all moves
@@ -69,7 +71,7 @@ class CancelPickingAction extends Action
             // Refresh the page to show updated state
             $this->getLivewire()->redirect(request()->url());
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             Notification::make()
                 ->title(__('Error'))
                 ->body(__('Failed to cancel picking: :error', ['error' => $e->getMessage()]))

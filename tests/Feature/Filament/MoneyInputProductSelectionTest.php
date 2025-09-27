@@ -10,6 +10,7 @@ use App\Models\Partner;
 use App\Models\Product;
 use App\Models\User;
 use Brick\Money\Money;
+use Filament\Facades\Filament;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Livewire\Livewire;
 use Tests\TestCase;
@@ -33,9 +34,9 @@ class MoneyInputProductSelectionTest extends TestCase
         $this->company = Company::factory()->create();
         $this->user = User::factory()->create();
         $this->currency = \Modules\Foundation\Models\Currency::factory()->create(['code' => 'USD']);
-        
+
         $this->company->update(['currency_id' => $this->currency->id]);
-        
+
         $this->vendor = \Modules\Foundation\Models\Partner::factory()->vendor()->create([
             'company_id' => $this->company->id,
         ]);
@@ -55,7 +56,7 @@ class MoneyInputProductSelectionTest extends TestCase
 
         // Set up authentication and tenant
         $this->actingAs($this->user);
-        \Filament\Facades\Filament::setTenant($this->company);
+        Filament::setTenant($this->company);
     }
 
     /** @test */
@@ -88,17 +89,17 @@ class MoneyInputProductSelectionTest extends TestCase
 
         // Verify that the unit_price is populated as a string, not "[object Object]"
         $formData = $livewire->get('data');
-        
+
         $this->assertIsArray($formData['lines']);
         $this->assertCount(1, $formData['lines']);
-        
+
         $lineData = $formData['lines'][0];
-        
+
         // The key assertion: unit_price should be a string representation of the amount
         $this->assertIsString($lineData['unit_price']);
         $this->assertEquals('150.75', $lineData['unit_price']);
         $this->assertNotEquals('[object Object]', $lineData['unit_price']);
-        
+
         // Also verify other fields were populated correctly
         $this->assertEquals($this->product->name, $lineData['description']);
         $this->assertEquals($this->product->expense_account_id, $lineData['expense_account_id']);
@@ -150,7 +151,7 @@ class MoneyInputProductSelectionTest extends TestCase
 
         // Test decimal price
         $livewire->set('data.lines.0.product_id', $decimalProduct->id);
-        
+
         $formData = $livewire->get('data');
         $this->assertEquals('99.99', $formData['lines'][0]['unit_price']);
     }
@@ -188,7 +189,7 @@ class MoneyInputProductSelectionTest extends TestCase
         ]);
 
         $formData = $livewire->get('data');
-        
+
         // Should handle null gracefully
         $this->assertNull($formData['lines'][0]['unit_price']);
         $this->assertNotEquals('[object Object]', $formData['lines'][0]['unit_price']);
@@ -198,7 +199,7 @@ class MoneyInputProductSelectionTest extends TestCase
     public function it_can_create_vendor_bill_after_product_selection(): void
     {
         // End-to-end test to ensure the fix doesn't break the creation process
-        
+
         $livewire = Livewire::test(CreateVendorBill::class)
             ->fillForm([
                 'vendor_id' => $this->vendor->id,

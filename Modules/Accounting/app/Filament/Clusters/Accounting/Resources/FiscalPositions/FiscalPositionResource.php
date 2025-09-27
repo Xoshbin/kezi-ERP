@@ -2,12 +2,8 @@
 
 namespace Modules\Accounting\Filament\Clusters\Accounting\Resources\FiscalPositions;
 
-use App\Filament\Clusters\Accounting\AccountingCluster;
-use App\Filament\Clusters\Accounting\Resources\FiscalPositions\Pages\CreateFiscalPosition;
-use App\Filament\Clusters\Accounting\Resources\FiscalPositions\Pages\EditFiscalPosition;
-use App\Filament\Clusters\Accounting\Resources\FiscalPositions\Pages\ListFiscalPositions;
-use App\Filament\Clusters\Accounting\Resources\FiscalPositions\RelationManagers\AccountMappingsRelationManager;
-use App\Filament\Clusters\Accounting\Resources\FiscalPositions\RelationManagers\TaxMappingsRelationManager;
+
+use BackedEnum;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
@@ -18,14 +14,21 @@ use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use LaraZeus\SpatieTranslatable\Resources\Concerns\Translatable;
+use Modules\Accounting\Filament\Clusters\Accounting\AccountingCluster;
+use Modules\Accounting\Filament\Clusters\Accounting\Resources\FiscalPositions\Pages\CreateFiscalPosition;
+use Modules\Accounting\Filament\Clusters\Accounting\Resources\FiscalPositions\Pages\EditFiscalPosition;
+use Modules\Accounting\Filament\Clusters\Accounting\Resources\FiscalPositions\Pages\ListFiscalPositions;
+use Modules\Accounting\Filament\Clusters\Accounting\Resources\FiscalPositions\RelationManagers\AccountMappingsRelationManager;
+use Modules\Accounting\Filament\Clusters\Accounting\Resources\FiscalPositions\RelationManagers\TaxMappingsRelationManager;
+use Modules\Accounting\Models\FiscalPosition;
 
 class FiscalPositionResource extends Resource
 {
     use Translatable;
 
-    protected static ?string $model = \Modules\Accounting\Models\FiscalPosition::class;
+    protected static ?string $model = FiscalPosition::class;
 
-    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-globe-alt';
+    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-globe-alt';
 
     protected static ?int $navigationSort = 4;
 

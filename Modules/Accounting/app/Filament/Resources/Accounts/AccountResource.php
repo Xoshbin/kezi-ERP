@@ -2,12 +2,6 @@
 
 namespace Modules\Accounting\Filament\Clusters\Settings\Resources\Accounts;
 
-use App\Enums\Accounting\AccountType;
-use App\Filament\Clusters\Settings\Resources\Accounts\Pages\CreateAccount;
-use App\Filament\Clusters\Settings\Resources\Accounts\Pages\EditAccount;
-use App\Filament\Clusters\Settings\Resources\Accounts\Pages\ListAccounts;
-use App\Filament\Clusters\Settings\Resources\Accounts\RelationManagers\JournalEntryLinesRelationManager;
-use App\Filament\Clusters\Settings\SettingsCluster;
 use BackedEnum;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
@@ -22,12 +16,13 @@ use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use LaraZeus\SpatieTranslatable\Resources\Concerns\Translatable;
+use Modules\Accounting\Models\Account;
 
 class AccountResource extends Resource
 {
     use Translatable;
 
-    protected static ?string $model = \Modules\Accounting\Models\Account::class;
+    protected static ?string $model = Account::class;
 
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-list-bullet';
 

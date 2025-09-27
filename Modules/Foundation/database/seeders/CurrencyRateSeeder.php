@@ -5,6 +5,8 @@ namespace Modules\Foundation\Database\Seeders;
 use App\Models\Company;
 use Carbon\Carbon;
 use Illuminate\Database\Seeder;
+use Modules\Foundation\Models\Currency;
+use Modules\Foundation\Models\CurrencyRate;
 
 class CurrencyRateSeeder extends Seeder
 {
@@ -15,9 +17,9 @@ class CurrencyRateSeeder extends Seeder
     {
         $company = Company::where('name', 'Jmeryar Solutions')->first();
         // Get all active currencies
-        $usd = \Modules\Foundation\Models\Currency::where('code', 'USD')->first();
+        $usd = Currency::where('code', 'USD')->first();
 
-        \Modules\Foundation\Models\CurrencyRate::updateOrCreate(
+        CurrencyRate::updateOrCreate(
             [
                 'currency_id' => $usd->id,
                 'effective_date' => Carbon::today(),

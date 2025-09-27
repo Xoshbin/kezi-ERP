@@ -2,6 +2,7 @@
 
 namespace Modules\Inventory\Services\Inventory;
 
+use Exception;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
@@ -67,7 +68,7 @@ class InventoryPerformanceMonitoringService
                         'rows' => $result[0]->table_rows ?? 0,
                     ];
                 }
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
                 $sizes[$table] = ['size_mb' => 0, 'rows' => 0, 'error' => $e->getMessage()];
             }
         }
@@ -147,7 +148,7 @@ class InventoryPerformanceMonitoringService
                 'needs_optimization' => $indexCount < 3, // Arbitrary threshold
                 'indexes' => $indexStats
             ];
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return [
                 'index_count' => 0,
                 'needs_optimization' => true,
@@ -201,7 +202,7 @@ class InventoryPerformanceMonitoringService
                 'performance_rating' => $this->rateQueryPerformance($executionTime),
                 'recommendations' => $this->getFEFORecommendations($executionTime)
             ];
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return [
                 'error' => $e->getMessage(),
                 'performance_rating' => 'error'
@@ -231,7 +232,7 @@ class InventoryPerformanceMonitoringService
                 'performance_rating' => $this->rateQueryPerformance($executionTime),
                 'recommendations' => $this->getReservationRecommendations($executionTime)
             ];
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return [
                 'error' => $e->getMessage(),
                 'performance_rating' => 'error'
@@ -262,7 +263,7 @@ class InventoryPerformanceMonitoringService
                 'performance_rating' => $this->rateQueryPerformance($executionTime),
                 'recommendations' => $this->getValuationRecommendations($executionTime)
             ];
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return [
                 'error' => $e->getMessage(),
                 'performance_rating' => 'error'
@@ -299,7 +300,7 @@ class InventoryPerformanceMonitoringService
                 'performance_rating' => $this->rateQueryPerformance($executionTime),
                 'recommendations' => $this->getReportingRecommendations($executionTime)
             ];
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return [
                 'error' => $e->getMessage(),
                 'performance_rating' => 'error'

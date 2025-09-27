@@ -2,22 +2,17 @@
 
 namespace Modules\Purchase\Actions\Purchases;
 
-use App\DataTransferObjects\Purchases\UpdateVendorBillDTO;
-use App\Enums\Purchases\VendorBillStatus;
-use App\Exceptions\UpdateNotAllowedException;
-use App\Models\Tax;
-use App\Models\VendorBillLine;
-use App\Services\Accounting\LockDateService;
 use Brick\Math\RoundingMode;
 use Brick\Money\Money;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
+use Modules\Purchase\Models\VendorBill;
 
 class UpdateVendorBillAction
 {
     public function __construct(protected \Modules\Accounting\Services\Accounting\LockDateService $lockDateService) {}
 
-    public function execute(UpdateVendorBillDTO $updateVendorBillDTO): \Modules\Purchase\Models\VendorBill
+    public function execute(UpdateVendorBillDTO $updateVendorBillDTO): VendorBill
     {
         $vendorBill = $updateVendorBillDTO->vendorBill;
 

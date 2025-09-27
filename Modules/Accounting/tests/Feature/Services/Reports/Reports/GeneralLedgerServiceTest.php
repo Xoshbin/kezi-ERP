@@ -2,13 +2,10 @@
 
 namespace Modules\Accounting\Tests\Feature\Services\Reports;
 
-use App\Models\Journal;
-use App\Models\JournalEntry;
-use App\Models\JournalEntryLine;
-use App\Services\Reports\GeneralLedgerService;
 use Brick\Money\Money;
 use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Modules\Accounting\Models\Account;
 use Tests\Traits\WithConfiguredCompany;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);
@@ -21,8 +18,8 @@ test('it generates a general ledger report with correct balances', function () {
     // Arrange
     $currency = $this->company->currency->code;
     $journal = Journal::factory()->for($this->company)->create();
-    $bankAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create(['name' => 'Main Bank']);
-    $equityAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create(['name' => 'Capital']);
+    $bankAccount = Account::factory()->for($this->company)->create(['name' => 'Main Bank']);
+    $equityAccount = Account::factory()->for($this->company)->create(['name' => 'Capital']);
 
     $startDate = Carbon::parse('2025-02-01');
     $endDate = Carbon::parse('2025-02-28');
@@ -84,8 +81,8 @@ test('it generates a general ledger report with correct balances', function () {
 test('it skips accounts with no activity', function () {
     // Arrange
     $journal = Journal::factory()->for($this->company)->create();
-    $bankAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create(['name' => 'Main Bank']);
-    $unusedAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create(['name' => 'Unused Account']);
+    $bankAccount = Account::factory()->for($this->company)->create(['name' => 'Main Bank']);
+    $unusedAccount = Account::factory()->for($this->company)->create(['name' => 'Unused Account']);
 
     $startDate = Carbon::parse('2025-02-01');
     $endDate = Carbon::parse('2025-02-28');
@@ -107,9 +104,9 @@ test('it skips accounts with no activity', function () {
 test('it handles multiple contra accounts correctly', function () {
     // Arrange
     $journal = Journal::factory()->for($this->company)->create();
-    $bankAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create(['name' => 'Main Bank']);
-    $account1 = \Modules\Accounting\Models\Account::factory()->for($this->company)->create(['name' => 'Account 1']);
-    $account2 = \Modules\Accounting\Models\Account::factory()->for($this->company)->create(['name' => 'Account 2']);
+    $bankAccount = Account::factory()->for($this->company)->create(['name' => 'Main Bank']);
+    $account1 = Account::factory()->for($this->company)->create(['name' => 'Account 1']);
+    $account2 = Account::factory()->for($this->company)->create(['name' => 'Account 2']);
 
     $startDate = Carbon::parse('2025-02-01');
     $endDate = Carbon::parse('2025-02-28');
@@ -134,8 +131,8 @@ test('it handles multiple contra accounts correctly', function () {
 test('it excludes draft transactions', function () {
     // Arrange
     $journal = Journal::factory()->for($this->company)->create();
-    $bankAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create(['name' => 'Main Bank']);
-    $equityAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create(['name' => 'Capital']);
+    $bankAccount = Account::factory()->for($this->company)->create(['name' => 'Main Bank']);
+    $equityAccount = Account::factory()->for($this->company)->create(['name' => 'Capital']);
 
     $startDate = Carbon::parse('2025-02-01');
     $endDate = Carbon::parse('2025-02-28');
@@ -163,8 +160,8 @@ test('it excludes draft transactions', function () {
 test('it generates report for all accounts when no account filter is provided', function () {
     // Arrange
     $journal = Journal::factory()->for($this->company)->create();
-    $bankAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create(['name' => 'Main Bank']);
-    $equityAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create(['name' => 'Capital']);
+    $bankAccount = Account::factory()->for($this->company)->create(['name' => 'Main Bank']);
+    $equityAccount = Account::factory()->for($this->company)->create(['name' => 'Capital']);
 
     $startDate = Carbon::parse('2025-02-01');
     $endDate = Carbon::parse('2025-02-28');

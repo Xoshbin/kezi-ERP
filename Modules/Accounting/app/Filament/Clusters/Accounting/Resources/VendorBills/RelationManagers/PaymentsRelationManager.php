@@ -2,9 +2,6 @@
 
 namespace Modules\Accounting\Filament\Clusters\Accounting\Resources\VendorBills\RelationManagers;
 
-use App\Enums\Payments\PaymentStatus;
-use App\Enums\Payments\PaymentType;
-use App\Filament\Tables\Columns\MoneyColumn;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\CreateAction;
 use Filament\Actions\DetachAction;
@@ -24,6 +21,8 @@ use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Modules\Payment\Models\Payment;
+use Modules\Purchase\Models\VendorBill;
 
 class PaymentsRelationManager extends RelationManager
 {
@@ -49,7 +48,7 @@ class PaymentsRelationManager extends RelationManager
                             ->default(function (): ?int {
                                 $owner = $this->getOwnerRecord();
 
-                                return $owner instanceof \Modules\Purchase\Models\VendorBill ? $owner->company_id : null;
+                                return $owner instanceof VendorBill ? $owner->company_id : null;
                             }),
 
                         Select::make('journal_id')
@@ -64,7 +63,7 @@ class PaymentsRelationManager extends RelationManager
                             ->default(function (): ?int {
                                 $owner = $this->getOwnerRecord();
 
-                                return $owner instanceof \Modules\Purchase\Models\VendorBill ? $owner->currency_id : null;
+                                return $owner instanceof VendorBill ? $owner->currency_id : null;
                             }),
 
                         DatePicker::make('payment_date')
@@ -190,7 +189,7 @@ class PaymentsRelationManager extends RelationManager
 
                 IconColumn::make('is_reconciled')
                     ->label(__('vendor_bill.payments_relation_manager.reconciliation_status'))
-                    ->getStateUsing(fn (\Modules\Payment\Models\Payment $record): bool => $record->status === PaymentStatus::Reconciled)
+                    ->getStateUsing(fn (Payment $record): bool => $record->status === PaymentStatus::Reconciled)
                     ->boolean()
                     ->trueIcon('heroicon-o-check-circle')
                     ->falseIcon('heroicon-o-x-circle')
@@ -236,7 +235,7 @@ class PaymentsRelationManager extends RelationManager
                     ->label(__('vendor_bill.payments_relation_manager.create_payment'))
                     ->mutateDataUsing(function (array $data): array {
                         $owner = $this->getOwnerRecord();
-                        $data['paid_to_from_partner_id'] = $owner instanceof \Modules\Purchase\Models\VendorBill ? $owner->vendor_id : null;
+                        $data['paid_to_from_partner_id'] = $owner instanceof VendorBill ? $owner->vendor_id : null;
 
                         return $data;
                     }),
@@ -246,7 +245,7 @@ class PaymentsRelationManager extends RelationManager
                 EditAction::make(),
                 DetachAction::make()
                     ->label(__('vendor_bill.payments_relation_manager.detach'))
-                    ->visible(fn (\Modules\Payment\Models\Payment $record): bool => $record->status === PaymentStatus::Draft),
+                    ->visible(fn (Payment $record): bool => $record->status === PaymentStatus::Draft),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([

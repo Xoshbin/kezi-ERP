@@ -3,6 +3,7 @@
 namespace Xoshbin\FilamentAiHelper\Livewire;
 
 use Carbon\Carbon;
+use Exception;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Http;
 use Livewire\Attributes\On;
@@ -124,12 +125,12 @@ class AiChatWidget extends Component
                         ];
                     }
                 } else {
-                    throw new \Exception($data['error'] ?? 'Failed to get AI response');
+                    throw new Exception($data['error'] ?? 'Failed to get AI response');
                 }
             } else {
-                throw new \Exception('Failed to communicate with AI service');
+                throw new Exception('Failed to communicate with AI service');
             }
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->hasError = true;
             $this->errorMessage = 'Sorry, I encountered an error. Please try again.';
 
@@ -187,7 +188,7 @@ class AiChatWidget extends Component
             if (class_exists($this->modelClass)) {
                 return $this->modelClass::find($this->modelId);
             }
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             // Silently fail if record not found
         }
 

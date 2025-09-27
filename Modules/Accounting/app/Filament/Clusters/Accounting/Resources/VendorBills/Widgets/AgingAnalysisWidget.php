@@ -2,15 +2,13 @@
 
 namespace Modules\Accounting\Filament\Clusters\Accounting\Resources\VendorBills\Widgets;
 
-use App\Enums\Purchases\VendorBillStatus;
-use App\Enums\Shared\PaymentState;
-use App\Support\NumberFormatter;
 use Brick\Math\RoundingMode;
 use Brick\Money\Money;
 use Carbon\Carbon;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
 use Illuminate\Database\Eloquent\Model;
+use Modules\Purchase\Models\VendorBill;
 
 class AgingAnalysisWidget extends BaseWidget
 {
@@ -18,7 +16,7 @@ class AgingAnalysisWidget extends BaseWidget
 
     protected function getStats(): array
     {
-        if (! $this->record instanceof \Modules\Purchase\Models\VendorBill) {
+        if (! $this->record instanceof VendorBill) {
             return [];
         }
 
@@ -60,7 +58,7 @@ class AgingAnalysisWidget extends BaseWidget
         ];
     }
 
-    private function calculateDaysOutstanding(\Modules\Purchase\Models\VendorBill $vendorBill): int
+    private function calculateDaysOutstanding(VendorBill $vendorBill): int
     {
         if (! $vendorBill->due_date) {
             return 0;
@@ -72,7 +70,7 @@ class AgingAnalysisWidget extends BaseWidget
         return (int) max(0, $today->diffInDays($dueDate, false));
     }
 
-    private function calculateOutstandingAmount(\Modules\Purchase\Models\VendorBill $vendorBill): Money
+    private function calculateOutstandingAmount(VendorBill $vendorBill): Money
     {
         $totalAmount = $vendorBill->total_amount;
         $paidAmount = $vendorBill->getPaidAmount();
@@ -129,7 +127,7 @@ class AgingAnalysisWidget extends BaseWidget
         return $this->getDaysOutstandingColor($daysOutstanding);
     }
 
-    private function getPaymentProgress(\Modules\Purchase\Models\VendorBill $vendorBill): string
+    private function getPaymentProgress(VendorBill $vendorBill): string
     {
         $totalAmount = $vendorBill->total_amount;
         $paidAmount = $vendorBill->getPaidAmount();
@@ -143,7 +141,7 @@ class AgingAnalysisWidget extends BaseWidget
         return \Modules\Foundation\Support\NumberFormatter::formatPercentage($percentage->getAmount()->toFloat(), 1);
     }
 
-    private function getPaymentProgressColor(\Modules\Purchase\Models\VendorBill $vendorBill): string
+    private function getPaymentProgressColor(VendorBill $vendorBill): string
     {
         return match ($vendorBill->paymentState) {
             \Modules\Foundation\Enums\Shared\PaymentState::NotPaid => 'gray',

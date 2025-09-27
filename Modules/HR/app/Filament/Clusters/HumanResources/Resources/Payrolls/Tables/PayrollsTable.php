@@ -2,8 +2,8 @@
 
 namespace Modules\HR\Filament\Clusters\HumanResources\Resources\Payrolls\Tables;
 
-use App\Filament\Tables\Columns\MoneyColumn;
-use App\Services\HumanResources\PayrollService;
+
+use Exception;
 use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
@@ -12,6 +12,7 @@ use Filament\Actions\ViewAction;
 use Filament\Support\Colors\Color;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Modules\HR\Models\Payroll;
 
 class PayrollsTable
 {
@@ -85,14 +86,14 @@ class PayrollsTable
                     ->label(__('payroll.actions.approve'))
                     ->icon('heroicon-o-check-circle')
                     ->color(Color::Green)
-                    ->visible(fn(\Modules\HR\Models\Payroll $record): bool => $record->status === 'draft')
+                    ->visible(fn(Payroll $record): bool => $record->status === 'draft')
                     ->requiresConfirmation()
                     ->modalHeading(__('payroll.actions.approve_payroll'))
                     ->modalDescription(__('payroll.actions.approve_payroll_description'))
-                    ->action(function (\Modules\HR\Models\Payroll $record) {
+                    ->action(function (Payroll $record) {
                         $user = auth()->user();
                         if (! $user) {
-                            throw new \Exception('User must be authenticated to approve payroll');
+                            throw new Exception('User must be authenticated to approve payroll');
                         }
                         $payrollService = app(PayrollService::class);
                         $payrollService->approvePayroll($record, $user);
@@ -105,19 +106,19 @@ class PayrollsTable
                     ->label(__('payroll.actions.pay'))
                     ->icon('heroicon-o-currency-dollar')
                     ->color(Color::Blue)
-                    ->visible(fn(\Modules\HR\Models\Payroll $record): bool => $record->status === 'processed' && ! $record->payment_id)
+                    ->visible(fn(Payroll $record): bool => $record->status === 'processed' && ! $record->payment_id)
                     ->requiresConfirmation()
                     ->modalHeading(__('payroll.actions.pay_employee'))
                     ->modalDescription(
-                        fn(\Modules\HR\Models\Payroll $record): string => __('payroll.actions.pay_employee_description', [
+                        fn(Payroll $record): string => __('payroll.actions.pay_employee_description', [
                             'employee' => $record->employee->full_name,
                             'amount' => $record->net_salary->formatTo('en_US'),
                         ])
                     )
-                    ->action(function (\Modules\HR\Models\Payroll $record) {
+                    ->action(function (Payroll $record) {
                         $user = auth()->user();
                         if (! $user) {
-                            throw new \Exception('User must be authenticated to pay employee');
+                            throw new Exception('User must be authenticated to pay employee');
                         }
                         $payrollService = app(PayrollService::class);
                         $payrollService->payEmployee($record, $user);
@@ -130,15 +131,15 @@ class PayrollsTable
                     ->label(__('payroll.actions.view_payment'))
                     ->icon('heroicon-o-eye')
                     ->color(Color::Gray)
-                    ->visible(fn(\Modules\HR\Models\Payroll $record): bool => $record->payment_id !== null)
-                    ->url(fn(\Modules\HR\Models\Payroll $record): string => route('filament.jmeryar.resources.payments.edit', $record->payment_id))
+                    ->visible(fn(Payroll $record): bool => $record->payment_id !== null)
+                    ->url(fn(Payroll $record): string => route('filament.jmeryar.resources.payments.edit', $record->payment_id))
                     ->openUrlInNewTab(),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
                     DeleteBulkAction::make()
                         ->action(function ($records) {
-                            $records->each(function (\Modules\HR\Models\Payroll $record) {
+                            $records->each(function (Payroll $record) {
                                 if ($record->status === 'draft') {
                                     $record->delete();
                                 }

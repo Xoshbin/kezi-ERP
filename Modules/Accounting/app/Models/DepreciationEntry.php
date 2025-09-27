@@ -5,7 +5,9 @@ namespace Modules\Accounting\Models;
 use App\Casts\BaseCurrencyMoneyCast;
 use App\Enums\Assets\DepreciationEntryStatus;
 use App\Observers\DepreciationEntryObserver;
+use Brick\Money\Money;
 use Database\Factories\DepreciationEntryFactory;
+use Eloquent;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -20,7 +22,7 @@ use Illuminate\Support\Carbon;
  * @property int $asset_id
  * @property int|null $journal_entry_id
  * @property Carbon $depreciation_date
- * @property \Brick\Money\Money $amount
+ * @property Money $amount
  * @property DepreciationEntryStatus $status
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
@@ -40,12 +42,12 @@ use Illuminate\Support\Carbon;
  * @method static Builder<static>|DepreciationEntry whereStatus($value)
  * @method static Builder<static>|DepreciationEntry whereUpdatedAt($value)
  *
- * @mixin \Eloquent
+ * @mixin Eloquent
  */
 #[ObservedBy([DepreciationEntryObserver::class])]
 class DepreciationEntry extends Model
 {
-    /** @use HasFactory<\Database\Factories\DepreciationEntryFactory> */
+    /** @use HasFactory<DepreciationEntryFactory> */
     use HasFactory;
 
     /**

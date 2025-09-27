@@ -1,13 +1,15 @@
 <?php
 
-use App\Enums\Payments\PaymentStatus;
-use App\Livewire\Accounting\SystemPaymentsTable;
 use App\Models\Company;
-use App\Models\Journal;
 use App\Models\User;
 use Brick\Money\Money;
+use Filament\Facades\Filament;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Livewire\Livewire;
+use Modules\Accounting\Models\Account;
+use Modules\Accounting\Models\BankStatement;
+use Modules\Foundation\Models\Partner;
+use Modules\Payment\Models\Payment;
 
 uses(RefreshDatabase::class);
 
@@ -21,16 +23,16 @@ beforeEach(function () {
     $this->actingAs($this->user);
 
     // Set up Filament tenant context
-    \Filament\Facades\Filament::setTenant($this->company);
+    Filament::setTenant($this->company);
 
     $this->currency = $this->company->currency;
 
     // Create required accounts for reconciliation
-    $this->bankAccount = \Modules\Accounting\Models\Account::factory()
+    $this->bankAccount = Account::factory()
         ->for($this->company)
         ->create(['type' => 'bank_and_cash', 'name' => 'Bank Account']);
 
-    $this->outstandingAccount = \Modules\Accounting\Models\Account::factory()
+    $this->outstandingAccount = Account::factory()
         ->for($this->company)
         ->create(['type' => 'current_assets', 'name' => 'Outstanding Receipts']);
 
@@ -44,7 +46,7 @@ beforeEach(function () {
         ->for($this->company)
         ->create(['type' => 'bank']);
 
-    $this->bankStatement = \Modules\Accounting\Models\BankStatement::factory()
+    $this->bankStatement = BankStatement::factory()
         ->for($this->company)
         ->for($this->currency)
         ->for($this->bankJournal)
@@ -59,9 +61,9 @@ describe('SystemPaymentsTable Livewire Component', function () {
     });
 
     it('displays only unreconciled confirmed payments', function () {
-        $partner = \Modules\Foundation\Models\Partner::factory()->for($this->company)->create();
+        $partner = Partner::factory()->for($this->company)->create();
 
-        $confirmedPayment = \Modules\Payment\Models\Payment::factory()
+        $confirmedPayment = Payment::factory()
             ->for($this->company)
             ->for($this->currency)
             ->for($this->bankJournal)
@@ -71,7 +73,7 @@ describe('SystemPaymentsTable Livewire Component', function () {
                 'amount' => Money::of(100, $this->currency->code),
             ]);
 
-        $reconciledPayment = \Modules\Payment\Models\Payment::factory()
+        $reconciledPayment = Payment::factory()
             ->for($this->company)
             ->for($this->currency)
             ->for($this->bankJournal)
@@ -80,7 +82,7 @@ describe('SystemPaymentsTable Livewire Component', function () {
                 'amount' => Money::of(200, $this->currency->code),
             ]);
 
-        $draftPayment = \Modules\Payment\Models\Payment::factory()
+        $draftPayment = Payment::factory()
             ->for($this->company)
             ->for($this->currency)
             ->for($this->bankJournal)
@@ -96,7 +98,7 @@ describe('SystemPaymentsTable Livewire Component', function () {
     });
 
     it('can toggle payment selection', function () {
-        $payment = \Modules\Payment\Models\Payment::factory()
+        $payment = Payment::factory()
             ->for($this->company)
             ->for($this->currency)
             ->for($this->bankJournal)
@@ -119,7 +121,7 @@ describe('SystemPaymentsTable Livewire Component', function () {
     });
 
     it('emits selection changed event when toggling payments', function () {
-        $payment = \Modules\Payment\Models\Payment::factory()
+        $payment = Payment::factory()
             ->for($this->company)
             ->for($this->currency)
             ->for($this->bankJournal)
@@ -139,7 +141,7 @@ describe('SystemPaymentsTable Livewire Component', function () {
     });
 
     it('calculates correct total for inbound payments', function () {
-        $inboundPayment = \Modules\Payment\Models\Payment::factory()
+        $inboundPayment = Payment::factory()
             ->for($this->company)
             ->for($this->currency)
             ->for($this->bankJournal)
@@ -159,7 +161,7 @@ describe('SystemPaymentsTable Livewire Component', function () {
     });
 
     it('calculates correct total for outbound payments', function () {
-        $outboundPayment = \Modules\Payment\Models\Payment::factory()
+        $outboundPayment = Payment::factory()
             ->for($this->company)
             ->for($this->currency)
             ->for($this->bankJournal)
@@ -179,7 +181,7 @@ describe('SystemPaymentsTable Livewire Component', function () {
     });
 
     it('calculates correct total for mixed payment types', function () {
-        $inboundPayment = \Modules\Payment\Models\Payment::factory()
+        $inboundPayment = Payment::factory()
             ->for($this->company)
             ->for($this->currency)
             ->for($this->bankJournal)
@@ -189,7 +191,7 @@ describe('SystemPaymentsTable Livewire Component', function () {
                 'status' => PaymentStatus::Confirmed,
             ]);
 
-        $outboundPayment = \Modules\Payment\Models\Payment::factory()
+        $outboundPayment = Payment::factory()
             ->for($this->company)
             ->for($this->currency)
             ->for($this->bankJournal)
@@ -214,9 +216,9 @@ describe('SystemPaymentsTable Livewire Component', function () {
     });
 
     it('displays payment information correctly', function () {
-        $partner = \Modules\Foundation\Models\Partner::factory()->for($this->company)->create(['name' => 'Test Partner']);
+        $partner = Partner::factory()->for($this->company)->create(['name' => 'Test Partner']);
 
-        $payment = \Modules\Payment\Models\Payment::factory()
+        $payment = Payment::factory()
             ->for($this->company)
             ->for($this->currency)
             ->for($this->bankJournal)
@@ -279,7 +281,7 @@ describe('SystemPaymentsTable Livewire Component', function () {
 
     it('shows empty state when no unreconciled payments exist', function () {
         // Create only reconciled payments
-        \Modules\Payment\Models\Payment::factory()
+        Payment::factory()
             ->for($this->company)
             ->for($this->currency)
             ->for($this->bankJournal)

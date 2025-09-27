@@ -2,8 +2,6 @@
 
 namespace Modules\Inventory\Services\Inventory;
 
-use App\Models\StockMove;
-use App\Models\StockQuant;
 use Illuminate\Support\Facades\DB;
 use RuntimeException;
 
@@ -210,12 +208,12 @@ class StockQuantService
         }
     }
 
-    public function applyForIncomingProductLine(\App\Models\StockMoveProductLine $productLine): void
+    public function applyForIncomingProductLine(StockMoveProductLine $productLine): void
     {
         $this->adjust($productLine->company_id, $productLine->product_id, $productLine->to_location_id, $productLine->quantity, 0);
     }
 
-    public function applyForOutgoingProductLine(\App\Models\StockMoveProductLine $productLine): void
+    public function applyForOutgoingProductLine(StockMoveProductLine $productLine): void
     {
         $this->adjust($productLine->company_id, $productLine->product_id, $productLine->from_location_id, -$productLine->quantity, 0);
     }

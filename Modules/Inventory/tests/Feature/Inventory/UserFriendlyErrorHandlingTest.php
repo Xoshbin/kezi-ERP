@@ -1,22 +1,15 @@
 <?php
 
-use App\Enums\Inventory\StockMoveStatus;
-use App\Enums\Inventory\StockMoveType;
-use App\Enums\Inventory\ValuationMethod;
-use App\Enums\Products\ProductType;
-use App\Exceptions\Inventory\InsufficientCostInformationException;
 use App\Models\Company;
-use App\Models\StockLocation;
-use App\Models\StockMoveProductLine;
-use App\Models\User;
-use App\Services\Inventory\UserFriendlyErrorService;
 use Brick\Money\Money;
+use Modules\Product\Models\Product;
+use Modules\Purchase\Models\VendorBill;
 
 beforeEach(function () {
     $this->company = Company::factory()->create();
     $this->user = User::factory()->create();
 
-    $this->product = \Modules\Product\Models\Product::factory()->create([
+    $this->product = Product::factory()->create([
         'company_id' => $this->company->id,
         'type' => \Modules\Product\Enums\Products\ProductType::Storable,
         'inventory_valuation_method' => ValuationMethod::FIFO,
@@ -113,12 +106,12 @@ it('provides different solutions based on vendor bill status', function () {
     expect($message1)->toContain('create and confirm a vendor bill');
 
     // Create a draft vendor bill for the product
-    $vendorBill = \Modules\Purchase\Models\VendorBill::factory()->create([
+    $vendorBill = VendorBill::factory()->create([
         'company_id' => $this->company->id,
-        'status' => \App\Enums\Purchases\VendorBillStatus::Draft,
+        'status' => VendorBillStatus::Draft,
     ]);
 
-    \App\Models\VendorBillLine::factory()->create([
+    VendorBillLine::factory()->create([
         'vendor_bill_id' => $vendorBill->id,
         'company_id' => $this->company->id,
         'product_id' => $this->product->id,
@@ -204,7 +197,7 @@ it('exception provides user-friendly methods', function () {
 });
 
 it('handles AVCO valuation method appropriately', function () {
-    $avcoProduct = \Modules\Product\Models\Product::factory()->create([
+    $avcoProduct = Product::factory()->create([
         'company_id' => $this->company->id,
         'type' => \Modules\Product\Enums\Products\ProductType::Storable,
         'inventory_valuation_method' => ValuationMethod::AVCO,

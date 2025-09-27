@@ -1,22 +1,19 @@
 <?php
 
-use App\Enums\Purchases\PurchaseOrderStatus;
-use App\Filament\Clusters\Purchases\Resources\PurchaseOrders\Pages\CreatePurchaseOrder;
-use App\Filament\Clusters\Purchases\Resources\PurchaseOrders\Pages\EditPurchaseOrder;
-use App\Filament\Clusters\Purchases\Resources\PurchaseOrders\PurchaseOrderResource;
-use App\Models\PurchaseOrder;
-use App\Models\PurchaseOrderLine;
+use Filament\Facades\Filament;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Livewire\Livewire;
+use Modules\Foundation\Models\Partner;
+use Modules\Product\Models\Product;
 use Tests\Traits\WithConfiguredCompany;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);
 
 beforeEach(function () {
     $this->setupWithConfiguredCompany();
-    $this->vendor = \Modules\Foundation\Models\Partner::factory()->vendor()->create(['company_id' => $this->company->id]);
+    $this->vendor = Partner::factory()->vendor()->create(['company_id' => $this->company->id]);
 
-    \Filament\Facades\Filament::setTenant($this->company);
+    Filament::setTenant($this->company);
 });
 
 test('can render purchase order list page', function () {
@@ -30,7 +27,7 @@ test('can render purchase order create page', function () {
 });
 
 test('can create purchase order through filament', function () {
-    $product = \Modules\Product\Models\Product::factory()->create(['company_id' => $this->company->id]);
+    $product = Product::factory()->create(['company_id' => $this->company->id]);
 
     $livewire = Livewire::test(CreatePurchaseOrder::class, ['tenant' => $this->company])
         ->fillForm([
@@ -100,7 +97,7 @@ test('can confirm purchase order through filament action', function () {
     // Add a line to the purchase order so it can be confirmed
     PurchaseOrderLine::factory()->create([
         'purchase_order_id' => $purchaseOrder->id,
-        'product_id' => \Modules\Product\Models\Product::factory()->create(['company_id' => $this->company->id])->id,
+        'product_id' => Product::factory()->create(['company_id' => $this->company->id])->id,
     ]);
 
     Livewire::test(EditPurchaseOrder::class, ['record' => $purchaseOrder->getRouteKey(), 'tenant' => $this->company])
@@ -142,7 +139,7 @@ test('confirm action transitions to ToReceive status', function () {
     // Add a line to the purchase order so it can be confirmed
     PurchaseOrderLine::factory()->create([
         'purchase_order_id' => $purchaseOrder->id,
-        'product_id' => \Modules\Product\Models\Product::factory()->create(['company_id' => $this->company->id])->id,
+        'product_id' => Product::factory()->create(['company_id' => $this->company->id])->id,
     ]);
 
     Livewire::test(EditPurchaseOrder::class, ['record' => $purchaseOrder->getRouteKey(), 'tenant' => $this->company])

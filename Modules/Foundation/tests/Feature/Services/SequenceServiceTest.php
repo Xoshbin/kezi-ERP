@@ -1,9 +1,8 @@
 <?php
 
-use App\Enums\Settings\NumberingType;
-use App\Models\Company;
-use App\Services\SequenceService;
+
 use Carbon\Carbon;
+use Modules\Foundation\Models\Sequence;
 use Tests\Traits\WithConfiguredCompany;
 
 describe('SequenceService', function () {
@@ -140,7 +139,7 @@ describe('SequenceService', function () {
     it('creates sequence records in database', function () {
         $this->sequenceService->getNextInvoiceNumber($this->company);
 
-        $sequence = \Modules\Foundation\Models\Sequence::where([
+        $sequence = Sequence::where([
             'company_id' => $this->company->id,
             'document_type' => 'invoice',
         ])->first();

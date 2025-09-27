@@ -1,8 +1,7 @@
 <?php
 
-use App\Enums\Purchases\VendorBillStatus;
-use App\Enums\Sales\InvoiceStatus;
-use App\Rules\NumberingSettingsChangeRule;
+use Modules\Purchase\Models\VendorBill;
+use Modules\Sales\Models\Invoice;
 use Tests\Traits\WithConfiguredCompany;
 
 describe('NumberingSettingsChangeRule', function () {
@@ -29,7 +28,7 @@ describe('NumberingSettingsChangeRule', function () {
 
     it('fails validation when posted invoices exist', function () {
         // Create a posted invoice
-        \Modules\Sales\Models\Invoice::factory()->create([
+        Invoice::factory()->create([
             'company_id' => $this->company->id,
             'status' => InvoiceStatus::Posted,
             'invoice_number' => 'INV-00001',
@@ -52,7 +51,7 @@ describe('NumberingSettingsChangeRule', function () {
 
     it('fails validation when posted vendor bills exist', function () {
         // Create a posted vendor bill
-        \Modules\Purchase\Models\VendorBill::factory()->create([
+        VendorBill::factory()->create([
             'company_id' => $this->company->id,
             'status' => VendorBillStatus::Posted,
             'bill_reference' => 'BILL-00001',
@@ -75,13 +74,13 @@ describe('NumberingSettingsChangeRule', function () {
 
     it('fails validation when both posted invoices and bills exist', function () {
         // Create posted documents
-        \Modules\Sales\Models\Invoice::factory()->create([
+        Invoice::factory()->create([
             'company_id' => $this->company->id,
             'status' => InvoiceStatus::Posted,
             'invoice_number' => 'INV-00001',
         ]);
 
-        \Modules\Purchase\Models\VendorBill::factory()->create([
+        VendorBill::factory()->create([
             'company_id' => $this->company->id,
             'status' => VendorBillStatus::Posted,
             'bill_reference' => 'BILL-00001',
@@ -105,13 +104,13 @@ describe('NumberingSettingsChangeRule', function () {
 
     it('passes validation when only draft documents exist', function () {
         // Create draft documents (should not prevent changes)
-        \Modules\Sales\Models\Invoice::factory()->create([
+        Invoice::factory()->create([
             'company_id' => $this->company->id,
             'status' => InvoiceStatus::Draft,
             'invoice_number' => null,
         ]);
 
-        \Modules\Purchase\Models\VendorBill::factory()->create([
+        VendorBill::factory()->create([
             'company_id' => $this->company->id,
             'status' => VendorBillStatus::Draft,
             // Draft bills can have bill_reference (it's just not auto-generated)

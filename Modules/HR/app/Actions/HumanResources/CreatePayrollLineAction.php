@@ -2,13 +2,12 @@
 
 namespace Modules\HR\Actions\HumanResources;
 
-use App\DataTransferObjects\HumanResources\PayrollLineDTO;
-use App\Models\PayrollLine;
 use Brick\Money\Money;
+use Modules\HR\Models\Payroll;
 
 class CreatePayrollLineAction
 {
-    public function execute(\Modules\HR\Models\Payroll $payroll, PayrollLineDTO $dto): PayrollLine
+    public function execute(Payroll $payroll, PayrollLineDTO $dto): PayrollLine
     {
         $currency = $payroll->currency;
 

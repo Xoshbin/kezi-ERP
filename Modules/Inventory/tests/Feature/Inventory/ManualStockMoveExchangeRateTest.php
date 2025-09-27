@@ -1,44 +1,37 @@
 <?php
 
-use App\Actions\Purchases\CreateVendorBillAction;
-use App\DataTransferObjects\Purchases\CreateVendorBillDTO;
-use App\DataTransferObjects\Purchases\CreateVendorBillLineDTO;
-use App\Enums\Inventory\StockMoveStatus;
-use App\Enums\Inventory\StockMoveType;
-use App\Enums\Purchases\VendorBillStatus;
-use App\Models\Company;
-use App\Models\StockLocation;
-use App\Models\StockMove;
-use App\Models\StockMoveProductLine;
-use App\Models\Tax;
-use App\Models\User;
-use App\Services\Inventory\InventoryValuationService;
 use Brick\Money\Money;
+use Modules\Accounting\Models\Account;
+use Modules\Accounting\Models\AssetCategory;
+use Modules\Foundation\Models\Currency;
+use Modules\Foundation\Models\Partner;
+use Modules\Product\Enums\Products\ProductType;
+use Modules\Product\Models\Product;
 
 beforeEach(function () {
     $this->company = Company::factory()->create();
     $this->user = User::factory()->create();
 
     // Set up currencies
-    $this->usdCurrency = \Modules\Foundation\Models\Currency::where('code', 'USD')->first() ?? \Modules\Foundation\Models\Currency::factory()->create(['code' => 'USD', 'decimal_places' => 2]);
-    $this->iqdCurrency = \Modules\Foundation\Models\Currency::where('code', 'IQD')->first() ?? \Modules\Foundation\Models\Currency::factory()->create(['code' => 'IQD', 'decimal_places' => 3]);
+    $this->usdCurrency = Currency::where('code', 'USD')->first() ?? Currency::factory()->create(['code' => 'USD', 'decimal_places' => 2]);
+    $this->iqdCurrency = Currency::where('code', 'IQD')->first() ?? Currency::factory()->create(['code' => 'IQD', 'decimal_places' => 3]);
 
     // Set company currency to IQD
     $this->company->update(['currency_id' => $this->iqdCurrency->id]);
 
     // Create vendor
-    $this->vendor = \Modules\Foundation\Models\Partner::factory()->vendor()->create(['company_id' => $this->company->id]);
+    $this->vendor = Partner::factory()->vendor()->create(['company_id' => $this->company->id]);
 
     // Create locations
     $this->vendorLocation = StockLocation::factory()->create([
         'company_id' => $this->company->id,
         'name' => 'Vendor Location',
-        'type' => \App\Enums\Inventory\StockLocationType::Vendor,
+        'type' => StockLocationType::Vendor,
     ]);
     $this->stockLocation = StockLocation::factory()->create([
         'company_id' => $this->company->id,
         'name' => 'Stock Location',
-        'type' => \App\Enums\Inventory\StockLocationType::Internal,
+        'type' => StockLocationType::Internal,
     ]);
 
     // Set company default locations
@@ -48,13 +41,13 @@ beforeEach(function () {
     ]);
 
     // Create accounts first
-    $assetAccount = \Modules\Accounting\Models\Account::factory()->create(['company_id' => $this->company->id]);
-    $depreciationAccount = \Modules\Accounting\Models\Account::factory()->create(['company_id' => $this->company->id]);
-    $this->expenseAccount = \Modules\Accounting\Models\Account::factory()->create(['company_id' => $this->company->id]);
+    $assetAccount = Account::factory()->create(['company_id' => $this->company->id]);
+    $depreciationAccount = Account::factory()->create(['company_id' => $this->company->id]);
+    $this->expenseAccount = Account::factory()->create(['company_id' => $this->company->id]);
 
     // Create required default accounts for vendor bill processing
-    $apAccount = \Modules\Accounting\Models\Account::factory()->create(['company_id' => $this->company->id]);
-    $purchaseJournal = \App\Models\Journal::factory()->create(['company_id' => $this->company->id]);
+    $apAccount = Account::factory()->create(['company_id' => $this->company->id]);
+    $purchaseJournal = Journal::factory()->create(['company_id' => $this->company->id]);
 
     // Set company default accounts
     $this->company->update([
@@ -63,13 +56,13 @@ beforeEach(function () {
     ]);
 
     // Create asset category
-    $this->assetCategory = \Modules\Accounting\Models\AssetCategory::create([
+    $this->assetCategory = AssetCategory::create([
         'company_id' => $this->company->id,
         'name' => 'Test Asset Category',
         'asset_account_id' => $assetAccount->id,
         'accumulated_depreciation_account_id' => $depreciationAccount->id,
         'depreciation_expense_account_id' => $this->expenseAccount->id,
-        'depreciation_method' => \App\Enums\Assets\DepreciationMethod::StraightLine,
+        'depreciation_method' => DepreciationMethod::StraightLine,
         'useful_life_years' => 5,
         'is_active' => true,
     ]);
@@ -82,22 +75,22 @@ beforeEach(function () {
     ]);
 
     // Create products
-    $this->product1 = \Modules\Product\Models\Product::factory()->create([
+    $this->product1 = Product::factory()->create([
         'company_id' => $this->company->id,
-        'type' => \Modules\Product\Enums\Products\ProductType::Storable,
-        'inventory_valuation_method' => \App\Enums\Inventory\ValuationMethod::AVCO,
+        'type' => ProductType::Storable,
+        'inventory_valuation_method' => ValuationMethod::AVCO,
     ]);
 
-    $this->product2 = \Modules\Product\Models\Product::factory()->create([
+    $this->product2 = Product::factory()->create([
         'company_id' => $this->company->id,
-        'type' => \Modules\Product\Enums\Products\ProductType::Storable,
-        'inventory_valuation_method' => \App\Enums\Inventory\ValuationMethod::AVCO,
+        'type' => ProductType::Storable,
+        'inventory_valuation_method' => ValuationMethod::AVCO,
     ]);
 
-    $this->product3 = \Modules\Product\Models\Product::factory()->create([
+    $this->product3 = Product::factory()->create([
         'company_id' => $this->company->id,
-        'type' => \Modules\Product\Enums\Products\ProductType::Storable,
-        'inventory_valuation_method' => \App\Enums\Inventory\ValuationMethod::AVCO,
+        'type' => ProductType::Storable,
+        'inventory_valuation_method' => ValuationMethod::AVCO,
     ]);
 });
 
@@ -165,7 +158,7 @@ it('manual stock move uses same exchange rate and cost calculation as vendor bil
     $vendorBill->update(['status' => VendorBillStatus::Posted, 'posted_at' => now()]);
 
     // Manually create the journal entry for the vendor bill
-    $createJournalEntryAction = app(\App\Actions\Accounting\CreateJournalEntryForVendorBillAction::class);
+    $createJournalEntryAction = app(CreateJournalEntryForVendorBillAction::class);
     $vendorBillJournalEntry = $createJournalEntryAction->execute($vendorBill, $this->user);
     $vendorBillTotalAmount = $vendorBillJournalEntry->total_debit;
 
@@ -250,6 +243,6 @@ it('manual stock move uses same exchange rate and cost calculation as vendor bil
     $expectedCostPerUnit = Money::of(26134.5, 'IQD');
 
     expect($costResult->cost->isEqualTo($expectedCostPerUnit))->toBeTrue()
-        ->and($costResult->source)->toBe(\App\Enums\Inventory\CostSource::VendorBill)
+        ->and($costResult->source)->toBe(CostSource::VendorBill)
         ->and($costResult->reference)->toContain("VendorBill:{$vendorBill->id}");
 });

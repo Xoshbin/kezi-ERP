@@ -1,9 +1,8 @@
 <?php
 
-use App\Enums\PaymentTerms\PaymentTermType;
 use App\Models\Company;
-use Database\Seeders\PaymentTermsSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Modules\Foundation\Models\PaymentTerm;
 
 uses(RefreshDatabase::class);
 
@@ -18,7 +17,7 @@ it('seeds common payment terms for a company', function () {
     $seeder->run();
 
     // Verify payment terms were created
-    $paymentTerms = \Modules\Foundation\Models\PaymentTerm::where('company_id', $this->company->id)->get();
+    $paymentTerms = PaymentTerm::where('company_id', $this->company->id)->get();
 
     expect($paymentTerms)->toHaveCount(16); // We defined 16 payment terms
 
@@ -48,7 +47,7 @@ it('creates correct payment term lines for immediate payment', function () {
     $seeder = new PaymentTermsSeeder;
     $seeder->run();
 
-    $paymentTerms = \Modules\Foundation\Models\PaymentTerm::where('company_id', $this->company->id)->get();
+    $paymentTerms = PaymentTerm::where('company_id', $this->company->id)->get();
     $immediate = $paymentTerms->first(fn ($term) => $term->getTranslation('name', 'en') === 'Immediate');
 
     $lines = $immediate->lines;
@@ -67,7 +66,7 @@ it('creates correct payment term lines for net 30', function () {
     $seeder = new PaymentTermsSeeder;
     $seeder->run();
 
-    $paymentTerms = \Modules\Foundation\Models\PaymentTerm::where('company_id', $this->company->id)->get();
+    $paymentTerms = PaymentTerm::where('company_id', $this->company->id)->get();
     $net30 = $paymentTerms->first(fn ($term) => $term->getTranslation('name', 'en') === 'Net 30');
 
     $lines = $net30->lines;
@@ -86,7 +85,7 @@ it('creates correct payment term lines for early payment discount', function () 
     $seeder = new PaymentTermsSeeder;
     $seeder->run();
 
-    $paymentTerms = \Modules\Foundation\Models\PaymentTerm::where('company_id', $this->company->id)->get();
+    $paymentTerms = PaymentTerm::where('company_id', $this->company->id)->get();
     $discount = $paymentTerms->first(fn ($term) => $term->getTranslation('name', 'en') === '2% 10, Net 30');
 
     $lines = $discount->lines;
@@ -105,7 +104,7 @@ it('creates correct payment term lines for installment payments', function () {
     $seeder = new PaymentTermsSeeder;
     $seeder->run();
 
-    $paymentTerms = \Modules\Foundation\Models\PaymentTerm::where('company_id', $this->company->id)->get();
+    $paymentTerms = PaymentTerm::where('company_id', $this->company->id)->get();
     $installment = $paymentTerms->first(fn ($term) => $term->getTranslation('name', 'en') === '50% Now, 50% in 30 Days');
 
     $lines = $installment->lines->sortBy('sequence');
@@ -130,7 +129,7 @@ it('creates correct payment term lines for day of month', function () {
     $seeder = new PaymentTermsSeeder;
     $seeder->run();
 
-    $paymentTerms = \Modules\Foundation\Models\PaymentTerm::where('company_id', $this->company->id)->get();
+    $paymentTerms = PaymentTerm::where('company_id', $this->company->id)->get();
     $dayOfMonth = $paymentTerms->first(fn ($term) => $term->getTranslation('name', 'en') === '15th of Next Month');
 
     $lines = $dayOfMonth->lines;
@@ -148,7 +147,7 @@ it('creates correct payment term lines for end of month', function () {
     $seeder = new PaymentTermsSeeder;
     $seeder->run();
 
-    $paymentTerms = \Modules\Foundation\Models\PaymentTerm::where('company_id', $this->company->id)->get();
+    $paymentTerms = PaymentTerm::where('company_id', $this->company->id)->get();
     $eom = $paymentTerms->first(fn ($term) => $term->getTranslation('name', 'en') === 'EOM + 15');
 
     $lines = $eom->lines;
@@ -168,7 +167,7 @@ it('does not create duplicate payment terms', function () {
     $seeder->run();
 
     // Should still only have one set of payment terms
-    $paymentTerms = \Modules\Foundation\Models\PaymentTerm::where('company_id', $this->company->id)->get();
+    $paymentTerms = PaymentTerm::where('company_id', $this->company->id)->get();
     expect($paymentTerms)->toHaveCount(16);
 
     // Check that we don't have duplicates
@@ -183,13 +182,13 @@ it('creates payment terms for multiple companies', function () {
     $seeder->run();
 
     // Both companies should have payment terms
-    $company1Terms = \Modules\Foundation\Models\PaymentTerm::where('company_id', $this->company->id)->count();
-    $company2Terms = \Modules\Foundation\Models\PaymentTerm::where('company_id', $company2->id)->count();
+    $company1Terms = PaymentTerm::where('company_id', $this->company->id)->count();
+    $company2Terms = PaymentTerm::where('company_id', $company2->id)->count();
 
     expect($company1Terms)->toBe(16);
     expect($company2Terms)->toBe(16);
 
     // Terms should be separate for each company
-    $totalTerms = \Modules\Foundation\Models\PaymentTerm::count();
+    $totalTerms = PaymentTerm::count();
     expect($totalTerms)->toBe(32); // 16 terms × 2 companies
 });

@@ -2,10 +2,8 @@
 
 namespace Modules\Accounting\Models;
 
-use App\Casts\BaseCurrencyMoneyCast;
-use App\Casts\OriginalCurrencyMoneyCast;
-use App\Observers\JournalEntryLineObserver;
 use Brick\Money\Money;
+use Eloquent;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -55,12 +53,12 @@ use RuntimeException;
  * @method static Builder<static>|JournalEntryLine wherePartnerId($value)
  * @method static Builder<static>|JournalEntryLine whereUpdatedAt($value)
  *
- * @mixin \Eloquent
+ * @mixin Eloquent
  */
 #[ObservedBy([JournalEntryLineObserver::class])]
 class JournalEntryLine extends Model
 {
-    /** @use HasFactory<\Database\Factories\JournalEntryLineFactory> */
+    /** @use HasFactory<JournalEntryLineFactory> */
     use HasFactory;
 
     /**

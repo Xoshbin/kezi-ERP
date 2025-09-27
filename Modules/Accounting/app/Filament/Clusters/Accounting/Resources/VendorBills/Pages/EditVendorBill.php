@@ -2,25 +2,6 @@
 
 namespace Modules\Accounting\Filament\Clusters\Accounting\Resources\VendorBills\Pages;
 
-use App\Actions\Accounting\BuildVendorBillPostingPreviewAction;
-use App\Actions\Payments\CreatePaymentAction;
-use App\Actions\Purchases\UpdateVendorBillAction;
-use App\DataTransferObjects\Payments\CreatePaymentDocumentLinkDTO;
-use App\DataTransferObjects\Payments\CreatePaymentDTO;
-use App\DataTransferObjects\Purchases\UpdateVendorBillDTO;
-use App\DataTransferObjects\Purchases\VendorBillLineDTO;
-use App\Enums\Payments\PaymentMethod;
-use App\Enums\Payments\PaymentType;
-use App\Enums\Purchases\VendorBillStatus;
-use App\Filament\Actions\DocsAction;
-use App\Filament\Clusters\Accounting\Resources\VendorBills\VendorBillResource;
-use App\Filament\Clusters\Accounting\Resources\VendorBills\Widgets\SettlementSummaryWidget;
-use App\Filament\Forms\Components\MoneyInput;
-use App\Models\Company;
-use App\Models\Journal;
-use App\Models\VendorBillAttachment;
-use App\Services\PaymentService;
-use App\Services\VendorBillService;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Brick\Money\Money;
 use Exception;
@@ -35,7 +16,11 @@ use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
+use InvalidArgumentException;
+use Modules\Purchase\Models\VendorBill;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class EditVendorBill extends EditRecord
 {
@@ -51,13 +36,13 @@ class EditVendorBill extends EditRecord
                 ->label(__('Preview Posting'))
                 ->icon('heroicon-o-eye')
                 ->color('info')
-                ->visible(fn (\Modules\Purchase\Models\VendorBill $record): bool => $record->status === VendorBillStatus::Draft)
+                ->visible(fn (VendorBill $record): bool => $record->status === VendorBillStatus::Draft)
                 ->requiresConfirmation()
                 ->modalHeading(__('Posting Preview'))
                 ->modalSubmitAction(false)
                 ->modalCancelActionLabel(__('Close'))
                 ->modalWidth('7xl')
-                ->modalContent(function (\Modules\Purchase\Models\VendorBill $record) {
+                ->modalContent(function (VendorBill $record) {
                     $preview = app(BuildVendorBillPostingPreviewAction::class)->execute($record);
 
                     return view('filament/accounting/vendor-bills/preview-posting', [
@@ -70,8 +55,8 @@ class EditVendorBill extends EditRecord
                 ->label(__('Export Preview (CSV)'))
                 ->icon('heroicon-o-arrow-down-tray')
                 ->color('gray')
-                ->visible(fn (\Modules\Purchase\Models\VendorBill $record): bool => $record->status === VendorBillStatus::Draft && config('app.debug') && ! app()->environment('production'))
-                ->action(function (\Modules\Purchase\Models\VendorBill $record): \Symfony\Component\HttpFoundation\StreamedResponse {
+                ->visible(fn (VendorBill $record): bool => $record->status === VendorBillStatus::Draft && config('app.debug') && ! app()->environment('production'))
+                ->action(function (VendorBill $record): StreamedResponse {
                     $preview = app(BuildVendorBillPostingPreviewAction::class)->execute($record);
                     $rows = [];
                     $rows[] = ['Account Code', 'Account Name', 'Description', 'Debit', 'Credit'];
@@ -100,8 +85,8 @@ class EditVendorBill extends EditRecord
                 ->label(__('Export Preview (PDF)'))
                 ->icon('heroicon-o-document-arrow-down')
                 ->color('gray')
-                ->visible(fn (\Modules\Purchase\Models\VendorBill $record): bool => $record->status === VendorBillStatus::Draft && config('app.debug') && ! app()->environment('production'))
-                ->action(function (\Modules\Purchase\Models\VendorBill $record): \Symfony\Component\HttpFoundation\StreamedResponse {
+                ->visible(fn (VendorBill $record): bool => $record->status === VendorBillStatus::Draft && config('app.debug') && ! app()->environment('production'))
+                ->action(function (VendorBill $record): StreamedResponse {
                     $preview = app(BuildVendorBillPostingPreviewAction::class)->execute($record);
                     $pdf = Pdf::loadView('filament/accounting/vendor-bills/preview-posting-pdf', [
                         'preview' => $preview,
@@ -120,14 +105,14 @@ class EditVendorBill extends EditRecord
                 ->label(__('vendor_bill.confirm'))
                 ->color('success')
                 ->requiresConfirmation()
-                ->visible(fn (\Modules\Purchase\Models\VendorBill $record): bool => $record->status === VendorBillStatus::Draft)
-                ->disabled(fn (\Modules\Purchase\Models\VendorBill $record): bool => $record->lines->isEmpty() || $record->total_amount->isZero())
-                ->action(function (\Modules\Purchase\Models\VendorBill $record): void {
+                ->visible(fn (VendorBill $record): bool => $record->status === VendorBillStatus::Draft)
+                ->disabled(fn (VendorBill $record): bool => $record->lines->isEmpty() || $record->total_amount->isZero())
+                ->action(function (VendorBill $record): void {
                     $vendorBillService = app(VendorBillService::class);
                     try {
                         $user = Auth::user();
                         if (! $user) {
-                            throw new \Exception('User must be authenticated to confirm vendor bill');
+                            throw new Exception('User must be authenticated to confirm vendor bill');
                         }
                         $vendorBillService->confirm($record, $user);
                         Notification::make()->title(__('vendor_bill.notification_bill_confirmed_success'))->success()->send();
@@ -191,15 +176,15 @@ class EditVendorBill extends EditRecord
                     \Modules\Foundation\App\Filament\Forms\Components\MoneyInput::make('amount')
                         ->label('Amount')
                         ->currencyField('currency_id')
-                        ->default(fn (\Modules\Purchase\Models\VendorBill $record) => $record->getRemainingAmount())
+                        ->default(fn (VendorBill $record) => $record->getRemainingAmount())
                         ->required(),
                     TextInput::make('reference')
                         ->label('Reference')
                         ->placeholder('Optional reference'),
                     Hidden::make('currency_id')
-                        ->default(fn (\Modules\Purchase\Models\VendorBill $record) => $record->currency_id),
+                        ->default(fn (VendorBill $record) => $record->currency_id),
                 ])
-                ->action(function (\Modules\Purchase\Models\VendorBill $record, array $data): void {
+                ->action(function (VendorBill $record, array $data): void {
                     try {
                         $currency = $record->currency;
 
@@ -228,7 +213,7 @@ class EditVendorBill extends EditRecord
                         // Create and confirm payment
                         $user = Auth::user();
                         if (! $user) {
-                            throw new \Exception('User must be authenticated to create payment');
+                            throw new Exception('User must be authenticated to create payment');
                         }
                         $payment = app(CreatePaymentAction::class)->execute($paymentDTO, $user);
                         app(PaymentService::class)->confirm($payment, $user);
@@ -245,14 +230,14 @@ class EditVendorBill extends EditRecord
                             ->send();
                     }
                 })
-                ->visible(fn (\Modules\Purchase\Models\VendorBill $record) => $record->status === VendorBillStatus::Posted &&
+                ->visible(fn (VendorBill $record) => $record->status === VendorBillStatus::Posted &&
                     ! $record->getRemainingAmount()->isZero()
                 ),
 
             DeleteAction::make()
                 ->action(function (Model $record) {
-                    if (! $record instanceof \Modules\Purchase\Models\VendorBill) {
-                        throw new \Exception('Invalid record type');
+                    if (! $record instanceof VendorBill) {
+                        throw new Exception('Invalid record type');
                     }
                     app(VendorBillService::class)->delete($record);
                     $this->redirect(VendorBillResource::getUrl('index'));
@@ -264,8 +249,8 @@ class EditVendorBill extends EditRecord
 
     protected function handleRecordUpdate(Model $record, array $data): Model
     {
-        if (! $record instanceof \Modules\Purchase\Models\VendorBill) {
-            throw new \InvalidArgumentException('Expected VendorBill record');
+        if (! $record instanceof VendorBill) {
+            throw new InvalidArgumentException('Expected VendorBill record');
         }
 
         // Store new attachments separately and remove from data for DTO
@@ -322,7 +307,7 @@ class EditVendorBill extends EditRecord
         }
 
         $record = $this->getRecord();
-        if (! $record instanceof \Modules\Purchase\Models\VendorBill) {
+        if (! $record instanceof VendorBill) {
             return;
         }
 
@@ -338,7 +323,7 @@ class EditVendorBill extends EditRecord
             if (Storage::disk('local')->exists($filePath)) {
                 $fileInfo = pathinfo($filePath);
                 $absolutePath = Storage::disk('local')->path($filePath);
-                $mimeType = \Illuminate\Support\Facades\File::mimeType($absolutePath);
+                $mimeType = File::mimeType($absolutePath);
                 $fileSize = Storage::disk('local')->size($filePath);
 
                 VendorBillAttachment::create([
@@ -357,7 +342,7 @@ class EditVendorBill extends EditRecord
     protected function mutateFormDataBeforeFill(array $data): array
     {
         $record = $this->getRecord();
-        if (! $record instanceof \Modules\Purchase\Models\VendorBill) {
+        if (! $record instanceof VendorBill) {
             return $data;
         }
 

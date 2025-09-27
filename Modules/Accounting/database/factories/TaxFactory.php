@@ -2,10 +2,9 @@
 
 namespace Modules\Accounting\Database\Factories;
 
-use App\Enums\Accounting\TaxType;
 use App\Models\Company;
-use App\Models\Tax;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Modules\Accounting\Models\Account;
 
 /**
  * @extends Factory<Tax>
@@ -25,7 +24,7 @@ class TaxFactory extends Factory
             'rate' => $this->faker->randomFloat(2, 0, 100),
             'type' => $this->faker->randomElement([TaxType::Sales, TaxType::Purchase, TaxType::Both]),
             'is_active' => $this->faker->boolean,
-            'tax_account_id' => \Modules\Accounting\Models\Account::factory()->create()->id,
+            'tax_account_id' => Account::factory()->create()->id,
         ];
     }
 }

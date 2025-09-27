@@ -4,6 +4,7 @@ namespace Modules\Inventory\Exceptions\Inventory;
 
 use Brick\Money\Money;
 use Exception;
+use Modules\Product\Models\Product;
 
 /**
  * Exception thrown when cost data exists but is invalid for inventory operations
@@ -14,7 +15,7 @@ use Exception;
 class InvalidCostDataException extends Exception
 {
     public function __construct(
-        public readonly \Modules\Product\Models\Product $product,
+        public readonly Product $product,
         public readonly string $costSource,
         public readonly ?Money $invalidCost = null,
         public readonly string $reason = '',
@@ -36,7 +37,7 @@ class InvalidCostDataException extends Exception
     /**
      * Get the product that caused the exception
      */
-    public function getProduct(): \Modules\Product\Models\Product
+    public function getProduct(): Product
     {
         return $this->product;
     }

@@ -2,9 +2,9 @@
 
 namespace Modules\Inventory\Observers;
 
-use App\Enums\Inventory\StockMoveStatus;
-use App\Models\StockMove;
 use Illuminate\Support\Facades\Auth;
+use Modules\Foundation\Models\AuditLog;
+use Modules\Purchase\Models\VendorBill;
 
 class StockMoveObserver
 {
@@ -18,7 +18,7 @@ class StockMoveObserver
         // Check if the status was just changed to 'Done'
         if ($stockMove->wasChanged('status') && $stockMove->status === StockMoveStatus::Done) {
             // Skip auto-created moves linked to Vendor Bills (handled via ProcessIncomingStockAction)
-            if ($stockMove->source_type === \Modules\Purchase\Models\VendorBill::class) {
+            if ($stockMove->source_type === VendorBill::class) {
                 return;
             }
 
@@ -29,14 +29,14 @@ class StockMoveObserver
                     // Check if this is a truly manual stock move (not linked to any source document)
                     if (!$stockMove->source_type || !$stockMove->source_id) {
                         // Use consolidated approach for manual stock moves to create a single journal entry
-                        $inventoryValuationService = app(\App\Services\Inventory\InventoryValuationService::class);
+                        $inventoryValuationService = app(InventoryValuationService::class);
                         $inventoryValuationService->createConsolidatedManualStockMoveJournalEntry($stockMove);
-                    } else if ($stockMove->source_type === \Modules\Purchase\Models\VendorBill::class) {
+                    } else if ($stockMove->source_type === VendorBill::class) {
                         // For stock moves linked to vendor bills, use consolidated approach
-                        $inventoryValuationService = app(\App\Services\Inventory\InventoryValuationService::class);
+                        $inventoryValuationService = app(InventoryValuationService::class);
 
                         // Check if a consolidated journal entry already exists for this vendor bill
-                        $existingJournalEntry = \App\Models\JournalEntry::where('source_type', \Modules\Purchase\Models\VendorBill::class)
+                        $existingJournalEntry = JournalEntry::where('source_type', VendorBill::class)
                             ->where('source_id', $stockMove->source_id)
                             ->where('reference', 'LIKE', 'STOCK-IN-%')
                             ->first();
@@ -45,9 +45,9 @@ class StockMoveObserver
 
                         if (!$existingJournalEntry) {
                             // Get all stock moves for the same vendor bill
-                            $allStockMoves = \App\Models\StockMove::where('source_type', \Modules\Purchase\Models\VendorBill::class)
+                            $allStockMoves = StockMove::where('source_type', VendorBill::class)
                                 ->where('source_id', $stockMove->source_id)
-                                ->where('status', \App\Enums\Inventory\StockMoveStatus::Done)
+                                ->where('status', StockMoveStatus::Done)
                                 ->get();
 
                             // Use the existing consolidated method for vendor bill stock moves
@@ -56,16 +56,16 @@ class StockMoveObserver
                         }
                     } else {
                         // Use individual processing for other source document types
-                        $createJournalEntryAction = app(\App\Actions\Inventory\CreateJournalEntryForStockMoveAction::class);
+                        $createJournalEntryAction = app(CreateJournalEntryForStockMoveAction::class);
                         $createJournalEntryAction->execute($stockMove, $user);
                     }
                 }
             }
 
             // Update stock quants for the movement
-            $stockQuantService = app(\App\Services\Inventory\StockQuantService::class);
+            $stockQuantService = app(StockQuantService::class);
 
-            if ($stockMove->move_type === \App\Enums\Inventory\StockMoveType::Incoming) {
+            if ($stockMove->move_type === StockMoveType::Incoming) {
                 // For incoming moves, update stock quants for each product line
                 foreach ($stockMove->productLines as $productLine) {
                     $stockQuantService->applyForIncomingProductLine($productLine);
@@ -73,7 +73,7 @@ class StockMoveObserver
 
                 // Update Purchase Order status if this stock move is related to a PO
                 $this->updatePurchaseOrderStatusFromStockMove($stockMove);
-            } elseif ($stockMove->move_type === \App\Enums\Inventory\StockMoveType::Outgoing) {
+            } elseif ($stockMove->move_type === StockMoveType::Outgoing) {
                 // For outgoing moves, stock consumption is handled by the reservation system
                 // via StockMoveConfirmed event → ProcessOutgoingStockJob → ProcessOutgoingStockAction
                 // Do not consume stock here to avoid double consumption
@@ -95,8 +95,8 @@ class StockMoveObserver
     protected function updatePurchaseOrderStatusFromStockMove(StockMove $stockMove): void
     {
         // Check if this stock move is related to a Purchase Order
-        if ($stockMove->source_type === \App\Models\PurchaseOrder::class && $stockMove->source_id) {
-            $purchaseOrder = \App\Models\PurchaseOrder::find($stockMove->source_id);
+        if ($stockMove->source_type === PurchaseOrder::class && $stockMove->source_id) {
+            $purchaseOrder = PurchaseOrder::find($stockMove->source_id);
             if ($purchaseOrder) {
                 // Update received quantities on PO lines based on stock move
                 $this->updatePurchaseOrderLineQuantities($purchaseOrder, $stockMove);
@@ -111,7 +111,7 @@ class StockMoveObserver
     /**
      * Update Purchase Order line quantities based on completed stock move.
      */
-    protected function updatePurchaseOrderLineQuantities(\App\Models\PurchaseOrder $purchaseOrder, StockMove $stockMove): void
+    protected function updatePurchaseOrderLineQuantities(PurchaseOrder $purchaseOrder, StockMove $stockMove): void
     {
         foreach ($stockMove->productLines as $stockMoveProductLine) {
             // Find the corresponding PO line for this product
@@ -139,7 +139,7 @@ class StockMoveObserver
             return;
         }
 
-        \Modules\Foundation\Models\AuditLog::create([
+        AuditLog::create([
             'user_id' => $user->id,
             'auditable_id' => $stockMove->id,
             'auditable_type' => StockMove::class,

@@ -2,10 +2,9 @@
 
 namespace Modules\Inventory\Services;
 
-use App\Actions\Accounting\CreateJournalEntryForAdjustmentAction;
-use App\Enums\Adjustments\AdjustmentDocumentStatus;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
+use Modules\Inventory\Models\AdjustmentDocument;
 
 // 1. Import the new action
 
@@ -16,7 +15,7 @@ class AdjustmentDocumentService
     /**
      * Post a draft credit note and create its reversing journal entry.
      */
-    public function post(\Modules\Inventory\Models\AdjustmentDocument $creditNote, User $user): void
+    public function post(AdjustmentDocument $creditNote, User $user): void
     {
         DB::transaction(function () use ($creditNote, $user) {
             // Update the credit note's status and save it.
@@ -31,7 +30,7 @@ class AdjustmentDocumentService
             $creditNote->journal_entry_id = $journalEntry->id;
             $creditNote->save();
 
-            \Modules\Inventory\Events\AdjustmentDocumentPosted::dispatch($creditNote);
+            AdjustmentDocumentPosted::dispatch($creditNote);
         });
     }
 }

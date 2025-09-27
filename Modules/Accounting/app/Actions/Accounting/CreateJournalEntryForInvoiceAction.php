@@ -2,12 +2,10 @@
 
 namespace Modules\Accounting\Actions\Accounting;
 
-use App\DataTransferObjects\Accounting\CreateJournalEntryDTO;
-use App\DataTransferObjects\Accounting\CreateJournalEntryLineDTO;
-use App\Models\JournalEntry;
 use App\Models\User;
 use Brick\Money\Money;
 use Illuminate\Support\Facades\DB;
+use Modules\Sales\Models\Invoice;
 use RuntimeException;
 
 class CreateJournalEntryForInvoiceAction
@@ -16,7 +14,7 @@ class CreateJournalEntryForInvoiceAction
         private readonly CreateJournalEntryAction $createJournalEntryAction
     ) {}
 
-    public function execute(\Modules\Sales\Models\Invoice $invoice, User $user): JournalEntry
+    public function execute(Invoice $invoice, User $user): JournalEntry
     {
         return DB::transaction(function () use ($invoice, $user) {
             // 1. Load all necessary related data for efficiency.
@@ -84,7 +82,7 @@ class CreateJournalEntryForInvoiceAction
                 entry_date: $invoice->invoice_date,
                 reference: $invoice->invoice_number,
                 description: 'Invoice ' . $invoice->invoice_number,
-                source_type: \Modules\Sales\Models\Invoice::class,
+                source_type: Invoice::class,
                 source_id: $invoice->id,
                 created_by_user_id: $user->id,
                 is_posted: true,

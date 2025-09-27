@@ -2,21 +2,7 @@
 
 namespace Modules\Sales\Actions\Sales;
 
-use App\Actions\Inventory\CreateStockMoveAction;
-use App\DataTransferObjects\Inventory\CreateStockMoveDTO;
-use App\DataTransferObjects\Inventory\CreateStockMoveProductLineDTO;
-use App\DataTransferObjects\Sales\CreateDeliveryFromSalesOrderDTO;
-use App\Enums\Inventory\StockLocationType;
-use App\Enums\Inventory\StockMoveStatus;
-use App\Enums\Inventory\StockMoveType;
-use App\Enums\Inventory\StockPickingState;
-use App\Enums\Inventory\StockPickingType;
-use App\Enums\Products\ProductType;
-use App\Models\SalesOrder;
-use App\Models\StockLocation;
-use App\Models\StockPicking;
 use App\Models\User;
-use App\Services\Inventory\StockReservationService;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
@@ -33,7 +19,7 @@ class CreateDeliveryFromSalesOrderAction
     /**
      * Create delivery orders for all deliverable products in a sales order
      *
-     * @return Collection<int, \App\Models\StockMove> Collection of created stock moves
+     * @return Collection<int, StockMove> Collection of created stock moves
      */
     public function execute(CreateDeliveryFromSalesOrderDTO $dto): Collection
     {
@@ -101,7 +87,7 @@ class CreateDeliveryFromSalesOrderAction
                         // If we're in automatic mode, mark the move as done and dispatch event
                         if ($dto->autoConfirm) {
                             $stockMove->update(['status' => StockMoveStatus::Done]);
-                            \Modules\Inventory\Events\Inventory\StockMoveConfirmed::dispatch($stockMove);
+                            StockMoveConfirmed::dispatch($stockMove);
                         }
                     }
                 }
@@ -191,12 +177,12 @@ class CreateDeliveryFromSalesOrderAction
 
         if ($salesOrder->isFullyDelivered()) {
             if ($salesOrder->isFullyInvoiced()) {
-                $salesOrder->status = \App\Enums\Sales\SalesOrderStatus::Done;
+                $salesOrder->status = SalesOrderStatus::Done;
             } else {
-                $salesOrder->status = \App\Enums\Sales\SalesOrderStatus::FullyDelivered;
+                $salesOrder->status = SalesOrderStatus::FullyDelivered;
             }
         } else {
-            $salesOrder->status = \App\Enums\Sales\SalesOrderStatus::PartiallyDelivered;
+            $salesOrder->status = SalesOrderStatus::PartiallyDelivered;
         }
 
         $salesOrder->save();

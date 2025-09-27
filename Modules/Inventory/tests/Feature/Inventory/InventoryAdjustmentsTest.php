@@ -2,21 +2,13 @@
 
 namespace Modules\Inventory\Tests\Feature\Inventory;
 
-use App\Actions\Inventory\CreateInventoryAdjustmentAction;
-use App\DataTransferObjects\Inventory\CreateInventoryAdjustmentDTO;
-use App\DataTransferObjects\Inventory\InventoryAdjustmentLineDTO;
-use App\Enums\Inventory\StockMoveType;
-use App\Enums\Inventory\StockPickingState;
-use App\Enums\Inventory\StockPickingType;
-use App\Models\JournalEntry;
-use App\Models\Lot;
-use App\Models\StockMoveLine;
-use App\Models\StockMoveValuation;
-use App\Models\StockPicking;
-use App\Models\StockQuant;
 use Brick\Money\Money;
 use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use InvalidArgumentException;
+use Modules\Accounting\Models\Account;
+use Modules\Product\Enums\Products\ProductType;
+use Modules\Product\Models\Product;
 use Tests\Traits\WithConfiguredCompany;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);
@@ -26,14 +18,14 @@ beforeEach(function () {
     $this->setupInventoryTestEnvironment();
 
     // Create COGS account
-    $this->cogsAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create([
+    $this->cogsAccount = Account::factory()->for($this->company)->create([
         'type' => 'cost_of_revenue',
         'name' => 'Cost of Goods Sold',
     ]);
 
-    $this->product = \Modules\Product\Models\Product::factory()->for($this->company)->create([
-        'type' => \Modules\Product\Enums\Products\ProductType::Storable,
-        'inventory_valuation_method' => \App\Enums\Inventory\ValuationMethod::AVCO,
+    $this->product = Product::factory()->for($this->company)->create([
+        'type' => ProductType::Storable,
+        'inventory_valuation_method' => ValuationMethod::AVCO,
         'default_inventory_account_id' => $this->inventoryAccount->id,
         'default_stock_input_account_id' => $this->stockInputAccount->id,
         'default_cogs_account_id' => $this->cogsAccount->id,
@@ -41,7 +33,7 @@ beforeEach(function () {
     ]);
 
     // Create inventory adjustment account
-    $this->adjustmentAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create([
+    $this->adjustmentAccount = Account::factory()->for($this->company)->create([
         'type' => 'expense',
         'name' => 'Inventory Adjustment',
     ]);
@@ -117,7 +109,7 @@ it('creates positive adjustment with proper stock moves and journal entries', fu
 
     $journalEntry = $valuation->journalEntry;
     expect($journalEntry)->not->toBeNull();
-    expect($journalEntry->state)->toBe(\App\Enums\Accounting\JournalEntryState::Posted);
+    expect($journalEntry->state)->toBe(JournalEntryState::Posted);
 
     // Assert journal entry lines
     $lines = $journalEntry->lines;
@@ -154,7 +146,7 @@ it('creates negative adjustment with proper accounting', function () {
     ]);
 
     // Create cost layer to establish cost basis
-    \App\Models\InventoryCostLayer::create([
+    InventoryCostLayer::create([
         'product_id' => $this->product->id,
         'quantity' => 10.0,
         'cost_per_unit' => Money::of(150, $this->company->currency->code),
@@ -334,7 +326,7 @@ it('prevents negative quantity adjustments', function () {
     );
 
     expect(fn() => $this->adjustmentAction->execute($adjustmentDto))
-        ->toThrow(\InvalidArgumentException::class, 'Counted quantity cannot be negative');
+        ->toThrow(InvalidArgumentException::class, 'Counted quantity cannot be negative');
 });
 
 it('handles zero adjustments gracefully', function () {

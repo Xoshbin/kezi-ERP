@@ -2,12 +2,9 @@
 
 namespace Modules\Purchase\Models;
 
-use App\Casts\BaseCurrencyMoneyCast;
-use App\Casts\DocumentCurrencyMoneyCast;
-use App\Enums\Purchases\PurchaseOrderStatus;
-use App\Observers\AuditLogObserver;
 use Brick\Money\Money;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -48,9 +45,9 @@ use Illuminate\Support\Carbon;
  * @property-read Currency $currency
  * @property-read User $createdByUser
  * @property-read StockLocation|null $deliveryLocation
- * @property-read \Illuminate\Database\Eloquent\Collection<int, PurchaseOrderLine> $lines
+ * @property-read Collection<int, PurchaseOrderLine> $lines
  * @property-read int|null $lines_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \Modules\Purchase\Models\VendorBill> $vendorBills
+ * @property-read Collection<int, VendorBill> $vendorBills
  * @property-read int|null $vendor_bills_count
  */
 #[ObservedBy([\Modules\Foundation\Observers\AuditLogObserver::class])]
@@ -166,7 +163,7 @@ class PurchaseOrder extends Model
      */
     public function vendorBills(): HasMany
     {
-        return $this->hasMany(\Modules\Purchase\Models\VendorBill::class);
+        return $this->hasMany(VendorBill::class);
     }
 
     /**

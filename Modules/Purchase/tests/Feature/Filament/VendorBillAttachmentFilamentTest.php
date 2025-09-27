@@ -2,13 +2,19 @@
 
 namespace Modules\Purchase\Tests\Feature\Filament;
 
-use App\Filament\Clusters\Accounting\Resources\VendorBills\Pages\CreateVendorBill;
 use App\Models\Company;
 use App\Models\User;
+use Brick\Money\Money;
+use Filament\Facades\Filament;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use Livewire\Livewire;
+use Modules\Accounting\Models\Account;
+use Modules\Foundation\Models\Currency;
+use Modules\Foundation\Models\Partner;
+use Modules\Product\Models\Product;
+use Modules\Purchase\Models\VendorBill;
 use Tests\TestCase;
 
 class VendorBillAttachmentFilamentTest extends TestCase
@@ -19,13 +25,13 @@ class VendorBillAttachmentFilamentTest extends TestCase
 
     protected Company $company;
 
-    protected \Modules\Foundation\Models\Currency $currency;
+    protected Currency $currency;
 
-    protected \Modules\Foundation\Models\Partner $vendor;
+    protected Partner $vendor;
 
-    protected \Modules\Accounting\Models\Account $expenseAccount;
+    protected Account $expenseAccount;
 
-    protected \Modules\Product\Models\Product $product;
+    protected Product $product;
 
     protected function setUp(): void
     {
@@ -38,15 +44,15 @@ class VendorBillAttachmentFilamentTest extends TestCase
         $this->actingAs($this->user);
 
         // Set up Filament tenant context
-        \Filament\Facades\Filament::setTenant($this->company);
+        Filament::setTenant($this->company);
 
-        $this->currency = \Modules\Foundation\Models\Currency::factory()->create(['code' => 'USD', 'decimal_places' => 2]);
-        $this->vendor = \Modules\Foundation\Models\Partner::factory()->create(['company_id' => $this->company->id]);
-        $this->expenseAccount = \Modules\Accounting\Models\Account::factory()->create(['company_id' => $this->company->id]);
-        $this->product = \Modules\Product\Models\Product::factory()->create([
+        $this->currency = Currency::factory()->create(['code' => 'USD', 'decimal_places' => 2]);
+        $this->vendor = Partner::factory()->create(['company_id' => $this->company->id]);
+        $this->expenseAccount = Account::factory()->create(['company_id' => $this->company->id]);
+        $this->product = Product::factory()->create([
             'company_id' => $this->company->id,
             'expense_account_id' => $this->expenseAccount->id,
-            'unit_price' => \Brick\Money\Money::of(100, $this->currency->code),
+            'unit_price' => Money::of(100, $this->currency->code),
         ]);
 
         // Set up storage for testing
@@ -91,7 +97,7 @@ class VendorBillAttachmentFilamentTest extends TestCase
         ]);
 
         // Check that attachment was created
-        $vendorBill = \Modules\Purchase\Models\VendorBill::where('bill_reference', 'BILL-001')->first();
+        $vendorBill = VendorBill::where('bill_reference', 'BILL-001')->first();
         $this->assertCount(1, $vendorBill->attachments);
 
         $attachment = $vendorBill->attachments->first();

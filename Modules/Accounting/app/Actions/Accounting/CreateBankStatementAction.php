@@ -2,16 +2,16 @@
 
 namespace Modules\Accounting\Actions\Accounting;
 
-use App\DataTransferObjects\Accounting\CreateBankStatementDTO;
 use Illuminate\Support\Facades\DB;
+use Modules\Accounting\Models\BankStatement;
 
 class CreateBankStatementAction
 {
-    public function execute(CreateBankStatementDTO $dto): \Modules\Accounting\Models\BankStatement
+    public function execute(CreateBankStatementDTO $dto): BankStatement
     {
         return DB::transaction(function () use ($dto) {
             // 1. Create the parent BankStatement first.
-            $bankStatement = \Modules\Accounting\Models\BankStatement::create([
+            $bankStatement = BankStatement::create([
                 'company_id' => $dto->company_id,
                 'currency_id' => $dto->currency_id,
                 'journal_id' => $dto->journal_id,

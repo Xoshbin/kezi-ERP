@@ -1,22 +1,17 @@
 <?php
 
-// in app/Filament/Resources/AdjustmentDocumentResource/Pages/CreateAdjustmentDocument.php
-
 namespace Modules\Accounting\Filament\Clusters\Accounting\Resources\AdjustmentDocuments\Pages;
 
-// Add imports for Invoice and VendorBill
-use App\Actions\Adjustments\CreateAdjustmentDocumentAction;
-use App\DataTransferObjects\Adjustments\CreateAdjustmentDocumentDTO;
-use App\DataTransferObjects\Adjustments\CreateAdjustmentDocumentLineDTO;
-use App\Enums\Adjustments\AdjustmentDocumentType;
-use App\Filament\Clusters\Accounting\Resources\AdjustmentDocuments\AdjustmentDocumentResource;
 use Brick\Money\Money;
 use Filament\Facades\Filament;
 use Filament\Resources\Pages\CreateRecord;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Validation\ValidationException;
-
-// Other use statements...
+use InvalidArgumentException;
+use Modules\Foundation\Models\Currency;
+use Modules\Purchase\Models\VendorBill;
+use Modules\Sales\Models\Invoice;
 
 class CreateAdjustmentDocument extends CreateRecord
 {
@@ -27,14 +22,14 @@ class CreateAdjustmentDocument extends CreateRecord
         // 1. Forcefully derive currency_id if it's missing but a source document is linked.
         if (empty($data['currency_id'])) {
             if (! empty($data['original_invoice_id'])) {
-                $invoice = \Modules\Sales\Models\Invoice::find($data['original_invoice_id']);
-                if ($invoice instanceof \Illuminate\Database\Eloquent\Collection) {
+                $invoice = Invoice::find($data['original_invoice_id']);
+                if ($invoice instanceof Collection) {
                     $invoice = $invoice->first();
                 }
                 $data['currency_id'] = $invoice?->currency_id;
             } elseif (! empty($data['original_vendor_bill_id'])) {
-                $bill = \Modules\Purchase\Models\VendorBill::find($data['original_vendor_bill_id']);
-                if ($bill instanceof \Illuminate\Database\Eloquent\Collection) {
+                $bill = VendorBill::find($data['original_vendor_bill_id']);
+                if ($bill instanceof Collection) {
                     $bill = $bill->first();
                 }
                 $data['currency_id'] = $bill?->currency_id;
@@ -66,12 +61,12 @@ class CreateAdjustmentDocument extends CreateRecord
     protected function handleRecordCreation(array $data): Model
     {
         // This method will now always receive a valid $data['currency_id']
-        $currency = \Modules\Foundation\Models\Currency::findOrFail($data['currency_id']);
+        $currency = Currency::findOrFail($data['currency_id']);
         // Ensure we have a single Currency model, not a collection
-        if ($currency instanceof \Illuminate\Database\Eloquent\Collection) {
+        if ($currency instanceof Collection) {
             $currency = $currency->first();
             if (! $currency) {
-                throw new \InvalidArgumentException('Currency not found');
+                throw new InvalidArgumentException('Currency not found');
             }
         }
         $lineDTOs = [];

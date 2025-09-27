@@ -5,12 +5,13 @@ namespace Modules\Accounting\Filament\Clusters\Accounting\Pages;
 use App\Filament\Clusters\Accounting\Widgets\CashFlowWidget;
 use App\Filament\Clusters\Accounting\Widgets\FinancialStatsOverview;
 use App\Filament\Clusters\Accounting\Widgets\IncomeVsExpenseChart;
+use BackedEnum;
 use Filament\Facades\Filament;
 use Filament\Pages\Dashboard as BaseDashboard;
 
 class Dashboard extends BaseDashboard
 {
-    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-chart-bar';
+    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-chart-bar';
 
     public static function getNavigationLabel(): string
     {

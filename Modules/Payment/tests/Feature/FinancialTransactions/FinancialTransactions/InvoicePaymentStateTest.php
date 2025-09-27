@@ -2,15 +2,11 @@
 
 namespace Modules\Payment\Tests\Feature\FinancialTransactions;
 
-use App\Enums\Accounting\JournalType;
-use App\Enums\Partners\PartnerType;
-use App\Enums\Payments\PaymentStatus;
-use App\Enums\Sales\InvoiceStatus;
-use App\Enums\Shared\PaymentState;
-use App\Models\Journal;
-use App\Models\PaymentDocumentLink;
 use Brick\Money\Money;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Modules\Foundation\Models\Partner;
+use Modules\Payment\Models\Payment;
+use Modules\Sales\Models\Invoice;
 use Tests\Traits\WithConfiguredCompany;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);
@@ -20,7 +16,7 @@ beforeEach(function () {
 });
 
 test('invoice payment state is not paid when no payments exist', function () {
-    $invoice = \Modules\Sales\Models\Invoice::factory()->for($this->company)->create([
+    $invoice = Invoice::factory()->for($this->company)->create([
         'total_amount' => Money::of(100000, $this->company->currency->code), // 1000.00
         'currency_id' => $this->company->currency->id,
         'status' => InvoiceStatus::Posted,
@@ -35,16 +31,16 @@ test('invoice payment state is not paid when no payments exist', function () {
 });
 
 test('invoice payment state is partially paid when payment is less than total', function () {
-    $invoice = \Modules\Sales\Models\Invoice::factory()->for($this->company)->create([
+    $invoice = Invoice::factory()->for($this->company)->create([
         'total_amount' => Money::of(100000, $this->company->currency->code), // 1000.00
         'currency_id' => $this->company->currency->id,
         'status' => InvoiceStatus::Posted,
     ]);
 
-    $customer = \Modules\Foundation\Models\Partner::factory()->for($this->company)->create(['type' => 'customer']);
+    $customer = Partner::factory()->for($this->company)->create(['type' => 'customer']);
     $journal = Journal::factory()->for($this->company)->create(['type' => 'bank']);
 
-    $payment = \Modules\Payment\Models\Payment::factory()->for($this->company)->create([
+    $payment = Payment::factory()->for($this->company)->create([
         'amount' => Money::of(50000, $this->company->currency->code), // 500.00
         'currency_id' => $this->company->currency->id,
         'paid_to_from_partner_id' => $customer->id,
@@ -69,16 +65,16 @@ test('invoice payment state is partially paid when payment is less than total', 
 });
 
 test('invoice payment state is paid when payment equals total amount', function () {
-    $invoice = \Modules\Sales\Models\Invoice::factory()->for($this->company)->create([
+    $invoice = Invoice::factory()->for($this->company)->create([
         'total_amount' => Money::of(100000, $this->company->currency->code), // 1000.00
         'currency_id' => $this->company->currency->id,
         'status' => InvoiceStatus::Posted,
     ]);
 
-    $customer = \Modules\Foundation\Models\Partner::factory()->for($this->company)->create(['type' => 'customer']);
+    $customer = Partner::factory()->for($this->company)->create(['type' => 'customer']);
     $journal = Journal::factory()->for($this->company)->create(['type' => 'bank']);
 
-    $payment = \Modules\Payment\Models\Payment::factory()->for($this->company)->create([
+    $payment = Payment::factory()->for($this->company)->create([
         'amount' => Money::of(100000, $this->company->currency->code), // 1000.00
         'currency_id' => $this->company->currency->id,
         'paid_to_from_partner_id' => $customer->id,
@@ -103,16 +99,16 @@ test('invoice payment state is paid when payment equals total amount', function 
 });
 
 test('invoice payment state is paid when overpaid', function () {
-    $invoice = \Modules\Sales\Models\Invoice::factory()->for($this->company)->create([
+    $invoice = Invoice::factory()->for($this->company)->create([
         'total_amount' => Money::of(100000, $this->company->currency->code), // 1000.00
         'currency_id' => $this->company->currency->id,
         'status' => InvoiceStatus::Posted,
     ]);
 
-    $customer = \Modules\Foundation\Models\Partner::factory()->for($this->company)->create(['type' => 'customer']);
+    $customer = Partner::factory()->for($this->company)->create(['type' => 'customer']);
     $journal = Journal::factory()->for($this->company)->create(['type' => 'bank']);
 
-    $payment = \Modules\Payment\Models\Payment::factory()->for($this->company)->create([
+    $payment = Payment::factory()->for($this->company)->create([
         'amount' => Money::of(120000, $this->company->currency->code), // 1200.00
         'currency_id' => $this->company->currency->id,
         'paid_to_from_partner_id' => $customer->id,
@@ -137,17 +133,17 @@ test('invoice payment state is paid when overpaid', function () {
 });
 
 test('invoice payment state handles multiple partial payments correctly', function () {
-    $invoice = \Modules\Sales\Models\Invoice::factory()->for($this->company)->create([
+    $invoice = Invoice::factory()->for($this->company)->create([
         'total_amount' => Money::of(150000, $this->company->currency->code), // 1500.00
         'currency_id' => $this->company->currency->id,
         'status' => InvoiceStatus::Posted,
     ]);
 
-    $customer = \Modules\Foundation\Models\Partner::factory()->for($this->company)->create(['type' => 'customer']);
+    $customer = Partner::factory()->for($this->company)->create(['type' => 'customer']);
     $journal = Journal::factory()->for($this->company)->create(['type' => 'bank']);
 
     // First payment: 500.00
-    $payment1 = \Modules\Payment\Models\Payment::factory()->for($this->company)->create([
+    $payment1 = Payment::factory()->for($this->company)->create([
         'amount' => Money::of(50000, $this->company->currency->code),
         'currency_id' => $this->company->currency->id,
         'paid_to_from_partner_id' => $customer->id,
@@ -165,7 +161,7 @@ test('invoice payment state handles multiple partial payments correctly', functi
     expect($invoice->paymentState)->toBe(\Modules\Foundation\Enums\Shared\PaymentState::PartiallyPaid);
 
     // Second payment: 700.00 (total now 1200.00)
-    $payment2 = \Modules\Payment\Models\Payment::factory()->for($this->company)->create([
+    $payment2 = Payment::factory()->for($this->company)->create([
         'amount' => Money::of(70000, $this->company->currency->code),
         'currency_id' => $this->company->currency->id,
         'paid_to_from_partner_id' => $customer->id,
@@ -185,7 +181,7 @@ test('invoice payment state handles multiple partial payments correctly', functi
         ->and($invoice->getRemainingAmount())->toEqual(Money::of(30000, $this->company->currency->code));
 
     // Third payment: 300.00 (total now 1500.00 - fully paid)
-    $payment3 = \Modules\Payment\Models\Payment::factory()->for($this->company)->create([
+    $payment3 = Payment::factory()->for($this->company)->create([
         'amount' => Money::of(30000, $this->company->currency->code),
         'currency_id' => $this->company->currency->id,
         'paid_to_from_partner_id' => $customer->id,
@@ -206,7 +202,7 @@ test('invoice payment state handles multiple partial payments correctly', functi
 });
 
 test('invoice payment state calculation uses efficient database queries', function () {
-    $invoice = \Modules\Sales\Models\Invoice::factory()->for($this->company)->create([
+    $invoice = Invoice::factory()->for($this->company)->create([
         'total_amount' => Money::of(100000, $this->company->currency->code),
         'currency_id' => $this->company->currency->id,
         'status' => InvoiceStatus::Posted,
@@ -223,17 +219,17 @@ test('invoice payment state calculation uses efficient database queries', functi
 });
 
 test('invoice payment state ignores draft payments per accounting principles', function () {
-    $invoice = \Modules\Sales\Models\Invoice::factory()->for($this->company)->create([
+    $invoice = Invoice::factory()->for($this->company)->create([
         'total_amount' => Money::of(100000, $this->company->currency->code), // 1000.00
         'currency_id' => $this->company->currency->id,
         'status' => InvoiceStatus::Posted,
     ]);
 
-    $customer = \Modules\Foundation\Models\Partner::factory()->for($this->company)->create(['type' => \Modules\Foundation\Enums\Partners\PartnerType::Customer]);
+    $customer = Partner::factory()->for($this->company)->create(['type' => \Modules\Foundation\Enums\Partners\PartnerType::Customer]);
     $journal = Journal::factory()->for($this->company)->create(['type' => JournalType::Bank]);
 
     // Create a confirmed payment for 500.00
-    $confirmedPayment = \Modules\Payment\Models\Payment::factory()->for($this->company)->create([
+    $confirmedPayment = Payment::factory()->for($this->company)->create([
         'amount' => Money::of(50000, $this->company->currency->code),
         'currency_id' => $this->company->currency->id,
         'paid_to_from_partner_id' => $customer->id,
@@ -248,7 +244,7 @@ test('invoice payment state ignores draft payments per accounting principles', f
     ]);
 
     // Create a draft payment for 600.00 (this should be ignored)
-    $draftPayment = \Modules\Payment\Models\Payment::factory()->for($this->company)->create([
+    $draftPayment = Payment::factory()->for($this->company)->create([
         'amount' => Money::of(60000, $this->company->currency->code),
         'currency_id' => $this->company->currency->id,
         'paid_to_from_partner_id' => $customer->id,
@@ -272,17 +268,17 @@ test('invoice payment state ignores draft payments per accounting principles', f
 });
 
 test('invoice payment state treats reconciled payments same as confirmed', function () {
-    $invoice = \Modules\Sales\Models\Invoice::factory()->for($this->company)->create([
+    $invoice = Invoice::factory()->for($this->company)->create([
         'total_amount' => Money::of(100000, $this->company->currency->code), // 1000.00
         'currency_id' => $this->company->currency->id,
         'status' => InvoiceStatus::Posted,
     ]);
 
-    $customer = \Modules\Foundation\Models\Partner::factory()->for($this->company)->create(['type' => \Modules\Foundation\Enums\Partners\PartnerType::Customer]);
+    $customer = Partner::factory()->for($this->company)->create(['type' => \Modules\Foundation\Enums\Partners\PartnerType::Customer]);
     $journal = Journal::factory()->for($this->company)->create(['type' => JournalType::Bank]);
 
     // Create a reconciled payment for full amount
-    $reconciledPayment = \Modules\Payment\Models\Payment::factory()->for($this->company)->create([
+    $reconciledPayment = Payment::factory()->for($this->company)->create([
         'amount' => Money::of(100000, $this->company->currency->code),
         'currency_id' => $this->company->currency->id,
         'paid_to_from_partner_id' => $customer->id,

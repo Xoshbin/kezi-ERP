@@ -1,10 +1,9 @@
 <?php
 
-use App\Enums\Accounting\AccountType;
-use App\Enums\Products\ProductType;
-use App\Filament\Clusters\Inventory\Resources\Products\Pages\CreateProduct;
 use App\Models\Company;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Modules\Accounting\Models\Account;
+use Modules\Product\Models\Product;
 use Tests\Traits\WithConfiguredCompany;
 use function Pest\Livewire\livewire;
 
@@ -26,7 +25,7 @@ test('TranslatableSelect component loads correctly in ProductResource create pag
 
 test('TranslatableSelect can search accounts by name in current locale', function () {
     // Create accounts with translatable names
-    $account1 = \Modules\Accounting\Models\Account::factory()->create([
+    $account1 = Account::factory()->create([
         'company_id' => $this->company->id,
         'code' => 'ACC-001',
         'name' => [
@@ -37,7 +36,7 @@ test('TranslatableSelect can search accounts by name in current locale', functio
         'type' => \Modules\Accounting\Enums\Accounting\AccountType::Income,
     ]);
 
-    $account2 = \Modules\Accounting\Models\Account::factory()->create([
+    $account2 = Account::factory()->create([
         'company_id' => $this->company->id,
         'code' => 'ACC-002',
         'name' => [
@@ -56,12 +55,12 @@ test('TranslatableSelect can search accounts by name in current locale', functio
     $component->assertSuccessful();
 
     // Verify that accounts exist and are accessible
-    expect(\Modules\Accounting\Models\Account::where('company_id', $this->company->id)->count())->toBeGreaterThanOrEqual(2);
+    expect(Account::where('company_id', $this->company->id)->count())->toBeGreaterThanOrEqual(2);
 });
 
 test('TranslatableSelect can search accounts by code', function () {
     // Create an account with a specific code
-    $account = \Modules\Accounting\Models\Account::factory()->create([
+    $account = Account::factory()->create([
         'company_id' => $this->company->id,
         'code' => 'SEARCH-TEST-001',
         'name' => [
@@ -85,7 +84,7 @@ test('TranslatableSelect can search accounts by code', function () {
 
 test('can create product with TranslatableSelect account selections', function () {
     // Create accounts for the product
-    $incomeAccount = \Modules\Accounting\Models\Account::factory()->create([
+    $incomeAccount = Account::factory()->create([
         'company_id' => $this->company->id,
         'code' => 'INC-001',
         'name' => [
@@ -96,7 +95,7 @@ test('can create product with TranslatableSelect account selections', function (
         'type' => \Modules\Accounting\Enums\Accounting\AccountType::Income,
     ]);
 
-    $expenseAccount = \Modules\Accounting\Models\Account::factory()->create([
+    $expenseAccount = Account::factory()->create([
         'company_id' => $this->company->id,
         'code' => 'EXP-001',
         'name' => [
@@ -124,7 +123,7 @@ test('can create product with TranslatableSelect account selections', function (
         ->assertHasNoFormErrors();
 
     // Verify the product was created with the correct account relationships
-    $product = \Modules\Product\Models\Product::where('sku', 'TST-TRANS-001')->first();
+    $product = Product::where('sku', 'TST-TRANS-001')->first();
     expect($product)->not->toBeNull();
     expect($product->income_account_id)->toBe($incomeAccount->id);
     expect($product->expense_account_id)->toBe($expenseAccount->id);
@@ -135,14 +134,14 @@ test('TranslatableSelect respects company scoping', function () {
     // Create accounts for different companies
     $otherCompany = Company::factory()->create();
 
-    $ourAccount = \Modules\Accounting\Models\Account::factory()->create([
+    $ourAccount = Account::factory()->create([
         'company_id' => $this->company->id,
         'code' => 'OUR-001',
         'name' => 'Our Company Account',
         'type' => \Modules\Accounting\Enums\Accounting\AccountType::Income,
     ]);
 
-    $otherAccount = \Modules\Accounting\Models\Account::factory()->create([
+    $otherAccount = Account::factory()->create([
         'company_id' => $otherCompany->id,
         'code' => 'OTHER-001',
         'name' => 'Other Company Account',
@@ -156,8 +155,8 @@ test('TranslatableSelect respects company scoping', function () {
     $component->assertSuccessful();
 
     // Verify that only accounts from our company are accessible
-    $companyAccountIds = \Modules\Accounting\Models\Account::where('company_id', $this->company->id)->pluck('id')->toArray();
-    $otherCompanyAccountIds = \Modules\Accounting\Models\Account::where('company_id', $otherCompany->id)->pluck('id')->toArray();
+    $companyAccountIds = Account::where('company_id', $this->company->id)->pluck('id')->toArray();
+    $otherCompanyAccountIds = Account::where('company_id', $otherCompany->id)->pluck('id')->toArray();
 
     expect($companyAccountIds)->toContain($ourAccount->id);
     expect($companyAccountIds)->not->toContain($otherAccount->id);

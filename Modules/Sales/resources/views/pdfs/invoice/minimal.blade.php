@@ -5,7 +5,7 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <title>{{ __('invoice.invoice') }} {{ $invoice->invoice_number }}</title>
     @php
-        use Filament\Support\Facades\FilamentColor;
+        use Brick\Money\Money;use Filament\Support\Facades\FilamentColor;
         use Filament\Support\Colors\Color as FsColor;
         $gray = FilamentColor::getColor('gray');
         $g50 = FsColor::convertToRgb($gray[50]);
@@ -41,7 +41,7 @@
             text-align: center;
             margin-bottom: 40px;
             padding-bottom: 20px;
-            border-bottom: 1px solid {{ $g900 }};
+            border-bottom: 1px solid{{ $g900 }};
             position: relative;
         }
 
@@ -115,7 +115,7 @@
 
         .invoice-meta td {
             padding: 8px 15px;
-            border: 1px solid {{ $g900 }};
+            border: 1px solid{{ $g900 }};
             font-size: 10px;
         }
 
@@ -146,7 +146,7 @@
 
         .line-items td {
             padding: 8px;
-            border: 1px solid {{ $g900 }};
+            border: 1px solid{{ $g900 }};
             text-align: {{ app()->getLocale() === 'ar' ? 'right' : 'left' }};
             font-size: 10px;
         }
@@ -174,7 +174,7 @@
 
         .totals td {
             padding: 8px 10px;
-            border: 1px solid {{ $g900 }};
+            border: 1px solid{{ $g900 }};
             font-size: 10px;
         }
 
@@ -201,7 +201,7 @@
             margin-top: 50px;
             text-align: center;
             font-size: 9px;
-            border-top: 1px solid {{ $g900 }};
+            border-top: 1px solid{{ $g900 }};
             padding-top: 20px;
         }
 
@@ -213,130 +213,130 @@
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <h1>{{ strtoupper(__('invoice.invoice')) }}</h1>
-            <div class="invoice-number">Number: {{ $invoice->invoice_number ?? 'DRAFT' }}</div>
-            @if($invoice->status === 'draft')
-                <div class="draft-watermark">DRAFT</div>
+<div class="container">
+    <div class="header">
+        <h1>{{ strtoupper(__('invoice.invoice')) }}</h1>
+        <div class="invoice-number">Number: {{ $invoice->invoice_number ?? 'DRAFT' }}</div>
+        @if($invoice->status === 'draft')
+            <div class="draft-watermark">DRAFT</div>
+        @endif
+    </div>
+
+    <div class="invoice-details clearfix">
+        <div class="company-details">
+            <div class="section-title">From</div>
+            <div class="company-name">{{ $company->name }}</div>
+            @if($company->address)
+                <div class="detail-line">{{ $company->address }}</div>
+            @endif
+            @if($company->city)
+                <div class="detail-line">{{ $company->city }}</div>
+            @endif
+            @if($company->tax_id)
+                <div class="detail-line">{{ __('company.tax_id') }}: {{ $company->tax_id }}</div>
+            @endif
+            @if($company->phone)
+                <div class="detail-line">{{ __('partner.phone') }}: {{ $company->phone }}</div>
+            @endif
+            @if($company->email)
+                <div class="detail-line">{{ __('partner.email') }}: {{ $company->email }}</div>
             @endif
         </div>
 
-        <div class="invoice-details clearfix">
-            <div class="company-details">
-                <div class="section-title">From</div>
-                <div class="company-name">{{ $company->name }}</div>
-                @if($company->address)
-                    <div class="detail-line">{{ $company->address }}</div>
-                @endif
-                @if($company->city)
-                    <div class="detail-line">{{ $company->city }}</div>
-                @endif
-                @if($company->tax_id)
-                    <div class="detail-line">{{ __('company.tax_id') }}: {{ $company->tax_id }}</div>
-                @endif
-                @if($company->phone)
-                    <div class="detail-line">{{ __('partner.phone') }}: {{ $company->phone }}</div>
-                @endif
-                @if($company->email)
-                    <div class="detail-line">{{ __('partner.email') }}: {{ $company->email }}</div>
-                @endif
-            </div>
-
-            <div class="customer-details">
-                <div class="section-title">To</div>
-                <div class="company-name">{{ $customer->name }}</div>
-                @if($customer->address_line_1)
-                    <div class="detail-line">{{ $customer->address_line_1 }}</div>
-                @endif
-                @if($customer->address_line_2)
-                    <div class="detail-line">{{ $customer->address_line_2 }}</div>
-                @endif
-                @if($customer->city)
-                    <div class="detail-line">{{ $customer->city }}, {{ $customer->state }} {{ $customer->zip_code }}</div>
-                @endif
-                @if($customer->tax_id)
-                    <div class="detail-line">{{ __('partner.tax_id') }}: {{ $customer->tax_id }}</div>
-                @endif
-                @if($customer->phone)
-                    <div class="detail-line">{{ __('partner.phone') }}: {{ $customer->phone }}</div>
-                @endif
-                @if($customer->email)
-                    <div class="detail-line">{{ __('partner.email') }}: {{ $customer->email }}</div>
-                @endif
-            </div>
+        <div class="customer-details">
+            <div class="section-title">To</div>
+            <div class="company-name">{{ $customer->name }}</div>
+            @if($customer->address_line_1)
+                <div class="detail-line">{{ $customer->address_line_1 }}</div>
+            @endif
+            @if($customer->address_line_2)
+                <div class="detail-line">{{ $customer->address_line_2 }}</div>
+            @endif
+            @if($customer->city)
+                <div class="detail-line">{{ $customer->city }}, {{ $customer->state }} {{ $customer->zip_code }}</div>
+            @endif
+            @if($customer->tax_id)
+                <div class="detail-line">{{ __('partner.tax_id') }}: {{ $customer->tax_id }}</div>
+            @endif
+            @if($customer->phone)
+                <div class="detail-line">{{ __('partner.phone') }}: {{ $customer->phone }}</div>
+            @endif
+            @if($customer->email)
+                <div class="detail-line">{{ __('partner.email') }}: {{ $customer->email }}</div>
+            @endif
         </div>
+    </div>
 
-        <div class="invoice-meta">
-            <table>
-                <tr>
-                    <td class="label">{{ __('invoice.invoice_date') }}</td>
-                    <td>{{ $invoice->invoice_date->format('Y-m-d') }}</td>
-                    <td class="label">{{ __('invoice.due_date') }}</td>
-                    <td>{{ $invoice->due_date->format('Y-m-d') }}</td>
-                </tr>
-                <tr>
-                    <td class="label">{{ __('invoice.currency') }}</td>
-                    <td>{{ $currency->code }}</td>
-                    <td class="label">{{ __('invoice.status') }}</td>
-                    <td>{{ $invoice->status->label() }}</td>
-                </tr>
-            </table>
-        </div>
+    <div class="invoice-meta">
+        <table>
+            <tr>
+                <td class="label">{{ __('invoice.invoice_date') }}</td>
+                <td>{{ $invoice->invoice_date->format('Y-m-d') }}</td>
+                <td class="label">{{ __('invoice.due_date') }}</td>
+                <td>{{ $invoice->due_date->format('Y-m-d') }}</td>
+            </tr>
+            <tr>
+                <td class="label">{{ __('invoice.currency') }}</td>
+                <td>{{ $currency->code }}</td>
+                <td class="label">{{ __('invoice.status') }}</td>
+                <td>{{ $invoice->status->label() }}</td>
+            </tr>
+        </table>
+    </div>
 
-        <div class="line-items">
-            <table>
-                <thead>
-                    <tr>
-                        <th style="width: 45%;">{{ __('invoice.description') }}</th>
-                        <th style="width: 15%;">Qty</th>
-                        <th style="width: 20%;">Price</th>
-                        <th style="width: 20%;">Total</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach($invoice->invoiceLines as $line)
-                    <tr>
-                        <td>
-                            @if($line->product)
-                                <div class="product-name">{{ $line->product->name }}</div>
-                            @endif
-                            {{ $line->description }}
-                        </td>
-                        <td class="amount-column">{{ \App\Support\NumberFormatter::formatNumber($line->quantity, 2) }}</td>
-                        <td class="amount-column">{{ $line->unit_price }}</td>
-                        <td class="amount-column">{{ $line->subtotal }}</td>
-                    </tr>
-                    @endforeach
-                </tbody>
-            </table>
-        </div>
-
-        <div class="totals">
-            <table>
+    <div class="line-items">
+        <table>
+            <thead>
+            <tr>
+                <th style="width: 45%;">{{ __('invoice.description') }}</th>
+                <th style="width: 15%;">Qty</th>
+                <th style="width: 20%;">Price</th>
+                <th style="width: 20%;">Total</th>
+            </tr>
+            </thead>
+            <tbody>
+            @foreach($invoice->invoiceLines as $line)
                 <tr>
-                    <td class="label">Subtotal</td>
-                    <td class="amount">{{ $invoice->invoiceLines->reduce(fn($carry, $line) => $carry->plus($line->subtotal), \Brick\Money\Money::of(0, $currency->code)) }}</td>
+                    <td>
+                        @if($line->product)
+                            <div class="product-name">{{ $line->product->name }}</div>
+                        @endif
+                        {{ $line->description }}
+                    </td>
+                    <td class="amount-column">{{ \App\Support\NumberFormatter::formatNumber($line->quantity, 2) }}</td>
+                    <td class="amount-column">{{ $line->unit_price }}</td>
+                    <td class="amount-column">{{ $line->subtotal }}</td>
                 </tr>
-                @if($invoice->total_tax->isPositive())
+            @endforeach
+            </tbody>
+        </table>
+    </div>
+
+    <div class="totals">
+        <table>
+            <tr>
+                <td class="label">Subtotal</td>
+                <td class="amount">{{ $invoice->invoiceLines->reduce(fn($carry, $line) => $carry->plus($line->subtotal), Money::of(0, $currency->code)) }}</td>
+            </tr>
+            @if($invoice->total_tax->isPositive())
                 <tr>
                     <td class="label">{{ __('invoice.tax') }}</td>
                     <td class="amount">{{ $invoice->total_tax }}</td>
                 </tr>
-                @endif
-                <tr class="total-row">
-                    <td class="label">{{ __('invoice.total_amount') }}</td>
-                    <td class="amount">{{ $invoice->total_amount }}</td>
-                </tr>
-            </table>
-        </div>
-
-        <div class="footer">
-            <p>Thank you for your business</p>
-            @if($company->website)
-                <p>{{ $company->website }}</p>
             @endif
-        </div>
+            <tr class="total-row">
+                <td class="label">{{ __('invoice.total_amount') }}</td>
+                <td class="amount">{{ $invoice->total_amount }}</td>
+            </tr>
+        </table>
     </div>
+
+    <div class="footer">
+        <p>Thank you for your business</p>
+        @if($company->website)
+            <p>{{ $company->website }}</p>
+        @endif
+    </div>
+</div>
 </body>
 </html>

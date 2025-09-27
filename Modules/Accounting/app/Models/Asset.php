@@ -8,6 +8,7 @@ use App\Enums\Assets\DepreciationMethod;
 use App\Observers\AssetObserver;
 use Brick\Money\Money;
 use Database\Factories\AssetFactory;
+use Eloquent;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
@@ -62,12 +63,12 @@ use Illuminate\Support\Carbon;
  * @method static Builder<static>|Asset whereUpdatedAt($value)
  * @method static Builder<static>|Asset whereUsefulLifeYears($value)
  *
- * @mixin \Eloquent
+ * @mixin Eloquent
  */
 #[ObservedBy([AssetObserver::class])]
 class Asset extends Model
 {
-    /** @use HasFactory<\Database\Factories\AssetFactory> */
+    /** @use HasFactory<AssetFactory> */
     use HasFactory;
 
     /**
@@ -210,7 +211,7 @@ class Asset extends Model
      * This relationship links the asset to its acquisition document.
      */
     /**
-     * @return MorphTo<\Illuminate\Database\Eloquent\Model, static>
+     * @return MorphTo<Model, static>
      */
     public function source(): MorphTo
     {

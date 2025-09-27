@@ -4,7 +4,10 @@ namespace Modules\Foundation\Models;
 
 use App\Enums\PaymentTerms\PaymentTermType;
 use App\Observers\AuditLogObserver;
+use Brick\Math\RoundingMode;
+use Brick\Money\Money;
 use Database\Factories\PaymentTermLineFactory;
+use Eloquent;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -44,12 +47,12 @@ use Illuminate\Support\Carbon;
  * @method static Builder<static>|PaymentTermLine whereType($value)
  * @method static Builder<static>|PaymentTermLine whereUpdatedAt($value)
  *
- * @mixin \Eloquent
+ * @mixin Eloquent
  */
 #[ObservedBy([\Modules\Foundation\Observers\AuditLogObserver::class])]
 class PaymentTermLine extends Model
 {
-    /** @use HasFactory<\Database\Factories\PaymentTermLineFactory> */
+    /** @use HasFactory<PaymentTermLineFactory> */
     use HasFactory;
 
     /**
@@ -155,15 +158,15 @@ class PaymentTermLine extends Model
     /**
      * Calculate the discount amount for early payment.
      */
-    public function calculateDiscountAmount(\Brick\Money\Money $amount, Carbon $documentDate, Carbon $paymentDate): \Brick\Money\Money
+    public function calculateDiscountAmount(Money $amount, Carbon $documentDate, Carbon $paymentDate): Money
     {
         if (! $this->hasEarlyPaymentDiscount($documentDate, $paymentDate)) {
-            return \Brick\Money\Money::of(0, $amount->getCurrency());
+            return Money::of(0, $amount->getCurrency());
         }
 
         $discountRate = $this->discount_percentage / 100;
 
-        return $amount->multipliedBy($discountRate, \Brick\Math\RoundingMode::HALF_UP);
+        return $amount->multipliedBy($discountRate, RoundingMode::HALF_UP);
     }
 
     /**

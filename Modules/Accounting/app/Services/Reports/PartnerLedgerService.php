@@ -2,20 +2,17 @@
 
 namespace Modules\Accounting\Services\Reports;
 
-use App\DataTransferObjects\Reports\PartnerLedgerDTO;
-use App\DataTransferObjects\Reports\PartnerLedgerTransactionLineDTO;
-use App\Enums\Accounting\JournalType;
 use App\Models\Company;
-use App\Models\JournalEntryLine;
 use Brick\Money\Money;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use InvalidArgumentException;
+use Modules\Foundation\Models\Partner;
 
 class PartnerLedgerService
 {
-    public function generate(Company $company, \Modules\Foundation\Models\Partner $partner, Carbon $startDate, Carbon $endDate): PartnerLedgerDTO
+    public function generate(Company $company, Partner $partner, Carbon $startDate, Carbon $endDate): PartnerLedgerDTO
     {
         // Prerequisite: Ensure the partner is correctly configured.
         if (is_null($partner->receivable_account_id) || is_null($partner->payable_account_id)) {

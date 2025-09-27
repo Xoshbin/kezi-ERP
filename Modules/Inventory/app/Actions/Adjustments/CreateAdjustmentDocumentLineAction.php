@@ -2,15 +2,13 @@
 
 namespace Modules\Inventory\Actions\Adjustments;
 
-use App\DataTransferObjects\Adjustments\CreateAdjustmentDocumentLineDTO;
-use App\Models\AdjustmentDocumentLine;
-use App\Models\Tax;
 use Brick\Math\RoundingMode;
 use Brick\Money\Money;
+use Modules\Inventory\Models\AdjustmentDocument;
 
 class CreateAdjustmentDocumentLineAction
 {
-    public function execute(\Modules\Inventory\Models\AdjustmentDocument $adjustmentDocument, CreateAdjustmentDocumentLineDTO $dto): AdjustmentDocumentLine
+    public function execute(AdjustmentDocument $adjustmentDocument, CreateAdjustmentDocumentLineDTO $dto): AdjustmentDocumentLine
     {
         $currency = $adjustmentDocument->currency;
 

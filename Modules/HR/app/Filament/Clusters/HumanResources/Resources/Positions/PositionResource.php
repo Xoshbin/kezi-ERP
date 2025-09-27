@@ -9,6 +9,7 @@ use App\Filament\Clusters\HumanResources\Resources\Positions\Pages\ListPositions
 use App\Filament\Clusters\HumanResources\Resources\Positions\Schemas\PositionForm;
 use App\Filament\Clusters\HumanResources\Resources\Positions\Tables\PositionsTable;
 use App\Models\Position;
+use BackedEnum;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Tables\Table;
@@ -20,7 +21,7 @@ class PositionResource extends Resource
 
     protected static ?string $model = Position::class;
 
-    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-briefcase';
+    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-briefcase';
 
     protected static ?string $cluster = HumanResourcesCluster::class;
 

@@ -5,6 +5,7 @@ namespace Modules\Accounting\Filament\Clusters\Accounting\Resources\Partners\Rel
 use App\Actions\Reconciliation\MatchJournalItemsAction;
 use App\Enums\Reconciliation\ReconciliationType;
 use App\Exceptions\Reconciliation\ReconciliationException;
+use App\Models\Company;
 use App\Models\JournalEntryLine;
 use Exception;
 use Filament\Actions\Action;
@@ -60,7 +61,7 @@ class UnreconciledEntriesRelationManager extends RelationManager
     {
         $tenant = Filament::getTenant();
 
-        return $tenant instanceof \App\Models\Company && $tenant->enable_reconciliation;
+        return $tenant instanceof Company && $tenant->enable_reconciliation;
     }
 
     public function form(Schema $schema): Schema

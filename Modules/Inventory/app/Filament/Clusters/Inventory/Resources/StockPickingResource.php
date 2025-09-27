@@ -2,14 +2,12 @@
 
 namespace Modules\Inventory\Filament\Clusters\Inventory\Resources;
 
-use App\Enums\Inventory\StockPickingState;
-use App\Enums\Inventory\StockPickingType;
-use App\Filament\Clusters\Inventory\InventoryCluster;
-use App\Filament\Clusters\Inventory\Resources\StockPickingResource\Pages\CreateStockPicking;
-use App\Filament\Clusters\Inventory\Resources\StockPickingResource\Pages\EditStockPicking;
-use App\Filament\Clusters\Inventory\Resources\StockPickingResource\Pages\ListStockPickings;
-use App\Filament\Clusters\Inventory\Resources\StockPickingResource\Pages\ViewStockPicking;
-use App\Models\StockPicking;
+use BackedEnum;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\DeleteBulkAction;
+use Filament\Actions\EditAction;
+use Filament\Actions\ViewAction;
 use Filament\Forms;
 use Filament\Resources\Resource;
 use Filament\Schemas\Components\Section;
@@ -24,7 +22,7 @@ class StockPickingResource extends Resource
 
     protected static ?string $cluster = InventoryCluster::class;
 
-    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-clipboard-document-list';
+    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-clipboard-document-list';
 
     protected static ?int $navigationSort = 30;
 
@@ -155,18 +153,18 @@ class StockPickingResource extends Resource
                     ->options(StockPickingState::class),
             ])
             ->recordActions([
-                \Filament\Actions\ViewAction::make()
+                ViewAction::make()
                     ->icon('heroicon-o-eye'),
-                \Filament\Actions\EditAction::make()
+                EditAction::make()
                     ->icon('heroicon-o-pencil-square')
                     ->visible(fn(StockPicking $record): bool => $record->state === StockPickingState::Draft),
-                \Filament\Actions\DeleteAction::make()
+                DeleteAction::make()
                     ->icon('heroicon-o-trash')
                     ->visible(fn(StockPicking $record): bool => $record->state === StockPickingState::Draft),
             ])
             ->toolbarActions([
-                \Filament\Actions\BulkActionGroup::make([
-                    \Filament\Actions\DeleteBulkAction::make()
+                BulkActionGroup::make([
+                    DeleteBulkAction::make()
                         ->requiresConfirmation(),
                 ]),
             ])

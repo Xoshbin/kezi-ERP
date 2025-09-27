@@ -2,11 +2,11 @@
 
 namespace Modules\Accounting\Tests\Feature;
 
-use App\Enums\Sales\InvoiceStatus;
-use App\Models\JournalEntry;
 use App\Models\User;
+use Filament\Facades\Filament;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Livewire\Livewire;
+use Modules\Sales\Models\Invoice;
 use Tests\TestCase;
 
 class WebInterfaceInvoicePostingTest extends TestCase
@@ -24,10 +24,10 @@ class WebInterfaceInvoicePostingTest extends TestCase
         $user = User::first();
         $company = $user->companies()->first();
         $this->actingAs($user);
-        \Filament\Facades\Filament::setTenant($company);
+        Filament::setTenant($company);
 
         // Create test data: 3 draft invoices with invoice lines for testing
-        \Modules\Sales\Models\Invoice::factory()->count(3)->withLines()->create([
+        Invoice::factory()->count(3)->withLines()->create([
             'status' => InvoiceStatus::Draft,
             'company_id' => $company->id,
         ]);
@@ -37,7 +37,7 @@ class WebInterfaceInvoicePostingTest extends TestCase
     {
 
         // Get some draft invoices from the seeded data
-        $draftInvoices = \Modules\Sales\Models\Invoice::where('status', InvoiceStatus::Draft)->take(3)->get();
+        $draftInvoices = Invoice::where('status', InvoiceStatus::Draft)->take(3)->get();
 
         $this->assertGreaterThanOrEqual(3, $draftInvoices->count(), 'Need at least 3 draft invoices from seeder');
 
@@ -47,7 +47,7 @@ class WebInterfaceInvoicePostingTest extends TestCase
         // Post each invoice one by one (simulating the web interface scenario)
         foreach ($draftInvoices as $invoice) {
             // Simulate the web interface posting action using Livewire
-            Livewire::test(\App\Filament\Clusters\Accounting\Resources\Invoices\Pages\EditInvoice::class, [
+            Livewire::test(EditInvoice::class, [
                 'record' => $invoice->getRouteKey(),
             ])
                 ->callAction('confirm')
@@ -107,14 +107,14 @@ class WebInterfaceInvoicePostingTest extends TestCase
     {
 
         // Get multiple draft invoices
-        $draftInvoices = \Modules\Sales\Models\Invoice::where('status', InvoiceStatus::Draft)->take(3)->get();
+        $draftInvoices = Invoice::where('status', InvoiceStatus::Draft)->take(3)->get();
 
         $this->assertGreaterThanOrEqual(3, $draftInvoices->count(), 'Need at least 3 draft invoices from seeder');
 
         // Post all invoices rapidly (simulating the original error scenario)
         foreach ($draftInvoices as $invoice) {
             // Use Livewire to simulate the web interface action
-            Livewire::test(\App\Filament\Clusters\Accounting\Resources\Invoices\Pages\EditInvoice::class, [
+            Livewire::test(EditInvoice::class, [
                 'record' => $invoice->getRouteKey(),
             ])
                 ->callAction('confirm')
@@ -133,7 +133,7 @@ class WebInterfaceInvoicePostingTest extends TestCase
         $company = $draftInvoices->first()->company;
         $journalEntries = JournalEntry::where('company_id', $company->id)
             ->whereIn('source_id', $draftInvoices->pluck('id'))
-            ->where('source_type', \Modules\Sales\Models\Invoice::class)
+            ->where('source_type', Invoice::class)
             ->get();
 
         $references = $journalEntries->pluck('reference')->toArray();

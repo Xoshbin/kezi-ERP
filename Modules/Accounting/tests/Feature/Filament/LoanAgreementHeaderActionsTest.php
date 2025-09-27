@@ -1,10 +1,9 @@
 <?php
 
-use App\Enums\Loans\LoanType;
-use App\Enums\Loans\ScheduleMethod;
-use App\Models\Journal;
 use Brick\Money\Money;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Modules\Accounting\Models\Account;
+use Modules\Accounting\Models\LoanAgreement;
 use Tests\Traits\WithConfiguredCompany;
 use function Pest\Livewire\livewire;
 
@@ -17,7 +16,7 @@ beforeEach(function () {
 it('can accrue interest, post repayment, and reclassify from header actions', function () {
     $code = $this->company->currency->code;
 
-    $loan = \Modules\Accounting\Models\LoanAgreement::factory()->for($this->company)->create([
+    $loan = LoanAgreement::factory()->for($this->company)->create([
         'currency_id' => $this->company->currency_id,
         'principal_amount' => Money::of('10000', $code),
         'loan_type' => LoanType::Payable,
@@ -30,18 +29,18 @@ it('can accrue interest, post repayment, and reclassify from header actions', fu
     ]);
 
     // Precompute schedule
-    livewire(\App\Filament\Clusters\Accounting\Resources\LoanAgreements\Pages\ViewLoanAgreement::class, [
+    livewire(ViewLoanAgreement::class, [
         'record' => $loan->getRouteKey(),
     ])->callAction('computeSchedule');
 
     $journal = Journal::factory()->for($this->company)->create();
-    $bank = \Modules\Accounting\Models\Account::factory()->for($this->company)->create();
-    $loanAcc = \Modules\Accounting\Models\Account::factory()->for($this->company)->create();
-    $accrued = \Modules\Accounting\Models\Account::factory()->for($this->company)->create();
-    $interest = \Modules\Accounting\Models\Account::factory()->for($this->company)->create();
+    $bank = Account::factory()->for($this->company)->create();
+    $loanAcc = Account::factory()->for($this->company)->create();
+    $accrued = Account::factory()->for($this->company)->create();
+    $interest = Account::factory()->for($this->company)->create();
 
     // Accrue interest for month 1
-    livewire(\App\Filament\Clusters\Accounting\Resources\LoanAgreements\Pages\ViewLoanAgreement::class, [
+    livewire(ViewLoanAgreement::class, [
         'record' => $loan->getRouteKey(),
     ])->callAction('accrueInterest', data: [
         'journal_id' => $journal->id,
@@ -51,7 +50,7 @@ it('can accrue interest, post repayment, and reclassify from header actions', fu
     ]);
 
     // Post repayment for month 1 (interest-first)
-    livewire(\App\Filament\Clusters\Accounting\Resources\LoanAgreements\Pages\ViewLoanAgreement::class, [
+    livewire(ViewLoanAgreement::class, [
         'record' => $loan->getRouteKey(),
     ])->callAction('postRepayment', data: [
         'journal_id' => $journal->id,
@@ -62,12 +61,12 @@ it('can accrue interest, post repayment, and reclassify from header actions', fu
     ]);
 
     // Reclassify current portion for next 6 months
-    livewire(\App\Filament\Clusters\Accounting\Resources\LoanAgreements\Pages\ViewLoanAgreement::class, [
+    livewire(ViewLoanAgreement::class, [
         'record' => $loan->getRouteKey(),
     ])->callAction('reclassifyCurrentPortion', data: [
         'journal_id' => $journal->id,
         'long_term_account_id' => $loanAcc->id,
-        'short_term_account_id' => \Modules\Accounting\Models\Account::factory()->for($this->company)->create()->id,
+        'short_term_account_id' => Account::factory()->for($this->company)->create()->id,
         'months' => 6,
         'as_of_date' => now()->startOfMonth()->addMonths(6)->format('Y-m-d'),
     ]);

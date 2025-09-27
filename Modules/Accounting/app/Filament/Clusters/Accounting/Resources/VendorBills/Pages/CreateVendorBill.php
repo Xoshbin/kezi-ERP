@@ -2,21 +2,20 @@
 
 namespace Modules\Accounting\Filament\Clusters\Accounting\Resources\VendorBills\Pages;
 
-use App\Actions\Purchases\CreateVendorBillAction;
-use App\DataTransferObjects\Purchases\CreateVendorBillDTO;
-use App\DataTransferObjects\Purchases\CreateVendorBillLineDTO;
-use App\Filament\Actions\DocsAction;
-use App\Filament\Clusters\Accounting\Resources\VendorBills\VendorBillResource;
-use App\Models\PurchaseOrder;
-use App\Models\VendorBillAttachment;
 use Brick\Money\Money;
+use Exception;
 use Filament\Actions\Action;
 use Filament\Facades\Filament;
 use Filament\Forms\Components\Select;
 use Filament\Resources\Pages\CreateRecord;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
+use InvalidArgumentException;
+use Modules\Foundation\Models\Currency;
+use Modules\Purchase\Models\VendorBill;
 
 class CreateVendorBill extends CreateRecord
 {
@@ -38,12 +37,12 @@ class CreateVendorBill extends CreateRecord
 
     protected function mutateFormDataBeforeCreate(array $data): array
     {
-        $currency = \Modules\Foundation\Models\Currency::findOrFail($data['currency_id']);
+        $currency = Currency::findOrFail($data['currency_id']);
         // Ensure we have a single Currency model, not a collection
-        if ($currency instanceof \Illuminate\Database\Eloquent\Collection) {
+        if ($currency instanceof Collection) {
             $currency = $currency->first();
             if (! $currency) {
-                throw new \InvalidArgumentException('Currency not found');
+                throw new InvalidArgumentException('Currency not found');
             }
         }
         $lineDTOs = [];
@@ -108,11 +107,11 @@ class CreateVendorBill extends CreateRecord
         foreach ($this->attachments as $filePath) {
             if (Storage::disk('local')->exists($filePath)) {
                 $fileInfo = pathinfo($filePath);
-                $mimeType = \Illuminate\Support\Facades\File::mimeType(\Illuminate\Support\Facades\Storage::disk('local')->path($filePath));
+                $mimeType = File::mimeType(Storage::disk('local')->path($filePath));
                 $fileSize = Storage::disk('local')->size($filePath);
 
                 VendorBillAttachment::create([
-                    'company_id' => $this->getRecord() instanceof \Modules\Purchase\Models\VendorBill ? $this->getRecord()->company_id : null,
+                    'company_id' => $this->getRecord() instanceof VendorBill ? $this->getRecord()->company_id : null,
                     'vendor_bill_id' => $this->getRecord()?->getKey(),
                     'file_name' => $fileInfo['basename'],
                     'file_path' => $filePath,
@@ -216,7 +215,7 @@ class CreateVendorBill extends CreateRecord
                 try {
                     $formState = $this->form->getRawState();
                     return !empty($formState['vendor_id']) && empty($formState['purchase_order_id']);
-                } catch (\Exception $e) {
+                } catch (Exception $e) {
                     // If form state can't be retrieved, hide the action
                     return false;
                 }

@@ -2,12 +2,11 @@
 
 namespace Modules\Accounting\Filament\Clusters\Accounting\Resources\VendorBills\Widgets;
 
-use App\Enums\Purchases\VendorBillStatus;
 use Brick\Money\Money;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
 use Illuminate\Database\Eloquent\Model;
-use NumberFormatter;
+use Modules\Purchase\Models\VendorBill;
 
 class SettlementSummaryWidget extends BaseWidget
 {
@@ -15,7 +14,7 @@ class SettlementSummaryWidget extends BaseWidget
 
     protected function getStats(): array
     {
-        if (! $this->record instanceof \Modules\Purchase\Models\VendorBill) {
+        if (! $this->record instanceof VendorBill) {
             return [];
         }
 

@@ -2,9 +2,8 @@
 
 namespace Modules\Accounting\Livewire\Accounting;
 
-use App\Filament\Tables\Columns\MoneyColumn;
-use App\Services\BankReconciliationService;
 use Brick\Money\Money;
+use Exception;
 use Filament\Actions\Action;
 use Filament\Actions\Concerns\InteractsWithActions;
 use Filament\Actions\Contracts\HasActions;
@@ -18,8 +17,13 @@ use Filament\Tables\Columns\ViewColumn;
 use Filament\Tables\Concerns\InteractsWithTable;
 use Filament\Tables\Contracts\HasTable;
 use Filament\Tables\Table;
+use Illuminate\Contracts\View\View;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
+use Modules\Accounting\Models\Account;
+use Modules\Accounting\Models\BankStatement;
+use Modules\Accounting\Models\BankStatementLine;
 
 class BankTransactionsTable extends Component implements HasActions, HasForms, HasTable
 {
@@ -27,12 +31,12 @@ class BankTransactionsTable extends Component implements HasActions, HasForms, H
     use InteractsWithForms;
     use InteractsWithTable;
 
-    public \Modules\Accounting\Models\BankStatement $bankStatement;
+    public BankStatement $bankStatement;
 
     /** @var array<int, int> */
     public array $selectedBankLines = [];
 
-    public function mount(\Modules\Accounting\Models\BankStatement $bankStatement): void
+    public function mount(BankStatement $bankStatement): void
     {
         $this->bankStatement = $bankStatement;
     }
@@ -41,7 +45,7 @@ class BankTransactionsTable extends Component implements HasActions, HasForms, H
     {
         return $table
             ->query(
-                \Modules\Accounting\Models\BankStatementLine::query()
+                BankStatementLine::query()
                     ->where('bank_statement_id', $this->bankStatement->id)
                     ->where('is_reconciled', false)
             )
@@ -71,7 +75,7 @@ class BankTransactionsTable extends Component implements HasActions, HasForms, H
                         Select::make('account_id')
                             ->label(__('bank_statement.write_off_account'))
                             ->options(function () {
-                                return \Modules\Accounting\Models\Account::where('company_id', $this->bankStatement->company_id)
+                                return Account::where('company_id', $this->bankStatement->company_id)
                                     ->where('type', 'expense')
                                     ->pluck('name', 'id');
                             })
@@ -81,19 +85,19 @@ class BankTransactionsTable extends Component implements HasActions, HasForms, H
                             ->required()
                             ->maxLength(500),
                     ])
-                    ->action(function (array $data, \Modules\Accounting\Models\BankStatementLine $record) {
-                        $writeOffAccount = \Modules\Accounting\Models\Account::findOrFail($data['account_id']);
+                    ->action(function (array $data, BankStatementLine $record) {
+                        $writeOffAccount = Account::findOrFail($data['account_id']);
                         // Ensure we have a single Account model, not a collection
-                        if ($writeOffAccount instanceof \Illuminate\Database\Eloquent\Collection) {
+                        if ($writeOffAccount instanceof Collection) {
                             $writeOffAccount = $writeOffAccount->first();
                             if (! $writeOffAccount) {
-                                throw new \Exception('Write-off account not found');
+                                throw new Exception('Write-off account not found');
                             }
                         }
 
                         $user = Auth::user();
                         if (! $user) {
-                            throw new \Exception('User must be authenticated to create write-off');
+                            throw new Exception('User must be authenticated to create write-off');
                         }
                         app(\Modules\Accounting\Services\BankReconciliationService::class)->createWriteOff(
                             $record,
@@ -128,7 +132,7 @@ class BankTransactionsTable extends Component implements HasActions, HasForms, H
         $total = Money::of(0, $this->bankStatement->currency->code);
 
         if (! empty($this->selectedBankLines)) {
-            $lines = \Modules\Accounting\Models\BankStatementLine::whereIn('id', $this->selectedBankLines)->get();
+            $lines = BankStatementLine::whereIn('id', $this->selectedBankLines)->get();
             foreach ($lines as $line) {
                 $total = $total->plus($line->amount);
             }
@@ -146,7 +150,7 @@ class BankTransactionsTable extends Component implements HasActions, HasForms, H
         return null;
     }
 
-    public function render(): \Illuminate\Contracts\View\View
+    public function render(): View
     {
         return view('livewire.accounting.bank-transactions-table');
     }

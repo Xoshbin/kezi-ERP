@@ -7,6 +7,7 @@ use App\Models\StockMove;
 use App\Models\User;
 use App\Services\Inventory\InventoryValuationService;
 use Illuminate\Support\Facades\DB;
+use RuntimeException;
 
 class CreateJournalEntryForStockMoveAction
 {
@@ -23,7 +24,7 @@ class CreateJournalEntryForStockMoveAction
                 $product = $productLine->product;
 
                 if (!$product) {
-                    throw new \RuntimeException("Product not found for product line ID {$productLine->id}");
+                    throw new RuntimeException("Product not found for product line ID {$productLine->id}");
                 }
 
                 // Create journal entries based on move type

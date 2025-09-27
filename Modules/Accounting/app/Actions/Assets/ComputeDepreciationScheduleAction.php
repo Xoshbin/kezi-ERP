@@ -2,14 +2,14 @@
 
 namespace Modules\Accounting\Actions\Assets;
 
-use App\Enums\Assets\DepreciationEntryStatus;
-use App\Enums\Assets\DepreciationMethod;
 use Brick\Math\RoundingMode;
 use Illuminate\Support\Facades\DB;
+use Modules\Accounting\Models\Asset;
+use Modules\Accounting\Models\DepreciationEntry;
 
 class ComputeDepreciationScheduleAction
 {
-    public function execute(\Modules\Accounting\Models\Asset $asset): void
+    public function execute(Asset $asset): void
     {
         DB::transaction(function () use ($asset) {
             // Clear existing draft entries
@@ -22,7 +22,7 @@ class ComputeDepreciationScheduleAction
         });
     }
 
-    private function computeStraightLine(\Modules\Accounting\Models\Asset $asset): void
+    private function computeStraightLine(Asset $asset): void
     {
         $depreciableValue = $asset->purchase_value->minus($asset->salvage_value);
         $totalMonths = $asset->useful_life_years * 12;
@@ -36,7 +36,7 @@ class ComputeDepreciationScheduleAction
         $depreciationDate = $asset->purchase_date->copy()->startOfMonth()->addMonth();
 
         for ($i = 0; $i < $totalMonths; $i++) {
-            \Modules\Accounting\Models\DepreciationEntry::create([
+            DepreciationEntry::create([
                 'asset_id' => $asset->id,
                 'company_id' => $asset->company_id,
                 'depreciation_date' => $depreciationDate->copy(),

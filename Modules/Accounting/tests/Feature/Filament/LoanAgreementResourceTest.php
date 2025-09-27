@@ -1,7 +1,5 @@
 <?php
 
-use App\Filament\Clusters\Accounting\Resources\LoanAgreements\LoanAgreementResource;
-use App\Models\LoanAgreement;
 use Brick\Money\Money;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\Traits\WithConfiguredCompany;
@@ -19,7 +17,7 @@ it('can render the list and create pages', function () {
 });
 
 it('can create a loan agreement with Money inputs', function () {
-    livewire(\App\Filament\Clusters\Accounting\Resources\LoanAgreements\Pages\CreateLoanAgreement::class)
+    livewire(CreateLoanAgreement::class)
         ->fillForm([
             'partner_id' => null,
             'loan_date' => now()->format('Y-m-d'),
@@ -28,9 +26,9 @@ it('can create a loan agreement with Money inputs', function () {
             'currency_id' => $this->company->currency_id,
             'principal_amount' => 10000,
             'outstanding_principal' => 0,
-            'loan_type' => \App\Enums\Loans\LoanType::Payable->value,
-            'status' => \App\Enums\Loans\LoanStatus::Draft->value,
-            'schedule_method' => \App\Enums\Loans\ScheduleMethod::Annuity->value,
+            'loan_type' => LoanType::Payable->value,
+            'status' => LoanStatus::Draft->value,
+            'schedule_method' => ScheduleMethod::Annuity->value,
             'interest_rate' => 12.0,
             'eir_enabled' => false,
         ])
@@ -47,12 +45,12 @@ it('can run compute schedule and recalc EIR actions from view page', function ()
         'loan_date' => now()->startOfMonth(),
         'start_date' => now()->startOfMonth()->addMonth(),
         'duration_months' => 12,
-        'schedule_method' => \App\Enums\Loans\ScheduleMethod::Annuity,
+        'schedule_method' => ScheduleMethod::Annuity,
         'interest_rate' => 12.0,
         'eir_enabled' => true,
     ]);
 
-    $wire = livewire(\App\Filament\Clusters\Accounting\Resources\LoanAgreements\Pages\ViewLoanAgreement::class, [
+    $wire = livewire(ViewLoanAgreement::class, [
         'record' => $loan->getRouteKey(),
     ]);
 

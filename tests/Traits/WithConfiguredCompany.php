@@ -27,7 +27,7 @@ trait WithConfiguredCompany
         $this->actingAs($this->user);
 
         // Set up Filament tenant context
-        \Filament\Facades\Filament::setTenant($this->company);
+        Filament::setTenant($this->company);
     }
 
     /**

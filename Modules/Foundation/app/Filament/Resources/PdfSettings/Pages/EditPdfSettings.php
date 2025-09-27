@@ -3,6 +3,7 @@
 namespace Modules\Foundation\Filament\Clusters\Settings\Resources\PdfSettings\Pages;
 
 use App\Filament\Clusters\Settings\Resources\PdfSettings\PdfSettingsResource;
+use App\Models\Company;
 use Filament\Actions\Action;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
@@ -20,7 +21,7 @@ class EditPdfSettings extends EditRecord
                 ->color('info')
                 ->url(function (): string {
                     $record = $this->getRecord();
-                    $id = $record instanceof \App\Models\Company ? (int) $record->getKey() : 0;
+                    $id = $record instanceof Company ? (int) $record->getKey() : 0;
 
                     return route('pdf.preview', ['company' => $id]);
                 })
@@ -36,7 +37,7 @@ class EditPdfSettings extends EditRecord
     public function getHeading(): string
     {
         $record = $this->getRecord();
-        $name = $record instanceof \App\Models\Company ? (string) $record->name : '';
+        $name = $record instanceof Company ? (string) $record->name : '';
 
         return __('pdf_settings.edit_heading', ['company' => $name]);
     }

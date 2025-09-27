@@ -2,14 +2,10 @@
 
 namespace Modules\Sales\Actions\Sales;
 
-use App\DataTransferObjects\Sales\CreateInvoiceFromSalesOrderDTO;
-use App\DataTransferObjects\Sales\CreateInvoiceLineDTO;
-use App\Enums\Sales\InvoiceStatus;
-use App\Models\SalesOrder;
-use App\Services\Accounting\LockDateService;
 use Brick\Money\Money;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
+use Modules\Sales\Models\Invoice;
 
 /**
  * Action for creating a customer invoice from a sales order
@@ -24,7 +20,7 @@ class CreateInvoiceFromSalesOrderAction
     /**
      * Execute the action to create an invoice from a sales order
      */
-    public function execute(CreateInvoiceFromSalesOrderDTO $dto): \Modules\Sales\Models\Invoice
+    public function execute(CreateInvoiceFromSalesOrderDTO $dto): Invoice
     {
         $salesOrder = $dto->salesOrder;
 
@@ -49,7 +45,7 @@ class CreateInvoiceFromSalesOrderAction
             $currencyCode = $salesOrder->currency->code;
 
             // Create the invoice
-            $invoice = \Modules\Sales\Models\Invoice::create([
+            $invoice = Invoice::create([
                 'company_id' => $salesOrder->company_id,
                 'customer_id' => $salesOrder->customer_id,
                 'sales_order_id' => $salesOrder->id,
@@ -107,12 +103,12 @@ class CreateInvoiceFromSalesOrderAction
 
         if ($salesOrder->isFullyInvoiced()) {
             if ($salesOrder->isFullyDelivered()) {
-                $salesOrder->status = \App\Enums\Sales\SalesOrderStatus::Done;
+                $salesOrder->status = SalesOrderStatus::Done;
             } else {
-                $salesOrder->status = \App\Enums\Sales\SalesOrderStatus::FullyInvoiced;
+                $salesOrder->status = SalesOrderStatus::FullyInvoiced;
             }
         } else {
-            $salesOrder->status = \App\Enums\Sales\SalesOrderStatus::PartiallyInvoiced;
+            $salesOrder->status = SalesOrderStatus::PartiallyInvoiced;
         }
 
         $salesOrder->save();

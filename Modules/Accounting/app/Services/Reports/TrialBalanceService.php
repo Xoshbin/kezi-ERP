@@ -8,6 +8,7 @@ use App\Enums\Accounting\AccountType;
 use App\Models\Company;
 use Brick\Money\Money;
 use Carbon\Carbon;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
 class TrialBalanceService
@@ -17,7 +18,7 @@ class TrialBalanceService
         $currency = $company->currency->code;
         $zero = Money::zero($currency);
 
-        /** @var \Illuminate\Support\Collection<int, object{account_id: int, account_code: string, account_name: string, account_type: string, total_debit: string|null, total_credit: string|null}> $queryResults */
+        /** @var Collection<int, object{account_id: int, account_code: string, account_name: string, account_type: string, total_debit: string|null, total_credit: string|null}> $queryResults */
         $queryResults = DB::table('journal_entry_lines')
             ->select([
                 'accounts.id as account_id',

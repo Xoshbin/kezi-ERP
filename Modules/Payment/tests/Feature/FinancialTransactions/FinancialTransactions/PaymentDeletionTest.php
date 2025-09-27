@@ -2,10 +2,8 @@
 
 namespace Modules\Payment\Tests\Feature\FinancialTransactions;
 
-use App\Enums\Payments\PaymentStatus;
-use App\Exceptions\DeletionNotAllowedException;
-use App\Services\PaymentService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Modules\Payment\Models\Payment;
 use Tests\Traits\WithConfiguredCompany;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);
@@ -16,7 +14,7 @@ beforeEach(function () {
 
 test('it prevents deletion of a confirmed payment', function () {
     // Arrange: Create a payment and confirm it.
-    $payment = \Modules\Payment\Models\Payment::factory()->for($this->company)->create([
+    $payment = Payment::factory()->for($this->company)->create([
         'status' => PaymentStatus::Confirmed,
     ]);
 
@@ -30,7 +28,7 @@ test('it prevents deletion of a confirmed payment', function () {
 
 test('it allows deletion of a draft payment', function () {
     // Arrange: Create a draft payment.
-    $payment = \Modules\Payment\Models\Payment::factory()->for($this->company)->create([
+    $payment = Payment::factory()->for($this->company)->create([
         'status' => PaymentStatus::Draft,
     ]);
 

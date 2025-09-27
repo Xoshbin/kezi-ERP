@@ -2,10 +2,9 @@
 
 namespace Modules\Accounting\Database\Factories;
 
-use App\Enums\Accounting\JournalType;
 use App\Models\Company;
-use App\Models\Journal;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Modules\Accounting\Models\Account;
 
 /**
  * @extends Factory<Journal>
@@ -27,8 +26,8 @@ class JournalFactory extends Factory
             'currency_id' => function (array $attributes) {
                 return Company::find($attributes['company_id'])->currency_id;
             },
-            'default_debit_account_id' => \Modules\Accounting\Models\Account::factory(),
-            'default_credit_account_id' => \Modules\Accounting\Models\Account::factory(),
+            'default_debit_account_id' => Account::factory(),
+            'default_credit_account_id' => Account::factory(),
         ];
     }
 }

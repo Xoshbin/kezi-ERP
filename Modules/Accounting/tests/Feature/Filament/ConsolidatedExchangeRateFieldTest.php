@@ -1,12 +1,13 @@
 <?php
 
-use App\Enums\Purchases\VendorBillStatus;
-use App\Enums\Sales\InvoiceStatus;
-use App\Filament\Clusters\Accounting\Resources\Invoices\Pages\EditInvoice;
-use App\Filament\Clusters\Accounting\Resources\VendorBills\Pages\EditVendorBill;
 use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Livewire\Livewire;
+use Modules\Foundation\Models\Currency;
+use Modules\Foundation\Models\CurrencyRate;
+use Modules\Foundation\Models\Partner;
+use Modules\Purchase\Models\VendorBill;
+use Modules\Sales\Models\Invoice;
 use Tests\Traits\WithConfiguredCompany;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);
@@ -16,7 +17,7 @@ beforeEach(function () {
     $this->actingAs($this->user);
 
     // Create foreign currency (USD)
-    $this->foreignCurrency = \Modules\Foundation\Models\Currency::factory()->create([
+    $this->foreignCurrency = Currency::factory()->create([
         'code' => 'USD',
         'name' => ['en' => 'US Dollar'],
         'symbol' => '$',
@@ -25,7 +26,7 @@ beforeEach(function () {
 
     // Create exchange rate
     $this->exchangeRate = 1460.0;
-    \Modules\Foundation\Models\CurrencyRate::create([
+    CurrencyRate::create([
         'currency_id' => $this->foreignCurrency->id,
         'company_id' => $this->company->id,
         'rate' => $this->exchangeRate,
@@ -33,13 +34,13 @@ beforeEach(function () {
         'source' => 'manual',
     ]);
 
-    $this->vendor = \Modules\Foundation\Models\Partner::factory()->vendor()->create(['company_id' => $this->company->id]);
-    $this->customer = \Modules\Foundation\Models\Partner::factory()->customer()->create(['company_id' => $this->company->id]);
+    $this->vendor = Partner::factory()->vendor()->create(['company_id' => $this->company->id]);
+    $this->customer = Partner::factory()->customer()->create(['company_id' => $this->company->id]);
 });
 
 describe('Consolidated Exchange Rate Field', function () {
     test('single exchange rate field exists for foreign currency vendor bills', function () {
-        $vendorBill = \Modules\Purchase\Models\VendorBill::factory()->create([
+        $vendorBill = VendorBill::factory()->create([
             'company_id' => $this->company->id,
             'vendor_id' => $this->vendor->id,
             'currency_id' => $this->foreignCurrency->id,
@@ -56,7 +57,7 @@ describe('Consolidated Exchange Rate Field', function () {
     });
 
     test('single exchange rate field exists for foreign currency invoices', function () {
-        $invoice = \Modules\Sales\Models\Invoice::factory()->create([
+        $invoice = Invoice::factory()->create([
             'company_id' => $this->company->id,
             'customer_id' => $this->customer->id,
             'currency_id' => $this->foreignCurrency->id,
@@ -73,7 +74,7 @@ describe('Consolidated Exchange Rate Field', function () {
     });
 
     test('exchange rate field is hidden for base currency documents', function () {
-        $vendorBill = \Modules\Purchase\Models\VendorBill::factory()->create([
+        $vendorBill = VendorBill::factory()->create([
             'company_id' => $this->company->id,
             'vendor_id' => $this->vendor->id,
             'currency_id' => $this->company->currency_id,
@@ -87,7 +88,7 @@ describe('Consolidated Exchange Rate Field', function () {
     });
 
     test('exchange rate field shows current rate in helper text', function () {
-        $vendorBill = \Modules\Purchase\Models\VendorBill::factory()->create([
+        $vendorBill = VendorBill::factory()->create([
             'company_id' => $this->company->id,
             'vendor_id' => $this->vendor->id,
             'currency_id' => $this->foreignCurrency->id,
@@ -106,7 +107,7 @@ describe('Consolidated Exchange Rate Field', function () {
 
     test('exchange rate field maintains conditional editability', function () {
         // Test draft status - should be editable
-        $draftBill = \Modules\Purchase\Models\VendorBill::factory()->create([
+        $draftBill = VendorBill::factory()->create([
             'company_id' => $this->company->id,
             'vendor_id' => $this->vendor->id,
             'currency_id' => $this->foreignCurrency->id,
@@ -117,7 +118,7 @@ describe('Consolidated Exchange Rate Field', function () {
         $livewire->assertFormFieldExists('exchange_rate_at_creation');
 
         // Test posted status - should exist but be disabled
-        $postedBill = \Modules\Purchase\Models\VendorBill::factory()->create([
+        $postedBill = VendorBill::factory()->create([
             'company_id' => $this->company->id,
             'vendor_id' => $this->vendor->id,
             'currency_id' => $this->foreignCurrency->id,
@@ -132,7 +133,7 @@ describe('Consolidated Exchange Rate Field', function () {
     test('exchange rate field can be set and persists', function () {
         $customRate = 1500.0;
 
-        $vendorBill = \Modules\Purchase\Models\VendorBill::factory()->create([
+        $vendorBill = VendorBill::factory()->create([
             'company_id' => $this->company->id,
             'vendor_id' => $this->vendor->id,
             'currency_id' => $this->foreignCurrency->id,

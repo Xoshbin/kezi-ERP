@@ -3,15 +3,12 @@
 namespace Modules\Inventory\Tests\Feature\Inventory;
 
 use App\Models\Company;
-use App\Models\Lot;
-use App\Models\StockLocation;
-use App\Models\StockMove;
-use App\Models\StockQuant;
-use App\Services\Inventory\InventoryPerformanceMonitoringService;
-use App\Services\Inventory\InventoryQueryOptimizationService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
+use Modules\Product\Models\Product;
+use ReflectionClass;
 use Tests\TestCase;
 
 class InventoryPerformanceOptimizationTest extends TestCase
@@ -19,7 +16,7 @@ class InventoryPerformanceOptimizationTest extends TestCase
     use RefreshDatabase;
 
     private Company $company;
-    private \Modules\Product\Models\Product $product;
+    private Product $product;
     private StockLocation $location;
     private InventoryPerformanceMonitoringService $monitoringService;
     private InventoryQueryOptimizationService $optimizationService;
@@ -29,9 +26,9 @@ class InventoryPerformanceOptimizationTest extends TestCase
         parent::setUp();
 
         $this->company = Company::factory()->create();
-        $this->product = \Modules\Product\Models\Product::factory()->create([
+        $this->product = Product::factory()->create([
             'company_id' => $this->company->id,
-            'type' => \Modules\Product\Enums\Products\ProductType::Storable,
+            'type' => ProductType::Storable,
         ]);
         $this->location = StockLocation::factory()->create(['company_id' => $this->company->id]);
 
@@ -101,9 +98,9 @@ class InventoryPerformanceOptimizationTest extends TestCase
     public function test_can_get_bulk_stock_quantities(): void
     {
         // Create test stock moves for multiple products
-        $product2 = \Modules\Product\Models\Product::factory()->create([
+        $product2 = Product::factory()->create([
             'company_id' => $this->company->id,
-            'type' => \Modules\Product\Enums\Products\ProductType::Storable,
+            'type' => ProductType::Storable,
         ]);
 
         // Create incoming stock moves with product lines
@@ -113,7 +110,7 @@ class InventoryPerformanceOptimizationTest extends TestCase
             'status' => 'done',
         ]);
 
-        \App\Models\StockMoveProductLine::factory()->create([
+        StockMoveProductLine::factory()->create([
             'company_id' => $this->company->id,
             'stock_move_id' => $move1->id,
             'product_id' => $this->product->id,
@@ -127,7 +124,7 @@ class InventoryPerformanceOptimizationTest extends TestCase
             'status' => 'done',
         ]);
 
-        \App\Models\StockMoveProductLine::factory()->create([
+        StockMoveProductLine::factory()->create([
             'company_id' => $this->company->id,
             'stock_move_id' => $move2->id,
             'product_id' => $product2->id,
@@ -286,7 +283,7 @@ class InventoryPerformanceOptimizationTest extends TestCase
     public function test_performance_monitoring_handles_errors_gracefully(): void
     {
         // Test with invalid table name to trigger error handling
-        $reflection = new \ReflectionClass($this->monitoringService);
+        $reflection = new ReflectionClass($this->monitoringService);
         $method = $reflection->getMethod('analyzeTableIndexUsage');
         $method->setAccessible(true);
 
@@ -307,7 +304,7 @@ class InventoryPerformanceOptimizationTest extends TestCase
             [999] // Non-existent product ID
         );
 
-        expect($result)->toBeInstanceOf(\Illuminate\Support\Collection::class)
+        expect($result)->toBeInstanceOf(Collection::class)
             ->and($result)->toHaveCount(0);
     }
 }

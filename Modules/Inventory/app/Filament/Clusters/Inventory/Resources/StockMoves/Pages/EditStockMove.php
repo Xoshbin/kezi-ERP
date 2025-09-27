@@ -2,17 +2,11 @@
 
 namespace Modules\Inventory\Filament\Clusters\Inventory\Resources\StockMoves\Pages;
 
-use App\Actions\Inventory\UpdateStockMoveWithProductLinesAction;
-use App\DataTransferObjects\Inventory\CreateStockMoveProductLineDTO;
-use App\DataTransferObjects\Inventory\UpdateStockMoveWithProductLinesDTO;
-use App\Enums\Inventory\StockMoveStatus;
-use App\Enums\Inventory\StockMoveType;
-use App\Exceptions\Inventory\InsufficientCostInformationException;
-use App\Filament\Actions\DocsAction;
-use App\Filament\Clusters\Inventory\Resources\StockMoves\StockMoveResource;
 use Carbon\Carbon;
+use Filament\Actions\Action;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\ViewAction;
+use Filament\Facades\Filament;
 use Filament\Notifications\Actions\Action as NotificationAction;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
@@ -29,7 +23,7 @@ class EditStockMove extends EditRecord
                 ->icon('heroicon-o-eye'),
             DeleteAction::make()
                 ->icon('heroicon-o-trash')
-                ->visible(fn(): bool => ($this->getRecord() instanceof \App\Models\StockMove) && $this->getRecord()->status === StockMoveStatus::Draft),
+                ->visible(fn(): bool => ($this->getRecord() instanceof StockMove) && $this->getRecord()->status === StockMoveStatus::Draft),
             DocsAction::make('stock-management'),
         ];
     }
@@ -50,7 +44,7 @@ class EditStockMove extends EditRecord
     protected function mutateFormDataBeforeFill(array $data): array
     {
         $record = $this->getRecord();
-        if (! $record instanceof \App\Models\StockMove) {
+        if (! $record instanceof StockMove) {
             return $data;
         }
 
@@ -111,10 +105,10 @@ class EditStockMove extends EditRecord
                 ->danger()
                 ->persistent()
                 ->actions([
-                    \Filament\Actions\Action::make('create_vendor_bill')
+                    Action::make('create_vendor_bill')
                         ->label(__('Create Vendor Bill'))
                         ->button()
-                        ->url(route('filament.jmeryar.accounting.resources.vendor-bills.create', ['tenant' => \Filament\Facades\Filament::getTenant()]))
+                        ->url(route('filament.jmeryar.accounting.resources.vendor-bills.create', ['tenant' => Filament::getTenant()]))
                         ->openUrlInNewTab(),
                 ])
                 ->send();

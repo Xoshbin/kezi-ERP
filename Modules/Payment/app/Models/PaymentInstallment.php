@@ -5,8 +5,10 @@ namespace Modules\Payment\Models;
 use App\Casts\DocumentCurrencyMoneyCast;
 use App\Enums\PaymentInstallments\InstallmentStatus;
 use App\Observers\AuditLogObserver;
+use Brick\Math\RoundingMode;
 use Brick\Money\Money;
 use Database\Factories\PaymentInstallmentFactory;
+use Eloquent;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
@@ -14,6 +16,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Support\Carbon;
 
 /**
@@ -58,12 +61,12 @@ use Illuminate\Support\Carbon;
  * @method static Builder<static>|PaymentInstallment dueSoon(int $days = 7)
  * @method static Builder<static>|PaymentInstallment unpaid()
  *
- * @mixin \Eloquent
+ * @mixin Eloquent
  */
 #[ObservedBy([\Modules\Foundation\Observers\AuditLogObserver::class])]
 class PaymentInstallment extends Model
 {
-    /** @use HasFactory<\Database\Factories\PaymentInstallmentFactory> */
+    /** @use HasFactory<PaymentInstallmentFactory> */
     use HasFactory;
 
     /**
@@ -121,7 +124,7 @@ class PaymentInstallment extends Model
     /**
      * Get the parent model (Invoice or VendorBill).
      */
-    public function installmentable(): \Illuminate\Database\Eloquent\Relations\MorphTo
+    public function installmentable(): MorphTo
     {
         return $this->morphTo('installmentable', 'installment_type', 'installment_id');
     }
@@ -208,7 +211,7 @@ class PaymentInstallment extends Model
         $discountRate = $this->discount_percentage / 100;
         $remainingAmount = $this->getRemainingAmount();
 
-        return $remainingAmount->multipliedBy($discountRate, \Brick\Math\RoundingMode::HALF_UP);
+        return $remainingAmount->multipliedBy($discountRate, RoundingMode::HALF_UP);
     }
 
     /**

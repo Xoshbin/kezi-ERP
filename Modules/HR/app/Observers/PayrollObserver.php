@@ -2,13 +2,15 @@
 
 namespace Modules\HR\Observers;
 
+use Modules\HR\Models\Payroll;
+
 class PayrollObserver
 {
     /**
      * Handle the Payroll "creating" event.
      * Generate payroll number and calculate totals automatically when creating a new payroll.
      */
-    public function creating(\Modules\HR\Models\Payroll $payroll): void
+    public function creating(Payroll $payroll): void
     {
         if (empty($payroll->payroll_number)) {
             $payroll->payroll_number = $this->generatePayrollNumber($payroll->company_id);
@@ -20,7 +22,7 @@ class PayrollObserver
     /**
      * Calculate gross salary, total deductions, and net salary.
      */
-    private function calculatePayrollTotals(\Modules\HR\Models\Payroll $payroll): void
+    private function calculatePayrollTotals(Payroll $payroll): void
     {
 
         // Calculate gross salary (sum of all salary components)
@@ -59,7 +61,7 @@ class PayrollObserver
         $month = now()->format('m');
 
         // Get the next sequential number for this month
-        $lastPayroll = \Modules\HR\Models\Payroll::where('company_id', $companyId)
+        $lastPayroll = Payroll::where('company_id', $companyId)
             ->where('payroll_number', 'like', $prefix.$year.$month.'%')
             ->orderBy('payroll_number', 'desc')
             ->first();

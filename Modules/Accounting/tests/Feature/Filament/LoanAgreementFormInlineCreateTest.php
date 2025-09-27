@@ -1,6 +1,5 @@
 <?php
 
-use App\Filament\Clusters\Accounting\Resources\LoanAgreements\Pages\CreateLoanAgreement;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\Support\FilamentInlineCreate as Inline;
 use Tests\Traits\WithConfiguredCompany;
@@ -29,9 +28,9 @@ it('can fill create loan form using newly created partner and currency', functio
             'currency_id' => $currency->id,
             'principal_amount' => 5000,
             'outstanding_principal' => 0,
-            'loan_type' => \App\Enums\Loans\LoanType::Payable->value,
-            'status' => \App\Enums\Loans\LoanStatus::Draft->value,
-            'schedule_method' => \App\Enums\Loans\ScheduleMethod::Annuity->value,
+            'loan_type' => LoanType::Payable->value,
+            'status' => LoanStatus::Draft->value,
+            'schedule_method' => ScheduleMethod::Annuity->value,
             'interest_rate' => 10.0,
             'eir_enabled' => false,
         ])

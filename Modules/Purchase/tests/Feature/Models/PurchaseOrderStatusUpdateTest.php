@@ -1,8 +1,7 @@
 <?php
 
-use App\Enums\Purchases\PurchaseOrderStatus;
-use App\Models\PurchaseOrder;
-use App\Models\PurchaseOrderLine;
+use Modules\Foundation\Models\Partner;
+use Modules\Product\Models\Product;
 use Tests\Traits\WithConfiguredCompany;
 
 uses(WithConfiguredCompany::class);
@@ -10,7 +9,7 @@ uses(WithConfiguredCompany::class);
 describe('Purchase Order Status Updates', function () {
     beforeEach(function () {
         $this->setupWithConfiguredCompany();
-        $this->vendor = \Modules\Foundation\Models\Partner::factory()->vendor()->create(['company_id' => $this->company->id]);
+        $this->vendor = Partner::factory()->vendor()->create(['company_id' => $this->company->id]);
     });
 
     it('prevents receive status updates when not from inventory operation', function () {
@@ -25,7 +24,7 @@ describe('Purchase Order Status Updates', function () {
         // Add a line with some received quantity to simulate partial receipt
         PurchaseOrderLine::factory()->create([
             'purchase_order_id' => $purchaseOrder->id,
-            'product_id' => \Modules\Product\Models\Product::factory()->create(['company_id' => $this->company->id])->id,
+            'product_id' => Product::factory()->create(['company_id' => $this->company->id])->id,
             'quantity' => 10,
             'quantity_received' => 5, // Partially received
         ]);
@@ -54,7 +53,7 @@ describe('Purchase Order Status Updates', function () {
         // Add a line with some received quantity to simulate partial receipt
         PurchaseOrderLine::factory()->create([
             'purchase_order_id' => $purchaseOrder->id,
-            'product_id' => \Modules\Product\Models\Product::factory()->create(['company_id' => $this->company->id])->id,
+            'product_id' => Product::factory()->create(['company_id' => $this->company->id])->id,
             'quantity' => 10,
             'quantity_received' => 5, // Partially received
         ]);
@@ -83,7 +82,7 @@ describe('Purchase Order Status Updates', function () {
         // Add a line with NO received quantity
         PurchaseOrderLine::factory()->create([
             'purchase_order_id' => $purchaseOrder->id,
-            'product_id' => \Modules\Product\Models\Product::factory()->create(['company_id' => $this->company->id])->id,
+            'product_id' => Product::factory()->create(['company_id' => $this->company->id])->id,
             'quantity' => 10,
             'quantity_received' => 0, // Nothing received yet
         ]);

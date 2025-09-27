@@ -2,16 +2,14 @@
 
 namespace Modules\Inventory\Tests\Feature\Adjustments;
 
-use App\Actions\Adjustments\CreateAdjustmentDocumentAction;
-use App\DataTransferObjects\Adjustments\CreateAdjustmentDocumentDTO;
-use App\DataTransferObjects\Adjustments\CreateAdjustmentDocumentLineDTO;
-use App\Enums\Adjustments\AdjustmentDocumentType;
-use App\Models\AdjustmentDocumentLine;
-use App\Models\Company;
-use App\Models\Tax;
 use Brick\Money\Money;
 use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Modules\Accounting\Models\Account;
+use Modules\Foundation\Models\Currency;
+use Modules\Foundation\Models\CurrencyRate;
+use Modules\Inventory\Models\AdjustmentDocument;
+use Modules\Product\Models\Product;
 use Tests\TestCase;
 use Tests\Traits\WithConfiguredCompany;
 
@@ -21,15 +19,15 @@ class AdjustmentDocumentMultiCurrencyTest extends TestCase
 
     protected Company $company;
 
-    protected \Modules\Foundation\Models\Currency $iqd;
+    protected Currency $iqd;
 
-    protected \Modules\Foundation\Models\Currency $usd;
+    protected Currency $usd;
 
-    protected \Modules\Product\Models\Product $product;
+    protected Product $product;
 
     protected Tax $tax;
 
-    protected \Modules\Accounting\Models\Account $account;
+    protected Account $account;
 
     protected function setUp(): void
     {
@@ -38,11 +36,11 @@ class AdjustmentDocumentMultiCurrencyTest extends TestCase
         $this->setupWithConfiguredCompany();
 
         // Setup currencies (use firstOrCreate to avoid conflicts)
-        $this->iqd = \Modules\Foundation\Models\Currency::firstOrCreate(
+        $this->iqd = Currency::firstOrCreate(
             ['code' => 'IQD'],
             ['name' => ['en' => 'Iraqi Dinar'], 'symbol' => 'IQD', 'decimal_places' => 3, 'is_active' => true]
         );
-        $this->usd = \Modules\Foundation\Models\Currency::firstOrCreate(
+        $this->usd = Currency::firstOrCreate(
             ['code' => 'USD'],
             ['name' => ['en' => 'US Dollar'], 'symbol' => '$', 'decimal_places' => 2, 'is_active' => true]
         );
@@ -51,7 +49,7 @@ class AdjustmentDocumentMultiCurrencyTest extends TestCase
         $this->company->update(['currency_id' => $this->iqd->id]);
 
         // Create exchange rate: 1 USD = 1500 IQD
-        \Modules\Foundation\Models\CurrencyRate::create([
+        CurrencyRate::create([
             'company_id' => $this->company->id,
             'currency_id' => $this->usd->id,
             'rate' => 1500.0,
@@ -59,9 +57,9 @@ class AdjustmentDocumentMultiCurrencyTest extends TestCase
         ]);
 
         // Setup test data
-        $this->product = \Modules\Product\Models\Product::factory()->create(['company_id' => $this->company->id]);
+        $this->product = Product::factory()->create(['company_id' => $this->company->id]);
         $this->tax = Tax::factory()->create(['company_id' => $this->company->id, 'rate' => 0.10]);
-        $this->account = \Modules\Accounting\Models\Account::factory()->create(['company_id' => $this->company->id]);
+        $this->account = Account::factory()->create(['company_id' => $this->company->id]);
     }
 
     /** @test */
@@ -172,7 +170,7 @@ class AdjustmentDocumentMultiCurrencyTest extends TestCase
     public function it_handles_missing_exchange_rate_gracefully()
     {
         // Remove the exchange rate
-        \Modules\Foundation\Models\CurrencyRate::where('currency_id', $this->usd->id)->delete();
+        CurrencyRate::where('currency_id', $this->usd->id)->delete();
 
         $action = app(CreateAdjustmentDocumentAction::class);
 
@@ -211,7 +209,7 @@ class AdjustmentDocumentMultiCurrencyTest extends TestCase
     public function observer_updates_company_currency_totals_when_lines_change()
     {
         // Create adjustment document in USD
-        $adjustmentDocument = \Modules\Inventory\Models\AdjustmentDocument::factory()->create([
+        $adjustmentDocument = AdjustmentDocument::factory()->create([
             'company_id' => $this->company->id,
             'currency_id' => $this->usd->id,
             'exchange_rate_at_creation' => 1500.0,
@@ -245,7 +243,7 @@ class AdjustmentDocumentMultiCurrencyTest extends TestCase
     public function it_creates_correct_journal_entry_for_multi_currency_adjustment_document()
     {
         $action = app(CreateAdjustmentDocumentAction::class);
-        $service = app(\App\Services\AdjustmentDocumentService::class);
+        $service = app(AdjustmentDocumentService::class);
 
         // Create a USD adjustment document
         $dto = new CreateAdjustmentDocumentDTO(
@@ -272,7 +270,7 @@ class AdjustmentDocumentMultiCurrencyTest extends TestCase
         $adjustmentDocument = $action->execute($dto);
 
         // Post the adjustment document to create journal entry
-        $user = \App\Models\User::factory()->create();
+        $user = User::factory()->create();
         $service->post($adjustmentDocument, $user);
 
         // Refresh to get the journal entry

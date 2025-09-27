@@ -1,9 +1,7 @@
 <?php
 
-use App\Enums\Accounting\JournalEntryState;
-use App\Enums\Payments\PaymentStatus;
-use App\Services\PaymentService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Modules\Payment\Models\Payment;
 use Tests\Traits\MocksTime;
 use Tests\Traits\WithConfiguredCompany;
 
@@ -12,7 +10,7 @@ uses(RefreshDatabase::class, WithConfiguredCompany::class, MocksTime::class);
 test('cancelling a confirmed payment creates a reversing journal entry and an audit log', function () {
 
     // Create and confirm a payment
-    $payment = \Modules\Payment\Models\Payment::factory()->for($this->company)->create(['status' => 'draft']);
+    $payment = Payment::factory()->for($this->company)->create(['status' => 'draft']);
     $paymentService = app(PaymentService::class);
     $paymentService->confirm($payment, $this->user);
     $payment->refresh();
@@ -32,7 +30,7 @@ test('cancelling a confirmed payment creates a reversing journal entry and an au
 
     // Assert: Audit log was created
     $this->assertDatabaseHas('audit_logs', [
-        'auditable_type' => \Modules\Payment\Models\Payment::class,
+        'auditable_type' => Payment::class,
         'auditable_id' => $payment->id,
         'user_id' => $this->user->id,
         'event_type' => 'cancellation',

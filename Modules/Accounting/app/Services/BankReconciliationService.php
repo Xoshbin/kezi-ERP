@@ -2,18 +2,16 @@
 
 namespace Modules\Accounting\Services;
 
-use App\Actions\Accounting\CreateJournalEntryForReconciliationAction;
-use App\Actions\Accounting\CreateJournalEntryForStatementLineAction;
-use App\DataTransferObjects\Accounting\CreateJournalEntryForStatementLineDTO;
-use App\Enums\Payments\PaymentStatus;
-use App\Enums\Payments\PaymentType;
-use App\Exceptions\Reconciliation\ReconciliationDisabledException;
 use App\Models\Company;
 use App\Models\User;
 use Brick\Money\Money;
+use Exception;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\DB;
 use InvalidArgumentException;
+use Modules\Accounting\Models\Account;
+use Modules\Accounting\Models\BankStatementLine;
+use Modules\Payment\Models\Payment;
 use RuntimeException;
 
 // 1. Import the new action
@@ -24,7 +22,7 @@ class BankReconciliationService
         private CurrencyConverterService $currencyConverter
     ) {}
 
-    public function reconcilePayment(\Modules\Payment\Models\Payment $payment, \Modules\Accounting\Models\BankStatementLine $statementLine, User $user): void
+    public function reconcilePayment(Payment $payment, BankStatementLine $statementLine, User $user): void
     {
         // Check if reconciliation is enabled for the company
         $this->validateReconciliationEnabled($payment->company);
@@ -50,8 +48,8 @@ class BankReconciliationService
     public function reconcile(array $bankStatementLineIds, array $paymentIds, User $user): void
     {
         // Fetch all necessary models upfront
-        $lines = \Modules\Accounting\Models\BankStatementLine::whereIn('id', $bankStatementLineIds)->get();
-        $payments = \Modules\Payment\Models\Payment::whereIn('id', $paymentIds)->with('company')->get();
+        $lines = BankStatementLine::whereIn('id', $bankStatementLineIds)->get();
+        $payments = Payment::whereIn('id', $paymentIds)->with('company')->get();
 
         // Check if reconciliation is enabled for the company
         if ($payments->isNotEmpty()) {
@@ -89,7 +87,7 @@ class BankReconciliationService
         });
     }
 
-    public function createWriteOff(\Modules\Accounting\Models\BankStatementLine $line, \Modules\Accounting\Models\Account $writeOffAccount, User $user, string $description): void
+    public function createWriteOff(BankStatementLine $line, Account $writeOffAccount, User $user, string $description): void
     {
         // Create DTO and execute action - the action handles its own transaction
         $dto = new CreateJournalEntryForStatementLineDTO(
@@ -114,8 +112,8 @@ class BankReconciliationService
     public function reconcileMultiple(array $bankLineIds, array $paymentIds, User $user): void
     {
         // Pre-fetch to check reconciliation setting
-        $bankLines = \Modules\Accounting\Models\BankStatementLine::whereIn('id', $bankLineIds)->with('bankStatement.company')->get();
-        $payments = \Modules\Payment\Models\Payment::whereIn('id', $paymentIds)->with(['currency', 'company'])->get();
+        $bankLines = BankStatementLine::whereIn('id', $bankLineIds)->with('bankStatement.company')->get();
+        $payments = Payment::whereIn('id', $paymentIds)->with(['currency', 'company'])->get();
 
         // Check if reconciliation is enabled for the company
         if ($payments->isNotEmpty()) {
@@ -125,13 +123,13 @@ class BankReconciliationService
         }
 
         DB::transaction(function () use ($bankLineIds, $paymentIds, $user) {
-            $bankLines = \Modules\Accounting\Models\BankStatementLine::whereIn('id', $bankLineIds)->with('bankStatement.currency')->get();
-            $payments = \Modules\Payment\Models\Payment::whereIn('id', $paymentIds)->with(['currency', 'company'])->get();
+            $bankLines = BankStatementLine::whereIn('id', $bankLineIds)->with('bankStatement.currency')->get();
+            $payments = Payment::whereIn('id', $paymentIds)->with(['currency', 'company'])->get();
 
             // Validate that totals match using proper Money arithmetic
             $firstBankLine = $bankLines->first();
             if (! $firstBankLine) {
-                throw new \Exception('No bank lines provided for reconciliation');
+                throw new Exception('No bank lines provided for reconciliation');
             }
             $currency = $firstBankLine->bankStatement->currency;
             $bankTotal = Money::of(0, $currency->code);
@@ -184,11 +182,11 @@ class BankReconciliationService
     /**
      * Get unreconciled bank statement lines for a given bank statement
      *
-     * @return Collection<int, \Modules\Accounting\Models\BankStatementLine>
+     * @return Collection<int, BankStatementLine>
      */
     public function getUnreconciledBankLines(int $bankStatementId)
     {
-        return \Modules\Accounting\Models\BankStatementLine::where('bank_statement_id', $bankStatementId)
+        return BankStatementLine::where('bank_statement_id', $bankStatementId)
             ->where('is_reconciled', false)
             ->get();
     }
@@ -196,11 +194,11 @@ class BankReconciliationService
     /**
      * Get unreconciled payments for a given company
      *
-     * @return Collection<int, \Modules\Payment\Models\Payment>
+     * @return Collection<int, Payment>
      */
     public function getUnreconciledPayments(int $companyId)
     {
-        return \Modules\Payment\Models\Payment::where('company_id', $companyId)
+        return Payment::where('company_id', $companyId)
             ->where('status', PaymentStatus::Confirmed)
             ->whereDoesntHave('bankStatementLines')
             ->with(['partner', 'currency'])

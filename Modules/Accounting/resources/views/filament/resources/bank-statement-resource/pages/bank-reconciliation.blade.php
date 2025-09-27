@@ -1,3 +1,4 @@
+@php use App\Livewire\Accounting\BankReconciliationMatcher; @endphp
 <x-filament-panels::page>
-    @livewire(\App\Livewire\Accounting\BankReconciliationMatcher::class, ['bankStatementId' => $record])
+    @livewire(BankReconciliationMatcher::class, ['bankStatementId' => $record])
 </x-filament-panels::page>

@@ -2,14 +2,12 @@
 
 namespace Modules\Inventory\Tests\Feature\Inventory;
 
-use App\Actions\Purchases\CreateVendorBillLineAction;
-use App\DataTransferObjects\Purchases\CreateVendorBillLineDTO;
-use App\Enums\Inventory\StockPickingState;
-use App\Enums\Inventory\StockPickingType;
-use App\Models\StockPicking;
-use App\Services\VendorBillService;
+
 use Brick\Money\Money;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Modules\Product\Enums\Products\ProductType;
+use Modules\Product\Models\Product;
+use Modules\Purchase\Models\VendorBill;
 use Tests\Traits\WithConfiguredCompany;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);
@@ -18,9 +16,9 @@ beforeEach(function () {
     $this->setupWithConfiguredCompany();
     $this->setupInventoryTestEnvironment();
 
-    $this->product = \Modules\Product\Models\Product::factory()->for($this->company)->create([
-        'type' => \Modules\Product\Enums\Products\ProductType::Storable,
-        'inventory_valuation_method' => \App\Enums\Inventory\ValuationMethod::AVCO,
+    $this->product = Product::factory()->for($this->company)->create([
+        'type' => ProductType::Storable,
+        'inventory_valuation_method' => ValuationMethod::AVCO,
         'default_inventory_account_id' => $this->inventoryAccount->id,
         'default_stock_input_account_id' => $this->stockInputAccount->id,
         'average_cost' => Money::of(0, $this->company->currency->code),
@@ -31,7 +29,7 @@ it('creates a receipt picking and updates quants when posting a vendor bill', fu
     $qty = 8;
     $unitCost = Money::of(100, $this->company->currency->code);
 
-    $vendorBill = \Modules\Purchase\Models\VendorBill::factory()->for($this->company)->create([
+    $vendorBill = VendorBill::factory()->for($this->company)->create([
         'vendor_id' => $this->vendor->id,
         'status' => 'draft',
         'bill_date' => now()->toDateString(),
@@ -69,7 +67,7 @@ it('creates a receipt picking and updates quants when posting a vendor bill', fu
     expect($productLine)->not->toBeNull();
 
     // Quant updated at company's default stock location
-    $quant = \App\Models\StockQuant::where('company_id', $this->company->id)
+    $quant = StockQuant::where('company_id', $this->company->id)
         ->where('product_id', $this->product->id)
         ->where('location_id', $this->company->default_stock_location_id)
         ->first();

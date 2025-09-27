@@ -1,15 +1,10 @@
 <?php
 
-use App\Actions\Payments\CreatePaymentAction;
-use App\DataTransferObjects\Payments\CreatePaymentDocumentLinkDTO;
-use App\DataTransferObjects\Payments\CreatePaymentDTO;
-use App\Enums\Accounting\JournalType;
-use App\Enums\Payments\PaymentMethod;
-use App\Enums\Payments\PaymentType;
-use App\Models\Journal;
-use App\Services\PaymentService;
 use Brick\Money\Money;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Modules\Accounting\Models\Account;
+use Modules\Purchase\Models\VendorBill;
+use Modules\Sales\Models\Invoice;
 use Tests\Traits\MocksTime;
 use Tests\Traits\WithConfiguredCompany;
 
@@ -18,7 +13,7 @@ uses(RefreshDatabase::class, WithConfiguredCompany::class, MocksTime::class);
 test('an inbound payment can be created and linked to an invoice', function () {
     // Arrange: Create an invoice to be paid.
     $currency = $this->company->currency;
-    $invoice = \Modules\Sales\Models\Invoice::factory()->for($this->company)->create([
+    $invoice = Invoice::factory()->for($this->company)->create([
         'status' => 'posted',
         'total_amount' => Money::of(200, $currency->code),
         'currency_id' => $currency->id,
@@ -63,7 +58,7 @@ test('an inbound payment can be created and linked to an invoice', function () {
 test('an outbound payment can be created and linked to a vendor bill', function () {
     // Arrange: Create a vendor bill to be paid.
     $currency = $this->company->currency;
-    $vendorBill = \Modules\Purchase\Models\VendorBill::factory()->for($this->company)->create([
+    $vendorBill = VendorBill::factory()->for($this->company)->create([
         'status' => 'posted',
         'total_amount' => Money::of(150, $currency->code),
         'currency_id' => $currency->id,
@@ -107,8 +102,8 @@ test('an outbound payment can be created and linked to a vendor bill', function 
 
 test('creating a payment generates the correct journal entry', function () {
     // Arrange: Set up the necessary accounts and journal.
-    $receivableAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create(['type' => 'receivable']);
-    $bankAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create(['type' => 'bank_and_cash']);
+    $receivableAccount = Account::factory()->for($this->company)->create(['type' => 'receivable']);
+    $bankAccount = Account::factory()->for($this->company)->create(['type' => 'bank_and_cash']);
     $bankJournal = Journal::factory()->for($this->company)->create([
         'type' => JournalType::Bank,
         'default_debit_account_id' => $bankAccount->id,
@@ -117,7 +112,7 @@ test('creating a payment generates the correct journal entry', function () {
     $this->company->update(['default_accounts_receivable_id' => $receivableAccount->id]);
 
     // Arrange: Create a posted invoice.
-    $invoice = \Modules\Sales\Models\Invoice::factory()->for($this->company)->create([
+    $invoice = Invoice::factory()->for($this->company)->create([
         'status' => 'posted',
         'total_amount' => Money::of(500, $this->company->currency->code),
         'currency_id' => $this->company->currency_id,

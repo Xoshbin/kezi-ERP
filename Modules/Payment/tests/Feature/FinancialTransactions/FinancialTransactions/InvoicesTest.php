@@ -1,18 +1,14 @@
 <?php
 
-use App\Actions\Sales\CreateInvoiceAction;
-use App\Actions\Sales\CreateInvoiceLineAction;
-use App\DataTransferObjects\Sales\CreateInvoiceDTO;
-use App\DataTransferObjects\Sales\CreateInvoiceLineDTO;
-use App\DataTransferObjects\Sales\UpdateInvoiceDTO;
-use App\Enums\Sales\InvoiceStatus;
-use App\Exceptions\DeletionNotAllowedException;
-use App\Exceptions\PeriodIsLockedException;
-use App\Exceptions\UpdateNotAllowedException;
-use App\Services\InvoiceService;
 use Brick\Money\Money;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Event;
+use Modules\Accounting\Models\Account;
+use Modules\Accounting\Models\LockDate;
+use Modules\Foundation\Models\Partner;
+use Modules\Product\Models\Product;
+use Modules\Sales\Events\InvoiceConfirmed;
+use Modules\Sales\Models\Invoice;
 use Tests\Traits\WithConfiguredCompany;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);
@@ -22,7 +18,7 @@ test('a draft invoice can be confirmed, which posts it and dispatches an event',
     Event::fake();
 
     // Arrange: Create a draft invoice with at least one line to satisfy business rules.
-    $invoice = \Modules\Sales\Models\Invoice::factory()->withLines(1)->create([
+    $invoice = Invoice::factory()->withLines(1)->create([
         'company_id' => $this->company->id,
         'currency_id' => $this->company->currency_id,
         'status' => InvoiceStatus::Draft,
@@ -38,26 +34,26 @@ test('a draft invoice can be confirmed, which posts it and dispatches an event',
     ]);
 
     // Assert: An event was dispatched to notify other parts of the system.
-    Event::assertDispatched(\Modules\Sales\Events\InvoiceConfirmed::class, function ($event) use ($invoice) {
+    Event::assertDispatched(InvoiceConfirmed::class, function ($event) use ($invoice) {
         return $event->invoice->id === $invoice->id;
     });
 });
 
 test('confirming an invoice generates the correct journal entry', function () {
     // Arrange: The company is already configured with default accounts and journals.
-    $productSalesAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create(['type' => 'income']);
+    $productSalesAccount = Account::factory()->for($this->company)->create(['type' => 'income']);
     $currencyCode = $this->company->currency->code;
 
     // THE FIX: Ensure the product is created with a default income account.
     // Use Service type to avoid inventory complexity in this test
-    $product = \Modules\Product\Models\Product::factory()->for($this->company)->create([
-        'type' => \Modules\Product\Enums\Products\ProductType::Service,
+    $product = Product::factory()->for($this->company)->create([
+        'type' => ProductType::Service,
         'income_account_id' => $productSalesAccount->id,
         'unit_price' => Money::of(100, $currencyCode),
     ]);
 
     // Arrange: Create a draft invoice...
-    $invoice = \Modules\Sales\Models\Invoice::factory()->create([
+    $invoice = Invoice::factory()->create([
         'company_id' => $this->company->id,
         'currency_id' => $this->company->currency_id,
         'status' => 'draft',
@@ -68,7 +64,7 @@ test('confirming an invoice generates the correct journal entry', function () {
         product_id: $product->id,
         description: 'Product Description',
         quantity: 2,
-        unit_price: \Brick\Money\Money::of('100', $this->company->currency->code),
+        unit_price: Money::of('100', $this->company->currency->code),
         income_account_id: $productSalesAccount->id,
         tax_id: null,
     );
@@ -85,11 +81,11 @@ test('confirming an invoice generates the correct journal entry', function () {
 
 test('a posted invoice cannot be updated', function () {
     // Arrange: Create a posted invoice.
-    $invoice = \Modules\Sales\Models\Invoice::factory()->for($this->company)->create([
+    $invoice = Invoice::factory()->for($this->company)->create([
         'status' => 'posted',
     ]);
     $originalCustomerId = $invoice->customer_id;
-    $newCustomer = \Modules\Foundation\Models\Partner::factory()->for($this->company)->create();
+    $newCustomer = Partner::factory()->for($this->company)->create();
 
     // Arrange: Prepare the DTO with the attempted update data.
     $updateDto = new UpdateInvoiceDTO(
@@ -103,7 +99,7 @@ test('a posted invoice cannot be updated', function () {
     );
 
     // Assert: Expect the Action to throw the exception because the invoice is posted.
-    expect(fn() => app(\App\Actions\Sales\UpdateInvoiceAction::class)->execute($updateDto))
+    expect(fn() => app(UpdateInvoiceAction::class)->execute($updateDto))
         ->toThrow(\Modules\Foundation\Exceptions\UpdateNotAllowedException::class, 'Cannot modify a non-draft invoice.');
 
     // Assert: Double-check that the customer_id was not changed in the database.
@@ -116,7 +112,7 @@ test('a posted invoice cannot be updated', function () {
 test('a posted invoice cannot be deleted', function () {
     // Arrange: Create a posted invoice.
     $currencyCode = $this->company->currency->code;
-    $invoice = \Modules\Sales\Models\Invoice::factory()->create([
+    $invoice = Invoice::factory()->create([
         'company_id' => $this->company->id,
         'currency_id' => $this->company->currency_id,
         'status' => 'posted',
@@ -135,7 +131,7 @@ test('a posted invoice cannot be deleted', function () {
 test('a draft invoice can be deleted', function () {
     // Arrange: Create a draft invoice.
     $currencyCode = $this->company->currency->code;
-    $invoice = \Modules\Sales\Models\Invoice::factory()->create([
+    $invoice = Invoice::factory()->create([
         'company_id' => $this->company->id,
         'currency_id' => $this->company->currency_id,
         'status' => 'draft',
@@ -155,15 +151,15 @@ test('a draft invoice can be deleted', function () {
 
 test('an invoice cannot be created or posted in a locked period', function () {
     // Arrange: Lock the company's books for any date in the past.
-    \Modules\Accounting\Models\LockDate::factory()->for($this->company)->create([
+    LockDate::factory()->for($this->company)->create([
         'locked_until' => now()->subDay(),
-        'lock_type' => \App\Enums\Accounting\LockDateType::AllUsers,
+        'lock_type' => LockDateType::AllUsers,
     ]);
 
     // Arrange: Prepare invoice DTO with a date that falls within the locked period.
     $invoiceDto = new CreateInvoiceDTO(
         company_id: $this->company->id,
-        customer_id: \Modules\Foundation\Models\Partner::factory()->for($this->company)->create()->id,
+        customer_id: Partner::factory()->for($this->company)->create()->id,
         currency_id: $this->company->currency_id,
         invoice_date: now()->subMonth()->toDateString(), // This date is locked.
         due_date: now()->addMonth()->toDateString(),
@@ -203,7 +199,7 @@ test('an invoice cannot be created or posted in a locked period', function () {
         ->toThrow(\Modules\Accounting\Exceptions\PeriodIsLockedException::class);
 
     // Arrange: Create a draft invoice with a date in the future (not locked).
-    $draftInvoice = \Modules\Sales\Models\Invoice::factory()->create([
+    $draftInvoice = Invoice::factory()->create([
         'company_id' => $this->company->id,
         'status' => InvoiceStatus::Draft,
         'invoice_date' => now()->addDay()->toDateString(),

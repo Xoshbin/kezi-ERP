@@ -5,6 +5,7 @@ namespace Modules\Accounting\Models;
 use App\Enums\Budgets\BudgetStatus;
 use App\Enums\Budgets\BudgetType;
 use Database\Factories\BudgetFactory;
+use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -43,11 +44,11 @@ use Illuminate\Support\Carbon;
  * @method static Builder<static>|Budget whereStatus($value)
  * @method static Builder<static>|Budget whereUpdatedAt($value)
  *
- * @mixin \Eloquent
+ * @mixin Eloquent
  */
 class Budget extends Model
 {
-    /** @use HasFactory<\Database\Factories\BudgetFactory> */
+    /** @use HasFactory<BudgetFactory> */
     use HasFactory;
 
     /**

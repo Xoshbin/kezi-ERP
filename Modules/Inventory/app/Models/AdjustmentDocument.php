@@ -8,7 +8,9 @@ use App\Enums\Adjustments\AdjustmentDocumentStatus;
 use App\Enums\Adjustments\AdjustmentDocumentType;
 use Brick\Money\Money;
 use Database\Factories\AdjustmentDocumentFactory;
+use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -24,9 +26,9 @@ use Illuminate\Support\Carbon;
  * @property string $type
  * @property Carbon $date
  * @property string $reference_number
- * @property \Brick\Money\Money $subtotal
- * @property \Brick\Money\Money $total_amount
- * @property \Brick\Money\Money $total_tax
+ * @property Money $subtotal
+ * @property Money $total_amount
+ * @property Money $total_tax
  * @property string $reason
  * @property AdjustmentDocumentStatus $status
  * @property string|null $posted_at
@@ -58,11 +60,11 @@ use Illuminate\Support\Carbon;
  * @method static Builder<static>|AdjustmentDocument whereType($value)
  * @method static Builder<static>|AdjustmentDocument whereUpdatedAt($value)
  *
- * @mixin \Eloquent
+ * @mixin Eloquent
  */
 class AdjustmentDocument extends Model
 {
-    /** @use HasFactory<\Database\Factories\AdjustmentDocumentFactory> */
+    /** @use HasFactory<AdjustmentDocumentFactory> */
     use HasFactory;
 
     /**
@@ -260,7 +262,7 @@ class AdjustmentDocument extends Model
         $currencyCode = $this->currency->code;
         $zero = Money::of(0, $currencyCode);
 
-        /** @var \Illuminate\Database\Eloquent\Collection<int, AdjustmentDocumentLine> $lines */
+        /** @var Collection<int, AdjustmentDocumentLine> $lines */
         $lines = $this->lines;
 
         $totalTax = $lines->reduce(

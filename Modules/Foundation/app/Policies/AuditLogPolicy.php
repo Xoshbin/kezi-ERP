@@ -3,6 +3,7 @@
 namespace Modules\Foundation\Policies;
 
 use App\Models\User;
+use Modules\Foundation\Models\AuditLog;
 
 class AuditLogPolicy
 {
@@ -17,7 +18,7 @@ class AuditLogPolicy
     /**
      * Determine whether the user can view the model.
      */
-    public function view(User $user, \Modules\Foundation\Models\AuditLog $auditLog): bool
+    public function view(User $user, AuditLog $auditLog): bool
     {
         return false;
     }
@@ -33,7 +34,7 @@ class AuditLogPolicy
     /**
      * Determine whether the user can update the model.
      */
-    public function update(User $user, \Modules\Foundation\Models\AuditLog $auditLog): bool
+    public function update(User $user, AuditLog $auditLog): bool
     {
         return false;
     }
@@ -41,7 +42,7 @@ class AuditLogPolicy
     /**
      * Determine whether the user can delete the model.
      */
-    public function delete(User $user, \Modules\Foundation\Models\AuditLog $auditLog): bool
+    public function delete(User $user, AuditLog $auditLog): bool
     {
         return false;
     }
@@ -49,7 +50,7 @@ class AuditLogPolicy
     /**
      * Determine whether the user can restore the model.
      */
-    public function restore(User $user, \Modules\Foundation\Models\AuditLog $auditLog): bool
+    public function restore(User $user, AuditLog $auditLog): bool
     {
         return false;
     }
@@ -57,7 +58,7 @@ class AuditLogPolicy
     /**
      * Determine whether the user can permanently delete the model.
      */
-    public function forceDelete(User $user, \Modules\Foundation\Models\AuditLog $auditLog): bool
+    public function forceDelete(User $user, AuditLog $auditLog): bool
     {
         return false;
     }

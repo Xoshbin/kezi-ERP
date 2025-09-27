@@ -3,6 +3,7 @@
 namespace Modules\Accounting\Models;
 
 use Database\Factories\FiscalPositionTaxMappingFactory;
+use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -31,11 +32,11 @@ use Illuminate\Support\Carbon;
  * @method static Builder<static>|FiscalPositionTaxMapping whereOriginalTaxId($value)
  * @method static Builder<static>|FiscalPositionTaxMapping whereUpdatedAt($value)
  *
- * @mixin \Eloquent
+ * @mixin Eloquent
  */
 class FiscalPositionTaxMapping extends Model
 {
-    /** @use HasFactory<\Database\Factories\FiscalPositionTaxMappingFactory> */
+    /** @use HasFactory<FiscalPositionTaxMappingFactory> */
     use HasFactory;
 
     /**

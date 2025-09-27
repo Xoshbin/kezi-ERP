@@ -2,11 +2,12 @@
 
 namespace Modules\Inventory\Database\Seeders;
 
-use App\Enums\Adjustments\AdjustmentDocumentStatus;
-use App\Enums\Adjustments\AdjustmentDocumentType;
 use App\Models\Company;
 use Brick\Money\Money;
 use Illuminate\Database\Seeder;
+use Modules\Accounting\Models\Account;
+use Modules\Inventory\Models\AdjustmentDocument;
+use Modules\Sales\Models\Invoice;
 
 class AdjustmentDocumentSeeder extends Seeder
 {
@@ -21,7 +22,7 @@ class AdjustmentDocumentSeeder extends Seeder
         $currencyCode = $company->currency->code;
 
         // 1. Find the original invoice for "Hawre Trading Group"
-        $originalInvoice = \Modules\Sales\Models\Invoice::whereHas('customer', function ($query) {
+        $originalInvoice = Invoice::whereHas('customer', function ($query) {
             $query->where('name', 'Hawre Trading Group');
         })->latest()->first();
 
@@ -34,7 +35,7 @@ class AdjustmentDocumentSeeder extends Seeder
         // Note: Journal entry will be created when the document is posted
 
         // 3. Find the "Sales Discounts & Returns" account
-        $salesDiscountAccount = \Modules\Accounting\Models\Account::where('name->en', 'Sales Discounts & Returns')->where('company_id', $company->id)->first();
+        $salesDiscountAccount = Account::where('name->en', 'Sales Discounts & Returns')->where('company_id', $company->id)->first();
         if (! $salesDiscountAccount) {
             $this->command->error('The "Sales Discounts & Returns" account was not found. Please run the AccountSeeder.');
 
@@ -45,7 +46,7 @@ class AdjustmentDocumentSeeder extends Seeder
         $creditNoteAmount = Money::of('500000', $currencyCode);
         $zeroAmount = Money::of('0', $currencyCode);
 
-        $creditNote = \Modules\Inventory\Models\AdjustmentDocument::create([
+        $creditNote = AdjustmentDocument::create([
             'company_id' => $company->id,
             'original_invoice_id' => $originalInvoice->id,
             'type' => AdjustmentDocumentType::CreditNote,

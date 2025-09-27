@@ -6,6 +6,8 @@ use App\Models\Company;
 use Brick\Money\Money;
 use Carbon\Carbon;
 use InvalidArgumentException;
+use Modules\Foundation\Models\Currency;
+use Modules\Foundation\Models\CurrencyRate;
 
 /**
  * CurrencyConverterService
@@ -21,16 +23,16 @@ class CurrencyConverterService
      * effective on a specific date.
      *
      * @param  Money  $amount  The amount to convert
-     * @param \Modules\Foundation\Models\Currency $toCurrency The target currency
+     * @param Currency $toCurrency The target currency
      * @param  Carbon|string  $date  The date for which to use the exchange rate
      * @param  Company  $company  The company context for base currency
      * @return Money The converted amount
      *
      * @throws InvalidArgumentException If conversion is not possible
      */
-    public function convert(Money $amount, \Modules\Foundation\Models\Currency $toCurrency, $date, Company $company): Money
+    public function convert(Money $amount, Currency $toCurrency, $date, Company $company): Money
     {
-        $fromCurrency = \Modules\Foundation\Models\Currency::where('code', $amount->getCurrency()->getCurrencyCode())->first();
+        $fromCurrency = Currency::where('code', $amount->getCurrency()->getCurrencyCode())->first();
 
         if (! $fromCurrency) {
             throw new InvalidArgumentException("Currency {$amount->getCurrency()->getCurrencyCode()} not found");
@@ -61,7 +63,7 @@ class CurrencyConverterService
      *
      * @throws InvalidArgumentException
      */
-    public function convertToBaseCurrency(Money $amount, \Modules\Foundation\Models\Currency $fromCurrency, \Modules\Foundation\Models\Currency $baseCurrency, $date, Company $company): Money
+    public function convertToBaseCurrency(Money $amount, Currency $fromCurrency, Currency $baseCurrency, $date, Company $company): Money
     {
         if ($fromCurrency->id === $baseCurrency->id) {
             return $amount;
@@ -96,7 +98,7 @@ class CurrencyConverterService
      *
      * @throws InvalidArgumentException
      */
-    public function convertFromBaseCurrency(Money $amount, \Modules\Foundation\Models\Currency $toCurrency, $date, Company $company): Money
+    public function convertFromBaseCurrency(Money $amount, Currency $toCurrency, $date, Company $company): Money
     {
         $rate = $this->getExchangeRate($toCurrency, $date, $company);
 
@@ -126,17 +128,17 @@ class CurrencyConverterService
      *
      * @param  Carbon|string  $date
      */
-    public function getExchangeRate(\Modules\Foundation\Models\Currency $currency, $date, Company $company): ?float
+    public function getExchangeRate(Currency $currency, $date, Company $company): ?float
     {
-        return \Modules\Foundation\Models\CurrencyRate::getRateForDate($currency->id, $date, $company->id);
+        return CurrencyRate::getRateForDate($currency->id, $date, $company->id);
     }
 
     /**
      * Get the latest exchange rate for a currency for a specific company.
      */
-    public function getLatestExchangeRate(\Modules\Foundation\Models\Currency $currency, Company $company): ?float
+    public function getLatestExchangeRate(Currency $currency, Company $company): ?float
     {
-        return \Modules\Foundation\Models\CurrencyRate::getLatestRate($currency->id, $company->id);
+        return CurrencyRate::getLatestRate($currency->id, $company->id);
     }
 
     /**

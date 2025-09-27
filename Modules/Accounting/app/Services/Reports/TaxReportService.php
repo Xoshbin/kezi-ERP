@@ -10,6 +10,7 @@ use App\Models\Tax;
 use Brick\Math\RoundingMode;
 use Brick\Money\Money;
 use Carbon\Carbon;
+use Exception;
 use Illuminate\Support\Collection;
 
 class TaxReportService
@@ -85,7 +86,7 @@ class TaxReportService
             // Accumulate the tax amount
             $currentData = $taxData->get($taxKey);
             if (! $currentData || ! isset($currentData['tax_amount'])) {
-                throw new \Exception('Tax data not properly initialized');
+                throw new Exception('Tax data not properly initialized');
             }
             $currentData['tax_amount'] = $currentData['tax_amount']->plus($lineAmount->abs());
 

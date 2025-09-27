@@ -2,9 +2,6 @@
 
 namespace Modules\Inventory\Listeners\Inventory;
 
-use App\Enums\Inventory\StockMoveType;
-use App\Jobs\Inventory\ProcessIncomingStockJob;
-use App\Jobs\Inventory\ProcessOutgoingStockJob;
 
 class HandleStockMoveConfirmation
 {
@@ -19,7 +16,7 @@ class HandleStockMoveConfirmation
     /**
      * Handle the event.
      */
-    public function handle(\Modules\Inventory\Events\Inventory\StockMoveConfirmed $event): void
+    public function handle(StockMoveConfirmed $event): void
     {
         $stockMove = $event->stockMove;
 

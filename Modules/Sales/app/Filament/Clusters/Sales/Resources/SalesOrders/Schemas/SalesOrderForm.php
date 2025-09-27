@@ -2,12 +2,6 @@
 
 namespace Modules\Sales\Filament\Clusters\Sales\Resources\SalesOrders\Schemas;
 
-use App\Enums\Accounting\TaxType;
-use App\Enums\Products\ProductType;
-use App\Enums\Sales\SalesOrderStatus;
-use App\Filament\Forms\Components\MoneyInput;
-use App\Models\SalesOrder;
-use App\Models\Tax;
 use Filament\Actions\Action;
 use Filament\Facades\Filament;
 use Filament\Forms\Components\DatePicker;
@@ -19,6 +13,8 @@ use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
+use Illuminate\Support\Facades\Auth;
+use Modules\Product\Models\Product;
 use Xoshbin\TranslatableSelect\Components\TranslatableSelect;
 
 class SalesOrderForm
@@ -30,10 +26,10 @@ class SalesOrderForm
                 Section::make(__('sales_orders.sections.basic_info'))
                     ->schema([
                         Hidden::make('company_id')
-                            ->default(fn() => \Illuminate\Support\Facades\Auth::user()?->company_id),
+                            ->default(fn() => Auth::user()?->company_id),
 
                         Hidden::make('created_by_user_id')
-                            ->default(fn() => \Illuminate\Support\Facades\Auth::id()),
+                            ->default(fn() => Auth::id()),
 
                         Grid::make(2)
                             ->schema([
@@ -171,7 +167,7 @@ class SalesOrderForm
                                     ->live()
                                     ->afterStateUpdated(function ($state, callable $set) {
                                         if ($state) {
-                                            $product = \Modules\Product\Models\Product::find($state);
+                                            $product = Product::find($state);
                                             if ($product) {
                                                 $set('description', $product->name);
                                                 $set('unit_price', $product->sale_price?->getAmount() ?? 0);

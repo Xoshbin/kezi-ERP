@@ -2,18 +2,12 @@
 
 namespace Modules\Inventory\Tests\Feature\Inventory;
 
-use App\Actions\Purchases\CreateVendorBillLineAction;
-use App\DataTransferObjects\Purchases\CreateVendorBillLineDTO;
-use App\Enums\Inventory\InventoryAccountingMode;
-use App\Enums\Inventory\ValuationMethod;
-use App\Enums\Products\ProductType;
-use App\Enums\Purchases\VendorBillStatus;
-use App\Models\JournalEntry;
-use App\Models\StockMove;
-use App\Models\StockMoveValuation;
-use App\Services\VendorBillService;
 use Brick\Money\Money;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Modules\Accounting\Models\Account;
+use Modules\Foundation\Models\Partner;
+use Modules\Product\Models\Product;
+use Modules\Purchase\Models\VendorBill;
 use Tests\Traits\WithConfiguredCompany;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);
@@ -22,31 +16,31 @@ beforeEach(function () {
     $this->setupWithConfiguredCompany();
 
     // Create vendor
-    $this->vendor = \Modules\Foundation\Models\Partner::factory()->vendor()->create([
+    $this->vendor = Partner::factory()->vendor()->create([
         'company_id' => $this->company->id,
     ]);
 
     // Create required accounts
-    $this->inventoryAccount = \Modules\Accounting\Models\Account::factory()->create([
+    $this->inventoryAccount = Account::factory()->create([
         'company_id' => $this->company->id,
         'name' => ['en' => 'Inventory Asset'],
         'type' => 'current_assets',
     ]);
 
-    $this->stockInputAccount = \Modules\Accounting\Models\Account::factory()->create([
+    $this->stockInputAccount = Account::factory()->create([
         'company_id' => $this->company->id,
         'name' => ['en' => 'Stock Input'],
         'type' => 'current_liabilities',
     ]);
 
-    $this->expenseAccount = \Modules\Accounting\Models\Account::factory()->create([
+    $this->expenseAccount = Account::factory()->create([
         'company_id' => $this->company->id,
         'name' => ['en' => 'Expense Account'],
         'type' => 'expense',
     ]);
 
     // Create storable product
-    $this->product = \Modules\Product\Models\Product::factory()->create([
+    $this->product = Product::factory()->create([
         'company_id' => $this->company->id,
         'name' => 'Test Product',
         'type' => \Modules\Product\Enums\Products\ProductType::Storable,
@@ -63,7 +57,7 @@ it('creates inventory journal entries when company uses AUTO_RECORD_ON_BILL mode
         'inventory_accounting_mode' => InventoryAccountingMode::AUTO_RECORD_ON_BILL,
     ]);
 
-    $vendorBill = \Modules\Purchase\Models\VendorBill::factory()->for($this->company)->create([
+    $vendorBill = VendorBill::factory()->for($this->company)->create([
         'vendor_id' => $this->vendor->id,
         'status' => VendorBillStatus::Draft,
         'bill_date' => now()->format('Y-m-d'),
@@ -87,7 +81,7 @@ it('creates inventory journal entries when company uses AUTO_RECORD_ON_BILL mode
     app(VendorBillService::class)->post($vendorBill, $this->user);
 
     // Assert: Stock move was created
-    $stockMove = StockMove::where('source_type', \Modules\Purchase\Models\VendorBill::class)
+    $stockMove = StockMove::where('source_type', VendorBill::class)
         ->where('source_id', $vendorBill->id)
         ->first();
 
@@ -99,7 +93,7 @@ it('creates inventory journal entries when company uses AUTO_RECORD_ON_BILL mode
     expect((float) $productLine->quantity)->toBe(5.0);
 
     // Assert: Inventory journal entry was created (consolidated)
-    $inventoryJournalEntry = JournalEntry::where('source_type', \Modules\Purchase\Models\VendorBill::class)
+    $inventoryJournalEntry = JournalEntry::where('source_type', VendorBill::class)
         ->where('source_id', $vendorBill->id)
         ->where('reference', 'LIKE', 'STOCK-IN-%')
         ->first();
@@ -136,7 +130,7 @@ it('does NOT create inventory journal entries when company uses MANUAL_INVENTORY
         'inventory_accounting_mode' => InventoryAccountingMode::MANUAL_INVENTORY_RECORDING,
     ]);
 
-    $vendorBill = \Modules\Purchase\Models\VendorBill::factory()->for($this->company)->create([
+    $vendorBill = VendorBill::factory()->for($this->company)->create([
         'vendor_id' => $this->vendor->id,
         'status' => VendorBillStatus::Draft,
         'bill_date' => now()->format('Y-m-d'),
@@ -160,7 +154,7 @@ it('does NOT create inventory journal entries when company uses MANUAL_INVENTORY
     app(VendorBillService::class)->post($vendorBill, $this->user);
 
     // Assert: NO stock moves were created
-    $stockMoves = StockMove::where('source_type', \Modules\Purchase\Models\VendorBill::class)
+    $stockMoves = StockMove::where('source_type', VendorBill::class)
         ->where('source_id', $vendorBill->id)
         ->get();
 
@@ -174,7 +168,7 @@ it('does NOT create inventory journal entries when company uses MANUAL_INVENTORY
     $mainJournalEntry = $vendorBill->refresh()->journalEntry;
     expect($mainJournalEntry)->not->toBeNull();
 
-    $allJournalEntries = JournalEntry::where('source_type', \Modules\Purchase\Models\VendorBill::class)
+    $allJournalEntries = JournalEntry::where('source_type', VendorBill::class)
         ->where('source_id', $vendorBill->id)
         ->get();
 
@@ -188,7 +182,7 @@ it('creates inventory journal entries for ALL storable products in AUTO_RECORD_O
     ]);
 
     // Create second product
-    $product2 = \Modules\Product\Models\Product::factory()->create([
+    $product2 = Product::factory()->create([
         'company_id' => $this->company->id,
         'name' => 'Test Product 2',
         'type' => \Modules\Product\Enums\Products\ProductType::Storable,
@@ -198,7 +192,7 @@ it('creates inventory journal entries for ALL storable products in AUTO_RECORD_O
         'expense_account_id' => $this->expenseAccount->id,
     ]);
 
-    $vendorBill = \Modules\Purchase\Models\VendorBill::factory()->for($this->company)->create([
+    $vendorBill = VendorBill::factory()->for($this->company)->create([
         'vendor_id' => $this->vendor->id,
         'status' => VendorBillStatus::Draft,
         'bill_date' => now()->format('Y-m-d'),
@@ -234,7 +228,7 @@ it('creates inventory journal entries for ALL storable products in AUTO_RECORD_O
     app(VendorBillService::class)->post($vendorBill, $this->user);
 
     // Assert: One stock move was created with BOTH product lines
-    $stockMove = StockMove::where('source_type', \Modules\Purchase\Models\VendorBill::class)
+    $stockMove = StockMove::where('source_type', VendorBill::class)
         ->where('source_id', $vendorBill->id)
         ->first();
 
@@ -253,7 +247,7 @@ it('creates inventory journal entries for ALL storable products in AUTO_RECORD_O
     expect((float) $productLine2->quantity)->toBe(2.0);
 
     // Assert: One consolidated inventory journal entry was created for BOTH products
-    $inventoryJournalEntry = JournalEntry::where('source_type', \Modules\Purchase\Models\VendorBill::class)
+    $inventoryJournalEntry = JournalEntry::where('source_type', VendorBill::class)
         ->where('source_id', $vendorBill->id)
         ->where('reference', 'LIKE', 'STOCK-IN-%')
         ->first();
@@ -285,7 +279,7 @@ it('creates inventory journal entries for ALL storable products in AUTO_RECORD_O
     expect($journalEntryLines)->toHaveCount(4); // 2 debit lines + 2 credit lines
 
     // Assert: Total journal entries = 1 main bill JE + 1 consolidated inventory JE
-    $allJournalEntries = JournalEntry::where('source_type', \Modules\Purchase\Models\VendorBill::class)
+    $allJournalEntries = JournalEntry::where('source_type', VendorBill::class)
         ->where('source_id', $vendorBill->id)
         ->get();
 
@@ -297,6 +291,6 @@ it('has correct default inventory accounting mode for new companies', function (
     expect(InventoryAccountingMode::getDefault())->toBe(InventoryAccountingMode::AUTO_RECORD_ON_BILL);
 
     // Assert: New company gets the default mode
-    $newCompany = \App\Models\Company::factory()->create();
+    $newCompany = Company::factory()->create();
     expect($newCompany->inventory_accounting_mode)->toBe(InventoryAccountingMode::AUTO_RECORD_ON_BILL);
 });

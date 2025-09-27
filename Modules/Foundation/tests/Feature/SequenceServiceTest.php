@@ -3,9 +3,10 @@
 namespace Modules\Foundation\Tests\Feature;
 
 use App\Models\Company;
-use App\Services\SequenceService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
+use Modules\Foundation\Models\Currency;
+use Modules\Foundation\Models\Sequence;
 use Tests\TestCase;
 
 class SequenceServiceTest extends TestCase
@@ -20,7 +21,7 @@ class SequenceServiceTest extends TestCase
     {
         parent::setUp();
 
-        $currency = \Modules\Foundation\Models\Currency::factory()->create(['code' => 'USD']);
+        $currency = Currency::factory()->create(['code' => 'USD']);
         $this->company = Company::factory()->create(['currency_id' => $currency->id]);
         $this->sequenceService = app(\Modules\Foundation\Services\SequenceService::class);
     }
@@ -69,7 +70,7 @@ class SequenceServiceTest extends TestCase
 
     public function test_it_creates_separate_sequences_for_different_companies()
     {
-        $currency = \Modules\Foundation\Models\Currency::factory()->create(['code' => 'EUR']);
+        $currency = Currency::factory()->create(['code' => 'EUR']);
         $company2 = Company::factory()->create(['currency_id' => $currency->id]);
 
         $number1Company1 = $this->sequenceService->getNextInvoiceNumber($this->company);
@@ -126,7 +127,7 @@ class SequenceServiceTest extends TestCase
 
     public function test_sequence_model_atomic_increment()
     {
-        $sequence = \Modules\Foundation\Models\Sequence::create([
+        $sequence = Sequence::create([
             'company_id' => $this->company->id,
             'document_type' => 'test',
             'prefix' => 'TEST',

@@ -5,6 +5,7 @@ namespace Modules\Inventory\Filament\Clusters\Inventory\Resources\StockMoves\Pag
 use App\Enums\Inventory\StockMoveStatus;
 use App\Filament\Clusters\Inventory\Resources\StockMoves\Actions\ConfirmStockMoveAction;
 use App\Filament\Clusters\Inventory\Resources\StockMoves\StockMoveResource;
+use App\Models\StockMove;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\EditAction;
 use Filament\Resources\Pages\ViewRecord;
@@ -18,12 +19,12 @@ class ViewStockMove extends ViewRecord
         return [
             EditAction::make()
                 ->icon('heroicon-o-pencil-square')
-                ->visible(fn(): bool => ($this->getRecord() instanceof \App\Models\StockMove) && $this->getRecord()->status === StockMoveStatus::Draft),
+                ->visible(fn(): bool => ($this->getRecord() instanceof StockMove) && $this->getRecord()->status === StockMoveStatus::Draft),
             ConfirmStockMoveAction::make()
-                ->visible(fn(): bool => ($this->getRecord() instanceof \App\Models\StockMove) && $this->getRecord()->status === StockMoveStatus::Draft),
+                ->visible(fn(): bool => ($this->getRecord() instanceof StockMove) && $this->getRecord()->status === StockMoveStatus::Draft),
             DeleteAction::make()
                 ->icon('heroicon-o-trash')
-                ->visible(fn(): bool => ($this->getRecord() instanceof \App\Models\StockMove) && $this->getRecord()->status === StockMoveStatus::Draft),
+                ->visible(fn(): bool => ($this->getRecord() instanceof StockMove) && $this->getRecord()->status === StockMoveStatus::Draft),
         ];
     }
 

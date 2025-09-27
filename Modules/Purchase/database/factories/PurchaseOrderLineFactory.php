@@ -2,12 +2,11 @@
 
 namespace Modules\Purchase\Database\Factories;
 
-use App\Models\PurchaseOrder;
-use App\Models\PurchaseOrderLine;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Modules\Product\Models\Product;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\PurchaseOrderLine>
+ * @extends Factory<PurchaseOrderLine>
  */
 class PurchaseOrderLineFactory extends Factory
 {
@@ -29,7 +28,7 @@ class PurchaseOrderLineFactory extends Factory
 
         return [
             'purchase_order_id' => PurchaseOrder::factory(),
-            'product_id' => \Modules\Product\Models\Product::factory(),
+            'product_id' => Product::factory(),
             'description' => $this->faker->sentence(),
             'quantity' => $quantity,
             'unit_price' => $unitPrice * 100, // Store as cents for Money cast

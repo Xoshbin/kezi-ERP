@@ -2,9 +2,10 @@
 
 namespace Modules\Payment\Database\Seeders;
 
-use App\Enums\Partners\PartnerType;
-use App\Models\PaymentDocumentLink;
 use Illuminate\Database\Seeder;
+use Modules\Payment\Models\Payment;
+use Modules\Purchase\Models\VendorBill;
+use Modules\Sales\Models\Invoice;
 
 class PaymentDocumentLinkSeeder extends Seeder
 {
@@ -13,11 +14,11 @@ class PaymentDocumentLinkSeeder extends Seeder
      */
     public function run(): void
     {
-        $payments = \Modules\Payment\Models\Payment::all();
+        $payments = Payment::all();
 
         foreach ($payments as $payment) {
             if ($payment->payment_type === 'customer') {
-                $invoice = \Modules\Sales\Models\Invoice::where('partner_id', $payment->partner_id)
+                $invoice = Invoice::where('partner_id', $payment->partner_id)
                     ->where('company_id', $payment->company_id)
                     ->first();
 
@@ -35,7 +36,7 @@ class PaymentDocumentLinkSeeder extends Seeder
                     );
                 }
             } elseif ($payment->payment_type === \Modules\Foundation\Enums\Partners\PartnerType::Vendor) {
-                $vendorBill = \Modules\Purchase\Models\VendorBill::where('partner_id', $payment->partner_id)
+                $vendorBill = VendorBill::where('partner_id', $payment->partner_id)
                     ->where('company_id', $payment->company_id)
                     ->first();
 

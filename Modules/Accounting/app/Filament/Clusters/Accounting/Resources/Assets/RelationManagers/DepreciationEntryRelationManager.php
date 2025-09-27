@@ -2,14 +2,15 @@
 
 namespace Modules\Accounting\Filament\Clusters\Accounting\Resources\Assets\RelationManagers;
 
-use App\Enums\Assets\DepreciationEntryStatus;
-use App\Services\AssetService;
+use Exception;
 use Filament\Actions\Action;
+use Filament\Notifications\Notification;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Model;
+use Modules\Accounting\Models\DepreciationEntry;
 
 class DepreciationEntryRelationManager extends RelationManager
 {
@@ -50,23 +51,23 @@ class DepreciationEntryRelationManager extends RelationManager
             ->recordActions([
                 Action::make('post')
                     ->label(__('asset.post'))
-                    ->action(fn (\Modules\Accounting\Models\DepreciationEntry $record) => $this->postDepreciation($record))
+                    ->action(fn (DepreciationEntry $record) => $this->postDepreciation($record))
                     ->requiresConfirmation()
-                    ->visible(fn (\Modules\Accounting\Models\DepreciationEntry $record): bool => $record->status === DepreciationEntryStatus::Draft),
+                    ->visible(fn (DepreciationEntry $record): bool => $record->status === DepreciationEntryStatus::Draft),
             ])
             ->toolbarActions([
                 // No bulk actions needed
             ]);
     }
 
-    public function postDepreciation(\Modules\Accounting\Models\DepreciationEntry $entry): void
+    public function postDepreciation(DepreciationEntry $entry): void
     {
         $user = request()->user();
         if (! $user) {
-            throw new \Exception('User must be authenticated to post depreciation');
+            throw new Exception('User must be authenticated to post depreciation');
         }
         app(\Modules\Accounting\Services\AssetService::class)->postDepreciation($entry, $user);
-        \Filament\Notifications\Notification::make()
+        Notification::make()
             ->title(__('asset.post_depreciation_success'))
             ->success()
             ->send();

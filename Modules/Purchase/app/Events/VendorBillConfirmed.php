@@ -8,6 +8,7 @@ use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
+use Modules\Purchase\Models\VendorBill;
 
 class VendorBillConfirmed
 {
@@ -16,7 +17,7 @@ class VendorBillConfirmed
     /**
      * Create a new event instance.
      */
-    public function __construct(public \Modules\Purchase\Models\VendorBill $vendorBill, public User $user)
+    public function __construct(public VendorBill $vendorBill, public User $user)
     {
         //
     }

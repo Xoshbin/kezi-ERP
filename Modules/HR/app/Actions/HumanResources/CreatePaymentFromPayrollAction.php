@@ -2,13 +2,10 @@
 
 namespace Modules\HR\Actions\HumanResources;
 
-use App\Actions\Payments\CreatePaymentAction;
-use App\DataTransferObjects\Payments\CreatePaymentDTO;
-use App\Enums\Payments\PaymentMethod;
-use App\Enums\Payments\PaymentType;
-use App\Models\Journal;
 use App\Models\User;
 use InvalidArgumentException;
+use Modules\HR\Models\Payroll;
+use Modules\Payment\Models\Payment;
 
 class CreatePaymentFromPayrollAction
 {
@@ -21,7 +18,7 @@ class CreatePaymentFromPayrollAction
      *
      * @throws InvalidArgumentException
      */
-    public function execute(\Modules\HR\Models\Payroll $payroll, User $user): \Modules\Payment\Models\Payment
+    public function execute(Payroll $payroll, User $user): Payment
     {
         // Validate payroll status
         if ($payroll->status !== 'processed') {

@@ -1,12 +1,13 @@
 <?php
 
-use App\Enums\Payments\PaymentStatus;
-use App\Filament\Clusters\Accounting\Resources\BankStatements\BankStatementResource;
-use App\Models\Company;
-use App\Models\Journal;
-use App\Models\User;
 use Brick\Money\Money;
+use Filament\Facades\Filament;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Modules\Accounting\Models\Account;
+use Modules\Accounting\Models\BankStatement;
+use Modules\Accounting\Models\BankStatementLine;
+use Modules\Foundation\Models\Partner;
+use Modules\Payment\Models\Payment;
 
 uses(RefreshDatabase::class);
 
@@ -20,16 +21,16 @@ beforeEach(function () {
     $this->actingAs($this->user);
 
     // Set up Filament tenant context
-    \Filament\Facades\Filament::setTenant($this->company);
+    Filament::setTenant($this->company);
 
     $this->currency = $this->company->currency;
 
     // Create required accounts for reconciliation
-    $this->bankAccount = \Modules\Accounting\Models\Account::factory()
+    $this->bankAccount = Account::factory()
         ->for($this->company)
         ->create(['type' => 'bank_and_cash', 'name' => 'Bank Account']);
 
-    $this->outstandingAccount = \Modules\Accounting\Models\Account::factory()
+    $this->outstandingAccount = Account::factory()
         ->for($this->company)
         ->create(['type' => 'current_assets', 'name' => 'Outstanding Receipts']);
 
@@ -43,7 +44,7 @@ beforeEach(function () {
         ->for($this->company)
         ->create(['type' => 'bank']);
 
-    $this->bankStatement = \Modules\Accounting\Models\BankStatement::factory()
+    $this->bankStatement = BankStatement::factory()
         ->for($this->company)
         ->for($this->currency)
         ->for($this->bankJournal)
@@ -76,7 +77,7 @@ describe('Bank Reconciliation Integration Tests', function () {
     });
 
     it('shows unreconciled bank statement lines', function () {
-        $unreconciledLine = \Modules\Accounting\Models\BankStatementLine::factory()
+        $unreconciledLine = BankStatementLine::factory()
             ->for($this->bankStatement)
             ->create([
                 'description' => 'Customer Payment ABC123',
@@ -84,7 +85,7 @@ describe('Bank Reconciliation Integration Tests', function () {
                 'is_reconciled' => false,
             ]);
 
-        $reconciledLine = \Modules\Accounting\Models\BankStatementLine::factory()
+        $reconciledLine = BankStatementLine::factory()
             ->for($this->bankStatement)
             ->create([
                 'description' => 'Already Reconciled',
@@ -98,9 +99,9 @@ describe('Bank Reconciliation Integration Tests', function () {
     });
 
     it('shows unreconciled system payments', function () {
-        $partner = \Modules\Foundation\Models\Partner::factory()->for($this->company)->create(['name' => 'ABC Corp']);
+        $partner = Partner::factory()->for($this->company)->create(['name' => 'ABC Corp']);
 
-        $unreconciledPayment = \Modules\Payment\Models\Payment::factory()
+        $unreconciledPayment = Payment::factory()
             ->for($this->company)
             ->for($this->currency)
             ->for($this->bankJournal)
@@ -111,7 +112,7 @@ describe('Bank Reconciliation Integration Tests', function () {
                 'payment_type' => 'inbound',
             ]);
 
-        $reconciledPayment = \Modules\Payment\Models\Payment::factory()
+        $reconciledPayment = Payment::factory()
             ->for($this->company)
             ->for($this->currency)
             ->for($this->bankJournal)
@@ -135,7 +136,7 @@ describe('Bank Reconciliation Integration Tests', function () {
     });
 
     it('shows write-off functionality for bank statement lines', function () {
-        $bankLine = \Modules\Accounting\Models\BankStatementLine::factory()
+        $bankLine = BankStatementLine::factory()
             ->for($this->bankStatement)
             ->create([
                 'description' => 'Small Bank Fee',
@@ -152,11 +153,11 @@ describe('Bank Reconciliation Integration Tests', function () {
 
     it('handles empty state when no unreconciled items exist', function () {
         // Create only reconciled items
-        \Modules\Accounting\Models\BankStatementLine::factory()
+        BankStatementLine::factory()
             ->for($this->bankStatement)
             ->create(['is_reconciled' => true]);
 
-        \Modules\Payment\Models\Payment::factory()
+        Payment::factory()
             ->for($this->company)
             ->for($this->currency)
             ->for($this->bankJournal)
@@ -189,7 +190,7 @@ describe('Bank Reconciliation Integration Tests', function () {
             'ending_balance' => Money::of(5678.901, $this->currency->code),
         ]);
 
-        \Modules\Accounting\Models\BankStatementLine::factory()
+        BankStatementLine::factory()
             ->for($this->bankStatement)
             ->create([
                 'amount' => Money::of(123.456, $this->currency->code),
@@ -214,7 +215,7 @@ describe('Bank Reconciliation Integration Tests', function () {
 
     it('prevents access to other company bank statements', function () {
         $otherCompany = Company::factory()->create();
-        $otherBankStatement = \Modules\Accounting\Models\BankStatement::factory()
+        $otherBankStatement = BankStatement::factory()
             ->for($otherCompany)
             ->create();
 

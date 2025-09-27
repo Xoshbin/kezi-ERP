@@ -4,6 +4,8 @@ namespace Modules\HR\Casts;
 
 use Illuminate\Database\Eloquent\Model;
 use InvalidArgumentException;
+use Modules\Foundation\Casts\MoneyCast;
+use Modules\Foundation\Models\Currency;
 
 /**
  * PayrollCurrencyMoneyCast - Uses the currency from the parent payroll.
@@ -16,7 +18,7 @@ class PayrollCurrencyMoneyCast extends MoneyCast
     /**
      * Resolve the currency from the parent payroll.
      */
-    protected function resolveCurrency(Model $model): \Modules\Foundation\Models\Currency
+    protected function resolveCurrency(Model $model): Currency
     {
         // Check if the model has a payroll relationship
         if (method_exists($model, 'payroll') && $model->getAttribute('payroll_id')) {

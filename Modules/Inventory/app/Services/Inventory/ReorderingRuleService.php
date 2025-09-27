@@ -2,11 +2,8 @@
 
 namespace Modules\Inventory\Services\Inventory;
 
-use App\Enums\Inventory\ReorderingRoute;
-use App\Models\ReorderingRule;
-use App\Models\ReplenishmentSuggestion;
-use App\Models\StockQuant;
 use Carbon\Carbon;
+use Exception;
 use Illuminate\Support\Facades\Log;
 
 /**
@@ -86,7 +83,7 @@ class ReorderingRuleService
                     $this->createReplenishmentSuggestion($rule, $currentDate);
                     $suggestionsCreated++;
                 }
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
                 Log::error("Failed to process reordering rule {$rule->id}: " . $e->getMessage());
             }
         }

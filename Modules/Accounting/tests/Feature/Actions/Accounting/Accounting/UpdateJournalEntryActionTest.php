@@ -1,11 +1,8 @@
 <?php
 
-use App\Actions\Accounting\UpdateJournalEntryAction;
-use App\DataTransferObjects\Accounting\UpdateJournalEntryDTO;
-use App\DataTransferObjects\Accounting\UpdateJournalEntryLineDTO;
-use App\Models\JournalEntry;
 use Brick\Money\Money;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Modules\Accounting\Models\Account;
 use Tests\Traits\WithConfiguredCompany;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);
@@ -15,8 +12,8 @@ test('it updates a journal entry and syncs its lines from a DTO', function () {
         'reference' => 'Original Reference',
         'is_posted' => false,
     ]);
-    $accountA = \Modules\Accounting\Models\Account::factory()->for($this->company)->create();
-    $accountB = \Modules\Accounting\Models\Account::factory()->for($this->company)->create();
+    $accountA = Account::factory()->for($this->company)->create();
+    $accountB = Account::factory()->for($this->company)->create();
 
     // Add an initial line that we expect to be removed
     $journalEntry->lines()->create([

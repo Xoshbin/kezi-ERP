@@ -2,11 +2,11 @@
 
 namespace Modules\Product\Tests\Feature;
 
-use App\Enums\Inventory\ValuationMethod;
-use App\Enums\Products\ProductType;
-use App\Filament\Clusters\Inventory\Resources\Products\Pages\CreateProduct;
+
 use Brick\Money\Money;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Modules\Accounting\Models\Account;
+use Modules\Product\Models\Product;
 use Tests\Traits\WithConfiguredCompany;
 use function Pest\Livewire\livewire;
 
@@ -18,12 +18,12 @@ beforeEach(function () {
 
 it('can create a product with explicit inventory valuation method', function () {
     // Create the accounts needed for the product
-    $incomeAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create();
-    $expenseAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create();
-    $inventoryAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create();
+    $incomeAccount = Account::factory()->for($this->company)->create();
+    $expenseAccount = Account::factory()->for($this->company)->create();
+    $inventoryAccount = Account::factory()->for($this->company)->create();
 
     // This reproduces the exact scenario from the error message but with explicit valuation method
-    $product = \Modules\Product\Models\Product::create([
+    $product = Product::create([
         'name' => 'iphone',
         'sku' => 'iphone17',
         'type' => \Modules\Product\Enums\Products\ProductType::Storable,
@@ -38,7 +38,7 @@ it('can create a product with explicit inventory valuation method', function () 
     ]);
 
     // Verify the product was created successfully
-    expect($product)->toBeInstanceOf(\Modules\Product\Models\Product::class)
+    expect($product)->toBeInstanceOf(Product::class)
         ->and($product->name)->toBe('iphone')
         ->and($product->sku)->toBe('iphone17')
         ->and($product->type)->toBe(\Modules\Product\Enums\Products\ProductType::Storable)
@@ -55,7 +55,7 @@ it('can create a product with explicit inventory valuation method', function () 
 });
 
 it('can create a product using factory that matches the database default', function () {
-    $product = \Modules\Product\Models\Product::factory()->for($this->company)->create();
+    $product = Product::factory()->for($this->company)->create();
 
     // Verify the factory default matches the database default
     expect($product->inventory_valuation_method)->toBe(ValuationMethod::AVCO);
@@ -68,8 +68,8 @@ it('can create a product using factory that matches the database default', funct
 });
 
 it('can create a product through Filament interface with default valuation method', function () {
-    $incomeAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create();
-    $expenseAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create();
+    $incomeAccount = Account::factory()->for($this->company)->create();
+    $expenseAccount = Account::factory()->for($this->company)->create();
 
     livewire(CreateProduct::class)
         ->fillForm([
