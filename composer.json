@@ -17,6 +17,7 @@
         "lara-zeus/spatie-translatable": "^1.0",
         "laravel/framework": "^12.0",
         "laravel/tinker": "^2.10.1",
+        "nwidart/laravel-modules": "^12.0",
         "xoshbin/filament-custom-fields": "dev-main",
         "xoshbin/filament-translatable-select": "dev-main",
         "xoshbin/pertuk": "^0.0.4"
@@ -79,6 +80,11 @@
     "extra": {
         "laravel": {
             "dont-discover": []
+        },
+        "merge-plugin": {
+            "include": [
+                "Modules/*/composer.json"
+            ]
         }
     },
     "config": {
