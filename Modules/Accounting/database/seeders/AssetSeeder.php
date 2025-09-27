@@ -2,8 +2,6 @@
 
 namespace Modules\Accounting\Database\Seeders;
 
-use App\Models\Account;
-use App\Models\Asset;
 use App\Models\Company;
 use App\Models\Journal;
 use Exception;

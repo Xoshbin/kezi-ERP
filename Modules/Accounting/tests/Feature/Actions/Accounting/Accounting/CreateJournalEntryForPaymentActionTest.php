@@ -3,7 +3,6 @@
 use App\Actions\Accounting\CreateJournalEntryForPaymentAction;
 use App\Enums\Payments\PaymentStatus;
 use App\Enums\Payments\PaymentType;
-use App\Models\Payment;
 use Brick\Money\Money;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\Traits\WithConfiguredCompany;

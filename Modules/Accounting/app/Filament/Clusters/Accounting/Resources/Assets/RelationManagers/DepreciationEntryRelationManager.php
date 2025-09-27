@@ -3,7 +3,6 @@
 namespace Modules\Accounting\Filament\Clusters\Accounting\Resources\Assets\RelationManagers;
 
 use App\Enums\Assets\DepreciationEntryStatus;
-use App\Models\DepreciationEntry;
 use App\Services\AssetService;
 use Filament\Actions\Action;
 use Filament\Resources\RelationManagers\RelationManager;

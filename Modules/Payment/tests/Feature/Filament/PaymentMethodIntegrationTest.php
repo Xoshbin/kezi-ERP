@@ -7,12 +7,9 @@ use App\Filament\Clusters\Accounting\Resources\Payments\Pages\CreatePayment;
 use App\Filament\Clusters\Accounting\Resources\Payments\Pages\EditPayment;
 use App\Filament\Clusters\Accounting\Resources\Payments\Pages\ListPayments;
 use App\Models\Journal;
-use App\Models\Partner;
-use App\Models\Payment;
 use Brick\Money\Money;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\Traits\WithConfiguredCompany;
-
 use function Pest\Livewire\livewire;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);

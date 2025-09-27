@@ -3,8 +3,6 @@
 namespace Modules\Foundation\Services;
 
 use App\Models\Company;
-use App\Models\Currency;
-use App\Models\CurrencyRate;
 use Brick\Money\Money;
 use Carbon\Carbon;
 use InvalidArgumentException;

@@ -4,7 +4,6 @@ namespace Modules\Inventory\Filament\Clusters\Inventory\Pages;
 
 use App\Filament\Clusters\Inventory\InventoryCluster;
 use App\Models\Lot;
-use App\Models\Product;
 use App\Services\Inventory\InventoryReportingService;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Concerns\InteractsWithForms;

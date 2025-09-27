@@ -11,11 +11,8 @@ use App\Filament\Clusters\Accounting\Resources\BankStatements\Pages\ListBankStat
 use App\Filament\Clusters\Accounting\Resources\BankStatements\RelationManagers\BankStatementLinesRelationManager;
 use App\Filament\Forms\Components\MoneyInput;
 use App\Filament\Tables\Columns\MoneyColumn;
-use App\Models\BankStatement;
 use App\Models\Company;
-use App\Models\Currency;
 use App\Models\Journal;
-use App\Models\Partner;
 use BackedEnum;
 use Closure;
 use Filament\Actions\Action;
@@ -164,12 +161,12 @@ class BankStatementResource extends Resource
                         ->label(__('bank_statement.date'))
                         ->required()
                         ->columnSpan(2),
-                    MoneyInput::make('starting_balance')
+                    \Modules\Foundation\App\Filament\Forms\Components\MoneyInput::make('starting_balance')
                         ->label(__('bank_statement.starting_balance'))
                         ->currencyField('currency_id')
                         ->required()
                         ->columnSpan(2),
-                    MoneyInput::make('ending_balance')
+                    \Modules\Foundation\App\Filament\Forms\Components\MoneyInput::make('ending_balance')
                         ->label(__('bank_statement.ending_balance'))
                         ->currencyField('currency_id')
                         ->required()
@@ -210,7 +207,7 @@ class BankStatementResource extends Resource
                                 ->searchableFields(['name', 'email', 'contact_person'])
                                 ->preload()
                                 ->columnSpan(3),
-                            MoneyInput::make('amount')
+                            \Modules\Foundation\App\Filament\Forms\Components\MoneyInput::make('amount')
                                 ->label(__('bank_statement.amount'))
                                 ->prefix(function ($get) {
                                     // Try multiple path strategies to get the currency
@@ -257,7 +254,7 @@ class BankStatementResource extends Resource
                                 })
                                 ->helperText(__('bank_statement.foreign_currency_help'))
                                 ->columnSpan(3),
-                            MoneyInput::make('amount_in_foreign_currency')
+                            \Modules\Foundation\App\Filament\Forms\Components\MoneyInput::make('amount_in_foreign_currency')
                                 ->label(__('bank_statement.amount_in_foreign_currency'))
                                 ->currencyField('foreign_currency_id')
                                 ->visible(fn ($get) => $get('foreign_currency_id'))
@@ -304,13 +301,13 @@ class BankStatementResource extends Resource
                     ->sortable(),
 
                 // Starting Balance (critical financial information)
-                MoneyColumn::make('starting_balance')
+                \Modules\Foundation\App\Filament\Tables\Columns\MoneyColumn::make('starting_balance')
                     ->label(__('bank_statement.starting_balance'))
                     ->sortable()
                     ->weight('medium'),
 
                 // Ending Balance (critical financial information)
-                MoneyColumn::make('ending_balance')
+                \Modules\Foundation\App\Filament\Tables\Columns\MoneyColumn::make('ending_balance')
                     ->label(__('bank_statement.ending_balance'))
                     ->sortable()
                     ->weight('bold')

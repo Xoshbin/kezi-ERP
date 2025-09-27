@@ -4,7 +4,6 @@ namespace Modules\HR\Actions\HumanResources;
 
 use App\DataTransferObjects\HumanResources\CreateEmploymentContractDTO;
 use App\Models\Company;
-use App\Models\Currency;
 use App\Models\EmploymentContract;
 use Brick\Money\Money;
 use Carbon\Carbon;

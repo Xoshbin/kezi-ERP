@@ -2,8 +2,6 @@
 
 namespace Modules\Purchase\Tests\Browser;
 
-use App\Models\Partner;
-use App\Models\Product;
 use App\Models\Tax;
 use Brick\Money\Money;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
@@ -22,9 +20,9 @@ class PurchaseOrderLineItemsBrowserTest extends DuskTestCase
     protected function setUp(): void
     {
         parent::setUp();
-        
+
         $this->setupWithConfiguredCompany();
-        
+
         $this->vendor = \Modules\Foundation\Models\Partner::factory()->vendor()->create(['company_id' => $this->company->id]);
         $this->product = \Modules\Product\Models\Product::factory()->create([
             'company_id' => $this->company->id,
@@ -49,35 +47,35 @@ class PurchaseOrderLineItemsBrowserTest extends DuskTestCase
             $browser->loginAs($this->user)
                 ->visit("/companies/{$this->company->id}/purchases/purchase-orders/create")
                 ->waitFor('[data-field-wrapper="vendor_id"]')
-                
+
                 // Fill basic PO information
                 ->select('[data-field-wrapper="vendor_id"] select', $this->vendor->id)
                 ->select('[data-field-wrapper="currency_id"] select', $this->company->currency_id)
                 ->type('[data-field-wrapper="reference"] input', 'TEST-REF-001')
                 ->type('[data-field-wrapper="notes"] textarea', 'Test purchase order with line items')
-                
+
                 // Add a line item
                 ->click('[data-field-wrapper="lines"] button[type="button"]') // Add item button
                 ->waitFor('[data-field-wrapper="lines"] [data-field-wrapper="product_id"]')
-                
+
                 // Select product and verify auto-population
                 ->select('[data-field-wrapper="lines"] [data-field-wrapper="product_id"] select', $this->product->id)
                 ->pause(1000) // Wait for reactive updates
-                
+
                 // Verify description was auto-populated
                 ->assertInputValue('[data-field-wrapper="lines"] [data-field-wrapper="description"] input', 'Test Product Description')
-                
+
                 // Fill quantity and unit price
                 ->type('[data-field-wrapper="lines"] [data-field-wrapper="quantity"] input', '5')
                 ->type('[data-field-wrapper="lines"] [data-field-wrapper="unit_price"] input', '10.00')
-                
+
                 // Select tax
                 ->select('[data-field-wrapper="lines"] [data-field-wrapper="tax_id"] select', $this->tax->id)
-                
+
                 // Submit the form
                 ->click('button[type="submit"]')
                 ->waitForText('Purchase order created successfully')
-                
+
                 // Verify we're redirected to the edit page
                 ->assertPathMatches('/companies/\d+/purchases/purchase-orders/\d+/edit');
         });
@@ -107,25 +105,25 @@ class PurchaseOrderLineItemsBrowserTest extends DuskTestCase
             $browser->loginAs($this->user)
                 ->visit("/companies/{$this->company->id}/purchases/purchase-orders/create")
                 ->waitFor('[data-field-wrapper="vendor_id"]')
-                
+
                 // Fill basic PO information
                 ->select('[data-field-wrapper="vendor_id"] select', $this->vendor->id)
                 ->select('[data-field-wrapper="currency_id"] select', $this->company->currency_id)
-                
+
                 // Add a line item
                 ->click('[data-field-wrapper="lines"] button[type="button"]')
                 ->waitFor('[data-field-wrapper="lines"] [data-field-wrapper="product_id"]')
-                
+
                 // Fill line item data
                 ->select('[data-field-wrapper="lines"] [data-field-wrapper="product_id"] select', $this->product->id)
                 ->type('[data-field-wrapper="lines"] [data-field-wrapper="description"] input', 'Test Line Item')
                 ->type('[data-field-wrapper="lines"] [data-field-wrapper="quantity"] input', '2')
                 ->type('[data-field-wrapper="lines"] [data-field-wrapper="unit_price"] input', '25.00')
                 ->select('[data-field-wrapper="lines"] [data-field-wrapper="tax_id"] select', $this->tax->id)
-                
+
                 // Wait for calculations to update
                 ->pause(2000)
-                
+
                 // Check that totals section shows calculated values
                 // Note: The exact selectors may need adjustment based on the actual rendered HTML
                 ->assertPresent('[data-field-wrapper="total_amount"]')

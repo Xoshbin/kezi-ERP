@@ -7,7 +7,6 @@ use App\Filament\Clusters\Accounting\Resources\LoanAgreements\Pages\ViewLoanAgre
 use App\Models\LoanAgreement;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\Traits\WithConfiguredCompany;
-
 use function Pest\Livewire\livewire;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);

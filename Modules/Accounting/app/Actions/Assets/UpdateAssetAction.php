@@ -3,7 +3,6 @@
 namespace Modules\Accounting\Actions\Assets;
 
 use App\DataTransferObjects\Assets\UpdateAssetDTO;
-use App\Models\Asset;
 use Illuminate\Support\Facades\DB;
 
 class UpdateAssetAction

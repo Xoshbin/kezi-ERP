@@ -4,12 +4,8 @@ use App\Enums\PaymentTerms\PaymentTermType;
 use App\Filament\Clusters\Accounting\Resources\Invoices\Pages\CreateInvoice;
 use App\Filament\Clusters\Accounting\Resources\VendorBills\Pages\CreateVendorBill;
 use App\Models\Journal;
-use App\Models\Partner;
-use App\Models\PaymentTerm;
-use App\Models\PaymentTermLine;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\Traits\WithConfiguredCompany;
-
 use function Pest\Livewire\livewire;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);

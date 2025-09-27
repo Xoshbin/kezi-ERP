@@ -3,7 +3,6 @@
 namespace Modules\Purchase\Events;
 
 use App\Models\User;
-use App\Models\VendorBill;
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Broadcasting\PrivateChannel;

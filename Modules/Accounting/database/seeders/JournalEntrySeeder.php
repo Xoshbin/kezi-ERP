@@ -5,7 +5,6 @@ namespace Modules\Accounting\Database\Seeders;
 use App\Actions\Accounting\CreateJournalEntryAction;
 use App\DataTransferObjects\Accounting\CreateJournalEntryDTO;
 use App\DataTransferObjects\Accounting\CreateJournalEntryLineDTO;
-use App\Models\Account;
 use App\Models\Company;
 use App\Models\Journal;
 use App\Models\User;

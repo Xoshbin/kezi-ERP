@@ -13,11 +13,7 @@ use App\Filament\Clusters\Accounting\Resources\Partners\RelationManagers\Invoice
 use App\Filament\Clusters\Accounting\Resources\Partners\RelationManagers\PaymentsRelationManager;
 use App\Filament\Clusters\Accounting\Resources\Partners\RelationManagers\UnreconciledEntriesRelationManager;
 use App\Filament\Clusters\Accounting\Resources\Partners\RelationManagers\VendorBillsRelationManager;
-use Xoshbin\CustomFields\Filament\Forms\Components\CustomFieldsComponent;
-use Xoshbin\CustomFields\Filament\Tables\CustomFieldTableColumns;
 use App\Filament\Tables\Columns\MoneyColumn;
-use App\Models\Account;
-use App\Models\Partner;
 use App\Models\Tax;
 use BackedEnum;
 use Filament\Actions\Action;
@@ -41,6 +37,8 @@ use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Xoshbin\CustomFields\Filament\Forms\Components\CustomFieldsComponent;
+use Xoshbin\CustomFields\Filament\Tables\CustomFieldTableColumns;
 use Xoshbin\TranslatableSelect\Components\TranslatableSelect;
 
 class PartnerResource extends Resource
@@ -318,7 +316,7 @@ class PartnerResource extends Resource
                     ->sortable(),
 
                 // Financial Information - Customer Balances
-                MoneyColumn::make('customer_balance')
+                \Modules\Foundation\App\Filament\Tables\Columns\MoneyColumn::make('customer_balance')
                     ->label(__('partner.customer_outstanding'))
                     ->getStateUsing(function (\Modules\Foundation\Models\Partner $record) {
                         if (! in_array($record->type, [\Modules\Foundation\Enums\Partners\PartnerType::Customer, \Modules\Foundation\Enums\Partners\PartnerType::Both])) {
@@ -337,7 +335,7 @@ class PartnerResource extends Resource
                     })
                     ->sortable(false),
 
-                MoneyColumn::make('customer_overdue')
+                \Modules\Foundation\App\Filament\Tables\Columns\MoneyColumn::make('customer_overdue')
                     ->label(__('partner.customer_overdue'))
                     ->getStateUsing(function (\Modules\Foundation\Models\Partner $record) {
                         if (! in_array($record->type, [\Modules\Foundation\Enums\Partners\PartnerType::Customer, \Modules\Foundation\Enums\Partners\PartnerType::Both])) {
@@ -357,7 +355,7 @@ class PartnerResource extends Resource
                     ->sortable(false),
 
                 // Financial Information - Vendor Balances
-                MoneyColumn::make('vendor_balance')
+                \Modules\Foundation\App\Filament\Tables\Columns\MoneyColumn::make('vendor_balance')
                     ->label(__('partner.vendor_outstanding'))
                     ->getStateUsing(function (\Modules\Foundation\Models\Partner $record) {
                         if (! in_array($record->type, [\Modules\Foundation\Enums\Partners\PartnerType::Vendor, \Modules\Foundation\Enums\Partners\PartnerType::Both])) {
@@ -376,7 +374,7 @@ class PartnerResource extends Resource
                     })
                     ->sortable(false),
 
-                MoneyColumn::make('vendor_overdue')
+                \Modules\Foundation\App\Filament\Tables\Columns\MoneyColumn::make('vendor_overdue')
                     ->label(__('partner.vendor_overdue'))
                     ->getStateUsing(function (\Modules\Foundation\Models\Partner $record) {
                         if (! in_array($record->type, [\Modules\Foundation\Enums\Partners\PartnerType::Vendor, \Modules\Foundation\Enums\Partners\PartnerType::Both])) {

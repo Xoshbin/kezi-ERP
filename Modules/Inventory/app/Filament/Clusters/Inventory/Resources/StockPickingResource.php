@@ -15,9 +15,8 @@ use Filament\Resources\Resource;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Tables;
-
-
 use Filament\Tables\Table;
+
 
 class StockPickingResource extends Resource
 {

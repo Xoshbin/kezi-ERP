@@ -1,8 +1,6 @@
 <?php
 
 use App\Actions\Accounting\CreateJournalEntryForDepreciationAction;
-use App\Models\Asset;
-use App\Models\DepreciationEntry;
 use Brick\Money\Money;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\Traits\WithConfiguredCompany;

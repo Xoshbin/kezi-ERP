@@ -2,8 +2,6 @@
 
 namespace Modules\Purchase\DataTransferObjects\Purchases;
 
-use App\Models\VendorBill;
-
 readonly class UpdateVendorBillDTO
 {
     /**

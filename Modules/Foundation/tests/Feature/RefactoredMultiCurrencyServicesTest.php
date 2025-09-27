@@ -1,7 +1,6 @@
 <?php
 
 use App\Models\Company;
-use App\Models\Currency;
 use App\Services\InvoiceService;
 use Brick\Money\Money;
 use Carbon\Carbon;

@@ -2,9 +2,6 @@
 
 namespace Modules\Inventory\Services\Inventory;
 
-use App\Models\Company;
-use App\Models\Product;
-use App\Models\StockLocation;
 use App\Models\StockMove;
 use App\Models\StockQuant;
 use Illuminate\Support\Facades\DB;

@@ -1,6 +1,5 @@
 <?php
 
-use App\Models\Product;
 use App\Services\Inventory\StockQuantService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\Traits\WithConfiguredCompany;

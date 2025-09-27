@@ -8,7 +8,6 @@ use App\Enums\Payments\PaymentStatus;
 use App\Enums\Payments\PaymentType;
 use App\Models\Journal;
 use App\Models\JournalEntry;
-use App\Models\Partner;
 use App\Services\PaymentService;
 use Brick\Money\Money;
 use Illuminate\Foundation\Testing\RefreshDatabase;

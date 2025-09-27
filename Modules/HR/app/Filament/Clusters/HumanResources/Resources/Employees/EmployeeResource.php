@@ -8,7 +8,6 @@ use App\Filament\Clusters\HumanResources\Resources\Employees\Pages\EditEmployee;
 use App\Filament\Clusters\HumanResources\Resources\Employees\Pages\ListEmployees;
 use App\Filament\Clusters\HumanResources\Resources\Employees\Schemas\EmployeeForm;
 use App\Filament\Clusters\HumanResources\Resources\Employees\Tables\EmployeesTable;
-use App\Models\Employee;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Tables\Table;

@@ -2,10 +2,6 @@
 
 namespace Modules\Purchase\Database\Seeders;
 
-use App\Models\Account;
-use App\Models\Product;
-use App\Models\Tax;
-use App\Models\VendorBill;
 use App\Models\VendorBillLine;
 use Illuminate\Database\Seeder;
 

@@ -4,7 +4,6 @@ namespace Modules\Inventory\Services\Inventory;
 
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Collection;
 
 class InventoryPerformanceMonitoringService
 {
@@ -15,7 +14,7 @@ class InventoryPerformanceMonitoringService
     {
         // Enable query logging temporarily
         DB::enableQueryLog();
-        
+
         $analysis = [
             'slow_queries' => [],
             'recommendations' => [],
@@ -25,10 +24,10 @@ class InventoryPerformanceMonitoringService
 
         // Check for missing indexes on critical tables
         $analysis['missing_indexes'] = $this->checkMissingIndexes();
-        
+
         // Analyze query patterns
         $analysis['query_patterns'] = $this->analyzeQueryPatterns();
-        
+
         return $analysis;
     }
 
@@ -49,16 +48,16 @@ class InventoryPerformanceMonitoringService
         ];
 
         $sizes = [];
-        
+
         foreach ($tables as $table) {
             try {
                 $result = DB::select("
-                    SELECT 
+                    SELECT
                         table_name,
                         ROUND(((data_length + index_length) / 1024 / 1024), 2) AS size_mb,
                         table_rows
-                    FROM information_schema.tables 
-                    WHERE table_schema = DATABASE() 
+                    FROM information_schema.tables
+                    WHERE table_schema = DATABASE()
                     AND table_name = ?
                 ", [$table]);
 
@@ -127,22 +126,22 @@ class InventoryPerformanceMonitoringService
         try {
             // Get index usage statistics
             $indexStats = DB::select("
-                SELECT 
+                SELECT
                     index_name,
                     cardinality,
                     sub_part,
                     packed,
                     nullable,
                     index_type
-                FROM information_schema.statistics 
-                WHERE table_schema = DATABASE() 
+                FROM information_schema.statistics
+                WHERE table_schema = DATABASE()
                 AND table_name = ?
                 ORDER BY seq_in_index
             ", [$tableName]);
 
             // Simple heuristic: if table has very few indexes, it might need optimization
             $indexCount = count(array_unique(array_column($indexStats, 'index_name')));
-            
+
             return [
                 'index_count' => $indexCount,
                 'needs_optimization' => $indexCount < 3, // Arbitrary threshold
@@ -178,7 +177,7 @@ class InventoryPerformanceMonitoringService
     private function analyzeFEFOQueries(): array
     {
         $startTime = microtime(true);
-        
+
         try {
             // Simulate a typical FEFO query
             $result = DB::table('stock_quants as sq')
@@ -216,7 +215,7 @@ class InventoryPerformanceMonitoringService
     private function analyzeReservationQueries(): array
     {
         $startTime = microtime(true);
-        
+
         try {
             // Simulate a typical reservation lookup query
             $result = DB::table('stock_reservations')
@@ -246,7 +245,7 @@ class InventoryPerformanceMonitoringService
     private function analyzeValuationQueries(): array
     {
         $startTime = microtime(true);
-        
+
         try {
             // Simulate a typical valuation query
             $result = DB::table('stock_move_valuations as smv')
@@ -277,7 +276,7 @@ class InventoryPerformanceMonitoringService
     private function analyzeReportingQueries(): array
     {
         $startTime = microtime(true);
-        
+
         try {
             // Simulate a typical aging report query
             $result = DB::table('inventory_cost_layers')
@@ -399,7 +398,7 @@ class InventoryPerformanceMonitoringService
     public function generateOptimizationReport(): array
     {
         $analysis = $this->analyzeSlowQueries();
-        
+
         $report = [
             'timestamp' => now()->toISOString(),
             'overall_health' => $this->calculateOverallHealth($analysis),
@@ -421,7 +420,7 @@ class InventoryPerformanceMonitoringService
     private function calculateOverallHealth(array $analysis): string
     {
         $scores = [];
-        
+
         foreach ($analysis['query_patterns'] as $pattern) {
             if (isset($pattern['performance_rating'])) {
                 $scores[] = $pattern['performance_rating'];
@@ -455,7 +454,7 @@ class InventoryPerformanceMonitoringService
     private function prioritizeRecommendations(array $analysis): array
     {
         $recommendations = [];
-        
+
         // Collect all recommendations
         foreach ($analysis['query_patterns'] as $patternName => $pattern) {
             if (isset($pattern['recommendations'])) {
@@ -484,9 +483,9 @@ class InventoryPerformanceMonitoringService
     private function getNextSteps(array $analysis): array
     {
         $steps = [];
-        
+
         $overallHealth = $this->calculateOverallHealth($analysis);
-        
+
         if ($overallHealth === 'poor') {
             $steps[] = 'Immediate action required: Apply performance indexes migration';
             $steps[] = 'Enable query result caching for inventory operations';

@@ -4,7 +4,6 @@ namespace Modules\Inventory\Database\Factories;
 
 use App\Enums\Inventory\ReorderingRoute;
 use App\Models\Company;
-use App\Models\Product;
 use App\Models\ReorderingRule;
 use App\Models\StockLocation;
 use Illuminate\Database\Eloquent\Factories\Factory;

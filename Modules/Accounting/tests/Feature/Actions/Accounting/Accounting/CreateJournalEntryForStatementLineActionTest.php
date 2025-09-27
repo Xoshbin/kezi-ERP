@@ -2,11 +2,7 @@
 
 use App\Actions\Accounting\CreateJournalEntryForStatementLineAction;
 use App\DataTransferObjects\Accounting\CreateJournalEntryForStatementLineDTO;
-use App\Models\Account;
-use App\Models\BankStatement;
-use App\Models\BankStatementLine;
 use App\Models\Company;
-use App\Models\Currency;
 use App\Models\Journal;
 use App\Models\JournalEntry;
 use App\Models\User;

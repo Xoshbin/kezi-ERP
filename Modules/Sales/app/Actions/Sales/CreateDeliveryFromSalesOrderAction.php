@@ -12,7 +12,6 @@ use App\Enums\Inventory\StockMoveType;
 use App\Enums\Inventory\StockPickingState;
 use App\Enums\Inventory\StockPickingType;
 use App\Enums\Products\ProductType;
-use App\Events\Inventory\StockMoveConfirmed;
 use App\Models\SalesOrder;
 use App\Models\StockLocation;
 use App\Models\StockPicking;
@@ -77,7 +76,7 @@ class CreateDeliveryFromSalesOrderAction
                 if ($line->product && $line->product->type === \Modules\Product\Enums\Products\ProductType::Storable) {
                     // Only create delivery for quantities that haven't been delivered yet
                     $remainingQuantity = $line->getRemainingToDeliver();
-                    
+
                     if ($remainingQuantity > 0) {
                         $stockMove = $this->createStockMoveForLine(
                             $salesOrder,
@@ -124,7 +123,7 @@ class CreateDeliveryFromSalesOrderAction
 
         // Try to get warehouse location from sales order delivery location
         $warehouseLocation = $salesOrder->deliveryLocation;
-        
+
         // Fallback to company's main warehouse
         if (!$warehouseLocation) {
             $warehouseLocation = StockLocation::where('company_id', $company->id)
@@ -189,7 +188,7 @@ class CreateDeliveryFromSalesOrderAction
     private function updateSalesOrderStatus(SalesOrder $salesOrder): void
     {
         $salesOrder->refresh();
-        
+
         if ($salesOrder->isFullyDelivered()) {
             if ($salesOrder->isFullyInvoiced()) {
                 $salesOrder->status = \App\Enums\Sales\SalesOrderStatus::Done;
@@ -199,7 +198,7 @@ class CreateDeliveryFromSalesOrderAction
         } else {
             $salesOrder->status = \App\Enums\Sales\SalesOrderStatus::PartiallyDelivered;
         }
-        
+
         $salesOrder->save();
     }
 }

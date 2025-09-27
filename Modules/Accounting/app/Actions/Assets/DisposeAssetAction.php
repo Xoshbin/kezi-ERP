@@ -7,7 +7,6 @@ use App\DataTransferObjects\Accounting\CreateJournalEntryDTO;
 use App\DataTransferObjects\Accounting\CreateJournalEntryLineDTO;
 use App\DataTransferObjects\Assets\DisposeAssetDTO;
 use App\Enums\Assets\AssetStatus;
-use App\Models\Asset;
 use App\Models\User;
 use Brick\Money\Money;
 use Illuminate\Support\Facades\DB;

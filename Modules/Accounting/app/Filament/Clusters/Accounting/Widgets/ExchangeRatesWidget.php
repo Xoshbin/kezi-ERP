@@ -2,8 +2,6 @@
 
 namespace Modules\Accounting\Filament\Clusters\Accounting\Widgets;
 
-use App\Models\Currency;
-use App\Models\CurrencyRate;
 use Carbon\Carbon;
 use Filament\Widgets\StatsOverviewWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;

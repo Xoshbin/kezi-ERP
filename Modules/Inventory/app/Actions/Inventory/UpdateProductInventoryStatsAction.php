@@ -2,7 +2,6 @@
 
 namespace Modules\Inventory\Actions\Inventory;
 
-use App\Models\Product;
 use Brick\Math\RoundingMode;
 use Brick\Money\Money;
 use Illuminate\Support\Facades\DB;

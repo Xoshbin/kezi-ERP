@@ -5,7 +5,6 @@ namespace Modules\Accounting\Observers;
 use App\Actions\Accounting\CreateJournalEntryForAssetAcquisitionAction;
 use App\Enums\Assets\AssetStatus;
 use App\Exceptions\DeletionNotAllowedException;
-use App\Models\Asset;
 use Illuminate\Support\Facades\Auth;
 
 class AssetObserver

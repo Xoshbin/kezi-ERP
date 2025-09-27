@@ -6,7 +6,6 @@ use App\Enums\Inventory\ValuationMethod;
 use App\Enums\Products\ProductType;
 use App\Filament\Clusters\Inventory\Resources\StockMoves\Actions\ConfirmStockMoveAction;
 use App\Models\Company;
-use App\Models\Product;
 use App\Models\StockLocation;
 use App\Models\StockMove;
 use App\Models\StockMoveProductLine;

@@ -12,8 +12,8 @@ use App\Filament\Actions\DocsAction;
 use App\Filament\Clusters\Inventory\Resources\StockMoves\StockMoveResource;
 use Carbon\Carbon;
 use Filament\Facades\Filament;
-use Filament\Notifications\Notification;
 use Filament\Notifications\Actions\Action as NotificationAction;
+use Filament\Notifications\Notification;
 use Filament\Resources\Pages\CreateRecord;
 use Illuminate\Database\Eloquent\Model;
 
@@ -95,7 +95,7 @@ class CreateStockMove extends CreateRecord
     protected function getHeaderActions(): array
     {
         return [
-            DocsAction::make('stock-management'),
+            \Modules\Foundation\App\Filament\Actions\DocsAction::make('stock-management'),
         ];
     }
 }

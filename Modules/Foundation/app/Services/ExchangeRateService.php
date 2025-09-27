@@ -2,8 +2,6 @@
 
 namespace Modules\Foundation\Services;
 
-use App\Models\Currency;
-use App\Models\CurrencyRate;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Support\Facades\Http;

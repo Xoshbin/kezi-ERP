@@ -3,7 +3,6 @@
 use App\Actions\Accounting\UpdateJournalEntryAction;
 use App\DataTransferObjects\Accounting\UpdateJournalEntryDTO;
 use App\DataTransferObjects\Accounting\UpdateJournalEntryLineDTO;
-use App\Models\Account;
 use App\Models\JournalEntry;
 use Brick\Money\Money;
 use Illuminate\Foundation\Testing\RefreshDatabase;

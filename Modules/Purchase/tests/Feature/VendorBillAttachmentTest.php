@@ -3,10 +3,7 @@
 namespace Modules\Purchase\Tests\Feature;
 
 use App\Models\Company;
-use App\Models\Currency;
-use App\Models\Partner;
 use App\Models\User;
-use App\Models\VendorBill;
 use App\Models\VendorBillAttachment;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;

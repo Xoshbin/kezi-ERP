@@ -12,8 +12,6 @@ use App\DataTransferObjects\Assets\UpdateAssetDTO;
 use App\Enums\Assets\AssetStatus;
 use App\Enums\Assets\DepreciationEntryStatus;
 use App\Exceptions\DeletionNotAllowedException;
-use App\Models\Asset;
-use App\Models\DepreciationEntry;
 use App\Models\User;
 use Brick\Math\RoundingMode;
 use Carbon\Carbon;

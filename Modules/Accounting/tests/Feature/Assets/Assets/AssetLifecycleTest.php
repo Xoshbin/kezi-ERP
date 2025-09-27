@@ -3,8 +3,6 @@
 use App\Actions\Assets\CreateAssetAction;
 use App\DataTransferObjects\Assets\CreateAssetDTO;
 use App\Enums\Assets\AssetStatus;
-use App\Models\Account;
-use App\Models\Asset;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\Traits\WithConfiguredCompany;
 

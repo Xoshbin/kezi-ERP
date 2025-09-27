@@ -6,7 +6,6 @@ use App\Enums\Partners\PartnerType;
 use App\Enums\Purchases\VendorBillStatus;
 use App\Enums\Sales\InvoiceStatus;
 use App\Observers\PartnerObserver;
-use Xoshbin\CustomFields\Traits\HasCustomFields;
 use Brick\Money\Money;
 use Database\Factories\PartnerFactory;
 use Eloquent;
@@ -20,6 +19,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
 use RuntimeException;
+use Xoshbin\CustomFields\Traits\HasCustomFields;
 
 /**
  * Class Partner

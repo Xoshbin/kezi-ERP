@@ -4,10 +4,7 @@ namespace Modules\Foundation\Tests\Feature;
 
 use App\Enums\Accounting\AccountType;
 use App\Enums\Partners\PartnerType;
-use App\Models\Account;
 use App\Models\Company;
-use App\Models\Currency;
-use App\Models\Partner;
 use App\Models\Tax;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;

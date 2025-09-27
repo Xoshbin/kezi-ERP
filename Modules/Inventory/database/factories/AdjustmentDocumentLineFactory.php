@@ -2,10 +2,7 @@
 
 namespace Modules\Inventory\Database\Factories;
 
-use App\Models\Account;
-use App\Models\AdjustmentDocument;
 use App\Models\AdjustmentDocumentLine;
-use App\Models\Product;
 use App\Models\Tax;
 use Brick\Money\Money;
 use Illuminate\Database\Eloquent\Factories\Factory;

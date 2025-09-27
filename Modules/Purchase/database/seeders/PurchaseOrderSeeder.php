@@ -7,14 +7,10 @@ use App\DataTransferObjects\Purchases\CreatePurchaseOrderLineDTO;
 use App\Enums\Partners\PartnerType;
 use App\Enums\Purchases\PurchaseOrderStatus;
 use App\Models\Company;
-use App\Models\Currency;
-use App\Models\Partner;
-use App\Models\Product;
 use App\Models\PurchaseOrder;
 use App\Models\Tax;
 use Brick\Money\Money;
 use Carbon\Carbon;
-use Illuminate\Container\Attributes\Auth;
 use Illuminate\Database\Seeder;
 
 class PurchaseOrderSeeder extends Seeder

@@ -10,13 +10,7 @@ use App\Filament\Clusters\Accounting\Resources\AdjustmentDocuments\Pages\CreateA
 use App\Filament\Clusters\Accounting\Resources\AdjustmentDocuments\Pages\EditAdjustmentDocument;
 use App\Filament\Clusters\Accounting\Resources\AdjustmentDocuments\Pages\ListAdjustmentDocuments;
 use App\Filament\Forms\Components\MoneyInput;
-use App\Models\Account;
-use App\Models\AdjustmentDocument;
-use App\Models\Currency;
-use App\Models\Invoice;
-use App\Models\Product;
 use App\Models\Tax;
-use App\Models\VendorBill;
 use App\Rules\NotInLockedPeriod;
 use BackedEnum;
 use Filament\Actions\Action;
@@ -84,7 +78,7 @@ class AdjustmentDocumentResource extends Resource
                         ->preload()
                         ->live()
                         ->columnSpan(2)
-                        ->disabled(fn (Get $get): bool => ! empty($get('original_invoice_id')) || ! empty($get('original_vendor_bill_id')))
+                        ->disabled(fn(Get $get): bool => ! empty($get('original_invoice_id')) || ! empty($get('original_vendor_bill_id')))
                         ->createOptionForm([
                             TextInput::make('code')
                                 ->label(__('currency.code'))
@@ -117,7 +111,7 @@ class AdjustmentDocumentResource extends Resource
                         ->label(__('adjustment_document.adjustment_type'))
                         ->options(
                             collect(AdjustmentDocumentType::cases())
-                                ->mapWithKeys(fn (AdjustmentDocumentType $type) => [$type->value => $type->label()])
+                                ->mapWithKeys(fn(AdjustmentDocumentType $type) => [$type->value => $type->label()])
                         )
                         ->required()
                         ->searchable()
@@ -137,7 +131,7 @@ class AdjustmentDocumentResource extends Resource
                         ->columnSpan(1),
                     Select::make('status')
                         ->label(__('adjustment_document.status'))
-                        ->options(collect(AdjustmentDocumentStatus::cases())->mapWithKeys(fn ($case) => [$case->value => $case->label()]))
+                        ->options(collect(AdjustmentDocumentStatus::cases())->mapWithKeys(fn($case) => [$case->value => $case->label()]))
                         ->disabled()
                         ->dehydrated(false)
                         ->default(AdjustmentDocumentStatus::Draft->value)
@@ -162,7 +156,7 @@ class AdjustmentDocumentResource extends Resource
                             'vendor_bill' => __('adjustment_document.vendor_bill'),
                         ])
                         ->reactive()
-                        ->afterStateUpdated(fn (Set $set) => [$set('original_invoice_id', null), $set('original_vendor_bill_id', null)])
+                        ->afterStateUpdated(fn(Set $set) => [$set('original_invoice_id', null), $set('original_vendor_bill_id', null)])
                         ->dehydrated(false)
                         ->afterStateHydrated(function (Get $get, Set $set) {
                             if ($get('original_invoice_id')) {
@@ -179,7 +173,7 @@ class AdjustmentDocumentResource extends Resource
                         ->relationship(
                             'originalInvoice',
                             'invoice_number',
-                            fn ($query) => $query->posted()->with('customer')
+                            fn($query) => $query->posted()->with('customer')
                         )
                         ->getOptionLabelUsing(function ($value): ?string {
                             $invoice = \Modules\Sales\Models\Invoice::posted()->with('customer')->find($value);
@@ -194,9 +188,9 @@ class AdjustmentDocumentResource extends Resource
                                 return null;
                             }
 
-                            return $invoice->invoice_number.' - '.$invoice->customer->name;
+                            return $invoice->invoice_number . ' - ' . $invoice->customer->name;
                         })
-                        ->visible(fn (Get $get) => $get('document_link_type') === 'invoice')
+                        ->visible(fn(Get $get) => $get('document_link_type') === 'invoice')
                         ->reactive()
                         ->afterStateUpdated(function ($state, Set $set) {
                             if ($state) {
@@ -213,8 +207,8 @@ class AdjustmentDocumentResource extends Resource
                         ->label('Original Vendor Bill')
                         ->searchable()
                         ->preload()
-                        ->relationship('originalVendorBill', 'bill_reference', fn ($query) => $query->posted())
-                        ->visible(fn (Get $get) => $get('document_link_type') === 'vendor_bill')
+                        ->relationship('originalVendorBill', 'bill_reference', fn($query) => $query->posted())
+                        ->visible(fn(Get $get) => $get('document_link_type') === 'vendor_bill')
                         ->reactive()
                         ->afterStateUpdated(function ($state, Set $set) {
                             if ($state) {
@@ -284,7 +278,7 @@ class AdjustmentDocumentResource extends Resource
                                     Textarea::make('description')
                                         ->label(__('product.description'))
                                         ->columnSpanFull(),
-                                    MoneyInput::make('unit_price')
+                                    \Modules\Foundation\Filament\Forms\Components\MoneyInput::make('unit_price')
                                         ->label(__('product.unit_price'))
                                         ->currencyField('../../currency_id'),
                                     Select::make('income_account_id')
@@ -309,7 +303,7 @@ class AdjustmentDocumentResource extends Resource
                                 ->numeric()
                                 ->default(1)
                                 ->columnSpan(2),
-                            MoneyInput::make('unit_price')
+                            \Modules\Foundation\Filament\Forms\Components\MoneyInput::make('unit_price')
                                 ->label('Price')
                                 ->currencyField('../../currency_id')
                                 ->required()
@@ -347,7 +341,7 @@ class AdjustmentDocumentResource extends Resource
                                 ->searchable()
                                 ->searchableFields(['name', 'code'])
                                 ->preload()
-                                ->getOptionLabelFromRecordUsing(fn ($record) => $record->getTranslatedLabel('name').' ('.$record->code.')')
+                                ->getOptionLabelFromRecordUsing(fn($record) => $record->getTranslatedLabel('name') . ' (' . $record->code . ')')
                                 ->required()
                                 ->createOptionForm([
                                     Select::make('company_id')
@@ -367,7 +361,7 @@ class AdjustmentDocumentResource extends Resource
                                         ->required()
                                         ->options(
                                             collect(\Modules\Accounting\Enums\Accounting\AccountType::cases())
-                                                ->mapWithKeys(fn (\Modules\Accounting\Enums\Accounting\AccountType $type) => [$type->value => $type->label()])
+                                                ->mapWithKeys(fn(\Modules\Accounting\Enums\Accounting\AccountType $type) => [$type->value => $type->label()])
                                         )
                                         ->searchable(),
                                     Toggle::make('is_deprecated')
@@ -409,12 +403,12 @@ class AdjustmentDocumentResource extends Resource
                     ->label('Type')
                     ->searchable()
                     ->badge()
-                    ->color(fn (AdjustmentDocumentType $state): string => match ($state->value) {
+                    ->color(fn(AdjustmentDocumentType $state): string => match ($state->value) {
                         'credit_note' => 'success',
                         'debit_note' => 'warning',
                         default => 'gray',
                     })
-                    ->formatStateUsing(fn (AdjustmentDocumentType $state): string => ucfirst(str_replace('_', ' ', $state->value))),
+                    ->formatStateUsing(fn(AdjustmentDocumentType $state): string => ucfirst(str_replace('_', ' ', $state->value))),
                 TextColumn::make('date')
                     ->label('Date')
                     ->date('M j, Y')
@@ -422,18 +416,18 @@ class AdjustmentDocumentResource extends Resource
                     ->icon('heroicon-o-calendar-days'),
                 TextColumn::make('total_amount')
                     ->label('Amount')
-                    ->money(fn ($record) => $record->currency->code)
+                    ->money(fn($record) => $record->currency->code)
                     ->sortable(),
                 TextColumn::make('status')
                     ->label('Status')
-                    ->formatStateUsing(fn (AdjustmentDocumentStatus $state): string => $state->label())
+                    ->formatStateUsing(fn(AdjustmentDocumentStatus $state): string => $state->label())
                     ->badge()
-                    ->color(fn (AdjustmentDocumentStatus $state): string => match ($state) {
+                    ->color(fn(AdjustmentDocumentStatus $state): string => match ($state) {
                         AdjustmentDocumentStatus::Draft => 'warning',
                         AdjustmentDocumentStatus::Posted => 'success',
                         AdjustmentDocumentStatus::Cancelled => 'danger',
                     })
-                    ->icon(fn (AdjustmentDocumentStatus $state): string => match ($state) {
+                    ->icon(fn(AdjustmentDocumentStatus $state): string => match ($state) {
                         AdjustmentDocumentStatus::Draft => 'heroicon-m-pencil-square',
                         AdjustmentDocumentStatus::Posted => 'heroicon-m-check-circle',
                         AdjustmentDocumentStatus::Cancelled => 'heroicon-m-x-circle',
@@ -452,7 +446,7 @@ class AdjustmentDocumentResource extends Resource
                 SelectFilter::make('type')
                     ->options(
                         collect(AdjustmentDocumentType::cases())
-                            ->mapWithKeys(fn (AdjustmentDocumentType $type) => [$type->value => $type->label()])
+                            ->mapWithKeys(fn(AdjustmentDocumentType $type) => [$type->value => $type->label()])
                     )
                     ->multiple(),
             ])

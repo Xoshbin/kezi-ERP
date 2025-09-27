@@ -3,7 +3,6 @@
 namespace Modules\Accounting\Jobs;
 
 use App\Actions\Assets\PostDepreciationEntryAction;
-use App\Models\DepreciationEntry;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;

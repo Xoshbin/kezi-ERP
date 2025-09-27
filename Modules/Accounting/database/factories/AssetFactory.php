@@ -3,7 +3,6 @@
 namespace Modules\Accounting\Database\Factories;
 
 use App\Enums\Assets\AssetStatus;
-use App\Models\Account;
 use App\Models\Asset;
 use App\Models\Company;
 use Brick\Money\Money;

@@ -3,7 +3,6 @@
 namespace Modules\HR\Filament\Clusters\HumanResources\Resources\Positions\Schemas;
 
 use App\Filament\Forms\Components\MoneyInput;
-use App\Models\Currency;
 use App\Models\Department;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
@@ -104,12 +103,12 @@ class PositionForm
                         ->live()
                         ->columnSpan(3),
 
-                    MoneyInput::make('min_salary')
+                    \Modules\Foundation\App\Filament\Forms\Components\MoneyInput::make('min_salary')
                         ->label(__('position.min_salary'))
                         ->currencyField('currency_id')
                         ->columnSpan(1),
 
-                    MoneyInput::make('max_salary')
+                    \Modules\Foundation\App\Filament\Forms\Components\MoneyInput::make('max_salary')
                         ->label(__('position.max_salary'))
                         ->currencyField('currency_id')
                         ->columnSpan(1),

@@ -2,7 +2,6 @@
 
 namespace Modules\Accounting\Policies;
 
-use App\Models\FiscalPosition;
 use App\Models\User;
 
 class FiscalPositionPolicy

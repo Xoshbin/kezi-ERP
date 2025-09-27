@@ -2,8 +2,6 @@
 
 namespace Modules\Accounting\Console\Commands;
 
-use App\Jobs\ProcessDepreciationJob;
-use App\Models\DepreciationEntry;
 use Illuminate\Console\Command;
 
 class ProcessDepreciations extends Command

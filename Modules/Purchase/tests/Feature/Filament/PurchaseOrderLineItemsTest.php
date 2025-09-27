@@ -2,8 +2,6 @@
 
 use App\Enums\Purchases\PurchaseOrderStatus;
 use App\Filament\Clusters\Purchases\Resources\PurchaseOrders\Pages\CreatePurchaseOrder;
-use App\Models\Partner;
-use App\Models\Product;
 use App\Models\Tax;
 use Brick\Money\Money;
 use Illuminate\Foundation\Testing\RefreshDatabase;

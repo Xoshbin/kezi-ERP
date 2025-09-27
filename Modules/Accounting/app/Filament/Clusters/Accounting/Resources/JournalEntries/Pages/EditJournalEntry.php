@@ -7,7 +7,6 @@ use App\DataTransferObjects\Accounting\UpdateJournalEntryDTO;
 use App\DataTransferObjects\Accounting\UpdateJournalEntryLineDTO;
 use App\Filament\Actions\DocsAction;
 use App\Filament\Clusters\Accounting\Resources\JournalEntries\JournalEntryResource;
-use App\Models\Currency;
 use App\Models\JournalEntry;
 use App\Models\JournalEntryLine;
 use App\Services\JournalEntryService;
@@ -57,7 +56,7 @@ class EditJournalEntry extends EditRecord
                     $this->redirect(JournalEntryResource::getUrl('index'));
                 }),
 
-            DocsAction::make('opening-balances'),
+            \Modules\Foundation\App\Filament\Actions\DocsAction::make('opening-balances'),
         ];
     }
 

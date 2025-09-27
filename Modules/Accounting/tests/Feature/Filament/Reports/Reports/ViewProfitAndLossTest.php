@@ -5,14 +5,12 @@ namespace Modules\Accounting\Tests\Feature\Filament\Reports;
 use App\Enums\Accounting\AccountType;
 use App\Enums\Accounting\JournalEntryState;
 use App\Filament\Clusters\Accounting\Pages\Reports\ViewProfitAndLoss;
-use App\Models\Account;
 use App\Models\Journal;
 use App\Models\JournalEntry;
 use App\Models\JournalEntryLine;
 use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\Traits\WithConfiguredCompany;
-
 use function Pest\Livewire\livewire;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);

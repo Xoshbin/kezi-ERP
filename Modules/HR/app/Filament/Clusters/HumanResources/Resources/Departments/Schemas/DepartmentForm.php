@@ -3,7 +3,6 @@
 namespace Modules\HR\Filament\Clusters\HumanResources\Resources\Departments\Schemas;
 
 use App\Models\Department;
-use App\Models\Employee;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;

@@ -6,7 +6,6 @@ use App\Enums\Budgets\BudgetStatus;
 use App\Enums\Budgets\BudgetType;
 use App\Models\Budget;
 use App\Models\Company;
-use App\Models\Currency;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**

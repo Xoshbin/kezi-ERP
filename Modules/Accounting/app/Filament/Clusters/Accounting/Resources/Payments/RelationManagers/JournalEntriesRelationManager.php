@@ -5,7 +5,6 @@ namespace Modules\Accounting\Filament\Clusters\Accounting\Resources\Payments\Rel
 use App\Enums\Accounting\JournalEntryState;
 use App\Filament\Tables\Columns\MoneyColumn;
 use App\Models\JournalEntry;
-use App\Models\Payment;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
@@ -96,12 +95,12 @@ class JournalEntriesRelationManager extends RelationManager
                     ->label(__('payment.journal_entries_relation_manager.journal'))
                     ->toggleable(),
 
-                MoneyColumn::make('total_debit')
+                \Modules\Foundation\App\Filament\Tables\Columns\MoneyColumn::make('total_debit')
                     ->label(__('payment.journal_entries_relation_manager.total_debit'))
                     ->sortable()
                     ->toggleable(),
 
-                MoneyColumn::make('total_credit')
+                \Modules\Foundation\App\Filament\Tables\Columns\MoneyColumn::make('total_credit')
                     ->label(__('payment.journal_entries_relation_manager.total_credit'))
                     ->sortable()
                     ->toggleable(),

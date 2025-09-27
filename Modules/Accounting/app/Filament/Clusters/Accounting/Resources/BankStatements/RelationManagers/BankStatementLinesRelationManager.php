@@ -4,7 +4,6 @@ namespace Modules\Accounting\Filament\Clusters\Accounting\Resources\BankStatemen
 
 use App\Actions\Accounting\ReverseJournalEntryAction;
 use App\Enums\Accounting\JournalEntryState;
-use App\Models\BankStatementLine;
 use Exception;
 use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;

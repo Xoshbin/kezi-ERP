@@ -1,9 +1,7 @@
 <?php
 
 use App\Exceptions\DeletionNotAllowedException;
-use App\Models\Account;
 use App\Models\Company;
-use App\Models\Currency;
 use App\Services\CompanyService;
 use App\Services\CurrencyService;
 use Illuminate\Foundation\Testing\RefreshDatabase;

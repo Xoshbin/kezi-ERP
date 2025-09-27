@@ -8,8 +8,6 @@ use App\Filament\Clusters\Accounting\Resources\Journals\Pages\CreateJournal;
 use App\Filament\Clusters\Accounting\Resources\Journals\Pages\EditJournal;
 use App\Filament\Clusters\Accounting\Resources\Journals\Pages\ListJournals;
 use App\Filament\Clusters\Accounting\Resources\Journals\RelationManagers\JournalEntriesRelationManager;
-use App\Models\Account;
-use App\Models\Currency;
 use App\Models\Journal;
 use BackedEnum;
 use Filament\Actions\Action;

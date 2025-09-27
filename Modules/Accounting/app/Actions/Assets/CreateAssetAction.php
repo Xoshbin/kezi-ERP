@@ -4,7 +4,6 @@ namespace Modules\Accounting\Actions\Assets;
 
 use App\DataTransferObjects\Assets\CreateAssetDTO;
 use App\Enums\Assets\AssetStatus;
-use App\Models\Asset;
 use Illuminate\Support\Facades\DB;
 
 class CreateAssetAction

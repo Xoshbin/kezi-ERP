@@ -4,7 +4,6 @@ use App\Actions\Sales\CreateInvoiceLineAction;
 use App\DataTransferObjects\Sales\CreateInvoiceLineDTO;
 use App\Enums\Accounting\JournalEntryState;
 use App\Enums\Sales\InvoiceStatus;
-use App\Models\Invoice;
 use App\Services\InvoiceService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\Traits\MocksTime;

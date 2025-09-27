@@ -4,10 +4,8 @@ use App\Enums\Payments\PaymentStatus;
 use App\Filament\Clusters\Accounting\Resources\Payments\Pages\CreatePayment;
 use App\Filament\Clusters\Accounting\Resources\Payments\Pages\EditPayment;
 use App\Filament\Clusters\Accounting\Resources\Payments\PaymentResource;
-use App\Models\Payment;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\Traits\WithConfiguredCompany;
-
 use function Pest\Livewire\livewire;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);

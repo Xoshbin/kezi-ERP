@@ -3,7 +3,6 @@
 namespace Modules\Inventory\Actions\Adjustments;
 
 use App\DataTransferObjects\Adjustments\CreateAdjustmentDocumentLineDTO;
-use App\Models\AdjustmentDocument;
 use App\Models\AdjustmentDocumentLine;
 use App\Models\Tax;
 use Brick\Math\RoundingMode;

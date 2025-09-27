@@ -4,7 +4,6 @@ namespace Modules\Accounting\Database\Factories;
 
 use App\Models\AnalyticAccount;
 use App\Models\Company;
-use App\Models\Currency;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**

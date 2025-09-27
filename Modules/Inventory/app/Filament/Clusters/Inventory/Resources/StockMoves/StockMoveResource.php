@@ -5,17 +5,14 @@ namespace Modules\Inventory\Filament\Clusters\Inventory\Resources\StockMoves;
 use App\Enums\Inventory\StockMoveStatus;
 use App\Enums\Inventory\StockMoveType;
 use App\Filament\Clusters\Inventory\InventoryCluster;
-use App\Filament\Components\CostPreviewComponent;
 use App\Filament\Clusters\Inventory\Resources\StockMoves\Actions\ConfirmStockMoveAction;
 use App\Filament\Clusters\Inventory\Resources\StockMoves\Pages\CreateStockMove;
 use App\Filament\Clusters\Inventory\Resources\StockMoves\Pages\EditStockMove;
 use App\Filament\Clusters\Inventory\Resources\StockMoves\Pages\ListStockMoves;
 use App\Filament\Clusters\Inventory\Resources\StockMoves\Pages\ViewStockMove;
-use App\Models\Product;
+use App\Filament\Components\CostPreviewComponent;
 use App\Models\StockLocation;
 use App\Models\StockMove;
-use App\Models\Invoice;
-use App\Models\VendorBill;
 use BackedEnum;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
@@ -27,12 +24,12 @@ use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
+use Filament\Infolists\Components\RepeatableEntry;
+use Filament\Infolists\Components\TextEntry;
 use Filament\Resources\Resource;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
-use Filament\Infolists\Components\TextEntry;
-use Filament\Infolists\Components\RepeatableEntry;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\SelectFilter;
@@ -106,7 +103,7 @@ class StockMoveResource extends Resource
                             ]),
 
                             // Cost Preview Component
-                            CostPreviewComponent::forProductLine('product_id', 'quantity'),
+                            \Modules\Foundation\App\Filament\Components\CostPreviewComponent::forProductLine('product_id', 'quantity'),
                             Grid::make(2)->schema([
                                 TranslatableSelect::forModel('from_location_id', StockLocation::class)
                                     ->label(__('stock_move.from_location'))
@@ -176,7 +173,7 @@ class StockMoveResource extends Resource
                 ->description(__('Estimated cost impact of this stock movement'))
                 ->icon('heroicon-o-currency-dollar')
                 ->schema([
-                    CostPreviewComponent::forStockMove(),
+                    \Modules\Foundation\App\Filament\Components\CostPreviewComponent::forStockMove(),
                 ])
                 ->visible(fn(callable $get) => $get('move_type') === StockMoveType::Incoming->value),
 

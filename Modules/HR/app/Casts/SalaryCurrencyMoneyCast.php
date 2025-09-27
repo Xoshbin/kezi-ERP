@@ -3,7 +3,6 @@
 namespace Modules\HR\Casts;
 
 use App\Models\Company;
-use App\Models\Currency;
 use Exception;
 use Filament\Facades\Filament;
 use Illuminate\Database\Eloquent\Collection;

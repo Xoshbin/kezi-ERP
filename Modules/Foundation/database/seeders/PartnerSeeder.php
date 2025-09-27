@@ -4,9 +4,7 @@ namespace Modules\Foundation\Database\Seeders;
 
 use App\Enums\Accounting\AccountType;
 use App\Enums\Partners\PartnerType;
-use App\Models\Account;
 use App\Models\Company;
-use App\Models\Partner;
 use Exception;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Database\Seeder;

@@ -3,7 +3,6 @@
 namespace Modules\HR\Database\Factories;
 
 use App\Models\Company;
-use App\Models\Currency;
 use App\Models\Department;
 use App\Models\Position;
 use Brick\Money\Money;

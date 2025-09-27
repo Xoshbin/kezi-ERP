@@ -12,10 +12,7 @@ use App\Filament\Clusters\Inventory\Resources\StockPickingResource\Actions\Valid
 use App\Filament\Clusters\Inventory\Resources\StockPickingResource\Pages\ListStockPickings;
 use App\Filament\Clusters\Inventory\Resources\StockPickingResource\Pages\ViewStockPicking;
 use App\Models\Company;
-use App\Models\Currency;
 use App\Models\Lot;
-use App\Models\Partner;
-use App\Models\Product;
 use App\Models\StockLocation;
 use App\Models\StockMove;
 use App\Models\StockPicking;

@@ -2,7 +2,6 @@
 
 namespace Modules\Foundation\Casts;
 
-use App\Models\Currency;
 use Brick\Math\Exception\MathException;
 use Brick\Money\Money;
 use Illuminate\Contracts\Database\Eloquent\CastsAttributes;

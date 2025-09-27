@@ -3,7 +3,6 @@
 namespace Modules\Product\Tests\Feature;
 
 use App\Enums\Inventory\ValuationMethod;
-use App\Models\Product;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\Traits\WithConfiguredCompany;
 

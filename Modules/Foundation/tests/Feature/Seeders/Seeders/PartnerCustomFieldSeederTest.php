@@ -1,10 +1,9 @@
 <?php
 
-use Xoshbin\CustomFields\Enums\CustomFieldType;
-use Xoshbin\CustomFields\Models\CustomFieldDefinition;
-use App\Models\Partner;
 use Database\Seeders\PartnerCustomFieldSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Xoshbin\CustomFields\Enums\CustomFieldType;
+use Xoshbin\CustomFields\Models\CustomFieldDefinition;
 
 uses(RefreshDatabase::class);
 

@@ -4,11 +4,6 @@ use App\Enums\Purchases\VendorBillStatus;
 use App\Enums\Sales\InvoiceStatus;
 use App\Filament\Clusters\Accounting\Resources\Invoices\Pages\EditInvoice;
 use App\Filament\Clusters\Accounting\Resources\VendorBills\Pages\EditVendorBill;
-use App\Models\Currency;
-use App\Models\CurrencyRate;
-use App\Models\Invoice;
-use App\Models\Partner;
-use App\Models\VendorBill;
 use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Livewire\Livewire;
@@ -55,7 +50,7 @@ describe('Consolidated Exchange Rate Field', function () {
 
         // Check that only the consolidated exchange rate field exists
         $livewire->assertFormFieldExists('exchange_rate_at_creation');
-        
+
         // Verify the old current_exchange_rate field doesn't exist
         $livewire->assertFormFieldDoesNotExist('current_exchange_rate');
     });
@@ -72,7 +67,7 @@ describe('Consolidated Exchange Rate Field', function () {
 
         // Check that only the consolidated exchange rate field exists
         $livewire->assertFormFieldExists('exchange_rate_at_creation');
-        
+
         // Verify the old current_exchange_rate field doesn't exist
         $livewire->assertFormFieldDoesNotExist('current_exchange_rate');
     });
@@ -103,7 +98,7 @@ describe('Consolidated Exchange Rate Field', function () {
 
         // The field should exist and be visible
         $livewire->assertFormFieldExists('exchange_rate_at_creation');
-        
+
         // We can't easily test the helper text content in Livewire tests,
         // but we can verify the field is properly configured
         expect($vendorBill->currency_id)->toBe($this->foreignCurrency->id);
@@ -136,7 +131,7 @@ describe('Consolidated Exchange Rate Field', function () {
 
     test('exchange rate field can be set and persists', function () {
         $customRate = 1500.0;
-        
+
         $vendorBill = \Modules\Purchase\Models\VendorBill::factory()->create([
             'company_id' => $this->company->id,
             'vendor_id' => $this->vendor->id,

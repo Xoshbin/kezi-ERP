@@ -2,8 +2,6 @@
 
 namespace Modules\Sales\DataTransferObjects\Sales;
 
-use App\Models\Invoice;
-
 class UpdateInvoiceDTO
 {
     /**

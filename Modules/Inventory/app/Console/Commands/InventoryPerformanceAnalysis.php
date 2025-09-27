@@ -2,18 +2,17 @@
 
 namespace Modules\Inventory\Console\Commands;
 
+use App\Models\Company;
 use App\Services\Inventory\InventoryPerformanceMonitoringService;
 use App\Services\Inventory\InventoryQueryOptimizationService;
-use App\Models\Company;
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\DB;
 
 class InventoryPerformanceAnalysis extends Command
 {
     /**
      * The name and signature of the console command.
      */
-    protected $signature = 'inventory:performance-analysis 
+    protected $signature = 'inventory:performance-analysis
                             {--company= : Specific company ID to analyze}
                             {--warm-cache : Warm up cache after analysis}
                             {--export= : Export results to file}';
@@ -106,7 +105,7 @@ class InventoryPerformanceAnalysis extends Command
         foreach ($report['table_analysis'] as $tableName => $data) {
             $status = $this->getTableStatus($data);
             $statusColor = $status === 'OK' ? 'green' : ($status === 'WARNING' ? 'yellow' : 'red');
-            
+
             $tableRows[] = [
                 $tableName,
                 number_format($data['size_mb'], 2),
@@ -135,7 +134,7 @@ class InventoryPerformanceAnalysis extends Command
                 };
 
                 $status = $rating === 'poor' ? '⚠️  NEEDS ATTENTION' : '✅ OK';
-                
+
                 $queryRows[] = [
                     ucwords(str_replace('_', ' ', $queryType)),
                     number_format($data['execution_time_ms'], 2),
@@ -190,7 +189,7 @@ class InventoryPerformanceAnalysis extends Command
         foreach ($report['optimization_recommendations'] as $index => $rec) {
             $priorityColor = $rec['priority'] === 'high' ? 'red' : 'yellow';
             $priorityIcon = $rec['priority'] === 'high' ? '🔴' : '🟡';
-            
+
             if ($rec['priority'] === 'high') {
                 $highPriorityCount++;
             } else {

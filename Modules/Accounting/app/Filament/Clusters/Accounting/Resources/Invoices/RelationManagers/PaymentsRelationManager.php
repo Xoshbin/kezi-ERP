@@ -5,7 +5,6 @@ namespace Modules\Accounting\Filament\Clusters\Accounting\Resources\Invoices\Rel
 use App\Enums\Payments\PaymentStatus;
 use App\Enums\Payments\PaymentType;
 use App\Filament\Tables\Columns\MoneyColumn;
-use App\Models\Payment;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\CreateAction;
 use Filament\Actions\DetachAction;
@@ -132,11 +131,11 @@ class PaymentsRelationManager extends RelationManager
                     ->searchable()
                     ->placeholder(__('invoice.payments_relation_manager.no_reference')),
 
-                MoneyColumn::make('amount')
+                \Modules\Foundation\App\Filament\Tables\Columns\MoneyColumn::make('amount')
                     ->label(__('invoice.payments_relation_manager.amount'))
                     ->sortable(),
 
-                MoneyColumn::make('pivot.amount_applied')
+                \Modules\Foundation\App\Filament\Tables\Columns\MoneyColumn::make('pivot.amount_applied')
                     ->label(__('invoice.payments_relation_manager.amount_applied'))
                     ->sortable(),
 

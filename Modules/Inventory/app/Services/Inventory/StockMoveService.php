@@ -7,7 +7,6 @@ use App\DataTransferObjects\Inventory\CreateStockMoveDTO;
 use App\DataTransferObjects\Inventory\UpdateStockMoveDTO;
 use App\DataTransferObjects\Inventory\UpdateStockMoveWithProductLinesDTO;
 use App\Enums\Inventory\StockMoveStatus;
-use App\Events\Inventory\StockMoveConfirmed;
 use App\Models\StockMove;
 
 /**

@@ -2,7 +2,6 @@
 
 use App\Enums\PaymentTerms\PaymentTermType;
 use App\Models\Company;
-use App\Models\PaymentTerm;
 use Database\Seeders\PaymentTermsSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 

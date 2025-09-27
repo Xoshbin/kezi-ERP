@@ -7,8 +7,6 @@ use App\DataTransferObjects\Payments\CreatePaymentDTO;
 use App\Enums\Payments\PaymentMethod;
 use App\Enums\Payments\PaymentType;
 use App\Models\Journal;
-use App\Models\Payment;
-use App\Models\Payroll;
 use App\Models\User;
 use InvalidArgumentException;
 

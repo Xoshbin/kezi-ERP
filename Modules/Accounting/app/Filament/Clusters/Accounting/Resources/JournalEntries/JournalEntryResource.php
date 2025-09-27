@@ -9,12 +9,9 @@ use App\Filament\Clusters\Accounting\Resources\JournalEntries\Pages\EditJournalE
 use App\Filament\Clusters\Accounting\Resources\JournalEntries\Pages\ListJournalEntries;
 use App\Filament\Forms\Components\MoneyInput;
 use App\Filament\Tables\Columns\MoneyColumn;
-use App\Models\Account;
 use App\Models\Company;
-use App\Models\Currency;
 use App\Models\Journal;
 use App\Models\JournalEntry;
-use App\Models\Partner;
 use App\Rules\ActiveAccount;
 use BackedEnum;
 use Filament\Actions\Action;
@@ -137,13 +134,13 @@ class JournalEntryResource extends Resource
                                 ->rules([new \Modules\Accounting\Rules\ActiveAccount])
                                 ->required()
                                 ->columnSpan(3),
-                            MoneyInput::make('debit')
+                            \Modules\Foundation\App\Filament\Forms\Components\MoneyInput::make('debit')
                                 ->label(__('journal_entry.debit'))
                                 ->required()
                                 ->currencyField('../../company.currency_id')
                                 ->live(onBlur: true)
                                 ->columnSpan(3),
-                            MoneyInput::make('credit')
+                            \Modules\Foundation\App\Filament\Forms\Components\MoneyInput::make('credit')
                                 ->label(__('journal_entry.credit'))
                                 ->required()
                                 ->currencyField('../../company.currency_id')
@@ -172,15 +169,15 @@ class JournalEntryResource extends Resource
 
             Section::make(__('journal_entry.company_currency_totals'))
                 ->schema([
-                    MoneyInput::make('total_debit')
+                    \Modules\Foundation\App\Filament\Forms\Components\MoneyInput::make('total_debit')
                         ->label(__('journal_entry.total_debit'))
                         ->currencyField('../../company.currency_id')
                         ->readOnly(),
-                    MoneyInput::make('total_credit')
+                    \Modules\Foundation\App\Filament\Forms\Components\MoneyInput::make('total_credit')
                         ->label(__('journal_entry.total_credit'))
                         ->currencyField('../../company.currency_id')
                         ->readOnly(),
-                    MoneyInput::make('balance')
+                    \Modules\Foundation\App\Filament\Forms\Components\MoneyInput::make('balance')
                         ->label(__('journal_entry.balance'))
                         ->currencyField('../../company.currency_id')
                         ->readOnly(),
@@ -232,13 +229,13 @@ class JournalEntryResource extends Resource
                     ->toggleable(),
 
                 // Total Debit (critical financial information)
-                MoneyColumn::make('total_debit')
+                \Modules\Foundation\App\Filament\Tables\Columns\MoneyColumn::make('total_debit')
                     ->label(__('journal_entry.total_debit'))
                     ->sortable()
                     ->weight('bold'),
 
                 // Total Credit (critical financial information)
-                MoneyColumn::make('total_credit')
+                \Modules\Foundation\App\Filament\Tables\Columns\MoneyColumn::make('total_credit')
                     ->label(__('journal_entry.total_credit'))
                     ->sortable()
                     ->weight('bold'),

@@ -10,7 +10,6 @@ use App\Filament\Clusters\HumanResources\Resources\Payrolls\Pages\ViewPayroll;
 use App\Filament\Clusters\HumanResources\Resources\Payrolls\Schemas\PayrollForm;
 use App\Filament\Clusters\HumanResources\Resources\Payrolls\Schemas\PayrollInfolist;
 use App\Filament\Clusters\HumanResources\Resources\Payrolls\Tables\PayrollsTable;
-use App\Models\Payroll;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Tables\Table;

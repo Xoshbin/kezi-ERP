@@ -3,7 +3,6 @@
 namespace Modules\HR\Filament\Clusters\HumanResources\Resources\Payrolls\Tables;
 
 use App\Filament\Tables\Columns\MoneyColumn;
-use App\Models\Payroll;
 use App\Services\HumanResources\PayrollService;
 use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
@@ -45,15 +44,15 @@ class PayrollsTable
                     ->date()
                     ->sortable(),
 
-                MoneyColumn::make('gross_salary')
+                \Modules\Foundation\App\Filament\Tables\Columns\MoneyColumn::make('gross_salary')
                     ->label(__('payroll.fields.gross_salary'))
                     ->sortable(),
 
-                MoneyColumn::make('total_deductions')
+                \Modules\Foundation\App\Filament\Tables\Columns\MoneyColumn::make('total_deductions')
                     ->label(__('payroll.fields.total_deductions'))
                     ->sortable(),
 
-                MoneyColumn::make('net_salary')
+                \Modules\Foundation\App\Filament\Tables\Columns\MoneyColumn::make('net_salary')
                     ->label(__('payroll.fields.net_salary'))
                     ->sortable(),
 

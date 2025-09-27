@@ -12,8 +12,10 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-use Illuminate\Support\Carbon; // Utilized for explicit enforcement of immutability and data integrity.
+use Illuminate\Support\Carbon;
 use RuntimeException;
+
+// Utilized for explicit enforcement of immutability and data integrity.
 
 /**
  * Class JournalEntryLine

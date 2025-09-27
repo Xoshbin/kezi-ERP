@@ -3,14 +3,10 @@
 use App\Enums\Accounting\JournalType;
 use App\Enums\Payments\PaymentStatus;
 use App\Filament\Clusters\Accounting\Resources\BankStatements\BankStatementResource;
-use App\Models\BankStatement;
-use App\Models\Currency;
 use App\Models\Journal;
-use App\Models\Partner;
 use Brick\Money\Money;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\Traits\WithConfiguredCompany;
-
 use function Pest\Livewire\livewire;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);

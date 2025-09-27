@@ -4,8 +4,6 @@ namespace Modules\Accounting\Tests\Feature\Filament\Pages\Reports;
 
 use App\Enums\Sales\InvoiceStatus;
 use App\Filament\Clusters\Accounting\Pages\Reports\ViewAgedReceivables;
-use App\Models\Invoice;
-use App\Models\Partner;
 use Brick\Money\Money;
 use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;

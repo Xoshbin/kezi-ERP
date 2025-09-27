@@ -6,7 +6,6 @@ use App\DataTransferObjects\Accounting\CreateJournalEntryDTO;
 use App\DataTransferObjects\Accounting\CreateJournalEntryLineDTO;
 use App\Models\JournalEntry;
 use App\Models\User;
-use App\Models\VendorBill;
 use Brick\Money\Money;
 use Illuminate\Support\Facades\DB;
 use RuntimeException;

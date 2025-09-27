@@ -7,7 +7,6 @@ use App\Actions\Sales\CreateInvoiceFromSalesOrderAction;
 use App\DataTransferObjects\Sales\CreateDeliveryFromSalesOrderDTO;
 use App\DataTransferObjects\Sales\CreateInvoiceFromSalesOrderDTO;
 use App\Filament\Clusters\Sales\Resources\SalesOrders\SalesOrderResource;
-use App\Models\Account;
 use Carbon\Carbon;
 use Filament\Actions;
 use Filament\Actions\Action;
@@ -26,7 +25,7 @@ class ViewSalesOrder extends ViewRecord
     {
         return [
             Actions\EditAction::make(),
-            
+
             Action::make('create_invoice')
                 ->label(__('sales_orders.actions.create_invoice'))
                 ->icon('heroicon-o-document-text')
@@ -38,13 +37,13 @@ class ViewSalesOrder extends ViewRecord
                         ->required()
                         ->default(now())
                         ->native(false),
-                    
+
                     DatePicker::make('due_date')
                         ->label(__('invoices.fields.due_date'))
                         ->required()
                         ->default(now()->addDays(30))
                         ->native(false),
-                    
+
                     Select::make('default_income_account_id')
                         ->label(__('invoices.fields.default_income_account'))
                         ->options(function () {
@@ -93,7 +92,7 @@ class ViewSalesOrder extends ViewRecord
                         ->required()
                         ->default(now())
                         ->native(false),
-                    
+
                     Toggle::make('auto_confirm')
                         ->label(__('deliveries.fields.auto_confirm'))
                         ->helperText(__('deliveries.help.auto_confirm'))

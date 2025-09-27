@@ -32,7 +32,7 @@ class FeeLinesRelationManager extends RelationManager
             Select::make('type')
                 ->options(collect(FeeType::cases())->mapWithKeys(fn ($c) => [$c->value => $c->name])->toArray())
                 ->required(),
-            MoneyInput::make('amount')->currencyField('currency_id')->required(),
+            \Modules\Foundation\App\Filament\Forms\Components\MoneyInput::make('amount')->currencyField('currency_id')->required(),
             Toggle::make('capitalize')->default(true),
         ]);
     }
@@ -42,7 +42,7 @@ class FeeLinesRelationManager extends RelationManager
         return $table->columns([
             TextColumn::make('date')->date(),
             TextColumn::make('type')->badge(),
-            MoneyColumn::make('amount'),
+            \Modules\Foundation\App\Filament\Tables\Columns\MoneyColumn::make('amount'),
             IconColumn::make('capitalize')->boolean(),
         ]);
     }

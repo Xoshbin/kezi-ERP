@@ -2,9 +2,6 @@
 
 namespace Modules\Accounting\Observers;
 
-use App\Models\BankStatement;
-use App\Models\BankStatementLine;
-
 class BankStatementLineObserver
 {
     /**

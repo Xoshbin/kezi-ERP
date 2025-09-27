@@ -11,9 +11,7 @@ use App\Enums\Accounting\AccountType;
 use App\Enums\Accounting\JournalType;
 use App\Filament\Actions\DocsAction;
 use App\Filament\Clusters\Accounting\Resources\LoanAgreements\LoanAgreementResource;
-use App\Models\Account;
 use App\Models\Journal;
-use App\Models\LoanAgreement;
 use Filament\Actions;
 use Filament\Facades\Filament;
 use Filament\Forms\Components\DatePicker;
@@ -29,7 +27,7 @@ class ViewLoanAgreement extends ViewRecord
     protected function getHeaderActions(): array
     {
         return [
-            DocsAction::make('loan-agreements'),
+            \Modules\Foundation\App\Filament\Actions\DocsAction::make('loan-agreements'),
             Actions\EditAction::make(),
             Actions\Action::make('computeSchedule')
                 ->label(__('Compute Schedule'))

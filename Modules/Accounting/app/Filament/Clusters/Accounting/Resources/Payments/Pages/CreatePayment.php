@@ -8,7 +8,6 @@ use App\Enums\Payments\PaymentMethod;
 use App\Enums\Payments\PaymentType;
 use App\Filament\Actions\DocsAction;
 use App\Filament\Clusters\Accounting\Resources\Payments\PaymentResource;
-use App\Models\Currency;
 use Brick\Money\Money;
 use Filament\Facades\Filament;
 use Filament\Resources\Pages\CreateRecord;
@@ -22,7 +21,7 @@ class CreatePayment extends CreateRecord
     protected function getHeaderActions(): array
     {
         return [
-            DocsAction::make('payments'),
+            \Modules\Foundation\App\Filament\Actions\DocsAction::make('payments'),
         ];
     }
 

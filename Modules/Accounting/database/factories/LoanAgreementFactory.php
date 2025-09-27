@@ -6,7 +6,6 @@ use App\Enums\Loans\LoanStatus;
 use App\Enums\Loans\LoanType;
 use App\Enums\Loans\ScheduleMethod;
 use App\Models\Company;
-use App\Models\Currency;
 use App\Models\LoanAgreement;
 use Brick\Money\Money;
 use Illuminate\Database\Eloquent\Factories\Factory;

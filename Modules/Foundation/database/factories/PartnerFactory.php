@@ -22,7 +22,7 @@ class PartnerFactory extends Factory
         return [
             'company_id' => Company::factory()->create()->id,
             'name' => $this->faker->company,
-            'type' => $this->faker->randomElement([PartnerType::Vendor, PartnerType::Customer, PartnerType::Both]),
+            'type' => $this->faker->randomElement([\Modules\Foundation\App\Enums\Partners\PartnerType::Vendor, \Modules\Foundation\App\Enums\Partners\PartnerType::Customer, \Modules\Foundation\App\Enums\Partners\PartnerType::Both]),
             'contact_person' => $this->faker->name,
             'email' => $this->faker->unique()->safeEmail,
             'phone' => $this->faker->phoneNumber,
@@ -40,14 +40,14 @@ class PartnerFactory extends Factory
     public function vendor(): self
     {
         return $this->state(fn (array $attributes) => [
-            'type' => PartnerType::Vendor,
+            'type' => \Modules\Foundation\App\Enums\Partners\PartnerType::Vendor,
         ]);
     }
 
     public function customer(): self
     {
         return $this->state(fn (array $attributes) => [
-            'type' => PartnerType::Customer,
+            'type' => \Modules\Foundation\App\Enums\Partners\PartnerType::Customer,
         ]);
     }
 }
