@@ -1,6 +1,6 @@
 <?php
 
-namespace Database\Factories;
+namespace Modules\Foundation\Database\Factories;
 
 use App\Enums\Partners\PartnerType;
 use App\Models\Company;

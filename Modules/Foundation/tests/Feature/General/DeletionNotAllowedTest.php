@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Feature;
+namespace Modules\Foundation\Tests\Feature;
 
 use App\Exceptions\DeletionNotAllowedException;
 use App\Models\Account;

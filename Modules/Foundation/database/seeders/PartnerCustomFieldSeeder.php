@@ -1,6 +1,6 @@
 <?php
 
-namespace Database\Seeders;
+namespace Modules\Foundation\Database\Seeders;
 
 use Xoshbin\CustomFields\Enums\CustomFieldType;
 use Xoshbin\CustomFields\Models\CustomFieldDefinition;

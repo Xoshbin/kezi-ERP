@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Feature\Filament\Widgets;
+namespace Modules\Accounting\Tests\Feature\Filament\Widgets;
 
 use App\Enums\Partners\PartnerType;
 use App\Enums\Sales\InvoiceStatus;

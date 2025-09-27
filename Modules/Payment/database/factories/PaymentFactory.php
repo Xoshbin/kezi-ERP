@@ -1,6 +1,6 @@
 <?php
 
-namespace Database\Factories;
+namespace Modules\Payment\Database\Factories;
 
 use App\Enums\Payments\PaymentStatus;
 use App\Enums\Payments\PaymentType;

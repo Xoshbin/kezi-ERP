@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Feature\Purchases;
+namespace Modules\Purchase\Tests\Feature\Purchases;
 
 use App\Actions\Purchases\CreatePurchaseOrderAction;
 use App\DataTransferObjects\Purchases\CreatePurchaseOrderDTO;

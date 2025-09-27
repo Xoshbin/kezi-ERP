@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Feature;
+namespace Modules\Product\Tests\Feature;
 
 use App\Enums\Inventory\ValuationMethod;
 use App\Enums\Products\ProductType;

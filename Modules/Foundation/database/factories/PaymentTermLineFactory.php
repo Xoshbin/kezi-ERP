@@ -1,6 +1,6 @@
 <?php
 
-namespace Database\Factories;
+namespace Modules\Foundation\Database\Factories;
 
 use App\Enums\PaymentTerms\PaymentTermType;
 use App\Models\PaymentTerm;

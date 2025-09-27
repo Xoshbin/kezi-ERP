@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Feature\Traits;
+namespace Modules\Payment\Tests\Feature\Traits;
 
 use App\Enums\Payments\PaymentStatus;
 use App\Enums\Purchases\VendorBillStatus;

@@ -1,6 +1,6 @@
 <?php
 
-namespace Database\Seeders;
+namespace Modules\Product\Database\Seeders;
 
 use App\Enums\Inventory\ValuationMethod;
 use App\Enums\Products\ProductType;

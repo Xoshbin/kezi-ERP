@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Feature;
+namespace Modules\Foundation\Tests\Feature;
 
 use App\Enums\Accounting\TaxType;
 use App\Models\Account;

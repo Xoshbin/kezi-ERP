@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Feature\Filament;
+namespace Modules\Inventory\Tests\Feature\Filament;
 
 use App\Enums\Inventory\ValuationMethod;
 use App\Enums\Products\ProductType;

@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Feature\HumanResources;
+namespace Modules\HR\Tests\Feature\HumanResources;
 
 use App\Enums\Payments\PaymentStatus;
 use App\Enums\Payments\PaymentType;

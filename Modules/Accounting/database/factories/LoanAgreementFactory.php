@@ -1,6 +1,6 @@
 <?php
 
-namespace Database\Factories;
+namespace Modules\Accounting\Database\Factories;
 
 use App\Enums\Loans\LoanStatus;
 use App\Enums\Loans\LoanType;

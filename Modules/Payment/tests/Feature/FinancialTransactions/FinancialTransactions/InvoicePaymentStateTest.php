@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Feature\FinancialTransactions;
+namespace Modules\Payment\Tests\Feature\FinancialTransactions;
 
 use App\Enums\Accounting\JournalType;
 use App\Enums\Partners\PartnerType;

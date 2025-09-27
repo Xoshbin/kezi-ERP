@@ -1,6 +1,6 @@
 <?php
 
-namespace Database\Factories;
+namespace Modules\Inventory\Database\Factories;
 
 use App\Enums\Inventory\ReorderingRoute;
 use App\Models\Company;

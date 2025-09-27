@@ -1,6 +1,6 @@
 <?php
 
-namespace Database\Factories;
+namespace Modules\Accounting\Database\Factories;
 
 use App\Models\Budget;
 use App\Models\BudgetLine;

@@ -1,6 +1,6 @@
 <?php
 
-namespace Database\Seeders;
+namespace Modules\Purchase\Database\Seeders;
 
 use App\Models\Account;
 use App\Models\Product;

@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Feature\HumanResources;
+namespace Modules\HR\Tests\Feature\HumanResources;
 
 use App\Filament\Clusters\HumanResources\Resources\Positions\Pages\CreatePosition;
 use App\Filament\Clusters\HumanResources\Resources\Positions\PositionResource;

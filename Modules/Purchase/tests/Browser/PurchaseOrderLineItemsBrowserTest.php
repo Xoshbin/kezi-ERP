@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Browser;
+namespace Modules\Purchase\Tests\Browser;
 
 use App\Models\Partner;
 use App\Models\Product;

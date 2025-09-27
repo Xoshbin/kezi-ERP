@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Feature\HumanResources;
+namespace Modules\HR\Tests\Feature\HumanResources;
 
 use App\DataTransferObjects\HumanResources\CreateEmployeeDTO;
 use App\DataTransferObjects\HumanResources\CreateEmploymentContractDTO;

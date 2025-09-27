@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Feature;
+namespace Modules\Sales\Tests\Feature;
 
 use App\Actions\Sales\CreateInvoiceAction;
 use App\DataTransferObjects\Sales\CreateInvoiceDTO;

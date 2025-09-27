@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Feature\Bank;
+namespace Modules\Accounting\Tests\Feature\Bank;
 
 use App\Actions\Accounting\CreateBankStatementAction;
 use App\Actions\Accounting\UpdateBankStatementAction;

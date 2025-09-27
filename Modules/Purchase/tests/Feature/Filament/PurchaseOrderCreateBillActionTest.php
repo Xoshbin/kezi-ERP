@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Feature\Filament;
+namespace Modules\Purchase\Tests\Feature\Filament;
 
 use App\Enums\Purchases\PurchaseOrderStatus;
 use App\Filament\Clusters\Purchases\Resources\PurchaseOrders\Pages\EditPurchaseOrder;
