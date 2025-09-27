@@ -87,12 +87,12 @@ class BankStatementLinesRelationManager extends RelationManager
                     ->label('Reverse Write-Off')
                     ->icon('heroicon-o-arrow-uturn-left')
                     ->color('danger')
-                    ->visible(function (BankStatementLine $record) {
+                    ->visible(function (\Modules\Accounting\Models\BankStatementLine $record) {
                         $je = $record->journalEntry;
 
                         return $record->is_reconciled && $je instanceof \App\Models\JournalEntry && $je->state === JournalEntryState::Posted;
                     })
-                    ->authorize(function (BankStatementLine $record) {
+                    ->authorize(function (\Modules\Accounting\Models\BankStatementLine $record) {
                         $je = $record->journalEntry;
 
                         return $je instanceof \App\Models\JournalEntry && Gate::allows('reverse', $je);
@@ -100,7 +100,7 @@ class BankStatementLinesRelationManager extends RelationManager
                     ->requiresConfirmation()
                     ->modalHeading('Reverse Write-Off')
                     ->modalDescription('Are you sure you want to reverse this write-off? This will create a reversing journal entry and mark the bank statement line as unreconciled.')
-                    ->action(function (BankStatementLine $record) {
+                    ->action(function (\Modules\Accounting\Models\BankStatementLine $record) {
                         try {
                             $journalEntry = $record->journalEntry;
                             if (! $journalEntry instanceof \App\Models\JournalEntry) {

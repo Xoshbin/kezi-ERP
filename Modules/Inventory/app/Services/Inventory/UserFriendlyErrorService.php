@@ -45,7 +45,7 @@ class UserFriendlyErrorService
     /**
      * Get explanation based on product's valuation method
      */
-    protected function getValuationMethodExplanation(Product $product): string
+    protected function getValuationMethodExplanation(\Modules\Product\Models\Product $product): string
     {
         $method = strtolower($product->inventory_valuation_method->value);
         
@@ -55,7 +55,7 @@ class UserFriendlyErrorService
     /**
      * Get the primary solution based on vendor bill analysis
      */
-    protected function getPrimarySolution(Product $product, array $vendorBillAnalysis): string
+    protected function getPrimarySolution(\Modules\Product\Models\Product $product, array $vendorBillAnalysis): string
     {
         if (!$vendorBillAnalysis['has_vendor_bills']) {
             return __('inventory_accounting.cost_validation_errors.solutions.no_bills');
@@ -75,7 +75,7 @@ class UserFriendlyErrorService
     /**
      * Get step-by-step next actions
      */
-    protected function getNextSteps(Product $product, array $vendorBillAnalysis): array
+    protected function getNextSteps(\Modules\Product\Models\Product $product, array $vendorBillAnalysis): array
     {
         if (!$vendorBillAnalysis['has_vendor_bills']) {
             return [

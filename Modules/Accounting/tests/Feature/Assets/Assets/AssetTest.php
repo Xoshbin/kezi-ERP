@@ -15,14 +15,14 @@ uses(RefreshDatabase::class, WithConfiguredCompany::class);
 
 test('running depreciation for an asset creates the correct journal entries', function () {
     // Arrange: Set up the necessary accounts and journal.
-    $fixedAssetAccount = Account::factory()->for($this->company)->create(['type' => 'fixed_assets']);
-    $accumulatedDepreciationAccount = Account::factory()->for($this->company)->create(['type' => 'non_current_assets']);
-    $depreciationExpenseAccount = Account::factory()->for($this->company)->create(['type' => 'expense']);
+    $fixedAssetAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create(['type' => 'fixed_assets']);
+    $accumulatedDepreciationAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create(['type' => 'non_current_assets']);
+    $depreciationExpenseAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create(['type' => 'expense']);
     $depreciationJournal = $this->company->default_depreciation_journal_id;
 
     // Arrange: Create an asset to be depreciated.
     $currencyCode = $this->company->currency->code;
-    $asset = Asset::factory()->for($this->company)->create([
+    $asset = \Modules\Accounting\Models\Asset::factory()->for($this->company)->create([
         'purchase_value' => Money::of(1200, $currencyCode),
         'salvage_value' => Money::of(0, $currencyCode),
         'purchase_date' => now()->subYear(),
@@ -34,7 +34,7 @@ test('running depreciation for an asset creates the correct journal entries', fu
     ]);
 
     // Act: Compute draft depreciation entries and then post the first one.
-    (app(AssetService::class))->computeDepreciation($asset);
+    (app(\Modules\Accounting\Services\AssetService::class))->computeDepreciation($asset);
     $draftEntry = $asset->depreciationEntries()->where('status', DepreciationEntryStatus::Draft)->first();
 
     // Resolve the action from the container to handle dependencies automatically
@@ -84,14 +84,14 @@ test('running depreciation for an asset creates the correct journal entries', fu
 test('a draft asset can be deleted', function () {
     // Arrange: Create a draft asset with no financial records.
     $currencyCode = $this->company->currency->code;
-    $asset = Asset::factory()->for($this->company)->create([
+    $asset = \Modules\Accounting\Models\Asset::factory()->for($this->company)->create([
         'status' => AssetStatus::Draft,
         'purchase_value' => Money::of(1000, $currencyCode),
         'salvage_value' => Money::of(0, $currencyCode),
     ]);
 
     // Act: Delete the asset using the service.
-    $assetService = app(AssetService::class);
+    $assetService = app(\Modules\Accounting\Services\AssetService::class);
     $result = $assetService->delete($asset);
 
     // Assert: The deletion was successful.
@@ -102,16 +102,16 @@ test('a draft asset can be deleted', function () {
 test('a confirmed asset cannot be deleted', function () {
     // Arrange: Create a confirmed asset.
     $currencyCode = $this->company->currency->code;
-    $asset = Asset::factory()->for($this->company)->create([
+    $asset = \Modules\Accounting\Models\Asset::factory()->for($this->company)->create([
         'status' => AssetStatus::Confirmed,
         'purchase_value' => Money::of(1000, $currencyCode),
         'salvage_value' => Money::of(0, $currencyCode),
     ]);
 
     // Act & Assert: Attempting to delete should throw an exception.
-    $assetService = app(AssetService::class);
+    $assetService = app(\Modules\Accounting\Services\AssetService::class);
     expect(fn () => $assetService->delete($asset))
-        ->toThrow(DeletionNotAllowedException::class, 'Cannot delete a confirmed asset. Only draft assets can be deleted.');
+        ->toThrow(\Modules\Foundation\Exceptions\DeletionNotAllowedException::class, 'Cannot delete a confirmed asset. Only draft assets can be deleted.');
 
     // Verify: The asset still exists.
     $this->assertModelExists($asset);
@@ -120,7 +120,7 @@ test('a confirmed asset cannot be deleted', function () {
 test('an asset with depreciation entries cannot be deleted', function () {
     // Arrange: Create a draft asset and add a depreciation entry.
     $currencyCode = $this->company->currency->code;
-    $asset = Asset::factory()->for($this->company)->create([
+    $asset = \Modules\Accounting\Models\Asset::factory()->for($this->company)->create([
         'status' => AssetStatus::Draft,
         'purchase_value' => Money::of(1000, $currencyCode),
         'salvage_value' => Money::of(0, $currencyCode),
@@ -135,9 +135,9 @@ test('an asset with depreciation entries cannot be deleted', function () {
     ]);
 
     // Act & Assert: Attempting to delete should throw an exception.
-    $assetService = app(AssetService::class);
+    $assetService = app(\Modules\Accounting\Services\AssetService::class);
     expect(fn () => $assetService->delete($asset))
-        ->toThrow(DeletionNotAllowedException::class, 'Cannot delete an asset with depreciation entries. Depreciation history must be preserved.');
+        ->toThrow(\Modules\Foundation\Exceptions\DeletionNotAllowedException::class, 'Cannot delete an asset with depreciation entries. Depreciation history must be preserved.');
 
     // Verify: The asset still exists.
     $this->assertModelExists($asset);
@@ -146,7 +146,7 @@ test('an asset with depreciation entries cannot be deleted', function () {
 test('an asset with journal entries cannot be deleted', function () {
     // Arrange: Create a draft asset and add a journal entry.
     $currencyCode = $this->company->currency->code;
-    $asset = Asset::factory()->for($this->company)->create([
+    $asset = \Modules\Accounting\Models\Asset::factory()->for($this->company)->create([
         'status' => AssetStatus::Draft,
         'purchase_value' => Money::of(1000, $currencyCode),
         'salvage_value' => Money::of(0, $currencyCode),
@@ -167,9 +167,9 @@ test('an asset with journal entries cannot be deleted', function () {
     ]);
 
     // Act & Assert: Attempting to delete should throw an exception.
-    $assetService = app(AssetService::class);
+    $assetService = app(\Modules\Accounting\Services\AssetService::class);
     expect(fn () => $assetService->delete($asset))
-        ->toThrow(DeletionNotAllowedException::class, 'Cannot delete an asset with associated journal entries. Financial records must be preserved.');
+        ->toThrow(\Modules\Foundation\Exceptions\DeletionNotAllowedException::class, 'Cannot delete an asset with associated journal entries. Financial records must be preserved.');
 
     // Verify: The asset still exists.
     $this->assertModelExists($asset);
@@ -178,7 +178,7 @@ test('an asset with journal entries cannot be deleted', function () {
 test('asset observer prevents deletion of confirmed assets', function () {
     // Arrange: Create a confirmed asset.
     $currencyCode = $this->company->currency->code;
-    $asset = Asset::factory()->for($this->company)->create([
+    $asset = \Modules\Accounting\Models\Asset::factory()->for($this->company)->create([
         'status' => AssetStatus::Confirmed,
         'purchase_value' => Money::of(1000, $currencyCode),
         'salvage_value' => Money::of(0, $currencyCode),
@@ -186,7 +186,7 @@ test('asset observer prevents deletion of confirmed assets', function () {
 
     // Act & Assert: Direct model deletion should be blocked by the observer.
     expect(fn () => $asset->delete())
-        ->toThrow(DeletionNotAllowedException::class, 'Cannot delete a confirmed asset. Only draft assets can be deleted.');
+        ->toThrow(\Modules\Foundation\Exceptions\DeletionNotAllowedException::class, 'Cannot delete a confirmed asset. Only draft assets can be deleted.');
 
     // Verify: The asset still exists.
     $this->assertModelExists($asset);
@@ -195,7 +195,7 @@ test('asset observer prevents deletion of confirmed assets', function () {
 test('asset observer prevents deletion of assets with depreciation entries', function () {
     // Arrange: Create a draft asset with depreciation entries.
     $currencyCode = $this->company->currency->code;
-    $asset = Asset::factory()->for($this->company)->create([
+    $asset = \Modules\Accounting\Models\Asset::factory()->for($this->company)->create([
         'status' => AssetStatus::Draft,
         'purchase_value' => Money::of(1000, $currencyCode),
         'salvage_value' => Money::of(0, $currencyCode),
@@ -210,7 +210,7 @@ test('asset observer prevents deletion of assets with depreciation entries', fun
 
     // Act & Assert: Direct model deletion should be blocked by the observer.
     expect(fn () => $asset->delete())
-        ->toThrow(DeletionNotAllowedException::class, 'Cannot delete an asset with depreciation entries. Depreciation history must be preserved.');
+        ->toThrow(\Modules\Foundation\Exceptions\DeletionNotAllowedException::class, 'Cannot delete an asset with depreciation entries. Depreciation history must be preserved.');
 
     // Verify: The asset still exists.
     $this->assertModelExists($asset);

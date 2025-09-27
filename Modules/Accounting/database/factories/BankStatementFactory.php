@@ -24,7 +24,7 @@ class BankStatementFactory extends Factory
         return [
             'company_id' => Company::factory(),
             'journal_id' => Journal::factory(),
-            'currency_id' => Currency::firstOrCreate(['code' => 'IQD'], ['name' => 'Iraqi Dinar'])->id,
+            'currency_id' => \Modules\Foundation\Models\Currency::firstOrCreate(['code' => 'IQD'], ['name' => 'Iraqi Dinar'])->id,
             'reference' => $this->faker->unique()->bothify('REF-####-????'),
             'date' => $this->faker->date(),
             'starting_balance' => Money::of($this->faker->randomFloat(2, 100, 10000), 'USD'),

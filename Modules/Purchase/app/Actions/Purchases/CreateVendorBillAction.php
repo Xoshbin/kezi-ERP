@@ -14,11 +14,11 @@ use Illuminate\Validation\ValidationException;
 class CreateVendorBillAction
 {
     public function __construct(
-        protected LockDateService $lockDateService,
+        protected \Modules\Accounting\Services\Accounting\LockDateService $lockDateService,
         protected CreateVendorBillLineAction $createVendorBillLineAction
     ) {}
 
-    public function execute(CreateVendorBillDTO $createVendorBillDTO): VendorBill
+    public function execute(CreateVendorBillDTO $createVendorBillDTO): \Modules\Purchase\Models\VendorBill
     {
         $this->lockDateService->enforce(Company::findOrFail($createVendorBillDTO->company_id), Carbon::parse($createVendorBillDTO->bill_date));
 
@@ -28,7 +28,7 @@ class CreateVendorBillAction
         }
 
         return DB::transaction(function () use ($createVendorBillDTO) {
-            $vendorBill = VendorBill::create([
+            $vendorBill = \Modules\Purchase\Models\VendorBill::create([
                 'company_id' => $createVendorBillDTO->company_id,
                 'vendor_id' => $createVendorBillDTO->vendor_id,
                 'currency_id' => $createVendorBillDTO->currency_id,

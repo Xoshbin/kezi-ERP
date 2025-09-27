@@ -11,7 +11,7 @@ use Brick\Money\Money;
 
 class CreateInvoiceLineAction
 {
-    public function execute(Invoice $invoice, CreateInvoiceLineDTO $dto): InvoiceLine
+    public function execute(\Modules\Sales\Models\Invoice $invoice, CreateInvoiceLineDTO $dto): \Modules\Sales\Models\InvoiceLine
     {
         $currency = $invoice->currency;
         $unitPrice = $dto->unit_price; // Already a Money object
@@ -27,7 +27,7 @@ class CreateInvoiceLineAction
         }
 
         // 2. The create method now receives a complete, valid array of attributes.
-        /** @var InvoiceLine $invoiceLine */
+        /** @var \Modules\Sales\Models\InvoiceLine $invoiceLine */
         $invoiceLine = $invoice->invoiceLines()->create([
             'company_id' => $invoice->company_id,
             'product_id' => $dto->product_id,

@@ -28,7 +28,7 @@ class StockQuantFactory extends Factory
 
         return [
             'company_id' => Company::factory(),
-            'product_id' => Product::factory(),
+            'product_id' => \Modules\Product\Models\Product::factory(),
             'location_id' => StockLocation::factory(),
             'lot_id' => null,
             'quantity' => $quantity,

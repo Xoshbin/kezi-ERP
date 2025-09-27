@@ -11,7 +11,7 @@ readonly class TrialBalanceLineDTO
         public int $accountId,
         public string $accountCode,
         public string $accountName,
-        public AccountType $accountType,
+        public \Modules\Accounting\Enums\Accounting\AccountType $accountType,
         public Money $debit,
         public Money $credit,
     ) {}

@@ -19,8 +19,8 @@ uses(RefreshDatabase::class, WithConfiguredCompany::class);
 
 it('correctly creates a journal entry and links it to the statement line via a polymorphic relationship', function () {
     // Arrange
-    $line = BankStatementLine::factory()->for(BankStatement::factory()->for($this->company)->for(Journal::factory()->for($this->company)->create())->create())->create(['amount' => -100000]); // -100.000 IQD
-    $writeOffAccount = Account::factory()->for($this->company)->create();
+    $line = \Modules\Accounting\Models\BankStatementLine::factory()->for(\Modules\Accounting\Models\BankStatement::factory()->for($this->company)->for(Journal::factory()->for($this->company)->create())->create())->create(['amount' => -100000]); // -100.000 IQD
+    $writeOffAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create();
 
     $dto = new CreateJournalEntryForStatementLineDTO(
         bankStatementLine: $line,
@@ -35,7 +35,7 @@ it('correctly creates a journal entry and links it to the statement line via a p
     // Assert
     $this->assertDatabaseHas('journal_entries', [
         'source_id' => $line->id,
-        'source_type' => BankStatementLine::class,
+        'source_type' => \Modules\Accounting\Models\BankStatementLine::class,
         'description' => 'Test Write Off',
     ]);
 });
@@ -45,8 +45,8 @@ it('updates the statement line status to reconciled within the same atomic trans
     $this->company = Company::factory()->create();
     $user = User::factory()->create();
     $user->companies()->attach($this->company);
-    $line = BankStatementLine::factory()->for(BankStatement::factory()->for($this->company)->for(Journal::factory()->for($this->company)->create())->create())->create(['is_reconciled' => false]);
-    $writeOffAccount = Account::factory()->for($this->company)->create();
+    $line = \Modules\Accounting\Models\BankStatementLine::factory()->for(\Modules\Accounting\Models\BankStatement::factory()->for($this->company)->for(Journal::factory()->for($this->company)->create())->create())->create(['is_reconciled' => false]);
+    $writeOffAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create();
 
     $dto = new CreateJournalEntryForStatementLineDTO(
         bankStatementLine: $line,
@@ -73,8 +73,8 @@ it('rolls back the entire transaction if updating the statement line fails', fun
     $this->company = Company::factory()->create();
     $user = User::factory()->create();
     $user->companies()->attach($this->company);
-    $line = BankStatementLine::factory()->for(BankStatement::factory()->for($this->company)->for(Journal::factory()->for($this->company)->create())->create())->create();
-    $writeOffAccount = Account::factory()->for($this->company)->create();
+    $line = \Modules\Accounting\Models\BankStatementLine::factory()->for(\Modules\Accounting\Models\BankStatement::factory()->for($this->company)->for(Journal::factory()->for($this->company)->create())->create())->create();
+    $writeOffAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create();
 
     $dto = new CreateJournalEntryForStatementLineDTO(
         bankStatementLine: $line,
@@ -105,14 +105,14 @@ it('rolls back the entire transaction if updating the statement line fails', fun
 
 it('handles multi-currency scenarios correctly', function (string $currencyCode, int $minorAmount, string $majorAmount) {
     // Arrange - Use the existing company (IQD) and create exchange rates for foreign currencies
-    $currency = Currency::firstOrCreate(['code' => $currencyCode], ['name' => $currencyCode, 'symbol' => $currencyCode, 'exchange_rate' => 1, 'is_active' => true, 'decimal_places' => $currencyCode === 'IQD' ? 3 : 2]);
+    $currency = \Modules\Foundation\Models\Currency::firstOrCreate(['code' => $currencyCode], ['name' => $currencyCode, 'symbol' => $currencyCode, 'exchange_rate' => 1, 'is_active' => true, 'decimal_places' => $currencyCode === 'IQD' ? 3 : 2]);
     $currency->update(['decimal_places' => $currencyCode === 'IQD' ? 3 : 2]);
 
     // Create exchange rate if the currency is different from company's base currency
     if ($currencyCode !== $this->company->currency->code) {
         // Create the rate for yesterday to ensure it's found (effective_date <= today)
         $effectiveDate = \Carbon\Carbon::yesterday();
-        \App\Models\CurrencyRate::create([
+        \Modules\Foundation\Models\CurrencyRate::create([
             'currency_id' => $currency->id,
             'company_id' => $this->company->id,
             'rate' => $currencyCode === 'USD' ? 1500.0 : 1.0, // 1 USD = 1500 IQD
@@ -124,9 +124,9 @@ it('handles multi-currency scenarios correctly', function (string $currencyCode,
     $user = User::factory()->create();
     $user->companies()->attach($this->company);
     $journal = Journal::factory()->for($this->company)->create();
-    $bankStatement = BankStatement::factory()->for($this->company)->for($journal)->create(['currency_id' => $currency->id]);
-    $line = BankStatementLine::factory()->for($bankStatement)->create(['amount' => Money::ofMinor($minorAmount, $currencyCode)]);
-    $writeOffAccount = Account::factory()->for($this->company)->create();
+    $bankStatement = \Modules\Accounting\Models\BankStatement::factory()->for($this->company)->for($journal)->create(['currency_id' => $currency->id]);
+    $line = \Modules\Accounting\Models\BankStatementLine::factory()->for($bankStatement)->create(['amount' => Money::ofMinor($minorAmount, $currencyCode)]);
+    $writeOffAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create();
     $bankAccount = $journal->defaultDebitAccount;
 
     $dto = new CreateJournalEntryForStatementLineDTO(

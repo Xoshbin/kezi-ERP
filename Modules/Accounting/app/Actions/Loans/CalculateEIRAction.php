@@ -9,9 +9,9 @@ use Illuminate\Support\Facades\DB;
 
 class CalculateEIRAction
 {
-    public function __construct(private readonly EIRSolverService $eir) {}
+    public function __construct(private readonly \Modules\Accounting\Services\Loans\EIRSolverService $eir) {}
 
-    public function execute(LoanAgreement $loan): void
+    public function execute(\Modules\Accounting\Models\LoanAgreement $loan): void
     {
         DB::transaction(function () use ($loan) {
             $loan->loadMissing('currency', 'feeLines', 'scheduleEntries');
@@ -25,7 +25,7 @@ class CalculateEIRAction
             /** @var Money $principal */
             $principal = $loan->principal_amount;
 
-            /** @var \Illuminate\Support\Collection<int, \App\Models\LoanFeeLine> $feeCollection */
+            /** @var \Illuminate\Support\Collection<int, \Modules\Accounting\Models\LoanFeeLine> $feeCollection */
             $feeCollection = $loan->feeLines;
             $capitalizedFees = Money::of('0', $currency);
             foreach ($feeCollection as $fee) {
@@ -41,7 +41,7 @@ class CalculateEIRAction
             $cashflows = [];
             $cashflows[] = -$netDisbursement->getAmount()->toFloat();
 
-            /** @var \Illuminate\Support\Collection<int, \App\Models\LoanScheduleEntry> $entriesCol */
+            /** @var \Illuminate\Support\Collection<int, \Modules\Accounting\Models\LoanScheduleEntry> $entriesCol */
             $entriesCol = $loan->scheduleEntries()->orderBy('sequence')->get();
             foreach ($entriesCol as $entry) {
                 /** @var \Brick\Money\Money $pmt */
@@ -61,7 +61,7 @@ class CalculateEIRAction
             $carrying = $netDisbursement;
             $entries = $loan->scheduleEntries()->orderBy('sequence')->get();
             foreach ($entries as $entry) {
-                /** @var \App\Models\LoanScheduleEntry $entry */
+                /** @var \Modules\Accounting\Models\LoanScheduleEntry $entry */
                 $interest = Money::of($carrying->getAmount()->toFloat() * $rate, $currency, null, \Brick\Math\RoundingMode::HALF_UP);
                 /** @var \Brick\Money\Money $payment */
                 $payment = $entry->payment_amount;

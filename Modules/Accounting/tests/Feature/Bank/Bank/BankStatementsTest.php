@@ -26,7 +26,7 @@ beforeEach(function () {
 
 test('it creates a bank statement and its lines from a dto', function () {
     // Arrange: Prepare the DTOs needed for the action.
-    $partner = Partner::factory()->for($this->company)->create();
+    $partner = \Modules\Foundation\Models\Partner::factory()->for($this->company)->create();
     $currencyCode = $this->company->currency->code;
 
     $lineDTOs = [
@@ -83,7 +83,7 @@ test('it creates a bank statement and its lines from a dto', function () {
 test('it updates a bank statement and syncs its lines from a dto', function () {
     // Arrange: Create an initial bank statement with two lines.
     $currencyCode = $this->company->currency->code;
-    $statement = BankStatement::factory()->for($this->company)->for($this->bankJournal)->create([
+    $statement = \Modules\Accounting\Models\BankStatement::factory()->for($this->company)->for($this->bankJournal)->create([
         'currency_id' => $this->company->currency_id, // <-- THE FIX
     ]);
     $lineToRemove = $statement->bankStatementLines()->create([

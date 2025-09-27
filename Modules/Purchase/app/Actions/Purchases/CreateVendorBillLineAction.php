@@ -11,7 +11,7 @@ use Brick\Money\Money;
 
 class CreateVendorBillLineAction
 {
-    public function execute(VendorBill $vendorBill, CreateVendorBillLineDTO $dto): VendorBillLine
+    public function execute(\Modules\Purchase\Models\VendorBill $vendorBill, CreateVendorBillLineDTO $dto): VendorBillLine
     {
         $currency = $vendorBill->currency;
 

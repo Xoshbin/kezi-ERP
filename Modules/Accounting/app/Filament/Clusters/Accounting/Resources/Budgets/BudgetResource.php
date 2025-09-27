@@ -21,7 +21,7 @@ use Filament\Tables\Table;
 
 class BudgetResource extends Resource
 {
-    protected static ?string $model = Budget::class;
+    protected static ?string $model = \Modules\Accounting\Models\Budget::class;
 
     protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-chart-bar';
 

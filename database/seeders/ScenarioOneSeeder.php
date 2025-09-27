@@ -171,7 +171,7 @@ class ScenarioOneSeeder extends Seeder
             'bill_reference' => 'KE-LAPTOP-001',
             'total_amount' => 3000000,
             'total_tax' => 0,
-            'status' => VendorBill::STATUS_DRAFT,
+            'status' => \Modules\Purchase\Models\VendorBill::STATUS_DRAFT,
             'created_at' => now(),
             'updated_at' => now(),
         ]);
@@ -226,7 +226,7 @@ class ScenarioOneSeeder extends Seeder
             ],
         ]);
         DB::table('vendor_bills')->where('id', $vendorBillId)->update([
-            'status' => VendorBill::STATUS_DRAFT,
+            'status' => \Modules\Purchase\Models\VendorBill::STATUS_DRAFT,
             'journal_entry_id' => $vendorBillJournalEntryId,
         ]);
 
@@ -247,7 +247,7 @@ class ScenarioOneSeeder extends Seeder
             'customer_id' => $hawreCustomerId,
             'invoice_date' => now(),
             'due_date' => Carbon::now()->addDays(15),
-            'status' => Invoice::STATUS_DRAFT,
+            'status' => \Modules\Sales\Models\Invoice::STATUS_DRAFT,
             'invoice_number' => 'INV-0001',
             'total_amount' => 5000000,
             'total_tax' => 0,
@@ -305,7 +305,7 @@ class ScenarioOneSeeder extends Seeder
             ],
         ]);
         DB::table('invoices')->where('id', $invoiceId)->update([
-            'status' => Invoice::STATUS_DRAFT,
+            'status' => \Modules\Sales\Models\Invoice::STATUS_DRAFT,
             'invoice_number' => 'INV-0001',
             'journal_entry_id' => $invoiceJournalEntryId,
         ]);
@@ -367,7 +367,7 @@ class ScenarioOneSeeder extends Seeder
             'journal_entry_id' => $paymentJournalEntryId,
         ]);
         DB::table('invoices')->where('id', $invoiceId)->update([
-            'status' => Invoice::STATUS_DRAFT,
+            'status' => \Modules\Sales\Models\Invoice::STATUS_DRAFT,
         ]);
         DB::table('payment_document_links')->insert([
             'payment_id' => $paymentId,
@@ -433,7 +433,7 @@ class ScenarioOneSeeder extends Seeder
             'journal_entry_id' => $vendorPaymentJournalEntryId,
         ]);
         DB::table('vendor_bills')->where('id', $vendorBillId)->update([
-            'status' => VendorBill::STATUS_DRAFT,
+            'status' => \Modules\Purchase\Models\VendorBill::STATUS_DRAFT,
         ]);
         DB::table('payment_document_links')->insert([
             'payment_id' => $vendorPaymentId,

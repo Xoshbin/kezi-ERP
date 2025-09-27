@@ -19,9 +19,9 @@ class MoneyInputAdjustmentDocumentProductSelectionTest extends TestCase
 
     private Company $company;
     private User $user;
-    private Currency $currency;
-    private Product $product;
-    private Account $incomeAccount;
+    private \Modules\Foundation\Models\Currency $currency;
+    private \Modules\Product\Models\Product $product;
+    private \Modules\Accounting\Models\Account $incomeAccount;
 
     protected function setUp(): void
     {
@@ -30,17 +30,17 @@ class MoneyInputAdjustmentDocumentProductSelectionTest extends TestCase
         // Create test data
         $this->company = Company::factory()->create();
         $this->user = User::factory()->create();
-        $this->currency = Currency::factory()->create(['code' => 'USD']);
+        $this->currency = \Modules\Foundation\Models\Currency::factory()->create(['code' => 'USD']);
         
         $this->company->update(['currency_id' => $this->currency->id]);
 
-        $this->incomeAccount = Account::factory()->create([
+        $this->incomeAccount = \Modules\Accounting\Models\Account::factory()->create([
             'company_id' => $this->company->id,
             'type' => 'income',
         ]);
 
         // Create a product with a specific Money unit price
-        $this->product = Product::factory()->create([
+        $this->product = \Modules\Product\Models\Product::factory()->create([
             'company_id' => $this->company->id,
             'name' => 'Test Adjustment Product',
             'description' => 'Test product for adjustment document',
@@ -101,7 +101,7 @@ class MoneyInputAdjustmentDocumentProductSelectionTest extends TestCase
     public function it_handles_products_with_different_price_formats_in_adjustment_document(): void
     {
         // Test with integer price
-        $integerProduct = Product::factory()->create([
+        $integerProduct = \Modules\Product\Models\Product::factory()->create([
             'company_id' => $this->company->id,
             'name' => 'Integer Price Product',
             'description' => 'Product with integer price',
@@ -110,7 +110,7 @@ class MoneyInputAdjustmentDocumentProductSelectionTest extends TestCase
         ]);
 
         // Test with decimal price
-        $decimalProduct = Product::factory()->create([
+        $decimalProduct = \Modules\Product\Models\Product::factory()->create([
             'company_id' => $this->company->id,
             'name' => 'Decimal Price Product',
             'description' => 'Product with decimal price',
@@ -152,7 +152,7 @@ class MoneyInputAdjustmentDocumentProductSelectionTest extends TestCase
     public function it_handles_products_with_null_unit_price_in_adjustment_document(): void
     {
         // Create a product with null unit price
-        $nullPriceProduct = Product::factory()->create([
+        $nullPriceProduct = \Modules\Product\Models\Product::factory()->create([
             'company_id' => $this->company->id,
             'name' => 'No Price Product',
             'description' => 'Product without price',
@@ -190,7 +190,7 @@ class MoneyInputAdjustmentDocumentProductSelectionTest extends TestCase
     public function it_populates_description_from_product_name_in_adjustment_document(): void
     {
         // Verify that adjustment documents use product name for description (like vendor bills)
-        $productWithName = Product::factory()->create([
+        $productWithName = \Modules\Product\Models\Product::factory()->create([
             'company_id' => $this->company->id,
             'name' => 'Specific Product Name',
             'description' => 'Different description text',

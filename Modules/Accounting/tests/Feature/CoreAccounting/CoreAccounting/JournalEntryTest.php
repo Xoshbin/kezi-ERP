@@ -22,8 +22,8 @@ uses(RefreshDatabase::class, WithConfiguredCompany::class, MocksTime::class);
 
 test('a journal entry correctly calculates totals and assigns a user when created', function () {
     $currency = $this->company->currency;
-    $account1 = Account::factory()->for($this->company)->create();
-    $account2 = Account::factory()->for($this->company)->create();
+    $account1 = \Modules\Accounting\Models\Account::factory()->for($this->company)->create();
+    $account2 = \Modules\Accounting\Models\Account::factory()->for($this->company)->create();
 
     $dto = new CreateJournalEntryDTO(
         company_id: $this->company->id,
@@ -40,7 +40,7 @@ test('a journal entry correctly calculates totals and assigns a user when create
         ],
     );
 
-    $journalEntry = (app(CreateJournalEntryAction::class))->execute($dto);
+    $journalEntry = (app(\Modules\Accounting\Actions\Accounting\CreateJournalEntryAction::class))->execute($dto);
 
     $expectedAmount = Money::of('125.50', $currency->code);
     expect($journalEntry->total_debit->isEqualTo($expectedAmount))->toBeTrue();
@@ -50,8 +50,8 @@ test('a journal entry correctly calculates totals and assigns a user when create
 
 test('creating an unbalanced journal entry is prevented', function () {
     $currency = $this->company->currency;
-    $account1 = Account::factory()->for($this->company)->create();
-    $account2 = Account::factory()->for($this->company)->create();
+    $account1 = \Modules\Accounting\Models\Account::factory()->for($this->company)->create();
+    $account2 = \Modules\Accounting\Models\Account::factory()->for($this->company)->create();
 
     $dto = new CreateJournalEntryDTO(
         company_id: $this->company->id,
@@ -68,14 +68,14 @@ test('creating an unbalanced journal entry is prevented', function () {
         ],
     );
 
-    expect(fn () => (app(CreateJournalEntryAction::class))->execute($dto))
+    expect(fn () => (app(\Modules\Accounting\Actions\Accounting\CreateJournalEntryAction::class))->execute($dto))
         ->toThrow(ValidationException::class);
 });
 
 test('a balanced draft journal entry can be posted', function () {
     $currency = $this->company->currency;
-    $account1 = Account::factory()->for($this->company)->create();
-    $account2 = Account::factory()->for($this->company)->create();
+    $account1 = \Modules\Accounting\Models\Account::factory()->for($this->company)->create();
+    $account2 = \Modules\Accounting\Models\Account::factory()->for($this->company)->create();
 
     $dto = new CreateJournalEntryDTO(
         company_id: $this->company->id,
@@ -92,7 +92,7 @@ test('a balanced draft journal entry can be posted', function () {
         ],
     );
 
-    $journalEntry = (app(CreateJournalEntryAction::class))->execute($dto);
+    $journalEntry = (app(\Modules\Accounting\Actions\Accounting\CreateJournalEntryAction::class))->execute($dto);
     expect($journalEntry->is_posted)->toBeFalse();
 
     (app(JournalEntryService::class))->post($journalEntry);
@@ -103,8 +103,8 @@ test('a balanced draft journal entry can be posted', function () {
 
 test('an unbalanced draft journal entry cannot be posted', function () {
     $currency = $this->company->currency;
-    $account1 = Account::factory()->for($this->company)->create();
-    $account2 = Account::factory()->for($this->company)->create();
+    $account1 = \Modules\Accounting\Models\Account::factory()->for($this->company)->create();
+    $account2 = \Modules\Accounting\Models\Account::factory()->for($this->company)->create();
 
     $dto = new CreateJournalEntryDTO(
         company_id: $this->company->id,
@@ -121,7 +121,7 @@ test('an unbalanced draft journal entry cannot be posted', function () {
         ],
     );
 
-    expect(fn () => (app(CreateJournalEntryAction::class))->execute($dto))
+    expect(fn () => (app(\Modules\Accounting\Actions\Accounting\CreateJournalEntryAction::class))->execute($dto))
         ->toThrow(ValidationException::class);
 });
 
@@ -175,14 +175,14 @@ test('a posted journal entry cannot be deleted via the service', function () {
     ]);
 
     expect(fn () => $service->delete($journalEntry))
-        ->toThrow(DeletionNotAllowedException::class, 'Cannot delete a posted journal entry. Corrections must be made with a new reversal entry.');
+        ->toThrow(\Modules\Foundation\Exceptions\DeletionNotAllowedException::class, 'Cannot delete a posted journal entry. Corrections must be made with a new reversal entry.');
 
     $this->assertModelExists($journalEntry);
 });
 
 test('a draft journal entry in a locked period cannot be deleted', function () {
     $service = app(JournalEntryService::class);
-    LockDate::factory()->for($this->company)->create([
+    \Modules\Accounting\Models\LockDate::factory()->for($this->company)->create([
         'lock_type' => \App\Enums\Accounting\LockDateType::AllUsers->value,
         'locked_until' => now()->subMonth(),
     ]);
@@ -195,7 +195,7 @@ test('a draft journal entry in a locked period cannot be deleted', function () {
     ]);
 
     expect(fn () => $service->delete($journalEntry))
-        ->toThrow(PeriodIsLockedException::class);
+        ->toThrow(\Modules\Accounting\Exceptions\PeriodIsLockedException::class);
 
     $this->assertModelExists($journalEntry);
 });
@@ -231,12 +231,12 @@ test('posting a journal entry generates a cryptographic hash', function () {
 });
 
 test('posting a journal entry links to the previous entry hash to form an audit chain', function () {
-    $action = app(CreateJournalEntryAction::class);
+    $action = app(\Modules\Accounting\Actions\Accounting\CreateJournalEntryAction::class);
     $currency = $this->company->currency;
-    $account1 = Account::factory()->for($this->company)->create();
-    $account2 = Account::factory()->for($this->company)->create();
-    $account3 = Account::factory()->for($this->company)->create();
-    $account4 = Account::factory()->for($this->company)->create();
+    $account1 = \Modules\Accounting\Models\Account::factory()->for($this->company)->create();
+    $account2 = \Modules\Accounting\Models\Account::factory()->for($this->company)->create();
+    $account3 = \Modules\Accounting\Models\Account::factory()->for($this->company)->create();
+    $account4 = \Modules\Accounting\Models\Account::factory()->for($this->company)->create();
 
     // 1. Create and post the first entry.
     $firstDto = new CreateJournalEntryDTO(

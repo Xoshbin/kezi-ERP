@@ -28,15 +28,15 @@ test('it calculates the balance sheet correctly and it balances', function () {
 
     // -- Create Accounts --
     // Assets
-    $bankAccount = Account::factory()->for($this->company)->create(['type' => AccountType::BankAndCash]);
-    $arAccount = Account::factory()->for($this->company)->create(['type' => AccountType::Receivable]);
+    $bankAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create(['type' => \Modules\Accounting\Enums\Accounting\AccountType::BankAndCash]);
+    $arAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create(['type' => \Modules\Accounting\Enums\Accounting\AccountType::Receivable]);
     // Liabilities
-    $apAccount = Account::factory()->for($this->company)->create(['type' => AccountType::Payable]);
+    $apAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create(['type' => \Modules\Accounting\Enums\Accounting\AccountType::Payable]);
     // Equity
-    $equityAccount = Account::factory()->for($this->company)->create(['type' => AccountType::Equity]);
+    $equityAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create(['type' => \Modules\Accounting\Enums\Accounting\AccountType::Equity]);
     // P&L Accounts for Current Year Earnings
-    $salesAccount = Account::factory()->for($this->company)->create(['type' => AccountType::Income]);
-    $rentAccount = Account::factory()->for($this->company)->create(['type' => AccountType::Expense]);
+    $salesAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create(['type' => \Modules\Accounting\Enums\Accounting\AccountType::Income]);
+    $rentAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create(['type' => \Modules\Accounting\Enums\Accounting\AccountType::Expense]);
 
     $asOfDate = Carbon::parse('2025-03-31');
 
@@ -66,7 +66,7 @@ test('it calculates the balance sheet correctly and it balances', function () {
     JournalEntry::factory()->for($this->company)->for($journal)->create(['entry_date' => '2025-04-05', 'state' => JournalEntryState::Posted]);
 
     // Action
-    $service = app(BalanceSheetService::class);
+    $service = app(\Modules\Accounting\Services\Reports\BalanceSheetService::class);
     $report = $service->generate($this->company, $asOfDate);
 
     // Assert
@@ -101,7 +101,7 @@ test('it returns empty report when no transactions exist', function () {
     $asOfDate = Carbon::parse('2025-03-31');
 
     // Action
-    $service = app(BalanceSheetService::class);
+    $service = app(\Modules\Accounting\Services\Reports\BalanceSheetService::class);
     $report = $service->generate($this->company, $asOfDate);
 
     // Assert
@@ -125,10 +125,10 @@ test('it handles negative current year earnings correctly', function () {
     $currency = $this->company->currency->code;
     $journal = Journal::factory()->for($this->company)->create();
 
-    $bankAccount = Account::factory()->for($this->company)->create(['type' => AccountType::BankAndCash]);
-    $equityAccount = Account::factory()->for($this->company)->create(['type' => AccountType::Equity]);
-    $salesAccount = Account::factory()->for($this->company)->create(['type' => AccountType::Income]);
-    $expenseAccount = Account::factory()->for($this->company)->create(['type' => AccountType::Expense]);
+    $bankAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create(['type' => \Modules\Accounting\Enums\Accounting\AccountType::BankAndCash]);
+    $equityAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create(['type' => \Modules\Accounting\Enums\Accounting\AccountType::Equity]);
+    $salesAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create(['type' => \Modules\Accounting\Enums\Accounting\AccountType::Income]);
+    $expenseAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create(['type' => \Modules\Accounting\Enums\Accounting\AccountType::Expense]);
 
     $asOfDate = Carbon::parse('2025-03-31');
 
@@ -148,7 +148,7 @@ test('it handles negative current year earnings correctly', function () {
     JournalEntryLine::factory()->for($entry3)->create(['account_id' => $bankAccount->id, 'debit' => 0, 'credit' => 500000]);
 
     // Action
-    $service = app(BalanceSheetService::class);
+    $service = app(\Modules\Accounting\Services\Reports\BalanceSheetService::class);
     $report = $service->generate($this->company, $asOfDate);
 
     // Assert
@@ -161,8 +161,8 @@ test('it excludes draft transactions from the report', function () {
     $currency = $this->company->currency->code;
     $journal = Journal::factory()->for($this->company)->create();
 
-    $bankAccount = Account::factory()->for($this->company)->create(['type' => AccountType::BankAndCash]);
-    $equityAccount = Account::factory()->for($this->company)->create(['type' => AccountType::Equity]);
+    $bankAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create(['type' => \Modules\Accounting\Enums\Accounting\AccountType::BankAndCash]);
+    $equityAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create(['type' => \Modules\Accounting\Enums\Accounting\AccountType::Equity]);
 
     $asOfDate = Carbon::parse('2025-03-31');
 
@@ -177,7 +177,7 @@ test('it excludes draft transactions from the report', function () {
     JournalEntryLine::factory()->for($entry2)->create(['account_id' => $equityAccount->id, 'debit' => 0, 'credit' => 500000]);
 
     // Action
-    $service = app(BalanceSheetService::class);
+    $service = app(\Modules\Accounting\Services\Reports\BalanceSheetService::class);
     $report = $service->generate($this->company, $asOfDate);
 
     // Assert - Only the posted transaction should be included
@@ -191,8 +191,8 @@ test('it excludes transactions after the as-of date', function () {
     $currency = $this->company->currency->code;
     $journal = Journal::factory()->for($this->company)->create();
 
-    $bankAccount = Account::factory()->for($this->company)->create(['type' => AccountType::BankAndCash]);
-    $equityAccount = Account::factory()->for($this->company)->create(['type' => AccountType::Equity]);
+    $bankAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create(['type' => \Modules\Accounting\Enums\Accounting\AccountType::BankAndCash]);
+    $equityAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create(['type' => \Modules\Accounting\Enums\Accounting\AccountType::Equity]);
 
     $asOfDate = Carbon::parse('2025-03-31');
 
@@ -207,7 +207,7 @@ test('it excludes transactions after the as-of date', function () {
     JournalEntryLine::factory()->for($entry2)->create(['account_id' => $equityAccount->id, 'debit' => 0, 'credit' => 500000]);
 
     // Action
-    $service = app(BalanceSheetService::class);
+    $service = app(\Modules\Accounting\Services\Reports\BalanceSheetService::class);
     $report = $service->generate($this->company, $asOfDate);
 
     // Assert - Only the transaction before as-of date should be included
@@ -221,8 +221,8 @@ test('it excludes profit and loss accounts from balance sheet accounts', functio
     $currency = $this->company->currency->code;
     $journal = Journal::factory()->for($this->company)->create();
 
-    $bankAccount = Account::factory()->for($this->company)->create(['type' => AccountType::BankAndCash]);
-    $salesAccount = Account::factory()->for($this->company)->create(['type' => AccountType::Income]);
+    $bankAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create(['type' => \Modules\Accounting\Enums\Accounting\AccountType::BankAndCash]);
+    $salesAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create(['type' => \Modules\Accounting\Enums\Accounting\AccountType::Income]);
 
     $asOfDate = Carbon::parse('2025-03-31');
 
@@ -232,7 +232,7 @@ test('it excludes profit and loss accounts from balance sheet accounts', functio
     JournalEntryLine::factory()->for($entry1)->create(['account_id' => $salesAccount->id, 'debit' => 0, 'credit' => 1000000]);
 
     // Action
-    $service = app(BalanceSheetService::class);
+    $service = app(\Modules\Accounting\Services\Reports\BalanceSheetService::class);
     $report = $service->generate($this->company, $asOfDate);
 
     // Assert - P&L accounts should not appear in balance sheet lines, only in current year earnings

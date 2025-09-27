@@ -20,8 +20,8 @@ beforeEach(function () {
     $this->setupWithConfiguredCompany();
     $this->setupInventoryTestEnvironment();
 
-    $this->product = Product::factory()->for($this->company)->create([
-        'type' => \App\Enums\Products\ProductType::Storable,
+    $this->product = \Modules\Product\Models\Product::factory()->for($this->company)->create([
+        'type' => \Modules\Product\Enums\Products\ProductType::Storable,
         'inventory_valuation_method' => \App\Enums\Inventory\ValuationMethod::AVCO,
         'default_inventory_account_id' => $this->inventoryAccount->id,
         'default_stock_input_account_id' => $this->stockInputAccount->id,

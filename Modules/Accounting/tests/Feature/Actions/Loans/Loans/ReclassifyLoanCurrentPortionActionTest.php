@@ -16,7 +16,7 @@ uses(RefreshDatabase::class, WithConfiguredCompany::class);
 it('moves next-12-month principal from LT to ST for payable loan', function () {
     $code = $this->company->currency->code;
 
-    $loan = LoanAgreement::factory()->for($this->company)->create([
+    $loan = \Modules\Accounting\Models\LoanAgreement::factory()->for($this->company)->create([
         'currency_id' => $this->company->currency_id,
         'principal_amount' => Money::of('12000', $code),
         'loan_type' => LoanType::Payable,
@@ -29,8 +29,8 @@ it('moves next-12-month principal from LT to ST for payable loan', function () {
 
     app(ComputeLoanScheduleAction::class)->execute($loan);
 
-    $lt = Account::factory()->for($this->company)->create();
-    $st = Account::factory()->for($this->company)->create();
+    $lt = \Modules\Accounting\Models\Account::factory()->for($this->company)->create();
+    $st = \Modules\Accounting\Models\Account::factory()->for($this->company)->create();
     $journal = Journal::factory()->for($this->company)->create();
 
     $je = app(ReclassifyLoanCurrentPortionAction::class)->execute(

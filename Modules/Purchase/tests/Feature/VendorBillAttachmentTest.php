@@ -21,7 +21,7 @@ class VendorBillAttachmentTest extends TestCase
 
     protected Company $company;
 
-    protected VendorBill $vendorBill;
+    protected \Modules\Purchase\Models\VendorBill $vendorBill;
 
     protected function setUp(): void
     {
@@ -32,10 +32,10 @@ class VendorBillAttachmentTest extends TestCase
         $this->user = User::factory()->create();
         $this->user->companies()->attach($this->company);
 
-        $currency = Currency::factory()->create();
-        $vendor = Partner::factory()->create(['company_id' => $this->company->id]);
+        $currency = \Modules\Foundation\Models\Currency::factory()->create();
+        $vendor = \Modules\Foundation\Models\Partner::factory()->create(['company_id' => $this->company->id]);
 
-        $this->vendorBill = VendorBill::factory()->create([
+        $this->vendorBill = \Modules\Purchase\Models\VendorBill::factory()->create([
             'company_id' => $this->company->id,
             'vendor_id' => $vendor->id,
             'currency_id' => $currency->id,

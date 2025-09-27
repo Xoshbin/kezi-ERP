@@ -17,11 +17,11 @@ test('it creates a correct journal entry for a posted invoice', function () {
         'rate' => 0.10, // 10% tax
         'tax_account_id' => $this->company->default_tax_account_id,
     ]);
-    $product = Product::factory()->for($this->company)->create([
-        'income_account_id' => \App\Models\Account::factory()->for($this->company)->create(['type' => 'income'])->id,
+    $product = \Modules\Product\Models\Product::factory()->for($this->company)->create([
+        'income_account_id' => \Modules\Accounting\Models\Account::factory()->for($this->company)->create(['type' => 'income'])->id,
     ]);
 
-    $invoice = Invoice::factory()->for($this->company)->create([
+    $invoice = \Modules\Sales\Models\Invoice::factory()->for($this->company)->create([
         'status' => InvoiceStatus::Posted,
         'posted_at' => now(),
         'invoice_number' => 'TEST-INV-001',

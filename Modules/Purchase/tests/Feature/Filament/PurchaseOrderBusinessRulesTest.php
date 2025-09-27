@@ -20,8 +20,8 @@ class PurchaseOrderBusinessRulesTest extends TestCase
 
     protected Company $company;
     protected User $user;
-    protected Partner $vendor;
-    protected Currency $currency;
+    protected \Modules\Foundation\Models\Partner $vendor;
+    protected \Modules\Foundation\Models\Currency $currency;
 
     protected function setUp(): void
     {
@@ -32,11 +32,11 @@ class PurchaseOrderBusinessRulesTest extends TestCase
         $this->user->companies()->attach($this->company);
         $this->actingAs($this->user);
 
-        $this->vendor = Partner::factory()->vendor()->create([
+        $this->vendor = \Modules\Foundation\Models\Partner::factory()->vendor()->create([
             'company_id' => $this->company->id,
         ]);
 
-        $this->currency = Currency::factory()->create([
+        $this->currency = \Modules\Foundation\Models\Currency::factory()->create([
             'code' => 'USD',
             'name' => 'US Dollar',
         ]);
@@ -69,7 +69,7 @@ class PurchaseOrderBusinessRulesTest extends TestCase
         ]);
 
         // Create a vendor bill for this purchase order
-        VendorBill::factory()->create([
+        \Modules\Purchase\Models\VendorBill::factory()->create([
             'company_id' => $this->company->id,
             'vendor_id' => $this->vendor->id,
             'currency_id' => $this->currency->id,
@@ -139,7 +139,7 @@ class PurchaseOrderBusinessRulesTest extends TestCase
         ]);
 
         // Create a vendor bill for this purchase order
-        VendorBill::factory()->create([
+        \Modules\Purchase\Models\VendorBill::factory()->create([
             'company_id' => $this->company->id,
             'vendor_id' => $this->vendor->id,
             'currency_id' => $this->currency->id,
@@ -217,7 +217,7 @@ class PurchaseOrderBusinessRulesTest extends TestCase
         $this->assertTrue($purchaseOrder->canCreateBill());
 
         // Create a vendor bill
-        VendorBill::factory()->create([
+        \Modules\Purchase\Models\VendorBill::factory()->create([
             'company_id' => $this->company->id,
             'vendor_id' => $this->vendor->id,
             'currency_id' => $this->currency->id,

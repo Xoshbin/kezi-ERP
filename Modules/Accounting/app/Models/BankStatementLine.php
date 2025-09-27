@@ -67,8 +67,8 @@ class BankStatementLine extends Model
 
     protected $casts = [
         'date' => 'date',
-        'amount' => DocumentCurrencyMoneyCast::class,
-        'amount_in_foreign_currency' => OriginalCurrencyMoneyCast::class,
+        'amount' => \Modules\Foundation\Casts\DocumentCurrencyMoneyCast::class,
+        'amount_in_foreign_currency' => \Modules\Foundation\Casts\OriginalCurrencyMoneyCast::class,
         'is_reconciled' => 'boolean',
     ];
 

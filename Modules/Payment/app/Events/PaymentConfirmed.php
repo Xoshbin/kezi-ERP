@@ -16,7 +16,7 @@ class PaymentConfirmed
     /**
      * Create a new event instance.
      */
-    public function __construct(public readonly Payment $payment)
+    public function __construct(public readonly \Modules\Payment\Models\Payment $payment)
     {
         //
     }

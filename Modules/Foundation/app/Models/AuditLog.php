@@ -25,7 +25,7 @@ use Illuminate\Support\Carbon;
  * @property-read Model|\Eloquent $auditable
  * @property-read User $user
  *
- * @method static AuditLogFactory factory($count = null, $state = [])
+ * @method static \Modules\Foundation\Database\Factories\AuditLogFactory factory($count = null, $state = [])
  * @method static Builder<static>|AuditLog newModelQuery()
  * @method static Builder<static>|AuditLog newQuery()
  * @method static Builder<static>|AuditLog query()

@@ -23,7 +23,7 @@ it('allows creating partners with the company custom field through filament', fu
     livewire(CreatePartner::class)
         ->fillForm([
             'name' => 'Test Company Partner',
-            'type' => \App\Enums\Partners\PartnerType::Customer->value,
+            'type' => \Modules\Foundation\Enums\Partners\PartnerType::Customer->value,
             'email' => 'test@company.com',
             'custom_fields.company' => true,
         ])
@@ -31,7 +31,7 @@ it('allows creating partners with the company custom field through filament', fu
         ->assertHasNoFormErrors();
 
     // Verify the partner was created with the custom field value
-    $partner = Partner::where('name', 'Test Company Partner')->first();
+    $partner = \Modules\Foundation\Models\Partner::where('name', 'Test Company Partner')->first();
     expect($partner)->not->toBeNull();
 
     $customFieldValue = $partner->getCustomFieldValue('company');
@@ -42,7 +42,7 @@ it('allows creating partners without the company field checked', function () {
     livewire(CreatePartner::class)
         ->fillForm([
             'name' => 'Test Individual Partner',
-            'type' => \App\Enums\Partners\PartnerType::Customer->value,
+            'type' => \Modules\Foundation\Enums\Partners\PartnerType::Customer->value,
             'email' => 'test@individual.com',
             'custom_fields.company' => false,
         ])
@@ -50,7 +50,7 @@ it('allows creating partners without the company field checked', function () {
         ->assertHasNoFormErrors();
 
     // Verify the partner was created with the custom field value
-    $partner = Partner::where('name', 'Test Individual Partner')->first();
+    $partner = \Modules\Foundation\Models\Partner::where('name', 'Test Individual Partner')->first();
     expect($partner)->not->toBeNull();
 
     $customFieldValue = $partner->getCustomFieldValue('company');
@@ -58,15 +58,15 @@ it('allows creating partners without the company field checked', function () {
 });
 
 it('generates table columns for the company field since show_in_table is true', function () {
-    $columns = CustomFieldTableColumns::make(Partner::class);
+    $columns = CustomFieldTableColumns::make(\Modules\Foundation\Models\Partner::class);
 
     expect($columns)->toHaveCount(1);
     expect($columns[0]->getName())->toBe('custom_fields.company');
 });
 
 it('includes company field in sortable columns but not searchable (boolean fields are not searchable)', function () {
-    $searchableColumns = CustomFieldTableColumns::getSearchableColumns(Partner::class);
-    $sortableColumns = CustomFieldTableColumns::getSortableColumns(Partner::class);
+    $searchableColumns = CustomFieldTableColumns::getSearchableColumns(\Modules\Foundation\Models\Partner::class);
+    $sortableColumns = CustomFieldTableColumns::getSortableColumns(\Modules\Foundation\Models\Partner::class);
 
     // Boolean fields are not searchable (only text-based fields are)
     expect($searchableColumns)->not->toContain('custom_fields.company');
@@ -77,12 +77,12 @@ it('includes company field in sortable columns but not searchable (boolean field
 
 it('works with the existing custom field system', function () {
     // Verify the definition exists and is properly configured
-    $definition = CustomFieldDefinition::where('model_type', Partner::class)->first();
+    $definition = CustomFieldDefinition::where('model_type', \Modules\Foundation\Models\Partner::class)->first();
     expect($definition)->not->toBeNull();
     expect($definition->is_active)->toBeTrue();
 
     // Create a partner and set custom field values
-    $partner = Partner::factory()->create([
+    $partner = \Modules\Foundation\Models\Partner::factory()->create([
         'company_id' => $this->company->id,
         'name' => 'Integration Test Partner',
     ]);

@@ -16,8 +16,8 @@ test('it updates a journal entry and syncs its lines from a DTO', function () {
         'reference' => 'Original Reference',
         'is_posted' => false,
     ]);
-    $accountA = Account::factory()->for($this->company)->create();
-    $accountB = Account::factory()->for($this->company)->create();
+    $accountA = \Modules\Accounting\Models\Account::factory()->for($this->company)->create();
+    $accountB = \Modules\Accounting\Models\Account::factory()->for($this->company)->create();
 
     // Add an initial line that we expect to be removed
     $journalEntry->lines()->create([

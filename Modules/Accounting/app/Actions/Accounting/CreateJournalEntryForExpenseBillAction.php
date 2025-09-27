@@ -16,7 +16,7 @@ class CreateJournalEntryForExpenseBillAction
 {
     public function __construct(private readonly CreateJournalEntryAction $createJournalEntryAction) {}
 
-    public function execute(VendorBill $vendorBill, User $user): JournalEntry
+    public function execute(\Modules\Purchase\Models\VendorBill $vendorBill, User $user): JournalEntry
     {
         return DB::transaction(function () use ($vendorBill, $user) {
             $vendorBill->load('company', 'currency', 'lines.tax', 'vendor');
@@ -39,7 +39,7 @@ class CreateJournalEntryForExpenseBillAction
             foreach ($expenseLines as $line) {
                 // If an asset category is provided, treat as asset acquisition
                 if ($line->asset_category_id) {
-                    $category = AssetCategory::find($line->asset_category_id);
+                    $category = \Modules\Accounting\Models\AssetCategory::find($line->asset_category_id);
                     if (! $category) {
                         throw new RuntimeException('Invalid asset category selected on bill line.');
                     }
@@ -121,7 +121,7 @@ class CreateJournalEntryForExpenseBillAction
                 entry_date: $vendorBill->accounting_date,
                 reference: $vendorBill->bill_reference,
                 description: 'Vendor Bill ' . $vendorBill->bill_reference,
-                source_type: VendorBill::class,
+                source_type: \Modules\Purchase\Models\VendorBill::class,
                 source_id: $vendorBill->id,
                 created_by_user_id: $user->id,
                 is_posted: true,

@@ -16,14 +16,14 @@ use Illuminate\Support\Facades\DB;
 
 class UpdateInvoiceAction
 {
-    public function __construct(protected LockDateService $lockDateService) {}
+    public function __construct(protected \Modules\Accounting\Services\Accounting\LockDateService $lockDateService) {}
 
-    public function execute(UpdateInvoiceDTO $dto): Invoice
+    public function execute(UpdateInvoiceDTO $dto): \Modules\Sales\Models\Invoice
     {
         $invoice = $dto->invoice;
 
         if ($invoice->status !== InvoiceStatus::Draft) {
-            throw new UpdateNotAllowedException('Cannot modify a non-draft invoice.');
+            throw new \Modules\Foundation\Exceptions\UpdateNotAllowedException('Cannot modify a non-draft invoice.');
         }
 
         $this->lockDateService->enforce($invoice->company, Carbon::parse($dto->invoice_date));
@@ -53,7 +53,7 @@ class UpdateInvoiceAction
                     }
                 }
 
-                $lines[] = new InvoiceLine([
+                $lines[] = new \Modules\Sales\Models\InvoiceLine([
                     'company_id' => $invoice->company_id,
                     'product_id' => $lineDto->product_id,
                     'description' => $lineDto->description,

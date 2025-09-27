@@ -13,11 +13,11 @@ uses(RefreshDatabase::class, WithConfiguredCompany::class);
 
 test('a bank statement line can be reconciled with a payment', function () {
     // Arrange: Set up the necessary accounts and a payment.
-    $bankAccount = Account::factory()->for($this->company)->create(['type' => 'bank_and_cash']);
+    $bankAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create(['type' => 'bank_and_cash']);
     $this->company->update(['default_bank_account_id' => $bankAccount->id]);
 
     $currencyCode = $this->company->currency->code;
-    $payment = Payment::factory()
+    $payment = \Modules\Payment\Models\Payment::factory()
         ->for($this->company)
         ->create([
             'amount' => Money::of(100, $currencyCode),
@@ -26,7 +26,7 @@ test('a bank statement line can be reconciled with a payment', function () {
         ]);
 
     // Arrange: Create a bank statement and a line that matches the payment.
-    $bankStatement = \App\Models\BankStatement::factory()
+    $bankStatement = \Modules\Accounting\Models\BankStatement::factory()
         ->for($this->company)
         ->for($payment->journal) // We can reuse the payment's journal
         ->create([
@@ -45,7 +45,7 @@ test('a bank statement line can be reconciled with a payment', function () {
     ]);
 
     // Act: Reconcile the statement line with the payment.
-    (app(BankReconciliationService::class))->reconcilePayment($payment, $bankStatementLine, $this->user);
+    (app(\Modules\Accounting\Services\BankReconciliationService::class))->reconcilePayment($payment, $bankStatementLine, $this->user);
 
     // Assert: The statement line is now marked as reconciled.
     $bankStatementLine->refresh();

@@ -49,7 +49,7 @@ readonly class CreatePurchaseOrderDTO
             // Get currency for line items
             $currency = null;
             if (isset($data['currency_id'])) {
-                $currency = \App\Models\Currency::find($data['currency_id']);
+                $currency = \Modules\Foundation\Models\Currency::find($data['currency_id']);
             }
             $currencyCode = $currency?->code ?? 'USD';
 

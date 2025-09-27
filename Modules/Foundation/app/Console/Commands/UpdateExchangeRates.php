@@ -23,9 +23,9 @@ class UpdateExchangeRates extends Command
      */
     protected $description = 'Update exchange rates for all active currencies';
 
-    protected ExchangeRateService $exchangeRateService;
+    protected \Modules\Foundation\Services\ExchangeRateService $exchangeRateService;
 
-    public function __construct(ExchangeRateService $exchangeRateService)
+    public function __construct(\Modules\Foundation\Services\ExchangeRateService $exchangeRateService)
     {
         parent::__construct();
         $this->exchangeRateService = $exchangeRateService;

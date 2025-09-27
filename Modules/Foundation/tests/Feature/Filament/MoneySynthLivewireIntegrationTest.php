@@ -19,10 +19,10 @@ class MoneySynthLivewireIntegrationTest extends TestCase
 
     private Company $company;
     private User $user;
-    private Currency $currency;
-    private Partner $vendor;
-    private Product $product;
-    private Account $expenseAccount;
+    private \Modules\Foundation\Models\Currency $currency;
+    private \Modules\Foundation\Models\Partner $vendor;
+    private \Modules\Product\Models\Product $product;
+    private \Modules\Accounting\Models\Account $expenseAccount;
 
     protected function setUp(): void
     {
@@ -31,20 +31,20 @@ class MoneySynthLivewireIntegrationTest extends TestCase
         // Create test data
         $this->company = Company::factory()->create();
         $this->user = User::factory()->create();
-        $this->currency = Currency::factory()->create(['code' => 'USD']);
+        $this->currency = \Modules\Foundation\Models\Currency::factory()->create(['code' => 'USD']);
         
         $this->company->update(['currency_id' => $this->currency->id]);
         
-        $this->vendor = Partner::factory()->vendor()->create([
+        $this->vendor = \Modules\Foundation\Models\Partner::factory()->vendor()->create([
             'company_id' => $this->company->id,
         ]);
 
-        $this->expenseAccount = Account::factory()->create([
+        $this->expenseAccount = \Modules\Accounting\Models\Account::factory()->create([
             'company_id' => $this->company->id,
             'type' => 'expense',
         ]);
 
-        $this->product = Product::factory()->create([
+        $this->product = \Modules\Product\Models\Product::factory()->create([
             'company_id' => $this->company->id,
             'expense_account_id' => $this->expenseAccount->id,
         ]);

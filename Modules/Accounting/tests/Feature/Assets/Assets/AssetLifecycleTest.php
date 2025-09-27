@@ -12,15 +12,15 @@ uses(RefreshDatabase::class, WithConfiguredCompany::class);
 
 beforeEach(function () {
 
-    $this->assetAccount = Account::factory()->for($this->company)->create(['type' => 'fixed_assets']);
-    $this->depreciationExpenseAccount = Account::factory()->for($this->company)->create(['type' => 'expense']);
-    $this->accumulatedDepreciationAccount = Account::factory()->for($this->company)->create(['type' => 'non_current_assets']);
+    $this->assetAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create(['type' => 'fixed_assets']);
+    $this->depreciationExpenseAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create(['type' => 'expense']);
+    $this->accumulatedDepreciationAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create(['type' => 'non_current_assets']);
 });
 
 test('asset can be created manually and confirmed', function () {
     // Arrange
     $currencyCode = $this->company->currency->code;
-    $assetDTO = new CreateAssetDTO(
+    $assetDTO = new \Modules\Accounting\DataTransferObjects\Assets\CreateAssetDTO(
         company_id: $this->company->id,
         name: 'Test Asset',
         purchase_date: now(),
@@ -57,7 +57,7 @@ test('asset can be created manually and confirmed', function () {
 test('confirming asset generates initial journal entry', function () {
     // Arrange
     $currencyCode = $this->company->currency->code;
-    $assetDTO = new CreateAssetDTO(
+    $assetDTO = new \Modules\Accounting\DataTransferObjects\Assets\CreateAssetDTO(
         company_id: $this->company->id,
         name: 'Test Asset',
         purchase_date: now(),
@@ -78,7 +78,7 @@ test('confirming asset generates initial journal entry', function () {
 
     // Assert
     $this->assertDatabaseHas('journal_entries', [
-        'source_type' => Asset::class,
+        'source_type' => \Modules\Accounting\Models\Asset::class,
         'source_id' => $asset->id,
         'is_posted' => true,
     ]);
@@ -101,7 +101,7 @@ test('confirming asset generates initial journal entry', function () {
 
 test('depreciation calculation generates correct draft entries', function () {
     // Arrange
-    $assetDTO = new CreateAssetDTO(
+    $assetDTO = new \Modules\Accounting\DataTransferObjects\Assets\CreateAssetDTO(
         company_id: $this->company->id,
         name: 'Test Asset',
         purchase_date: now(),
@@ -134,7 +134,7 @@ test('depreciation calculation generates correct draft entries', function () {
 
 test('automated depreciation job posts correct journal entries periodically', function () {
     // Arrange
-    $assetDTO = new CreateAssetDTO(
+    $assetDTO = new \Modules\Accounting\DataTransferObjects\Assets\CreateAssetDTO(
         company_id: $this->company->id,
         name: 'Test Asset',
         purchase_date: now()->subMonth(),
@@ -182,7 +182,7 @@ test('automated depreciation job posts correct journal entries periodically', fu
 
 test('posted depreciation entries are immutable and hashed', function () {
     // Arrange
-    $assetDTO = new CreateAssetDTO(
+    $assetDTO = new \Modules\Accounting\DataTransferObjects\Assets\CreateAssetDTO(
         company_id: $this->company->id,
         name: 'Test Asset',
         purchase_date: now()->subMonth(),
@@ -205,10 +205,10 @@ test('posted depreciation entries are immutable and hashed', function () {
     $journalEntry = $depreciationEntry->journalEntry;
 
     // Assert immutability
-    $this->expectException(\App\Exceptions\UpdateNotAllowedException::class);
+    $this->expectException(\Modules\Foundation\Exceptions\UpdateNotAllowedException::class);
     $depreciationEntry->update(['amount' => 5000]);
 
-    $this->expectException(\App\Exceptions\DeletionNotAllowedException::class);
+    $this->expectException(\Modules\Foundation\Exceptions\DeletionNotAllowedException::class);
     $depreciationEntry->delete();
 
     // Assert hashing
@@ -218,7 +218,7 @@ test('posted depreciation entries are immutable and hashed', function () {
 
 test('asset modification recomputes future depreciation schedule', function () {
     // Arrange: Create an asset and its initial depreciation schedule.
-    $assetDTO = new \App\DataTransferObjects\Assets\CreateAssetDTO(
+    $assetDTO = new \Modules\Accounting\DataTransferObjects\Assets\CreateAssetDTO(
         company_id: $this->company->id,
         name: 'Test Asset',
         purchase_date: now()->subYears(2),
@@ -282,7 +282,7 @@ test('asset modification recomputes future depreciation schedule', function () {
 
 test('asset disposal correctly generates final journal entries', function () {
     // Arrange
-    $assetDTO = new CreateAssetDTO(
+    $assetDTO = new \Modules\Accounting\DataTransferObjects\Assets\CreateAssetDTO(
         company_id: $this->company->id,
         name: 'Test Asset',
         purchase_date: now()->subYears(5),
@@ -323,7 +323,7 @@ test('asset disposal correctly generates final journal entries', function () {
     ]);
 
     $this->assertDatabaseHas('journal_entries', [
-        'source_type' => Asset::class,
+        'source_type' => \Modules\Accounting\Models\Asset::class,
         'source_id' => $asset->id,
         'is_posted' => true,
     ]);

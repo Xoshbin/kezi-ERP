@@ -17,28 +17,28 @@ uses(RefreshDatabase::class, WithConfiguredCompany::class);
 beforeEach(function () {
     // Arrange: The WithConfiguredCompany trait provides $this->company and $this->user.
     // We only need to create data specific to this test's context.
-    $this->vendor = Partner::factory()->for($this->company)->vendor()->create();
+    $this->vendor = \Modules\Foundation\Models\Partner::factory()->for($this->company)->vendor()->create();
 
     // Create an account that IS flagged to create assets
-    $this->assetAccount = Account::factory()->for($this->company)->create([
+    $this->assetAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create([
         'name' => ['en' => 'IT Equipment'],
         'type' => 'fixed_assets',
         'can_create_assets' => true,
     ]);
 
     // Create a standard expense account that IS NOT flagged
-    $this->expenseAccount = Account::factory()->for($this->company)->create([
+    $this->expenseAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create([
         'name' => ['en' => 'Office Supplies'],
         'type' => 'expense',
         'can_create_assets' => false,
     ]);
 
     // Create depreciation-related default accounts and attach to company instance (not persisted columns)
-    $this->depreciationExpenseAccount = Account::factory()->for($this->company)->create([
+    $this->depreciationExpenseAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create([
         'name' => ['en' => 'Depreciation Expense'],
         'type' => 'depreciation',
     ]);
-    $this->accumulatedDepreciationAccount = Account::factory()->for($this->company)->create([
+    $this->accumulatedDepreciationAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create([
         'name' => ['en' => 'Accumulated Depreciation'],
         'type' => 'non_current_assets',
     ]);

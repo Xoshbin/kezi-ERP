@@ -31,7 +31,7 @@ class PurchaseOrderLineFactory extends Factory
 
         return [
             'purchase_order_id' => PurchaseOrder::factory(),
-            'product_id' => Product::factory(),
+            'product_id' => \Modules\Product\Models\Product::factory(),
             'description' => $this->faker->sentence(),
             'quantity' => $quantity,
             'unit_price' => $unitPrice * 100, // Store as cents for Money cast

@@ -36,7 +36,7 @@ describe('Journal Entry Reversals', function () {
             'total_credit' => Money::of(150, $currencyCode),
         ]);
         $arAccount = $this->company->defaultAccountsReceivable;
-        $revenueAccount = Account::factory()->for($this->company)->create(['type' => 'income']);
+        $revenueAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create(['type' => 'income']);
 
         $originalEntry->lines()->createMany([
             ['company_id' => $this->company->id, 'account_id' => $arAccount->id, 'debit' => Money::of(150, $currencyCode), 'credit' => Money::of(0, $currencyCode)],
@@ -88,7 +88,7 @@ describe('Payment Cancellations', function () {
 
     test('it successfully cancels a confirmed payment', function () {
         // Arrange: Create a posted invoice for the payment to be applied to.
-        $invoice = Invoice::factory()->for($this->company)->create([
+        $invoice = \Modules\Sales\Models\Invoice::factory()->for($this->company)->create([
             'status' => 'posted',
             'total_amount' => \Brick\Money\Money::of(250, $this->company->currency->code),
         ]);
@@ -132,7 +132,7 @@ describe('Payment Cancellations', function () {
 
     test('it prevents cancelling a draft payment', function () {
         // Arrange: Create a draft payment.
-        $draftPayment = Payment::factory()
+        $draftPayment = \Modules\Payment\Models\Payment::factory()
             ->for($this->company)
             ->for($this->company->currency)
             ->for($this->company->journals()->first())
@@ -145,7 +145,7 @@ describe('Payment Cancellations', function () {
 
     test('it prevents cancelling a reconciled payment', function () {
         // Arrange: Create a reconciled payment.
-        $reconciledPayment = Payment::factory()
+        $reconciledPayment = \Modules\Payment\Models\Payment::factory()
             ->for($this->company)
             ->for($this->company->currency)
             ->for($this->company->journals()->first())

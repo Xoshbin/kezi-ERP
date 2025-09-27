@@ -24,7 +24,7 @@ class AnalyticPlanResource extends Resource
 {
     use Translatable;
 
-    protected static ?string $model = AnalyticPlan::class;
+    protected static ?string $model = \Modules\Accounting\Models\AnalyticPlan::class;
 
     protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-clipboard-document-list';
 

@@ -29,7 +29,7 @@ class TranslatableSelectModalTest extends TestCase
     public function translatable_select_for_model_does_not_try_to_establish_relationships()
     {
         // Create a tax account for the test
-        $taxAccount = Account::factory()->create([
+        $taxAccount = \Modules\Accounting\Models\Account::factory()->create([
             'company_id' => $this->company->id,
             'name' => ['en' => 'VAT Payable'],
             'code' => 'VAT-001',
@@ -51,7 +51,7 @@ class TranslatableSelectModalTest extends TestCase
     public function translatable_select_for_model_can_get_search_results()
     {
         // Create a tax account and some taxes
-        $taxAccount = Account::factory()->create([
+        $taxAccount = \Modules\Accounting\Models\Account::factory()->create([
             'company_id' => $this->company->id,
             'name' => ['en' => 'VAT Payable'],
             'code' => 'VAT-001',
@@ -91,7 +91,7 @@ class TranslatableSelectModalTest extends TestCase
     public function translatable_select_for_model_can_get_option_labels()
     {
         // Create a tax account and a tax
-        $taxAccount = Account::factory()->create([
+        $taxAccount = \Modules\Accounting\Models\Account::factory()->create([
             'company_id' => $this->company->id,
             'name' => ['en' => 'VAT Payable'],
             'code' => 'VAT-001',

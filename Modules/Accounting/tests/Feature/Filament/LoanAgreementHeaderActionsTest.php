@@ -20,7 +20,7 @@ beforeEach(function () {
 it('can accrue interest, post repayment, and reclassify from header actions', function () {
     $code = $this->company->currency->code;
 
-    $loan = LoanAgreement::factory()->for($this->company)->create([
+    $loan = \Modules\Accounting\Models\LoanAgreement::factory()->for($this->company)->create([
         'currency_id' => $this->company->currency_id,
         'principal_amount' => Money::of('10000', $code),
         'loan_type' => LoanType::Payable,
@@ -38,10 +38,10 @@ it('can accrue interest, post repayment, and reclassify from header actions', fu
     ])->callAction('computeSchedule');
 
     $journal = Journal::factory()->for($this->company)->create();
-    $bank = Account::factory()->for($this->company)->create();
-    $loanAcc = Account::factory()->for($this->company)->create();
-    $accrued = Account::factory()->for($this->company)->create();
-    $interest = Account::factory()->for($this->company)->create();
+    $bank = \Modules\Accounting\Models\Account::factory()->for($this->company)->create();
+    $loanAcc = \Modules\Accounting\Models\Account::factory()->for($this->company)->create();
+    $accrued = \Modules\Accounting\Models\Account::factory()->for($this->company)->create();
+    $interest = \Modules\Accounting\Models\Account::factory()->for($this->company)->create();
 
     // Accrue interest for month 1
     livewire(\App\Filament\Clusters\Accounting\Resources\LoanAgreements\Pages\ViewLoanAgreement::class, [
@@ -70,7 +70,7 @@ it('can accrue interest, post repayment, and reclassify from header actions', fu
     ])->callAction('reclassifyCurrentPortion', data: [
         'journal_id' => $journal->id,
         'long_term_account_id' => $loanAcc->id,
-        'short_term_account_id' => Account::factory()->for($this->company)->create()->id,
+        'short_term_account_id' => \Modules\Accounting\Models\Account::factory()->for($this->company)->create()->id,
         'months' => 6,
         'as_of_date' => now()->startOfMonth()->addMonths(6)->format('Y-m-d'),
     ]);

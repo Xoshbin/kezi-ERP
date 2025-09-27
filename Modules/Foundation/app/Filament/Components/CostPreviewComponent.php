@@ -35,7 +35,7 @@ class CostPreviewComponent
                 }
 
                 try {
-                    $product = Product::find($productId);
+                    $product = \Modules\Product\Models\Product::find($productId);
                     if (!$product) {
                         return [
                             'status' => 'error',
@@ -139,7 +139,7 @@ class CostPreviewComponent
                             continue;
                         }
 
-                        $product = Product::find($line['product_id']);
+                        $product = \Modules\Product\Models\Product::find($line['product_id']);
                         if (!$product) {
                             continue;
                         }

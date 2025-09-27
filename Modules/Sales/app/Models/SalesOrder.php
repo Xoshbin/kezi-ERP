@@ -53,7 +53,7 @@ use Illuminate\Support\Carbon;
  * @property-read \Illuminate\Database\Eloquent\Collection<int, Invoice> $invoices
  * @property-read int|null $invoices_count
  */
-#[ObservedBy([AuditLogObserver::class])]
+#[ObservedBy([\Modules\Foundation\Observers\AuditLogObserver::class])]
 class SalesOrder extends Model
 {
     use HasFactory;
@@ -93,10 +93,10 @@ class SalesOrder extends Model
         'confirmed_at' => 'datetime',
         'cancelled_at' => 'datetime',
         'exchange_rate_at_creation' => 'decimal:6',
-        'total_amount' => DocumentCurrencyMoneyCast::class,
-        'total_tax' => DocumentCurrencyMoneyCast::class,
-        'total_amount_company_currency' => BaseCurrencyMoneyCast::class,
-        'total_tax_company_currency' => BaseCurrencyMoneyCast::class,
+        'total_amount' => \Modules\Foundation\Casts\DocumentCurrencyMoneyCast::class,
+        'total_tax' => \Modules\Foundation\Casts\DocumentCurrencyMoneyCast::class,
+        'total_amount_company_currency' => \Modules\Foundation\Casts\BaseCurrencyMoneyCast::class,
+        'total_tax_company_currency' => \Modules\Foundation\Casts\BaseCurrencyMoneyCast::class,
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
     ];

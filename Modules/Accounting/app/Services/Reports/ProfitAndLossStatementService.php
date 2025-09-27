@@ -32,11 +32,11 @@ class ProfitAndLossStatementService
             ->join('journal_entries', 'journal_entry_lines.journal_entry_id', '=', 'journal_entries.id')
             ->where('accounts.company_id', $company->id)
             ->whereIn('accounts.type', [
-                AccountType::Income->value,
-                AccountType::OtherIncome->value,
-                AccountType::Expense->value,
-                AccountType::Depreciation->value,
-                AccountType::CostOfRevenue->value,
+                \Modules\Accounting\Enums\Accounting\AccountType::Income->value,
+                \Modules\Accounting\Enums\Accounting\AccountType::OtherIncome->value,
+                \Modules\Accounting\Enums\Accounting\AccountType::Expense->value,
+                \Modules\Accounting\Enums\Accounting\AccountType::Depreciation->value,
+                \Modules\Accounting\Enums\Accounting\AccountType::CostOfRevenue->value,
             ])
             ->where('journal_entries.state', JournalEntryState::Posted->value)
             ->whereBetween('journal_entries.entry_date', [$startDate, $endDate])
@@ -65,18 +65,18 @@ class ProfitAndLossStatementService
 
         // Get account models to access translated names
         $accountIds = $results->pluck('account_id')->unique();
-        /** @var \Illuminate\Support\Collection<int, \App\Models\Account> $accounts */
+        /** @var \Illuminate\Support\Collection<int, \Modules\Accounting\Models\Account> $accounts */
         $accounts = $company->accounts()->whereIn('id', $accountIds)->get()->keyBy('id');
 
         $revenueLines = $results->whereIn('account_type', [
-            AccountType::Income->value,
-            AccountType::OtherIncome->value,
+            \Modules\Accounting\Enums\Accounting\AccountType::Income->value,
+            \Modules\Accounting\Enums\Accounting\AccountType::OtherIncome->value,
         ])
             ->map(function (object $row) use ($currency, $accounts) {
                 // Invert the sign for presentation, as income accounts have a natural credit balance.
                 // The balance from the query is already in minor units, so use it directly
                 $balance = Money::ofMinor(-(int) $row->balance, $currency);
-                /** @var \App\Models\Account|null $account */
+                /** @var \Modules\Accounting\Models\Account|null $account */
                 $account = $accounts->get($row->account_id);
                 $accountName = $account ? (is_array($account->name) ? ($account->name['en'] ?? (empty($account->name) ? '' : (string) array_values($account->name)[0])) : (string) $account->name) : (string) $row->account_name;
 
@@ -89,15 +89,15 @@ class ProfitAndLossStatementService
             });
 
         $expenseLines = $results->whereIn('account_type', [
-            AccountType::Expense->value,
-            AccountType::Depreciation->value,
-            AccountType::CostOfRevenue->value,
+            \Modules\Accounting\Enums\Accounting\AccountType::Expense->value,
+            \Modules\Accounting\Enums\Accounting\AccountType::Depreciation->value,
+            \Modules\Accounting\Enums\Accounting\AccountType::CostOfRevenue->value,
         ])
             ->map(function (object $row) use ($currency, $accounts) {
                 // Expense accounts have a natural debit balance, which is correct for presentation.
                 // The balance from the query is already in minor units, so use it directly
                 $balance = Money::ofMinor((int) $row->balance, $currency);
-                /** @var \App\Models\Account|null $account */
+                /** @var \Modules\Accounting\Models\Account|null $account */
                 $account = $accounts->get($row->account_id);
                 $accountName = $account ? (is_array($account->name) ? ($account->name['en'] ?? (empty($account->name) ? '' : (string) array_values($account->name)[0])) : (string) $account->name) : (string) $row->account_name;
 

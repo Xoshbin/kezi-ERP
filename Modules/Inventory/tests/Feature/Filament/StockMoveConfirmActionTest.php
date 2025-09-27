@@ -22,9 +22,9 @@ beforeEach(function () {
     $this->actingAs($this->user);
     Filament::setTenant($this->company);
 
-    $this->product = Product::factory()->create([
+    $this->product = \Modules\Product\Models\Product::factory()->create([
         'company_id' => $this->company->id,
-        'type' => ProductType::Storable,
+        'type' => \Modules\Product\Enums\Products\ProductType::Storable,
         'inventory_valuation_method' => ValuationMethod::FIFO,
         'average_cost' => Money::of(0, $this->company->currency->code),
     ]);

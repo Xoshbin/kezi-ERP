@@ -19,7 +19,7 @@ class JournalEntryLineFactory extends Factory
             'company_id' => function (array $attributes) {
                 return JournalEntry::find($attributes['journal_entry_id'])->company_id;
             },
-            'account_id' => Account::factory(),
+            'account_id' => \Modules\Accounting\Models\Account::factory(),
             'partner_id' => null,
             'description' => $this->faker->sentence(),
             'debit' => $isDebit ? $amount : 0,

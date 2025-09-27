@@ -72,7 +72,7 @@ class PaymentDocumentLink extends Model
      * @var array<string, string>
      */
     protected $casts = [
-        'amount_applied' => DocumentCurrencyMoneyCast::class, // Amount in payment currency
+        'amount_applied' => \Modules\Foundation\Casts\DocumentCurrencyMoneyCast::class, // Amount in payment currency
         'created_at' => 'datetime', // Automatically casts to Carbon instances for convenient date manipulation.  [4]
         'updated_at' => 'datetime', // Automatically casts to Carbon instances.  [4]
     ];

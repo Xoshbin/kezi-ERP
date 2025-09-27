@@ -32,7 +32,7 @@ class TranslatableSearchTest extends TestCase
         app()->setLocale('en');
 
         // Create a currency with translations
-        $currency = Currency::factory()->create([
+        $currency = \Modules\Foundation\Models\Currency::factory()->create([
             'name' => [
                 'en' => 'US Dollar',
                 'ckb' => 'دۆلاری ئەمریکی',
@@ -43,29 +43,29 @@ class TranslatableSearchTest extends TestCase
         ]);
 
         // Test search in English
-        $results = Currency::getFilamentSearchResults('Dollar');
+        $results = \Modules\Foundation\Models\Currency::getFilamentSearchResults('Dollar');
         $this->assertArrayHasKey($currency->id, $results);
         $this->assertEquals('US Dollar', $results[$currency->id]);
 
         // Test search in Kurdish
-        $results = Currency::getFilamentSearchResults('دۆلار');
+        $results = \Modules\Foundation\Models\Currency::getFilamentSearchResults('دۆلار');
         $this->assertArrayHasKey($currency->id, $results);
         $this->assertEquals('US Dollar', $results[$currency->id]); // Should return in current locale (en)
 
         // Test search in Arabic
-        $results = Currency::getFilamentSearchResults('الدولار');
+        $results = \Modules\Foundation\Models\Currency::getFilamentSearchResults('الدولار');
         $this->assertArrayHasKey($currency->id, $results);
         $this->assertEquals('US Dollar', $results[$currency->id]); // Should return in current locale (en)
 
         // Test partial search
-        $results = Currency::getFilamentSearchResults('دۆلا');
+        $results = \Modules\Foundation\Models\Currency::getFilamentSearchResults('دۆلا');
         $this->assertArrayHasKey($currency->id, $results);
     }
 
     /** @test */
     public function it_returns_results_in_current_locale()
     {
-        $currency = Currency::factory()->create([
+        $currency = \Modules\Foundation\Models\Currency::factory()->create([
             'name' => [
                 'en' => 'Euro',
                 'ckb' => 'یۆرۆ',
@@ -79,7 +79,7 @@ class TranslatableSearchTest extends TestCase
         app()->setLocale('ckb');
 
         // Search in English but expect Kurdish result
-        $results = Currency::getFilamentSearchResults('Euro');
+        $results = \Modules\Foundation\Models\Currency::getFilamentSearchResults('Euro');
         $this->assertArrayHasKey($currency->id, $results);
         $this->assertEquals('یۆرۆ', $results[$currency->id]);
 
@@ -87,7 +87,7 @@ class TranslatableSearchTest extends TestCase
         app()->setLocale('ar');
 
         // Search in Kurdish but expect Arabic result
-        $results = Currency::getFilamentSearchResults('یۆرۆ');
+        $results = \Modules\Foundation\Models\Currency::getFilamentSearchResults('یۆرۆ');
         $this->assertArrayHasKey($currency->id, $results);
         $this->assertEquals('اليورو', $results[$currency->id]);
     }
@@ -95,7 +95,7 @@ class TranslatableSearchTest extends TestCase
     /** @test */
     public function it_can_search_accounts_with_code_and_name()
     {
-        $account = Account::factory()->create([
+        $account = \Modules\Accounting\Models\Account::factory()->create([
             'company_id' => $this->company->id,
             'name' => [
                 'en' => 'Cash Account',
@@ -103,21 +103,21 @@ class TranslatableSearchTest extends TestCase
                 'ar' => 'حساب النقد',
             ],
             'code' => '1001',
-            'type' => AccountType::BankAndCash,
+            'type' => \Modules\Accounting\Enums\Accounting\AccountType::BankAndCash,
         ]);
 
         // Search by code
-        $results = Account::getFilamentSearchResults('1001');
+        $results = \Modules\Accounting\Models\Account::getFilamentSearchResults('1001');
         $this->assertArrayHasKey($account->id, $results);
 
         // Search by name in different languages
-        $results = Account::getFilamentSearchResults('Cash');
+        $results = \Modules\Accounting\Models\Account::getFilamentSearchResults('Cash');
         $this->assertArrayHasKey($account->id, $results);
 
-        $results = Account::getFilamentSearchResults('کاش');
+        $results = \Modules\Accounting\Models\Account::getFilamentSearchResults('کاش');
         $this->assertArrayHasKey($account->id, $results);
 
-        $results = Account::getFilamentSearchResults('النقد');
+        $results = \Modules\Accounting\Models\Account::getFilamentSearchResults('النقد');
         $this->assertArrayHasKey($account->id, $results);
     }
 
@@ -159,31 +159,31 @@ class TranslatableSearchTest extends TestCase
     /** @test */
     public function it_can_search_non_translatable_models()
     {
-        $partner = Partner::factory()->create([
+        $partner = \Modules\Foundation\Models\Partner::factory()->create([
             'company_id' => $this->company->id,
             'name' => 'John Doe Company',
             'email' => 'john@example.com',
             'contact_person' => 'John Doe',
-            'type' => PartnerType::Customer,
+            'type' => \Modules\Foundation\Enums\Partners\PartnerType::Customer,
         ]);
 
         // Search by name
-        $results = Partner::getFilamentSearchResults('John');
+        $results = \Modules\Foundation\Models\Partner::getFilamentSearchResults('John');
         $this->assertArrayHasKey($partner->id, $results);
 
         // Search by email
-        $results = Partner::getFilamentSearchResults('john@example');
+        $results = \Modules\Foundation\Models\Partner::getFilamentSearchResults('john@example');
         $this->assertArrayHasKey($partner->id, $results);
 
         // Search by contact person
-        $results = Partner::getFilamentSearchResults('Doe');
+        $results = \Modules\Foundation\Models\Partner::getFilamentSearchResults('Doe');
         $this->assertArrayHasKey($partner->id, $results);
     }
 
     /** @test */
     public function it_handles_missing_translations_gracefully()
     {
-        $currency = Currency::factory()->create([
+        $currency = \Modules\Foundation\Models\Currency::factory()->create([
             'name' => [
                 'en' => 'British Pound',
                 // Missing Kurdish and Arabic translations
@@ -193,13 +193,13 @@ class TranslatableSearchTest extends TestCase
         ]);
 
         // Should still find the currency and return the available translation
-        $results = Currency::getFilamentSearchResults('British');
+        $results = \Modules\Foundation\Models\Currency::getFilamentSearchResults('British');
         $this->assertArrayHasKey($currency->id, $results);
         $this->assertEquals('British Pound', $results[$currency->id]);
 
         // Test with Kurdish locale but missing translation
         app()->setLocale('ckb');
-        $results = Currency::getFilamentSearchResults('British');
+        $results = \Modules\Foundation\Models\Currency::getFilamentSearchResults('British');
         $this->assertArrayHasKey($currency->id, $results);
         // Should fallback to the available translation
         $this->assertEquals('British Pound', $results[$currency->id]);
@@ -211,7 +211,7 @@ class TranslatableSearchTest extends TestCase
         // Set locale to English for this test
         app()->setLocale('en');
 
-        $account = Account::factory()->create([
+        $account = \Modules\Accounting\Models\Account::factory()->create([
             'company_id' => $this->company->id,
             'name' => [
                 'en' => 'Bank Account',
@@ -219,12 +219,12 @@ class TranslatableSearchTest extends TestCase
                 'ar' => 'حساب البنك',
             ],
             'code' => '1100',
-            'type' => AccountType::BankAndCash,
+            'type' => \Modules\Accounting\Enums\Accounting\AccountType::BankAndCash,
         ]);
 
         $formatter = fn ($account) => [$account->id => $account->getTranslatedLabel('name').' ('.$account->code.')'];
 
-        $results = Account::getFormattedSearchResults('Bank', 50, $formatter);
+        $results = \Modules\Accounting\Models\Account::getFormattedSearchResults('Bank', 50, $formatter);
         $this->assertArrayHasKey($account->id, $results);
         $this->assertEquals('Bank Account (1100)', $results[$account->id]);
     }
@@ -234,7 +234,7 @@ class TranslatableSearchTest extends TestCase
     {
         // Create multiple currencies
         for ($i = 1; $i <= 60; $i++) {
-            Currency::factory()->create([
+            \Modules\Foundation\Models\Currency::factory()->create([
                 'name' => [
                     'en' => "Currency $i",
                     'ckb' => "دراو $i",
@@ -246,18 +246,18 @@ class TranslatableSearchTest extends TestCase
         }
 
         // Test default limit (50)
-        $results = Currency::getFilamentSearchResults('Currency');
+        $results = \Modules\Foundation\Models\Currency::getFilamentSearchResults('Currency');
         $this->assertCount(50, $results);
 
         // Test custom limit
-        $results = Currency::getFilamentSearchResults('Currency', 10);
+        $results = \Modules\Foundation\Models\Currency::getFilamentSearchResults('Currency', 10);
         $this->assertCount(10, $results);
     }
 
     /** @test */
     public function it_can_get_all_translations_for_debugging()
     {
-        $currency = Currency::factory()->create([
+        $currency = \Modules\Foundation\Models\Currency::factory()->create([
             'name' => [
                 'en' => 'Japanese Yen',
                 'ckb' => 'یەنی ژاپۆنی',

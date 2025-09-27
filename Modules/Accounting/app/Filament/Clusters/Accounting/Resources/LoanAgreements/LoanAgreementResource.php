@@ -22,7 +22,7 @@ use Filament\Tables\Table;
 
 class LoanAgreementResource extends Resource
 {
-    protected static ?string $model = LoanAgreement::class;
+    protected static ?string $model = \Modules\Accounting\Models\LoanAgreement::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
 

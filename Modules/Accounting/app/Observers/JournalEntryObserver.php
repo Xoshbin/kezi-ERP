@@ -14,7 +14,7 @@ class JournalEntryObserver
     public function creating(JournalEntry $journalEntry): void
     {
         if ($journalEntry->is_posted) {
-            app(LockDateService::class)->enforce($journalEntry->company, $journalEntry->entry_date);
+            app(\Modules\Accounting\Services\Accounting\LockDateService::class)->enforce($journalEntry->company, $journalEntry->entry_date);
             $this->applyHashingAndLinking($journalEntry);
         }
     }
@@ -26,7 +26,7 @@ class JournalEntryObserver
     public function updating(JournalEntry $journalEntry): void
     {
         if ($journalEntry->isDirty('is_posted') && $journalEntry->is_posted) {
-            app(LockDateService::class)->enforce($journalEntry->company, $journalEntry->entry_date);
+            app(\Modules\Accounting\Services\Accounting\LockDateService::class)->enforce($journalEntry->company, $journalEntry->entry_date);
             $this->applyHashingAndLinking($journalEntry);
         }
     }

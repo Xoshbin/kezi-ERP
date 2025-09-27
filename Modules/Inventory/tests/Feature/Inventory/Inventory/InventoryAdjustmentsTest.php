@@ -28,13 +28,13 @@ beforeEach(function () {
     $this->setupInventoryTestEnvironment();
 
     // Create COGS account
-    $this->cogsAccount = \App\Models\Account::factory()->for($this->company)->create([
+    $this->cogsAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create([
         'type' => 'cost_of_revenue',
         'name' => 'Cost of Goods Sold',
     ]);
 
-    $this->product = Product::factory()->for($this->company)->create([
-        'type' => \App\Enums\Products\ProductType::Storable,
+    $this->product = \Modules\Product\Models\Product::factory()->for($this->company)->create([
+        'type' => \Modules\Product\Enums\Products\ProductType::Storable,
         'inventory_valuation_method' => \App\Enums\Inventory\ValuationMethod::AVCO,
         'default_inventory_account_id' => $this->inventoryAccount->id,
         'default_stock_input_account_id' => $this->stockInputAccount->id,
@@ -43,7 +43,7 @@ beforeEach(function () {
     ]);
 
     // Create inventory adjustment account
-    $this->adjustmentAccount = \App\Models\Account::factory()->for($this->company)->create([
+    $this->adjustmentAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create([
         'type' => 'expense',
         'name' => 'Inventory Adjustment',
     ]);

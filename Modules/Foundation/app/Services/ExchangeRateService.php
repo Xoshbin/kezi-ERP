@@ -26,7 +26,7 @@ class ExchangeRateService
     public function updateAllRates(string $source = 'api'): array
     {
         $results = [];
-        $activeCurrencies = Currency::where('is_active', true)->get();
+        $activeCurrencies = \Modules\Foundation\Models\Currency::where('is_active', true)->get();
 
         foreach ($activeCurrencies as $currency) {
             try {
@@ -50,10 +50,10 @@ class ExchangeRateService
     /**
      * Store a new exchange rate for a currency.
      */
-    public function storeRate(Currency $currency, float $rate, Carbon $effectiveDate, string $source = 'manual'): CurrencyRate
+    public function storeRate(\Modules\Foundation\Models\Currency $currency, float $rate, Carbon $effectiveDate, string $source = 'manual'): \Modules\Foundation\Models\CurrencyRate
     {
         // Check if a rate already exists for this currency and date
-        $existingRate = CurrencyRate::where('currency_id', $currency->id)
+        $existingRate = \Modules\Foundation\Models\CurrencyRate::where('currency_id', $currency->id)
             ->where('effective_date', $effectiveDate->toDateString())
             ->first();
 
@@ -68,7 +68,7 @@ class ExchangeRateService
         }
 
         // Create new rate
-        return CurrencyRate::create([
+        return \Modules\Foundation\Models\CurrencyRate::create([
             'currency_id' => $currency->id,
             'rate' => $rate,
             'effective_date' => $effectiveDate,
@@ -118,9 +118,9 @@ class ExchangeRateService
     /**
      * Get the latest rate for a currency.
      */
-    public function getLatestRate(Currency $currency): ?CurrencyRate
+    public function getLatestRate(\Modules\Foundation\Models\Currency $currency): ?\Modules\Foundation\Models\CurrencyRate
     {
-        /** @var CurrencyRate|null $rate */
+        /** @var \Modules\Foundation\Models\CurrencyRate|null $rate */
         $rate = $currency->rates()
             ->orderBy('effective_date', 'desc')
             ->first();
@@ -131,9 +131,9 @@ class ExchangeRateService
     /**
      * Get the rate for a currency on a specific date.
      */
-    public function getRateForDate(Currency $currency, Carbon $date): ?CurrencyRate
+    public function getRateForDate(\Modules\Foundation\Models\Currency $currency, Carbon $date): ?\Modules\Foundation\Models\CurrencyRate
     {
-        /** @var CurrencyRate|null $rate */
+        /** @var \Modules\Foundation\Models\CurrencyRate|null $rate */
         $rate = $currency->rates()
             ->where('effective_date', '<=', $date->toDateString())
             ->orderBy('effective_date', 'desc')
@@ -145,9 +145,9 @@ class ExchangeRateService
     /**
      * Get historical rates for a currency within a date range.
      *
-     * @return \Illuminate\Database\Eloquent\Collection<int, \App\Models\CurrencyRate>
+     * @return \Illuminate\Database\Eloquent\Collection<int, \Modules\Foundation\Models\CurrencyRate>
      */
-    public function getHistoricalRates(Currency $currency, Carbon $startDate, Carbon $endDate)
+    public function getHistoricalRates(\Modules\Foundation\Models\Currency $currency, Carbon $startDate, Carbon $endDate)
     {
         /** @var \Illuminate\Database\Eloquent\Collection<int, \App\Models\CurrencyRate> */
         return $currency->rates()
@@ -159,7 +159,7 @@ class ExchangeRateService
     /**
      * Check if a rate exists for a currency on a specific date.
      */
-    public function hasRateForDate(Currency $currency, Carbon $date): bool
+    public function hasRateForDate(\Modules\Foundation\Models\Currency $currency, Carbon $date): bool
     {
         return $currency->rates()
             ->where('effective_date', $date->toDateString())
@@ -177,7 +177,7 @@ class ExchangeRateService
     {
         $cutoffDate = Carbon::now()->subDays($retentionDays);
 
-        return CurrencyRate::where('effective_date', '<', $cutoffDate->toDateString())
+        return \Modules\Foundation\Models\CurrencyRate::where('effective_date', '<', $cutoffDate->toDateString())
             ->delete();
     }
 
@@ -192,7 +192,7 @@ class ExchangeRateService
         $cutoffDate = Carbon::now()->subDays($maxDaysOld);
         $missingRates = [];
 
-        $activeCurrencies = Currency::where('is_active', true)->get();
+        $activeCurrencies = \Modules\Foundation\Models\Currency::where('is_active', true)->get();
 
         foreach ($activeCurrencies as $currency) {
             $latestRate = $this->getLatestRate($currency);

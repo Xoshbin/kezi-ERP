@@ -31,8 +31,8 @@ it('can render the create page', function () {
 });
 
 it('can create a standalone inbound payment', function () {
-    /** @var \App\Models\Partner $customer */
-    $customer = Partner::factory()->customer()->create([
+    /** @var \Modules\Foundation\Models\Partner $customer */
+    $customer = \Modules\Foundation\Models\Partner::factory()->customer()->create([
         'company_id' => $this->company->id,
     ]);
 
@@ -64,14 +64,14 @@ it('can create a standalone inbound payment', function () {
         'status' => PaymentStatus::Draft,
     ]);
 
-    $payment = Payment::where('reference', 'Standalone Payment')->first();
+    $payment = \Modules\Payment\Models\Payment::where('reference', 'Standalone Payment')->first();
     expect($payment->amount->isEqualTo(Money::of(500, $this->company->currency->code)))->toBeTrue();
     expect($payment->paid_to_from_partner_id)->toBe($customer->id);
 });
 
 it('can create a standalone outbound payment', function () {
-    /** @var \App\Models\Partner $vendor */
-    $vendor = Partner::factory()->vendor()->create([
+    /** @var \Modules\Foundation\Models\Partner $vendor */
+    $vendor = \Modules\Foundation\Models\Partner::factory()->vendor()->create([
         'company_id' => $this->company->id,
     ]);
 
@@ -103,7 +103,7 @@ it('can create a standalone outbound payment', function () {
         'status' => PaymentStatus::Draft,
     ]);
 
-    $payment = Payment::where('reference', 'Standalone Vendor Payment')->first();
+    $payment = \Modules\Payment\Models\Payment::where('reference', 'Standalone Vendor Payment')->first();
     expect($payment->amount->isEqualTo(Money::of(300, $this->company->currency->code)))->toBeTrue();
     expect($payment->paid_to_from_partner_id)->toBe($vendor->id);
 });
@@ -131,7 +131,7 @@ it('can validate input on create', function () {
 });
 
 it('can render the edit page', function () {
-    $payment = Payment::factory()->create([
+    $payment = \Modules\Payment\Models\Payment::factory()->create([
         'company_id' => $this->company->id,
     ]);
 
@@ -140,12 +140,12 @@ it('can render the edit page', function () {
 });
 
 it('can edit a draft standalone payment', function () {
-    /** @var \App\Models\Partner $customer */
-    $customer = Partner::factory()->customer()->create([
+    /** @var \Modules\Foundation\Models\Partner $customer */
+    $customer = \Modules\Foundation\Models\Partner::factory()->customer()->create([
         'company_id' => $this->company->id,
     ]);
 
-    $payment = Payment::factory()->create([
+    $payment = \Modules\Payment\Models\Payment::factory()->create([
         'company_id' => $this->company->id,
         'status' => PaymentStatus::Draft,
         'payment_type' => PaymentType::Inbound,
@@ -178,12 +178,12 @@ it('can edit a draft standalone payment', function () {
 });
 
 it('cannot edit a confirmed standalone payment', function () {
-    /** @var \App\Models\Partner $customer */
-    $customer = Partner::factory()->customer()->create([
+    /** @var \Modules\Foundation\Models\Partner $customer */
+    $customer = \Modules\Foundation\Models\Partner::factory()->customer()->create([
         'company_id' => $this->company->id,
     ]);
 
-    $payment = Payment::factory()->create([
+    $payment = \Modules\Payment\Models\Payment::factory()->create([
         'company_id' => $this->company->id,
         'status' => PaymentStatus::Confirmed,
         'payment_type' => PaymentType::Inbound,
@@ -210,7 +210,7 @@ it('cannot edit a confirmed standalone payment', function () {
                 'reference' => 'Should Not Change',
             ])
             ->call('save');
-    })->toThrow(\App\Exceptions\UpdateNotAllowedException::class, 'Only draft payments can be updated.');
+    })->toThrow(\Modules\Foundation\Exceptions\UpdateNotAllowedException::class, 'Only draft payments can be updated.');
 
     // Payment should remain unchanged
     $payment->refresh();
@@ -219,15 +219,15 @@ it('cannot edit a confirmed standalone payment', function () {
 });
 
 it('can confirm a draft standalone payment', function () {
-    /** @var \App\Models\Partner $customer */
-    $customer = Partner::factory()->customer()->create([
+    /** @var \Modules\Foundation\Models\Partner $customer */
+    $customer = \Modules\Foundation\Models\Partner::factory()->customer()->create([
         'company_id' => $this->company->id,
     ]);
 
-    /** @var \App\Models\Account $bankAccount */
-    $bankAccount = \App\Models\Account::factory()->create([
+    /** @var \Modules\Accounting\Models\Account $bankAccount */
+    $bankAccount = \Modules\Accounting\Models\Account::factory()->create([
         'company_id' => $this->company->id,
-        'type' => \App\Enums\Accounting\AccountType::BankAndCash->value,
+        'type' => \Modules\Accounting\Enums\Accounting\AccountType::BankAndCash->value,
     ]);
 
     /** @var \App\Models\Journal $bankJournal */
@@ -239,7 +239,7 @@ it('can confirm a draft standalone payment', function () {
         'currency_id' => $this->company->currency_id,
     ]);
 
-    $payment = Payment::factory()->create([
+    $payment = \Modules\Payment\Models\Payment::factory()->create([
         'company_id' => $this->company->id,
         'journal_id' => $bankJournal->id,
         'status' => PaymentStatus::Draft,
@@ -301,7 +301,7 @@ it('can confirm a draft standalone payment', function () {
 // });
 
 it('can delete a draft payment', function () {
-    $payment = Payment::factory()->create([
+    $payment = \Modules\Payment\Models\Payment::factory()->create([
         'company_id' => $this->company->id,
         'status' => PaymentStatus::Draft,
         'amount' => Money::of(100, $this->company->currency->code),
@@ -317,7 +317,7 @@ it('can delete a draft payment', function () {
 });
 
 it('cannot delete a confirmed payment', function () {
-    $payment = Payment::factory()->create([
+    $payment = \Modules\Payment\Models\Payment::factory()->create([
         'company_id' => $this->company->id,
         'status' => PaymentStatus::Confirmed,
     ]);
@@ -329,16 +329,16 @@ it('cannot delete a confirmed payment', function () {
 });
 
 it('can display journal entries relation manager', function () {
-    /** @var \App\Models\Partner $customer */
-    $customer = Partner::factory()->customer()->create([
+    /** @var \Modules\Foundation\Models\Partner $customer */
+    $customer = \Modules\Foundation\Models\Partner::factory()->customer()->create([
         'company_id' => $this->company->id,
     ]);
 
     /** @var \App\Models\Journal $bankJournal */
     $bankJournal = Journal::factory()->for($this->company)->create(['type' => JournalType::Bank]);
 
-    /** @var \App\Models\Payment $payment */
-    $payment = Payment::factory()->create([
+    /** @var \Modules\Payment\Models\Payment $payment */
+    $payment = \Modules\Payment\Models\Payment::factory()->create([
         'company_id' => $this->company->id,
         'journal_id' => $bankJournal->id,
         'currency_id' => $this->company->currency_id,
@@ -353,7 +353,7 @@ it('can display journal entries relation manager', function () {
         'company_id' => $this->company->id,
         'journal_id' => $bankJournal->id,
         'currency_id' => $this->company->currency_id,
-        'source_type' => Payment::class,
+        'source_type' => \Modules\Payment\Models\Payment::class,
         'source_id' => $payment->id,
         'reference' => 'PAY/'.$payment->id,
         'description' => 'Payment journal entry',
@@ -377,16 +377,16 @@ it('can display journal entries relation manager', function () {
 });
 
 it('can display bank statement lines relation manager for reconciled payment', function () {
-    /** @var \App\Models\Partner $customer */
-    $customer = Partner::factory()->customer()->create([
+    /** @var \Modules\Foundation\Models\Partner $customer */
+    $customer = \Modules\Foundation\Models\Partner::factory()->customer()->create([
         'company_id' => $this->company->id,
     ]);
 
     /** @var \App\Models\Journal $bankJournal */
     $bankJournal = Journal::factory()->for($this->company)->create(['type' => JournalType::Bank]);
 
-    /** @var \App\Models\Payment $payment */
-    $payment = Payment::factory()->create([
+    /** @var \Modules\Payment\Models\Payment $payment */
+    $payment = \Modules\Payment\Models\Payment::factory()->create([
         'company_id' => $this->company->id,
         'journal_id' => $bankJournal->id,
         'currency_id' => $this->company->currency_id,
@@ -397,13 +397,13 @@ it('can display bank statement lines relation manager for reconciled payment', f
     ]);
 
     // Create a bank statement and line linked to this payment
-    $bankStatement = \App\Models\BankStatement::factory()->create([
+    $bankStatement = \Modules\Accounting\Models\BankStatement::factory()->create([
         'company_id' => $this->company->id,
         'currency_id' => $this->company->currency_id,
         'reference' => 'STMT-001',
     ]);
 
-    $bankStatementLine = \App\Models\BankStatementLine::factory()->create([
+    $bankStatementLine = \Modules\Accounting\Models\BankStatementLine::factory()->create([
         'bank_statement_id' => $bankStatement->id,
         'payment_id' => $payment->id,
         'description' => 'Payment from customer',

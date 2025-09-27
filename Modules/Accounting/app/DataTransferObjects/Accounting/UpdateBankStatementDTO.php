@@ -11,7 +11,7 @@ class UpdateBankStatementDTO
      * @param  UpdateBankStatementLineDTO[]  $lines
      */
     public function __construct(
-        public readonly BankStatement $bankStatement,
+        public readonly \Modules\Accounting\Models\BankStatement $bankStatement,
         public readonly int $currency_id,
         public readonly int $journal_id,
         public readonly string $reference,

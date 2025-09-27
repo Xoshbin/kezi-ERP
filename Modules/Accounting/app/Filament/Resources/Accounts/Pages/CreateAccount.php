@@ -38,7 +38,7 @@ class CreateAccount extends CreateRecord
 
     protected function handleRecordCreation(array $data): Model
     {
-        $accountService = new AccountService;
+        $accountService = new \Modules\Accounting\Services\AccountService;
 
         return $accountService->create($data);
     }

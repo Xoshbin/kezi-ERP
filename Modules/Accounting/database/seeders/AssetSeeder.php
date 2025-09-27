@@ -28,12 +28,12 @@ class AssetSeeder extends Seeder
         }
 
         // Fetch accounts
-        $assetAccount = Account::where('code', '1200')->where('company_id', $company->id)->first();
+        $assetAccount = \Modules\Accounting\Models\Account::where('code', '1200')->where('company_id', $company->id)->first();
         if (! $assetAccount) {
             throw new Exception('Account with code 1200 (Fixed Assets) not found. Please run AccountSeeder.');
         }
 
-        $depreciationAccount = Account::where('code', '5100')->where('company_id', $company->id)->first();
+        $depreciationAccount = \Modules\Accounting\Models\Account::where('code', '5100')->where('company_id', $company->id)->first();
         if (! $depreciationAccount) {
             throw new Exception('Account with code 5100 (Depreciation Expense) not found. Please run AccountSeeder.');
         }
@@ -44,7 +44,7 @@ class AssetSeeder extends Seeder
             throw new Exception("Journal 'Fixed Assets' not found. Please run JournalSeeder.");
         }
 
-        Asset::updateOrCreate(
+        \Modules\Accounting\Models\Asset::updateOrCreate(
             [
                 'code' => 'AST001',
                 'company_id' => $company->id,

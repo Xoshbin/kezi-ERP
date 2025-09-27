@@ -36,7 +36,7 @@ class PaymentTermsSeeder extends Seeder
                 'lines' => [
                     [
                         'sequence' => 1,
-                        'type' => PaymentTermType::Immediate,
+                        'type' => \Modules\Foundation\Enums\PaymentTerms\PaymentTermType::Immediate,
                         'days' => 0,
                         'percentage' => 100.0,
                     ],
@@ -50,7 +50,7 @@ class PaymentTermsSeeder extends Seeder
                 'lines' => [
                     [
                         'sequence' => 1,
-                        'type' => PaymentTermType::Net,
+                        'type' => \Modules\Foundation\Enums\PaymentTerms\PaymentTermType::Net,
                         'days' => 15,
                         'percentage' => 100.0,
                     ],
@@ -62,7 +62,7 @@ class PaymentTermsSeeder extends Seeder
                 'lines' => [
                     [
                         'sequence' => 1,
-                        'type' => PaymentTermType::Net,
+                        'type' => \Modules\Foundation\Enums\PaymentTerms\PaymentTermType::Net,
                         'days' => 30,
                         'percentage' => 100.0,
                     ],
@@ -74,7 +74,7 @@ class PaymentTermsSeeder extends Seeder
                 'lines' => [
                     [
                         'sequence' => 1,
-                        'type' => PaymentTermType::Net,
+                        'type' => \Modules\Foundation\Enums\PaymentTerms\PaymentTermType::Net,
                         'days' => 45,
                         'percentage' => 100.0,
                     ],
@@ -86,7 +86,7 @@ class PaymentTermsSeeder extends Seeder
                 'lines' => [
                     [
                         'sequence' => 1,
-                        'type' => PaymentTermType::Net,
+                        'type' => \Modules\Foundation\Enums\PaymentTerms\PaymentTermType::Net,
                         'days' => 60,
                         'percentage' => 100.0,
                     ],
@@ -100,7 +100,7 @@ class PaymentTermsSeeder extends Seeder
                 'lines' => [
                     [
                         'sequence' => 1,
-                        'type' => PaymentTermType::Net,
+                        'type' => \Modules\Foundation\Enums\PaymentTerms\PaymentTermType::Net,
                         'days' => 30,
                         'percentage' => 100.0,
                         'discount_percentage' => 2.0,
@@ -114,7 +114,7 @@ class PaymentTermsSeeder extends Seeder
                 'lines' => [
                     [
                         'sequence' => 1,
-                        'type' => PaymentTermType::Net,
+                        'type' => \Modules\Foundation\Enums\PaymentTerms\PaymentTermType::Net,
                         'days' => 30,
                         'percentage' => 100.0,
                         'discount_percentage' => 1.0,
@@ -128,7 +128,7 @@ class PaymentTermsSeeder extends Seeder
                 'lines' => [
                     [
                         'sequence' => 1,
-                        'type' => PaymentTermType::Net,
+                        'type' => \Modules\Foundation\Enums\PaymentTerms\PaymentTermType::Net,
                         'days' => 21,
                         'percentage' => 100.0,
                         'discount_percentage' => 3.0,
@@ -144,7 +144,7 @@ class PaymentTermsSeeder extends Seeder
                 'lines' => [
                     [
                         'sequence' => 1,
-                        'type' => PaymentTermType::EndOfMonth,
+                        'type' => \Modules\Foundation\Enums\PaymentTerms\PaymentTermType::EndOfMonth,
                         'days' => 0,
                         'percentage' => 100.0,
                     ],
@@ -156,7 +156,7 @@ class PaymentTermsSeeder extends Seeder
                 'lines' => [
                     [
                         'sequence' => 1,
-                        'type' => PaymentTermType::EndOfMonth,
+                        'type' => \Modules\Foundation\Enums\PaymentTerms\PaymentTermType::EndOfMonth,
                         'days' => 15,
                         'percentage' => 100.0,
                     ],
@@ -168,7 +168,7 @@ class PaymentTermsSeeder extends Seeder
                 'lines' => [
                     [
                         'sequence' => 1,
-                        'type' => PaymentTermType::EndOfMonth,
+                        'type' => \Modules\Foundation\Enums\PaymentTerms\PaymentTermType::EndOfMonth,
                         'days' => 30,
                         'percentage' => 100.0,
                     ],
@@ -182,7 +182,7 @@ class PaymentTermsSeeder extends Seeder
                 'lines' => [
                     [
                         'sequence' => 1,
-                        'type' => PaymentTermType::DayOfMonth,
+                        'type' => \Modules\Foundation\Enums\PaymentTerms\PaymentTermType::DayOfMonth,
                         'days' => 0,
                         'day_of_month' => 15,
                         'percentage' => 100.0,
@@ -195,7 +195,7 @@ class PaymentTermsSeeder extends Seeder
                 'lines' => [
                     [
                         'sequence' => 1,
-                        'type' => PaymentTermType::DayOfMonth,
+                        'type' => \Modules\Foundation\Enums\PaymentTerms\PaymentTermType::DayOfMonth,
                         'days' => 0,
                         'day_of_month' => 1,
                         'percentage' => 100.0,
@@ -210,13 +210,13 @@ class PaymentTermsSeeder extends Seeder
                 'lines' => [
                     [
                         'sequence' => 1,
-                        'type' => PaymentTermType::Immediate,
+                        'type' => \Modules\Foundation\Enums\PaymentTerms\PaymentTermType::Immediate,
                         'days' => 0,
                         'percentage' => 50.0,
                     ],
                     [
                         'sequence' => 2,
-                        'type' => PaymentTermType::Net,
+                        'type' => \Modules\Foundation\Enums\PaymentTerms\PaymentTermType::Net,
                         'days' => 30,
                         'percentage' => 50.0,
                     ],
@@ -228,19 +228,19 @@ class PaymentTermsSeeder extends Seeder
                 'lines' => [
                     [
                         'sequence' => 1,
-                        'type' => PaymentTermType::Net,
+                        'type' => \Modules\Foundation\Enums\PaymentTerms\PaymentTermType::Net,
                         'days' => 30,
                         'percentage' => 33.33,
                     ],
                     [
                         'sequence' => 2,
-                        'type' => PaymentTermType::Net,
+                        'type' => \Modules\Foundation\Enums\PaymentTerms\PaymentTermType::Net,
                         'days' => 60,
                         'percentage' => 33.33,
                     ],
                     [
                         'sequence' => 3,
-                        'type' => PaymentTermType::Net,
+                        'type' => \Modules\Foundation\Enums\PaymentTerms\PaymentTermType::Net,
                         'days' => 90,
                         'percentage' => 33.34, // Slightly higher to handle rounding
                     ],
@@ -252,25 +252,25 @@ class PaymentTermsSeeder extends Seeder
                 'lines' => [
                     [
                         'sequence' => 1,
-                        'type' => PaymentTermType::Net,
+                        'type' => \Modules\Foundation\Enums\PaymentTerms\PaymentTermType::Net,
                         'days' => 90,
                         'percentage' => 25.0,
                     ],
                     [
                         'sequence' => 2,
-                        'type' => PaymentTermType::Net,
+                        'type' => \Modules\Foundation\Enums\PaymentTerms\PaymentTermType::Net,
                         'days' => 180,
                         'percentage' => 25.0,
                     ],
                     [
                         'sequence' => 3,
-                        'type' => PaymentTermType::Net,
+                        'type' => \Modules\Foundation\Enums\PaymentTerms\PaymentTermType::Net,
                         'days' => 270,
                         'percentage' => 25.0,
                     ],
                     [
                         'sequence' => 4,
-                        'type' => PaymentTermType::Net,
+                        'type' => \Modules\Foundation\Enums\PaymentTerms\PaymentTermType::Net,
                         'days' => 360,
                         'percentage' => 25.0,
                     ],
@@ -281,7 +281,7 @@ class PaymentTermsSeeder extends Seeder
         foreach ($paymentTerms as $termData) {
             // Check if payment term already exists for this company
             // Since name is translatable, we need to check the JSON column
-            $existingTerm = PaymentTerm::where('company_id', $company->id)
+            $existingTerm = \Modules\Foundation\Models\PaymentTerm::where('company_id', $company->id)
                 ->whereJsonContains('name->en', $termData['name'])
                 ->first();
 
@@ -290,7 +290,7 @@ class PaymentTermsSeeder extends Seeder
             }
 
             // Create the payment term
-            $paymentTerm = PaymentTerm::create([
+            $paymentTerm = \Modules\Foundation\Models\PaymentTerm::create([
                 'company_id' => $company->id,
                 'name' => ['en' => $termData['name']],
                 'description' => ['en' => $termData['description']],
@@ -299,7 +299,7 @@ class PaymentTermsSeeder extends Seeder
 
             // Create the payment term lines
             foreach ($termData['lines'] as $lineData) {
-                PaymentTermLine::create([
+                \Modules\Foundation\Models\PaymentTermLine::create([
                     'payment_term_id' => $paymentTerm->id,
                     'sequence' => $lineData['sequence'],
                     'type' => $lineData['type'],

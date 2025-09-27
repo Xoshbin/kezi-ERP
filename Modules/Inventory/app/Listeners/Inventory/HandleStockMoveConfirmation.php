@@ -20,7 +20,7 @@ class HandleStockMoveConfirmation
     /**
      * Handle the event.
      */
-    public function handle(StockMoveConfirmed $event): void
+    public function handle(\Modules\Inventory\Events\Inventory\StockMoveConfirmed $event): void
     {
         $stockMove = $event->stockMove;
 

@@ -44,7 +44,7 @@ use Xoshbin\TranslatableSelect\Components\TranslatableSelect;
 
 class AdjustmentDocumentResource extends Resource
 {
-    protected static ?string $model = AdjustmentDocument::class;
+    protected static ?string $model = \Modules\Inventory\Models\AdjustmentDocument::class;
 
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-document-duplicate';
 
@@ -78,7 +78,7 @@ class AdjustmentDocumentResource extends Resource
             Section::make(__('adjustment_document.document_information'))
                 ->description(__('adjustment_document.document_information_description'))
                 ->schema([
-                    TranslatableSelect::forModel('currency_id', Currency::class, 'name')
+                    TranslatableSelect::forModel('currency_id', \Modules\Foundation\Models\Currency::class, 'name')
                         ->required()
                         ->searchable()
                         ->preload()
@@ -182,7 +182,7 @@ class AdjustmentDocumentResource extends Resource
                             fn ($query) => $query->posted()->with('customer')
                         )
                         ->getOptionLabelUsing(function ($value): ?string {
-                            $invoice = Invoice::posted()->with('customer')->find($value);
+                            $invoice = \Modules\Sales\Models\Invoice::posted()->with('customer')->find($value);
                             if (! $invoice) {
                                 return null;
                             }
@@ -200,7 +200,7 @@ class AdjustmentDocumentResource extends Resource
                         ->reactive()
                         ->afterStateUpdated(function ($state, Set $set) {
                             if ($state) {
-                                $invoice = Invoice::find($state);
+                                $invoice = \Modules\Sales\Models\Invoice::find($state);
                                 // Ensure we have a single Invoice model, not a collection
                                 if ($invoice instanceof Collection) {
                                     $invoice = $invoice->first();
@@ -218,7 +218,7 @@ class AdjustmentDocumentResource extends Resource
                         ->reactive()
                         ->afterStateUpdated(function ($state, Set $set) {
                             if ($state) {
-                                $bill = VendorBill::find($state);
+                                $bill = \Modules\Purchase\Models\VendorBill::find($state);
                                 // Ensure we have a single VendorBill model, not a collection
                                 if ($bill instanceof Collection) {
                                     $bill = $bill->first();
@@ -247,7 +247,7 @@ class AdjustmentDocumentResource extends Resource
                         ->reorderable(false)
                         ->minItems(1)
                         ->schema([
-                            TranslatableSelect::forModel('product_id', Product::class, 'name')
+                            TranslatableSelect::forModel('product_id', \Modules\Product\Models\Product::class, 'name')
                                 ->label(__('adjustment_document.product'))
                                 ->searchable()
                                 ->searchableFields(['name', 'sku', 'description'])
@@ -255,7 +255,7 @@ class AdjustmentDocumentResource extends Resource
                                 ->reactive()
                                 ->afterStateUpdated(function (callable $set, $state) {
                                     if ($state) {
-                                        $product = Product::find($state);
+                                        $product = \Modules\Product\Models\Product::find($state);
                                         // Ensure we have a single Product model, not a collection
                                         if ($product instanceof Collection) {
                                             $product = $product->first();
@@ -342,7 +342,7 @@ class AdjustmentDocumentResource extends Resource
                                         ->modalWidth('lg');
                                 })
                                 ->columnSpan(3),
-                            TranslatableSelect::forModel('account_id', Account::class)
+                            TranslatableSelect::forModel('account_id', \Modules\Accounting\Models\Account::class)
                                 ->label('Account')
                                 ->searchable()
                                 ->searchableFields(['name', 'code'])
@@ -366,8 +366,8 @@ class AdjustmentDocumentResource extends Resource
                                         ->label(__('account.type'))
                                         ->required()
                                         ->options(
-                                            collect(AccountType::cases())
-                                                ->mapWithKeys(fn (AccountType $type) => [$type->value => $type->label()])
+                                            collect(\Modules\Accounting\Enums\Accounting\AccountType::cases())
+                                                ->mapWithKeys(fn (\Modules\Accounting\Enums\Accounting\AccountType $type) => [$type->value => $type->label()])
                                         )
                                         ->searchable(),
                                     Toggle::make('is_deprecated')

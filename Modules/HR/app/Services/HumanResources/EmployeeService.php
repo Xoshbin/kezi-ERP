@@ -16,14 +16,14 @@ use Illuminate\Support\Facades\Gate;
 class EmployeeService
 {
     public function __construct(
-        protected CreateEmployeeAction $createEmployeeAction,
+        protected \Modules\HR\Actions\HumanResources\CreateEmployeeAction $createEmployeeAction,
         protected CreateEmploymentContractAction $createEmploymentContractAction,
     ) {}
 
     /**
      * Create a new employee with optional employment contract.
      */
-    public function createEmployee(CreateEmployeeDTO $createEmployeeDTO, ?CreateEmploymentContractDTO $contractDTO = null): Employee
+    public function createEmployee(CreateEmployeeDTO $createEmployeeDTO, ?CreateEmploymentContractDTO $contractDTO = null): \Modules\HR\Models\Employee
     {
         return DB::transaction(function () use ($createEmployeeDTO, $contractDTO) {
             // Create the employee
@@ -77,7 +77,7 @@ class EmployeeService
     /**
      * Terminate an employee.
      */
-    public function terminateEmployee(Employee $employee, string $terminationDate, string $reason, User $user): void
+    public function terminateEmployee(\Modules\HR\Models\Employee $employee, string $terminationDate, string $reason, User $user): void
     {
         Gate::forUser($user)->authorize('update', $employee);
 
@@ -107,7 +107,7 @@ class EmployeeService
     /**
      * Reactivate a terminated employee.
      */
-    public function reactivateEmployee(Employee $employee, string $reactivationDate, User $user): void
+    public function reactivateEmployee(\Modules\HR\Models\Employee $employee, string $reactivationDate, User $user): void
     {
         Gate::forUser($user)->authorize('update', $employee);
 
@@ -130,7 +130,7 @@ class EmployeeService
     /**
      * Transfer employee to different department/position.
      */
-    public function transferEmployee(Employee $employee, ?int $newDepartmentId, ?int $newPositionId, ?int $newManagerId, string $effectiveDate, User $user): void
+    public function transferEmployee(\Modules\HR\Models\Employee $employee, ?int $newDepartmentId, ?int $newPositionId, ?int $newManagerId, string $effectiveDate, User $user): void
     {
         Gate::forUser($user)->authorize('update', $employee);
 
@@ -153,7 +153,7 @@ class EmployeeService
      */
     public function getEmployeeStatistics(Company $company): array
     {
-        $employees = Employee::where('company_id', $company->id);
+        $employees = \Modules\HR\Models\Employee::where('company_id', $company->id);
 
         return [
             'total_employees' => $employees->count(),

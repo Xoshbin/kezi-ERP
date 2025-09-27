@@ -15,8 +15,8 @@ uses(RefreshDatabase::class, WithConfiguredCompany::class);
 it('creates a journal entry and its lines from a DTO', function () {
     // Arrange: Use the company and user provided by the WithConfiguredCompany trait.
     // We only need to create the specific accounts for this transaction.
-    $accountA = Account::factory()->for($this->company)->create();
-    $accountB = Account::factory()->for($this->company)->create();
+    $accountA = \Modules\Accounting\Models\Account::factory()->for($this->company)->create();
+    $accountB = \Modules\Accounting\Models\Account::factory()->for($this->company)->create();
     $currencyCode = $this->company->currency->code;
 
     $amount = Money::of('150.75', $currencyCode);
@@ -53,7 +53,7 @@ it('creates a journal entry and its lines from a DTO', function () {
     );
 
     // Act: Execute the action.
-    $action = app(CreateJournalEntryAction::class);
+    $action = app(\Modules\Accounting\Actions\Accounting\CreateJournalEntryAction::class);
     $journalEntry = $action->execute($journalEntryDTO);
 
     // Assert: The journal entry and its lines were created correctly.

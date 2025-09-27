@@ -51,24 +51,24 @@ it('displays correct financial stats with real data', function () {
     $this->actingAs($this->user);
 
     // Create test data
-    $customer = Partner::factory()->for($this->company)->create([
-        'type' => PartnerType::Customer,
+    $customer = \Modules\Foundation\Models\Partner::factory()->for($this->company)->create([
+        'type' => \Modules\Foundation\Enums\Partners\PartnerType::Customer,
         'name' => 'Test Customer',
     ]);
 
-    $product = Product::factory()->for($this->company)->create([
+    $product = \Modules\Product\Models\Product::factory()->for($this->company)->create([
         'name' => 'Test Product',
         'unit_price' => Money::of(100, $this->company->currency->code),
     ]);
 
     // Create and post an invoice
-    $invoice = Invoice::factory()->for($this->company)->for($customer, 'customer')->create([
+    $invoice = \Modules\Sales\Models\Invoice::factory()->for($this->company)->for($customer, 'customer')->create([
         'status' => InvoiceStatus::Draft,
         'invoice_date' => Carbon::now(),
         'due_date' => Carbon::now()->addDays(30),
     ]);
 
-    InvoiceLine::factory()->for($invoice)->for($product)->create([
+    \Modules\Sales\Models\InvoiceLine::factory()->for($invoice)->for($product)->create([
         'quantity' => 10,
         'unit_price' => Money::of(100, $this->company->currency->code),
         'subtotal' => Money::of(1000, $this->company->currency->code),
@@ -144,7 +144,7 @@ it('handles service errors gracefully', function () {
     $this->actingAs($this->user);
 
     // Mock a service to throw an exception
-    $this->mock(\App\Services\Reports\ProfitAndLossStatementService::class)
+    $this->mock(\Modules\Accounting\Services\Reports\ProfitAndLossStatementService::class)
         ->shouldReceive('generate')
         ->andThrow(new \Exception('Service error'));
 
@@ -159,8 +159,8 @@ it('calculates cash flow forecasts correctly', function () {
     $this->actingAs($this->user);
 
     // Create overdue invoice
-    $customer = Partner::factory()->for($this->company)->create(['type' => PartnerType::Customer]);
-    Invoice::factory()->for($this->company)->for($customer, 'customer')->create([
+    $customer = \Modules\Foundation\Models\Partner::factory()->for($this->company)->create(['type' => \Modules\Foundation\Enums\Partners\PartnerType::Customer]);
+    \Modules\Sales\Models\Invoice::factory()->for($this->company)->for($customer, 'customer')->create([
         'status' => InvoiceStatus::Posted,
         'invoice_date' => Carbon::now()->subDays(45),
         'due_date' => Carbon::now()->subDays(15), // Overdue
@@ -168,7 +168,7 @@ it('calculates cash flow forecasts correctly', function () {
     ]);
 
     // Create invoice due in 5 days
-    Invoice::factory()->for($this->company)->for($customer, 'customer')->create([
+    \Modules\Sales\Models\Invoice::factory()->for($this->company)->for($customer, 'customer')->create([
         'status' => InvoiceStatus::Posted,
         'invoice_date' => Carbon::now(),
         'due_date' => Carbon::now()->addDays(5),

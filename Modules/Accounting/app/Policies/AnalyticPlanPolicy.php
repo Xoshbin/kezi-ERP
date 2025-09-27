@@ -18,7 +18,7 @@ class AnalyticPlanPolicy
     /**
      * Determine whether the user can view the model.
      */
-    public function view(User $user, AnalyticPlan $analyticPlan): bool
+    public function view(User $user, \Modules\Accounting\Models\AnalyticPlan $analyticPlan): bool
     {
         return false;
     }
@@ -34,7 +34,7 @@ class AnalyticPlanPolicy
     /**
      * Determine whether the user can update the model.
      */
-    public function update(User $user, AnalyticPlan $analyticPlan): bool
+    public function update(User $user, \Modules\Accounting\Models\AnalyticPlan $analyticPlan): bool
     {
         return false;
     }
@@ -42,7 +42,7 @@ class AnalyticPlanPolicy
     /**
      * Determine whether the user can delete the model.
      */
-    public function delete(User $user, AnalyticPlan $analyticPlan): bool
+    public function delete(User $user, \Modules\Accounting\Models\AnalyticPlan $analyticPlan): bool
     {
         return false;
     }
@@ -50,7 +50,7 @@ class AnalyticPlanPolicy
     /**
      * Determine whether the user can restore the model.
      */
-    public function restore(User $user, AnalyticPlan $analyticPlan): bool
+    public function restore(User $user, \Modules\Accounting\Models\AnalyticPlan $analyticPlan): bool
     {
         return false;
     }
@@ -58,7 +58,7 @@ class AnalyticPlanPolicy
     /**
      * Determine whether the user can permanently delete the model.
      */
-    public function forceDelete(User $user, AnalyticPlan $analyticPlan): bool
+    public function forceDelete(User $user, \Modules\Accounting\Models\AnalyticPlan $analyticPlan): bool
     {
         return false;
     }

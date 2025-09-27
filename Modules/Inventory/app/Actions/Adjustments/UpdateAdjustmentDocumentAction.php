@@ -15,12 +15,12 @@ class UpdateAdjustmentDocumentAction
         private readonly CreateAdjustmentDocumentLineAction $createAdjustmentDocumentLineAction
     ) {}
 
-    public function execute(UpdateAdjustmentDocumentDTO $dto): AdjustmentDocument
+    public function execute(UpdateAdjustmentDocumentDTO $dto): \Modules\Inventory\Models\AdjustmentDocument
     {
         $adjustmentDocument = $dto->adjustmentDocument;
 
         if ($adjustmentDocument->status !== AdjustmentDocumentStatus::Draft) {
-            throw new UpdateNotAllowedException('Cannot modify a posted adjustment document.');
+            throw new \Modules\Foundation\Exceptions\UpdateNotAllowedException('Cannot modify a posted adjustment document.');
         }
 
         return DB::transaction(function () use ($dto, $adjustmentDocument) {

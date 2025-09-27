@@ -8,7 +8,7 @@ use Brick\Money\Money;
 
 class BuildAdjustmentPostingPreviewAction
 {
-    private function accountLabelName(?Account $account): string
+    private function accountLabelName(?\Modules\Accounting\Models\Account $account): string
     {
         if (! $account) {
             return '';
@@ -28,7 +28,7 @@ class BuildAdjustmentPostingPreviewAction
      *
      * @return array{errors: array<int, string>, issues: array<int, array{type: string, message: string}>, lines: array<int, array{account_id: int|null, account_name: string, account_code: string|null, debit_minor: int, credit_minor: int, description: string}>, totals: array{debit_minor: int, credit_minor: int, balanced: bool}}
      */
-    public function execute(AdjustmentDocument $adjustment): array
+    public function execute(\Modules\Inventory\Models\AdjustmentDocument $adjustment): array
     {
         $adjustment->load('company', 'currency');
 
@@ -63,7 +63,7 @@ class BuildAdjustmentPostingPreviewAction
         $subtotal = $totalAmount->minus($totalTax);
 
         if ($salesDiscountId) {
-            /** @var \App\Models\Account|null $salesDiscount */
+            /** @var \Modules\Accounting\Models\Account|null $salesDiscount */
             $salesDiscount = $company->defaultSalesDiscountAccount;
             $linesPreview[] = [
                 'account_id' => $salesDiscountId,
@@ -77,7 +77,7 @@ class BuildAdjustmentPostingPreviewAction
         }
 
         if ($totalTax->isPositive() && $taxAccountId) {
-            /** @var \App\Models\Account|null $taxAccount */
+            /** @var \Modules\Accounting\Models\Account|null $taxAccount */
             $taxAccount = $company->defaultTaxAccount;
             $linesPreview[] = [
                 'account_id' => $taxAccountId,
@@ -91,7 +91,7 @@ class BuildAdjustmentPostingPreviewAction
         }
 
         if ($arAccountId) {
-            /** @var \App\Models\Account|null $ar */
+            /** @var \Modules\Accounting\Models\Account|null $ar */
             $ar = $company->defaultAccountsReceivable;
             $linesPreview[] = [
                 'account_id' => $arAccountId,

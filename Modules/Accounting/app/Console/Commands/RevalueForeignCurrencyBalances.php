@@ -27,9 +27,9 @@ class RevalueForeignCurrencyBalances extends Command
      */
     protected $description = 'Perform period-end revaluation of foreign currency balances';
 
-    protected ExchangeGainLossService $exchangeGainLossService;
+    protected \Modules\Accounting\Services\ExchangeGainLossService $exchangeGainLossService;
 
-    public function __construct(ExchangeGainLossService $exchangeGainLossService)
+    public function __construct(\Modules\Accounting\Services\ExchangeGainLossService $exchangeGainLossService)
     {
         parent::__construct();
         $this->exchangeGainLossService = $exchangeGainLossService;

@@ -15,7 +15,7 @@ class CreateEmploymentContractAction
     public function execute(CreateEmploymentContractDTO $createContractDTO): EmploymentContract
     {
         return DB::transaction(function () use ($createContractDTO): EmploymentContract {
-            $currency = Currency::find($createContractDTO->currency_id);
+            $currency = \Modules\Foundation\Models\Currency::find($createContractDTO->currency_id);
             if (! $currency) {
                 throw new \InvalidArgumentException('Currency not found');
             }

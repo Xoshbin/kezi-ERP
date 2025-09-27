@@ -38,45 +38,45 @@ uses(RefreshDatabase::class, WithConfiguredCompany::class, MocksTime::class);
 
 describe('LockDate Service', function () {
     it('returns true for a date within a locked period', function () {
-        LockDate::factory()->create([
+        \Modules\Accounting\Models\LockDate::factory()->create([
             'company_id' => $this->company->id,
             'locked_until' => '2025-12-31',
             'lock_type' => LockDateType::HardLock,
         ]);
-        $service = app(LockDateService::class);
+        $service = app(\Modules\Accounting\Services\Accounting\LockDateService::class);
         $date = Carbon::parse('2025-12-15');
         expect($service->isPeriodLocked($this->company, $date, LockDateType::HardLock->value))->toBeTrue();
     });
 
     it('returns false for a date outside a locked period', function () {
-        LockDate::factory()->create([
+        \Modules\Accounting\Models\LockDate::factory()->create([
             'company_id' => $this->company->id,
             'locked_until' => '2025-12-31',
             'lock_type' => LockDateType::HardLock,
         ]);
-        $service = app(LockDateService::class);
+        $service = app(\Modules\Accounting\Services\Accounting\LockDateService::class);
         $date = Carbon::parse('2026-01-15');
         expect($service->isPeriodLocked($this->company, $date, LockDateType::HardLock->value))->toBeFalse();
     });
 
     it('throws PeriodIsLockedException for a locked date', function () {
-        LockDate::factory()->create([
+        \Modules\Accounting\Models\LockDate::factory()->create([
             'company_id' => $this->company->id,
             'locked_until' => '2025-12-31',
             'lock_type' => LockDateType::HardLock,
         ]);
-        $service = app(LockDateService::class);
+        $service = app(\Modules\Accounting\Services\Accounting\LockDateService::class);
         $date = Carbon::parse('2025-12-15');
         $service->enforce($this->company, $date);
-    })->throws(PeriodIsLockedException::class);
+    })->throws(\Modules\Accounting\Exceptions\PeriodIsLockedException::class);
 
     it('uses and clears the cache correctly', function () {
-        $lockDate = LockDate::factory()->create([
+        $lockDate = \Modules\Accounting\Models\LockDate::factory()->create([
             'company_id' => $this->company->id,
             'locked_until' => '2025-12-31',
             'lock_type' => LockDateType::AllUsers,
         ]);
-        $service = app(LockDateService::class);
+        $service = app(\Modules\Accounting\Services\Accounting\LockDateService::class);
         $date = Carbon::parse('2025-12-15');
         $cacheKey = "lock_date_{$this->company->id}_".LockDateType::AllUsers->value;
 
@@ -95,22 +95,22 @@ describe('LockDate Service', function () {
 
 describe('LockDate Observer', function () {
     it('throws UpdateNotAllowedException when updating a HARD_LOCK LockDate', function () {
-        $lockDate = LockDate::factory()->create([
+        $lockDate = \Modules\Accounting\Models\LockDate::factory()->create([
             'company_id' => $this->company->id,
             'locked_until' => '2025-12-31',
             'lock_type' => LockDateType::HardLock,
         ]);
         $lockDate->update(['locked_until' => '2026-01-01']);
-    })->throws(UpdateNotAllowedException::class);
+    })->throws(\Modules\Foundation\Exceptions\UpdateNotAllowedException::class);
 
     it('throws UpdateNotAllowedException when deleting a HARD_LOCK LockDate', function () {
-        $lockDate = LockDate::factory()->create([
+        $lockDate = \Modules\Accounting\Models\LockDate::factory()->create([
             'company_id' => $this->company->id,
             'locked_until' => '2025-12-31',
             'lock_type' => LockDateType::HardLock,
         ]);
         $lockDate->delete();
-    })->throws(UpdateNotAllowedException::class);
+    })->throws(\Modules\Foundation\Exceptions\UpdateNotAllowedException::class);
 });
 
 describe('Action Integration with Locked Periods', function () {
@@ -118,16 +118,16 @@ describe('Action Integration with Locked Periods', function () {
     // It sets up the locked period once for all the action tests.
     beforeEach(function () {
         $this->travelTo('2026-02-01'); // Ensure "now" is outside the locked period
-        LockDate::factory()->create([
+        \Modules\Accounting\Models\LockDate::factory()->create([
             'company_id' => $this->company->id,
             'locked_until' => '2025-12-31',
             'lock_type' => LockDateType::HardLock,
         ]);
-        \App\Models\Partner::factory()->for($this->company)->create();
+        \Modules\Foundation\Models\Partner::factory()->for($this->company)->create();
     });
 
     it('throws PeriodIsLockedException for CreateInvoiceAction', function () {
-        app(CreateInvoiceAction::class)->execute(new CreateInvoiceDTO(
+        app(\Modules\Sales\Actions\Sales\CreateInvoiceAction::class)->execute(new CreateInvoiceDTO(
             company_id: $this->company->id,
             customer_id: $this->company->partners->first()->id,
             currency_id: $this->company->currency->id,
@@ -136,7 +136,7 @@ describe('Action Integration with Locked Periods', function () {
             lines: [],
             fiscal_position_id: null
         ));
-    })->throws(PeriodIsLockedException::class);
+    })->throws(\Modules\Accounting\Exceptions\PeriodIsLockedException::class);
 
     it('throws PeriodIsLockedException for CreateVendorBillAction', function () {
         app(CreateVendorBillAction::class)->execute(new CreateVendorBillDTO(
@@ -150,10 +150,10 @@ describe('Action Integration with Locked Periods', function () {
             lines: [],
             created_by_user_id: $this->user->id
         ));
-    })->throws(PeriodIsLockedException::class);
+    })->throws(\Modules\Accounting\Exceptions\PeriodIsLockedException::class);
 
     it('throws PeriodIsLockedException for CreatePaymentAction', function () {
-        $invoice = Invoice::factory()->for($this->company)->create();
+        $invoice = \Modules\Sales\Models\Invoice::factory()->for($this->company)->create();
         $linkDto = new CreatePaymentDocumentLinkDTO('invoice', $invoice->id, \Brick\Money\Money::of(100, $this->company->currency->code));
 
         app(CreatePaymentAction::class)->execute(new CreatePaymentDTO(
@@ -169,10 +169,10 @@ describe('Action Integration with Locked Periods', function () {
             document_links: [$linkDto],
             reference: null
         ), $this->user);
-    })->throws(PeriodIsLockedException::class);
+    })->throws(\Modules\Accounting\Exceptions\PeriodIsLockedException::class);
 
     it('throws PeriodIsLockedException for CreateJournalEntryAction', function () {
-        app(CreateJournalEntryAction::class)->execute(new CreateJournalEntryDTO(
+        app(\Modules\Accounting\Actions\Accounting\CreateJournalEntryAction::class)->execute(new CreateJournalEntryDTO(
             company_id: $this->company->id,
             journal_id: $this->company->default_sales_journal_id,
             currency_id: $this->company->currency->id,
@@ -183,7 +183,7 @@ describe('Action Integration with Locked Periods', function () {
             is_posted: false,
             lines: []
         ));
-    })->throws(PeriodIsLockedException::class);
+    })->throws(\Modules\Accounting\Exceptions\PeriodIsLockedException::class);
 
     it('throws PeriodIsLockedException for CreateAdjustmentDocumentAction', function () {
         app(CreateAdjustmentDocumentAction::class)->execute(new CreateAdjustmentDocumentDTO(
@@ -197,12 +197,12 @@ describe('Action Integration with Locked Periods', function () {
             original_vendor_bill_id: null,
             lines: []
         ));
-    })->throws(PeriodIsLockedException::class);
+    })->throws(\Modules\Accounting\Exceptions\PeriodIsLockedException::class);
 });
 
 describe('Validation Rule (NotInLockedPeriod)', function () {
     beforeEach(function () {
-        LockDate::factory()->create([
+        \Modules\Accounting\Models\LockDate::factory()->create([
             'company_id' => $this->company->id,
             'locked_until' => '2025-12-31',
             'lock_type' => LockDateType::HardLock,
@@ -224,12 +224,12 @@ describe('Validation Rule (NotInLockedPeriod)', function () {
 
 describe('Filament Resource (LockDateResource)', function () {
     it('disables edit and delete actions for HardLock records', function () {
-        $hardLock = LockDate::factory()->create([
+        $hardLock = \Modules\Accounting\Models\LockDate::factory()->create([
             'company_id' => $this->company->id,
             'locked_until' => '2025-12-31',
             'lock_type' => LockDateType::HardLock,
         ]);
-        $softLock = LockDate::factory()->create([
+        $softLock = \Modules\Accounting\Models\LockDate::factory()->create([
             'company_id' => $this->company->id,
             'locked_until' => '2026-01-31',
             'lock_type' => LockDateType::AllUsers,

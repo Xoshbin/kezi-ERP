@@ -32,8 +32,8 @@ beforeEach(function () {
         'inventory_accounting_mode' => \App\Enums\Inventory\InventoryAccountingMode::AUTO_RECORD_ON_BILL,
     ]);
 
-    $this->product = Product::factory()->for($this->company)->create([
-        'type' => ProductType::Storable,
+    $this->product = \Modules\Product\Models\Product::factory()->for($this->company)->create([
+        'type' => \Modules\Product\Enums\Products\ProductType::Storable,
         'inventory_valuation_method' => \App\Enums\Inventory\ValuationMethod::AVCO,
         'default_inventory_account_id' => $this->inventoryAccount->id,
         'default_stock_input_account_id' => $this->stockInputAccount->id,
@@ -41,7 +41,7 @@ beforeEach(function () {
     ]);
 
     // Ensure product has a COGS account for outgoing valuation
-    $this->cogsAccount = \App\Models\Account::factory()->for($this->company)->create([
+    $this->cogsAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create([
         'type' => 'cost_of_revenue',
     ]);
     $this->product->update(['default_cogs_account_id' => $this->cogsAccount->id]);
@@ -52,7 +52,7 @@ it('creates a delivery picking for posted invoice and reserves then consumes ava
     $qtyIn = 5;
     $cost = Money::of(100, $this->company->currency->code);
 
-    $vendorBill = VendorBill::factory()->for($this->company)->create([
+    $vendorBill = \Modules\Purchase\Models\VendorBill::factory()->for($this->company)->create([
         'vendor_id' => $this->vendor->id,
         'status' => 'draft',
     ]);
@@ -78,10 +78,10 @@ it('creates a delivery picking for posted invoice and reserves then consumes ava
 
     // Create and post an invoice for 3 units
     $qtyOut = 3;
-    $customer = \App\Models\Partner::factory()->for($this->company)->create([
-        'type' => \App\Enums\Partners\PartnerType::Customer,
+    $customer = \Modules\Foundation\Models\Partner::factory()->for($this->company)->create([
+        'type' => \Modules\Foundation\Enums\Partners\PartnerType::Customer,
     ]);
-    $invoice = Invoice::factory()->for($this->company)->create([
+    $invoice = \Modules\Sales\Models\Invoice::factory()->for($this->company)->create([
         'customer_id' => $customer->id,
         'status' => InvoiceStatus::Draft,
     ]);
@@ -126,7 +126,7 @@ it('partially reserves when oversold and consumes only reserved amount', functio
     $qtyIn = 5;
     $cost = Money::of(100, $this->company->currency->code);
 
-    $vendorBill = VendorBill::factory()->for($this->company)->create([
+    $vendorBill = \Modules\Purchase\Models\VendorBill::factory()->for($this->company)->create([
         'vendor_id' => $this->vendor->id,
         'status' => 'draft',
     ]);
@@ -144,10 +144,10 @@ it('partially reserves when oversold and consumes only reserved amount', functio
 
     // Oversell: try to sell 10
     $qtyOut = 10;
-    $customer = \App\Models\Partner::factory()->for($this->company)->create([
-        'type' => \App\Enums\Partners\PartnerType::Customer,
+    $customer = \Modules\Foundation\Models\Partner::factory()->for($this->company)->create([
+        'type' => \Modules\Foundation\Enums\Partners\PartnerType::Customer,
     ]);
-    $invoice = Invoice::factory()->for($this->company)->create([
+    $invoice = \Modules\Sales\Models\Invoice::factory()->for($this->company)->create([
         'customer_id' => $customer->id,
         'status' => InvoiceStatus::Draft,
     ]);

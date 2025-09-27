@@ -15,7 +15,7 @@ use InvalidArgumentException;
 class PurchaseOrderService
 {
     public function __construct(
-        protected LockDateService $lockDateService,
+        protected \Modules\Accounting\Services\Accounting\LockDateService $lockDateService,
         protected SequenceService $sequenceService
     ) {}
 

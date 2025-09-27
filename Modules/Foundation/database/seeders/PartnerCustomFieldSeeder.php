@@ -20,7 +20,7 @@ class PartnerCustomFieldSeeder extends Seeder
             // Note: Custom field definitions are global (not company-specific) based on current schema
             CustomFieldDefinition::updateOrCreate(
                 [
-                    'model_type' => Partner::class,
+                    'model_type' => \Modules\Foundation\Models\Partner::class,
                 ],
                 [
                     'name' => 'Partner Classification',

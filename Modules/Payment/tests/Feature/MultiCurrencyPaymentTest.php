@@ -23,7 +23,7 @@ uses(RefreshDatabase::class, WithConfiguredCompany::class);
 
 beforeEach(function () {
     // Create USD currency for foreign currency tests
-    $this->usdCurrency = Currency::firstOrCreate(
+    $this->usdCurrency = \Modules\Foundation\Models\Currency::firstOrCreate(
         ['code' => 'USD'],
         [
             'name' => ['en' => 'US Dollar', 'ckb' => 'دۆلاری ئەمریکی', 'ar' => 'دولار أمريكي'],
@@ -40,7 +40,7 @@ beforeEach(function () {
     $this->paymentExchangeRate = 1470.0; // 1 USD = 1470 IQD on payment date (10 IQD gain)
 
     // Create exchange rates for both dates
-    CurrencyRate::updateOrCreate(
+    \Modules\Foundation\Models\CurrencyRate::updateOrCreate(
         [
             'currency_id' => $this->usdCurrency->id,
             'effective_date' => $this->invoiceDate->toDateString(),
@@ -52,7 +52,7 @@ beforeEach(function () {
         ]
     );
 
-    CurrencyRate::updateOrCreate(
+    \Modules\Foundation\Models\CurrencyRate::updateOrCreate(
         [
             'currency_id' => $this->usdCurrency->id,
             'effective_date' => $this->paymentDate->toDateString(),
@@ -74,7 +74,7 @@ beforeEach(function () {
 describe('Multi-Currency Payment Tests', function () {
     test('can create USD payment for USD invoice with same exchange rate', function () {
         // Arrange: Create USD invoice
-        $invoice = Invoice::factory()->for($this->company)->create([
+        $invoice = \Modules\Sales\Models\Invoice::factory()->for($this->company)->create([
             'currency_id' => $this->usdCurrency->id,
             'total_amount' => Money::of(100, 'USD'), // $100.00
             'status' => 'posted',
@@ -130,7 +130,7 @@ describe('Multi-Currency Payment Tests', function () {
 
     test('can create USD payment for USD invoice with different exchange rate (gain scenario)', function () {
         // Arrange: Create USD invoice on earlier date
-        $invoice = Invoice::factory()->for($this->company)->create([
+        $invoice = \Modules\Sales\Models\Invoice::factory()->for($this->company)->create([
             'currency_id' => $this->usdCurrency->id,
             'total_amount' => Money::of(100, 'USD'),
             'status' => 'posted',
@@ -180,7 +180,7 @@ describe('Multi-Currency Payment Tests', function () {
 describe('Cross-Currency Payment Tests', function () {
     test('can create IQD payment for USD invoice', function () {
         // Arrange: Create USD invoice
-        $invoice = Invoice::factory()->for($this->company)->create([
+        $invoice = \Modules\Sales\Models\Invoice::factory()->for($this->company)->create([
             'currency_id' => $this->usdCurrency->id,
             'total_amount' => Money::of(100, 'USD'),
             'status' => 'posted',
@@ -229,7 +229,7 @@ describe('Cross-Currency Payment Tests', function () {
 
     test('can create USD payment for IQD invoice', function () {
         // Arrange: Create IQD invoice (base currency)
-        $invoice = Invoice::factory()->for($this->company)->create([
+        $invoice = \Modules\Sales\Models\Invoice::factory()->for($this->company)->create([
             'currency_id' => $this->company->currency_id,
             'total_amount' => Money::of(147000, 'IQD'), // 147,000 IQD
             'status' => 'posted',
@@ -280,7 +280,7 @@ describe('Cross-Currency Payment Tests', function () {
 describe('VendorBill Payment Tests', function () {
     test('can create USD payment for USD vendor bill', function () {
         // Arrange: Create USD vendor bill
-        $vendorBill = VendorBill::factory()->for($this->company)->create([
+        $vendorBill = \Modules\Purchase\Models\VendorBill::factory()->for($this->company)->create([
             'currency_id' => $this->usdCurrency->id,
             'total_amount' => Money::of(200, 'USD'),
             'status' => 'posted',
@@ -323,7 +323,7 @@ describe('VendorBill Payment Tests', function () {
 describe('Payment Document Link Tests', function () {
     test('payment document link stores amount in correct currency', function () {
         // Arrange: Create USD invoice
-        $invoice = Invoice::factory()->for($this->company)->create([
+        $invoice = \Modules\Sales\Models\Invoice::factory()->for($this->company)->create([
             'currency_id' => $this->usdCurrency->id,
             'total_amount' => Money::of(150, 'USD'),
             'status' => 'posted',
@@ -367,7 +367,7 @@ describe('Payment Document Link Tests', function () {
 
     test('partial payment creates correct payment document link', function () {
         // Arrange: Create USD invoice for $300
-        $invoice = Invoice::factory()->for($this->company)->create([
+        $invoice = \Modules\Sales\Models\Invoice::factory()->for($this->company)->create([
             'currency_id' => $this->usdCurrency->id,
             'total_amount' => Money::of(300, 'USD'),
             'status' => 'posted',
@@ -414,7 +414,7 @@ describe('Payment Document Link Tests', function () {
 describe('Payment State Bug Tests', function () {
     test('USD invoice with partial IQD payment should show partially paid state', function () {
         // Arrange: Create USD invoice for $1500
-        $invoice = Invoice::factory()->for($this->company)->create([
+        $invoice = \Modules\Sales\Models\Invoice::factory()->for($this->company)->create([
             'currency_id' => $this->usdCurrency->id,
             'total_amount' => Money::of(1500, 'USD'), // $1500 USD
             'status' => 'posted',
@@ -463,7 +463,7 @@ describe('Payment State Bug Tests', function () {
 
     test('USD invoice with full USD payment should show paid state', function () {
         // Arrange: Create USD invoice for $100
-        $invoice = Invoice::factory()->for($this->company)->create([
+        $invoice = \Modules\Sales\Models\Invoice::factory()->for($this->company)->create([
             'currency_id' => $this->usdCurrency->id,
             'total_amount' => Money::of(100, 'USD'),
             'status' => 'posted',
@@ -507,7 +507,7 @@ describe('Payment State Bug Tests', function () {
         // This test reproduces the exact scenario described by the user
 
         // Arrange: Create $1500 USD invoice and post it
-        $invoice = Invoice::factory()->for($this->company)->create([
+        $invoice = \Modules\Sales\Models\Invoice::factory()->for($this->company)->create([
             'currency_id' => $this->usdCurrency->id,
             'total_amount' => Money::of(1500, 'USD'), // $1500 USD
             'status' => 'posted',

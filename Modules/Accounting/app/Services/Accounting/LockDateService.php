@@ -32,7 +32,7 @@ class LockDateService
         foreach ($lockTypes as $lockType) {
             $lockedDate = $this->getLockDateForType($company, $lockType);
             if ($lockedDate && $date->lte($lockedDate)) {
-                throw new PeriodIsLockedException("The period is locked until {$lockedDate->format('Y-m-d')}.");
+                throw new \Modules\Accounting\Exceptions\PeriodIsLockedException("The period is locked until {$lockedDate->format('Y-m-d')}.");
             }
         }
     }
@@ -42,7 +42,7 @@ class LockDateService
         $cacheKey = "lock_date_{$company->id}_{$lockType}";
 
         return Cache::remember($cacheKey, now()->addDay(), function () use ($company, $lockType) {
-            $date = LockDate::where('company_id', $company->id)
+            $date = \Modules\Accounting\Models\LockDate::where('company_id', $company->id)
                 ->where('lock_type', $lockType)
                 ->value('locked_until');
 

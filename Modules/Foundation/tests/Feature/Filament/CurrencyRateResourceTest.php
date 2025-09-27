@@ -31,7 +31,7 @@ it('can render the create page', function () {
 
 it('can create a currency rate', function () {
     // Create a new currency for this test with proper translatable name
-    $currency = Currency::factory()->create([
+    $currency = \Modules\Foundation\Models\Currency::factory()->create([
         'code' => 'TEST',
         'name' => [
             'en' => 'Test Currency',
@@ -62,14 +62,14 @@ it('can create a currency rate', function () {
     ]);
 
     // Check the effective_date separately since it's stored as datetime
-    $currencyRate = CurrencyRate::where('currency_id', $currency->id)
+    $currencyRate = \Modules\Foundation\Models\CurrencyRate::where('currency_id', $currency->id)
         ->where('company_id', $this->company->id)
         ->first();
     expect($currencyRate->effective_date->format('Y-m-d'))->toBe(now()->format('Y-m-d'));
 });
 
 it('can render the edit page', function () {
-    $currencyRate = CurrencyRate::factory()->create([
+    $currencyRate = \Modules\Foundation\Models\CurrencyRate::factory()->create([
         'company_id' => $this->company->id,
     ]);
 
@@ -82,7 +82,7 @@ it('can retrieve data', function () {
     $currencyRates = collect();
     for ($i = 0; $i < 10; $i++) {
         $currencyRates->push(
-            CurrencyRate::factory()->create([
+            \Modules\Foundation\Models\CurrencyRate::factory()->create([
                 'company_id' => $this->company->id,
                 'effective_date' => now()->subDays($i)->format('Y-m-d'),
             ])
@@ -94,7 +94,7 @@ it('can retrieve data', function () {
 });
 
 it('can edit a currency rate', function () {
-    $currencyRate = CurrencyRate::factory()->create([
+    $currencyRate = \Modules\Foundation\Models\CurrencyRate::factory()->create([
         'company_id' => $this->company->id,
     ]);
 
@@ -116,7 +116,7 @@ it('can edit a currency rate', function () {
 });
 
 it('can delete a currency rate', function () {
-    $currencyRate = CurrencyRate::factory()->create([
+    $currencyRate = \Modules\Foundation\Models\CurrencyRate::factory()->create([
         'company_id' => $this->company->id,
     ]);
 
@@ -147,7 +147,7 @@ it('validates required fields', function () {
 
 it('validates rate is numeric and positive', function () {
     // Create a new currency for this test with proper translatable name
-    $currency = Currency::factory()->create([
+    $currency = \Modules\Foundation\Models\Currency::factory()->create([
         'code' => 'TEST2',
         'name' => [
             'en' => 'Test Currency 2',

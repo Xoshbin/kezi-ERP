@@ -25,13 +25,13 @@ class InvoiceNumberRaceConditionTest extends TestCase
 
     private Company $company;
 
-    private Partner $customer;
+    private \Modules\Foundation\Models\Partner $customer;
 
-    private Currency $currency;
+    private \Modules\Foundation\Models\Currency $currency;
 
     private User $user;
 
-    private Account $incomeAccount;
+    private \Modules\Accounting\Models\Account $incomeAccount;
 
     private Journal $salesJournal;
 
@@ -42,12 +42,12 @@ class InvoiceNumberRaceConditionTest extends TestCase
         parent::setUp();
 
         // Create test data
-        $this->currency = Currency::factory()->create(['code' => 'USD']);
+        $this->currency = \Modules\Foundation\Models\Currency::factory()->create(['code' => 'USD']);
         $this->company = Company::factory()->create(['currency_id' => $this->currency->id]);
-        $this->customer = Partner::factory()->create(['company_id' => $this->company->id]);
+        $this->customer = \Modules\Foundation\Models\Partner::factory()->create(['company_id' => $this->company->id]);
         $this->user = User::factory()->create();
 
-        $this->incomeAccount = Account::factory()->create([
+        $this->incomeAccount = \Modules\Accounting\Models\Account::factory()->create([
             'company_id' => $this->company->id,
             'type' => 'income',
         ]);
@@ -94,10 +94,10 @@ class InvoiceNumberRaceConditionTest extends TestCase
                 fiscal_position_id: null
             );
 
-            $invoices[] = app(CreateInvoiceAction::class)->execute($invoiceDTO);
+            $invoices[] = app(\Modules\Sales\Actions\Sales\CreateInvoiceAction::class)->execute($invoiceDTO);
         }
 
-        $sequenceService = app(\App\Services\SequenceService::class);
+        $sequenceService = app(\Modules\Foundation\Services\SequenceService::class);
         $generatedNumbers = [];
 
         // Simulate concurrent posting by calling getNextInvoiceNumber multiple times
@@ -144,7 +144,7 @@ class InvoiceNumberRaceConditionTest extends TestCase
         $this->assertNotEquals($invoice1->journal_entry_id, $invoice2->journal_entry_id);
     }
 
-    private function createTestInvoice(): Invoice
+    private function createTestInvoice(): \Modules\Sales\Models\Invoice
     {
         $invoiceDTO = new CreateInvoiceDTO(
             company_id: $this->company->id,
@@ -165,6 +165,6 @@ class InvoiceNumberRaceConditionTest extends TestCase
             fiscal_position_id: null
         );
 
-        return app(CreateInvoiceAction::class)->execute($invoiceDTO);
+        return app(\Modules\Sales\Actions\Sales\CreateInvoiceAction::class)->execute($invoiceDTO);
     }
 }

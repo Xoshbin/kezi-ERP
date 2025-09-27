@@ -12,9 +12,9 @@ class PostDepreciationEntryAction
 {
     public function __construct(protected CreateJournalEntryForDepreciationAction $createJournalEntry) {}
 
-    public function execute(DepreciationEntry $depreciationEntry, User $user): DepreciationEntry
+    public function execute(\Modules\Accounting\Models\DepreciationEntry $depreciationEntry, User $user): \Modules\Accounting\Models\DepreciationEntry
     {
-        return DB::transaction(function () use ($depreciationEntry, $user): DepreciationEntry {
+        return DB::transaction(function () use ($depreciationEntry, $user): \Modules\Accounting\Models\DepreciationEntry {
             $journalEntry = $this->createJournalEntry->execute($depreciationEntry, $user);
 
             $depreciationEntry->update([

@@ -94,7 +94,7 @@ class ViewTaxReport extends Page
         }
 
         $company = Company::findOrFail($user->company_id);
-        $service = app(TaxReportService::class);
+        $service = app(\Modules\Accounting\Services\Reports\TaxReportService::class);
 
         $report = $service->generate(
             $company,
@@ -109,8 +109,8 @@ class ViewTaxReport extends Page
                     'taxId' => $line->taxId,
                     'taxName' => $line->taxName,
                     'taxRate' => $line->taxRate,
-                    'netAmount' => NumberFormatter::formatMoneyTo($line->netAmount),
-                    'taxAmount' => NumberFormatter::formatMoneyTo($line->taxAmount),
+                    'netAmount' => \Modules\Foundation\Support\NumberFormatter::formatMoneyTo($line->netAmount),
+                    'taxAmount' => \Modules\Foundation\Support\NumberFormatter::formatMoneyTo($line->taxAmount),
                     'netAmountRaw' => $line->netAmount->getAmount()->toFloat(),
                     'taxAmountRaw' => $line->taxAmount->getAmount()->toFloat(),
                 ];
@@ -120,15 +120,15 @@ class ViewTaxReport extends Page
                     'taxId' => $line->taxId,
                     'taxName' => $line->taxName,
                     'taxRate' => $line->taxRate,
-                    'netAmount' => NumberFormatter::formatMoneyTo($line->netAmount),
-                    'taxAmount' => NumberFormatter::formatMoneyTo($line->taxAmount),
+                    'netAmount' => \Modules\Foundation\Support\NumberFormatter::formatMoneyTo($line->netAmount),
+                    'taxAmount' => \Modules\Foundation\Support\NumberFormatter::formatMoneyTo($line->taxAmount),
                     'netAmountRaw' => $line->netAmount->getAmount()->toFloat(),
                     'taxAmountRaw' => $line->taxAmount->getAmount()->toFloat(),
                 ];
             })->toArray(),
-            'totalOutputTax' => NumberFormatter::formatMoneyTo($report->totalOutputTax),
-            'totalInputTax' => NumberFormatter::formatMoneyTo($report->totalInputTax),
-            'netTaxPayable' => NumberFormatter::formatMoneyTo($report->netTaxPayable),
+            'totalOutputTax' => \Modules\Foundation\Support\NumberFormatter::formatMoneyTo($report->totalOutputTax),
+            'totalInputTax' => \Modules\Foundation\Support\NumberFormatter::formatMoneyTo($report->totalInputTax),
+            'netTaxPayable' => \Modules\Foundation\Support\NumberFormatter::formatMoneyTo($report->netTaxPayable),
             'netTaxPayableRaw' => $report->netTaxPayable->getAmount()->toFloat(),
             'companyName' => $company->name,
         ];

@@ -25,8 +25,8 @@ class PurchaseOrderLineItemsBrowserTest extends DuskTestCase
         
         $this->setupWithConfiguredCompany();
         
-        $this->vendor = Partner::factory()->vendor()->create(['company_id' => $this->company->id]);
-        $this->product = Product::factory()->create([
+        $this->vendor = \Modules\Foundation\Models\Partner::factory()->vendor()->create(['company_id' => $this->company->id]);
+        $this->product = \Modules\Product\Models\Product::factory()->create([
             'company_id' => $this->company->id,
             'name' => 'Test Product',
             'description' => 'Test Product Description',
@@ -142,19 +142,19 @@ class PurchaseOrderLineItemsBrowserTest extends DuskTestCase
             $browser->loginAs($this->user)
                 ->visit("/companies/{$this->company->id}/purchases/purchase-orders/create")
                 ->waitFor('[data-field-wrapper="vendor_id"]')
-                
+
                 // Fill basic PO information
                 ->select('[data-field-wrapper="vendor_id"] select', $this->vendor->id)
                 ->select('[data-field-wrapper="currency_id"] select', $this->company->currency_id)
-                
+
                 // Add a line item but leave required fields empty
                 ->click('[data-field-wrapper="lines"] button[type="button"]')
                 ->waitFor('[data-field-wrapper="lines"] [data-field-wrapper="product_id"]')
-                
+
                 // Try to submit without filling required line item fields
                 ->click('button[type="submit"]')
                 ->pause(1000)
-                
+
                 // Check for validation errors
                 ->assertPresent('.fi-fo-field-wrp-error-message'); // Filament error message class
         });

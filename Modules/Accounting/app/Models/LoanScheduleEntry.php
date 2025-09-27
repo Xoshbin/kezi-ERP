@@ -18,10 +18,10 @@ class LoanScheduleEntry extends Model
 
     protected $casts = [
         'due_date' => 'date',
-        'payment_amount' => DocumentCurrencyMoneyCast::class,
-        'principal_component' => DocumentCurrencyMoneyCast::class,
-        'interest_component' => DocumentCurrencyMoneyCast::class,
-        'outstanding_balance_after' => DocumentCurrencyMoneyCast::class,
+        'payment_amount' => \Modules\Foundation\Casts\DocumentCurrencyMoneyCast::class,
+        'principal_component' => \Modules\Foundation\Casts\DocumentCurrencyMoneyCast::class,
+        'interest_component' => \Modules\Foundation\Casts\DocumentCurrencyMoneyCast::class,
+        'outstanding_balance_after' => \Modules\Foundation\Casts\DocumentCurrencyMoneyCast::class,
         'is_accrual_posted' => 'boolean',
         'is_payment_posted' => 'boolean',
     ];

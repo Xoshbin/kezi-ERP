@@ -33,8 +33,8 @@ it('correctly processes an incoming storable product using AVCO, creating a stoc
     $costPerUnit = Money::of(150, 'IQD');
     $totalValue = $costPerUnit->multipliedBy($quantity);
 
-    $product = Product::factory()->for($this->company)->create([
-        'type' => ProductType::Storable,
+    $product = \Modules\Product\Models\Product::factory()->for($this->company)->create([
+        'type' => \Modules\Product\Enums\Products\ProductType::Storable,
         'inventory_valuation_method' => ValuationMethod::AVCO,
         'default_inventory_account_id' => $this->inventoryAccount->id,
         'default_stock_input_account_id' => $this->stockInputAccount->id,
@@ -76,7 +76,7 @@ it('correctly processes an incoming storable product using AVCO, creating a stoc
     $this->assertDatabaseHas('stock_moves', [
         'move_type' => StockMoveType::Incoming->value,
         'status' => StockMoveStatus::Done->value,
-        'source_type' => VendorBill::class,
+        'source_type' => \Modules\Purchase\Models\VendorBill::class,
         'source_id' => $vendorBill->id,
     ]);
 

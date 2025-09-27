@@ -37,10 +37,10 @@ test('the entire accounting workflow from setup to credit note', function () {
     $currencyCode = $currency->code;
     $bankAccount = $this->company->defaultBankAccount;
     $arAccount = $this->company->defaultAccountsReceivable;
-    $itEquipmentAccount = Account::factory()->for($this->company)->create(['type' => 'current_assets']);
+    $itEquipmentAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create(['type' => 'current_assets']);
     $apAccount = $this->company->defaultAccountsPayable;
-    $equityAccount = Account::factory()->for($this->company)->create(['type' => 'equity']);
-    $revenueAccount = Account::factory()->for($this->company)->create(['type' => 'income']);
+    $equityAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create(['type' => 'equity']);
+    $revenueAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create(['type' => 'income']);
     $salesDiscountAccount = $this->company->defaultSalesDiscountAccount;
     $bankJournal = $this->company->defaultBankJournal;
 
@@ -51,7 +51,7 @@ test('the entire accounting workflow from setup to credit note', function () {
     $goodwillDiscount = Money::of(500_000, $currencyCode);
 
     // Step 3: Capital Injection
-    $createJournalEntryAction = app(CreateJournalEntryAction::class);
+    $createJournalEntryAction = app(\Modules\Accounting\Actions\Accounting\CreateJournalEntryAction::class);
     $capitalEntryDto = new CreateJournalEntryDTO(
         company_id: $this->company->id,
         journal_id: $bankJournal->id,
@@ -88,7 +88,7 @@ test('the entire accounting workflow from setup to credit note', function () {
     expect($capitalEntry->total_credit->isEqualTo($initialCapitalInvestment))->toBeTrue();
 
     // Step 4: Purchasing a Fixed Asset
-    $vendor = Partner::factory()->for($this->company)->create(['name' => 'Paykar Tech Supplies', 'type' => PartnerType::Vendor]);
+    $vendor = \Modules\Foundation\Models\Partner::factory()->for($this->company)->create(['name' => 'Paykar Tech Supplies', 'type' => \Modules\Foundation\Enums\Partners\PartnerType::Vendor]);
     // Arrange: Prepare the DTOs for the Action.
     $lineDto = new CreateVendorBillLineDTO(
         description: 'High-End Laptop for Business Use',
@@ -132,7 +132,7 @@ test('the entire accounting workflow from setup to credit note', function () {
     expect($purchaseEntry->lines->where('account_id', $apAccount->id)->first()->credit->isEqualTo($highEndLaptopCost))->toBeTrue();
 
     // Step 5: Providing a Service & Invoicing
-    $customer = Partner::factory()->for($this->company)->create(['name' => 'Hawre Trading Group', 'type' => PartnerType::Customer]);
+    $customer = \Modules\Foundation\Models\Partner::factory()->for($this->company)->create(['name' => 'Hawre Trading Group', 'type' => \Modules\Foundation\Enums\Partners\PartnerType::Customer]);
     $lineDto = new CreateInvoiceLineDTO(
         description: 'On-site IT Infrastructure Setup',
         quantity: 1,
@@ -153,7 +153,7 @@ test('the entire accounting workflow from setup to credit note', function () {
     );
 
     // Act: Create the invoice using the Action.
-    $invoice = (app(CreateInvoiceAction::class))->execute($invoiceDto);
+    $invoice = (app(\Modules\Sales\Actions\Sales\CreateInvoiceAction::class))->execute($invoiceDto);
 
     // The rest of the test remains the same...
     $invoiceService = app(InvoiceService::class);
@@ -243,7 +243,7 @@ test('the entire accounting workflow from setup to credit note', function () {
     // Step 8: Handling a Correction (Credit Note)
     $adjustmentService = app(AdjustmentDocumentService::class);
 
-    $creditNote = \App\Models\AdjustmentDocument::factory()->create([
+    $creditNote = \Modules\Inventory\Models\AdjustmentDocument::factory()->create([
         'company_id' => $this->company->id,
         'currency_id' => $this->company->currency_id,
         'reference_number' => 'CN-001',

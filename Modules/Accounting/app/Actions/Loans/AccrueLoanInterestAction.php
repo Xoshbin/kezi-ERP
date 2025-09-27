@@ -14,12 +14,12 @@ use Illuminate\Support\Facades\DB;
 
 class AccrueLoanInterestAction
 {
-    public function __construct(private readonly CreateJournalEntryAction $createJE) {}
+    public function __construct(private readonly \Modules\Accounting\Actions\Accounting\CreateJournalEntryAction $createJE) {}
 
     /**
      * Accrue interest for a given schedule sequence (monthly end by default).
      */
-    public function execute(LoanAgreement $loan, User $user, int $journalId, int $interestAccountId, int $accruedInterestAccountId, int $forMonthSequence): JournalEntry
+    public function execute(\Modules\Accounting\Models\LoanAgreement $loan, User $user, int $journalId, int $interestAccountId, int $accruedInterestAccountId, int $forMonthSequence): JournalEntry
     {
         return DB::transaction(function () use ($loan, $user, $journalId, $interestAccountId, $accruedInterestAccountId, $forMonthSequence) {
             $loan->loadMissing('currency', 'company', 'scheduleEntries');
@@ -29,7 +29,7 @@ class AccrueLoanInterestAction
             }
             $currencyCode = (string) data_get($currencyModel, 'code');
 
-            /** @var LoanScheduleEntry $entry */
+            /** @var \Modules\Accounting\Models\LoanScheduleEntry $entry */
             $entry = $loan->scheduleEntries()->where('sequence', $forMonthSequence)->firstOrFail();
 
             // Amount to accrue = interest_component of schedule entry

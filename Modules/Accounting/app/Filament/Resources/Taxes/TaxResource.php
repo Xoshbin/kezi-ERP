@@ -70,7 +70,7 @@ class TaxResource extends Resource
                                 TextInput::make('code')->label(__('account.code'))->required(),
                                 TextInput::make('name')->label(__('account.name'))->required(),
                                 Select::make('type')->label(__('account.type'))
-                                    ->options(collect(AccountType::cases())->mapWithKeys(fn($t) => [$t->value => $t->label()]))
+                                    ->options(collect(\Modules\Accounting\Enums\Accounting\AccountType::cases())->mapWithKeys(fn($t) => [$t->value => $t->label()]))
                                     ->required(),
                                 Toggle::make('is_deprecated')->label(__('account.is_deprecated'))->default(false),
                                 Toggle::make('allow_reconciliation')->label(__('account.allow_reconciliation'))->default(false),
@@ -116,7 +116,7 @@ class TaxResource extends Resource
                     ->searchable(),
                 TextColumn::make('rate')
                     ->label(__('tax.rate'))
-                    ->formatStateUsing(fn($state) => NumberFormatter::formatPercentage($state / 100))
+                    ->formatStateUsing(fn($state) => \Modules\Foundation\Support\NumberFormatter::formatPercentage($state / 100))
                     ->sortable(),
                 TextColumn::make('type')
                     ->label(__('tax.type'))

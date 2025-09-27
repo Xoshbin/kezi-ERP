@@ -91,7 +91,7 @@ class ViewAgedPayables extends Page
             throw new \Exception('Company not found');
         }
 
-        $service = app(AgedPayableService::class);
+        $service = app(\Modules\Accounting\Services\Reports\AgedPayableService::class);
 
         $report = $service->generate(
             $company,
@@ -103,30 +103,30 @@ class ViewAgedPayables extends Page
             'reportLines' => $report->reportLines->map(fn ($line) => [
                 'partnerId' => $line->partnerId,
                 'partnerName' => $line->partnerName,
-                'current' => NumberFormatter::formatMoneyTo($line->current),
+                'current' => \Modules\Foundation\Support\NumberFormatter::formatMoneyTo($line->current),
                 'currentAmount' => $line->current->getAmount()->toFloat(),
-                'bucket1_30' => NumberFormatter::formatMoneyTo($line->bucket1_30),
+                'bucket1_30' => \Modules\Foundation\Support\NumberFormatter::formatMoneyTo($line->bucket1_30),
                 'bucket1_30Amount' => $line->bucket1_30->getAmount()->toFloat(),
-                'bucket31_60' => NumberFormatter::formatMoneyTo($line->bucket31_60),
+                'bucket31_60' => \Modules\Foundation\Support\NumberFormatter::formatMoneyTo($line->bucket31_60),
                 'bucket31_60Amount' => $line->bucket31_60->getAmount()->toFloat(),
-                'bucket61_90' => NumberFormatter::formatMoneyTo($line->bucket61_90),
+                'bucket61_90' => \Modules\Foundation\Support\NumberFormatter::formatMoneyTo($line->bucket61_90),
                 'bucket61_90Amount' => $line->bucket61_90->getAmount()->toFloat(),
-                'bucket90_plus' => NumberFormatter::formatMoneyTo($line->bucket90_plus),
+                'bucket90_plus' => \Modules\Foundation\Support\NumberFormatter::formatMoneyTo($line->bucket90_plus),
                 'bucket90_plusAmount' => $line->bucket90_plus->getAmount()->toFloat(),
-                'totalDue' => NumberFormatter::formatMoneyTo($line->totalDue),
+                'totalDue' => \Modules\Foundation\Support\NumberFormatter::formatMoneyTo($line->totalDue),
                 'totalDueAmount' => $line->totalDue->getAmount()->toFloat(),
             ])->toArray(),
-            'totalCurrent' => NumberFormatter::formatMoneyTo($report->totalCurrent),
+            'totalCurrent' => \Modules\Foundation\Support\NumberFormatter::formatMoneyTo($report->totalCurrent),
             'totalCurrentAmount' => $report->totalCurrent->getAmount()->toFloat(),
-            'totalBucket1_30' => NumberFormatter::formatMoneyTo($report->totalBucket1_30),
+            'totalBucket1_30' => \Modules\Foundation\Support\NumberFormatter::formatMoneyTo($report->totalBucket1_30),
             'totalBucket1_30Amount' => $report->totalBucket1_30->getAmount()->toFloat(),
-            'totalBucket31_60' => NumberFormatter::formatMoneyTo($report->totalBucket31_60),
+            'totalBucket31_60' => \Modules\Foundation\Support\NumberFormatter::formatMoneyTo($report->totalBucket31_60),
             'totalBucket31_60Amount' => $report->totalBucket31_60->getAmount()->toFloat(),
-            'totalBucket61_90' => NumberFormatter::formatMoneyTo($report->totalBucket61_90),
+            'totalBucket61_90' => \Modules\Foundation\Support\NumberFormatter::formatMoneyTo($report->totalBucket61_90),
             'totalBucket61_90Amount' => $report->totalBucket61_90->getAmount()->toFloat(),
-            'totalBucket90_plus' => NumberFormatter::formatMoneyTo($report->totalBucket90_plus),
+            'totalBucket90_plus' => \Modules\Foundation\Support\NumberFormatter::formatMoneyTo($report->totalBucket90_plus),
             'totalBucket90_plusAmount' => $report->totalBucket90_plus->getAmount()->toFloat(),
-            'grandTotalDue' => NumberFormatter::formatMoneyTo($report->grandTotalDue),
+            'grandTotalDue' => \Modules\Foundation\Support\NumberFormatter::formatMoneyTo($report->grandTotalDue),
             'grandTotalDueAmount' => $report->grandTotalDue->getAmount()->toFloat(),
             'companyName' => (string) ($company->name ?? ''),
             'asOfDate' => $this->asOfDate,

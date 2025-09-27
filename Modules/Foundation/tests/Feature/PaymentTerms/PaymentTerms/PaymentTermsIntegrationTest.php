@@ -31,12 +31,12 @@ class PaymentTermsIntegrationTest extends TestCase
 
     public function test_can_create_immediate_payment_term(): void
     {
-        $paymentTerm = PaymentTerm::factory()->for($this->company)->create([
+        $paymentTerm = \Modules\Foundation\Models\PaymentTerm::factory()->for($this->company)->create([
             'name' => ['en' => 'Immediate Payment', 'ar' => 'دفع فوري'],
         ]);
 
-        PaymentTermLine::factory()->for($paymentTerm)->create([
-            'type' => PaymentTermType::Immediate,
+        \Modules\Foundation\Models\PaymentTermLine::factory()->for($paymentTerm)->create([
+            'type' => \Modules\Foundation\Enums\PaymentTerms\PaymentTermType::Immediate,
             'days' => 0,
             'percentage' => 100,
         ]);
@@ -54,12 +54,12 @@ class PaymentTermsIntegrationTest extends TestCase
 
     public function test_can_create_net_30_payment_term(): void
     {
-        $paymentTerm = PaymentTerm::factory()->for($this->company)->create([
+        $paymentTerm = \Modules\Foundation\Models\PaymentTerm::factory()->for($this->company)->create([
             'name' => ['en' => 'Net 30', 'ar' => 'صافي 30'],
         ]);
 
-        PaymentTermLine::factory()->for($paymentTerm)->create([
-            'type' => PaymentTermType::Net,
+        \Modules\Foundation\Models\PaymentTermLine::factory()->for($paymentTerm)->create([
+            'type' => \Modules\Foundation\Enums\PaymentTerms\PaymentTermType::Net,
             'days' => 30,
             'percentage' => 100,
         ]);
@@ -76,20 +76,20 @@ class PaymentTermsIntegrationTest extends TestCase
 
     public function test_can_create_installment_payment_term(): void
     {
-        $paymentTerm = PaymentTerm::factory()->for($this->company)->create([
+        $paymentTerm = \Modules\Foundation\Models\PaymentTerm::factory()->for($this->company)->create([
             'name' => ['en' => '50% in 30 days, 50% in 60 days', 'ar' => '50% خلال 30 يوم، 50% خلال 60 يوم'],
         ]);
 
-        PaymentTermLine::factory()->for($paymentTerm)->create([
+        \Modules\Foundation\Models\PaymentTermLine::factory()->for($paymentTerm)->create([
             'sequence' => 1,
-            'type' => PaymentTermType::Net,
+            'type' => \Modules\Foundation\Enums\PaymentTerms\PaymentTermType::Net,
             'days' => 30,
             'percentage' => 50,
         ]);
 
-        PaymentTermLine::factory()->for($paymentTerm)->create([
+        \Modules\Foundation\Models\PaymentTermLine::factory()->for($paymentTerm)->create([
             'sequence' => 2,
-            'type' => PaymentTermType::Net,
+            'type' => \Modules\Foundation\Enums\PaymentTerms\PaymentTermType::Net,
             'days' => 60,
             'percentage' => 50,
         ]);
@@ -114,12 +114,12 @@ class PaymentTermsIntegrationTest extends TestCase
 
     public function test_can_create_end_of_month_payment_term(): void
     {
-        $paymentTerm = PaymentTerm::factory()->for($this->company)->create([
+        $paymentTerm = \Modules\Foundation\Models\PaymentTerm::factory()->for($this->company)->create([
             'name' => ['en' => 'End of Month + 15', 'ar' => 'نهاية الشهر + 15'],
         ]);
 
-        PaymentTermLine::factory()->for($paymentTerm)->create([
-            'type' => PaymentTermType::EndOfMonth,
+        \Modules\Foundation\Models\PaymentTermLine::factory()->for($paymentTerm)->create([
+            'type' => \Modules\Foundation\Enums\PaymentTerms\PaymentTermType::EndOfMonth,
             'days' => 15,
             'percentage' => 100,
         ]);
@@ -137,12 +137,12 @@ class PaymentTermsIntegrationTest extends TestCase
 
     public function test_can_create_day_of_month_payment_term(): void
     {
-        $paymentTerm = PaymentTerm::factory()->for($this->company)->create([
+        $paymentTerm = \Modules\Foundation\Models\PaymentTerm::factory()->for($this->company)->create([
             'name' => ['en' => '15th of Next Month', 'ar' => '15 من الشهر القادم'],
         ]);
 
-        PaymentTermLine::factory()->for($paymentTerm)->create([
-            'type' => PaymentTermType::DayOfMonth,
+        \Modules\Foundation\Models\PaymentTermLine::factory()->for($paymentTerm)->create([
+            'type' => \Modules\Foundation\Enums\PaymentTerms\PaymentTermType::DayOfMonth,
             'days' => 0,
             'day_of_month' => 15,
             'percentage' => 100,
@@ -167,12 +167,12 @@ class PaymentTermsIntegrationTest extends TestCase
 
     public function test_payment_term_with_early_payment_discount(): void
     {
-        $paymentTerm = PaymentTerm::factory()->for($this->company)->create([
+        $paymentTerm = \Modules\Foundation\Models\PaymentTerm::factory()->for($this->company)->create([
             'name' => ['en' => '2% 10, Net 30', 'ar' => '2% خلال 10، صافي 30'],
         ]);
 
-        PaymentTermLine::factory()->for($paymentTerm)->create([
-            'type' => PaymentTermType::Net,
+        \Modules\Foundation\Models\PaymentTermLine::factory()->for($paymentTerm)->create([
+            'type' => \Modules\Foundation\Enums\PaymentTerms\PaymentTermType::Net,
             'days' => 30,
             'percentage' => 100,
             'discount_percentage' => 2.0,
@@ -200,26 +200,26 @@ class PaymentTermsIntegrationTest extends TestCase
 
     public function test_payment_term_handles_rounding_correctly(): void
     {
-        $paymentTerm = PaymentTerm::factory()->for($this->company)->create();
+        $paymentTerm = \Modules\Foundation\Models\PaymentTerm::factory()->for($this->company)->create();
 
         // Create three installments with percentages that don't divide evenly
-        PaymentTermLine::factory()->for($paymentTerm)->create([
+        \Modules\Foundation\Models\PaymentTermLine::factory()->for($paymentTerm)->create([
             'sequence' => 1,
-            'type' => PaymentTermType::Net,
+            'type' => \Modules\Foundation\Enums\PaymentTerms\PaymentTermType::Net,
             'days' => 30,
             'percentage' => 33.33,
         ]);
 
-        PaymentTermLine::factory()->for($paymentTerm)->create([
+        \Modules\Foundation\Models\PaymentTermLine::factory()->for($paymentTerm)->create([
             'sequence' => 2,
-            'type' => PaymentTermType::Net,
+            'type' => \Modules\Foundation\Enums\PaymentTerms\PaymentTermType::Net,
             'days' => 60,
             'percentage' => 33.33,
         ]);
 
-        PaymentTermLine::factory()->for($paymentTerm)->create([
+        \Modules\Foundation\Models\PaymentTermLine::factory()->for($paymentTerm)->create([
             'sequence' => 3,
-            'type' => PaymentTermType::Net,
+            'type' => \Modules\Foundation\Enums\PaymentTerms\PaymentTermType::Net,
             'days' => 90,
             'percentage' => 33.34, // Slightly higher to make total 100%
         ]);

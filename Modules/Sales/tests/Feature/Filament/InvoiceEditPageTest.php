@@ -19,26 +19,26 @@ beforeEach(function () {
     // Set up Filament tenant context
     \Filament\Facades\Filament::setTenant($this->company);
 
-    $this->currency = Currency::factory()->create(['code' => 'USD']);
-    $this->customer = Partner::factory()->create([
+    $this->currency = \Modules\Foundation\Models\Currency::factory()->create(['code' => 'USD']);
+    $this->customer = \Modules\Foundation\Models\Partner::factory()->create([
         'company_id' => $this->company->id,
         'type' => 'customer',
     ]);
-    $this->account = Account::factory()->create([
+    $this->account = \Modules\Accounting\Models\Account::factory()->create([
         'company_id' => $this->company->id,
     ]);
 });
 
 test('edit page shows pdf actions for draft invoice', function () {
     // Arrange
-    $invoice = Invoice::factory()->create([
+    $invoice = \Modules\Sales\Models\Invoice::factory()->create([
         'company_id' => $this->company->id,
         'customer_id' => $this->customer->id,
         'currency_id' => $this->currency->id,
         'status' => InvoiceStatus::Draft,
     ]);
 
-    InvoiceLine::factory()->create([
+    \Modules\Sales\Models\InvoiceLine::factory()->create([
         'invoice_id' => $invoice->id,
         'income_account_id' => $this->account->id,
     ]);
@@ -56,7 +56,7 @@ test('edit page shows pdf actions for draft invoice', function () {
 
 test('edit page shows pdf actions for posted invoice', function () {
     // Arrange
-    $invoice = Invoice::factory()->create([
+    $invoice = \Modules\Sales\Models\Invoice::factory()->create([
         'company_id' => $this->company->id,
         'customer_id' => $this->customer->id,
         'currency_id' => $this->currency->id,
@@ -64,7 +64,7 @@ test('edit page shows pdf actions for posted invoice', function () {
         'invoice_number' => 'INV-001',
     ]);
 
-    InvoiceLine::factory()->create([
+    \Modules\Sales\Models\InvoiceLine::factory()->create([
         'invoice_id' => $invoice->id,
         'income_account_id' => $this->account->id,
     ]);
@@ -82,14 +82,14 @@ test('edit page shows pdf actions for posted invoice', function () {
 
 test('edit page pdf actions work correctly', function () {
     // Arrange
-    $invoice = Invoice::factory()->create([
+    $invoice = \Modules\Sales\Models\Invoice::factory()->create([
         'company_id' => $this->company->id,
         'customer_id' => $this->customer->id,
         'currency_id' => $this->currency->id,
         'status' => InvoiceStatus::Draft,
     ]);
 
-    InvoiceLine::factory()->create([
+    \Modules\Sales\Models\InvoiceLine::factory()->create([
         'invoice_id' => $invoice->id,
         'income_account_id' => $this->account->id,
     ]);
@@ -105,14 +105,14 @@ test('edit page pdf actions work correctly', function () {
 
 test('edit page shows all expected actions', function () {
     // Arrange
-    $invoice = Invoice::factory()->create([
+    $invoice = \Modules\Sales\Models\Invoice::factory()->create([
         'company_id' => $this->company->id,
         'customer_id' => $this->customer->id,
         'currency_id' => $this->currency->id,
         'status' => InvoiceStatus::Draft,
     ]);
 
-    InvoiceLine::factory()->create([
+    \Modules\Sales\Models\InvoiceLine::factory()->create([
         'invoice_id' => $invoice->id,
         'income_account_id' => $this->account->id,
     ]);

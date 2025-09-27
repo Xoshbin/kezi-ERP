@@ -31,7 +31,7 @@ class StockMoveValuation extends Model
     ];
 
     protected $casts = [
-        'cost_impact' => BaseCurrencyMoneyCast::class,
+        'cost_impact' => \Modules\Foundation\Casts\BaseCurrencyMoneyCast::class,
         'valuation_method' => ValuationMethod::class,
         'cost_source' => CostSource::class,
         'cost_warnings' => 'array',

@@ -16,11 +16,11 @@ class PaymentDocumentLinkSeeder extends Seeder
      */
     public function run(): void
     {
-        $payments = Payment::all();
+        $payments = \Modules\Payment\Models\Payment::all();
 
         foreach ($payments as $payment) {
             if ($payment->payment_type === 'customer') {
-                $invoice = Invoice::where('partner_id', $payment->partner_id)
+                $invoice = \Modules\Sales\Models\Invoice::where('partner_id', $payment->partner_id)
                     ->where('company_id', $payment->company_id)
                     ->first();
 
@@ -37,8 +37,8 @@ class PaymentDocumentLinkSeeder extends Seeder
                         ]
                     );
                 }
-            } elseif ($payment->payment_type === PartnerType::Vendor) {
-                $vendorBill = VendorBill::where('partner_id', $payment->partner_id)
+            } elseif ($payment->payment_type === \Modules\Foundation\Enums\Partners\PartnerType::Vendor) {
+                $vendorBill = \Modules\Purchase\Models\VendorBill::where('partner_id', $payment->partner_id)
                     ->where('company_id', $payment->company_id)
                     ->first();
 

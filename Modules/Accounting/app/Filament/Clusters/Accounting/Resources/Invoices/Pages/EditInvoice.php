@@ -50,14 +50,14 @@ class EditInvoice extends EditRecord
                     ->label(__('View PDF'))
                     ->icon('heroicon-o-document-text')
                     ->color('info')
-                    ->url(fn (Invoice $record) => route('invoices.pdf', $record))
+                    ->url(fn (\Modules\Sales\Models\Invoice $record) => route('invoices.pdf', $record))
                     ->openUrlInNewTab(),
 
                 Action::make('downloadPdf')
                     ->label(__('Download PDF'))
                     ->icon('heroicon-o-arrow-down-tray')
                     ->color('success')
-                    ->url(fn (Invoice $record) => route('invoices.pdf.download', $record)),
+                    ->url(fn (\Modules\Sales\Models\Invoice $record) => route('invoices.pdf.download', $record)),
             ])
                 ->label(__('PDF'))
                 ->icon('heroicon-o-document-text')
@@ -68,13 +68,13 @@ class EditInvoice extends EditRecord
                 ->label(__('Preview Posting'))
                 ->icon('heroicon-o-eye')
                 ->color('info')
-                ->visible(fn (Invoice $record): bool => $record->status === InvoiceStatus::Draft)
+                ->visible(fn (\Modules\Sales\Models\Invoice $record): bool => $record->status === InvoiceStatus::Draft)
                 ->requiresConfirmation()
                 ->modalHeading(__('Posting Preview'))
                 ->modalSubmitAction(false)
                 ->modalCancelActionLabel(__('Close'))
                 ->modalWidth('7xl')
-                ->modalContent(function (Invoice $record) {
+                ->modalContent(function (\Modules\Sales\Models\Invoice $record) {
                     $preview = app(BuildInvoicePostingPreviewAction::class)->execute($record);
 
                     return view('filament/accounting/invoices/preview-posting', [
@@ -87,8 +87,8 @@ class EditInvoice extends EditRecord
                 ->label(__('Export Preview (CSV)'))
                 ->icon('heroicon-o-arrow-down-tray')
                 ->color('gray')
-                ->visible(fn (Invoice $record): bool => $record->status === InvoiceStatus::Draft && config('app.debug') && ! app()->environment('production'))
-                ->action(function (Invoice $record): \Symfony\Component\HttpFoundation\StreamedResponse {
+                ->visible(fn (\Modules\Sales\Models\Invoice $record): bool => $record->status === InvoiceStatus::Draft && config('app.debug') && ! app()->environment('production'))
+                ->action(function (\Modules\Sales\Models\Invoice $record): \Symfony\Component\HttpFoundation\StreamedResponse {
                     $preview = app(BuildInvoicePostingPreviewAction::class)->execute($record);
                     $rows = [];
                     $rows[] = ['Account Code', 'Account Name', 'Description', 'Debit', 'Credit'];
@@ -118,8 +118,8 @@ class EditInvoice extends EditRecord
                 ->label(__('Export Preview (PDF)'))
                 ->icon('heroicon-o-document-arrow-down')
                 ->color('gray')
-                ->visible(fn (Invoice $record): bool => $record->status === InvoiceStatus::Draft && config('app.debug') && ! app()->environment('production'))
-                ->action(function (Invoice $record): \Symfony\Component\HttpFoundation\StreamedResponse {
+                ->visible(fn (\Modules\Sales\Models\Invoice $record): bool => $record->status === InvoiceStatus::Draft && config('app.debug') && ! app()->environment('production'))
+                ->action(function (\Modules\Sales\Models\Invoice $record): \Symfony\Component\HttpFoundation\StreamedResponse {
                     $preview = app(BuildInvoicePostingPreviewAction::class)->execute($record);
                     $pdf = Pdf::loadView('filament/accounting/invoices/preview-posting-pdf', [
                         'preview' => $preview,
@@ -138,9 +138,9 @@ class EditInvoice extends EditRecord
                 ->label(__('invoice.confirm_invoice'))
                 ->color('success')
                 ->requiresConfirmation()
-                ->visible(fn (Invoice $record): bool => $record->status === InvoiceStatus::Draft)
-                ->disabled(fn (Invoice $record): bool => $record->invoiceLines->isEmpty() || $record->total_amount->isZero())
-                ->action(function (Invoice $record): void {
+                ->visible(fn (\Modules\Sales\Models\Invoice $record): bool => $record->status === InvoiceStatus::Draft)
+                ->disabled(fn (\Modules\Sales\Models\Invoice $record): bool => $record->invoiceLines->isEmpty() || $record->total_amount->isZero())
+                ->action(function (\Modules\Sales\Models\Invoice $record): void {
                     $this->save();
                     $service = app(InvoiceService::class);
                     try {
@@ -192,15 +192,15 @@ class EditInvoice extends EditRecord
                     MoneyInput::make('amount')
                         ->label(__('payment.form.amount'))
                         ->currencyField('currency_id')
-                        ->default(fn (Invoice $record) => $record->getRemainingAmount())
+                        ->default(fn (\Modules\Sales\Models\Invoice $record) => $record->getRemainingAmount())
                         ->required(),
                     TextInput::make('reference')
                         ->label(__('payment.form.reference'))
                         ->placeholder(__('Optional reference')),
                     Hidden::make('currency_id')
-                        ->default(fn (Invoice $record) => $record->currency_id),
+                        ->default(fn (\Modules\Sales\Models\Invoice $record) => $record->currency_id),
                 ])
-                ->action(function (Invoice $record, array $data) {
+                ->action(function (\Modules\Sales\Models\Invoice $record, array $data) {
                     try {
                         $currency = $record->currency;
 
@@ -246,7 +246,7 @@ class EditInvoice extends EditRecord
                             ->send();
                     }
                 })
-                ->visible(fn (Invoice $record) => $record->status === InvoiceStatus::Posted &&
+                ->visible(fn (\Modules\Sales\Models\Invoice $record) => $record->status === InvoiceStatus::Posted &&
                     ! $record->getRemainingAmount()->isZero()
                 ),
 
@@ -270,7 +270,7 @@ class EditInvoice extends EditRecord
 
             DeleteAction::make()
                 ->action(function (Model $record) {
-                    if (! $record instanceof \App\Models\Invoice) {
+                    if (! $record instanceof \Modules\Sales\Models\Invoice) {
                         throw new \Exception('Invalid record type');
                     }
                     app(InvoiceService::class)->delete($record);
@@ -284,7 +284,7 @@ class EditInvoice extends EditRecord
     protected function mutateFormDataBeforeFill(array $data): array
     {
         $record = $this->getRecord();
-        if (! $record instanceof Invoice) {
+        if (! $record instanceof \Modules\Sales\Models\Invoice) {
             return $data;
         }
         $record->loadMissing('invoiceLines', 'currency');
@@ -305,9 +305,9 @@ class EditInvoice extends EditRecord
 
     protected function handleRecordUpdate(Model $record, array $data): Model
     {
-        if (! $record instanceof Invoice) {
+        if (! $record instanceof \Modules\Sales\Models\Invoice) {
             // Filament guarantees the record is an Invoice, but add guard for Larastan
-            $record = Invoice::findOrFail((int) $record->getKey());
+            $record = \Modules\Sales\Models\Invoice::findOrFail((int) $record->getKey());
         }
 
         $lineDTOs = [];

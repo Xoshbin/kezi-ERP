@@ -95,7 +95,7 @@ class StockPickingFactory extends Factory
     public function withPartner(): static
     {
         return $this->state(fn (array $attributes) => [
-            'partner_id' => Partner::factory(),
+            'partner_id' => \Modules\Foundation\Models\Partner::factory(),
         ]);
     }
 }

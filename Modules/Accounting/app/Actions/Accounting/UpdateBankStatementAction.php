@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\DB;
 
 class UpdateBankStatementAction
 {
-    public function execute(UpdateBankStatementDTO $dto): BankStatement
+    public function execute(UpdateBankStatementDTO $dto): \Modules\Accounting\Models\BankStatement
     {
         return DB::transaction(function () use ($dto) {
             $bankStatement = $dto->bankStatement;

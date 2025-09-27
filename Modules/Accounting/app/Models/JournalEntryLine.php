@@ -104,11 +104,11 @@ class JournalEntryLine extends Model
      */
     protected $casts = [
         // These fields are ALWAYS in the company's base currency
-        'debit' => BaseCurrencyMoneyCast::class,
-        'credit' => BaseCurrencyMoneyCast::class,
+        'debit' => \Modules\Foundation\Casts\BaseCurrencyMoneyCast::class,
+        'credit' => \Modules\Foundation\Casts\BaseCurrencyMoneyCast::class,
 
         // This field is in the foreign currency
-        'original_currency_amount' => OriginalCurrencyMoneyCast::class,
+        'original_currency_amount' => \Modules\Foundation\Casts\OriginalCurrencyMoneyCast::class,
 
         // Cast the rate for correct handling
         'exchange_rate_at_transaction' => 'float',

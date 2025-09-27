@@ -60,7 +60,7 @@ use Illuminate\Support\Carbon;
  *
  * @mixin \Eloquent
  */
-#[ObservedBy([AuditLogObserver::class])]
+#[ObservedBy([\Modules\Foundation\Observers\AuditLogObserver::class])]
 class PaymentInstallment extends Model
 {
     /** @use HasFactory<\Database\Factories\PaymentInstallmentFactory> */
@@ -91,8 +91,8 @@ class PaymentInstallment extends Model
      */
     protected $casts = [
         'due_date' => 'date',
-        'amount' => DocumentCurrencyMoneyCast::class,
-        'paid_amount' => DocumentCurrencyMoneyCast::class,
+        'amount' => \Modules\Foundation\Casts\DocumentCurrencyMoneyCast::class,
+        'paid_amount' => \Modules\Foundation\Casts\DocumentCurrencyMoneyCast::class,
         'status' => InstallmentStatus::class,
         'discount_percentage' => 'float',
         'discount_deadline' => 'date',

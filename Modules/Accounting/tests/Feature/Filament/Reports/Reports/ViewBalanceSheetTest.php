@@ -33,12 +33,12 @@ describe('ViewBalanceSheet Filament Page', function () {
         $journal = Journal::factory()->for($this->company)->create();
 
         // Create accounts
-        $bankAccount = Account::factory()->for($this->company)->create(['type' => AccountType::BankAndCash]);
-        $arAccount = Account::factory()->for($this->company)->create(['type' => AccountType::Receivable]);
-        $apAccount = Account::factory()->for($this->company)->create(['type' => AccountType::Payable]);
-        $equityAccount = Account::factory()->for($this->company)->create(['type' => AccountType::Equity]);
-        $salesAccount = Account::factory()->for($this->company)->create(['type' => AccountType::Income]);
-        $expenseAccount = Account::factory()->for($this->company)->create(['type' => AccountType::Expense]);
+        $bankAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create(['type' => \Modules\Accounting\Enums\Accounting\AccountType::BankAndCash]);
+        $arAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create(['type' => \Modules\Accounting\Enums\Accounting\AccountType::Receivable]);
+        $apAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create(['type' => \Modules\Accounting\Enums\Accounting\AccountType::Payable]);
+        $equityAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create(['type' => \Modules\Accounting\Enums\Accounting\AccountType::Equity]);
+        $salesAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create(['type' => \Modules\Accounting\Enums\Accounting\AccountType::Income]);
+        $expenseAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create(['type' => \Modules\Accounting\Enums\Accounting\AccountType::Expense]);
 
         // Create transactions
         // 1. Initial capital investment
@@ -100,10 +100,10 @@ describe('ViewBalanceSheet Filament Page', function () {
         $currency = $this->company->currency->code;
         $journal = Journal::factory()->for($this->company)->create();
 
-        $bankAccount = Account::factory()->for($this->company)->create(['type' => AccountType::BankAndCash]);
-        $equityAccount = Account::factory()->for($this->company)->create(['type' => AccountType::Equity]);
-        $salesAccount = Account::factory()->for($this->company)->create(['type' => AccountType::Income]);
-        $expenseAccount = Account::factory()->for($this->company)->create(['type' => AccountType::Expense]);
+        $bankAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create(['type' => \Modules\Accounting\Enums\Accounting\AccountType::BankAndCash]);
+        $equityAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create(['type' => \Modules\Accounting\Enums\Accounting\AccountType::Equity]);
+        $salesAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create(['type' => \Modules\Accounting\Enums\Accounting\AccountType::Income]);
+        $expenseAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create(['type' => \Modules\Accounting\Enums\Accounting\AccountType::Expense]);
 
         // Initial capital
         $entry1 = JournalEntry::factory()->for($this->company)->for($journal)
@@ -139,8 +139,8 @@ describe('ViewBalanceSheet Filament Page', function () {
         $currency = $this->company->currency->code;
         $journal = Journal::factory()->for($this->company)->create();
 
-        $bankAccount = Account::factory()->for($this->company)->create(['type' => AccountType::BankAndCash]);
-        $equityAccount = Account::factory()->for($this->company)->create(['type' => AccountType::Equity]);
+        $bankAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create(['type' => \Modules\Accounting\Enums\Accounting\AccountType::BankAndCash]);
+        $equityAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create(['type' => \Modules\Accounting\Enums\Accounting\AccountType::Equity]);
 
         // Posted transaction
         $entry1 = JournalEntry::factory()->for($this->company)->for($journal)

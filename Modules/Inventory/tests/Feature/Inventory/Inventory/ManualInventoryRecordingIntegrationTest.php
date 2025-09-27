@@ -47,8 +47,8 @@ class ManualInventoryRecordingIntegrationTest extends TestCase
     protected $cogsAccount;
 
     // Test-specific properties
-    protected Product $product;
-    protected VendorBill $vendorBill;
+    protected \Modules\Product\Models\Product $product;
+    protected \Modules\Purchase\Models\VendorBill $vendorBill;
 
     protected function setUp(): void
     {
@@ -64,16 +64,16 @@ class ManualInventoryRecordingIntegrationTest extends TestCase
         ]);
 
         // Create test product with FIFO valuation
-        $this->product = Product::factory()->create([
+        $this->product = \Modules\Product\Models\Product::factory()->create([
             'company_id' => $this->company->id,
-            'type' => ProductType::Storable,
+            'type' => \Modules\Product\Enums\Products\ProductType::Storable,
             'inventory_valuation_method' => ValuationMethod::FIFO,
             'quantity_on_hand' => 0,
             'average_cost' => Money::of(0, $this->company->currency->code),
         ]);
 
         // Create and post vendor bill
-        $this->vendorBill = VendorBill::factory()->create([
+        $this->vendorBill = \Modules\Purchase\Models\VendorBill::factory()->create([
             'company_id' => $this->company->id,
             'vendor_id' => $this->vendor->id,
             'status' => VendorBillStatus::Posted,
@@ -162,7 +162,7 @@ class ManualInventoryRecordingIntegrationTest extends TestCase
     public function test_cost_determination_uses_latest_vendor_bill(): void
     {
         // Create second vendor bill with different price
-        $secondVendorBill = VendorBill::factory()->create([
+        $secondVendorBill = \Modules\Purchase\Models\VendorBill::factory()->create([
             'company_id' => $this->company->id,
             'vendor_id' => $this->vendor->id,
             'status' => VendorBillStatus::Posted,
@@ -212,9 +212,9 @@ class ManualInventoryRecordingIntegrationTest extends TestCase
     public function test_cost_determination_fails_without_posted_vendor_bills(): void
     {
         // Create product without any vendor bills and zero average cost
-        $productWithoutBills = Product::factory()->create([
+        $productWithoutBills = \Modules\Product\Models\Product::factory()->create([
             'company_id' => $this->company->id,
-            'type' => ProductType::Storable,
+            'type' => \Modules\Product\Enums\Products\ProductType::Storable,
             'inventory_valuation_method' => ValuationMethod::FIFO,
             'average_cost' => Money::of(0, $this->company->currency->code),
         ]);

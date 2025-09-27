@@ -52,13 +52,13 @@ class EditVendorBill extends EditRecord
                 ->label(__('Preview Posting'))
                 ->icon('heroicon-o-eye')
                 ->color('info')
-                ->visible(fn (VendorBill $record): bool => $record->status === VendorBillStatus::Draft)
+                ->visible(fn (\Modules\Purchase\Models\VendorBill $record): bool => $record->status === VendorBillStatus::Draft)
                 ->requiresConfirmation()
                 ->modalHeading(__('Posting Preview'))
                 ->modalSubmitAction(false)
                 ->modalCancelActionLabel(__('Close'))
                 ->modalWidth('7xl')
-                ->modalContent(function (VendorBill $record) {
+                ->modalContent(function (\Modules\Purchase\Models\VendorBill $record) {
                     $preview = app(BuildVendorBillPostingPreviewAction::class)->execute($record);
 
                     return view('filament/accounting/vendor-bills/preview-posting', [
@@ -71,8 +71,8 @@ class EditVendorBill extends EditRecord
                 ->label(__('Export Preview (CSV)'))
                 ->icon('heroicon-o-arrow-down-tray')
                 ->color('gray')
-                ->visible(fn (VendorBill $record): bool => $record->status === VendorBillStatus::Draft && config('app.debug') && ! app()->environment('production'))
-                ->action(function (VendorBill $record): \Symfony\Component\HttpFoundation\StreamedResponse {
+                ->visible(fn (\Modules\Purchase\Models\VendorBill $record): bool => $record->status === VendorBillStatus::Draft && config('app.debug') && ! app()->environment('production'))
+                ->action(function (\Modules\Purchase\Models\VendorBill $record): \Symfony\Component\HttpFoundation\StreamedResponse {
                     $preview = app(BuildVendorBillPostingPreviewAction::class)->execute($record);
                     $rows = [];
                     $rows[] = ['Account Code', 'Account Name', 'Description', 'Debit', 'Credit'];
@@ -101,8 +101,8 @@ class EditVendorBill extends EditRecord
                 ->label(__('Export Preview (PDF)'))
                 ->icon('heroicon-o-document-arrow-down')
                 ->color('gray')
-                ->visible(fn (VendorBill $record): bool => $record->status === VendorBillStatus::Draft && config('app.debug') && ! app()->environment('production'))
-                ->action(function (VendorBill $record): \Symfony\Component\HttpFoundation\StreamedResponse {
+                ->visible(fn (\Modules\Purchase\Models\VendorBill $record): bool => $record->status === VendorBillStatus::Draft && config('app.debug') && ! app()->environment('production'))
+                ->action(function (\Modules\Purchase\Models\VendorBill $record): \Symfony\Component\HttpFoundation\StreamedResponse {
                     $preview = app(BuildVendorBillPostingPreviewAction::class)->execute($record);
                     $pdf = Pdf::loadView('filament/accounting/vendor-bills/preview-posting-pdf', [
                         'preview' => $preview,
@@ -121,9 +121,9 @@ class EditVendorBill extends EditRecord
                 ->label(__('vendor_bill.confirm'))
                 ->color('success')
                 ->requiresConfirmation()
-                ->visible(fn (VendorBill $record): bool => $record->status === VendorBillStatus::Draft)
-                ->disabled(fn (VendorBill $record): bool => $record->lines->isEmpty() || $record->total_amount->isZero())
-                ->action(function (VendorBill $record): void {
+                ->visible(fn (\Modules\Purchase\Models\VendorBill $record): bool => $record->status === VendorBillStatus::Draft)
+                ->disabled(fn (\Modules\Purchase\Models\VendorBill $record): bool => $record->lines->isEmpty() || $record->total_amount->isZero())
+                ->action(function (\Modules\Purchase\Models\VendorBill $record): void {
                     $vendorBillService = app(VendorBillService::class);
                     try {
                         $user = Auth::user();
@@ -192,15 +192,15 @@ class EditVendorBill extends EditRecord
                     MoneyInput::make('amount')
                         ->label('Amount')
                         ->currencyField('currency_id')
-                        ->default(fn (VendorBill $record) => $record->getRemainingAmount())
+                        ->default(fn (\Modules\Purchase\Models\VendorBill $record) => $record->getRemainingAmount())
                         ->required(),
                     TextInput::make('reference')
                         ->label('Reference')
                         ->placeholder('Optional reference'),
                     Hidden::make('currency_id')
-                        ->default(fn (VendorBill $record) => $record->currency_id),
+                        ->default(fn (\Modules\Purchase\Models\VendorBill $record) => $record->currency_id),
                 ])
-                ->action(function (VendorBill $record, array $data): void {
+                ->action(function (\Modules\Purchase\Models\VendorBill $record, array $data): void {
                     try {
                         $currency = $record->currency;
 
@@ -246,13 +246,13 @@ class EditVendorBill extends EditRecord
                             ->send();
                     }
                 })
-                ->visible(fn (VendorBill $record) => $record->status === VendorBillStatus::Posted &&
+                ->visible(fn (\Modules\Purchase\Models\VendorBill $record) => $record->status === VendorBillStatus::Posted &&
                     ! $record->getRemainingAmount()->isZero()
                 ),
 
             DeleteAction::make()
                 ->action(function (Model $record) {
-                    if (! $record instanceof \App\Models\VendorBill) {
+                    if (! $record instanceof \Modules\Purchase\Models\VendorBill) {
                         throw new \Exception('Invalid record type');
                     }
                     app(VendorBillService::class)->delete($record);
@@ -265,7 +265,7 @@ class EditVendorBill extends EditRecord
 
     protected function handleRecordUpdate(Model $record, array $data): Model
     {
-        if (! $record instanceof VendorBill) {
+        if (! $record instanceof \Modules\Purchase\Models\VendorBill) {
             throw new \InvalidArgumentException('Expected VendorBill record');
         }
 
@@ -323,7 +323,7 @@ class EditVendorBill extends EditRecord
         }
 
         $record = $this->getRecord();
-        if (! $record instanceof VendorBill) {
+        if (! $record instanceof \Modules\Purchase\Models\VendorBill) {
             return;
         }
 
@@ -358,7 +358,7 @@ class EditVendorBill extends EditRecord
     protected function mutateFormDataBeforeFill(array $data): array
     {
         $record = $this->getRecord();
-        if (! $record instanceof VendorBill) {
+        if (! $record instanceof \Modules\Purchase\Models\VendorBill) {
             return $data;
         }
 

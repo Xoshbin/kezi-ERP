@@ -21,7 +21,7 @@ beforeEach(function () {
 
 it('configures createOption forms and can post repayment after creating needed records', function () {
     $code = $this->company->currency->code;
-    $loan = LoanAgreement::factory()->for($this->company)->create([
+    $loan = \Modules\Accounting\Models\LoanAgreement::factory()->for($this->company)->create([
         'currency_id' => $this->company->currency_id,
         'principal_amount' => Money::of('10000', $code),
         'duration_months' => 12,
@@ -40,20 +40,20 @@ it('configures createOption forms and can post repayment after creating needed r
         'name' => 'Bank Journal',
         'short_code' => 'BNK',
     ]);
-    $bank = Account::factory()->for($this->company)->create([
+    $bank = \Modules\Accounting\Models\Account::factory()->for($this->company)->create([
         'code' => '100100',
         'name' => 'Main Bank',
-        'type' => AccountType::BankAndCash,
+        'type' => \Modules\Accounting\Enums\Accounting\AccountType::BankAndCash,
     ]);
-    $loanAcc = Account::factory()->for($this->company)->create([
+    $loanAcc = \Modules\Accounting\Models\Account::factory()->for($this->company)->create([
         'code' => '210100',
         'name' => 'Loan Payable',
-        'type' => AccountType::NonCurrentLiabilities,
+        'type' => \Modules\Accounting\Enums\Accounting\AccountType::NonCurrentLiabilities,
     ]);
-    $accrued = Account::factory()->for($this->company)->create([
+    $accrued = \Modules\Accounting\Models\Account::factory()->for($this->company)->create([
         'code' => '215500',
         'name' => 'Accrued Interest',
-        'type' => AccountType::CurrentLiabilities,
+        'type' => \Modules\Accounting\Enums\Accounting\AccountType::CurrentLiabilities,
     ]);
 
     // Submit the action using created options

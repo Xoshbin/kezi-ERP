@@ -42,13 +42,13 @@ test('a journal entry line cannot be deleted from a posted journal entry', funct
     ]);
     $lineToDelete = $journalEntry->lines()->create([
         'company_id' => $this->company->id,
-        'account_id' => Account::factory()->for($this->company)->create()->id,
+        'account_id' => \Modules\Accounting\Models\Account::factory()->for($this->company)->create()->id,
         'debit' => Money::of(100, $currencyCode),
         'credit' => Money::of(0, $currencyCode),
     ]);
     $journalEntry->lines()->create([
         'company_id' => $this->company->id,
-        'account_id' => Account::factory()->for($this->company)->create()->id,
+        'account_id' => \Modules\Accounting\Models\Account::factory()->for($this->company)->create()->id,
         'debit' => Money::of(0, $currencyCode),
         'credit' => Money::of(100, $currencyCode),
     ]);
@@ -75,8 +75,8 @@ test('a partner linked to a posted invoice cannot be deleted', function () {
      */
 
     // Arrange: Create a partner and a posted invoice linked to them.
-    $customer = Partner::factory()->for($this->company)->create();
-    Invoice::factory()->for($this->company)->create([
+    $customer = \Modules\Foundation\Models\Partner::factory()->for($this->company)->create();
+    \Modules\Sales\Models\Invoice::factory()->for($this->company)->create([
         'customer_id' => $customer->id,
         'currency_id' => $this->company->currency_id, // Ensure currency is set
         'status' => 'posted',
@@ -85,7 +85,7 @@ test('a partner linked to a posted invoice cannot be deleted', function () {
     // Act & Assert: Attempting to delete the partner should be blocked by our observer.
     expect(fn () => $customer->delete())
         ->toThrow(
-            DeletionNotAllowedException::class,
+            \Modules\Foundation\Exceptions\DeletionNotAllowedException::class,
             'Cannot delete a partner with associated financial documents (invoices, bills, or payments).'
         );
 
@@ -103,8 +103,8 @@ test('a product linked to a posted vendor bill line cannot be deleted', function
      */
 
     // Arrange: Create a product and a posted vendor bill.
-    $product = Product::factory()->for($this->company)->create();
-    $vendorBill = VendorBill::factory()->for($this->company)->create([
+    $product = \Modules\Product\Models\Product::factory()->for($this->company)->create();
+    $vendorBill = \Modules\Purchase\Models\VendorBill::factory()->for($this->company)->create([
         'status' => 'posted',
         'currency_id' => $this->company->currency_id,
     ]);
@@ -126,7 +126,7 @@ test('a product linked to a posted vendor bill line cannot be deleted', function
 
     // Assert: Attempting to delete the product should be blocked by the ProductObserver.
     expect(fn () => $product->delete())
-        ->toThrow(DeletionNotAllowedException::class, 'Cannot delete a product that has been used in transactions.');
+        ->toThrow(\Modules\Foundation\Exceptions\DeletionNotAllowedException::class, 'Cannot delete a product that has been used in transactions.');
 
     // Verify: The product must not have been soft-deleted.
     $this->assertNotSoftDeleted($product);
@@ -168,7 +168,7 @@ test('a posted invoice with lines cannot be deleted', function () {
      */
 
     // Arrange: Create a draft invoice with at least one line to satisfy business rules.
-    $invoice = Invoice::factory()->for($this->company)->withLines(1)->create([
+    $invoice = \Modules\Sales\Models\Invoice::factory()->for($this->company)->withLines(1)->create([
         'status' => InvoiceStatus::Draft,
         'currency_id' => $this->company->currency_id,
     ]);
@@ -181,7 +181,7 @@ test('a posted invoice with lines cannot be deleted', function () {
     app(\App\Services\InvoiceService::class)->confirm($invoice, $this->user);
 
     // Assert: Attempting to delete the now-posted invoice must fail.
-    $this->expectException(\App\Exceptions\DeletionNotAllowedException::class);
+    $this->expectException(\Modules\Foundation\Exceptions\DeletionNotAllowedException::class);
     app(\App\Services\InvoiceService::class)->delete($invoice);
 
     // Verify: The invoice and its journal entry must still exist.

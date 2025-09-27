@@ -24,8 +24,8 @@ class PayrollForm
                     Select::make('employee_id')
                         ->label(__('payroll.fields.employee'))
                         ->relationship('employee', 'first_name')
-                        ->getOptionLabelFromRecordUsing(fn (Employee $record): string => $record->full_name.' ('.$record->employee_number.')')
-                        ->getSearchResultsUsing(fn (string $search): array => Employee::where('is_active', true)
+                        ->getOptionLabelFromRecordUsing(fn (\Modules\HR\Models\Employee $record): string => $record->full_name.' ('.$record->employee_number.')')
+                        ->getSearchResultsUsing(fn (string $search): array => \Modules\HR\Models\Employee::where('is_active', true)
                             ->where('employment_status', 'active')
                             ->where(function ($query) use ($search) {
                                 $query->where('first_name', 'like', "%{$search}%")
@@ -34,7 +34,7 @@ class PayrollForm
                             })
                             ->limit(50)
                             ->get()
-                            ->mapWithKeys(fn (Employee $employee): array => [
+                            ->mapWithKeys(fn (\Modules\HR\Models\Employee $employee): array => [
                                 $employee->id => $employee->full_name.' ('.$employee->employee_number.')',
                             ])
                             ->toArray()
@@ -44,7 +44,7 @@ class PayrollForm
                         ->preload()
                         ->columnSpan(2),
 
-                    TranslatableSelect::forModel('currency_id', Currency::class)
+                    TranslatableSelect::forModel('currency_id', \Modules\Foundation\Models\Currency::class)
                         ->label(__('payroll.fields.currency'))
                         ->searchable()
                         ->searchableFields(['name', 'code'])
@@ -58,7 +58,7 @@ class PayrollForm
                             return "{$currencyName} ({$record->code})";
                         })
                         ->required()
-                        ->default(fn () => Currency::where('code', 'IQD')->first()?->id)
+                        ->default(fn () => \Modules\Foundation\Models\Currency::where('code', 'IQD')->first()?->id)
                         ->columnSpan(1),
 
                     DatePicker::make('period_start_date')

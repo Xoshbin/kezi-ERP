@@ -12,7 +12,7 @@ class AccountService
     /**
      * @param  array<string, mixed>  $data
      */
-    public function create(array $data): Account
+    public function create(array $data): \Modules\Accounting\Models\Account
     {
         Validator::make($data, [
             'code' => [
@@ -24,13 +24,13 @@ class AccountService
             'company_id' => ['required', 'exists:companies,id'],
         ])->validate();
 
-        return Account::create($data);
+        return \Modules\Accounting\Models\Account::create($data);
     }
 
     /**
      * @param  array<string, mixed>  $data
      */
-    public function update(Account $account, array $data): Account
+    public function update(\Modules\Accounting\Models\Account $account, array $data): \Modules\Accounting\Models\Account
     {
         Validator::make($data, [
             'code' => [
@@ -47,10 +47,10 @@ class AccountService
         return $account;
     }
 
-    public function delete(Account $account): void
+    public function delete(\Modules\Accounting\Models\Account $account): void
     {
         if ($account->journalEntryLines()->exists()) {
-            throw new DeletionNotAllowedException('Cannot delete account with associated financial records.');
+            throw new \Modules\Foundation\Exceptions\DeletionNotAllowedException('Cannot delete account with associated financial records.');
         }
 
         $account->delete();

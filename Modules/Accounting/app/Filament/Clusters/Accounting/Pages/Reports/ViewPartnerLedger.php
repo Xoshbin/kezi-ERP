@@ -76,7 +76,7 @@ class ViewPartnerLedger extends Page
                                     return [];
                                 }
 
-                                return Partner::where('company_id', $user->company_id)
+                                return \Modules\Foundation\Models\Partner::where('company_id', $user->company_id)
                                     ->with(['receivableAccount', 'payableAccount'])
                                     ->get()
                                     ->mapWithKeys(function ($partner) {
@@ -129,8 +129,8 @@ class ViewPartnerLedger extends Page
         }
 
         $company = Company::findOrFail($user->company_id);
-        $partner = Partner::findOrFail($this->partnerId);
-        $service = app(PartnerLedgerService::class);
+        $partner = \Modules\Foundation\Models\Partner::findOrFail($this->partnerId);
+        $service = app(\Modules\Accounting\Services\Reports\PartnerLedgerService::class);
 
         $report = $service->generate(
             $company,
@@ -144,19 +144,19 @@ class ViewPartnerLedger extends Page
             'partnerId' => $report->partnerId,
             'partnerName' => $report->partnerName,
             'currency' => $report->currency,
-            'openingBalance' => NumberFormatter::formatMoneyTo($report->openingBalance),
+            'openingBalance' => \Modules\Foundation\Support\NumberFormatter::formatMoneyTo($report->openingBalance),
             'openingBalanceAmount' => $report->openingBalance->getAmount()->toFloat(),
-            'closingBalance' => NumberFormatter::formatMoneyTo($report->closingBalance),
+            'closingBalance' => \Modules\Foundation\Support\NumberFormatter::formatMoneyTo($report->closingBalance),
             'closingBalanceAmount' => $report->closingBalance->getAmount()->toFloat(),
             'transactionLines' => $report->transactionLines->map(fn ($line) => [
                 'date' => $line->date->format('Y-m-d'),
                 'reference' => $line->reference,
                 'transactionType' => $line->transactionType,
-                'debit' => NumberFormatter::formatMoneyTo($line->debit),
+                'debit' => \Modules\Foundation\Support\NumberFormatter::formatMoneyTo($line->debit),
                 'debitAmount' => $line->debit->getAmount()->toFloat(),
-                'credit' => NumberFormatter::formatMoneyTo($line->credit),
+                'credit' => \Modules\Foundation\Support\NumberFormatter::formatMoneyTo($line->credit),
                 'creditAmount' => $line->credit->getAmount()->toFloat(),
-                'balance' => NumberFormatter::formatMoneyTo($line->balance),
+                'balance' => \Modules\Foundation\Support\NumberFormatter::formatMoneyTo($line->balance),
                 'balanceAmount' => $line->balance->getAmount()->toFloat(),
             ])->toArray(),
         ];

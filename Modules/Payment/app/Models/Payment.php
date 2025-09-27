@@ -51,7 +51,7 @@ use Illuminate\Support\Carbon;
  * @property-read Collection<int, VendorBill> $vendorBills
  * @property-read int|null $vendor_bills_count
  *
- * @method static PaymentFactory factory($count = null, $state = [])
+ * @method static \Modules\Payment\Database\Factories\PaymentFactory factory($count = null, $state = [])
  * @method static Builder<static>|Payment newModelQuery()
  * @method static Builder<static>|Payment newQuery()
  * @method static Builder<static>|Payment query()
@@ -71,7 +71,7 @@ use Illuminate\Support\Carbon;
  *
  * @mixin \Eloquent
  */
-#[ObservedBy([AuditLogObserver::class, PaymentObserver::class])]
+#[ObservedBy([\Modules\Foundation\Observers\AuditLogObserver::class, PaymentObserver::class])]
 class Payment extends Model
 {
     /** @use HasFactory<\Database\Factories\PaymentFactory> */
@@ -107,8 +107,8 @@ class Payment extends Model
      */
     protected $casts = [
         'payment_date' => 'date', // Casts to a Carbon date object [3, 11].
-        'amount' => DocumentCurrencyMoneyCast::class, // Payment amount in payment currency
-        'amount_company_currency' => BaseCurrencyMoneyCast::class, // Payment amount in company base currency
+        'amount' => \Modules\Foundation\Casts\DocumentCurrencyMoneyCast::class, // Payment amount in payment currency
+        'amount_company_currency' => \Modules\Foundation\Casts\BaseCurrencyMoneyCast::class, // Payment amount in company base currency
         'exchange_rate_at_payment' => 'decimal:10',
         'payment_type' => PaymentType::class,
         'payment_method' => PaymentMethod::class,

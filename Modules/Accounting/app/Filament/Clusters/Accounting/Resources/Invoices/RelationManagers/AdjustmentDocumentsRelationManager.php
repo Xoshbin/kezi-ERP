@@ -48,7 +48,7 @@ class AdjustmentDocumentsRelationManager extends RelationManager
                             ->default(function (): ?int {
                                 $owner = $this->getOwnerRecord();
 
-                                return $owner instanceof \App\Models\Invoice ? $owner->company_id : null;
+                                return $owner instanceof \Modules\Sales\Models\Invoice ? $owner->company_id : null;
                             }),
 
                         Select::make('currency_id')
@@ -58,7 +58,7 @@ class AdjustmentDocumentsRelationManager extends RelationManager
                             ->default(function (): ?int {
                                 $owner = $this->getOwnerRecord();
 
-                                return $owner instanceof \App\Models\Invoice ? $owner->currency_id : null;
+                                return $owner instanceof \Modules\Sales\Models\Invoice ? $owner->currency_id : null;
                             }),
 
                         Select::make('type')
@@ -195,7 +195,7 @@ class AdjustmentDocumentsRelationManager extends RelationManager
                     ->label(__('invoice.adjustment_documents_relation_manager.create_adjustment'))
                     ->mutateDataUsing(function (array $data): array {
                         $owner = $this->getOwnerRecord();
-                        $data['original_invoice_id'] = $owner instanceof \App\Models\Invoice ? $owner->getKey() : null;
+                        $data['original_invoice_id'] = $owner instanceof \Modules\Sales\Models\Invoice ? $owner->getKey() : null;
 
                         return $data;
                     }),
@@ -203,9 +203,9 @@ class AdjustmentDocumentsRelationManager extends RelationManager
             ->recordActions([
                 ViewAction::make(),
                 EditAction::make()
-                    ->visible(fn (AdjustmentDocument $record): bool => $record->status === AdjustmentDocumentStatus::Draft),
+                    ->visible(fn (\Modules\Inventory\Models\AdjustmentDocument $record): bool => $record->status === AdjustmentDocumentStatus::Draft),
                 DeleteAction::make()
-                    ->visible(fn (AdjustmentDocument $record): bool => $record->status === AdjustmentDocumentStatus::Draft),
+                    ->visible(fn (\Modules\Inventory\Models\AdjustmentDocument $record): bool => $record->status === AdjustmentDocumentStatus::Draft),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([

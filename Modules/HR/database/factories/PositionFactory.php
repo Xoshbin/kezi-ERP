@@ -21,7 +21,7 @@ class PositionFactory extends Factory
      */
     public function definition(): array
     {
-        $currency = Currency::firstOrCreate(
+        $currency = \Modules\Foundation\Models\Currency::firstOrCreate(
             ['code' => 'IQD'],
             [
                 'name' => 'Iraqi Dinar',

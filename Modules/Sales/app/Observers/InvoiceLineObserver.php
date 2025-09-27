@@ -11,7 +11,7 @@ class InvoiceLineObserver
      * Handle the InvoiceLine "saved" event.
      * This is triggered on both creation and update.
      */
-    public function saved(InvoiceLine $invoiceLine): void
+    public function saved(\Modules\Sales\Models\InvoiceLine $invoiceLine): void
     {
         $this->updateParentInvoiceTotals($invoiceLine);
     }
@@ -19,7 +19,7 @@ class InvoiceLineObserver
     /**
      * Handle the InvoiceLine "deleted" event.
      */
-    public function deleted(InvoiceLine $invoiceLine): void
+    public function deleted(\Modules\Sales\Models\InvoiceLine $invoiceLine): void
     {
         $this->updateParentInvoiceTotals($invoiceLine);
     }
@@ -27,7 +27,7 @@ class InvoiceLineObserver
     /**
      * Recalculate and save the totals on the parent Invoice.
      */
-    protected function updateParentInvoiceTotals(InvoiceLine $invoiceLine): void
+    protected function updateParentInvoiceTotals(\Modules\Sales\Models\InvoiceLine $invoiceLine): void
     {
         // The invoice relationship is guaranteed to exist due to foreign key constraints
         // with cascadeOnDelete, so we can safely access it without null checks
@@ -45,7 +45,7 @@ class InvoiceLineObserver
     /**
      * Update company currency totals based on current line totals and exchange rate.
      */
-    protected function updateCompanyCurrencyTotals(\App\Models\Invoice $invoice): void
+    protected function updateCompanyCurrencyTotals(\Modules\Sales\Models\Invoice $invoice): void
     {
         if (! $invoice->exchange_rate_at_creation || $invoice->currency_id === $invoice->company->currency_id) {
             return; // No conversion needed

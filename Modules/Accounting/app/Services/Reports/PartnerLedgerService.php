@@ -16,7 +16,7 @@ use InvalidArgumentException;
 
 class PartnerLedgerService
 {
-    public function generate(Company $company, Partner $partner, Carbon $startDate, Carbon $endDate): PartnerLedgerDTO
+    public function generate(Company $company, \Modules\Foundation\Models\Partner $partner, Carbon $startDate, Carbon $endDate): PartnerLedgerDTO
     {
         // Prerequisite: Ensure the partner is correctly configured.
         if (is_null($partner->receivable_account_id) || is_null($partner->payable_account_id)) {

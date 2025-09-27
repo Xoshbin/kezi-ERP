@@ -20,10 +20,10 @@ class MoneyInputInvoiceProductSelectionTest extends TestCase
 
     private Company $company;
     private User $user;
-    private Currency $currency;
-    private Partner $customer;
-    private Product $product;
-    private Account $incomeAccount;
+    private \Modules\Foundation\Models\Currency $currency;
+    private \Modules\Foundation\Models\Partner $customer;
+    private \Modules\Product\Models\Product $product;
+    private \Modules\Accounting\Models\Account $incomeAccount;
 
     protected function setUp(): void
     {
@@ -32,21 +32,21 @@ class MoneyInputInvoiceProductSelectionTest extends TestCase
         // Create test data
         $this->company = Company::factory()->create();
         $this->user = User::factory()->create();
-        $this->currency = Currency::factory()->create(['code' => 'USD']);
+        $this->currency = \Modules\Foundation\Models\Currency::factory()->create(['code' => 'USD']);
         
         $this->company->update(['currency_id' => $this->currency->id]);
         
-        $this->customer = Partner::factory()->customer()->create([
+        $this->customer = \Modules\Foundation\Models\Partner::factory()->customer()->create([
             'company_id' => $this->company->id,
         ]);
 
-        $this->incomeAccount = Account::factory()->create([
+        $this->incomeAccount = \Modules\Accounting\Models\Account::factory()->create([
             'company_id' => $this->company->id,
             'type' => 'income',
         ]);
 
         // Create a product with a specific Money unit price
-        $this->product = Product::factory()->create([
+        $this->product = \Modules\Product\Models\Product::factory()->create([
             'company_id' => $this->company->id,
             'name' => 'Test Invoice Product',
             'description' => 'Test product for invoice',
@@ -107,7 +107,7 @@ class MoneyInputInvoiceProductSelectionTest extends TestCase
     public function it_handles_products_with_different_price_formats_in_invoice(): void
     {
         // Test with integer price
-        $integerProduct = Product::factory()->create([
+        $integerProduct = \Modules\Product\Models\Product::factory()->create([
             'company_id' => $this->company->id,
             'name' => 'Integer Price Product',
             'description' => 'Product with integer price',
@@ -116,7 +116,7 @@ class MoneyInputInvoiceProductSelectionTest extends TestCase
         ]);
 
         // Test with decimal price
-        $decimalProduct = Product::factory()->create([
+        $decimalProduct = \Modules\Product\Models\Product::factory()->create([
             'company_id' => $this->company->id,
             'name' => 'Decimal Price Product',
             'description' => 'Product with decimal price',
@@ -158,7 +158,7 @@ class MoneyInputInvoiceProductSelectionTest extends TestCase
     public function it_handles_products_with_null_unit_price_in_invoice(): void
     {
         // Create a product with null unit price
-        $nullPriceProduct = Product::factory()->create([
+        $nullPriceProduct = \Modules\Product\Models\Product::factory()->create([
             'company_id' => $this->company->id,
             'name' => 'No Price Product',
             'description' => 'Product without price',
@@ -240,7 +240,7 @@ class MoneyInputInvoiceProductSelectionTest extends TestCase
     public function it_populates_description_from_product_description_not_name(): void
     {
         // Verify that the invoice uses product description, not name (unlike vendor bills)
-        $productWithDescription = Product::factory()->create([
+        $productWithDescription = \Modules\Product\Models\Product::factory()->create([
             'company_id' => $this->company->id,
             'name' => 'Product Name',
             'description' => 'Detailed product description',

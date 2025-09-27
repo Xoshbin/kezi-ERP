@@ -16,7 +16,7 @@ class FiscalPositionTaxMappingSeeder extends Seeder
     public function run(): void
     {
         // Fetch the domestic fiscal position
-        $domesticPosition = FiscalPosition::where('name->en', 'Domestic (Iraq)')->first();
+        $domesticPosition = \Modules\Accounting\Models\FiscalPosition::where('name->en', 'Domestic (Iraq)')->first();
 
         if (! $domesticPosition) {
             throw new RuntimeException('Fiscal position "Domestic (Iraq)" not found. Please run the FiscalPositionSeeder first.');
@@ -30,7 +30,7 @@ class FiscalPositionTaxMappingSeeder extends Seeder
         }
 
         // Create the tax mapping
-        FiscalPositionTaxMapping::updateOrCreate(
+        \Modules\Accounting\Models\FiscalPositionTaxMapping::updateOrCreate(
             [
                 'fiscal_position_id' => $domesticPosition->id,
                 'original_tax_id' => $vat10->id,

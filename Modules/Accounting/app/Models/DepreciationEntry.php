@@ -79,7 +79,7 @@ class DepreciationEntry extends Model
      */
     protected $casts = [
         'depreciation_date' => 'date', // Casts to Carbon instance, focusing on date part
-        'amount' => BaseCurrencyMoneyCast::class, // Ensures precision for currency amounts
+        'amount' => \Modules\Foundation\Casts\BaseCurrencyMoneyCast::class, // Ensures precision for currency amounts
         'journal_entry_id' => 'integer',
         'status' => DepreciationEntryStatus::class,
         'created_at' => 'datetime',

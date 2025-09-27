@@ -22,7 +22,7 @@ beforeEach(function () {
 });
 
 it('can render the list page', function () {
-    $products = Product::factory()->count(5)->create();
+    $products = \Modules\Product\Models\Product::factory()->count(5)->create();
 
     livewire(ListProducts::class)
         ->assertOk()
@@ -35,11 +35,11 @@ it('can render the create page', function () {
 });
 
 it('can create a product', function () {
-    $newProductData = Product::factory()->make();
+    $newProductData = \Modules\Product\Models\Product::factory()->make();
 
     // Required accounts for storable products
-    $incomeAccount = Account::factory()->for($this->company)->create();
-    $expenseAccount = Account::factory()->for($this->company)->create();
+    $incomeAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create();
+    $expenseAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create();
 
     livewire(CreateProduct::class)
         ->fillForm([
@@ -55,14 +55,14 @@ it('can create a product', function () {
         ->assertNotified()
         ->assertRedirect();
 
-    assertDatabaseHas(Product::class, [
+    assertDatabaseHas(\Modules\Product\Models\Product::class, [
         'name' => json_encode(['en' => $newProductData->name]),
         'sku' => $newProductData->sku,
     ]);
 });
 
 it('can render the edit page', function () {
-    $product = Product::factory()->create();
+    $product = \Modules\Product\Models\Product::factory()->create();
 
     livewire(EditProduct::class, [
         'record' => $product->id,
@@ -75,9 +75,9 @@ it('can render the edit page', function () {
 });
 
 it('can update a product', function () {
-    $product = Product::factory()->create();
+    $product = \Modules\Product\Models\Product::factory()->create();
 
-    $newProductData = Product::factory()->make();
+    $newProductData = \Modules\Product\Models\Product::factory()->make();
 
     livewire(EditProduct::class, [
         'record' => $product->id,
@@ -89,7 +89,7 @@ it('can update a product', function () {
         ->call('save')
         ->assertNotified();
 
-    assertDatabaseHas(Product::class, [
+    assertDatabaseHas(\Modules\Product\Models\Product::class, [
         'id' => $product->id,
         'name' => json_encode(['en' => $newProductData->name, 'ar' => '']),
         'sku' => $newProductData->sku,
@@ -97,7 +97,7 @@ it('can update a product', function () {
 });
 
 it('can delete a product', function () {
-    $product = Product::factory()->create();
+    $product = \Modules\Product\Models\Product::factory()->create();
 
     livewire(EditProduct::class, [
         'record' => $product->id,

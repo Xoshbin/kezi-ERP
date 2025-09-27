@@ -28,7 +28,7 @@ class WebInterfaceInvoicePostingTest extends TestCase
         \Filament\Facades\Filament::setTenant($company);
 
         // Create test data: 3 draft invoices with invoice lines for testing
-        Invoice::factory()->count(3)->withLines()->create([
+        \Modules\Sales\Models\Invoice::factory()->count(3)->withLines()->create([
             'status' => InvoiceStatus::Draft,
             'company_id' => $company->id,
         ]);
@@ -38,7 +38,7 @@ class WebInterfaceInvoicePostingTest extends TestCase
     {
 
         // Get some draft invoices from the seeded data
-        $draftInvoices = Invoice::where('status', InvoiceStatus::Draft)->take(3)->get();
+        $draftInvoices = \Modules\Sales\Models\Invoice::where('status', InvoiceStatus::Draft)->take(3)->get();
 
         $this->assertGreaterThanOrEqual(3, $draftInvoices->count(), 'Need at least 3 draft invoices from seeder');
 
@@ -108,7 +108,7 @@ class WebInterfaceInvoicePostingTest extends TestCase
     {
 
         // Get multiple draft invoices
-        $draftInvoices = Invoice::where('status', InvoiceStatus::Draft)->take(3)->get();
+        $draftInvoices = \Modules\Sales\Models\Invoice::where('status', InvoiceStatus::Draft)->take(3)->get();
 
         $this->assertGreaterThanOrEqual(3, $draftInvoices->count(), 'Need at least 3 draft invoices from seeder');
 
@@ -134,7 +134,7 @@ class WebInterfaceInvoicePostingTest extends TestCase
         $company = $draftInvoices->first()->company;
         $journalEntries = JournalEntry::where('company_id', $company->id)
             ->whereIn('source_id', $draftInvoices->pluck('id'))
-            ->where('source_type', Invoice::class)
+            ->where('source_type', \Modules\Sales\Models\Invoice::class)
             ->get();
 
         $references = $journalEntries->pluck('reference')->toArray();

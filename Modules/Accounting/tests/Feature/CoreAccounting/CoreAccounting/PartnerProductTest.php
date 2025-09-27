@@ -11,53 +11,53 @@ use Tests\Traits\WithConfiguredCompany;
 uses(RefreshDatabase::class, WithConfiguredCompany::class);
 
 test('a partner record is soft-deleted to preserve historical transaction context', function () {
-    $partner = Partner::factory()->for($this->company)->create();
+    $partner = \Modules\Foundation\Models\Partner::factory()->for($this->company)->create();
     $partner->delete();
 
     // Partners, as non-financial records, should be soft-deleted to maintain auditability [2-5].
     $this->assertSoftDeleted($partner);
-    expect(Partner::find($partner->id))->toBeNull(); // Verifies default query behavior
+    expect(\Modules\Foundation\Models\Partner::find($partner->id))->toBeNull(); // Verifies default query behavior
 });
 
 test('a soft-deleted partner can be retrieved using "withTrashed" for historical reporting', function () {
-    $partner = Partner::factory()->for($this->company)->create();
+    $partner = \Modules\Foundation\Models\Partner::factory()->for($this->company)->create();
     $partner->delete();
 
     // Ensures that historical data linked to soft-deleted entities is still accessible [2-5].
-    expect(Partner::withTrashed()->find($partner->id))->not->toBeNull();
+    expect(\Modules\Foundation\Models\Partner::withTrashed()->find($partner->id))->not->toBeNull();
 });
 
 test('a product record is soft-deleted to preserve its history and linkages', function () {
     // MODIFIED: The product factory needs a Money object for unit_price
     $currencyCode = $this->company->currency->code;
-    $product = Product::factory()->for($this->company)->create([
+    $product = \Modules\Product\Models\Product::factory()->for($this->company)->create([
         'unit_price' => Money::of(10, $currencyCode),
     ]);
     $product->delete();
 
     // Products, like partners, are non-financial and subject to soft deletion principles [2-5].
     $this->assertSoftDeleted($product);
-    expect(Product::find($product->id))->toBeNull();
+    expect(\Modules\Product\Models\Product::find($product->id))->toBeNull();
 });
 
 test('a soft-deleted product can be retrieved with "withTrashed" for historical analysis', function () {
     // MODIFIED: The product factory needs a Money object for unit_price
     $currencyCode = $this->company->currency->code;
-    $product = Product::factory()->for($this->company)->create([
+    $product = \Modules\Product\Models\Product::factory()->for($this->company)->create([
         'unit_price' => Money::of(10, $currencyCode),
     ]);
     $product->delete();
 
     // Verifies the ability to access product history even after deactivation [2-5].
-    expect(Product::withTrashed()->find($product->id))->not->toBeNull();
+    expect(\Modules\Product\Models\Product::withTrashed()->find($product->id))->not->toBeNull();
 });
 
 test('a product is correctly linked to its default income and expense general ledger accounts', function () {
-    $incomeAccount = Account::factory()->for($this->company)->create(['type' => 'income']);
-    $expenseAccount = Account::factory()->for($this->company)->create(['type' => 'expense']);
+    $incomeAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create(['type' => 'income']);
+    $expenseAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create(['type' => 'expense']);
     // MODIFIED: The product factory needs a Money object for unit_price
     $currencyCode = $this->company->currency->code;
-    $product = Product::factory()->for($this->company)->create([
+    $product = \Modules\Product\Models\Product::factory()->for($this->company)->create([
         'income_account_id' => $incomeAccount->id,
         'expense_account_id' => $expenseAccount->id,
         'unit_price' => Money::of(10, $currencyCode),
@@ -69,7 +69,7 @@ test('a product is correctly linked to its default income and expense general le
 });
 
 test('a tax is correctly linked to its designated general ledger tax account', function () {
-    $taxAccount = Account::factory()->for($this->company)->create(['type' => 'current_liabilities']); // e.g., VAT Payable
+    $taxAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create(['type' => 'current_liabilities']); // e.g., VAT Payable
     // MODIFIED: The tax factory needs a Money object for rate
     $currencyCode = $this->company->currency->code;
     $tax = Tax::factory()->for($this->company)->create([

@@ -15,10 +15,10 @@ use Illuminate\Support\Facades\DB;
 
 class ReclassifyLoanCurrentPortionAction
 {
-    public function __construct(private readonly CreateJournalEntryAction $createJE) {}
+    public function __construct(private readonly \Modules\Accounting\Actions\Accounting\CreateJournalEntryAction $createJE) {}
 
     public function execute(
-        LoanAgreement $loan,
+        \Modules\Accounting\Models\LoanAgreement $loan,
         User $user,
         int $journalId,
         int $longTermAccountId,
@@ -38,7 +38,7 @@ class ReclassifyLoanCurrentPortionAction
 
             // Sum principal components due in next N months after asOf
             $sum = Money::of(0, $code);
-            /** @var \Illuminate\Support\Collection<int, \App\Models\LoanScheduleEntry> $entries */
+            /** @var \Illuminate\Support\Collection<int, \Modules\Accounting\Models\LoanScheduleEntry> $entries */
             $entries = $loan->scheduleEntries()->orderBy('sequence')->get();
             foreach ($entries as $entry) {
                 if ($entry->due_date->lessThanOrEqualTo($asOf)) {
@@ -107,7 +107,7 @@ class ReclassifyLoanCurrentPortionAction
                 created_by_user_id: $user->id,
                 is_posted: true,
                 lines: $lines,
-                source_type: LoanAgreement::class,
+                source_type: \Modules\Accounting\Models\LoanAgreement::class,
                 source_id: $loan->id,
             );
 

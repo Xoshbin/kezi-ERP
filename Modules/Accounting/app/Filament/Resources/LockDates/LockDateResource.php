@@ -21,7 +21,7 @@ use Filament\Tables\Table;
 
 class LockDateResource extends Resource
 {
-    protected static ?string $model = LockDate::class;
+    protected static ?string $model = \Modules\Accounting\Models\LockDate::class;
 
     protected static ?int $navigationSort = 7;
 
@@ -57,8 +57,8 @@ class LockDateResource extends Resource
                                     ->mapWithKeys(fn (LockDateType $type) => [$type->value => $type->label()])
                             )
                             ->required()
-                            ->disabled(fn (?LockDate $record) => $record !== null && $record->lock_type === LockDateType::HardLock)
-                            ->dehydrated(fn (?LockDate $record) => $record === null),
+                            ->disabled(fn (?\Modules\Accounting\Models\LockDate $record) => $record !== null && $record->lock_type === LockDateType::HardLock)
+                            ->dehydrated(fn (?\Modules\Accounting\Models\LockDate $record) => $record === null),
                         DatePicker::make('locked_until')
                             ->label(__('lock_date.locked_until'))
                             ->required(),
@@ -77,9 +77,9 @@ class LockDateResource extends Resource
             ])
             ->recordActions([
                 EditAction::make()
-                    ->disabled(fn (LockDate $record) => $record->lock_type === LockDateType::HardLock),
+                    ->disabled(fn (\Modules\Accounting\Models\LockDate $record) => $record->lock_type === LockDateType::HardLock),
                 DeleteAction::make()
-                    ->disabled(fn (LockDate $record) => $record->lock_type === LockDateType::HardLock),
+                    ->disabled(fn (\Modules\Accounting\Models\LockDate $record) => $record->lock_type === LockDateType::HardLock),
             ])
             ->toolbarActions([]);
     }

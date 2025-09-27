@@ -9,17 +9,17 @@ use App\Models\DepreciationEntry;
 
 class DepreciationEntryObserver
 {
-    public function updating(DepreciationEntry $depreciationEntry): void
+    public function updating(\Modules\Accounting\Models\DepreciationEntry $depreciationEntry): void
     {
         if ($depreciationEntry->getOriginal('status') === DepreciationEntryStatus::Posted) {
-            throw new UpdateNotAllowedException('Posted depreciation entries cannot be updated.');
+            throw new \Modules\Foundation\Exceptions\UpdateNotAllowedException('Posted depreciation entries cannot be updated.');
         }
     }
 
-    public function deleting(DepreciationEntry $depreciationEntry): void
+    public function deleting(\Modules\Accounting\Models\DepreciationEntry $depreciationEntry): void
     {
         if ($depreciationEntry->status === DepreciationEntryStatus::Posted) {
-            throw new DeletionNotAllowedException('Posted depreciation entries cannot be deleted.');
+            throw new \Modules\Foundation\Exceptions\DeletionNotAllowedException('Posted depreciation entries cannot be deleted.');
         }
     }
 }

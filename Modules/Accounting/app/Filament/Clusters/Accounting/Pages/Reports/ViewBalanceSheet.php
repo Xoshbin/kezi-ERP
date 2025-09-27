@@ -89,7 +89,7 @@ class ViewBalanceSheet extends Page
             throw new \Exception('Company not found');
         }
 
-        $service = app(BalanceSheetService::class);
+        $service = app(\Modules\Accounting\Services\Reports\BalanceSheetService::class);
 
         $report = $service->generate(
             $company,
@@ -102,31 +102,31 @@ class ViewBalanceSheet extends Page
                 'accountId' => $line->accountId,
                 'accountCode' => $line->accountCode,
                 'accountName' => $line->accountName,
-                'balance' => NumberFormatter::formatMoneyTo($line->balance),
+                'balance' => \Modules\Foundation\Support\NumberFormatter::formatMoneyTo($line->balance),
                 'balanceAmount' => $line->balance->getAmount()->toFloat(),
             ])->toArray(),
             'liabilityLines' => $report->liabilityLines->map(fn ($line) => [
                 'accountId' => $line->accountId,
                 'accountCode' => $line->accountCode,
                 'accountName' => $line->accountName,
-                'balance' => NumberFormatter::formatMoneyTo($line->balance),
+                'balance' => \Modules\Foundation\Support\NumberFormatter::formatMoneyTo($line->balance),
                 'balanceAmount' => $line->balance->getAmount()->toFloat(),
             ])->toArray(),
             'equityLines' => $report->equityLines->map(fn ($line) => [
                 'accountId' => $line->accountId,
                 'accountCode' => $line->accountCode,
                 'accountName' => $line->accountName,
-                'balance' => NumberFormatter::formatMoneyTo($line->balance),
+                'balance' => \Modules\Foundation\Support\NumberFormatter::formatMoneyTo($line->balance),
                 'balanceAmount' => $line->balance->getAmount()->toFloat(),
             ])->toArray(),
-            'totalAssets' => NumberFormatter::formatMoneyTo($report->totalAssets),
-            'totalLiabilities' => NumberFormatter::formatMoneyTo($report->totalLiabilities),
-            'retainedEarnings' => NumberFormatter::formatMoneyTo($report->retainedEarnings),
-            'currentYearEarnings' => NumberFormatter::formatMoneyTo($report->currentYearEarnings),
+            'totalAssets' => \Modules\Foundation\Support\NumberFormatter::formatMoneyTo($report->totalAssets),
+            'totalLiabilities' => \Modules\Foundation\Support\NumberFormatter::formatMoneyTo($report->totalLiabilities),
+            'retainedEarnings' => \Modules\Foundation\Support\NumberFormatter::formatMoneyTo($report->retainedEarnings),
+            'currentYearEarnings' => \Modules\Foundation\Support\NumberFormatter::formatMoneyTo($report->currentYearEarnings),
             'currentYearEarningsAmount' => $report->currentYearEarnings->getAmount()->toFloat(),
             'isCurrentYearLoss' => $report->currentYearEarnings->isNegative(),
-            'totalEquity' => NumberFormatter::formatMoneyTo($report->totalEquity),
-            'totalLiabilitiesAndEquity' => NumberFormatter::formatMoneyTo($report->totalLiabilitiesAndEquity),
+            'totalEquity' => \Modules\Foundation\Support\NumberFormatter::formatMoneyTo($report->totalEquity),
+            'totalLiabilitiesAndEquity' => \Modules\Foundation\Support\NumberFormatter::formatMoneyTo($report->totalLiabilitiesAndEquity),
         ];
 
         $this->dispatch('report-generated');
