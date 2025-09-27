@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Enums\Reconciliation;
+namespace Modules\Accounting\Enums\Reconciliation;
 
 /**
  * Enum ReconciliationType

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Services\Accounting;
+namespace Modules\Accounting\Services\Accounting;
 
 use App\Enums\Accounting\LockDateType;
 use App\Exceptions\PeriodIsLockedException;

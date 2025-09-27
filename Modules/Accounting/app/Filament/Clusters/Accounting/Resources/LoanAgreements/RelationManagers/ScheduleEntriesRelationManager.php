@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Clusters\Accounting\Resources\LoanAgreements\RelationManagers;
+namespace Modules\Accounting\Filament\Clusters\Accounting\Resources\LoanAgreements\RelationManagers;
 
 use App\Filament\Tables\Columns\MoneyColumn;
 use Filament\Resources\RelationManagers\RelationManager;

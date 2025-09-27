@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Clusters\HumanResources\Resources\Positions;
+namespace Modules\HR\Filament\Clusters\HumanResources\Resources\Positions;
 
 use App\Filament\Clusters\HumanResources\HumanResourcesCluster;
 use App\Filament\Clusters\HumanResources\Resources\Positions\Pages\CreatePosition;

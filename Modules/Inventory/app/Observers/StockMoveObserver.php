@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Observers;
+namespace Modules\Inventory\Observers;
 
 use App\Enums\Inventory\StockMoveStatus;
 use App\Models\AuditLog;

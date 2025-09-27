@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Clusters\HumanResources\Resources\Positions\Tables;
+namespace Modules\HR\Filament\Clusters\HumanResources\Resources\Positions\Tables;
 
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;

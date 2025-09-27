@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Clusters\Accounting\Resources\VendorBills\Pages;
+namespace Modules\Accounting\Filament\Clusters\Accounting\Resources\VendorBills\Pages;
 
 use App\Actions\Accounting\BuildVendorBillPostingPreviewAction;
 use App\Actions\Payments\CreatePaymentAction;

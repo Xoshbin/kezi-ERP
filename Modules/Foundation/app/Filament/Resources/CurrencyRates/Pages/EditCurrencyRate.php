@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Clusters\Settings\Resources\CurrencyRates\Pages;
+namespace Modules\Foundation\Filament\Clusters\Settings\Resources\CurrencyRates\Pages;
 
 use App\Filament\Clusters\Settings\Resources\CurrencyRates\CurrencyRateResource;
 use Filament\Actions\DeleteAction;

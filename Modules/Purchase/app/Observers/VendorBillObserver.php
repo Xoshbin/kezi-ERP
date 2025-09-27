@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Observers;
+namespace Modules\Purchase\Observers;
 
 use App\Enums\Inventory\StockMoveStatus;
 use App\Enums\Inventory\StockMoveType;

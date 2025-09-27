@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Clusters\HumanResources\Resources\LeaveTypes\Schemas;
+namespace Modules\HR\Filament\Clusters\HumanResources\Resources\LeaveTypes\Schemas;
 
 use Filament\Forms\Components\ColorPicker;
 use Filament\Forms\Components\Textarea;

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Enums\Shared;
+namespace Modules\Foundation\Enums\Shared;
 
 enum PaymentState: string
 {

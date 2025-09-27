@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Clusters\Accounting\Resources\Assets;
+namespace Modules\Accounting\Filament\Clusters\Accounting\Resources\Assets;
 
 use App\Enums\Accounting\AccountType;
 use App\Enums\Assets\AssetStatus;

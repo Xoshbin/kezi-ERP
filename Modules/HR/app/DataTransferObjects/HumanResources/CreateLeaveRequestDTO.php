@@ -1,6 +1,6 @@
 <?php
 
-namespace App\DataTransferObjects\HumanResources;
+namespace Modules\HR\DataTransferObjects\HumanResources;
 
 readonly class CreateLeaveRequestDTO
 {

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Console\Commands;
+namespace Modules\Foundation\Console\Commands;
 
 use App\Services\ExchangeRateService;
 use Illuminate\Console\Command;

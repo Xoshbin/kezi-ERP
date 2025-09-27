@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Clusters\Accounting\Resources\BankStatements;
+namespace Modules\Accounting\Filament\Clusters\Accounting\Resources\BankStatements;
 
 use App\Enums\Accounting\JournalType;
 use App\Filament\Clusters\Accounting\AccountingCluster;

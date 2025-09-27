@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Clusters\Inventory;
+namespace Modules\Inventory\Filament\Clusters\Inventory;
 
 use Filament\Clusters\Cluster;
 

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Exceptions\Reconciliation;
+namespace Modules\Accounting\Exceptions\Reconciliation;
 
 use Brick\Money\Money;
 

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Clusters\Accounting\Resources\JournalEntries\Pages;
+namespace Modules\Accounting\Filament\Clusters\Accounting\Resources\JournalEntries\Pages;
 
 use App\Actions\Accounting\UpdateJournalEntryAction;
 use App\DataTransferObjects\Accounting\UpdateJournalEntryDTO;

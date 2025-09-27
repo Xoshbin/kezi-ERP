@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Services\Inventory;
+namespace Modules\Inventory\Services\Inventory;
 
 use App\Actions\Accounting\CreateJournalEntryAction;
 use App\DataTransferObjects\Accounting\CreateJournalEntryDTO;

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Casts;
+namespace Modules\Foundation\Casts;
 
 use App\Models\Currency;
 use Brick\Math\Exception\MathException;

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Clusters\Accounting\Resources\Invoices;
+namespace Modules\Accounting\Filament\Clusters\Accounting\Resources\Invoices;
 
 use App\Actions\Payments\CreatePaymentAction;
 use App\DataTransferObjects\Payments\CreatePaymentDocumentLinkDTO;

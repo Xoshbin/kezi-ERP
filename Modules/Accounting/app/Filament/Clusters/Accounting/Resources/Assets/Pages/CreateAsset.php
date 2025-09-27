@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Clusters\Accounting\Resources\Assets\Pages;
+namespace Modules\Accounting\Filament\Clusters\Accounting\Resources\Assets\Pages;
 
 use App\DataTransferObjects\Assets\CreateAssetDTO;
 use App\Filament\Clusters\Accounting\Resources\Assets\AssetResource;

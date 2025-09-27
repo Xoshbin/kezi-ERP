@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Exceptions\Inventory;
+namespace Modules\Inventory\Exceptions\Inventory;
 
 use App\Models\Product;
 use App\Services\Inventory\ProductCostAnalysisService;

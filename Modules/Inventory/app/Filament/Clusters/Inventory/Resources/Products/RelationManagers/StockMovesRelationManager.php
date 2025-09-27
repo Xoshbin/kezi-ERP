@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Clusters\Inventory\Resources\Products\RelationManagers;
+namespace Modules\Inventory\Filament\Clusters\Inventory\Resources\Products\RelationManagers;
 
 use App\Enums\Inventory\StockMoveStatus;
 use App\Enums\Inventory\StockMoveType;

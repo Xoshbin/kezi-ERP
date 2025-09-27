@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Clusters\Accounting\Resources\VendorBills\Widgets;
+namespace Modules\Accounting\Filament\Clusters\Accounting\Resources\VendorBills\Widgets;
 
 use App\Enums\Purchases\VendorBillStatus;
 use App\Models\VendorBill;

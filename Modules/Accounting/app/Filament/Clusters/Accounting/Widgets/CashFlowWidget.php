@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Clusters\Accounting\Widgets;
+namespace Modules\Accounting\Filament\Clusters\Accounting\Widgets;
 
 use App\Services\Reports\AgedPayableService;
 use App\Services\Reports\AgedReceivableService;

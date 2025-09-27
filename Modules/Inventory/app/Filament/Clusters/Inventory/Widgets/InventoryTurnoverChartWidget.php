@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Clusters\Inventory\Widgets;
+namespace Modules\Inventory\Filament\Clusters\Inventory\Widgets;
 
 use App\Enums\Inventory\StockMoveType;
 use App\Models\StockMove;

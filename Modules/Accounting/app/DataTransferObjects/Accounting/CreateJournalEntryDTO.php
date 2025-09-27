@@ -1,6 +1,6 @@
 <?php
 
-namespace App\DataTransferObjects\Accounting;
+namespace Modules\Accounting\DataTransferObjects\Accounting;
 
 class CreateJournalEntryDTO
 {

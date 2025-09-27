@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Clusters\Accounting\Resources\FiscalPositions\Pages;
+namespace Modules\Accounting\Filament\Clusters\Accounting\Resources\FiscalPositions\Pages;
 
 use App\Filament\Clusters\Accounting\Resources\FiscalPositions\FiscalPositionResource;
 use Filament\Actions\CreateAction;

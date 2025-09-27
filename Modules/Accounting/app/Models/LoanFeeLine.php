@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Models;
+namespace Modules\Accounting\Models;
 
 use App\Casts\DocumentCurrencyMoneyCast;
 use App\Enums\Loans\FeeType;

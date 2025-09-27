@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Clusters\Accounting\Resources\AuditLogs\Pages;
+namespace Modules\Accounting\Filament\Clusters\Accounting\Resources\AuditLogs\Pages;
 
 use App\Filament\Clusters\Accounting\Resources\AuditLogs\AuditLogResource;
 use Filament\Actions\DeleteAction;

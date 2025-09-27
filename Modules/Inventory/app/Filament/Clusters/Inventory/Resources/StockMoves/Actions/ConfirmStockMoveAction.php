@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Clusters\Inventory\Resources\StockMoves\Actions;
+namespace Modules\Inventory\Filament\Clusters\Inventory\Resources\StockMoves\Actions;
 
 use App\Actions\Inventory\ConfirmStockMoveAction as ConfirmStockMoveActionClass;
 use App\DataTransferObjects\Inventory\ConfirmStockMoveDTO;

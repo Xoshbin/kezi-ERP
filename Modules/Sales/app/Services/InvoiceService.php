@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Services;
+namespace Modules\Sales\Services;
 
 use App\Actions\Accounting\CreateJournalEntryForInvoiceAction;
 use App\Actions\Sales\CreateStockMovesForInvoiceAction;

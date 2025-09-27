@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Models;
+namespace Modules\Product\Models;
 
 use App\Casts\BaseCurrencyMoneyCast;
 use App\Enums\Inventory\ValuationMethod;

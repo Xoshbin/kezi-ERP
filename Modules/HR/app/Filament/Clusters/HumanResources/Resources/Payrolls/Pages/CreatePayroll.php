@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Clusters\HumanResources\Resources\Payrolls\Pages;
+namespace Modules\HR\Filament\Clusters\HumanResources\Resources\Payrolls\Pages;
 
 use App\Filament\Clusters\HumanResources\Resources\Payrolls\PayrollResource;
 use Filament\Facades\Filament;

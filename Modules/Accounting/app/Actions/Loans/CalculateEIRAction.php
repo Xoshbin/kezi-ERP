@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Actions\Loans;
+namespace Modules\Accounting\Actions\Loans;
 
 use App\Models\LoanAgreement;
 use App\Services\Loans\EIRSolverService;

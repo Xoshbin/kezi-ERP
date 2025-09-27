@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Observers;
+namespace Modules\Accounting\Observers;
 
 use App\Enums\Assets\DepreciationEntryStatus;
 use App\Exceptions\DeletionNotAllowedException;

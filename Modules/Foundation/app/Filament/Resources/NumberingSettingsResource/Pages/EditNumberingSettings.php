@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Clusters\Settings\Resources\NumberingSettingsResource\Pages;
+namespace Modules\Foundation\Filament\Clusters\Settings\Resources\NumberingSettingsResource\Pages;
 
 use App\Filament\Clusters\Settings\Resources\NumberingSettingsResource;
 use Filament\Notifications\Notification;

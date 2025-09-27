@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Enums\Assets;
+namespace Modules\Accounting\Enums\Assets;
 
 enum DepreciationMethod: string
 {

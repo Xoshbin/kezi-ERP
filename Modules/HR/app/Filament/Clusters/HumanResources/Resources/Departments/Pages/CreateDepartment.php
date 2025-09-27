@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Clusters\HumanResources\Resources\Departments\Pages;
+namespace Modules\HR\Filament\Clusters\HumanResources\Resources\Departments\Pages;
 
 use App\Filament\Clusters\HumanResources\Resources\Departments\DepartmentResource;
 use Filament\Resources\Pages\CreateRecord;

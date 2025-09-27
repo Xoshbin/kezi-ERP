@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Actions\Sales;
+namespace Modules\Sales\Actions\Sales;
 
 use App\Actions\Inventory\CreateStockMoveAction;
 use App\DataTransferObjects\Inventory\CreateStockMoveDTO;

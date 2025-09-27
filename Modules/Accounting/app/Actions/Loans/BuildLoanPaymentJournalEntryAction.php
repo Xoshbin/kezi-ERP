@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Actions\Loans;
+namespace Modules\Accounting\Actions\Loans;
 
 use App\Actions\Accounting\CreateJournalEntryAction;
 use App\DataTransferObjects\Accounting\CreateJournalEntryDTO;

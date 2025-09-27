@@ -2,7 +2,7 @@
 
 // in app/Filament/Resources/AdjustmentDocumentResource/Pages/CreateAdjustmentDocument.php
 
-namespace App\Filament\Clusters\Accounting\Resources\AdjustmentDocuments\Pages;
+namespace Modules\Accounting\Filament\Clusters\Accounting\Resources\AdjustmentDocuments\Pages;
 
 // Add imports for Invoice and VendorBill
 use App\Actions\Adjustments\CreateAdjustmentDocumentAction;

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Services;
+namespace Modules\Purchase\Services;
 
 use App\Enums\Purchases\PurchaseOrderStatus;
 use App\Models\PurchaseOrder;

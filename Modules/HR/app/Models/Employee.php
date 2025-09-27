@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Models;
+namespace Modules\HR\Models;
 
 use App\Observers\AuditLogObserver;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;

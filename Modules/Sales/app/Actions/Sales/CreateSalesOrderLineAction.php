@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Actions\Sales;
+namespace Modules\Sales\Actions\Sales;
 
 use App\DataTransferObjects\Sales\CreateSalesOrderLineDTO;
 use App\Models\SalesOrder;

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Enums\Sales;
+namespace Modules\Sales\Enums\Sales;
 
 /**
  * Sales Order Status Enum

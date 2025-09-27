@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Clusters\HumanResources;
+namespace Modules\HR\Filament\Clusters\HumanResources;
 
 use Filament\Clusters\Cluster;
 

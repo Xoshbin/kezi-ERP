@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Clusters\HumanResources\Resources\Positions\Pages;
+namespace Modules\HR\Filament\Clusters\HumanResources\Resources\Positions\Pages;
 
 use App\Filament\Clusters\HumanResources\Resources\Positions\PositionResource;
 use Filament\Actions\DeleteAction;

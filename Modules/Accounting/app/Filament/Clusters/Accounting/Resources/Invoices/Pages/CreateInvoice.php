@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Clusters\Accounting\Resources\Invoices\Pages;
+namespace Modules\Accounting\Filament\Clusters\Accounting\Resources\Invoices\Pages;
 
 use App\Actions\Sales\CreateInvoiceAction;
 use App\DataTransferObjects\Sales\CreateInvoiceDTO;

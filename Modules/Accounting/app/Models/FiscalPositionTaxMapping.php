@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Models;
+namespace Modules\Accounting\Models;
 
 use Database\Factories\FiscalPositionTaxMappingFactory;
 use Illuminate\Database\Eloquent\Builder;

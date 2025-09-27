@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Jobs;
+namespace Modules\Accounting\Jobs;
 
 use App\Actions\Assets\PostDepreciationEntryAction;
 use App\Models\DepreciationEntry;

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Clusters\Accounting\Resources\FiscalPositions;
+namespace Modules\Accounting\Filament\Clusters\Accounting\Resources\FiscalPositions;
 
 use App\Filament\Clusters\Accounting\AccountingCluster;
 use App\Filament\Clusters\Accounting\Resources\FiscalPositions\Pages\CreateFiscalPosition;

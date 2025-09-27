@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Services;
+namespace Modules\Accounting\Services;
 
 use App\Actions\Accounting\CreateJournalEntryAction;
 use App\Actions\Accounting\ReverseJournalEntryAction;

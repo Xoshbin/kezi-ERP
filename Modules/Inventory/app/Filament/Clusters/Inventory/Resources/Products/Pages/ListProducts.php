@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Clusters\Inventory\Resources\Products\Pages;
+namespace Modules\Inventory\Filament\Clusters\Inventory\Resources\Products\Pages;
 
 use App\Filament\Clusters\Inventory\Resources\Products\ProductResource;
 use Filament\Actions\CreateAction;

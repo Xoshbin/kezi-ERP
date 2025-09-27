@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Clusters\Accounting\Resources\AnalyticAccounts\Pages;
+namespace Modules\Accounting\Filament\Clusters\Accounting\Resources\AnalyticAccounts\Pages;
 
 use App\Filament\Clusters\Accounting\Resources\AnalyticAccounts\AnalyticAccountResource;
 use Filament\Actions\DeleteAction;

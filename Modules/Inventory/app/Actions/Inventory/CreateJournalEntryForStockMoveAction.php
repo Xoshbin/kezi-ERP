@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Actions\Inventory;
+namespace Modules\Inventory\Actions\Inventory;
 
 use App\Enums\Inventory\StockMoveType;
 use App\Models\StockMove;

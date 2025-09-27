@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Clusters\Inventory\Resources\StockLocations\Pages;
+namespace Modules\Inventory\Filament\Clusters\Inventory\Resources\StockLocations\Pages;
 
 use App\Filament\Clusters\Inventory\Resources\StockLocations\StockLocationResource;
 use Filament\Actions\CreateAction;

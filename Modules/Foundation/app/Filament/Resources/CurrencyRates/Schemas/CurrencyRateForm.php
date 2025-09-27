@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Clusters\Settings\Resources\CurrencyRates\Schemas;
+namespace Modules\Foundation\Filament\Clusters\Settings\Resources\CurrencyRates\Schemas;
 
 use App\Models\Currency;
 use Carbon\Carbon;

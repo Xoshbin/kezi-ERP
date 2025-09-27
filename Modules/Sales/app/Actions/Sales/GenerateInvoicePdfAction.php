@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Actions\Sales;
+namespace Modules\Sales\Actions\Sales;
 
 use App\Models\Invoice;
 use Barryvdh\DomPDF\Facade\Pdf;

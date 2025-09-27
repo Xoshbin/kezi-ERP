@@ -2,7 +2,7 @@
 
 // in app/Filament/Resources/AdjustmentDocumentResource/Pages/EditAdjustmentDocument.php
 
-namespace App\Filament\Clusters\Accounting\Resources\AdjustmentDocuments\Pages;
+namespace Modules\Accounting\Filament\Clusters\Accounting\Resources\AdjustmentDocuments\Pages;
 
 // Add these imports
 use App\Actions\Accounting\BuildAdjustmentPostingPreviewAction;

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\DataTransferObjects\Reports;
+namespace Modules\Accounting\DataTransferObjects\Reports;
 
 use App\Enums\Accounting\AccountType;
 use Brick\Money\Money;

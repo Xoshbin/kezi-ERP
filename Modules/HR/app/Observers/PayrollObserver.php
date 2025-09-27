@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Observers;
+namespace Modules\HR\Observers;
 
 use App\Models\Payroll;
 

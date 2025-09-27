@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Traits;
+namespace Modules\Foundation\Traits;
 
 use App\Enums\Payments\PaymentStatus;
 use App\Enums\Shared\PaymentState;

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Clusters\Settings\Resources\LockDates;
+namespace Modules\Accounting\Filament\Clusters\Settings\Resources\LockDates;
 
 use App\Enums\Accounting\LockDateType;
 use App\Filament\Clusters\Settings\Resources\LockDates\Pages\CreateLockDate;

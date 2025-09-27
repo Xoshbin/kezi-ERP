@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Clusters\Inventory\Widgets;
+namespace Modules\Inventory\Filament\Clusters\Inventory\Widgets;
 
 use App\Services\Inventory\InventoryReportingService;
 use Filament\Widgets\ChartWidget;

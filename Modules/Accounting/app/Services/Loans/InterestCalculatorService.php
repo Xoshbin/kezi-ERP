@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Services\Loans;
+namespace Modules\Accounting\Services\Loans;
 
 use Brick\Math\RoundingMode;
 use Brick\Money\Money;
