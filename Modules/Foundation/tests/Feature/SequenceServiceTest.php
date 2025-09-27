@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Feature;
+namespace Modules\Foundation\Tests\Feature;
 
 use App\Models\Company;
 use App\Models\Currency;

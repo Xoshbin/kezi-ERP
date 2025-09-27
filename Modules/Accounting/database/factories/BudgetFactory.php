@@ -1,6 +1,6 @@
 <?php
 
-namespace Database\Factories;
+namespace Modules\Accounting\Database\Factories;
 
 use App\Enums\Budgets\BudgetStatus;
 use App\Enums\Budgets\BudgetType;

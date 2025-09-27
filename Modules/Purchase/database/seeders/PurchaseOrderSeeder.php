@@ -1,6 +1,6 @@
 <?php
 
-namespace Database\Seeders;
+namespace Modules\Purchase\Database\Seeders;
 
 use App\Actions\Purchases\CreatePurchaseOrderLineAction;
 use App\DataTransferObjects\Purchases\CreatePurchaseOrderLineDTO;

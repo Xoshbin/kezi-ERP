@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Feature\Accounting;
+namespace Modules\Accounting\Tests\Feature\Accounting;
 
 use App\Actions\Purchases\CreateVendorBillAction;
 use App\DataTransferObjects\Purchases\CreateVendorBillDTO;

@@ -1,6 +1,6 @@
 <?php
 
-namespace Database\Seeders;
+namespace Modules\Inventory\Database\Seeders;
 
 use App\Enums\Adjustments\AdjustmentDocumentStatus;
 use App\Enums\Adjustments\AdjustmentDocumentType;

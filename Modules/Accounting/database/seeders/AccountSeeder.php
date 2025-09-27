@@ -1,6 +1,6 @@
 <?php
 
-namespace Database\Seeders;
+namespace Modules\Accounting\Database\Seeders;
 
 use App\Enums\Accounting\AccountType;
 use App\Models\Account;

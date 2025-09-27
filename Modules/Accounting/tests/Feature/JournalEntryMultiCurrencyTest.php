@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Feature\Accounting;
+namespace Modules\Accounting\Tests\Feature\Accounting;
 
 use App\Actions\Accounting\CreateJournalEntryAction;
 use App\DataTransferObjects\Accounting\CreateJournalEntryDTO;

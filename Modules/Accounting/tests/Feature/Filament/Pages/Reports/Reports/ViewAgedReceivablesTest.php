@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Feature\Filament\Pages\Reports;
+namespace Modules\Accounting\Tests\Feature\Filament\Pages\Reports;
 
 use App\Enums\Sales\InvoiceStatus;
 use App\Filament\Clusters\Accounting\Pages\Reports\ViewAgedReceivables;

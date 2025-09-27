@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Feature\Filament;
+namespace Modules\Foundation\Tests\Feature\Filament;
 
 use App\Filament\Clusters\Accounting\Resources\VendorBills\Pages\CreateVendorBill;
 use App\Models\Account;

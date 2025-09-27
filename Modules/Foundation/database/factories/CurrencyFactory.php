@@ -1,6 +1,6 @@
 <?php
 
-namespace Database\Factories;
+namespace Modules\Foundation\Database\Factories;
 
 use App\Models\Currency;
 use Illuminate\Database\Eloquent\Factories\Factory;

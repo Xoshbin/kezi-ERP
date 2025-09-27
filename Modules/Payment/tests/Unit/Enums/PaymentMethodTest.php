@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Unit\Enums;
+namespace Modules\Payment\Tests\Unit\Enums;
 
 use App\Enums\Payments\PaymentMethod;
 use Tests\TestCase;

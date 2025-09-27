@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Feature\Sales;
+namespace Modules\Sales\Tests\Feature\Sales;
 
 use App\Actions\Sales\CreateInvoiceFromSalesOrderAction;
 use App\Actions\Sales\CreateSalesOrderAction;

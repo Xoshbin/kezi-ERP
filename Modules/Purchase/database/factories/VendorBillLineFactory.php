@@ -1,6 +1,6 @@
 <?php
 
-namespace Database\Factories;
+namespace Modules\Purchase\Database\Factories;
 
 use App\Models\Account;
 use App\Models\AnalyticAccount;

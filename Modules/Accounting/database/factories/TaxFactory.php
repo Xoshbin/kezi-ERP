@@ -1,6 +1,6 @@
 <?php
 
-namespace Database\Factories;
+namespace Modules\Accounting\Database\Factories;
 
 use App\Enums\Accounting\TaxType;
 use App\Models\Account;

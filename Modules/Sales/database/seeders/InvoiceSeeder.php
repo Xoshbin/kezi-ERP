@@ -1,6 +1,6 @@
 <?php
 
-namespace Database\Seeders;
+namespace Modules\Sales\Database\Seeders;
 
 use App\Actions\Sales\CreateInvoiceLineAction;
 use App\DataTransferObjects\Sales\CreateInvoiceLineDTO;

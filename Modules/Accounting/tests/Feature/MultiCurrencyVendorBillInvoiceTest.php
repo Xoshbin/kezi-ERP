@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Feature;
+namespace Modules\Accounting\Tests\Feature;
 
 use App\Actions\Purchases\CreateVendorBillAction;
 use App\Actions\Sales\CreateInvoiceAction;

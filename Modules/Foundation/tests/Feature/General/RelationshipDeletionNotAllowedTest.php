@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Feature\General;
+namespace Modules\Foundation\Tests\Feature\General;
 
 use App\Models\User;
 use RuntimeException;

@@ -1,6 +1,6 @@
 <?php
 
-namespace Database\Seeders;
+namespace Modules\Payment\Database\Seeders;
 
 use App\Models\Company;
 use App\Models\Invoice;
