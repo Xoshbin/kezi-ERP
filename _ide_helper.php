@@ -24368,6 +24368,102 @@ namespace Illuminate\Http {
             }
     }
 
+namespace Nwidart\Modules {
+    /**
+     */
+    class Module {
+        /**
+         * @see \Coolsam\Modules\ModulesServiceProvider::registerModuleMacros()
+         * @param string|null $relativeNamespace
+         * @static
+         */
+        public static function namespace($relativeNamespace = '')
+        {
+            return \Nwidart\Modules\Module::namespace($relativeNamespace);
+        }
+
+        /**
+         * @see \Coolsam\Modules\ModulesServiceProvider::registerModuleMacros()
+         * @static
+         */
+        public static function getTitle()
+        {
+            return \Nwidart\Modules\Module::getTitle();
+        }
+
+        /**
+         * @see \Coolsam\Modules\ModulesServiceProvider::registerModuleMacros()
+         * @param string $relativeNamespace
+         * @static
+         */
+        public static function appNamespace($relativeNamespace = '')
+        {
+            return \Nwidart\Modules\Module::appNamespace($relativeNamespace);
+        }
+
+        /**
+         * @see \Coolsam\Modules\ModulesServiceProvider::registerModuleMacros()
+         * @param string $relativePath
+         * @static
+         */
+        public static function appPath($relativePath = '')
+        {
+            return \Nwidart\Modules\Module::appPath($relativePath);
+        }
+
+        /**
+         * @see \Coolsam\Modules\ModulesServiceProvider::registerModuleMacros()
+         * @param string $relativePath
+         * @static
+         */
+        public static function databasePath($relativePath = '')
+        {
+            return \Nwidart\Modules\Module::databasePath($relativePath);
+        }
+
+        /**
+         * @see \Coolsam\Modules\ModulesServiceProvider::registerModuleMacros()
+         * @param string $relativePath
+         * @static
+         */
+        public static function resourcesPath($relativePath = '')
+        {
+            return \Nwidart\Modules\Module::resourcesPath($relativePath);
+        }
+
+        /**
+         * @see \Coolsam\Modules\ModulesServiceProvider::registerModuleMacros()
+         * @param string $relativePath
+         * @static
+         */
+        public static function migrationsPath($relativePath = '')
+        {
+            return \Nwidart\Modules\Module::migrationsPath($relativePath);
+        }
+
+        /**
+         * @see \Coolsam\Modules\ModulesServiceProvider::registerModuleMacros()
+         * @param string $relativePath
+         * @static
+         */
+        public static function seedersPath($relativePath = '')
+        {
+            return \Nwidart\Modules\Module::seedersPath($relativePath);
+        }
+
+        /**
+         * @see \Coolsam\Modules\ModulesServiceProvider::registerModuleMacros()
+         * @param string $relativePath
+         * @static
+         */
+        public static function factoriesPath($relativePath = '')
+        {
+            return \Nwidart\Modules\Module::factoriesPath($relativePath);
+        }
+
+            }
+    }
+
 namespace Illuminate\Database\Query {
     /**
      */
@@ -24634,6 +24730,13 @@ namespace Illuminate\Database\Eloquent\Relations {
             }
     }
 
+namespace Nwidart\Modules\Laravel {
+    /**
+     */
+    class Module extends \Nwidart\Modules\Module {
+            }
+    }
+
 namespace Illuminate\Database\Eloquent\Factories {
     /**
      * @template TModel of \Illuminate\Database\Eloquent\Model
@@ -24649,23 +24752,6 @@ namespace Illuminate\Database\Eloquent\Factories {
         public static function translations($locales, $value)
         {
             return \Illuminate\Database\Eloquent\Factories\Factory::translations($locales, $value);
-        }
-
-            }
-    }
-
-namespace Illuminate\Routing {
-    /**
-     */
-    class Route {
-        /**
-         * @see \Livewire\Features\SupportLazyLoading\SupportLazyLoading::registerRouteMacro()
-         * @param mixed $enabled
-         * @static
-         */
-        public static function lazy($enabled = true)
-        {
-            return \Illuminate\Routing\Route::lazy($enabled);
         }
 
             }
@@ -27231,6 +27317,23 @@ namespace Livewire\Features\SupportTesting {
         public static function assertTableColumnSummarizerExists($columnName, $summarizerId)
         {
             return \Livewire\Features\SupportTesting\Testable::assertTableColumnSummarizerExists($columnName, $summarizerId);
+        }
+
+            }
+    }
+
+namespace Illuminate\Routing {
+    /**
+     */
+    class Route {
+        /**
+         * @see \Livewire\Features\SupportLazyLoading\SupportLazyLoading::registerRouteMacro()
+         * @param mixed $enabled
+         * @static
+         */
+        public static function lazy($enabled = true)
+        {
+            return \Illuminate\Routing\Route::lazy($enabled);
         }
 
             }
