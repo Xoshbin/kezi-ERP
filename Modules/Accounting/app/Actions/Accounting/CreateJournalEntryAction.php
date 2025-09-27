@@ -19,8 +19,8 @@ use Illuminate\Validation\ValidationException;
 class CreateJournalEntryAction
 {
     public function __construct(
-        private readonly LockDateService $lockDateService,
-        private readonly CurrencyConverterService $currencyConverter
+        private readonly \Modules\Accounting\Services\Accounting\LockDateService $lockDateService,
+        private readonly \Modules\Foundation\Services\CurrencyConverterService $currencyConverter
     ) {}
 
     public function execute(CreateJournalEntryDTO $dto): JournalEntry
@@ -28,7 +28,7 @@ class CreateJournalEntryAction
         $company = Company::findOrFail($dto->company_id);
         $this->lockDateService->enforce($company, Carbon::parse($dto->entry_date));
 
-        $currency = Currency::find($dto->currency_id);
+        $currency = \Modules\Foundation\Models\Currency::find($dto->currency_id);
         if (! $currency) {
             throw new Exception("Currency with ID {$dto->currency_id} not found.");
         }
@@ -38,7 +38,7 @@ class CreateJournalEntryAction
         $totalCreditBaseCurrency = Money::zero($company->currency->code);
 
         foreach ($dto->lines as $index => $line) {
-            $account = Account::find($line->account_id);
+            $account = \Modules\Accounting\Models\Account::find($line->account_id);
             if ($account && $account->is_deprecated) {
                 $accountName = is_array($account->name) ? ($account->name['en'] ?? (empty($account->name) ? '' : (string) array_values($account->name)[0])) : (string) $account->name;
                 throw ValidationException::withMessages([
@@ -48,7 +48,7 @@ class CreateJournalEntryAction
 
             // Enforce account currency lock
             if ($account && $account->currency_id && $account->currency_id !== $dto->currency_id) {
-                $accountCurrency = Currency::findOrFail($account->currency_id);
+                $accountCurrency = \Modules\Foundation\Models\Currency::findOrFail($account->currency_id);
                 $accountName = is_array($account->name) ? ($account->name['en'] ?? (empty($account->name) ? '' : (string) array_values($account->name)[0])) : (string) $account->name;
                 $accountCurrencyCode = $accountCurrency->code;
                 throw ValidationException::withMessages([

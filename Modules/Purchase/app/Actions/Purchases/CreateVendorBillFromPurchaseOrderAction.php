@@ -15,7 +15,7 @@ class CreateVendorBillFromPurchaseOrderAction
         protected CreateVendorBillAction $createVendorBillAction
     ) {}
 
-    public function execute(CreateVendorBillFromPurchaseOrderDTO $dto): VendorBill
+    public function execute(CreateVendorBillFromPurchaseOrderDTO $dto): \Modules\Purchase\Models\VendorBill
     {
         $purchaseOrder = $this->validateAndGetPurchaseOrder($dto->purchase_order_id);
 

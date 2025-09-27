@@ -45,11 +45,11 @@ class LoanAgreementForm
                         ->createOptionForm([
                             Hidden::make('company_id')->default(fn () => Filament::getTenant()?->getKey()),
                             TextInput::make('name')->label(__('partner.name') ?: 'Name')->required(),
-                            Select::make('type')->label(__('partner.type') ?: 'Type')->options(PartnerType::class)->required(),
+                            Select::make('type')->label(__('partner.type') ?: 'Type')->options(\Modules\Foundation\Enums\Partners\PartnerType::class)->required(),
                             TextInput::make('email')->label(__('partner.email') ?: 'Email')->email(),
                             TextInput::make('contact_person')->label(__('partner.contact_person') ?: 'Contact Person'),
                         ])
-                        ->createOptionUsing(fn (array $data) => Partner::create($data)->getKey())
+                        ->createOptionUsing(fn (array $data) => \Modules\Foundation\Models\Partner::create($data)->getKey())
                         ->createOptionModalHeading(__('common.modal_title_create_partner') ?: 'Create Partner')
                         ->createOptionAction(fn (Action $action) => $action->modalWidth('lg')),
 
@@ -105,7 +105,7 @@ class LoanAgreementForm
 
                     Group::make()
                         ->schema([
-                            TranslatableSelect::forModel('currency_id', Currency::class, 'name')
+                            TranslatableSelect::forModel('currency_id', \Modules\Foundation\Models\Currency::class, 'name')
                                 ->label(__('invoice.currency'))
                                 ->required()
                                 ->live()
@@ -118,7 +118,7 @@ class LoanAgreementForm
                                 })
                                 ->afterStateUpdated(function (callable $set, $state) {
                                     if ($state) {
-                                        $currency = Currency::find($state);
+                                        $currency = \Modules\Foundation\Models\Currency::find($state);
                                         // Ensure we have a single Currency model, not a collection
                                         if ($currency instanceof Collection) {
                                             $currency = $currency->first();
@@ -127,7 +127,7 @@ class LoanAgreementForm
 
                                         if ($currency && $company instanceof Company && $currency->id !== $company->currency_id) {
                                             // Get latest exchange rate for this company
-                                            $latestRate = CurrencyRate::getLatestRate($currency->id, $company->id);
+                                            $latestRate = \Modules\Foundation\Models\CurrencyRate::getLatestRate($currency->id, $company->id);
                                             if ($latestRate) {
                                                 $set('current_exchange_rate', $latestRate);
                                             }
@@ -177,7 +177,7 @@ class LoanAgreementForm
                                 ->currencyField('currency_id')
                                 ->disabled()
                                 ->dehydrated(false)
-                                ->visible(fn (?LoanAgreement $record) => $record && $record->outstanding_principal)
+                                ->visible(fn (?\Modules\Accounting\Models\LoanAgreement $record) => $record && $record->outstanding_principal)
                                 ->columnSpanFull(),
                         ])
                         ->columns(12)

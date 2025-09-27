@@ -39,8 +39,8 @@ class ExchangeGainLossService
     /**
      * Calculate and post realized exchange gain/loss for a payment reconciliation.
      *
-     * @param  Payment  $payment
-     * @param  Invoice|VendorBill  $document
+     * @param \Modules\Payment\Models\Payment $payment
+     * @param \Modules\Sales\Models\Invoice|\Modules\Purchase\Models\VendorBill $document
      */
     public function processRealizedGainLoss($payment, $document, Money $amountApplied): ?JournalEntry
     {
@@ -103,7 +103,7 @@ class ExchangeGainLossService
             $foreignCurrencyBalances = $this->getForeignCurrencyBalances($account, $revaluationDate);
 
             foreach ($foreignCurrencyBalances as $currencyId => $balance) {
-                $currency = Currency::find($currencyId);
+                $currency = \Modules\Foundation\Models\Currency::find($currencyId);
 
                 if (! $currency || $currency->id === $company->currency_id) {
                     continue; // Skip base currency
@@ -167,7 +167,7 @@ class ExchangeGainLossService
      */
     protected function calculateUnrealizedGainLoss(
         Money $balance,
-        Currency $currency,
+        \Modules\Foundation\Models\Currency $currency,
         Company $company,
         Carbon $revaluationDate
     ): Money {
@@ -198,14 +198,14 @@ class ExchangeGainLossService
     protected function postRealizedGainLossEntry(
         Company $company,
         Money $exchangeDifference,
-        Payment $payment,
+        \Modules\Payment\Models\Payment $payment,
         \Illuminate\Database\Eloquent\Model $document
     ): JournalEntry {
         $isGain = $exchangeDifference->isPositive();
         $gainLossAccount = $company->default_gain_loss_account_id;
 
         // Determine the receivable/payable account
-        $balanceAccount = $document instanceof Invoice
+        $balanceAccount = $document instanceof \Modules\Sales\Models\Invoice
             ? $company->default_accounts_receivable_id
             : $company->default_accounts_payable_id;
 
@@ -276,7 +276,7 @@ class ExchangeGainLossService
             source_id: $payment->getKey(),
         );
 
-        return app(CreateJournalEntryAction::class)->execute($entryDTO);
+        return app(\Modules\Accounting\Actions\Accounting\CreateJournalEntryAction::class)->execute($entryDTO);
     }
 
     /**
@@ -292,7 +292,7 @@ class ExchangeGainLossService
     /**
      * Get exchange rate from payment.
      */
-    protected function getPaymentExchangeRate(Payment $payment): ?float
+    protected function getPaymentExchangeRate(\Modules\Payment\Models\Payment $payment): ?float
     {
         // This would need to be implemented based on how you store exchange rates on payments
         // For now, return null as placeholder
@@ -303,7 +303,7 @@ class ExchangeGainLossService
      * Get accounts that need revaluation.
      *
      * @param  array<int>  $accountIds
-     * @return \Illuminate\Database\Eloquent\Collection<int, Account>
+     * @return \Illuminate\Database\Eloquent\Collection<int, \Modules\Accounting\Models\Account>
      */
     protected function getAccountsForRevaluation(Company $company, array $accountIds = []): Collection
     {
@@ -325,7 +325,7 @@ class ExchangeGainLossService
      *
      * @return array<string, mixed>
      */
-    protected function getForeignCurrencyBalances(Account $account, Carbon $date): array
+    protected function getForeignCurrencyBalances(\Modules\Accounting\Models\Account $account, Carbon $date): array
     {
         // This would need to be implemented to calculate balances by currency
         // For now, return empty array as placeholder
@@ -337,8 +337,8 @@ class ExchangeGainLossService
      */
     protected function postUnrealizedGainLossEntry(
         Company $company,
-        Account $account,
-        Currency $currency,
+        \Modules\Accounting\Models\Account $account,
+        \Modules\Foundation\Models\Currency $currency,
         Money $unrealizedGainLoss,
         Carbon $revaluationDate
     ): ?JournalEntry {

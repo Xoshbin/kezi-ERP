@@ -23,7 +23,7 @@ class PaymentSeeder extends Seeder
         // Invoice INV-003 is intentionally left without any payment.
 
         // --- SCENARIO 2: Fully Paid (1 Payment) ---
-        $billToFullyPay = VendorBill::where('bill_reference', 'HC-INV-2025-002')->firstOrFail();
+        $billToFullyPay = \Modules\Purchase\Models\VendorBill::where('bill_reference', 'HC-INV-2025-002')->firstOrFail();
         $this->createPayment(
             company: $company,
             journal: $journal,
@@ -36,7 +36,7 @@ class PaymentSeeder extends Seeder
         );
 
         // --- SCENARIO 3: Partially Paid (1 Payment) ---
-        $invoiceToPartiallyPay = Invoice::where('invoice_number', 'INV-001')->firstOrFail();
+        $invoiceToPartiallyPay = \Modules\Sales\Models\Invoice::where('invoice_number', 'INV-001')->firstOrFail();
         $this->createPayment(
             company: $company,
             journal: $journal,
@@ -48,7 +48,7 @@ class PaymentSeeder extends Seeder
         );
 
         // --- SCENARIO 4: Partially Paid (2 Payments) ---
-        $billToPartiallyPayTwice = VendorBill::where('bill_reference', 'PK-INV-2025-001')->firstOrFail();
+        $billToPartiallyPayTwice = \Modules\Purchase\Models\VendorBill::where('bill_reference', 'PK-INV-2025-001')->firstOrFail();
         // First partial payment
         $this->createPayment(
             company: $company,
@@ -71,7 +71,7 @@ class PaymentSeeder extends Seeder
         );
 
         // --- SCENARIO 5: Fully Paid (2 Payments) ---
-        $invoiceToFullyPayTwice = Invoice::where('invoice_number', 'INV-002')->firstOrFail();
+        $invoiceToFullyPayTwice = \Modules\Sales\Models\Invoice::where('invoice_number', 'INV-002')->firstOrFail();
         // First payment
         $this->createPayment(
             company: $company,
@@ -103,7 +103,7 @@ class PaymentSeeder extends Seeder
      */
     private function createPayment($company, $journal, $partner, $paymentType, $amount, $reference, $invoice = null, $vendorBill = null): void
     {
-        $payment = Payment::create([
+        $payment = \Modules\Payment\Models\Payment::create([
             'company_id' => $company->id,
             'currency_id' => $company->currency_id,
             'payment_type' => $paymentType,

@@ -17,7 +17,7 @@ class BankReconciliationMatcher extends Component
 {
     public int $bankStatementId;
 
-    public BankStatement $bankStatement;
+    public \Modules\Accounting\Models\BankStatement $bankStatement;
 
     // Totals from child components
     public Money $bankTotal;
@@ -36,11 +36,11 @@ class BankReconciliationMatcher extends Component
         /** @var \App\Models\Company|null $tenant */
         $tenant = Filament::getTenant();
 
-        $bankStatement = BankStatement::with(['currency', 'journal'])->find($bankStatementId);
+        $bankStatement = \Modules\Accounting\Models\BankStatement::with(['currency', 'journal'])->find($bankStatementId);
 
         if (! $bankStatement || ($tenant && $bankStatement->company_id !== $tenant->getKey())) {
             // Unauthorized or non-existent: render a safe, empty state without leaking data
-            $this->bankStatement = new BankStatement([
+            $this->bankStatement = new \Modules\Accounting\Models\BankStatement([
                 'id' => 0,
                 'company_id' => $tenant?->id,
                 'currency_id' => $tenant?->currency_id,
@@ -93,9 +93,9 @@ class BankReconciliationMatcher extends Component
             'systemTotal' => $this->systemTotal,
             'difference' => $difference,
             'isBalanced' => $difference->isZero(),
-            'bankTotalFormatted' => NumberFormatter::formatMoneyTo($this->bankTotal),
-            'systemTotalFormatted' => NumberFormatter::formatMoneyTo($this->systemTotal),
-            'differenceFormatted' => NumberFormatter::formatMoneyTo($difference),
+            'bankTotalFormatted' => \Modules\Foundation\Support\NumberFormatter::formatMoneyTo($this->bankTotal),
+            'systemTotalFormatted' => \Modules\Foundation\Support\NumberFormatter::formatMoneyTo($this->systemTotal),
+            'differenceFormatted' => \Modules\Foundation\Support\NumberFormatter::formatMoneyTo($difference),
         ];
     }
 
@@ -124,7 +124,7 @@ class BankReconciliationMatcher extends Component
         if (! $user) {
             throw new \Exception('User must be authenticated to reconcile transactions');
         }
-        app(BankReconciliationService::class)->reconcileMultiple(
+        app(\Modules\Accounting\Services\BankReconciliationService::class)->reconcileMultiple(
             $this->selectedBankLines,
             $this->selectedPayments,
             $user

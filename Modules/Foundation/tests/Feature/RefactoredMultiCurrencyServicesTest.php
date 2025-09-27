@@ -49,7 +49,7 @@ test('multi-currency services integration works correctly', function () {
     // This test verifies that our refactored services integrate multi-currency support
     // without breaking existing functionality
 
-    $baseCurrency = Currency::factory()->create(['code' => 'USD']);
+    $baseCurrency = \Modules\Foundation\Models\Currency::factory()->create(['code' => 'USD']);
     $company = Company::factory()->create(['currency_id' => $baseCurrency->id]);
 
     // The services should have the new multi-currency dependencies injected
@@ -64,7 +64,7 @@ test('multi-currency services integration works correctly', function () {
     expect($propertyNames)->toContain('exchangeRateService');
 
     // Test that CurrencyConverterService is working
-    $currencyConverter = app(\App\Services\CurrencyConverterService::class);
+    $currencyConverter = app(\Modules\Foundation\Services\CurrencyConverterService::class);
     $sameCurrencyResult = $currencyConverter->convert(
         Money::of(100, 'USD'),
         $baseCurrency,

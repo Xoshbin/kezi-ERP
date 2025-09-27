@@ -88,9 +88,9 @@ class ViewGeneralLedger extends Page
 
                                 $searchService = app(\Xoshbin\TranslatableSelect\Services\TranslatableSearchService::class);
                                 $localeResolver = app(\Xoshbin\TranslatableSelect\Services\LocaleResolver::class);
-                                $searchLocales = $localeResolver->getModelLocales(Account::class);
+                                $searchLocales = $localeResolver->getModelLocales(\Modules\Accounting\Models\Account::class);
 
-                                $results = $searchService->getFilamentSearchResults(Account::class, $search, [
+                                $results = $searchService->getFilamentSearchResults(\Modules\Accounting\Models\Account::class, $search, [
                                     'searchFields' => ['name', 'code'],
                                     'labelField' => 'name',
                                     'searchLocales' => $searchLocales,
@@ -101,7 +101,7 @@ class ViewGeneralLedger extends Page
                                 // Format results to include code
                                 $formattedResults = [];
                                 foreach ($results as $id => $name) {
-                                    $account = Account::find($id);
+                                    $account = \Modules\Accounting\Models\Account::find($id);
                                     if ($account) {
                                         $formattedResults[$id] = $account->code.' - '.$name;
                                     }
@@ -110,9 +110,9 @@ class ViewGeneralLedger extends Page
                                 return $formattedResults;
                             })
                             ->getOptionLabelsUsing(function (array $values): array {
-                                return Account::whereIn('id', $values)
+                                return \Modules\Accounting\Models\Account::whereIn('id', $values)
                                     ->get()
-                                    ->mapWithKeys(function (Account $account) {
+                                    ->mapWithKeys(function (\Modules\Accounting\Models\Account $account) {
                                         $accountName = is_array($account->name) ? ($account->name['en'] ?? (empty($account->name) ? '' : (string) array_values($account->name)[0])) : (string) $account->name;
 
                                         return [$account->id => "{$account->code} - {$accountName}"];
@@ -147,7 +147,7 @@ class ViewGeneralLedger extends Page
         if (! $company instanceof \App\Models\Company) {
             return;
         }
-        $service = app(GeneralLedgerService::class);
+        $service = app(\Modules\Accounting\Services\Reports\GeneralLedgerService::class);
 
         $report = $service->generate(
             $company,
@@ -162,9 +162,9 @@ class ViewGeneralLedger extends Page
                 'accountId' => $account->accountId,
                 'accountCode' => $account->accountCode,
                 'accountName' => $account->accountName,
-                'openingBalance' => NumberFormatter::formatMoneyTo($account->openingBalance),
+                'openingBalance' => \Modules\Foundation\Support\NumberFormatter::formatMoneyTo($account->openingBalance),
                 'openingBalanceAmount' => $account->openingBalance->getAmount()->toFloat(),
-                'closingBalance' => NumberFormatter::formatMoneyTo($account->closingBalance),
+                'closingBalance' => \Modules\Foundation\Support\NumberFormatter::formatMoneyTo($account->closingBalance),
                 'closingBalanceAmount' => $account->closingBalance->getAmount()->toFloat(),
                 'transactionLines' => $account->transactionLines->map(fn ($line) => [
                     'journalEntryId' => $line->journalEntryId,
@@ -172,11 +172,11 @@ class ViewGeneralLedger extends Page
                     'reference' => $line->reference,
                     'description' => $line->description,
                     'contraAccount' => $line->contraAccount,
-                    'debit' => NumberFormatter::formatMoneyTo($line->debit),
+                    'debit' => \Modules\Foundation\Support\NumberFormatter::formatMoneyTo($line->debit),
                     'debitAmount' => $line->debit->getAmount()->toFloat(),
-                    'credit' => NumberFormatter::formatMoneyTo($line->credit),
+                    'credit' => \Modules\Foundation\Support\NumberFormatter::formatMoneyTo($line->credit),
                     'creditAmount' => $line->credit->getAmount()->toFloat(),
-                    'balance' => NumberFormatter::formatMoneyTo($line->balance),
+                    'balance' => \Modules\Foundation\Support\NumberFormatter::formatMoneyTo($line->balance),
                     'balanceAmount' => $line->balance->getAmount()->toFloat(),
                 ])->toArray(),
             ])->toArray(),

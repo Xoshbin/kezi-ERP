@@ -13,7 +13,7 @@ uses(RefreshDatabase::class, WithConfiguredCompany::class, MocksTime::class);
 test('cancelling a confirmed payment creates a reversing journal entry and an audit log', function () {
 
     // Create and confirm a payment
-    $payment = Payment::factory()->for($this->company)->create(['status' => 'draft']);
+    $payment = \Modules\Payment\Models\Payment::factory()->for($this->company)->create(['status' => 'draft']);
     $paymentService = app(PaymentService::class);
     $paymentService->confirm($payment, $this->user);
     $payment->refresh();
@@ -33,7 +33,7 @@ test('cancelling a confirmed payment creates a reversing journal entry and an au
 
     // Assert: Audit log was created
     $this->assertDatabaseHas('audit_logs', [
-        'auditable_type' => Payment::class,
+        'auditable_type' => \Modules\Payment\Models\Payment::class,
         'auditable_id' => $payment->id,
         'user_id' => $this->user->id,
         'event_type' => 'cancellation',

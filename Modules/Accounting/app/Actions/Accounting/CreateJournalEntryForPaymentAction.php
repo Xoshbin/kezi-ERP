@@ -20,7 +20,7 @@ class CreateJournalEntryForPaymentAction
         private readonly CreateJournalEntryAction $createJournalEntryAction
     ) {}
 
-    public function execute(Payment $payment, User $user): JournalEntry
+    public function execute(\Modules\Payment\Models\Payment $payment, User $user): JournalEntry
     {
         $company = $payment->company->load('currency');
         $baseCurrency = $company->currency;

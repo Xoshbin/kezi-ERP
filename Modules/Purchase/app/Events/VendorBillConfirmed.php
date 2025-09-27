@@ -17,7 +17,7 @@ class VendorBillConfirmed
     /**
      * Create a new event instance.
      */
-    public function __construct(public VendorBill $vendorBill, public User $user)
+    public function __construct(public \Modules\Purchase\Models\VendorBill $vendorBill, public User $user)
     {
         //
     }

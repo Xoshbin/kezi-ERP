@@ -17,9 +17,9 @@ class CurrencyRateSeeder extends Seeder
     {
         $company = Company::where('name', 'Jmeryar Solutions')->first();
         // Get all active currencies
-        $usd = Currency::where('code', 'USD')->first();
+        $usd = \Modules\Foundation\Models\Currency::where('code', 'USD')->first();
 
-        CurrencyRate::updateOrCreate(
+        \Modules\Foundation\Models\CurrencyRate::updateOrCreate(
             [
                 'currency_id' => $usd->id,
                 'effective_date' => Carbon::today(),

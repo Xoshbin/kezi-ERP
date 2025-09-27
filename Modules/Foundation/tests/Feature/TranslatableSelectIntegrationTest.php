@@ -29,7 +29,7 @@ test('TranslatableSelect component loads correctly in ProductResource create pag
 
 test('TranslatableSelect can search accounts by name in current locale', function () {
     // Create accounts with translatable names
-    $account1 = Account::factory()->create([
+    $account1 = \Modules\Accounting\Models\Account::factory()->create([
         'company_id' => $this->company->id,
         'code' => 'ACC-001',
         'name' => [
@@ -37,10 +37,10 @@ test('TranslatableSelect can search accounts by name in current locale', functio
             'ar' => 'إيرادات المبيعات',
             'ckb' => 'داهاتی فرۆشتن',
         ],
-        'type' => AccountType::Income,
+        'type' => \Modules\Accounting\Enums\Accounting\AccountType::Income,
     ]);
 
-    $account2 = Account::factory()->create([
+    $account2 = \Modules\Accounting\Models\Account::factory()->create([
         'company_id' => $this->company->id,
         'code' => 'ACC-002',
         'name' => [
@@ -48,7 +48,7 @@ test('TranslatableSelect can search accounts by name in current locale', functio
             'ar' => 'تكلفة البضائع المباعة',
             'ckb' => 'تێچووی کاڵای فرۆشراو',
         ],
-        'type' => AccountType::Expense,
+        'type' => \Modules\Accounting\Enums\Accounting\AccountType::Expense,
     ]);
 
     // Test the create page with TranslatableSelect
@@ -59,12 +59,12 @@ test('TranslatableSelect can search accounts by name in current locale', functio
     $component->assertSuccessful();
 
     // Verify that accounts exist and are accessible
-    expect(Account::where('company_id', $this->company->id)->count())->toBeGreaterThanOrEqual(2);
+    expect(\Modules\Accounting\Models\Account::where('company_id', $this->company->id)->count())->toBeGreaterThanOrEqual(2);
 });
 
 test('TranslatableSelect can search accounts by code', function () {
     // Create an account with a specific code
-    $account = Account::factory()->create([
+    $account = \Modules\Accounting\Models\Account::factory()->create([
         'company_id' => $this->company->id,
         'code' => 'SEARCH-TEST-001',
         'name' => [
@@ -72,7 +72,7 @@ test('TranslatableSelect can search accounts by code', function () {
             'ar' => 'حساب تجريبي',
             'ckb' => 'هەژماری تاقیکردنەوە',
         ],
-        'type' => AccountType::Income,
+        'type' => \Modules\Accounting\Enums\Accounting\AccountType::Income,
     ]);
 
     $component = livewire(CreateProduct::class, [
@@ -88,7 +88,7 @@ test('TranslatableSelect can search accounts by code', function () {
 
 test('can create product with TranslatableSelect account selections', function () {
     // Create accounts for the product
-    $incomeAccount = Account::factory()->create([
+    $incomeAccount = \Modules\Accounting\Models\Account::factory()->create([
         'company_id' => $this->company->id,
         'code' => 'INC-001',
         'name' => [
@@ -96,10 +96,10 @@ test('can create product with TranslatableSelect account selections', function (
             'ar' => 'مبيعات المنتجات',
             'ckb' => 'فرۆشتنی بەرهەم',
         ],
-        'type' => AccountType::Income,
+        'type' => \Modules\Accounting\Enums\Accounting\AccountType::Income,
     ]);
 
-    $expenseAccount = Account::factory()->create([
+    $expenseAccount = \Modules\Accounting\Models\Account::factory()->create([
         'company_id' => $this->company->id,
         'code' => 'EXP-001',
         'name' => [
@@ -107,7 +107,7 @@ test('can create product with TranslatableSelect account selections', function (
             'ar' => 'تكاليف المنتجات',
             'ckb' => 'تێچووی بەرهەم',
         ],
-        'type' => AccountType::Expense,
+        'type' => \Modules\Accounting\Enums\Accounting\AccountType::Expense,
     ]);
 
     // Test creating a product using the TranslatableSelect components
@@ -117,7 +117,7 @@ test('can create product with TranslatableSelect account selections', function (
         ->fillForm([
             'name' => 'Test Product with TranslatableSelect',
             'sku' => 'TST-TRANS-001',
-            'type' => ProductType::Service->value,
+            'type' => \Modules\Product\Enums\Products\ProductType::Service->value,
             'description' => 'Testing TranslatableSelect integration',
             'income_account_id' => $incomeAccount->id,
             'expense_account_id' => $expenseAccount->id,
@@ -127,7 +127,7 @@ test('can create product with TranslatableSelect account selections', function (
         ->assertHasNoFormErrors();
 
     // Verify the product was created with the correct account relationships
-    $product = Product::where('sku', 'TST-TRANS-001')->first();
+    $product = \Modules\Product\Models\Product::where('sku', 'TST-TRANS-001')->first();
     expect($product)->not->toBeNull();
     expect($product->income_account_id)->toBe($incomeAccount->id);
     expect($product->expense_account_id)->toBe($expenseAccount->id);
@@ -138,18 +138,18 @@ test('TranslatableSelect respects company scoping', function () {
     // Create accounts for different companies
     $otherCompany = Company::factory()->create();
 
-    $ourAccount = Account::factory()->create([
+    $ourAccount = \Modules\Accounting\Models\Account::factory()->create([
         'company_id' => $this->company->id,
         'code' => 'OUR-001',
         'name' => 'Our Company Account',
-        'type' => AccountType::Income,
+        'type' => \Modules\Accounting\Enums\Accounting\AccountType::Income,
     ]);
 
-    $otherAccount = Account::factory()->create([
+    $otherAccount = \Modules\Accounting\Models\Account::factory()->create([
         'company_id' => $otherCompany->id,
         'code' => 'OTHER-001',
         'name' => 'Other Company Account',
-        'type' => AccountType::Income,
+        'type' => \Modules\Accounting\Enums\Accounting\AccountType::Income,
     ]);
 
     $component = livewire(CreateProduct::class, [
@@ -159,8 +159,8 @@ test('TranslatableSelect respects company scoping', function () {
     $component->assertSuccessful();
 
     // Verify that only accounts from our company are accessible
-    $companyAccountIds = Account::where('company_id', $this->company->id)->pluck('id')->toArray();
-    $otherCompanyAccountIds = Account::where('company_id', $otherCompany->id)->pluck('id')->toArray();
+    $companyAccountIds = \Modules\Accounting\Models\Account::where('company_id', $this->company->id)->pluck('id')->toArray();
+    $otherCompanyAccountIds = \Modules\Accounting\Models\Account::where('company_id', $otherCompany->id)->pluck('id')->toArray();
 
     expect($companyAccountIds)->toContain($ourAccount->id);
     expect($companyAccountIds)->not->toContain($otherAccount->id);

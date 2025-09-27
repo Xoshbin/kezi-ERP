@@ -96,7 +96,7 @@ class EditJournalEntry extends EditRecord
 
             if ($isMultiCurrency) {
                 // Multi-currency entry: use original amounts in transaction currency
-                $originalCurrency = $line->original_currency_id ? Currency::find($line->original_currency_id) : null;
+                $originalCurrency = $line->original_currency_id ? \Modules\Foundation\Models\Currency::find($line->original_currency_id) : null;
                 if ($originalCurrency && $originalCurrency->code === $currencyCode) {
                     // Determine if this line was a debit or credit based on base currency amounts
                     $isDebit = $line->debit->isPositive();

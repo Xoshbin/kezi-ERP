@@ -22,16 +22,16 @@ test('it generates a partner ledger for a customer with invoices and payments', 
     $currency = $this->company->currency->code;
 
     // Create partner with dedicated receivable/payable accounts
-    $receivableAccount = Account::factory()->for($this->company)->create(['type' => 'receivable']);
-    $payableAccount = Account::factory()->for($this->company)->create(['type' => 'payable']);
-    $partner = Partner::factory()->for($this->company)->create([
+    $receivableAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create(['type' => 'receivable']);
+    $payableAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create(['type' => 'payable']);
+    $partner = \Modules\Foundation\Models\Partner::factory()->for($this->company)->create([
         'receivable_account_id' => $receivableAccount->id,
         'payable_account_id' => $payableAccount->id,
     ]);
 
     $salesJournal = Journal::factory()->for($this->company)->create(['type' => JournalType::Sale]);
     $bankJournal = Journal::factory()->for($this->company)->create(['type' => JournalType::Bank]);
-    $otherAccount = Account::factory()->for($this->company)->create(['type' => 'income']);
+    $otherAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create(['type' => 'income']);
 
     $startDate = Carbon::parse('2025-03-01');
     $endDate = Carbon::parse('2025-03-31');
@@ -55,7 +55,7 @@ test('it generates a partner ledger for a customer with invoices and payments', 
     \App\Models\JournalEntryLine::create(['company_id' => $this->company->id, 'journal_entry_id' => $entry3->id, 'account_id' => $otherAccount->id, 'debit' => '700000', 'credit' => '0']);
 
     // Action
-    $service = app(PartnerLedgerService::class);
+    $service = app(\Modules\Accounting\Services\Reports\PartnerLedgerService::class);
     $report = $service->generate($this->company, $partner, $startDate, $endDate);
 
     // Assert
@@ -92,7 +92,7 @@ test('it generates a partner ledger for a customer with invoices and payments', 
 
 test('it throws exception when partner does not have assigned accounts', function () {
     // Arrange
-    $partner = Partner::factory()->for($this->company)->create([
+    $partner = \Modules\Foundation\Models\Partner::factory()->for($this->company)->create([
         'receivable_account_id' => null,
         'payable_account_id' => null,
     ]);
@@ -101,7 +101,7 @@ test('it throws exception when partner does not have assigned accounts', functio
     $endDate = Carbon::parse('2025-03-31');
 
     // Action & Assert
-    $service = app(PartnerLedgerService::class);
+    $service = app(\Modules\Accounting\Services\Reports\PartnerLedgerService::class);
 
     expect(fn () => $service->generate($this->company, $partner, $startDate, $endDate))
         ->toThrow(InvalidArgumentException::class, "Partner {$partner->name} does not have assigned receivable/payable accounts.");
@@ -111,9 +111,9 @@ test('it generates empty ledger for partner with no transactions', function () {
     // Arrange
     $currency = $this->company->currency->code;
 
-    $receivableAccount = Account::factory()->for($this->company)->create(['type' => 'receivable']);
-    $payableAccount = Account::factory()->for($this->company)->create(['type' => 'payable']);
-    $partner = Partner::factory()->for($this->company)->create([
+    $receivableAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create(['type' => 'receivable']);
+    $payableAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create(['type' => 'payable']);
+    $partner = \Modules\Foundation\Models\Partner::factory()->for($this->company)->create([
         'receivable_account_id' => $receivableAccount->id,
         'payable_account_id' => $payableAccount->id,
     ]);
@@ -122,7 +122,7 @@ test('it generates empty ledger for partner with no transactions', function () {
     $endDate = Carbon::parse('2025-03-31');
 
     // Action
-    $service = app(PartnerLedgerService::class);
+    $service = app(\Modules\Accounting\Services\Reports\PartnerLedgerService::class);
     $report = $service->generate($this->company, $partner, $startDate, $endDate);
 
     // Assert
@@ -135,16 +135,16 @@ test('it generates ledger for vendor with bills and payments', function () {
     // Arrange
     $currency = $this->company->currency->code;
 
-    $receivableAccount = Account::factory()->for($this->company)->create(['type' => 'receivable']);
-    $payableAccount = Account::factory()->for($this->company)->create(['type' => 'payable']);
-    $partner = Partner::factory()->for($this->company)->create([
+    $receivableAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create(['type' => 'receivable']);
+    $payableAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create(['type' => 'payable']);
+    $partner = \Modules\Foundation\Models\Partner::factory()->for($this->company)->create([
         'receivable_account_id' => $receivableAccount->id,
         'payable_account_id' => $payableAccount->id,
     ]);
 
     $purchaseJournal = Journal::factory()->for($this->company)->create(['type' => JournalType::Purchase]);
     $bankJournal = Journal::factory()->for($this->company)->create(['type' => JournalType::Bank]);
-    $expenseAccount = Account::factory()->for($this->company)->create(['type' => 'expense']);
+    $expenseAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create(['type' => 'expense']);
 
     $startDate = Carbon::parse('2025-03-01');
     $endDate = Carbon::parse('2025-03-31');
@@ -162,7 +162,7 @@ test('it generates ledger for vendor with bills and payments', function () {
     \App\Models\JournalEntryLine::create(['company_id' => $this->company->id, 'journal_entry_id' => $entry2->id, 'account_id' => $expenseAccount->id, 'debit' => '0', 'credit' => '150000']);
 
     // Action
-    $service = app(PartnerLedgerService::class);
+    $service = app(\Modules\Accounting\Services\Reports\PartnerLedgerService::class);
     $report = $service->generate($this->company, $partner, $startDate, $endDate);
 
     // Assert
@@ -190,15 +190,15 @@ test('it only includes posted transactions', function () {
     // Arrange
     $currency = $this->company->currency->code;
 
-    $receivableAccount = Account::factory()->for($this->company)->create(['type' => 'receivable']);
-    $payableAccount = Account::factory()->for($this->company)->create(['type' => 'payable']);
-    $partner = Partner::factory()->for($this->company)->create([
+    $receivableAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create(['type' => 'receivable']);
+    $payableAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create(['type' => 'payable']);
+    $partner = \Modules\Foundation\Models\Partner::factory()->for($this->company)->create([
         'receivable_account_id' => $receivableAccount->id,
         'payable_account_id' => $payableAccount->id,
     ]);
 
     $salesJournal = Journal::factory()->for($this->company)->create(['type' => JournalType::Sale]);
-    $otherAccount = Account::factory()->for($this->company)->create(['type' => 'income']);
+    $otherAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create(['type' => 'income']);
 
     $startDate = Carbon::parse('2025-03-01');
     $endDate = Carbon::parse('2025-03-31');
@@ -216,7 +216,7 @@ test('it only includes posted transactions', function () {
     \App\Models\JournalEntryLine::create(['company_id' => $this->company->id, 'journal_entry_id' => $entry2->id, 'account_id' => $otherAccount->id, 'debit' => '0', 'credit' => '300000']);
 
     // Action
-    $service = app(PartnerLedgerService::class);
+    $service = app(\Modules\Accounting\Services\Reports\PartnerLedgerService::class);
     $report = $service->generate($this->company, $partner, $startDate, $endDate);
 
     // Assert - Should only include the posted transaction
@@ -232,9 +232,9 @@ test('it correctly identifies vendor vs customer context and shows proper balanc
 
     // Arrange - Create a vendor partner
     $currency = $this->company->currency->code;
-    $receivableAccount = Account::factory()->for($this->company)->create(['type' => 'receivable']);
-    $payableAccount = Account::factory()->for($this->company)->create(['type' => 'payable']);
-    $vendor = Partner::factory()->for($this->company)->create([
+    $receivableAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create(['type' => 'receivable']);
+    $payableAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create(['type' => 'payable']);
+    $vendor = \Modules\Foundation\Models\Partner::factory()->for($this->company)->create([
         'type' => 'vendor',
         'receivable_account_id' => $receivableAccount->id,
         'payable_account_id' => $payableAccount->id,
@@ -242,8 +242,8 @@ test('it correctly identifies vendor vs customer context and shows proper balanc
 
     $purchaseJournal = Journal::factory()->for($this->company)->create(['type' => JournalType::Purchase]);
     $bankJournal = Journal::factory()->for($this->company)->create(['type' => JournalType::Bank]);
-    $expenseAccount = Account::factory()->for($this->company)->create(['type' => 'expense']);
-    $bankAccount = Account::factory()->for($this->company)->create(['type' => 'bank_and_cash']);
+    $expenseAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create(['type' => 'expense']);
+    $bankAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create(['type' => 'bank_and_cash']);
 
     $startDate = Carbon::parse('2025-03-01');
     $endDate = Carbon::parse('2025-03-31');
@@ -261,7 +261,7 @@ test('it correctly identifies vendor vs customer context and shows proper balanc
     \App\Models\JournalEntryLine::create(['company_id' => $this->company->id, 'journal_entry_id' => $paymentEntry->id, 'account_id' => $bankAccount->id, 'debit' => '0', 'credit' => '600000']);
 
     // Action
-    $service = app(PartnerLedgerService::class);
+    $service = app(\Modules\Accounting\Services\Reports\PartnerLedgerService::class);
     $report = $service->generate($this->company, $vendor, $startDate, $endDate);
 
     // Assert - CORRECT behavior for vendor ledger
@@ -288,9 +288,9 @@ test('it correctly handles customer ledger with invoices and payments', function
 
     // Arrange - Create a customer partner
     $currency = $this->company->currency->code;
-    $receivableAccount = Account::factory()->for($this->company)->create(['type' => 'receivable']);
-    $payableAccount = Account::factory()->for($this->company)->create(['type' => 'payable']);
-    $customer = Partner::factory()->for($this->company)->create([
+    $receivableAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create(['type' => 'receivable']);
+    $payableAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create(['type' => 'payable']);
+    $customer = \Modules\Foundation\Models\Partner::factory()->for($this->company)->create([
         'type' => 'customer',
         'receivable_account_id' => $receivableAccount->id,
         'payable_account_id' => $payableAccount->id,
@@ -298,8 +298,8 @@ test('it correctly handles customer ledger with invoices and payments', function
 
     $salesJournal = Journal::factory()->for($this->company)->create(['type' => JournalType::Sale]);
     $bankJournal = Journal::factory()->for($this->company)->create(['type' => JournalType::Bank]);
-    $revenueAccount = Account::factory()->for($this->company)->create(['type' => 'income']);
-    $bankAccount = Account::factory()->for($this->company)->create(['type' => 'bank_and_cash']);
+    $revenueAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create(['type' => 'income']);
+    $bankAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create(['type' => 'bank_and_cash']);
 
     $startDate = Carbon::parse('2025-03-01');
     $endDate = Carbon::parse('2025-03-31');
@@ -317,7 +317,7 @@ test('it correctly handles customer ledger with invoices and payments', function
     \App\Models\JournalEntryLine::create(['company_id' => $this->company->id, 'journal_entry_id' => $paymentEntry->id, 'account_id' => $receivableAccount->id, 'debit' => '0', 'credit' => '500000']);
 
     // Action
-    $service = app(PartnerLedgerService::class);
+    $service = app(\Modules\Accounting\Services\Reports\PartnerLedgerService::class);
     $report = $service->generate($this->company, $customer, $startDate, $endDate);
 
     // Assert - CORRECT behavior for customer ledger
@@ -344,9 +344,9 @@ test('it handles overpayment scenarios correctly for vendors', function () {
 
     // Arrange - Vendor with overpayment
     $currency = $this->company->currency->code;
-    $receivableAccount = Account::factory()->for($this->company)->create(['type' => 'receivable']);
-    $payableAccount = Account::factory()->for($this->company)->create(['type' => 'payable']);
-    $vendor = Partner::factory()->for($this->company)->create([
+    $receivableAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create(['type' => 'receivable']);
+    $payableAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create(['type' => 'payable']);
+    $vendor = \Modules\Foundation\Models\Partner::factory()->for($this->company)->create([
         'type' => 'vendor',
         'receivable_account_id' => $receivableAccount->id,
         'payable_account_id' => $payableAccount->id,
@@ -354,8 +354,8 @@ test('it handles overpayment scenarios correctly for vendors', function () {
 
     $purchaseJournal = Journal::factory()->for($this->company)->create(['type' => JournalType::Purchase]);
     $bankJournal = Journal::factory()->for($this->company)->create(['type' => JournalType::Bank]);
-    $expenseAccount = Account::factory()->for($this->company)->create(['type' => 'expense']);
-    $bankAccount = Account::factory()->for($this->company)->create(['type' => 'bank_and_cash']);
+    $expenseAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create(['type' => 'expense']);
+    $bankAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create(['type' => 'bank_and_cash']);
 
     $startDate = Carbon::parse('2025-03-01');
     $endDate = Carbon::parse('2025-03-31');
@@ -373,7 +373,7 @@ test('it handles overpayment scenarios correctly for vendors', function () {
     \App\Models\JournalEntryLine::create(['company_id' => $this->company->id, 'journal_entry_id' => $paymentEntry->id, 'account_id' => $bankAccount->id, 'debit' => '0', 'credit' => '800000']);
 
     // Action
-    $service = app(PartnerLedgerService::class);
+    $service = app(\Modules\Accounting\Services\Reports\PartnerLedgerService::class);
     $report = $service->generate($this->company, $vendor, $startDate, $endDate);
 
     // Assert - Should show negative balance (they owe us money back)

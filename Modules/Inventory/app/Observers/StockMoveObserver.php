@@ -19,7 +19,7 @@ class StockMoveObserver
         // Check if the status was just changed to 'Done'
         if ($stockMove->wasChanged('status') && $stockMove->status === StockMoveStatus::Done) {
             // Skip auto-created moves linked to Vendor Bills (handled via ProcessIncomingStockAction)
-            if ($stockMove->source_type === \App\Models\VendorBill::class) {
+            if ($stockMove->source_type === \Modules\Purchase\Models\VendorBill::class) {
                 return;
             }
 
@@ -32,12 +32,12 @@ class StockMoveObserver
                         // Use consolidated approach for manual stock moves to create a single journal entry
                         $inventoryValuationService = app(\App\Services\Inventory\InventoryValuationService::class);
                         $inventoryValuationService->createConsolidatedManualStockMoveJournalEntry($stockMove);
-                    } else if ($stockMove->source_type === \App\Models\VendorBill::class) {
+                    } else if ($stockMove->source_type === \Modules\Purchase\Models\VendorBill::class) {
                         // For stock moves linked to vendor bills, use consolidated approach
                         $inventoryValuationService = app(\App\Services\Inventory\InventoryValuationService::class);
 
                         // Check if a consolidated journal entry already exists for this vendor bill
-                        $existingJournalEntry = \App\Models\JournalEntry::where('source_type', \App\Models\VendorBill::class)
+                        $existingJournalEntry = \App\Models\JournalEntry::where('source_type', \Modules\Purchase\Models\VendorBill::class)
                             ->where('source_id', $stockMove->source_id)
                             ->where('reference', 'LIKE', 'STOCK-IN-%')
                             ->first();
@@ -46,7 +46,7 @@ class StockMoveObserver
 
                         if (!$existingJournalEntry) {
                             // Get all stock moves for the same vendor bill
-                            $allStockMoves = \App\Models\StockMove::where('source_type', \App\Models\VendorBill::class)
+                            $allStockMoves = \App\Models\StockMove::where('source_type', \Modules\Purchase\Models\VendorBill::class)
                                 ->where('source_id', $stockMove->source_id)
                                 ->where('status', \App\Enums\Inventory\StockMoveStatus::Done)
                                 ->get();
@@ -140,7 +140,7 @@ class StockMoveObserver
             return;
         }
 
-        AuditLog::create([
+        \Modules\Foundation\Models\AuditLog::create([
             'user_id' => $user->id,
             'auditable_id' => $stockMove->id,
             'auditable_type' => StockMove::class,

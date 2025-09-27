@@ -20,10 +20,10 @@ class MoneyInputProductSelectionTest extends TestCase
 
     private Company $company;
     private User $user;
-    private Currency $currency;
-    private Partner $vendor;
-    private Product $product;
-    private Account $expenseAccount;
+    private \Modules\Foundation\Models\Currency $currency;
+    private \Modules\Foundation\Models\Partner $vendor;
+    private \Modules\Product\Models\Product $product;
+    private \Modules\Accounting\Models\Account $expenseAccount;
 
     protected function setUp(): void
     {
@@ -32,21 +32,21 @@ class MoneyInputProductSelectionTest extends TestCase
         // Create test data
         $this->company = Company::factory()->create();
         $this->user = User::factory()->create();
-        $this->currency = Currency::factory()->create(['code' => 'USD']);
+        $this->currency = \Modules\Foundation\Models\Currency::factory()->create(['code' => 'USD']);
         
         $this->company->update(['currency_id' => $this->currency->id]);
         
-        $this->vendor = Partner::factory()->vendor()->create([
+        $this->vendor = \Modules\Foundation\Models\Partner::factory()->vendor()->create([
             'company_id' => $this->company->id,
         ]);
 
-        $this->expenseAccount = Account::factory()->create([
+        $this->expenseAccount = \Modules\Accounting\Models\Account::factory()->create([
             'company_id' => $this->company->id,
             'type' => 'expense',
         ]);
 
         // Create a product with a specific Money unit price
-        $this->product = Product::factory()->create([
+        $this->product = \Modules\Product\Models\Product::factory()->create([
             'company_id' => $this->company->id,
             'name' => 'Test Product',
             'unit_price' => Money::of('150.75', $this->currency->code), // Specific price to test
@@ -108,7 +108,7 @@ class MoneyInputProductSelectionTest extends TestCase
     public function it_handles_products_with_different_price_formats(): void
     {
         // Test with integer price
-        $integerProduct = Product::factory()->create([
+        $integerProduct = \Modules\Product\Models\Product::factory()->create([
             'company_id' => $this->company->id,
             'name' => 'Integer Price Product',
             'unit_price' => Money::of('100', $this->currency->code),
@@ -116,7 +116,7 @@ class MoneyInputProductSelectionTest extends TestCase
         ]);
 
         // Test with decimal price
-        $decimalProduct = Product::factory()->create([
+        $decimalProduct = \Modules\Product\Models\Product::factory()->create([
             'company_id' => $this->company->id,
             'name' => 'Decimal Price Product',
             'unit_price' => Money::of('99.99', $this->currency->code),
@@ -159,7 +159,7 @@ class MoneyInputProductSelectionTest extends TestCase
     public function it_handles_products_with_null_unit_price(): void
     {
         // Create a product with null unit price
-        $nullPriceProduct = Product::factory()->create([
+        $nullPriceProduct = \Modules\Product\Models\Product::factory()->create([
             'company_id' => $this->company->id,
             'name' => 'No Price Product',
             'unit_price' => null,

@@ -53,7 +53,7 @@ class MoneyInput extends TextInput
                     /** @var int|null $currencyId */
                     $currencyId = $get($this->currencyFieldName);
                     if ($currencyId) {
-                        $currency = Currency::find($currencyId);
+                        $currency = \Modules\Foundation\Models\Currency::find($currencyId);
                         if ($currency) {
                             return $currency->code;
                         }
@@ -66,7 +66,7 @@ class MoneyInput extends TextInput
                     $mainRecord = $livewire->getRecord();
                     if ($mainRecord instanceof \Illuminate\Database\Eloquent\Model && method_exists($mainRecord, 'currency')) {
                         $currency = $mainRecord->relationLoaded('currency') ? $mainRecord->getRelation('currency') : $mainRecord->currency()->first();
-                        /** @var \App\Models\Currency|null $currency */
+                        /** @var \Modules\Foundation\Models\Currency|null $currency */
                         if ($currency) {
                             return $currency->code;
                         }
@@ -76,7 +76,7 @@ class MoneyInput extends TextInput
                 // Try to get the tenant's default currency as final fallback
                 $tenant = Filament::getTenant();
                 if ($tenant instanceof \Illuminate\Database\Eloquent\Model && method_exists($tenant, 'currency')) {
-                    /** @var \App\Models\Currency|null $tCurrency */
+                    /** @var \Modules\Foundation\Models\Currency|null $tCurrency */
                     $tCurrency = $tenant->relationLoaded('currency') ? $tenant->getRelation('currency') : $tenant->currency()->first();
                     if ($tCurrency) {
                         return $tCurrency->code;
@@ -132,7 +132,7 @@ class MoneyInput extends TextInput
                 // To avoid too many database queries, we can cache the result.
                 static $currencyCache = [];
                 if (! isset($currencyCache[$currencyId])) {
-                    $currencyCache[$currencyId] = Currency::find($currencyId);
+                    $currencyCache[$currencyId] = \Modules\Foundation\Models\Currency::find($currencyId);
                 }
                 $currency = $currencyCache[$currencyId];
                 if ($currency) {
@@ -148,7 +148,7 @@ class MoneyInput extends TextInput
                 $mainRecord = $livewire->getRecord();
                 if ($mainRecord instanceof \Illuminate\Database\Eloquent\Model && method_exists($mainRecord, 'currency')) {
                     $currency = $mainRecord->relationLoaded('currency') ? $mainRecord->getRelation('currency') : $mainRecord->currency()->first();
-                    /** @var \App\Models\Currency|null $currency */
+                    /** @var \Modules\Foundation\Models\Currency|null $currency */
                     if ($currency) {
                         $currencyCode = $currency->code;
                     }

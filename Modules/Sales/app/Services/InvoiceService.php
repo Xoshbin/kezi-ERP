@@ -24,7 +24,7 @@ use RuntimeException;
 class InvoiceService
 {
     public function __construct(
-        protected LockDateService $lockDateService,
+        protected \Modules\Accounting\Services\Accounting\LockDateService $lockDateService,
         protected JournalEntryService $journalEntryService,
         protected CreateJournalEntryForInvoiceAction $createJournalEntryForInvoiceAction,
         protected CreateStockMovesForInvoiceAction $createStockMovesForInvoiceAction,
@@ -33,11 +33,11 @@ class InvoiceService
         protected ExchangeRateService $exchangeRateService
     ) {}
 
-    public function delete(Invoice $invoice): bool
+    public function delete(\Modules\Sales\Models\Invoice $invoice): bool
     {
         // Guard Clause: Only allow deleting if the status is InvoiceStatus::Draft.
         if ($invoice->status !== InvoiceStatus::Draft) {
-            throw new DeletionNotAllowedException('Cannot delete a posted invoice.');
+            throw new \Modules\Foundation\Exceptions\DeletionNotAllowedException('Cannot delete a posted invoice.');
         }
 
         // If the guard passes, proceed with the deletion.
@@ -46,7 +46,7 @@ class InvoiceService
         return $result !== null ? $result : false;
     }
 
-    public function confirm(Invoice $invoice, User $user): void
+    public function confirm(\Modules\Sales\Models\Invoice $invoice, User $user): void
     {
         // Guard clause to prevent re-confirming.
         if ($invoice->status !== InvoiceStatus::Draft) {
@@ -82,14 +82,14 @@ class InvoiceService
                 );
             }
 
-            InvoiceConfirmed::dispatch($invoice);
+            \Modules\Sales\Events\InvoiceConfirmed::dispatch($invoice);
         });
     }
 
     /**
      * Resets a posted invoice back to draft status with a detailed audit log.
      */
-    public function resetToDraft(Invoice $invoice, User $user, string $reason): void
+    public function resetToDraft(\Modules\Sales\Models\Invoice $invoice, User $user, string $reason): void
     {
         if ($invoice->status !== InvoiceStatus::Posted) {
             throw new Exception('Only posted invoices can be reset to draft.');
@@ -102,7 +102,7 @@ class InvoiceService
             }
 
             // Step 1: Create a detailed audit log explaining the action.
-            AuditLog::create([
+            \Modules\Foundation\Models\AuditLog::create([
                 'user_id' => $user->id,
                 'event_type' => 'reset_to_draft',
                 'auditable_type' => get_class($invoice),
@@ -148,7 +148,7 @@ class InvoiceService
     /**
      * Cancels a posted invoice by creating a reversing journal entry and a detailed audit log.
      */
-    public function cancel(Invoice $invoice, User $user, string $reason): void
+    public function cancel(\Modules\Sales\Models\Invoice $invoice, User $user, string $reason): void
     {
         Gate::forUser($user)->authorize('cancel', $invoice); // You may want a specific policy for this
 
@@ -163,7 +163,7 @@ class InvoiceService
             }
 
             // Step 1: Create a detailed audit log explaining the action.
-            AuditLog::create([
+            \Modules\Foundation\Models\AuditLog::create([
                 'user_id' => $user->id,
                 'event_type' => 'cancellation',
                 'auditable_type' => get_class($invoice),
@@ -191,7 +191,7 @@ class InvoiceService
      * Process multi-currency amounts for an invoice.
      * Captures exchange rate and converts amounts to company base currency.
      */
-    protected function processMultiCurrencyAmounts(Invoice $invoice): void
+    protected function processMultiCurrencyAmounts(\Modules\Sales\Models\Invoice $invoice): void
     {
         // Load necessary relationships
         $invoice->load(['company', 'currency', 'invoiceLines']);
@@ -262,9 +262,9 @@ class InvoiceService
     /**
      * Convert invoice line amounts to company currency.
      *
-     * @param  \App\Models\InvoiceLine  $line
+     * @param \Modules\Sales\Models\InvoiceLine $line
      */
-    protected function convertInvoiceLineAmounts($line, Currency $companyCurrency, float $exchangeRate): void
+    protected function convertInvoiceLineAmounts($line, \Modules\Foundation\Models\Currency $companyCurrency, float $exchangeRate): void
     {
         $unitPriceCompanyCurrency = $this->currencyConverter->convertWithRate(
             $line->unit_price,
@@ -299,7 +299,7 @@ class InvoiceService
      *
      * @throws RuntimeException if validation fails
      */
-    private function validateInvoiceForPosting(Invoice $invoice): void
+    private function validateInvoiceForPosting(\Modules\Sales\Models\Invoice $invoice): void
     {
         $preview = app(BuildInvoicePostingPreviewAction::class)->execute($invoice);
 

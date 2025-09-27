@@ -82,7 +82,7 @@ class JournalResource extends Resource
                         ->label(__('journal.short_code'))
                         ->required()
                         ->maxLength(255),
-                    TranslatableSelect::forModel('currency_id', Currency::class, 'name')
+                    TranslatableSelect::forModel('currency_id', \Modules\Foundation\Models\Currency::class, 'name')
                         ->label(__('journal.currency'))
                         ->required()
                         ->searchable()
@@ -121,12 +121,12 @@ class JournalResource extends Resource
             Section::make(__('journal.default_accounts'))
                 ->description(__('journal.default_accounts_description'))
                 ->schema([
-                    TranslatableSelect::forModel('default_debit_account_id', Account::class, 'name')
+                    TranslatableSelect::forModel('default_debit_account_id', \Modules\Accounting\Models\Account::class, 'name')
                         ->searchable()
                         ->preload()
                         ->helperText(__('journal.default_debit_account_helper')),
 
-                    TranslatableSelect::forModel('default_credit_account_id', Account::class, 'name')
+                    TranslatableSelect::forModel('default_credit_account_id', \Modules\Accounting\Models\Account::class, 'name')
                         ->searchable()
                         ->preload()
                         ->helperText(__('journal.default_credit_account_helper')),

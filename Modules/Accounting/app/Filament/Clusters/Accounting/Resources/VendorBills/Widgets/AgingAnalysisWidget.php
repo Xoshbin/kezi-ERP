@@ -19,14 +19,14 @@ class AgingAnalysisWidget extends BaseWidget
 
     protected function getStats(): array
     {
-        if (! $this->record instanceof VendorBill) {
+        if (! $this->record instanceof \Modules\Purchase\Models\VendorBill) {
             return [];
         }
 
         $vendorBill = $this->record;
 
         // Only show aging for posted vendor bills that are not fully paid
-        if ($vendorBill->status !== VendorBillStatus::Posted || $vendorBill->paymentState === PaymentState::Paid) {
+        if ($vendorBill->status !== VendorBillStatus::Posted || $vendorBill->paymentState === \Modules\Foundation\Enums\Shared\PaymentState::Paid) {
             return [
                 Stat::make(__('vendor_bill.aging_widget.status'), __('vendor_bill.aging_widget.not_applicable'))
                     ->description(__('vendor_bill.aging_widget.not_applicable_desc'))
@@ -61,7 +61,7 @@ class AgingAnalysisWidget extends BaseWidget
         ];
     }
 
-    private function calculateDaysOutstanding(VendorBill $vendorBill): int
+    private function calculateDaysOutstanding(\Modules\Purchase\Models\VendorBill $vendorBill): int
     {
         if (! $vendorBill->due_date) {
             return 0;
@@ -73,7 +73,7 @@ class AgingAnalysisWidget extends BaseWidget
         return (int) max(0, $today->diffInDays($dueDate, false));
     }
 
-    private function calculateOutstandingAmount(VendorBill $vendorBill): Money
+    private function calculateOutstandingAmount(\Modules\Purchase\Models\VendorBill $vendorBill): Money
     {
         $totalAmount = $vendorBill->total_amount;
         $paidAmount = $vendorBill->getPaidAmount();
@@ -130,7 +130,7 @@ class AgingAnalysisWidget extends BaseWidget
         return $this->getDaysOutstandingColor($daysOutstanding);
     }
 
-    private function getPaymentProgress(VendorBill $vendorBill): string
+    private function getPaymentProgress(\Modules\Purchase\Models\VendorBill $vendorBill): string
     {
         $totalAmount = $vendorBill->total_amount;
         $paidAmount = $vendorBill->getPaidAmount();
@@ -141,21 +141,21 @@ class AgingAnalysisWidget extends BaseWidget
 
         $percentage = $paidAmount->dividedBy($totalAmount->getAmount(), RoundingMode::HALF_UP)->multipliedBy(100);
 
-        return NumberFormatter::formatPercentage($percentage->getAmount()->toFloat(), 1);
+        return \Modules\Foundation\Support\NumberFormatter::formatPercentage($percentage->getAmount()->toFloat(), 1);
     }
 
-    private function getPaymentProgressColor(VendorBill $vendorBill): string
+    private function getPaymentProgressColor(\Modules\Purchase\Models\VendorBill $vendorBill): string
     {
         return match ($vendorBill->paymentState) {
-            PaymentState::NotPaid => 'gray',
-            PaymentState::PartiallyPaid => 'warning',
-            PaymentState::Paid => 'success',
+            \Modules\Foundation\Enums\Shared\PaymentState::NotPaid => 'gray',
+            \Modules\Foundation\Enums\Shared\PaymentState::PartiallyPaid => 'warning',
+            \Modules\Foundation\Enums\Shared\PaymentState::Paid => 'success',
         };
     }
 
     private function formatMoney(Money $money): string
     {
-        return NumberFormatter::formatMoney($money);
+        return \Modules\Foundation\Support\NumberFormatter::formatMoney($money);
     }
 
     protected function getColumns(): int

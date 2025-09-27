@@ -33,17 +33,17 @@ test('a company with any financial records cannot be deleted', function (string 
 
     // Act & Assert: Attempting to delete the company should fail with our specific exception.
     expect(fn () => $this->company->delete())
-        ->toThrow(DeletionNotAllowedException::class, 'Cannot delete a company with associated financial records.');
+        ->toThrow(\Modules\Foundation\Exceptions\DeletionNotAllowedException::class, 'Cannot delete a company with associated financial records.');
 
     // Verify: The company must still exist in the database.
     $this->assertModelExists($this->company);
 
 })->with([
-    'with an Account' => [Account::class],
+    'with an Account' => [\Modules\Accounting\Models\Account::class],
     'with a Journal Entry' => [JournalEntry::class, ['total_debit' => 0, 'total_credit' => 0]],
-    'with an Invoice' => [Invoice::class, ['total_amount' => 0, 'total_tax' => 0]],
-    'with a Vendor Bill' => [VendorBill::class, ['total_amount' => 0, 'total_tax' => 0]],
-    'with an Asset' => [\App\Models\Asset::class, ['purchase_value' => 1000, 'salvage_value' => 0]],
+    'with an Invoice' => [\Modules\Sales\Models\Invoice::class, ['total_amount' => 0, 'total_tax' => 0]],
+    'with a Vendor Bill' => [\Modules\Purchase\Models\VendorBill::class, ['total_amount' => 0, 'total_tax' => 0]],
+    'with an Asset' => [\Modules\Accounting\Models\Asset::class, ['purchase_value' => 1000, 'salvage_value' => 0]],
 ]);
 
 // ======================================================================
@@ -61,7 +61,7 @@ test('a journal with journal entries cannot be deleted', function () {
 
     // Act & Assert: Attempting to delete the journal should be blocked.
     expect(fn () => $journal->delete())
-        ->toThrow(DeletionNotAllowedException::class, 'Cannot delete a journal with associated journal entries.');
+        ->toThrow(\Modules\Foundation\Exceptions\DeletionNotAllowedException::class, 'Cannot delete a journal with associated journal entries.');
 
     // Verify: The journal must still exist.
     $this->assertModelExists($journal);
@@ -81,7 +81,7 @@ test('a currency in use by a company or transaction cannot be deleted', function
 
     // Act & Assert: Attempting to delete this currency should fail.
     expect(fn () => $currencyInUse->delete())
-        ->toThrow(DeletionNotAllowedException::class, 'Cannot delete a currency that is in use.');
+        ->toThrow(\Modules\Foundation\Exceptions\DeletionNotAllowedException::class, 'Cannot delete a currency that is in use.');
 
     // Verify: The currency must still exist.
     $this->assertModelExists($currencyInUse);
@@ -98,8 +98,8 @@ test('a tax used in a transaction is deactivated instead of deleted', function (
 
     // Arrange: Create a tax and use it in an invoice line.
     $tax = Tax::factory()->for($this->company)->create(['is_active' => true]);
-    $invoice = Invoice::factory()->for($this->company)->create(['total_amount' => 0, 'total_tax' => 0]);
-    InvoiceLine::factory()->for($invoice)->for($tax)->create(['unit_price' => 100, 'quantity' => 1]);
+    $invoice = \Modules\Sales\Models\Invoice::factory()->for($this->company)->create(['total_amount' => 0, 'total_tax' => 0]);
+    \Modules\Sales\Models\InvoiceLine::factory()->for($invoice)->for($tax)->create(['unit_price' => 100, 'quantity' => 1]);
 
     // Act: Attempt to delete the tax. The observer should intercept this.
     $deleteResult = $tax->delete();

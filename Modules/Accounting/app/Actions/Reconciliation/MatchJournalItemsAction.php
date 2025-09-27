@@ -32,7 +32,7 @@ class MatchJournalItemsAction
      * @param  ReconciliationType  $reconciliationType  Type of reconciliation
      * @param  string|null  $reference  Optional reference for the reconciliation
      * @param  string|null  $description  Optional description for the reconciliation
-     * @return Reconciliation The created reconciliation record
+     * @return \Modules\Accounting\Models\Reconciliation The created reconciliation record
      *
      * @throws ReconciliationDisabledException
      * @throws AccountNotReconcilableException
@@ -46,7 +46,7 @@ class MatchJournalItemsAction
         ReconciliationType $reconciliationType = ReconciliationType::ManualArAp,
         ?string $reference = null,
         ?string $description = null
-    ): Reconciliation {
+    ): \Modules\Accounting\Models\Reconciliation {
         // Validate input
         if (empty($journalLineIds)) {
             throw new InvalidArgumentException('No journal entry lines provided for reconciliation.');
@@ -85,7 +85,7 @@ class MatchJournalItemsAction
 
         // Create the reconciliation record
         return DB::transaction(function () use ($journalLines, $company, $reconciliationType, $reference, $description) {
-            $reconciliation = Reconciliation::create([
+            $reconciliation = \Modules\Accounting\Models\Reconciliation::create([
                 'company_id' => $company->id,
                 'reconciliation_type' => $reconciliationType,
                 'reference' => $reference,

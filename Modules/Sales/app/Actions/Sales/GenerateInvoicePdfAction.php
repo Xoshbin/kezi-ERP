@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\View;
 
 class GenerateInvoicePdfAction
 {
-    public function execute(Invoice $invoice, string $template = 'classic'): Response
+    public function execute(\Modules\Sales\Models\Invoice $invoice, string $template = 'classic'): Response
     {
         // Note: We now allow printing draft invoices for quotes/offers/previews
 
@@ -53,7 +53,7 @@ class GenerateInvoicePdfAction
         return $pdf->stream($fileName);
     }
 
-    public function download(Invoice $invoice, string $template = 'classic'): Response
+    public function download(\Modules\Sales\Models\Invoice $invoice, string $template = 'classic'): Response
     {
         // Note: We now allow downloading draft invoices for quotes/offers/previews
 

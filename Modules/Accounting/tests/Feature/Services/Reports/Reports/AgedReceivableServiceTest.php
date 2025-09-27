@@ -23,12 +23,12 @@ beforeEach(function () {
 test('it generates the aged receivable report with correct bucketing', function () {
     // Arrange
     $currency = $this->company->currency->code;
-    $partner = Partner::factory()->for($this->company)->create();
+    $partner = \Modules\Foundation\Models\Partner::factory()->for($this->company)->create();
     $asOfDate = Carbon::parse('2025-08-12');
 
     // Create invoices with different due dates relative to the "as of" date
     // Use Money objects to ensure correct conversion to minor units
-    $invoice1 = Invoice::factory()->for($this->company)->create([
+    $invoice1 = \Modules\Sales\Models\Invoice::factory()->for($this->company)->create([
         'customer_id' => $partner->id,
         'currency_id' => $this->company->currency_id,
         'due_date' => '2025-09-01',
@@ -38,7 +38,7 @@ test('it generates the aged receivable report with correct bucketing', function 
     ]);
 
     // 2. 1-30 days past due
-    $invoice2 = Invoice::factory()->for($this->company)->create([
+    $invoice2 = \Modules\Sales\Models\Invoice::factory()->for($this->company)->create([
         'customer_id' => $partner->id,
         'currency_id' => $this->company->currency_id,
         'due_date' => '2025-07-20',
@@ -48,7 +48,7 @@ test('it generates the aged receivable report with correct bucketing', function 
     ]);
 
     // 3. 31-60 days past due
-    $invoice3 = Invoice::factory()->for($this->company)->create([
+    $invoice3 = \Modules\Sales\Models\Invoice::factory()->for($this->company)->create([
         'customer_id' => $partner->id,
         'currency_id' => $this->company->currency_id,
         'due_date' => '2025-06-20',
@@ -58,7 +58,7 @@ test('it generates the aged receivable report with correct bucketing', function 
     ]);
 
     // 4. 61-90 days past due
-    $invoice4 = Invoice::factory()->for($this->company)->create([
+    $invoice4 = \Modules\Sales\Models\Invoice::factory()->for($this->company)->create([
         'customer_id' => $partner->id,
         'currency_id' => $this->company->currency_id,
         'due_date' => '2025-05-20',
@@ -68,7 +68,7 @@ test('it generates the aged receivable report with correct bucketing', function 
     ]);
 
     // 5. 91+ days past due
-    $invoice5 = Invoice::factory()->for($this->company)->create([
+    $invoice5 = \Modules\Sales\Models\Invoice::factory()->for($this->company)->create([
         'customer_id' => $partner->id,
         'currency_id' => $this->company->currency_id,
         'due_date' => '2025-04-20',
@@ -78,7 +78,7 @@ test('it generates the aged receivable report with correct bucketing', function 
     ]);
 
     // 6. Ignored: Fully paid invoice
-    $invoice6 = Invoice::factory()->for($this->company)->create([
+    $invoice6 = \Modules\Sales\Models\Invoice::factory()->for($this->company)->create([
         'customer_id' => $partner->id,
         'currency_id' => $this->company->currency_id,
         'due_date' => '2025-07-01',
@@ -88,7 +88,7 @@ test('it generates the aged receivable report with correct bucketing', function 
     ]);
 
     // Create payment that fully pays invoice6
-    $payment = Payment::factory()->for($this->company)->create([
+    $payment = \Modules\Payment\Models\Payment::factory()->for($this->company)->create([
         'amount' => Money::of(1000, $currency),
         'currency_id' => $this->company->currency_id,
         'status' => PaymentStatus::Confirmed,
@@ -101,7 +101,7 @@ test('it generates the aged receivable report with correct bucketing', function 
     ]);
 
     // 7. Ignored: Invoice issued after the "as of" date
-    Invoice::factory()->for($this->company)->create([
+    \Modules\Sales\Models\Invoice::factory()->for($this->company)->create([
         'customer_id' => $partner->id,
         'currency_id' => $this->company->currency_id,
         'invoice_date' => '2025-09-01',
@@ -111,7 +111,7 @@ test('it generates the aged receivable report with correct bucketing', function 
     ]);
 
     // Action
-    $service = app(AgedReceivableService::class);
+    $service = app(\Modules\Accounting\Services\Reports\AgedReceivableService::class);
     $report = $service->generate($this->company, $asOfDate);
 
     // Assert
@@ -143,11 +143,11 @@ test('it generates the aged receivable report with correct bucketing', function 
 test('it handles partially paid invoices correctly', function () {
     // Arrange
     $currency = $this->company->currency->code;
-    $partner = Partner::factory()->for($this->company)->create();
+    $partner = \Modules\Foundation\Models\Partner::factory()->for($this->company)->create();
     $asOfDate = Carbon::parse('2025-08-12');
 
     // Create an invoice that's partially paid
-    $invoice = Invoice::factory()->for($this->company)->create([
+    $invoice = \Modules\Sales\Models\Invoice::factory()->for($this->company)->create([
         'customer_id' => $partner->id,
         'currency_id' => $this->company->currency_id,
         'due_date' => '2025-07-20', // 23 days past due
@@ -157,7 +157,7 @@ test('it handles partially paid invoices correctly', function () {
     ]);
 
     // Create partial payment
-    $payment = Payment::factory()->for($this->company)->create([
+    $payment = \Modules\Payment\Models\Payment::factory()->for($this->company)->create([
         'amount' => Money::of(300, $currency),
         'currency_id' => $this->company->currency_id,
         'status' => PaymentStatus::Confirmed,
@@ -170,7 +170,7 @@ test('it handles partially paid invoices correctly', function () {
     ]);
 
     // Action
-    $service = app(AgedReceivableService::class);
+    $service = app(\Modules\Accounting\Services\Reports\AgedReceivableService::class);
     $report = $service->generate($this->company, $asOfDate);
 
     // Assert
@@ -184,11 +184,11 @@ test('it handles partially paid invoices correctly', function () {
 test('it excludes draft invoices', function () {
     // Arrange
     $currency = $this->company->currency->code;
-    $partner = Partner::factory()->for($this->company)->create();
+    $partner = \Modules\Foundation\Models\Partner::factory()->for($this->company)->create();
     $asOfDate = Carbon::parse('2025-08-12');
 
     // Create a draft invoice
-    Invoice::factory()->for($this->company)->create([
+    \Modules\Sales\Models\Invoice::factory()->for($this->company)->create([
         'customer_id' => $partner->id,
         'currency_id' => $this->company->currency_id,
         'due_date' => '2025-07-20',
@@ -198,7 +198,7 @@ test('it excludes draft invoices', function () {
     ]);
 
     // Action
-    $service = app(AgedReceivableService::class);
+    $service = app(\Modules\Accounting\Services\Reports\AgedReceivableService::class);
     $report = $service->generate($this->company, $asOfDate);
 
     // Assert
@@ -209,12 +209,12 @@ test('it excludes draft invoices', function () {
 test('it handles multiple partners correctly', function () {
     // Arrange
     $currency = $this->company->currency->code;
-    $partner1 = Partner::factory()->for($this->company)->create(['name' => 'Partner A']);
-    $partner2 = Partner::factory()->for($this->company)->create(['name' => 'Partner B']);
+    $partner1 = \Modules\Foundation\Models\Partner::factory()->for($this->company)->create(['name' => 'Partner A']);
+    $partner2 = \Modules\Foundation\Models\Partner::factory()->for($this->company)->create(['name' => 'Partner B']);
     $asOfDate = Carbon::parse('2025-08-12');
 
     // Partner 1 - Current invoice
-    Invoice::factory()->for($this->company)->create([
+    \Modules\Sales\Models\Invoice::factory()->for($this->company)->create([
         'customer_id' => $partner1->id,
         'currency_id' => $this->company->currency_id,
         'due_date' => '2025-09-01',
@@ -224,7 +224,7 @@ test('it handles multiple partners correctly', function () {
     ]);
 
     // Partner 2 - Past due invoice
-    Invoice::factory()->for($this->company)->create([
+    \Modules\Sales\Models\Invoice::factory()->for($this->company)->create([
         'customer_id' => $partner2->id,
         'currency_id' => $this->company->currency_id,
         'due_date' => '2025-07-20',
@@ -234,7 +234,7 @@ test('it handles multiple partners correctly', function () {
     ]);
 
     // Action
-    $service = app(AgedReceivableService::class);
+    $service = app(\Modules\Accounting\Services\Reports\AgedReceivableService::class);
     $report = $service->generate($this->company, $asOfDate);
 
     // Assert

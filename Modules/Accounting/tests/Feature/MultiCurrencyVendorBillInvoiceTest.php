@@ -26,7 +26,7 @@ uses(RefreshDatabase::class, WithConfiguredCompany::class);
 
 beforeEach(function () {
     // Create USD currency for foreign currency tests
-    $this->usdCurrency = Currency::firstOrCreate(
+    $this->usdCurrency = \Modules\Foundation\Models\Currency::firstOrCreate(
         ['code' => 'USD'],
         [
             'name' => ['en' => 'US Dollar', 'ckb' => 'دۆلاری ئەمریکی', 'ar' => 'دولار أمريكي'],
@@ -40,7 +40,7 @@ beforeEach(function () {
     $this->exchangeRate = 1460.0;
     $this->transactionDate = Carbon::parse('2024-01-01');
 
-    CurrencyRate::updateOrCreate(
+    \Modules\Foundation\Models\CurrencyRate::updateOrCreate(
         [
             'currency_id' => $this->usdCurrency->id,
             'effective_date' => $this->transactionDate->toDateString(),
@@ -53,18 +53,18 @@ beforeEach(function () {
     );
 
     // Create test vendor and customer
-    $this->vendor = Partner::factory()->for($this->company)->create(['type' => PartnerType::Vendor]);
-    $this->customer = Partner::factory()->for($this->company)->create(['type' => PartnerType::Customer]);
+    $this->vendor = \Modules\Foundation\Models\Partner::factory()->for($this->company)->create(['type' => \Modules\Foundation\Enums\Partners\PartnerType::Vendor]);
+    $this->customer = \Modules\Foundation\Models\Partner::factory()->for($this->company)->create(['type' => \Modules\Foundation\Enums\Partners\PartnerType::Customer]);
 
     // Create test accounts first
-    $this->expenseAccount = Account::factory()->for($this->company)->create(['type' => 'expense']);
-    $this->incomeAccount = Account::factory()->for($this->company)->create(['type' => 'income']);
-    $this->inventoryAccount = Account::factory()->for($this->company)->create(['type' => 'current_assets']);
-    $this->stockInputAccount = Account::factory()->for($this->company)->create(['type' => 'current_assets']);
+    $this->expenseAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create(['type' => 'expense']);
+    $this->incomeAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create(['type' => 'income']);
+    $this->inventoryAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create(['type' => 'current_assets']);
+    $this->stockInputAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create(['type' => 'current_assets']);
 
     // Create test product as service (non-storable) to avoid inventory complications
-    $this->product = Product::factory()->for($this->company)->create([
-        'type' => ProductType::Service, // Use service type to avoid inventory movements
+    $this->product = \Modules\Product\Models\Product::factory()->for($this->company)->create([
+        'type' => \Modules\Product\Enums\Products\ProductType::Service, // Use service type to avoid inventory movements
         'expense_account_id' => $this->expenseAccount->id,
         'income_account_id' => $this->incomeAccount->id,
     ]);
@@ -239,7 +239,7 @@ describe('Invoice Multi-Currency Tests', function () {
         );
 
         // Act: Create the invoice
-        $invoice = app(CreateInvoiceAction::class)->execute($invoiceDto);
+        $invoice = app(\Modules\Sales\Actions\Sales\CreateInvoiceAction::class)->execute($invoiceDto);
         $invoice->refresh();
 
         // Assert: Verify dual currency storage
@@ -284,7 +284,7 @@ describe('Invoice Multi-Currency Tests', function () {
             fiscal_position_id: null
         );
 
-        $invoice = app(CreateInvoiceAction::class)->execute($invoiceDto);
+        $invoice = app(\Modules\Sales\Actions\Sales\CreateInvoiceAction::class)->execute($invoiceDto);
 
         // Act: Post the invoice
         app(InvoiceService::class)->confirm($invoice, $this->user);
@@ -333,7 +333,7 @@ describe('Invoice Multi-Currency Tests', function () {
             fiscal_position_id: null
         );
 
-        $invoice = app(CreateInvoiceAction::class)->execute($invoiceDto);
+        $invoice = app(\Modules\Sales\Actions\Sales\CreateInvoiceAction::class)->execute($invoiceDto);
 
         // Act: Post the invoice
         app(InvoiceService::class)->confirm($invoice, $this->user);

@@ -11,7 +11,7 @@ class UpdateAdjustmentDocumentDTO
      * @param  UpdateAdjustmentDocumentLineDTO[]  $lines
      */
     public function __construct(
-        public readonly AdjustmentDocument $adjustmentDocument,
+        public readonly \Modules\Inventory\Models\AdjustmentDocument $adjustmentDocument,
         public readonly AdjustmentDocumentType $type,
         public readonly string $date,
         public readonly string $reference_number,

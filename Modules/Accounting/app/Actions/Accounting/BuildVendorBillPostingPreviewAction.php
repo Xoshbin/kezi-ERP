@@ -9,7 +9,7 @@ use Brick\Money\Money;
 
 class BuildVendorBillPostingPreviewAction
 {
-    private function accountLabelName(?\App\Models\Account $account): string
+    private function accountLabelName(?\Modules\Accounting\Models\Account $account): string
     {
         if (! $account) {
             return '';
@@ -30,7 +30,7 @@ class BuildVendorBillPostingPreviewAction
      *
      * @return array{errors: array<int, string>, issues: array<int, array{type: string, message: string, product_id?: int|null}>, lines: array<int, array{account_id: int|null, account_name: string, account_code: string|null, debit_minor: int, credit_minor: int, description: string, product_id?: int|null}>, totals: array{debit_minor: int, credit_minor: int, balanced: bool}}
      */
-    public function execute(VendorBill $vendorBill): array
+    public function execute(\Modules\Purchase\Models\VendorBill $vendorBill): array
     {
         $vendorBill->load('company', 'currency', 'vendor', 'lines.product.inventoryAccount');
 
@@ -70,11 +70,11 @@ class BuildVendorBillPostingPreviewAction
         $creditTotal = Money::of(0, $currencyCode);
 
         foreach ($vendorBill->lines as $line) {
-            $isStorable = $line->product?->type === ProductType::Storable;
+            $isStorable = $line->product?->type === \Modules\Product\Enums\Products\ProductType::Storable;
             $isAsset = (bool) $line->asset_category_id;
 
             if ($isStorable && $line->product) {
-                /** @var \App\Models\Account|null $inventoryAccount */
+                /** @var \Modules\Accounting\Models\Account|null $inventoryAccount */
                 $inventoryAccount = $line->product->inventoryAccount;
                 if (! $inventoryAccount) {
                     $msg = "Product ID {$line->product_id} is missing its inventory account.";
@@ -93,18 +93,18 @@ class BuildVendorBillPostingPreviewAction
                     $debitTotal = $debitTotal->plus($line->subtotal);
                 }
             } elseif ($isAsset) {
-                $category = AssetCategory::find($line->asset_category_id);
+                $category = \Modules\Accounting\Models\AssetCategory::find($line->asset_category_id);
                 if (! $category) {
                     $msg = 'Invalid asset category selected on a bill line.';
                     $errors[] = $msg;
                     $issues[] = ['type' => 'asset_category_invalid', 'message' => $msg];
                 } else {
-                    /** @var \App\Models\Account|null $assetAccount */
+                    /** @var \Modules\Accounting\Models\Account|null $assetAccount */
                     $assetAccount = $category->assetAccount;
                     $linesPreview[] = [
                         'account_id' => $category->asset_account_id,
                         'account_name' => $this->accountLabelName($assetAccount),
-                        'account_code' => $assetAccount instanceof \App\Models\Account ? $assetAccount->code : null,
+                        'account_code' => $assetAccount instanceof \Modules\Accounting\Models\Account ? $assetAccount->code : null,
                         'debit_minor' => $line->subtotal->getMinorAmount()->toInt(),
                         'credit_minor' => 0,
                         'description' => 'Asset: '.$line->description,
@@ -112,7 +112,7 @@ class BuildVendorBillPostingPreviewAction
                     $debitTotal = $debitTotal->plus($line->subtotal);
                 }
             } else {
-                /** @var \App\Models\Account|null $expenseAccount */
+                /** @var \Modules\Accounting\Models\Account|null $expenseAccount */
                 $expenseAccount = $line->expenseAccount;
                 $linesPreview[] = [
                     'account_id' => $line->expense_account_id,
@@ -132,7 +132,7 @@ class BuildVendorBillPostingPreviewAction
                     $errors[] = $msg;
                     $issues[] = ['type' => 'input_tax_missing', 'message' => $msg];
                 } else {
-                    /** @var \App\Models\Account|null $taxAccount */
+                    /** @var \Modules\Accounting\Models\Account|null $taxAccount */
                     $taxAccount = $company->defaultTaxReceivable ?? $company->defaultTaxAccount;
                     $linesPreview[] = [
                         'account_id' => $taxAccountId,
@@ -148,7 +148,7 @@ class BuildVendorBillPostingPreviewAction
         }
 
         if ($apAccountId) {
-            /** @var \App\Models\Account|null $apAccount */
+            /** @var \Modules\Accounting\Models\Account|null $apAccount */
             $apAccount = $vendorBill->vendor->payableAccount ?? $company->defaultAccountsPayable;
             $linesPreview[] = [
                 'account_id' => $apAccountId,

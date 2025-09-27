@@ -25,18 +25,18 @@ class PurchaseOrderSeeder extends Seeder
     public function run(): void
     {
         $company = Company::where('name', 'Jmeryar Solutions')->firstOrFail();
-        $usdCurrency = Currency::where('code', 'USD')->firstOrFail();
+        $usdCurrency = \Modules\Foundation\Models\Currency::where('code', 'USD')->firstOrFail();
         $tax = Tax::where('company_id', $company->id)->where('rate', 5)->firstOrFail();
 
         // --- Fetch Products (assuming they are created by ProductSeeder) ---
-        $gpuProduct = Product::where('company_id', $company->id)->where('sku', 'GPU-RTX4090')->firstOrFail();
-        $ramProduct = Product::where('company_id', $company->id)->where('sku', 'RAM-DDR5-32GB')->firstOrFail();
-        $ssdProduct = Product::where('company_id', $company->id)->where('sku', 'SSD-2TB-NVME')->firstOrFail();
+        $gpuProduct = \Modules\Product\Models\Product::where('company_id', $company->id)->where('sku', 'GPU-RTX4090')->firstOrFail();
+        $ramProduct = \Modules\Product\Models\Product::where('company_id', $company->id)->where('sku', 'RAM-DDR5-32GB')->firstOrFail();
+        $ssdProduct = \Modules\Product\Models\Product::where('company_id', $company->id)->where('sku', 'SSD-2TB-NVME')->firstOrFail();
 
         // --- Fetch/Create Vendor ---
-        $vendor = Partner::firstOrCreate(
+        $vendor = \Modules\Foundation\Models\Partner::firstOrCreate(
             ['name' => 'TechGlobal Suppliers', 'company_id' => $company->id],
-            ['type' => PartnerType::Vendor]
+            ['type' => \Modules\Foundation\Enums\Partners\PartnerType::Vendor]
         );
 
         $createLineAction = resolve(CreatePurchaseOrderLineAction::class);

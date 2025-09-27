@@ -25,7 +25,7 @@ class CreateJournalEntry extends CreateRecord
     {
         $lineDTOs = [];
         if (isset($data['lines']) && is_array($data['lines'])) {
-            $currency = Currency::findOrFail($data['currency_id']);
+            $currency = \Modules\Foundation\Models\Currency::findOrFail($data['currency_id']);
             // Ensure we have a single Currency model, not a collection
             if ($currency instanceof \Illuminate\Database\Eloquent\Collection) {
                 $currency = $currency->first();
@@ -65,7 +65,7 @@ class CreateJournalEntry extends CreateRecord
         );
 
         try {
-            return app(CreateJournalEntryAction::class)->execute($journalEntryDTO);
+            return app(\Modules\Accounting\Actions\Accounting\CreateJournalEntryAction::class)->execute($journalEntryDTO);
         } catch (QueryException $e) {
             // Check if it's a database constraint violation for duplicate reference
             // MySQL error code 1062 for duplicate entry

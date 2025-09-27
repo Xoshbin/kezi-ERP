@@ -26,7 +26,7 @@ class PayrollService
 {
     public function __construct(
         protected ProcessPayrollAction $processPayrollAction,
-        protected LockDateService $lockDateService,
+        protected \Modules\Accounting\Services\Accounting\LockDateService $lockDateService,
         protected CreateJournalEntryForPayrollAction $createJournalEntryForPayrollAction,
         protected CreatePaymentFromPayrollAction $createPaymentFromPayrollAction,
     ) {}
@@ -34,9 +34,9 @@ class PayrollService
     /**
      * Process payroll for an employee.
      */
-    public function processPayroll(Employee $employee, string $periodStartDate, string $periodEndDate, string $payDate, User $user): Payroll
+    public function processPayroll(\Modules\HR\Models\Employee $employee, string $periodStartDate, string $periodEndDate, string $payDate, User $user): \Modules\HR\Models\Payroll
     {
-        Gate::forUser($user)->authorize('create', Payroll::class);
+        Gate::forUser($user)->authorize('create', \Modules\HR\Models\Payroll::class);
 
         $this->lockDateService->enforce($employee->company, Carbon::parse($payDate));
 
@@ -105,7 +105,7 @@ class PayrollService
     /**
      * Approve a payroll.
      */
-    public function approvePayroll(Payroll $payroll, User $user): void
+    public function approvePayroll(\Modules\HR\Models\Payroll $payroll, User $user): void
     {
         Gate::forUser($user)->authorize('approve', $payroll);
 
@@ -131,7 +131,7 @@ class PayrollService
      *
      * @return array<string, mixed>
      */
-    private function calculateAttendanceAmounts(Employee $employee, string $periodStartDate, string $periodEndDate): array
+    private function calculateAttendanceAmounts(\Modules\HR\Models\Employee $employee, string $periodStartDate, string $periodEndDate): array
     {
         $attendances = $employee->attendances()
             ->whereBetween('attendance_date', [$periodStartDate, $periodEndDate])
@@ -227,7 +227,7 @@ class PayrollService
      * @param  array<string, mixed>  $deductions
      * @return list<PayrollLineDTO>
      */
-    private function createPayrollLines(Employee $employee, Money $baseSalary, array $attendanceData, array $deductions): array
+    private function createPayrollLines(\Modules\HR\Models\Employee $employee, Money $baseSalary, array $attendanceData, array $deductions): array
     {
         $lines = [];
         $company = $employee->company;
@@ -333,7 +333,7 @@ class PayrollService
     /**
      * Create payment for an approved payroll.
      */
-    public function payEmployee(Payroll $payroll, User $user): Payment
+    public function payEmployee(\Modules\HR\Models\Payroll $payroll, User $user): \Modules\Payment\Models\Payment
     {
         Gate::forUser($user)->authorize('pay', $payroll);
 

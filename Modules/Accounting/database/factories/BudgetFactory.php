@@ -28,7 +28,7 @@ class BudgetFactory extends Factory
             'period_end_date' => $this->faker->dateTimeBetween('+1 month', '+1 year'),
             'budget_type' => $this->faker->randomElement([BudgetType::Analytic, BudgetType::Financial]),
             'status' => $this->faker->randomElement([BudgetStatus::Draft, BudgetStatus::Finalized]),
-            'currency_id' => Currency::factory()->createSafely()->id,
+            'currency_id' => \Modules\Foundation\Models\Currency::factory()->createSafely()->id,
         ];
     }
 }

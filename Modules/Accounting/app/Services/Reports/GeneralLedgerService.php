@@ -27,7 +27,7 @@ class GeneralLedgerService
             $accountsQuery->whereIn('id', $accountIds);
         }
 
-        /** @var \Illuminate\Support\Collection<int, Account> $accounts */
+        /** @var \Illuminate\Support\Collection<int, \Modules\Accounting\Models\Account> $accounts */
         $accounts = $accountsQuery->orderBy('code')->get();
         $reportAccounts = new Collection;
 
@@ -74,7 +74,7 @@ class GeneralLedgerService
         return new GeneralLedgerDTO($reportAccounts);
     }
 
-    private function getOpeningBalance(Account $account, Carbon $startDate, string $currency): Money
+    private function getOpeningBalance(\Modules\Accounting\Models\Account $account, Carbon $startDate, string $currency): Money
     {
         /** @var object{total_debit: string|null, total_credit: string|null}|null $result */
         $result = DB::table('journal_entry_lines')
@@ -95,7 +95,7 @@ class GeneralLedgerService
     /**
      * @return Collection<int, JournalEntryLine>
      */
-    private function getTransactionsForPeriod(Account $account, Carbon $startDate, Carbon $endDate): Collection
+    private function getTransactionsForPeriod(\Modules\Accounting\Models\Account $account, Carbon $startDate, Carbon $endDate): Collection
     {
         return JournalEntryLine::query()
             ->with(['journalEntry.lines.account']) // Eager load for contra-account lookup

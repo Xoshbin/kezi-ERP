@@ -18,43 +18,43 @@ uses(RefreshDatabase::class, WithConfiguredCompany::class);
 
 it('posts a single JE for mixed vendor bills (storable + asset + expense)', function () {
     $this->setupWithConfiguredCompany();
-    $this->vendor = \App\Models\Partner::factory()->for($this->company)->vendor()->create();
+    $this->vendor = \Modules\Foundation\Models\Partner::factory()->for($this->company)->vendor()->create();
 
     // Set up accounts and product
-    $inventoryAccount = Account::factory()->for($this->company)->create([
+    $inventoryAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create([
         'name' => ['en' => 'Inventory'],
         'type' => 'current_assets',
     ]);
-    $stockInputAccount = Account::factory()->for($this->company)->create([
+    $stockInputAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create([
         'name' => ['en' => 'Stock Input'],
         'type' => 'current_liabilities',
     ]);
-    $expenseAccount = Account::factory()->for($this->company)->create([
+    $expenseAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create([
         'name' => ['en' => 'Office Supplies'],
         'type' => 'expense',
     ]);
 
-    $product = Product::factory()->for($this->company)->create([
+    $product = \Modules\Product\Models\Product::factory()->for($this->company)->create([
         'name' => 'Widget',
-        'type' => ProductType::Storable,
+        'type' => \Modules\Product\Enums\Products\ProductType::Storable,
         'default_inventory_account_id' => $inventoryAccount->id,
         'default_stock_input_account_id' => $stockInputAccount->id,
     ]);
 
-    $assetAccount = Account::factory()->for($this->company)->create([
+    $assetAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create([
         'name' => ['en' => 'IT Equipment'],
         'type' => 'fixed_assets',
     ]);
-    $accumDepAccount = Account::factory()->for($this->company)->create([
+    $accumDepAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create([
         'name' => ['en' => 'Accum Dep'],
         'type' => 'non_current_assets',
     ]);
-    $depExpenseAccount = Account::factory()->for($this->company)->create([
+    $depExpenseAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create([
         'name' => ['en' => 'Depr Expense'],
         'type' => 'depreciation',
     ]);
 
-    $category = AssetCategory::create([
+    $category = \Modules\Accounting\Models\AssetCategory::create([
         'company_id' => $this->company->id,
         'name' => 'IT Equipment',
         'asset_account_id' => $assetAccount->id,

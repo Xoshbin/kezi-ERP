@@ -20,7 +20,7 @@ class PayrollResource extends Resource
 {
     use Translatable;
 
-    protected static ?string $model = Payroll::class;
+    protected static ?string $model = \Modules\HR\Models\Payroll::class;
 
     protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-currency-dollar';
 

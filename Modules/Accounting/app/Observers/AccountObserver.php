@@ -9,7 +9,7 @@ class AccountObserver
     /**
      * Handle the Account "created" event.
      */
-    public function created(Account $account): void
+    public function created(\Modules\Accounting\Models\Account $account): void
     {
         //
     }
@@ -17,7 +17,7 @@ class AccountObserver
     /**
      * Handle the Account "updated" event.
      */
-    public function updated(Account $account): void
+    public function updated(\Modules\Accounting\Models\Account $account): void
     {
         //
     }
@@ -25,7 +25,7 @@ class AccountObserver
     /**
      * Handle the Account "deleting" event.
      */
-    public function deleting(Account $account): bool
+    public function deleting(\Modules\Accounting\Models\Account $account): bool
     {
         // Use the correct method name from your Account model
         if ($account->journalEntryLines()->exists()) {
@@ -41,7 +41,7 @@ class AccountObserver
     /**
      * Handle the Account "deleted" event.
      */
-    public function deleted(Account $account): void
+    public function deleted(\Modules\Accounting\Models\Account $account): void
     {
         //
     }
@@ -49,7 +49,7 @@ class AccountObserver
     /**
      * Handle the Account "restored" event.
      */
-    public function restored(Account $account): void
+    public function restored(\Modules\Accounting\Models\Account $account): void
     {
         //
     }
@@ -57,7 +57,7 @@ class AccountObserver
     /**
      * Handle the Account "force deleted" event.
      */
-    public function forceDeleted(Account $account): void
+    public function forceDeleted(\Modules\Accounting\Models\Account $account): void
     {
         //
     }

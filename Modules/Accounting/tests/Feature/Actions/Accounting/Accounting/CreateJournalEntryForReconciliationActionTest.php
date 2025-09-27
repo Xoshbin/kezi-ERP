@@ -10,7 +10,7 @@ uses(RefreshDatabase::class, WithConfiguredCompany::class);
 
 test('it creates a correct journal entry for a payment reconciliation', function () {
 
-    $payment = Payment::factory()
+    $payment = \Modules\Payment\Models\Payment::factory()
         ->for($this->company)
         ->create([
             'amount' => Money::of(250, $this->company->currency->code),

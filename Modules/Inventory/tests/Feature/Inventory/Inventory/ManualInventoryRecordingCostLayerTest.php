@@ -33,9 +33,9 @@ beforeEach(function () {
     ]);
 
     // Create test product
-    $this->product = Product::factory()->create([
+    $this->product = \Modules\Product\Models\Product::factory()->create([
         'company_id' => $this->company->id,
-        'type' => ProductType::Storable,
+        'type' => \Modules\Product\Enums\Products\ProductType::Storable,
         'inventory_valuation_method' => ValuationMethod::FIFO,
         'quantity_on_hand' => 0,
         'average_cost' => Money::of(0, $this->company->currency->code),
@@ -78,7 +78,7 @@ it('creates cost layers when stock moves are processed in manual mode even witho
 
 it('creates cost layers when stock moves are processed after vendor bill in manual mode', function () {
     // First, create and post a vendor bill
-    $vendorBill = VendorBill::factory()->create([
+    $vendorBill = \Modules\Purchase\Models\VendorBill::factory()->create([
         'company_id' => $this->company->id,
         'vendor_id' => $this->vendor->id,
         'status' => VendorBillStatus::Draft,
@@ -149,7 +149,7 @@ it('creates cost layers when stock moves are processed after vendor bill in manu
 
 it('handles multiple vendor bills and uses the latest one for cost determination', function () {
     // Create first vendor bill
-    $vendorBill1 = VendorBill::factory()->create([
+    $vendorBill1 = \Modules\Purchase\Models\VendorBill::factory()->create([
         'company_id' => $this->company->id,
         'vendor_id' => $this->vendor->id,
         'status' => VendorBillStatus::Draft,
@@ -174,7 +174,7 @@ it('handles multiple vendor bills and uses the latest one for cost determination
     sleep(1);
 
     // Create second vendor bill with different price
-    $vendorBill2 = VendorBill::factory()->create([
+    $vendorBill2 = \Modules\Purchase\Models\VendorBill::factory()->create([
         'company_id' => $this->company->id,
         'vendor_id' => $this->vendor->id,
         'status' => VendorBillStatus::Draft,

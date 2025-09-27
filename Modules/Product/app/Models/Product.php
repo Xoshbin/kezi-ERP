@@ -29,7 +29,7 @@ use Spatie\Translatable\HasTranslations;
  * @property string $sku
  * @property string|null $description
  * @property Money|null $unit_price
- * @property ProductType $type
+ * @property \Modules\Product\Enums\Products\ProductType $type
  * @property bool $is_active
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
@@ -43,7 +43,7 @@ use Spatie\Translatable\HasTranslations;
  *
  * @method static Builder<static>|Product active()
  * @method static Builder<static>|Product bySku($sku, $companyId)
- * @method static ProductFactory factory($count = null, $state = [])
+ * @method static \Modules\Product\Database\Factories\ProductFactory factory($count = null, $state = [])
  * @method static Builder<static>|Product newModelQuery()
  * @method static Builder<static>|Product newQuery()
  * @method static Builder<static>|Product onlyTrashed()
@@ -66,7 +66,7 @@ use Spatie\Translatable\HasTranslations;
  *
  * @mixin Eloquent
  */
-#[ObservedBy([ProductObserver::class])]
+#[ObservedBy([\Modules\Product\Observers\ProductObserver::class])]
 class Product extends Model
 {
     use HasFactory, HasTranslations, SoftDeletes;
@@ -95,14 +95,14 @@ class Product extends Model
     ];
 
     protected $casts = [
-        'unit_price' => BaseCurrencyMoneyCast::class,
-        'average_cost' => BaseCurrencyMoneyCast::class,
+        'unit_price' => \Modules\Foundation\Casts\BaseCurrencyMoneyCast::class,
+        'average_cost' => \Modules\Foundation\Casts\BaseCurrencyMoneyCast::class,
         'is_active' => 'boolean',
         'inventory_valuation_method' => ValuationMethod::class,
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
         'deleted_at' => 'datetime',
-        'type' => ProductType::class,
+        'type' => \Modules\Product\Enums\Products\ProductType::class,
         'quantity_on_hand' => 'float',
         'lot_tracking_enabled' => 'boolean',
     ];
@@ -110,7 +110,7 @@ class Product extends Model
     protected static function booted(): void
     {
         static::saving(function (Product $product) {
-            if ($product->type === ProductType::Storable && empty($product->default_inventory_account_id)) {
+            if ($product->type === \Modules\Product\Enums\Products\ProductType::Storable && empty($product->default_inventory_account_id)) {
                 throw ValidationException::withMessages([
                     'default_inventory_account_id' => __('validation.required', ['attribute' => __('product.default_inventory_account')]),
                 ]);

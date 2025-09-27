@@ -17,7 +17,7 @@ class PayrollCurrencyMoneyCast extends MoneyCast
     /**
      * Resolve the currency from the parent payroll.
      */
-    protected function resolveCurrency(Model $model): Currency
+    protected function resolveCurrency(Model $model): \Modules\Foundation\Models\Currency
     {
         // Check if the model has a payroll relationship
         if (method_exists($model, 'payroll') && $model->getAttribute('payroll_id')) {

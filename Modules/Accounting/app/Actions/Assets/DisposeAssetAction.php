@@ -16,10 +16,10 @@ use RuntimeException;
 class DisposeAssetAction
 {
     public function __construct(
-        private readonly CreateJournalEntryAction $createJournalEntryAction
+        private readonly \Modules\Accounting\Actions\Accounting\CreateJournalEntryAction $createJournalEntryAction
     ) {}
 
-    public function execute(Asset $asset, DisposeAssetDTO $dto, User $user): Asset
+    public function execute(\Modules\Accounting\Models\Asset $asset, DisposeAssetDTO $dto, User $user): \Modules\Accounting\Models\Asset
     {
         return DB::transaction(function () use ($asset, $dto, $user) {
             $asset->load('company.currency', 'company.defaultBankJournal');
@@ -111,7 +111,7 @@ class DisposeAssetAction
                 created_by_user_id: $user->id,
                 is_posted: true,
                 lines: $lines,
-                source_type: Asset::class,
+                source_type: \Modules\Accounting\Models\Asset::class,
                 source_id: $asset->id
             );
 

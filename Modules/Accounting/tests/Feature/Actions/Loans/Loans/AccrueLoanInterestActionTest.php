@@ -16,7 +16,7 @@ uses(RefreshDatabase::class, WithConfiguredCompany::class);
 it('accrues monthly interest for a payable loan', function () {
     $code = $this->company->currency->code;
 
-    $loan = LoanAgreement::factory()->for($this->company)->create([
+    $loan = \Modules\Accounting\Models\LoanAgreement::factory()->for($this->company)->create([
         'currency_id' => $this->company->currency_id,
         'principal_amount' => Money::of('10000', $code),
         'loan_type' => LoanType::Payable,
@@ -28,8 +28,8 @@ it('accrues monthly interest for a payable loan', function () {
 
     app(ComputeLoanScheduleAction::class)->execute($loan);
 
-    $interestExpense = Account::factory()->for($this->company)->create();
-    $accruedInterest = Account::factory()->for($this->company)->create();
+    $interestExpense = \Modules\Accounting\Models\Account::factory()->for($this->company)->create();
+    $accruedInterest = \Modules\Accounting\Models\Account::factory()->for($this->company)->create();
     $journal = Journal::factory()->for($this->company)->create();
 
     $je = app(AccrueLoanInterestAction::class)->execute(

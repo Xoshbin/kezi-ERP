@@ -48,17 +48,17 @@ class ProductSeeder extends Seeder
         // --- New Products ---
 
         // Resolve accounts by code
-        $inventoryAccount = Account::where('company_id', $company->id)->where('code', '130102')->firstOrFail(); // Inventory Asset (IQD)
-        $stockInputAccount = Account::where('company_id', $company->id)->where('code', '210202')->firstOrFail(); // Stock Input Account (IQD)
-        $costOfRevenue = Account::where('company_id', $company->id)->where('code', '500100')->firstOrFail(); // Cost of Goods Sold (IQD)
-        $incomeAccount = Account::where('company_id', $company->id)->where('code', '410102')->firstOrFail(); // Cost of Goods Sold (IQD)
+        $inventoryAccount = \Modules\Accounting\Models\Account::where('company_id', $company->id)->where('code', '130102')->firstOrFail(); // Inventory Asset (IQD)
+        $stockInputAccount = \Modules\Accounting\Models\Account::where('company_id', $company->id)->where('code', '210202')->firstOrFail(); // Stock Input Account (IQD)
+        $costOfRevenue = \Modules\Accounting\Models\Account::where('company_id', $company->id)->where('code', '500100')->firstOrFail(); // Cost of Goods Sold (IQD)
+        $incomeAccount = \Modules\Accounting\Models\Account::where('company_id', $company->id)->where('code', '410102')->firstOrFail(); // Cost of Goods Sold (IQD)
 
         // Product A: High-End Graphics Cards (FIFO Valuation)
-        $productA = Product::updateOrCreate(
+        $productA = \Modules\Product\Models\Product::updateOrCreate(
             ['company_id' => $company->id, 'sku' => 'GPU-RTX4090'],
             [
                 'name' => 'NVIDIA RTX 4090 Graphics Card',
-                'type' => ProductType::Storable,
+                'type' => \Modules\Product\Enums\Products\ProductType::Storable,
                 'inventory_valuation_method' => ValuationMethod::FIFO,
                 'unit_price' => 2500000,
                 'default_inventory_account_id' => $inventoryAccount->id,
@@ -70,11 +70,11 @@ class ProductSeeder extends Seeder
         );
 
         // Product B: Memory Modules (AVCO Valuation)
-        $productB = Product::updateOrCreate(
+        $productB = \Modules\Product\Models\Product::updateOrCreate(
             ['company_id' => $company->id, 'sku' => 'RAM-DDR5-32GB'],
             [
                 'name' => 'DDR5 32GB Memory Module',
-                'type' => ProductType::Storable,
+                'type' => \Modules\Product\Enums\Products\ProductType::Storable,
                 'inventory_valuation_method' => ValuationMethod::AVCO,
                 'unit_price' => 400000,
                 'default_inventory_account_id' => $inventoryAccount->id,
@@ -86,11 +86,11 @@ class ProductSeeder extends Seeder
         );
 
         // Product C: Storage Drives (LIFO Valuation)
-        $productC = Product::updateOrCreate(
+        $productC = \Modules\Product\Models\Product::updateOrCreate(
             ['company_id' => $company->id, 'sku' => 'SSD-2TB-NVME'],
             [
                 'name' => '2TB NVMe SSD Drive',
-                'type' => ProductType::Storable,
+                'type' => \Modules\Product\Enums\Products\ProductType::Storable,
                 'inventory_valuation_method' => ValuationMethod::LIFO,
                 'unit_price' => 300000,
                 'default_inventory_account_id' => $inventoryAccount->id,

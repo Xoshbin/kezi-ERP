@@ -52,7 +52,7 @@ use Illuminate\Support\Carbon;
  * @property-read Currency $currency
  * @property-read User|null $approvedBy
  */
-#[ObservedBy([AuditLogObserver::class])]
+#[ObservedBy([\Modules\Foundation\Observers\AuditLogObserver::class])]
 class EmploymentContract extends Model
 {
     /** @use HasFactory<\Database\Factories\EmploymentContractFactory> */
@@ -104,12 +104,12 @@ class EmploymentContract extends Model
         'start_date' => 'date',
         'end_date' => 'date',
         'is_active' => 'boolean',
-        'base_salary' => DocumentCurrencyMoneyCast::class,
-        'hourly_rate' => DocumentCurrencyMoneyCast::class,
-        'housing_allowance' => DocumentCurrencyMoneyCast::class,
-        'transport_allowance' => DocumentCurrencyMoneyCast::class,
-        'meal_allowance' => DocumentCurrencyMoneyCast::class,
-        'other_allowances' => DocumentCurrencyMoneyCast::class,
+        'base_salary' => \Modules\Foundation\Casts\DocumentCurrencyMoneyCast::class,
+        'hourly_rate' => \Modules\Foundation\Casts\DocumentCurrencyMoneyCast::class,
+        'housing_allowance' => \Modules\Foundation\Casts\DocumentCurrencyMoneyCast::class,
+        'transport_allowance' => \Modules\Foundation\Casts\DocumentCurrencyMoneyCast::class,
+        'meal_allowance' => \Modules\Foundation\Casts\DocumentCurrencyMoneyCast::class,
+        'other_allowances' => \Modules\Foundation\Casts\DocumentCurrencyMoneyCast::class,
         'working_hours_per_week' => 'decimal:2',
         'working_days_per_week' => 'decimal:1',
         'annual_leave_days' => 'integer',

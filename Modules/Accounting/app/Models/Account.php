@@ -50,7 +50,7 @@ use Spatie\Translatable\HasTranslations;
  * @property-read Collection<int, Tax> $taxes
  * @property-read int|null $taxes_count
  *
- * @method static AccountFactory factory($count = null, $state = [])
+ * @method static \Modules\Accounting\Database\Factories\AccountFactory factory($count = null, $state = [])
  * @method static Builder<static>|Account newModelQuery()
  * @method static Builder<static>|Account newQuery()
  * @method static Builder<static>|Account query()
@@ -65,7 +65,7 @@ use Spatie\Translatable\HasTranslations;
  *
  * @mixin Eloquent
  */
-#[ObservedBy([AccountObserver::class, AuditLogObserver::class])] // (to log when accounts are created or deprecated)
+#[ObservedBy([\Modules\Accounting\Observers\AccountObserver::class, \Modules\Foundation\Observers\AuditLogObserver::class])] // (to log when accounts are created or deprecated)
 class Account extends Model
 {
     /** @use HasFactory<AccountFactory> */
@@ -126,7 +126,7 @@ class Account extends Model
     protected $casts = [
         'is_deprecated' => 'boolean',
         'allow_reconciliation' => 'boolean',
-        'type' => AccountType::class, // Enums provide type safety and clarity [12]
+        'type' => \Modules\Accounting\Enums\Accounting\AccountType::class, // Enums provide type safety and clarity [12]
     ];
 
     /*

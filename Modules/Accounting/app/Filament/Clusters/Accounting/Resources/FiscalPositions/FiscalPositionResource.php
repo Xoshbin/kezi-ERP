@@ -24,7 +24,7 @@ class FiscalPositionResource extends Resource
 {
     use Translatable;
 
-    protected static ?string $model = FiscalPosition::class;
+    protected static ?string $model = \Modules\Accounting\Models\FiscalPosition::class;
 
     protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-globe-alt';
 

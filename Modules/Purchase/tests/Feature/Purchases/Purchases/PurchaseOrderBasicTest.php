@@ -20,9 +20,9 @@ beforeEach(function () {
     $this->setupWithConfiguredCompany();
     $this->setupInventoryTestEnvironment();
 
-    $this->product = Product::factory()->create([
+    $this->product = \Modules\Product\Models\Product::factory()->create([
         'company_id' => $this->company->id,
-        'type' => ProductType::Storable,
+        'type' => \Modules\Product\Enums\Products\ProductType::Storable,
     ]);
 });
 

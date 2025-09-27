@@ -33,9 +33,9 @@ class CurrencyFactory extends Factory
 
     public function configure(): self
     {
-        return $this->afterMaking(function (Currency $currency) {
+        return $this->afterMaking(function (\Modules\Foundation\Models\Currency $currency) {
             //
-        })->afterCreating(function (Currency $currency) {
+        })->afterCreating(function (\Modules\Foundation\Models\Currency $currency) {
             if ($currency->code === 'IQD') {
                 $currency->decimal_places = 3;
                 $currency->save();
@@ -46,12 +46,12 @@ class CurrencyFactory extends Factory
     /**
      * Create a currency with firstOrCreate to avoid duplicates in parallel tests
      */
-    public function createSafely(array $attributes = []): Currency
+    public function createSafely(array $attributes = []): \Modules\Foundation\Models\Currency
     {
         $definition = $this->definition();
         $mergedAttributes = array_merge($definition, $attributes);
 
-        return Currency::firstOrCreate(
+        return \Modules\Foundation\Models\Currency::firstOrCreate(
             ['code' => $mergedAttributes['code']],
             $mergedAttributes
         );

@@ -19,7 +19,7 @@ class CurrencyRateResource extends Resource
 {
     use Translatable;
 
-    protected static ?string $model = CurrencyRate::class;
+    protected static ?string $model = \Modules\Foundation\Models\CurrencyRate::class;
 
     protected static string|\BackedEnum|null $navigationIcon = Heroicon::OutlinedCurrencyDollar;
 

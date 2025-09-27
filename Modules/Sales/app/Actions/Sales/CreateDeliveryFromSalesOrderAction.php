@@ -28,7 +28,7 @@ use Illuminate\Validation\ValidationException;
 class CreateDeliveryFromSalesOrderAction
 {
     public function __construct(
-        protected CreateStockMoveAction $createStockMoveAction
+        protected \Modules\Inventory\Actions\Inventory\CreateStockMoveAction $createStockMoveAction
     ) {}
 
     /**
@@ -74,7 +74,7 @@ class CreateDeliveryFromSalesOrderAction
             $reservationService = app(StockReservationService::class);
 
             foreach ($salesOrder->lines as $line) {
-                if ($line->product && $line->product->type === ProductType::Storable) {
+                if ($line->product && $line->product->type === \Modules\Product\Enums\Products\ProductType::Storable) {
                     // Only create delivery for quantities that haven't been delivered yet
                     $remainingQuantity = $line->getRemainingToDeliver();
                     
@@ -102,7 +102,7 @@ class CreateDeliveryFromSalesOrderAction
                         // If we're in automatic mode, mark the move as done and dispatch event
                         if ($dto->autoConfirm) {
                             $stockMove->update(['status' => StockMoveStatus::Done]);
-                            StockMoveConfirmed::dispatch($stockMove);
+                            \Modules\Inventory\Events\Inventory\StockMoveConfirmed::dispatch($stockMove);
                         }
                     }
                 }

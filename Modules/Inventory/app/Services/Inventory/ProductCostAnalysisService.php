@@ -36,10 +36,10 @@ class ProductCostAnalysisService
     /**
      * Analyze vendor bill status for a product
      *
-     * @param Product $product
+     * @param \Modules\Product\Models\Product $product
      * @return array
      */
-    public function analyzeVendorBillStatus(Product $product): array
+    public function analyzeVendorBillStatus(\Modules\Product\Models\Product $product): array
     {
         $vendorBillLines = VendorBillLine::where('product_id', $product->id)
             ->with(['vendorBill' => function ($query) {
@@ -76,10 +76,10 @@ class ProductCostAnalysisService
     /**
      * Get context-aware cost suggestions for a product
      *
-     * @param Product $product
+     * @param \Modules\Product\Models\Product $product
      * @return array
      */
-    public function getContextualCostSuggestions(Product $product): array
+    public function getContextualCostSuggestions(\Modules\Product\Models\Product $product): array
     {
         $suggestions = [];
         $vendorBillAnalysis = $this->analyzeVendorBillStatus($product);
@@ -131,10 +131,10 @@ class ProductCostAnalysisService
     /**
      * Get a detailed cost status explanation for a product
      *
-     * @param Product $product
+     * @param \Modules\Product\Models\Product $product
      * @return string
      */
-    public function getCostStatusExplanation(Product $product): string
+    public function getCostStatusExplanation(\Modules\Product\Models\Product $product): string
     {
         $vendorBillAnalysis = $this->analyzeVendorBillStatus($product);
 
@@ -166,10 +166,10 @@ class ProductCostAnalysisService
     /**
      * Get specific action steps for establishing proper cost information
      *
-     * @param Product $product
+     * @param \Modules\Product\Models\Product $product
      * @return array
      */
-    public function getEstablishmentSteps(Product $product): array
+    public function getEstablishmentSteps(\Modules\Product\Models\Product $product): array
     {
         $steps = [];
         $vendorBillAnalysis = $this->analyzeVendorBillStatus($product);
@@ -202,10 +202,10 @@ class ProductCostAnalysisService
     /**
      * Check if a product is ready for inventory movements
      *
-     * @param Product $product
+     * @param \Modules\Product\Models\Product $product
      * @return bool
      */
-    public function isReadyForInventoryMovements(Product $product): bool
+    public function isReadyForInventoryMovements(\Modules\Product\Models\Product $product): bool
     {
         if ($product->inventory_valuation_method === ValuationMethod::AVCO) {
             return $product->average_cost && $product->average_cost->isPositive();
@@ -217,10 +217,10 @@ class ProductCostAnalysisService
     /**
      * Get the minimum requirements for cost establishment
      *
-     * @param Product $product
+     * @param \Modules\Product\Models\Product $product
      * @return array
      */
-    public function getMinimumRequirements(Product $product): array
+    public function getMinimumRequirements(\Modules\Product\Models\Product $product): array
     {
         $requirements = [
             'product_type' => 'Product must be of type "Storable"',

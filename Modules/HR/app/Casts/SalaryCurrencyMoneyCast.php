@@ -21,11 +21,11 @@ class SalaryCurrencyMoneyCast extends MoneyCast
     /**
      * Resolve the currency from the 'currency_id' field.
      */
-    protected function resolveCurrency(Model $model): Currency
+    protected function resolveCurrency(Model $model): \Modules\Foundation\Models\Currency
     {
         // Check for currency_id field
         if (isset($model->currency_id)) {
-            $currency = Currency::findOrFail($model->currency_id);
+            $currency = \Modules\Foundation\Models\Currency::findOrFail($model->currency_id);
             // Ensure we have a single Currency model, not a collection
             if ($currency instanceof Collection) {
                 $currency = $currency->first();

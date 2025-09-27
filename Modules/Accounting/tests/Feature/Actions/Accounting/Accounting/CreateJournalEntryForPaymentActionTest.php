@@ -15,7 +15,7 @@ test('it creates a correct journal entry for an inbound payment', function () {
     $this->company->currency->update(['exchange_rate' => 1.0]);
     $this->company->refresh();
 
-    $payment = Payment::factory()->for($this->company)->create([
+    $payment = \Modules\Payment\Models\Payment::factory()->for($this->company)->create([
         'payment_type' => PaymentType::Inbound,
         'amount' => Money::of(500, $this->company->currency->code),
         'currency_id' => $this->company->currency_id,

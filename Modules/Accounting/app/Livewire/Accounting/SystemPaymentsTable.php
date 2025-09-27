@@ -29,12 +29,12 @@ class SystemPaymentsTable extends Component implements HasActions, HasForms, Has
     use InteractsWithForms;
     use InteractsWithTable;
 
-    public BankStatement $bankStatement;
+    public \Modules\Accounting\Models\BankStatement $bankStatement;
 
     /** @var array<int, int> */
     public array $selectedPayments = [];
 
-    public function mount(BankStatement $bankStatement): void
+    public function mount(\Modules\Accounting\Models\BankStatement $bankStatement): void
     {
         $this->bankStatement = $bankStatement;
     }
@@ -43,7 +43,7 @@ class SystemPaymentsTable extends Component implements HasActions, HasForms, Has
     {
         return $table
             ->query(
-                Payment::query()
+                \Modules\Payment\Models\Payment::query()
                     ->where('company_id', $this->bankStatement->company_id)
                     ->where('status', PaymentStatus::Confirmed)
                     ->whereDoesntHave('bankStatementLines')  // Only show unreconciled payments
@@ -134,14 +134,14 @@ class SystemPaymentsTable extends Component implements HasActions, HasForms, Has
         $total = Money::of(0, $bankStatementCurrency);
 
         if (! empty($this->selectedPayments)) {
-            $payments = Payment::whereIn('id', $this->selectedPayments)->with('currency')->get();
+            $payments = \Modules\Payment\Models\Payment::whereIn('id', $this->selectedPayments)->with('currency')->get();
             foreach ($payments as $payment) {
                 $paymentAmount = $payment->amount;
 
                 // Convert payment amount to bank statement currency if different
                 if ($paymentAmount->getCurrency()->getCurrencyCode() !== $bankStatementCurrency) {
                     try {
-                        $paymentAmount = app(CurrencyConverterService::class)->convert(
+                        $paymentAmount = app(\Modules\Foundation\Services\CurrencyConverterService::class)->convert(
                             $paymentAmount,
                             $this->bankStatement->currency,
                             $payment->payment_date,

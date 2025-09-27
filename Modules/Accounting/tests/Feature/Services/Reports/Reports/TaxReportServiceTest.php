@@ -30,7 +30,7 @@ test('it generates a tax report with sales tax only', function () {
     $endDate = Carbon::parse('2025-04-30');
 
     // Create sales tax and account
-    $salesTaxAccount = Account::factory()->for($company)->create(['type' => AccountType::CurrentLiabilities]);
+    $salesTaxAccount = \Modules\Accounting\Models\Account::factory()->for($company)->create(['type' => \Modules\Accounting\Enums\Accounting\AccountType::CurrentLiabilities]);
     $salesTax = Tax::factory()->for($company)->create([
         'name' => 'VAT 15% (Sales)',
         'rate' => 15.0,
@@ -52,14 +52,14 @@ test('it generates a tax report with sales tax only', function () {
     // Create journal entry lines: AR debit, Income credit, Tax credit
     JournalEntryLine::factory()->create([
         'journal_entry_id' => $journalEntry->id,
-        'account_id' => Account::factory()->for($company)->create(['type' => AccountType::Receivable])->id,
+        'account_id' => \Modules\Accounting\Models\Account::factory()->for($company)->create(['type' => \Modules\Accounting\Enums\Accounting\AccountType::Receivable])->id,
         'debit' => Money::of(1150, $currency), // 1000 + 150 tax
         'credit' => Money::zero($currency),
     ]);
 
     JournalEntryLine::factory()->create([
         'journal_entry_id' => $journalEntry->id,
-        'account_id' => Account::factory()->for($company)->create(['type' => AccountType::Income])->id,
+        'account_id' => \Modules\Accounting\Models\Account::factory()->for($company)->create(['type' => \Modules\Accounting\Enums\Accounting\AccountType::Income])->id,
         'debit' => Money::zero($currency),
         'credit' => Money::of(1000, $currency),
     ]);
@@ -72,7 +72,7 @@ test('it generates a tax report with sales tax only', function () {
     ]);
 
     // Action
-    $service = app(TaxReportService::class);
+    $service = app(\Modules\Accounting\Services\Reports\TaxReportService::class);
     $report = $service->generate($company, $startDate, $endDate);
 
     // Assert
@@ -99,7 +99,7 @@ test('it generates a tax report with purchase tax only', function () {
     $endDate = Carbon::parse('2025-04-30');
 
     // Create purchase tax and account
-    $purchaseTaxAccount = Account::factory()->for($company)->create(['type' => AccountType::CurrentAssets]);
+    $purchaseTaxAccount = \Modules\Accounting\Models\Account::factory()->for($company)->create(['type' => \Modules\Accounting\Enums\Accounting\AccountType::CurrentAssets]);
     $purchaseTax = Tax::factory()->for($company)->create([
         'name' => 'VAT 15% (Purchase)',
         'rate' => 15.0,
@@ -121,7 +121,7 @@ test('it generates a tax report with purchase tax only', function () {
     // Create journal entry lines: Expense debit, Tax debit, AP credit
     JournalEntryLine::factory()->create([
         'journal_entry_id' => $journalEntry->id,
-        'account_id' => Account::factory()->for($company)->create(['type' => AccountType::Expense])->id,
+        'account_id' => \Modules\Accounting\Models\Account::factory()->for($company)->create(['type' => \Modules\Accounting\Enums\Accounting\AccountType::Expense])->id,
         'debit' => Money::of(600, $currency),
         'credit' => Money::zero($currency),
     ]);
@@ -135,13 +135,13 @@ test('it generates a tax report with purchase tax only', function () {
 
     JournalEntryLine::factory()->create([
         'journal_entry_id' => $journalEntry->id,
-        'account_id' => Account::factory()->for($company)->create(['type' => AccountType::Payable])->id,
+        'account_id' => \Modules\Accounting\Models\Account::factory()->for($company)->create(['type' => \Modules\Accounting\Enums\Accounting\AccountType::Payable])->id,
         'debit' => Money::zero($currency),
         'credit' => Money::of(690, $currency), // 600 + 90 tax
     ]);
 
     // Action
-    $service = app(TaxReportService::class);
+    $service = app(\Modules\Accounting\Services\Reports\TaxReportService::class);
     $report = $service->generate($company, $startDate, $endDate);
 
     // Assert
@@ -168,7 +168,7 @@ test('it generates a tax report with mixed sales and purchase taxes', function (
     $endDate = Carbon::parse('2025-04-30');
 
     // Create sales tax
-    $salesTaxAccount = Account::factory()->for($company)->create(['type' => AccountType::CurrentLiabilities]);
+    $salesTaxAccount = \Modules\Accounting\Models\Account::factory()->for($company)->create(['type' => \Modules\Accounting\Enums\Accounting\AccountType::CurrentLiabilities]);
     $salesTax = Tax::factory()->for($company)->create([
         'name' => 'VAT 15% (Sales)',
         'rate' => 15.0,
@@ -178,7 +178,7 @@ test('it generates a tax report with mixed sales and purchase taxes', function (
     ]);
 
     // Create purchase tax
-    $purchaseTaxAccount = Account::factory()->for($company)->create(['type' => AccountType::CurrentAssets]);
+    $purchaseTaxAccount = \Modules\Accounting\Models\Account::factory()->for($company)->create(['type' => \Modules\Accounting\Enums\Accounting\AccountType::CurrentAssets]);
     $purchaseTax = Tax::factory()->for($company)->create([
         'name' => 'VAT 15% (Purchase)',
         'rate' => 15.0,
@@ -200,14 +200,14 @@ test('it generates a tax report with mixed sales and purchase taxes', function (
 
     JournalEntryLine::factory()->create([
         'journal_entry_id' => $salesEntry->id,
-        'account_id' => Account::factory()->for($company)->create(['type' => AccountType::Receivable])->id,
+        'account_id' => \Modules\Accounting\Models\Account::factory()->for($company)->create(['type' => \Modules\Accounting\Enums\Accounting\AccountType::Receivable])->id,
         'debit' => Money::of(1150, $currency),
         'credit' => Money::zero($currency),
     ]);
 
     JournalEntryLine::factory()->create([
         'journal_entry_id' => $salesEntry->id,
-        'account_id' => Account::factory()->for($company)->create(['type' => AccountType::Income])->id,
+        'account_id' => \Modules\Accounting\Models\Account::factory()->for($company)->create(['type' => \Modules\Accounting\Enums\Accounting\AccountType::Income])->id,
         'debit' => Money::zero($currency),
         'credit' => Money::of(1000, $currency),
     ]);
@@ -228,7 +228,7 @@ test('it generates a tax report with mixed sales and purchase taxes', function (
 
     JournalEntryLine::factory()->create([
         'journal_entry_id' => $purchaseEntry->id,
-        'account_id' => Account::factory()->for($company)->create(['type' => AccountType::Expense])->id,
+        'account_id' => \Modules\Accounting\Models\Account::factory()->for($company)->create(['type' => \Modules\Accounting\Enums\Accounting\AccountType::Expense])->id,
         'debit' => Money::of(600, $currency),
         'credit' => Money::zero($currency),
     ]);
@@ -242,13 +242,13 @@ test('it generates a tax report with mixed sales and purchase taxes', function (
 
     JournalEntryLine::factory()->create([
         'journal_entry_id' => $purchaseEntry->id,
-        'account_id' => Account::factory()->for($company)->create(['type' => AccountType::Payable])->id,
+        'account_id' => \Modules\Accounting\Models\Account::factory()->for($company)->create(['type' => \Modules\Accounting\Enums\Accounting\AccountType::Payable])->id,
         'debit' => Money::zero($currency),
         'credit' => Money::of(690, $currency),
     ]);
 
     // Action
-    $service = app(TaxReportService::class);
+    $service = app(\Modules\Accounting\Services\Reports\TaxReportService::class);
     $report = $service->generate($company, $startDate, $endDate);
 
     // Assert
@@ -268,7 +268,7 @@ test('it excludes transactions outside the date range', function () {
     $endDate = Carbon::parse('2025-04-30');
 
     // Create sales tax
-    $salesTaxAccount = Account::factory()->for($company)->create(['type' => AccountType::CurrentLiabilities]);
+    $salesTaxAccount = \Modules\Accounting\Models\Account::factory()->for($company)->create(['type' => \Modules\Accounting\Enums\Accounting\AccountType::CurrentLiabilities]);
     $salesTax = Tax::factory()->for($company)->create([
         'name' => 'VAT 15% (Sales)',
         'rate' => 15.0,
@@ -308,7 +308,7 @@ test('it excludes transactions outside the date range', function () {
     ]);
 
     // Action
-    $service = app(TaxReportService::class);
+    $service = app(\Modules\Accounting\Services\Reports\TaxReportService::class);
     $report = $service->generate($company, $startDate, $endDate);
 
     // Assert - should be empty as no transactions in date range
@@ -327,7 +327,7 @@ test('it excludes draft journal entries', function () {
     $endDate = Carbon::parse('2025-04-30');
 
     // Create sales tax
-    $salesTaxAccount = Account::factory()->for($company)->create(['type' => AccountType::CurrentLiabilities]);
+    $salesTaxAccount = \Modules\Accounting\Models\Account::factory()->for($company)->create(['type' => \Modules\Accounting\Enums\Accounting\AccountType::CurrentLiabilities]);
     $salesTax = Tax::factory()->for($company)->create([
         'name' => 'VAT 15% (Sales)',
         'rate' => 15.0,
@@ -353,7 +353,7 @@ test('it excludes draft journal entries', function () {
     ]);
 
     // Action
-    $service = app(TaxReportService::class);
+    $service = app(\Modules\Accounting\Services\Reports\TaxReportService::class);
     $report = $service->generate($company, $startDate, $endDate);
 
     // Assert - should be empty as draft entries are excluded
@@ -372,7 +372,7 @@ test('it excludes inactive taxes', function () {
     $endDate = Carbon::parse('2025-04-30');
 
     // Create INACTIVE sales tax
-    $salesTaxAccount = Account::factory()->for($company)->create(['type' => AccountType::CurrentLiabilities]);
+    $salesTaxAccount = \Modules\Accounting\Models\Account::factory()->for($company)->create(['type' => \Modules\Accounting\Enums\Accounting\AccountType::CurrentLiabilities]);
     $inactiveTax = Tax::factory()->for($company)->create([
         'name' => 'VAT 15% (Inactive)',
         'rate' => 15.0,
@@ -398,7 +398,7 @@ test('it excludes inactive taxes', function () {
     ]);
 
     // Action
-    $service = app(TaxReportService::class);
+    $service = app(\Modules\Accounting\Services\Reports\TaxReportService::class);
     $report = $service->generate($company, $startDate, $endDate);
 
     // Assert - should be empty as inactive taxes are excluded
@@ -417,7 +417,7 @@ test('it handles multiple tax rates correctly', function () {
     $endDate = Carbon::parse('2025-04-30');
 
     // Create 15% sales tax
-    $salesTax15Account = Account::factory()->for($company)->create(['type' => AccountType::CurrentLiabilities]);
+    $salesTax15Account = \Modules\Accounting\Models\Account::factory()->for($company)->create(['type' => \Modules\Accounting\Enums\Accounting\AccountType::CurrentLiabilities]);
     $salesTax15 = Tax::factory()->for($company)->create([
         'name' => 'VAT 15% (Sales)',
         'rate' => 15.0,
@@ -427,7 +427,7 @@ test('it handles multiple tax rates correctly', function () {
     ]);
 
     // Create 10% sales tax
-    $salesTax10Account = Account::factory()->for($company)->create(['type' => AccountType::CurrentLiabilities]);
+    $salesTax10Account = \Modules\Accounting\Models\Account::factory()->for($company)->create(['type' => \Modules\Accounting\Enums\Accounting\AccountType::CurrentLiabilities]);
     $salesTax10 = Tax::factory()->for($company)->create([
         'name' => 'VAT 10% (Sales)',
         'rate' => 10.0,
@@ -467,7 +467,7 @@ test('it handles multiple tax rates correctly', function () {
     ]);
 
     // Action
-    $service = app(TaxReportService::class);
+    $service = app(\Modules\Accounting\Services\Reports\TaxReportService::class);
     $report = $service->generate($company, $startDate, $endDate);
 
     // Assert

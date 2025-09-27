@@ -28,7 +28,7 @@ class CurrencyResource extends Resource
 
     protected static bool $isScopedToTenant = false;
 
-    protected static ?string $model = Currency::class;
+    protected static ?string $model = \Modules\Foundation\Models\Currency::class;
 
     protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-currency-dollar';
 
@@ -94,7 +94,7 @@ class CurrencyResource extends Resource
                     ->searchable(),
                 TextColumn::make('exchange_rate')
                     ->label(__('currency.exchange_rate'))
-                    ->formatStateUsing(fn ($state) => NumberFormatter::formatNumber($state, 4))
+                    ->formatStateUsing(fn ($state) => \Modules\Foundation\Support\NumberFormatter::formatNumber($state, 4))
                     ->sortable(),
                 IconColumn::make('is_active')
                     ->label(__('currency.is_active'))

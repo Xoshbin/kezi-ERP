@@ -14,8 +14,8 @@ uses(RefreshDatabase::class, WithConfiguredCompany::class, MocksTime::class);
 
 test('cancelling a posted invoice creates a reversing journal entry and an audit log', function () {
 
-    $invoice = Invoice::factory()->for($this->company)->create(['status' => 'draft']);
-    $incomeAccount = \App\Models\Account::factory()->for($this->company)->create(['type' => 'income']);
+    $invoice = \Modules\Sales\Models\Invoice::factory()->for($this->company)->create(['status' => 'draft']);
+    $incomeAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create(['type' => 'income']);
     $lineDto = new CreateInvoiceLineDTO(
         description: 'Consulting Services',
         quantity: 1,
@@ -49,7 +49,7 @@ test('cancelling a posted invoice creates a reversing journal entry and an audit
 
     // Assert: Audit log was created with the correct details
     $this->assertDatabaseHas('audit_logs', [
-        'auditable_type' => Invoice::class,
+        'auditable_type' => \Modules\Sales\Models\Invoice::class,
         'auditable_id' => $invoice->id,
         'user_id' => $this->user->id,
         'event_type' => 'cancellation',

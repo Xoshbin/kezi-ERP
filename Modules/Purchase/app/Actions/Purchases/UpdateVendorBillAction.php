@@ -16,14 +16,14 @@ use Illuminate\Support\Facades\DB;
 
 class UpdateVendorBillAction
 {
-    public function __construct(protected LockDateService $lockDateService) {}
+    public function __construct(protected \Modules\Accounting\Services\Accounting\LockDateService $lockDateService) {}
 
-    public function execute(UpdateVendorBillDTO $updateVendorBillDTO): VendorBill
+    public function execute(UpdateVendorBillDTO $updateVendorBillDTO): \Modules\Purchase\Models\VendorBill
     {
         $vendorBill = $updateVendorBillDTO->vendorBill;
 
         if ($vendorBill->status !== VendorBillStatus::Draft) {
-            throw new UpdateNotAllowedException('Only draft vendor bills can be updated.');
+            throw new \Modules\Foundation\Exceptions\UpdateNotAllowedException('Only draft vendor bills can be updated.');
         }
 
         $this->lockDateService->enforce($vendorBill->company, Carbon::parse($updateVendorBillDTO->bill_date));

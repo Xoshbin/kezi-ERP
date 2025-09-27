@@ -98,12 +98,12 @@ class InvoiceLine extends Model
      */
     protected $casts = [
         'quantity' => 'decimal:2',
-        'unit_price' => DocumentCurrencyMoneyCast::class,
-        'unit_price_company_currency' => BaseCurrencyMoneyCast::class,
-        'subtotal' => DocumentCurrencyMoneyCast::class,
-        'subtotal_company_currency' => BaseCurrencyMoneyCast::class,
-        'total_line_tax' => DocumentCurrencyMoneyCast::class,
-        'total_line_tax_company_currency' => BaseCurrencyMoneyCast::class,
+        'unit_price' => \Modules\Foundation\Casts\DocumentCurrencyMoneyCast::class,
+        'unit_price_company_currency' => \Modules\Foundation\Casts\BaseCurrencyMoneyCast::class,
+        'subtotal' => \Modules\Foundation\Casts\DocumentCurrencyMoneyCast::class,
+        'subtotal_company_currency' => \Modules\Foundation\Casts\BaseCurrencyMoneyCast::class,
+        'total_line_tax' => \Modules\Foundation\Casts\DocumentCurrencyMoneyCast::class,
+        'total_line_tax_company_currency' => \Modules\Foundation\Casts\BaseCurrencyMoneyCast::class,
         'created_at' => 'datetime', // Eloquent automatically manages these, but explicit casting is robust [12, 13].
         'updated_at' => 'datetime',
     ];

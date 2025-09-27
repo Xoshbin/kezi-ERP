@@ -16,7 +16,7 @@ describe('Invoice Numbering Integration', function () {
 
     it('auto-generates invoice numbers when posting invoices', function () {
         // Create a draft invoice with at least one line
-        $invoice = Invoice::factory()->withLines(1)->create([
+        $invoice = \Modules\Sales\Models\Invoice::factory()->withLines(1)->create([
             'company_id' => $this->company->id,
             'status' => InvoiceStatus::Draft,
         ]);
@@ -37,7 +37,7 @@ describe('Invoice Numbering Integration', function () {
         // Set custom numbering settings
         $this->company->numbering_settings = [
             'invoice' => [
-                'type' => NumberingType::SLASH_SEPARATED->value,
+                'type' => \Modules\Foundation\Enums\Settings\NumberingType::SLASH_SEPARATED->value,
                 'prefix' => 'INVOICE',
                 'padding' => 4,
             ],
@@ -45,7 +45,7 @@ describe('Invoice Numbering Integration', function () {
         $this->company->save();
 
         // Create a draft invoice with at least one line
-        $invoice = Invoice::factory()->withLines(1)->create([
+        $invoice = \Modules\Sales\Models\Invoice::factory()->withLines(1)->create([
             'company_id' => $this->company->id,
             'status' => InvoiceStatus::Draft,
             'invoice_date' => '2025-06-15',
@@ -65,7 +65,7 @@ describe('Invoice Numbering Integration', function () {
         $invoices = [];
 
         for ($i = 0; $i < 3; $i++) {
-            $invoice = Invoice::factory()->withLines(1)->create([
+            $invoice = \Modules\Sales\Models\Invoice::factory()->withLines(1)->create([
                 'company_id' => $this->company->id,
                 'status' => InvoiceStatus::Draft,
             ]);
@@ -84,7 +84,7 @@ describe('Invoice Numbering Integration', function () {
         // Set dot-separated numbering
         $this->company->numbering_settings = [
             'invoice' => [
-                'type' => NumberingType::DOT_SEPARATED->value,
+                'type' => \Modules\Foundation\Enums\Settings\NumberingType::DOT_SEPARATED->value,
                 'prefix' => 'INV',
                 'padding' => 3,
             ],
@@ -92,7 +92,7 @@ describe('Invoice Numbering Integration', function () {
         $this->company->save();
 
         // Create invoice with specific date and at least one line
-        $invoice = Invoice::factory()->withLines(1)->create([
+        $invoice = \Modules\Sales\Models\Invoice::factory()->withLines(1)->create([
             'company_id' => $this->company->id,
             'status' => InvoiceStatus::Draft,
             'invoice_date' => '2025-12-25',

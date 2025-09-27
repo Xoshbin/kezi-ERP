@@ -77,5 +77,5 @@ abstract class MoneyCast implements CastsAttributes
      * for determining the currency context (e.g., company base currency,
      * document currency, etc.) to ensure predictable behavior.
      */
-    abstract protected function resolveCurrency(Model $model): Currency;
+    abstract protected function resolveCurrency(Model $model): \Modules\Foundation\Models\Currency;
 }

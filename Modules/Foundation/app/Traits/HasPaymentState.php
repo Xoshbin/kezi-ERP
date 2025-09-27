@@ -30,20 +30,20 @@ trait HasPaymentState
      * Computes the payment state of the document on the fly.
      * The value is not stored in the database to maintain data consistency.
      */
-    public function getPaymentStateAttribute(): PaymentState
+    public function getPaymentStateAttribute(): \Modules\Foundation\Enums\Shared\PaymentState
     {
         $paidAmount = $this->getPaidAmount();
 
         if ($paidAmount->isZero()) {
-            return PaymentState::NotPaid;
+            return \Modules\Foundation\Enums\Shared\PaymentState::NotPaid;
         }
 
         // isGreaterThanOrEqual() handles cases of overpayment correctly.
         if ($paidAmount->isGreaterThanOrEqualTo($this->total_amount)) {
-            return PaymentState::Paid;
+            return \Modules\Foundation\Enums\Shared\PaymentState::Paid;
         }
 
-        return PaymentState::PartiallyPaid;
+        return \Modules\Foundation\Enums\Shared\PaymentState::PartiallyPaid;
     }
 
     /**
@@ -56,7 +56,7 @@ trait HasPaymentState
     {
         // Load the company and currency converter service
         $this->load(['company', 'currency']);
-        $currencyConverter = app(CurrencyConverterService::class);
+        $currencyConverter = app(\Modules\Foundation\Services\CurrencyConverterService::class);
 
         // Get all confirmed/reconciled payment document links for this document
         /** @var \Illuminate\Database\Eloquent\Collection<int, \App\Models\PaymentDocumentLink> $paymentLinks */
@@ -116,7 +116,7 @@ trait HasPaymentState
      */
     public function isFullyPaid(): bool
     {
-        return $this->payment_state === PaymentState::Paid;
+        return $this->payment_state === \Modules\Foundation\Enums\Shared\PaymentState::Paid;
     }
 
     /**
@@ -124,7 +124,7 @@ trait HasPaymentState
      */
     public function isPartiallyPaid(): bool
     {
-        return $this->payment_state === PaymentState::PartiallyPaid;
+        return $this->payment_state === \Modules\Foundation\Enums\Shared\PaymentState::PartiallyPaid;
     }
 
     /**
@@ -132,6 +132,6 @@ trait HasPaymentState
      */
     public function isNotPaid(): bool
     {
-        return $this->payment_state === PaymentState::NotPaid;
+        return $this->payment_state === \Modules\Foundation\Enums\Shared\PaymentState::NotPaid;
     }
 }

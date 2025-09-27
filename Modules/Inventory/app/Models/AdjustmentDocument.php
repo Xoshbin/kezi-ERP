@@ -38,7 +38,7 @@ use Illuminate\Support\Carbon;
  * @property-read Invoice|null $originalInvoice
  * @property-read VendorBill|null $originalVendorBill
  *
- * @method static AdjustmentDocumentFactory factory($count = null, $state = [])
+ * @method static \Modules\Inventory\Database\Factories\AdjustmentDocumentFactory factory($count = null, $state = [])
  * @method static Builder<static>|AdjustmentDocument newModelQuery()
  * @method static Builder<static>|AdjustmentDocument newQuery()
  * @method static Builder<static>|AdjustmentDocument query()
@@ -115,12 +115,12 @@ class AdjustmentDocument extends Model
         'type' => AdjustmentDocumentType::class,
         'status' => AdjustmentDocumentStatus::class,
         'exchange_rate_at_creation' => 'decimal:10',
-        'subtotal' => DocumentCurrencyMoneyCast::class,  // Document currency amounts
-        'total_amount' => DocumentCurrencyMoneyCast::class,  // Document currency amounts
-        'total_tax' => DocumentCurrencyMoneyCast::class,  // Document currency amounts
-        'subtotal_company_currency' => BaseCurrencyMoneyCast::class,  // Company base currency amounts
-        'total_amount_company_currency' => BaseCurrencyMoneyCast::class,  // Company base currency amounts
-        'total_tax_company_currency' => BaseCurrencyMoneyCast::class,  // Company base currency amounts
+        'subtotal' => \Modules\Foundation\Casts\DocumentCurrencyMoneyCast::class,  // Document currency amounts
+        'total_amount' => \Modules\Foundation\Casts\DocumentCurrencyMoneyCast::class,  // Document currency amounts
+        'total_tax' => \Modules\Foundation\Casts\DocumentCurrencyMoneyCast::class,  // Document currency amounts
+        'subtotal_company_currency' => \Modules\Foundation\Casts\BaseCurrencyMoneyCast::class,  // Company base currency amounts
+        'total_amount_company_currency' => \Modules\Foundation\Casts\BaseCurrencyMoneyCast::class,  // Company base currency amounts
+        'total_tax_company_currency' => \Modules\Foundation\Casts\BaseCurrencyMoneyCast::class,  // Company base currency amounts
         'created_at' => 'datetime',   // [5, 6]
         'updated_at' => 'datetime',   // [5, 6]
     ];

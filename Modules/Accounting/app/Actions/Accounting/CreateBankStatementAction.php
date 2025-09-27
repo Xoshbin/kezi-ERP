@@ -8,11 +8,11 @@ use Illuminate\Support\Facades\DB;
 
 class CreateBankStatementAction
 {
-    public function execute(CreateBankStatementDTO $dto): BankStatement
+    public function execute(CreateBankStatementDTO $dto): \Modules\Accounting\Models\BankStatement
     {
         return DB::transaction(function () use ($dto) {
             // 1. Create the parent BankStatement first.
-            $bankStatement = BankStatement::create([
+            $bankStatement = \Modules\Accounting\Models\BankStatement::create([
                 'company_id' => $dto->company_id,
                 'currency_id' => $dto->currency_id,
                 'journal_id' => $dto->journal_id,

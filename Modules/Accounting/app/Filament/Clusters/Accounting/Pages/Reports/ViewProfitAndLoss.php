@@ -98,7 +98,7 @@ class ViewProfitAndLoss extends Page
             throw new \Exception('Company not found');
         }
 
-        $service = app(ProfitAndLossStatementService::class);
+        $service = app(\Modules\Accounting\Services\Reports\ProfitAndLossStatementService::class);
 
         $report = $service->generate(
             $company,
@@ -112,19 +112,19 @@ class ViewProfitAndLoss extends Page
                 'accountId' => $line->accountId,
                 'accountCode' => $line->accountCode,
                 'accountName' => $line->accountName,
-                'balance' => NumberFormatter::formatMoneyTo($line->balance),
+                'balance' => \Modules\Foundation\Support\NumberFormatter::formatMoneyTo($line->balance),
                 'balanceAmount' => $line->balance->getAmount()->toFloat(),
             ])->toArray(),
             'expenseLines' => $report->expenseLines->map(fn ($line) => [
                 'accountId' => $line->accountId,
                 'accountCode' => $line->accountCode,
                 'accountName' => $line->accountName,
-                'balance' => NumberFormatter::formatMoneyTo($line->balance),
+                'balance' => \Modules\Foundation\Support\NumberFormatter::formatMoneyTo($line->balance),
                 'balanceAmount' => $line->balance->getAmount()->toFloat(),
             ])->toArray(),
-            'totalRevenue' => NumberFormatter::formatMoneyTo($report->totalRevenue),
-            'totalExpenses' => NumberFormatter::formatMoneyTo($report->totalExpenses),
-            'netIncome' => NumberFormatter::formatMoneyTo($report->netIncome),
+            'totalRevenue' => \Modules\Foundation\Support\NumberFormatter::formatMoneyTo($report->totalRevenue),
+            'totalExpenses' => \Modules\Foundation\Support\NumberFormatter::formatMoneyTo($report->totalExpenses),
+            'netIncome' => \Modules\Foundation\Support\NumberFormatter::formatMoneyTo($report->netIncome),
             'netIncomeAmount' => $report->netIncome->getAmount()->toFloat(),
             'isNetLoss' => $report->netIncome->isNegative(),
         ];

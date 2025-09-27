@@ -23,13 +23,13 @@ class InventoryMovementValidationService
     /**
      * Validate that a product is ready for inventory movements
      *
-     * @param Product $product
+     * @param \Modules\Product\Models\Product $product
      * @param StockMoveType $moveType
      * @param float $quantity
      * @return InventoryMovementValidationResult
      */
     public function validateMovement(
-        Product $product,
+        \Modules\Product\Models\Product $product,
         StockMoveType $moveType,
         float $quantity
     ): InventoryMovementValidationResult {
@@ -141,10 +141,10 @@ class InventoryMovementValidationService
     /**
      * Get detailed guidance for resolving validation failures
      *
-     * @param Product $product
+     * @param \Modules\Product\Models\Product $product
      * @return array
      */
-    public function getResolutionGuidance(Product $product): array
+    public function getResolutionGuidance(\Modules\Product\Models\Product $product): array
     {
         return [
             'establishment_steps' => $this->costAnalysisService->getEstablishmentSteps($product),

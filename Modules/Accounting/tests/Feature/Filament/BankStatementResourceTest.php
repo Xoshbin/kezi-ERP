@@ -30,8 +30,8 @@ it('can render the create page', function () {
 });
 
 it('can create a bank statement', function () {
-    /** @var \App\Models\Partner $partner */
-    $partner = Partner::factory()->create([
+    /** @var \Modules\Foundation\Models\Partner $partner */
+    $partner = \Modules\Foundation\Models\Partner::factory()->create([
         'company_id' => $this->company->id,
     ]);
 
@@ -75,7 +75,7 @@ it('can create a bank statement', function () {
         'amount' => 500000, // Stored in minor units (500.00 * 1000 for IQD)
     ]);
 
-    $bankStatement = BankStatement::first();
+    $bankStatement = \Modules\Accounting\Models\BankStatement::first();
     expect($bankStatement->starting_balance->isEqualTo(Money::of('1000.00', $this->company->currency->code)))->toBeTrue();
     expect($bankStatement->ending_balance->isEqualTo(Money::of('1500.00', $this->company->currency->code)))->toBeTrue();
 });
@@ -105,7 +105,7 @@ it('can validate input on create', function () {
 });
 
 it('can render the edit page', function () {
-    $bankStatement = BankStatement::factory()->create([
+    $bankStatement = \Modules\Accounting\Models\BankStatement::factory()->create([
         'company_id' => $this->company->id,
     ]);
 
@@ -120,7 +120,7 @@ it('can edit a bank statement', function () {
         'type' => \App\Enums\Accounting\JournalType::Bank,
     ]);
 
-    $bankStatement = BankStatement::factory()->create([
+    $bankStatement = \Modules\Accounting\Models\BankStatement::factory()->create([
         'company_id' => $this->company->id,
         'journal_id' => $bankJournal->id,
         'reference' => 'Old Ref',
@@ -134,8 +134,8 @@ it('can edit a bank statement', function () {
         'amount' => Money::of(100, $this->company->currency->code),
     ]);
 
-    /** @var \App\Models\Partner $newPartner */
-    $newPartner = Partner::factory()->create([
+    /** @var \Modules\Foundation\Models\Partner $newPartner */
+    $newPartner = \Modules\Foundation\Models\Partner::factory()->create([
         'company_id' => $this->company->id,
     ]);
 
@@ -170,7 +170,7 @@ it('can edit a bank statement', function () {
 });
 
 it('can render the reconcile page', function () {
-    $bankStatement = BankStatement::factory()->create([
+    $bankStatement = \Modules\Accounting\Models\BankStatement::factory()->create([
         'company_id' => $this->company->id,
     ]);
 
@@ -179,7 +179,7 @@ it('can render the reconcile page', function () {
 });
 
 it('preserves the reconcile button in the table', function () {
-    $bankStatement = BankStatement::factory()->create([
+    $bankStatement = \Modules\Accounting\Models\BankStatement::factory()->create([
         'company_id' => $this->company->id,
     ]);
 
@@ -189,20 +189,20 @@ it('preserves the reconcile button in the table', function () {
 });
 
 it('can navigate to reconciliation page', function () {
-    $bankStatement = BankStatement::factory()->create([
+    $bankStatement = \Modules\Accounting\Models\BankStatement::factory()->create([
         'company_id' => $this->company->id,
     ]);
 
     $this->get(BankStatementResource::getUrl('reconcile', ['record' => $bankStatement]))
         ->assertSuccessful()
-        ->assertSeeLivewire(\App\Livewire\Accounting\BankReconciliationMatcher::class);
+        ->assertSeeLivewire(\Modules\Accounting\Livewire\Accounting\BankReconciliationMatcher::class);
 });
 
 it('ensures foreign currency field excludes statement currency', function () {
     // This test verifies that the foreign currency dropdown filters out the statement currency
     // We test this by checking that the form schema correctly filters currencies
 
-    $usdCurrency = Currency::firstOrCreate(
+    $usdCurrency = \Modules\Foundation\Models\Currency::firstOrCreate(
         ['code' => 'USD'],
         [
             'name' => ['en' => 'US Dollar'],
@@ -216,7 +216,7 @@ it('ensures foreign currency field excludes statement currency', function () {
     $statementCurrencyId = $this->company->currency_id; // IQD
 
     // Get currencies excluding the statement currency (simulating the form logic)
-    $availableForeignCurrencies = \App\Models\Currency::where('is_active', true)
+    $availableForeignCurrencies = \Modules\Foundation\Models\Currency::where('is_active', true)
         ->where('id', '!=', $statementCurrencyId)
         ->get();
 
@@ -228,11 +228,11 @@ it('ensures foreign currency field excludes statement currency', function () {
 });
 
 it('can handle multiple lines in create', function () {
-    /** @var \App\Models\Partner $partner1 */
-    $partner1 = Partner::factory()->create(['company_id' => $this->company->id]);
+    /** @var \Modules\Foundation\Models\Partner $partner1 */
+    $partner1 = \Modules\Foundation\Models\Partner::factory()->create(['company_id' => $this->company->id]);
 
-    /** @var \App\Models\Partner $partner2 */
-    $partner2 = Partner::factory()->create(['company_id' => $this->company->id]);
+    /** @var \Modules\Foundation\Models\Partner $partner2 */
+    $partner2 = \Modules\Foundation\Models\Partner::factory()->create(['company_id' => $this->company->id]);
 
     /** @var \App\Models\Journal $bankJournal */
     $bankJournal = Journal::factory()->for($this->company)->create(['type' => JournalType::Bank]);
@@ -266,7 +266,7 @@ it('can handle multiple lines in create', function () {
 
     $this->assertDatabaseCount('bank_statement_lines', 2);
 
-    $bankStatement = BankStatement::first();
+    $bankStatement = \Modules\Accounting\Models\BankStatement::first();
     expect($bankStatement->bankStatementLines)->toHaveCount(2);
 });
 
@@ -274,7 +274,7 @@ it('handles money objects correctly in forms', function () {
     /** @var \App\Models\Journal $bankJournal */
     $bankJournal = Journal::factory()->for($this->company)->create(['type' => JournalType::Bank]);
 
-    $bankStatement = BankStatement::factory()->create([
+    $bankStatement = \Modules\Accounting\Models\BankStatement::factory()->create([
         'company_id' => $this->company->id,
         'currency_id' => $this->company->currency_id,
         'journal_id' => $bankJournal->id,
@@ -305,15 +305,15 @@ it('can reconcile bank statement lines with payments', function () {
     $bankJournal = Journal::factory()->for($this->company)->create(['type' => JournalType::Bank]);
 
     // Set up required company accounts for reconciliation
-    $bankAccount = \App\Models\Account::factory()->for($this->company)->create(['type' => 'bank_and_cash']);
-    $outstandingAccount = \App\Models\Account::factory()->for($this->company)->create(['type' => 'current_assets']);
+    $bankAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create(['type' => 'bank_and_cash']);
+    $outstandingAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create(['type' => 'current_assets']);
 
     $this->company->update([
         'default_bank_account_id' => $bankAccount->id,
         'default_outstanding_receipts_account_id' => $outstandingAccount->id,
     ]);
 
-    $bankStatement = BankStatement::factory()->create([
+    $bankStatement = \Modules\Accounting\Models\BankStatement::factory()->create([
         'company_id' => $this->company->id,
         'currency_id' => $this->company->currency_id,
         'journal_id' => $bankJournal->id,
@@ -329,7 +329,7 @@ it('can reconcile bank statement lines with payments', function () {
     ]);
 
     // Create a matching payment
-    $payment = \App\Models\Payment::factory()->create([
+    $payment = \Modules\Payment\Models\Payment::factory()->create([
         'company_id' => $this->company->id,
         'journal_id' => $bankJournal->id,
         'currency_id' => $this->company->currency_id,
@@ -339,7 +339,7 @@ it('can reconcile bank statement lines with payments', function () {
     ]);
 
     // Test the BankReconciliationMatcher component reactivity
-    $reconciliationComponent = livewire(\App\Livewire\Accounting\BankReconciliationMatcher::class, [
+    $reconciliationComponent = livewire(\Modules\Accounting\Livewire\Accounting\BankReconciliationMatcher::class, [
         'bankStatementId' => $bankStatement->id,
     ]);
 
@@ -366,7 +366,7 @@ it('can create write-off entries for unmatched bank statement lines', function (
     /** @var \App\Models\Journal $bankJournal */
     $bankJournal = Journal::factory()->for($this->company)->create(['type' => JournalType::Bank]);
 
-    $bankStatement = BankStatement::factory()->create([
+    $bankStatement = \Modules\Accounting\Models\BankStatement::factory()->create([
         'company_id' => $this->company->id,
         'currency_id' => $this->company->currency_id,
         'journal_id' => $bankJournal->id,
@@ -382,7 +382,7 @@ it('can create write-off entries for unmatched bank statement lines', function (
     ]);
 
     // Create a write-off account
-    $writeOffAccount = \App\Models\Account::factory()->for($this->company)->create([
+    $writeOffAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create([
         'type' => 'expense',
         'name' => 'Bank Charges',
     ]);
@@ -411,7 +411,7 @@ it('prevents reconciliation when totals do not match', function () {
     /** @var \App\Models\Journal $bankJournal */
     $bankJournal = Journal::factory()->for($this->company)->create(['type' => JournalType::Bank]);
 
-    $bankStatement = BankStatement::factory()->create([
+    $bankStatement = \Modules\Accounting\Models\BankStatement::factory()->create([
         'company_id' => $this->company->id,
         'currency_id' => $this->company->currency_id,
         'journal_id' => $bankJournal->id,
@@ -427,7 +427,7 @@ it('prevents reconciliation when totals do not match', function () {
     ]);
 
     // Create a payment with different amount
-    $payment = \App\Models\Payment::factory()->create([
+    $payment = \Modules\Payment\Models\Payment::factory()->create([
         'company_id' => $this->company->id,
         'journal_id' => $bankJournal->id,
         'currency_id' => $this->company->currency_id,
@@ -438,7 +438,7 @@ it('prevents reconciliation when totals do not match', function () {
 
     // Test that reconciliation button is disabled when totals don't match
     // Test the BankReconciliationMatcher component with mismatched amounts
-    $reconciliationComponent = livewire(\App\Livewire\Accounting\BankReconciliationMatcher::class, [
+    $reconciliationComponent = livewire(\Modules\Accounting\Livewire\Accounting\BankReconciliationMatcher::class, [
         'bankStatementId' => $bankStatement->id,
     ]);
 
@@ -471,7 +471,7 @@ it('can clear selections in reconciliation interface', function () {
     /** @var \App\Models\Journal $bankJournal */
     $bankJournal = Journal::factory()->for($this->company)->create(['type' => JournalType::Bank]);
 
-    $bankStatement = BankStatement::factory()->create([
+    $bankStatement = \Modules\Accounting\Models\BankStatement::factory()->create([
         'company_id' => $this->company->id,
         'currency_id' => $this->company->currency_id,
         'journal_id' => $bankJournal->id,
@@ -487,7 +487,7 @@ it('can clear selections in reconciliation interface', function () {
     ]);
 
     // Test the clear selections functionality in BankReconciliationMatcher component
-    $reconciliationComponent = livewire(\App\Livewire\Accounting\BankReconciliationMatcher::class, [
+    $reconciliationComponent = livewire(\Modules\Accounting\Livewire\Accounting\BankReconciliationMatcher::class, [
         'bankStatementId' => $bankStatement->id,
     ]);
 
@@ -509,7 +509,7 @@ it('has reactive reconciliation summary', function () {
     /** @var \App\Models\Journal $bankJournal */
     $bankJournal = Journal::factory()->for($this->company)->create(['type' => JournalType::Bank]);
 
-    $bankStatement = BankStatement::factory()->create([
+    $bankStatement = \Modules\Accounting\Models\BankStatement::factory()->create([
         'company_id' => $this->company->id,
         'currency_id' => $this->company->currency_id,
         'journal_id' => $bankJournal->id,
@@ -525,7 +525,7 @@ it('has reactive reconciliation summary', function () {
     ]);
 
     // Create a matching payment
-    $payment = \App\Models\Payment::factory()->create([
+    $payment = \Modules\Payment\Models\Payment::factory()->create([
         'company_id' => $this->company->id,
         'journal_id' => $bankJournal->id,
         'currency_id' => $this->company->currency_id,
@@ -535,7 +535,7 @@ it('has reactive reconciliation summary', function () {
     ]);
 
     // Test the BankReconciliationMatcher Livewire component directly
-    $reconciliationComponent = livewire(\App\Livewire\Accounting\BankReconciliationMatcher::class, [
+    $reconciliationComponent = livewire(\Modules\Accounting\Livewire\Accounting\BankReconciliationMatcher::class, [
         'bankStatementId' => $bankStatement->id,
     ]);
 
@@ -568,7 +568,7 @@ it('can toggle bank lines and payments in reconciliation interface', function ()
     /** @var \App\Models\Journal $bankJournal */
     $bankJournal = Journal::factory()->for($this->company)->create(['type' => JournalType::Bank]);
 
-    $bankStatement = BankStatement::factory()->create([
+    $bankStatement = \Modules\Accounting\Models\BankStatement::factory()->create([
         'company_id' => $this->company->id,
         'currency_id' => $this->company->currency_id,
         'journal_id' => $bankJournal->id,
@@ -582,7 +582,7 @@ it('can toggle bank lines and payments in reconciliation interface', function ()
         'is_reconciled' => false,
     ]);
 
-    $payment = \App\Models\Payment::factory()->create([
+    $payment = \Modules\Payment\Models\Payment::factory()->create([
         'company_id' => $this->company->id,
         'journal_id' => $bankJournal->id,
         'currency_id' => $this->company->currency_id,
@@ -620,7 +620,7 @@ it('can perform reconciliation through the livewire component', function () {
     /** @var \App\Models\Journal $bankJournal */
     $bankJournal = Journal::factory()->for($this->company)->create(['type' => JournalType::Bank]);
 
-    $bankStatement = BankStatement::factory()->create([
+    $bankStatement = \Modules\Accounting\Models\BankStatement::factory()->create([
         'company_id' => $this->company->id,
         'currency_id' => $this->company->currency_id,
         'journal_id' => $bankJournal->id,
@@ -634,7 +634,7 @@ it('can perform reconciliation through the livewire component', function () {
         'is_reconciled' => false,
     ]);
 
-    $payment = \App\Models\Payment::factory()->create([
+    $payment = \Modules\Payment\Models\Payment::factory()->create([
         'company_id' => $this->company->id,
         'journal_id' => $bankJournal->id,
         'currency_id' => $this->company->currency_id,
@@ -643,7 +643,7 @@ it('can perform reconciliation through the livewire component', function () {
         'status' => PaymentStatus::Confirmed,
     ]);
 
-    $reconciliationComponent = livewire(\App\Livewire\Accounting\BankReconciliationMatcher::class, [
+    $reconciliationComponent = livewire(\Modules\Accounting\Livewire\Accounting\BankReconciliationMatcher::class, [
         'bankStatementId' => $bankStatement->id,
     ]);
 
@@ -676,7 +676,7 @@ it('calculates totals correctly with different payment types', function () {
     /** @var \App\Models\Journal $bankJournal */
     $bankJournal = Journal::factory()->for($this->company)->create(['type' => JournalType::Bank]);
 
-    $bankStatement = BankStatement::factory()->create([
+    $bankStatement = \Modules\Accounting\Models\BankStatement::factory()->create([
         'company_id' => $this->company->id,
         'currency_id' => $this->company->currency_id,
         'journal_id' => $bankJournal->id,
@@ -701,7 +701,7 @@ it('calculates totals correctly with different payment types', function () {
     ]);
 
     // Create an inbound payment (money coming in)
-    $inboundPayment = \App\Models\Payment::factory()->create([
+    $inboundPayment = \Modules\Payment\Models\Payment::factory()->create([
         'company_id' => $this->company->id,
         'journal_id' => $bankJournal->id,
         'currency_id' => $this->company->currency_id,
@@ -711,7 +711,7 @@ it('calculates totals correctly with different payment types', function () {
     ]);
 
     // Create an outbound payment (money going out)
-    $outboundPayment = \App\Models\Payment::factory()->create([
+    $outboundPayment = \Modules\Payment\Models\Payment::factory()->create([
         'company_id' => $this->company->id,
         'journal_id' => $bankJournal->id,
         'currency_id' => $this->company->currency_id,
@@ -720,7 +720,7 @@ it('calculates totals correctly with different payment types', function () {
         'status' => PaymentStatus::Confirmed,
     ]);
 
-    $reconciliationComponent = livewire(\App\Livewire\Accounting\BankReconciliationMatcher::class, [
+    $reconciliationComponent = livewire(\Modules\Accounting\Livewire\Accounting\BankReconciliationMatcher::class, [
         'bankStatementId' => $bankStatement->id,
     ]);
 
@@ -786,7 +786,7 @@ it('can write off bank statement lines', function () {
     /** @var \App\Models\Journal $bankJournal */
     $bankJournal = Journal::factory()->for($this->company)->create(['type' => JournalType::Bank]);
 
-    $bankStatement = BankStatement::factory()->create([
+    $bankStatement = \Modules\Accounting\Models\BankStatement::factory()->create([
         'company_id' => $this->company->id,
         'currency_id' => $this->company->currency_id,
         'journal_id' => $bankJournal->id,
@@ -807,7 +807,7 @@ it('can write off bank statement lines', function () {
     ]);
 
     // Create a write-off account
-    $writeOffAccount = \App\Models\Account::factory()->for($this->company)->create([
+    $writeOffAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create([
         'type' => 'expense',
         'name' => 'Bank Charges',
     ]);
@@ -827,14 +827,14 @@ it('can write off payments', function () {
     /** @var \App\Models\Journal $bankJournal */
     $bankJournal = Journal::factory()->for($this->company)->create(['type' => JournalType::Bank]);
 
-    $bankStatement = BankStatement::factory()->create([
+    $bankStatement = \Modules\Accounting\Models\BankStatement::factory()->create([
         'company_id' => $this->company->id,
         'currency_id' => $this->company->currency_id,
         'journal_id' => $bankJournal->id,
     ]);
 
     // Create an unmatched payment
-    $payment = \App\Models\Payment::factory()->create([
+    $payment = \Modules\Payment\Models\Payment::factory()->create([
         'company_id' => $this->company->id,
         'journal_id' => $bankJournal->id,
         'currency_id' => $this->company->currency_id,

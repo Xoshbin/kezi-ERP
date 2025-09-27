@@ -96,7 +96,7 @@ class PositionForm
             Section::make(__('position.salary_range'))
                 ->description(__('position.salary_range_description'))
                 ->schema([
-                    TranslatableSelect::forModel('currency_id', Currency::class)
+                    TranslatableSelect::forModel('currency_id', \Modules\Foundation\Models\Currency::class)
                         ->searchable()
                         ->label(__('position.salary_currency'))
                         ->searchableFields(['name', 'code'])

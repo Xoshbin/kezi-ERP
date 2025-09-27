@@ -20,11 +20,11 @@ uses(RefreshDatabase::class, WithConfiguredCompany::class);
 
 test('payment confirmation properly posts draft invoice before marking as paid', function () {
     // Arrange: Create a draft invoice
-    $customer = Partner::factory()->customer()->create([
+    $customer = \Modules\Foundation\Models\Partner::factory()->customer()->create([
         'company_id' => $this->company->id,
     ]);
 
-    $invoice = Invoice::factory()->withLines(1)->create([
+    $invoice = \Modules\Sales\Models\Invoice::factory()->withLines(1)->create([
         'company_id' => $this->company->id,
         'customer_id' => $customer->id,
         'currency_id' => $this->company->currency_id,
@@ -37,7 +37,7 @@ test('payment confirmation properly posts draft invoice before marking as paid',
 
     // Create a payment for the full amount
     $journal = Journal::factory()->for($this->company)->create(['type' => JournalType::Bank]);
-    $payment = Payment::factory()->create([
+    $payment = \Modules\Payment\Models\Payment::factory()->create([
         'company_id' => $this->company->id,
         'status' => PaymentStatus::Draft,
         'amount' => Money::of(100000, $this->company->currency->code),
@@ -80,11 +80,11 @@ test('payment confirmation properly posts draft invoice before marking as paid',
 
 test('payment confirmation properly posts draft vendor bill before marking as paid', function () {
     // Arrange: Create a draft vendor bill
-    $vendor = Partner::factory()->vendor()->create([
+    $vendor = \Modules\Foundation\Models\Partner::factory()->vendor()->create([
         'company_id' => $this->company->id,
     ]);
 
-    $vendorBill = VendorBill::factory()->withLines(1)->create([
+    $vendorBill = \Modules\Purchase\Models\VendorBill::factory()->withLines(1)->create([
         'company_id' => $this->company->id,
         'vendor_id' => $vendor->id,
         'currency_id' => $this->company->currency_id,
@@ -96,7 +96,7 @@ test('payment confirmation properly posts draft vendor bill before marking as pa
 
     // Create a payment for the full amount
     $journal = Journal::factory()->for($this->company)->create(['type' => JournalType::Bank]);
-    $payment = Payment::factory()->create([
+    $payment = \Modules\Payment\Models\Payment::factory()->create([
         'company_id' => $this->company->id,
         'status' => PaymentStatus::Draft,
         'amount' => Money::of(50000, $this->company->currency->code),
@@ -138,11 +138,11 @@ test('payment confirmation properly posts draft vendor bill before marking as pa
 
 test('payment confirmation does not affect already posted documents', function () {
     // Arrange: Create an already posted invoice
-    $customer = Partner::factory()->customer()->create([
+    $customer = \Modules\Foundation\Models\Partner::factory()->customer()->create([
         'company_id' => $this->company->id,
     ]);
 
-    $invoice = Invoice::factory()->create([
+    $invoice = \Modules\Sales\Models\Invoice::factory()->create([
         'company_id' => $this->company->id,
         'customer_id' => $customer->id,
         'currency_id' => $this->company->currency_id,
@@ -154,7 +154,7 @@ test('payment confirmation does not affect already posted documents', function (
 
     // Create a payment for the full amount
     $journal = Journal::factory()->for($this->company)->create(['type' => JournalType::Bank]);
-    $payment = Payment::factory()->create([
+    $payment = \Modules\Payment\Models\Payment::factory()->create([
         'company_id' => $this->company->id,
         'status' => PaymentStatus::Draft,
         'amount' => Money::of(100000, $this->company->currency->code),

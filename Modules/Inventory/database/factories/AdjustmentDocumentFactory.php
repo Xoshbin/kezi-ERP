@@ -35,17 +35,17 @@ class AdjustmentDocumentFactory extends Factory
             'date' => $this->faker->date(),
             'reference_number' => $this->faker->unique()->bothify('ADJ-#####'),
             'subtotal' => function (array $attributes) {
-                $currency = Currency::find($attributes['currency_id']);
+                $currency = \Modules\Foundation\Models\Currency::find($attributes['currency_id']);
 
                 return Money::of($this->faker->randomFloat(2, 100, 8000), $currency->code);
             },
             'total_tax' => function (array $attributes) {
-                $currency = Currency::find($attributes['currency_id']);
+                $currency = \Modules\Foundation\Models\Currency::find($attributes['currency_id']);
 
                 return Money::of($this->faker->randomFloat(2, 0, 2000), $currency->code);
             },
             'total_amount' => function (array $attributes) {
-                $currency = Currency::find($attributes['currency_id']);
+                $currency = \Modules\Foundation\Models\Currency::find($attributes['currency_id']);
                 $subtotal = $attributes['subtotal'] ?? Money::of(1000, $currency->code);
                 $totalTax = $attributes['total_tax'] ?? Money::of(100, $currency->code);
 
@@ -81,7 +81,7 @@ class AdjustmentDocumentFactory extends Factory
 
     public function withLines(int $count = 1): self
     {
-        return $this->afterCreating(function (AdjustmentDocument $adjustmentDocument) use ($count) {
+        return $this->afterCreating(function (\Modules\Inventory\Models\AdjustmentDocument $adjustmentDocument) use ($count) {
             AdjustmentDocumentLine::factory()->count($count)->create([
                 'adjustment_document_id' => $adjustmentDocument->id,
             ]);

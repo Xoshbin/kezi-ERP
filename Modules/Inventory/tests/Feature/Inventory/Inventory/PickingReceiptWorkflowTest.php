@@ -20,8 +20,8 @@ beforeEach(function () {
     $this->setupWithConfiguredCompany();
     $this->setupInventoryTestEnvironment();
 
-    $this->product = Product::factory()->for($this->company)->create([
-        'type' => \App\Enums\Products\ProductType::Storable,
+    $this->product = \Modules\Product\Models\Product::factory()->for($this->company)->create([
+        'type' => \Modules\Product\Enums\Products\ProductType::Storable,
         'inventory_valuation_method' => \App\Enums\Inventory\ValuationMethod::AVCO,
         'default_inventory_account_id' => $this->inventoryAccount->id,
         'default_stock_input_account_id' => $this->stockInputAccount->id,
@@ -33,7 +33,7 @@ it('creates a receipt picking and updates quants when posting a vendor bill', fu
     $qty = 8;
     $unitCost = Money::of(100, $this->company->currency->code);
 
-    $vendorBill = VendorBill::factory()->for($this->company)->create([
+    $vendorBill = \Modules\Purchase\Models\VendorBill::factory()->for($this->company)->create([
         'vendor_id' => $this->vendor->id,
         'status' => 'draft',
         'bill_date' => now()->toDateString(),

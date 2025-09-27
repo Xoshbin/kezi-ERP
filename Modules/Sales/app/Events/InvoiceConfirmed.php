@@ -16,7 +16,7 @@ class InvoiceConfirmed
     /**
      * Create a new event instance.
      */
-    public function __construct(public Invoice $invoice)
+    public function __construct(public \Modules\Sales\Models\Invoice $invoice)
     {
         //
     }

@@ -24,13 +24,13 @@ class VendorBillAttachmentFilamentTest extends TestCase
 
     protected Company $company;
 
-    protected Currency $currency;
+    protected \Modules\Foundation\Models\Currency $currency;
 
-    protected Partner $vendor;
+    protected \Modules\Foundation\Models\Partner $vendor;
 
-    protected Account $expenseAccount;
+    protected \Modules\Accounting\Models\Account $expenseAccount;
 
-    protected Product $product;
+    protected \Modules\Product\Models\Product $product;
 
     protected function setUp(): void
     {
@@ -45,10 +45,10 @@ class VendorBillAttachmentFilamentTest extends TestCase
         // Set up Filament tenant context
         \Filament\Facades\Filament::setTenant($this->company);
 
-        $this->currency = Currency::factory()->create(['code' => 'USD', 'decimal_places' => 2]);
-        $this->vendor = Partner::factory()->create(['company_id' => $this->company->id]);
-        $this->expenseAccount = Account::factory()->create(['company_id' => $this->company->id]);
-        $this->product = Product::factory()->create([
+        $this->currency = \Modules\Foundation\Models\Currency::factory()->create(['code' => 'USD', 'decimal_places' => 2]);
+        $this->vendor = \Modules\Foundation\Models\Partner::factory()->create(['company_id' => $this->company->id]);
+        $this->expenseAccount = \Modules\Accounting\Models\Account::factory()->create(['company_id' => $this->company->id]);
+        $this->product = \Modules\Product\Models\Product::factory()->create([
             'company_id' => $this->company->id,
             'expense_account_id' => $this->expenseAccount->id,
             'unit_price' => \Brick\Money\Money::of(100, $this->currency->code),
@@ -96,7 +96,7 @@ class VendorBillAttachmentFilamentTest extends TestCase
         ]);
 
         // Check that attachment was created
-        $vendorBill = VendorBill::where('bill_reference', 'BILL-001')->first();
+        $vendorBill = \Modules\Purchase\Models\VendorBill::where('bill_reference', 'BILL-001')->first();
         $this->assertCount(1, $vendorBill->attachments);
 
         $attachment = $vendorBill->attachments->first();

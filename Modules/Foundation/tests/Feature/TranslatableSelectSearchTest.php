@@ -33,7 +33,7 @@ class TranslatableSelectSearchTest extends TestCase
     public function test_translatable_search_works_across_all_locales()
     {
         // Create an account with translations
-        $account = Account::create([
+        $account = \Modules\Accounting\Models\Account::create([
             'company_id' => $this->company->id,
             'code' => 'TEST001',
             'name' => [
@@ -41,17 +41,17 @@ class TranslatableSelectSearchTest extends TestCase
                 'ckb' => 'حسابی تاقیکردنەوە',
                 'ar' => 'حساب اختبار',
             ],
-            'type' => AccountType::CurrentAssets,
+            'type' => \Modules\Accounting\Enums\Accounting\AccountType::CurrentAssets,
             'is_deprecated' => false,
         ]);
 
         $searchService = app(TranslatableSearchService::class);
         $localeResolver = app(LocaleResolver::class);
 
-        $searchLocales = $localeResolver->getModelLocales(Account::class);
+        $searchLocales = $localeResolver->getModelLocales(\Modules\Accounting\Models\Account::class);
 
         // Test English search
-        $results = $searchService->getFilamentSearchResults(Account::class, 'Test', [
+        $results = $searchService->getFilamentSearchResults(\Modules\Accounting\Models\Account::class, 'Test', [
             'searchFields' => ['name', 'code'],
             'labelField' => 'name',
             'searchLocales' => $searchLocales,
@@ -63,7 +63,7 @@ class TranslatableSelectSearchTest extends TestCase
         $this->assertEquals('Test Account', $results[$account->id]);
 
         // Test Kurdish search
-        $results = $searchService->getFilamentSearchResults(Account::class, 'تاقی', [
+        $results = $searchService->getFilamentSearchResults(\Modules\Accounting\Models\Account::class, 'تاقی', [
             'searchFields' => ['name', 'code'],
             'labelField' => 'name',
             'searchLocales' => $searchLocales,
@@ -75,7 +75,7 @@ class TranslatableSelectSearchTest extends TestCase
         $this->assertEquals('Test Account', $results[$account->id]);
 
         // Test Arabic search
-        $results = $searchService->getFilamentSearchResults(Account::class, 'اختبار', [
+        $results = $searchService->getFilamentSearchResults(\Modules\Accounting\Models\Account::class, 'اختبار', [
             'searchFields' => ['name', 'code'],
             'labelField' => 'name',
             'searchLocales' => $searchLocales,
@@ -87,7 +87,7 @@ class TranslatableSelectSearchTest extends TestCase
         $this->assertEquals('Test Account', $results[$account->id]);
 
         // Test code search (non-translatable field)
-        $results = $searchService->getFilamentSearchResults(Account::class, 'TEST001', [
+        $results = $searchService->getFilamentSearchResults(\Modules\Accounting\Models\Account::class, 'TEST001', [
             'searchFields' => ['name', 'code'],
             'labelField' => 'name',
             'searchLocales' => $searchLocales,
@@ -103,7 +103,7 @@ class TranslatableSelectSearchTest extends TestCase
     public function test_search_handles_both_translatable_and_non_translatable_fields()
     {
         // Create accounts with different data
-        $translatableAccount = Account::create([
+        $translatableAccount = \Modules\Accounting\Models\Account::create([
             'company_id' => $this->company->id,
             'code' => 'TRANS001',
             'name' => [
@@ -111,11 +111,11 @@ class TranslatableSelectSearchTest extends TestCase
                 'ckb' => 'حسابی وەرگێڕراو',
                 'ar' => 'حساب قابل للترجمة',
             ],
-            'type' => AccountType::CurrentAssets,
+            'type' => \Modules\Accounting\Enums\Accounting\AccountType::CurrentAssets,
             'is_deprecated' => false,
         ]);
 
-        $codeAccount = Account::create([
+        $codeAccount = \Modules\Accounting\Models\Account::create([
             'company_id' => $this->company->id,
             'code' => 'SPECIAL123',
             'name' => [
@@ -123,16 +123,16 @@ class TranslatableSelectSearchTest extends TestCase
                 'ckb' => 'حسابی گەڕانی کۆد',
                 'ar' => 'حساب البحث بالرمز',
             ],
-            'type' => AccountType::CurrentAssets,
+            'type' => \Modules\Accounting\Enums\Accounting\AccountType::CurrentAssets,
             'is_deprecated' => false,
         ]);
 
         $searchService = app(TranslatableSearchService::class);
         $localeResolver = app(LocaleResolver::class);
-        $searchLocales = $localeResolver->getModelLocales(Account::class);
+        $searchLocales = $localeResolver->getModelLocales(\Modules\Accounting\Models\Account::class);
 
         // Search by translatable content
-        $results = $searchService->getFilamentSearchResults(Account::class, 'وەرگێڕراو', [
+        $results = $searchService->getFilamentSearchResults(\Modules\Accounting\Models\Account::class, 'وەرگێڕراو', [
             'searchFields' => ['name', 'code'],
             'labelField' => 'name',
             'searchLocales' => $searchLocales,
@@ -144,7 +144,7 @@ class TranslatableSelectSearchTest extends TestCase
         $this->assertArrayNotHasKey($codeAccount->id, $results);
 
         // Search by code (non-translatable)
-        $results = $searchService->getFilamentSearchResults(Account::class, 'SPECIAL123', [
+        $results = $searchService->getFilamentSearchResults(\Modules\Accounting\Models\Account::class, 'SPECIAL123', [
             'searchFields' => ['name', 'code'],
             'labelField' => 'name',
             'searchLocales' => $searchLocales,
@@ -161,9 +161,9 @@ class TranslatableSelectSearchTest extends TestCase
     {
         $searchService = app(TranslatableSearchService::class);
         $localeResolver = app(LocaleResolver::class);
-        $searchLocales = $localeResolver->getModelLocales(Account::class);
+        $searchLocales = $localeResolver->getModelLocales(\Modules\Accounting\Models\Account::class);
 
-        $results = $searchService->getFilamentSearchResults(Account::class, 'NonExistentSearch', [
+        $results = $searchService->getFilamentSearchResults(\Modules\Accounting\Models\Account::class, 'NonExistentSearch', [
             'searchFields' => ['name', 'code'],
             'labelField' => 'name',
             'searchLocales' => $searchLocales,
@@ -178,34 +178,34 @@ class TranslatableSelectSearchTest extends TestCase
     public function test_product_resource_income_account_filtering()
     {
         // Create income accounts
-        $incomeAccount = Account::create([
+        $incomeAccount = \Modules\Accounting\Models\Account::create([
             'company_id' => $this->company->id,
             'code' => 'INC001',
             'name' => ['en' => 'Test Income Account'],
-            'type' => AccountType::Income,
+            'type' => \Modules\Accounting\Enums\Accounting\AccountType::Income,
             'is_deprecated' => false,
         ]);
 
         // Create expense account (should not appear in income dropdown)
-        $expenseAccount = Account::create([
+        $expenseAccount = \Modules\Accounting\Models\Account::create([
             'company_id' => $this->company->id,
             'code' => 'EXP001',
             'name' => ['en' => 'Test Expense Account'],
-            'type' => AccountType::Expense,
+            'type' => \Modules\Accounting\Enums\Accounting\AccountType::Expense,
             'is_deprecated' => false,
         ]);
 
         $searchService = app(TranslatableSearchService::class);
         $localeResolver = app(LocaleResolver::class);
-        $searchLocales = $localeResolver->getModelLocales(Account::class);
+        $searchLocales = $localeResolver->getModelLocales(\Modules\Accounting\Models\Account::class);
 
         // Test income account filtering (as used in ProductResource)
-        $incomeResults = $searchService->getFilamentSearchResults(Account::class, '', [
+        $incomeResults = $searchService->getFilamentSearchResults(\Modules\Accounting\Models\Account::class, '', [
             'searchFields' => ['name', 'code'],
             'labelField' => 'name',
             'searchLocales' => $searchLocales,
             'queryModifier' => fn ($query) => $query->where('company_id', $this->company->id)
-                ->whereIn('type', [AccountType::Income, AccountType::OtherIncome]),
+                ->whereIn('type', [\Modules\Accounting\Enums\Accounting\AccountType::Income, \Modules\Accounting\Enums\Accounting\AccountType::OtherIncome]),
             'limit' => 50,
         ]);
 
@@ -218,34 +218,34 @@ class TranslatableSelectSearchTest extends TestCase
     public function test_product_resource_expense_account_filtering()
     {
         // Create expense account
-        $expenseAccount = Account::create([
+        $expenseAccount = \Modules\Accounting\Models\Account::create([
             'company_id' => $this->company->id,
             'code' => 'EXP001',
             'name' => ['en' => 'Test Expense Account'],
-            'type' => AccountType::Expense,
+            'type' => \Modules\Accounting\Enums\Accounting\AccountType::Expense,
             'is_deprecated' => false,
         ]);
 
         // Create income account (should not appear in expense dropdown)
-        $incomeAccount = Account::create([
+        $incomeAccount = \Modules\Accounting\Models\Account::create([
             'company_id' => $this->company->id,
             'code' => 'INC001',
             'name' => ['en' => 'Test Income Account'],
-            'type' => AccountType::Income,
+            'type' => \Modules\Accounting\Enums\Accounting\AccountType::Income,
             'is_deprecated' => false,
         ]);
 
         $searchService = app(TranslatableSearchService::class);
         $localeResolver = app(LocaleResolver::class);
-        $searchLocales = $localeResolver->getModelLocales(Account::class);
+        $searchLocales = $localeResolver->getModelLocales(\Modules\Accounting\Models\Account::class);
 
         // Test expense account filtering (as used in ProductResource)
-        $expenseResults = $searchService->getFilamentSearchResults(Account::class, '', [
+        $expenseResults = $searchService->getFilamentSearchResults(\Modules\Accounting\Models\Account::class, '', [
             'searchFields' => ['name', 'code'],
             'labelField' => 'name',
             'searchLocales' => $searchLocales,
             'queryModifier' => fn ($query) => $query->where('company_id', $this->company->id)
-                ->whereIn('type', [AccountType::Expense, AccountType::Depreciation, AccountType::CostOfRevenue]),
+                ->whereIn('type', [\Modules\Accounting\Enums\Accounting\AccountType::Expense, \Modules\Accounting\Enums\Accounting\AccountType::Depreciation, \Modules\Accounting\Enums\Accounting\AccountType::CostOfRevenue]),
             'limit' => 50,
         ]);
 
@@ -262,14 +262,14 @@ class TranslatableSelectSearchTest extends TestCase
 
         foreach ($searchTerms as $term) {
             $results = $this->searchService->getFilamentSearchResults(
-                Account::class,
+                \Modules\Accounting\Models\Account::class,
                 $term,
                 [
                     'searchFields' => ['name', 'code'],
                     'labelField' => 'name',
                     'searchLocales' => ['en', 'ckb', 'ar'],
                     'queryModifier' => fn ($query) => $query->where('company_id', $this->company->id)
-                        ->whereIn('type', [AccountType::Income, AccountType::OtherIncome]),
+                        ->whereIn('type', [\Modules\Accounting\Enums\Accounting\AccountType::Income, \Modules\Accounting\Enums\Accounting\AccountType::OtherIncome]),
                     'limit' => 50,
                 ]
             );

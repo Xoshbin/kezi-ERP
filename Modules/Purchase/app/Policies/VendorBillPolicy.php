@@ -19,7 +19,7 @@ class VendorBillPolicy
     /**
      * Determine whether the user can view the model.
      */
-    public function view(User $user, VendorBill $vendorBill): bool
+    public function view(User $user, \Modules\Purchase\Models\VendorBill $vendorBill): bool
     {
         // TODO: Change this to implement actual logic before deploying
         return true;
@@ -37,7 +37,7 @@ class VendorBillPolicy
     /**
      * Determine whether the user can update the model.
      */
-    public function update(User $user, VendorBill $vendorBill): bool
+    public function update(User $user, \Modules\Purchase\Models\VendorBill $vendorBill): bool
     {
         // TODO: Change this to implement actual logic before deploying
         return true;
@@ -46,7 +46,7 @@ class VendorBillPolicy
     /**
      * Determine whether the user can delete the model.
      */
-    public function delete(User $user, VendorBill $vendorBill): bool
+    public function delete(User $user, \Modules\Purchase\Models\VendorBill $vendorBill): bool
     {
         // TODO: Change this to implement actual logic before deploying
         return true;
@@ -55,7 +55,7 @@ class VendorBillPolicy
     /**
      * Determine whether the user can restore the model.
      */
-    public function restore(User $user, VendorBill $vendorBill): bool
+    public function restore(User $user, \Modules\Purchase\Models\VendorBill $vendorBill): bool
     {
         // TODO: Change this to implement actual logic before deploying
         return true;
@@ -64,7 +64,7 @@ class VendorBillPolicy
     /**
      * Determine whether the user can permanently delete the model.
      */
-    public function forceDelete(User $user, VendorBill $vendorBill): bool
+    public function forceDelete(User $user, \Modules\Purchase\Models\VendorBill $vendorBill): bool
     {
         // TODO: Change this to implement actual logic before deploying
         return true;
@@ -73,7 +73,7 @@ class VendorBillPolicy
     /**
      * Determine whether the user can confirm the vendor bill.
      */
-    public function post(User $user, VendorBill $vendorBill): bool
+    public function post(User $user, \Modules\Purchase\Models\VendorBill $vendorBill): bool
     {
         // For now, we will allow it. In a real app, you might check for a specific role.
         // TODO: Change this to implement actual logic before deploying
@@ -84,7 +84,7 @@ class VendorBillPolicy
      * Determine whether the user can reset the invoice to draft.
      * This is a sensitive action and should be restricted.
      */
-    public function resetToDraft(User $user, VendorBill $vendorBill): bool
+    public function resetToDraft(User $user, \Modules\Purchase\Models\VendorBill $vendorBill): bool
     {
         // In a real application, you would check if the user has a specific role,
         // for example: return $user->hasRole('manager');
@@ -97,7 +97,7 @@ class VendorBillPolicy
     /**
      * Determine whether the user can cancel the model.
      */
-    public function cancel(User $user, VendorBill $vendorBill): bool
+    public function cancel(User $user, \Modules\Purchase\Models\VendorBill $vendorBill): bool
     {
         // For now, allow any logged-in user to cancel a posted vendor bill.
         // We can add more specific role-based logic here later if needed.

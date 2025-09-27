@@ -10,7 +10,7 @@ use Brick\Money\Money;
 
 class CreatePayrollLineAction
 {
-    public function execute(Payroll $payroll, PayrollLineDTO $dto): PayrollLine
+    public function execute(\Modules\HR\Models\Payroll $payroll, PayrollLineDTO $dto): PayrollLine
     {
         $currency = $payroll->currency;
 

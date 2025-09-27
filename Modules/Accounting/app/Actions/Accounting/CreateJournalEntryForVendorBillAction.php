@@ -18,10 +18,10 @@ class CreateJournalEntryForVendorBillAction
 {
     public function __construct(
         private readonly CreateJournalEntryAction $createJournalEntryAction,
-        private readonly CurrencyConverterService $currencyConverter
+        private readonly \Modules\Foundation\Services\CurrencyConverterService $currencyConverter
     ) {}
 
-    public function execute(VendorBill $vendorBill, User $user): JournalEntry
+    public function execute(\Modules\Purchase\Models\VendorBill $vendorBill, User $user): JournalEntry
     {
         return DB::transaction(function () use ($vendorBill, $user) {
             $vendorBill->load('company', 'currency', 'vendor', 'lines.product.stockInputAccount', 'lines.tax');
@@ -52,7 +52,7 @@ class CreateJournalEntryForVendorBillAction
             };
 
             foreach ($vendorBill->lines as $line) {
-                $isStorable = $line->product?->type === ProductType::Storable;
+                $isStorable = $line->product?->type === \Modules\Product\Enums\Products\ProductType::Storable;
                 $isAsset = (bool) $line->asset_category_id;
 
                 // Determine if tax should be capitalized (non-recoverable) or treated as deductible
@@ -92,7 +92,7 @@ class CreateJournalEntryForVendorBillAction
                     );
                     $totalAP = $totalAP->plus($inventoryCost);
                 } elseif ($isAsset) {
-                    $category = AssetCategory::find($line->asset_category_id);
+                    $category = \Modules\Accounting\Models\AssetCategory::find($line->asset_category_id);
                     if (! $category) {
                         throw new RuntimeException('Invalid asset category on bill line.');
                     }
@@ -189,7 +189,7 @@ class CreateJournalEntryForVendorBillAction
                 entry_date: $vendorBill->accounting_date,
                 reference: $vendorBill->bill_reference,
                 description: 'Vendor Bill ' . $vendorBill->bill_reference,
-                source_type: VendorBill::class,
+                source_type: \Modules\Purchase\Models\VendorBill::class,
                 source_id: $vendorBill->id,
                 created_by_user_id: $user->id,
                 is_posted: true,

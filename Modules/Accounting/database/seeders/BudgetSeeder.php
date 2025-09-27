@@ -23,28 +23,28 @@ class BudgetSeeder extends Seeder
         }
 
         // Fetch accounts
-        $salesAccount = Account::where('code', '4000')->first();
+        $salesAccount = \Modules\Accounting\Models\Account::where('code', '4000')->first();
         if (! $salesAccount) {
             throw new Exception("Account with code '4000' (Sales) not found. Please run AccountSeeder.");
         }
 
-        $marketingAccount = Account::where('code', '4100')->first();
+        $marketingAccount = \Modules\Accounting\Models\Account::where('code', '4100')->first();
         if (! $marketingAccount) {
             throw new Exception("Account with code '4100' (Marketing) not found. Please run AccountSeeder.");
         }
 
-        $adminAccount = Account::where('code', '4200')->first();
+        $adminAccount = \Modules\Accounting\Models\Account::where('code', '4200')->first();
         if (! $adminAccount) {
             throw new Exception("Account with code '4200' (Administration) not found. Please run AccountSeeder.");
         }
 
         // Fetch analytic plan
-        $analyticPlan = AnalyticPlan::where('name->en', 'Department')->first();
+        $analyticPlan = \Modules\Accounting\Models\AnalyticPlan::where('name->en', 'Department')->first();
         if (! $analyticPlan) {
             throw new Exception("Analytic Plan 'Department' not found. Please run AnalyticPlanSeeder.");
         }
 
-        Budget::updateOrCreate(
+        \Modules\Accounting\Models\Budget::updateOrCreate(
             [
                 'name' => '2025 Annual Budget',
                 'company_id' => $company->id,

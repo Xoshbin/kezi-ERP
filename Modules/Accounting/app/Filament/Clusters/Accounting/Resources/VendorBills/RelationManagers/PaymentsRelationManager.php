@@ -50,7 +50,7 @@ class PaymentsRelationManager extends RelationManager
                             ->default(function (): ?int {
                                 $owner = $this->getOwnerRecord();
 
-                                return $owner instanceof \App\Models\VendorBill ? $owner->company_id : null;
+                                return $owner instanceof \Modules\Purchase\Models\VendorBill ? $owner->company_id : null;
                             }),
 
                         Select::make('journal_id')
@@ -65,7 +65,7 @@ class PaymentsRelationManager extends RelationManager
                             ->default(function (): ?int {
                                 $owner = $this->getOwnerRecord();
 
-                                return $owner instanceof \App\Models\VendorBill ? $owner->currency_id : null;
+                                return $owner instanceof \Modules\Purchase\Models\VendorBill ? $owner->currency_id : null;
                             }),
 
                         DatePicker::make('payment_date')
@@ -191,7 +191,7 @@ class PaymentsRelationManager extends RelationManager
 
                 IconColumn::make('is_reconciled')
                     ->label(__('vendor_bill.payments_relation_manager.reconciliation_status'))
-                    ->getStateUsing(fn (Payment $record): bool => $record->status === PaymentStatus::Reconciled)
+                    ->getStateUsing(fn (\Modules\Payment\Models\Payment $record): bool => $record->status === PaymentStatus::Reconciled)
                     ->boolean()
                     ->trueIcon('heroicon-o-check-circle')
                     ->falseIcon('heroicon-o-x-circle')
@@ -237,7 +237,7 @@ class PaymentsRelationManager extends RelationManager
                     ->label(__('vendor_bill.payments_relation_manager.create_payment'))
                     ->mutateDataUsing(function (array $data): array {
                         $owner = $this->getOwnerRecord();
-                        $data['paid_to_from_partner_id'] = $owner instanceof \App\Models\VendorBill ? $owner->vendor_id : null;
+                        $data['paid_to_from_partner_id'] = $owner instanceof \Modules\Purchase\Models\VendorBill ? $owner->vendor_id : null;
 
                         return $data;
                     }),
@@ -247,7 +247,7 @@ class PaymentsRelationManager extends RelationManager
                 EditAction::make(),
                 DetachAction::make()
                     ->label(__('vendor_bill.payments_relation_manager.detach'))
-                    ->visible(fn (Payment $record): bool => $record->status === PaymentStatus::Draft),
+                    ->visible(fn (\Modules\Payment\Models\Payment $record): bool => $record->status === PaymentStatus::Draft),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([

@@ -27,56 +27,56 @@ beforeEach(function () {
     $this->setupWithConfiguredCompany();
 
     // Create vendor
-    $this->vendor = Partner::factory()->vendor()->create([
+    $this->vendor = \Modules\Foundation\Models\Partner::factory()->vendor()->create([
         'company_id' => $this->company->id,
     ]);
 
     // Create required accounts
-    $this->inventoryAccount1 = Account::factory()->create([
+    $this->inventoryAccount1 = \Modules\Accounting\Models\Account::factory()->create([
         'company_id' => $this->company->id,
         'name' => ['en' => 'Inventory Asset 1'],
         'type' => 'current_assets',
     ]);
 
-    $this->inventoryAccount2 = Account::factory()->create([
+    $this->inventoryAccount2 = \Modules\Accounting\Models\Account::factory()->create([
         'company_id' => $this->company->id,
         'name' => ['en' => 'Inventory Asset 2'],
         'type' => 'current_assets',
     ]);
 
-    $this->stockInputAccount1 = Account::factory()->create([
+    $this->stockInputAccount1 = \Modules\Accounting\Models\Account::factory()->create([
         'company_id' => $this->company->id,
         'name' => ['en' => 'Stock Input 1'],
         'type' => 'current_liabilities',
     ]);
 
-    $this->stockInputAccount2 = Account::factory()->create([
+    $this->stockInputAccount2 = \Modules\Accounting\Models\Account::factory()->create([
         'company_id' => $this->company->id,
         'name' => ['en' => 'Stock Input 2'],
         'type' => 'current_liabilities',
     ]);
 
-    $this->expenseAccount = Account::factory()->create([
+    $this->expenseAccount = \Modules\Accounting\Models\Account::factory()->create([
         'company_id' => $this->company->id,
         'name' => ['en' => 'Expense Account'],
         'type' => 'expense',
     ]);
 
     // Create two different storable products
-    $this->product1 = Product::factory()->create([
+    $this->product1 = \Modules\Product\Models\Product::factory()->create([
         'company_id' => $this->company->id,
         'name' => 'Product 1',
-        'type' => ProductType::Storable,
+        'type' => \Modules\Product\Enums\Products\ProductType::Storable,
         'inventory_valuation_method' => ValuationMethod::AVCO,
         'default_inventory_account_id' => $this->inventoryAccount1->id,
         'default_stock_input_account_id' => $this->stockInputAccount1->id,
         'expense_account_id' => $this->expenseAccount->id,
     ]);
 
-    $this->product2 = Product::factory()->create([
+    $this->product2 = \Modules\Product\Models\Product::factory()->create([
         'company_id' => $this->company->id,
         'name' => 'Product 2',
-        'type' => ProductType::Storable,
+        'type' => \Modules\Product\Enums\Products\ProductType::Storable,
         'inventory_valuation_method' => ValuationMethod::AVCO,
         'default_inventory_account_id' => $this->inventoryAccount2->id,
         'default_stock_input_account_id' => $this->stockInputAccount2->id,
@@ -91,7 +91,7 @@ it('reproduces the bug: creates inventory journal entries for ALL storable produ
     $quantity2 = 3;
     $unitPrice2 = Money::of(200, $this->company->currency->code);
 
-    $vendorBill = VendorBill::factory()->for($this->company)->create([
+    $vendorBill = \Modules\Purchase\Models\VendorBill::factory()->for($this->company)->create([
         'vendor_id' => $this->vendor->id,
         'status' => VendorBillStatus::Draft,
         'bill_date' => now()->format('Y-m-d'),
@@ -128,7 +128,7 @@ it('reproduces the bug: creates inventory journal entries for ALL storable produ
     app(VendorBillService::class)->post($vendorBill, $this->user);
 
     // Assert: Verify stock move was created with product lines for BOTH products
-    $stockMoves = StockMove::where('source_type', VendorBill::class)
+    $stockMoves = StockMove::where('source_type', \Modules\Purchase\Models\VendorBill::class)
         ->where('source_id', $vendorBill->id)
         ->get();
 
@@ -193,7 +193,7 @@ it('reproduces the bug: creates inventory journal entries for ALL storable produ
 it('verifies that each storable product gets its own inventory valuation journal entry with unique references', function () {
     // This test specifically checks for unique journal entry references to avoid constraint violations
 
-    $vendorBill = VendorBill::factory()->for($this->company)->create([
+    $vendorBill = \Modules\Purchase\Models\VendorBill::factory()->for($this->company)->create([
         'vendor_id' => $this->vendor->id,
         'status' => VendorBillStatus::Draft,
         'bill_reference' => 'MULTI-TEST-001',
@@ -230,7 +230,7 @@ it('verifies that each storable product gets its own inventory valuation journal
     app(VendorBillService::class)->post($vendorBill, $this->user);
 
     // Assert: Verify all journal entries have unique references
-    $allJournalEntries = JournalEntry::where('source_type', VendorBill::class)
+    $allJournalEntries = JournalEntry::where('source_type', \Modules\Purchase\Models\VendorBill::class)
         ->where('source_id', $vendorBill->id)
         ->get();
 

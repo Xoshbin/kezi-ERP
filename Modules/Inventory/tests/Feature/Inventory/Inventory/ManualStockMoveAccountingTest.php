@@ -24,18 +24,18 @@ beforeEach(function () {
     $this->setupInventoryTestEnvironment();
 
     // Ensure required accounts exist for product
-    $this->inventoryAccount = Account::factory()->for($this->company)->create([
+    $this->inventoryAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create([
         'name' => 'Inventory Asset',
         'type' => 'current_assets',
     ]);
-    $this->stockInputAccount = Account::factory()->for($this->company)->create([
+    $this->stockInputAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create([
         'name' => 'Stock Input',
         'type' => 'current_liabilities',
     ]);
 
     // Create a storable product with a non-zero average cost to be used for manual moves
-    $this->product = Product::factory()->for($this->company)->create([
-        'type' => ProductType::Storable,
+    $this->product = \Modules\Product\Models\Product::factory()->for($this->company)->create([
+        'type' => \Modules\Product\Enums\Products\ProductType::Storable,
         'inventory_valuation_method' => ValuationMethod::AVCO,
         'default_inventory_account_id' => $this->inventoryAccount->id,
         'default_stock_input_account_id' => $this->stockInputAccount->id,
@@ -70,7 +70,7 @@ it('creates non-zero inventory journal amounts for manual incoming stock moves',
     );
 
     // Act
-    $move = app(CreateStockMoveAction::class)->execute($dto);
+    $move = app(\Modules\Inventory\Actions\Inventory\CreateStockMoveAction::class)->execute($dto);
     $move->refresh();
 
     // Assert: a valuation was created and linked to a journal entry with non-zero amounts
@@ -103,8 +103,8 @@ it('creates non-zero inventory journal amounts for manual incoming stock moves',
 
 it('throws exception for manual stock moves when product has no cost information', function () {
     // Arrange: Create a product with zero average cost and no cost layers
-    $productWithoutCost = Product::factory()->for($this->company)->create([
-        'type' => ProductType::Storable,
+    $productWithoutCost = \Modules\Product\Models\Product::factory()->for($this->company)->create([
+        'type' => \Modules\Product\Enums\Products\ProductType::Storable,
         'inventory_valuation_method' => ValuationMethod::AVCO,
         'default_inventory_account_id' => $this->inventoryAccount->id,
         'default_stock_input_account_id' => $this->stockInputAccount->id,
@@ -135,14 +135,14 @@ it('throws exception for manual stock moves when product has no cost information
     );
 
     // Act & Assert: Should throw InsufficientCostInformationException
-    expect(fn() => app(CreateStockMoveAction::class)->execute($dto))
+    expect(fn() => app(\Modules\Inventory\Actions\Inventory\CreateStockMoveAction::class)->execute($dto))
         ->toThrow(InsufficientCostInformationException::class, 'Cannot determine cost for product');
 });
 
 it('throws exception for manual outgoing stock moves when product has no cost information', function () {
     // Arrange: Create a product with zero average cost and no cost layers
-    $productWithoutCost = Product::factory()->for($this->company)->create([
-        'type' => ProductType::Storable,
+    $productWithoutCost = \Modules\Product\Models\Product::factory()->for($this->company)->create([
+        'type' => \Modules\Product\Enums\Products\ProductType::Storable,
         'inventory_valuation_method' => ValuationMethod::AVCO,
         'default_inventory_account_id' => $this->inventoryAccount->id,
         'default_stock_input_account_id' => $this->stockInputAccount->id,
@@ -174,6 +174,6 @@ it('throws exception for manual outgoing stock moves when product has no cost in
     );
 
     // Act & Assert: Should throw RuntimeException for COGS calculation (outgoing moves still use old logic)
-    expect(fn() => app(CreateStockMoveAction::class)->execute($dto))
+    expect(fn() => app(\Modules\Inventory\Actions\Inventory\CreateStockMoveAction::class)->execute($dto))
         ->toThrow(RuntimeException::class, 'Cannot calculate COGS for product');
 });

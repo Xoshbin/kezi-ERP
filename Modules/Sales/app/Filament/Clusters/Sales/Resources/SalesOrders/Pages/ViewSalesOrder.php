@@ -48,7 +48,7 @@ class ViewSalesOrder extends ViewRecord
                     Select::make('default_income_account_id')
                         ->label(__('invoices.fields.default_income_account'))
                         ->options(function () {
-                            return Account::where('company_id', Filament::getTenant()?->id)
+                            return \Modules\Accounting\Models\Account::where('company_id', Filament::getTenant()?->id)
                                 ->where('account_type', 'income')
                                 ->pluck('name', 'id');
                         })

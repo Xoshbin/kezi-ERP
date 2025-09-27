@@ -14,10 +14,10 @@ class ProcessPayrollAction
         protected CreatePayrollLineAction $createPayrollLineAction
     ) {}
 
-    public function execute(ProcessPayrollDTO $processPayrollDTO): Payroll
+    public function execute(ProcessPayrollDTO $processPayrollDTO): \Modules\HR\Models\Payroll
     {
         return DB::transaction(function () use ($processPayrollDTO) {
-            $currency = Currency::findOrFail($processPayrollDTO->currency_id);
+            $currency = \Modules\Foundation\Models\Currency::findOrFail($processPayrollDTO->currency_id);
 
             // Convert Money fields if they're strings
             $baseSalary = $processPayrollDTO->base_salary instanceof Money
@@ -103,7 +103,7 @@ class ProcessPayrollAction
                 $payrollNumber = $this->generatePayrollNumber($processPayrollDTO->company_id);
             }
 
-            $payroll = Payroll::create([
+            $payroll = \Modules\HR\Models\Payroll::create([
                 'company_id' => $processPayrollDTO->company_id,
                 'employee_id' => $processPayrollDTO->employee_id,
                 'currency_id' => $processPayrollDTO->currency_id,
@@ -159,7 +159,7 @@ class ProcessPayrollAction
         $month = now()->format('m');
 
         // Get the next sequential number for this month
-        $lastPayroll = Payroll::where('company_id', $companyId)
+        $lastPayroll = \Modules\HR\Models\Payroll::where('company_id', $companyId)
             ->where('payroll_number', 'like', $prefix.$year.$month.'%')
             ->orderBy('payroll_number', 'desc')
             ->first();

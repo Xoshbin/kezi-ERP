@@ -18,9 +18,9 @@ class InvoiceLineFactory extends Factory
 
         return [
             // A line should NOT create its own parent invoice. The test should provide it.
-            'invoice_id' => Invoice::factory(),
+            'invoice_id' => \Modules\Sales\Models\Invoice::factory(),
             'company_id' => function (array $attributes) {
-                return Invoice::find($attributes['invoice_id'])->company_id;
+                return \Modules\Sales\Models\Invoice::find($attributes['invoice_id'])->company_id;
             },
             'product_id' => null, // Default to a descriptive line without a product
             'description' => $this->faker->sentence(),
@@ -28,7 +28,7 @@ class InvoiceLineFactory extends Factory
             'unit_price' => $unitPrice,
             'tax_id' => null, // Default to no tax
             // The income account should come from the product or be specified in the test.
-            'income_account_id' => Account::factory()->state(['type' => 'income']),
+            'income_account_id' => \Modules\Accounting\Models\Account::factory()->state(['type' => 'income']),
             // Calculate subtotal and tax properly
             'subtotal' => $subtotal,
             'total_line_tax' => Money::of(0, 'USD'), // No tax by default

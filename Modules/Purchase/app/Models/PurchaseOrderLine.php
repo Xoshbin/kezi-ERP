@@ -41,7 +41,7 @@ use Illuminate\Support\Carbon;
  * @property-read Product $product
  * @property-read Tax|null $tax
  */
-#[ObservedBy([AuditLogObserver::class])]
+#[ObservedBy([\Modules\Foundation\Observers\AuditLogObserver::class])]
 class PurchaseOrderLine extends Model
 {
     use HasFactory;
@@ -74,14 +74,14 @@ class PurchaseOrderLine extends Model
     protected $casts = [
         'quantity' => 'float',
         'quantity_received' => 'float',
-        'unit_price' => DocumentCurrencyMoneyCast::class,
-        'subtotal' => DocumentCurrencyMoneyCast::class,
-        'total_line_tax' => DocumentCurrencyMoneyCast::class,
-        'total' => DocumentCurrencyMoneyCast::class,
-        'unit_price_company_currency' => BaseCurrencyMoneyCast::class,
-        'subtotal_company_currency' => BaseCurrencyMoneyCast::class,
-        'total_line_tax_company_currency' => BaseCurrencyMoneyCast::class,
-        'total_company_currency' => BaseCurrencyMoneyCast::class,
+        'unit_price' => \Modules\Foundation\Casts\DocumentCurrencyMoneyCast::class,
+        'subtotal' => \Modules\Foundation\Casts\DocumentCurrencyMoneyCast::class,
+        'total_line_tax' => \Modules\Foundation\Casts\DocumentCurrencyMoneyCast::class,
+        'total' => \Modules\Foundation\Casts\DocumentCurrencyMoneyCast::class,
+        'unit_price_company_currency' => \Modules\Foundation\Casts\BaseCurrencyMoneyCast::class,
+        'subtotal_company_currency' => \Modules\Foundation\Casts\BaseCurrencyMoneyCast::class,
+        'total_line_tax_company_currency' => \Modules\Foundation\Casts\BaseCurrencyMoneyCast::class,
+        'total_company_currency' => \Modules\Foundation\Casts\BaseCurrencyMoneyCast::class,
         'expected_delivery_date' => 'date',
         'created_at' => 'datetime',
         'updated_at' => 'datetime',

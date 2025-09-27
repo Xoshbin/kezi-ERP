@@ -86,11 +86,11 @@ class PayrollsTable
                     ->label(__('payroll.actions.approve'))
                     ->icon('heroicon-o-check-circle')
                     ->color(Color::Green)
-                    ->visible(fn(Payroll $record): bool => $record->status === 'draft')
+                    ->visible(fn(\Modules\HR\Models\Payroll $record): bool => $record->status === 'draft')
                     ->requiresConfirmation()
                     ->modalHeading(__('payroll.actions.approve_payroll'))
                     ->modalDescription(__('payroll.actions.approve_payroll_description'))
-                    ->action(function (Payroll $record) {
+                    ->action(function (\Modules\HR\Models\Payroll $record) {
                         $user = auth()->user();
                         if (! $user) {
                             throw new \Exception('User must be authenticated to approve payroll');
@@ -106,16 +106,16 @@ class PayrollsTable
                     ->label(__('payroll.actions.pay'))
                     ->icon('heroicon-o-currency-dollar')
                     ->color(Color::Blue)
-                    ->visible(fn(Payroll $record): bool => $record->status === 'processed' && ! $record->payment_id)
+                    ->visible(fn(\Modules\HR\Models\Payroll $record): bool => $record->status === 'processed' && ! $record->payment_id)
                     ->requiresConfirmation()
                     ->modalHeading(__('payroll.actions.pay_employee'))
                     ->modalDescription(
-                        fn(Payroll $record): string => __('payroll.actions.pay_employee_description', [
+                        fn(\Modules\HR\Models\Payroll $record): string => __('payroll.actions.pay_employee_description', [
                             'employee' => $record->employee->full_name,
                             'amount' => $record->net_salary->formatTo('en_US'),
                         ])
                     )
-                    ->action(function (Payroll $record) {
+                    ->action(function (\Modules\HR\Models\Payroll $record) {
                         $user = auth()->user();
                         if (! $user) {
                             throw new \Exception('User must be authenticated to pay employee');
@@ -131,15 +131,15 @@ class PayrollsTable
                     ->label(__('payroll.actions.view_payment'))
                     ->icon('heroicon-o-eye')
                     ->color(Color::Gray)
-                    ->visible(fn(Payroll $record): bool => $record->payment_id !== null)
-                    ->url(fn(Payroll $record): string => route('filament.jmeryar.resources.payments.edit', $record->payment_id))
+                    ->visible(fn(\Modules\HR\Models\Payroll $record): bool => $record->payment_id !== null)
+                    ->url(fn(\Modules\HR\Models\Payroll $record): string => route('filament.jmeryar.resources.payments.edit', $record->payment_id))
                     ->openUrlInNewTab(),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
                     DeleteBulkAction::make()
                         ->action(function ($records) {
-                            $records->each(function (Payroll $record) {
+                            $records->each(function (\Modules\HR\Models\Payroll $record) {
                                 if ($record->status === 'draft') {
                                     $record->delete();
                                 }

@@ -42,8 +42,8 @@ class ManualStockMoveFilamentTest extends TestCase
     protected $cogsAccount;
 
     // Test-specific properties
-    protected Product $product;
-    protected VendorBill $vendorBill;
+    protected \Modules\Product\Models\Product $product;
+    protected \Modules\Purchase\Models\VendorBill $vendorBill;
 
     protected function setUp(): void
     {
@@ -59,16 +59,16 @@ class ManualStockMoveFilamentTest extends TestCase
         ]);
 
         // Create test product with FIFO valuation
-        $this->product = Product::factory()->create([
+        $this->product = \Modules\Product\Models\Product::factory()->create([
             'company_id' => $this->company->id,
-            'type' => ProductType::Storable,
+            'type' => \Modules\Product\Enums\Products\ProductType::Storable,
             'inventory_valuation_method' => ValuationMethod::FIFO,
             'quantity_on_hand' => 0,
             'average_cost' => Money::of(0, $this->company->currency->code),
         ]);
 
         // Create and post vendor bill to establish cost
-        $this->vendorBill = VendorBill::factory()->create([
+        $this->vendorBill = \Modules\Purchase\Models\VendorBill::factory()->create([
             'company_id' => $this->company->id,
             'vendor_id' => $this->vendor->id,
             'status' => VendorBillStatus::Posted,
@@ -204,9 +204,9 @@ class ManualStockMoveFilamentTest extends TestCase
     public function test_stock_move_validation_prevents_processing_without_cost(): void
     {
         // Create product without cost information
-        $productWithoutCost = Product::factory()->create([
+        $productWithoutCost = \Modules\Product\Models\Product::factory()->create([
             'company_id' => $this->company->id,
-            'type' => ProductType::Storable,
+            'type' => \Modules\Product\Enums\Products\ProductType::Storable,
             'inventory_valuation_method' => ValuationMethod::FIFO,
             'average_cost' => Money::of(0, $this->company->currency->code),
         ]);

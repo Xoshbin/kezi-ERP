@@ -23,7 +23,7 @@ use Illuminate\Support\Facades\DB;
 class CreateStockMovesForInvoiceAction
 {
     public function __construct(
-        protected CreateStockMoveAction $createStockMoveAction
+        protected \Modules\Inventory\Actions\Inventory\CreateStockMoveAction $createStockMoveAction
     ) {}
 
     /**
@@ -62,7 +62,7 @@ class CreateStockMovesForInvoiceAction
             $reservationService = app(StockReservationService::class);
 
             foreach ($invoice->invoiceLines as $line) {
-                if ($line->product && $line->product->type === ProductType::Storable) {
+                if ($line->product && $line->product->type === \Modules\Product\Enums\Products\ProductType::Storable) {
                     $stockMove = $this->createStockMoveForLine(
                         $invoice,
                         $line,
@@ -80,7 +80,7 @@ class CreateStockMovesForInvoiceAction
                     $stockMoves->push($stockMove);
 
                     // Dispatch the StockMoveConfirmed event to trigger valuation and outgoing processing
-                    StockMoveConfirmed::dispatch($stockMove);
+                    \Modules\Inventory\Events\Inventory\StockMoveConfirmed::dispatch($stockMove);
                 }
             }
 
@@ -93,7 +93,7 @@ class CreateStockMovesForInvoiceAction
      *
      * @return array{warehouse: \App\Models\StockLocation|null, vendor: \App\Models\StockLocation|null}
      */
-    protected function getStockLocations(Invoice $invoice): array
+    protected function getStockLocations(\Modules\Sales\Models\Invoice $invoice): array
     {
         // Get stock locations - use company defaults or fallback to any available locations
         /** @var \App\Models\StockLocation|null $warehouseLocation */
@@ -119,8 +119,8 @@ class CreateStockMovesForInvoiceAction
      * Create a stock move for a single invoice line
      */
     protected function createStockMoveForLine(
-        Invoice $invoice,
-        \App\Models\InvoiceLine $line,
+        \Modules\Sales\Models\Invoice $invoice,
+        \Modules\Sales\Models\InvoiceLine $line,
         User $user,
         StockLocation $warehouseLocation,
         StockLocation $customerLocation
@@ -135,7 +135,7 @@ class CreateStockMovesForInvoiceAction
             from_location_id: $warehouseLocation->id,
             to_location_id: $customerLocation->id,
             description: $line->description,
-            source_type: Invoice::class,
+            source_type: \Modules\Sales\Models\Invoice::class,
             source_id: $invoice->id
         );
 
@@ -148,7 +148,7 @@ class CreateStockMovesForInvoiceAction
             reference: $invoice->invoice_number,
             description: "Stock delivery for invoice {$invoice->invoice_number}",
             source_id: $invoice->id,
-            source_type: Invoice::class,
+            source_type: \Modules\Sales\Models\Invoice::class,
             created_by_user_id: $user->id,
         );
 

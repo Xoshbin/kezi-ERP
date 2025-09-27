@@ -22,8 +22,8 @@ class CashFlowWidget extends BaseWidget
             return [];
         }
 
-        $arService = app(AgedReceivableService::class);
-        $apService = app(AgedPayableService::class);
+        $arService = app(\Modules\Accounting\Services\Reports\AgedReceivableService::class);
+        $apService = app(\Modules\Accounting\Services\Reports\AgedPayableService::class);
         $today = Carbon::now();
 
         try {
@@ -62,25 +62,25 @@ class CashFlowWidget extends BaseWidget
 
         return [
             // Overdue Receivables (90+ days)
-            Stat::make(__('dashboard.cash_flow.overdue_receivables'), NumberFormatter::formatMoneyTo($overdueReceivables))
+            Stat::make(__('dashboard.cash_flow.overdue_receivables'), \Modules\Foundation\Support\NumberFormatter::formatMoneyTo($overdueReceivables))
                 ->description(__('dashboard.cash_flow.immediate_collection_needed'))
                 ->descriptionIcon('heroicon-m-exclamation-triangle')
                 ->color($overdueReceivables->isZero() ? 'success' : 'danger'),
 
             // Overdue Payables (90+ days)
-            Stat::make(__('dashboard.cash_flow.overdue_payables'), NumberFormatter::formatMoneyTo($overduePayables))
+            Stat::make(__('dashboard.cash_flow.overdue_payables'), \Modules\Foundation\Support\NumberFormatter::formatMoneyTo($overduePayables))
                 ->description(__('dashboard.cash_flow.immediate_payment_needed'))
                 ->descriptionIcon('heroicon-m-exclamation-triangle')
                 ->color($overduePayables->isZero() ? 'success' : 'warning'),
 
             // Near-term Cash Flow (Current + 1-30 days)
-            Stat::make(__('dashboard.cash_flow.forecast_near_term'), NumberFormatter::formatMoneyTo($netCashFlowSoon))
+            Stat::make(__('dashboard.cash_flow.forecast_near_term'), \Modules\Foundation\Support\NumberFormatter::formatMoneyTo($netCashFlowSoon))
                 ->description(__('dashboard.cash_flow.net_cash_flow_soon'))
                 ->descriptionIcon($netCashFlowSoon->isPositive() ? 'heroicon-m-arrow-trending-up' : 'heroicon-m-arrow-trending-down')
                 ->color($netCashFlowSoon->isPositive() ? 'success' : ($netCashFlowSoon->isNegative() ? 'danger' : 'gray')),
 
             // 30-Day Cash Flow Forecast (Current + 1-60 days)
-            Stat::make(__('dashboard.cash_flow.forecast_30_days'), NumberFormatter::formatMoneyTo($netCashFlow30Days))
+            Stat::make(__('dashboard.cash_flow.forecast_30_days'), \Modules\Foundation\Support\NumberFormatter::formatMoneyTo($netCashFlow30Days))
                 ->description(__('dashboard.cash_flow.net_cash_flow_month'))
                 ->descriptionIcon($netCashFlow30Days->isPositive() ? 'heroicon-m-arrow-trending-up' : 'heroicon-m-arrow-trending-down')
                 ->color($netCashFlow30Days->isPositive() ? 'success' : ($netCashFlow30Days->isNegative() ? 'danger' : 'gray')),

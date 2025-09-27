@@ -177,7 +177,7 @@ class JournalEntriesRelationManager extends RelationManager
     protected function getTableQuery(): Builder
     {
         $payment = $this->getOwnerRecord();
-        if (! $payment instanceof Payment) {
+        if (! $payment instanceof \Modules\Payment\Models\Payment) {
             return JournalEntry::query()->whereRaw('1 = 0');
         }
 
@@ -187,7 +187,7 @@ class JournalEntriesRelationManager extends RelationManager
                 $query->where('id', $payment->journal_entry_id)
                     // Polymorphic relationship (reconciliation entries, etc.)
                     ->orWhere(function (Builder $subQuery) use ($payment) {
-                        $subQuery->where('source_type', Payment::class)
+                        $subQuery->where('source_type', \Modules\Payment\Models\Payment::class)
                             ->where('source_id', $payment->getKey());
                     });
             })

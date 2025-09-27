@@ -9,9 +9,9 @@ use Illuminate\Support\Facades\DB;
 
 class CreateEmployeeAction
 {
-    public function execute(CreateEmployeeDTO $createEmployeeDTO): Employee
+    public function execute(CreateEmployeeDTO $createEmployeeDTO): \Modules\HR\Models\Employee
     {
-        return DB::transaction(function () use ($createEmployeeDTO): Employee {
+        return DB::transaction(function () use ($createEmployeeDTO): \Modules\HR\Models\Employee {
             // Generate employee number if not provided
             $employeeNumber = $createEmployeeDTO->employee_number;
             if (empty($employeeNumber)) {
@@ -19,10 +19,10 @@ class CreateEmployeeAction
                 if (! $company) {
                     throw new \InvalidArgumentException('Company not found');
                 }
-                $employeeNumber = Employee::generateEmployeeNumber($company);
+                $employeeNumber = \Modules\HR\Models\Employee::generateEmployeeNumber($company);
             }
 
-            $employee = Employee::create([
+            $employee = \Modules\HR\Models\Employee::create([
                 'company_id' => $createEmployeeDTO->company_id,
                 'user_id' => $createEmployeeDTO->user_id,
                 'department_id' => $createEmployeeDTO->department_id,

@@ -37,7 +37,7 @@ test('can create account through createOptionForm with proper company_id', funct
     $accountData = [
         'code' => 'TEST-001',
         'name' => 'Test Account',
-        'type' => AccountType::Income->value,
+        'type' => \Modules\Accounting\Enums\Accounting\AccountType::Income->value,
         'is_deprecated' => false,
     ];
 
@@ -45,18 +45,18 @@ test('can create account through createOptionForm with proper company_id', funct
     $component->assertSuccessful();
 
     // Create an account manually to verify the structure works
-    $account = Account::create([
+    $account = \Modules\Accounting\Models\Account::create([
         'company_id' => $this->company->id,
         'code' => 'TEST-001',
         'name' => 'Test Account',
-        'type' => AccountType::Income,
+        'type' => \Modules\Accounting\Enums\Accounting\AccountType::Income,
         'is_deprecated' => false,
     ]);
 
     expect($account->company_id)->toBe($this->company->id);
     expect($account->code)->toBe('TEST-001');
     expect($account->name)->toBe('Test Account');
-    expect($account->type)->toBe(AccountType::Income);
+    expect($account->type)->toBe(\Modules\Accounting\Enums\Accounting\AccountType::Income);
 });
 
 test('createOptionForm includes company_id from tenant context', function () {

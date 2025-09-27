@@ -24,9 +24,9 @@ class SequenceService
     public function getNextInvoiceNumber(Company $company, ?Carbon $date = null): string
     {
         $config = $company->getInvoiceNumberingConfig();
-        $numberingType = NumberingType::from($config['type']);
+        $numberingType = \Modules\Foundation\Enums\Settings\NumberingType::from($config['type']);
 
-        $sequence = Sequence::getOrCreateSequence(
+        $sequence = \Modules\Foundation\Models\Sequence::getOrCreateSequence(
             companyId: $company->id,
             documentType: 'invoice',
             prefix: $config['prefix'],
@@ -36,7 +36,7 @@ class SequenceService
         $nextNumber = $sequence->getNextNumber();
 
         // For simple format, return as-is (already formatted by Sequence model)
-        if ($numberingType === NumberingType::SIMPLE) {
+        if ($numberingType === \Modules\Foundation\Enums\Settings\NumberingType::SIMPLE) {
             return $nextNumber;
         }
 
@@ -60,9 +60,9 @@ class SequenceService
     public function getNextVendorBillNumber(Company $company, ?Carbon $date = null): string
     {
         $config = $company->getVendorBillNumberingConfig();
-        $numberingType = NumberingType::from($config['type']);
+        $numberingType = \Modules\Foundation\Enums\Settings\NumberingType::from($config['type']);
 
-        $sequence = Sequence::getOrCreateSequence(
+        $sequence = \Modules\Foundation\Models\Sequence::getOrCreateSequence(
             companyId: $company->id,
             documentType: 'vendor_bill',
             prefix: $config['prefix'],
@@ -72,7 +72,7 @@ class SequenceService
         $nextNumber = $sequence->getNextNumber();
 
         // For simple format, return as-is (already formatted by Sequence model)
-        if ($numberingType === NumberingType::SIMPLE) {
+        if ($numberingType === \Modules\Foundation\Enums\Settings\NumberingType::SIMPLE) {
             return $nextNumber;
         }
 
@@ -93,7 +93,7 @@ class SequenceService
      */
     public function getNextPaymentNumber(Company $company): string
     {
-        $sequence = Sequence::getOrCreateSequence(
+        $sequence = \Modules\Foundation\Models\Sequence::getOrCreateSequence(
             companyId: $company->id,
             documentType: 'payment',
             prefix: 'PAY',
@@ -108,7 +108,7 @@ class SequenceService
      */
     public function getNextCreditNoteNumber(Company $company): string
     {
-        $sequence = Sequence::getOrCreateSequence(
+        $sequence = \Modules\Foundation\Models\Sequence::getOrCreateSequence(
             companyId: $company->id,
             documentType: 'credit_note',
             prefix: 'CN',
@@ -123,7 +123,7 @@ class SequenceService
      */
     public function getNextJournalEntryNumber(Company $company): string
     {
-        $sequence = Sequence::getOrCreateSequence(
+        $sequence = \Modules\Foundation\Models\Sequence::getOrCreateSequence(
             companyId: $company->id,
             documentType: 'journal_entry',
             prefix: 'JE',
@@ -142,7 +142,7 @@ class SequenceService
         string $prefix,
         int $padding = 5
     ): string {
-        $sequence = Sequence::getOrCreateSequence(
+        $sequence = \Modules\Foundation\Models\Sequence::getOrCreateSequence(
             companyId: $company->id,
             documentType: $documentType,
             prefix: $prefix,
@@ -157,7 +157,7 @@ class SequenceService
      */
     public function getCurrentNumber(Company $company, string $documentType): int
     {
-        $sequence = Sequence::where('company_id', $company->id)
+        $sequence = \Modules\Foundation\Models\Sequence::where('company_id', $company->id)
             ->where('document_type', $documentType)
             ->first();
 
@@ -170,7 +170,7 @@ class SequenceService
      */
     public function resetSequence(Company $company, string $documentType, int $number): void
     {
-        $sequence = Sequence::where('company_id', $company->id)
+        $sequence = \Modules\Foundation\Models\Sequence::where('company_id', $company->id)
             ->where('document_type', $documentType)
             ->first();
 

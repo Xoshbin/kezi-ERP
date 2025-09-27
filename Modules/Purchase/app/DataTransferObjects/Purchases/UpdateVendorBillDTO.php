@@ -10,7 +10,7 @@ readonly class UpdateVendorBillDTO
      * @param  VendorBillLineDTO[]  $lines
      */
     public function __construct(
-        public VendorBill $vendorBill,
+        public \Modules\Purchase\Models\VendorBill $vendorBill,
         public int $company_id,
         public int $vendor_id,
         public int $currency_id,

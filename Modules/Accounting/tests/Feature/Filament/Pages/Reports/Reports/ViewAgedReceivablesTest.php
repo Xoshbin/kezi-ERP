@@ -31,11 +31,11 @@ test('it can render the aged receivables page', function () {
 test('it can generate aged receivables report', function () {
     // Arrange
     $currency = $this->company->currency->code;
-    $partner = Partner::factory()->for($this->company)->create(['name' => 'Test Partner']);
+    $partner = \Modules\Foundation\Models\Partner::factory()->for($this->company)->create(['name' => 'Test Partner']);
     $asOfDate = Carbon::parse('2025-08-12');
 
     // Create a past due invoice
-    Invoice::factory()->for($this->company)->create([
+    \Modules\Sales\Models\Invoice::factory()->for($this->company)->create([
         'customer_id' => $partner->id,
         'currency_id' => $this->company->currency_id,
         'due_date' => '2025-07-20', // 23 days past due

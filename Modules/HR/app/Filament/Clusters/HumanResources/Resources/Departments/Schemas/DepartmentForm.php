@@ -45,7 +45,7 @@ class DepartmentForm
             Section::make(__('department.management'))
                 ->description(__('department.management_description'))
                 ->schema([
-                    TranslatableSelect::forModel('manager_id', Employee::class)
+                    TranslatableSelect::forModel('manager_id', \Modules\HR\Models\Employee::class)
                         ->label(__('department.manager'))
                         ->searchable()
                         ->searchableFields(['first_name', 'last_name', 'employee_number'])

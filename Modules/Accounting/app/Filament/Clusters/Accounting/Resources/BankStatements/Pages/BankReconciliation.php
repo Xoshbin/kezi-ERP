@@ -19,7 +19,7 @@ class BankReconciliation extends Page
     public function mount(int $record): void
     {
         // Return 404 for non-existent records (keeps tests and UX logical)
-        if (! BankStatement::withoutGlobalScopes()->whereKey($record)->exists()) {
+        if (! \Modules\Accounting\Models\BankStatement::withoutGlobalScopes()->whereKey($record)->exists()) {
             abort(404);
         }
 

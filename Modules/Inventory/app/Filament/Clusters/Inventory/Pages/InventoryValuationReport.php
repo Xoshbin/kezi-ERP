@@ -96,7 +96,7 @@ class InventoryValuationReport extends Page implements HasForms
                         Select::make('product_ids')
                             ->label(__('inventory_reports.valuation.filters.products'))
                             ->options(function () {
-                                return \App\Models\Product::query()
+                                return \Modules\Product\Models\Product::query()
                                     ->where('company_id', \Filament\Facades\Filament::getTenant()?->getKey())
                                     ->pluck('name', 'id');
                             })

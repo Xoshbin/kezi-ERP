@@ -15,16 +15,16 @@ beforeEach(function () {
     $this->user = User::factory()->create();
     $this->company = Company::factory()->create();
     $this->user->companies()->attach($this->company);
-    $this->currency = Currency::factory()->create(['code' => 'USD']);
-    $this->customer = Partner::factory()->create([
+    $this->currency = \Modules\Foundation\Models\Currency::factory()->create(['code' => 'USD']);
+    $this->customer = \Modules\Foundation\Models\Partner::factory()->create([
         'company_id' => $this->company->id,
         'type' => 'customer',
     ]);
-    $this->account = Account::factory()->create([
+    $this->account = \Modules\Accounting\Models\Account::factory()->create([
         'company_id' => $this->company->id,
     ]);
 
-    $this->invoice = Invoice::factory()->create([
+    $this->invoice = \Modules\Sales\Models\Invoice::factory()->create([
         'company_id' => $this->company->id,
         'customer_id' => $this->customer->id,
         'currency_id' => $this->currency->id,
@@ -34,7 +34,7 @@ beforeEach(function () {
         'total_tax' => Money::of(10, 'USD'),
     ]);
 
-    InvoiceLine::factory()->create([
+    \Modules\Sales\Models\InvoiceLine::factory()->create([
         'invoice_id' => $this->invoice->id,
         'income_account_id' => $this->account->id,
         'description' => 'Test Product',
@@ -174,7 +174,7 @@ test('pdf settings work with different locales', function () {
 
 test('draft invoices generate pdf with draft watermark', function () {
     // Arrange - Create a draft invoice
-    $draftInvoice = Invoice::factory()->create([
+    $draftInvoice = \Modules\Sales\Models\Invoice::factory()->create([
         'company_id' => $this->company->id,
         'customer_id' => $this->customer->id,
         'currency_id' => $this->currency->id,
@@ -184,7 +184,7 @@ test('draft invoices generate pdf with draft watermark', function () {
         'total_tax' => Money::of(10, 'USD'),
     ]);
 
-    InvoiceLine::factory()->create([
+    \Modules\Sales\Models\InvoiceLine::factory()->create([
         'invoice_id' => $draftInvoice->id,
         'income_account_id' => $this->account->id,
         'description' => 'Draft Product',

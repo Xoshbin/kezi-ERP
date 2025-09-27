@@ -70,7 +70,7 @@ use Illuminate\Support\Carbon;
  * @property-read Collection<int, Payroll> $payrolls
  * @property-read int|null $payrolls_count
  */
-#[ObservedBy([AuditLogObserver::class])]
+#[ObservedBy([\Modules\Foundation\Observers\AuditLogObserver::class])]
 class Employee extends Model
 {
     use HasFactory, SoftDeletes;

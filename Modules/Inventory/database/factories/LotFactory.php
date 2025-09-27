@@ -23,7 +23,7 @@ class LotFactory extends Factory
     {
         return [
             'company_id' => Company::factory(),
-            'product_id' => Product::factory(),
+            'product_id' => \Modules\Product\Models\Product::factory(),
             'lot_code' => 'LOT-' . $this->faker->unique()->numerify('####'),
             'expiration_date' => $this->faker->optional(0.7)->dateTimeBetween('+1 month', '+2 years'),
             'active' => true,

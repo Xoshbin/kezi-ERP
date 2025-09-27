@@ -27,7 +27,7 @@ use RuntimeException;
  * @property int $id
  * @property int|null $company_id
  * @property string $name
- * @property PartnerType $type
+ * @property \Modules\Foundation\Enums\Partners\PartnerType $type
  * @property string|null $contact_person
  * @property string|null $email
  * @property string|null $phone
@@ -52,7 +52,7 @@ use RuntimeException;
  * @property-read Collection<int, VendorBill> $vendorBills
  * @property-read int|null $vendor_bills_count
  *
- * @method static PartnerFactory factory($count = null, $state = [])
+ * @method static \Modules\Foundation\Database\Factories\PartnerFactory factory($count = null, $state = [])
  * @method static Builder<static>|Partner newModelQuery()
  * @method static Builder<static>|Partner newQuery()
  * @method static Builder<static>|Partner onlyTrashed()
@@ -80,7 +80,7 @@ use RuntimeException;
  *
  * @mixin Eloquent
  */
-#[ObservedBy([PartnerObserver::class])]
+#[ObservedBy([\Modules\Foundation\Observers\PartnerObserver::class])]
 class Partner extends Model
 {
     use HasFactory, SoftDeletes, HasCustomFields;
@@ -117,7 +117,7 @@ class Partner extends Model
      * @var array<string, string>
      */
     protected $casts = [
-        'type' => PartnerType::class,
+        'type' => \Modules\Foundation\Enums\Partners\PartnerType::class,
         'is_active' => 'boolean',
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
@@ -243,7 +243,7 @@ class Partner extends Model
      */
     public function getCustomerOutstandingBalance(): Money
     {
-        if (! in_array($this->type, [PartnerType::Customer, PartnerType::Both])) {
+        if (! in_array($this->type, [\Modules\Foundation\Enums\Partners\PartnerType::Customer, \Modules\Foundation\Enums\Partners\PartnerType::Both])) {
             $this->loadMissing('company.currency');
 
             if (! $this->company?->currency) {
@@ -277,7 +277,7 @@ class Partner extends Model
      */
     public function getVendorOutstandingBalance(): Money
     {
-        if (! in_array($this->type, [PartnerType::Vendor, PartnerType::Both])) {
+        if (! in_array($this->type, [\Modules\Foundation\Enums\Partners\PartnerType::Vendor, \Modules\Foundation\Enums\Partners\PartnerType::Both])) {
             $this->loadMissing('company.currency');
 
             if (! $this->company?->currency) {
@@ -311,7 +311,7 @@ class Partner extends Model
      */
     public function getCustomerOverdueBalance(): Money
     {
-        if (! in_array($this->type, [PartnerType::Customer, PartnerType::Both])) {
+        if (! in_array($this->type, [\Modules\Foundation\Enums\Partners\PartnerType::Customer, \Modules\Foundation\Enums\Partners\PartnerType::Both])) {
             $this->loadMissing('company.currency');
 
             if (! $this->company?->currency) {
@@ -346,7 +346,7 @@ class Partner extends Model
      */
     public function getVendorOverdueBalance(): Money
     {
-        if (! in_array($this->type, [PartnerType::Vendor, PartnerType::Both])) {
+        if (! in_array($this->type, [\Modules\Foundation\Enums\Partners\PartnerType::Vendor, \Modules\Foundation\Enums\Partners\PartnerType::Both])) {
             $this->loadMissing('company.currency');
 
             if (! $this->company?->currency) {
@@ -440,7 +440,7 @@ class Partner extends Model
      */
     public function getCustomerDueWithinDays(int $days): Money
     {
-        if (! in_array($this->type, [PartnerType::Customer, PartnerType::Both])) {
+        if (! in_array($this->type, [\Modules\Foundation\Enums\Partners\PartnerType::Customer, \Modules\Foundation\Enums\Partners\PartnerType::Both])) {
             $this->loadMissing('company.currency');
 
             if (! $this->company?->currency) {
@@ -478,7 +478,7 @@ class Partner extends Model
      */
     public function getVendorDueWithinDays(int $days): Money
     {
-        if (! in_array($this->type, [PartnerType::Vendor, PartnerType::Both])) {
+        if (! in_array($this->type, [\Modules\Foundation\Enums\Partners\PartnerType::Vendor, \Modules\Foundation\Enums\Partners\PartnerType::Both])) {
             $this->loadMissing('company.currency');
 
             if (! $this->company?->currency) {

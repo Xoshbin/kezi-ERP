@@ -12,7 +12,7 @@ class CurrencySeeder extends Seeder
      */
     public function run(): void
     {
-        Currency::updateOrCreate(
+        \Modules\Foundation\Models\Currency::updateOrCreate(
             ['code' => 'USD'],
             [
                 'name' => ['en' => 'US Dollar', 'ckb' => 'دۆلاری ئەمریکی', 'ar' => 'دولار أمريكي'],
@@ -22,7 +22,7 @@ class CurrencySeeder extends Seeder
             ]
         );
 
-        Currency::updateOrCreate(
+        \Modules\Foundation\Models\Currency::updateOrCreate(
             ['code' => 'IQD'],
             [
                 'name' => ['en' => 'Iraqi Dinar', 'ckb' => 'دیناری عێراقی', 'ar' => 'دينار عراقي'],

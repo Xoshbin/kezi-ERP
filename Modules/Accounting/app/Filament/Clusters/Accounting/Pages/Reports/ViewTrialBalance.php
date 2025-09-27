@@ -90,7 +90,7 @@ class ViewTrialBalance extends Page
         if (! $company instanceof \App\Models\Company) {
             return;
         }
-        $service = app(TrialBalanceService::class);
+        $service = app(\Modules\Accounting\Services\Reports\TrialBalanceService::class);
 
         $report = $service->generate(
             $company,
@@ -106,13 +106,13 @@ class ViewTrialBalance extends Page
                 'accountCode' => $line->accountCode,
                 'accountName' => $line->accountName,
                 'accountType' => $line->accountType->value,
-                'debit' => NumberFormatter::formatMoneyTo($line->debit),
-                'credit' => NumberFormatter::formatMoneyTo($line->credit),
+                'debit' => \Modules\Foundation\Support\NumberFormatter::formatMoneyTo($line->debit),
+                'credit' => \Modules\Foundation\Support\NumberFormatter::formatMoneyTo($line->credit),
                 'debitAmount' => $line->debit->getAmount()->toFloat(),
                 'creditAmount' => $line->credit->getAmount()->toFloat(),
             ])->toArray(),
-            'totalDebit' => NumberFormatter::formatMoneyTo($report->totalDebit),
-            'totalCredit' => NumberFormatter::formatMoneyTo($report->totalCredit),
+            'totalDebit' => \Modules\Foundation\Support\NumberFormatter::formatMoneyTo($report->totalDebit),
+            'totalCredit' => \Modules\Foundation\Support\NumberFormatter::formatMoneyTo($report->totalCredit),
             'totalDebitAmount' => $report->totalDebit->getAmount()->toFloat(),
             'totalCreditAmount' => $report->totalCredit->getAmount()->toFloat(),
             'isBalanced' => $report->isBalanced,

@@ -30,11 +30,11 @@ beforeEach(function () {
     $this->currency = $this->company->currency;
 
     // Create required accounts for reconciliation
-    $this->bankAccount = Account::factory()
+    $this->bankAccount = \Modules\Accounting\Models\Account::factory()
         ->for($this->company)
         ->create(['type' => 'bank_and_cash', 'name' => 'Bank Account']);
 
-    $this->outstandingAccount = Account::factory()
+    $this->outstandingAccount = \Modules\Accounting\Models\Account::factory()
         ->for($this->company)
         ->create(['type' => 'current_assets', 'name' => 'Outstanding Receipts']);
 
@@ -48,7 +48,7 @@ beforeEach(function () {
         ->for($this->company)
         ->create(['type' => 'bank']);
 
-    $this->bankStatement = BankStatement::factory()
+    $this->bankStatement = \Modules\Accounting\Models\BankStatement::factory()
         ->for($this->company)
         ->for($this->currency)
         ->for($this->bankJournal)
@@ -63,9 +63,9 @@ describe('SystemPaymentsTable Livewire Component', function () {
     });
 
     it('displays only unreconciled confirmed payments', function () {
-        $partner = Partner::factory()->for($this->company)->create();
+        $partner = \Modules\Foundation\Models\Partner::factory()->for($this->company)->create();
 
-        $confirmedPayment = Payment::factory()
+        $confirmedPayment = \Modules\Payment\Models\Payment::factory()
             ->for($this->company)
             ->for($this->currency)
             ->for($this->bankJournal)
@@ -75,7 +75,7 @@ describe('SystemPaymentsTable Livewire Component', function () {
                 'amount' => Money::of(100, $this->currency->code),
             ]);
 
-        $reconciledPayment = Payment::factory()
+        $reconciledPayment = \Modules\Payment\Models\Payment::factory()
             ->for($this->company)
             ->for($this->currency)
             ->for($this->bankJournal)
@@ -84,7 +84,7 @@ describe('SystemPaymentsTable Livewire Component', function () {
                 'amount' => Money::of(200, $this->currency->code),
             ]);
 
-        $draftPayment = Payment::factory()
+        $draftPayment = \Modules\Payment\Models\Payment::factory()
             ->for($this->company)
             ->for($this->currency)
             ->for($this->bankJournal)
@@ -100,7 +100,7 @@ describe('SystemPaymentsTable Livewire Component', function () {
     });
 
     it('can toggle payment selection', function () {
-        $payment = Payment::factory()
+        $payment = \Modules\Payment\Models\Payment::factory()
             ->for($this->company)
             ->for($this->currency)
             ->for($this->bankJournal)
@@ -123,7 +123,7 @@ describe('SystemPaymentsTable Livewire Component', function () {
     });
 
     it('emits selection changed event when toggling payments', function () {
-        $payment = Payment::factory()
+        $payment = \Modules\Payment\Models\Payment::factory()
             ->for($this->company)
             ->for($this->currency)
             ->for($this->bankJournal)
@@ -143,7 +143,7 @@ describe('SystemPaymentsTable Livewire Component', function () {
     });
 
     it('calculates correct total for inbound payments', function () {
-        $inboundPayment = Payment::factory()
+        $inboundPayment = \Modules\Payment\Models\Payment::factory()
             ->for($this->company)
             ->for($this->currency)
             ->for($this->bankJournal)
@@ -163,7 +163,7 @@ describe('SystemPaymentsTable Livewire Component', function () {
     });
 
     it('calculates correct total for outbound payments', function () {
-        $outboundPayment = Payment::factory()
+        $outboundPayment = \Modules\Payment\Models\Payment::factory()
             ->for($this->company)
             ->for($this->currency)
             ->for($this->bankJournal)
@@ -183,7 +183,7 @@ describe('SystemPaymentsTable Livewire Component', function () {
     });
 
     it('calculates correct total for mixed payment types', function () {
-        $inboundPayment = Payment::factory()
+        $inboundPayment = \Modules\Payment\Models\Payment::factory()
             ->for($this->company)
             ->for($this->currency)
             ->for($this->bankJournal)
@@ -193,7 +193,7 @@ describe('SystemPaymentsTable Livewire Component', function () {
                 'status' => PaymentStatus::Confirmed,
             ]);
 
-        $outboundPayment = Payment::factory()
+        $outboundPayment = \Modules\Payment\Models\Payment::factory()
             ->for($this->company)
             ->for($this->currency)
             ->for($this->bankJournal)
@@ -218,9 +218,9 @@ describe('SystemPaymentsTable Livewire Component', function () {
     });
 
     it('displays payment information correctly', function () {
-        $partner = Partner::factory()->for($this->company)->create(['name' => 'Test Partner']);
+        $partner = \Modules\Foundation\Models\Partner::factory()->for($this->company)->create(['name' => 'Test Partner']);
 
-        $payment = Payment::factory()
+        $payment = \Modules\Payment\Models\Payment::factory()
             ->for($this->company)
             ->for($this->currency)
             ->for($this->bankJournal)
@@ -283,7 +283,7 @@ describe('SystemPaymentsTable Livewire Component', function () {
 
     it('shows empty state when no unreconciled payments exist', function () {
         // Create only reconciled payments
-        Payment::factory()
+        \Modules\Payment\Models\Payment::factory()
             ->for($this->company)
             ->for($this->currency)
             ->for($this->bankJournal)

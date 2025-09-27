@@ -26,8 +26,8 @@ class PaymentInstallmentFactory extends Factory
 
         return [
             'company_id' => Company::factory(),
-            'installment_type' => Invoice::class,
-            'installment_id' => Invoice::factory(),
+            'installment_type' => \Modules\Sales\Models\Invoice::class,
+            'installment_id' => \Modules\Sales\Models\Invoice::factory(),
             'sequence' => 1,
             'due_date' => $this->faker->dateTimeBetween('now', '+90 days'),
             'amount' => $amount,

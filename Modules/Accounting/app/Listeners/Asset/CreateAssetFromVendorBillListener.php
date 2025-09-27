@@ -15,7 +15,7 @@ class CreateAssetFromVendorBillListener implements ShouldQueue
 {
     public function __construct(private readonly CreateAssetAction $createAssetAction) {}
 
-    public function handle(VendorBillConfirmed $event): void
+    public function handle(\Modules\Purchase\Events\VendorBillConfirmed $event): void
     {
         $vendorBill = $event->vendorBill;
         $company = $vendorBill->company;
@@ -27,7 +27,7 @@ class CreateAssetFromVendorBillListener implements ShouldQueue
             // Check explicit asset-category selection first, fallback to can_create_assets on account
             $category = null;
             if ($line->asset_category_id) {
-                $category = AssetCategory::find($line->asset_category_id);
+                $category = \Modules\Accounting\Models\AssetCategory::find($line->asset_category_id);
             } elseif ($line->expenseAccount->can_create_assets) {
                 // Implicit asset via account; map into a temporary category-like structure using company defaults
                 $category = new class($company, $line)
@@ -76,7 +76,7 @@ class CreateAssetFromVendorBillListener implements ShouldQueue
             }
 
             try {
-                $assetDTO = new CreateAssetDTO(
+                $assetDTO = new \Modules\Accounting\DataTransferObjects\Assets\CreateAssetDTO(
                     company_id: $vendorBill->company_id,
                     name: $line->product->name ?? $line->description,
                     purchase_date: $vendorBill->bill_date,

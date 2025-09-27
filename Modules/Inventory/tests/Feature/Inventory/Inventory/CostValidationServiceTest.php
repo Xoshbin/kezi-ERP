@@ -20,15 +20,15 @@ beforeEach(function () {
     $this->costValidationService = app(CostValidationService::class);
 
     // Create required accounts
-    $this->inventoryAccount = \App\Models\Account::factory()->for($this->company)->create([
+    $this->inventoryAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create([
         'name' => 'Inventory Asset',
         'type' => 'current_assets',
     ]);
-    $this->cogsAccount = \App\Models\Account::factory()->for($this->company)->create([
+    $this->cogsAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create([
         'name' => 'Cost of Goods Sold',
         'type' => 'expense',
     ]);
-    $this->stockInputAccount = \App\Models\Account::factory()->for($this->company)->create([
+    $this->stockInputAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create([
         'name' => 'Stock Input',
         'type' => 'current_liabilities',
     ]);
@@ -36,9 +36,9 @@ beforeEach(function () {
 
 it('validates cost availability for product with average cost', function () {
     // Arrange: Create a product with average cost
-    $product = Product::factory()->create([
+    $product = \Modules\Product\Models\Product::factory()->create([
         'company_id' => $this->company->id,
-        'type' => ProductType::Storable,
+        'type' => \Modules\Product\Enums\Products\ProductType::Storable,
         'inventory_valuation_method' => ValuationMethod::AVCO,
         'average_cost' => Money::of(50000, 'IQD'), // 500.00 IQD
         'default_inventory_account_id' => $this->inventoryAccount->id,
@@ -61,9 +61,9 @@ it('validates cost availability for product with average cost', function () {
 
 it('validates cost unavailability for product without cost information', function () {
     // Arrange: Create a product without cost information
-    $product = Product::factory()->create([
+    $product = \Modules\Product\Models\Product::factory()->create([
         'company_id' => $this->company->id,
-        'type' => ProductType::Storable,
+        'type' => \Modules\Product\Enums\Products\ProductType::Storable,
         'inventory_valuation_method' => ValuationMethod::AVCO,
         'average_cost' => Money::of(0, 'IQD'), // Zero cost
         'unit_price' => Money::of(0, 'IQD'), // Zero price
@@ -86,9 +86,9 @@ it('validates cost unavailability for product without cost information', functio
 
 it('provides cost preview for valid product', function () {
     // Arrange: Create a product with average cost
-    $product = Product::factory()->create([
+    $product = \Modules\Product\Models\Product::factory()->create([
         'company_id' => $this->company->id,
-        'type' => ProductType::Storable,
+        'type' => \Modules\Product\Enums\Products\ProductType::Storable,
         'inventory_valuation_method' => ValuationMethod::AVCO,
         'average_cost' => Money::of(50000, 'IQD'), // 500.00 IQD
         'default_inventory_account_id' => $this->inventoryAccount->id,
@@ -115,18 +115,18 @@ it('provides cost preview for valid product', function () {
 
 it('detects cost information availability correctly', function () {
     // Arrange: Create products with and without cost information
-    $productWithCost = Product::factory()->create([
+    $productWithCost = \Modules\Product\Models\Product::factory()->create([
         'company_id' => $this->company->id,
-        'type' => ProductType::Storable,
+        'type' => \Modules\Product\Enums\Products\ProductType::Storable,
         'average_cost' => Money::of(50000, 'IQD'),
         'default_inventory_account_id' => $this->inventoryAccount->id,
         'default_cogs_account_id' => $this->cogsAccount->id,
         'default_stock_input_account_id' => $this->stockInputAccount->id,
     ]);
 
-    $productWithoutCost = Product::factory()->create([
+    $productWithoutCost = \Modules\Product\Models\Product::factory()->create([
         'company_id' => $this->company->id,
-        'type' => ProductType::Storable,
+        'type' => \Modules\Product\Enums\Products\ProductType::Storable,
         'average_cost' => Money::of(0, 'IQD'), // Zero cost
         'unit_price' => Money::of(0, 'IQD'), // Zero price
         'default_inventory_account_id' => $this->inventoryAccount->id,
@@ -141,9 +141,9 @@ it('detects cost information availability correctly', function () {
 
 it('provides appropriate suggested actions', function () {
     // Arrange: Create a product without cost information
-    $product = Product::factory()->create([
+    $product = \Modules\Product\Models\Product::factory()->create([
         'company_id' => $this->company->id,
-        'type' => ProductType::Storable,
+        'type' => \Modules\Product\Enums\Products\ProductType::Storable,
         'inventory_valuation_method' => ValuationMethod::AVCO,
         'average_cost' => Money::of(0, 'IQD'), // Zero cost
         'unit_price' => Money::of(100000, 'IQD'), // Has unit price

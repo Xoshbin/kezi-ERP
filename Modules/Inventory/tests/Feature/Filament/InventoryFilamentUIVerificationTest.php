@@ -295,10 +295,10 @@ function setupSampleInventoryData(): void
 {
     // Create sample products
     test()->products = collect([
-        Product::factory()->for(test()->company)->create([
+        \Modules\Product\Models\Product::factory()->for(test()->company)->create([
             'name' => 'Test Laptop',
             'sku' => 'TEST-LAPTOP-001',
-            'type' => ProductType::Storable,
+            'type' => \Modules\Product\Enums\Products\ProductType::Storable,
             'inventory_valuation_method' => ValuationMethod::FIFO,
             'unit_price' => Money::of(150000000, 'IQD'),
             'default_inventory_account_id' => test()->inventoryAccount->id,
@@ -306,10 +306,10 @@ function setupSampleInventoryData(): void
             'default_cogs_account_id' => test()->cogsAccount->id,
             'average_cost' => Money::of(0, 'IQD'),
         ]),
-        Product::factory()->for(test()->company)->create([
+        \Modules\Product\Models\Product::factory()->for(test()->company)->create([
             'name' => 'Test Smartphone',
             'sku' => 'TEST-PHONE-001',
-            'type' => ProductType::Storable,
+            'type' => \Modules\Product\Enums\Products\ProductType::Storable,
             'inventory_valuation_method' => ValuationMethod::AVCO,
             'unit_price' => Money::of(120000000, 'IQD'),
             'default_inventory_account_id' => test()->inventoryAccount->id,

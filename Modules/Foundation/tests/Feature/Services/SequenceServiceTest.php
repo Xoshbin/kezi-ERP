@@ -12,14 +12,14 @@ describe('SequenceService', function () {
 
     beforeEach(function () {
         $this->setupWithConfiguredCompany();
-        $this->sequenceService = app(SequenceService::class);
+        $this->sequenceService = app(\Modules\Foundation\Services\SequenceService::class);
     });
 
     it('generates invoice numbers using company settings', function () {
         // Set custom numbering settings
         $this->company->numbering_settings = [
             'invoice' => [
-                'type' => NumberingType::SIMPLE->value,
+                'type' => \Modules\Foundation\Enums\Settings\NumberingType::SIMPLE->value,
                 'prefix' => 'INVOICE',
                 'padding' => 6,
             ],
@@ -35,7 +35,7 @@ describe('SequenceService', function () {
         // Set custom numbering settings
         $this->company->numbering_settings = [
             'vendor_bill' => [
-                'type' => NumberingType::SIMPLE->value,
+                'type' => \Modules\Foundation\Enums\Settings\NumberingType::SIMPLE->value,
                 'prefix' => 'PURCHASE',
                 'padding' => 4,
             ],
@@ -60,7 +60,7 @@ describe('SequenceService', function () {
     it('generates numbers with year prefix format', function () {
         $this->company->numbering_settings = [
             'invoice' => [
-                'type' => NumberingType::YEAR_PREFIX->value,
+                'type' => \Modules\Foundation\Enums\Settings\NumberingType::YEAR_PREFIX->value,
                 'prefix' => 'INV',
                 'padding' => 5,
             ],
@@ -76,7 +76,7 @@ describe('SequenceService', function () {
     it('generates numbers with year month format', function () {
         $this->company->numbering_settings = [
             'vendor_bill' => [
-                'type' => NumberingType::YEAR_MONTH->value,
+                'type' => \Modules\Foundation\Enums\Settings\NumberingType::YEAR_MONTH->value,
                 'prefix' => 'BILL',
                 'padding' => 3,
             ],
@@ -92,7 +92,7 @@ describe('SequenceService', function () {
     it('generates numbers with slash separated format', function () {
         $this->company->numbering_settings = [
             'invoice' => [
-                'type' => NumberingType::SLASH_SEPARATED->value,
+                'type' => \Modules\Foundation\Enums\Settings\NumberingType::SLASH_SEPARATED->value,
                 'prefix' => 'INV',
                 'padding' => 4,
             ],
@@ -141,7 +141,7 @@ describe('SequenceService', function () {
     it('creates sequence records in database', function () {
         $this->sequenceService->getNextInvoiceNumber($this->company);
 
-        $sequence = Sequence::where([
+        $sequence = \Modules\Foundation\Models\Sequence::where([
             'company_id' => $this->company->id,
             'document_type' => 'invoice',
         ])->first();
@@ -155,7 +155,7 @@ describe('SequenceService', function () {
     it('uses current date when no date provided for date-based formats', function () {
         $this->company->numbering_settings = [
             'invoice' => [
-                'type' => NumberingType::YEAR_PREFIX->value,
+                'type' => \Modules\Foundation\Enums\Settings\NumberingType::YEAR_PREFIX->value,
                 'prefix' => 'INV',
                 'padding' => 5,
             ],

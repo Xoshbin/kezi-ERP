@@ -27,7 +27,7 @@ class AuditLogObserver
     public function deleted(Model $model): void
     {
         // Prevent logging the deletion of an audit log itself.
-        if ($model instanceof AuditLog) {
+        if ($model instanceof \Modules\Foundation\Models\AuditLog) {
             return;
         }
         $this->logAction('record_deleted', $model);
@@ -78,7 +78,7 @@ class AuditLogObserver
             $companyId = $model->getAttribute('company_id');
         }
 
-        AuditLog::create([
+        \Modules\Foundation\Models\AuditLog::create([
             'user_id' => auth()->id(),
             'company_id' => $companyId,
             'event_type' => $eventType,

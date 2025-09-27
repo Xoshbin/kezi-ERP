@@ -19,8 +19,8 @@ beforeEach(function () {
     $this->setupInventoryTestEnvironment();
 
     // Create a storable product with required inventory accounts and valid average cost
-    $this->product = Product::factory()->for($this->company)->create([
-        'type' => \App\Enums\Products\ProductType::Storable,
+    $this->product = \Modules\Product\Models\Product::factory()->for($this->company)->create([
+        'type' => \Modules\Product\Enums\Products\ProductType::Storable,
         'inventory_valuation_method' => \App\Enums\Inventory\ValuationMethod::AVCO,
         'default_inventory_account_id' => $this->inventoryAccount->id,
         'default_stock_input_account_id' => $this->stockInputAccount->id,
@@ -54,7 +54,7 @@ it('creates journal entries when creating a stock move directly as done', functi
     );
 
     // Act
-    $move = app(CreateStockMoveAction::class)->execute($dto);
+    $move = app(\Modules\Inventory\Actions\Inventory\CreateStockMoveAction::class)->execute($dto);
     $move->refresh();
 
     // Assert
@@ -88,7 +88,7 @@ it('creates journal entries when updating a draft stock move to done', function 
         source_id: 2,
     );
 
-    $move = app(CreateStockMoveAction::class)->execute($createDto);
+    $move = app(\Modules\Inventory\Actions\Inventory\CreateStockMoveAction::class)->execute($createDto);
 
     // Act: Update to done using the update action with lines
     $updateDto = new UpdateStockMoveWithProductLinesDTO(

@@ -15,7 +15,7 @@ class CreateJournalEntryForPayrollAction
 {
     public function __construct(private readonly CreateJournalEntryAction $createJournalEntryAction) {}
 
-    public function execute(Payroll $payroll, User $user): JournalEntry
+    public function execute(\Modules\HR\Models\Payroll $payroll, User $user): JournalEntry
     {
         return DB::transaction(function () use ($payroll, $user) {
             $payroll->load('company', 'currency', 'employee', 'payrollLines.account');
@@ -77,7 +77,7 @@ class CreateJournalEntryForPayrollAction
                 entry_date: $payroll->pay_date,
                 reference: $payroll->payroll_number,
                 description: 'Payroll for '.$payroll->employee->full_name.' - '.$payroll->period_start_date.' to '.$payroll->period_end_date,
-                source_type: Payroll::class,
+                source_type: \Modules\HR\Models\Payroll::class,
                 source_id: $payroll->id,
                 created_by_user_id: $user->id,
                 is_posted: true,

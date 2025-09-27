@@ -44,8 +44,8 @@ class NotInLockedPeriod implements ValidationRule
 
         try {
             $date = Carbon::parse($value);
-            app(LockDateService::class)->enforce($this->company, $date);
-        } catch (PeriodIsLockedException $e) {
+            app(\Modules\Accounting\Services\Accounting\LockDateService::class)->enforce($this->company, $date);
+        } catch (\Modules\Accounting\Exceptions\PeriodIsLockedException $e) {
             $fail($e->getMessage());
         }
     }

@@ -25,10 +25,10 @@ class FinancialStatsOverview extends BaseWidget
         }
 
         // Get services
-        $plService = app(ProfitAndLossStatementService::class);
-        $bsService = app(BalanceSheetService::class);
-        $arService = app(AgedReceivableService::class);
-        $apService = app(AgedPayableService::class);
+        $plService = app(\Modules\Accounting\Services\Reports\ProfitAndLossStatementService::class);
+        $bsService = app(\Modules\Accounting\Services\Reports\BalanceSheetService::class);
+        $arService = app(\Modules\Accounting\Services\Reports\AgedReceivableService::class);
+        $apService = app(\Modules\Accounting\Services\Reports\AgedPayableService::class);
 
         // Date ranges
         $today = Carbon::now();
@@ -73,38 +73,38 @@ class FinancialStatsOverview extends BaseWidget
 
         return [
             // Current Month Net Profit
-            Stat::make(__('dashboard.financial.current_month_profit'), NumberFormatter::formatMoneyTo($netProfit))
+            Stat::make(__('dashboard.financial.current_month_profit'), \Modules\Foundation\Support\NumberFormatter::formatMoneyTo($netProfit))
                 ->description(__('dashboard.financial.profit_after_expenses'))
                 ->descriptionIcon($netProfit->isPositive() ? 'heroicon-m-arrow-trending-up' : 'heroicon-m-arrow-trending-down')
                 ->color($netProfit->isPositive() ? 'success' : ($netProfit->isNegative() ? 'danger' : 'gray'))
                 ->chart($this->getMonthlyProfitTrend($company, $plService)),
 
             // Year-to-Date Net Profit
-            Stat::make(__('dashboard.financial.ytd_profit'), NumberFormatter::formatMoneyTo($ytdNetProfit))
+            Stat::make(__('dashboard.financial.ytd_profit'), \Modules\Foundation\Support\NumberFormatter::formatMoneyTo($ytdNetProfit))
                 ->description(__('dashboard.financial.year_to_date_performance'))
                 ->descriptionIcon($ytdNetProfit->isPositive() ? 'heroicon-m-arrow-trending-up' : 'heroicon-m-arrow-trending-down')
                 ->color($ytdNetProfit->isPositive() ? 'success' : ($ytdNetProfit->isNegative() ? 'danger' : 'gray')),
 
             // Total Outstanding Receivables
-            Stat::make(__('dashboard.financial.total_receivables'), NumberFormatter::formatMoneyTo($totalReceivables))
+            Stat::make(__('dashboard.financial.total_receivables'), \Modules\Foundation\Support\NumberFormatter::formatMoneyTo($totalReceivables))
                 ->description(__('dashboard.financial.outstanding_customer_invoices'))
                 ->descriptionIcon('heroicon-m-banknotes')
                 ->color($totalReceivables->isZero() ? 'gray' : 'warning'),
 
             // Total Outstanding Payables
-            Stat::make(__('dashboard.financial.total_payables'), NumberFormatter::formatMoneyTo($totalPayables))
+            Stat::make(__('dashboard.financial.total_payables'), \Modules\Foundation\Support\NumberFormatter::formatMoneyTo($totalPayables))
                 ->description(__('dashboard.financial.outstanding_vendor_bills'))
                 ->descriptionIcon('heroicon-m-credit-card')
                 ->color($totalPayables->isZero() ? 'gray' : 'danger'),
 
             // Cash Balance
-            Stat::make(__('dashboard.financial.cash_balance'), NumberFormatter::formatMoneyTo($cashBalance))
+            Stat::make(__('dashboard.financial.cash_balance'), \Modules\Foundation\Support\NumberFormatter::formatMoneyTo($cashBalance))
                 ->description(__('dashboard.financial.total_cash_all_accounts'))
                 ->descriptionIcon('heroicon-m-currency-dollar')
                 ->color($cashBalance->isPositive() ? 'success' : ($cashBalance->isNegative() ? 'danger' : 'gray')),
 
             // Gross Profit Margin
-            Stat::make(__('dashboard.financial.gross_margin'), NumberFormatter::formatPercentage($grossProfitMargin, 1))
+            Stat::make(__('dashboard.financial.gross_margin'), \Modules\Foundation\Support\NumberFormatter::formatPercentage($grossProfitMargin, 1))
                 ->description(__('dashboard.financial.profitability_ratio'))
                 ->descriptionIcon('heroicon-m-chart-pie')
                 ->color($grossProfitMargin > 20 ? 'success' : ($grossProfitMargin > 10 ? 'warning' : 'danger')),
@@ -131,7 +131,7 @@ class FinancialStatsOverview extends BaseWidget
     /**
      * @return array<int, float>
      */
-    private function getMonthlyProfitTrend(Company $company, ProfitAndLossStatementService $plService): array
+    private function getMonthlyProfitTrend(Company $company, \Modules\Accounting\Services\Reports\ProfitAndLossStatementService $plService): array
     {
         $data = [];
 

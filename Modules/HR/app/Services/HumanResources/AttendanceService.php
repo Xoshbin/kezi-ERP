@@ -20,7 +20,7 @@ class AttendanceService
     /**
      * Clock in an employee.
      */
-    public function clockIn(Employee $employee, ?string $location = null, ?string $device = null, ?string $ip = null, ?User $user = null): Attendance
+    public function clockIn(\Modules\HR\Models\Employee $employee, ?string $location = null, ?string $device = null, ?string $ip = null, ?User $user = null): Attendance
     {
         $today = now()->format('Y-m-d');
         $currentTime = now()->format('H:i:s');
@@ -59,7 +59,7 @@ class AttendanceService
     /**
      * Clock out an employee.
      */
-    public function clockOut(Employee $employee, ?string $location = null, ?string $device = null, ?string $ip = null): Attendance
+    public function clockOut(\Modules\HR\Models\Employee $employee, ?string $location = null, ?string $device = null, ?string $ip = null): Attendance
     {
         $today = now()->format('Y-m-d');
         $currentTime = now()->format('H:i:s');
@@ -112,7 +112,7 @@ class AttendanceService
     /**
      * Start break for an employee.
      */
-    public function startBreak(Employee $employee): Attendance
+    public function startBreak(\Modules\HR\Models\Employee $employee): Attendance
     {
         $attendance = $employee->getAttendanceForDate(now());
         if (! $attendance || ! $attendance->clock_in_time) {
@@ -138,7 +138,7 @@ class AttendanceService
     /**
      * End break for an employee.
      */
-    public function endBreak(Employee $employee): Attendance
+    public function endBreak(\Modules\HR\Models\Employee $employee): Attendance
     {
         $attendance = $employee->getAttendanceForDate(now());
         if (! $attendance || ! $attendance->break_start_time) {
@@ -207,7 +207,7 @@ class AttendanceService
      *
      * @return array<string, mixed>
      */
-    public function getAttendanceSummary(Employee $employee, string $startDate, string $endDate): array
+    public function getAttendanceSummary(\Modules\HR\Models\Employee $employee, string $startDate, string $endDate): array
     {
         $attendances = $employee->attendances()
             ->whereBetween('attendance_date', [$startDate, $endDate])

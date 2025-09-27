@@ -15,8 +15,8 @@ class CreateAsset extends CreateRecord
 
     protected function handleRecordCreation(array $data): Model
     {
-        $dto = new CreateAssetDTO(...$data);
+        $dto = new \Modules\Accounting\DataTransferObjects\Assets\CreateAssetDTO(...$data);
 
-        return DB::transaction(fn () => app(AssetService::class)->createAsset($dto));
+        return DB::transaction(fn () => app(\Modules\Accounting\Services\AssetService::class)->createAsset($dto));
     }
 }

@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\DB;
 class CreatePurchaseOrderAction
 {
     public function __construct(
-        protected LockDateService $lockDateService,
+        protected \Modules\Accounting\Services\Accounting\LockDateService $lockDateService,
         protected CreatePurchaseOrderLineAction $createLineAction
     ) {}
 

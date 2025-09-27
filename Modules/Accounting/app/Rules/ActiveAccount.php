@@ -16,7 +16,7 @@ class ActiveAccount implements ValidationRule
      */
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {
-        $account = Account::find($value);
+        $account = \Modules\Accounting\Models\Account::find($value);
         // Ensure we have a single Account model, not a collection
         if ($account instanceof \Illuminate\Database\Eloquent\Collection) {
             $account = $account->first();

@@ -26,7 +26,7 @@ class PayrollPaymentTest extends TestCase
 
     private Company $company;
 
-    private Employee $employee;
+    private \Modules\HR\Models\Employee $employee;
 
     private EmploymentContract $contract;
 
@@ -41,7 +41,7 @@ class PayrollPaymentTest extends TestCase
         $this->payrollService = app(PayrollService::class);
 
         // Create employee with contract
-        $this->employee = Employee::factory()->create([
+        $this->employee = \Modules\HR\Models\Employee::factory()->create([
             'company_id' => $this->company->id,
         ]);
 
@@ -59,14 +59,14 @@ class PayrollPaymentTest extends TestCase
 
     private function setupHRAccounts(): void
     {
-        $salaryExpenseAccount = Account::factory()->create([
+        $salaryExpenseAccount = \Modules\Accounting\Models\Account::factory()->create([
             'company_id' => $this->company->id,
             'name' => 'Salary Expense',
             'code' => '6100',
             'type' => 'expense',
         ]);
 
-        $salaryPayableAccount = Account::factory()->create([
+        $salaryPayableAccount = \Modules\Accounting\Models\Account::factory()->create([
             'company_id' => $this->company->id,
             'name' => 'Salary Payable',
             'code' => '2100',
@@ -108,7 +108,7 @@ class PayrollPaymentTest extends TestCase
         $payment = $this->payrollService->payEmployee($payroll, $this->user);
 
         // Assert payment was created correctly
-        $this->assertInstanceOf(Payment::class, $payment);
+        $this->assertInstanceOf(\Modules\Payment\Models\Payment::class, $payment);
         $this->assertEquals($payroll->company_id, $payment->company_id);
         $this->assertEquals($payroll->currency_id, $payment->currency_id);
         $this->assertEquals($payroll->pay_date->format('Y-m-d'), $payment->payment_date->format('Y-m-d'));

@@ -39,7 +39,7 @@ use Spatie\Translatable\HasTranslations;
  * @property-read Collection<int, Partner> $vendors
  * @property-read int|null $vendors_count
  *
- * @method static PaymentTermFactory factory($count = null, $state = [])
+ * @method static \Modules\Foundation\Database\Factories\PaymentTermFactory factory($count = null, $state = [])
  * @method static Builder<static>|PaymentTerm newModelQuery()
  * @method static Builder<static>|PaymentTerm newQuery()
  * @method static Builder<static>|PaymentTerm query()
@@ -54,7 +54,7 @@ use Spatie\Translatable\HasTranslations;
  *
  * @mixin Eloquent
  */
-#[ObservedBy([AuditLogObserver::class])]
+#[ObservedBy([\Modules\Foundation\Observers\AuditLogObserver::class])]
 class PaymentTerm extends Model
 {
     /** @use HasFactory<PaymentTermFactory> */

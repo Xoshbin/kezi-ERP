@@ -156,7 +156,7 @@ class StockMovesRelationManager extends RelationManager
                 CreateAction::make()
                     ->icon('heroicon-o-plus')
                     ->mutateDataUsing(function (array $data): array {
-                        /** @var \App\Models\Product $owner */
+                        /** @var \Modules\Product\Models\Product $owner */
                         $owner = $this->getOwnerRecord();
                         $data['company_id'] = $owner->getAttribute('company_id');
                         $data['product_id'] = $owner->getKey();

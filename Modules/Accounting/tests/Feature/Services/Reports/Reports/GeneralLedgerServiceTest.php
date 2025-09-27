@@ -22,8 +22,8 @@ test('it generates a general ledger report with correct balances', function () {
     // Arrange
     $currency = $this->company->currency->code;
     $journal = Journal::factory()->for($this->company)->create();
-    $bankAccount = Account::factory()->for($this->company)->create(['name' => 'Main Bank']);
-    $equityAccount = Account::factory()->for($this->company)->create(['name' => 'Capital']);
+    $bankAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create(['name' => 'Main Bank']);
+    $equityAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create(['name' => 'Capital']);
 
     $startDate = Carbon::parse('2025-02-01');
     $endDate = Carbon::parse('2025-02-28');
@@ -47,7 +47,7 @@ test('it generates a general ledger report with correct balances', function () {
     JournalEntry::factory()->for($this->company)->for($journal)->create(['entry_date' => '2025-03-01', 'state' => 'posted']);
 
     // Action
-    $service = app(GeneralLedgerService::class);
+    $service = app(\Modules\Accounting\Services\Reports\GeneralLedgerService::class);
     $report = $service->generate($this->company, $startDate, $endDate, [$bankAccount->id]);
 
     // Assert
@@ -85,8 +85,8 @@ test('it generates a general ledger report with correct balances', function () {
 test('it skips accounts with no activity', function () {
     // Arrange
     $journal = Journal::factory()->for($this->company)->create();
-    $bankAccount = Account::factory()->for($this->company)->create(['name' => 'Main Bank']);
-    $unusedAccount = Account::factory()->for($this->company)->create(['name' => 'Unused Account']);
+    $bankAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create(['name' => 'Main Bank']);
+    $unusedAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create(['name' => 'Unused Account']);
 
     $startDate = Carbon::parse('2025-02-01');
     $endDate = Carbon::parse('2025-02-28');
@@ -97,7 +97,7 @@ test('it skips accounts with no activity', function () {
     JournalEntryLine::factory()->for($entry)->create(['account_id' => $unusedAccount->id, 'debit' => 0, 'credit' => 1_000_000_000]);
 
     // Action - Generate report for unused account only
-    $service = app(GeneralLedgerService::class);
+    $service = app(\Modules\Accounting\Services\Reports\GeneralLedgerService::class);
     $report = $service->generate($this->company, $startDate, $endDate, [$unusedAccount->id]);
 
     // Assert - Should include the account since it has activity in the period
@@ -108,9 +108,9 @@ test('it skips accounts with no activity', function () {
 test('it handles multiple contra accounts correctly', function () {
     // Arrange
     $journal = Journal::factory()->for($this->company)->create();
-    $bankAccount = Account::factory()->for($this->company)->create(['name' => 'Main Bank']);
-    $account1 = Account::factory()->for($this->company)->create(['name' => 'Account 1']);
-    $account2 = Account::factory()->for($this->company)->create(['name' => 'Account 2']);
+    $bankAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create(['name' => 'Main Bank']);
+    $account1 = \Modules\Accounting\Models\Account::factory()->for($this->company)->create(['name' => 'Account 1']);
+    $account2 = \Modules\Accounting\Models\Account::factory()->for($this->company)->create(['name' => 'Account 2']);
 
     $startDate = Carbon::parse('2025-02-01');
     $endDate = Carbon::parse('2025-02-28');
@@ -122,7 +122,7 @@ test('it handles multiple contra accounts correctly', function () {
     JournalEntryLine::factory()->for($entry)->create(['account_id' => $account2->id, 'debit' => 0, 'credit' => 2000000]);
 
     // Action
-    $service = app(GeneralLedgerService::class);
+    $service = app(\Modules\Accounting\Services\Reports\GeneralLedgerService::class);
     $report = $service->generate($this->company, $startDate, $endDate, [$bankAccount->id]);
 
     // Assert
@@ -135,8 +135,8 @@ test('it handles multiple contra accounts correctly', function () {
 test('it excludes draft transactions', function () {
     // Arrange
     $journal = Journal::factory()->for($this->company)->create();
-    $bankAccount = Account::factory()->for($this->company)->create(['name' => 'Main Bank']);
-    $equityAccount = Account::factory()->for($this->company)->create(['name' => 'Capital']);
+    $bankAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create(['name' => 'Main Bank']);
+    $equityAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create(['name' => 'Capital']);
 
     $startDate = Carbon::parse('2025-02-01');
     $endDate = Carbon::parse('2025-02-28');
@@ -152,7 +152,7 @@ test('it excludes draft transactions', function () {
     JournalEntryLine::factory()->for($draftEntry)->create(['account_id' => $equityAccount->id, 'debit' => 0, 'credit' => 500000]);
 
     // Action
-    $service = app(GeneralLedgerService::class);
+    $service = app(\Modules\Accounting\Services\Reports\GeneralLedgerService::class);
     $report = $service->generate($this->company, $startDate, $endDate, [$bankAccount->id]);
 
     // Assert - Should only include the posted transaction
@@ -164,8 +164,8 @@ test('it excludes draft transactions', function () {
 test('it generates report for all accounts when no account filter is provided', function () {
     // Arrange
     $journal = Journal::factory()->for($this->company)->create();
-    $bankAccount = Account::factory()->for($this->company)->create(['name' => 'Main Bank']);
-    $equityAccount = Account::factory()->for($this->company)->create(['name' => 'Capital']);
+    $bankAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create(['name' => 'Main Bank']);
+    $equityAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create(['name' => 'Capital']);
 
     $startDate = Carbon::parse('2025-02-01');
     $endDate = Carbon::parse('2025-02-28');
@@ -176,7 +176,7 @@ test('it generates report for all accounts when no account filter is provided', 
     JournalEntryLine::factory()->for($entry)->create(['account_id' => $equityAccount->id, 'debit' => 0, 'credit' => 1000000]);
 
     // Action - No account filter provided
-    $service = app(GeneralLedgerService::class);
+    $service = app(\Modules\Accounting\Services\Reports\GeneralLedgerService::class);
     $report = $service->generate($this->company, $startDate, $endDate);
 
     // Assert - Should include both accounts

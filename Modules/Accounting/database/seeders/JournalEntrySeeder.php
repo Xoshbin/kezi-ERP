@@ -28,10 +28,10 @@ class JournalEntrySeeder extends Seeder
             $openingBalanceJournal = Journal::where('name->en', 'Opening Balance')->where('company_id', $company->id)->firstOrFail();
 
             // Get the accounts by their codes
-            $bankAccountIqd = Account::where('code', '110102')->where('company_id', $company->id)->firstOrFail(); // Bank Account (IQD)
-            $cashAccountIqd = Account::where('code', '110202')->where('company_id', $company->id)->firstOrFail(); // Cash (IQD)
-            $vehiclesAccount = Account::where('code', '150201')->where('company_id', $company->id)->firstOrFail(); // Vehicles
-            $ownersEquityAccount = Account::where('code', '320101')->where('company_id', $company->id)->firstOrFail(); // Owner's Equity
+            $bankAccountIqd = \Modules\Accounting\Models\Account::where('code', '110102')->where('company_id', $company->id)->firstOrFail(); // Bank Account (IQD)
+            $cashAccountIqd = \Modules\Accounting\Models\Account::where('code', '110202')->where('company_id', $company->id)->firstOrFail(); // Cash (IQD)
+            $vehiclesAccount = \Modules\Accounting\Models\Account::where('code', '150201')->where('company_id', $company->id)->firstOrFail(); // Vehicles
+            $ownersEquityAccount = \Modules\Accounting\Models\Account::where('code', '320101')->where('company_id', $company->id)->firstOrFail(); // Owner's Equity
 
             $lineDTOs = [
                 new CreateJournalEntryLineDTO(
@@ -80,7 +80,7 @@ class JournalEntrySeeder extends Seeder
                 lines: $lineDTOs
             );
 
-            app(CreateJournalEntryAction::class)->execute($journalEntryDTO);
+            app(\Modules\Accounting\Actions\Accounting\CreateJournalEntryAction::class)->execute($journalEntryDTO);
         });
     }
 }

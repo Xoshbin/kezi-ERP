@@ -160,7 +160,7 @@ class StockMoveService
         $move->status = StockMoveStatus::Done;
         $move->save();
 
-        StockMoveConfirmed::dispatch($move);
+        \Modules\Inventory\Events\Inventory\StockMoveConfirmed::dispatch($move);
 
         return $move;
     }

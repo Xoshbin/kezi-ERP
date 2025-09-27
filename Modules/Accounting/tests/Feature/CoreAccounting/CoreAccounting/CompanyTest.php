@@ -14,11 +14,11 @@ uses(RefreshDatabase::class, WithConfiguredCompany::class);
 
 test('a company with existing financial records cannot be deleted', function () {
     // Arrange: Create a dependent financial record.
-    Account::factory()->for($this->company)->create();
+    \Modules\Accounting\Models\Account::factory()->for($this->company)->create();
 
     // Assert: Expect the exact message thrown by the CompanyObserver.
     expect(fn () => $this->company->delete())
-        ->toThrow(DeletionNotAllowedException::class, 'Cannot delete a company with associated financial records.'); // <-- Corrected Message
+        ->toThrow(\Modules\Foundation\Exceptions\DeletionNotAllowedException::class, 'Cannot delete a company with associated financial records.'); // <-- Corrected Message
 
     // Verify: Double-check that the company was NOT removed from the database.
     $this->assertModelExists($this->company);
@@ -42,7 +42,7 @@ test('duplicate tax ID for a company in the same fiscal country is prevented', f
     ];
 
     // Arrange: Instantiate the service that contains our business logic.
-    $companyService = app(CompanyService::class);
+    $companyService = app(\Modules\Foundation\Services\CompanyService::class);
 
     // Assert: We expect that calling the service's create method with duplicate data
     // will fail validation and throw Laravel's standard ValidationException.
@@ -52,7 +52,7 @@ test('duplicate tax ID for a company in the same fiscal country is prevented', f
 
 test('creating a currency with an existing code is prevented', function () {
     // Arrange: Create the initial currency.
-    Currency::factory()->create(['code' => 'XYZ']); // Use a unique code to avoid conflicts.
+    \Modules\Foundation\Models\Currency::factory()->create(['code' => 'XYZ']); // Use a unique code to avoid conflicts.
 
     // Arrange: Prepare the data for the duplicate currency.
     $duplicateData = [
@@ -63,7 +63,7 @@ test('creating a currency with an existing code is prevented', function () {
     ];
 
     // Arrange: Instantiate the service that holds the creation logic.
-    $currencyService = app(CurrencyService::class);
+    $currencyService = app(\Modules\Foundation\Services\CurrencyService::class);
 
     // Assert: Expect the service to throw a ValidationException when trying to create
     // the duplicate record, proving the business rule is enforced.

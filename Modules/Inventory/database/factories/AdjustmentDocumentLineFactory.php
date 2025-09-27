@@ -17,22 +17,22 @@ class AdjustmentDocumentLineFactory extends Factory
     public function definition(): array
     {
         return [
-            'adjustment_document_id' => AdjustmentDocument::factory(),
+            'adjustment_document_id' => \Modules\Inventory\Models\AdjustmentDocument::factory(),
             'company_id' => function (array $attributes) {
-                return AdjustmentDocument::find($attributes['adjustment_document_id'])->company_id;
+                return \Modules\Inventory\Models\AdjustmentDocument::find($attributes['adjustment_document_id'])->company_id;
             },
-            'product_id' => Product::factory(),
+            'product_id' => \Modules\Product\Models\Product::factory(),
             'description' => $this->faker->sentence,
             'quantity' => $this->faker->numberBetween(1, 10),
             'unit_price' => function (array $attributes) {
-                $adjustmentDocument = AdjustmentDocument::find($attributes['adjustment_document_id']);
+                $adjustmentDocument = \Modules\Inventory\Models\AdjustmentDocument::find($attributes['adjustment_document_id']);
                 $currency = $adjustmentDocument->currency;
 
                 return Money::of($this->faker->randomFloat(2, 10, 100), $currency->code);
             },
             'tax_id' => Tax::factory(),
             // Don't set subtotal and total_line_tax - let the model calculate them
-            'account_id' => Account::factory(),
+            'account_id' => \Modules\Accounting\Models\Account::factory(),
         ];
     }
 }

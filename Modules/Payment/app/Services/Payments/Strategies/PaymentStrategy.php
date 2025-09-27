@@ -11,10 +11,10 @@ interface PaymentStrategy
     /**
      * Execute the strategy for creating a payment.
      */
-    public function executeCreate(Payment $payment, CreatePaymentDTO $dto): void;
+    public function executeCreate(\Modules\Payment\Models\Payment $payment, CreatePaymentDTO $dto): void;
 
     /**
      * Execute the strategy for updating a payment.
      */
-    public function executeUpdate(Payment $payment, UpdatePaymentDTO $dto): void;
+    public function executeUpdate(\Modules\Payment\Models\Payment $payment, UpdatePaymentDTO $dto): void;
 }

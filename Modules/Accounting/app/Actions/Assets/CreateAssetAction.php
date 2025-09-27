@@ -9,10 +9,10 @@ use Illuminate\Support\Facades\DB;
 
 class CreateAssetAction
 {
-    public function execute(CreateAssetDTO $dto): Asset
+    public function execute(\Modules\Accounting\DataTransferObjects\Assets\CreateAssetDTO $dto): \Modules\Accounting\Models\Asset
     {
         return DB::transaction(function () use ($dto) {
-            return Asset::create([
+            return \Modules\Accounting\Models\Asset::create([
                 'name' => $dto->name,
                 'company_id' => $dto->company_id,
                 'currency_id' => $dto->currency_id,

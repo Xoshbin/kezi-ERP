@@ -17,7 +17,7 @@ class VendorBillObserver
     /**
      * Handle the VendorBill "updated" event.
      */
-    public function updated(VendorBill $vendorBill): void
+    public function updated(\Modules\Purchase\Models\VendorBill $vendorBill): void
     {
         // Only trigger when the status is first changed to 'posted'.
         // Business logic for creating stock moves now lives in VendorBillService::post().
@@ -27,7 +27,7 @@ class VendorBillObserver
         }
     }
 
-    public function processStorableProductLine(VendorBill $vendorBill, \App\Models\VendorBillLine $line): void
+    public function processStorableProductLine(\Modules\Purchase\Models\VendorBill $vendorBill, \App\Models\VendorBillLine $line): void
     {
         if (! $line->product) {
             return;

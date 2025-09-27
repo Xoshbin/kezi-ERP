@@ -19,19 +19,19 @@ class JournalSeeder extends Seeder
         $company = Company::firstOrFail();
 
         // Fetch Currencies
-        $iqdCurrency = Currency::where('code', 'IQD')->firstOrFail();
-        $usdCurrency = Currency::where('code', 'USD')->firstOrFail();
+        $iqdCurrency = \Modules\Foundation\Models\Currency::where('code', 'IQD')->firstOrFail();
+        $usdCurrency = \Modules\Foundation\Models\Currency::where('code', 'USD')->firstOrFail();
 
         // Fetch Accounts using their unique codes for reliability
-        $bankAccountIqd = Account::where('code', '110102')->firstOrFail();
-        $bankAccountUsd = Account::where('code', '110101')->firstOrFail();
-        $cashAccountIqd = Account::where('code', '110202')->firstOrFail();
-        $cashAccountUsd = Account::where('code', '110201')->firstOrFail();
-        $accountsReceivable = Account::where('code', '120101')->firstOrFail();
-        $productSales = Account::where('code', '410101')->firstOrFail();
-        $accountsPayable = Account::where('code', '210101')->firstOrFail();
-        $cogs = Account::where('code', '510101')->firstOrFail();
-        $depreciationExpenseAccount = Account::where('code', '530301')->firstOrFail();
+        $bankAccountIqd = \Modules\Accounting\Models\Account::where('code', '110102')->firstOrFail();
+        $bankAccountUsd = \Modules\Accounting\Models\Account::where('code', '110101')->firstOrFail();
+        $cashAccountIqd = \Modules\Accounting\Models\Account::where('code', '110202')->firstOrFail();
+        $cashAccountUsd = \Modules\Accounting\Models\Account::where('code', '110201')->firstOrFail();
+        $accountsReceivable = \Modules\Accounting\Models\Account::where('code', '120101')->firstOrFail();
+        $productSales = \Modules\Accounting\Models\Account::where('code', '410101')->firstOrFail();
+        $accountsPayable = \Modules\Accounting\Models\Account::where('code', '210101')->firstOrFail();
+        $cogs = \Modules\Accounting\Models\Account::where('code', '510101')->firstOrFail();
+        $depreciationExpenseAccount = \Modules\Accounting\Models\Account::where('code', '530301')->firstOrFail();
 
         $journals = [
             // == Primary Operational Journals ==

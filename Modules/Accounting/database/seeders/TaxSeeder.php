@@ -25,7 +25,7 @@ class TaxSeeder extends Seeder
                 throw new Exception("Company 'Jmeryar Solutions' not found. Please run CompanySeeder.");
             }
 
-            $vatPayableAccount = Account::where('code', '220101')->where('company_id', $company->id)->first();
+            $vatPayableAccount = \Modules\Accounting\Models\Account::where('code', '220101')->where('company_id', $company->id)->first();
             if (! $vatPayableAccount) {
                 throw new Exception("Account 'VAT Payable' (220101) not found. Please run AccountSeeder.");
             }

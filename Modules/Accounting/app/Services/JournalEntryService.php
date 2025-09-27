@@ -22,7 +22,7 @@ use Illuminate\Validation\ValidationException;
 class JournalEntryService
 {
     public function __construct(
-        protected LockDateService $lockDateService,
+        protected \Modules\Accounting\Services\Accounting\LockDateService $lockDateService,
         protected CurrencyConverterService $currencyConverter
     ) {}
 
@@ -66,8 +66,8 @@ class JournalEntryService
      * @param  JournalEntry  $journalEntry  The entry to delete.
      * @return bool|null True on successful deletion.
      *
-     * @throws DeletionNotAllowedException If the entry is already posted.
-     * @throws PeriodIsLockedException If the entry's date is in a locked period.
+     * @throws \Modules\Foundation\Exceptions\DeletionNotAllowedException If the entry is already posted.
+     * @throws \Modules\Accounting\Exceptions\PeriodIsLockedException If the entry's date is in a locked period.
      */
     public function delete(JournalEntry $journalEntry): ?bool
     {
@@ -78,7 +78,7 @@ class JournalEntryService
         // Block deletion if the entry has been posted.
         // Block deletion if the entry has been posted. This is the non-negotiable immutability rule.
         if ($journalEntry->is_posted) {
-            throw new DeletionNotAllowedException(
+            throw new \Modules\Foundation\Exceptions\DeletionNotAllowedException(
                 'Cannot delete a posted journal entry. Corrections must be made with a new reversal entry.'
             );
         }
@@ -119,7 +119,7 @@ class JournalEntryService
      * @param  array<string, mixed>  $entryData
      * @param  array<string, mixed>  $lines
      */
-    public function createMultiCurrencyEntry(array $entryData, array $lines, Currency $transactionCurrency, User $user): JournalEntry
+    public function createMultiCurrencyEntry(array $entryData, array $lines, \Modules\Foundation\Models\Currency $transactionCurrency, User $user): JournalEntry
     {
         // Convert the array-based line data to DTOs
         $lineDTOs = [];
@@ -150,6 +150,6 @@ class JournalEntryService
         );
 
         // Use the CreateJournalEntryAction which now handles multi-currency
-        return app(CreateJournalEntryAction::class)->execute($journalEntryDTO);
+        return app(\Modules\Accounting\Actions\Accounting\CreateJournalEntryAction::class)->execute($journalEntryDTO);
     }
 }

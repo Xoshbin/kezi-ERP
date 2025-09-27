@@ -15,8 +15,8 @@ class BankStatementLineSeeder extends Seeder
      */
     public function run(): void
     {
-        $statements = BankStatement::all();
-        $partners = Partner::all();
+        $statements = \Modules\Accounting\Models\BankStatement::all();
+        $partners = \Modules\Foundation\Models\Partner::all();
 
         if ($statements->isEmpty()) {
             $this->command->warn('No bank statements found. Skipping BankStatementLineSeeder.');
@@ -32,7 +32,7 @@ class BankStatementLineSeeder extends Seeder
                 $amount = Money::of(rand(-20000, 50000) / 100, $currency->code);
                 $totalAmount = $totalAmount->plus($amount);
 
-                BankStatementLine::create([
+                \Modules\Accounting\Models\BankStatementLine::create([
                     'bank_statement_id' => $statement->id,
                     'date' => $statement->date->subDays(rand(1, 28)),
                     'description' => 'Transaction '.($i + 1),

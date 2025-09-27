@@ -18,7 +18,7 @@ describe('VendorBill Numbering Integration', function () {
 
     it('auto-generates bill numbers when posting vendor bills', function () {
         // Create a draft vendor bill without bill_reference
-        $vendorBill = VendorBill::factory()->withLines(1)->create([
+        $vendorBill = \Modules\Purchase\Models\VendorBill::factory()->withLines(1)->create([
             'company_id' => $this->company->id,
             'status' => VendorBillStatus::Draft,
             'bill_reference' => '', // Empty reference
@@ -38,7 +38,7 @@ describe('VendorBill Numbering Integration', function () {
 
     it('does not overwrite existing bill references', function () {
         // Create a vendor bill with existing reference
-        $vendorBill = VendorBill::factory()->withLines(1)->create([
+        $vendorBill = \Modules\Purchase\Models\VendorBill::factory()->withLines(1)->create([
             'company_id' => $this->company->id,
             'status' => VendorBillStatus::Draft,
             'bill_reference' => 'MANUAL-001',
@@ -58,7 +58,7 @@ describe('VendorBill Numbering Integration', function () {
         // Set custom numbering settings
         $this->company->numbering_settings = [
             'vendor_bill' => [
-                'type' => NumberingType::YEAR_PREFIX->value,
+                'type' => \Modules\Foundation\Enums\Settings\NumberingType::YEAR_PREFIX->value,
                 'prefix' => 'PURCHASE',
                 'padding' => 6,
             ],
@@ -66,7 +66,7 @@ describe('VendorBill Numbering Integration', function () {
         $this->company->save();
 
         // Create a draft vendor bill
-        $vendorBill = VendorBill::factory()->withLines(1)->create([
+        $vendorBill = \Modules\Purchase\Models\VendorBill::factory()->withLines(1)->create([
             'company_id' => $this->company->id,
             'status' => VendorBillStatus::Draft,
             'bill_reference' => '',
@@ -87,7 +87,7 @@ describe('VendorBill Numbering Integration', function () {
         $bills = [];
 
         for ($i = 0; $i < 3; $i++) {
-            $bill = VendorBill::factory()->withLines(1)->create([
+            $bill = \Modules\Purchase\Models\VendorBill::factory()->withLines(1)->create([
                 'company_id' => $this->company->id,
                 'status' => VendorBillStatus::Draft,
                 'bill_reference' => '',
@@ -107,7 +107,7 @@ describe('VendorBill Numbering Integration', function () {
         // Set year-month numbering
         $this->company->numbering_settings = [
             'vendor_bill' => [
-                'type' => NumberingType::YEAR_MONTH->value,
+                'type' => \Modules\Foundation\Enums\Settings\NumberingType::YEAR_MONTH->value,
                 'prefix' => 'BILL',
                 'padding' => 3,
             ],
@@ -115,7 +115,7 @@ describe('VendorBill Numbering Integration', function () {
         $this->company->save();
 
         // Create vendor bill with specific date
-        $vendorBill = VendorBill::factory()->withLines(1)->create([
+        $vendorBill = \Modules\Purchase\Models\VendorBill::factory()->withLines(1)->create([
             'company_id' => $this->company->id,
             'status' => VendorBillStatus::Draft,
             'bill_reference' => '',

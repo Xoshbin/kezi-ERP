@@ -14,7 +14,7 @@ class AuthServiceProvider extends ServiceProvider
      * @var array<class-string, class-string>
      */
     protected $policies = [
-        Payroll::class => PayrollPolicy::class,
+        \Modules\HR\Models\Payroll::class => \Modules\HR\Policies\PayrollPolicy::class,
     ];
 
     /**

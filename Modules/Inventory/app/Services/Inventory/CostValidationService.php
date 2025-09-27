@@ -25,14 +25,14 @@ class CostValidationService
     /**
      * Validate if cost can be determined for a product and stock move
      *
-     * @param Product $product
+     * @param \Modules\Product\Models\Product $product
      * @param StockMoveType $moveType
      * @param StockMove|null $stockMove
      * @param bool $allowFallbacks
      * @return CostValidationResult
      */
     public function validateCostAvailability(
-        Product $product,
+        \Modules\Product\Models\Product $product,
         StockMoveType $moveType,
         ?StockMove $stockMove = null,
         bool $allowFallbacks = false
@@ -75,7 +75,7 @@ class CostValidationService
     /**
      * Get cost preview for a product and quantity
      *
-     * @param Product $product
+     * @param \Modules\Product\Models\Product $product
      * @param float $quantity
      * @param StockMoveType $moveType
      * @param StockMove|null $stockMove
@@ -83,7 +83,7 @@ class CostValidationService
      * @return CostPreviewResult
      */
     public function getCostPreview(
-        Product $product,
+        \Modules\Product\Models\Product $product,
         float $quantity,
         StockMoveType $moveType,
         ?StockMove $stockMove = null,
@@ -118,10 +118,10 @@ class CostValidationService
     /**
      * Check if a product has any cost information available
      *
-     * @param Product $product
+     * @param \Modules\Product\Models\Product $product
      * @return bool
      */
-    public function hasAnyCostInformation(Product $product): bool
+    public function hasAnyCostInformation(\Modules\Product\Models\Product $product): bool
     {
         // Check average cost
         if ($product->average_cost && $product->average_cost->isPositive()) {
@@ -144,10 +144,10 @@ class CostValidationService
     /**
      * Get suggested actions for improving cost availability
      *
-     * @param Product $product
+     * @param \Modules\Product\Models\Product $product
      * @return array
      */
-    public function getSuggestedActions(Product $product): array
+    public function getSuggestedActions(\Modules\Product\Models\Product $product): array
     {
         // Use the new analysis service for context-aware suggestions
         $analysisService = app(\App\Services\Inventory\ProductCostAnalysisService::class);

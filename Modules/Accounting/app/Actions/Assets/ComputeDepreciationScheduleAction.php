@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\DB;
 
 class ComputeDepreciationScheduleAction
 {
-    public function execute(Asset $asset): void
+    public function execute(\Modules\Accounting\Models\Asset $asset): void
     {
         DB::transaction(function () use ($asset) {
             // Clear existing draft entries
@@ -24,7 +24,7 @@ class ComputeDepreciationScheduleAction
         });
     }
 
-    private function computeStraightLine(Asset $asset): void
+    private function computeStraightLine(\Modules\Accounting\Models\Asset $asset): void
     {
         $depreciableValue = $asset->purchase_value->minus($asset->salvage_value);
         $totalMonths = $asset->useful_life_years * 12;
@@ -38,7 +38,7 @@ class ComputeDepreciationScheduleAction
         $depreciationDate = $asset->purchase_date->copy()->startOfMonth()->addMonth();
 
         for ($i = 0; $i < $totalMonths; $i++) {
-            DepreciationEntry::create([
+            \Modules\Accounting\Models\DepreciationEntry::create([
                 'asset_id' => $asset->id,
                 'company_id' => $asset->company_id,
                 'depreciation_date' => $depreciationDate->copy(),

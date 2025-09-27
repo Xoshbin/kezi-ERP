@@ -57,7 +57,7 @@ class CurrencyRatesTable
                 SelectFilter::make('currency_id')
                     ->label(__('currency.exchange_rates.currency'))
                     ->relationship('currency', 'name')
-                    ->getOptionLabelFromRecordUsing(function (Currency $record): string {
+                    ->getOptionLabelFromRecordUsing(function (\Modules\Foundation\Models\Currency $record): string {
                         $currencyName = is_array($record->name) ? ($record->name['en'] ?? (empty($record->name) ? '' : (string) array_values($record->name)[0])) : (string) $record->name;
 
                         return "{$currencyName} ({$record->code})";

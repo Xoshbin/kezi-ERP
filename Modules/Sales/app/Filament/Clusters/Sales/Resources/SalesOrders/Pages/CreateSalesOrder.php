@@ -55,7 +55,7 @@ class CreateSalesOrder extends CreateRecord
     private function getCurrencyCode(array $data): string
     {
         $currencyId = $data['currency_id'];
-        $currency = \App\Models\Currency::find($currencyId);
+        $currency = \Modules\Foundation\Models\Currency::find($currencyId);
         return $currency ? $currency->code : 'USD';
     }
 }

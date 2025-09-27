@@ -58,8 +58,8 @@ class BankStatement extends Model
 
     protected $casts = [
         'date' => 'date',
-        'starting_balance' => DocumentCurrencyMoneyCast::class,
-        'ending_balance' => DocumentCurrencyMoneyCast::class,
+        'starting_balance' => \Modules\Foundation\Casts\DocumentCurrencyMoneyCast::class,
+        'ending_balance' => \Modules\Foundation\Casts\DocumentCurrencyMoneyCast::class,
     ];
 
     public function company(): BelongsTo
