@@ -2,11 +2,10 @@
 
 namespace Modules\Inventory\Tests\Feature\Inventory;
 
-use App\Actions\Purchases\CreateVendorBillLineAction;
-use App\DataTransferObjects\Purchases\CreateVendorBillLineDTO;
-use App\Services\VendorBillService;
 use Brick\Money\Money;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Modules\Product\Models\Product;
+use Modules\Purchase\Models\VendorBill;
 use Tests\Traits\WithConfiguredCompany;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);
@@ -16,9 +15,9 @@ it('posts AP for storable product bills and posts inventory + input tax correctl
     $this->setupInventoryTestEnvironment();
 
     // Create storable product with inventory accounts
-    $this->product = \Modules\Product\Models\Product::factory()->for($this->company)->create([
-        'type' => \Modules\Product\Enums\Products\ProductType::Storable,
-        'inventory_valuation_method' => \App\Enums\Inventory\ValuationMethod::AVCO,
+    $this->product = Product::factory()->for($this->company)->create([
+        'type' => ProductType::Storable,
+        'inventory_valuation_method' => ValuationMethod::AVCO,
         'default_inventory_account_id' => $this->inventoryAccount->id,
         'default_stock_input_account_id' => $this->stockInputAccount->id,
     ]);
@@ -27,7 +26,7 @@ it('posts AP for storable product bills and posts inventory + input tax correctl
     $unitPrice = Money::of(200, $this->company->currency->code);
     $total = $unitPrice->multipliedBy($quantity);
 
-    $vendorBill = \Modules\Purchase\Models\VendorBill::factory()->for($this->company)->create([
+    $vendorBill = VendorBill::factory()->for($this->company)->create([
         'vendor_id' => $this->vendor->id,
         'status' => 'draft',
     ]);

@@ -1,12 +1,14 @@
 <?php
 
-use App\Enums\Purchases\VendorBillStatus;
-use App\Enums\Sales\InvoiceStatus;
-use App\Services\InvoiceService;
-use App\Services\VendorBillService;
 use Brick\Money\Money;
 use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Modules\Foundation\Models\Currency;
+use Modules\Foundation\Models\CurrencyRate;
+use Modules\Foundation\Models\Partner;
+use Modules\Product\Models\Product;
+use Modules\Purchase\Models\VendorBill;
+use Modules\Sales\Models\Invoice;
 use Tests\Traits\WithConfiguredCompany;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);
@@ -15,7 +17,7 @@ beforeEach(function () {
     $this->setupWithConfiguredCompany();
 
     // Create foreign currency (USD)
-    $this->foreignCurrency = \Modules\Foundation\Models\Currency::factory()->create([
+    $this->foreignCurrency = Currency::factory()->create([
         'code' => 'USD',
         'name' => ['en' => 'US Dollar'],
         'symbol' => '$',
@@ -24,7 +26,7 @@ beforeEach(function () {
 
     // Create exchange rate for today (future date relative to test document)
     $this->exchangeRate = 1460.0;
-    \Modules\Foundation\Models\CurrencyRate::create([
+    CurrencyRate::create([
         'currency_id' => $this->foreignCurrency->id,
         'company_id' => $this->company->id,
         'rate' => $this->exchangeRate,
@@ -32,15 +34,15 @@ beforeEach(function () {
         'source' => 'manual',
     ]);
 
-    $this->vendor = \Modules\Foundation\Models\Partner::factory()->vendor()->create(['company_id' => $this->company->id]);
-    $this->customer = \Modules\Foundation\Models\Partner::factory()->customer()->create(['company_id' => $this->company->id]);
-    $this->product = \Modules\Product\Models\Product::factory()->create(['company_id' => $this->company->id]);
+    $this->vendor = Partner::factory()->vendor()->create(['company_id' => $this->company->id]);
+    $this->customer = Partner::factory()->customer()->create(['company_id' => $this->company->id]);
+    $this->product = Product::factory()->create(['company_id' => $this->company->id]);
 });
 
 describe('Exchange Rate Historical Fallback', function () {
     test('vendor bill service falls back to latest rate when no historical rate exists', function () {
         // Create vendor bill with historical date (before our exchange rate)
-        $vendorBill = \Modules\Purchase\Models\VendorBill::factory()->create([
+        $vendorBill = VendorBill::factory()->create([
             'company_id' => $this->company->id,
             'vendor_id' => $this->vendor->id,
             'currency_id' => $this->foreignCurrency->id,
@@ -72,7 +74,7 @@ describe('Exchange Rate Historical Fallback', function () {
 
     test('invoice service falls back to latest rate when no historical rate exists', function () {
         // Create invoice with historical date (before our exchange rate)
-        $invoice = \Modules\Sales\Models\Invoice::factory()->create([
+        $invoice = Invoice::factory()->create([
             'company_id' => $this->company->id,
             'customer_id' => $this->customer->id,
             'currency_id' => $this->foreignCurrency->id,
@@ -106,7 +108,7 @@ describe('Exchange Rate Historical Fallback', function () {
         $manualRate = 1500.0;
 
         // Create vendor bill with manual exchange rate
-        $vendorBill = \Modules\Purchase\Models\VendorBill::factory()->create([
+        $vendorBill = VendorBill::factory()->create([
             'company_id' => $this->company->id,
             'vendor_id' => $this->vendor->id,
             'currency_id' => $this->foreignCurrency->id,
@@ -138,7 +140,7 @@ describe('Exchange Rate Historical Fallback', function () {
 
     test('services handle base currency documents correctly', function () {
         // Create vendor bill in base currency (IQD)
-        $vendorBill = \Modules\Purchase\Models\VendorBill::factory()->create([
+        $vendorBill = VendorBill::factory()->create([
             'company_id' => $this->company->id,
             'vendor_id' => $this->vendor->id,
             'currency_id' => $this->company->currency_id, // Base currency

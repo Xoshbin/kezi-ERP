@@ -1,20 +1,13 @@
 <?php
 
-use App\DataTransferObjects\Inventory\CreateStockMoveDTO;
-use App\DataTransferObjects\Inventory\CreateStockMoveProductLineDTO;
-use App\Enums\Inventory\StockMoveStatus;
-use App\Enums\Inventory\StockMoveType;
 use App\Models\Company;
-use App\Models\StockLocation;
-use App\Models\StockMove;
-use App\Models\StockMoveProductLine;
 use App\Models\User;
-use App\Services\Inventory\StockMoveService;
+use Modules\Product\Models\Product;
 
 beforeEach(function () {
     $this->company = Company::factory()->create();
     $this->user = User::factory()->create();
-    $this->product = \Modules\Product\Models\Product::factory()->create(['company_id' => $this->company->id]);
+    $this->product = Product::factory()->create(['company_id' => $this->company->id]);
     $this->fromLocation = StockLocation::factory()->create(['company_id' => $this->company->id]);
     $this->toLocation = StockLocation::factory()->create(['company_id' => $this->company->id]);
     $this->stockMoveService = app(StockMoveService::class);
@@ -65,7 +58,7 @@ it('can create a stock move with product lines', function () {
 });
 
 it('can create a stock move with multiple product lines', function () {
-    $product2 = \Modules\Product\Models\Product::factory()->create(['company_id' => $this->company->id]);
+    $product2 = Product::factory()->create(['company_id' => $this->company->id]);
 
     $productLineDto1 = new CreateStockMoveProductLineDTO(
         product_id: $this->product->id,

@@ -2,16 +2,15 @@
 
 namespace Modules\Accounting\Actions\Assets;
 
-use App\DataTransferObjects\Assets\CreateAssetDTO;
-use App\Enums\Assets\AssetStatus;
 use Illuminate\Support\Facades\DB;
+use Modules\Accounting\Models\Asset;
 
 class CreateAssetAction
 {
-    public function execute(\Modules\Accounting\DataTransferObjects\Assets\CreateAssetDTO $dto): \Modules\Accounting\Models\Asset
+    public function execute(\Modules\Accounting\DataTransferObjects\Assets\CreateAssetDTO $dto): Asset
     {
         return DB::transaction(function () use ($dto) {
-            return \Modules\Accounting\Models\Asset::create([
+            return Asset::create([
                 'name' => $dto->name,
                 'company_id' => $dto->company_id,
                 'currency_id' => $dto->currency_id,

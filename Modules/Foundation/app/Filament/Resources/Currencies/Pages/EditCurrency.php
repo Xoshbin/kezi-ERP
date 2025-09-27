@@ -2,11 +2,11 @@
 
 namespace Modules\Foundation\Filament\Clusters\Settings\Resources\Currencies\Pages;
 
-use App\Filament\Clusters\Settings\Resources\Currencies\CurrencyResource;
 use Filament\Actions\DeleteAction;
 use Filament\Resources\Pages\EditRecord;
 use LaraZeus\SpatieTranslatable\Actions\LocaleSwitcher;
 use LaraZeus\SpatieTranslatable\Resources\Pages\EditRecord\Concerns\Translatable;
+use Modules\Foundation\Filament\Clusters\Settings\Resources\Currencies\CurrencyResource;
 
 class EditCurrency extends EditRecord
 {

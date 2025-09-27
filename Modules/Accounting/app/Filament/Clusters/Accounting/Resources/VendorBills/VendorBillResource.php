@@ -2,30 +2,6 @@
 
 namespace Modules\Accounting\Filament\Clusters\Accounting\Resources\VendorBills;
 
-use App\Actions\Payments\CreatePaymentAction;
-use App\DataTransferObjects\Payments\CreatePaymentDocumentLinkDTO;
-use App\DataTransferObjects\Payments\CreatePaymentDTO;
-use App\Enums\Accounting\TaxType;
-use App\Enums\Assets\DepreciationMethod;
-use App\Enums\Partners\PartnerType;
-use App\Enums\Payments\PaymentMethod;
-use App\Enums\Payments\PaymentType;
-use App\Enums\Products\ProductType;
-use App\Enums\Purchases\VendorBillStatus;
-use App\Enums\Shared\PaymentState;
-use App\Filament\Clusters\Accounting\AccountingCluster;
-use App\Filament\Clusters\Accounting\Resources\VendorBills\Pages\CreateVendorBill;
-use App\Filament\Clusters\Accounting\Resources\VendorBills\Pages\EditVendorBill;
-use App\Filament\Clusters\Accounting\Resources\VendorBills\Pages\ListVendorBills;
-use App\Filament\Clusters\Accounting\Resources\VendorBills\RelationManagers\AdjustmentDocumentsRelationManager;
-use App\Filament\Clusters\Accounting\Resources\VendorBills\RelationManagers\PaymentsRelationManager;
-use App\Filament\Forms\Components\MoneyInput;
-use App\Filament\Tables\Columns\MoneyColumn;
-use App\Models\Company;
-use App\Models\Journal;
-use App\Models\Tax;
-use App\Rules\NotInLockedPeriod;
-use App\Services\PaymentService;
 use BackedEnum;
 use Brick\Money\Money;
 use Exception;
@@ -50,11 +26,17 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Auth;
+use Modules\Accounting\Models\Account;
+use Modules\Accounting\Models\AssetCategory;
+use Modules\Foundation\Models\Currency;
+use Modules\Foundation\Models\CurrencyRate;
+use Modules\Product\Models\Product;
+use Modules\Purchase\Models\VendorBill;
 use Xoshbin\TranslatableSelect\Components\TranslatableSelect;
 
 class VendorBillResource extends Resource
 {
-    protected static ?string $model = \Modules\Purchase\Models\VendorBill::class;
+    protected static ?string $model = VendorBill::class;
 
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-receipt-percent';
 
@@ -127,7 +109,7 @@ class VendorBillResource extends Resource
                             return $action
                                 ->modalWidth('lg');
                         }),
-                    TranslatableSelect::forModel('currency_id', \Modules\Foundation\Models\Currency::class, 'name')
+                    TranslatableSelect::forModel('currency_id', Currency::class, 'name')
                         ->label(__('vendor_bill.currency'))
                         ->required()
                         ->live()
@@ -141,7 +123,7 @@ class VendorBillResource extends Resource
                         })
                         ->afterStateUpdated(function (callable $set, $state) {
                             if ($state) {
-                                $currency = \Modules\Foundation\Models\Currency::find($state);
+                                $currency = Currency::find($state);
                                 // Ensure we have a single Currency model, not a collection
                                 if ($currency instanceof Collection) {
                                     $currency = $currency->first();
@@ -150,7 +132,7 @@ class VendorBillResource extends Resource
 
                                 if ($currency && $company instanceof Company && $currency->id !== $company->currency_id) {
                                     // Get latest exchange rate for this company
-                                    $latestRate = \Modules\Foundation\Models\CurrencyRate::getLatestRate($currency->id, $company->id);
+                                    $latestRate = CurrencyRate::getLatestRate($currency->id, $company->id);
                                     if ($latestRate) {
                                         $set('exchange_rate_at_creation', $latestRate);
                                     }
@@ -196,14 +178,14 @@ class VendorBillResource extends Resource
                             $company = Filament::getTenant();
                             return $currencyId && $company instanceof Company && $currencyId != $company->currency_id;
                         })
-                        ->disabled(fn(?\Modules\Purchase\Models\VendorBill $record) => $record && $record->status !== VendorBillStatus::Draft)
+                        ->disabled(fn(?VendorBill $record) => $record && $record->status !== VendorBillStatus::Draft)
                         ->helperText(function (callable $get) {
                             $currencyId = $get('currency_id');
                             $company = Filament::getTenant();
                             if ($currencyId && $company instanceof Company && $currencyId !== $company->currency_id) {
-                                $currency = \Modules\Foundation\Models\Currency::find($currencyId);
+                                $currency = Currency::find($currencyId);
                                 if ($currency) {
-                                    $latestRate = \Modules\Foundation\Models\CurrencyRate::getLatestRate($currency->id, $company->id);
+                                    $latestRate = CurrencyRate::getLatestRate($currency->id, $company->id);
                                     if ($latestRate) {
                                         return __('vendor_bill.exchange_rate_helper') . ' ' . __('vendor_bill.current_rate', ['rate' => $latestRate]);
                                     }
@@ -265,10 +247,10 @@ class VendorBillResource extends Resource
                         ->live()
                         ->reorderable(true)
                         ->minItems(1)
-                        ->disabled(fn(?\Modules\Purchase\Models\VendorBill $record) => $record ? $record->status !== VendorBillStatus::Draft : false)
-                        ->deletable(fn(?\Modules\Purchase\Models\VendorBill $record) => $record === null || $record->status === VendorBillStatus::Draft)
+                        ->disabled(fn(?VendorBill $record) => $record ? $record->status !== VendorBillStatus::Draft : false)
+                        ->deletable(fn(?VendorBill $record) => $record === null || $record->status === VendorBillStatus::Draft)
                         ->schema([
-                            TranslatableSelect::forModel('product_id', \Modules\Product\Models\Product::class, 'name')
+                            TranslatableSelect::forModel('product_id', Product::class, 'name')
                                 ->label(__('vendor_bill.product'))
                                 ->searchableFields(['name', 'sku', 'description'])
                                 ->searchable()
@@ -276,7 +258,7 @@ class VendorBillResource extends Resource
                                 ->reactive()
                                 ->afterStateUpdated(function (callable $set, $state) {
                                     if ($state) {
-                                        $product = \Modules\Product\Models\Product::find($state);
+                                        $product = Product::find($state);
                                         // Ensure we have a single Product model, not a collection
                                         if ($product instanceof Collection) {
                                             $product = $product->first();
@@ -285,7 +267,7 @@ class VendorBillResource extends Resource
                                             $set('description', $product->name);
                                             // Convert Money object to string for MoneyInput component
                                             $unitPrice = $product->unit_price;
-                                            if ($unitPrice instanceof \Brick\Money\Money) {
+                                            if ($unitPrice instanceof Money) {
                                                 $set('unit_price', $unitPrice->getAmount()->__toString());
                                             } else {
                                                 $set('unit_price', $unitPrice);
@@ -344,7 +326,7 @@ class VendorBillResource extends Resource
                                 ->currencyField('../../currency_id')
                                 ->required()
                                 ->columnSpan(3),
-                            TranslatableSelect::forModel('expense_account_id', \Modules\Accounting\Models\Account::class, 'name')
+                            TranslatableSelect::forModel('expense_account_id', Account::class, 'name')
                                 ->label(__('vendor_bill.expense_account'))
                                 ->searchableFields(['name', 'code'])
                                 ->searchable()
@@ -365,7 +347,7 @@ class VendorBillResource extends Resource
                                         ->default(fn() => Filament::getTenant()?->getKey()),
                                     Select::make('tax_account_id')
                                         ->options(function () {
-                                            return \Modules\Accounting\Models\Account::where('company_id', Filament::getTenant()?->getKey())
+                                            return Account::where('company_id', Filament::getTenant()?->getKey())
                                                 ->where('is_deprecated', false)
                                                 ->pluck('name', 'id');
                                         })
@@ -398,7 +380,7 @@ class VendorBillResource extends Resource
                                         ->modalWidth('lg');
                                 })
                                 ->columnSpan(3),
-                            TranslatableSelect::forModel('asset_category_id', \Modules\Accounting\Models\AssetCategory::class, 'name')
+                            TranslatableSelect::forModel('asset_category_id', AssetCategory::class, 'name')
                                 ->label(__('asset.category'))
                                 ->searchableFields(['name'])
                                 ->searchable()
@@ -465,16 +447,16 @@ class VendorBillResource extends Resource
                         ])
                         ->maxSize(10240) // 10MB max file size
                         ->maxFiles(10)
-                        ->disabled(fn(?\Modules\Purchase\Models\VendorBill $record) => $record ? $record->status !== VendorBillStatus::Draft : false)
+                        ->disabled(fn(?VendorBill $record) => $record ? $record->status !== VendorBillStatus::Draft : false)
                         ->helperText(__('vendor_bill.attachments_helper'))
                         ->downloadable()
                         ->openable()
-                        ->deletable(fn(?\Modules\Purchase\Models\VendorBill $record) => $record === null || $record->status === VendorBillStatus::Draft)
+                        ->deletable(fn(?VendorBill $record) => $record === null || $record->status === VendorBillStatus::Draft)
                         ->reorderable(),
                 ])
                 ->collapsible()
                 ->columnSpanFull()
-                ->collapsed(fn(?\Modules\Purchase\Models\VendorBill $record) => $record && $record->attachments()->count() === 0),
+                ->collapsed(fn(?VendorBill $record) => $record && $record->attachments()->count() === 0),
 
             Section::make(__('vendor_bill.company_currency_totals'))
                 ->schema([
@@ -482,22 +464,22 @@ class VendorBillResource extends Resource
                         ->label(__('vendor_bill.exchange_rate_at_creation'))
                         ->numeric()
                         ->disabled()
-                        ->visible(fn(?\Modules\Purchase\Models\VendorBill $record) => $record && $record->exchange_rate_at_creation),
+                        ->visible(fn(?VendorBill $record) => $record && $record->exchange_rate_at_creation),
 
                     \Modules\Foundation\App\Filament\Forms\Components\MoneyInput::make('total_amount_company_currency')
                         ->label(__('vendor_bill.total_amount_company_currency'))
                         ->currencyField('../../company.currency_id')
                         ->disabled()
-                        ->visible(fn(?\Modules\Purchase\Models\VendorBill $record) => $record && $record->total_amount_company_currency),
+                        ->visible(fn(?VendorBill $record) => $record && $record->total_amount_company_currency),
 
                     \Modules\Foundation\App\Filament\Forms\Components\MoneyInput::make('total_tax_company_currency')
                         ->label(__('vendor_bill.total_tax_company_currency'))
                         ->currencyField('../../company.currency_id')
                         ->disabled()
-                        ->visible(fn(?\Modules\Purchase\Models\VendorBill $record) => $record && $record->total_tax_company_currency),
+                        ->visible(fn(?VendorBill $record) => $record && $record->total_tax_company_currency),
                 ])
                 ->columnSpanFull()
-                ->visible(fn(?\Modules\Purchase\Models\VendorBill $record) => $record && ($record->exchange_rate_at_creation || $record->total_amount_company_currency)),
+                ->visible(fn(?VendorBill $record) => $record && ($record->exchange_rate_at_creation || $record->total_amount_company_currency)),
         ]);
     }
 
@@ -509,7 +491,7 @@ class VendorBillResource extends Resource
                 TextColumn::make('reference')
                     ->label(__('vendor_bill.reference'))
                     ->searchable(['bill_reference'])
-                    ->getStateUsing(function (\Modules\Purchase\Models\VendorBill $record): string {
+                    ->getStateUsing(function (VendorBill $record): string {
                         if ($record->bill_reference) {
                             return $record->bill_reference;
                         }
@@ -517,8 +499,8 @@ class VendorBillResource extends Resource
                         return 'DRAFT-' . str_pad((string) $record->id, 5, '0', STR_PAD_LEFT);
                     })
                     ->badge()
-                    ->color(fn(\Modules\Purchase\Models\VendorBill $record): string => $record->bill_reference ? 'success' : 'warning')
-                    ->icon(fn(\Modules\Purchase\Models\VendorBill $record): string => $record->bill_reference ? 'heroicon-m-check-circle' : 'heroicon-m-pencil-square')
+                    ->color(fn(VendorBill $record): string => $record->bill_reference ? 'success' : 'warning')
+                    ->icon(fn(VendorBill $record): string => $record->bill_reference ? 'heroicon-m-check-circle' : 'heroicon-m-pencil-square')
                     ->sortable(),
 
                 // Vendor (critical for identification)
@@ -537,7 +519,7 @@ class VendorBillResource extends Resource
                     ->color('info')
                     ->icon('heroicon-m-document-text')
                     ->url(
-                        fn(?\Modules\Purchase\Models\VendorBill $record): ?string =>
+                        fn(?VendorBill $record): ?string =>
                         $record?->purchaseOrder
                             ? route('filament.jmeryar.purchases.resources.purchase-orders.view', [
                                 'record' => $record->purchaseOrder,
@@ -693,15 +675,15 @@ class VendorBillResource extends Resource
                         \Modules\Foundation\App\Filament\Forms\Components\MoneyInput::make('amount')
                             ->label(__('payment.form.amount'))
                             ->currencyField('currency_id')
-                            ->default(fn(\Modules\Purchase\Models\VendorBill $record) => $record->getRemainingAmount())
+                            ->default(fn(VendorBill $record) => $record->getRemainingAmount())
                             ->required(),
                         TextInput::make('reference')
                             ->label(__('payment.form.reference'))
                             ->placeholder(__('Optional reference')),
                         Hidden::make('currency_id')
-                            ->default(fn(\Modules\Purchase\Models\VendorBill $record) => $record->currency_id),
+                            ->default(fn(VendorBill $record) => $record->currency_id),
                     ])
-                    ->action(function (\Modules\Purchase\Models\VendorBill $record, array $data) {
+                    ->action(function (VendorBill $record, array $data) {
                         try {
                             $currency = $record->currency;
 
@@ -748,7 +730,7 @@ class VendorBillResource extends Resource
                         }
                     })
                     ->visible(
-                        fn(\Modules\Purchase\Models\VendorBill $record) => $record->status === VendorBillStatus::Posted &&
+                        fn(VendorBill $record) => $record->status === VendorBillStatus::Posted &&
                             ! $record->getRemainingAmount()->isZero()
                     ),
             ])

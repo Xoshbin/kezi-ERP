@@ -2,15 +2,16 @@
 
 namespace Modules\Accounting\Services;
 
-use App\Actions\Accounting\CreateJournalEntryAction;
-use App\DataTransferObjects\Accounting\CreateJournalEntryDTO;
-use App\DataTransferObjects\Accounting\CreateJournalEntryLineDTO;
-use App\Models\Account;
 use App\Models\Company;
-use App\Models\JournalEntry;
 use Brick\Money\Money;
 use Carbon\Carbon;
+use Exception;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
+use Modules\Foundation\Models\Currency;
+use Modules\Payment\Models\Payment;
+use Modules\Purchase\Models\VendorBill;
+use Modules\Sales\Models\Invoice;
 
 /**
  * ExchangeGainLossService
@@ -35,8 +36,8 @@ class ExchangeGainLossService
     /**
      * Calculate and post realized exchange gain/loss for a payment reconciliation.
      *
-     * @param \Modules\Payment\Models\Payment $payment
-     * @param \Modules\Sales\Models\Invoice|\Modules\Purchase\Models\VendorBill $document
+     * @param Payment $payment
+     * @param Invoice|VendorBill $document
      */
     public function processRealizedGainLoss($payment, $document, Money $amountApplied): ?JournalEntry
     {
@@ -99,7 +100,7 @@ class ExchangeGainLossService
             $foreignCurrencyBalances = $this->getForeignCurrencyBalances($account, $revaluationDate);
 
             foreach ($foreignCurrencyBalances as $currencyId => $balance) {
-                $currency = \Modules\Foundation\Models\Currency::find($currencyId);
+                $currency = Currency::find($currencyId);
 
                 if (! $currency || $currency->id === $company->currency_id) {
                     continue; // Skip base currency
@@ -163,7 +164,7 @@ class ExchangeGainLossService
      */
     protected function calculateUnrealizedGainLoss(
         Money $balance,
-        \Modules\Foundation\Models\Currency $currency,
+        Currency $currency,
         Company $company,
         Carbon $revaluationDate
     ): Money {
@@ -194,14 +195,14 @@ class ExchangeGainLossService
     protected function postRealizedGainLossEntry(
         Company $company,
         Money $exchangeDifference,
-        \Modules\Payment\Models\Payment $payment,
-        \Illuminate\Database\Eloquent\Model $document
+        Payment $payment,
+        Model $document
     ): JournalEntry {
         $isGain = $exchangeDifference->isPositive();
         $gainLossAccount = $company->default_gain_loss_account_id;
 
         // Determine the receivable/payable account
-        $balanceAccount = $document instanceof \Modules\Sales\Models\Invoice
+        $balanceAccount = $document instanceof Invoice
             ? $company->default_accounts_receivable_id
             : $company->default_accounts_payable_id;
 
@@ -242,7 +243,7 @@ class ExchangeGainLossService
         $lineDTOs = [];
         foreach ($lines as $line) {
             if (! $line['account_id']) {
-                throw new \Exception('Account ID is required for exchange gain/loss journal entry line');
+                throw new Exception('Account ID is required for exchange gain/loss journal entry line');
             }
             $lineDTOs[] = new CreateJournalEntryLineDTO(
                 account_id: $line['account_id'],
@@ -255,7 +256,7 @@ class ExchangeGainLossService
         }
 
         if (! $company->default_bank_journal_id) {
-            throw new \Exception('Company must have a default bank journal for exchange gain/loss entries');
+            throw new Exception('Company must have a default bank journal for exchange gain/loss entries');
         }
 
         $entryDTO = new CreateJournalEntryDTO(
@@ -278,7 +279,7 @@ class ExchangeGainLossService
     /**
      * Get exchange rate from document (invoice/vendor bill).
      */
-    protected function getDocumentExchangeRate(\Illuminate\Database\Eloquent\Model $document): ?float
+    protected function getDocumentExchangeRate(Model $document): ?float
     {
         // This would need to be implemented based on how you store exchange rates on documents
         // For now, return null as placeholder
@@ -288,7 +289,7 @@ class ExchangeGainLossService
     /**
      * Get exchange rate from payment.
      */
-    protected function getPaymentExchangeRate(\Modules\Payment\Models\Payment $payment): ?float
+    protected function getPaymentExchangeRate(Payment $payment): ?float
     {
         // This would need to be implemented based on how you store exchange rates on payments
         // For now, return null as placeholder
@@ -334,7 +335,7 @@ class ExchangeGainLossService
     protected function postUnrealizedGainLossEntry(
         Company $company,
         \Modules\Accounting\Models\Account $account,
-        \Modules\Foundation\Models\Currency $currency,
+        Currency $currency,
         Money $unrealizedGainLoss,
         Carbon $revaluationDate
     ): ?JournalEntry {

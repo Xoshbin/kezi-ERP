@@ -2,6 +2,7 @@
 
 namespace Modules\Accounting\Filament\Clusters\Accounting\Widgets;
 
+use App\Models\Company;
 use App\Services\Reports\ProfitAndLossStatementService;
 use Carbon\Carbon;
 use Exception;
@@ -24,7 +25,7 @@ class IncomeVsExpenseChart extends ChartWidget
     protected function getData(): array
     {
         $company = Filament::getTenant();
-        if (! $company instanceof \App\Models\Company) {
+        if (! $company instanceof Company) {
             return $this->getEmptyData();
         }
 

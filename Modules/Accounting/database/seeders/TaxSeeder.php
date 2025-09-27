@@ -2,12 +2,11 @@
 
 namespace Modules\Accounting\Database\Seeders;
 
-use App\Enums\Accounting\TaxType;
 use App\Models\Company;
-use App\Models\Tax;
 use Exception;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
+use Modules\Accounting\Models\Account;
 
 class TaxSeeder extends Seeder
 {
@@ -24,7 +23,7 @@ class TaxSeeder extends Seeder
                 throw new Exception("Company 'Jmeryar Solutions' not found. Please run CompanySeeder.");
             }
 
-            $vatPayableAccount = \Modules\Accounting\Models\Account::where('code', '220101')->where('company_id', $company->id)->first();
+            $vatPayableAccount = Account::where('code', '220101')->where('company_id', $company->id)->first();
             if (! $vatPayableAccount) {
                 throw new Exception("Account 'VAT Payable' (220101) not found. Please run AccountSeeder.");
             }

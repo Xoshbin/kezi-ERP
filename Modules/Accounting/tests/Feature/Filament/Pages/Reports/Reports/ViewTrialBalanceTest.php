@@ -2,14 +2,10 @@
 
 namespace Modules\Accounting\Tests\Feature\Filament\Pages\Reports;
 
-use App\Enums\Accounting\AccountType;
-use App\Filament\Clusters\Accounting\Pages\Reports\ViewTrialBalance;
-use App\Models\Journal;
-use App\Models\JournalEntry;
-use App\Models\JournalEntryLine;
 use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Livewire\Livewire;
+use Modules\Accounting\Models\Account;
 use Tests\Traits\WithConfiguredCompany;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);
@@ -34,17 +30,17 @@ test('it generates a balanced trial balance report', function () {
     $journal = Journal::factory()->for($company)->create();
     $asOfDate = Carbon::parse('2025-12-31');
 
-    $bankAccount = \Modules\Accounting\Models\Account::factory()->for($company)->create([
+    $bankAccount = Account::factory()->for($company)->create([
         'code' => '1000',
         'name' => 'Bank Account',
         'type' => \Modules\Accounting\Enums\Accounting\AccountType::BankAndCash,
     ]);
-    $salesAccount = \Modules\Accounting\Models\Account::factory()->for($company)->create([
+    $salesAccount = Account::factory()->for($company)->create([
         'code' => '4000',
         'name' => 'Sales Revenue',
         'type' => \Modules\Accounting\Enums\Accounting\AccountType::Income,
     ]);
-    $expenseAccount = \Modules\Accounting\Models\Account::factory()->for($company)->create([
+    $expenseAccount = Account::factory()->for($company)->create([
         'code' => '5000',
         'name' => 'Office Expenses',
         'type' => \Modules\Accounting\Enums\Accounting\AccountType::Expense,
@@ -111,7 +107,7 @@ test('it shows unbalanced status when trial balance does not balance', function 
     $journal = Journal::factory()->for($company)->create();
     $asOfDate = Carbon::parse('2025-12-31');
 
-    $bankAccount = \Modules\Accounting\Models\Account::factory()->for($company)->create(['type' => \Modules\Accounting\Enums\Accounting\AccountType::BankAndCash]);
+    $bankAccount = Account::factory()->for($company)->create(['type' => \Modules\Accounting\Enums\Accounting\AccountType::BankAndCash]);
 
     // Create an unbalanced entry by directly inserting into database
     $entry = JournalEntry::factory()->for($company)->for($journal)->create([
@@ -154,8 +150,8 @@ test('it excludes draft journal entries from trial balance', function () {
     $journal = Journal::factory()->for($company)->create();
     $asOfDate = Carbon::parse('2025-12-31');
 
-    $bankAccount = \Modules\Accounting\Models\Account::factory()->for($company)->create(['type' => \Modules\Accounting\Enums\Accounting\AccountType::BankAndCash]);
-    $salesAccount = \Modules\Accounting\Models\Account::factory()->for($company)->create(['type' => \Modules\Accounting\Enums\Accounting\AccountType::Income]);
+    $bankAccount = Account::factory()->for($company)->create(['type' => \Modules\Accounting\Enums\Accounting\AccountType::BankAndCash]);
+    $salesAccount = Account::factory()->for($company)->create(['type' => \Modules\Accounting\Enums\Accounting\AccountType::Income]);
 
     // Draft transaction (should be excluded)
     $draftEntry = JournalEntry::factory()->for($company)->for($journal)->create([
@@ -187,8 +183,8 @@ test('it respects the as of date filter', function () {
     $journal = Journal::factory()->for($company)->create();
     $asOfDate = Carbon::parse('2025-06-15');
 
-    $bankAccount = \Modules\Accounting\Models\Account::factory()->for($company)->create(['type' => \Modules\Accounting\Enums\Accounting\AccountType::BankAndCash]);
-    $salesAccount = \Modules\Accounting\Models\Account::factory()->for($company)->create(['type' => \Modules\Accounting\Enums\Accounting\AccountType::Income]);
+    $bankAccount = Account::factory()->for($company)->create(['type' => \Modules\Accounting\Enums\Accounting\AccountType::BankAndCash]);
+    $salesAccount = Account::factory()->for($company)->create(['type' => \Modules\Accounting\Enums\Accounting\AccountType::Income]);
 
     // Transaction before the as of date (should be included)
     $entry1 = JournalEntry::factory()->for($company)->for($journal)->create([

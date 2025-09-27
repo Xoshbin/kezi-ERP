@@ -3,6 +3,7 @@
 namespace Modules\Inventory\Models;
 
 use App\Enums\Inventory\StockLocationType;
+use Database\Factories\StockLocationFactory;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -11,7 +12,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class StockLocation extends Model
 {
-    /** @use HasFactory<\Database\Factories\StockLocationFactory> */
+    /** @use HasFactory<StockLocationFactory> */
     use HasFactory;
 
     protected $fillable = [

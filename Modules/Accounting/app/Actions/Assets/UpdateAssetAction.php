@@ -2,8 +2,8 @@
 
 namespace Modules\Accounting\Actions\Assets;
 
-use App\DataTransferObjects\Assets\UpdateAssetDTO;
 use Illuminate\Support\Facades\DB;
+use Modules\Accounting\Models\Asset;
 
 class UpdateAssetAction
 {
@@ -11,7 +11,7 @@ class UpdateAssetAction
         protected ComputeDepreciationScheduleAction $computeDepreciationScheduleAction
     ) {}
 
-    public function execute(\Modules\Accounting\Models\Asset $asset, UpdateAssetDTO $dto): \Modules\Accounting\Models\Asset
+    public function execute(Asset $asset, UpdateAssetDTO $dto): Asset
     {
         return DB::transaction(function () use ($asset, $dto) {
             $asset->update([

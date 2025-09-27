@@ -2,18 +2,12 @@
 
 namespace Modules\Accounting\Actions\Reconciliation;
 
-use App\Enums\Reconciliation\ReconciliationType;
-use App\Exceptions\Reconciliation\AccountNotReconcilableException;
-use App\Exceptions\Reconciliation\AlreadyReconciledException;
-use App\Exceptions\Reconciliation\PartnerMismatchException;
-use App\Exceptions\Reconciliation\ReconciliationDisabledException;
-use App\Exceptions\Reconciliation\UnbalancedReconciliationException;
 use App\Models\Company;
-use App\Models\JournalEntryLine;
 use Brick\Money\Money;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\DB;
 use InvalidArgumentException;
+use Modules\Accounting\Models\Reconciliation;
 
 /**
  * Action for matching journal entry lines in manual reconciliation processes.
@@ -31,7 +25,7 @@ class MatchJournalItemsAction
      * @param  ReconciliationType  $reconciliationType  Type of reconciliation
      * @param  string|null  $reference  Optional reference for the reconciliation
      * @param  string|null  $description  Optional description for the reconciliation
-     * @return \Modules\Accounting\Models\Reconciliation The created reconciliation record
+     * @return Reconciliation The created reconciliation record
      *
      * @throws ReconciliationDisabledException
      * @throws AccountNotReconcilableException
@@ -45,7 +39,7 @@ class MatchJournalItemsAction
         ReconciliationType $reconciliationType = ReconciliationType::ManualArAp,
         ?string $reference = null,
         ?string $description = null
-    ): \Modules\Accounting\Models\Reconciliation {
+    ): Reconciliation {
         // Validate input
         if (empty($journalLineIds)) {
             throw new InvalidArgumentException('No journal entry lines provided for reconciliation.');
@@ -84,7 +78,7 @@ class MatchJournalItemsAction
 
         // Create the reconciliation record
         return DB::transaction(function () use ($journalLines, $company, $reconciliationType, $reference, $description) {
-            $reconciliation = \Modules\Accounting\Models\Reconciliation::create([
+            $reconciliation = Reconciliation::create([
                 'company_id' => $company->id,
                 'reconciliation_type' => $reconciliationType,
                 'reference' => $reference,
@@ -188,7 +182,7 @@ class MatchJournalItemsAction
      * Validate that all journal entry lines belong to the same partner.
      * This is required for A/R and A/P reconciliation.
      *
-     * @param  Collection<int, \App\Models\JournalEntryLine>  $journalLines
+     * @param  Collection<int, JournalEntryLine>  $journalLines
      */
     private function validatePartnerConsistency(Collection $journalLines): void
     {

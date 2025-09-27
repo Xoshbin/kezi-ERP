@@ -6,7 +6,9 @@ use App\Models\StockMove;
 use App\Services\Inventory\InventoryValuationService;
 use App\Services\Inventory\StockQuantService;
 use App\Services\Inventory\StockReservationService;
+use Exception;
 use Illuminate\Support\Facades\DB;
+use Modules\Product\Models\Product;
 
 class ProcessOutgoingStockAction
 {
@@ -21,15 +23,15 @@ class ProcessOutgoingStockAction
         DB::transaction(function () use ($stockMove) {
             $sourceDocument = $stockMove->source;
             if (! $sourceDocument) {
-                throw new \Exception('Stock move must have a source document');
+                throw new Exception('Stock move must have a source document');
             }
 
             // Handle both old structure (direct product) and new structure (product lines)
             if (isset($stockMove->product_id) && $stockMove->product_id) {
                 // Old structure - single product
                 $product = $stockMove->product;
-                if (! $product instanceof \Modules\Product\Models\Product) {
-                    throw new \Exception('Product not found for stock move');
+                if (! $product instanceof Product) {
+                    throw new Exception('Product not found for stock move');
                 }
 
                 $this->inventoryValuationService->processOutgoingStock(
@@ -42,8 +44,8 @@ class ProcessOutgoingStockAction
                 // New structure - multiple product lines
                 foreach ($stockMove->productLines as $productLine) {
                     $product = $productLine->product;
-                    if (! $product instanceof \Modules\Product\Models\Product) {
-                        throw new \Exception('Product not found for product line');
+                    if (! $product instanceof Product) {
+                        throw new Exception('Product not found for product line');
                     }
 
                     $this->inventoryValuationService->processOutgoingStock(

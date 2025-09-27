@@ -2,13 +2,12 @@
 
 namespace Modules\Purchase\Actions\Purchases;
 
-use App\DataTransferObjects\Purchases\CreateVendorBillDTO;
 use App\Models\Company;
-use App\Models\PurchaseOrder;
-use App\Services\Accounting\LockDateService;
 use Carbon\Carbon;
+use Exception;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
+use Modules\Purchase\Models\VendorBill;
 
 class CreateVendorBillAction
 {
@@ -17,7 +16,7 @@ class CreateVendorBillAction
         protected CreateVendorBillLineAction $createVendorBillLineAction
     ) {}
 
-    public function execute(CreateVendorBillDTO $createVendorBillDTO): \Modules\Purchase\Models\VendorBill
+    public function execute(CreateVendorBillDTO $createVendorBillDTO): VendorBill
     {
         $this->lockDateService->enforce(Company::findOrFail($createVendorBillDTO->company_id), Carbon::parse($createVendorBillDTO->bill_date));
 
@@ -27,7 +26,7 @@ class CreateVendorBillAction
         }
 
         return DB::transaction(function () use ($createVendorBillDTO) {
-            $vendorBill = \Modules\Purchase\Models\VendorBill::create([
+            $vendorBill = VendorBill::create([
                 'company_id' => $createVendorBillDTO->company_id,
                 'vendor_id' => $createVendorBillDTO->vendor_id,
                 'currency_id' => $createVendorBillDTO->currency_id,
@@ -53,7 +52,7 @@ class CreateVendorBillAction
             // We just need to reload the relationship to get the fresh data.
             $freshVendorBill = $vendorBill->fresh('lines');
             if (! $freshVendorBill) {
-                throw new \Exception('Failed to refresh vendor bill after creation');
+                throw new Exception('Failed to refresh vendor bill after creation');
             }
 
             return $freshVendorBill;

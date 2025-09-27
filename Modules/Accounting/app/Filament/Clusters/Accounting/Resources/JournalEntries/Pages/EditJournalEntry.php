@@ -2,14 +2,6 @@
 
 namespace Modules\Accounting\Filament\Clusters\Accounting\Resources\JournalEntries\Pages;
 
-use App\Actions\Accounting\UpdateJournalEntryAction;
-use App\DataTransferObjects\Accounting\UpdateJournalEntryDTO;
-use App\DataTransferObjects\Accounting\UpdateJournalEntryLineDTO;
-use App\Filament\Actions\DocsAction;
-use App\Filament\Clusters\Accounting\Resources\JournalEntries\JournalEntryResource;
-use App\Models\JournalEntry;
-use App\Models\JournalEntryLine;
-use App\Services\JournalEntryService;
 use Brick\Money\Money;
 use Exception;
 use Filament\Actions\Action;
@@ -17,6 +9,7 @@ use Filament\Actions\DeleteAction;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
 use Illuminate\Database\Eloquent\Model;
+use Modules\Foundation\Models\Currency;
 
 /**
  * @property JournalEntry $record
@@ -95,7 +88,7 @@ class EditJournalEntry extends EditRecord
 
             if ($isMultiCurrency) {
                 // Multi-currency entry: use original amounts in transaction currency
-                $originalCurrency = $line->original_currency_id ? \Modules\Foundation\Models\Currency::find($line->original_currency_id) : null;
+                $originalCurrency = $line->original_currency_id ? Currency::find($line->original_currency_id) : null;
                 if ($originalCurrency && $originalCurrency->code === $currencyCode) {
                     // Determine if this line was a debit or credit based on base currency amounts
                     $isDebit = $line->debit->isPositive();

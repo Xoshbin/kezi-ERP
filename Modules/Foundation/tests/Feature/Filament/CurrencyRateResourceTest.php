@@ -1,12 +1,9 @@
 <?php
 
-use App\Filament\Clusters\Settings\Resources\CurrencyRates\CurrencyRateResource;
-use App\Filament\Clusters\Settings\Resources\CurrencyRates\Pages\CreateCurrencyRate;
-use App\Filament\Clusters\Settings\Resources\CurrencyRates\Pages\EditCurrencyRate;
-use App\Filament\Clusters\Settings\Resources\CurrencyRates\Pages\ListCurrencyRates;
-use App\Filament\Clusters\Settings\SettingsCluster;
 use Filament\Actions\DeleteAction;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Modules\Foundation\Models\Currency;
+use Modules\Foundation\Models\CurrencyRate;
 use Tests\Traits\WithConfiguredCompany;
 use function Pest\Livewire\livewire;
 
@@ -28,7 +25,7 @@ it('can render the create page', function () {
 
 it('can create a currency rate', function () {
     // Create a new currency for this test with proper translatable name
-    $currency = \Modules\Foundation\Models\Currency::factory()->create([
+    $currency = Currency::factory()->create([
         'code' => 'TEST',
         'name' => [
             'en' => 'Test Currency',
@@ -59,14 +56,14 @@ it('can create a currency rate', function () {
     ]);
 
     // Check the effective_date separately since it's stored as datetime
-    $currencyRate = \Modules\Foundation\Models\CurrencyRate::where('currency_id', $currency->id)
+    $currencyRate = CurrencyRate::where('currency_id', $currency->id)
         ->where('company_id', $this->company->id)
         ->first();
     expect($currencyRate->effective_date->format('Y-m-d'))->toBe(now()->format('Y-m-d'));
 });
 
 it('can render the edit page', function () {
-    $currencyRate = \Modules\Foundation\Models\CurrencyRate::factory()->create([
+    $currencyRate = CurrencyRate::factory()->create([
         'company_id' => $this->company->id,
     ]);
 
@@ -79,7 +76,7 @@ it('can retrieve data', function () {
     $currencyRates = collect();
     for ($i = 0; $i < 10; $i++) {
         $currencyRates->push(
-            \Modules\Foundation\Models\CurrencyRate::factory()->create([
+            CurrencyRate::factory()->create([
                 'company_id' => $this->company->id,
                 'effective_date' => now()->subDays($i)->format('Y-m-d'),
             ])
@@ -91,7 +88,7 @@ it('can retrieve data', function () {
 });
 
 it('can edit a currency rate', function () {
-    $currencyRate = \Modules\Foundation\Models\CurrencyRate::factory()->create([
+    $currencyRate = CurrencyRate::factory()->create([
         'company_id' => $this->company->id,
     ]);
 
@@ -113,7 +110,7 @@ it('can edit a currency rate', function () {
 });
 
 it('can delete a currency rate', function () {
-    $currencyRate = \Modules\Foundation\Models\CurrencyRate::factory()->create([
+    $currencyRate = CurrencyRate::factory()->create([
         'company_id' => $this->company->id,
     ]);
 
@@ -144,7 +141,7 @@ it('validates required fields', function () {
 
 it('validates rate is numeric and positive', function () {
     // Create a new currency for this test with proper translatable name
-    $currency = \Modules\Foundation\Models\Currency::factory()->create([
+    $currency = Currency::factory()->create([
         'code' => 'TEST2',
         'name' => [
             'en' => 'Test Currency 2',

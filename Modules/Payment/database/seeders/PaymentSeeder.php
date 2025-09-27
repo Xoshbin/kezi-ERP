@@ -8,6 +8,9 @@ use App\Models\PaymentDocumentLink;
 use Brick\Money\Money;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Date;
+use Modules\Payment\Models\Payment;
+use Modules\Purchase\Models\VendorBill;
+use Modules\Sales\Models\Invoice;
 
 class PaymentSeeder extends Seeder
 {
@@ -20,7 +23,7 @@ class PaymentSeeder extends Seeder
         // Invoice INV-003 is intentionally left without any payment.
 
         // --- SCENARIO 2: Fully Paid (1 Payment) ---
-        $billToFullyPay = \Modules\Purchase\Models\VendorBill::where('bill_reference', 'HC-INV-2025-002')->firstOrFail();
+        $billToFullyPay = VendorBill::where('bill_reference', 'HC-INV-2025-002')->firstOrFail();
         $this->createPayment(
             company: $company,
             journal: $journal,
@@ -33,7 +36,7 @@ class PaymentSeeder extends Seeder
         );
 
         // --- SCENARIO 3: Partially Paid (1 Payment) ---
-        $invoiceToPartiallyPay = \Modules\Sales\Models\Invoice::where('invoice_number', 'INV-001')->firstOrFail();
+        $invoiceToPartiallyPay = Invoice::where('invoice_number', 'INV-001')->firstOrFail();
         $this->createPayment(
             company: $company,
             journal: $journal,
@@ -45,7 +48,7 @@ class PaymentSeeder extends Seeder
         );
 
         // --- SCENARIO 4: Partially Paid (2 Payments) ---
-        $billToPartiallyPayTwice = \Modules\Purchase\Models\VendorBill::where('bill_reference', 'PK-INV-2025-001')->firstOrFail();
+        $billToPartiallyPayTwice = VendorBill::where('bill_reference', 'PK-INV-2025-001')->firstOrFail();
         // First partial payment
         $this->createPayment(
             company: $company,
@@ -68,7 +71,7 @@ class PaymentSeeder extends Seeder
         );
 
         // --- SCENARIO 5: Fully Paid (2 Payments) ---
-        $invoiceToFullyPayTwice = \Modules\Sales\Models\Invoice::where('invoice_number', 'INV-002')->firstOrFail();
+        $invoiceToFullyPayTwice = Invoice::where('invoice_number', 'INV-002')->firstOrFail();
         // First payment
         $this->createPayment(
             company: $company,
@@ -100,7 +103,7 @@ class PaymentSeeder extends Seeder
      */
     private function createPayment($company, $journal, $partner, $paymentType, $amount, $reference, $invoice = null, $vendorBill = null): void
     {
-        $payment = \Modules\Payment\Models\Payment::create([
+        $payment = Payment::create([
             'company_id' => $company->id,
             'currency_id' => $company->currency_id,
             'payment_type' => $paymentType,

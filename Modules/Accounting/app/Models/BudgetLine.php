@@ -3,7 +3,9 @@
 namespace Modules\Accounting\Models;
 
 use App\Casts\BaseCurrencyMoneyCast;
+use Brick\Money\Money;
 use Database\Factories\BudgetLineFactory;
+use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -17,9 +19,9 @@ use Illuminate\Support\Carbon;
  * @property int $budget_id
  * @property int|null $analytic_account_id
  * @property int|null $account_id
- * @property \Brick\Money\Money $budgeted_amount
- * @property \Brick\Money\Money $achieved_amount
- * @property \Brick\Money\Money $committed_amount
+ * @property Money $budgeted_amount
+ * @property Money $achieved_amount
+ * @property Money $committed_amount
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property-read Account|null $account
@@ -40,11 +42,11 @@ use Illuminate\Support\Carbon;
  * @method static Builder<static>|BudgetLine whereId($value)
  * @method static Builder<static>|BudgetLine whereUpdatedAt($value)
  *
- * @mixin \Eloquent
+ * @mixin Eloquent
  */
 class BudgetLine extends Model
 {
-    /** @use HasFactory<\Database\Factories\BudgetLineFactory> */
+    /** @use HasFactory<BudgetLineFactory> */
     use HasFactory;
 
     /**

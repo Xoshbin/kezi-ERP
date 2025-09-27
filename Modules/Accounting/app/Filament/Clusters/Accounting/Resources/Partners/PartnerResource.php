@@ -2,19 +2,6 @@
 
 namespace Modules\Accounting\Filament\Clusters\Accounting\Resources\Partners;
 
-use App\Enums\Accounting\AccountType;
-use App\Enums\Partners\PartnerType;
-use App\Filament\Clusters\Accounting\AccountingCluster;
-use App\Filament\Clusters\Accounting\Resources\Partners\Pages\CreatePartner;
-use App\Filament\Clusters\Accounting\Resources\Partners\Pages\EditPartner;
-use App\Filament\Clusters\Accounting\Resources\Partners\Pages\ListPartners;
-use App\Filament\Clusters\Accounting\Resources\Partners\Pages\ViewPartner;
-use App\Filament\Clusters\Accounting\Resources\Partners\RelationManagers\InvoicesRelationManager;
-use App\Filament\Clusters\Accounting\Resources\Partners\RelationManagers\PaymentsRelationManager;
-use App\Filament\Clusters\Accounting\Resources\Partners\RelationManagers\UnreconciledEntriesRelationManager;
-use App\Filament\Clusters\Accounting\Resources\Partners\RelationManagers\VendorBillsRelationManager;
-use App\Filament\Tables\Columns\MoneyColumn;
-use App\Models\Tax;
 use BackedEnum;
 use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
@@ -37,13 +24,15 @@ use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Modules\Accounting\Models\Account;
+use Modules\Foundation\Models\Partner;
 use Xoshbin\CustomFields\Filament\Forms\Components\CustomFieldsComponent;
 use Xoshbin\CustomFields\Filament\Tables\CustomFieldTableColumns;
 use Xoshbin\TranslatableSelect\Components\TranslatableSelect;
 
 class PartnerResource extends Resource
 {
-    protected static ?string $model = \Modules\Foundation\Models\Partner::class;
+    protected static ?string $model = Partner::class;
 
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-user-group';
 
@@ -210,7 +199,7 @@ class PartnerResource extends Resource
                     ->schema([
                         Grid::make(2)
                             ->schema([
-                                TranslatableSelect::forModel('receivable_account_id', \Modules\Accounting\Models\Account::class)
+                                TranslatableSelect::forModel('receivable_account_id', Account::class)
                                     ->searchable()
                                     ->preload()
                                     ->createOptionForm([
@@ -238,7 +227,7 @@ class PartnerResource extends Resource
                                     ->helperText(__('partner.receivable_account_help'))
                                     ->prefixIcon('heroicon-m-arrow-trending-up'),
 
-                                TranslatableSelect::forModel('payable_account_id', \Modules\Accounting\Models\Account::class)
+                                TranslatableSelect::forModel('payable_account_id', Account::class)
                                     ->searchable()
                                     ->preload()
                                     ->createOptionForm([
@@ -272,7 +261,7 @@ class PartnerResource extends Resource
                     ->collapsible(),
 
                 // Custom Fields Section
-                CustomFieldsComponent::make(\Modules\Foundation\Models\Partner::class),
+                CustomFieldsComponent::make(Partner::class),
             ]);
     }
 
@@ -318,7 +307,7 @@ class PartnerResource extends Resource
                 // Financial Information - Customer Balances
                 \Modules\Foundation\App\Filament\Tables\Columns\MoneyColumn::make('customer_balance')
                     ->label(__('partner.customer_outstanding'))
-                    ->getStateUsing(function (\Modules\Foundation\Models\Partner $record) {
+                    ->getStateUsing(function (Partner $record) {
                         if (! in_array($record->type, [\Modules\Foundation\Enums\Partners\PartnerType::Customer, \Modules\Foundation\Enums\Partners\PartnerType::Both])) {
                             return null;
                         }
@@ -326,7 +315,7 @@ class PartnerResource extends Resource
                         return $record->getCustomerOutstandingBalance();
                     })
                     ->badge()
-                    ->color(function (\Modules\Foundation\Models\Partner $record) {
+                    ->color(function (Partner $record) {
                         if (! in_array($record->type, [\Modules\Foundation\Enums\Partners\PartnerType::Customer, \Modules\Foundation\Enums\Partners\PartnerType::Both])) {
                             return 'gray';
                         }
@@ -337,7 +326,7 @@ class PartnerResource extends Resource
 
                 \Modules\Foundation\App\Filament\Tables\Columns\MoneyColumn::make('customer_overdue')
                     ->label(__('partner.customer_overdue'))
-                    ->getStateUsing(function (\Modules\Foundation\Models\Partner $record) {
+                    ->getStateUsing(function (Partner $record) {
                         if (! in_array($record->type, [\Modules\Foundation\Enums\Partners\PartnerType::Customer, \Modules\Foundation\Enums\Partners\PartnerType::Both])) {
                             return null;
                         }
@@ -345,7 +334,7 @@ class PartnerResource extends Resource
                         return $record->getCustomerOverdueBalance();
                     })
                     ->badge()
-                    ->color(function (\Modules\Foundation\Models\Partner $record) {
+                    ->color(function (Partner $record) {
                         if (! in_array($record->type, [\Modules\Foundation\Enums\Partners\PartnerType::Customer, \Modules\Foundation\Enums\Partners\PartnerType::Both])) {
                             return 'gray';
                         }
@@ -357,7 +346,7 @@ class PartnerResource extends Resource
                 // Financial Information - Vendor Balances
                 \Modules\Foundation\App\Filament\Tables\Columns\MoneyColumn::make('vendor_balance')
                     ->label(__('partner.vendor_outstanding'))
-                    ->getStateUsing(function (\Modules\Foundation\Models\Partner $record) {
+                    ->getStateUsing(function (Partner $record) {
                         if (! in_array($record->type, [\Modules\Foundation\Enums\Partners\PartnerType::Vendor, \Modules\Foundation\Enums\Partners\PartnerType::Both])) {
                             return null;
                         }
@@ -365,7 +354,7 @@ class PartnerResource extends Resource
                         return $record->getVendorOutstandingBalance();
                     })
                     ->badge()
-                    ->color(function (\Modules\Foundation\Models\Partner $record) {
+                    ->color(function (Partner $record) {
                         if (! in_array($record->type, [\Modules\Foundation\Enums\Partners\PartnerType::Vendor, \Modules\Foundation\Enums\Partners\PartnerType::Both])) {
                             return 'gray';
                         }
@@ -376,7 +365,7 @@ class PartnerResource extends Resource
 
                 \Modules\Foundation\App\Filament\Tables\Columns\MoneyColumn::make('vendor_overdue')
                     ->label(__('partner.vendor_overdue'))
-                    ->getStateUsing(function (\Modules\Foundation\Models\Partner $record) {
+                    ->getStateUsing(function (Partner $record) {
                         if (! in_array($record->type, [\Modules\Foundation\Enums\Partners\PartnerType::Vendor, \Modules\Foundation\Enums\Partners\PartnerType::Both])) {
                             return null;
                         }
@@ -384,7 +373,7 @@ class PartnerResource extends Resource
                         return $record->getVendorOverdueBalance();
                     })
                     ->badge()
-                    ->color(function (\Modules\Foundation\Models\Partner $record) {
+                    ->color(function (Partner $record) {
                         if (! in_array($record->type, [\Modules\Foundation\Enums\Partners\PartnerType::Vendor, \Modules\Foundation\Enums\Partners\PartnerType::Both])) {
                             return 'gray';
                         }
@@ -396,13 +385,13 @@ class PartnerResource extends Resource
                 // Last Activity
                 TextColumn::make('last_activity')
                     ->label(__('partner.last_activity'))
-                    ->getStateUsing(fn (\Modules\Foundation\Models\Partner $record): string => $record->getLastTransactionDate()?->format('M j, Y') ?? __('partner.no_activity')
+                    ->getStateUsing(fn (Partner $record): string => $record->getLastTransactionDate()?->format('M j, Y') ?? __('partner.no_activity')
                     )
                     ->sortable(false)
                     ->toggleable(),
 
                 // Custom Fields (dynamic columns)
-                ...CustomFieldTableColumns::make(\Modules\Foundation\Models\Partner::class),
+                ...CustomFieldTableColumns::make(Partner::class),
 
                 // Contact Information (toggleable)
                 TextColumn::make('contact_person')

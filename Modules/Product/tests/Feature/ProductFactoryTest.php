@@ -2,8 +2,8 @@
 
 namespace Modules\Product\Tests\Feature;
 
-use App\Enums\Inventory\ValuationMethod;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Modules\Product\Models\Product;
 use Tests\Traits\WithConfiguredCompany;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);
@@ -16,15 +16,15 @@ it('can create a product using factory without specifying inventory valuation me
     // This test should initially fail with the constraint violation
     // and pass after we fix the ProductFactory
 
-    $product = \Modules\Product\Models\Product::factory()->for($this->company)->create();
+    $product = Product::factory()->for($this->company)->create();
 
-    expect($product)->toBeInstanceOf(\Modules\Product\Models\Product::class)
+    expect($product)->toBeInstanceOf(Product::class)
         ->and($product->inventory_valuation_method)->toBeInstanceOf(ValuationMethod::class)
         ->and($product->inventory_valuation_method)->toBe(ValuationMethod::AVCO);
 });
 
 it('can create a product with explicit inventory valuation method', function () {
-    $product = \Modules\Product\Models\Product::factory()->for($this->company)->create([
+    $product = Product::factory()->for($this->company)->create([
         'inventory_valuation_method' => ValuationMethod::FIFO,
     ]);
 
@@ -32,13 +32,13 @@ it('can create a product with explicit inventory valuation method', function () 
 });
 
 it('defaults to AVCO valuation method when not specified', function () {
-    $product = \Modules\Product\Models\Product::factory()->for($this->company)->make();
+    $product = Product::factory()->for($this->company)->make();
 
     expect($product->inventory_valuation_method)->toBe(ValuationMethod::AVCO);
 });
 
 it('properly casts inventory valuation method to enum', function () {
-    $product = \Modules\Product\Models\Product::factory()->for($this->company)->create([
+    $product = Product::factory()->for($this->company)->create([
         'inventory_valuation_method' => 'fifo',
     ]);
 

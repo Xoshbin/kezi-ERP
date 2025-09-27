@@ -1,18 +1,9 @@
 <?php
 
-use App\Actions\Inventory\CreateStockMoveAction;
-use App\DataTransferObjects\Inventory\CreateStockMoveDTO;
-use App\DataTransferObjects\Inventory\CreateStockMoveProductLineDTO;
-use App\Enums\Inventory\StockMoveStatus;
-use App\Enums\Inventory\StockMoveType;
-use App\Enums\Inventory\ValuationMethod;
-use App\Enums\Products\ProductType;
-use App\Exceptions\Inventory\InsufficientCostInformationException;
-use App\Models\JournalEntry;
-use App\Models\StockMove;
-use App\Models\StockMoveValuation;
 use Brick\Money\Money;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Modules\Accounting\Models\Account;
+use Modules\Product\Models\Product;
 use Tests\Traits\WithConfiguredCompany;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);
@@ -22,17 +13,17 @@ beforeEach(function () {
     $this->setupInventoryTestEnvironment();
 
     // Ensure required accounts exist for product
-    $this->inventoryAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create([
+    $this->inventoryAccount = Account::factory()->for($this->company)->create([
         'name' => 'Inventory Asset',
         'type' => 'current_assets',
     ]);
-    $this->stockInputAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create([
+    $this->stockInputAccount = Account::factory()->for($this->company)->create([
         'name' => 'Stock Input',
         'type' => 'current_liabilities',
     ]);
 
     // Create a storable product with a non-zero average cost to be used for manual moves
-    $this->product = \Modules\Product\Models\Product::factory()->for($this->company)->create([
+    $this->product = Product::factory()->for($this->company)->create([
         'type' => \Modules\Product\Enums\Products\ProductType::Storable,
         'inventory_valuation_method' => ValuationMethod::AVCO,
         'default_inventory_account_id' => $this->inventoryAccount->id,
@@ -101,7 +92,7 @@ it('creates non-zero inventory journal amounts for manual incoming stock moves',
 
 it('throws exception for manual stock moves when product has no cost information', function () {
     // Arrange: Create a product with zero average cost and no cost layers
-    $productWithoutCost = \Modules\Product\Models\Product::factory()->for($this->company)->create([
+    $productWithoutCost = Product::factory()->for($this->company)->create([
         'type' => \Modules\Product\Enums\Products\ProductType::Storable,
         'inventory_valuation_method' => ValuationMethod::AVCO,
         'default_inventory_account_id' => $this->inventoryAccount->id,
@@ -139,7 +130,7 @@ it('throws exception for manual stock moves when product has no cost information
 
 it('throws exception for manual outgoing stock moves when product has no cost information', function () {
     // Arrange: Create a product with zero average cost and no cost layers
-    $productWithoutCost = \Modules\Product\Models\Product::factory()->for($this->company)->create([
+    $productWithoutCost = Product::factory()->for($this->company)->create([
         'type' => \Modules\Product\Enums\Products\ProductType::Storable,
         'inventory_valuation_method' => ValuationMethod::AVCO,
         'default_inventory_account_id' => $this->inventoryAccount->id,

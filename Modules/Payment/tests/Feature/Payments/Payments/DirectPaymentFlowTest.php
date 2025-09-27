@@ -11,6 +11,7 @@ use App\Models\JournalEntry;
 use App\Services\PaymentService;
 use Brick\Money\Money;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Modules\Foundation\Models\Partner;
 use Tests\Traits\WithConfiguredCompany;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);
@@ -22,7 +23,7 @@ beforeEach(function () {
 test('a loan payment creates the correct journal entry', function () {
     // Arrange: Create necessary accounts and partners
     $bankJournal = Journal::factory()->for($this->company)->create(['type' => JournalType::Bank]);
-    $partner = \Modules\Foundation\Models\Partner::factory()->for($this->company)->create();
+    $partner = Partner::factory()->for($this->company)->create();
 
     $paymentDTO = new CreatePaymentDTO(
         company_id: $this->company->id,
@@ -71,7 +72,7 @@ test('a loan payment creates the correct journal entry', function () {
 test('a capital injection payment creates the correct journal entry', function () {
     // Arrange
     $bankJournal = Journal::factory()->for($this->company)->create(['type' => JournalType::Bank]);
-    $partner = \Modules\Foundation\Models\Partner::factory()->for($this->company)->create();
+    $partner = Partner::factory()->for($this->company)->create();
 
     $paymentDTO = new CreatePaymentDTO(
         company_id: $this->company->id,
@@ -107,7 +108,7 @@ test('a capital injection payment creates the correct journal entry', function (
 test('an expense claim payment creates the correct journal entry', function () {
     // Arrange
     $bankJournal = Journal::factory()->for($this->company)->create(['type' => JournalType::Bank]);
-    $partner = \Modules\Foundation\Models\Partner::factory()->for($this->company)->create();
+    $partner = Partner::factory()->for($this->company)->create();
 
     $paymentDTO = new CreatePaymentDTO(
         company_id: $this->company->id,
@@ -164,6 +165,6 @@ test('settlement payments still work as before', function () {
 
     // Act & Assert: Without document links and without partner, should throw specific error
     expect(fn () => app(CreatePaymentAction::class)->execute($paymentDTO, $this->user))
-        ->toThrow(\InvalidArgumentException::class, 'Payments without document links must specify a partner.');
+        ->toThrow(InvalidArgumentException::class, 'Payments without document links must specify a partner.');
 
 });

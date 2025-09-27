@@ -4,20 +4,22 @@ namespace Modules\Inventory\Actions\Inventory;
 
 use Brick\Math\RoundingMode;
 use Brick\Money\Money;
+use Exception;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Modules\Product\Models\Product;
 
 class UpdateProductInventoryStatsAction
 {
-    public function execute(\Modules\Product\Models\Product $product, int $quantityChange, Money $purchasePricePerUnit): \Modules\Product\Models\Product
+    public function execute(Product $product, int $quantityChange, Money $purchasePricePerUnit): Product
     {
         return DB::transaction(function () use ($product, $quantityChange, $purchasePricePerUnit) {
             // Lock the product row to prevent race conditions during calculation.
-            $product = \Modules\Product\Models\Product::lockForUpdate()->findOrFail($product->id);
+            $product = Product::lockForUpdate()->findOrFail($product->id);
 
             $purchaseValue = $purchasePricePerUnit->multipliedBy($quantityChange, RoundingMode::HALF_UP);
             if (! $product->average_cost) {
-                throw new \Exception('Product must have an average cost for inventory update');
+                throw new Exception('Product must have an average cost for inventory update');
             }
             $oldValue = $product->average_cost->multipliedBy($product->quantity_on_hand, RoundingMode::HALF_UP);
             $totalQuantity = $product->quantity_on_hand + $quantityChange;

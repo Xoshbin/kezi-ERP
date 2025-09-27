@@ -2,17 +2,8 @@
 
 namespace Modules\Accounting\Filament\Clusters\Accounting\Resources\BankStatements;
 
-use App\Enums\Accounting\JournalType;
-use App\Filament\Clusters\Accounting\AccountingCluster;
-use App\Filament\Clusters\Accounting\Resources\BankStatements\Pages\BankReconciliation;
-use App\Filament\Clusters\Accounting\Resources\BankStatements\Pages\CreateBankStatement;
-use App\Filament\Clusters\Accounting\Resources\BankStatements\Pages\EditBankStatement;
-use App\Filament\Clusters\Accounting\Resources\BankStatements\Pages\ListBankStatements;
-use App\Filament\Clusters\Accounting\Resources\BankStatements\RelationManagers\BankStatementLinesRelationManager;
-use App\Filament\Forms\Components\MoneyInput;
-use App\Filament\Tables\Columns\MoneyColumn;
+
 use App\Models\Company;
-use App\Models\Journal;
 use BackedEnum;
 use Closure;
 use Filament\Actions\Action;
@@ -32,11 +23,22 @@ use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Modules\Accounting\Enums\Accounting\JournalType;
+use Modules\Accounting\Filament\Clusters\Accounting\AccountingCluster;
+use Modules\Accounting\Filament\Clusters\Accounting\Resources\BankStatements\Pages\BankReconciliation;
+use Modules\Accounting\Filament\Clusters\Accounting\Resources\BankStatements\Pages\CreateBankStatement;
+use Modules\Accounting\Filament\Clusters\Accounting\Resources\BankStatements\Pages\EditBankStatement;
+use Modules\Accounting\Filament\Clusters\Accounting\Resources\BankStatements\Pages\ListBankStatements;
+use Modules\Accounting\Filament\Clusters\Accounting\Resources\BankStatements\RelationManagers\BankStatementLinesRelationManager;
+use Modules\Accounting\Models\BankStatement;
+use Modules\Accounting\Models\Journal;
+use Modules\Foundation\Models\Currency;
+use Modules\Foundation\Models\Partner;
 use Xoshbin\TranslatableSelect\Components\TranslatableSelect;
 
 class BankStatementResource extends Resource
 {
-    protected static ?string $model = \Modules\Accounting\Models\BankStatement::class;
+    protected static ?string $model = BankStatement::class;
 
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-banknotes';
 
@@ -70,7 +72,7 @@ class BankStatementResource extends Resource
             Section::make(__('bank_statement.statement_information'))
                 ->description(__('bank_statement.statement_information_description'))
                 ->schema([
-                    TranslatableSelect::forModel('currency_id', \Modules\Foundation\Models\Currency::class, 'name')
+                    TranslatableSelect::forModel('currency_id', Currency::class, 'name')
                         ->label(__('bank_statement.currency'))
                         ->searchable()
                         ->preload()
@@ -201,7 +203,7 @@ class BankStatementResource extends Resource
                                 ->required()
                                 ->maxLength(255)
                                 ->columnSpan(4),
-                            TranslatableSelect::forModel('partner_id', \Modules\Foundation\Models\Partner::class, 'name')
+                            TranslatableSelect::forModel('partner_id', Partner::class, 'name')
                                 ->label(__('bank_statement.partner'))
                                 ->searchable()
                                 ->searchableFields(['name', 'email', 'contact_person'])
@@ -217,7 +219,7 @@ class BankStatementResource extends Resource
                                         ?? $get('currency_id');
 
                                     if ($currencyId) {
-                                        $currency = \Modules\Foundation\Models\Currency::find($currencyId);
+                                        $currency = Currency::find($currencyId);
 
                                         return $currency->code ?? 'IQD';
                                     }
@@ -232,7 +234,7 @@ class BankStatementResource extends Resource
                                 ->required()
                                 ->helperText(__('bank_statement.amount_in_statement_currency'))
                                 ->columnSpan(3),
-                            TranslatableSelect::forModel('foreign_currency_id', \Modules\Foundation\Models\Currency::class, 'name')
+                            TranslatableSelect::forModel('foreign_currency_id', Currency::class, 'name')
                                 ->label(__('bank_statement.foreign_currency'))
                                 ->searchable()
                                 ->preload()
@@ -240,7 +242,7 @@ class BankStatementResource extends Resource
                                 ->options(function ($get) {
                                     $statementCurrencyId = $get('../../../currency_id');
 
-                                    return \Modules\Foundation\Models\Currency::where('is_active', true)
+                                    return Currency::where('is_active', true)
                                         ->when($statementCurrencyId, function ($query, $statementCurrencyId) {
                                             return $query->where('id', '!=', $statementCurrencyId);
                                         })
@@ -332,7 +334,7 @@ class BankStatementResource extends Resource
                     ->label(__('bank_statement.reconcile'))
                     ->icon('heroicon-o-scale')
                     ->color('success')
-                    ->url(fn (\Modules\Accounting\Models\BankStatement $record): string => static::getUrl('reconcile', ['record' => $record]))
+                    ->url(fn (BankStatement $record): string => static::getUrl('reconcile', ['record' => $record]))
                     ->visible(fn (): bool => Filament::getTenant()->enable_reconciliation ?? false),
             ])
             ->toolbarActions([
@@ -343,7 +345,7 @@ class BankStatementResource extends Resource
     }
 
     /**
-     * @return Builder<\Modules\Accounting\Models\BankStatement>
+     * @return Builder<BankStatement>
      */
     public static function getEloquentQuery(): Builder
     {

@@ -2,16 +2,13 @@
 
 namespace Modules\Purchase\Database\Seeders;
 
-use App\Actions\Purchases\CreatePurchaseOrderLineAction;
-use App\DataTransferObjects\Purchases\CreatePurchaseOrderLineDTO;
-use App\Enums\Partners\PartnerType;
-use App\Enums\Purchases\PurchaseOrderStatus;
 use App\Models\Company;
-use App\Models\PurchaseOrder;
-use App\Models\Tax;
 use Brick\Money\Money;
 use Carbon\Carbon;
 use Illuminate\Database\Seeder;
+use Modules\Foundation\Models\Currency;
+use Modules\Foundation\Models\Partner;
+use Modules\Product\Models\Product;
 
 class PurchaseOrderSeeder extends Seeder
 {
@@ -21,16 +18,16 @@ class PurchaseOrderSeeder extends Seeder
     public function run(): void
     {
         $company = Company::where('name', 'Jmeryar Solutions')->firstOrFail();
-        $usdCurrency = \Modules\Foundation\Models\Currency::where('code', 'USD')->firstOrFail();
+        $usdCurrency = Currency::where('code', 'USD')->firstOrFail();
         $tax = Tax::where('company_id', $company->id)->where('rate', 5)->firstOrFail();
 
         // --- Fetch Products (assuming they are created by ProductSeeder) ---
-        $gpuProduct = \Modules\Product\Models\Product::where('company_id', $company->id)->where('sku', 'GPU-RTX4090')->firstOrFail();
-        $ramProduct = \Modules\Product\Models\Product::where('company_id', $company->id)->where('sku', 'RAM-DDR5-32GB')->firstOrFail();
-        $ssdProduct = \Modules\Product\Models\Product::where('company_id', $company->id)->where('sku', 'SSD-2TB-NVME')->firstOrFail();
+        $gpuProduct = Product::where('company_id', $company->id)->where('sku', 'GPU-RTX4090')->firstOrFail();
+        $ramProduct = Product::where('company_id', $company->id)->where('sku', 'RAM-DDR5-32GB')->firstOrFail();
+        $ssdProduct = Product::where('company_id', $company->id)->where('sku', 'SSD-2TB-NVME')->firstOrFail();
 
         // --- Fetch/Create Vendor ---
-        $vendor = \Modules\Foundation\Models\Partner::firstOrCreate(
+        $vendor = Partner::firstOrCreate(
             ['name' => 'TechGlobal Suppliers', 'company_id' => $company->id],
             ['type' => \Modules\Foundation\Enums\Partners\PartnerType::Vendor]
         );

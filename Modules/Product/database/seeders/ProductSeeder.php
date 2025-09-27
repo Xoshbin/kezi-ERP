@@ -2,10 +2,10 @@
 
 namespace Modules\Product\Database\Seeders;
 
-use App\Enums\Inventory\ValuationMethod;
-use App\Enums\Products\ProductType;
 use App\Models\Company;
 use Illuminate\Database\Seeder;
+use Modules\Accounting\Models\Account;
+use Modules\Product\Models\Product;
 
 class ProductSeeder extends Seeder
 {
@@ -46,13 +46,13 @@ class ProductSeeder extends Seeder
         // --- New Products ---
 
         // Resolve accounts by code
-        $inventoryAccount = \Modules\Accounting\Models\Account::where('company_id', $company->id)->where('code', '130102')->firstOrFail(); // Inventory Asset (IQD)
-        $stockInputAccount = \Modules\Accounting\Models\Account::where('company_id', $company->id)->where('code', '210202')->firstOrFail(); // Stock Input Account (IQD)
-        $costOfRevenue = \Modules\Accounting\Models\Account::where('company_id', $company->id)->where('code', '500100')->firstOrFail(); // Cost of Goods Sold (IQD)
-        $incomeAccount = \Modules\Accounting\Models\Account::where('company_id', $company->id)->where('code', '410102')->firstOrFail(); // Cost of Goods Sold (IQD)
+        $inventoryAccount = Account::where('company_id', $company->id)->where('code', '130102')->firstOrFail(); // Inventory Asset (IQD)
+        $stockInputAccount = Account::where('company_id', $company->id)->where('code', '210202')->firstOrFail(); // Stock Input Account (IQD)
+        $costOfRevenue = Account::where('company_id', $company->id)->where('code', '500100')->firstOrFail(); // Cost of Goods Sold (IQD)
+        $incomeAccount = Account::where('company_id', $company->id)->where('code', '410102')->firstOrFail(); // Cost of Goods Sold (IQD)
 
         // Product A: High-End Graphics Cards (FIFO Valuation)
-        $productA = \Modules\Product\Models\Product::updateOrCreate(
+        $productA = Product::updateOrCreate(
             ['company_id' => $company->id, 'sku' => 'GPU-RTX4090'],
             [
                 'name' => 'NVIDIA RTX 4090 Graphics Card',
@@ -68,7 +68,7 @@ class ProductSeeder extends Seeder
         );
 
         // Product B: Memory Modules (AVCO Valuation)
-        $productB = \Modules\Product\Models\Product::updateOrCreate(
+        $productB = Product::updateOrCreate(
             ['company_id' => $company->id, 'sku' => 'RAM-DDR5-32GB'],
             [
                 'name' => 'DDR5 32GB Memory Module',
@@ -84,7 +84,7 @@ class ProductSeeder extends Seeder
         );
 
         // Product C: Storage Drives (LIFO Valuation)
-        $productC = \Modules\Product\Models\Product::updateOrCreate(
+        $productC = Product::updateOrCreate(
             ['company_id' => $company->id, 'sku' => 'SSD-2TB-NVME'],
             [
                 'name' => '2TB NVMe SSD Drive',
@@ -100,13 +100,13 @@ class ProductSeeder extends Seeder
         );
 
         // Create reordering rules as per end-to-end scenario documentation
-        $warehouseLocation = \App\Models\StockLocation::where('company_id', $company->id)
+        $warehouseLocation = StockLocation::where('company_id', $company->id)
             ->where('name', 'Warehouse')
             ->first();
 
         if ($warehouseLocation) {
             // GPU-RTX4090 Reorder Rule: Min: 5, Max: 20, Safety Stock: 2
-            \App\Models\ReorderingRule::updateOrCreate(
+            ReorderingRule::updateOrCreate(
                 [
                     'company_id' => $company->id,
                     'product_id' => $productA->id,
@@ -117,14 +117,14 @@ class ProductSeeder extends Seeder
                     'max_qty' => 20,
                     'safety_stock' => 2,
                     'multiple' => 1,
-                    'route' => \App\Enums\Inventory\ReorderingRoute::MinMax,
+                    'route' => ReorderingRoute::MinMax,
                     'lead_time_days' => 7,
                     'active' => true,
                 ]
             );
 
             // RAM-DDR5-32GB Reorder Rule: Min: 20, Max: 100, Safety Stock: 10
-            \App\Models\ReorderingRule::updateOrCreate(
+            ReorderingRule::updateOrCreate(
                 [
                     'company_id' => $company->id,
                     'product_id' => $productB->id,
@@ -135,14 +135,14 @@ class ProductSeeder extends Seeder
                     'max_qty' => 100,
                     'safety_stock' => 10,
                     'multiple' => 5,
-                    'route' => \App\Enums\Inventory\ReorderingRoute::MinMax,
+                    'route' => ReorderingRoute::MinMax,
                     'lead_time_days' => 5,
                     'active' => true,
                 ]
             );
 
             // SSD-2TB-NVME Reorder Rule: Min: 15, Max: 50, Safety Stock: 5
-            \App\Models\ReorderingRule::updateOrCreate(
+            ReorderingRule::updateOrCreate(
                 [
                     'company_id' => $company->id,
                     'product_id' => $productC->id,
@@ -153,7 +153,7 @@ class ProductSeeder extends Seeder
                     'max_qty' => 50,
                     'safety_stock' => 5,
                     'multiple' => 5,
-                    'route' => \App\Enums\Inventory\ReorderingRoute::MinMax,
+                    'route' => ReorderingRoute::MinMax,
                     'lead_time_days' => 10,
                     'active' => true,
                 ]

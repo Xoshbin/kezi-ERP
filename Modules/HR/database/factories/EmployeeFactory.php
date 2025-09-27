@@ -4,11 +4,12 @@ namespace Modules\HR\Database\Factories;
 
 use App\Models\Company;
 use App\Models\Department;
+use App\Models\Employee;
 use App\Models\Position;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Employee>
+ * @extends Factory<Employee>
  */
 class EmployeeFactory extends Factory
 {

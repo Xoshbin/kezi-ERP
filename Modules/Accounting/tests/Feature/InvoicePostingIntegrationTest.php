@@ -2,16 +2,14 @@
 
 namespace Modules\Accounting\Tests\Feature;
 
-use App\Actions\Sales\CreateInvoiceAction;
-use App\DataTransferObjects\Sales\CreateInvoiceDTO;
-use App\DataTransferObjects\Sales\CreateInvoiceLineDTO;
 use App\Models\Company;
-use App\Models\Journal;
-use App\Models\Tax;
 use App\Models\User;
-use App\Services\InvoiceService;
 use Brick\Money\Money;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Modules\Accounting\Models\Account;
+use Modules\Foundation\Models\Currency;
+use Modules\Foundation\Models\Partner;
+use Modules\Sales\Models\Invoice;
 use Tests\TestCase;
 
 class InvoicePostingIntegrationTest extends TestCase
@@ -20,15 +18,15 @@ class InvoicePostingIntegrationTest extends TestCase
 
     private Company $company;
 
-    private \Modules\Foundation\Models\Partner $customer;
+    private Partner $customer;
 
-    private \Modules\Foundation\Models\Currency $currency;
+    private Currency $currency;
 
     private User $user;
 
-    private \Modules\Accounting\Models\Account $incomeAccount;
+    private Account $incomeAccount;
 
-    private \Modules\Accounting\Models\Account $receivableAccount;
+    private Account $receivableAccount;
 
     private Journal $salesJournal;
 
@@ -39,17 +37,17 @@ class InvoicePostingIntegrationTest extends TestCase
         parent::setUp();
 
         // Create test data
-        $this->currency = \Modules\Foundation\Models\Currency::factory()->create(['code' => 'USD']);
+        $this->currency = Currency::factory()->create(['code' => 'USD']);
         $this->company = Company::factory()->create(['currency_id' => $this->currency->id]);
-        $this->customer = \Modules\Foundation\Models\Partner::factory()->create(['company_id' => $this->company->id]);
+        $this->customer = Partner::factory()->create(['company_id' => $this->company->id]);
         $this->user = User::factory()->create();
 
-        $this->incomeAccount = \Modules\Accounting\Models\Account::factory()->create([
+        $this->incomeAccount = Account::factory()->create([
             'company_id' => $this->company->id,
             'type' => 'income',
         ]);
 
-        $this->receivableAccount = \Modules\Accounting\Models\Account::factory()->create([
+        $this->receivableAccount = Account::factory()->create([
             'company_id' => $this->company->id,
             'type' => 'receivable',
         ]);
@@ -93,9 +91,9 @@ class InvoicePostingIntegrationTest extends TestCase
         $invoice3->refresh();
 
         // Verify all invoices were posted successfully with unique numbers
-        $this->assertEquals(\App\Enums\Sales\InvoiceStatus::Posted, $invoice1->status);
-        $this->assertEquals(\App\Enums\Sales\InvoiceStatus::Posted, $invoice2->status);
-        $this->assertEquals(\App\Enums\Sales\InvoiceStatus::Posted, $invoice3->status);
+        $this->assertEquals(InvoiceStatus::Posted, $invoice1->status);
+        $this->assertEquals(InvoiceStatus::Posted, $invoice2->status);
+        $this->assertEquals(InvoiceStatus::Posted, $invoice3->status);
 
         $this->assertMatchesRegularExpression('/^INV\/\d{4}\/\d{2}\/\d{7}$/', $invoice1->invoice_number);
         $this->assertMatchesRegularExpression('/^INV\/\d{4}\/\d{2}\/\d{7}$/', $invoice2->invoice_number);
@@ -115,7 +113,7 @@ class InvoicePostingIntegrationTest extends TestCase
         $this->assertMatchesRegularExpression('/^INV\/\d{4}\/\d{2}\/\d{7}$/', $journalEntry3->reference);
 
         // Verify no duplicate journal entry references exist
-        $duplicateEntries = \App\Models\JournalEntry::where('company_id', $this->company->id)
+        $duplicateEntries = JournalEntry::where('company_id', $this->company->id)
             ->where('journal_id', $this->salesJournal->id)
             ->where('reference', 'INV-00001')
             ->where('id', '!=', $journalEntry1->id)
@@ -146,7 +144,7 @@ class InvoicePostingIntegrationTest extends TestCase
             // Verify each invoice gets a unique number and journal entry
             $this->assertNotNull($invoice->invoice_number);
             $this->assertNotNull($invoice->journal_entry_id);
-            $this->assertEquals(\App\Enums\Sales\InvoiceStatus::Posted, $invoice->status);
+            $this->assertEquals(InvoiceStatus::Posted, $invoice->status);
         }
 
         // Verify all invoice numbers are unique
@@ -160,7 +158,7 @@ class InvoicePostingIntegrationTest extends TestCase
         }
 
         // Verify no duplicate journal entry references exist in the database
-        $journalEntryReferences = \App\Models\JournalEntry::where('company_id', $this->company->id)
+        $journalEntryReferences = JournalEntry::where('company_id', $this->company->id)
             ->where('journal_id', $this->salesJournal->id)
             ->pluck('reference')
             ->toArray();
@@ -168,7 +166,7 @@ class InvoicePostingIntegrationTest extends TestCase
         $this->assertCount(5, array_unique($journalEntryReferences));
     }
 
-    private function createTestInvoice(string $description = 'Test Item'): \Modules\Sales\Models\Invoice
+    private function createTestInvoice(string $description = 'Test Item'): Invoice
     {
         $invoiceDTO = new CreateInvoiceDTO(
             company_id: $this->company->id,

@@ -4,7 +4,9 @@ namespace Modules\Accounting\Rules;
 
 use Closure;
 use Illuminate\Contracts\Validation\ValidationRule;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Translation\PotentiallyTranslatedString;
+use Modules\Accounting\Models\Account;
 
 class ActiveAccount implements ValidationRule
 {
@@ -15,9 +17,9 @@ class ActiveAccount implements ValidationRule
      */
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {
-        $account = \Modules\Accounting\Models\Account::find($value);
+        $account = Account::find($value);
         // Ensure we have a single Account model, not a collection
-        if ($account instanceof \Illuminate\Database\Eloquent\Collection) {
+        if ($account instanceof Collection) {
             $account = $account->first();
         }
 

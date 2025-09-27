@@ -2,13 +2,10 @@
 
 namespace Modules\Accounting\Database\Factories;
 
-use App\Enums\Loans\LoanStatus;
-use App\Enums\Loans\LoanType;
-use App\Enums\Loans\ScheduleMethod;
 use App\Models\Company;
-use App\Models\LoanAgreement;
 use Brick\Money\Money;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Modules\Foundation\Models\Currency;
 
 /**
  * @extends Factory<LoanAgreement>
@@ -27,7 +24,7 @@ class LoanAgreementFactory extends Factory
             'start_date' => now()->addMonth()->startOfMonth()->toDateString(),
             'maturity_date' => now()->addMonths(12)->toDateString(),
             'duration_months' => 12,
-            'currency_id' => \Modules\Foundation\Models\Currency::factory()->createSafely(),
+            'currency_id' => Currency::factory()->createSafely(),
             'principal_amount' => Money::of('10000', 'USD'),
             'outstanding_principal' => Money::of('10000', 'USD'),
             'loan_type' => LoanType::Payable,

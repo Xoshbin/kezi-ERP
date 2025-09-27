@@ -2,15 +2,13 @@
 
 namespace Modules\Accounting\Tests\Feature\Accounting;
 
-use App\Actions\Accounting\CreateJournalEntryAction;
-use App\DataTransferObjects\Accounting\CreateJournalEntryDTO;
-use App\DataTransferObjects\Accounting\CreateJournalEntryLineDTO;
-use App\Enums\Accounting\AccountType;
-use App\Models\Journal;
 use Brick\Money\Money;
 use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Validation\ValidationException;
+use Modules\Accounting\Models\Account;
+use Modules\Foundation\Models\Currency;
+use Modules\Foundation\Models\CurrencyRate;
 use Tests\Traits\WithConfiguredCompany;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);
@@ -18,15 +16,15 @@ uses(RefreshDatabase::class, WithConfiguredCompany::class);
 beforeEach(function () {
     $this->setupWithConfiguredCompany();
 
-    $this->usdCurrency = \Modules\Foundation\Models\Currency::factory()->create(['code' => 'USD']);
+    $this->usdCurrency = Currency::factory()->create(['code' => 'USD']);
     $this->journal = Journal::factory()->create(['company_id' => $this->company->id]);
-    $this->account1 = \Modules\Accounting\Models\Account::factory()->create(['company_id' => $this->company->id]);
-    $this->account2 = \Modules\Accounting\Models\Account::factory()->create(['company_id' => $this->company->id]);
+    $this->account1 = Account::factory()->create(['company_id' => $this->company->id]);
+    $this->account2 = Account::factory()->create(['company_id' => $this->company->id]);
 
     // Create exchange rate for the foreign currency (use yesterday to ensure it's available)
     $this->entryDate = Carbon::today()->format('Y-m-d');
     $this->rateDate = Carbon::yesterday()->format('Y-m-d');
-    $this->currencyRate = \Modules\Foundation\Models\CurrencyRate::create([
+    $this->currencyRate = CurrencyRate::create([
         'currency_id' => $this->usdCurrency->id,
         'company_id' => $this->company->id,
         'rate' => 1460,
@@ -35,8 +33,8 @@ beforeEach(function () {
     ]);
 
     // Create standard accounts
-    $this->receivableAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create(['type' => 'receivable']);
-    $this->revenueAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create(['type' => 'income']);
+    $this->receivableAccount = Account::factory()->for($this->company)->create(['type' => 'receivable']);
+    $this->revenueAccount = Account::factory()->for($this->company)->create(['type' => 'income']);
 });
 
 test('it creates a journal entry in a foreign currency correctly', function () {
@@ -114,7 +112,7 @@ test('it creates a journal entry in a foreign currency correctly', function () {
 
 test('it blocks posting to a currency-locked account with the wrong currency', function () {
     // Arrange: Create a bank account that is explicitly locked to USD
-    $usdBankAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create([
+    $usdBankAccount = Account::factory()->for($this->company)->create([
         'type' => \Modules\Accounting\Enums\Accounting\AccountType::BankAndCash,
         'currency_id' => $this->usdCurrency->id,
     ]);

@@ -3,9 +3,12 @@
 namespace Modules\Accounting\Filament\Clusters\Accounting\Pages\Reports;
 
 use App\Filament\Clusters\Accounting\AccountingCluster;
+use App\Models\Company;
 use App\Services\Reports\AgedReceivableService;
 use App\Support\NumberFormatter;
+use BackedEnum;
 use Carbon\Carbon;
+use Exception;
 use Filament\Actions\Action;
 use Filament\Facades\Filament;
 use Filament\Forms\Components\DatePicker;
@@ -16,7 +19,7 @@ use Illuminate\Contracts\Support\Htmlable;
 
 class ViewAgedReceivables extends Page
 {
-    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-clock';
+    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-clock';
 
     protected string $view = 'filament.pages.reports.view-aged-receivables';
 
@@ -87,8 +90,8 @@ class ViewAgedReceivables extends Page
         ]);
 
         $company = Filament::getTenant();
-        if (! $company instanceof \App\Models\Company) {
-            throw new \Exception('Company not found');
+        if (! $company instanceof Company) {
+            throw new Exception('Company not found');
         }
 
         $service = app(\Modules\Accounting\Services\Reports\AgedReceivableService::class);

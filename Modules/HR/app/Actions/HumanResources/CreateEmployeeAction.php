@@ -2,26 +2,28 @@
 
 namespace Modules\HR\Actions\HumanResources;
 
-use App\DataTransferObjects\HumanResources\CreateEmployeeDTO;
 use App\Models\Company;
 use Illuminate\Support\Facades\DB;
+use InvalidArgumentException;
+use Modules\HR\Models\Employee;
+use RuntimeException;
 
 class CreateEmployeeAction
 {
-    public function execute(CreateEmployeeDTO $createEmployeeDTO): \Modules\HR\Models\Employee
+    public function execute(CreateEmployeeDTO $createEmployeeDTO): Employee
     {
-        return DB::transaction(function () use ($createEmployeeDTO): \Modules\HR\Models\Employee {
+        return DB::transaction(function () use ($createEmployeeDTO): Employee {
             // Generate employee number if not provided
             $employeeNumber = $createEmployeeDTO->employee_number;
             if (empty($employeeNumber)) {
                 $company = Company::find($createEmployeeDTO->company_id);
                 if (! $company) {
-                    throw new \InvalidArgumentException('Company not found');
+                    throw new InvalidArgumentException('Company not found');
                 }
-                $employeeNumber = \Modules\HR\Models\Employee::generateEmployeeNumber($company);
+                $employeeNumber = Employee::generateEmployeeNumber($company);
             }
 
-            $employee = \Modules\HR\Models\Employee::create([
+            $employee = Employee::create([
                 'company_id' => $createEmployeeDTO->company_id,
                 'user_id' => $createEmployeeDTO->user_id,
                 'department_id' => $createEmployeeDTO->department_id,
@@ -59,7 +61,7 @@ class CreateEmployeeAction
 
             $fresh = $employee->fresh();
             if (! $fresh) {
-                throw new \RuntimeException('Failed to refresh employee after creation');
+                throw new RuntimeException('Failed to refresh employee after creation');
             }
 
             return $fresh;

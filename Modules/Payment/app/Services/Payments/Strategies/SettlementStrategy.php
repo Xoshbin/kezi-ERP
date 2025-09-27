@@ -2,8 +2,7 @@
 
 namespace Modules\Payment\Services\Payments\Strategies;
 
-use App\DataTransferObjects\Payments\CreatePaymentDTO;
-use App\DataTransferObjects\Payments\UpdatePaymentDTO;
+use Modules\Payment\Models\Payment;
 
 class SettlementStrategy implements PaymentStrategy
 {
@@ -11,7 +10,7 @@ class SettlementStrategy implements PaymentStrategy
      * Execute the strategy for creating a settlement payment.
      * This handles linking payments to invoices and vendor bills.
      */
-    public function executeCreate(\Modules\Payment\Models\Payment $payment, CreatePaymentDTO $dto): void
+    public function executeCreate(Payment $payment, CreatePaymentDTO $dto): void
     {
         // Create the payment document links
         foreach ($dto->document_links as $link) {
@@ -34,7 +33,7 @@ class SettlementStrategy implements PaymentStrategy
      * Execute the strategy for updating a settlement payment.
      * This handles updating payment document links.
      */
-    public function executeUpdate(\Modules\Payment\Models\Payment $payment, UpdatePaymentDTO $dto): void
+    public function executeUpdate(Payment $payment, UpdatePaymentDTO $dto): void
     {
         // Delete existing links and create new ones
         $payment->paymentDocumentLinks()->delete();

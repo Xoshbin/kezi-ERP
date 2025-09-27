@@ -8,6 +8,8 @@ use Filament\Facades\Filament;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use InvalidArgumentException;
+use Modules\Foundation\Casts\MoneyCast;
+use Modules\Foundation\Models\Currency;
 
 /**
  * SalaryCurrencyMoneyCast - Uses the currency_id field.
@@ -20,11 +22,11 @@ class SalaryCurrencyMoneyCast extends MoneyCast
     /**
      * Resolve the currency from the 'currency_id' field.
      */
-    protected function resolveCurrency(Model $model): \Modules\Foundation\Models\Currency
+    protected function resolveCurrency(Model $model): Currency
     {
         // Check for currency_id field
         if (isset($model->currency_id)) {
-            $currency = \Modules\Foundation\Models\Currency::findOrFail($model->currency_id);
+            $currency = Currency::findOrFail($model->currency_id);
             // Ensure we have a single Currency model, not a collection
             if ($currency instanceof Collection) {
                 $currency = $currency->first();

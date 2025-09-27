@@ -2,8 +2,10 @@
 
 namespace Modules\Foundation\Casts;
 
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use InvalidArgumentException;
+use Modules\Foundation\Models\Currency;
 
 /**
  * OriginalCurrencyMoneyCast - Uses the original transaction currency.
@@ -18,13 +20,13 @@ class OriginalCurrencyMoneyCast extends MoneyCast
      * Resolve the currency from the 'original_currency_id' or 'foreign_currency_id' field on the line itself.
      * This cast is now strict and will not fall back to ambiguous logic.
      */
-    protected function resolveCurrency(Model $model): \Modules\Foundation\Models\Currency
+    protected function resolveCurrency(Model $model): Currency
     {
         // Check for original_currency_id (used in journal entry lines)
         if (isset($model->original_currency_id)) {
-            $currency = \Modules\Foundation\Models\Currency::findOrFail($model->original_currency_id);
+            $currency = Currency::findOrFail($model->original_currency_id);
             // Ensure we have a single Currency model, not a collection
-            if ($currency instanceof \Illuminate\Database\Eloquent\Collection) {
+            if ($currency instanceof Collection) {
                 $currency = $currency->first();
                 if (! $currency) {
                     throw new InvalidArgumentException('Original currency collection is empty');
@@ -36,9 +38,9 @@ class OriginalCurrencyMoneyCast extends MoneyCast
 
         // Check for foreign_currency_id (used in bank statement lines)
         if (isset($model->foreign_currency_id)) {
-            $currency = \Modules\Foundation\Models\Currency::findOrFail($model->foreign_currency_id);
+            $currency = Currency::findOrFail($model->foreign_currency_id);
             // Ensure we have a single Currency model, not a collection
-            if ($currency instanceof \Illuminate\Database\Eloquent\Collection) {
+            if ($currency instanceof Collection) {
                 $currency = $currency->first();
                 if (! $currency) {
                     throw new InvalidArgumentException('Foreign currency collection is empty');

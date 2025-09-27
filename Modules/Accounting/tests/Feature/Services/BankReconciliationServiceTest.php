@@ -1,13 +1,14 @@
 <?php
 
-use App\Enums\Accounting\JournalType;
-use App\Enums\Payments\PaymentStatus;
-use App\Enums\Payments\PaymentType;
-use App\Models\Journal;
-use App\Services\BankReconciliationService;
 use Brick\Money\Money;
 use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Modules\Accounting\Models\Account;
+use Modules\Accounting\Models\BankStatement;
+use Modules\Accounting\Models\BankStatementLine;
+use Modules\Foundation\Models\Currency;
+use Modules\Foundation\Models\CurrencyRate;
+use Modules\Payment\Models\Payment;
 use Tests\Traits\WithConfiguredCompany;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);
@@ -19,7 +20,7 @@ beforeEach(function () {
         ->for($this->company)
         ->create(['type' => JournalType::Bank]);
 
-    $this->bankStatement = \Modules\Accounting\Models\BankStatement::factory()
+    $this->bankStatement = BankStatement::factory()
         ->for($this->company)
         ->for($this->company->currency)
         ->for($this->bankJournal)
@@ -31,14 +32,14 @@ beforeEach(function () {
 describe('BankReconciliationService', function () {
     it('can reconcile multiple bank lines with multiple payments', function () {
         // Create bank statement lines
-        $bankLine1 = \Modules\Accounting\Models\BankStatementLine::factory()
+        $bankLine1 = BankStatementLine::factory()
             ->for($this->bankStatement)
             ->create([
                 'amount' => Money::of(100, $this->company->currency->code),
                 'is_reconciled' => false,
             ]);
 
-        $bankLine2 = \Modules\Accounting\Models\BankStatementLine::factory()
+        $bankLine2 = BankStatementLine::factory()
             ->for($this->bankStatement)
             ->create([
                 'amount' => Money::of(50, $this->company->currency->code),
@@ -46,7 +47,7 @@ describe('BankReconciliationService', function () {
             ]);
 
         // Create payments
-        $payment1 = \Modules\Payment\Models\Payment::factory()
+        $payment1 = Payment::factory()
             ->for($this->company)
             ->for($this->company->currency)
             ->for($this->bankJournal)
@@ -56,7 +57,7 @@ describe('BankReconciliationService', function () {
                 'status' => 'confirmed',
             ]);
 
-        $payment2 = \Modules\Payment\Models\Payment::factory()
+        $payment2 = Payment::factory()
             ->for($this->company)
             ->for($this->company->currency)
             ->for($this->bankJournal)
@@ -86,14 +87,14 @@ describe('BankReconciliationService', function () {
     });
 
     it('throws exception when totals do not match', function () {
-        $bankLine = \Modules\Accounting\Models\BankStatementLine::factory()
+        $bankLine = BankStatementLine::factory()
             ->for($this->bankStatement)
             ->create([
                 'amount' => Money::of(100, $this->company->currency->code),
                 'is_reconciled' => false,
             ]);
 
-        $payment = \Modules\Payment\Models\Payment::factory()
+        $payment = Payment::factory()
             ->for($this->company)
             ->for($this->company->currency)
             ->for($this->bankJournal)
@@ -111,14 +112,14 @@ describe('BankReconciliationService', function () {
     });
 
     it('handles outbound payments correctly in reconciliation', function () {
-        $bankLine = \Modules\Accounting\Models\BankStatementLine::factory()
+        $bankLine = BankStatementLine::factory()
             ->for($this->bankStatement)
             ->create([
                 'amount' => Money::of(-100, $this->company->currency->code), // Negative for outbound
                 'is_reconciled' => false,
             ]);
 
-        $payment = \Modules\Payment\Models\Payment::factory()
+        $payment = Payment::factory()
             ->for($this->company)
             ->for($this->company->currency)
             ->for($this->bankJournal)
@@ -139,14 +140,14 @@ describe('BankReconciliationService', function () {
     });
 
     it('can create write-offs for bank statement lines', function () {
-        $bankLine = \Modules\Accounting\Models\BankStatementLine::factory()
+        $bankLine = BankStatementLine::factory()
             ->for($this->bankStatement)
             ->create([
                 'amount' => Money::of(10, $this->company->currency->code),
                 'is_reconciled' => false,
             ]);
 
-        $writeOffAccount = \Modules\Accounting\Models\Account::factory()
+        $writeOffAccount = Account::factory()
             ->for($this->company)
             ->create(['type' => 'expense']);
 
@@ -161,11 +162,11 @@ describe('BankReconciliationService', function () {
     });
 
     it('can get unreconciled bank lines', function () {
-        \Modules\Accounting\Models\BankStatementLine::factory()
+        BankStatementLine::factory()
             ->for($this->bankStatement)
             ->create(['is_reconciled' => true]);
 
-        $unreconciledLine = \Modules\Accounting\Models\BankStatementLine::factory()
+        $unreconciledLine = BankStatementLine::factory()
             ->for($this->bankStatement)
             ->create(['is_reconciled' => false]);
 
@@ -176,13 +177,13 @@ describe('BankReconciliationService', function () {
     });
 
     it('can get unreconciled payments', function () {
-        \Modules\Payment\Models\Payment::factory()
+        Payment::factory()
             ->for($this->company)
             ->for($this->company->currency)
             ->for($this->bankJournal)
             ->create(['status' => PaymentStatus::Reconciled]);
 
-        $unreconciledPayment = \Modules\Payment\Models\Payment::factory()
+        $unreconciledPayment = Payment::factory()
             ->for($this->company)
             ->for($this->company->currency)
             ->for($this->bankJournal)
@@ -198,7 +199,7 @@ describe('BankReconciliationService', function () {
 describe('Multi-Currency Bank Reconciliation', function () {
     beforeEach(function () {
         // Create USD currency for foreign currency tests
-        $this->usdCurrency = \Modules\Foundation\Models\Currency::firstOrCreate(
+        $this->usdCurrency = Currency::firstOrCreate(
             ['code' => 'USD'],
             [
                 'name' => ['en' => 'US Dollar', 'ckb' => 'دۆلاری ئەمریکی', 'ar' => 'دولار أمريكي'],
@@ -212,7 +213,7 @@ describe('Multi-Currency Bank Reconciliation', function () {
         $this->exchangeRate = 1460.0;
         $this->transactionDate = Carbon::parse('2024-01-01');
 
-        \Modules\Foundation\Models\CurrencyRate::updateOrCreate(
+        CurrencyRate::updateOrCreate(
             [
                 'currency_id' => $this->usdCurrency->id,
                 'effective_date' => $this->transactionDate->toDateString(),
@@ -225,7 +226,7 @@ describe('Multi-Currency Bank Reconciliation', function () {
         );
 
         // Create USD bank statement
-        $this->usdBankStatement = \Modules\Accounting\Models\BankStatement::factory()
+        $this->usdBankStatement = BankStatement::factory()
             ->for($this->company)
             ->for($this->usdCurrency)
             ->for($this->bankJournal)
@@ -238,7 +239,7 @@ describe('Multi-Currency Bank Reconciliation', function () {
 
     it('can reconcile same-currency transactions (USD statement + USD payment)', function () {
         // Create USD bank statement line
-        $bankLine = \Modules\Accounting\Models\BankStatementLine::factory()
+        $bankLine = BankStatementLine::factory()
             ->for($this->usdBankStatement)
             ->create([
                 'amount' => Money::of(100, 'USD'), // $100.00
@@ -247,7 +248,7 @@ describe('Multi-Currency Bank Reconciliation', function () {
             ]);
 
         // Create USD payment
-        $payment = \Modules\Payment\Models\Payment::factory()
+        $payment = Payment::factory()
             ->for($this->company)
             ->for($this->usdCurrency)
             ->for($this->bankJournal)
@@ -272,7 +273,7 @@ describe('Multi-Currency Bank Reconciliation', function () {
 
     it('can reconcile cross-currency transactions (USD statement + IQD payment)', function () {
         // Create USD bank statement line
-        $bankLine = \Modules\Accounting\Models\BankStatementLine::factory()
+        $bankLine = BankStatementLine::factory()
             ->for($this->usdBankStatement)
             ->create([
                 'amount' => Money::of(100, 'USD'), // $100.00
@@ -281,7 +282,7 @@ describe('Multi-Currency Bank Reconciliation', function () {
             ]);
 
         // Create IQD payment equivalent to $100 at 1460 rate = 146,000 IQD
-        $payment = \Modules\Payment\Models\Payment::factory()
+        $payment = Payment::factory()
             ->for($this->company)
             ->for($this->company->currency) // IQD
             ->for($this->bankJournal)
@@ -306,7 +307,7 @@ describe('Multi-Currency Bank Reconciliation', function () {
 
     it('throws exception when cross-currency totals do not match after conversion', function () {
         // Create USD bank statement line
-        $bankLine = \Modules\Accounting\Models\BankStatementLine::factory()
+        $bankLine = BankStatementLine::factory()
             ->for($this->usdBankStatement)
             ->create([
                 'amount' => Money::of(100, 'USD'), // $100.00
@@ -316,7 +317,7 @@ describe('Multi-Currency Bank Reconciliation', function () {
 
         // Create IQD payment that doesn't match after conversion
         // $50 equivalent at 1460 rate = 73,000 IQD (not matching $100)
-        $payment = \Modules\Payment\Models\Payment::factory()
+        $payment = Payment::factory()
             ->for($this->company)
             ->for($this->company->currency) // IQD
             ->for($this->bankJournal)
@@ -337,7 +338,7 @@ describe('Multi-Currency Bank Reconciliation', function () {
 
     it('handles multiple cross-currency payments correctly', function () {
         // Create USD bank statement lines totaling $200
-        $bankLine1 = \Modules\Accounting\Models\BankStatementLine::factory()
+        $bankLine1 = BankStatementLine::factory()
             ->for($this->usdBankStatement)
             ->create([
                 'amount' => Money::of(100, 'USD'),
@@ -345,7 +346,7 @@ describe('Multi-Currency Bank Reconciliation', function () {
                 'date' => $this->transactionDate,
             ]);
 
-        $bankLine2 = \Modules\Accounting\Models\BankStatementLine::factory()
+        $bankLine2 = BankStatementLine::factory()
             ->for($this->usdBankStatement)
             ->create([
                 'amount' => Money::of(100, 'USD'),
@@ -354,7 +355,7 @@ describe('Multi-Currency Bank Reconciliation', function () {
             ]);
 
         // Create mixed currency payments: 1 USD + 1 IQD totaling $200
-        $usdPayment = \Modules\Payment\Models\Payment::factory()
+        $usdPayment = Payment::factory()
             ->for($this->company)
             ->for($this->usdCurrency)
             ->for($this->bankJournal)
@@ -365,7 +366,7 @@ describe('Multi-Currency Bank Reconciliation', function () {
                 'payment_date' => $this->transactionDate,
             ]);
 
-        $iqdPayment = \Modules\Payment\Models\Payment::factory()
+        $iqdPayment = Payment::factory()
             ->for($this->company)
             ->for($this->company->currency) // IQD
             ->for($this->bankJournal)

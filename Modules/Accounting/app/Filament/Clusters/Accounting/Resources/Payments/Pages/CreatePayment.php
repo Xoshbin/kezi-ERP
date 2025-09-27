@@ -2,17 +2,15 @@
 
 namespace Modules\Accounting\Filament\Clusters\Accounting\Resources\Payments\Pages;
 
-use App\Actions\Payments\CreatePaymentAction;
-use App\DataTransferObjects\Payments\CreatePaymentDTO;
-use App\Enums\Payments\PaymentMethod;
-use App\Enums\Payments\PaymentType;
-use App\Filament\Actions\DocsAction;
-use App\Filament\Clusters\Accounting\Resources\Payments\PaymentResource;
 use Brick\Money\Money;
+use Exception;
 use Filament\Facades\Filament;
 use Filament\Resources\Pages\CreateRecord;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
+use InvalidArgumentException;
+use Modules\Foundation\Models\Currency;
 
 class CreatePayment extends CreateRecord
 {
@@ -27,12 +25,12 @@ class CreatePayment extends CreateRecord
 
     protected function handleRecordCreation(array $data): Model
     {
-        $currency = \Modules\Foundation\Models\Currency::findOrFail($data['currency_id']);
+        $currency = Currency::findOrFail($data['currency_id']);
         // Ensure we have a single Currency model, not a collection
-        if ($currency instanceof \Illuminate\Database\Eloquent\Collection) {
+        if ($currency instanceof Collection) {
             $currency = $currency->first();
             if (! $currency) {
-                throw new \InvalidArgumentException('Currency not found');
+                throw new InvalidArgumentException('Currency not found');
             }
         }
 
@@ -57,7 +55,7 @@ class CreatePayment extends CreateRecord
 
         $user = Auth::user();
         if (! $user) {
-            throw new \Exception('User must be authenticated to create payment');
+            throw new Exception('User must be authenticated to create payment');
         }
 
         return app(CreatePaymentAction::class)->execute($paymentDTO, $user);

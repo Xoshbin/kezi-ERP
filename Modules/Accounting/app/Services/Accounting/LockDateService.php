@@ -2,11 +2,10 @@
 
 namespace Modules\Accounting\Services\Accounting;
 
-use App\Enums\Accounting\LockDateType;
-use App\Exceptions\PeriodIsLockedException;
 use App\Models\Company;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Cache;
+use Modules\Accounting\Models\LockDate;
 
 class LockDateService
 {
@@ -41,7 +40,7 @@ class LockDateService
         $cacheKey = "lock_date_{$company->id}_{$lockType}";
 
         return Cache::remember($cacheKey, now()->addDay(), function () use ($company, $lockType) {
-            $date = \Modules\Accounting\Models\LockDate::where('company_id', $company->id)
+            $date = LockDate::where('company_id', $company->id)
                 ->where('lock_type', $lockType)
                 ->value('locked_until');
 

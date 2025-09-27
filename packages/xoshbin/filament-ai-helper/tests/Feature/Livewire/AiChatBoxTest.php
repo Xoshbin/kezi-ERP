@@ -158,7 +158,7 @@ it('handles api errors gracefully', function () {
     // Mock an error response
     $this->mock(GetAIAssistantResponseAction::class, function ($mock) {
         $mock->shouldReceive('execute')
-            ->andThrow(new \Exception('API Error'));
+            ->andThrow(new Exception('API Error'));
         $mock->shouldReceive('generateWelcomeMessage')
             ->andReturn('Welcome message');
     });

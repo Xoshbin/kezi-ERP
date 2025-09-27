@@ -2,9 +2,8 @@
 
 namespace Modules\Inventory\Filament\Clusters\Inventory\Resources\StockPickingResource\Actions;
 
-use App\Enums\Inventory\StockPickingState;
-use App\Models\StockPicking;
-use App\Services\Inventory\StockReservationService;
+use DB;
+use Exception;
 use Filament\Actions\Action;
 use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\Repeater;
@@ -77,7 +76,7 @@ class AssignPickingAction extends Action
                                             }
 
                                             // Get available lots for this product
-                                            return \App\Models\Lot::where('product_id', $moveData['product_id'])
+                                            return Lot::where('product_id', $moveData['product_id'])
                                                 ->where('active', true)
                                                 ->pluck('lot_code', 'id')
                                                 ->toArray();
@@ -120,7 +119,7 @@ class AssignPickingAction extends Action
     protected function assignPicking(StockPicking $picking, array $data): void
     {
         try {
-            \DB::transaction(function () use ($picking, $data) {
+            DB::transaction(function () use ($picking, $data) {
                 $reservationService = app(StockReservationService::class);
 
                 // Process each move
@@ -163,7 +162,7 @@ class AssignPickingAction extends Action
 
             // Refresh the page to show updated state
             $this->getLivewire()->redirect(request()->url());
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             Notification::make()
                 ->title(__('Error'))
                 ->body(__('Failed to assign picking: :error', ['error' => $e->getMessage()]))

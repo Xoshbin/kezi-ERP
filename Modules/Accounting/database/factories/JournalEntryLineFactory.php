@@ -5,6 +5,7 @@ namespace Modules\Accounting\Database\Factories;
 use App\Models\JournalEntry;
 use Brick\Money\Money;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Modules\Accounting\Models\Account;
 
 class JournalEntryLineFactory extends Factory
 {
@@ -18,7 +19,7 @@ class JournalEntryLineFactory extends Factory
             'company_id' => function (array $attributes) {
                 return JournalEntry::find($attributes['journal_entry_id'])->company_id;
             },
-            'account_id' => \Modules\Accounting\Models\Account::factory(),
+            'account_id' => Account::factory(),
             'partner_id' => null,
             'description' => $this->faker->sentence(),
             'debit' => $isDebit ? $amount : 0,

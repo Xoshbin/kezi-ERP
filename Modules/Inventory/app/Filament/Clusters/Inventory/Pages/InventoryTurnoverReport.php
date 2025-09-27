@@ -3,15 +3,22 @@
 namespace Modules\Inventory\Filament\Clusters\Inventory\Pages;
 
 use App\Filament\Clusters\Inventory\InventoryCluster;
+use App\Services\Inventory\InventoryCSVExportService;
 use App\Services\Inventory\InventoryReportingService;
+use BackedEnum;
 use Carbon\Carbon;
+use Exception;
+use Filament\Actions\Action;
+use Filament\Facades\Filament;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
+use Filament\Notifications\Notification;
 use Filament\Pages\Page;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
+use Modules\Product\Models\Product;
 
 class InventoryTurnoverReport extends Page implements HasForms
 {
@@ -20,7 +27,7 @@ class InventoryTurnoverReport extends Page implements HasForms
 
     protected string $view = 'filament.clusters.inventory.pages.inventory-turnover-report';
 
-    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-arrow-path';
+    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-arrow-path';
 
     protected static ?int $navigationSort = 22;
 
@@ -83,8 +90,8 @@ class InventoryTurnoverReport extends Page implements HasForms
                         Select::make('product_ids')
                             ->label(__('inventory_reports.turnover.filters.products'))
                             ->options(function () {
-                                return \Modules\Product\Models\Product::query()
-                                    ->where('company_id', \Filament\Facades\Filament::getTenant()?->getKey())
+                                return Product::query()
+                                    ->where('company_id', Filament::getTenant()?->getKey())
                                     ->pluck('name', 'id');
                             })
                             ->multiple()
@@ -182,13 +189,13 @@ class InventoryTurnoverReport extends Page implements HasForms
     protected function getHeaderActions(): array
     {
         return [
-            \Filament\Actions\Action::make('export')
+            Action::make('export')
                 ->label(__('inventory_reports.turnover.actions.export'))
                 ->icon('heroicon-o-arrow-down-tray')
                 ->disabled(fn() => !$this->reportData)
                 ->action(function () {
                     if (!$this->reportData) {
-                        \Filament\Notifications\Notification::make()
+                        Notification::make()
                             ->title(__('inventory_reports.turnover.no_data_to_export'))
                             ->danger()
                             ->send();
@@ -196,14 +203,14 @@ class InventoryTurnoverReport extends Page implements HasForms
                     }
 
                     try {
-                        $csvService = app(\App\Services\Inventory\InventoryCSVExportService::class);
+                        $csvService = app(InventoryCSVExportService::class);
                         $csvContent = $csvService->exportTurnoverReport($this->reportData, [
                             'include_metadata' => true
                         ]);
 
                         $filename = 'inventory-turnover-' . now()->format('Y-m-d-H-i-s') . '.csv';
 
-                        \Filament\Notifications\Notification::make()
+                        Notification::make()
                             ->title(__('inventory_reports.turnover.export_started'))
                             ->success()
                             ->send();
@@ -213,8 +220,8 @@ class InventoryTurnoverReport extends Page implements HasForms
                         }, $filename, [
                             'Content-Type' => 'text/csv; charset=UTF-8',
                         ]);
-                    } catch (\Exception $e) {
-                        \Filament\Notifications\Notification::make()
+                    } catch (Exception $e) {
+                        Notification::make()
                             ->title(__('inventory_reports.turnover.export_failed'))
                             ->body($e->getMessage())
                             ->danger()
@@ -222,7 +229,7 @@ class InventoryTurnoverReport extends Page implements HasForms
                     }
                 }),
 
-            \Filament\Actions\Action::make('refresh')
+            Action::make('refresh')
                 ->label(__('inventory_reports.turnover.actions.refresh'))
                 ->icon('heroicon-o-arrow-path')
                 ->action('generateReport'),

@@ -2,9 +2,7 @@
 
 namespace Modules\Accounting\Filament\Clusters\Accounting\Resources\LoanAgreements\RelationManagers;
 
-use App\Enums\Loans\FeeType;
-use App\Filament\Forms\Components\MoneyInput;
-use App\Filament\Tables\Columns\MoneyColumn;
+
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Select;
@@ -14,6 +12,7 @@ use Filament\Schemas\Schema;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Modules\Accounting\Models\LoanAgreement;
 
 class FeeLinesRelationManager extends RelationManager
 {
@@ -26,7 +25,7 @@ class FeeLinesRelationManager extends RelationManager
                 ->default(function () {
                     $owner = $this->getOwnerRecord();
 
-                    return $owner instanceof \Modules\Accounting\Models\LoanAgreement ? $owner->currency_id : null;
+                    return $owner instanceof LoanAgreement ? $owner->currency_id : null;
                 }),
             DatePicker::make('date')->required(),
             Select::make('type')

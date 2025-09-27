@@ -3,15 +3,23 @@
 namespace Modules\Inventory\Filament\Clusters\Inventory\Pages;
 
 use App\Filament\Clusters\Inventory\InventoryCluster;
+use App\Models\StockLocation;
+use App\Services\Inventory\InventoryCSVExportService;
 use App\Services\Inventory\InventoryReportingService;
+use BackedEnum;
+use Exception;
+use Filament\Actions\Action;
+use Filament\Facades\Filament;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
+use Filament\Notifications\Notification;
 use Filament\Pages\Page;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
+use Modules\Product\Models\Product;
 
 class InventoryAgingReport extends Page implements HasForms
 {
@@ -20,7 +28,7 @@ class InventoryAgingReport extends Page implements HasForms
 
     protected string $view = 'filament.clusters.inventory.pages.inventory-aging-report';
 
-    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-clock';
+    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-clock';
 
     protected static ?int $navigationSort = 21;
 
@@ -67,8 +75,8 @@ class InventoryAgingReport extends Page implements HasForms
                         Select::make('product_ids')
                             ->label(__('inventory_reports.aging.filters.products'))
                             ->options(function () {
-                                return \Modules\Product\Models\Product::query()
-                                    ->where('company_id', \Filament\Facades\Filament::getTenant()?->getKey())
+                                return Product::query()
+                                    ->where('company_id', Filament::getTenant()?->getKey())
                                     ->pluck('name', 'id');
                             })
                             ->multiple()
@@ -80,8 +88,8 @@ class InventoryAgingReport extends Page implements HasForms
                         Select::make('location_ids')
                             ->label(__('inventory_reports.aging.filters.locations'))
                             ->options(function () {
-                                return \App\Models\StockLocation::query()
-                                    ->where('company_id', \Filament\Facades\Filament::getTenant()?->getKey())
+                                return StockLocation::query()
+                                    ->where('company_id', Filament::getTenant()?->getKey())
                                     ->pluck('name', 'id');
                             })
                             ->multiple()
@@ -193,7 +201,7 @@ class InventoryAgingReport extends Page implements HasForms
     protected function getHeaderActions(): array
     {
         return [
-            \Filament\Actions\Action::make('export')
+            Action::make('export')
                 ->label(__('inventory_reports.aging.actions.export'))
                 ->icon('heroicon-o-arrow-down-tray')
                 ->disabled(fn() => !$this->reportData)
@@ -203,7 +211,7 @@ class InventoryAgingReport extends Page implements HasForms
                 ->modalSubmitActionLabel(__('inventory_reports.aging.actions.export'))
                 ->action(function () {
                     if (!$this->reportData) {
-                        \Filament\Notifications\Notification::make()
+                        Notification::make()
                             ->title(__('inventory_reports.aging.no_data_to_export'))
                             ->danger()
                             ->send();
@@ -211,14 +219,14 @@ class InventoryAgingReport extends Page implements HasForms
                     }
 
                     try {
-                        $csvService = app(\App\Services\Inventory\InventoryCSVExportService::class);
+                        $csvService = app(InventoryCSVExportService::class);
                         $csvContent = $csvService->exportAgingReport($this->reportData, [
                             'include_metadata' => true
                         ]);
 
                         $filename = 'inventory-aging-' . now()->format('Y-m-d-H-i-s') . '.csv';
 
-                        \Filament\Notifications\Notification::make()
+                        Notification::make()
                             ->title(__('inventory_reports.aging.export_started'))
                             ->success()
                             ->send();
@@ -228,8 +236,8 @@ class InventoryAgingReport extends Page implements HasForms
                         }, $filename, [
                             'Content-Type' => 'text/csv; charset=UTF-8',
                         ]);
-                    } catch (\Exception $e) {
-                        \Filament\Notifications\Notification::make()
+                    } catch (Exception $e) {
+                        Notification::make()
                             ->title(__('inventory_reports.aging.export_failed'))
                             ->body($e->getMessage())
                             ->danger()
@@ -237,7 +245,7 @@ class InventoryAgingReport extends Page implements HasForms
                     }
                 }),
 
-            \Filament\Actions\Action::make('refresh')
+            Action::make('refresh')
                 ->label(__('inventory_reports.aging.actions.refresh'))
                 ->icon('heroicon-o-arrow-path')
                 ->action('generateReport'),

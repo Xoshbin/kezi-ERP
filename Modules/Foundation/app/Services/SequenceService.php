@@ -2,9 +2,9 @@
 
 namespace Modules\Foundation\Services;
 
-use App\Enums\Settings\NumberingType;
 use App\Models\Company;
 use Carbon\Carbon;
+use Modules\Foundation\Models\Sequence;
 
 /**
  * SequenceService
@@ -25,7 +25,7 @@ class SequenceService
         $config = $company->getInvoiceNumberingConfig();
         $numberingType = \Modules\Foundation\Enums\Settings\NumberingType::from($config['type']);
 
-        $sequence = \Modules\Foundation\Models\Sequence::getOrCreateSequence(
+        $sequence = Sequence::getOrCreateSequence(
             companyId: $company->id,
             documentType: 'invoice',
             prefix: $config['prefix'],
@@ -61,7 +61,7 @@ class SequenceService
         $config = $company->getVendorBillNumberingConfig();
         $numberingType = \Modules\Foundation\Enums\Settings\NumberingType::from($config['type']);
 
-        $sequence = \Modules\Foundation\Models\Sequence::getOrCreateSequence(
+        $sequence = Sequence::getOrCreateSequence(
             companyId: $company->id,
             documentType: 'vendor_bill',
             prefix: $config['prefix'],
@@ -92,7 +92,7 @@ class SequenceService
      */
     public function getNextPaymentNumber(Company $company): string
     {
-        $sequence = \Modules\Foundation\Models\Sequence::getOrCreateSequence(
+        $sequence = Sequence::getOrCreateSequence(
             companyId: $company->id,
             documentType: 'payment',
             prefix: 'PAY',
@@ -107,7 +107,7 @@ class SequenceService
      */
     public function getNextCreditNoteNumber(Company $company): string
     {
-        $sequence = \Modules\Foundation\Models\Sequence::getOrCreateSequence(
+        $sequence = Sequence::getOrCreateSequence(
             companyId: $company->id,
             documentType: 'credit_note',
             prefix: 'CN',
@@ -122,7 +122,7 @@ class SequenceService
      */
     public function getNextJournalEntryNumber(Company $company): string
     {
-        $sequence = \Modules\Foundation\Models\Sequence::getOrCreateSequence(
+        $sequence = Sequence::getOrCreateSequence(
             companyId: $company->id,
             documentType: 'journal_entry',
             prefix: 'JE',
@@ -141,7 +141,7 @@ class SequenceService
         string $prefix,
         int $padding = 5
     ): string {
-        $sequence = \Modules\Foundation\Models\Sequence::getOrCreateSequence(
+        $sequence = Sequence::getOrCreateSequence(
             companyId: $company->id,
             documentType: $documentType,
             prefix: $prefix,
@@ -156,7 +156,7 @@ class SequenceService
      */
     public function getCurrentNumber(Company $company, string $documentType): int
     {
-        $sequence = \Modules\Foundation\Models\Sequence::where('company_id', $company->id)
+        $sequence = Sequence::where('company_id', $company->id)
             ->where('document_type', $documentType)
             ->first();
 
@@ -169,7 +169,7 @@ class SequenceService
      */
     public function resetSequence(Company $company, string $documentType, int $number): void
     {
-        $sequence = \Modules\Foundation\Models\Sequence::where('company_id', $company->id)
+        $sequence = Sequence::where('company_id', $company->id)
             ->where('document_type', $documentType)
             ->first();
 

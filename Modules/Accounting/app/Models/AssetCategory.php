@@ -2,6 +2,7 @@
 
 namespace Modules\Accounting\Models;
 
+use App\Enums\Assets\DepreciationMethod;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -24,7 +25,7 @@ class AssetCategory extends Model
 
     protected $casts = [
         'is_active' => 'boolean',
-        'depreciation_method' => \App\Enums\Assets\DepreciationMethod::class,
+        'depreciation_method' => DepreciationMethod::class,
     ];
 
     /**

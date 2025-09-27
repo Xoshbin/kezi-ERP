@@ -2,10 +2,7 @@
 
 namespace Modules\Inventory\Services\Inventory;
 
-use App\DataTransferObjects\Inventory\InventoryMovementValidationResult;
-use App\Enums\Inventory\StockMoveType;
-use App\Exceptions\Inventory\InsufficientCostInformationException;
-use App\Models\StockMove;
+use Modules\Product\Models\Product;
 
 /**
  * Service for validating inventory movements before execution
@@ -22,13 +19,13 @@ class InventoryMovementValidationService
     /**
      * Validate that a product is ready for inventory movements
      *
-     * @param \Modules\Product\Models\Product $product
+     * @param Product $product
      * @param StockMoveType $moveType
      * @param float $quantity
      * @return InventoryMovementValidationResult
      */
     public function validateMovement(
-        \Modules\Product\Models\Product $product,
+        Product $product,
         StockMoveType $moveType,
         float $quantity
     ): InventoryMovementValidationResult {
@@ -140,10 +137,10 @@ class InventoryMovementValidationService
     /**
      * Get detailed guidance for resolving validation failures
      *
-     * @param \Modules\Product\Models\Product $product
+     * @param Product $product
      * @return array
      */
-    public function getResolutionGuidance(\Modules\Product\Models\Product $product): array
+    public function getResolutionGuidance(Product $product): array
     {
         return [
             'establishment_steps' => $this->costAnalysisService->getEstablishmentSteps($product),

@@ -2,11 +2,10 @@
 
 namespace Modules\Accounting\Database\Factories;
 
-use App\Enums\Assets\AssetStatus;
-use App\Models\Asset;
 use App\Models\Company;
 use Brick\Money\Money;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Modules\Accounting\Models\Account;
 
 /**
  * @extends Factory<Asset>
@@ -32,9 +31,9 @@ class AssetFactory extends Factory
             'useful_life_years' => $this->faker->numberBetween(3, 10),
             'depreciation_method' => 'straight_line',
             // Create real accounts instead of using random numbers
-            'asset_account_id' => \Modules\Accounting\Models\Account::factory(),
-            'depreciation_expense_account_id' => \Modules\Accounting\Models\Account::factory(),
-            'accumulated_depreciation_account_id' => \Modules\Accounting\Models\Account::factory(),
+            'asset_account_id' => Account::factory(),
+            'depreciation_expense_account_id' => Account::factory(),
+            'accumulated_depreciation_account_id' => Account::factory(),
             'status' => AssetStatus::Draft,
         ];
     }

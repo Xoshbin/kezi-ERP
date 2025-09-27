@@ -2,28 +2,12 @@
 
 namespace Modules\Inventory\Tests\Feature\Filament;
 
-use App\Enums\Inventory\ValuationMethod;
-use App\Enums\Products\ProductType;
-use App\Filament\Clusters\Inventory\Pages\InventoryAgingReport;
-use App\Filament\Clusters\Inventory\Pages\InventoryOverview;
-use App\Filament\Clusters\Inventory\Pages\InventoryTurnoverReport;
-use App\Filament\Clusters\Inventory\Pages\InventoryValuationReport;
-use App\Filament\Clusters\Inventory\Pages\LotTraceabilityReport;
-use App\Filament\Clusters\Inventory\Pages\ReorderStatusReport;
-use App\Filament\Clusters\Inventory\Resources\StockQuantResource;
-use App\Filament\Clusters\Inventory\Resources\StockQuantResource\Pages\ListStockQuants;
-use App\Filament\Clusters\Inventory\Resources\StockQuantResource\Pages\ViewStockQuant;
-use App\Filament\Clusters\Inventory\Widgets\InventoryAgingChartWidget;
-use App\Filament\Clusters\Inventory\Widgets\InventoryStatsOverviewWidget;
-use App\Filament\Clusters\Inventory\Widgets\InventoryTurnoverChartWidget;
-use App\Filament\Clusters\Inventory\Widgets\InventoryValueChartWidget;
-use App\Models\Lot;
-use App\Models\StockQuant;
 use Brick\Money\Money;
 use Carbon\Carbon;
 use Filament\Infolists\Testing\TestsInfolists;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Livewire\Livewire;
+use Modules\Product\Models\Product;
 use Tests\Traits\WithConfiguredCompany;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);
@@ -292,7 +276,7 @@ function setupSampleInventoryData(): void
 {
     // Create sample products
     test()->products = collect([
-        \Modules\Product\Models\Product::factory()->for(test()->company)->create([
+        Product::factory()->for(test()->company)->create([
             'name' => 'Test Laptop',
             'sku' => 'TEST-LAPTOP-001',
             'type' => \Modules\Product\Enums\Products\ProductType::Storable,
@@ -303,7 +287,7 @@ function setupSampleInventoryData(): void
             'default_cogs_account_id' => test()->cogsAccount->id,
             'average_cost' => Money::of(0, 'IQD'),
         ]),
-        \Modules\Product\Models\Product::factory()->for(test()->company)->create([
+        Product::factory()->for(test()->company)->create([
             'name' => 'Test Smartphone',
             'sku' => 'TEST-PHONE-001',
             'type' => \Modules\Product\Enums\Products\ProductType::Storable,

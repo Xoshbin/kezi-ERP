@@ -2,21 +2,18 @@
 
 namespace Modules\Sales\Actions\Sales;
 
-use App\DataTransferObjects\Sales\UpdateInvoiceDTO;
-use App\Enums\Sales\InvoiceStatus;
-use App\Exceptions\UpdateNotAllowedException;
-use App\Models\Tax;
-use App\Services\Accounting\LockDateService;
 use Brick\Math\RoundingMode;
 use Brick\Money\Money;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
+use Modules\Sales\Models\Invoice;
+use Modules\Sales\Models\InvoiceLine;
 
 class UpdateInvoiceAction
 {
     public function __construct(protected \Modules\Accounting\Services\Accounting\LockDateService $lockDateService) {}
 
-    public function execute(UpdateInvoiceDTO $dto): \Modules\Sales\Models\Invoice
+    public function execute(UpdateInvoiceDTO $dto): Invoice
     {
         $invoice = $dto->invoice;
 
@@ -51,7 +48,7 @@ class UpdateInvoiceAction
                     }
                 }
 
-                $lines[] = new \Modules\Sales\Models\InvoiceLine([
+                $lines[] = new InvoiceLine([
                     'company_id' => $invoice->company_id,
                     'product_id' => $lineDto->product_id,
                     'description' => $lineDto->description,

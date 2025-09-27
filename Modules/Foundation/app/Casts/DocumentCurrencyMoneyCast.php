@@ -2,8 +2,16 @@
 
 namespace Modules\Foundation\Casts;
 
+use Brick\Money\Money;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use InvalidArgumentException;
+use Modules\Accounting\Models\BankStatement;
+use Modules\Foundation\Models\Currency;
+use Modules\Inventory\Models\AdjustmentDocument;
+use Modules\Payment\Models\Payment;
+use Modules\Purchase\Models\VendorBill;
+use Modules\Sales\Models\Invoice;
 
 /**
  * DocumentCurrencyMoneyCast - Uses the document's stated currency.
@@ -17,13 +25,13 @@ class DocumentCurrencyMoneyCast extends MoneyCast
     /**
      * Resolve the currency from the document's header.
      */
-    protected function resolveCurrency(Model $model): \Modules\Foundation\Models\Currency
+    protected function resolveCurrency(Model $model): Currency
     {
         // Case 1: The model IS the document header (e.g., Invoice, VendorBill).
         if (isset($model->currency_id)) {
-            $currency = \Modules\Foundation\Models\Currency::findOrFail($model->currency_id);
+            $currency = Currency::findOrFail($model->currency_id);
             // Ensure we have a single Currency model, not a collection
-            if ($currency instanceof \Illuminate\Database\Eloquent\Collection) {
+            if ($currency instanceof Collection) {
                 $currency = $currency->first();
                 if (! $currency) {
                     throw new InvalidArgumentException('Currency collection is empty');
@@ -37,63 +45,63 @@ class DocumentCurrencyMoneyCast extends MoneyCast
         // This expects the parent relationship to be eager-loaded.
         if (method_exists($model, 'invoice') && $model->relationLoaded('invoice')) {
             $invoice = $model->getRelation('invoice');
-            if ($invoice instanceof \Illuminate\Database\Eloquent\Model && method_exists($invoice, 'currency')) {
+            if ($invoice instanceof Model && method_exists($invoice, 'currency')) {
                 $currency = $invoice->relationLoaded('currency') ? $invoice->getRelation('currency') : $invoice->currency()->first();
-                if ($currency instanceof \Modules\Foundation\Models\Currency) {
+                if ($currency instanceof Currency) {
                     return $currency;
                 }
             }
         }
         if (method_exists($model, 'vendorBill') && $model->relationLoaded('vendorBill')) {
             $vendorBill = $model->getRelation('vendorBill');
-            if ($vendorBill instanceof \Illuminate\Database\Eloquent\Model && method_exists($vendorBill, 'currency')) {
+            if ($vendorBill instanceof Model && method_exists($vendorBill, 'currency')) {
                 $currency = $vendorBill->relationLoaded('currency') ? $vendorBill->getRelation('currency') : $vendorBill->currency()->first();
-                if ($currency instanceof \Modules\Foundation\Models\Currency) {
+                if ($currency instanceof Currency) {
                     return $currency;
                 }
             }
         }
         if (method_exists($model, 'adjustmentDocument') && $model->relationLoaded('adjustmentDocument')) {
             $adjustmentDocument = $model->getRelation('adjustmentDocument');
-            if ($adjustmentDocument instanceof \Illuminate\Database\Eloquent\Model && method_exists($adjustmentDocument, 'currency')) {
+            if ($adjustmentDocument instanceof Model && method_exists($adjustmentDocument, 'currency')) {
                 $currency = $adjustmentDocument->relationLoaded('currency') ? $adjustmentDocument->getRelation('currency') : $adjustmentDocument->currency()->first();
-                if ($currency instanceof \Modules\Foundation\Models\Currency) {
+                if ($currency instanceof Currency) {
                     return $currency;
                 }
             }
         }
         if (method_exists($model, 'payment') && $model->relationLoaded('payment')) {
             $payment = $model->getRelation('payment');
-            if ($payment instanceof \Illuminate\Database\Eloquent\Model && method_exists($payment, 'currency')) {
+            if ($payment instanceof Model && method_exists($payment, 'currency')) {
                 $currency = $payment->relationLoaded('currency') ? $payment->getRelation('currency') : $payment->currency()->first();
-                if ($currency instanceof \Modules\Foundation\Models\Currency) {
+                if ($currency instanceof Currency) {
                     return $currency;
                 }
             }
         }
         if (method_exists($model, 'bankStatement') && $model->relationLoaded('bankStatement')) {
             $bankStatement = $model->getRelation('bankStatement');
-            if ($bankStatement instanceof \Illuminate\Database\Eloquent\Model && method_exists($bankStatement, 'currency')) {
+            if ($bankStatement instanceof Model && method_exists($bankStatement, 'currency')) {
                 $currency = $bankStatement->relationLoaded('currency') ? $bankStatement->getRelation('currency') : $bankStatement->currency()->first();
-                if ($currency instanceof \Modules\Foundation\Models\Currency) {
+                if ($currency instanceof Currency) {
                     return $currency;
                 }
             }
         }
         if (method_exists($model, 'purchaseOrder') && $model->relationLoaded('purchaseOrder')) {
             $purchaseOrder = $model->getRelation('purchaseOrder');
-            if ($purchaseOrder instanceof \Illuminate\Database\Eloquent\Model && method_exists($purchaseOrder, 'currency')) {
+            if ($purchaseOrder instanceof Model && method_exists($purchaseOrder, 'currency')) {
                 $currency = $purchaseOrder->relationLoaded('currency') ? $purchaseOrder->getRelation('currency') : $purchaseOrder->currency()->first();
-                if ($currency instanceof \Modules\Foundation\Models\Currency) {
+                if ($currency instanceof Currency) {
                     return $currency;
                 }
             }
         }
         if (method_exists($model, 'salesOrder') && $model->relationLoaded('salesOrder')) {
             $salesOrder = $model->getRelation('salesOrder');
-            if ($salesOrder instanceof \Illuminate\Database\Eloquent\Model && method_exists($salesOrder, 'currency')) {
+            if ($salesOrder instanceof Model && method_exists($salesOrder, 'currency')) {
                 $currency = $salesOrder->relationLoaded('currency') ? $salesOrder->getRelation('currency') : $salesOrder->currency()->first();
-                if ($currency instanceof \Modules\Foundation\Models\Currency) {
+                if ($currency instanceof Currency) {
                     return $currency;
                 }
             }
@@ -101,9 +109,9 @@ class DocumentCurrencyMoneyCast extends MoneyCast
         // Loan schedule: resolve via parent loan
         if (method_exists($model, 'loan') && $model->relationLoaded('loan')) {
             $loan = $model->getRelation('loan');
-            if ($loan instanceof \Illuminate\Database\Eloquent\Model && method_exists($loan, 'currency')) {
+            if ($loan instanceof Model && method_exists($loan, 'currency')) {
                 $currency = $loan->relationLoaded('currency') ? $loan->getRelation('currency') : $loan->currency()->first();
-                if ($currency instanceof \Modules\Foundation\Models\Currency) {
+                if ($currency instanceof Currency) {
                     return $currency;
                 }
             }
@@ -155,7 +163,7 @@ class DocumentCurrencyMoneyCast extends MoneyCast
         // Some models expose a direct currency() relationship (e.g., PaymentDocumentLink)
         if (method_exists($model, 'currency')) {
             $currency = $model->relationLoaded('currency') ? $model->getRelation('currency') : $model->currency()->first();
-            if ($currency instanceof \Modules\Foundation\Models\Currency) {
+            if ($currency instanceof Currency) {
                 return $currency;
             }
         }
@@ -175,7 +183,7 @@ class DocumentCurrencyMoneyCast extends MoneyCast
             return [$key => null];
         }
 
-        if ($value instanceof \Brick\Money\Money) {
+        if ($value instanceof Money) {
             return [$key => $value->getMinorAmount()->toInt()];
         }
 
@@ -183,32 +191,32 @@ class DocumentCurrencyMoneyCast extends MoneyCast
             // Try to resolve currency using raw attributes first to support factory/order of assignment
             $currency = null;
             if (isset($attributes['currency_id'])) {
-                $currency = \Modules\Foundation\Models\Currency::find($attributes['currency_id']);
+                $currency = Currency::find($attributes['currency_id']);
             }
             if (! $currency && isset($attributes['invoice_id'])) {
-                $currency = optional(\Modules\Sales\Models\Invoice::find($attributes['invoice_id']))->currency;
+                $currency = optional(Invoice::find($attributes['invoice_id']))->currency;
             }
             if (! $currency && isset($attributes['vendor_bill_id'])) {
-                $currency = optional(\Modules\Purchase\Models\VendorBill::find($attributes['vendor_bill_id']))->currency;
+                $currency = optional(VendorBill::find($attributes['vendor_bill_id']))->currency;
             }
             if (! $currency && isset($attributes['adjustment_document_id'])) {
-                $currency = optional(\Modules\Inventory\Models\AdjustmentDocument::find($attributes['adjustment_document_id']))->currency;
+                $currency = optional(AdjustmentDocument::find($attributes['adjustment_document_id']))->currency;
             }
             if (! $currency && isset($attributes['payment_id'])) {
-                $currency = optional(\Modules\Payment\Models\Payment::find($attributes['payment_id']))->currency;
+                $currency = optional(Payment::find($attributes['payment_id']))->currency;
             }
             if (! $currency && isset($attributes['bank_statement_id'])) {
-                $currency = optional(\Modules\Accounting\Models\BankStatement::find($attributes['bank_statement_id']))->currency;
+                $currency = optional(BankStatement::find($attributes['bank_statement_id']))->currency;
             }
             if (! $currency && isset($attributes['purchase_order_id'])) {
-                $currency = optional(\App\Models\PurchaseOrder::find($attributes['purchase_order_id']))->currency;
+                $currency = optional(PurchaseOrder::find($attributes['purchase_order_id']))->currency;
             }
 
             if (! $currency) {
                 $currency = $this->resolveCurrency($model);
             }
 
-            $money = \Brick\Money\Money::of($value, $currency->code);
+            $money = Money::of($value, $currency->code);
 
             return [$key => $money->getMinorAmount()->toInt()];
         }

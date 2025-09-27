@@ -2,12 +2,7 @@
 
 namespace Modules\Inventory\Services\Inventory;
 
-use App\DataTransferObjects\Inventory\ConfirmStockMoveDTO;
-use App\DataTransferObjects\Inventory\CreateStockMoveDTO;
-use App\DataTransferObjects\Inventory\UpdateStockMoveDTO;
-use App\DataTransferObjects\Inventory\UpdateStockMoveWithProductLinesDTO;
-use App\Enums\Inventory\StockMoveStatus;
-use App\Models\StockMove;
+use Modules\Inventory\Events\Inventory\StockMoveConfirmed;
 
 /**
  * Stock Move Service
@@ -159,7 +154,7 @@ class StockMoveService
         $move->status = StockMoveStatus::Done;
         $move->save();
 
-        \Modules\Inventory\Events\Inventory\StockMoveConfirmed::dispatch($move);
+        StockMoveConfirmed::dispatch($move);
 
         return $move;
     }

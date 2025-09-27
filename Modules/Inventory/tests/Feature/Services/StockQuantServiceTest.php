@@ -1,7 +1,10 @@
 <?php
 
-use App\Services\Inventory\StockQuantService;
+
+use Brick\Money\Money;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Modules\Product\Enums\Products\ProductType;
+use Modules\Product\Models\Product;
 use Tests\Traits\WithConfiguredCompany;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);
@@ -10,12 +13,12 @@ beforeEach(function () {
     $this->setupWithConfiguredCompany();
     $this->setupInventoryTestEnvironment();
 
-    $this->product = \Modules\Product\Models\Product::factory()->for($this->company)->create([
-        'type' => \Modules\Product\Enums\Products\ProductType::Storable,
-        'inventory_valuation_method' => \App\Enums\Inventory\ValuationMethod::AVCO,
+    $this->product = Product::factory()->for($this->company)->create([
+        'type' => ProductType::Storable,
+        'inventory_valuation_method' => ValuationMethod::AVCO,
         'default_inventory_account_id' => $this->inventoryAccount->id,
         'default_stock_input_account_id' => $this->stockInputAccount->id,
-        'average_cost' => \Brick\Money\Money::of(0, $this->company->currency->code),
+        'average_cost' => Money::of(0, $this->company->currency->code),
     ]);
 
     $this->service = app(StockQuantService::class);
@@ -23,7 +26,7 @@ beforeEach(function () {
 
 it('upserts and adjusts quants atomically', function () {
     // Initially no quant
-    expect(\App\Models\StockQuant::where('company_id', $this->company->id)
+    expect(StockQuant::where('company_id', $this->company->id)
         ->where('product_id', $this->product->id)
         ->where('location_id', $this->stockLocation->id)
         ->exists())->toBeFalse();

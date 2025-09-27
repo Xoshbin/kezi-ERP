@@ -2,9 +2,9 @@
 
 namespace Modules\Accounting\Database\Factories;
 
-use App\Enums\Accounting\AccountType;
 use App\Models\Company;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Modules\Accounting\Models\Account;
 
 class AccountFactory extends Factory
 {
@@ -13,7 +13,7 @@ class AccountFactory extends Factory
      *
      * @var string
      */
-    protected $model = \Modules\Accounting\Models\Account::class;
+    protected $model = Account::class;
 
     /**
      * Configure the model factory.
@@ -26,7 +26,7 @@ class AccountFactory extends Factory
      */
     public function configure(): static
     {
-        return $this->afterMaking(function (\Modules\Accounting\Models\Account $account) {
+        return $this->afterMaking(function (Account $account) {
             // If a code hasn't been explicitly set by a state, generate it
             // based on the account's final type. This is our single source of truth.
             if (empty($account->code)) {

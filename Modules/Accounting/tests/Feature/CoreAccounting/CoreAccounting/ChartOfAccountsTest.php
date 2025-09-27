@@ -1,21 +1,16 @@
 <?php
 
-use App\Actions\Accounting\CreateJournalEntryAction;
-use App\DataTransferObjects\Accounting\CreateJournalEntryDTO;
-use App\DataTransferObjects\Accounting\CreateJournalEntryLineDTO;
-use App\Models\Journal;
-use App\Services\AccountService;
-use App\Services\JournalService;
 use Brick\Money\Money;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Validation\ValidationException;
+use Modules\Accounting\Models\Account;
 use Tests\Traits\WithConfiguredCompany;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);
 
 test('creating an account with a duplicate code for the same company is prevented', function () {
     // Arrange: Create the first account with code '1000'.
-    \Modules\Accounting\Models\Account::factory()->for($this->company)->create(['code' => '1000']);
+    Account::factory()->for($this->company)->create(['code' => '1000']);
 
     // Arrange: Prepare the data for the second account, which is a duplicate.
     $duplicateAccountData = [
@@ -36,12 +31,12 @@ test('creating an account with a duplicate code for the same company is prevente
 
 test('an account with existing transactions is marked as deprecated instead of being deleted', function () {
     // Arrange: Create an account and link a transaction to it.
-    $account = \Modules\Accounting\Models\Account::factory()->for($this->company)->create();
+    $account = Account::factory()->for($this->company)->create();
     $journal = Journal::factory()->for($this->company)->create();
     $currencyCode = $this->company->currency->code;
 
     // Create the journal entry using the proper Action
-    $balancingAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create();
+    $balancingAccount = Account::factory()->for($this->company)->create();
 
     $createJournalEntryAction = app(\Modules\Accounting\Actions\Accounting\CreateJournalEntryAction::class);
     $journalEntry = $createJournalEntryAction->execute(new CreateJournalEntryDTO(
@@ -90,8 +85,8 @@ test('an account with existing transactions is marked as deprecated instead of b
 
 test('a deprecated account cannot be used for new financial transactions', function () {
     // Arrange: Create the necessary accounts.
-    $deprecatedAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create(['is_deprecated' => true]);
-    $activeAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create();
+    $deprecatedAccount = Account::factory()->for($this->company)->create(['is_deprecated' => true]);
+    $activeAccount = Account::factory()->for($this->company)->create();
 
     // Arrange: Prepare the data for a journal entry that attempts to use the deprecated account.
     $currencyCode = $this->company->currency->code;

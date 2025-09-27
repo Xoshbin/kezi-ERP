@@ -1,9 +1,14 @@
 <?php
 
-use App\Enums\Sales\InvoiceStatus;
 use App\Models\Company;
 use App\Models\User;
+use Filament\Facades\Filament;
 use Livewire\Livewire;
+use Modules\Accounting\Models\Account;
+use Modules\Foundation\Models\Currency;
+use Modules\Foundation\Models\Partner;
+use Modules\Sales\Models\Invoice;
+use Modules\Sales\Models\InvoiceLine;
 
 beforeEach(function () {
     $this->user = User::factory()->create();
@@ -12,35 +17,35 @@ beforeEach(function () {
     $this->actingAs($this->user);
 
     // Set up Filament tenant context
-    \Filament\Facades\Filament::setTenant($this->company);
+    Filament::setTenant($this->company);
 
-    $this->currency = \Modules\Foundation\Models\Currency::factory()->create(['code' => 'USD']);
-    $this->customer = \Modules\Foundation\Models\Partner::factory()->create([
+    $this->currency = Currency::factory()->create(['code' => 'USD']);
+    $this->customer = Partner::factory()->create([
         'company_id' => $this->company->id,
         'type' => 'customer',
     ]);
-    $this->account = \Modules\Accounting\Models\Account::factory()->create([
+    $this->account = Account::factory()->create([
         'company_id' => $this->company->id,
     ]);
 });
 
 test('edit page shows pdf actions for draft invoice', function () {
     // Arrange
-    $invoice = \Modules\Sales\Models\Invoice::factory()->create([
+    $invoice = Invoice::factory()->create([
         'company_id' => $this->company->id,
         'customer_id' => $this->customer->id,
         'currency_id' => $this->currency->id,
         'status' => InvoiceStatus::Draft,
     ]);
 
-    \Modules\Sales\Models\InvoiceLine::factory()->create([
+    InvoiceLine::factory()->create([
         'invoice_id' => $invoice->id,
         'income_account_id' => $this->account->id,
     ]);
 
     // Action
     $component = Livewire::actingAs($this->user)
-        ->test(\App\Filament\Clusters\Accounting\Resources\Invoices\Pages\EditInvoice::class, [
+        ->test(EditInvoice::class, [
             'record' => $invoice->getRouteKey(),
         ]);
 
@@ -51,7 +56,7 @@ test('edit page shows pdf actions for draft invoice', function () {
 
 test('edit page shows pdf actions for posted invoice', function () {
     // Arrange
-    $invoice = \Modules\Sales\Models\Invoice::factory()->create([
+    $invoice = Invoice::factory()->create([
         'company_id' => $this->company->id,
         'customer_id' => $this->customer->id,
         'currency_id' => $this->currency->id,
@@ -59,14 +64,14 @@ test('edit page shows pdf actions for posted invoice', function () {
         'invoice_number' => 'INV-001',
     ]);
 
-    \Modules\Sales\Models\InvoiceLine::factory()->create([
+    InvoiceLine::factory()->create([
         'invoice_id' => $invoice->id,
         'income_account_id' => $this->account->id,
     ]);
 
     // Action
     $component = Livewire::actingAs($this->user)
-        ->test(\App\Filament\Clusters\Accounting\Resources\Invoices\Pages\EditInvoice::class, [
+        ->test(EditInvoice::class, [
             'record' => $invoice->getRouteKey(),
         ]);
 
@@ -77,14 +82,14 @@ test('edit page shows pdf actions for posted invoice', function () {
 
 test('edit page pdf actions work correctly', function () {
     // Arrange
-    $invoice = \Modules\Sales\Models\Invoice::factory()->create([
+    $invoice = Invoice::factory()->create([
         'company_id' => $this->company->id,
         'customer_id' => $this->customer->id,
         'currency_id' => $this->currency->id,
         'status' => InvoiceStatus::Draft,
     ]);
 
-    \Modules\Sales\Models\InvoiceLine::factory()->create([
+    InvoiceLine::factory()->create([
         'invoice_id' => $invoice->id,
         'income_account_id' => $this->account->id,
     ]);
@@ -100,21 +105,21 @@ test('edit page pdf actions work correctly', function () {
 
 test('edit page shows all expected actions', function () {
     // Arrange
-    $invoice = \Modules\Sales\Models\Invoice::factory()->create([
+    $invoice = Invoice::factory()->create([
         'company_id' => $this->company->id,
         'customer_id' => $this->customer->id,
         'currency_id' => $this->currency->id,
         'status' => InvoiceStatus::Draft,
     ]);
 
-    \Modules\Sales\Models\InvoiceLine::factory()->create([
+    InvoiceLine::factory()->create([
         'invoice_id' => $invoice->id,
         'income_account_id' => $this->account->id,
     ]);
 
     // Action
     $component = Livewire::actingAs($this->user)
-        ->test(\App\Filament\Clusters\Accounting\Resources\Invoices\Pages\EditInvoice::class, [
+        ->test(EditInvoice::class, [
             'record' => $invoice->getRouteKey(),
         ]);
 

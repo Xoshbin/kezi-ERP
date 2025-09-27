@@ -7,6 +7,7 @@ use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
+use Modules\Sales\Models\Invoice;
 
 class InvoiceConfirmed
 {
@@ -15,7 +16,7 @@ class InvoiceConfirmed
     /**
      * Create a new event instance.
      */
-    public function __construct(public \Modules\Sales\Models\Invoice $invoice)
+    public function __construct(public Invoice $invoice)
     {
         //
     }

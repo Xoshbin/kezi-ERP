@@ -4,6 +4,9 @@ namespace Modules\Accounting\Database\Seeders;
 
 use Brick\Money\Money;
 use Illuminate\Database\Seeder;
+use Modules\Accounting\Models\BankStatement;
+use Modules\Accounting\Models\BankStatementLine;
+use Modules\Foundation\Models\Partner;
 
 class BankStatementLineSeeder extends Seeder
 {
@@ -12,8 +15,8 @@ class BankStatementLineSeeder extends Seeder
      */
     public function run(): void
     {
-        $statements = \Modules\Accounting\Models\BankStatement::all();
-        $partners = \Modules\Foundation\Models\Partner::all();
+        $statements = BankStatement::all();
+        $partners = Partner::all();
 
         if ($statements->isEmpty()) {
             $this->command->warn('No bank statements found. Skipping BankStatementLineSeeder.');
@@ -29,7 +32,7 @@ class BankStatementLineSeeder extends Seeder
                 $amount = Money::of(rand(-20000, 50000) / 100, $currency->code);
                 $totalAmount = $totalAmount->plus($amount);
 
-                \Modules\Accounting\Models\BankStatementLine::create([
+                BankStatementLine::create([
                     'bank_statement_id' => $statement->id,
                     'date' => $statement->date->subDays(rand(1, 28)),
                     'description' => 'Transaction '.($i + 1),

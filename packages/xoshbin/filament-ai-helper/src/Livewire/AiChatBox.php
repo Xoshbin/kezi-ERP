@@ -2,6 +2,7 @@
 
 namespace Xoshbin\FilamentAiHelper\Livewire;
 
+use Exception;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\RateLimiter;
 use Livewire\Attributes\On;
@@ -77,7 +78,7 @@ class AiChatBox extends Component
             if (! empty($welcomeMessage)) {
                 $this->addMessage('assistant', $welcomeMessage);
             }
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->addMessage('assistant',
                 "Hello! I'm AccounTech Pro, your AI accounting assistant. ".
                 'How can I help you analyze this record?'
@@ -113,7 +114,7 @@ class AiChatBox extends Component
 
             $this->addMessage('assistant', $response);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->hasError = true;
             $this->errorMessage = 'Sorry, I encountered an error while processing your request. Please try again.';
             $this->addMessage('assistant', $this->errorMessage);
@@ -176,7 +177,7 @@ class AiChatBox extends Component
             }
 
             return $this->modelClass::find($this->modelId);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return null;
         }
     }

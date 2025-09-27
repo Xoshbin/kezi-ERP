@@ -3,8 +3,7 @@
 namespace Modules\Inventory\Console\Commands;
 
 use App\Models\Company;
-use App\Services\Inventory\InventoryPerformanceMonitoringService;
-use App\Services\Inventory\InventoryQueryOptimizationService;
+use Exception;
 use Illuminate\Console\Command;
 
 class InventoryPerformanceAnalysis extends Command
@@ -247,7 +246,7 @@ class InventoryPerformanceAnalysis extends Command
 
             $this->info("📄 Results exported to: {$path}");
             $this->newLine();
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->error("Failed to export results: {$e->getMessage()}");
         }
     }

@@ -2,18 +2,17 @@
 
 namespace Modules\Payment\Services;
 
-use App\Actions\Accounting\CreateJournalEntryForPaymentAction;
-use App\Enums\Payments\PaymentStatus;
-use App\Enums\Purchases\VendorBillStatus;
-use App\Enums\Sales\InvoiceStatus;
-use App\Exceptions\DeletionNotAllowedException;
-use App\Exceptions\UpdateNotAllowedException;
-use App\Models\PaymentDocumentLink;
 use App\Models\User;
 use Brick\Money\Money;
 use Exception;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use InvalidArgumentException;
+use Modules\Foundation\Models\AuditLog;
+use Modules\Payment\Events\PaymentConfirmed;
+use Modules\Payment\Models\Payment;
+use Modules\Purchase\Models\VendorBill;
+use Modules\Sales\Models\Invoice;
 
 class PaymentService
 {
@@ -29,7 +28,7 @@ class PaymentService
     /**
      * Confirm a draft payment, locking it and creating the journal entry.
      */
-    public function confirm(\Modules\Payment\Models\Payment $payment, User $user): \Modules\Payment\Models\Payment
+    public function confirm(Payment $payment, User $user): Payment
     {
         if ($payment->status !== PaymentStatus::Draft) {
             throw new \Modules\Foundation\Exceptions\UpdateNotAllowedException('Only draft payments can be confirmed.');
@@ -49,7 +48,7 @@ class PaymentService
             // After confirming the payment, update the status of linked documents.
             $this->updateLinkedDocumentStatus($payment, $user);
 
-            \Modules\Payment\Events\PaymentConfirmed::dispatch($payment);
+            PaymentConfirmed::dispatch($payment);
 
             return $payment;
         });
@@ -60,7 +59,7 @@ class PaymentService
      * Ensures documents are properly posted before marking as paid.
      * Uses the HasPaymentState trait for accurate multi-currency payment state calculation.
      */
-    protected function updateLinkedDocumentStatus(\Modules\Payment\Models\Payment $payment, User $user): void
+    protected function updateLinkedDocumentStatus(Payment $payment, User $user): void
     {
         $payment->load('paymentDocumentLinks.invoice', 'paymentDocumentLinks.vendorBill');
 
@@ -108,7 +107,7 @@ class PaymentService
     /**
      * Cancels a confirmed payment by creating a reversing journal entry and a detailed audit log.
      */
-    public function cancel(\Modules\Payment\Models\Payment $payment, User $user, string $reason): void // Add $reason parameter
+    public function cancel(Payment $payment, User $user, string $reason): void // Add $reason parameter
     {
         if ($payment->status !== PaymentStatus::Confirmed) {
             throw new Exception('Only confirmed payments can be cancelled.');
@@ -121,7 +120,7 @@ class PaymentService
             }
 
             // Step 1: Create the explicit audit log with the reason.
-            \Modules\Foundation\Models\AuditLog::create([
+            AuditLog::create([
                 'user_id' => $user->id,
                 'event_type' => 'cancellation',
                 'auditable_type' => get_class($payment),
@@ -149,11 +148,11 @@ class PaymentService
      * Deletes a payment, but only if it is in a draft state.
      * Enforces the accounting principle of immutability for confirmed transactions.
      *
-     * @param \Modules\Payment\Models\Payment $payment The payment to be deleted.
+     * @param Payment $payment The payment to be deleted.
      *
      * @throws \Modules\Foundation\Exceptions\DeletionNotAllowedException If the payment is not in a draft state.
      */
-    public function delete(\Modules\Payment\Models\Payment $payment): void
+    public function delete(Payment $payment): void
     {
         // THE GUARD CLAUSE: This is the core of the fix.
         if ($payment->status !== PaymentStatus::Draft) {
@@ -168,7 +167,7 @@ class PaymentService
      * Process multi-currency amounts for a payment.
      * Captures exchange rate and converts amounts to company base currency.
      */
-    protected function processMultiCurrencyPayment(\Modules\Payment\Models\Payment $payment): void
+    protected function processMultiCurrencyPayment(Payment $payment): void
     {
         // Load necessary relationships
         $payment->load(['company', 'currency']);
@@ -216,9 +215,9 @@ class PaymentService
      * This method handles payment application with multi-currency support.
      *
      * @param  array<int, array{document_type: string, document_id: int, amount_applied: string}>  $applications
-     * @return array<int, \App\Models\PaymentDocumentLink>
+     * @return array<int, PaymentDocumentLink>
      */
-    public function applyToDocuments(\Modules\Payment\Models\Payment $payment, array $applications, User $user): array
+    public function applyToDocuments(Payment $payment, array $applications, User $user): array
     {
         if ($payment->status !== PaymentStatus::Confirmed) {
             throw new Exception('Only confirmed payments can be applied to documents');
@@ -250,11 +249,11 @@ class PaymentService
     /**
      * Get document by type and ID.
      */
-    protected function getDocument(string $documentType, int $documentId): \Modules\Sales\Models\Invoice|\Modules\Purchase\Models\VendorBill
+    protected function getDocument(string $documentType, int $documentId): Invoice|VendorBill
     {
         return match ($documentType) {
-            'invoice' => \Modules\Sales\Models\Invoice::findOrFail($documentId),
-            'vendor_bill' => \Modules\Purchase\Models\VendorBill::findOrFail($documentId),
+            'invoice' => Invoice::findOrFail($documentId),
+            'vendor_bill' => VendorBill::findOrFail($documentId),
             default => throw new InvalidArgumentException("Invalid document type: {$documentType}")
         };
     }
@@ -262,7 +261,7 @@ class PaymentService
     /**
      * Create payment document link.
      */
-    protected function createPaymentDocumentLink(\Modules\Payment\Models\Payment $payment, \Illuminate\Database\Eloquent\Model $document, Money $amountApplied): \App\Models\PaymentDocumentLink
+    protected function createPaymentDocumentLink(Payment $payment, Model $document, Money $amountApplied): PaymentDocumentLink
     {
         $linkData = [
             'company_id' => $payment->company_id,
@@ -270,9 +269,9 @@ class PaymentService
             'amount_applied' => $amountApplied,
         ];
 
-        if ($document instanceof \Modules\Sales\Models\Invoice) {
+        if ($document instanceof Invoice) {
             $linkData['invoice_id'] = $document->id;
-        } elseif ($document instanceof \Modules\Purchase\Models\VendorBill) {
+        } elseif ($document instanceof VendorBill) {
             $linkData['vendor_bill_id'] = $document->id;
         }
 

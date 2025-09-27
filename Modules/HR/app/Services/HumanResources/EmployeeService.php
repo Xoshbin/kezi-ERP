@@ -2,15 +2,12 @@
 
 namespace Modules\HR\Services\HumanResources;
 
-use App\Actions\HumanResources\CreateEmployeeAction;
-use App\Actions\HumanResources\CreateEmploymentContractAction;
-use App\DataTransferObjects\HumanResources\CreateEmployeeDTO;
-use App\DataTransferObjects\HumanResources\CreateEmploymentContractDTO;
 use App\Models\Company;
 use App\Models\User;
 use Exception;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
+use Modules\HR\Models\Employee;
 
 class EmployeeService
 {
@@ -22,7 +19,7 @@ class EmployeeService
     /**
      * Create a new employee with optional employment contract.
      */
-    public function createEmployee(CreateEmployeeDTO $createEmployeeDTO, ?CreateEmploymentContractDTO $contractDTO = null): \Modules\HR\Models\Employee
+    public function createEmployee(CreateEmployeeDTO $createEmployeeDTO, ?CreateEmploymentContractDTO $contractDTO = null): Employee
     {
         return DB::transaction(function () use ($createEmployeeDTO, $contractDTO) {
             // Create the employee
@@ -66,7 +63,7 @@ class EmployeeService
 
             $freshEmployee = $employee->fresh(['currentContract', 'department', 'position', 'manager']);
             if (! $freshEmployee) {
-                throw new \Exception('Failed to refresh employee after creation');
+                throw new Exception('Failed to refresh employee after creation');
             }
 
             return $freshEmployee;
@@ -76,7 +73,7 @@ class EmployeeService
     /**
      * Terminate an employee.
      */
-    public function terminateEmployee(\Modules\HR\Models\Employee $employee, string $terminationDate, string $reason, User $user): void
+    public function terminateEmployee(Employee $employee, string $terminationDate, string $reason, User $user): void
     {
         Gate::forUser($user)->authorize('update', $employee);
 
@@ -106,7 +103,7 @@ class EmployeeService
     /**
      * Reactivate a terminated employee.
      */
-    public function reactivateEmployee(\Modules\HR\Models\Employee $employee, string $reactivationDate, User $user): void
+    public function reactivateEmployee(Employee $employee, string $reactivationDate, User $user): void
     {
         Gate::forUser($user)->authorize('update', $employee);
 
@@ -129,7 +126,7 @@ class EmployeeService
     /**
      * Transfer employee to different department/position.
      */
-    public function transferEmployee(\Modules\HR\Models\Employee $employee, ?int $newDepartmentId, ?int $newPositionId, ?int $newManagerId, string $effectiveDate, User $user): void
+    public function transferEmployee(Employee $employee, ?int $newDepartmentId, ?int $newPositionId, ?int $newManagerId, string $effectiveDate, User $user): void
     {
         Gate::forUser($user)->authorize('update', $employee);
 
@@ -152,7 +149,7 @@ class EmployeeService
      */
     public function getEmployeeStatistics(Company $company): array
     {
-        $employees = \Modules\HR\Models\Employee::where('company_id', $company->id);
+        $employees = Employee::where('company_id', $company->id);
 
         return [
             'total_employees' => $employees->count(),

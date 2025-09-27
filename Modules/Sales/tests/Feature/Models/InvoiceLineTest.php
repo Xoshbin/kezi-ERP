@@ -1,14 +1,17 @@
 <?php
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Modules\Foundation\Models\Currency;
+use Modules\Sales\Models\Invoice;
+use Modules\Sales\Models\InvoiceLine;
 
 uses(RefreshDatabase::class);
 
 it('correctly resolves currency through its parent invoice relationship', function () {
     // Arrange
-    $usd = \Modules\Foundation\Models\Currency::factory()->create(['code' => 'USD']);
-    $invoice = \Modules\Sales\Models\Invoice::factory()->create(['currency_id' => $usd->id]);
-    $line = \Modules\Sales\Models\InvoiceLine::factory()->create(['invoice_id' => $invoice->id]);
+    $usd = Currency::factory()->create(['code' => 'USD']);
+    $invoice = Invoice::factory()->create(['currency_id' => $usd->id]);
+    $line = InvoiceLine::factory()->create(['invoice_id' => $invoice->id]);
 
     // Eager load the relationship just as the application would
     $line->load('invoice.currency');

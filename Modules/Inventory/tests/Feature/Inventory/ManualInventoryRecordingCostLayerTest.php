@@ -2,21 +2,10 @@
 
 namespace Modules\Inventory\Tests\Feature\Inventory;
 
-use App\Actions\Purchases\CreateVendorBillLineAction;
-use App\DataTransferObjects\Purchases\CreateVendorBillLineDTO;
-use App\Enums\Inventory\InventoryAccountingMode;
-use App\Enums\Inventory\StockMoveStatus;
-use App\Enums\Inventory\StockMoveType;
-use App\Enums\Inventory\ValuationMethod;
-use App\Enums\Products\ProductType;
-use App\Enums\Purchases\VendorBillStatus;
-use App\Models\InventoryCostLayer;
-use App\Models\StockMove;
-use App\Models\StockMoveProductLine;
-use App\Services\Inventory\InventoryValuationService;
-use App\Services\VendorBillService;
 use Brick\Money\Money;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Modules\Product\Models\Product;
+use Modules\Purchase\Models\VendorBill;
 use Tests\Traits\WithConfiguredCompany;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);
@@ -31,7 +20,7 @@ beforeEach(function () {
     ]);
 
     // Create test product
-    $this->product = \Modules\Product\Models\Product::factory()->create([
+    $this->product = Product::factory()->create([
         'company_id' => $this->company->id,
         'type' => \Modules\Product\Enums\Products\ProductType::Storable,
         'inventory_valuation_method' => ValuationMethod::FIFO,
@@ -71,12 +60,12 @@ it('creates cost layers when stock moves are processed in manual mode even witho
         $this->product,
         $stockMove,
         false
-    ))->toThrow(\App\Exceptions\Inventory\InsufficientCostInformationException::class);
+    ))->toThrow(InsufficientCostInformationException::class);
 });
 
 it('creates cost layers when stock moves are processed after vendor bill in manual mode', function () {
     // First, create and post a vendor bill
-    $vendorBill = \Modules\Purchase\Models\VendorBill::factory()->create([
+    $vendorBill = VendorBill::factory()->create([
         'company_id' => $this->company->id,
         'vendor_id' => $this->vendor->id,
         'status' => VendorBillStatus::Draft,
@@ -147,7 +136,7 @@ it('creates cost layers when stock moves are processed after vendor bill in manu
 
 it('handles multiple vendor bills and uses the latest one for cost determination', function () {
     // Create first vendor bill
-    $vendorBill1 = \Modules\Purchase\Models\VendorBill::factory()->create([
+    $vendorBill1 = VendorBill::factory()->create([
         'company_id' => $this->company->id,
         'vendor_id' => $this->vendor->id,
         'status' => VendorBillStatus::Draft,
@@ -172,7 +161,7 @@ it('handles multiple vendor bills and uses the latest one for cost determination
     sleep(1);
 
     // Create second vendor bill with different price
-    $vendorBill2 = \Modules\Purchase\Models\VendorBill::factory()->create([
+    $vendorBill2 = VendorBill::factory()->create([
         'company_id' => $this->company->id,
         'vendor_id' => $this->vendor->id,
         'status' => VendorBillStatus::Draft,

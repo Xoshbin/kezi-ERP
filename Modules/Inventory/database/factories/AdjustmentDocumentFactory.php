@@ -2,14 +2,10 @@
 
 namespace Modules\Inventory\Database\Factories;
 
-use App\Enums\Adjustments\AdjustmentDocumentStatus;
-use App\Enums\Adjustments\AdjustmentDocumentType;
-use App\Models\AdjustmentDocument;
-use App\Models\AdjustmentDocumentLine;
 use App\Models\Company;
-use App\Models\JournalEntry;
 use Brick\Money\Money;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Modules\Foundation\Models\Currency;
 
 /**
  * @extends Factory<AdjustmentDocument>
@@ -34,17 +30,17 @@ class AdjustmentDocumentFactory extends Factory
             'date' => $this->faker->date(),
             'reference_number' => $this->faker->unique()->bothify('ADJ-#####'),
             'subtotal' => function (array $attributes) {
-                $currency = \Modules\Foundation\Models\Currency::find($attributes['currency_id']);
+                $currency = Currency::find($attributes['currency_id']);
 
                 return Money::of($this->faker->randomFloat(2, 100, 8000), $currency->code);
             },
             'total_tax' => function (array $attributes) {
-                $currency = \Modules\Foundation\Models\Currency::find($attributes['currency_id']);
+                $currency = Currency::find($attributes['currency_id']);
 
                 return Money::of($this->faker->randomFloat(2, 0, 2000), $currency->code);
             },
             'total_amount' => function (array $attributes) {
-                $currency = \Modules\Foundation\Models\Currency::find($attributes['currency_id']);
+                $currency = Currency::find($attributes['currency_id']);
                 $subtotal = $attributes['subtotal'] ?? Money::of(1000, $currency->code);
                 $totalTax = $attributes['total_tax'] ?? Money::of(100, $currency->code);
 

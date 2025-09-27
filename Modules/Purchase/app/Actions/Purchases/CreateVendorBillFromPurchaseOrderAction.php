@@ -2,11 +2,8 @@
 
 namespace Modules\Purchase\Actions\Purchases;
 
-use App\DataTransferObjects\Purchases\CreateVendorBillDTO;
-use App\DataTransferObjects\Purchases\CreateVendorBillFromPurchaseOrderDTO;
-use App\DataTransferObjects\Purchases\CreateVendorBillLineDTO;
-use App\Models\PurchaseOrder;
 use Illuminate\Validation\ValidationException;
+use Modules\Purchase\Models\VendorBill;
 
 class CreateVendorBillFromPurchaseOrderAction
 {
@@ -14,7 +11,7 @@ class CreateVendorBillFromPurchaseOrderAction
         protected CreateVendorBillAction $createVendorBillAction
     ) {}
 
-    public function execute(CreateVendorBillFromPurchaseOrderDTO $dto): \Modules\Purchase\Models\VendorBill
+    public function execute(CreateVendorBillFromPurchaseOrderDTO $dto): VendorBill
     {
         $purchaseOrder = $this->validateAndGetPurchaseOrder($dto->purchase_order_id);
 

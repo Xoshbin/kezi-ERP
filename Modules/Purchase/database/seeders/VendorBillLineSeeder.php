@@ -4,6 +4,8 @@ namespace Modules\Purchase\Database\Seeders;
 
 use App\Models\VendorBillLine;
 use Illuminate\Database\Seeder;
+use Modules\Accounting\Models\Account;
+use Modules\Purchase\Models\VendorBill;
 
 class VendorBillLineSeeder extends Seeder
 {
@@ -48,9 +50,9 @@ class VendorBillLineSeeder extends Seeder
         //     );
         // }
 
-        $laptopBill = \Modules\Purchase\Models\VendorBill::where('bill_reference', 'KE-LAPTOP-001')->first();
+        $laptopBill = VendorBill::where('bill_reference', 'KE-LAPTOP-001')->first();
         if ($laptopBill) {
-            $itEquipmentAccount = \Modules\Accounting\Models\Account::where('code', '150301')->firstOrFail();
+            $itEquipmentAccount = Account::where('code', '150301')->firstOrFail();
             VendorBillLine::updateOrCreate(
                 ['vendor_bill_id' => $laptopBill->id, 'description' => 'High-End Laptop for Business Use'],
                 [

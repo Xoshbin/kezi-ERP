@@ -2,15 +2,16 @@
 
 namespace Modules\Foundation\Database\Factories;
 
-use App\Enums\PaymentTerms\PaymentTermType;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Modules\Foundation\Models\PaymentTerm;
+use Modules\Foundation\Models\PaymentTermLine;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\PaymentTermLine>
+ * @extends Factory<\App\Models\PaymentTermLine>
  */
 class PaymentTermLineFactory extends Factory
 {
-    protected $model = \Modules\Foundation\Models\PaymentTermLine::class;
+    protected $model = PaymentTermLine::class;
 
     /**
      * Define the model's default state.
@@ -20,7 +21,7 @@ class PaymentTermLineFactory extends Factory
     public function definition(): array
     {
         return [
-            'payment_term_id' => \Modules\Foundation\Models\PaymentTerm::factory(),
+            'payment_term_id' => PaymentTerm::factory(),
             'sequence' => 1,
             'type' => $this->faker->randomElement(\Modules\Foundation\Enums\PaymentTerms\PaymentTermType::cases()),
             'days' => $this->faker->numberBetween(0, 90),

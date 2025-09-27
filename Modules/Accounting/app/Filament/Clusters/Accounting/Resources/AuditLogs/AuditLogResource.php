@@ -2,10 +2,8 @@
 
 namespace Modules\Accounting\Filament\Clusters\Accounting\Resources\AuditLogs;
 
-use App\Filament\Clusters\Accounting\AccountingCluster;
-use App\Filament\Clusters\Accounting\Resources\AuditLogs\Pages\CreateAuditLog;
-use App\Filament\Clusters\Accounting\Resources\AuditLogs\Pages\EditAuditLog;
-use App\Filament\Clusters\Accounting\Resources\AuditLogs\Pages\ListAuditLogs;
+
+use BackedEnum;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
@@ -16,12 +14,17 @@ use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Modules\Accounting\Filament\Clusters\Accounting\AccountingCluster;
+use Modules\Accounting\Filament\Clusters\Accounting\Resources\AuditLogs\Pages\CreateAuditLog;
+use Modules\Accounting\Filament\Clusters\Accounting\Resources\AuditLogs\Pages\EditAuditLog;
+use Modules\Accounting\Filament\Clusters\Accounting\Resources\AuditLogs\Pages\ListAuditLogs;
+use Modules\Foundation\Models\AuditLog;
 
 class AuditLogResource extends Resource
 {
-    protected static ?string $model = \Modules\Foundation\Models\AuditLog::class;
+    protected static ?string $model = AuditLog::class;
 
-    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-eye';
+    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-eye';
 
     protected static ?int $navigationSort = 2;
 

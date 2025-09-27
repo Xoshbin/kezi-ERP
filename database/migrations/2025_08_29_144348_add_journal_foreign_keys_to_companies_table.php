@@ -65,7 +65,7 @@ return new class extends Migration
                     $table->dropForeign(['company_id']);
                     $table->dropForeign(['currency_id']);
                 });
-            } catch (\Exception) {
+            } catch (Exception) {
                 // If the foreign key doesn't exist, continue with the migration rollback
             }
         }
@@ -75,7 +75,7 @@ return new class extends Migration
                 Schema::table('audit_logs', function (Blueprint $table) {
                     $table->dropForeign(['company_id']);
                 });
-            } catch (\Exception) {
+            } catch (Exception) {
                 // If the foreign key doesn't exist, continue with the migration rollback
             }
         }

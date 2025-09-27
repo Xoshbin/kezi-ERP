@@ -2,20 +2,15 @@
 
 namespace Modules\Inventory\Filament\Clusters\Inventory\Resources\StockMoves\Pages;
 
-use App\Actions\Inventory\CreateStockMoveAction;
-use App\DataTransferObjects\Inventory\CreateStockMoveDTO;
-use App\DataTransferObjects\Inventory\CreateStockMoveProductLineDTO;
-use App\Enums\Inventory\StockMoveStatus;
-use App\Enums\Inventory\StockMoveType;
-use App\Exceptions\Inventory\InsufficientCostInformationException;
-use App\Filament\Actions\DocsAction;
-use App\Filament\Clusters\Inventory\Resources\StockMoves\StockMoveResource;
+use App\Models\Company;
 use Carbon\Carbon;
+use Filament\Actions\Action;
 use Filament\Facades\Filament;
 use Filament\Notifications\Actions\Action as NotificationAction;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\CreateRecord;
 use Illuminate\Database\Eloquent\Model;
+use RuntimeException;
 
 class CreateStockMove extends CreateRecord
 {
@@ -33,10 +28,10 @@ class CreateStockMove extends CreateRecord
 
     protected function handleRecordCreation(array $data): Model
     {
-        /** @var \App\Models\Company|null $tenant */
+        /** @var Company|null $tenant */
         $tenant = Filament::getTenant();
         if (! $tenant) {
-            throw new \RuntimeException('Company context is required to create a stock move.');
+            throw new RuntimeException('Company context is required to create a stock move.');
         }
 
         // Convert product lines data to DTOs
@@ -76,10 +71,10 @@ class CreateStockMove extends CreateRecord
                 ->danger()
                 ->persistent()
                 ->actions([
-                    \Filament\Actions\Action::make('create_vendor_bill')
+                    Action::make('create_vendor_bill')
                         ->label(__('Create Vendor Bill'))
                         ->button()
-                        ->url(route('filament.jmeryar.accounting.resources.vendor-bills.create', ['tenant' => \Filament\Facades\Filament::getTenant()]))
+                        ->url(route('filament.jmeryar.accounting.resources.vendor-bills.create', ['tenant' => Filament::getTenant()]))
                         ->openUrlInNewTab(),
                 ])
                 ->send();

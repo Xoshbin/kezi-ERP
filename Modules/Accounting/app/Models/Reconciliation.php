@@ -5,6 +5,7 @@ namespace Modules\Accounting\Models;
 use App\Enums\Reconciliation\ReconciliationType;
 use Brick\Money\Money;
 use Carbon\Carbon;
+use Database\Factories\ReconciliationFactory;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -32,7 +33,7 @@ use RuntimeException;
  */
 class Reconciliation extends Model
 {
-    /** @use HasFactory<\Database\Factories\ReconciliationFactory> */
+    /** @use HasFactory<ReconciliationFactory> */
     use HasFactory;
 
     /**

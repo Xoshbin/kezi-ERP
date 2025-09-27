@@ -3,6 +3,7 @@
 namespace Modules\Purchase\DataTransferObjects\Purchases;
 
 use Carbon\Carbon;
+use Modules\Foundation\Models\Currency;
 
 /**
  * Data Transfer Object for creating a new Purchase Order
@@ -48,7 +49,7 @@ readonly class CreatePurchaseOrderDTO
             // Get currency for line items
             $currency = null;
             if (isset($data['currency_id'])) {
-                $currency = \Modules\Foundation\Models\Currency::find($data['currency_id']);
+                $currency = Currency::find($data['currency_id']);
             }
             $currencyCode = $currency?->code ?? 'USD';
 

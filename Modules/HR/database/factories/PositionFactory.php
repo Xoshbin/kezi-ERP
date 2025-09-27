@@ -7,6 +7,7 @@ use App\Models\Department;
 use App\Models\Position;
 use Brick\Money\Money;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Modules\Foundation\Models\Currency;
 
 /**
  * @extends Factory<Position>
@@ -20,7 +21,7 @@ class PositionFactory extends Factory
      */
     public function definition(): array
     {
-        $currency = \Modules\Foundation\Models\Currency::firstOrCreate(
+        $currency = Currency::firstOrCreate(
             ['code' => 'IQD'],
             [
                 'name' => 'Iraqi Dinar',

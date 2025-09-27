@@ -2,16 +2,19 @@
 
 namespace Modules\Accounting\Tests\Feature\Filament\Widgets;
 
-use App\Enums\Partners\PartnerType;
-use App\Enums\Sales\InvoiceStatus;
-use App\Filament\Clusters\Accounting\Widgets\CashFlowWidget;
-use App\Filament\Clusters\Accounting\Widgets\FinancialStatsOverview;
-use App\Filament\Clusters\Accounting\Widgets\IncomeVsExpenseChart;
 use Brick\Money\Money;
 use Carbon\Carbon;
+use Exception;
 use Filament\Facades\Filament;
+use Filament\Widgets\StatsOverviewWidget\Stat;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Livewire\Livewire;
+use Modules\Accounting\Services\Reports\ProfitAndLossStatementService;
+use Modules\Foundation\Models\Partner;
+use Modules\Product\Models\Product;
+use Modules\Sales\Models\Invoice;
+use Modules\Sales\Models\InvoiceLine;
+use ReflectionClass;
 use Tests\Traits\WithConfiguredCompany;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);
@@ -29,7 +32,7 @@ it('can render financial stats overview widget', function () {
     $widget = new FinancialStatsOverview;
 
     // Use reflection to access protected method
-    $reflection = new \ReflectionClass($widget);
+    $reflection = new ReflectionClass($widget);
     $method = $reflection->getMethod('getStats');
     $method->setAccessible(true);
     $stats = $method->invoke($widget);
@@ -39,7 +42,7 @@ it('can render financial stats overview widget', function () {
 
     // Check that each stat has required properties
     foreach ($stats as $stat) {
-        expect($stat)->toBeInstanceOf(\Filament\Widgets\StatsOverviewWidget\Stat::class);
+        expect($stat)->toBeInstanceOf(Stat::class);
     }
 });
 
@@ -47,31 +50,31 @@ it('displays correct financial stats with real data', function () {
     $this->actingAs($this->user);
 
     // Create test data
-    $customer = \Modules\Foundation\Models\Partner::factory()->for($this->company)->create([
+    $customer = Partner::factory()->for($this->company)->create([
         'type' => \Modules\Foundation\Enums\Partners\PartnerType::Customer,
         'name' => 'Test Customer',
     ]);
 
-    $product = \Modules\Product\Models\Product::factory()->for($this->company)->create([
+    $product = Product::factory()->for($this->company)->create([
         'name' => 'Test Product',
         'unit_price' => Money::of(100, $this->company->currency->code),
     ]);
 
     // Create and post an invoice
-    $invoice = \Modules\Sales\Models\Invoice::factory()->for($this->company)->for($customer, 'customer')->create([
+    $invoice = Invoice::factory()->for($this->company)->for($customer, 'customer')->create([
         'status' => InvoiceStatus::Draft,
         'invoice_date' => Carbon::now(),
         'due_date' => Carbon::now()->addDays(30),
     ]);
 
-    \Modules\Sales\Models\InvoiceLine::factory()->for($invoice)->for($product)->create([
+    InvoiceLine::factory()->for($invoice)->for($product)->create([
         'quantity' => 10,
         'unit_price' => Money::of(100, $this->company->currency->code),
         'subtotal' => Money::of(1000, $this->company->currency->code),
     ]);
 
     // Post the invoice
-    $invoiceService = app(\App\Services\InvoiceService::class);
+    $invoiceService = app(InvoiceService::class);
     $invoiceService->confirm($invoice, $this->user);
 
     // Test with just the invoice for simplicity
@@ -79,7 +82,7 @@ it('displays correct financial stats with real data', function () {
     $widget = new FinancialStatsOverview;
 
     // Use reflection to access protected method
-    $reflection = new \ReflectionClass($widget);
+    $reflection = new ReflectionClass($widget);
     $method = $reflection->getMethod('getStats');
     $method->setAccessible(true);
     $stats = $method->invoke($widget);
@@ -94,7 +97,7 @@ it('can render income vs expense chart widget', function () {
     $widget = new IncomeVsExpenseChart;
 
     // Use reflection to access protected method
-    $reflection = new \ReflectionClass($widget);
+    $reflection = new ReflectionClass($widget);
     $method = $reflection->getMethod('getData');
     $method->setAccessible(true);
     $chartData = $method->invoke($widget);
@@ -110,7 +113,7 @@ it('can render cash flow widget', function () {
     $widget = new CashFlowWidget;
 
     // Use reflection to access protected method
-    $reflection = new \ReflectionClass($widget);
+    $reflection = new ReflectionClass($widget);
     $method = $reflection->getMethod('getStats');
     $method->setAccessible(true);
     $stats = $method->invoke($widget);
@@ -140,9 +143,9 @@ it('handles service errors gracefully', function () {
     $this->actingAs($this->user);
 
     // Mock a service to throw an exception
-    $this->mock(\Modules\Accounting\Services\Reports\ProfitAndLossStatementService::class)
+    $this->mock(ProfitAndLossStatementService::class)
         ->shouldReceive('generate')
-        ->andThrow(new \Exception('Service error'));
+        ->andThrow(new Exception('Service error'));
 
     $component = Livewire::test(FinancialStatsOverview::class);
     $component->assertOk();
@@ -155,8 +158,8 @@ it('calculates cash flow forecasts correctly', function () {
     $this->actingAs($this->user);
 
     // Create overdue invoice
-    $customer = \Modules\Foundation\Models\Partner::factory()->for($this->company)->create(['type' => \Modules\Foundation\Enums\Partners\PartnerType::Customer]);
-    \Modules\Sales\Models\Invoice::factory()->for($this->company)->for($customer, 'customer')->create([
+    $customer = Partner::factory()->for($this->company)->create(['type' => \Modules\Foundation\Enums\Partners\PartnerType::Customer]);
+    Invoice::factory()->for($this->company)->for($customer, 'customer')->create([
         'status' => InvoiceStatus::Posted,
         'invoice_date' => Carbon::now()->subDays(45),
         'due_date' => Carbon::now()->subDays(15), // Overdue
@@ -164,7 +167,7 @@ it('calculates cash flow forecasts correctly', function () {
     ]);
 
     // Create invoice due in 5 days
-    \Modules\Sales\Models\Invoice::factory()->for($this->company)->for($customer, 'customer')->create([
+    Invoice::factory()->for($this->company)->for($customer, 'customer')->create([
         'status' => InvoiceStatus::Posted,
         'invoice_date' => Carbon::now(),
         'due_date' => Carbon::now()->addDays(5),
@@ -174,7 +177,7 @@ it('calculates cash flow forecasts correctly', function () {
     $widget = new CashFlowWidget;
 
     // Use reflection to access protected method
-    $reflection = new \ReflectionClass($widget);
+    $reflection = new ReflectionClass($widget);
     $method = $reflection->getMethod('getStats');
     $method->setAccessible(true);
     $stats = $method->invoke($widget);

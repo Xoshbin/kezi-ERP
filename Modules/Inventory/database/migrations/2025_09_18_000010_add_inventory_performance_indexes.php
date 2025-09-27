@@ -17,7 +17,7 @@ return new class extends Migration
                 Schema::table($table, function (Blueprint $table) use ($columns, $indexName) {
                     $table->index($columns, $indexName);
                 });
-            } catch (\Exception) {
+            } catch (Exception) {
                 // Index might already exist, ignore errors
             }
         };
@@ -50,7 +50,7 @@ return new class extends Migration
                 Schema::table($table, function (Blueprint $table) use ($indexName) {
                     $table->dropIndex($indexName);
                 });
-            } catch (\Exception) {
+            } catch (Exception) {
                 // Index might not exist or be used by foreign key, ignore errors
             }
         };

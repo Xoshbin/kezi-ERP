@@ -2,12 +2,8 @@
 
 namespace Modules\Sales\Filament\Clusters\Sales\Resources\SalesOrders\Pages;
 
-use App\Actions\Sales\CreateDeliveryFromSalesOrderAction;
-use App\Actions\Sales\CreateInvoiceFromSalesOrderAction;
-use App\DataTransferObjects\Sales\CreateDeliveryFromSalesOrderDTO;
-use App\DataTransferObjects\Sales\CreateInvoiceFromSalesOrderDTO;
-use App\Filament\Clusters\Sales\Resources\SalesOrders\SalesOrderResource;
 use Carbon\Carbon;
+use Exception;
 use Filament\Actions;
 use Filament\Actions\Action;
 use Filament\Facades\Filament;
@@ -16,6 +12,7 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Toggle;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ViewRecord;
+use Modules\Accounting\Models\Account;
 
 class ViewSalesOrder extends ViewRecord
 {
@@ -47,7 +44,7 @@ class ViewSalesOrder extends ViewRecord
                     Select::make('default_income_account_id')
                         ->label(__('invoices.fields.default_income_account'))
                         ->options(function () {
-                            return \Modules\Accounting\Models\Account::where('company_id', Filament::getTenant()?->id)
+                            return Account::where('company_id', Filament::getTenant()?->id)
                                 ->where('account_type', 'income')
                                 ->pluck('name', 'id');
                         })
@@ -72,7 +69,7 @@ class ViewSalesOrder extends ViewRecord
                             ->send();
 
                         return redirect()->route('filament.admin.resources.invoices.view', $invoice);
-                    } catch (\Exception $e) {
+                    } catch (Exception $e) {
                         Notification::make()
                             ->title(__('sales_orders.notifications.invoice_creation_failed'))
                             ->body($e->getMessage())
@@ -122,7 +119,7 @@ class ViewSalesOrder extends ViewRecord
                         $this->refreshFormData([
                             'status',
                         ]);
-                    } catch (\Exception $e) {
+                    } catch (Exception $e) {
                         Notification::make()
                             ->title(__('sales_orders.notifications.delivery_creation_failed'))
                             ->body($e->getMessage())

@@ -2,26 +2,22 @@
 
 namespace Modules\HR\Filament\Clusters\HumanResources\Resources\Employees;
 
-use App\Filament\Clusters\HumanResources\HumanResourcesCluster;
-use App\Filament\Clusters\HumanResources\Resources\Employees\Pages\CreateEmployee;
-use App\Filament\Clusters\HumanResources\Resources\Employees\Pages\EditEmployee;
-use App\Filament\Clusters\HumanResources\Resources\Employees\Pages\ListEmployees;
-use App\Filament\Clusters\HumanResources\Resources\Employees\Schemas\EmployeeForm;
-use App\Filament\Clusters\HumanResources\Resources\Employees\Tables\EmployeesTable;
+use BackedEnum;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use LaraZeus\SpatieTranslatable\Resources\Concerns\Translatable;
+use Modules\HR\Models\Employee;
 
 class EmployeeResource extends Resource
 {
     use Translatable;
 
-    protected static ?string $model = \Modules\HR\Models\Employee::class;
+    protected static ?string $model = Employee::class;
 
-    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-user';
+    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-user';
 
     protected static ?string $cluster = HumanResourcesCluster::class;
 
@@ -77,7 +73,7 @@ class EmployeeResource extends Resource
     }
 
     /**
-     * @return Builder<\Modules\HR\Models\Employee>
+     * @return Builder<Employee>
      */
     public static function getRecordRouteBindingEloquentQuery(): Builder
     {

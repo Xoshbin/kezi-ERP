@@ -5,6 +5,9 @@ namespace Modules\Accounting\Database\Seeders;
 use App\Models\Company;
 use Exception;
 use Illuminate\Database\Seeder;
+use Modules\Accounting\Models\Account;
+use Modules\Accounting\Models\AnalyticPlan;
+use Modules\Accounting\Models\Budget;
 
 class BudgetSeeder extends Seeder
 {
@@ -20,28 +23,28 @@ class BudgetSeeder extends Seeder
         }
 
         // Fetch accounts
-        $salesAccount = \Modules\Accounting\Models\Account::where('code', '4000')->first();
+        $salesAccount = Account::where('code', '4000')->first();
         if (! $salesAccount) {
             throw new Exception("Account with code '4000' (Sales) not found. Please run AccountSeeder.");
         }
 
-        $marketingAccount = \Modules\Accounting\Models\Account::where('code', '4100')->first();
+        $marketingAccount = Account::where('code', '4100')->first();
         if (! $marketingAccount) {
             throw new Exception("Account with code '4100' (Marketing) not found. Please run AccountSeeder.");
         }
 
-        $adminAccount = \Modules\Accounting\Models\Account::where('code', '4200')->first();
+        $adminAccount = Account::where('code', '4200')->first();
         if (! $adminAccount) {
             throw new Exception("Account with code '4200' (Administration) not found. Please run AccountSeeder.");
         }
 
         // Fetch analytic plan
-        $analyticPlan = \Modules\Accounting\Models\AnalyticPlan::where('name->en', 'Department')->first();
+        $analyticPlan = AnalyticPlan::where('name->en', 'Department')->first();
         if (! $analyticPlan) {
             throw new Exception("Analytic Plan 'Department' not found. Please run AnalyticPlanSeeder.");
         }
 
-        \Modules\Accounting\Models\Budget::updateOrCreate(
+        Budget::updateOrCreate(
             [
                 'name' => '2025 Annual Budget',
                 'company_id' => $company->id,

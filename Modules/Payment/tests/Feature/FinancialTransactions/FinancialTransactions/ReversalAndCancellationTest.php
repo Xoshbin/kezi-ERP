@@ -2,15 +2,12 @@
 
 namespace Modules\Payment\Tests\Feature\FinancialTransactions;
 
-use App\Enums\Accounting\JournalEntryState;
-use App\Enums\Payments\PaymentMethod;
-use App\Enums\Payments\PaymentStatus;
-use App\Enums\Payments\PaymentType;
-use App\Models\JournalEntry;
-use App\Services\JournalEntryService;
-use App\Services\PaymentService;
 use Brick\Money\Money;
+use Exception;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Modules\Accounting\Models\Account;
+use Modules\Payment\Models\Payment;
+use Modules\Sales\Models\Invoice;
 use Tests\Traits\MocksTime;
 use Tests\Traits\WithConfiguredCompany;
 
@@ -33,7 +30,7 @@ describe('Journal Entry Reversals', function () {
             'total_credit' => Money::of(150, $currencyCode),
         ]);
         $arAccount = $this->company->defaultAccountsReceivable;
-        $revenueAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create(['type' => 'income']);
+        $revenueAccount = Account::factory()->for($this->company)->create(['type' => 'income']);
 
         $originalEntry->lines()->createMany([
             ['company_id' => $this->company->id, 'account_id' => $arAccount->id, 'debit' => Money::of(150, $currencyCode), 'credit' => Money::of(0, $currencyCode)],
@@ -76,7 +73,7 @@ describe('Journal Entry Reversals', function () {
 
         // Act & Assert: Expect an exception when trying to reverse it.
         expect(fn () => $this->journalEntryService->createReversal($draftEntry, 'Should fail', $this->user))
-            ->toThrow(\Exception::class, 'Only posted journal entries can be reversed.');
+            ->toThrow(Exception::class, 'Only posted journal entries can be reversed.');
     });
 });
 
@@ -85,14 +82,14 @@ describe('Payment Cancellations', function () {
 
     test('it successfully cancels a confirmed payment', function () {
         // Arrange: Create a posted invoice for the payment to be applied to.
-        $invoice = \Modules\Sales\Models\Invoice::factory()->for($this->company)->create([
+        $invoice = Invoice::factory()->for($this->company)->create([
             'status' => 'posted',
-            'total_amount' => \Brick\Money\Money::of(250, $this->company->currency->code),
+            'total_amount' => Money::of(250, $this->company->currency->code),
         ]);
 
         // Arrange: Create a draft payment using the proper Action, which is the official way.
-        $linkDto = new \App\DataTransferObjects\Payments\CreatePaymentDocumentLinkDTO('invoice', $invoice->id, Money::of(250, $this->company->currency->code));
-        $paymentDto = new \App\DataTransferObjects\Payments\CreatePaymentDTO(
+        $linkDto = new CreatePaymentDocumentLinkDTO('invoice', $invoice->id, Money::of(250, $this->company->currency->code));
+        $paymentDto = new CreatePaymentDTO(
             company_id: $this->company->id,
             journal_id: $this->company->default_bank_journal_id,
             currency_id: $this->company->currency_id,
@@ -105,7 +102,7 @@ describe('Payment Cancellations', function () {
             document_links: [$linkDto],
             reference: 'Test Payment'
         );
-        $payment = (app(\App\Actions\Payments\CreatePaymentAction::class))->execute($paymentDto, $this->user);
+        $payment = (app(CreatePaymentAction::class))->execute($paymentDto, $this->user);
 
         // Act 1: Confirm the payment.
         $this->paymentService->confirm($payment, $this->user);
@@ -129,7 +126,7 @@ describe('Payment Cancellations', function () {
 
     test('it prevents cancelling a draft payment', function () {
         // Arrange: Create a draft payment.
-        $draftPayment = \Modules\Payment\Models\Payment::factory()
+        $draftPayment = Payment::factory()
             ->for($this->company)
             ->for($this->company->currency)
             ->for($this->company->journals()->first())
@@ -137,12 +134,12 @@ describe('Payment Cancellations', function () {
 
         // Act & Assert: Expect an exception.
         expect(fn () => $this->paymentService->cancel($draftPayment, $this->user, 'Should fail')) // FIX
-            ->toThrow(\Exception::class, 'Only confirmed payments can be cancelled.');
+            ->toThrow(Exception::class, 'Only confirmed payments can be cancelled.');
     });
 
     test('it prevents cancelling a reconciled payment', function () {
         // Arrange: Create a reconciled payment.
-        $reconciledPayment = \Modules\Payment\Models\Payment::factory()
+        $reconciledPayment = Payment::factory()
             ->for($this->company)
             ->for($this->company->currency)
             ->for($this->company->journals()->first())
@@ -150,6 +147,6 @@ describe('Payment Cancellations', function () {
 
         // Act & Assert: Expect an exception.
         expect(fn () => $this->paymentService->cancel($reconciledPayment, $this->user, 'Should fail')) // FIX
-            ->toThrow(\Exception::class, 'Only confirmed payments can be cancelled.');
+            ->toThrow(Exception::class, 'Only confirmed payments can be cancelled.');
     });
 });

@@ -339,7 +339,7 @@ class Employee extends Model
      */
     public function getAllSubordinates(): Collection
     {
-        $subordinates = new \Illuminate\Database\Eloquent\Collection;
+        $subordinates = new Collection;
 
         foreach ($this->directReports as $directReport) {
             $subordinates->push($directReport);

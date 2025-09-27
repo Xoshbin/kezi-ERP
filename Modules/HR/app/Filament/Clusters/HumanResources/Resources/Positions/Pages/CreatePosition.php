@@ -3,6 +3,7 @@
 namespace Modules\HR\Filament\Clusters\HumanResources\Resources\Positions\Pages;
 
 use App\Filament\Clusters\HumanResources\Resources\Positions\PositionResource;
+use App\Models\Company;
 use Exception;
 use Filament\Facades\Filament;
 use Filament\Resources\Pages\CreateRecord;
@@ -27,7 +28,7 @@ class CreatePosition extends CreateRecord
     protected function mutateFormDataBeforeCreate(array $data): array
     {
         // Ensure company_id is set from the current tenant
-        /** @var \App\Models\Company|null $tenant */
+        /** @var Company|null $tenant */
         $tenant = Filament::getTenant();
         $data['company_id'] = $tenant?->getKey();
 

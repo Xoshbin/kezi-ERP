@@ -2,15 +2,15 @@
 
 namespace Modules\Accounting\Filament\Clusters\Accounting\Resources\BankStatements\Pages;
 
-use App\Actions\Accounting\UpdateBankStatementAction;
-use App\DataTransferObjects\Accounting\UpdateBankStatementDTO;
-use App\DataTransferObjects\Accounting\UpdateBankStatementLineDTO;
-use App\Filament\Actions\DocsAction;
-use App\Filament\Clusters\Accounting\Resources\BankStatements\BankStatementResource;
 use Brick\Money\Money;
 use Filament\Actions\DeleteAction;
 use Filament\Resources\Pages\EditRecord;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
+use InvalidArgumentException;
+use Modules\Accounting\Models\BankStatement;
+use Modules\Accounting\Models\BankStatementLine;
+use Modules\Foundation\Models\Currency;
 
 class EditBankStatement extends EditRecord
 {
@@ -31,13 +31,13 @@ class EditBankStatement extends EditRecord
 
     protected function mutateFormDataBeforeFill(array $data): array
     {
-        /** @var \Modules\Accounting\Models\BankStatement $record */
+        /** @var BankStatement $record */
         $record = $this->record;
         $record->loadMissing('bankStatementLines', 'currency');
 
-        /** @var \Illuminate\Database\Eloquent\Collection<int, \Modules\Accounting\Models\BankStatementLine> $bankStatementLines */
+        /** @var Collection<int, BankStatementLine> $bankStatementLines */
         $bankStatementLines = $record->bankStatementLines;
-        $linesData = $bankStatementLines->map(function (\Modules\Accounting\Models\BankStatementLine $line) {
+        $linesData = $bankStatementLines->map(function (BankStatementLine $line) {
             return [
                 'date' => $line->date->format('Y-m-d'),
                 'description' => $line->description,
@@ -54,19 +54,19 @@ class EditBankStatement extends EditRecord
 
     protected function handleRecordUpdate(Model $record, array $data): Model
     {
-        /** @var \Modules\Accounting\Models\BankStatement $record */
+        /** @var BankStatement $record */
         $lineDTOs = [];
         foreach ($data['bankStatementLines'] as $line) {
             $foreignCurrency = null;
             $amountInForeignCurrency = null;
 
             if (! empty($line['foreign_currency_id']) && ! empty($line['amount_in_foreign_currency'])) {
-                $foreignCurrency = \Modules\Foundation\Models\Currency::findOrFail($line['foreign_currency_id']);
+                $foreignCurrency = Currency::findOrFail($line['foreign_currency_id']);
                 // Ensure we have a single Currency model, not a collection
-                if ($foreignCurrency instanceof \Illuminate\Database\Eloquent\Collection) {
+                if ($foreignCurrency instanceof Collection) {
                     $foreignCurrency = $foreignCurrency->first();
                     if (! $foreignCurrency) {
-                        throw new \InvalidArgumentException('Foreign currency not found');
+                        throw new InvalidArgumentException('Foreign currency not found');
                     }
                 }
                 $amountInForeignCurrency = Money::of($line['amount_in_foreign_currency'], $foreignCurrency->code);

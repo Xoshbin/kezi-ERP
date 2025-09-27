@@ -2,14 +2,14 @@
 
 namespace Modules\Purchase\Tests\Feature\Filament;
 
-use App\Enums\Products\ProductType;
-use App\Enums\Purchases\PurchaseOrderStatus;
-use App\Filament\Clusters\Accounting\Resources\VendorBills\Pages\CreateVendorBill;
-use App\Filament\Clusters\Purchases\Resources\PurchaseOrders\Pages\ViewPurchaseOrder;
-use App\Models\PurchaseOrder;
 use Brick\Money\Money;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Validation\ValidationException;
 use Livewire\Livewire;
+use Modules\Accounting\Models\Account;
+use Modules\Foundation\Models\Partner;
+use Modules\Product\Models\Product;
+use Modules\Purchase\Models\VendorBill;
 use Tests\Traits\WithConfiguredCompany;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);
@@ -19,7 +19,7 @@ beforeEach(function () {
     $this->setupInventoryTestEnvironment();
 
     // Create an expense account for products
-    $this->expenseAccount = \Modules\Accounting\Models\Account::factory()->create([
+    $this->expenseAccount = Account::factory()->create([
         'company_id' => $this->company->id,
         'type' => 'expense',
         'code' => '5000',
@@ -27,7 +27,7 @@ beforeEach(function () {
     ]);
 
     // Create a product with expense account
-    $this->product = \Modules\Product\Models\Product::factory()->create([
+    $this->product = Product::factory()->create([
         'company_id' => $this->company->id,
         'type' => \Modules\Product\Enums\Products\ProductType::Storable,
         'expense_account_id' => $this->expenseAccount->id,
@@ -150,14 +150,14 @@ it('can create vendor bill with purchase order link', function () {
         ->assertHasNoFormErrors();
 
     // Verify the vendor bill was created with PO link
-    $vendorBill = \Modules\Purchase\Models\VendorBill::where('bill_reference', 'TEST-BILL-001')->first();
+    $vendorBill = VendorBill::where('bill_reference', 'TEST-BILL-001')->first();
     expect($vendorBill)->not->toBeNull();
     expect((int) $vendorBill->purchase_order_id)->toBe($this->purchaseOrder->id);
 });
 
 it('validates purchase order compatibility when creating vendor bill', function () {
     // Create a PO with different vendor
-    $otherVendor = \Modules\Foundation\Models\Partner::factory()->vendor()->create([
+    $otherVendor = Partner::factory()->vendor()->create([
         'company_id' => $this->company->id,
     ]);
 
@@ -194,21 +194,21 @@ it('validates purchase order compatibility when creating vendor bill', function 
 
     // The validation error should occur when trying to create
     // Let's check if the vendor bill is actually created or if validation prevents it
-    $initialCount = \Modules\Purchase\Models\VendorBill::count();
+    $initialCount = VendorBill::count();
 
     try {
         $component->call('create');
-        $finalCount = \Modules\Purchase\Models\VendorBill::count();
+        $finalCount = VendorBill::count();
 
         if ($finalCount > $initialCount) {
             // Bill was created - check if it has the wrong purchase_order_id
-            $bill = \Modules\Purchase\Models\VendorBill::latest()->first();
+            $bill = VendorBill::latest()->first();
             expect($bill->purchase_order_id)->toBe($otherPO->id, 'Bill was created with wrong PO - validation should have prevented this');
         } else {
             // Bill was not created - this is what we expect
             expect(true)->toBeTrue('Validation correctly prevented bill creation');
         }
-    } catch (\Illuminate\Validation\ValidationException $e) {
+    } catch (ValidationException $e) {
         // This is what we expect
         expect(true)->toBeTrue('Validation exception thrown as expected');
     }
@@ -234,7 +234,7 @@ it('can load purchase order data via action', function () {
 
 it('filters purchase orders by vendor in load action', function () {
     // Create another vendor and PO
-    $otherVendor = \Modules\Foundation\Models\Partner::factory()->vendor()->create([
+    $otherVendor = Partner::factory()->vendor()->create([
         'company_id' => $this->company->id,
     ]);
 

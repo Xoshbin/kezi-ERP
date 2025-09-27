@@ -3,13 +3,14 @@
 namespace Modules\Accounting\Filament\Clusters\Accounting\Pages\Reports;
 
 use App\Filament\Clusters\Accounting\AccountingCluster;
+use BackedEnum;
 use Filament\Facades\Filament;
 use Filament\Pages\Page;
 use Illuminate\Contracts\Support\Htmlable;
 
 class ViewReports extends Page
 {
-    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-document-chart-bar';
+    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-document-chart-bar';
 
     protected string $view = 'filament.pages.reports.view-reports';
 

@@ -2,13 +2,12 @@
 
 namespace Modules\Payment\Database\Factories;
 
-use App\Enums\PaymentInstallments\InstallmentStatus;
-use App\Models\Company;
-use App\Models\PaymentInstallment;
+use DateTimeInterface;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Modules\Sales\Models\Invoice;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\PaymentInstallment>
+ * @extends Factory<PaymentInstallment>
  */
 class PaymentInstallmentFactory extends Factory
 {
@@ -25,8 +24,8 @@ class PaymentInstallmentFactory extends Factory
 
         return [
             'company_id' => Company::factory(),
-            'installment_type' => \Modules\Sales\Models\Invoice::class,
-            'installment_id' => \Modules\Sales\Models\Invoice::factory(),
+            'installment_type' => Invoice::class,
+            'installment_id' => Invoice::factory(),
             'sequence' => 1,
             'due_date' => $this->faker->dateTimeBetween('now', '+90 days'),
             'amount' => $amount,
@@ -121,7 +120,7 @@ class PaymentInstallmentFactory extends Factory
     /**
      * Set the due date.
      */
-    public function dueDate(\DateTimeInterface $dueDate): static
+    public function dueDate(DateTimeInterface $dueDate): static
     {
         return $this->state(fn (array $attributes) => [
             'due_date' => $dueDate,

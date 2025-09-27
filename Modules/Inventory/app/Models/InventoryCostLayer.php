@@ -47,7 +47,7 @@ class InventoryCostLayer extends Model
     }
 
     /**
-     * @return MorphTo<\Illuminate\Database\Eloquent\Model, static>
+     * @return MorphTo<Model, static>
      */
     public function source(): MorphTo
     {

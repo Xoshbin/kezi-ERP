@@ -2,9 +2,10 @@
 
 namespace Modules\Foundation\Database\Seeders;
 
-use App\Enums\PaymentTerms\PaymentTermType;
 use App\Models\Company;
 use Illuminate\Database\Seeder;
+use Modules\Foundation\Models\PaymentTerm;
+use Modules\Foundation\Models\PaymentTermLine;
 
 class PaymentTermsSeeder extends Seeder
 {
@@ -279,7 +280,7 @@ class PaymentTermsSeeder extends Seeder
         foreach ($paymentTerms as $termData) {
             // Check if payment term already exists for this company
             // Since name is translatable, we need to check the JSON column
-            $existingTerm = \Modules\Foundation\Models\PaymentTerm::where('company_id', $company->id)
+            $existingTerm = PaymentTerm::where('company_id', $company->id)
                 ->whereJsonContains('name->en', $termData['name'])
                 ->first();
 
@@ -288,7 +289,7 @@ class PaymentTermsSeeder extends Seeder
             }
 
             // Create the payment term
-            $paymentTerm = \Modules\Foundation\Models\PaymentTerm::create([
+            $paymentTerm = PaymentTerm::create([
                 'company_id' => $company->id,
                 'name' => ['en' => $termData['name']],
                 'description' => ['en' => $termData['description']],
@@ -297,7 +298,7 @@ class PaymentTermsSeeder extends Seeder
 
             // Create the payment term lines
             foreach ($termData['lines'] as $lineData) {
-                \Modules\Foundation\Models\PaymentTermLine::create([
+                PaymentTermLine::create([
                     'payment_term_id' => $paymentTerm->id,
                     'sequence' => $lineData['sequence'],
                     'type' => $lineData['type'],

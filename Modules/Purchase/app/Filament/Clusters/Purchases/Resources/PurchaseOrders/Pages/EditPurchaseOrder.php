@@ -6,11 +6,14 @@ use App\Actions\Purchases\CreateVendorBillFromPurchaseOrderAction;
 use App\DataTransferObjects\Purchases\CreateVendorBillFromPurchaseOrderDTO;
 use App\Enums\Purchases\PurchaseOrderStatus;
 use App\Filament\Clusters\Purchases\Resources\PurchaseOrders\PurchaseOrderResource;
+use App\Models\PurchaseOrder;
 use App\Services\PurchaseOrderService;
 use App\Services\SequenceService;
 use Carbon\Carbon;
+use Exception;
 use Filament\Actions\Action;
 use Filament\Actions\DeleteAction;
+use Filament\Facades\Filament;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
 use Illuminate\Support\Facades\Auth;
@@ -29,7 +32,7 @@ class EditPurchaseOrder extends EditRecord
                 ->visible(fn() => $this->record->status === PurchaseOrderStatus::RFQ)
                 ->requiresConfirmation()
                 ->action(function () {
-                    app(PurchaseOrderService::class)->sendRFQ($this->record, \Illuminate\Support\Facades\Auth::user());
+                    app(PurchaseOrderService::class)->sendRFQ($this->record, Auth::user());
 
                     Notification::make()
                         ->title(__('purchase_orders.notifications.rfq_sent'))
@@ -46,7 +49,7 @@ class EditPurchaseOrder extends EditRecord
                 ->visible(fn() => $this->record->status === PurchaseOrderStatus::Draft)
                 ->requiresConfirmation()
                 ->action(function () {
-                    app(PurchaseOrderService::class)->send($this->record, \Illuminate\Support\Facades\Auth::user());
+                    app(PurchaseOrderService::class)->send($this->record, Auth::user());
 
                     Notification::make()
                         ->title(__('purchase_orders.notifications.sent'))
@@ -63,7 +66,7 @@ class EditPurchaseOrder extends EditRecord
                 ->visible(fn() => $this->record->canBeConfirmed())
                 ->requiresConfirmation()
                 ->action(function () {
-                    app(PurchaseOrderService::class)->confirm($this->record, \Illuminate\Support\Facades\Auth::user());
+                    app(PurchaseOrderService::class)->confirm($this->record, Auth::user());
 
                     Notification::make()
                         ->title(__('purchase_orders.notifications.confirmed'))
@@ -132,10 +135,10 @@ class EditPurchaseOrder extends EditRecord
 
                         // Redirect to the newly created vendor bill edit page
                         $this->redirect(route('filament.jmeryar.accounting.resources.vendor-bills.edit', [
-                            'tenant' => \Filament\Facades\Filament::getTenant(),
+                            'tenant' => Filament::getTenant(),
                             'record' => $vendorBill->id
                         ]));
-                    } catch (\Exception $e) {
+                    } catch (Exception $e) {
                         Notification::make()
                             ->title(__('purchase_orders.notifications.bill_creation_failed'))
                             ->body($e->getMessage())
@@ -151,7 +154,7 @@ class EditPurchaseOrder extends EditRecord
                 ->visible(fn() => $this->record->status === PurchaseOrderStatus::FullyBilled)
                 ->requiresConfirmation()
                 ->action(function () {
-                    app(PurchaseOrderService::class)->markAsDone($this->record, \Illuminate\Support\Facades\Auth::user());
+                    app(PurchaseOrderService::class)->markAsDone($this->record, Auth::user());
 
                     Notification::make()
                         ->title(__('purchase_orders.notifications.marked_done'))
@@ -168,7 +171,7 @@ class EditPurchaseOrder extends EditRecord
                 ->visible(fn() => $this->record->canBeCancelled())
                 ->requiresConfirmation()
                 ->action(function () {
-                    app(PurchaseOrderService::class)->cancel($this->record, \Illuminate\Support\Facades\Auth::user());
+                    app(PurchaseOrderService::class)->cancel($this->record, Auth::user());
 
                     Notification::make()
                         ->title(__('purchase_orders.notifications.cancelled'))
@@ -186,7 +189,7 @@ class EditPurchaseOrder extends EditRecord
     protected function mutateFormDataBeforeFill(array $data): array
     {
         $record = $this->getRecord();
-        if (! $record instanceof \App\Models\PurchaseOrder) {
+        if (! $record instanceof PurchaseOrder) {
             return $data;
         }
 

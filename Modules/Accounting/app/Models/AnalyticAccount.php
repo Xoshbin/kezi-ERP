@@ -3,6 +3,7 @@
 namespace Modules\Accounting\Models;
 
 use Database\Factories\AnalyticAccountFactory;
+use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -41,11 +42,11 @@ use Illuminate\Support\Carbon;
  * @method static Builder<static>|AnalyticAccount whereReference($value)
  * @method static Builder<static>|AnalyticAccount whereUpdatedAt($value)
  *
- * @mixin \Eloquent
+ * @mixin Eloquent
  */
 class AnalyticAccount extends Model
 {
-    /** @use HasFactory<\Database\Factories\AnalyticAccountFactory> */
+    /** @use HasFactory<AnalyticAccountFactory> */
     use HasFactory;
 
     /**

@@ -1,17 +1,13 @@
 <?php
 
-use App\Actions\Reconciliation\MatchJournalItemsAction;
-use App\Enums\Reconciliation\ReconciliationType;
-use App\Exceptions\Reconciliation\AccountNotReconcilableException;
-use App\Exceptions\Reconciliation\AlreadyReconciledException;
-use App\Exceptions\Reconciliation\PartnerMismatchException;
-use App\Exceptions\Reconciliation\ReconciliationDisabledException;
-use App\Exceptions\Reconciliation\UnbalancedReconciliationException;
 use App\Models\Company;
-use App\Models\Journal;
-use App\Models\JournalEntry;
-use App\Models\JournalEntryLine;
+use App\Models\User;
+use Brick\Money\Money;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Modules\Accounting\Models\Account;
+use Modules\Accounting\Models\Reconciliation;
+use Modules\Foundation\Models\Currency;
+use Modules\Foundation\Models\Partner;
 use Tests\Traits\WithConfiguredCompany;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);
@@ -26,7 +22,7 @@ test('it throws exception when reconciliation is globally disabled', function ()
     $company = Company::first();
     if (! $company) {
         // If no company exists, create one
-        $currency = \Modules\Foundation\Models\Currency::firstOrCreate(['code' => 'IQD'], [
+        $currency = Currency::firstOrCreate(['code' => 'IQD'], [
             'name' => 'Iraqi Dinar',
             'symbol' => 'IQD',
             'is_active' => true,
@@ -48,7 +44,7 @@ test('it throws exception when reconciliation is globally disabled', function ()
 
     // Create accounts that belong to this company and allow reconciliation
     // (we want to test global reconciliation, not account-level reconciliation)
-    $account1 = \Modules\Accounting\Models\Account::create([
+    $account1 = Account::create([
         'company_id' => $company->id,
         'currency_id' => $company->currency_id,
         'code' => 'TEST1',
@@ -58,7 +54,7 @@ test('it throws exception when reconciliation is globally disabled', function ()
         'allow_reconciliation' => true, // Account allows reconciliation
     ]);
 
-    $account2 = \Modules\Accounting\Models\Account::create([
+    $account2 = Account::create([
         'company_id' => $company->id,
         'currency_id' => $company->currency_id,
         'code' => 'TEST2',
@@ -80,7 +76,7 @@ test('it throws exception when reconciliation is globally disabled', function ()
     ]);
 
     // Create a user for the journal entry
-    $testUser = \App\Models\User::factory()->create();
+    $testUser = User::factory()->create();
 
     $journalEntry = JournalEntry::create([
         'company_id' => $company->id,
@@ -91,8 +87,8 @@ test('it throws exception when reconciliation is globally disabled', function ()
         'description' => 'Test entry',
         'created_by_user_id' => $testUser->id,
         'is_posted' => true,
-        'total_debit' => \Brick\Money\Money::of(100, $company->currency->code),
-        'total_credit' => \Brick\Money\Money::of(100, $company->currency->code),
+        'total_debit' => Money::of(100, $company->currency->code),
+        'total_credit' => Money::of(100, $company->currency->code),
     ]);
 
     // Create journal entry lines manually to ensure they belong to the correct company
@@ -103,8 +99,8 @@ test('it throws exception when reconciliation is globally disabled', function ()
     $line1->journal_entry_id = $journalEntry->id;
     $line1->company_id = $company->id;
     $line1->account_id = $account1->id;
-    $line1->debit = \Brick\Money\Money::of(100, $company->currency->code);
-    $line1->credit = \Brick\Money\Money::of(0, $company->currency->code);
+    $line1->debit = Money::of(100, $company->currency->code);
+    $line1->credit = Money::of(0, $company->currency->code);
     $line1->description = 'Test debit line';
     $line1->save();
 
@@ -112,8 +108,8 @@ test('it throws exception when reconciliation is globally disabled', function ()
     $line2->journal_entry_id = $journalEntry->id;
     $line2->company_id = $company->id;
     $line2->account_id = $account2->id;
-    $line2->debit = \Brick\Money\Money::of(0, $company->currency->code);
-    $line2->credit = \Brick\Money\Money::of(100, $company->currency->code);
+    $line2->debit = Money::of(0, $company->currency->code);
+    $line2->credit = Money::of(100, $company->currency->code);
     $line2->description = 'Test credit line';
     $line2->save();
 
@@ -137,7 +133,7 @@ test('it throws exception when account does not allow reconciliation', function 
         $company->update(['enable_reconciliation' => true]);
     }
     // Create account that doesn't allow reconciliation manually
-    $account = \Modules\Accounting\Models\Account::create([
+    $account = Account::create([
         'company_id' => $company->id,
         'currency_id' => $company->currency_id,
         'code' => '1000',
@@ -207,7 +203,7 @@ test('it throws exception when journal entry lines are unbalanced', function () 
     $company->update(['enable_reconciliation' => true]);
 
     // Create account that allows reconciliation
-    $account = \Modules\Accounting\Models\Account::create([
+    $account = Account::create([
         'company_id' => $company->id,
         'currency_id' => $company->currency_id,
         'code' => '1001',
@@ -274,7 +270,7 @@ test('it throws exception when journal entry lines have different partners for A
     $company->update(['enable_reconciliation' => true]);
 
     // Create account that allows reconciliation
-    $account = \Modules\Accounting\Models\Account::create([
+    $account = Account::create([
         'company_id' => $company->id,
         'currency_id' => $company->currency_id,
         'code' => '1002',
@@ -285,7 +281,7 @@ test('it throws exception when journal entry lines have different partners for A
     ]);
 
     // Create different partners
-    $partner1 = \Modules\Foundation\Models\Partner::create([
+    $partner1 = Partner::create([
         'company_id' => $company->id,
         'name' => 'Partner 1',
         'email' => 'partner1@test.com',
@@ -294,7 +290,7 @@ test('it throws exception when journal entry lines have different partners for A
         'is_vendor' => false,
     ]);
 
-    $partner2 = \Modules\Foundation\Models\Partner::create([
+    $partner2 = Partner::create([
         'company_id' => $company->id,
         'name' => 'Partner 2',
         'email' => 'partner2@test.com',
@@ -353,7 +349,7 @@ test('it throws exception when journal entry lines are already reconciled', func
     $company->update(['enable_reconciliation' => true]);
 
     // Create account that allows reconciliation
-    $account = \Modules\Accounting\Models\Account::create([
+    $account = Account::create([
         'company_id' => $company->id,
         'currency_id' => $company->currency_id,
         'code' => '1003',
@@ -402,7 +398,7 @@ test('it throws exception when journal entry lines are already reconciled', func
     $lines = collect([$line1, $line2]);
 
     // Create existing reconciliation
-    $existingReconciliation = \Modules\Accounting\Models\Reconciliation::create([
+    $existingReconciliation = Reconciliation::create([
         'company_id' => $company->id,
         'reconciliation_type' => ReconciliationType::ManualGeneral,
         'reconciled_by_user_id' => 1,
@@ -422,7 +418,7 @@ test('it successfully creates reconciliation for valid balanced lines', function
     $company->update(['enable_reconciliation' => true]);
 
     // Create account that allows reconciliation
-    $account = \Modules\Accounting\Models\Account::create([
+    $account = Account::create([
         'company_id' => $company->id,
         'currency_id' => $company->currency_id,
         'code' => '1004',
@@ -433,7 +429,7 @@ test('it successfully creates reconciliation for valid balanced lines', function
     ]);
 
     // Create partner
-    $partner = \Modules\Foundation\Models\Partner::create([
+    $partner = Partner::create([
         'company_id' => $company->id,
         'name' => 'Success Partner',
         'email' => 'success@test.com',
@@ -490,7 +486,7 @@ test('it successfully creates reconciliation for valid balanced lines', function
     );
 
     expect($reconciliation)
-        ->toBeInstanceOf(\Modules\Accounting\Models\Reconciliation::class)
+        ->toBeInstanceOf(Reconciliation::class)
         ->and($reconciliation->company_id)->toBe($company->id)
         ->and($reconciliation->reconciliation_type)->toBe(ReconciliationType::ManualArAp)
         ->and($reconciliation->reference)->toBe('TEST-SUCCESS')
@@ -505,7 +501,7 @@ test('it allows reconciliation of lines without partners for general reconciliat
     $company->update(['enable_reconciliation' => true]);
 
     // Create account that allows reconciliation
-    $account = \Modules\Accounting\Models\Account::create([
+    $account = Account::create([
         'company_id' => $company->id,
         'currency_id' => $company->currency_id,
         'code' => '1005',
@@ -561,7 +557,7 @@ test('it allows reconciliation of lines without partners for general reconciliat
     );
 
     expect($reconciliation)
-        ->toBeInstanceOf(\Modules\Accounting\Models\Reconciliation::class)
+        ->toBeInstanceOf(Reconciliation::class)
         ->and($reconciliation->reconciliation_type)->toBe(ReconciliationType::ManualGeneral)
         ->and($reconciliation->journalEntryLines)->toHaveCount(2);
 });

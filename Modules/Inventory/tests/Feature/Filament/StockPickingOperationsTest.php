@@ -1,40 +1,28 @@
 <?php
 
 use App\Enums\Inventory\StockMoveStatus;
-use App\Enums\Inventory\StockPickingState;
-use App\Enums\Inventory\StockPickingType;
-use App\Filament\Clusters\Inventory\Resources\StockPickingResource;
-use App\Filament\Clusters\Inventory\Resources\StockPickingResource\Actions\AssignPickingAction;
-use App\Filament\Clusters\Inventory\Resources\StockPickingResource\Actions\CancelPickingAction;
-use App\Filament\Clusters\Inventory\Resources\StockPickingResource\Actions\ConfirmPickingAction;
-use App\Filament\Clusters\Inventory\Resources\StockPickingResource\Actions\CreateBackorderAction;
-use App\Filament\Clusters\Inventory\Resources\StockPickingResource\Actions\ValidatePickingAction;
-use App\Filament\Clusters\Inventory\Resources\StockPickingResource\Pages\ListStockPickings;
-use App\Filament\Clusters\Inventory\Resources\StockPickingResource\Pages\ViewStockPicking;
 use App\Models\Company;
-use App\Models\Lot;
-use App\Models\StockLocation;
-use App\Models\StockMove;
-use App\Models\StockPicking;
-use App\Models\StockQuant;
 use App\Models\User;
 use Livewire\Livewire;
+use Modules\Foundation\Models\Currency;
+use Modules\Foundation\Models\Partner;
+use Modules\Product\Models\Product;
 
 beforeEach(function () {
     $this->actingAs(User::factory()->create());
 
     $this->company = Company::factory()->create();
-    $this->currency = \Modules\Foundation\Models\Currency::factory()->create(['code' => 'USD']);
+    $this->currency = Currency::factory()->create(['code' => 'USD']);
     $this->company->update(['currency_id' => $this->currency->id]);
 
     // Set tenant context
     filament()->setTenant($this->company);
 
-    $this->partner = \Modules\Foundation\Models\Partner::factory()->create([
+    $this->partner = Partner::factory()->create([
         'company_id' => $this->company->id,
     ]);
 
-    $this->product = \Modules\Product\Models\Product::factory()->create([
+    $this->product = Product::factory()->create([
         'company_id' => $this->company->id,
     ]);
 

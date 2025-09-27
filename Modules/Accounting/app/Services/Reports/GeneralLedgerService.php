@@ -2,15 +2,12 @@
 
 namespace Modules\Accounting\Services\Reports;
 
-use App\DataTransferObjects\Reports\GeneralLedgerAccountDTO;
-use App\DataTransferObjects\Reports\GeneralLedgerDTO;
-use App\DataTransferObjects\Reports\GeneralLedgerTransactionLineDTO;
 use App\Models\Company;
-use App\Models\JournalEntryLine;
 use Brick\Money\Money;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
+use Modules\Accounting\Models\Account;
 
 class GeneralLedgerService
 {
@@ -26,7 +23,7 @@ class GeneralLedgerService
             $accountsQuery->whereIn('id', $accountIds);
         }
 
-        /** @var \Illuminate\Support\Collection<int, \Modules\Accounting\Models\Account> $accounts */
+        /** @var Collection<int, Account> $accounts */
         $accounts = $accountsQuery->orderBy('code')->get();
         $reportAccounts = new Collection;
 
@@ -73,7 +70,7 @@ class GeneralLedgerService
         return new GeneralLedgerDTO($reportAccounts);
     }
 
-    private function getOpeningBalance(\Modules\Accounting\Models\Account $account, Carbon $startDate, string $currency): Money
+    private function getOpeningBalance(Account $account, Carbon $startDate, string $currency): Money
     {
         /** @var object{total_debit: string|null, total_credit: string|null}|null $result */
         $result = DB::table('journal_entry_lines')
@@ -94,7 +91,7 @@ class GeneralLedgerService
     /**
      * @return Collection<int, JournalEntryLine>
      */
-    private function getTransactionsForPeriod(\Modules\Accounting\Models\Account $account, Carbon $startDate, Carbon $endDate): Collection
+    private function getTransactionsForPeriod(Account $account, Carbon $startDate, Carbon $endDate): Collection
     {
         return JournalEntryLine::query()
             ->with(['journalEntry.lines.account']) // Eager load for contra-account lookup
@@ -111,10 +108,10 @@ class GeneralLedgerService
     private function getContraAccountDescription(JournalEntryLine $line): string
     {
         // Find other lines in the same journal entry to describe the other side of the transaction.
-        /** @var \Illuminate\Support\Collection<int, JournalEntryLine> $otherLines */
+        /** @var Collection<int, JournalEntryLine> $otherLines */
         $otherLines = $line->journalEntry->lines->where('id', '!=', $line->id);
 
-        /** @var \Illuminate\Support\Collection<int, string> $names */
+        /** @var Collection<int, string> $names */
         $names = $otherLines->map(function (JournalEntryLine $l): string {
             $accountName = $l->account->name;
             if (is_array($accountName)) {

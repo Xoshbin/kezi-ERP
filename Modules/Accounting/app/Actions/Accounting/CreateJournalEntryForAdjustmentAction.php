@@ -2,18 +2,16 @@
 
 namespace Modules\Accounting\Actions\Accounting;
 
-use App\DataTransferObjects\Accounting\CreateJournalEntryDTO;
-use App\DataTransferObjects\Accounting\CreateJournalEntryLineDTO;
-use App\Models\JournalEntry;
 use App\Models\User;
 use Brick\Money\Money;
+use Modules\Inventory\Models\AdjustmentDocument;
 use RuntimeException;
 
 class CreateJournalEntryForAdjustmentAction
 {
     public function __construct(private readonly CreateJournalEntryAction $createJournalEntryAction) {}
 
-    public function execute(\Modules\Inventory\Models\AdjustmentDocument $adjustment, User $user): JournalEntry
+    public function execute(AdjustmentDocument $adjustment, User $user): JournalEntry
     {
         // 1. Load necessary relationships for context.
         $adjustment->load('company.currency', 'currency');
@@ -77,7 +75,7 @@ class CreateJournalEntryForAdjustmentAction
             entry_date: $adjustment->posted_at ?? now()->toDateString(),
             reference: 'CN-'.$adjustment->reference_number,
             description: 'Credit Note '.$adjustment->reference_number,
-            source_type: \Modules\Inventory\Models\AdjustmentDocument::class,
+            source_type: AdjustmentDocument::class,
             source_id: $adjustment->id,
             created_by_user_id: $user->id,
             is_posted: true,

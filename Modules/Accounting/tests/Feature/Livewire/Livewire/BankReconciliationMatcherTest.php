@@ -1,22 +1,25 @@
 <?php
 
-use App\Enums\Payments\PaymentStatus;
-use App\Enums\Payments\PaymentType;
-use App\Livewire\Accounting\BankReconciliationMatcher;
-use App\Livewire\Accounting\BankTransactionsTable;
-use App\Livewire\Accounting\SystemPaymentsTable;
-use App\Models\Journal;
 use App\Models\User;
 use Brick\Money\Money;
 use Carbon\Carbon;
+use Filament\Facades\Filament;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Livewire\Livewire;
+use Modules\Accounting\Models\Account;
+use Modules\Accounting\Models\BankStatement;
+use Modules\Accounting\Models\BankStatementLine;
+use Modules\Foundation\Models\Currency;
+use Modules\Foundation\Models\CurrencyRate;
+use Modules\Foundation\Models\Partner;
+use Modules\Payment\Models\Payment;
+use Tests\Builders\CompanyBuilder;
 
 uses(RefreshDatabase::class);
 
 beforeEach(function () {
     // Create company with reconciliation enabled and required accounts
-    $this->company = \Tests\Builders\CompanyBuilder::new()
+    $this->company = CompanyBuilder::new()
         ->withDefaultAccounts()
         ->withReconciliationEnabled()
         ->create();
@@ -26,16 +29,16 @@ beforeEach(function () {
     $this->actingAs($this->user);
 
     // Set up Filament tenant context
-    \Filament\Facades\Filament::setTenant($this->company);
+    Filament::setTenant($this->company);
 
     $this->currency = $this->company->currency;
 
     // Get the default accounts created by CompanyBuilder
-    $this->bankAccount = \Modules\Accounting\Models\Account::where('company_id', $this->company->id)
+    $this->bankAccount = Account::where('company_id', $this->company->id)
         ->where('type', 'bank_and_cash')
         ->first();
 
-    $this->outstandingAccount = \Modules\Accounting\Models\Account::where('company_id', $this->company->id)
+    $this->outstandingAccount = Account::where('company_id', $this->company->id)
         ->where('type', 'current_assets')
         ->first();
 
@@ -49,7 +52,7 @@ beforeEach(function () {
         ->for($this->company)
         ->create(['type' => 'bank']);
 
-    $this->bankStatement = \Modules\Accounting\Models\BankStatement::factory()
+    $this->bankStatement = BankStatement::factory()
         ->for($this->company)
         ->for($this->currency)
         ->for($this->bankJournal)
@@ -64,7 +67,7 @@ describe('BankReconciliationMatcher Livewire Component', function () {
     });
 
     it('displays unreconciled bank statement lines', function () {
-        $unreconciledLine = \Modules\Accounting\Models\BankStatementLine::factory()
+        $unreconciledLine = BankStatementLine::factory()
             ->for($this->bankStatement)
             ->create([
                 'description' => 'Test Transaction',
@@ -72,7 +75,7 @@ describe('BankReconciliationMatcher Livewire Component', function () {
                 'is_reconciled' => false,
             ]);
 
-        $reconciledLine = \Modules\Accounting\Models\BankStatementLine::factory()
+        $reconciledLine = BankStatementLine::factory()
             ->for($this->bankStatement)
             ->create(['is_reconciled' => true]);
 
@@ -83,9 +86,9 @@ describe('BankReconciliationMatcher Livewire Component', function () {
     });
 
     it('displays unreconciled system payments', function () {
-        $partner = \Modules\Foundation\Models\Partner::factory()->for($this->company)->create();
+        $partner = Partner::factory()->for($this->company)->create();
 
-        $unreconciledPayment = \Modules\Payment\Models\Payment::factory()
+        $unreconciledPayment = Payment::factory()
             ->for($this->company)
             ->for($this->currency)
             ->for($this->bankJournal)
@@ -95,7 +98,7 @@ describe('BankReconciliationMatcher Livewire Component', function () {
                 'amount' => Money::of(100, $this->currency->code),
             ]);
 
-        $reconciledPayment = \Modules\Payment\Models\Payment::factory()
+        $reconciledPayment = Payment::factory()
             ->for($this->company)
             ->for($this->currency)
             ->for($this->bankJournal)
@@ -108,7 +111,7 @@ describe('BankReconciliationMatcher Livewire Component', function () {
     });
 
     it('can toggle bank line selection', function () {
-        $bankLine = \Modules\Accounting\Models\BankStatementLine::factory()
+        $bankLine = BankStatementLine::factory()
             ->for($this->bankStatement)
             ->create(['is_reconciled' => false]);
 
@@ -126,7 +129,7 @@ describe('BankReconciliationMatcher Livewire Component', function () {
     });
 
     it('can toggle system payment selection', function () {
-        $payment = \Modules\Payment\Models\Payment::factory()
+        $payment = Payment::factory()
             ->for($this->company)
             ->for($this->currency)
             ->for($this->bankJournal)
@@ -150,14 +153,14 @@ describe('BankReconciliationMatcher Livewire Component', function () {
     });
 
     it('calculates summary correctly for balanced selection', function () {
-        $bankLine = \Modules\Accounting\Models\BankStatementLine::factory()
+        $bankLine = BankStatementLine::factory()
             ->for($this->bankStatement)
             ->create([
                 'amount' => Money::of(100, $this->currency->code),
                 'is_reconciled' => false,
             ]);
 
-        $payment = \Modules\Payment\Models\Payment::factory()
+        $payment = Payment::factory()
             ->for($this->company)
             ->for($this->currency)
             ->for($this->bankJournal)
@@ -191,14 +194,14 @@ describe('BankReconciliationMatcher Livewire Component', function () {
     });
 
     it('calculates summary correctly for unbalanced selection', function () {
-        $bankLine = \Modules\Accounting\Models\BankStatementLine::factory()
+        $bankLine = BankStatementLine::factory()
             ->for($this->bankStatement)
             ->create([
                 'amount' => Money::of(100, $this->currency->code),
                 'is_reconciled' => false,
             ]);
 
-        $payment = \Modules\Payment\Models\Payment::factory()
+        $payment = Payment::factory()
             ->for($this->company)
             ->for($this->currency)
             ->for($this->bankJournal)
@@ -230,14 +233,14 @@ describe('BankReconciliationMatcher Livewire Component', function () {
     });
 
     it('can perform reconciliation when balanced', function () {
-        $bankLine = \Modules\Accounting\Models\BankStatementLine::factory()
+        $bankLine = BankStatementLine::factory()
             ->for($this->bankStatement)
             ->create([
                 'amount' => Money::of(100, $this->currency->code),
                 'is_reconciled' => false,
             ]);
 
-        $payment = \Modules\Payment\Models\Payment::factory()
+        $payment = Payment::factory()
             ->for($this->company)
             ->for($this->currency)
             ->for($this->bankJournal)
@@ -272,14 +275,14 @@ describe('BankReconciliationMatcher Livewire Component', function () {
     });
 
     it('prevents reconciliation when not balanced', function () {
-        $bankLine = \Modules\Accounting\Models\BankStatementLine::factory()
+        $bankLine = BankStatementLine::factory()
             ->for($this->bankStatement)
             ->create([
                 'amount' => Money::of(100, $this->currency->code),
                 'is_reconciled' => false,
             ]);
 
-        $payment = \Modules\Payment\Models\Payment::factory()
+        $payment = Payment::factory()
             ->for($this->company)
             ->for($this->currency)
             ->for($this->bankJournal)
@@ -312,7 +315,7 @@ describe('BankReconciliationMatcher Livewire Component', function () {
     });
 
     it('can create write-offs through table action', function () {
-        $bankLine = \Modules\Accounting\Models\BankStatementLine::factory()
+        $bankLine = BankStatementLine::factory()
             ->for($this->bankStatement)
             ->create([
                 'amount' => Money::of(10, $this->currency->code),
@@ -320,7 +323,7 @@ describe('BankReconciliationMatcher Livewire Component', function () {
                 'description' => 'Small discrepancy',
             ]);
 
-        $writeOffAccount = \Modules\Accounting\Models\Account::factory()
+        $writeOffAccount = Account::factory()
             ->for($this->company)
             ->create(['type' => 'expense']);
 
@@ -338,7 +341,7 @@ describe('BankReconciliationMatcher Livewire Component', function () {
 describe('Multi-Currency Livewire Reconciliation', function () {
     beforeEach(function () {
         // Create USD currency for foreign currency tests
-        $this->usdCurrency = \Modules\Foundation\Models\Currency::firstOrCreate(
+        $this->usdCurrency = Currency::firstOrCreate(
             ['code' => 'USD'],
             [
                 'name' => ['en' => 'US Dollar', 'ckb' => 'دۆلاری ئەمریکی', 'ar' => 'دولار أمريكي'],
@@ -352,7 +355,7 @@ describe('Multi-Currency Livewire Reconciliation', function () {
         $this->exchangeRate = 1460.0;
         $this->transactionDate = Carbon::parse('2024-01-01');
 
-        \Modules\Foundation\Models\CurrencyRate::updateOrCreate(
+        CurrencyRate::updateOrCreate(
             [
                 'currency_id' => $this->usdCurrency->id,
                 'effective_date' => $this->transactionDate->toDateString(),
@@ -365,7 +368,7 @@ describe('Multi-Currency Livewire Reconciliation', function () {
         );
 
         // Create USD bank statement
-        $this->usdBankStatement = \Modules\Accounting\Models\BankStatement::factory()
+        $this->usdBankStatement = BankStatement::factory()
             ->for($this->company)
             ->for($this->usdCurrency)
             ->for($this->bankJournal)
@@ -377,14 +380,14 @@ describe('Multi-Currency Livewire Reconciliation', function () {
     });
 
     it('handles USD bank statement with USD payment reconciliation', function () {
-        $bankLine = \Modules\Accounting\Models\BankStatementLine::factory()
+        $bankLine = BankStatementLine::factory()
             ->for($this->usdBankStatement)
             ->create([
                 'amount' => Money::of(100, 'USD'),
                 'is_reconciled' => false,
             ]);
 
-        $payment = \Modules\Payment\Models\Payment::factory()
+        $payment = Payment::factory()
             ->for($this->company)
             ->for($this->usdCurrency)
             ->for($this->bankJournal)
@@ -419,11 +422,11 @@ describe('Multi-Currency Livewire Reconciliation', function () {
     });
 
     it('calculates totals correctly for USD bank statement', function () {
-        $bankLine1 = \Modules\Accounting\Models\BankStatementLine::factory()
+        $bankLine1 = BankStatementLine::factory()
             ->for($this->usdBankStatement)
             ->create(['amount' => Money::of(50, 'USD')]);
 
-        $bankLine2 = \Modules\Accounting\Models\BankStatementLine::factory()
+        $bankLine2 = BankStatementLine::factory()
             ->for($this->usdBankStatement)
             ->create(['amount' => Money::of(75, 'USD')]);
 
@@ -439,7 +442,7 @@ describe('Multi-Currency Livewire Reconciliation', function () {
 
     it('shows payments with currency information for USD bank statement', function () {
         // Create payments in different currencies
-        $usdPayment = \Modules\Payment\Models\Payment::factory()
+        $usdPayment = Payment::factory()
             ->for($this->company)
             ->for($this->usdCurrency)
             ->for($this->bankJournal)
@@ -448,7 +451,7 @@ describe('Multi-Currency Livewire Reconciliation', function () {
                 'status' => PaymentStatus::Confirmed,
             ]);
 
-        $iqdPayment = \Modules\Payment\Models\Payment::factory()
+        $iqdPayment = Payment::factory()
             ->for($this->company)
             ->for($this->company->currency) // IQD
             ->for($this->bankJournal)

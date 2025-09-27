@@ -2,14 +2,9 @@
 
 namespace Modules\Accounting\Tests\Feature\Filament\Reports;
 
-use App\Enums\Accounting\AccountType;
-use App\Enums\Accounting\JournalEntryState;
-use App\Filament\Clusters\Accounting\Pages\Reports\ViewProfitAndLoss;
-use App\Models\Journal;
-use App\Models\JournalEntry;
-use App\Models\JournalEntryLine;
 use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Modules\Accounting\Models\Account;
 use Tests\Traits\WithConfiguredCompany;
 use function Pest\Livewire\livewire;
 
@@ -30,10 +25,10 @@ describe('ViewProfitAndLoss Filament Page', function () {
         $currency = $this->company->currency->code;
         $journal = Journal::factory()->for($this->company)->create();
 
-        $salesAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create(['type' => \Modules\Accounting\Enums\Accounting\AccountType::Income]);
-        $expenseAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create(['type' => \Modules\Accounting\Enums\Accounting\AccountType::Expense]);
-        $receivableAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create(['type' => \Modules\Accounting\Enums\Accounting\AccountType::Receivable]);
-        $bankAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create(['type' => \Modules\Accounting\Enums\Accounting\AccountType::BankAndCash]);
+        $salesAccount = Account::factory()->for($this->company)->create(['type' => \Modules\Accounting\Enums\Accounting\AccountType::Income]);
+        $expenseAccount = Account::factory()->for($this->company)->create(['type' => \Modules\Accounting\Enums\Accounting\AccountType::Expense]);
+        $receivableAccount = Account::factory()->for($this->company)->create(['type' => \Modules\Accounting\Enums\Accounting\AccountType::Receivable]);
+        $bankAccount = Account::factory()->for($this->company)->create(['type' => \Modules\Accounting\Enums\Accounting\AccountType::BankAndCash]);
 
         // Create a sale transaction
         $salesEntry = JournalEntry::factory()->for($this->company)->for($journal)

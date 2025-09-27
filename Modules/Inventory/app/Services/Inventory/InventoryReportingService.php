@@ -2,20 +2,15 @@
 
 namespace Modules\Inventory\Services\Inventory;
 
-use App\Enums\Inventory\StockMoveType;
-use App\Enums\Inventory\ValuationMethod;
 use App\Models\Company;
-use App\Models\InventoryCostLayer;
-use App\Models\JournalEntryLine;
-use App\Models\Lot;
-use App\Models\ReorderingRule;
-use App\Models\StockMove;
-use App\Models\StockMoveValuation;
 use Brick\Math\RoundingMode;
 use Brick\Money\Money;
 use Carbon\Carbon;
+use Filament\Facades\Filament;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
+use Modules\Product\Models\Product;
+use RuntimeException;
 
 /**
  * Inventory Reporting Service
@@ -125,7 +120,7 @@ class InventoryReportingService
         $byProduct = [];
 
         // Process by product
-        $products = \Modules\Product\Models\Product::where('company_id', $company->id)
+        $products = Product::where('company_id', $company->id)
             ->where('type', 'storable')
             ->when(isset($filters['product_ids']), function (Builder $query) use ($filters) {
                 $query->whereIn('id', $filters['product_ids']);
@@ -268,7 +263,7 @@ class InventoryReportingService
     /**
      * Generate lot traceability report
      */
-    public function lotTrace(\Modules\Product\Models\Product $product, Lot $lot): array
+    public function lotTrace(Product $product, Lot $lot): array
     {
         // Get all stock moves for this lot through product lines
         $movements = StockMove::query()
@@ -419,9 +414,9 @@ class InventoryReportingService
         }
 
         // Get from current tenant context
-        $company = \Filament\Facades\Filament::getTenant();
+        $company = Filament::getTenant();
         if (!$company instanceof Company) {
-            throw new \RuntimeException('Company context is required for inventory reporting');
+            throw new RuntimeException('Company context is required for inventory reporting');
         }
 
         return $company;
@@ -431,7 +426,7 @@ class InventoryReportingService
      * Calculate valuation for a specific product
      */
     private function calculateProductValuation(
-        \Modules\Product\Models\Product $product,
+        Product $product,
         Carbon $asOfDate,
         Collection $valuations,
         Collection $costLayers,
@@ -506,7 +501,7 @@ class InventoryReportingService
      */
     private function getInventoryAccountBalance(Company $company, Carbon $asOfDate): Money
     {
-        $inventoryAccountIds = \Modules\Product\Models\Product::where('company_id', $company->id)
+        $inventoryAccountIds = Product::where('company_id', $company->id)
             ->where('type', 'storable')
             ->whereNotNull('default_inventory_account_id')
             ->pluck('default_inventory_account_id')
@@ -591,7 +586,7 @@ class InventoryReportingService
      */
     private function getCOGSForPeriod(Company $company, Carbon $startDate, Carbon $endDate): Money
     {
-        $cogsAccountIds = \Modules\Product\Models\Product::where('company_id', $company->id)
+        $cogsAccountIds = Product::where('company_id', $company->id)
             ->where('type', 'storable')
             ->whereNotNull('default_cogs_account_id')
             ->pluck('default_cogs_account_id')

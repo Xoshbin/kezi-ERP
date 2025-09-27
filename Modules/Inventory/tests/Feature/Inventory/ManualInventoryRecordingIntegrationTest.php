@@ -2,21 +2,10 @@
 
 namespace Modules\Inventory\Tests\Feature\Inventory;
 
-use App\Enums\Inventory\InventoryAccountingMode;
-use App\Enums\Inventory\StockMoveStatus;
-use App\Enums\Inventory\StockMoveType;
-use App\Enums\Inventory\ValuationMethod;
-use App\Enums\Products\ProductType;
-use App\Enums\Purchases\VendorBillStatus;
-use App\Models\InventoryCostLayer;
-use App\Models\StockMove;
-use App\Models\StockMoveProductLine;
-use App\Models\StockMoveValuation;
-use App\Models\StockQuant;
-use App\Models\VendorBillLine;
-use App\Services\Inventory\InventoryValuationService;
 use Brick\Money\Money;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Modules\Product\Models\Product;
+use Modules\Purchase\Models\VendorBill;
 use Tests\TestCase;
 use Tests\Traits\WithConfiguredCompany;
 
@@ -45,8 +34,8 @@ class ManualInventoryRecordingIntegrationTest extends TestCase
     protected $cogsAccount;
 
     // Test-specific properties
-    protected \Modules\Product\Models\Product $product;
-    protected \Modules\Purchase\Models\VendorBill $vendorBill;
+    protected Product $product;
+    protected VendorBill $vendorBill;
 
     protected function setUp(): void
     {
@@ -62,7 +51,7 @@ class ManualInventoryRecordingIntegrationTest extends TestCase
         ]);
 
         // Create test product with FIFO valuation
-        $this->product = \Modules\Product\Models\Product::factory()->create([
+        $this->product = Product::factory()->create([
             'company_id' => $this->company->id,
             'type' => \Modules\Product\Enums\Products\ProductType::Storable,
             'inventory_valuation_method' => ValuationMethod::FIFO,
@@ -71,7 +60,7 @@ class ManualInventoryRecordingIntegrationTest extends TestCase
         ]);
 
         // Create and post vendor bill
-        $this->vendorBill = \Modules\Purchase\Models\VendorBill::factory()->create([
+        $this->vendorBill = VendorBill::factory()->create([
             'company_id' => $this->company->id,
             'vendor_id' => $this->vendor->id,
             'status' => VendorBillStatus::Posted,
@@ -160,7 +149,7 @@ class ManualInventoryRecordingIntegrationTest extends TestCase
     public function test_cost_determination_uses_latest_vendor_bill(): void
     {
         // Create second vendor bill with different price
-        $secondVendorBill = \Modules\Purchase\Models\VendorBill::factory()->create([
+        $secondVendorBill = VendorBill::factory()->create([
             'company_id' => $this->company->id,
             'vendor_id' => $this->vendor->id,
             'status' => VendorBillStatus::Posted,
@@ -210,7 +199,7 @@ class ManualInventoryRecordingIntegrationTest extends TestCase
     public function test_cost_determination_fails_without_posted_vendor_bills(): void
     {
         // Create product without any vendor bills and zero average cost
-        $productWithoutBills = \Modules\Product\Models\Product::factory()->create([
+        $productWithoutBills = Product::factory()->create([
             'company_id' => $this->company->id,
             'type' => \Modules\Product\Enums\Products\ProductType::Storable,
             'inventory_valuation_method' => ValuationMethod::FIFO,
@@ -238,7 +227,7 @@ class ManualInventoryRecordingIntegrationTest extends TestCase
         // Verify cost determination fails
         $inventoryValuationService = app(InventoryValuationService::class);
 
-        $this->expectException(\App\Exceptions\Inventory\InsufficientCostInformationException::class);
+        $this->expectException(InsufficientCostInformationException::class);
         $inventoryValuationService->calculateIncomingCostPerUnitEnhanced(
             $productWithoutBills,
             $stockMove,

@@ -3,11 +3,11 @@
 namespace Modules\Inventory\Database\Factories;
 
 use App\Models\Company;
-use App\Models\Lot;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Modules\Product\Models\Product;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Lot>
+ * @extends Factory<Lot>
  */
 class LotFactory extends Factory
 {
@@ -22,7 +22,7 @@ class LotFactory extends Factory
     {
         return [
             'company_id' => Company::factory(),
-            'product_id' => \Modules\Product\Models\Product::factory(),
+            'product_id' => Product::factory(),
             'lot_code' => 'LOT-' . $this->faker->unique()->numerify('####'),
             'expiration_date' => $this->faker->optional(0.7)->dateTimeBetween('+1 month', '+2 years'),
             'active' => true,

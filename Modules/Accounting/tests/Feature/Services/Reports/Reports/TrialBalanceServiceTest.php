@@ -2,14 +2,11 @@
 
 namespace Modules\Accounting\Tests\Feature\Services\Reports;
 
-use App\Enums\Accounting\AccountType;
-use App\Models\Journal;
-use App\Models\JournalEntry;
-use App\Models\JournalEntryLine;
-use App\Services\Reports\TrialBalanceService;
+
 use Brick\Money\Money;
 use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Modules\Accounting\Models\Account;
 use Tests\Traits\WithConfiguredCompany;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);
@@ -25,9 +22,9 @@ test('it generates a balanced trial balance report', function () {
     $journal = Journal::factory()->for($company)->create();
     $asOfDate = Carbon::parse('2025-12-31');
 
-    $bankAccount = \Modules\Accounting\Models\Account::factory()->for($company)->create(['type' => \Modules\Accounting\Enums\Accounting\AccountType::BankAndCash]);
-    $salesAccount = \Modules\Accounting\Models\Account::factory()->for($company)->create(['type' => \Modules\Accounting\Enums\Accounting\AccountType::Income]);
-    $expenseAccount = \Modules\Accounting\Models\Account::factory()->for($company)->create(['type' => \Modules\Accounting\Enums\Accounting\AccountType::Expense]);
+    $bankAccount = Account::factory()->for($company)->create(['type' => \Modules\Accounting\Enums\Accounting\AccountType::BankAndCash]);
+    $salesAccount = Account::factory()->for($company)->create(['type' => \Modules\Accounting\Enums\Accounting\AccountType::Income]);
+    $expenseAccount = Account::factory()->for($company)->create(['type' => \Modules\Accounting\Enums\Accounting\AccountType::Expense]);
 
     // Transaction 1: Receive cash for a sale (1,500,000 IQD)
     $entry1 = JournalEntry::factory()->for($company)->for($journal)->create(['entry_date' => '2025-06-10', 'state' => 'posted']);
@@ -85,8 +82,8 @@ test('it excludes draft journal entries from trial balance', function () {
     $journal = Journal::factory()->for($company)->create();
     $asOfDate = Carbon::parse('2025-12-31');
 
-    $bankAccount = \Modules\Accounting\Models\Account::factory()->for($company)->create(['type' => \Modules\Accounting\Enums\Accounting\AccountType::BankAndCash]);
-    $salesAccount = \Modules\Accounting\Models\Account::factory()->for($company)->create(['type' => \Modules\Accounting\Enums\Accounting\AccountType::Income]);
+    $bankAccount = Account::factory()->for($company)->create(['type' => \Modules\Accounting\Enums\Accounting\AccountType::BankAndCash]);
+    $salesAccount = Account::factory()->for($company)->create(['type' => \Modules\Accounting\Enums\Accounting\AccountType::Income]);
 
     // Draft transaction (should be excluded)
     $draftEntry = JournalEntry::factory()->for($company)->for($journal)->create(['entry_date' => '2025-06-10', 'state' => 'draft']);
@@ -110,8 +107,8 @@ test('it excludes accounts with zero balances', function () {
     $journal = Journal::factory()->for($company)->create();
     $asOfDate = Carbon::parse('2025-12-31');
 
-    $bankAccount = \Modules\Accounting\Models\Account::factory()->for($company)->create(['type' => \Modules\Accounting\Enums\Accounting\AccountType::BankAndCash]);
-    $salesAccount = \Modules\Accounting\Models\Account::factory()->for($company)->create(['type' => \Modules\Accounting\Enums\Accounting\AccountType::Income]);
+    $bankAccount = Account::factory()->for($company)->create(['type' => \Modules\Accounting\Enums\Accounting\AccountType::BankAndCash]);
+    $salesAccount = Account::factory()->for($company)->create(['type' => \Modules\Accounting\Enums\Accounting\AccountType::Income]);
 
     // Transaction that nets to zero
     $entry1 = JournalEntry::factory()->for($company)->for($journal)->create(['entry_date' => '2025-06-10', 'state' => 'posted']);
@@ -140,9 +137,9 @@ test('it orders accounts by account code', function () {
     $journal = Journal::factory()->for($company)->create();
     $asOfDate = Carbon::parse('2025-12-31');
 
-    $account1 = \Modules\Accounting\Models\Account::factory()->for($company)->create(['code' => '1000', 'type' => \Modules\Accounting\Enums\Accounting\AccountType::BankAndCash]);
-    $account2 = \Modules\Accounting\Models\Account::factory()->for($company)->create(['code' => '4000', 'type' => \Modules\Accounting\Enums\Accounting\AccountType::Income]);
-    $account3 = \Modules\Accounting\Models\Account::factory()->for($company)->create(['code' => '2000', 'type' => \Modules\Accounting\Enums\Accounting\AccountType::Expense]);
+    $account1 = Account::factory()->for($company)->create(['code' => '1000', 'type' => \Modules\Accounting\Enums\Accounting\AccountType::BankAndCash]);
+    $account2 = Account::factory()->for($company)->create(['code' => '4000', 'type' => \Modules\Accounting\Enums\Accounting\AccountType::Income]);
+    $account3 = Account::factory()->for($company)->create(['code' => '2000', 'type' => \Modules\Accounting\Enums\Accounting\AccountType::Expense]);
 
     // Create transactions for each account
     $entry = JournalEntry::factory()->for($company)->for($journal)->create(['entry_date' => '2025-06-10', 'state' => 'posted']);

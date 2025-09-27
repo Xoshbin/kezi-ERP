@@ -2,13 +2,12 @@
 
 namespace Modules\Accounting\Actions\Loans;
 
-use App\Actions\Accounting\CreateJournalEntryAction;
-use App\DataTransferObjects\Accounting\CreateJournalEntryDTO;
-use App\DataTransferObjects\Accounting\CreateJournalEntryLineDTO;
-use App\Models\JournalEntry;
 use App\Models\User;
 use Brick\Money\Money;
 use Illuminate\Support\Facades\DB;
+use Modules\Accounting\Models\LoanAgreement;
+use Modules\Accounting\Models\LoanScheduleEntry;
+use RuntimeException;
 
 class AccrueLoanInterestAction
 {
@@ -17,21 +16,21 @@ class AccrueLoanInterestAction
     /**
      * Accrue interest for a given schedule sequence (monthly end by default).
      */
-    public function execute(\Modules\Accounting\Models\LoanAgreement $loan, User $user, int $journalId, int $interestAccountId, int $accruedInterestAccountId, int $forMonthSequence): JournalEntry
+    public function execute(LoanAgreement $loan, User $user, int $journalId, int $interestAccountId, int $accruedInterestAccountId, int $forMonthSequence): JournalEntry
     {
         return DB::transaction(function () use ($loan, $user, $journalId, $interestAccountId, $accruedInterestAccountId, $forMonthSequence) {
             $loan->loadMissing('currency', 'company', 'scheduleEntries');
             $currencyModel = $loan->currency;
             if (! $currencyModel) {
-                throw new \RuntimeException('Loan currency missing');
+                throw new RuntimeException('Loan currency missing');
             }
             $currencyCode = (string) data_get($currencyModel, 'code');
 
-            /** @var \Modules\Accounting\Models\LoanScheduleEntry $entry */
+            /** @var LoanScheduleEntry $entry */
             $entry = $loan->scheduleEntries()->where('sequence', $forMonthSequence)->firstOrFail();
 
             // Amount to accrue = interest_component of schedule entry
-            /** @var \Brick\Money\Money $amount */
+            /** @var Money $amount */
             $amount = $entry->interest_component;
 
             $zero = Money::of(0, $currencyCode);

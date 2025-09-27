@@ -2,17 +2,15 @@
 
 namespace Modules\Accounting\Observers;
 
-use App\Actions\Accounting\CreateJournalEntryForAssetAcquisitionAction;
-use App\Enums\Assets\AssetStatus;
-use App\Exceptions\DeletionNotAllowedException;
 use Illuminate\Support\Facades\Auth;
+use Modules\Accounting\Models\Asset;
 
 class AssetObserver
 {
     /**
      * Handle the Asset "updated" event.
      */
-    public function updated(\Modules\Accounting\Models\Asset $asset): void
+    public function updated(Asset $asset): void
     {
         // Check if the status was just changed to 'Confirmed'.
         if ($asset->wasChanged('status') && $asset->status === AssetStatus::Confirmed) {
@@ -32,7 +30,7 @@ class AssetObserver
      * Provides a safety net to prevent deletion of assets with financial records,
      * even if the service layer is bypassed.
      */
-    public function deleting(\Modules\Accounting\Models\Asset $asset): void
+    public function deleting(Asset $asset): void
     {
         // Safety net: Prevent deletion of non-draft assets
         if ($asset->status !== AssetStatus::Draft) {

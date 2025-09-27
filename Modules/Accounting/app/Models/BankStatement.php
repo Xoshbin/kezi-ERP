@@ -3,7 +3,9 @@
 namespace Modules\Accounting\Models;
 
 use App\Casts\DocumentCurrencyMoneyCast;
+use Brick\Money\Money;
 use Database\Factories\BankStatementFactory;
+use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -17,8 +19,8 @@ use Illuminate\Support\Carbon;
  * @property int $journal_id
  * @property string $reference
  * @property Carbon $date
- * @property \Brick\Money\Money $starting_balance
- * @property \Brick\Money\Money $ending_balance
+ * @property Money $starting_balance
+ * @property Money $ending_balance
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property-read Company $company
@@ -39,7 +41,7 @@ use Illuminate\Support\Carbon;
  * @method static Builder<static>|BankStatement whereStartingBalance($value)
  * @method static Builder<static>|BankStatement whereUpdatedAt($value)
  *
- * @mixin \Eloquent
+ * @mixin Eloquent
  */
 class BankStatement extends Model
 {

@@ -2,19 +2,18 @@
 
 namespace Modules\Accounting\Actions\Accounting;
 
-use App\DataTransferObjects\Accounting\CreateJournalEntryDTO;
-use App\DataTransferObjects\Accounting\CreateJournalEntryLineDTO;
-use App\Models\JournalEntry;
 use App\Models\User;
 use Brick\Money\Money;
 use Illuminate\Support\Facades\DB;
+use InvalidArgumentException;
+use Modules\HR\Models\Payroll;
 use RuntimeException;
 
 class CreateJournalEntryForPayrollAction
 {
     public function __construct(private readonly CreateJournalEntryAction $createJournalEntryAction) {}
 
-    public function execute(\Modules\HR\Models\Payroll $payroll, User $user): JournalEntry
+    public function execute(Payroll $payroll, User $user): JournalEntry
     {
         return DB::transaction(function () use ($payroll, $user) {
             $payroll->load('company', 'currency', 'employee', 'payrollLines.account');
@@ -43,7 +42,7 @@ class CreateJournalEntryForPayrollAction
                 $amount = $payrollLine->amount;
 
                 if (! $amount) {
-                    throw new \InvalidArgumentException("Payroll line {$payrollLine->id} has no amount");
+                    throw new InvalidArgumentException("Payroll line {$payrollLine->id} has no amount");
                 }
 
                 if ($payrollLine->debit_credit === 'debit') {
@@ -76,7 +75,7 @@ class CreateJournalEntryForPayrollAction
                 entry_date: $payroll->pay_date,
                 reference: $payroll->payroll_number,
                 description: 'Payroll for '.$payroll->employee->full_name.' - '.$payroll->period_start_date.' to '.$payroll->period_end_date,
-                source_type: \Modules\HR\Models\Payroll::class,
+                source_type: Payroll::class,
                 source_id: $payroll->id,
                 created_by_user_id: $user->id,
                 is_posted: true,

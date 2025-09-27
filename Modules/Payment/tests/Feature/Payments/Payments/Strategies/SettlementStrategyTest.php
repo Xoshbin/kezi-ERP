@@ -1,15 +1,10 @@
 <?php
 
-use App\DataTransferObjects\Payments\CreatePaymentDocumentLinkDTO;
-use App\DataTransferObjects\Payments\CreatePaymentDTO;
-use App\DataTransferObjects\Payments\UpdatePaymentDocumentLinkDTO;
-use App\DataTransferObjects\Payments\UpdatePaymentDTO;
-use App\Enums\Payments\PaymentMethod;
-use App\Enums\Payments\PaymentType;
-use App\Models\PaymentDocumentLink;
-use App\Services\Payments\Strategies\SettlementStrategy;
 use Brick\Money\Money;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Modules\Payment\Models\Payment;
+use Modules\Purchase\Models\VendorBill;
+use Modules\Sales\Models\Invoice;
 use Tests\Traits\WithConfiguredCompany;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);
@@ -21,8 +16,8 @@ beforeEach(function () {
 
 test('it creates payment document links for settlement payment creation', function () {
     // Arrange
-    $invoice = \Modules\Sales\Models\Invoice::factory()->for($this->company)->create();
-    $payment = \Modules\Payment\Models\Payment::factory()->for($this->company)->create([
+    $invoice = Invoice::factory()->for($this->company)->create();
+    $payment = Payment::factory()->for($this->company)->create([
 
         'payment_type' => PaymentType::Inbound,
         'currency_id' => $this->company->currency_id,
@@ -61,8 +56,8 @@ test('it creates payment document links for settlement payment creation', functi
 
 test('it creates payment document links for vendor bill settlement', function () {
     // Arrange
-    $vendorBill = \Modules\Purchase\Models\VendorBill::factory()->for($this->company)->create();
-    $payment = \Modules\Payment\Models\Payment::factory()->for($this->company)->create([
+    $vendorBill = VendorBill::factory()->for($this->company)->create();
+    $payment = Payment::factory()->for($this->company)->create([
 
         'payment_type' => PaymentType::Outbound,
         'currency_id' => $this->company->currency_id,
@@ -101,8 +96,8 @@ test('it creates payment document links for vendor bill settlement', function ()
 
 test('it updates payment document links correctly', function () {
     // Arrange
-    $invoice = \Modules\Sales\Models\Invoice::factory()->for($this->company)->create();
-    $payment = \Modules\Payment\Models\Payment::factory()->for($this->company)->create([
+    $invoice = Invoice::factory()->for($this->company)->create();
+    $payment = Payment::factory()->for($this->company)->create([
 
         'payment_type' => PaymentType::Inbound,
         'currency_id' => $this->company->currency_id,

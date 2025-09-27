@@ -1,20 +1,21 @@
 <?php
 
-use App\Enums\Payments\PaymentStatus;
-use App\Services\BankReconciliationService;
 use Brick\Money\Money;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Modules\Accounting\Models\Account;
+use Modules\Accounting\Models\BankStatement;
+use Modules\Payment\Models\Payment;
 use Tests\Traits\WithConfiguredCompany;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);
 
 test('a bank statement line can be reconciled with a payment', function () {
     // Arrange: Set up the necessary accounts and a payment.
-    $bankAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create(['type' => 'bank_and_cash']);
+    $bankAccount = Account::factory()->for($this->company)->create(['type' => 'bank_and_cash']);
     $this->company->update(['default_bank_account_id' => $bankAccount->id]);
 
     $currencyCode = $this->company->currency->code;
-    $payment = \Modules\Payment\Models\Payment::factory()
+    $payment = Payment::factory()
         ->for($this->company)
         ->create([
             'amount' => Money::of(100, $currencyCode),
@@ -23,7 +24,7 @@ test('a bank statement line can be reconciled with a payment', function () {
         ]);
 
     // Arrange: Create a bank statement and a line that matches the payment.
-    $bankStatement = \Modules\Accounting\Models\BankStatement::factory()
+    $bankStatement = BankStatement::factory()
         ->for($this->company)
         ->for($payment->journal) // We can reuse the payment's journal
         ->create([

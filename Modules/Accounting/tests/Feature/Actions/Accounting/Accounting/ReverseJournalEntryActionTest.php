@@ -1,12 +1,11 @@
 <?php
 
-use App\Actions\Accounting\CreateJournalEntryForStatementLineAction;
-use App\Actions\Accounting\ReverseJournalEntryAction;
-use App\DataTransferObjects\Accounting\CreateJournalEntryForStatementLineDTO;
-use App\Enums\Accounting\JournalEntryState;
-use App\Models\Journal;
-use App\Models\JournalEntry;
+use Brick\Money\Money;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Modules\Accounting\Actions\Accounting\CreateJournalEntryAction;
+use Modules\Accounting\Models\Account;
+use Modules\Accounting\Models\BankStatement;
+use Modules\Accounting\Models\BankStatementLine;
 use Tests\Traits\WithConfiguredCompany;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);
@@ -14,10 +13,10 @@ uses(RefreshDatabase::class, WithConfiguredCompany::class);
 beforeEach(function () {
 
     // Create an original journal entry via the write-off action
-    $this->line = \Modules\Accounting\Models\BankStatementLine::factory()
-        ->for(\Modules\Accounting\Models\BankStatement::factory()->for($this->company)->for(Journal::factory()->for($this->company)->create())->for($this->company->currency)->create())
-        ->create(['amount' => \Brick\Money\Money::ofMinor(-100000, $this->company->currency->code), 'is_reconciled' => false]);
-    $writeOffAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create();
+    $this->line = BankStatementLine::factory()
+        ->for(BankStatement::factory()->for($this->company)->for(Journal::factory()->for($this->company)->create())->for($this->company->currency)->create())
+        ->create(['amount' => Money::ofMinor(-100000, $this->company->currency->code), 'is_reconciled' => false]);
+    $writeOffAccount = Account::factory()->for($this->company)->create();
 
     $dto = new CreateJournalEntryForStatementLineDTO(
         bankStatementLine: $this->line,
@@ -31,7 +30,7 @@ beforeEach(function () {
 
 it('creates a correct reversing journal entry with inverted amounts', function () {
     // Act
-    $reversingJe = (new ReverseJournalEntryAction(app(\Modules\Accounting\Actions\Accounting\CreateJournalEntryAction::class)))->execute($this->originalJe, 'Test Reversal', $this->user);
+    $reversingJe = (new ReverseJournalEntryAction(app(CreateJournalEntryAction::class)))->execute($this->originalJe, 'Test Reversal', $this->user);
 
     // Assert
     $this->assertModelExists($reversingJe);
@@ -50,7 +49,7 @@ it('creates a correct reversing journal entry with inverted amounts', function (
 
 it('updates the original journal entry state to reversed', function () {
     // Act
-    (new ReverseJournalEntryAction(app(\Modules\Accounting\Actions\Accounting\CreateJournalEntryAction::class)))->execute($this->originalJe, 'Test Reversal', $this->user);
+    (new ReverseJournalEntryAction(app(CreateJournalEntryAction::class)))->execute($this->originalJe, 'Test Reversal', $this->user);
 
     // Assert
     $this->assertDatabaseHas('journal_entries', [
@@ -67,7 +66,7 @@ it('sets the source bank statement line back to unreconciled', function () {
     ]);
 
     // Act
-    (new ReverseJournalEntryAction(app(\Modules\Accounting\Actions\Accounting\CreateJournalEntryAction::class)))->execute($this->originalJe, 'Test Reversal', $this->user);
+    (new ReverseJournalEntryAction(app(CreateJournalEntryAction::class)))->execute($this->originalJe, 'Test Reversal', $this->user);
 
     // Assert final state
     $this->assertDatabaseHas('bank_statement_lines', [
@@ -78,7 +77,7 @@ it('sets the source bank statement line back to unreconciled', function () {
 
 it('is idempotent and does not create multiple reversals for the same entry', function () {
     // Act
-    $action = new ReverseJournalEntryAction(app(\Modules\Accounting\Actions\Accounting\CreateJournalEntryAction::class));
+    $action = new ReverseJournalEntryAction(app(CreateJournalEntryAction::class));
     $firstReversal = $action->execute($this->originalJe, 'Test Reversal', $this->user);
     $secondReversal = $action->execute($this->originalJe->fresh(), 'Test Reversal', $this->user); // Use fresh model
 

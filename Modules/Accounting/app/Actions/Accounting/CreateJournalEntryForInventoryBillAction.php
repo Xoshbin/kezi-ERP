@@ -2,19 +2,18 @@
 
 namespace Modules\Accounting\Actions\Accounting;
 
-use App\DataTransferObjects\Accounting\CreateJournalEntryDTO;
-use App\DataTransferObjects\Accounting\CreateJournalEntryLineDTO;
-use App\Models\JournalEntry;
 use App\Models\User;
 use Brick\Money\Money;
 use Illuminate\Support\Facades\DB;
+use InvalidArgumentException;
+use Modules\Purchase\Models\VendorBill;
 use RuntimeException;
 
 class CreateJournalEntryForInventoryBillAction
 {
     public function __construct(private readonly CreateJournalEntryAction $createJournalEntryAction) {}
 
-    public function execute(\Modules\Purchase\Models\VendorBill $vendorBill, User $user): JournalEntry
+    public function execute(VendorBill $vendorBill, User $user): JournalEntry
     {
         return DB::transaction(function () use ($vendorBill, $user) {
             $vendorBill->load('company', 'currency', 'vendor', 'lines.product.inventoryAccount');
@@ -86,7 +85,7 @@ class CreateJournalEntryForInventoryBillAction
             );
 
             if (! $company->default_purchase_journal_id) {
-                throw new \InvalidArgumentException('Company default purchase journal is not configured');
+                throw new InvalidArgumentException('Company default purchase journal is not configured');
             }
 
             $journalEntryDTO = new CreateJournalEntryDTO(
@@ -96,7 +95,7 @@ class CreateJournalEntryForInventoryBillAction
                 entry_date: $vendorBill->accounting_date,
                 reference: 'BILL/' . $vendorBill->bill_reference,
                 description: 'Inventory purchase (AP recognition) for Bill ' . $vendorBill->bill_reference,
-                source_type: \Modules\Purchase\Models\VendorBill::class,
+                source_type: VendorBill::class,
                 source_id: $vendorBill->id,
                 created_by_user_id: $user->id,
                 is_posted: true,

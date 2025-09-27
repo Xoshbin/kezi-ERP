@@ -8,6 +8,7 @@ use App\Enums\Sales\SalesOrderStatus;
 use App\Observers\AuditLogObserver;
 use Brick\Money\Money;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -48,9 +49,9 @@ use Illuminate\Support\Carbon;
  * @property-read Currency $currency
  * @property-read User $createdByUser
  * @property-read StockLocation|null $deliveryLocation
- * @property-read \Illuminate\Database\Eloquent\Collection<int, SalesOrderLine> $lines
+ * @property-read Collection<int, SalesOrderLine> $lines
  * @property-read int|null $lines_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, Invoice> $invoices
+ * @property-read Collection<int, Invoice> $invoices
  * @property-read int|null $invoices_count
  */
 #[ObservedBy([\Modules\Foundation\Observers\AuditLogObserver::class])]
@@ -163,7 +164,7 @@ class SalesOrder extends Model
     public function calculateTotals(): void
     {
         $currency = $this->currency ?? $this->currency()->first();
-        
+
         $totalAmount = Money::of(0, $currency->code);
         $totalTax = Money::of(0, $currency->code);
 
@@ -236,7 +237,7 @@ class SalesOrder extends Model
     public function getRemainingToInvoice(): Money
     {
         $totalInvoiced = Money::of(0, $this->currency->code);
-        
+
         foreach ($this->invoices as $invoice) {
             $totalInvoiced = $totalInvoiced->plus($invoice->total_amount);
         }
@@ -250,7 +251,7 @@ class SalesOrder extends Model
     public function getRemainingToDeliver(): Money
     {
         $totalDelivered = Money::of(0, $this->currency->code);
-        
+
         foreach ($this->lines as $line) {
             $deliveredValue = $line->unit_price->multipliedBy($line->quantity_delivered);
             $totalDelivered = $totalDelivered->plus($deliveredValue);
@@ -292,11 +293,11 @@ class SalesOrder extends Model
     {
         $totalQuantity = $this->lines->sum('quantity');
         $deliveredQuantity = $this->lines->sum('quantity_delivered');
-        
+
         if ($totalQuantity == 0) {
             return 0;
         }
-        
+
         return ($deliveredQuantity / $totalQuantity) * 100;
     }
 
@@ -307,11 +308,11 @@ class SalesOrder extends Model
     {
         $totalQuantity = $this->lines->sum('quantity');
         $invoicedQuantity = $this->lines->sum('quantity_invoiced');
-        
+
         if ($totalQuantity == 0) {
             return 0;
         }
-        
+
         return ($invoicedQuantity / $totalQuantity) * 100;
     }
 }

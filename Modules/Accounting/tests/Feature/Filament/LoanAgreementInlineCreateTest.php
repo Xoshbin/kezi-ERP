@@ -1,11 +1,9 @@
 <?php
 
-use App\Enums\Accounting\AccountType;
-use App\Enums\Accounting\JournalType;
-use App\Filament\Clusters\Accounting\Resources\LoanAgreements\Pages\ViewLoanAgreement;
-use App\Models\Journal;
 use Brick\Money\Money;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Modules\Accounting\Models\Account;
+use Modules\Accounting\Models\LoanAgreement;
 use Tests\Traits\WithConfiguredCompany;
 use function Pest\Livewire\livewire;
 
@@ -18,7 +16,7 @@ beforeEach(function () {
 
 it('configures createOption forms and can post repayment after creating needed records', function () {
     $code = $this->company->currency->code;
-    $loan = \Modules\Accounting\Models\LoanAgreement::factory()->for($this->company)->create([
+    $loan = LoanAgreement::factory()->for($this->company)->create([
         'currency_id' => $this->company->currency_id,
         'principal_amount' => Money::of('10000', $code),
         'duration_months' => 12,
@@ -37,17 +35,17 @@ it('configures createOption forms and can post repayment after creating needed r
         'name' => 'Bank Journal',
         'short_code' => 'BNK',
     ]);
-    $bank = \Modules\Accounting\Models\Account::factory()->for($this->company)->create([
+    $bank = Account::factory()->for($this->company)->create([
         'code' => '100100',
         'name' => 'Main Bank',
         'type' => \Modules\Accounting\Enums\Accounting\AccountType::BankAndCash,
     ]);
-    $loanAcc = \Modules\Accounting\Models\Account::factory()->for($this->company)->create([
+    $loanAcc = Account::factory()->for($this->company)->create([
         'code' => '210100',
         'name' => 'Loan Payable',
         'type' => \Modules\Accounting\Enums\Accounting\AccountType::NonCurrentLiabilities,
     ]);
-    $accrued = \Modules\Accounting\Models\Account::factory()->for($this->company)->create([
+    $accrued = Account::factory()->for($this->company)->create([
         'code' => '215500',
         'name' => 'Accrued Interest',
         'type' => \Modules\Accounting\Enums\Accounting\AccountType::CurrentLiabilities,

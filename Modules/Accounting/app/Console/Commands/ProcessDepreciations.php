@@ -3,6 +3,8 @@
 namespace Modules\Accounting\Console\Commands;
 
 use Illuminate\Console\Command;
+use Modules\Accounting\Jobs\ProcessDepreciationJob;
+use Modules\Accounting\Models\DepreciationEntry;
 
 class ProcessDepreciations extends Command
 {
@@ -14,12 +16,12 @@ class ProcessDepreciations extends Command
     {
         $this->info('Processing depreciations...');
 
-        $entries = \Modules\Accounting\Models\DepreciationEntry::where('status', 'draft')
+        $entries = DepreciationEntry::where('status', 'draft')
             ->where('depreciation_date', '<=', now())
             ->get();
 
         foreach ($entries as $entry) {
-            \Modules\Accounting\Jobs\ProcessDepreciationJob::dispatch($entry);
+            ProcessDepreciationJob::dispatch($entry);
         }
 
         $this->info('Done.');

@@ -2,15 +2,19 @@
 
 namespace Modules\Inventory\Filament\Clusters\Inventory\Pages;
 
-use App\Filament\Clusters\Inventory\InventoryCluster;
-use App\Models\Lot;
-use App\Services\Inventory\InventoryReportingService;
+
+use BackedEnum;
+use Exception;
+use Filament\Actions\Action;
+use Filament\Facades\Filament;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
+use Filament\Notifications\Notification;
 use Filament\Pages\Page;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
+use Modules\Product\Models\Product;
 
 class LotTraceabilityReport extends Page implements HasForms
 {
@@ -19,7 +23,7 @@ class LotTraceabilityReport extends Page implements HasForms
 
     protected string $view = 'filament.clusters.inventory.pages.lot-traceability-report';
 
-    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-magnifying-glass';
+    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-magnifying-glass';
 
     protected static ?int $navigationSort = 23;
 
@@ -27,7 +31,7 @@ class LotTraceabilityReport extends Page implements HasForms
 
     public ?array $reportData = null;
 
-    public ?\Modules\Product\Models\Product $selectedProduct = null;
+    public ?Product $selectedProduct = null;
 
     public ?Lot $selectedLot = null;
 
@@ -65,15 +69,15 @@ class LotTraceabilityReport extends Page implements HasForms
                         Select::make('product_id')
                             ->label(__('inventory_reports.lot_trace.filters.product'))
                             ->options(function () {
-                                return \Modules\Product\Models\Product::query()
-                                    ->where('company_id', \Filament\Facades\Filament::getTenant()?->getKey())
+                                return Product::query()
+                                    ->where('company_id', Filament::getTenant()?->getKey())
                                     ->pluck('name', 'id');
                             })
                             ->searchable()
                             ->preload()
                             ->live()
                             ->afterStateUpdated(function ($state) {
-                                $this->selectedProduct = $state ? \Modules\Product\Models\Product::find($state) : null;
+                                $this->selectedProduct = $state ? Product::find($state) : null;
                                 $this->data['lot_id'] = null;
                                 $this->selectedLot = null;
                                 $this->reportData = null;
@@ -178,13 +182,13 @@ class LotTraceabilityReport extends Page implements HasForms
     protected function getHeaderActions(): array
     {
         return [
-            \Filament\Actions\Action::make('export')
+            Action::make('export')
                 ->label(__('inventory_reports.lot_trace.actions.export'))
                 ->icon('heroicon-o-arrow-down-tray')
                 ->disabled(fn() => !$this->reportData)
                 ->action(function () {
                     if (!$this->reportData) {
-                        \Filament\Notifications\Notification::make()
+                        Notification::make()
                             ->title(__('inventory_reports.lot_trace.no_data_to_export'))
                             ->danger()
                             ->send();
@@ -192,14 +196,14 @@ class LotTraceabilityReport extends Page implements HasForms
                     }
 
                     try {
-                        $csvService = app(\App\Services\Inventory\InventoryCSVExportService::class);
+                        $csvService = app(InventoryCSVExportService::class);
                         $csvContent = $csvService->exportLotTraceabilityReport($this->reportData, [
                             'include_metadata' => true
                         ]);
 
                         $filename = 'lot-traceability-' . ($this->reportData['lot_code'] ?? 'report') . '-' . now()->format('Y-m-d-H-i-s') . '.csv';
 
-                        \Filament\Notifications\Notification::make()
+                        Notification::make()
                             ->title(__('inventory_reports.lot_trace.export_started'))
                             ->success()
                             ->send();
@@ -209,8 +213,8 @@ class LotTraceabilityReport extends Page implements HasForms
                         }, $filename, [
                             'Content-Type' => 'text/csv; charset=UTF-8',
                         ]);
-                    } catch (\Exception $e) {
-                        \Filament\Notifications\Notification::make()
+                    } catch (Exception $e) {
+                        Notification::make()
                             ->title(__('inventory_reports.lot_trace.export_failed'))
                             ->body($e->getMessage())
                             ->danger()
@@ -218,7 +222,7 @@ class LotTraceabilityReport extends Page implements HasForms
                     }
                 }),
 
-            \Filament\Actions\Action::make('refresh')
+            Action::make('refresh')
                 ->label(__('inventory_reports.lot_trace.actions.refresh'))
                 ->icon('heroicon-o-arrow-path')
                 ->action('generateReport')

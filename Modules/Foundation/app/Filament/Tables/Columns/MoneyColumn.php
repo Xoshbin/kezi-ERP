@@ -2,11 +2,12 @@
 
 namespace Modules\Foundation\Filament\Tables\Columns;
 
-use App\Support\NumberFormatter;
 use Brick\Money\Money;
 use Exception;
 use Filament\Tables\Columns\TextColumn;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
+use Modules\Foundation\Models\Currency;
 
 class MoneyColumn extends TextColumn
 {
@@ -58,9 +59,9 @@ class MoneyColumn extends TextColumn
                 $currencyCode = $currencyModel->code;
             }
         } elseif (isset($record->currency_id)) {
-            $currency = \Modules\Foundation\Models\Currency::find($record->currency_id);
+            $currency = Currency::find($record->currency_id);
             // Ensure we have a single Currency model, not a collection
-            if ($currency instanceof \Illuminate\Database\Eloquent\Collection) {
+            if ($currency instanceof Collection) {
                 $currency = $currency->first();
             }
             if ($currency) {
@@ -74,18 +75,18 @@ class MoneyColumn extends TextColumn
             $table = $this->getTable();
             $livewire = $table->getLivewire();
             if (method_exists($livewire, 'getOwnerRecord')) {
-                /** @var \Illuminate\Database\Eloquent\Model|null $ownerRecord */
+                /** @var Model|null $ownerRecord */
                 $ownerRecord = $livewire->getOwnerRecord();
             } elseif (method_exists($livewire, 'getRecord')) {
                 // getRecord() exists only on some resource pages
-                /** @var \Illuminate\Database\Eloquent\Model|null $ownerRecord */
+                /** @var Model|null $ownerRecord */
                 $ownerRecord = $livewire->getRecord();
             } else {
                 $ownerRecord = null;
             }
 
-            if ($ownerRecord instanceof \Illuminate\Database\Eloquent\Model && method_exists($ownerRecord, 'currency')) {
-                /** @var \Modules\Foundation\Models\Currency|null $currency */
+            if ($ownerRecord instanceof Model && method_exists($ownerRecord, 'currency')) {
+                /** @var Currency|null $currency */
                 $currency = $ownerRecord->relationLoaded('currency') ? $ownerRecord->getRelation('currency') : $ownerRecord->currency()->first();
                 if ($currency) {
                     $currencyCode = $currency->code;

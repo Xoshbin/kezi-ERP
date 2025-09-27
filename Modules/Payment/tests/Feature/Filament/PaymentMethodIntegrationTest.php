@@ -1,14 +1,10 @@
 <?php
 
-use App\Enums\Payments\PaymentMethod;
-use App\Enums\Payments\PaymentStatus;
-use App\Enums\Payments\PaymentType;
-use App\Filament\Clusters\Accounting\Resources\Payments\Pages\CreatePayment;
-use App\Filament\Clusters\Accounting\Resources\Payments\Pages\EditPayment;
-use App\Filament\Clusters\Accounting\Resources\Payments\Pages\ListPayments;
-use App\Models\Journal;
 use Brick\Money\Money;
+use Filament\Forms\Components\Field;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Modules\Foundation\Models\Partner;
+use Modules\Payment\Models\Payment;
 use Tests\Traits\WithConfiguredCompany;
 use function Pest\Livewire\livewire;
 
@@ -35,7 +31,7 @@ it('has correct payment method options', function () {
         if ($paymentMethodField) {
             return;
         }
-        if ($component instanceof \Filament\Forms\Components\Field) {
+        if ($component instanceof Field) {
             if ($component->getName() === 'payment_method') {
                 $paymentMethodField = $component;
 
@@ -63,7 +59,7 @@ it('has correct payment method options', function () {
 });
 
 it('can create payment with payment method', function () {
-    $partner = \Modules\Foundation\Models\Partner::factory()->create([
+    $partner = Partner::factory()->create([
         'company_id' => $this->company->id,
     ]);
 
@@ -89,20 +85,20 @@ it('can create payment with payment method', function () {
         ->call('create')
         ->assertHasNoFormErrors();
 
-    $created = \Modules\Payment\Models\Payment::where('reference', 'TEST-001')->first();
+    $created = Payment::where('reference', 'TEST-001')->first();
     expect($created)
         ->payment_method->toBe(PaymentMethod::BankTransfer)
         ->and($created->payment_type)->toBe(PaymentType::Outbound);
 });
 
 it('displays payment method column in table', function () {
-    $partner = \Modules\Foundation\Models\Partner::factory()->create(['company_id' => $this->company->id]);
+    $partner = Partner::factory()->create(['company_id' => $this->company->id]);
     $journal = Journal::factory()->create([
         'company_id' => $this->company->id,
         'currency_id' => $this->company->currency_id,
     ]);
 
-    $payment = \Modules\Payment\Models\Payment::factory()->create([
+    $payment = Payment::factory()->create([
         'company_id' => $this->company->id,
         'journal_id' => $journal->id,
         'currency_id' => $this->company->currency_id,
@@ -117,13 +113,13 @@ it('displays payment method column in table', function () {
 });
 
 it('displays payment method badge correctly', function () {
-    $partner = \Modules\Foundation\Models\Partner::factory()->create(['company_id' => $this->company->id]);
+    $partner = Partner::factory()->create(['company_id' => $this->company->id]);
     $journal = Journal::factory()->create([
         'company_id' => $this->company->id,
         'currency_id' => $this->company->currency_id,
     ]);
 
-    \Modules\Payment\Models\Payment::factory()->create([
+    Payment::factory()->create([
         'company_id' => $this->company->id,
         'journal_id' => $journal->id,
         'currency_id' => $this->company->currency_id,
@@ -137,13 +133,13 @@ it('displays payment method badge correctly', function () {
 });
 
 it('can edit payment method', function () {
-    $partner = \Modules\Foundation\Models\Partner::factory()->create(['company_id' => $this->company->id]);
+    $partner = Partner::factory()->create(['company_id' => $this->company->id]);
     $journal = Journal::factory()->create([
         'company_id' => $this->company->id,
         'currency_id' => $this->company->currency_id,
     ]);
 
-    $payment = \Modules\Payment\Models\Payment::factory()->create([
+    $payment = Payment::factory()->create([
         'company_id' => $this->company->id,
         'journal_id' => $journal->id,
         'currency_id' => $this->company->currency_id,
@@ -173,13 +169,13 @@ it('can edit payment method', function () {
 });
 
 it('can search by payment method in table', function () {
-    $partner = \Modules\Foundation\Models\Partner::factory()->create(['company_id' => $this->company->id]);
+    $partner = Partner::factory()->create(['company_id' => $this->company->id]);
     $journal = Journal::factory()->create([
         'company_id' => $this->company->id,
         'currency_id' => $this->company->currency_id,
     ]);
 
-    $checkPayment = \Modules\Payment\Models\Payment::factory()->create([
+    $checkPayment = Payment::factory()->create([
         'company_id' => $this->company->id,
         'journal_id' => $journal->id,
         'currency_id' => $this->company->currency_id,
@@ -189,7 +185,7 @@ it('can search by payment method in table', function () {
         'amount' => Money::of(100, $this->company->currency->code),
     ]);
 
-    $wirePayment = \Modules\Payment\Models\Payment::factory()->create([
+    $wirePayment = Payment::factory()->create([
         'company_id' => $this->company->id,
         'journal_id' => $journal->id,
         'currency_id' => $this->company->currency_id,

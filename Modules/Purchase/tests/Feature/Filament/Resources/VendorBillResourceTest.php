@@ -1,15 +1,13 @@
 <?php
 
-use App\Enums\Inventory\StockMoveStatus;
-use App\Enums\Inventory\StockMoveType;
-use App\Enums\Inventory\ValuationMethod;
-use App\Enums\Purchases\VendorBillStatus;
-use App\Filament\Clusters\Accounting\Resources\VendorBills\Pages\CreateVendorBill;
-use App\Filament\Clusters\Accounting\Resources\VendorBills\Pages\EditVendorBill;
-use App\Filament\Clusters\Accounting\Resources\VendorBills\Pages\ListVendorBills;
 use Brick\Money\Money;
 use Filament\Actions\DeleteAction;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Modules\Accounting\Models\Account;
+use Modules\Foundation\Models\Partner;
+use Modules\Product\Enums\Products\ProductType;
+use Modules\Product\Models\Product;
+use Modules\Purchase\Models\VendorBill;
 use Tests\Traits\WithConfiguredCompany;
 use function Pest\Livewire\livewire;
 
@@ -23,7 +21,7 @@ beforeEach(function () {
 });
 
 it('can render the list page', function () {
-    $vendorBills = \Modules\Purchase\Models\VendorBill::factory()->count(5)->for($this->company)->create();
+    $vendorBills = VendorBill::factory()->count(5)->for($this->company)->create();
 
     livewire(ListVendorBills::class)
         ->assertOk()
@@ -36,13 +34,13 @@ it('can render the create page', function () {
 });
 
 it('can create a vendor bill', function () {
-    /** @var \Modules\Foundation\Models\Partner $vendor */
-    $vendor = \Modules\Foundation\Models\Partner::factory()->vendor()->create([
+    /** @var Partner $vendor */
+    $vendor = Partner::factory()->vendor()->create([
         'company_id' => $this->company->id,
     ]);
 
-    /** @var \Modules\Product\Models\Product $product */
-    $product = \Modules\Product\Models\Product::factory()->create([
+    /** @var Product $product */
+    $product = Product::factory()->create([
         'company_id' => $this->company->id,
         'name' => 'Test Product Line', // Set a specific name to match the database assertion
         'unit_price' => Money::of(100, $this->company->currency->code), // Set a specific price for predictable total
@@ -86,7 +84,7 @@ it('can create a vendor bill', function () {
         'quantity' => 2,
     ]);
 
-    $vendorBill = \Modules\Purchase\Models\VendorBill::where('bill_reference', 'Test Bill Ref')->firstOrFail();
+    $vendorBill = VendorBill::where('bill_reference', 'Test Bill Ref')->firstOrFail();
     $this->assertCount(1, $vendorBill->lines);
     $this->assertTrue($vendorBill->total_amount->isEqualTo(Money::of(200, $this->company->currency->code)));
 });
@@ -113,7 +111,7 @@ it('can validate input on create', function () {
 });
 
 it('can render the edit page', function () {
-    $vendorBill = \Modules\Purchase\Models\VendorBill::factory()->for($this->company)->create();
+    $vendorBill = VendorBill::factory()->for($this->company)->create();
 
     livewire(EditVendorBill::class, [
         'record' => $vendorBill->id,
@@ -126,12 +124,12 @@ it('can render the edit page', function () {
 });
 
 it('can update a vendor bill', function () {
-    $vendorBill = \Modules\Purchase\Models\VendorBill::factory()->withLines(1)->for($this->company)->create([
+    $vendorBill = VendorBill::factory()->withLines(1)->for($this->company)->create([
         'bill_reference' => 'Old Ref',
     ]);
 
-    /** @var \Modules\Foundation\Models\Partner $newVendor */
-    $newVendor = \Modules\Foundation\Models\Partner::factory()->vendor()->create([
+    /** @var Partner $newVendor */
+    $newVendor = Partner::factory()->vendor()->create([
         'company_id' => $this->company->id,
     ]);
 
@@ -154,26 +152,26 @@ it('can update a vendor bill', function () {
 
 it('can confirm a vendor bill using service directly', function () {
     // Create vendor and product with proper company currency
-    $vendor = \Modules\Foundation\Models\Partner::factory()->vendor()->create([
+    $vendor = Partner::factory()->vendor()->create([
         'company_id' => $this->company->id,
     ]);
 
-    $product = \Modules\Product\Models\Product::factory()->create([
+    $product = Product::factory()->create([
         'company_id' => $this->company->id,
         'unit_price' => Money::of(100, $this->company->currency->code),
-        'type' => \Modules\Product\Enums\Products\ProductType::Storable,
-        'default_inventory_account_id' => \Modules\Accounting\Models\Account::factory()->create([
+        'type' => ProductType::Storable,
+        'default_inventory_account_id' => Account::factory()->create([
             'company_id' => $this->company->id,
             'type' => 'current_assets',
         ])->id,
-        'default_stock_input_account_id' => \Modules\Accounting\Models\Account::factory()->create([
+        'default_stock_input_account_id' => Account::factory()->create([
             'company_id' => $this->company->id,
             'type' => 'current_liabilities',
         ])->id,
     ]);
 
     // Create vendor bill manually to ensure proper currency handling
-    $vendorBill = \Modules\Purchase\Models\VendorBill::factory()->for($this->company)->create([
+    $vendorBill = VendorBill::factory()->for($this->company)->create([
         'vendor_id' => $vendor->id,
         'currency_id' => $this->company->currency_id,
         'status' => VendorBillStatus::Draft,
@@ -210,7 +208,7 @@ it('can confirm a vendor bill using service directly', function () {
     expect($this->company->default_purchase_journal_id)->not->toBeNull();
 
     // Test the service directly first
-    $vendorBillService = app(\App\Services\VendorBillService::class);
+    $vendorBillService = app(VendorBillService::class);
     $vendorBillService->confirm($vendorBill, $this->user);
 
     // Verify the bill was confirmed
@@ -225,30 +223,30 @@ it('can confirm a vendor bill using service directly', function () {
 
 it('can confirm a vendor bill via Filament action', function () {
     // Create vendor and product with proper company currency
-    $vendor = \Modules\Foundation\Models\Partner::factory()->vendor()->create([
+    $vendor = Partner::factory()->vendor()->create([
         'company_id' => $this->company->id,
     ]);
 
-    $product = \Modules\Product\Models\Product::factory()->create([
+    $product = Product::factory()->create([
         'company_id' => $this->company->id,
         'unit_price' => Money::of(100, $this->company->currency->code),
-        'type' => \Modules\Product\Enums\Products\ProductType::Storable,
-        'default_inventory_account_id' => \Modules\Accounting\Models\Account::factory()->create([
+        'type' => ProductType::Storable,
+        'default_inventory_account_id' => Account::factory()->create([
             'company_id' => $this->company->id,
             'type' => 'current_assets',
         ])->id,
-        'default_stock_input_account_id' => \Modules\Accounting\Models\Account::factory()->create([
+        'default_stock_input_account_id' => Account::factory()->create([
             'company_id' => $this->company->id,
             'type' => 'current_liabilities',
         ])->id,
-        'default_inventory_account_id' => \Modules\Accounting\Models\Account::factory()->create([
+        'default_inventory_account_id' => Account::factory()->create([
             'company_id' => $this->company->id,
             'type' => 'current_assets',
         ])->id,
     ]);
 
     // Create vendor bill manually to ensure proper currency handling
-    $vendorBill = \Modules\Purchase\Models\VendorBill::factory()->for($this->company)->create([
+    $vendorBill = VendorBill::factory()->for($this->company)->create([
         'vendor_id' => $vendor->id,
         'currency_id' => $this->company->currency_id,
         'status' => VendorBillStatus::Draft,
@@ -301,7 +299,7 @@ it('can confirm a vendor bill via Filament action', function () {
 });
 
 it('can delete a vendor bill', function () {
-    $vendorBill = \Modules\Purchase\Models\VendorBill::factory()->for($this->company)->create([
+    $vendorBill = VendorBill::factory()->for($this->company)->create([
         'status' => VendorBillStatus::Draft,
     ]);
 
@@ -318,7 +316,7 @@ it('can delete a vendor bill', function () {
 
 it('can display correct money amounts in edit form', function () {
     // Create a vendor bill with specific amounts
-    $vendorBill = \Modules\Purchase\Models\VendorBill::factory()->withLines(1)->for($this->company)->create();
+    $vendorBill = VendorBill::factory()->withLines(1)->for($this->company)->create();
 
     // Get the first line and set a specific unit price
     $line = $vendorBill->lines->first();
@@ -347,7 +345,7 @@ it('can display correct money amounts in edit form', function () {
 
 it('prevents confirming vendor bill without lines', function () {
     // Create vendor bill without lines
-    $vendorBill = \Modules\Purchase\Models\VendorBill::factory()->for($this->company)->create([
+    $vendorBill = VendorBill::factory()->for($this->company)->create([
         'status' => VendorBillStatus::Draft,
         'bill_date' => now()->format('Y-m-d'),
         'accounting_date' => now()->format('Y-m-d'),
@@ -377,7 +375,7 @@ it('prevents confirming vendor bill without lines', function () {
 });
 
 it('cannot confirm already posted vendor bill', function () {
-    $vendorBill = \Modules\Purchase\Models\VendorBill::factory()->withLines(1)->for($this->company)->create([
+    $vendorBill = VendorBill::factory()->withLines(1)->for($this->company)->create([
         'status' => VendorBillStatus::Posted,
         'posted_at' => now(),
     ]);
@@ -392,16 +390,16 @@ it('cannot confirm already posted vendor bill', function () {
 
 it('can create and confirm vendor bill following complete workflow', function () {
     // Arrange: Create vendor and product
-    $vendor = \Modules\Foundation\Models\Partner::factory()->vendor()->create([
+    $vendor = Partner::factory()->vendor()->create([
         'company_id' => $this->company->id,
     ]);
 
-    $product = \Modules\Product\Models\Product::factory()->create([
+    $product = Product::factory()->create([
         'company_id' => $this->company->id,
         'name' => 'Office Supplies',
         'unit_price' => Money::of(50, $this->company->currency->code),
-        'type' => \Modules\Product\Enums\Products\ProductType::Service,
-        'expense_account_id' => \Modules\Accounting\Models\Account::factory()->create([
+        'type' => ProductType::Service,
+        'expense_account_id' => Account::factory()->create([
             'company_id' => $this->company->id,
             'type' => 'expense',
         ])->id,
@@ -443,7 +441,7 @@ it('can create and confirm vendor bill following complete workflow', function ()
         'status' => VendorBillStatus::Draft->value,
     ]);
 
-    $vendorBill = \Modules\Purchase\Models\VendorBill::where('bill_reference', $uniqueReference)->firstOrFail();
+    $vendorBill = VendorBill::where('bill_reference', $uniqueReference)->firstOrFail();
 
     // Verify the bill structure
     expect($vendorBill->vendor_id)->toBe($vendor->id);
@@ -504,20 +502,20 @@ it('can create and confirm vendor bill following complete workflow', function ()
 
 it('shows error and keeps draft when storable product lacks inventory account', function () {
     // Arrange: Create vendor and storable product WITHOUT inventory account
-    $vendor = \Modules\Foundation\Models\Partner::factory()->vendor()->create([
+    $vendor = Partner::factory()->vendor()->create([
         'company_id' => $this->company->id,
     ]);
 
     // Create a storable product WITHOUT inventory account on purpose
     // Bypass model-level validation to simulate legacy/bad data
-    $product = \Modules\Product\Models\Product::withoutEvents(fn() => \Modules\Product\Models\Product::factory()->create([
+    $product = Product::withoutEvents(fn() => Product::factory()->create([
         'company_id' => $this->company->id,
-        'type' => \Modules\Product\Enums\Products\ProductType::Storable,
+        'type' => ProductType::Storable,
         'default_inventory_account_id' => null, // This is the key - no inventory account
     ]));
 
     // Create vendor bill manually to ensure proper currency handling
-    $vendorBill = \Modules\Purchase\Models\VendorBill::factory()->for($this->company)->create([
+    $vendorBill = VendorBill::factory()->for($this->company)->create([
         'vendor_id' => $vendor->id,
         'currency_id' => $this->company->currency_id,
         'status' => VendorBillStatus::Draft,
@@ -558,26 +556,26 @@ it('shows error and keeps draft when storable product lacks inventory account', 
 
 it('records stock moves and inventory/AP postings for storable products and updates AVCO', function () {
     // Arrange: vendor and accounts
-    $vendor = \Modules\Foundation\Models\Partner::factory()->vendor()->create([
+    $vendor = Partner::factory()->vendor()->create([
         'company_id' => $this->company->id,
     ]);
 
-    $inventoryAccount = \Modules\Accounting\Models\Account::factory()->create([
+    $inventoryAccount = Account::factory()->create([
         'company_id' => $this->company->id,
         'type' => 'current_assets',
     ]);
-    $expenseAccount = \Modules\Accounting\Models\Account::factory()->create([
+    $expenseAccount = Account::factory()->create([
         'company_id' => $this->company->id,
         'type' => 'expense',
     ]);
 
     // Storable product using AVCO and inventory account
-    $product = \Modules\Product\Models\Product::factory()->create([
+    $product = Product::factory()->create([
         'company_id' => $this->company->id,
-        'type' => \Modules\Product\Enums\Products\ProductType::Storable,
+        'type' => ProductType::Storable,
         'inventory_valuation_method' => ValuationMethod::AVCO,
         'default_inventory_account_id' => $inventoryAccount->id,
-        'default_stock_input_account_id' => \Modules\Accounting\Models\Account::factory()->create([
+        'default_stock_input_account_id' => Account::factory()->create([
             'company_id' => $this->company->id,
             'type' => 'current_liabilities',
         ])->id,
@@ -589,8 +587,8 @@ it('records stock moves and inventory/AP postings for storable products and upda
     $unit = Money::of(150, $this->company->currency->code);
     $subtotal = $unit->multipliedBy($qty);
 
-    /** @var \Modules\Purchase\Models\VendorBill $vendorBill */
-    $vendorBill = \Modules\Purchase\Models\VendorBill::factory()->for($this->company)->create([
+    /** @var VendorBill $vendorBill */
+    $vendorBill = VendorBill::factory()->for($this->company)->create([
         'vendor_id' => $vendor->id,
         'currency_id' => $this->company->currency_id,
         'status' => VendorBillStatus::Draft,
@@ -614,14 +612,14 @@ it('records stock moves and inventory/AP postings for storable products and upda
     $vendorBill->refresh();
 
     // Act: confirm via service
-    app(\App\Services\VendorBillService::class)->confirm($vendorBill, $this->user);
+    app(VendorBillService::class)->confirm($vendorBill, $this->user);
 
     // Assert: Stock move created (Incoming, Done) from Vendor to Stock locations
     $this->assertDatabaseHas('stock_moves', [
         'company_id' => $this->company->id,
         'move_type' => StockMoveType::Incoming->value,
         'status' => StockMoveStatus::Done->value,
-        'source_type' => \Modules\Purchase\Models\VendorBill::class,
+        'source_type' => VendorBill::class,
         'source_id' => $vendorBill->id,
     ]);
 

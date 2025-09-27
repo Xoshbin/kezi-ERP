@@ -7,6 +7,7 @@ use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
+use Modules\Payment\Models\Payment;
 
 class PaymentConfirmed
 {
@@ -15,7 +16,7 @@ class PaymentConfirmed
     /**
      * Create a new event instance.
      */
-    public function __construct(public readonly \Modules\Payment\Models\Payment $payment)
+    public function __construct(public readonly Payment $payment)
     {
         //
     }

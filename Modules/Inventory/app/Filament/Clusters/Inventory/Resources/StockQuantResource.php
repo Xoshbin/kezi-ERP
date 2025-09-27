@@ -6,6 +6,10 @@ use App\Filament\Clusters\Inventory\InventoryCluster;
 use App\Filament\Clusters\Inventory\Resources\StockQuantResource\Pages;
 use App\Models\StockQuant;
 use BackedEnum;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteBulkAction;
+use Filament\Actions\EditAction;
+use Filament\Actions\ViewAction;
 use Filament\Forms;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Resources\Resource;
@@ -244,12 +248,12 @@ class StockQuantResource extends Resource
                     ),
             ])
             ->recordActions([
-                \Filament\Actions\ViewAction::make(),
-                \Filament\Actions\EditAction::make(),
+                ViewAction::make(),
+                EditAction::make(),
             ])
             ->toolbarActions([
-                \Filament\Actions\BulkActionGroup::make([
-                    \Filament\Actions\DeleteBulkAction::make(),
+                BulkActionGroup::make([
+                    DeleteBulkAction::make(),
                 ]),
             ])
             ->defaultSort('updated_at', 'desc')

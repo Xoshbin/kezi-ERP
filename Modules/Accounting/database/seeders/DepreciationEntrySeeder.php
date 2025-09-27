@@ -8,6 +8,9 @@ use App\Models\JournalEntryLine;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
+use Modules\Accounting\Models\Account;
+use Modules\Accounting\Models\Asset;
+use Modules\Accounting\Models\DepreciationEntry;
 
 class DepreciationEntrySeeder extends Seeder
 {
@@ -17,10 +20,10 @@ class DepreciationEntrySeeder extends Seeder
     public function run(): void
     {
         DB::transaction(function () {
-            $depreciableAssets = \Modules\Accounting\Models\Asset::where('is_depreciable', true)->get();
+            $depreciableAssets = Asset::where('is_depreciable', true)->get();
             $journal = Journal::where('name->en', 'Fixed Assets Journal')->firstOrFail();
-            $depreciationExpenseAccount = \Modules\Accounting\Models\Account::where('name->en', 'Depreciation Expense')->firstOrFail();
-            $accumulatedDepreciationAccount = \Modules\Accounting\Models\Account::where('name->en', 'Accumulated Depreciation')->firstOrFail();
+            $depreciationExpenseAccount = Account::where('name->en', 'Depreciation Expense')->firstOrFail();
+            $accumulatedDepreciationAccount = Account::where('name->en', 'Accumulated Depreciation')->firstOrFail();
             $company = $depreciableAssets->first()->company;
 
             $referenceCounter = 1;
@@ -33,7 +36,7 @@ class DepreciationEntrySeeder extends Seeder
                     $postingDate = Carbon::parse($asset->purchase_date)->addMonths($i + 1)->startOfMonth();
                     $accumulatedDepreciation += $monthlyDepreciation;
 
-                    $depreciationEntry = \Modules\Accounting\Models\DepreciationEntry::create([
+                    $depreciationEntry = DepreciationEntry::create([
                         'asset_id' => $asset->id,
                         'company_id' => $asset->company_id,
                         'reference' => 'DEP-'.str_pad($referenceCounter++, 4, '0', STR_PAD_LEFT),

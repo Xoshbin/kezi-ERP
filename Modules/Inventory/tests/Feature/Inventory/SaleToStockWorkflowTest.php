@@ -2,18 +2,15 @@
 
 namespace Modules\Inventory\Tests\Feature\Inventory;
 
-use App\Actions\Sales\CreateInvoiceLineAction;
-use App\DataTransferObjects\Sales\CreateInvoiceLineDTO;
-use App\Enums\Inventory\StockMoveStatus;
-use App\Enums\Inventory\StockMoveType;
-use App\Enums\Inventory\ValuationMethod;
-use App\Enums\Products\ProductType;
-use App\Models\StockMove;
-use App\Models\StockMoveValuation;
-use App\Services\InvoiceService;
+
 use Brick\Money\Money;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Queue;
+use Modules\Accounting\Models\Account;
+use Modules\Foundation\Enums\Partners\PartnerType;
+use Modules\Foundation\Models\Partner;
+use Modules\Product\Models\Product;
+use Modules\Sales\Models\Invoice;
 use Tests\Traits\WithConfiguredCompany;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);
@@ -23,32 +20,32 @@ beforeEach(function () {
     $this->setupInventoryTestEnvironment();
 
     // Create additional accounts needed for sales workflow
-    $this->cogsAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create([
+    $this->cogsAccount = Account::factory()->for($this->company)->create([
         'name' => 'Cost of Goods Sold',
         'type' => 'cost_of_revenue',
     ]);
 
     // Create a customer for sales transactions
-    $this->customer = \Modules\Foundation\Models\Partner::factory()->for($this->company)->create([
-        'type' => \Modules\Foundation\Enums\Partners\PartnerType::Customer,
+    $this->customer = Partner::factory()->for($this->company)->create([
+        'type' => PartnerType::Customer,
     ]);
 
     // Create stock locations with the specific names that services expect
-    $this->warehouseLocation = \App\Models\StockLocation::factory()->for($this->company)->create([
+    $this->warehouseLocation = StockLocation::factory()->for($this->company)->create([
         'name' => 'Warehouse',
-        'type' => \App\Enums\Inventory\StockLocationType::Internal,
+        'type' => StockLocationType::Internal,
     ]);
-    $this->vendorsLocation = \App\Models\StockLocation::factory()->for($this->company)->create([
+    $this->vendorsLocation = StockLocation::factory()->for($this->company)->create([
         'name' => 'Vendors',
-        'type' => \App\Enums\Inventory\StockLocationType::Vendor,
+        'type' => StockLocationType::Vendor,
     ]);
-    $this->customersLocation = \App\Models\StockLocation::factory()->for($this->company)->create([
+    $this->customersLocation = StockLocation::factory()->for($this->company)->create([
         'name' => 'Customers',
-        'type' => \App\Enums\Inventory\StockLocationType::Customer,
+        'type' => StockLocationType::Customer,
     ]);
 
     // Create a storable product with inventory settings
-    $this->product = \Modules\Product\Models\Product::factory()->for($this->company)->create([
+    $this->product = Product::factory()->for($this->company)->create([
         'type' => \Modules\Product\Enums\Products\ProductType::Storable,
         'inventory_valuation_method' => ValuationMethod::AVCO,
         'default_inventory_account_id' => $this->inventoryAccount->id,
@@ -67,7 +64,7 @@ it('correctly processes outgoing storable product when invoice is posted, creati
     $totalSalesValue = $sellingPrice->multipliedBy($quantity); // 1000 * 5 = 5000
 
     // First, create initial inventory (you can't sell what you don't have)
-    \App\Models\StockQuant::factory()->create([
+    StockQuant::factory()->create([
         'company_id' => $this->company->id,
         'product_id' => $this->product->id,
         'location_id' => $this->stockLocation->id, // Use the default stock location
@@ -76,7 +73,7 @@ it('correctly processes outgoing storable product when invoice is posted, creati
     ]);
 
     // Create a draft invoice for the storable product
-    $invoice = \Modules\Sales\Models\Invoice::factory()->for($this->company)->create([
+    $invoice = Invoice::factory()->for($this->company)->create([
         'customer_id' => $this->customer->id,
         'status' => 'draft',
     ]);
@@ -110,7 +107,7 @@ it('correctly processes outgoing storable product when invoice is posted, creati
     $this->assertDatabaseHas('stock_moves', [
         'move_type' => StockMoveType::Outgoing->value,
         'status' => StockMoveStatus::Done->value,
-        'source_type' => \Modules\Sales\Models\Invoice::class,
+        'source_type' => Invoice::class,
         'source_id' => $invoice->id,
     ]);
 
@@ -120,7 +117,7 @@ it('correctly processes outgoing storable product when invoice is posted, creati
         'quantity' => $quantity,
     ]);
 
-    $stockMove = StockMove::where('source_type', \Modules\Sales\Models\Invoice::class)
+    $stockMove = StockMove::where('source_type', Invoice::class)
         ->where('source_id', $invoice->id)
         ->first();
     expect($stockMove)->not->toBeNull();
@@ -128,7 +125,7 @@ it('correctly processes outgoing storable product when invoice is posted, creati
     // Destination must be Customer (not Vendor)
     $productLine = $stockMove->productLines()->first();
     $productLine->load('toLocation');
-    expect($productLine->toLocation->type)->toBe(\App\Enums\Inventory\StockLocationType::Customer);
+    expect($productLine->toLocation->type)->toBe(StockLocationType::Customer);
 
     // Assert 3: Sales journal entry was created correctly
     $salesJournalEntry = $invoice->journalEntry;
@@ -161,7 +158,7 @@ it('dispatches stock move confirmed event when invoice with storable products is
     $sellingPrice = Money::of(800, $this->company->currency->code);
 
     // Create initial inventory
-    \App\Models\StockQuant::factory()->create([
+    StockQuant::factory()->create([
         'company_id' => $this->company->id,
         'product_id' => $this->product->id,
         'location_id' => $this->stockLocation->id, // Use the default stock location
@@ -169,7 +166,7 @@ it('dispatches stock move confirmed event when invoice with storable products is
         'reserved_quantity' => 0.0,
     ]);
 
-    $invoice = \Modules\Sales\Models\Invoice::factory()->for($this->company)->create([
+    $invoice = Invoice::factory()->for($this->company)->create([
         'customer_id' => $this->customer->id,
         'status' => 'draft',
     ]);
@@ -190,7 +187,7 @@ it('dispatches stock move confirmed event when invoice with storable products is
     $invoiceService->confirm($invoice, $this->user);
 
     // Assert: Stock move was created (proves the event was dispatched and processed)
-    $stockMove = StockMove::where('source_type', \Modules\Sales\Models\Invoice::class)
+    $stockMove = StockMove::where('source_type', Invoice::class)
         ->where('source_id', $invoice->id)
         ->first();
 
@@ -208,7 +205,7 @@ it('uses correct product type field when checking for storable products', functi
     // This test specifically checks Bug #1: using product->type instead of product->product_type
 
     // Create products with different types
-    $storableProduct = \Modules\Product\Models\Product::factory()->for($this->company)->create([
+    $storableProduct = Product::factory()->for($this->company)->create([
         'type' => \Modules\Product\Enums\Products\ProductType::Storable,
         'inventory_valuation_method' => ValuationMethod::AVCO,
         'default_inventory_account_id' => $this->inventoryAccount->id,
@@ -216,12 +213,12 @@ it('uses correct product type field when checking for storable products', functi
         'average_cost' => Money::of(250, $this->company->currency->code), // Valid cost for COGS calculation
     ]);
 
-    $serviceProduct = \Modules\Product\Models\Product::factory()->for($this->company)->create([
+    $serviceProduct = Product::factory()->for($this->company)->create([
         'type' => \Modules\Product\Enums\Products\ProductType::Service,
     ]);
 
     // Create initial inventory for the storable product
-    \App\Models\StockQuant::factory()->create([
+    StockQuant::factory()->create([
         'company_id' => $this->company->id,
         'product_id' => $storableProduct->id,
         'location_id' => $this->stockLocation->id, // Use the default stock location
@@ -229,7 +226,7 @@ it('uses correct product type field when checking for storable products', functi
         'reserved_quantity' => 0.0,
     ]);
 
-    $invoice = \Modules\Sales\Models\Invoice::factory()->for($this->company)->create([
+    $invoice = Invoice::factory()->for($this->company)->create([
         'customer_id' => $this->customer->id,
         'status' => 'draft',
     ]);
@@ -261,7 +258,7 @@ it('uses correct product type field when checking for storable products', functi
     $invoiceService->confirm($invoice, $this->user);
 
     // Assert: Only the storable product should have a stock move
-    $stockMoves = StockMove::where('source_type', \Modules\Sales\Models\Invoice::class)
+    $stockMoves = StockMove::where('source_type', Invoice::class)
         ->where('source_id', $invoice->id)
         ->get();
 
@@ -292,7 +289,7 @@ it('creates COGS journal entry when ProcessOutgoingStockJob is processed', funct
     $this->product->update(['average_cost' => $costPerUnit]);
 
     // Create initial inventory
-    \App\Models\StockQuant::factory()->create([
+    StockQuant::factory()->create([
         'company_id' => $this->company->id,
         'product_id' => $this->product->id,
         'location_id' => $this->stockLocation->id, // Use the default stock location
@@ -300,7 +297,7 @@ it('creates COGS journal entry when ProcessOutgoingStockJob is processed', funct
         'reserved_quantity' => 0.0,
     ]);
 
-    $invoice = \Modules\Sales\Models\Invoice::factory()->for($this->company)->create([
+    $invoice = Invoice::factory()->for($this->company)->create([
         'customer_id' => $this->customer->id,
         'status' => 'draft',
     ]);
@@ -327,7 +324,7 @@ it('creates COGS journal entry when ProcessOutgoingStockJob is processed', funct
     // Note: This assertion will fail until InventoryValuationService.processOutgoingStock() is implemented
     // but it documents the expected behavior
 
-    $stockMove = StockMove::where('source_type', \Modules\Sales\Models\Invoice::class)
+    $stockMove = StockMove::where('source_type', Invoice::class)
         ->where('source_id', $invoice->id)
         ->first();
     expect($stockMove)->not->toBeNull();

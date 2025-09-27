@@ -2,15 +2,9 @@
 
 namespace Modules\Purchase\Tests\Feature\Purchases;
 
-use App\Actions\Purchases\CreatePurchaseOrderAction;
-use App\DataTransferObjects\Purchases\CreatePurchaseOrderDTO;
-use App\DataTransferObjects\Purchases\CreatePurchaseOrderLineDTO;
-use App\Enums\Products\ProductType;
-use App\Enums\Purchases\PurchaseOrderStatus;
-use App\Models\PurchaseOrder;
-use App\Services\PurchaseOrderService;
 use Brick\Money\Money;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Modules\Product\Models\Product;
 use Tests\Traits\WithConfiguredCompany;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);
@@ -19,7 +13,7 @@ beforeEach(function () {
     $this->setupWithConfiguredCompany();
     $this->setupInventoryTestEnvironment();
 
-    $this->product = \Modules\Product\Models\Product::factory()->create([
+    $this->product = Product::factory()->create([
         'company_id' => $this->company->id,
         'type' => \Modules\Product\Enums\Products\ProductType::Storable,
     ]);

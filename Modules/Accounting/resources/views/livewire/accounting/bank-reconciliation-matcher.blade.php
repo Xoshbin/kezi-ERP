@@ -1,37 +1,41 @@
+@php use Filament\Facades\Filament; @endphp
 <div>
     {{-- Bank Statement Information --}}
     <div class="mb-6 bg-white shadow-sm rounded-lg p-6">
         <div class="flex items-center justify-between mb-4">
             <h2 class="text-lg font-medium text-gray-900">{{ __('bank_statement.statement_details') }}</h2>
             <div class="flex items-center space-x-3">
-                <a href="{{ route('docs.show', ['slug' => 'User Guide/payments']) }}" target="_blank" class="inline-flex items-center text-xs text-gray-500 hover:text-gray-700">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16h6M4 6h16M4 18h16" />
+                <a href="{{ route('docs.show', ['slug' => 'User Guide/payments']) }}" target="_blank"
+                   class="inline-flex items-center text-xs text-gray-500 hover:text-gray-700">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24"
+                         stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M8 10h.01M12 10h.01M16 10h.01M9 16h6M4 6h16M4 18h16"/>
                     </svg>
                     {{ __('Payments Guide') }}
                 </a>
                 <span class="text-sm text-gray-500">{{ __('bank_statement.currency') }}:</span>
                 <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-[var(--color-info-100)] text-[var(--color-info-800)]">
-                    {{ $bankStatement->currency->code ?? \Filament\Facades\Filament::getTenant()?->currency?->code }}
+                    {{ $bankStatement->currency->code ?? Filament::getTenant()?->currency?->code }}
                 </span>
             </div>
         </div>
         <dl class="flex flex-row justify-between w-full space-x-8">
             <div class="flex flex-col flex-1 items-start">
-            <dt class="text-sm font-medium text-gray-500">{{ __('bank_statement.reference') }}</dt>
-            <dd class="mt-1 text-sm text-gray-900">{{ $bankStatement->reference ?? '-' }}</dd>
+                <dt class="text-sm font-medium text-gray-500">{{ __('bank_statement.reference') }}</dt>
+                <dd class="mt-1 text-sm text-gray-900">{{ $bankStatement->reference ?? '-' }}</dd>
             </div>
             <div class="flex flex-col flex-1 items-start">
-            <dt class="text-sm font-medium text-gray-500">{{ __('bank_statement.date') }}</dt>
-            <dd class="mt-1 text-sm text-gray-900">{{ optional($bankStatement->date)->format('Y-m-d') ?? '-' }}</dd>
+                <dt class="text-sm font-medium text-gray-500">{{ __('bank_statement.date') }}</dt>
+                <dd class="mt-1 text-sm text-gray-900">{{ optional($bankStatement->date)->format('Y-m-d') ?? '-' }}</dd>
             </div>
             <div class="flex flex-col flex-1 items-start">
-            <dt class="text-sm font-medium text-gray-500">{{ __('bank_statement.starting_balance') }}</dt>
-            <dd class="mt-1 text-sm text-gray-900">{{ $bankStatement->starting_balance ? \App\Support\NumberFormatter::formatMoneyTo($bankStatement->starting_balance) : '0.000' }}</dd>
+                <dt class="text-sm font-medium text-gray-500">{{ __('bank_statement.starting_balance') }}</dt>
+                <dd class="mt-1 text-sm text-gray-900">{{ $bankStatement->starting_balance ? \App\Support\NumberFormatter::formatMoneyTo($bankStatement->starting_balance) : '0.000' }}</dd>
             </div>
             <div class="flex flex-col flex-1 items-start">
-            <dt class="text-sm font-medium text-gray-500">{{ __('bank_statement.ending_balance') }}</dt>
-            <dd class="mt-1 text-sm text-gray-900">{{ $bankStatement->ending_balance ? \App\Support\NumberFormatter::formatMoneyTo($bankStatement->ending_balance) : '0.000' }}</dd>
+                <dt class="text-sm font-medium text-gray-500">{{ __('bank_statement.ending_balance') }}</dt>
+                <dd class="mt-1 text-sm text-gray-900">{{ $bankStatement->ending_balance ? \App\Support\NumberFormatter::formatMoneyTo($bankStatement->ending_balance) : '0.000' }}</dd>
             </div>
         </dl>
     </div>
@@ -40,14 +44,14 @@
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
         {{-- Bank Transactions Table --}}
         @if($bankStatement->exists)
-            <livewire:accounting.bank-transactions-table :bank-statement="$bankStatement" />
+            <livewire:accounting.bank-transactions-table :bank-statement="$bankStatement"/>
         @else
             <div class="p-6 border rounded-lg text-sm text-gray-500">{{ __('bank_statement.no_bank_lines') }}</div>
         @endif
 
         {{-- System Payments Table --}}
         @if($bankStatement->exists)
-            <livewire:accounting.system-payments-table :bank-statement="$bankStatement" />
+            <livewire:accounting.system-payments-table :bank-statement="$bankStatement"/>
         @else
             <div class="p-6 border rounded-lg text-sm text-gray-500">{{ __('bank_statement.no_unreconciled_payments') }}</div>
         @endif
@@ -101,16 +105,16 @@
     {{-- Action Buttons --}}
     <div class="mt-6 flex justify-end gap-2">
         <x-filament::button
-            color="gray"
-            wire:click="$refresh"
+                color="gray"
+                wire:click="$refresh"
         >
             {{ __('bank_statement.refresh') }}
         </x-filament::button>
 
         <x-filament::button
-            wire:click="reconcile"
-            :disabled="!$this->summary['isBalanced'] || empty($selectedBankLines) || empty($selectedPayments)"
-            color="success"
+                wire:click="reconcile"
+                :disabled="!$this->summary['isBalanced'] || empty($selectedBankLines) || empty($selectedPayments)"
+                color="success"
         >
             {{ __('bank_statement.reconcile_selected') }}
         </x-filament::button>

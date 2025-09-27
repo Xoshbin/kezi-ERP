@@ -1,18 +1,7 @@
 <?php
 
-// in app/Filament/Resources/AdjustmentDocumentResource/Pages/EditAdjustmentDocument.php
-
 namespace Modules\Accounting\Filament\Clusters\Accounting\Resources\AdjustmentDocuments\Pages;
 
-// Add these imports
-use App\Actions\Accounting\BuildAdjustmentPostingPreviewAction;
-use App\Actions\Adjustments\UpdateAdjustmentDocumentAction;
-use App\DataTransferObjects\Adjustments\UpdateAdjustmentDocumentDTO;
-use App\DataTransferObjects\Adjustments\UpdateAdjustmentDocumentLineDTO;
-use App\Enums\Adjustments\AdjustmentDocumentStatus;
-use App\Enums\Adjustments\AdjustmentDocumentType;
-use App\Filament\Clusters\Accounting\Resources\AdjustmentDocuments\AdjustmentDocumentResource;
-use App\Services\AdjustmentDocumentService;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Brick\Money\Money;
 use Exception;
@@ -20,10 +9,14 @@ use Filament\Actions\Action;
 use Filament\Actions\DeleteAction;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Validation\ValidationException;
-
-// Other use statements...
+use InvalidArgumentException;
+use Modules\Foundation\Models\Currency;
+use Modules\Inventory\Models\AdjustmentDocument;
+use Modules\Purchase\Models\VendorBill;
+use Modules\Sales\Models\Invoice;
 
 class EditAdjustmentDocument extends EditRecord
 {
@@ -37,13 +30,13 @@ class EditAdjustmentDocument extends EditRecord
                 ->label(__('Preview Posting'))
                 ->icon('heroicon-o-eye')
                 ->color('info')
-                ->visible(fn (\Modules\Inventory\Models\AdjustmentDocument $record): bool => $record->status === AdjustmentDocumentStatus::Draft)
+                ->visible(fn (AdjustmentDocument $record): bool => $record->status === AdjustmentDocumentStatus::Draft)
                 ->requiresConfirmation()
                 ->modalHeading(__('Posting Preview'))
                 ->modalSubmitAction(false)
                 ->modalCancelActionLabel(__('Close'))
                 ->modalWidth('7xl')
-                ->modalContent(function (\Modules\Inventory\Models\AdjustmentDocument $record) {
+                ->modalContent(function (AdjustmentDocument $record) {
                     $preview = app(BuildAdjustmentPostingPreviewAction::class)->execute($record);
 
                     return view('filament/accounting/adjustments/preview-posting', [
@@ -55,8 +48,8 @@ class EditAdjustmentDocument extends EditRecord
                 ->label(__('Export Preview (CSV)'))
                 ->icon('heroicon-o-arrow-down-tray')
                 ->color('gray')
-                ->visible(fn (\Modules\Inventory\Models\AdjustmentDocument $record): bool => $record->status === AdjustmentDocumentStatus::Draft && config('app.debug') && ! app()->environment('production'))
-                ->action(function (\Modules\Inventory\Models\AdjustmentDocument $record) {
+                ->visible(fn (AdjustmentDocument $record): bool => $record->status === AdjustmentDocumentStatus::Draft && config('app.debug') && ! app()->environment('production'))
+                ->action(function (AdjustmentDocument $record) {
                     $preview = app(BuildAdjustmentPostingPreviewAction::class)->execute($record);
                     $rows = [];
                     $rows[] = ['Account Code', 'Account Name', 'Description', 'Debit', 'Credit'];
@@ -85,8 +78,8 @@ class EditAdjustmentDocument extends EditRecord
                 ->label(__('Export Preview (PDF)'))
                 ->icon('heroicon-o-document-arrow-down')
                 ->color('gray')
-                ->visible(fn (\Modules\Inventory\Models\AdjustmentDocument $record): bool => $record->status === AdjustmentDocumentStatus::Draft && config('app.debug') && ! app()->environment('production'))
-                ->action(function (\Modules\Inventory\Models\AdjustmentDocument $record) {
+                ->visible(fn (AdjustmentDocument $record): bool => $record->status === AdjustmentDocumentStatus::Draft && config('app.debug') && ! app()->environment('production'))
+                ->action(function (AdjustmentDocument $record) {
                     $preview = app(BuildAdjustmentPostingPreviewAction::class)->execute($record);
                     $pdf = Pdf::loadView('filament/accounting/adjustments/preview-posting-pdf', [
                         'preview' => $preview,
@@ -104,14 +97,14 @@ class EditAdjustmentDocument extends EditRecord
                 ->label(__('adjustment_document.post_document'))
                 ->color('success')
                 ->requiresConfirmation()
-                ->visible(fn (\Modules\Inventory\Models\AdjustmentDocument $record): bool => $record->status === AdjustmentDocumentStatus::Draft)
-                ->action(function (\Modules\Inventory\Models\AdjustmentDocument $record): void {
+                ->visible(fn (AdjustmentDocument $record): bool => $record->status === AdjustmentDocumentStatus::Draft)
+                ->action(function (AdjustmentDocument $record): void {
                     $this->save(); // This triggers mutateFormDataBeforeSave -> handleRecordUpdate
                     $service = app(AdjustmentDocumentService::class);
                     try {
                         $user = auth()->user();
                         if (! $user) {
-                            throw new \Exception('User must be authenticated to post adjustment document');
+                            throw new Exception('User must be authenticated to post adjustment document');
                         }
                         $service->post($record, $user);
                         Notification::make()->title(__('adjustment_document.notification_document_posted_successfully'))->success()->send();
@@ -129,14 +122,14 @@ class EditAdjustmentDocument extends EditRecord
         // 1. Forcefully derive currency_id if it's missing from the form submission.
         if (empty($data['currency_id'])) {
             if (! empty($data['original_invoice_id'])) {
-                $invoice = \Modules\Sales\Models\Invoice::find($data['original_invoice_id']);
-                if ($invoice instanceof \Illuminate\Database\Eloquent\Collection) {
+                $invoice = Invoice::find($data['original_invoice_id']);
+                if ($invoice instanceof Collection) {
                     $invoice = $invoice->first();
                 }
                 $data['currency_id'] = $invoice?->currency_id;
             } elseif (! empty($data['original_vendor_bill_id'])) {
-                $bill = \Modules\Purchase\Models\VendorBill::find($data['original_vendor_bill_id']);
-                if ($bill instanceof \Illuminate\Database\Eloquent\Collection) {
+                $bill = VendorBill::find($data['original_vendor_bill_id']);
+                if ($bill instanceof Collection) {
                     $bill = $bill->first();
                 }
                 $data['currency_id'] = $bill?->currency_id;
@@ -145,7 +138,7 @@ class EditAdjustmentDocument extends EditRecord
 
         // 2. As a final fallback, get it from the original record being edited.
         if (empty($data['currency_id'])) {
-            /** @var \Modules\Inventory\Models\AdjustmentDocument $rec */
+            /** @var AdjustmentDocument $rec */
             $rec = $this->record;
             $data['currency_id'] = $rec->getAttribute('currency_id');
         }
@@ -174,14 +167,14 @@ class EditAdjustmentDocument extends EditRecord
 
     protected function mutateFormDataBeforeFill(array $data): array
     {
-        /** @var \Modules\Inventory\Models\AdjustmentDocument $rec */
+        /** @var AdjustmentDocument $rec */
         $rec = $this->record;
         $rec->loadMissing('lines');
 
         // Keep Money objects for MoneyInput components
-        /** @var \Illuminate\Database\Eloquent\Collection<int, \App\Models\AdjustmentDocumentLine> $lines */
+        /** @var Collection<int, AdjustmentDocumentLine> $lines */
         $lines = $rec->lines;
-        $linesData = $lines->map(function (\App\Models\AdjustmentDocumentLine $line) {
+        $linesData = $lines->map(function (AdjustmentDocumentLine $line) {
             return [
                 'product_id' => $line->product_id,
                 'description' => $line->description,
@@ -200,12 +193,12 @@ class EditAdjustmentDocument extends EditRecord
     protected function handleRecordUpdate(Model $record, array $data): Model
     {
         // This method will now always receive a valid $data['currency_id']
-        $currency = \Modules\Foundation\Models\Currency::findOrFail($data['currency_id']);
+        $currency = Currency::findOrFail($data['currency_id']);
         // Ensure we have a single Currency model, not a collection
-        if ($currency instanceof \Illuminate\Database\Eloquent\Collection) {
+        if ($currency instanceof Collection) {
             $currency = $currency->first();
             if (! $currency) {
-                throw new \InvalidArgumentException('Currency not found');
+                throw new InvalidArgumentException('Currency not found');
             }
         }
         $lineDTOs = [];
@@ -220,8 +213,8 @@ class EditAdjustmentDocument extends EditRecord
             );
         }
 
-        if (! $record instanceof \Modules\Inventory\Models\AdjustmentDocument) {
-            throw new \Exception('Invalid record type');
+        if (! $record instanceof AdjustmentDocument) {
+            throw new Exception('Invalid record type');
         }
 
         $dto = new UpdateAdjustmentDocumentDTO(

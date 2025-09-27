@@ -1,13 +1,14 @@
 <?php
 
-use App\Enums\Accounting\JournalType;
-use App\Enums\Payments\PaymentMethod;
-use App\Enums\Payments\PaymentStatus;
-use App\Enums\Payments\PaymentType;
-use App\Filament\Clusters\Accounting\Resources\Payments\PaymentResource;
-use App\Models\Journal;
 use Brick\Money\Money;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Modules\Accounting\Enums\Accounting\AccountType;
+use Modules\Accounting\Models\Account;
+use Modules\Accounting\Models\BankStatement;
+use Modules\Accounting\Models\BankStatementLine;
+use Modules\Foundation\Exceptions\UpdateNotAllowedException;
+use Modules\Foundation\Models\Partner;
+use Modules\Payment\Models\Payment;
 use Tests\Traits\WithConfiguredCompany;
 use function Pest\Livewire\livewire;
 
@@ -28,15 +29,15 @@ it('can render the create page', function () {
 });
 
 it('can create a standalone inbound payment', function () {
-    /** @var \Modules\Foundation\Models\Partner $customer */
-    $customer = \Modules\Foundation\Models\Partner::factory()->customer()->create([
+    /** @var Partner $customer */
+    $customer = Partner::factory()->customer()->create([
         'company_id' => $this->company->id,
     ]);
 
-    /** @var \App\Models\Journal $bankJournal */
+    /** @var Journal $bankJournal */
     $bankJournal = Journal::factory()->for($this->company)->create(['type' => JournalType::Bank]);
 
-    livewire(\App\Filament\Clusters\Accounting\Resources\Payments\Pages\CreatePayment::class)
+    livewire(CreatePayment::class)
         ->fillForm([
             'journal_id' => $bankJournal->id,
             'currency_id' => $this->company->currency_id,
@@ -61,21 +62,21 @@ it('can create a standalone inbound payment', function () {
         'status' => PaymentStatus::Draft,
     ]);
 
-    $payment = \Modules\Payment\Models\Payment::where('reference', 'Standalone Payment')->first();
+    $payment = Payment::where('reference', 'Standalone Payment')->first();
     expect($payment->amount->isEqualTo(Money::of(500, $this->company->currency->code)))->toBeTrue();
     expect($payment->paid_to_from_partner_id)->toBe($customer->id);
 });
 
 it('can create a standalone outbound payment', function () {
-    /** @var \Modules\Foundation\Models\Partner $vendor */
-    $vendor = \Modules\Foundation\Models\Partner::factory()->vendor()->create([
+    /** @var Partner $vendor */
+    $vendor = Partner::factory()->vendor()->create([
         'company_id' => $this->company->id,
     ]);
 
-    /** @var \App\Models\Journal $bankJournal */
+    /** @var Journal $bankJournal */
     $bankJournal = Journal::factory()->for($this->company)->create(['type' => JournalType::Bank]);
 
-    livewire(\App\Filament\Clusters\Accounting\Resources\Payments\Pages\CreatePayment::class)
+    livewire(CreatePayment::class)
         ->fillForm([
             'journal_id' => $bankJournal->id,
             'currency_id' => $this->company->currency_id,
@@ -100,13 +101,13 @@ it('can create a standalone outbound payment', function () {
         'status' => PaymentStatus::Draft,
     ]);
 
-    $payment = \Modules\Payment\Models\Payment::where('reference', 'Standalone Vendor Payment')->first();
+    $payment = Payment::where('reference', 'Standalone Vendor Payment')->first();
     expect($payment->amount->isEqualTo(Money::of(300, $this->company->currency->code)))->toBeTrue();
     expect($payment->paid_to_from_partner_id)->toBe($vendor->id);
 });
 
 it('can validate input on create', function () {
-    livewire(\App\Filament\Clusters\Accounting\Resources\Payments\Pages\CreatePayment::class)
+    livewire(CreatePayment::class)
         ->fillForm([
             'journal_id' => null,
             'currency_id' => null,
@@ -128,7 +129,7 @@ it('can validate input on create', function () {
 });
 
 it('can render the edit page', function () {
-    $payment = \Modules\Payment\Models\Payment::factory()->create([
+    $payment = Payment::factory()->create([
         'company_id' => $this->company->id,
     ]);
 
@@ -137,12 +138,12 @@ it('can render the edit page', function () {
 });
 
 it('can edit a draft standalone payment', function () {
-    /** @var \Modules\Foundation\Models\Partner $customer */
-    $customer = \Modules\Foundation\Models\Partner::factory()->customer()->create([
+    /** @var Partner $customer */
+    $customer = Partner::factory()->customer()->create([
         'company_id' => $this->company->id,
     ]);
 
-    $payment = \Modules\Payment\Models\Payment::factory()->create([
+    $payment = Payment::factory()->create([
         'company_id' => $this->company->id,
         'status' => PaymentStatus::Draft,
         'payment_type' => PaymentType::Inbound,
@@ -153,7 +154,7 @@ it('can edit a draft standalone payment', function () {
         'currency_id' => $this->company->currency_id,
     ]);
 
-    livewire(\App\Filament\Clusters\Accounting\Resources\Payments\Pages\EditPayment::class, [
+    livewire(EditPayment::class, [
         'record' => $payment->getRouteKey(),
     ])
         ->fillForm([
@@ -175,12 +176,12 @@ it('can edit a draft standalone payment', function () {
 });
 
 it('cannot edit a confirmed standalone payment', function () {
-    /** @var \Modules\Foundation\Models\Partner $customer */
-    $customer = \Modules\Foundation\Models\Partner::factory()->customer()->create([
+    /** @var Partner $customer */
+    $customer = Partner::factory()->customer()->create([
         'company_id' => $this->company->id,
     ]);
 
-    $payment = \Modules\Payment\Models\Payment::factory()->create([
+    $payment = Payment::factory()->create([
         'company_id' => $this->company->id,
         'status' => PaymentStatus::Confirmed,
         'payment_type' => PaymentType::Inbound,
@@ -193,7 +194,7 @@ it('cannot edit a confirmed standalone payment', function () {
 
     // Attempting to edit a confirmed payment should throw an exception
     expect(function () use ($payment) {
-        livewire(\App\Filament\Clusters\Accounting\Resources\Payments\Pages\EditPayment::class, [
+        livewire(EditPayment::class, [
             'record' => $payment->getRouteKey(),
         ])
             ->fillForm([
@@ -207,7 +208,7 @@ it('cannot edit a confirmed standalone payment', function () {
                 'reference' => 'Should Not Change',
             ])
             ->call('save');
-    })->toThrow(\Modules\Foundation\Exceptions\UpdateNotAllowedException::class, 'Only draft payments can be updated.');
+    })->toThrow(UpdateNotAllowedException::class, 'Only draft payments can be updated.');
 
     // Payment should remain unchanged
     $payment->refresh();
@@ -216,18 +217,18 @@ it('cannot edit a confirmed standalone payment', function () {
 });
 
 it('can confirm a draft standalone payment', function () {
-    /** @var \Modules\Foundation\Models\Partner $customer */
-    $customer = \Modules\Foundation\Models\Partner::factory()->customer()->create([
+    /** @var Partner $customer */
+    $customer = Partner::factory()->customer()->create([
         'company_id' => $this->company->id,
     ]);
 
-    /** @var \Modules\Accounting\Models\Account $bankAccount */
-    $bankAccount = \Modules\Accounting\Models\Account::factory()->create([
+    /** @var Account $bankAccount */
+    $bankAccount = Account::factory()->create([
         'company_id' => $this->company->id,
-        'type' => \Modules\Accounting\Enums\Accounting\AccountType::BankAndCash->value,
+        'type' => AccountType::BankAndCash->value,
     ]);
 
-    /** @var \App\Models\Journal $bankJournal */
+    /** @var Journal $bankJournal */
     $bankJournal = Journal::factory()->create([
         'company_id' => $this->company->id,
         'type' => JournalType::Bank,
@@ -236,7 +237,7 @@ it('can confirm a draft standalone payment', function () {
         'currency_id' => $this->company->currency_id,
     ]);
 
-    $payment = \Modules\Payment\Models\Payment::factory()->create([
+    $payment = Payment::factory()->create([
         'company_id' => $this->company->id,
         'journal_id' => $bankJournal->id,
         'status' => PaymentStatus::Draft,
@@ -247,7 +248,7 @@ it('can confirm a draft standalone payment', function () {
         'payment_type' => PaymentType::Inbound,
     ]);
 
-    $component = livewire(\App\Filament\Clusters\Accounting\Resources\Payments\Pages\EditPayment::class, [
+    $component = livewire(EditPayment::class, [
         'record' => $payment->getRouteKey(),
     ]);
 
@@ -298,14 +299,14 @@ it('can confirm a draft standalone payment', function () {
 // });
 
 it('can delete a draft payment', function () {
-    $payment = \Modules\Payment\Models\Payment::factory()->create([
+    $payment = Payment::factory()->create([
         'company_id' => $this->company->id,
         'status' => PaymentStatus::Draft,
         'amount' => Money::of(100, $this->company->currency->code),
         'currency_id' => $this->company->currency_id,
     ]);
 
-    livewire(\App\Filament\Clusters\Accounting\Resources\Payments\Pages\EditPayment::class, [
+    livewire(EditPayment::class, [
         'record' => $payment->getRouteKey(),
     ])
         ->callAction('delete');
@@ -314,28 +315,28 @@ it('can delete a draft payment', function () {
 });
 
 it('cannot delete a confirmed payment', function () {
-    $payment = \Modules\Payment\Models\Payment::factory()->create([
+    $payment = Payment::factory()->create([
         'company_id' => $this->company->id,
         'status' => PaymentStatus::Confirmed,
     ]);
 
-    livewire(\App\Filament\Clusters\Accounting\Resources\Payments\Pages\EditPayment::class, [
+    livewire(EditPayment::class, [
         'record' => $payment->getRouteKey(),
     ])
         ->assertActionHidden('delete');
 });
 
 it('can display journal entries relation manager', function () {
-    /** @var \Modules\Foundation\Models\Partner $customer */
-    $customer = \Modules\Foundation\Models\Partner::factory()->customer()->create([
+    /** @var Partner $customer */
+    $customer = Partner::factory()->customer()->create([
         'company_id' => $this->company->id,
     ]);
 
-    /** @var \App\Models\Journal $bankJournal */
+    /** @var Journal $bankJournal */
     $bankJournal = Journal::factory()->for($this->company)->create(['type' => JournalType::Bank]);
 
-    /** @var \Modules\Payment\Models\Payment $payment */
-    $payment = \Modules\Payment\Models\Payment::factory()->create([
+    /** @var Payment $payment */
+    $payment = Payment::factory()->create([
         'company_id' => $this->company->id,
         'journal_id' => $bankJournal->id,
         'currency_id' => $this->company->currency_id,
@@ -346,11 +347,11 @@ it('can display journal entries relation manager', function () {
     ]);
 
     // Create a journal entry linked to this payment
-    $journalEntry = \App\Models\JournalEntry::factory()->create([
+    $journalEntry = JournalEntry::factory()->create([
         'company_id' => $this->company->id,
         'journal_id' => $bankJournal->id,
         'currency_id' => $this->company->currency_id,
-        'source_type' => \Modules\Payment\Models\Payment::class,
+        'source_type' => Payment::class,
         'source_id' => $payment->id,
         'reference' => 'PAY/'.$payment->id,
         'description' => 'Payment journal entry',
@@ -361,9 +362,9 @@ it('can display journal entries relation manager', function () {
     ]);
 
     // Test that the journal entries relation manager can be rendered
-    livewire(\App\Filament\Clusters\Accounting\Resources\Payments\RelationManagers\JournalEntriesRelationManager::class, [
+    livewire(JournalEntriesRelationManager::class, [
         'ownerRecord' => $payment,
-        'pageClass' => \App\Filament\Clusters\Accounting\Resources\Payments\Pages\EditPayment::class,
+        'pageClass' => EditPayment::class,
     ])
         ->assertCanSeeTableRecords([$journalEntry])
         ->assertCanRenderTableColumn('reference')
@@ -374,16 +375,16 @@ it('can display journal entries relation manager', function () {
 });
 
 it('can display bank statement lines relation manager for reconciled payment', function () {
-    /** @var \Modules\Foundation\Models\Partner $customer */
-    $customer = \Modules\Foundation\Models\Partner::factory()->customer()->create([
+    /** @var Partner $customer */
+    $customer = Partner::factory()->customer()->create([
         'company_id' => $this->company->id,
     ]);
 
-    /** @var \App\Models\Journal $bankJournal */
+    /** @var Journal $bankJournal */
     $bankJournal = Journal::factory()->for($this->company)->create(['type' => JournalType::Bank]);
 
-    /** @var \Modules\Payment\Models\Payment $payment */
-    $payment = \Modules\Payment\Models\Payment::factory()->create([
+    /** @var Payment $payment */
+    $payment = Payment::factory()->create([
         'company_id' => $this->company->id,
         'journal_id' => $bankJournal->id,
         'currency_id' => $this->company->currency_id,
@@ -394,13 +395,13 @@ it('can display bank statement lines relation manager for reconciled payment', f
     ]);
 
     // Create a bank statement and line linked to this payment
-    $bankStatement = \Modules\Accounting\Models\BankStatement::factory()->create([
+    $bankStatement = BankStatement::factory()->create([
         'company_id' => $this->company->id,
         'currency_id' => $this->company->currency_id,
         'reference' => 'STMT-001',
     ]);
 
-    $bankStatementLine = \Modules\Accounting\Models\BankStatementLine::factory()->create([
+    $bankStatementLine = BankStatementLine::factory()->create([
         'bank_statement_id' => $bankStatement->id,
         'payment_id' => $payment->id,
         'description' => 'Payment from customer',
@@ -409,9 +410,9 @@ it('can display bank statement lines relation manager for reconciled payment', f
     ]);
 
     // Test that the bank statement lines relation manager can be rendered
-    livewire(\App\Filament\Clusters\Accounting\Resources\Payments\RelationManagers\BankStatementLinesRelationManager::class, [
+    livewire(BankStatementLinesRelationManager::class, [
         'ownerRecord' => $payment,
-        'pageClass' => \App\Filament\Clusters\Accounting\Resources\Payments\Pages\EditPayment::class,
+        'pageClass' => EditPayment::class,
     ])
         ->assertCanSeeTableRecords([$bankStatementLine])
         ->assertCanRenderTableColumn('date')

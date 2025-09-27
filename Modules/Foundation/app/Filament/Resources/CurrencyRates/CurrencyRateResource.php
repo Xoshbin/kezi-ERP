@@ -2,25 +2,21 @@
 
 namespace Modules\Foundation\Filament\Clusters\Settings\Resources\CurrencyRates;
 
-use App\Filament\Clusters\Settings\Resources\CurrencyRates\Pages\CreateCurrencyRate;
-use App\Filament\Clusters\Settings\Resources\CurrencyRates\Pages\EditCurrencyRate;
-use App\Filament\Clusters\Settings\Resources\CurrencyRates\Pages\ListCurrencyRates;
-use App\Filament\Clusters\Settings\Resources\CurrencyRates\Schemas\CurrencyRateForm;
-use App\Filament\Clusters\Settings\Resources\CurrencyRates\Tables\CurrencyRatesTable;
-use App\Filament\Clusters\Settings\SettingsCluster;
+use BackedEnum;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
 use LaraZeus\SpatieTranslatable\Resources\Concerns\Translatable;
+use Modules\Foundation\Models\CurrencyRate;
 
 class CurrencyRateResource extends Resource
 {
     use Translatable;
 
-    protected static ?string $model = \Modules\Foundation\Models\CurrencyRate::class;
+    protected static ?string $model = CurrencyRate::class;
 
-    protected static string|\BackedEnum|null $navigationIcon = Heroicon::OutlinedCurrencyDollar;
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedCurrencyDollar;
 
     protected static ?string $cluster = SettingsCluster::class;
 

@@ -2,62 +2,61 @@
 
 namespace Modules\Payment\Tests\Feature\FinancialTransactions;
 
-use App\Actions\Purchases\CreateVendorBillAction;
-use App\DataTransferObjects\Purchases\CreateVendorBillDTO;
-use App\DataTransferObjects\Purchases\CreateVendorBillLineDTO;
-use App\Enums\Products\ProductType;
-use App\Services\VendorBillService;
 use Brick\Money\Money;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Modules\Accounting\Models\Account;
+use Modules\Accounting\Models\AssetCategory;
+use Modules\Foundation\Models\Partner;
+use Modules\Product\Models\Product;
 use Tests\Traits\WithConfiguredCompany;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);
 
 it('posts a single JE for mixed vendor bills (storable + asset + expense)', function () {
     $this->setupWithConfiguredCompany();
-    $this->vendor = \Modules\Foundation\Models\Partner::factory()->for($this->company)->vendor()->create();
+    $this->vendor = Partner::factory()->for($this->company)->vendor()->create();
 
     // Set up accounts and product
-    $inventoryAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create([
+    $inventoryAccount = Account::factory()->for($this->company)->create([
         'name' => ['en' => 'Inventory'],
         'type' => 'current_assets',
     ]);
-    $stockInputAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create([
+    $stockInputAccount = Account::factory()->for($this->company)->create([
         'name' => ['en' => 'Stock Input'],
         'type' => 'current_liabilities',
     ]);
-    $expenseAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create([
+    $expenseAccount = Account::factory()->for($this->company)->create([
         'name' => ['en' => 'Office Supplies'],
         'type' => 'expense',
     ]);
 
-    $product = \Modules\Product\Models\Product::factory()->for($this->company)->create([
+    $product = Product::factory()->for($this->company)->create([
         'name' => 'Widget',
         'type' => \Modules\Product\Enums\Products\ProductType::Storable,
         'default_inventory_account_id' => $inventoryAccount->id,
         'default_stock_input_account_id' => $stockInputAccount->id,
     ]);
 
-    $assetAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create([
+    $assetAccount = Account::factory()->for($this->company)->create([
         'name' => ['en' => 'IT Equipment'],
         'type' => 'fixed_assets',
     ]);
-    $accumDepAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create([
+    $accumDepAccount = Account::factory()->for($this->company)->create([
         'name' => ['en' => 'Accum Dep'],
         'type' => 'non_current_assets',
     ]);
-    $depExpenseAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create([
+    $depExpenseAccount = Account::factory()->for($this->company)->create([
         'name' => ['en' => 'Depr Expense'],
         'type' => 'depreciation',
     ]);
 
-    $category = \Modules\Accounting\Models\AssetCategory::create([
+    $category = AssetCategory::create([
         'company_id' => $this->company->id,
         'name' => 'IT Equipment',
         'asset_account_id' => $assetAccount->id,
         'accumulated_depreciation_account_id' => $accumDepAccount->id,
         'depreciation_expense_account_id' => $depExpenseAccount->id,
-        'depreciation_method' => \App\Enums\Assets\DepreciationMethod::StraightLine,
+        'depreciation_method' => DepreciationMethod::StraightLine,
         'useful_life_years' => 5,
         'salvage_value_default' => 0,
     ]);

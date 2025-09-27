@@ -2,15 +2,12 @@
 
 namespace Modules\Purchase\Tests\Feature\Purchases;
 
-use App\Actions\Purchases\CreateVendorBillFromPurchaseOrderAction;
-use App\DataTransferObjects\Purchases\CreateVendorBillFromPurchaseOrderDTO;
-use App\Enums\Products\ProductType;
-use App\Enums\Purchases\PurchaseOrderStatus;
-use App\Enums\Purchases\VendorBillStatus;
-use App\Models\PurchaseOrder;
 use Brick\Money\Money;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Validation\ValidationException;
+use Modules\Accounting\Models\Account;
+use Modules\Product\Models\Product;
+use Modules\Purchase\Models\VendorBill;
 use Tests\Traits\WithConfiguredCompany;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);
@@ -20,7 +17,7 @@ beforeEach(function () {
     $this->setupInventoryTestEnvironment();
 
     // Create an expense account for products
-    $this->expenseAccount = \Modules\Accounting\Models\Account::factory()->create([
+    $this->expenseAccount = Account::factory()->create([
         'company_id' => $this->company->id,
         'type' => 'expense',
         'code' => '5000',
@@ -28,7 +25,7 @@ beforeEach(function () {
     ]);
 
     // Create a product with expense account
-    $this->product = \Modules\Product\Models\Product::factory()->create([
+    $this->product = Product::factory()->create([
         'company_id' => $this->company->id,
         'type' => \Modules\Product\Enums\Products\ProductType::Storable,
         'expense_account_id' => $this->expenseAccount->id,
@@ -82,7 +79,7 @@ it('can create a vendor bill from a purchase order', function () {
 
     $vendorBill = app(CreateVendorBillFromPurchaseOrderAction::class)->execute($dto);
 
-    expect($vendorBill)->toBeInstanceOf(\Modules\Purchase\Models\VendorBill::class);
+    expect($vendorBill)->toBeInstanceOf(VendorBill::class);
     expect($vendorBill->purchase_order_id)->toBe($this->purchaseOrder->id);
     expect($vendorBill->vendor_id)->toBe($this->purchaseOrder->vendor_id);
     expect($vendorBill->currency_id)->toBe($this->purchaseOrder->currency_id);
@@ -171,7 +168,7 @@ it('validates that purchase order can create bills', function () {
 
 it('validates that products have expense accounts', function () {
     // Create a product without expense account
-    $productWithoutAccount = \Modules\Product\Models\Product::factory()->create([
+    $productWithoutAccount = Product::factory()->create([
         'company_id' => $this->company->id,
         'type' => \Modules\Product\Enums\Products\ProductType::Storable,
         'expense_account_id' => null, // No expense account

@@ -1,13 +1,14 @@
 <?php
 
 use App\Models\Company;
-use App\Services\CurrencyConverterService;
 use Brick\Money\Money;
 use Carbon\Carbon;
+use Modules\Foundation\Models\Currency;
+use Modules\Foundation\Models\CurrencyRate;
 
 test('can convert between same currency', function () {
     $company = Company::factory()->create();
-    $currency = \Modules\Foundation\Models\Currency::factory()->create(['code' => 'USD']);
+    $currency = Currency::factory()->create(['code' => 'USD']);
 
     $amount = Money::of(100, 'USD');
     $service = app(\Modules\Foundation\Services\CurrencyConverterService::class);
@@ -19,12 +20,12 @@ test('can convert between same currency', function () {
 });
 
 test('can convert to base currency', function () {
-    $baseCurrency = \Modules\Foundation\Models\Currency::factory()->create(['code' => 'USD']);
+    $baseCurrency = Currency::factory()->create(['code' => 'USD']);
     $company = Company::factory()->create(['currency_id' => $baseCurrency->id]);
-    $foreignCurrency = \Modules\Foundation\Models\Currency::factory()->create(['code' => 'EUR']);
+    $foreignCurrency = Currency::factory()->create(['code' => 'EUR']);
 
     // Create exchange rate: 1 EUR = 1.5 USD
-    \Modules\Foundation\Models\CurrencyRate::factory()->create([
+    CurrencyRate::factory()->create([
         'company_id' => $company->id,
         'currency_id' => $foreignCurrency->id,
         'rate' => 1.5,
@@ -41,12 +42,12 @@ test('can convert to base currency', function () {
 });
 
 test('can convert from base currency', function () {
-    $baseCurrency = \Modules\Foundation\Models\Currency::factory()->create(['code' => 'USD']);
+    $baseCurrency = Currency::factory()->create(['code' => 'USD']);
     $company = Company::factory()->create(['currency_id' => $baseCurrency->id]);
-    $foreignCurrency = \Modules\Foundation\Models\Currency::factory()->create(['code' => 'EUR']);
+    $foreignCurrency = Currency::factory()->create(['code' => 'EUR']);
 
     // Create exchange rate: 1 EUR = 1.5 USD
-    \Modules\Foundation\Models\CurrencyRate::factory()->create([
+    CurrencyRate::factory()->create([
         'company_id' => $company->id,
         'currency_id' => $foreignCurrency->id,
         'rate' => 1.5,
@@ -63,14 +64,14 @@ test('can convert from base currency', function () {
 });
 
 test('can convert between foreign currencies via base currency', function () {
-    $baseCurrency = \Modules\Foundation\Models\Currency::factory()->create(['code' => 'USD']);
+    $baseCurrency = Currency::factory()->create(['code' => 'USD']);
     $company = Company::factory()->create(['currency_id' => $baseCurrency->id]);
-    $currency1 = \Modules\Foundation\Models\Currency::factory()->create(['code' => 'EUR']);
-    $currency2 = \Modules\Foundation\Models\Currency::factory()->create(['code' => 'GBP']);
+    $currency1 = Currency::factory()->create(['code' => 'EUR']);
+    $currency2 = Currency::factory()->create(['code' => 'GBP']);
 
     // Create exchange rates
     // 1 EUR = 1.5 USD
-    \Modules\Foundation\Models\CurrencyRate::factory()->create([
+    CurrencyRate::factory()->create([
         'company_id' => $company->id,
         'currency_id' => $currency1->id,
         'rate' => 1.5,
@@ -78,7 +79,7 @@ test('can convert between foreign currencies via base currency', function () {
     ]);
 
     // 1 GBP = 2.0 USD
-    \Modules\Foundation\Models\CurrencyRate::factory()->create([
+    CurrencyRate::factory()->create([
         'company_id' => $company->id,
         'currency_id' => $currency2->id,
         'rate' => 2.0,
@@ -96,9 +97,9 @@ test('can convert between foreign currencies via base currency', function () {
 });
 
 test('throws exception when no exchange rate found', function () {
-    $baseCurrency = \Modules\Foundation\Models\Currency::factory()->create(['code' => 'USD']);
+    $baseCurrency = Currency::factory()->create(['code' => 'USD']);
     $company = Company::factory()->create(['currency_id' => $baseCurrency->id]);
-    $foreignCurrency = \Modules\Foundation\Models\Currency::factory()->create(['code' => 'EUR']);
+    $foreignCurrency = Currency::factory()->create(['code' => 'EUR']);
 
     $amount = Money::of(100, 'EUR');
     $service = app(\Modules\Foundation\Services\CurrencyConverterService::class);

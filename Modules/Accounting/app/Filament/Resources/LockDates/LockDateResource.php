@@ -2,11 +2,6 @@
 
 namespace Modules\Accounting\Filament\Clusters\Settings\Resources\LockDates;
 
-use App\Enums\Accounting\LockDateType;
-use App\Filament\Clusters\Settings\Resources\LockDates\Pages\CreateLockDate;
-use App\Filament\Clusters\Settings\Resources\LockDates\Pages\EditLockDate;
-use App\Filament\Clusters\Settings\Resources\LockDates\Pages\ListLockDates;
-use App\Filament\Clusters\Settings\SettingsCluster;
 use BackedEnum;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\EditAction;
@@ -17,10 +12,11 @@ use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Modules\Accounting\Models\LockDate;
 
 class LockDateResource extends Resource
 {
-    protected static ?string $model = \Modules\Accounting\Models\LockDate::class;
+    protected static ?string $model = LockDate::class;
 
     protected static ?int $navigationSort = 7;
 
@@ -56,8 +52,8 @@ class LockDateResource extends Resource
                                     ->mapWithKeys(fn (LockDateType $type) => [$type->value => $type->label()])
                             )
                             ->required()
-                            ->disabled(fn (?\Modules\Accounting\Models\LockDate $record) => $record !== null && $record->lock_type === LockDateType::HardLock)
-                            ->dehydrated(fn (?\Modules\Accounting\Models\LockDate $record) => $record === null),
+                            ->disabled(fn (?LockDate $record) => $record !== null && $record->lock_type === LockDateType::HardLock)
+                            ->dehydrated(fn (?LockDate $record) => $record === null),
                         DatePicker::make('locked_until')
                             ->label(__('lock_date.locked_until'))
                             ->required(),
@@ -76,9 +72,9 @@ class LockDateResource extends Resource
             ])
             ->recordActions([
                 EditAction::make()
-                    ->disabled(fn (\Modules\Accounting\Models\LockDate $record) => $record->lock_type === LockDateType::HardLock),
+                    ->disabled(fn (LockDate $record) => $record->lock_type === LockDateType::HardLock),
                 DeleteAction::make()
-                    ->disabled(fn (\Modules\Accounting\Models\LockDate $record) => $record->lock_type === LockDateType::HardLock),
+                    ->disabled(fn (LockDate $record) => $record->lock_type === LockDateType::HardLock),
             ])
             ->toolbarActions([]);
     }

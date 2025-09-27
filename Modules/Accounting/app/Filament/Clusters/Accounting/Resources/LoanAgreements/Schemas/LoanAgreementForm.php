@@ -2,13 +2,7 @@
 
 namespace Modules\Accounting\Filament\Clusters\Accounting\Resources\LoanAgreements\Schemas;
 
-use App\Enums\Loans\LoanStatus;
-use App\Enums\Loans\LoanType;
-use App\Enums\Loans\ScheduleMethod;
-use App\Enums\Partners\PartnerType;
-use App\Filament\Forms\Components\MoneyInput;
 use App\Models\Company;
-use App\Rules\NotInLockedPeriod;
 use Filament\Actions\Action;
 use Filament\Facades\Filament;
 use Filament\Forms\Components\DatePicker;
@@ -21,6 +15,10 @@ use Filament\Schemas\Components\Group;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Illuminate\Database\Eloquent\Collection;
+use Modules\Accounting\Models\LoanAgreement;
+use Modules\Foundation\Models\Currency;
+use Modules\Foundation\Models\CurrencyRate;
+use Modules\Foundation\Models\Partner;
 use Xoshbin\TranslatableSelect\Components\TranslatableSelect;
 
 class LoanAgreementForm
@@ -45,7 +43,7 @@ class LoanAgreementForm
                             TextInput::make('email')->label(__('partner.email') ?: 'Email')->email(),
                             TextInput::make('contact_person')->label(__('partner.contact_person') ?: 'Contact Person'),
                         ])
-                        ->createOptionUsing(fn (array $data) => \Modules\Foundation\Models\Partner::create($data)->getKey())
+                        ->createOptionUsing(fn (array $data) => Partner::create($data)->getKey())
                         ->createOptionModalHeading(__('common.modal_title_create_partner') ?: 'Create Partner')
                         ->createOptionAction(fn (Action $action) => $action->modalWidth('lg')),
 
@@ -101,7 +99,7 @@ class LoanAgreementForm
 
                     Group::make()
                         ->schema([
-                            TranslatableSelect::forModel('currency_id', \Modules\Foundation\Models\Currency::class, 'name')
+                            TranslatableSelect::forModel('currency_id', Currency::class, 'name')
                                 ->label(__('invoice.currency'))
                                 ->required()
                                 ->live()
@@ -114,7 +112,7 @@ class LoanAgreementForm
                                 })
                                 ->afterStateUpdated(function (callable $set, $state) {
                                     if ($state) {
-                                        $currency = \Modules\Foundation\Models\Currency::find($state);
+                                        $currency = Currency::find($state);
                                         // Ensure we have a single Currency model, not a collection
                                         if ($currency instanceof Collection) {
                                             $currency = $currency->first();
@@ -123,7 +121,7 @@ class LoanAgreementForm
 
                                         if ($currency && $company instanceof Company && $currency->id !== $company->currency_id) {
                                             // Get latest exchange rate for this company
-                                            $latestRate = \Modules\Foundation\Models\CurrencyRate::getLatestRate($currency->id, $company->id);
+                                            $latestRate = CurrencyRate::getLatestRate($currency->id, $company->id);
                                             if ($latestRate) {
                                                 $set('current_exchange_rate', $latestRate);
                                             }
@@ -173,7 +171,7 @@ class LoanAgreementForm
                                 ->currencyField('currency_id')
                                 ->disabled()
                                 ->dehydrated(false)
-                                ->visible(fn (?\Modules\Accounting\Models\LoanAgreement $record) => $record && $record->outstanding_principal)
+                                ->visible(fn (?LoanAgreement $record) => $record && $record->outstanding_principal)
                                 ->columnSpanFull(),
                         ])
                         ->columns(12)

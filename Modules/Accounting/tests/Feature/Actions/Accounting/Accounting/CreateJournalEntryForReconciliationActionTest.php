@@ -1,15 +1,15 @@
 <?php
 
-use App\Actions\Accounting\CreateJournalEntryForReconciliationAction;
 use Brick\Money\Money;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Modules\Payment\Models\Payment;
 use Tests\Traits\WithConfiguredCompany;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);
 
 test('it creates a correct journal entry for a payment reconciliation', function () {
 
-    $payment = \Modules\Payment\Models\Payment::factory()
+    $payment = Payment::factory()
         ->for($this->company)
         ->create([
             'amount' => Money::of(250, $this->company->currency->code),

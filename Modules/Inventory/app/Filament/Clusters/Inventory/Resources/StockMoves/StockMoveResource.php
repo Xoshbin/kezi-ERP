@@ -2,17 +2,6 @@
 
 namespace Modules\Inventory\Filament\Clusters\Inventory\Resources\StockMoves;
 
-use App\Enums\Inventory\StockMoveStatus;
-use App\Enums\Inventory\StockMoveType;
-use App\Filament\Clusters\Inventory\InventoryCluster;
-use App\Filament\Clusters\Inventory\Resources\StockMoves\Actions\ConfirmStockMoveAction;
-use App\Filament\Clusters\Inventory\Resources\StockMoves\Pages\CreateStockMove;
-use App\Filament\Clusters\Inventory\Resources\StockMoves\Pages\EditStockMove;
-use App\Filament\Clusters\Inventory\Resources\StockMoves\Pages\ListStockMoves;
-use App\Filament\Clusters\Inventory\Resources\StockMoves\Pages\ViewStockMove;
-use App\Filament\Components\CostPreviewComponent;
-use App\Models\StockLocation;
-use App\Models\StockMove;
 use BackedEnum;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
@@ -35,6 +24,9 @@ use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Modules\Product\Models\Product;
+use Modules\Purchase\Models\VendorBill;
+use Modules\Sales\Models\Invoice;
 use Xoshbin\TranslatableSelect\Components\TranslatableSelect;
 
 class StockMoveResource extends Resource
@@ -89,7 +81,7 @@ class StockMoveResource extends Resource
                         ->label(__('stock_move.product_lines'))
                         ->schema([
                             Grid::make(2)->schema([
-                                TranslatableSelect::forModel('product_id', \Modules\Product\Models\Product::class)
+                                TranslatableSelect::forModel('product_id', Product::class)
                                     ->label(__('stock_move.product'))
                                     ->required()
                                     ->searchable()
@@ -120,8 +112,8 @@ class StockMoveResource extends Resource
                                 Select::make('source_type')
                                     ->label(__('stock_move.source_type'))
                                     ->options([
-                                        \Modules\Sales\Models\Invoice::class => __('invoice.label'),
-                                        \Modules\Purchase\Models\VendorBill::class => __('vendor_bill.label'),
+                                        Invoice::class => __('invoice.label'),
+                                        VendorBill::class => __('vendor_bill.label'),
                                     ])
                                     ->reactive(),
                                 Select::make('source_id')
@@ -131,15 +123,15 @@ class StockMoveResource extends Resource
                                         if (! $type || ! class_exists($type)) {
                                             return [];
                                         }
-                                        if ($type === \Modules\Sales\Models\Invoice::class) {
-                                            return \Modules\Sales\Models\Invoice::query()
+                                        if ($type === Invoice::class) {
+                                            return Invoice::query()
                                                 ->selectRaw("id, COALESCE(invoice_number, CONCAT('#', id)) as display")
                                                 ->orderByDesc('id')
                                                 ->pluck('display', 'id')
                                                 ->all();
                                         }
-                                        if ($type === \Modules\Purchase\Models\VendorBill::class) {
-                                            return \Modules\Purchase\Models\VendorBill::query()
+                                        if ($type === VendorBill::class) {
+                                            return VendorBill::query()
                                                 ->selectRaw("id, COALESCE(bill_reference, CONCAT('#', id)) as display")
                                                 ->orderByDesc('id')
                                                 ->pluck('display', 'id')
@@ -163,7 +155,7 @@ class StockMoveResource extends Resource
                         ->itemLabel(
                             fn(array $state): ?string =>
                             isset($state['product_id'])
-                                ? \Modules\Product\Models\Product::find($state['product_id'])?->name ?? __('stock_move.new_product_line')
+                                ? Product::find($state['product_id'])?->name ?? __('stock_move.new_product_line')
                                 : __('stock_move.new_product_line')
                         ),
                 ]),
@@ -301,7 +293,7 @@ class StockMoveResource extends Resource
                     ->multiple()
                     ->preload()
                     ->options(function () {
-                        return \Modules\Product\Models\Product::query()
+                        return Product::query()
                             ->whereHas('stockMoveProductLines')
                             ->pluck('name', 'id');
                     })

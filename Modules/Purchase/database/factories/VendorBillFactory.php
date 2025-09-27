@@ -8,6 +8,7 @@ use App\Models\VendorBill;
 use App\Models\VendorBillLine;
 use Brick\Money\Money;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Modules\Foundation\Models\Partner;
 
 /**
  * @extends Factory<VendorBill>
@@ -23,7 +24,7 @@ class VendorBillFactory extends Factory
     {
         return [
             'company_id' => Company::factory(),
-            'vendor_id' => \Modules\Foundation\Models\Partner::factory(),
+            'vendor_id' => Partner::factory(),
             'currency_id' => function (array $attributes) {
                 return Company::find($attributes['company_id'])->currency_id;
             },
